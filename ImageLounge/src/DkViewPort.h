@@ -109,9 +109,9 @@ public:
 	//DkImageLoader* getImageLoader();
 	void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
 	DkControlWidget* getController();
-	bool isTestLoaded() { return testLoaded; };
+	bool isTestLoaded() { return mTestLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
-		this->visibleStatusbar = visibleStatusbar;
+		this->mVisibleStatusbar = visibleStatusbar;
 	};
 	
 	QString getCurrentPixelHexValue();
@@ -193,10 +193,11 @@ public slots:
 	void nextMovieFrame();
 	void previousMovieFrame();
 	void animateFade();
-	void animateMove();
 	virtual void togglePattern(bool show);
 
 protected:
+	
+	// events
 	virtual void dragLeaveEvent(QDragLeaveEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
@@ -205,45 +206,34 @@ protected:
 	virtual bool event(QEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
-	QFileInfo thumbFile;
-	bool thumbLoaded;
-	bool testLoaded;
-	bool visibleStatusbar;
-	bool gestureStarted;
+	bool mTestLoaded = false;
+	bool mVisibleStatusbar = false;
+	bool mGestureStarted = false;
 
-	QRectF oldImgRect;
-	QRectF oldImgViewRect;
-	QTransform oldWorldMatrix;
-	QTransform oldImgMatrix;
+	QRectF mOldImgRect;
 
-	QTimer* repeatZoomTimer;
+	QTimer* mRepeatZoomTimer = new QTimer(this);
 	
 	// fading stuff
-	QTimer* fadeTimer;
-	DkTimer fadeTime;
-	QImage fadeBuffer;
-	float fadeOpacity;
-	QRectF fadeImgViewRect;
-	QRectF fadeImgRect;
+	QTimer* mFadeTimer = new QTimer(this);
+	DkTimer mFadeTime;
+	QImage mFadeBuffer;
+	float mFadeOpacity;
+	QRectF mFadeImgViewRect;
+	QRectF mFadeImgRect;
 	
-	// moving stuff - not used yet
-	QPoint moveStep;
-	float targetScale;
-	QTimer* moveTimer;
-
 	// fun
-	bool dissolveImage;
+	bool mDissolveImage = false;
 	
-	QImage imgBg;
+	QImage mImgBg;
 
-	QVBoxLayout* paintLayout;
-	DkControlWidget* controller;
-	QSharedPointer<DkImageLoader> loader;
+	QVBoxLayout* mPaintLayout;
+	DkControlWidget* mController;
+	QSharedPointer<DkImageLoader> mLoader;
 
-	QPoint currentPixelPos;
-	//bool pluginImageWasApplied;
+	QPoint mCurrentPixelPos;
+	
 	// functions
-
 #if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
 	virtual int swipeRecognition(QNativeGestureEvent* event);
@@ -257,7 +247,6 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
 	void showZoom();
-	//QPoint newCenter(QSize s);	// for frameless
 	void toggleLena();
 	void getPixelInfo(const QPoint& pos);
 
@@ -274,11 +263,11 @@ public:
 	void addStartActions(QAction *startAction, QIcon *startIcon = 0);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	virtual void setMainGeometry(const QRect &geometry) {
-		mainScreen = geometry;
+		mMainScreen = geometry;
 	};
 
 	virtual QRect getMainGeometry() {
-		return mainScreen;
+		return mMainScreen;
 	};
 
 public slots:
@@ -293,13 +282,6 @@ protected:
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
 
-	// variables
-	QVector<QAction*> startActions;
-	QVector<QIcon*> startIcons;
-	QVector<QRectF> startActionsRects;
-	QVector<QPixmap> startActionsIcons;
-	QRect mainScreen;
-
 	// functions
 	QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
@@ -308,6 +290,13 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
+
+	// variables
+	QVector<QAction*> mStartActions;
+	QVector<QIcon*> mStartIcons;
+	QVector<QRectF> mStartActionsRects;
+	QVector<QPixmap> mStartActionsIcons;
+	QRect mMainScreen;	// TODO: let user choose which one to take
 };
 
 class DllExport DkViewPortContrast : public DkViewPort {
@@ -320,11 +309,10 @@ public:
 	void release();
 
 signals:
-	void tFSliderAdded(qreal pos);
-	void imageModeSet(int mode);
+	void tFSliderAdded(qreal pos) const;
+	void imageModeSet(int mode) const;
 
 public slots:
-	//TODO: remove the functions, which are not used anymore:
 	void changeChannel(int channel);
 	void changeColorTable(QGradientStops stops);
 	void pickColor(bool enable);
@@ -339,17 +327,18 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
-private:
-	QImage falseColorImg;
-	bool drawFalseColorImg;
-	bool isColorPickerActive;
-	int activeChannel;
-	//Mat origImg, cmImg, imgUC3;
-		
-	QVector<QImage> imgs;
-	QVector<QRgb> colorTable;
-	void drawImageHistogram();
 
+private:
+	QImage mFalseColorImg;
+	bool mDrawFalseColorImg = false;
+	bool mIsColorPickerActive = false;
+	int mActiveChannel = 0;
+		
+	QVector<QImage> mImgs;
+	QVector<QRgb> mColorTable;
+
+	// functions
+	void drawImageHistogram();
 };
 
 };

@@ -32,7 +32,7 @@
 #include "DkWidgets.h"
 #include "DkSettings.h"
 #include "DkNetwork.h"
-#include "DkThumbsWidgets.h"		// needed in the connects -> shall we move them to controller?
+#include "DkThumbsWidgets.h"		// needed in the connects -> shall we move them to mController?
 #include "DkMetaDataWidgets.h"
 #include "DkToolbars.h"
 
@@ -61,50 +61,34 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<nmc::DkImageContainerT>");
 	qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
 
-	testLoaded = false;
-	thumbLoaded = false;
-	visibleStatusbar = false;
-	gestureStarted = false;
-	dissolveImage = false;
-	//pluginImageWasApplied = false;
-	fadeOpacity = 0.0f;
+	mImgBg.load(":/nomacs/img/nomacs-bg.png");
 
-	imgBg.load(":/nomacs/img/nomacs-bg.png");
+	mRepeatZoomTimer->setInterval(20);
+	connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
 
-	repeatZoomTimer = new QTimer(this);
-	repeatZoomTimer->setInterval(20);
-	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
-
-	fadeTimer = new QTimer(this);
-	fadeTimer->setInterval(5);
-	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
-
-	moveTimer = new QTimer(this);
-	moveTimer->setInterval(5);
-	connect(moveTimer, SIGNAL(timeout()), this, SLOT(animateMove()));
-
-	//setAcceptDrops(true);
+	mFadeTimer->setInterval(5);
+	connect(mFadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
 
 	//no border
 	setMouseTracking (true);//receive mouse event everytime
 	
-	paintLayout = new QVBoxLayout(this);
-	paintLayout->setContentsMargins(0,0,0,0);
+	mPaintLayout = new QVBoxLayout(this);
+	mPaintLayout->setContentsMargins(0,0,0,0);
 
 	createShortcuts();
 
-	controller = new DkControlWidget(this, flags);
-	//controller->show();
+	mController = new DkControlWidget(this, flags);
+	//mController->show();
 
-	loader = QSharedPointer<DkImageLoader>(new DkImageLoader());
-	connectLoader(loader);
+	mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	connectLoader(mLoader);
 
-	controller->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
-	controller->getCropWidget()->setWorldTransform(&mWorldMatrix);
-	controller->getCropWidget()->setImageTransform(&mImgMatrix);
-	controller->getCropWidget()->setImageRect(&mImgViewRect);
+	mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
+	mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
+	mController->getCropWidget()->setImageTransform(&mImgMatrix);
+	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
-	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
+	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(QString)), this, SIGNAL(infoSignal(QString)));
 	
 	qDebug() << "viewer created...";
@@ -173,14 +157,14 @@ void DkViewPort::createShortcuts() {
 void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 
 	if(!removeWidget) {
-		paintLayout->addWidget(widget);
+		mPaintLayout->addWidget(widget);
 		//pluginImageWasApplied = false;
 	} else {
-		paintLayout->removeWidget(widget);
+		mPaintLayout->removeWidget(widget);
 		//widget->deleteLater();
 	}
 	
-	//controller->raise();
+	//mController->raise();
 	
 }
 
@@ -196,45 +180,45 @@ void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loade
 
 	// things todo if a file was not loaded...
 	if (!loaded) {
-		controller->getPlayer()->startTimer();
+		mController->getPlayer()->startTimer();
 		return;
 	}
 
-	// should not happen -> the loader should send this signal
-	if (!loader)
+	// should not happen -> the mLoader should send this signal
+	if (!mLoader)
 		return;
 
-	if (loader->hasImage())
-		setImage(loader->getImage());
+	if (mLoader->hasImage())
+		setImage(mLoader->getImage());
 }
 
 void DkViewPort::loadImage(QImage newImg) {
 
 	// delete current information
-	if (loader) {
+	if (mLoader) {
 		if (!unloadImage(true))
 			return;	// user canceled
 
-		loader->setImage(newImg);
+		mLoader->setImage(newImg);
 		setImage(newImg);
 
 		// save to temp folder
-		loader->saveTempFile(newImg);
+		mLoader->saveTempFile(newImg);
 	}
 }
 
 void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img) {
 
-	if (loader) {
+	if (mLoader) {
 
 		if (!unloadImage(true))
 			return;
 
 		if (img->hasImage()) {
-			loader->setCurrentImage(img);
+			mLoader->setCurrentImage(img);
 			setImage(img->image());
 		}
-		loader->load(img);
+		mLoader->load(img);
 	}
 
 }
@@ -245,22 +229,16 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit movieLoadedSignal(false);
 
-	if (!thumbLoaded) { 
-		oldImgViewRect = mImgViewRect;
-		oldWorldMatrix = mWorldMatrix;
-		oldImgMatrix = mImgMatrix;
-	}
-
 	stopMovie();	// just to be sure
 
 	//imgPyramid.clear();
 
-	controller->getOverview()->setImage(QImage());	// clear overview
+	mController->getOverview()->setImage(QImage());	// clear overview
 
 	mImgStorage.setImage(newImg);
 	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
-	if (loader->hasMovie() && !loader->isEdited())
+	if (mLoader->hasMovie() && !mLoader->isEdited())
 		loadMovie();
 
 	emit enableNoImageSignal(!newImg.isNull());
@@ -269,14 +247,9 @@ void DkViewPort::setImage(QImage newImg) {
 	//qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
 	if (!DkSettings::slideShow.moveSpeed && (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || 
-		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != mImgRect)) ||
-		 oldImgRect.isEmpty())
+		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
+		 mOldImgRect.isEmpty())
 		mWorldMatrix.reset();
-	else {
-		mImgViewRect = oldImgViewRect;
-		mImgMatrix = oldImgMatrix;
-		mWorldMatrix = oldWorldMatrix;
-	}
 
 	updateImageMatrix();		
 
@@ -286,33 +259,24 @@ void DkViewPort::setImage(QImage newImg) {
 		centerImage();
 	}
 
-	controller->getPlayer()->startTimer();
-	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
-	controller->stopLabels();
+	mController->getPlayer()->startTimer();
+	mController->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
+	mController->stopLabels();
 
-	thumbLoaded = false;
-	thumbFile = QFileInfo();
-	oldImgRect = mImgRect;
+	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec && (controller->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
-		fadeTimer->start();
-		fadeTime.start();
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
+		mFadeTimer->start();
+		mFadeTime.start();
 	}
 	else
-		fadeOpacity = 0.0f;
-
-	// init moving
-	if (DkSettings::slideShow.moveSpeed /*&& controller->getPlayer()->isPlaying()*/ 
-		&& newImg.width() > width() && newImg.height() > height()) {
-		targetScale = 1.0f/(float)mImgMatrix.m11();
-		// TODO: if too large - do a threshold
-	}
+		mFadeOpacity = 0.0f;
 
 	update();
 
 	// draw a histogram from the image -> does nothing if the histogram is invisible
-	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
+	if (mController->getHistogram()) mController->getHistogram()->drawHistogram(newImg);
 	if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display)
 		tcpSendImage(true);
 
@@ -322,13 +286,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 void DkViewPort::setThumbImage(QImage newImg) {
 	
-	if (!thumbLoaded) { 
-		qDebug() << "saving image matrix...";
-		oldImgViewRect = mImgViewRect;
-		oldWorldMatrix = mWorldMatrix;
-		oldImgMatrix = mImgMatrix;
-	}
-
 	DkTimer dt;
 	//imgPyramid.clear();
 
@@ -343,10 +300,8 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	updateImageMatrix();
 	
-	controller->getOverview()->setImage(newImg);
-	controller->stopLabels();
-
-	thumbLoaded = true;
+	mController->getOverview()->setImage(newImg);
+	mController->stopLabels();
 
 	update();
 
@@ -356,10 +311,10 @@ void DkViewPort::setThumbImage(QImage newImg) {
 void DkViewPort::tcpSendImage(bool silent) {
 
 	if (!silent)
-		controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
+		mController->setInfo("sending image...", 3000, DkControlWidget::center_label);
 
-	if (loader)
-		emit sendImageSignal(mImgStorage.getImage(), loader->fileName());
+	if (mLoader)
+		emit sendImageSignal(mImgStorage.getImage(), mLoader->fileName());
 	else
 		emit sendImageSignal(mImgStorage.getImage(), "nomacs - Image Lounge");
 }
@@ -426,7 +381,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	showZoom();
 	changeCursor();
 
-	controller->update();	// why do we need to update the controller manually?
+	mController->update();	// why do we need to update the mController manually?
 	update();
 
 	tcpSynchronize();
@@ -476,8 +431,8 @@ void DkViewPort::showZoom() {
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", mImgMatrix.m11()*mWorldMatrix.m11()*100);
 	
-	if (!controller->getZoomWidget()->isVisible())
-		controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
+	if (!mController->getZoomWidget()->isVisible())
+		mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
 }
 
 void DkViewPort::repeatZoom() {
@@ -490,7 +445,7 @@ void DkViewPort::repeatZoom() {
 		DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
 		zoom(0.9f);
 	else
-		repeatZoomTimer->stop();	// safety if we don't catch the release
+		mRepeatZoomTimer->stop();	// safety if we don't catch the release
 
 }
 
@@ -573,7 +528,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 	// check if we need a synchronization
 	if ((qApp->keyboardModifiers() == mAltMod ||
 		DkSettings::sync.syncMode != DkSettings::sync_mode_default || DkSettings::sync.syncActions) &&
-		(hasFocus() || controller->hasFocus())) {
+		(hasFocus() || mController->hasFocus())) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = mWorldMatrix.inverted().map(size);
 		size = mImgMatrix.inverted().map(size);
@@ -620,7 +575,7 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 			newPeers.append(cp->title);
 	}
 
-	controller->setInfo(newPeers);
+	mController->setInfo(newPeers);
 	update();
 }
 
@@ -638,7 +593,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
-		if (dissolveImage) {
+		if (mDissolveImage) {
 			QImage imgQt = mImgStorage.getImage();
 			DkImage::addToImage(imgQt, 255);
 			mImgStorage.setImage(imgQt);
@@ -646,12 +601,12 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		}
 
 		// TODO: if fading is active we interpolate with background instead of the other image
-		draw(&painter, 1.0f-fadeOpacity);
+		draw(&painter, 1.0f-mFadeOpacity);
 
-		if (/*fadeTimer->isActive() && */!fadeBuffer.isNull()) {
+		if (/*mFadeTimer->isActive() && */!mFadeBuffer.isNull()) {
 			float oldOp = (float)painter.opacity();
-			painter.setOpacity(fadeOpacity);
-			painter.drawImage(fadeImgViewRect, fadeBuffer, fadeBuffer.rect());
+			painter.setOpacity(mFadeOpacity);
+			painter.drawImage(mFadeImgViewRect, mFadeBuffer, mFadeBuffer.rect());
 			painter.setOpacity(oldOp);
 		}
 
@@ -662,7 +617,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		drawBackground(&painter);
 
 	// this was the auto-show function of the zoom widget
-	//DkZoomWidget* zw = controller->getZoomWidget();
+	//DkZoomWidget* zw = mController->getZoomWidget();
 
 	////in mode zoom/panning
 	//if (worldMatrix.m11() > 1 && !imageInside() && 
@@ -672,7 +627,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	//		zw->setVisible(true, true);
 	//}
 	//else if (zw->isVisible() && zw->isAutoHide())
-	//	controller->getZoomWidget()->hide();
+	//	mController->getZoomWidget()->hide();
 
 	painter.end();
 
@@ -683,7 +638,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// NOTE: never ever do this
 	// here it is just for fun!
-	if (dissolveImage)
+	if (mDissolveImage)
 		update();
 }
 
@@ -693,7 +648,7 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
 	// fit to mViewport
-	QSize s = imgBg.size();
+	QSize s = mImgBg.size();
 	if (s.width() > (float)(size().width()*0.5))
 		s = s*((size().width()*0.5)/s.width());
 
@@ -702,18 +657,18 @@ void DkViewPort::drawBackground(QPainter *painter) {
 
 	QRect bgRect(QPoint(qRound(size().width()-s.width()-size().width()*0.05), qRound(size().height()-s.height()-size().height()*0.05)), s);
 
-	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
+	painter->drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 }
 
 void DkViewPort::loadMovie() {
 
-	if (!loader)
+	if (!mLoader)
 		return;
 
 	if (mMovie)
 		mMovie->stop();
 
-	mMovie = QSharedPointer<QMovie>(new QMovie(loader->filePath()));
+	mMovie = QSharedPointer<QMovie>(new QMovie(mLoader->filePath()));
 	connect(mMovie.data(), SIGNAL(frameChanged(int)), this, SLOT(update()));
 	mMovie->start();
 
@@ -791,10 +746,10 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	centerImage();
 	changeCursor();
 
-	controller->getOverview()->setViewPortRect(geometry());
+	mController->getOverview()->setViewPortRect(geometry());
 	
-	controller->resize(width(), height());
-	qDebug() << "controller geometry: " << controller->geometry();
+	mController->resize(width(), height());
+	qDebug() << "mController geometry: " << mController->geometry();
 
 	return QGraphicsView::resizeEvent(event);
 }
@@ -815,7 +770,7 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::Drop) {
 
 		//qDebug() << "redirecting event...";
-		// mouse events that double are now fixed, since the mViewport is now overlayed by the controller
+		// mouse events that double are now fixed, since the mViewport is now overlayed by the mController
 		return QWidget::event(event);
 	}
 	else
@@ -840,7 +795,7 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 	} 
 	else if(event->buttons() == Qt::XButton1 || event->buttons() == Qt::XButton2) {
 		repeatZoom();
-		repeatZoomTimer->start();
+		mRepeatZoomTimer->start();
 	}
 	
 	// ok, start panning
@@ -853,9 +808,9 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 	// this fixes issues if some HUD widgets or child widgets
 	// do not implement mouse events correctly
 	if (event->buttons() == Qt::LeftButton)
-		gestureStarted = true;
+		mGestureStarted = true;
 	else
-		gestureStarted = false;
+		mGestureStarted = false;
 
 	// should be sent to QWidget?!
 	DkBaseViewPort::mousePressEvent(event);
@@ -863,12 +818,12 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
-	repeatZoomTimer->stop();
+	mRepeatZoomTimer->stop();
 
 	int sa = swipeRecognition(event->pos(), mPosGrab.toPoint());
 	QPoint pos = mapToImage(event->pos());
 
-	if (imageInside() && gestureStarted) {
+	if (imageInside() && mGestureStarted) {
 		swipeAction(sa);
 	}
 
@@ -876,7 +831,7 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	if (pos.x() != -1 && pos.y() != -1)
 		emit mouseClickSignal(event, pos);
 
-	gestureStarted = false;
+	mGestureStarted = false;
 
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
@@ -885,9 +840,9 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	//qDebug() << "mouse move (DkViewPort)";
 	//changeCursor();
-	currentPixelPos = event->pos();
+	mCurrentPixelPos = event->pos();
 
-	if (visibleStatusbar)
+	if (mVisibleStatusbar)
 		getPixelInfo(event->pos());
 
 	if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
@@ -918,13 +873,13 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		&& dist > QApplication::startDragDistance()
 		&& imageInside()
 		&& !getImage().isNull()
-		&& loader
+		&& mLoader
 		&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
 
-			qDebug() << loader->filePath();
+			qDebug() << mLoader->filePath();
 
 			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl::fromLocalFile(loader->filePath());
+			QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
 
 			QList<QUrl> urls;
 			urls.append(fileUrl);
@@ -932,7 +887,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			// who deletes me?
 			QMimeData* mimeData = new QMimeData();
 
-			if (QFileInfo(loader->filePath()).exists() && !loader->isEdited())
+			if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited())
 				mimeData->setUrls(urls);
 			else if (!getImage().isNull())
 				mimeData->setImageData(getImage());
@@ -1046,16 +1001,16 @@ void DkViewPort::swipeAction(int swipeGesture) {
 		loadPrevFileFast();
 		break;
 	case open_thumbs:
-		controller->showPreview(true);
+		mController->showPreview(true);
 		break;
 	case close_thumbs:
-		controller->showPreview(false);
+		mController->showPreview(false);
 		break;
 	case open_metadata:
-		controller->showMetaData(true);
+		mController->showMetaData(true);
 		break;
 	case close_metadata:
-		controller->showMetaData(false);
+		mController->showMetaData(false);
 		break;
 	default:
 		break;
@@ -1065,7 +1020,7 @@ void DkViewPort::swipeAction(int swipeGesture) {
 
 void DkViewPort::setFullScreen(bool fullScreen) {
 
-	controller->setFullScreen(fullScreen);
+	mController->setFullScreen(fullScreen);
 	toggleLena();
 }
 
@@ -1107,10 +1062,10 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 QString DkViewPort::getCurrentPixelHexValue() {
 
-	if (mImgStorage.getImage().isNull() || currentPixelPos.isNull())
+	if (mImgStorage.getImage().isNull() || mCurrentPixelPos.isNull())
 		return QString();
 
-	QPointF imgPos = mWorldMatrix.inverted().map(QPointF(currentPixelPos));
+	QPointF imgPos = mWorldMatrix.inverted().map(QPointF(mCurrentPixelPos));
 	imgPos = mImgMatrix.inverted().map(imgPos);
 
 	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
@@ -1142,22 +1097,22 @@ void DkViewPort::copyImage() {
 
 	qDebug() << "copying...";
 
-	if (getImage().isNull() || !loader)
+	if (getImage().isNull() || !mLoader)
 		return;
 
-	QUrl fileUrl = QUrl("file:///" + loader->filePath());
+	QUrl fileUrl = QUrl("file:///" + mLoader->filePath());
 
 	QList<QUrl> urls;
 	urls.append(fileUrl);
 
 	QMimeData* mimeData = new QMimeData;
 
-	if (QFileInfo(loader->filePath()).exists() && !loader->isEdited())
+	if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited())
 		mimeData->setUrls(urls);
 	else if (!getImage().isNull())
 		mimeData->setImageData(getImage());
 
-	mimeData->setText(loader->filePath());
+	mimeData->setText(mLoader->filePath());
 
 	QClipboard* clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData);
@@ -1183,33 +1138,22 @@ void DkViewPort::copyImageBuffer() {
 
 void DkViewPort::animateFade() {
 
-	fadeOpacity = 1.0f-(float)fadeTime.getTotalTime()/DkSettings::display.fadeSec;
+	mFadeOpacity = 1.0f-(float)mFadeTime.getTotalTime()/DkSettings::display.fadeSec;
 	
-	if (fadeOpacity <= 0) {
-		fadeBuffer = QImage();
-		fadeTimer->stop();
-		fadeOpacity = 0;
-	}
-	else if (DkSettings::slideShow.moveSpeed) {
-		float factor = 1.0f+(targetScale-(float)(mWorldMatrix.m11() * fadeTime.getTotalTime()))/DkSettings::display.fadeSec;
-		zoom(factor, QPoint(0,0));
-		qDebug() << "zoom factor: " << factor;
-		// TODO: maybe the timer is not stable? - painting seems to be stable
+	if (mFadeOpacity <= 0) {
+		mFadeBuffer = QImage();
+		mFadeTimer->stop();
+		mFadeOpacity = 0;
 	}
 
-	qDebug() << "new opacity: " << fadeOpacity;
+	qDebug() << "new opacity: " << mFadeOpacity;
 
 	update();
 }
 
-void DkViewPort::animateMove() {
-
-	moveView(moveStep/mWorldMatrix.m11());
-}
-
 void DkViewPort::togglePattern(bool show) {
 
-	controller->setInfo((show) ? tr("Transparency Pattern Enabled") : tr("Transparency Pattern Disabled"));
+	mController->setInfo((show) ? tr("Transparency Pattern Enabled") : tr("Transparency Pattern Disabled"));
 
 	DkBaseViewPort::togglePattern(show);
 }
@@ -1219,8 +1163,8 @@ void DkViewPort::rotateCW() {
 
 	applyPluginChanges();
 
-	if (loader != 0)
-		loader->rotateImage(90);
+	if (mLoader != 0)
+		mLoader->rotateImage(90);
 
 }
 
@@ -1228,8 +1172,8 @@ void DkViewPort::rotateCCW() {
 
 	applyPluginChanges();
 
-	if (loader != 0)
-		loader->rotateImage(-90);
+	if (mLoader != 0)
+		mLoader->rotateImage(-90);
 
 }
 
@@ -1237,8 +1181,8 @@ void DkViewPort::rotate180() {
 
 	applyPluginChanges();
 
-	if (loader != 0)
-		loader->rotateImage(180);
+	if (mLoader != 0)
+		mLoader->rotateImage(180);
 
 }
 
@@ -1250,7 +1194,7 @@ void DkViewPort::loadLena() {
 
 	// pass phrase
 	if (ok && !text.isEmpty() && text == "lena") {
-		testLoaded = true;
+		mTestLoaded = true;
 		toggleLena();
 	}
 	else if (!ok) {
@@ -1264,30 +1208,30 @@ void DkViewPort::loadLena() {
 		QApplication::beep();
 		
 		if (text.isEmpty())
-			controller->setInfo(tr("did you understand the brainteaser?"));
+			mController->setInfo(tr("did you understand the brainteaser?"));
 		else
-			controller->setInfo(tr("%1 is wrong...").arg(text));
+			mController->setInfo(tr("%1 is wrong...").arg(text));
 	}
 }
 
 void DkViewPort::toggleDissolve() {
 
-	qDebug() << "dissolving: " << dissolveImage;
-	dissolveImage = !dissolveImage;
+	qDebug() << "dissolving: " << mDissolveImage;
+	mDissolveImage = !mDissolveImage;
 
 	update();
 }
 
 void DkViewPort::toggleLena() {
 
-	if (!testLoaded)
+	if (!mTestLoaded)
 		return;
 
-	if (loader) {
+	if (mLoader) {
 		if (parentWidget() && parentWidget()->isFullScreen())
-			loader->load(":/nomacs/img/lena-full.jpg");
+			mLoader->load(":/nomacs/img/lena-full.jpg");
 		else
-			loader->load(":/nomacs/img/lena.jpg");
+			mLoader->load(":/nomacs/img/lena.jpg");
 	}
 }
 
@@ -1298,21 +1242,21 @@ void DkViewPort::settingsChanged() {
 	mAltMod = DkSettings::global.altMod;
 	mCtrlMod = DkSettings::global.ctrlMod;
 
-	controller->settingsChanged();
+	mController->settingsChanged();
 }
 
 void DkViewPort::setEditedImage(QImage newImg) {
 
 	if (newImg.isNull()) {
-		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
 	}
 
-	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 	imgC->setImage(newImg);
 	unloadImage(false);
-	loader->setImage(imgC);
-	qDebug() << "loader gets this size: " << newImg.size();
+	mLoader->setImage(imgC);
+	qDebug() << "mLoader gets this size: " << newImg.size();
 
 	// TODO: contrast mViewport does not add * 
 
@@ -1322,12 +1266,12 @@ void DkViewPort::setEditedImage(QImage newImg) {
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 	if (!img) {
-		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
 	}
 
 	unloadImage(false);
-	loader->setImage(img);
+	mLoader->setImage(img);
 }
 
 void DkViewPort::applyPluginChanges() {
@@ -1347,16 +1291,16 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
 	/*if (!pluginImageWasApplied)*/ applyPluginChanges(); //prevent recursion
 	
-	if (DkSettings::display.fadeSec && (controller->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
-		fadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
-		fadeImgViewRect = mImgViewRect;
-		fadeImgRect = mImgRect;
-		fadeOpacity = 1.0f;
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
+		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+		mFadeImgViewRect = mImgViewRect;
+		mFadeImgRect = mImgRect;
+		mFadeOpacity = 1.0f;
 	}
 
 	int success = true;
 	if (fileChange)
-		success = loader->unloadFile();		// returns false if the user cancels
+		success = mLoader->unloadFile();		// returns false if the user cancels
 	
 	if (mMovie && success) {
 		mMovie->stop();
@@ -1376,26 +1320,26 @@ void DkViewPort::loadFile(const QString& filePath) {
 	if (!unloadImage())
 		return;
 
-	testLoaded = false;
+	mTestLoaded = false;
 
-	if (loader && QFileInfo(filePath).isDir()) {
+	if (mLoader && QFileInfo(filePath).isDir()) {
 		QDir dir = QDir(filePath);
-		loader->setDir(dir);
+		mLoader->setDir(dir);
 	} 
-	else if (loader)
-		loader->load(filePath);
+	else if (mLoader)
+		mLoader->load(filePath);
 
 	qDebug() << "sync mode: " << (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display);
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || controller->hasFocus()) && loader->hasFile())
+	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || mController->hasFocus()) && mLoader->hasFile())
 		tcpLoadFile(0, filePath);
 }
 
 void DkViewPort::reloadFile() {
 
-	if (loader) {
+	if (mLoader) {
 
 		if (unloadImage())
-			loader->reloadImage();
+			mLoader->reloadImage();
 	}
 }
 
@@ -1404,11 +1348,11 @@ void DkViewPort::loadFile(int skipIdx) {
 	if (!unloadImage())
 		return;
 
-	if (loader && !testLoaded)
-		loader->changeFile(skipIdx);
+	if (mLoader && !mTestLoaded)
+		mLoader->changeFile(skipIdx);
 
 	// alt mod
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || controller->hasFocus())) {
+	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus())) {
 		emit sendNewFileSignal((qint16)skipIdx);
 		qDebug() << "emitting load next";
 	}
@@ -1437,17 +1381,17 @@ void DkViewPort::loadFileFast(int skipIdx) {
 		int sIdx = skipIdx;
 		QSharedPointer<DkImageContainerT> lastImg;
 
-		for (int idx = 0; idx < loader->getImages().size(); idx++) {
+		for (int idx = 0; idx < mLoader->getImages().size(); idx++) {
 
-			QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(sIdx);
+			QSharedPointer<DkImageContainerT> imgC = mLoader->getSkippedImage(sIdx);
 
 			if (!imgC)
 				break;
 
-			loader->setCurrentImage(imgC);
+			mLoader->setCurrentImage(imgC);
 
 			if (imgC && imgC->getLoadState() != DkImageContainer::exists_not) {
-				loader->load(imgC);
+				mLoader->load(imgC);
 				break;
 			}
 			else if (lastImg == imgC) {
@@ -1464,7 +1408,7 @@ void DkViewPort::loadFileFast(int skipIdx) {
 	if (((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncActions) &&
 		DkSettings::sync.syncMode != DkSettings::sync_mode_remote_display) && 
 		(hasFocus() || 
-		controller->hasFocus())) {
+		mController->hasFocus())) {
 		emit sendNewFileSignal((qint16)skipIdx);
 		QCoreApplication::sendPostedEvents();
 	}
@@ -1477,10 +1421,10 @@ void DkViewPort::loadFirst() {
 	if (!unloadImage())
 		return;
 
-	if (loader && !testLoaded)
-		loader->firstFile();
+	if (mLoader && !mTestLoaded)
+		mLoader->firstFile();
 
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1489,10 +1433,10 @@ void DkViewPort::loadLast() {
 	if (!unloadImage())
 		return;
 
-	if (loader && !testLoaded)
-		loader->lastFile();
+	if (mLoader && !mTestLoaded)
+		mLoader->lastFile();
 
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1502,10 +1446,10 @@ void DkViewPort::loadSkipPrev10() {
 	loadFileFast(-DkSettings::global.skipImgs);
 	//unloadImage();
 
-	//if (loader && !testLoaded)
-	//	loader->changeFile(-DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	//if (mLoader && !testLoaded)
+	//	mLoader->changeFile(-DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
 
-	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || controller->hasFocus()))
+	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal((qint16)-DkSettings::global.skipImgs);
 }
 
@@ -1514,10 +1458,10 @@ void DkViewPort::loadSkipNext10() {
 	loadFileFast(DkSettings::global.skipImgs);
 	//unloadImage();
 
-	//if (loader && !testLoaded)
-	//	loader->changeFile(DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	//if (mLoader && !testLoaded)
+	//	mLoader->changeFile(DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
 
-	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || controller->hasFocus()))
+	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal((qint16)DkSettings::global.skipImgs);
 }
 
@@ -1548,7 +1492,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 			//	break;
 			default:
 				loadFileFast(idx);
-				//if (loader) loader->loadFileAt(idx);
+				//if (mLoader) mLoader->loadFileAt(idx);
 		}
 	}
 	else 
@@ -1561,16 +1505,16 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 //DkImageLoader* DkViewPort::getImageLoader() {
 //
-//	return loader;
+//	return mLoader;
 //}
 
 void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader) {
 	
-	loader = newLoader;
+	mLoader = newLoader;
 	connectLoader(newLoader);
 
-	if (loader)
-		loader->activate();
+	if (mLoader)
+		mLoader->activate();
 }
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals) {
@@ -1579,44 +1523,44 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		return;
 
 	if (connectSignals) {
-		//connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
+		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 
-		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 
-		connect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), controller, SLOT(setInfo(QString, int, int)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), controller, SLOT(setInfoDelayed(QString, bool, int)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), controller, SLOT(setSpinnerDelayed(bool, int)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), mController, SLOT(setInfo(QString, int, int)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), mController, SLOT(setInfoDelayed(QString, bool, int)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)), Qt::UniqueConnection);
 
-		connect(loader.data(), SIGNAL(setPlayer(bool)), controller->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
 
-		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), controller->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
-		connect(controller->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
+		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), mController->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
+		connect(mController->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
 
 		// not sure if this is elegant?!
 		connect(mShortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()), Qt::UniqueConnection);
 	}
 	else {
-		//connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
+		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
 
-		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
-		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
-		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
+		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
-		disconnect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), controller, SLOT(setInfo(QString, int, int)));
-		disconnect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), controller, SLOT(setInfoDelayed(QString, bool, int)));
-		disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), controller, SLOT(setSpinnerDelayed(bool, int)));
+		disconnect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), mController, SLOT(setInfo(QString, int, int)));
+		disconnect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), mController, SLOT(setInfoDelayed(QString, bool, int)));
+		disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)));
 
-		disconnect(loader.data(), SIGNAL(setPlayer(bool)), controller->getPlayer(), SLOT(play(bool)));
+		disconnect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)));
 
-		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
-		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
+		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
 		
 		// not sure if this is elegant?!
 		disconnect(mShortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()));
@@ -1626,7 +1570,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 
 DkControlWidget* DkViewPort::getController() {
 	
-	return controller;
+	return mController;
 }
 
 void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
@@ -1637,7 +1581,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	rect.getTransform(tForm, cImgSize);
 
 	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
-		controller->setInfo(tr("I cannot crop an image that has 0 px, sorry."));
+		mController->setInfo(tr("I cannot crop an image that has 0 px, sorry."));
 		return;
 	}
 
@@ -1660,7 +1604,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
 	painter.end();
 
-	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 	imgC->setImage(img);
 	setEditedImage(imgC);
 	
@@ -1678,9 +1622,9 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 #endif
 
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	imgBg.load(":/nomacs/img/splash-screen.png");
+	mImgBg.load(":/nomacs/img/splash-screen.png");
 
-	mainScreen = geometry();
+	mMainScreen = geometry();
 
 	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
 	// always set the size to be full screen -> bad for OS that are not able to show transparent frames!!
@@ -1698,8 +1642,8 @@ void DkViewPortFrameless::release() {
 
 void DkViewPortFrameless::addStartActions(QAction* startAction, QIcon* startIcon) {
 
-	startActions.append(startAction);
-	startIcons.append(startIcon);
+	mStartActions.append(startAction);
+	mStartIcons.append(startIcon);
 }
 
 void DkViewPortFrameless::setImage(QImage newImg) {
@@ -1829,7 +1773,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	painter->setBrush(QColor(127, 144, 144, 200));
 	painter->setPen(QColor(100, 100, 100, 255));
 
-	QRectF initialRect = mainScreen;
+	QRectF initialRect = mMainScreen;
 	QPointF oldCenter = initialRect.center();
 
 	QTransform cT;
@@ -1838,45 +1782,45 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	initialRect.moveCenter(oldCenter);
 
 	// fit to mViewport
-	QSize s = imgBg.size();
+	QSize s = mImgBg.size();
 
 	QRectF bgRect(QPoint(), s);
 	bgRect.moveCenter(initialRect.center());//moveTopLeft(QPointF(size().width(), size().height())*0.5 - initialRect.bottomRight()*0.5);
 
 	//painter->drawRect(initialRect);
-	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
+	painter->drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 
-	if (startActions.isEmpty())
+	if (mStartActions.isEmpty())
 		return;
 
 	// first time?
-	if (startActionsRects.isEmpty()) {
+	if (mStartActionsRects.isEmpty()) {
 		float margin = 40;
-		float iconSizeMargin = (float)((initialRect.width()-3*margin)/startActions.size());
+		float iconSizeMargin = (float)((initialRect.width()-3*margin)/mStartActions.size());
 		QSize iconSize = QSize(qRound(iconSizeMargin - margin), qRound(iconSizeMargin - margin));
 		QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y()+iconSizeMargin*0.25f);
 
-		for (int idx = 0; idx < startActions.size(); idx++) {
+		for (int idx = 0; idx < mStartActions.size(); idx++) {
 
 			QRectF iconRect = QRectF(offset, iconSize);
-			QPixmap ci = startIcons[idx] ? startIcons[idx]->pixmap(iconSize) : startActions[idx]->icon().pixmap(iconSize);
-			startActionsRects.push_back(iconRect);
-			startActionsIcons.push_back(ci);
+			QPixmap ci = mStartIcons[idx] ? mStartIcons[idx]->pixmap(iconSize) : mStartActions[idx]->icon().pixmap(iconSize);
+			mStartActionsRects.push_back(iconRect);
+			mStartActionsIcons.push_back(ci);
 
 			offset.setX(offset.x() + margin + iconSize.width());
 		}
 	}
 
 	// draw start actions
-	for (int idx = 0; idx < startActions.size(); idx++) {
+	for (int idx = 0; idx < mStartActions.size(); idx++) {
 		
-		if (startIcons[idx])
-			painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+		if (mStartIcons[idx])
+			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		else
-			painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		
-		QRectF tmpRect = startActionsRects[idx];
-		QString text = startActions[idx]->text().replace("&", "");
+		QRectF tmpRect = mStartActionsRects[idx];
+		QString text = mStartActions[idx]->text().replace("&", "");
 		tmpRect.moveTop(tmpRect.bottom()+10);
 		painter->drawText(tmpRect, text);
 	}
@@ -1926,12 +1870,12 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 		qDebug() << "mouse released";
 		QPointF pos = mImgMatrix.inverted().map(event->pos());
 
-		for (int idx = 0; idx < startActionsRects.size(); idx++) {
+		for (int idx = 0; idx < mStartActionsRects.size(); idx++) {
 
-			if (startActionsRects[idx].contains(pos)) {
+			if (mStartActionsRects[idx].contains(pos)) {
 				qDebug() << "toggle..." << idx;
 				
-				startActions[idx]->trigger();
+				mStartActions[idx]->trigger();
 				break;
 			}
 		}
@@ -1950,9 +1894,9 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		QPointF pos = mImgMatrix.inverted().map(event->pos());
 
 		int idx;
-		for (idx = 0; idx < startActionsRects.size(); idx++) {
+		for (idx = 0; idx < mStartActionsRects.size(); idx++) {
 
-			if (startActionsRects[idx].contains(pos)) {
+			if (mStartActionsRects[idx].contains(pos)) {
 				setCursor(Qt::PointingHandCursor);
 				break;
 			}
@@ -1963,7 +1907,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		//	setCursor(Qt::OpenHandCursor);
 	}
 
-	if (visibleStatusbar)
+	if (mVisibleStatusbar)
 		getPixelInfo(event->pos());
 
 	if (event->buttons() == Qt::LeftButton) {
@@ -1992,10 +1936,10 @@ void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
 
 	DkViewPort::resizeEvent(event);
 
-	// controller should only be on the main screen...
+	// mController should only be on the main screen...
 	QDesktopWidget* dw = QApplication::desktop();
-	controller->setGeometry(dw->screenGeometry());
-	qDebug() << "controller resized to: " << controller->geometry();
+	mController->setGeometry(dw->screenGeometry());
+	qDebug() << "mController resized to: " << mController->geometry();
 }
 
 void DkViewPortFrameless::moveView(QPointF delta) {
@@ -2059,7 +2003,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 
 QTransform DkViewPortFrameless::getScaledImageMatrix() {
 
-	QRectF initialRect = mainScreen;
+	QRectF initialRect = mMainScreen;
 	QPointF oldCenter = mImgViewRect.isEmpty() ? initialRect.center() : mImgViewRect.center();
 	qDebug() << "initial rect: " << initialRect;
 
@@ -2091,14 +2035,9 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 
 DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
 
-	isColorPickerActive = false;
-	activeChannel = 0;
-	
-	colorTable = QVector<QRgb>(256);
-	for (int i = 0; i < colorTable.size(); i++) 
-		colorTable[i] = qRgb(i, i, i);
-	
-	drawFalseColorImg = false;
+	mColorTable = QVector<QRgb>(256);
+	for (int i = 0; i < mColorTable.size(); i++) 
+		mColorTable[i] = qRgb(i, i, i);
 
 }
 
@@ -2114,14 +2053,14 @@ void DkViewPortContrast::release() {
 
 void DkViewPortContrast::changeChannel(int channel) {
 
-	if (channel < 0 || channel >= imgs.size())
+	if (channel < 0 || channel >= mImgs.size())
 		return;
 
 	if (mImgStorage.hasImage()) {
 
-		falseColorImg = imgs[channel];
-		falseColorImg.setColorTable(colorTable);
-		drawFalseColorImg = true;
+		mFalseColorImg = mImgs[channel];
+		mFalseColorImg.setColorTable(mColorTable);
+		mDrawFalseColorImg = true;
 
 		update();
 
@@ -2148,8 +2087,8 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 
 	// If just one stop is set, we can speed things up:
 	if (stops.size() == 1) {
-		for (int i = 0; i < colorTable.size(); i++)
-			colorTable[i] = qRgb(rLeft, gLeft, bLeft);
+		for (int i = 0; i < mColorTable.size(); i++)
+			mColorTable[i] = qRgb(rLeft, gLeft, bLeft);
 	}
 	// Otherwise interpolate:
 	else {
@@ -2159,8 +2098,8 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 		tmp.getRgb(&rRight, &gRight, &bRight);
 		rightStop = stops.at(rightStopIdx).first;
 	
-		for (int i = 0; i < colorTable.size(); i++) {
-			actPos = (qreal) i / colorTable.size();
+		for (int i = 0; i < mColorTable.size(); i++) {
+			actPos = (qreal) i / mColorTable.size();
 
 			if (actPos > rightStop) {
 				leftStop = rightStop;	
@@ -2179,21 +2118,21 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 			}
 		
 			if (actPos <= leftStop)
-				colorTable[i] = qRgb(rLeft, gLeft, bLeft);
+				mColorTable[i] = qRgb(rLeft, gLeft, bLeft);
 			else if (actPos >= rightStop)
-				colorTable[i] = qRgb(rRight, gRight, bRight);
+				mColorTable[i] = qRgb(rRight, gRight, bRight);
 			else {
 				fac = (actPos - leftStop) / (rightStop - leftStop);
 				rAct = qRound(rLeft + (rRight - rLeft) * fac);
 				gAct = qRound(gLeft + (gRight - gLeft) * fac);
 				bAct = qRound(bLeft + (bRight - bLeft) * fac);
-				colorTable[i] = qRgb(rAct, gAct, bAct);
+				mColorTable[i] = qRgb(rAct, gAct, bAct);
 			}	
 		}
 	}
 
 
-	falseColorImg.setColorTable(colorTable);
+	mFalseColorImg.setColorTable(mColorTable);
 	
 	update();
 	
@@ -2221,8 +2160,8 @@ void DkViewPortContrast::draw(QPainter *painter, float) {
 		painter->drawRect(mImgViewRect);
 	}
 
-	if (drawFalseColorImg)
-		painter->drawImage(mImgViewRect, falseColorImg, mImgRect);		// TODO: add storage class for falseColorImg
+	if (mDrawFalseColorImg)
+		painter->drawImage(mImgViewRect, mFalseColorImg, mImgRect);		// TODO: add storage class for falseColorImg
 	else 
 		painter->drawImage(mImgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
 
@@ -2236,16 +2175,16 @@ void DkViewPortContrast::setImage(QImage newImg) {
 		return;
 
 	if (mImgStorage.getImage().format() == QImage::Format_Indexed8) {
-		imgs = QVector<QImage>(1);
-		imgs[0] = mImgStorage.getImage();
-		activeChannel = 0;
+		mImgs = QVector<QImage>(1);
+		mImgs[0] = mImgStorage.getImage();
+		mActiveChannel = 0;
 	}
 
 #ifdef WITH_OPENCV
 
 	else {	
 					
-			imgs = QVector<QImage>(4);
+			mImgs = QVector<QImage>(4);
 			std::vector<cv::Mat> planes;
 			
 			cv::Mat imgUC3 = DkImage::qImage2Mat(mImgStorage.getImage());
@@ -2262,34 +2201,34 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 				// dirty hack
 				if (i >= (int)planes.size()) i = 0;
-				imgs[idx] = QImage((const unsigned char*)planes[i].data, (int)planes[i].cols, (int)planes[i].rows, (int)planes[i].step,  QImage::Format_Indexed8);
-				imgs[idx] = imgs[idx].copy();
+				mImgs[idx] = QImage((const unsigned char*)planes[i].data, (int)planes[i].cols, (int)planes[i].rows, (int)planes[i].step,  QImage::Format_Indexed8);
+				mImgs[idx] = mImgs[idx].copy();
 				idx++;
 
 			}
 			// The first element in the vector contains the gray scale 'average' of the 3 channels:
 			cv::Mat grayMat;
 			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
-			imgs[0] = QImage((const unsigned char*)grayMat.data, (int)grayMat.cols, (int)grayMat.rows, (int)grayMat.step,  QImage::Format_Indexed8);
-			imgs[0] = imgs[0].copy();
+			mImgs[0] = QImage((const unsigned char*)grayMat.data, (int)grayMat.cols, (int)grayMat.rows, (int)grayMat.step,  QImage::Format_Indexed8);
+			mImgs[0] = mImgs[0].copy();
 			planes.clear();
 
 	}
 #else
 
 	else {
-		drawFalseColorImg = false;
+		mDrawFalseColorImg = false;
 		emit imageModeSet(mode_invalid_format);	
 		return;
 	}
 
 #endif
 	
-	falseColorImg = imgs[activeChannel];
-	falseColorImg.setColorTable(colorTable);
+	mFalseColorImg = mImgs[mActiveChannel];
+	mFalseColorImg.setColorTable(mColorTable);
 	
 	// images with valid color table return img.isGrayScale() false...
-	if (imgs.size() == 1) 
+	if (mImgs.size() == 1) 
 		emit imageModeSet(mode_gray);
 	else
 		emit imageModeSet(mode_rgb);
@@ -2301,14 +2240,14 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 void DkViewPortContrast::pickColor(bool enable) {
 
-	isColorPickerActive = enable;
+	mIsColorPickerActive = enable;
 	this->setCursor(Qt::CrossCursor);
 
 }
 
 void DkViewPortContrast::enableTF(bool enable) {
 
-	drawFalseColorImg = enable;
+	mDrawFalseColorImg = enable;
 	update();
 
 	drawImageHistogram();
@@ -2317,21 +2256,21 @@ void DkViewPortContrast::enableTF(bool enable) {
 
 void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
 
-	if (!isColorPickerActive)
+	if (!mIsColorPickerActive)
 		DkViewPort::mousePressEvent(event);	// just propagate events, if the color picker is not active
 }
 
 void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event) {
 
-	if (!isColorPickerActive)
+	if (!mIsColorPickerActive)
 		DkViewPort::mouseMoveEvent(event); // just propagate events, if the color picker is not active
-	else if (visibleStatusbar)
+	else if (mVisibleStatusbar)
 		getPixelInfo(event->pos());
 }
 
 void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event) {
 
-	if (isColorPickerActive) {
+	if (mIsColorPickerActive) {
 
 		QPointF imgPos = mWorldMatrix.inverted().map(event->pos());
 		imgPos = mImgMatrix.inverted().map(imgPos);
@@ -2345,7 +2284,7 @@ void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event) {
 
 		if (isPointValid) {
 
-			int colorIdx = imgs[activeChannel].pixelIndex(xy);
+			int colorIdx = mImgs[mActiveChannel].pixelIndex(xy);
 			qreal normedPos = (qreal) colorIdx / 255;
 			emit tFSliderAdded(normedPos);
 		}
@@ -2359,9 +2298,9 @@ void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
 
-	if ((event->key() == Qt::Key_Escape) && isColorPickerActive) {
+	if ((event->key() == Qt::Key_Escape) && mIsColorPickerActive) {
 		unsetCursor();
-		isColorPickerActive = false;
+		mIsColorPickerActive = false;
 		update();
 		return;
 	}
@@ -2371,8 +2310,8 @@ void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
 
 QImage DkViewPortContrast::getImage() {
 
-	if (drawFalseColorImg)
-		return falseColorImg;
+	if (mDrawFalseColorImg)
+		return mFalseColorImg;
 	else
 		return mImgStorage.getImage();
 
@@ -2381,9 +2320,9 @@ QImage DkViewPortContrast::getImage() {
 // in contrast mode: if the histogram widget is visible redraw the histogram from the selected image channel data
 void DkViewPortContrast::drawImageHistogram() {
 
-	if (controller->getHistogram() && controller->getHistogram()->isVisible()) {
-		if(drawFalseColorImg) controller->getHistogram()->drawHistogram(falseColorImg);
-		else controller->getHistogram()->drawHistogram(mImgStorage.getImage());
+	if (mController->getHistogram() && mController->getHistogram()->isVisible()) {
+		if(mDrawFalseColorImg) mController->getHistogram()->drawHistogram(mFalseColorImg);
+		else mController->getHistogram()->drawHistogram(mImgStorage.getImage());
 	}
 
 }
