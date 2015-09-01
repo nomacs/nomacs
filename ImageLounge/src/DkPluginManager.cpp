@@ -125,7 +125,7 @@ void DkPluginManagerDialog::showEvent(QShowEvent* ev) {
 
 	qDebug() << "show event called...";
 	loadPreviouslyInstalledPluginsList();
-	//loadPlugins();
+	loadPlugins();
 	tableWidgetInstalled->getPluginUpdateData();
 
 	tabs->setCurrentIndex(tab_installed_plugins);
@@ -1478,9 +1478,11 @@ void DkPluginDownloader::parseXml(QNetworkReply* reply) {
 				data.isWin64 = (xmlAttributes.value("win_x64").toString().compare("true", Qt::CaseInsensitive) == 0);
 				data.isWin86 = (xmlAttributes.value("win_x86").toString().compare("true", Qt::CaseInsensitive) == 0);
 				#if defined _WIN64
-					if (data.isWin64) mXmlPluginData.append(data);
+					if (data.isWin64) 
+						mXmlPluginData.append(data);
 				#elif _WIN32
-					if (data.isWin86) xmlPluginData.append(data);
+					if (data.isWin86) 
+						mXmlPluginData.append(data);
 				#endif
 			}
 		}
@@ -1708,7 +1710,7 @@ void DkPluginManager::saveSettings() const {
 	settings.remove("PluginSettings/filePaths");
 	settings.beginWriteArray("PluginSettings/filePaths");
 
-	for (int idx = 0; idx < pluginIdList.size(); idx) {
+	for (int idx = 0; idx < pluginIdList.size(); idx++) {
 		settings.setArrayIndex(idx);
 		settings.setValue("pluginId", pluginIdList.at(idx));
 		settings.setValue("pluginFilePath", pluginFiles.value(pluginIdList.at(idx)));
@@ -1776,6 +1778,9 @@ bool DkPluginManager::singlePluginLoad(const QString& filePath) {
 			pluginLoaders.insert(pluginID, loader);
 
 			addPlugin(pluginID, filePath, initializedPlugin);
+
+			// init actions
+			initializedPlugin->createActions(QApplication::activeWindow());
 		}
 		else {
 			delete loader;
@@ -1792,6 +1797,22 @@ bool DkPluginManager::singlePluginLoad(const QString& filePath) {
 	qDebug() << filePath << " loaded...";
 
 	return true;
+}
+
+QVector<DkPluginInterface*> DkPluginManager::getBasicPlugins() const {
+	
+	QVector<DkPluginInterface*> plugins;
+
+	for (const QString& pluginId : pluginIdList) {
+		
+		DkPluginInterface* p = getPlugin(pluginId);
+
+		if (p && p->interfaceType() == DkPluginInterface::interface_basic) {
+			plugins.append(p);
+		}
+	}
+
+	return plugins;
 }
 
 };

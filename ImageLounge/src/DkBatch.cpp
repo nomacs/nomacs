@@ -34,6 +34,7 @@
 #include "DkImageLoader.h"
 #include "DkSettings.h"
 #include "DkMessageBox.h"
+#include "DkPluginManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>
@@ -56,6 +57,8 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QSplitter>
+#include <QListWidget>
+#include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1000,7 +1003,14 @@ DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	createLayout();
 }
 
-void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchResize) const {
+void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
+
+	QStringList pluginList;
+	for (int idx = 0; idx < mListWidget->count(); idx++) {
+		pluginList.append(mListWidget->item(idx)->text());
+	}
+
+	batchPlugin->setProperties(pluginList);
 }
 
 bool DkBatchPluginWidget::hasUserInput() const {
@@ -1012,6 +1022,40 @@ bool DkBatchPluginWidget::requiresUserInput() const {
 }
 
 void DkBatchPluginWidget::createLayout() {
+
+	QListWidget* pluginSelectionWidget = new QListWidget(this);
+	pluginSelectionWidget->setDragEnabled(true);
+	pluginSelectionWidget->setDropIndicatorShown(true);
+	pluginSelectionWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	pluginSelectionWidget->addItems(getPluginActionNames());
+
+	mListWidget = new QListWidget(this);
+	mListWidget->setAcceptDrops(true);
+	mListWidget->setDragEnabled(true);
+	mListWidget->setDropIndicatorShown(true);
+	mListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->addWidget(pluginSelectionWidget);
+	layout->addWidget(mListWidget);
+	layout->addStretch();
+}
+
+QStringList DkBatchPluginWidget::getPluginActionNames() const {
+
+	QStringList pluginActions;
+	QVector<DkPluginInterface*> plugins = DkPluginManager::instance().getBasicPlugins();
+
+	for (const DkPluginInterface* p : plugins) {
+
+		QList<QAction*> actions = p->pluginActions();
+
+		for (const QAction* a : actions) {
+			pluginActions.append(p->pluginName() + " | " + a->text());
+		}
+	}
+
+	return pluginActions;
 }
 
 // DkBatchTransform --------------------------------------------------------------------
@@ -1154,8 +1198,8 @@ void DkBatchDialog::createLayout() {
 
 	mWidgets[batch_plugin] = new DkBatchWidget(tr("Plugins"), tr("inactive"), this);
 	mPluginWidget = new DkBatchPluginWidget(mWidgets[batch_plugin]);
-	mWidgets[batch_resize]->setContentWidget(mPluginWidget);
-	mWidgets[batch_resize]->showContent(false);
+	mWidgets[batch_plugin]->setContentWidget(mPluginWidget);
+	mWidgets[batch_plugin]->showContent(false);
 
 	mWidgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	mOutputSelection = new DkBatchOutput(mWidgets[batch_output]);
@@ -1295,6 +1339,10 @@ void DkBatchDialog::accept() {
 	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
 	mTransformWidget->transferProperties(transformBatch);
 
+	// create processing functions
+	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
+	mPluginWidget->transferProperties(pluginBatch);
+
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	
 	if (resizeBatch->isActive())
@@ -1302,6 +1350,9 @@ void DkBatchDialog::accept() {
 
 	if (transformBatch->isActive())
 		processFunctions.append(transformBatch);
+
+	if (pluginBatch->isActive())
+		processFunctions.append(pluginBatch);
 
 	config.setProcessFunctions(processFunctions);
 	mBatchProcessing->setBatchConfig(config);

@@ -66,7 +66,8 @@ public:
     virtual QStringList runID() const = 0;
     virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
     virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
-	virtual QList<QAction*> pluginActions(QWidget*) { return QList<QAction*>();};
+	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
+	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
     virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};
@@ -86,8 +87,6 @@ public:
 
 		return win;
 	}
-
-
 };
 
 class DkViewPortInterface : public DkPluginInterface {

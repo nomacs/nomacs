@@ -141,6 +141,8 @@ public:
 
 	bool singlePluginLoad(const QString& filePath);
 
+	QVector<DkPluginInterface*> getBasicPlugins() const;
+
 private:
 	DkPluginManager();
 

@@ -3594,7 +3594,7 @@ void DkNoMacs::addPluginsToMenu() {
 		if (cPlugin) {
 
 			QStringList runID = cPlugin->runID();
-			QList<QAction*> actions = cPlugin->pluginActions(this);
+			QList<QAction*> actions = cPlugin->createActions(this);
 
 			if (!actions.empty()) {
 				
@@ -3837,6 +3837,7 @@ void DkNoMacs::runPluginFromShortcut() {
 		allPluginActions << m->actions().toVector();
 	}
 
+	// this method fails if two plugins have the same action name!!
 	for (int i = 0; i < allPluginActions.size(); i++)
 		if (allPluginActions.at(i)->text().compare(actionName) == 0) {
 			allPluginActions.at(i)->trigger();

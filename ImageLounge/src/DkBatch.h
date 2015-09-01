@@ -53,6 +53,7 @@ class QRadioButton;
 class QDialogButtonBox;
 class QProgressBar;
 class QTabWidget;
+class QListWidget;
 
 namespace nmc {
 
@@ -344,7 +345,7 @@ class DkBatchPluginWidget : public QWidget, public DkBatchContent {
 public:
 	DkBatchPluginWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	void transferProperties(QSharedPointer<DkPluginBatch> batchResize) const;
+	void transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const;
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
 
@@ -353,7 +354,9 @@ signals:
 
 protected:
 	void createLayout();
+	QStringList getPluginActionNames() const;
 
+	QListWidget* mListWidget;
 
 };
 
