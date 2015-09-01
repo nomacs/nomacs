@@ -123,6 +123,8 @@ public:
 	void addPlugin(const QString& pluginId, const QString& filePath, DkPluginInterface* plugin);
 	QMap<QString, DkPluginInterface *> getPlugins() const;
 	DkPluginInterface* getPlugin(const QString& key) const;
+	DkPluginInterface* getPluginByName(const QString& pluginName) const;
+	QString actionNameToRunId(const QString& pluginId, const QString& actionName) const;
 	
 	QString getPluginFilePath(const QString& key) const;
 	QMap<QString, QString> getPluginFilePaths() const;

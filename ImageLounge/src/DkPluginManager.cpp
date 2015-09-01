@@ -54,6 +54,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkProxyFactory>
+#include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -1797,6 +1798,34 @@ bool DkPluginManager::singlePluginLoad(const QString& filePath) {
 	qDebug() << filePath << " loaded...";
 
 	return true;
+}
+
+DkPluginInterface * DkPluginManager::getPluginByName(const QString & pluginName) const {
+
+	for (const QString& pluginId : pluginIdList) {
+
+		DkPluginInterface* p = getPlugin(pluginId);
+
+		if (p && pluginName == p->pluginName())
+			return p;
+	}
+
+	return nullptr;
+}
+
+QString DkPluginManager::actionNameToRunId(const QString & pluginId, const QString & actionName) const {
+
+	DkPluginInterface* p = getPlugin(pluginId);
+
+	if (p) {
+		QList<QAction*> actions = p->pluginActions();
+		for (const QAction* a : actions) {
+			if (a->text() == actionName)
+				return a->data().toString();
+		}
+	}
+
+	return QString();
 }
 
 QVector<DkPluginInterface*> DkPluginManager::getBasicPlugins() const {

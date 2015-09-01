@@ -239,16 +239,22 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 		return true;
 	}
 
-	for (const QString& cPluginId : mPluginList) {
+	QString pluginId, runId;
+
+	for (const QString& cPluginString : mPluginList) {
+
+		resolvePluginString(cPluginString, pluginId, runId);
 
 		// get plugin
-		DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(cPluginId);
+		DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(pluginId);
+
+		qDebug() << "pluginId:" << pluginId;
 
 		// check if it is ok
 		if (cPlugin && cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
 			// apply the plugin
-			QSharedPointer<DkImageContainer> result = cPlugin->runPlugin(cPluginId, container);
+			QSharedPointer<DkImageContainer> result = cPlugin->runPlugin(runId, container);
 			
 			if (result && result->hasImage())
 				container = result;
@@ -256,7 +262,7 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 				logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(cPlugin->pluginName()));
 		}
 		else if (!cPlugin)
-			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(cPluginId));
+			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(pluginId));
 		else
 			logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(cPlugin->pluginName()));
 	}
@@ -278,6 +284,25 @@ QString DkPluginBatch::name() const {
 bool DkPluginBatch::isActive() const {
 	
 	return !mPluginList.empty();
+}
+
+void DkPluginBatch::resolvePluginString(const QString & pluginString, QString & pluginId, QString & runId) const {
+
+	QString uiSeparator = " | ";	// TODO: make a nice define
+
+	QStringList ids = pluginString.split(uiSeparator);
+
+	if (ids.size() != 2) {
+		qWarning() << "plugin string does not match:" << pluginString;
+	}
+	else {
+		DkPluginInterface* p = DkPluginManager::instance().getPluginByName(ids[0]);
+
+		if (p) {
+			pluginId = p->pluginID();
+			runId = DkPluginManager::instance().actionNameToRunId(pluginId, ids[1]);
+		}
+	}
 }
 
 // DkBatchProcess --------------------------------------------------------------------

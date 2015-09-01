@@ -118,7 +118,7 @@ public:
 	virtual bool isActive() const;
 
 protected:
-	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
+	void resolvePluginString(const QString& pluginString, QString& pluginId, QString& runId) const;
 
 	QStringList mPluginList;
 };
