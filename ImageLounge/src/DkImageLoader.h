@@ -74,10 +74,6 @@ public:
 	DkImageLoader(const QString& filePath = QString());
 	virtual ~DkImageLoader();
 
-	QStringList ignoreKeywords;
-	QStringList keywords;
-	QStringList folderKeywords;		// are deleted if a new folder is opened
-
 	static QStringList getFoldersRecursive(QDir dir);
 	QFileInfoList updateSubFolders(QDir rootDir);
 	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
@@ -92,11 +88,11 @@ public:
 	void firstFile();
 	void lastFile();
 	void clearPath();
-	QString getDir() const;
+	QString getDirPath() const;
 	QDir getSaveDir() const;
 	void loadLastDir();
-	void setDir(QDir& dir);
-	void setSaveDir(QDir& dir);
+	void setDir(const QString& dir);
+	void setSaveDir(const QString& dir);
 	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editFilePath = QString());
 	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
 	bool hasFile() const;
@@ -154,8 +150,7 @@ public slots:
 	void setFolderFilter(const QString& filter);
 	void setFolderFilters(const QStringList& filters);
 	QStringList getFolderFilters();
-	bool loadDir(const QString& newFilePath, bool scanRecursive = true);
-	bool loadDir(QDir newDir, bool scanRecursive = true);
+	bool loadDir(const QString& newDirPath, bool scanRecursive = true);
 	void errorDialog(const QString& msg) const;
 	void loadFileAt(int idx);
 
@@ -168,13 +163,17 @@ public slots:
 
 protected:
 
+	QStringList mIgnoreKeywords;
+	QStringList mKeywords;
+	QStringList mFolderKeywords;		// are deleted if a new folder is opened
+
 	QTimer delayedUpdateTimer;
 	bool timerBlockedUpdate;
-	QDir dir;
-	QDir saveDir;
+	QString mCurrentDir;
+	QString mSaveDir = "";
 	QFileSystemWatcher* dirWatcher;
 	QStringList subFolders;
-	QVector<QSharedPointer<DkImageContainerT > > images;
+	QVector<QSharedPointer<DkImageContainerT > > mImages;
 	QSharedPointer<DkImageContainerT > currentImage;
 	QSharedPointer<DkImageContainerT > lastImageLoaded;
 	bool folderUpdated;

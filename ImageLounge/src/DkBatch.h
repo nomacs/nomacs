@@ -176,7 +176,6 @@ public:
 	void stopProcessing();
 	void setResults(const QStringList& results);
 
-
 public slots:
 	void setDir(const QString& dirPath);
 	void browse();

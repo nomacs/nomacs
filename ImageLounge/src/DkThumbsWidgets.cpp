@@ -1402,7 +1402,7 @@ void DkThumbScene::copyImages(const QMimeData* mimeData) const {
 	if (!mimeData || !mimeData->hasUrls() || !loader)
 		return;
 
-	QDir dir = loader->getDir();
+	QDir dir = loader->getDirPath();
 
 	for (QUrl url : mimeData->urls()) {
 
@@ -1458,7 +1458,7 @@ void DkThumbScene::deleteSelected() const {
 			loader->activate();
 
 		if (loader)
-			loader->directoryChanged(loader->getDir());
+			loader->directoryChanged(loader->getDirPath());
 	}
 }
 

@@ -700,7 +700,7 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
 
 QString DkCentralWidget::getCurrentDir() const {
 
-	return mTabInfos[mTabbar->currentIndex()]->getImageLoader()->getDir();
+	return mTabInfos[mTabbar->currentIndex()]->getImageLoader()->getDirPath();
 }
 
 // DropEvents --------------------------------------------------------------------

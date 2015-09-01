@@ -1322,9 +1322,8 @@ void DkViewPort::loadFile(const QString& filePath) {
 
 	mTestLoaded = false;
 
-	if (mLoader && QFileInfo(filePath).isDir()) {
-		QDir dir = QDir(filePath);
-		mLoader->setDir(dir);
+	if (mLoader && !filePath.isEmpty() && QFileInfo(filePath).isDir()) {
+		mLoader->setDir(filePath);
 	} 
 	else if (mLoader)
 		mLoader->load(filePath);

@@ -407,7 +407,7 @@ void DkFileSelection::setDir(const QString& dirPath) {
 	mDirectoryEdit->setText(mCDirPath);
 	emit newHeaderText(mCDirPath);
 	emit updateInputDir(mCDirPath);
-	mLoader->setDir(QDir(mCDirPath));
+	mLoader->setDir(mCDirPath);
 	mThumbScrollWidget->updateThumbs(mLoader->getImages());
 }
 

@@ -2111,7 +2111,7 @@ void DkNoMacs::setRecursiveScan(bool recursive) {
 	else
 		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Disabled"));
 
-	loader->updateSubFolders(loader->getDir());
+	loader->updateSubFolders(loader->getDirPath());
 }
 
 void DkNoMacs::showOpacityDialog() {
@@ -2546,7 +2546,7 @@ void DkNoMacs::find(bool filterAction) {
 		searchDialog->setDefaultButton(db);
 
 		searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
-		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDir());
+		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDirPath());
 
 		connect(searchDialog, SIGNAL(filterSignal(const QStringList&)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(const QStringList&)));
 		connect(searchDialog, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
