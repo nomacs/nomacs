@@ -145,7 +145,7 @@ class DkSettingsListView : public QListView {
 
 public:
 	DkSettingsListView(QWidget* parent) : QListView(parent) {};
-	~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};
+	~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};	// wtf?
 
 public slots:
 	void keyPressEvent(QKeyEvent *event);

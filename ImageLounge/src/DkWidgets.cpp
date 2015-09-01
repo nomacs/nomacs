@@ -2515,9 +2515,7 @@ DkFileInfo::DkFileInfo() {
 
 DkFileInfo::DkFileInfo(const QFileInfo& fileInfo) {
 
-	this->mFileInfo = fileInfo;
-	mFileExists = false;
-	mUsed = false;
+	mFileInfo = fileInfo;
 }
 
 bool DkFileInfo::exists() const {
@@ -2525,7 +2523,7 @@ bool DkFileInfo::exists() const {
 }
 
 void DkFileInfo::setExists(bool fileExists) {
-	this->mFileExists = fileExists;
+	mFileExists = fileExists;
 }
 
 bool DkFileInfo::inUse() const {

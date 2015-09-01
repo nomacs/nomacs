@@ -102,7 +102,7 @@ public:
 	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {
-		this->mForceFastRendering = fastRendering;
+		mForceFastRendering = fastRendering;
 	};
 	
 	/**
@@ -117,7 +117,7 @@ public:
 	};
 
 	void setPanControl(QPointF panControl) {
-		this->mPanControl = panControl;
+		mPanControl = panControl;
 	};
 	
 	virtual QTransform getWorldMatrix() { 

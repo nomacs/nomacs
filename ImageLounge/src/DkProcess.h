@@ -247,7 +247,7 @@ public:
 	QString getBatchSummary(const DkBatchProcess& batch) const;
 
 	// getter, setter
-	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };
+	void setBatchConfig(const DkBatchConfig& config) { batchConfig = config; };
 	DkBatchConfig getBatchConfig() const { return batchConfig; };
 
 public slots:

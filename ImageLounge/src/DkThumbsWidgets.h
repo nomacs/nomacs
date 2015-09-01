@@ -75,7 +75,7 @@ public:
 
 	void setCurrentDx(float dx) {
 		scrollToCurrentImage = false;	// external move events
-		this->currentDx = dx;
+		currentDx = dx;
 	};
 
 	QTimer* getMoveImageTimer() {

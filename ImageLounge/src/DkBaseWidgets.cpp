@@ -86,7 +86,7 @@ void DkWidget::registerAction(QAction* action) {
 }
 
 void DkWidget::block(bool blocked) {
-	this->mBlocked = blocked;
+	mBlocked = blocked;
 	setVisible(false);
 }
 
@@ -314,7 +314,7 @@ void DkLabel::draw(QPainter* painter) {
 
 void DkLabel::setFixedWidth(int fixedWidth) {
 
-	this->mFixedWidth = fixedWidth;
+	mFixedWidth = fixedWidth;
 	setTextToLabel();
 }
 
@@ -383,7 +383,7 @@ void DkFadeLabel::init() {
 }
 
 void DkFadeLabel::block(bool blocked) {
-	this->mBlocked = blocked;
+	mBlocked = blocked;
 	setVisible(false);
 }
 
@@ -567,7 +567,7 @@ void DkResizableScrollArea::updateSize() {
 
 	updateGeometry();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
 		
 		int height = widget()->minimumSizeHint().height();
 
@@ -575,7 +575,7 @@ void DkResizableScrollArea::updateSize() {
 			height += horizontalScrollBar()->height();
 		setMinimumHeight(height);
 	}
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
 	
 		int width = widget()->minimumSizeHint().width();
 
@@ -595,9 +595,9 @@ QSize DkResizableScrollArea::sizeHint() const {
 	QSize s = QScrollArea::sizeHint();
 	QSize ws = widget()->sizeHint();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setHeight(ws.height());
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
 
 	return s;
@@ -611,9 +611,9 @@ QSize DkResizableScrollArea::minimumSizeHint() const {
 	QSize s = QScrollArea::minimumSizeHint();
 	QSize ws = widget()->minimumSizeHint();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setHeight(ws.height());
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
 
 	return s;

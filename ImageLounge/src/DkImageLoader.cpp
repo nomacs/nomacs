@@ -676,7 +676,7 @@ QVector<QSharedPointer<DkImageContainerT> > DkImageLoader::getImages() {
 
 void DkImageLoader::setImages(QVector<QSharedPointer<DkImageContainerT> > images) {
 
-	this->mImages = images;
+	mImages = images;
 	emit updateDirSignal(images);
 }
 

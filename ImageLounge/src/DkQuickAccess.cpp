@@ -69,7 +69,7 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 	}
 
 	// we assume they are unique
-	this->mActions << actions;
+	mActions << actions;
 }
 
 void DkQuickAccess::addFiles(const QStringList& filePaths) {

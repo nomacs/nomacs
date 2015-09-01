@@ -711,7 +711,7 @@ void DkAppManager::openTriggered() const {
 DkAppManagerDialog::DkAppManagerDialog(DkAppManager* manager /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
 
 	this->manager = manager;
-	this->setWindowTitle(tr("Manage Applications"));
+	setWindowTitle(tr("Manage Applications"));
 	createLayout();
 }
 
@@ -1379,7 +1379,7 @@ QImage DkResizeDialog::getResizedImage() {
 
 void DkResizeDialog::setExifDpi(float exifDpi) {
 
-	this->mExifDpi = exifDpi;
+	mExifDpi = exifDpi;
 	mResolutionEdit->blockSignals(true);
 	mResolutionEdit->setValue(exifDpi);
 	mResolutionEdit->blockSignals(false);
@@ -1677,19 +1677,19 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	QSize newSize;
 
 	if (mSizeBox->currentIndex() == size_percent)
-		newSize = QSize(qRound(mWPixelEdit->text().toFloat()/100.0f * this->mImg.width()), qRound(mHPixelEdit->text().toFloat()/100.0f * this->mImg.height()));
+		newSize = QSize(qRound(mWPixelEdit->text().toFloat()/100.0f * mImg.width()), qRound(mHPixelEdit->text().toFloat()/100.0f * mImg.height()));
 	else
 		newSize = QSize(mWPixelEdit->text().toInt(), mHPixelEdit->text().toInt());
 
-	QSize imgSize = this->mImg.size();
+	QSize imgSize = mImg.size();
 
 	qDebug() << "new size: " << newSize;
 
 	// nothing to do
-	if (this->mImg.size() == newSize)
+	if (mImg.size() == newSize)
 		return img;
 
-	if (this->mImg.size() != img.size()) {
+	if (mImg.size() != img.size()) {
 		// compute relative size
 		float relWidth = (float)newSize.width()/(float)imgSize.width();
 		float relHeight = (float)newSize.height()/(float)imgSize.height();
@@ -1790,7 +1790,7 @@ QKeySequence DkShortcutEditor::shortcut() const {
 }
 
 void DkShortcutEditor::setShortcut(const QKeySequence shortcut) {
-	this->ks = shortcut;
+	ks = shortcut;
 }
 
 bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
@@ -2043,7 +2043,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, const QString& 
 	}
 
 	mRootItem->appendChild(menuItem);
-	this->mActions.append(actions);
+	mActions.append(actions);
 	//qDebug() << "menu item has: " << menuItem->childCount();
 
 }
@@ -2365,7 +2365,7 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, float dpi, QPrinte
 	mImg = img;
 	mPrinter = printer;
 	mDpi = dpi;
-	this->mOrigDpi = dpi;
+	mOrigDpi = dpi;
 	mPrintDialog = 0;
 	mImgTransform = QTransform();
 	init();
@@ -2749,7 +2749,7 @@ void DkPrintPreviewDialog::print() {
 		mPrintDialog = new QPrintDialog(mPrinter, this);
 	if (mPrintDialog->exec() == QDialog::Accepted) {
 		mPreview->print();
-		this->close();
+		close();
 	}
 }
 
@@ -3278,7 +3278,7 @@ QImage DkUnsharpDialog::computeUnsharp(const QImage& img, int sigma, int amount)
 }
 
 void DkUnsharpDialog::setImage(const QImage& img) {
-	this->mImg = img;
+	mImg = img;
 	mViewport->setImage(img);
 	mViewport->fullView();
 	mViewport->zoomConstraints(mViewport->get100Factor());
@@ -3492,7 +3492,7 @@ QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage& img, float scaleLog, 
 }
 
 void DkTinyPlanetDialog::setImage(const QImage& img) {
-	this->mImg = img;
+	mImg = img;
 	updateImageSlot(img);
 	//mViewport->fullView();
 	//mViewport->zoomConstraints(mViewport->get100Factor());

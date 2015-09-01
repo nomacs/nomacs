@@ -111,11 +111,11 @@ public:
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
-		this->mWorldMatrix = worldMatrix;
+		mWorldMatrix = worldMatrix;
 	};
 
 	void setImgMatrix(QTransform* imgMatrix) {
-		this->mImgMatrix = imgMatrix;
+		mImgMatrix = imgMatrix;
 	};
 
 signals:

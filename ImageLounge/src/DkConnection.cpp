@@ -47,16 +47,16 @@ DkConnection::DkConnection(QObject* parent) : QTcpSocket(parent) {
 	mIsGreetingMessageSent = false;	
 	mIsSynchronizeMessageSent = false;
 	connectionCreated = false;
-	this->mSynchronizedTimer = new QTimer(this);
+	mSynchronizedTimer = new QTimer(this);
 
 	connect(mSynchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
 	connect(this, SIGNAL(readyRead()), this, SLOT(processReadyRead()));
 
-	this->setReadBufferSize(MaxBufferSize);
+	setReadBufferSize(MaxBufferSize);
 }
 
 void DkConnection::setTitle(QString newTitle) {
-	this->mCurrentTitle = newTitle;
+	mCurrentTitle = newTitle;
 }
 
 void DkConnection::sendStartSynchronizeMessage() {
@@ -90,7 +90,7 @@ void DkConnection::sendStopSynchronizeMessage() {
 }
 
 void DkConnection::sendNewTitleMessage(QString newtitle) {
-	this->mCurrentTitle = newtitle;
+	mCurrentTitle = newtitle;
 	//qDebug() << "sending new Title (\"" << newtitle << "\") Message to " << this->peerName() << ":" << this->peerPort();
 
 	QByteArray newTitleBA=newtitle.toUtf8();
@@ -140,17 +140,17 @@ void DkConnection::sendNewFileMessage(qint16 op , QString filename) {
 };
 
 void DkConnection::sendNewGoodbyeMessage() {
-	qDebug() << "sending good bye to " << this->peerName() << ":" << this->peerPort();
+	qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
 
 	QByteArray ba = "GoodBye"; 
 	QByteArray data = "GOODBYE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
-	this->waitForBytesWritten();
+	waitForBytesWritten();
 }
 
 void DkConnection::synchronizedPeersListChanged(QList<quint16> newList) {
-	this->mSynchronizedPeersServerPorts = newList;
+	mSynchronizedPeersServerPorts = newList;
 }
 
 bool DkConnection::readProtocolHeader() {

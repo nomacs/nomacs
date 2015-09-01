@@ -137,8 +137,8 @@ void DkBaseViewPort::createShortcuts() {
 
 void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
 
-	this->mMinZoom = minZoom;
-	this->mMaxZoom = maxZoom;
+	mMinZoom = minZoom;
+	mMaxZoom = maxZoom;
 }
 
 void DkBaseViewPort::release() {
@@ -201,9 +201,9 @@ void DkBaseViewPort::moveView(const QPointF& delta) {
 
 	QPointF lDelta = delta;
 	QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
-	if (imgWorldRect.width() < this->width())
+	if (imgWorldRect.width() < width())
 		lDelta.setX(0);
-	if (imgWorldRect.height() < this->height())
+	if (imgWorldRect.height() < height())
 		lDelta.setY(0);
 
 	mWorldMatrix.translate(lDelta.x(), lDelta.y());
@@ -295,7 +295,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	mImgStorage.setImage(newImg);
 	QRectF oldImgRect = mImgRect;
-	this->mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
+	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
 	
 	emit enableNoImageSignal(!newImg.isNull());
 
@@ -708,7 +708,7 @@ QTransform DkBaseViewPort::getScaledImageMatrix() {
 
 	// the image resizes as we zoom
 	float ratioImg = (float)mImgRect.width()/(float)mImgRect.height();
-	float ratioWin = (float)this->width()/(float)this->height();
+	float ratioWin = (float)width()/(float)height();
 
 	QTransform imgMatrix;
 	float s;

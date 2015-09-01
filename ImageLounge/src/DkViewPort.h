@@ -111,7 +111,7 @@ public:
 	DkControlWidget* getController();
 	bool isTestLoaded() { return mTestLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
-		this->mVisibleStatusbar = visibleStatusbar;
+		mVisibleStatusbar = visibleStatusbar;
 	};
 	
 	QString getCurrentPixelHexValue();

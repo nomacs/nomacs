@@ -73,7 +73,7 @@ DkTabInfo::~DkTabInfo() {
 
 bool DkTabInfo::operator ==(const DkTabInfo& o) const {
 
-	return this->mTabIdx == o.mTabIdx;
+	return mTabIdx == o.mTabIdx;
 }
 
 void DkTabInfo::loadSettings(const QSettings& settings) {
@@ -110,7 +110,7 @@ QString DkTabInfo::getFilePath() const {
 
 void DkTabInfo::setTabIdx(int tabIdx) {
 
-	this->mTabIdx = tabIdx;
+	mTabIdx = tabIdx;
 }
 
 int DkTabInfo::getTabIdx() const {
@@ -203,12 +203,12 @@ int DkTabInfo::getMode() const {
 
 void DkTabInfo::setMode(int mode) {
 
-	this->mTabMode = mode;
+	mTabMode = mode;
 }
 
 DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidget(parent) {
 
-	this->mViewport = viewport;
+	mViewport = viewport;
 	setObjectName("DkCentralWidget");
 	createLayout();
 	//loadSettings();
@@ -425,7 +425,7 @@ void DkCentralWidget::tabMoved(int from, int to) {
 
 void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex /* = -1 */) {
 
-	this->mTabInfos = tabInfos;
+	mTabInfos = tabInfos;
 	
 	for (QSharedPointer<DkTabInfo>& tabInfo : tabInfos)
 		mTabbar->addTab(tabInfo->getTabText());

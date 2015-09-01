@@ -382,7 +382,7 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize
 }
 
 void DkCompressDialog::imageHasAlpha(bool hasAlpha) {
-	this->mHasAlpha = hasAlpha;
+	mHasAlpha = hasAlpha;
 	mColChooser->setEnabled(hasAlpha);
 }
 
@@ -422,7 +422,7 @@ void DkCompressDialog::setImage(const QImage& img) {
 }
 
 void DkCompressDialog::setDialogMode(int dialogMode) {
-	this->mDialogMode = dialogMode;
+	mDialogMode = dialogMode;
 	init();
 }
 

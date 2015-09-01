@@ -123,7 +123,7 @@ public:
 	};
 
 	void setMaxThumbSize(int maxSize) {
-		this->mMaxThumbSize = maxSize;
+		mMaxThumbSize = maxSize;
 	};
 
 	int getMaxThumbSize() const {

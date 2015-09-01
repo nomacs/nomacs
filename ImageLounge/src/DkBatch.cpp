@@ -100,7 +100,7 @@ void DkBatchWidget::createLayout() {
 
 void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 	
-	this->mBatchContent = dynamic_cast<DkBatchContent*>(batchContent);
+	mBatchContent = dynamic_cast<DkBatchContent*>(batchContent);
 
 	mBatchWidgetLayout->addWidget(batchContent);
 	connect(mShowButton, SIGNAL(toggled(bool)), batchContent, SLOT(setVisible(bool)));
@@ -119,12 +119,12 @@ void DkBatchWidget::showContent(bool) {
 }
 
 void DkBatchWidget::setTitle(QString titleString) {
-	this->mTitleString = titleString;
+	mTitleString = titleString;
 	mTitleLabel->setText(titleString);
 }
 
 void DkBatchWidget::setHeader(QString headerString) {
-	this->mHeaderString = headerString;
+	mHeaderString = headerString;
 	mHeaderLabel->setText(headerString);
 }
 
@@ -897,7 +897,7 @@ bool DkBatchOutput::deleteOriginal() const {
 
 void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 
-	this->mExampleName = exampleName;
+	mExampleName = exampleName;
 	qDebug() << "example name: " << exampleName;
 	updateFileLabelPreview();
 }

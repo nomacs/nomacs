@@ -320,7 +320,7 @@ public:
 	~DkImageManipulationDialog();
 	
 	void setImage(QImage *img) {
-		this->mImg = img;
+		mImg = img;
 		createImgPreview();
 		drawImgPreview();
 	};

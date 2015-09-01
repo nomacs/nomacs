@@ -1146,7 +1146,7 @@ void DkImageStorage::setImage(const QImage& img) {
 
 	mStop = true;
 	mImgs.clear();	// is it save (if the thread is still working?)
-	this->mImg = img;
+	mImg = img;
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {

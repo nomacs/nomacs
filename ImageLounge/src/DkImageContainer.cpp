@@ -174,7 +174,7 @@ QString DkImageContainer::getTitleAttribute() const {
 QSharedPointer<DkBasicLoader> DkImageContainer::getLoader() {
 
 	if (!mLoader) {
-		this->mLoader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
+		mLoader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
 	}
 
 	return mLoader;
@@ -353,7 +353,7 @@ void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointe
 }
 
 void DkImageContainer::setEdited(bool edited) {
-	this->mEdited = edited;
+	mEdited = edited;
 }
 
 bool DkImageContainer::isEdited() const {
@@ -376,7 +376,7 @@ bool DkImageContainer::setPageIdx(int skipIdx) {
 QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 
 	if (!mZipData) {
-		this->mZipData = QSharedPointer<DkZipContainer>(new DkZipContainer(mFilePath));
+		mZipData = QSharedPointer<DkZipContainer>(new DkZipContainer(mFilePath));
 		if (mZipData->isZip())
 			setFilePath(mZipData->getImageFileInfo());
 	}

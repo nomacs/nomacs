@@ -437,7 +437,7 @@ void DkMetaDataDock::updateEntries() {
 
 void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC) {
 
-	this->mImgC = imgC;
+	mImgC = imgC;
 
 	if (isVisible())
 		updateEntries();
@@ -526,7 +526,7 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 DkMetaDataSelection::DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent) : QWidget(parent) {
 
 	setObjectName("DkMetaDataSelection");
-	this->mMetaData = metaData;
+	mMetaData = metaData;
 	createLayout();
 	selectionChanged();
 }
@@ -935,12 +935,12 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData) {
 
 void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 
-	if (numColumns == -1 && this->mNumColumns == -1) {
+	if (numColumns == -1 && mNumColumns == -1) {
 		int numLines = 6;
 		numColumns = ((float)mEntryKeyLabels.size()+numLines-1)/numLines > 2 ? qRound(((float)mEntryKeyLabels.size()+numLines-1)/numLines) : 2;
 	}
 	else if (numColumns == -1) {
-		numColumns = this->mNumColumns;
+		numColumns = mNumColumns;
 	}
 
 	if (mOrientation == Qt::Vertical)
@@ -1214,7 +1214,7 @@ void DkCommentWidget::createLayout() {
 
 void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
-	this->mMetaData = metaData;
+	mMetaData = metaData;
 	setComment(metaData->getDescription());
 }
 

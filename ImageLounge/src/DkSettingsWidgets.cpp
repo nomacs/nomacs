@@ -79,7 +79,7 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	init();
 
 	//setMinimumSize(1000,1000);
-	this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
 	connect(listView, SIGNAL(activated(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
 	connect(listView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
@@ -220,7 +220,7 @@ void DkSettingsDialog::saveSettings() {
 
 	DkSettings* settings = new DkSettings();
 	settings->save();
-	this->close();
+	close();
 
 	if (DkSettings::app.privateMode) {
 		QMessageBox::information(this, tr("Private Mode"), tr("Settings are not saved in the private mode"), QMessageBox::Ok, QMessageBox::Ok);

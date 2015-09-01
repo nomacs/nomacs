@@ -113,7 +113,7 @@ public:
 	~DkRatingLabel() {};
 
 	void setRating(int rating) {
-		this->mRating = rating;
+		mRating = rating;
 		updateRating();
 	};
 
@@ -542,15 +542,15 @@ public:
 	void reset();
 
 	void setWorldTransform(QTransform *worldTform) {
-		this->mWorldTform = worldTform;
+		mWorldTform = worldTform;
 	};	
 
 	void setImageTransform(QTransform *imgTform) {
-		this->mImgTform = imgTform;
+		mImgTform = imgTform;
 	};
 
 	void setImageRect(QRectF* imgRect) {
-		this->mImgRect = imgRect;
+		mImgRect = imgRect;
 	};
 
 	virtual void setVisible(bool visible);
@@ -760,8 +760,8 @@ public:
 
 protected:
 	QFileInfo mFileInfo;
-	bool mFileExists;
-	bool mUsed;
+	bool mFileExists = false;
+	bool mUsed = false;
 };
 
 class DkFolderLabel : public QLabel {
