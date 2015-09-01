@@ -682,10 +682,10 @@ void DkLANClientManager::connectionReceivedNewImage(DkConnection* connection, QI
 	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
 	foreach (DkPeer* peer, syncPeerList) {
 		if (peer && peer->peerId != connection->getPeerId()) {
-			DkLANConnection* connection = dynamic_cast<DkLANConnection*>(peer->connection); // TODO???? darf ich das
-			connect(this,SIGNAL(sendNewImageMessage(QImage, const QString&)), connection, SLOT(sendNewImageMessage(QImage, const QString&)));
+			DkLANConnection* con = dynamic_cast<DkLANConnection*>(peer->connection); // TODO???? darf ich das
+			connect(this,SIGNAL(sendNewImageMessage(QImage, const QString&)), con, SLOT(sendNewImageMessage(QImage, const QString&)));
 			emit sendNewImageMessage(image, title);
-			connect(this,SIGNAL(sendNewImageMessage(QImage, const QString&)), connection, SLOT(sendNewImageMessage(QImage, const QString&)));
+			connect(this,SIGNAL(sendNewImageMessage(QImage, const QString&)), con, SLOT(sendNewImageMessage(QImage, const QString&)));
 		}
 	}
 
@@ -990,42 +990,42 @@ void DkLANTcpServer::incomingConnection ( int socketDescriptor )  {
 // DkUpdSocket --------------------------------------------------------------------
 
 DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* parent ) : QUdpSocket(parent) {
-	this->startPort = startPort;
-	this->endPort = endPort;
+	this->mStartPort = startPort;
+	this->mEndPort = endPort;
 
-	for (serverPort = startPort; serverPort <= endPort; serverPort++) {
-		if (bind(QHostAddress::Any, serverPort))
+	for (mServerPort = startPort; mServerPort <= endPort; mServerPort++) {
+		if (bind(QHostAddress::Any, mServerPort))
 			break;
 	}
 
-	qDebug() << "UpdBroadcastserver listening on " << serverPort;
+	qDebug() << "UpdBroadcastserver listening on " << mServerPort;
 	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
-	localIpAddresses.clear();
+	mLocalIpAddresses.clear();
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
 	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
 		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
 		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-			localIpAddresses << itr->ip();
+			mLocalIpAddresses << itr->ip();
 		}
 	}
-	broadcasting = false;
+	mBroadcasting = false;
 }
 
 void DkLANUdpSocket::startBroadcast(quint16 tcpServerPort) {
-	this->tcpServerPort = tcpServerPort;
+	this->mTcpServerPort = tcpServerPort;
 
 	sendBroadcast(); // send first broadcast 
-	this->broadcastTimer = new QTimer;
-	broadcastTimer->setInterval(10000);
-	connect(broadcastTimer, SIGNAL(timeout()), this, SLOT(sendBroadcast()));
-	broadcastTimer->start();
-	broadcasting = true;
+	this->mBroadcastTimer = new QTimer;
+	mBroadcastTimer->setInterval(10000);
+	connect(mBroadcastTimer, SIGNAL(timeout()), this, SLOT(sendBroadcast()));
+	mBroadcastTimer->start();
+	mBroadcasting = true;
 }
 
 void DkLANUdpSocket::stopBroadcast() {
-	broadcastTimer->stop();
-	broadcasting = false;
+	mBroadcastTimer->stop();
+	mBroadcasting = false;
 }
 
 void DkLANUdpSocket::sendBroadcast() {
@@ -1033,9 +1033,9 @@ void DkLANUdpSocket::sendBroadcast() {
 	QByteArray datagram;
 	datagram.append(QHostInfo::localHostName());
 	datagram.append("@");
-	datagram.append(QByteArray::number(tcpServerPort));
+	datagram.append(QByteArray::number(mTcpServerPort));
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
-	for (quint16 port = startPort; port <= endPort; port++) {
+	for (quint16 port = mStartPort; port <= mEndPort; port++) {
 		for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
 			QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
 			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
@@ -1055,7 +1055,7 @@ void DkLANUdpSocket::sendNewClientBroadcast() {
 	datagram.append("@");
 	datagram.append(QByteArray::number(0));
 
-	for (quint16 port = startPort; port <= endPort; port++)  {
+	for (quint16 port = mStartPort; port <= mEndPort; port++)  {
 		writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
 	}
 	qDebug() << "sent broadcast:" << datagram << "--- " << 0;
@@ -1079,7 +1079,7 @@ void DkLANUdpSocket::readBroadcast() {
 		if (isLocalHostAddress(senderIP)) // ignore connections from localhost
 			continue;
 
-		if (list.at(0) == "newClient" && senderServerPort == 0 && broadcasting) { // new Client broadcast, answer with broadcast if instance is server
+		if (list.at(0) == "newClient" && senderServerPort == 0 && mBroadcasting) { // new Client broadcast, answer with broadcast if instance is server
 			sendBroadcast();
 			return;
 		}
@@ -1091,7 +1091,7 @@ void DkLANUdpSocket::readBroadcast() {
 }
 
 bool DkLANUdpSocket::isLocalHostAddress(const QHostAddress &address) {
-	foreach (QHostAddress localAddress, localIpAddresses) {
+	foreach (QHostAddress localAddress, mLocalIpAddresses) {
 		if (address == localAddress)
 			return true;
 	}
@@ -1327,10 +1327,10 @@ void DkPeerList::print() {
 DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 	
 	silent = true;
-	cookie = new QNetworkCookieJar(this);
-	accessManagerSetup.setCookieJar(cookie);
-	connect(&accessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
-	updateAborted = false;
+	mCookie = new QNetworkCookieJar(this);
+	mAccessManagerSetup.setCookieJar(mCookie);
+	connect(&mAccessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
+	mUpdateAborted = false;
 }
 
 void DkUpdater::checkForUpdates() {
@@ -1358,18 +1358,18 @@ void DkUpdater::checkForUpdates() {
 		QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 
 		if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-			accessManagerSetup.setProxy(listOfProxies[0]);
-			accessManagerVersion.setProxy(listOfProxies[0]);
+			mAccessManagerSetup.setProxy(listOfProxies[0]);
+			mAccessManagerVersion.setProxy(listOfProxies[0]);
 		}
 		qDebug() << "checking for proxy takes: " << dt.getTotal();
 	}
 
 	qDebug() << "checking for updates";
-	connect(&accessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+	connect(&mAccessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-	reply = accessManagerVersion.get(QNetworkRequest(url));
-	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+	mReply = mAccessManagerVersion.get(QNetworkRequest(url));
+	connect(mReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
 }
 
 void DkUpdater::replyFinished(QNetworkReply* reply) {
@@ -1435,9 +1435,9 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			QString msg = tr("A new version") % " (" % sl[0] % ") " % tr("is available");
 			msg = msg % "<br>" % tr("Do you want to download and install it now?");
 			msg = msg % "<br>" % tr("For more information see ") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>";
-			nomacsSetupUrl = url;
-			setupVersion = version;
-			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
+			mNomacsSetupUrl = url;
+			mSetupVersion = version;
+			qDebug() << "nomacs setup url:" << mNomacsSetupUrl;
 
 			if (!url.isEmpty())
 				emit displayUpdateDialog(msg, tr("updates")); 
@@ -1459,8 +1459,8 @@ void DkUpdater::startDownload(QUrl downloadUrl) {
 	//updateAborted = false;	// reset - it may have been canceled before
 	QNetworkRequest req(downloadUrl);
 	req.setRawHeader("User-Agent", "Auto-Updater");
-	reply = accessManagerSetup.get(req);
-	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+	mReply = mAccessManagerSetup.get(req);
+	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 }
 
 void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
@@ -1471,7 +1471,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 		return;
 	}
 
-	if (!updateAborted) {
+	if (!mUpdateAborted) {
 		QString basename = "nomacs-setup";
 		QString extension = ".exe";
 		QString absoluteFilePath = QDir::tempPath() + "/" + basename + extension;
@@ -1496,28 +1496,28 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		file.close();
 
-		DkSettings::global.setupVersion = setupVersion;
+		DkSettings::global.setupVersion = mSetupVersion;
 		DkSettings::global.setupPath = absoluteFilePath;
 
 		DkSettings::save();
 
 		emit downloadFinished(absoluteFilePath);
 	}
-	updateAborted = false;
+	mUpdateAborted = false;
 	qDebug() << "downloadFinishedSlot complete";
 }
 
 void DkUpdater::performUpdate() {
-	if(nomacsSetupUrl.isEmpty())
+	if(mNomacsSetupUrl.isEmpty())
 		qDebug() << "unable to perform update because the nomacsSetupUrl is empty";
 	else
-		startDownload(nomacsSetupUrl);
+		startDownload(mNomacsSetupUrl);
 }
 
 void DkUpdater::cancelUpdate()  {
 	qDebug() << "abort update";
-	updateAborted = true; 
-	reply->abort(); 
+	mUpdateAborted = true; 
+	mReply->abort(); 
 }
 
 void DkUpdater::replyError(QNetworkReply::NetworkError) {
@@ -1529,7 +1529,7 @@ void DkUpdater::replyError(QNetworkReply::NetworkError) {
 DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject* parent) : QObject(parent) {
 
 	this->silent = silent;
-	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+	connect(&mAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
 	updateAborted = false;
 	updateAbortedQt = false;
@@ -1537,10 +1537,10 @@ DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject* parent) : QObje
 
 void DkTranslationUpdater::checkForUpdates() {
 
-	total = -1;
-	totalQt = -1;
-	received = 0;
-	receivedQt = 0;
+	mTotal = -1;
+	mTotalQt = -1;
+	mReceived = 0;
+	mReceivedQt = 0;
 	updateAborted = false;
 	updateAbortedQt = false;
 
@@ -1548,22 +1548,22 @@ void DkTranslationUpdater::checkForUpdates() {
 	QNetworkProxyQuery npq(QUrl("http://www.google.com"));
 	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-		accessManager.setProxy(listOfProxies[0]);
+		mAccessManager.setProxy(listOfProxies[0]);
 	}
 
 	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-	reply = accessManager.get(QNetworkRequest(url));
-	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+	mReply = mAccessManager.get(QNetworkRequest(url));
+	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
 	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettings::global.language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
-	replyQt = accessManager.get(QNetworkRequest(url));
-	connect(replyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
+	mReplyQt = mAccessManager.get(QNetworkRequest(url));
+	connect(mReplyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
 }
 
 void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
@@ -1645,7 +1645,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 		if (!qtTranslation && !silent)
 			emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
 	}
-	if (reply->isFinished() && replyQt->isFinished()) {
+	if (reply->isFinished() && mReplyQt->isFinished()) {
 		qDebug() << "emitting downloadFinished";
 		emit downloadFinished();
 	}
@@ -1656,42 +1656,42 @@ void DkTranslationUpdater::updateDownloadProgress(qint64 received, qint64 total)
 	if (total == -1)  // if file does not exist 
 		return;
 
-	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
+	QDateTime lastModifiedRemote = mReply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
 	qDebug() << "isRemoteFileNewer:" << isRemoteFileNewer(lastModifiedRemote, translationName);
 	if (!isRemoteFileNewer(lastModifiedRemote, translationName)) {
 		updateAborted = true;
-		this->total = 0;
-		this->received = 0;
-		reply->abort();
+		this->mTotal = 0;
+		this->mReceived = 0;
+		mReply->abort();
 		return;
 	}
 
-	this->received = received;
-	this->total  = total;
+	this->mReceived = received;
+	this->mTotal  = total;
 	qDebug() << "total:" << total;
-	emit downloadProgress(this->received + this->receivedQt, this->total + this->totalQt); 
+	emit downloadProgress(this->mReceived + this->mReceivedQt, this->mTotal + this->mTotalQt); 
 }
 
 void DkTranslationUpdater::updateDownloadProgressQt(qint64 received, qint64 total) {
 	if (total == -1)  // if file does not exist 
 		return;
 
-	QDateTime lastModifiedRemote = replyQt->header(QNetworkRequest::LastModifiedHeader).toDateTime();
+	QDateTime lastModifiedRemote = mReplyQt->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 	QString translationName = "qt_"+ DkSettings::global.language + ".qm";
 	qDebug() << "isRemoteFileNewer:" << isRemoteFileNewer(lastModifiedRemote, translationName);
 	if (!isRemoteFileNewer(lastModifiedRemote, translationName)) {
 		updateAbortedQt = true;
-		this->totalQt = 0;
-		this->receivedQt = 0;
-		replyQt->abort();
+		this->mTotalQt = 0;
+		this->mReceivedQt = 0;
+		mReplyQt->abort();
 		return;
 	}
 
-	this->receivedQt = received;
-	this->totalQt = total;
-	qDebug() << "totalQt:" << totalQt;
-	emit downloadProgress(this->received + this->receivedQt, this->total + this->totalQt); 
+	this->mReceivedQt = received;
+	this->mTotalQt = total;
+	qDebug() << "totalQt:" << mTotalQt;
+	emit downloadProgress(this->mReceived + this->mReceivedQt, this->mTotal + this->mTotalQt); 
 }
 
 bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const QString& localTranslationName) {
@@ -1721,8 +1721,8 @@ bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const
 }
 
 void DkTranslationUpdater::cancelUpdate() {
-	reply->abort(); 
-	replyQt->abort();
+	mReply->abort(); 
+	mReplyQt->abort();
 	updateAborted = true;
 	updateAbortedQt = true;
 }

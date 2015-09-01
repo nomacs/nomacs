@@ -156,7 +156,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	//localClientManger->start();
 
 	oldGeometry = geometry();
-	overlaid = false;
+	mOverlaid = false;
 
 	menu = new DkMenuBar(this, -1);
 
@@ -1684,11 +1684,11 @@ void DkNoMacs::resizeEvent(QResizeEvent *event) {
 
 	QMainWindow::resizeEvent(event);
 	
-	if (!overlaid)
+	if (!mOverlaid)
 		oldGeometry = geometry();
 	else if (windowOpacity() < 1.0f) {
 		animateChangeOpacity();
-		overlaid = false;
+		mOverlaid = false;
 	}
 
 }
@@ -1697,11 +1697,11 @@ void DkNoMacs::moveEvent(QMoveEvent *event) {
 
 	QMainWindow::moveEvent(event);
 
-	if (!overlaid)
+	if (!mOverlaid)
 		oldGeometry = geometry();
 	else if (windowOpacity() < 1.0f) {
 		animateChangeOpacity();
-		overlaid = false;
+		mOverlaid = false;
 	}
 }
 
@@ -2216,7 +2216,7 @@ void DkNoMacs::lockWindow(bool lock) {
 }
 
 void DkNoMacs::newClientConnected(bool connected, bool) {
-	overlaid = false;
+	mOverlaid = false;
 	// add methods if clients are connected
 
 	syncActions[menu_sync]->setEnabled(connected);
@@ -2227,7 +2227,7 @@ void DkNoMacs::newClientConnected(bool connected, bool) {
 
 void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 
-	this->overlaid = overlaid;
+	this->mOverlaid = overlaid;
 
 	DkUtils::printDebug(DK_MODULE, "arranging...\n");
 
@@ -2266,20 +2266,20 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 
 void DkNoMacs::tcpSendWindowRect() {
 
-	overlaid = !overlaid;
+	mOverlaid = !mOverlaid;
 
 	qDebug() << "overlaying";
 	// change my geometry
-	tcpSetWindowRect(this->frameGeometry(), !overlaid, overlaid);
+	tcpSetWindowRect(this->frameGeometry(), !mOverlaid, mOverlaid);
 
-	emit sendPositionSignal(frameGeometry(), overlaid);
+	emit sendPositionSignal(frameGeometry(), mOverlaid);
 
 };
 
 void DkNoMacs::tcpSendArrange() {
 	
-	overlaid = !overlaid;
-	emit sendArrangeSignal(overlaid);
+	mOverlaid = !mOverlaid;
+	emit sendArrangeSignal(mOverlaid);
 }
 
 void DkNoMacs::showExplorer(bool show, bool saveSettings) {
@@ -3079,17 +3079,17 @@ void DkNoMacs::onWindowLoaded() {
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	
 	if (event->key() == Qt::Key_Alt) {
-		posGrabKey = QCursor::pos();
-		otherKeyPressed = false;
+		mPosGrabKey = QCursor::pos();
+		mOtherKeyPressed = false;
 	}
 	else
-		otherKeyPressed = true;
+		mOtherKeyPressed = true;
 
 }
 
 void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 
-	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
+	if (event->key() == Qt::Key_Alt && !mOtherKeyPressed && (mPosGrabKey - QCursor::pos()).manhattanLength() == 0)
 		menu->showMenu();
 	
 }

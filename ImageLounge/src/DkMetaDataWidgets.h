@@ -87,7 +87,6 @@ public:
 public slots:
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
 	void thumbLoaded(bool loaded);
-	//virtual void setVisible(bool visible);
 
 protected:
 	void createLayout();
@@ -98,12 +97,12 @@ protected:
 	void getExpandedItemNames(const QModelIndex& index, QStringList& expandedNames);
 	void expandRows(const QModelIndex& index, const QStringList& expandedNames);
 
-	QSharedPointer<DkImageContainerT> imgC;
-	QTreeView* treeView;
-	DkMetaDataModel* model;
-	QLabel* thumbNailLabel;
-	QSharedPointer<DkThumbNailT> thumb;
-	QStringList expandedNames;
+	QSharedPointer<DkImageContainerT> mImgC;
+	QTreeView* mTreeView = 0;
+	DkMetaDataModel* mModel = 0;
+	QLabel* mThumbNailLabel = 0;
+	QSharedPointer<DkThumbNailT> mThumb;
+	QStringList mExpandedNames;
 };
 
 class DkMetaDataSelection : public QWidget {
@@ -124,15 +123,15 @@ protected:
 	void createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList& outKeys, QStringList& outValues) const;
 	void appendGUIEntry(const QString& key, const QString& value, int idx = -1);
 
-	QSharedPointer<DkMetaDataT> metaData;
+	QSharedPointer<DkMetaDataT> mMetaData;
 
-	QStringList selectedKeys;
-	QStringList keys;
-	QStringList values;
+	QStringList mSelectedKeys;
+	QStringList mKeys;
+	QStringList mValues;
 
-	QVector<QCheckBox*> selection;
-	QCheckBox* cbCheckAll;
-	QGridLayout* layout;
+	QVector<QCheckBox*> mSelection;
+	QCheckBox* mCbCheckAll;
+	QGridLayout* mLayout;
 };
 
 class DkMetaDataHUD : public DkWidget {
@@ -169,7 +168,7 @@ public slots:
 	virtual void setVisible(bool visible, bool saveSetting = true);
 
 signals:
-	void positionChangeSignal(int newPos);
+	void positionChangeSignal(int newPos) const;
 
 protected:
 	void createLayout();
@@ -183,24 +182,23 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *event);
 
 	// current metadata
-	QSharedPointer<DkMetaDataT> metaData;
-	QStringList keyValues;
+	QSharedPointer<DkMetaDataT> mMetaData;
+	QStringList mKeyValues;
 
 	// gui elements
-	QVector<QLabel*> entryKeyLabels;
-	QVector<QLabel*> entryValueLabels;
-	QGridLayout* contentLayout;
-	QWidget* contentWidget;
-	DkResizableScrollArea* scrollArea;
-	QWidget* titleWidget;
+	QVector<QLabel*> mEntryKeyLabels;
+	QVector<QLabel*> mEntryValueLabels;
+	QGridLayout* mContentLayout = 0;
+	QWidget* mContentWidget = 0;
+	DkResizableScrollArea* mScrollArea = 0;
+	QWidget* mTitleWidget = 0;
 
-	QMenu* contextMenu;
-	QVector<QAction*> actions;
+	QMenu* mContextMenu = 0;
+	QVector<QAction*> mActions;
 
-	int numColumns;
-	int windowPosition;
-	Qt::Orientation orientation;
-	
+	int mNumColumns = -1;
+	int mWindowPosition = pos_south;
+	Qt::Orientation mOrientation = Qt::Horizontal;
 };
 
 class DkCommentTextEdit : public QTextEdit {
@@ -210,7 +208,7 @@ public:
 	DkCommentTextEdit(QWidget* parent = 0);
 
 signals:
-	void focusLost();
+	void focusLost() const;
 
 protected:
 	void focusOutEvent(QFocusEvent* focusEvent);
@@ -233,21 +231,18 @@ public slots:
 	void on_cancelButton_clicked();
 
 signals:
-	void showInfoSignal(QString msg);
+	void showInfoSignal(const QString& msg) const;
 
 protected:
-	QPushButton* saveButton;
-	QPushButton* cancelButton;
-	QLabel* titleLabel;
-	DkCommentTextEdit* commentLabel;
-	QSharedPointer<DkMetaDataT> metaData;
-	bool textChanged;
-	bool dirty;
-	QString oldText;
-
 	void setComment(const QString& description);
 	void saveComment();
 	void createLayout();
+
+	DkCommentTextEdit* mCommentLabel;
+	QSharedPointer<DkMetaDataT> mMetaData;
+	bool mTextChanged = false;
+	bool mDirty = false;
+	QString mOldText;
 };
 
 };

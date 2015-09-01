@@ -318,13 +318,13 @@ class DkLANUdpSocket : public QUdpSocket {
 
 	private:
 		bool isLocalHostAddress(const QHostAddress & address);
-		quint16 startPort;
-		quint16 endPort;
-		quint16 serverPort;
-		quint16 tcpServerPort;
-		QList<QHostAddress> localIpAddresses;
-		QTimer* broadcastTimer;
-		bool broadcasting;
+		quint16 mStartPort;
+		quint16 mEndPort;
+		quint16 mServerPort;
+		quint16 mTcpServerPort;
+		QList<QHostAddress> mLocalIpAddresses;
+		QTimer* mBroadcastTimer = 0;
+		bool mBroadcasting = false;
 };
 
 class DkPeer : public QObject{
@@ -504,23 +504,24 @@ public slots:
 	void cancelUpdate();
 
 signals:
-	void displayUpdateDialog(const QString& msg, const QString& title);
-	void showUpdaterMessage(const QString& msg, const QString& title);
-	void downloadFinished(const QString& filePath);
-	void downloadProgress(qint64, qint64);
+	void displayUpdateDialog(const QString& msg, const QString& title) const;
+	void showUpdaterMessage(const QString& msg, const QString& title) const;
+	void downloadFinished(const QString& filePath) const;
+	void downloadProgress(qint64, qint64) const;
 
 protected:
 	void startDownload(QUrl downloadUrl);
 	void downloadUpdate();
-	QNetworkAccessManager accessManagerVersion;
-	QNetworkAccessManager accessManagerSetup;
-	QNetworkReply* reply;
+	
+	QNetworkAccessManager mAccessManagerVersion;
+	QNetworkAccessManager mAccessManagerSetup;
+	
+	QNetworkReply* mReply = 0;
+	QNetworkCookieJar* mCookie = 0;
 
-	QNetworkCookieJar* cookie;
-
-	QUrl nomacsSetupUrl;
-	QString setupVersion;
-	bool updateAborted;
+	QUrl mNomacsSetupUrl;
+	QString mSetupVersion;
+	bool mUpdateAborted = false;
 };
 
 class DkTranslationUpdater : public QObject {
@@ -546,10 +547,11 @@ class DkTranslationUpdater : public QObject {
 	private:
 		bool isRemoteFileNewer(QDateTime lastModifiedRemote, const QString& localTranslationName);
 		bool updateAborted, updateAbortedQt;
-		qint64 total, totalQt, received, receivedQt;
-		QNetworkAccessManager accessManager;
-		QNetworkReply* reply;
-		QNetworkReply* replyQt;
+		
+		qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
+		QNetworkAccessManager mAccessManager;
+		QNetworkReply* mReply = 0;
+		QNetworkReply* mReplyQt = 0;
 };
 
 //// this code is based on code from: 

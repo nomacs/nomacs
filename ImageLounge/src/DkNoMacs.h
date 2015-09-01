@@ -611,19 +611,19 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent* event);
 
-	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);
 
 	void assignCustomShortcuts(QVector<QAction*> actions);
 	void assignCustomPluginShortcuts();
 	void savePluginActions(QVector<QAction *> actions);
 
-	bool otherKeyPressed;
-	QPoint posGrabKey;
-	bool overlaid;
+	// needed to hide menu
+	bool mOtherKeyPressed = true;
+	QPoint mPosGrabKey;
+	bool mOverlaid = false;
 
 	// vars
-	QWidget *parent;
+	//QWidget *parent;
 	QString currRunningPlugin;
 
 	QVector<QShortcut*> shortcuts;	
