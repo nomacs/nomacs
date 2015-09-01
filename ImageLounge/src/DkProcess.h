@@ -99,11 +99,11 @@ public:
 protected:
 	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
 
-	int mode;
-	int property;
-	float scaleFactor;
-	int iplMethod;
-	bool correctGamma;
+	int mMode = mode_default;
+	int mProperty = prop_default;
+	float mScaleFactor = 1.0f;
+	int mIplMethod = 0;
+	bool mCorrectGamma = false;
 };
 
 class DkPluginBatch : public DkAbstractBatch {
@@ -135,9 +135,9 @@ public:
 
 protected:
 
-	int angle;
-	bool horizontalFlip;
-	bool verticalFlip;
+	int mAngle = 0;
+	bool mHorizontalFlip = false;
+	bool mVerticalFlip = false;
 };
 
 class DkBatchProcess {
@@ -156,22 +156,22 @@ public:
 	QString outputFile() const;
 
 protected:
-	QString mFilePathIn;
-	QString mFilePathOut;
-	int mode;
-	bool deleteOriginal;
-	int compression;
-	int failure;
-	bool isProcessed;
-
-	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
-	QStringList logStrings;
-
 	bool process();
 	bool deleteExisting();
 	bool deleteOriginalFile();
 	bool copyFile();
 	bool renameFile();
+
+	QString mFilePathIn;
+	QString mFilePathOut;
+	int mMode = 0;
+	bool mDeleteOriginal = false;
+	int mCompression = -1;
+	int mFailure = 0;
+	bool mIsProcessed = false;
+
+	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
+	QStringList mLogStrings;
 };
 
 class DkBatchConfig {
