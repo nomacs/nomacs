@@ -28,11 +28,11 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QColor>
+//#include <QColor>
 #include <QTimer>
-#include <QThread>
-#include <QMutex>
-#include <QStringList>
+//#include <QThread>
+//#include <QMutex>
+//#include <QStringList>
 #include <QImage>
 #pragma warning(pop)	// no warnings from includes - end
 
@@ -53,24 +53,6 @@
 	typedef  unsigned char byte;
 #endif
 
-//#ifdef WITH_LIBTIFF
-//	#ifdef WIN32
-//		#include "tif_config.h"	
-//	#endif
-//
-//	#ifdef Q_WS_MAC
-//		#define uint64 uint64_hack_
-//		#define int64 int64_hack_
-//	#endif // Q_WS_MAC
-//
-//	#include "tiffio.h"
-//
-//	#ifdef Q_WS_MAC
-//		#undef uint64
-//		#undef int64
-//	#endif // Q_WS_MAC
-//#endif
-
 // Qt defines
 class QFileSystemWatcher;
 class QUrl;
@@ -90,7 +72,6 @@ class DllExport DkImageLoader : public QObject {
 public:
 
 	DkImageLoader(const QString& filePath = QString());
-
 	virtual ~DkImageLoader();
 
 	QStringList ignoreKeywords;
@@ -99,7 +80,7 @@ public:
 
 	static QStringList getFoldersRecursive(QDir dir);
 	QFileInfoList updateSubFolders(QDir rootDir);
-	QFileInfoList getFilteredFileInfoList(const QDir& dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
+	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
