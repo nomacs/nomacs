@@ -89,7 +89,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
-	connect(&mImgStorage, SIGNAL(infoSignal(QString)), this, SIGNAL(infoSignal(QString)));
+	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 	
 	qDebug() << "viewer created...";
 

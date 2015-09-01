@@ -959,7 +959,7 @@ public:
 	}
 
 signals:
-	void infoSignal(QString msg, int time = -1) const;
+	void infoSignal(const QString& msg, int time = -1) const;
 
 protected:
 	QString mMsg;

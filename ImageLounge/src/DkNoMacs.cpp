@@ -256,8 +256,8 @@ void DkNoMacs::init() {
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
-	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
-	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+	connect(viewport(), SIGNAL(statusInfoSignal(const QString&, int)), this, SLOT(showStatusMessage(const QString&, int)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(const QString&)), this, SLOT(showStatusMessage(const QString&)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	// connections to the image loader
@@ -268,7 +268,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
-	connect(centralWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+	connect(centralWidget(), SIGNAL(statusInfoSignal(const QString&, int)), this, SLOT(showStatusMessage(const QString&, int)));
 
 	getTabWidget()->getThumbScrollWidget()->registerAction(panelActions[menu_panel_thumbview]);
 	getTabWidget()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
@@ -327,13 +327,13 @@ void DkNoMacs::registerFileVersion() {
 		if (dwSize == 0) {
 			throw DkFileException("The version info size is zero\n", __LINE__, __FILE__);
 		}
-		std::vector<BYTE> data(dwSize);
+		std::vector<BYTE> bytes(dwSize);
 
-		if (data.empty())
+		if (bytes.empty())
 			throw DkFileException("The version info is empty\n", __LINE__, __FILE__);
 
 		// load the version info
-		if (!data.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &data[0])) {
+		if (!bytes.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &bytes[0])) {
 			throw DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
 		}
 
@@ -341,7 +341,7 @@ void DkNoMacs::registerFileVersion() {
 		UINT                uiVerLen = 0;
 		VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
 
-		if (!data.empty() && !VerQueryValue(&data[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
+		if (!bytes.empty() && !VerQueryValue(&bytes[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
 			throw DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
 		}
 

@@ -247,7 +247,6 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 		mFolderUpdated = false;
 
 		mFolderKeywords.clear();	// delete key words -> otherwise user may be confused
-		emit folderFiltersChanged(mFolderKeywords);
 
 		if (scanRecursive && DkSettings::global.scanSubFolders)
 			files = updateSubFolders(mCurrentDir);
@@ -411,7 +410,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	//	qDebug() << "old dir: " << dir.absolutePath();
 	
 	if (!recursive)
-		loadDir(mCurrentImage->filePath(), false);	// TODO: change to string
+		loadDir(mCurrentImage->filePath(), false);
 
 	// locate the current file
 	int newFileIdx = 0;
@@ -835,8 +834,6 @@ void DkImageLoader::load(const QString& filePath) {
 	hasZipMarker = filePath.contains(DkZipContainer::zipMarker()) != 0;
 #endif
 
-	loadDir(filePath);
-
 	if (QFileInfo(filePath).isFile() || hasZipMarker) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(filePath);
 		setCurrentImage(newImg);
@@ -845,6 +842,8 @@ void DkImageLoader::load(const QString& filePath) {
 	else
 		firstFile();
 	
+	// if here is a folder upate bug - this was before -- if (QFileInfo(filePath).isFile() || hasZipMarker) { 
+	loadDir(QFileInfo(filePath).absolutePath());
 }
 
 void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */) {
@@ -1722,8 +1721,10 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 	
 	// remove the * in fileFilters
 	QStringList fileFiltersClean = DkSettings::app.browseFilters;
-	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
-		fileFiltersClean[idx].replace("*", "");
+	for (QString& filter : fileFiltersClean)
+		filter.replace("*", "");
+
+	qDebug() << "browse filters: " << DkSettings::app.browseFilters;
 
 	QStringList fileList;
 	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
@@ -1901,11 +1902,6 @@ void DkImageLoader::setFolderFilters(const QStringList& filters) {
 	mFolderKeywords = filters;
 	mFolderUpdated = true;
 	loadDir(mCurrentDir);	// simulate a folder update operation
-
-	//if (!filters.empty() && !images.contains(currentImage))
-	//	loadFileAt(0);
-
-	emit folderFiltersChanged(mFolderKeywords);
 }
 
 QStringList DkImageLoader::getFolderFilters() {

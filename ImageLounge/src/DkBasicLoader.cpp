@@ -1253,7 +1253,7 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 	if (saved && mMetaData) {
 		
 		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData())
-			mMetaData->readMetaData(fInfo, ba);
+			mMetaData->readMetaData(filePath, ba);
 
 		if (mMetaData->isLoaded()) {
 			try {

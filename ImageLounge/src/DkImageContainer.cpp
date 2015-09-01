@@ -738,14 +738,14 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 	if (connectSignals && !mSelected) {
 		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)), Qt::UniqueConnection);
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)), Qt::UniqueConnection);
-		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)), Qt::UniqueConnection);
+		connect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)), Qt::UniqueConnection);
 		connect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)), Qt::UniqueConnection);
 		mFileUpdateTimer.start();
 	}
 	else if (!connectSignals) {
 		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
-		disconnect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
+		disconnect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)));
 		disconnect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)));
 		mFileUpdateTimer.stop();
 	}

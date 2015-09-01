@@ -125,7 +125,6 @@ public:
 #endif
 
 signals:
-	void folderFiltersChanged(const QStringList& filters) const;	// currently unused
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
 	void setPlayer(bool play) const;
 

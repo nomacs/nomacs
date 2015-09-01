@@ -29,7 +29,6 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QSharedPointer>
-#include <QFileInfo>
 #include <QStringList>
 #include <QMap>
 
@@ -60,7 +59,6 @@ typedef unsigned char byte;
 #endif
 
 // Qt defines
-class QFileInfo;
 class QVector2D;
 class QImage;
 
@@ -71,8 +69,8 @@ class DllExport DkMetaDataT {
 public:
 	DkMetaDataT();
 
-	void readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
+	void readMetaData(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool saveMetaData(const QString& filePath, bool force = false);
 	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 
 	int getOrientation() const;
@@ -115,11 +113,6 @@ public:
 	void printMetaData() const; //only for debug
 
 protected:
-	Exiv2::Image::AutoPtr exifImg;
-	QFileInfo file;
-	QStringList qtKeys;
-	QStringList qtValues;
-
 	enum {
 		not_loaded,
 		no_data,
@@ -127,7 +120,12 @@ protected:
 		dirty,
 	};
 
-	int exifState;
+	Exiv2::Image::AutoPtr mExifImg;
+	QString mFilePath;
+	QStringList mQtKeys;
+	QStringList mQtValues;
+
+	int mExifState = not_loaded;
 };
 
 class DllExport DkMetaDataHelper {
@@ -167,14 +165,14 @@ protected:
 	void operator=(DkMetaDataHelper const&);		// hide
 	void init();
 
-	QStringList camSearchTags;
-	QStringList descSearchTags;
+	QStringList mCamSearchTags;
+	QStringList mDescSearchTags;
 
-	QStringList translatedCamTags;
-	QStringList translatedDescTags;
+	QStringList mTranslatedCamTags;
+	QStringList mTranslatedDescTags;
 
-	QStringList exposureModes;
-	QMap<int, QString> flashModes;
+	QStringList mExposureModes;
+	QMap<int, QString> mFlashModes;
 };
 
 };

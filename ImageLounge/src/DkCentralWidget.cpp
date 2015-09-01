@@ -588,12 +588,12 @@ void DkCentralWidget::showThumbView(bool show) {
 
 		//mViewport->connectLoader(tabInfo->getImageLoader(), false);
 		connect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)), Qt::UniqueConnection);
-		connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)), Qt::UniqueConnection);
+		connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(const QString&, int)), this, SIGNAL(statusInfoSignal(const QString&, int)), Qt::UniqueConnection);
 		connect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
 	}
 	else {
 		disconnect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)));
-		disconnect(mThumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
+		disconnect(mThumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(const QString&, int)), this, SIGNAL(statusInfoSignal(const QString&, int)));
 		disconnect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
 		//mViewport->connectLoader(tabInfo->getImageLoader(), true);
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
