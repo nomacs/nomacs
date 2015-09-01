@@ -64,7 +64,7 @@
 namespace nmc {
 
 // DkBatchWidget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(QString titleString, QString headerString, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+DkBatchWidget::DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 	mTitleString = titleString;
 	mHeaderString = headerString;
 	createLayout();
@@ -107,7 +107,7 @@ void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 
 	mBatchWidgetLayout->addWidget(batchContent);
 	connect(mShowButton, SIGNAL(toggled(bool)), batchContent, SLOT(setVisible(bool)));
-	connect(batchContent, SIGNAL(newHeaderText(QString)), this, SLOT(setHeader(QString)));
+	connect(batchContent, SIGNAL(newHeaderText(const QString&)), this, SLOT(setHeader(const QString&)));
 }
 
 QWidget* DkBatchWidget::contentWidget() const {
@@ -121,12 +121,12 @@ void DkBatchWidget::showContent(bool) {
 	//contentWidget()->setVisible(show);
 }
 
-void DkBatchWidget::setTitle(QString titleString) {
+void DkBatchWidget::setTitle(const QString& titleString) {
 	mTitleString = titleString;
 	mTitleLabel->setText(titleString);
 }
 
-void DkBatchWidget::setHeader(QString headerString) {
+void DkBatchWidget::setHeader(const QString& headerString) {
 	mHeaderString = headerString;
 	mHeaderLabel->setText(headerString);
 }
@@ -144,7 +144,7 @@ void DkInputTextEdit::appendFiles(const QStringList& fileList) {
 	QStringList newFiles;
 
 	// unique!
-	for (QString cStr : fileList) {
+	for (const QString& cStr : fileList) {
 
 		if (!cFileList.contains(cStr))
 			newFiles.append(cStr);
@@ -515,7 +515,7 @@ void DkFilenameWidget::createLayout() {
 
 	mLeText = new QLineEdit(this);
 	connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
-	connect(mLeText, SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
+	connect(mLeText, SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
 
 	mPbPlus = new QPushButton("+", this);
 	mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -1006,8 +1006,8 @@ DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
 
 	QStringList pluginList;
-	for (int idx = 0; idx < mListWidget->count(); idx++) {
-		pluginList.append(mListWidget->item(idx)->text());
+	for (int idx = 0; idx < mPluginListWidget->count(); idx++) {
+		pluginList.append(mPluginListWidget->item(idx)->text());
 	}
 
 	batchPlugin->setProperties(pluginList);
@@ -1023,22 +1023,21 @@ bool DkBatchPluginWidget::requiresUserInput() const {
 
 void DkBatchPluginWidget::createLayout() {
 
-	QListWidget* pluginSelectionWidget = new QListWidget(this);
-	pluginSelectionWidget->setDragEnabled(true);
-	pluginSelectionWidget->setDropIndicatorShown(true);
-	pluginSelectionWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	DkListWidget* pluginSelectionWidget = new DkListWidget(this);
+	pluginSelectionWidget->setEmptyText(tr("Sorry, no Plugins found."));
 	pluginSelectionWidget->addItems(getPluginActionNames());
 
-	mListWidget = new QListWidget(this);
-	mListWidget->setAcceptDrops(true);
-	mListWidget->setDragEnabled(true);
-	mListWidget->setDropIndicatorShown(true);
-	mListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	mPluginListWidget = new DkListWidget(this);
+	mPluginListWidget->setEmptyText(tr("Drag Plugin Actions here."));
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(pluginSelectionWidget);
-	layout->addWidget(mListWidget);
+	layout->addWidget(mPluginListWidget);
 	layout->addStretch();
+
+	// connections
+	connect(pluginSelectionWidget, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
+	connect(mPluginListWidget, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
 }
 
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
@@ -1056,6 +1055,17 @@ QStringList DkBatchPluginWidget::getPluginActionNames() const {
 	}
 
 	return pluginActions;
+}
+
+void DkBatchPluginWidget::updateHeader() const {
+	
+	int c = mPluginListWidget->count();
+	if (!c)
+		emit newHeaderText(tr("inactive"));
+	else
+		emit newHeaderText(tr("%1 plugins selected").arg(c));
+
+	// TODO: counting is wrong! (if you remove plugins
 }
 
 // DkBatchTransform --------------------------------------------------------------------

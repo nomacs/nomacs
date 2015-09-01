@@ -37,6 +37,7 @@
 #include <QPen>
 #include <QFutureWatcher>
 #include <QLineEdit>
+#include <QListWidget>
 #pragma warning(pop)		// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -963,6 +964,27 @@ signals:
 protected:
 	QString mMsg;
 
+};
+
+class DkListWidget : public QListWidget {
+	Q_OBJECT
+
+public:
+	DkListWidget(QWidget* parent);
+
+	void startDrag(Qt::DropActions supportedActions);
+	bool isEmpty() const;
+
+	void setEmptyText(const QString& text);
+
+signals:
+	void dataDroppedSignal() const;
+
+protected:
+	void paintEvent(QPaintEvent *event);
+	void dropEvent(QDropEvent *event);
+
+	QString mEmptyText = tr("Drag Items Here");
 };
 
 };

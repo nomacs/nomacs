@@ -2927,6 +2927,58 @@ bool DkDirectoryEdit::existsDirectory(const QString& path) {
 	return QDir(path).exists();
 }
 
+// DkGmmListWidget --------------------------------------------------------------------
+DkListWidget::DkListWidget(QWidget* parent) : QListWidget(parent) {
+
+	setAcceptDrops(true);
+	setDragEnabled(true);
+	setMinimumHeight(100);
+	setDropIndicatorShown(true);
+
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+}
+
+void DkListWidget::startDrag(Qt::DropActions) {
+
+	QListWidget::startDrag(Qt::MoveAction);
+}
+
+bool DkListWidget::isEmpty() const {
+	return count() == 0;
+}
+
+void DkListWidget::setEmptyText(const QString & text) {
+	mEmptyText = text;
+}
+
+void DkListWidget::dropEvent(QDropEvent *event) {
+
+	if (event->source() != this)
+		QListWidget::dropEvent(event);
+
+	// work arround for the empty rows
+	emit dataDroppedSignal();
+}
+
+void DkListWidget::paintEvent(QPaintEvent *event) {
+
+	QListView::paintEvent(event);
+
+	if (model() && model()->rowCount(rootIndex())) 
+		return;
+
+	// The view is empty.
+	QPainter p(viewport());
+	p.setPen(Qt::NoPen);
+	p.setBrush(QBrush(QColor(200,200,200), Qt::BDiagPattern));
+	p.drawRect(QRect(QPoint(), size()));
+
+	p.setPen(QPen(QColor(100,100,100)));
+	p.drawText(rect(), Qt::AlignCenter, mEmptyText);
+}
+
+
 }
 
 

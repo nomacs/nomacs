@@ -87,6 +87,7 @@ class DkThumbScrollWidget;
 class DkImageLoader;
 class DkExplorer;
 class DkDirectoryEdit;
+class DkListWidget;
 
 class DkBatchContent {
 
@@ -99,14 +100,14 @@ class DkBatchWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	
 	void setContentWidget(QWidget* batchContent);
 	QWidget* contentWidget() const;
 
 public slots:
-	void setTitle(QString title);
-	void setHeader(QString header);
+	void setTitle(const QString& title);
+	void setHeader(const QString& header);
 	void showContent(bool show);
 
 protected:
@@ -350,13 +351,16 @@ public:
 	bool requiresUserInput() const;
 
 signals:
-	void newHeaderText(QString txt);
+	void newHeaderText(const QString& txt) const;
+
+public slots:
+	void updateHeader() const;
 
 protected:
 	void createLayout();
 	QStringList getPluginActionNames() const;
 
-	QListWidget* mListWidget;
+	DkListWidget* mPluginListWidget;
 
 };
 
@@ -375,7 +379,7 @@ public slots:
 	void checkBoxClicked();
 
 signals:
-	void newHeaderText(QString txt) const;
+	void newHeaderText(const QString& txt) const;
 
 protected:
 	void createLayout();
