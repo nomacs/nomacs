@@ -138,8 +138,8 @@ public slots:
 	void showScroller(bool visible);
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
-	void setInfo(QString msg, int time = 3000, int location = center_label);
-	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
+	void setInfo(const QString& msg, int time = 3000, int location = center_label);
+	virtual void setInfoDelayed(const QString& msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
 	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
 	void updateRating(int rating);

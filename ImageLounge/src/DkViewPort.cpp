@@ -1530,8 +1530,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 
-		connect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), mController, SLOT(setInfo(QString, int, int)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), mController, SLOT(setInfoDelayed(QString, bool, int)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(showInfoSignal(const QString&, int, int)), mController, SLOT(setInfo(const QString&, int, int)), Qt::UniqueConnection);
 		connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)), Qt::UniqueConnection);
 
 		connect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
@@ -1552,8 +1551,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
-		disconnect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), mController, SLOT(setInfo(QString, int, int)));
-		disconnect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), mController, SLOT(setInfoDelayed(QString, bool, int)));
+		disconnect(loader.data(), SIGNAL(showInfoSignal(const QString&, int, int)), mController, SLOT(setInfo(const QString&, int, int)));
 		disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)));
 
 		disconnect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)));

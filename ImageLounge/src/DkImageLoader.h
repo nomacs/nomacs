@@ -74,40 +74,42 @@ public:
 	DkImageLoader(const QString& filePath = QString());
 	virtual ~DkImageLoader();
 
-	static QStringList getFoldersRecursive(QDir dir);
-	QFileInfoList updateSubFolders(QDir rootDir);
+	static QStringList getFoldersRecursive(const QString& dirPath);
+	QFileInfoList updateSubFolders(const QString& rootDirPath);
 	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QSharedPointer<DkImageContainerT> getLastImage() const;
 	QString filePath() const;
-	QStringList getFileNames();
+	QStringList getFileNames() const;
+
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
 	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
+	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editFilePath = QString());
+	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
+	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
+	void sort();
+
+	// file selection
 	void firstFile();
 	void lastFile();
 	void clearPath();
-	QString getDirPath() const;
-	QDir getSaveDir() const;
 	void loadLastDir();
+	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
+
+	QString getDirPath() const;
+	QString getSavePath() const;
 	void setDir(const QString& dir);
 	void setSaveDir(const QString& dir);
-	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editFilePath = QString());
-	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
-	bool hasFile() const;
-	bool hasMovie();
-	QString fileName();
-	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
-	void sort();
-	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
+	
 	QSharedPointer<DkImageContainerT> findFile(const QString& filePath) const;
 	int findFileIdx(const QString& filePath, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
-	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
-#ifdef WITH_QUAZIP
-	bool loadZipArchive(const QString& zipPath);
-#endif
 	
+	bool hasFile() const;
+	bool hasMovie() const;
+	QString fileName() const;
+
 	void deactivate();
 	void activate(bool isActive = true);
 	bool hasImage() const;
@@ -118,29 +120,28 @@ public:
 
 	static bool restoreFile(const QString &filePath);
 
+#ifdef WITH_QUAZIP
+	bool loadZipArchive(const QString& zipPath);
+#endif
+
 signals:
-	void folderFiltersChanged(QStringList filters) const;
-	void updateImageSignal() const;
-	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700) const;
+	void folderFiltersChanged(const QStringList& filters) const;	// currently unused
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
-	void updateFileSignal(const QString& filePath, QSize s = QSize(), bool edited = false, QString attr = QString()) const;
-	void fileNotLoadedSignal(const QString& filePath) const;
 	void setPlayer(bool play) const;
-	void updateFileWatcherSignal(const QString& filePath) const;
 
 	// new signals
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
 	void imageUpdatedSignal(int idx);	// folder scrollbar needs that
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
-	void showInfoSignal(QString msg, int time = 3000, int position = 0);
+	void showInfoSignal(const QString& msg, int time = 3000, int position = 0);
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
 	void imageHasGPSSignal(bool hasGPS);
 
 public slots:
 	void changeFile(int skipIdx);
 	void directoryChanged(const QString& path = QString());
-	void saveFileWeb(QImage saveImg);
-	void saveUserFileAs(QImage saveImg, bool silent);
+	void saveFileWeb(const QImage& saveImg);
+	void saveUserFileAs(const QImage& saveImg, bool silent);
 	void saveFile(const QString& filename, const QImage& saveImg = QImage(), const QString& fileFilter = "", int compression = -1, bool threaded = true);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QString& filePath);
@@ -162,70 +163,37 @@ public slots:
 	void reloadImage();
 
 protected:
-
-	QStringList mIgnoreKeywords;
-	QStringList mKeywords;
-	QStringList mFolderKeywords;		// are deleted if a new folder is opened
-
-	QTimer delayedUpdateTimer;
-	bool timerBlockedUpdate;
-	QString mCurrentDir;
-	QString mSaveDir = "";
-	QFileSystemWatcher* dirWatcher;
-	QStringList subFolders;
-	QVector<QSharedPointer<DkImageContainerT > > mImages;
-	QSharedPointer<DkImageContainerT > currentImage;
-	QSharedPointer<DkImageContainerT > lastImageLoaded;
-	bool folderUpdated;
-	int tmpFileIdx;
-	bool sortingImages;
-	bool sortingIsDirty;
-	QFutureWatcher<QVector<QSharedPointer<DkImageContainerT > > > createImageWatcher;
-
 	// functions
 	void updateCacher(QSharedPointer<DkImageContainerT> imgC);
 	int getNextFolderIdx(int folderIdx);
 	int getPrevFolderIdx(int folderIdx);
 	void updateHistory();
-	void sendFileSignal();
-	QString getTitleAttributeString();
 	void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images);
 	void createImages(const QFileInfoList& files, bool sort = true);
 	QVector<QSharedPointer<DkImageContainerT > > sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const;
-};
 
-// deprecated
-class DkColorLoader : public QThread {
-	Q_OBJECT
+	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
 
-public:
-	DkColorLoader(QVector<QSharedPointer<DkImageContainerT> > images);
-	~DkColorLoader() {};
 
-	void stop();
-	void run();
+	QStringList mIgnoreKeywords;
+	QStringList mKeywords;
+	QStringList mFolderKeywords;		// are deleted if a new folder is opened
 
-	const QVector<QColor>& getColors() const;
-	const QVector<int>& getIndexes() const;
-	int maxFiles() const;
-	QString getFilename(int idx) const;
+	QTimer mDelayedUpdateTimer;
+	bool mTimerBlockedUpdate = false;
+	QString mCurrentDir;
+	QString mSaveDir;
+	QFileSystemWatcher* mDirWatcher = 0;
+	QStringList mSubFolders;
+	QVector<QSharedPointer<DkImageContainerT > > mImages;
+	QSharedPointer<DkImageContainerT > mCurrentImage;
+	QSharedPointer<DkImageContainerT > mLastImageLoaded;
+	bool mFolderUpdated = false;
+	int mTmpFileIdx = 0;
+	bool mSortingImages = false;
+	bool mSortingIsDirty = false;
+	QFutureWatcher<QVector<QSharedPointer<DkImageContainerT > > > mCreateImageWatcher;
 
-signals:
-	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
-
-protected:
-	void init();
-	void loadThumbs();
-	void loadColor(int fileIdx);
-	QColor computeColor(QImage& thumb);
-
-	QVector<QSharedPointer<DkImageContainerT> > images;
-	QVector<QColor> cols;
-	QVector<int> indexes;
-	bool isActive;
-	bool paused;
-	QMutex mutex;
-	int maxThumbs;
 };
 
 };

@@ -305,7 +305,7 @@ void DkControlWidget::connectWidgets() {
 	connect(mViewport, SIGNAL(zoomSignal(float)), mZoomWidget, SLOT(updateZoom(float)));
 
 	// waiting
-	connect(mDelayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
+	connect(mDelayedInfo, SIGNAL(infoSignal(const QString&, int)), this, SLOT(setInfo(const QString&, int)));
 	connect(mDelayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
 	// rating
@@ -322,10 +322,10 @@ void DkControlWidget::connectWidgets() {
 	connect(mCropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 
 	// comment widget
-	connect(mCommentWidget, SIGNAL(showInfoSignal(QString)), this, SLOT(setInfo(QString)));
+	connect(mCommentWidget, SIGNAL(showInfoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
 
 	// mViewport
-	connect(mViewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));
+	connect(mViewport, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
 }
 
 void DkControlWidget::update() {
@@ -538,7 +538,7 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	updateRating(metaData->getRating());
 }
 
-void DkControlWidget::setInfo(QString msg, int time, int location) {
+void DkControlWidget::setInfo(const QString& msg, int time, int location) {
 
 	if (location == center_label && mCenterLabel)
 		mCenterLabel->setText(msg, time);
@@ -550,7 +550,7 @@ void DkControlWidget::setInfo(QString msg, int time, int location) {
 	update();
 }
 
-void DkControlWidget::setInfoDelayed(QString msg, bool start, int delayTime) {
+void DkControlWidget::setInfoDelayed(const QString& msg, bool start, int delayTime) {
 
 	if (!mCenterLabel)
 		return;
