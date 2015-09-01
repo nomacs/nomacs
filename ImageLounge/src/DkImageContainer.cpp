@@ -251,6 +251,7 @@ void DkImageContainer::setImage(const QImage& img, const QString& filePath) {
 void DkImageContainer::setFilePath(const QString& filePath) {
 
 	mFilePath = filePath;
+	mFileInfo = filePath;
 
 #ifdef WIN32
 #if QT_VERSION < 0x050000
@@ -260,7 +261,6 @@ void DkImageContainer::setFilePath(const QString& filePath) {
 #endif
 #endif
 
-	mFileInfo = filePath;
 }
 
 bool DkImageContainer::hasImage() const {
