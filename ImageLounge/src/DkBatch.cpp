@@ -1198,7 +1198,7 @@ void DkBatchDialog::createLayout() {
 	connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
 
-	QSplitter* splitter = new QSplitter(this);
+	QSplitter* splitter = new QSplitter(Qt::Vertical, this);
 	splitter->addWidget(mWidgets[batch_input]);
 	splitter->addWidget(batchWidget);
 

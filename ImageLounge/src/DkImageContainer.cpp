@@ -201,6 +201,23 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() {
 	return mThumb;
 }
 
+QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedPointer<DkImageContainer> imgC) {
+
+	if (!imgC)
+		return QSharedPointer<DkImageContainerT>();
+
+	QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->filePath()));
+	
+	imgCT->mLoader = imgC->getLoader();
+	imgCT->mEdited = imgC->isEdited();
+	imgCT->mSelected = imgC->isSelected();
+	imgCT->mThumb = imgC->getThumb();
+	imgCT->mLoadState = imgC->getLoadState();
+	imgCT->mFileBuffer = imgC->getFileBuffer();
+
+	return imgCT;
+}
+
 QSharedPointer<QByteArray> DkImageContainer::getFileBuffer() {
 
 	if (!mFileBuffer) {

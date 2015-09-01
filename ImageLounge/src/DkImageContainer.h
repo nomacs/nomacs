@@ -165,6 +165,7 @@ public:
 
 	virtual QSharedPointer<DkBasicLoader> getLoader();
 	virtual QSharedPointer<DkThumbNailT> getThumb();
+	static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
 signals:
 	void fileLoadedSignal(bool loaded = true) const;

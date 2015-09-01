@@ -67,7 +67,7 @@ public:
     virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
     virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
 	virtual QList<QAction*> pluginActions(QWidget*) { return QList<QAction*>();};
-    virtual QSharedPointer<DkImageContainerT> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>()) const = 0;
+    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};
 	QMainWindow* getMainWidnow() const {

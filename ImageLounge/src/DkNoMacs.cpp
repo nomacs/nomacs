@@ -3811,7 +3811,7 @@ void DkNoMacs::runLoadedPlugin() {
    }
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
-		QSharedPointer<DkImageContainerT> result = cPlugin->runPlugin(key, getTabWidget()->getCurrentImage());
+		QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(cPlugin->runPlugin(key, getTabWidget()->getCurrentImage()));
 		if(result) 
 			viewport()->setEditedImage(result);
    }
@@ -3867,9 +3867,8 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 	if (!vPlugin) 
 		return;
 
-	//mViewport()->setPluginImageWasApplied(true);
-
-	QSharedPointer<DkImageContainerT> pluginImage = vPlugin->runPlugin("", getTabWidget()->getCurrentImage());	// empty vars - mViewport plugin doesn't need them
+	// this is that complicated because we do not want plugins to have threaded containers - this could get weird
+	QSharedPointer<DkImageContainerT> pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", getTabWidget()->getCurrentImage()));	// empty vars - mViewport plugin doesn't need them
 
 	if (pluginImage) {
 		if (askForSaving) {

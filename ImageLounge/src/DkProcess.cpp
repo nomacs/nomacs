@@ -29,6 +29,7 @@
 #include "DkUtils.h"
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
+#include "DkPluginManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFuture>
@@ -227,15 +228,47 @@ bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
 DkPluginBatch::DkPluginBatch() {
 }
 
-void DkPluginBatch::setProperties(const QStringList & /*pluginList*/) {
-
+void DkPluginBatch::setProperties(const QStringList & pluginList) {
+	mPluginList = pluginList;
 }
 
-bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> /*container*/, QStringList & /*logStrings*/) const {
+bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
 
-	
+	if (!isActive()) {
+		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+		return true;
+	}
 
-	return false;
+	for (const QString& cPluginId : mPluginList) {
+
+		// get plugin
+		DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(cPluginId);
+
+		// check if it is ok
+		if (cPlugin && cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
+
+			// apply the plugin
+			QSharedPointer<DkImageContainer> result = cPlugin->runPlugin(cPluginId, container);
+			
+			if (result && result->hasImage())
+				container = result;
+			else
+				logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(cPlugin->pluginName()));
+		}
+		else if (!cPlugin)
+			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(cPluginId));
+		else
+			logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(cPlugin->pluginName()));
+	}
+
+	if (!container || !container->hasImage()) {
+		logStrings.append(QObject::tr("%1 error, could not apply plugins.").arg(name()));
+		return false;
+	}
+	else
+		logStrings.append(QObject::tr("%1 plugins applied.").arg(name()));
+
+	return true;
 }
 
 QString DkPluginBatch::name() const {
