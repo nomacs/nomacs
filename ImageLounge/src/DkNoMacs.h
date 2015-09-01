@@ -474,7 +474,7 @@ public:
 
 	bool saveSettings;
 
-	QString getCurrRunningPlugin() {return currRunningPlugin;};
+	QString getCurrRunningPlugin() {return mActivePlugin;};
 	void colorizeIcons(const QColor& col);
 
 signals:
@@ -623,22 +623,21 @@ protected:
 	bool mOverlaid = false;
 
 	// vars
-	//QWidget *parent;
-	QString currRunningPlugin;
+	QString mActivePlugin;
 
-	QVector<QShortcut*> shortcuts;	
-	QVector<QAction *> fileActions;
-	QVector<QAction *> sortActions;
-	QVector<QAction *> openWithActions;
-	QVector<QAction *> editActions;
-	QVector<QAction *> toolsActions;
-	QVector<QAction *> panelActions;
-	QVector<QAction *> viewActions;
-	QVector<QAction *> syncActions;
-	QVector<QAction *> pluginsActions;
-	QVector<QAction *> pluginsDummyActions;
-	QVector<QAction *> lanActions;
-	QVector<QAction *> helpActions;
+	QVector<QShortcut*> mShortcuts;	
+	QVector<QAction *> mFileActions;
+	QVector<QAction *> mSortActions;
+	QVector<QAction *> mOpenWithActions;
+	QVector<QAction *> mEditActions;
+	QVector<QAction *> mToolsActions;
+	QVector<QAction *> mPanelActions;
+	QVector<QAction *> mViewActions;
+	QVector<QAction *> mSyncActions;
+	QVector<QAction *> mPluginsActions;
+	QVector<QAction *> mPluginsDummyActions;
+	QVector<QAction *> mLanActions;
+	QVector<QAction *> mHelpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
 	// icons
