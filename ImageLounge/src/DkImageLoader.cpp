@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkImageLoader.h"
-#include "DkNoMacs.h"
+
 #include "DkMessageBox.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
@@ -704,12 +704,13 @@ bool DkImageLoader::unloadFile() {
 	// if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask the user
 	if (mCurrentImage->isEdited() && (DkSettings::sync.syncMode == DkSettings::sync_mode_default)) {
 		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(QFileInfo(mCurrentImage->filePath()).fileName()), 
-			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), DkNoMacs::getDialogParent());
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), QApplication::activeWindow());
 
 		msgBox->setDefaultButton(QMessageBox::No);
 		msgBox->setObjectName("saveEditDialog");
 
 		int answer = msgBox->exec();
+		msgBox->deleteLater();
 
 		// TODO: Save As dialog for unsupported files
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
@@ -947,8 +948,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 
 		if (!tmpPath.isDir()) {
 			// load system default open dialog
-			QString dirName = QFileDialog::getExistingDirectory(DkNoMacs::getDialogParent(), tr("Save Directory"),
-				getDirPath());
+			QString dirName = QFileDialog::getExistingDirectory(QApplication::activeWindow(), tr("Save Directory"),	getDirPath());
 
 			tmpPath = dirName + "/";
 

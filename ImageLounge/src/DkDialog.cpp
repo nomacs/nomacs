@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkDialog.h"
-#include "DkNoMacs.h"
+
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkBaseViewPort.h"
@@ -4384,7 +4384,8 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 	}
 	catch(...) {
 		origR.release();
-		DkNoMacs::dialog("Sorry, I could not mix the image...");
+
+		QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("Sorry, I could not mix the image..."));
 		qDebug() << "exception caught...";
 		mMosaic = DkImage::mat2QImage(mMosaicMat);
 	}

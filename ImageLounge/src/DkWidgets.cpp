@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkWidgets.h"
-#include "DkNoMacs.h"
+
 #include "DkUtils.h"
 #include "DkTimer.h"
 #include "DkThumbs.h"
@@ -295,7 +295,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	cLoadIdx = 0;
 	numSaved = 0;
 
-	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
+	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), QApplication::activeWindow());
 	pd->setWindowTitle(tr("Thumbnails"));
 
 	//pd->setWindowModality(Qt::WindowModal);
@@ -1999,7 +1999,7 @@ void DkCropWidget::createToolbar() {
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
 	connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
-	connect(cropToolbar, SIGNAL(mShowInfo(bool)), this, SLOT(setShowInfo(bool)));
+	connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 
