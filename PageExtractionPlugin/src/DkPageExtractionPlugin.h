@@ -47,8 +47,9 @@ public:
 	QStringList runID() const;
 	QString pluginMenuName(const QString &runID = QString()) const;
 	QString pluginStatusTip(const QString &runID = QString()) const;
-	QList<QAction*> pluginActions(QWidget* parent);
-	QSharedPointer<DkImageContainerT> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>()) const override;
+	QList<QAction*> createActions(QWidget* parent);
+	QList<QAction*> pluginActions() const;
+	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> image = QSharedPointer<DkImageContainer>()) const override;
 
 	enum {
 		id_crop_to_page,

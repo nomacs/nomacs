@@ -77,7 +77,7 @@ public:
     QStringList runID() const;
     QString pluginMenuName(const QString &runID = QString()) const;
     QString pluginStatusTip(const QString &runID = QString()) const;
-	QSharedPointer<DkImageContainerT> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>()) const;
+	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> image = QSharedPointer<DkImageContainer>()) const;
 	DkPluginViewPort* getViewPort();
 	void deleteViewPort();
 

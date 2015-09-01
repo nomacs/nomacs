@@ -137,7 +137,7 @@ QString DkImgTransformationsPlugin::pluginStatusTip(const QString &runID) const 
 * @param run ID
 * @param current imgC in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainerT> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
+QSharedPointer<DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
 
 	//for a viewport plugin runID and imgC are null
 	if (viewport && imgC) {
@@ -257,8 +257,8 @@ void DkImgTransformationsViewPort::init() {
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos) {
 
 	QPoint posM = QPoint(pos.x(), pos.y());
-	if (worldMatrix) posM = worldMatrix->inverted().map(posM);
-	if (imgMatrix)	posM = imgMatrix->inverted().map(posM);
+	if (mWorldMatrix)	posM = mWorldMatrix->inverted().map(posM);
+	if (mImgMatrix)		posM = mImgMatrix->inverted().map(posM);
 	
 	return posM;
 }
@@ -456,8 +456,8 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	painter.fillRect(this->rect(), DkSettings::display.bgColor);
 
 
-	if (worldMatrix)
-		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));
+	if (mWorldMatrix)
+		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));
 
 	if (selectedMode == mode_scale) {
 		painter.save();

@@ -136,10 +136,10 @@ QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainerT> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> image) const {
+QSharedPointer<DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> image) const {
 	
 	if (!image)
-		image = QSharedPointer<DkImageContainerT>();
+		image = QSharedPointer<DkImageContainer>();
 
 	//for a viewport plugin runID and image are null
 	if (viewport) {
@@ -355,8 +355,8 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
 	
-	if (worldMatrix)
-		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
+	if (mWorldMatrix)
+		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
 	for (int idx = 0; idx < paths.size(); idx++) {
 

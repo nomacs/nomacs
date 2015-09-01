@@ -143,7 +143,7 @@ QString DkPageExtractionPlugin::pluginStatusTip(const QString &runID) const {
 	return tr("#MENU_STATUS_TIP");
 };
 
-QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
+QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
 
 	if (mActions.empty()) {
 		QAction* ca = new QAction(mMenuNames[id_crop_to_page], this);
@@ -162,12 +162,17 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
 	return mActions;
 }
 
+QList<QAction*> DkPageExtractionPlugin::pluginActions() const {
+
+	return mActions;
+}
+
 /**
 * Main function: runs plugin based on its ID
 * @param plugin ID
 * @param image to be processed
 **/
-QSharedPointer<DkImageContainerT> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
+QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
 
 	if (!mRunIDs.contains(runID) || !imgC)
 		return imgC;

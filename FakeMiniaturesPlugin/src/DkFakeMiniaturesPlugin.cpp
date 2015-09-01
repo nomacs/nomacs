@@ -111,7 +111,7 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 * @param plug-in ID
 * @param current imgC in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainerT> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
+QSharedPointer<DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
 
 	if (runID == "4d29da2b322f44979c55ea0ed4ff158b" && imgC) {
 		QMainWindow* mainWindow = this->getMainWidnow();

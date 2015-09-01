@@ -134,7 +134,7 @@ QString DkThresholdPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainerT> DkThresholdPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
+QSharedPointer<DkImageContainer> DkThresholdPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
 
 	//for a viewport plugin runID and imgC are null
 	if (viewport && imgC) {
