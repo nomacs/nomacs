@@ -40,16 +40,16 @@ namespace nmc {
 // DkQuickFilterCompleter --------------------------------------------------------------------
 DkQuickAccess::DkQuickAccess(QObject* parent /* = 0 */) : QObject(parent) {
 
-	model = new QStandardItemModel(this);
-	model->setColumnCount(1);
+	mModel = new QStandardItemModel(this);
+	mModel->setColumnCount(1);
 
 }
 
 void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 
 	// initialize the model
-	int nRows = model->rowCount();
-	model->setRowCount(nRows + actions.size());
+	int nRows = mModel->rowCount();
+	mModel->setRowCount(nRows + actions.size());
 
 	for (int rIdx = 0; rIdx < actions.size(); rIdx++) {
 		
@@ -65,11 +65,11 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 		QStandardItem* item = new QStandardItem(text);
 		item->setIcon(icon);
 		item->setToolTip(a->toolTip());
-		model->setItem(nRows+rIdx, 0, item);
+		mModel->setItem(nRows+rIdx, 0, item);
 	}
 
 	// we assume they are unique
-	this->actions << actions;
+	this->mActions << actions;
 }
 
 void DkQuickAccess::addFiles(const QStringList& filePaths) {
@@ -84,21 +84,21 @@ void DkQuickAccess::addDirs(const QStringList& dirPaths) {
 
 void DkQuickAccess::addItems(const QStringList& itemTexts, const QIcon& icon) {
 
-	int nRows = model->rowCount();
-	model->setRowCount(nRows + itemTexts.size());
+	int nRows = mModel->rowCount();
+	mModel->setRowCount(nRows + itemTexts.size());
 
 	for (int rIdx = 0; rIdx < itemTexts.size(); rIdx++) {
 
 		QString text = itemTexts.at(rIdx);
 
-		if (filePaths.contains(text))
+		if (mFilePaths.contains(text))
 			continue;
 
 		QStandardItem* item = new QStandardItem(text);
 		item->setIcon(icon);
 		//item->setToolTip(a->toolTip());
-		model->setItem(nRows + rIdx, 0, item);
-		filePaths.append(text);
+		mModel->setItem(nRows + rIdx, 0, item);
+		mFilePaths.append(text);
 	}
 }
 
@@ -106,12 +106,12 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 
 	QString key = index.data().toString();
 
-	if (filePaths.contains(key)) {
+	if (mFilePaths.contains(key)) {
 		emit loadFileSignal(key);
 		return;
 	}
 
-	for (QAction* a : actions) {
+	for (QAction* a : mActions) {
 
 		QString aKey = a->text().replace("&", "");
 

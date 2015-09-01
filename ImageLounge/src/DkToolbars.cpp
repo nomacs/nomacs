@@ -129,17 +129,17 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 	: QWidget(parent) {
 
 	this->setStatusTip(tr("Drag the slider downwards for elimination"));
-	this->normedPos = normedPos;
-	this->color = color;
-	this->sliderWidth = sliderWidth;
-	isActive = false;
+	this->mNormedPos = normedPos;
+	this->mColor = color;
+	this->mSliderWidth = sliderWidth;
+	mIsActive = false;
 
-	sliderHalfWidth = cvCeil((float)sliderWidth / 2);
+	mSliderHalfWidth = cvCeil((float)sliderWidth / 2);
 	//return (qreal)(pos) / (qreal)(width() - sliderWidth);
 	
 	int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));
 
-	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + sliderHalfWidth + 1);
+	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + mSliderHalfWidth + 1);
 
 	show();
 
@@ -152,13 +152,13 @@ void DkColorSlider::paintEvent(QPaintEvent*) {
 	painter.setPen(Qt::black);
 
 	// Draw the filled triangle at the top of the slider:
-	if (isActive) {
+	if (mIsActive) {
 
 		QPainterPath path;
-		path.moveTo(0, sliderHalfWidth);
-		path.lineTo(sliderHalfWidth, 0);
-		path.lineTo(sliderHalfWidth, 0);
-		path.lineTo(sliderWidth, sliderHalfWidth);
+		path.moveTo(0, mSliderHalfWidth);
+		path.lineTo(mSliderHalfWidth, 0);
+		path.lineTo(mSliderHalfWidth, 0);
+		path.lineTo(mSliderWidth, mSliderHalfWidth);
 	
 		painter.fillPath(path, Qt::black);
 		painter.drawPath(path);
@@ -166,25 +166,25 @@ void DkColorSlider::paintEvent(QPaintEvent*) {
 	} 
 	// Draw the empty triangle at the top of the slider:
 	else {
-		painter.drawLine(0, sliderHalfWidth, sliderHalfWidth, 0);
-		painter.drawLine(sliderHalfWidth, 0, sliderWidth, sliderHalfWidth);
+		painter.drawLine(0, mSliderHalfWidth, mSliderHalfWidth, 0);
+		painter.drawLine(mSliderHalfWidth, 0, mSliderWidth, mSliderHalfWidth);
 	}
 	
-	painter.drawRect(0, sliderHalfWidth, sliderWidth, sliderWidth);
-	painter.fillRect(2, sliderHalfWidth+2, sliderWidth - 3, sliderWidth - 3, color);
+	painter.drawRect(0, mSliderHalfWidth, mSliderWidth, mSliderWidth);
+	painter.fillRect(2, mSliderHalfWidth+2, mSliderWidth - 3, mSliderWidth - 3, mColor);
 	
  
 }
 
 void DkColorSlider::updatePos(int parentWidth) {
 
-	int pos = qRound(normedPos * (parentWidth - sliderWidth - 1));
-	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + sliderHalfWidth + 1);
+	int pos = qRound(mNormedPos * (parentWidth - mSliderWidth - 1));
+	setGeometry(pos, 23, mSliderWidth + 1, mSliderWidth + mSliderHalfWidth + 1);
 }
 
 void DkColorSlider::setActive(bool isActive) {
 
-	this->isActive = isActive;
+	mIsActive = isActive;
 }
 
 DkColorSlider::~DkColorSlider() {
@@ -192,42 +192,42 @@ DkColorSlider::~DkColorSlider() {
 
 QColor DkColorSlider::getColor() {
 
-	return color;
+	return mColor;
 
 };
 
 qreal DkColorSlider::getNormedPos() {
 
-	return normedPos;
+	return mNormedPos;
 
 };
 
 void DkColorSlider::setNormedPos(qreal pos) {
 
-	normedPos = pos;
+	mNormedPos = pos;
 
 };
 
 
 void DkColorSlider::mousePressEvent(QMouseEvent *event) {
 	
-	isActive = true;
-	dragStartX = event->pos().x();
+	mIsActive = true;
+	mDragStartX = event->pos().x();
 	emit sliderActivated(this);		
 }
 
 void DkColorSlider::mouseMoveEvent(QMouseEvent *event) {
 	
 	// Pass the actual position to the Gradient:
-	emit sliderMoved(this, event->pos().x() - dragStartX, event->pos().y());
+	emit sliderMoved(this, event->pos().x() - mDragStartX, event->pos().y());
 		
 }
 
 void DkColorSlider::mouseDoubleClickEvent(QMouseEvent*) {
 
-	QColor color = QColorDialog::getColor(this->color, this);
+	QColor color = QColorDialog::getColor(this->mColor, this);
 	if (color.isValid())
-		this->color = color;
+		this->mColor = color;
 
 	emit colorChanged(this);
 
@@ -243,16 +243,16 @@ DkGradient::DkGradient(QWidget *parent)
 
 	this->setFixedHeight(40);
 
-	isSliderDragged = false;
-	clickAreaHeight = 20;
-	deleteSliderDist = 50;
+	mIsSliderDragged = false;
+	mClickAreaHeight = 20;
+	mDeleteSliderDist = 50;
 	
 	// Note that sliderWidth should be odd, in order to get a pretty rendered slider.
-	sliderWidth = 10;
-	halfSliderWidth = sliderWidth / 2;
-	gradient = QLinearGradient(0, 0, width(), height() - clickAreaHeight);
+	mSliderWidth = 10;
+	mHalfSliderWidth = mSliderWidth / 2;
+	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
 	
-	sliders = QVector<DkColorSlider*>();
+	mSliders = QVector<DkColorSlider*>();
 	init();
 
 };
@@ -262,8 +262,6 @@ DkGradient::~DkGradient() {
 };
 
 void DkGradient::init() {
-
-	isActiveSliderExisting = false;
 
 	clearAllSliders();
 
@@ -277,12 +275,12 @@ void DkGradient::init() {
 
 void DkGradient::clearAllSliders() {
 
-	for (int i = 0; i < sliders.size(); i++) {
-		DkColorSlider* slider = sliders.at(i);
+	for (int i = 0; i < mSliders.size(); i++) {
+		DkColorSlider* slider = mSliders.at(i);
 		delete slider;
 	}
 
-	sliders.clear();
+	mSliders.clear();
 
 }
 
@@ -291,7 +289,7 @@ void DkGradient::setGradient(const QLinearGradient& gradient) {
 	reset();
 	clearAllSliders();	// reset adds a slider at the start and end
 
-	this->gradient.setStops(gradient.stops());
+	this->mGradient.setStops(gradient.stops());
 	
 	QVector<QGradientStop> stops = gradient.stops();
 
@@ -307,7 +305,7 @@ void DkGradient::setGradient(const QLinearGradient& gradient) {
 
 QLinearGradient DkGradient::getGradient() {
 
-	return gradient;
+	return mGradient;
 }
 
 void DkGradient::reset() {
@@ -325,8 +323,8 @@ void DkGradient::resizeEvent( QResizeEvent * event ) {
 
 	DkColorSlider *slider;
 
-	for (int i = 0; i < sliders.size(); i++) {
-		slider = sliders.at(i);
+	for (int i = 0; i < mSliders.size(); i++) {
+		slider = mSliders.at(i);
 		slider->updatePos(this->width());
 	}
 
@@ -341,8 +339,8 @@ void DkGradient::resizeEvent( QResizeEvent * event ) {
 void DkGradient::addSlider(qreal pos, QColor color) {
 
 
-	DkColorSlider *actSlider =  new DkColorSlider(this, pos, color, sliderWidth);
-	sliders.append(actSlider);
+	DkColorSlider *actSlider =  new DkColorSlider(this, pos, color, mSliderWidth);
+	mSliders.append(actSlider);
 	connect(actSlider, SIGNAL(sliderMoved(DkColorSlider*, int, int)), this, SLOT(moveSlider(DkColorSlider*, int, int)));
 	connect(actSlider, SIGNAL(colorChanged(DkColorSlider*)), this, SLOT(changeColor(DkColorSlider*)));
 	connect(actSlider, SIGNAL(sliderActivated(DkColorSlider*)), this, SLOT(activateSlider(DkColorSlider*)));
@@ -362,8 +360,8 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 
 	int leftIdx = 0, rightIdx = 0;
 	
-	for (int i = 0; i < sliders.size(); i++) {
-		dist = sliders.at(i)->getNormedPos() - pos;
+	for (int i = 0; i < mSliders.size(); i++) {
+		dist = mSliders.at(i)->getNormedPos() - pos;
 		if (dist < 0) {
 			if (abs(dist) < leftDist) {
 				leftDist = (abs(dist));
@@ -377,7 +375,7 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 			}
 		}
 		else {
-			actColor = sliders.at(i)->getColor();
+			actColor = mSliders.at(i)->getColor();
 			break;
 		}
 	}
@@ -386,16 +384,16 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 		actColor = Qt::black;
 	// The slider is most left:
 	else if (leftDist == initValue)
-		actColor = sliders.at(rightIdx)->getColor();
+		actColor = mSliders.at(rightIdx)->getColor();
 	// The slider is most right:
 	else if (rightDist == initValue)
-		actColor = sliders.at(leftIdx)->getColor();
+		actColor = mSliders.at(leftIdx)->getColor();
 	// The slider has a neighbor to the left and to the right:
 	else {
 		int rLeft, rRight, rNew, gLeft, gRight, gNew, bLeft, bRight, bNew;
 		
-		sliders.at(leftIdx)->getColor().getRgb(&rLeft, &gLeft, &bLeft);
-		sliders.at(rightIdx)->getColor().getRgb(&rRight, &gRight, &bRight);
+		mSliders.at(leftIdx)->getColor().getRgb(&rLeft, &gLeft, &bLeft);
+		mSliders.at(rightIdx)->getColor().getRgb(&rRight, &gRight, &bRight);
 		
 		qreal fac = leftDist / (leftDist + rightDist);
 		rNew = qRound(rLeft * (1 - fac) + rRight * fac);
@@ -409,7 +407,7 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 
 	addSlider(pos, col.isValid() ? col : actColor);
 	// The last slider in the list is the last one added, now make this one active:
-	activateSlider(sliders.last());
+	activateSlider(mSliders.last());
 
 	updateGradient();
 	update();
@@ -420,7 +418,7 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 void DkGradient::mousePressEvent(QMouseEvent *event) {
 
 	QPointF enterPos = event->pos();
-	qreal pos = (qreal)(enterPos.x() - halfSliderWidth) / (qreal)(width()-sliderWidth);
+	qreal pos = (qreal)(enterPos.x() - mHalfSliderWidth) / (qreal)(width()-mSliderWidth);
 
 	insertSlider(pos);
 	
@@ -428,17 +426,17 @@ void DkGradient::mousePressEvent(QMouseEvent *event) {
 
 void DkGradient::updateGradient() {
 
-	gradient = QLinearGradient(0, 0, width(), height() - clickAreaHeight);
+	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
 
-	for (int i = 0; i < sliders.size(); i++) 
-		gradient.setColorAt(sliders.at(i)->getNormedPos(), sliders.at(i)->getColor());
+	for (int i = 0; i < mSliders.size(); i++) 
+		mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
 
 
 }
 
 QGradientStops DkGradient::getGradientStops() {
 
-	return gradient.stops();
+	return mGradient.stops();
 
 };
 
@@ -447,12 +445,12 @@ void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
 
 
 	// Delete the actual slider:
-	if (yPos > deleteSliderDist) {
-		int idx = sliders.lastIndexOf(sender);
+	if (yPos > mDeleteSliderDist) {
+		int idx = mSliders.lastIndexOf(sender);
 		if (idx != -1) {
-			sliders.remove(idx);
+			mSliders.remove(idx);
 			delete sender;
-			isActiveSliderExisting = false;
+			mIsActiveSliderExisting = false;
 		}
 	}
 
@@ -463,8 +461,8 @@ void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
 
 		if (newPos < 0)
 			newPos = 0;
-		else if (newPos > width() - sliderWidth - 1)
-			newPos = width() - sliderWidth - 1;
+		else if (newPos > width() - mSliderWidth - 1)
+			newPos = width() - mSliderWidth - 1;
 
 		qreal normedSliderPos = getNormedPos(newPos);
 
@@ -475,8 +473,8 @@ void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
 
 		DkColorSlider *slider;
 		// Check if the position is already assigned to another slider:
-		for (int i = 0; i < sliders.size(); i++) {
-			slider = sliders.at(i);
+		for (int i = 0; i < mSliders.size(); i++) {
+			slider = mSliders.at(i);
 			if (slider != sender) {
 				if (slider->getNormedPos() == normedSliderPos)
 					return;
@@ -497,7 +495,7 @@ void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
 
 qreal DkGradient::getNormedPos(int pos) {
 
-	return (qreal)(pos) / (qreal)(width() - sliderWidth);
+	return (qreal)(pos) / (qreal)(width() - mSliderWidth);
 
 }
 
@@ -512,8 +510,8 @@ void DkGradient::paintEvent(QPaintEvent*) {
 	QPainter painter(this);
 	painter.setPen(Qt::gray);
 	
-	painter.fillRect(halfSliderWidth, 2, width() - sliderWidth, height() - clickAreaHeight, gradient);
-	painter.drawRect(halfSliderWidth, 2, width() - sliderWidth, height() - clickAreaHeight);
+	painter.fillRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight, mGradient);
+	painter.drawRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight);
 };
 
 
@@ -536,13 +534,13 @@ void DkGradient::changeColor(DkColorSlider*) {
 void DkGradient::activateSlider(DkColorSlider *sender) {
 
 	
-	if (isActiveSliderExisting) 
-		activeSlider->setActive(false);
+	if (mIsActiveSliderExisting) 
+		mActiveSlider->setActive(false);
 	else
-		isActiveSliderExisting = true;
+		mIsActiveSliderExisting = true;
 
-	activeSlider = sender;
-	activeSlider->setActive(true);
+	mActiveSlider = sender;
+	mActiveSlider->setActive(true);
 
 	update();
 
@@ -555,61 +553,61 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	loadSettings();
 
 	
-	enableTFCheckBox = new QCheckBox(tr("Enable"));
-	enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
+	mEnableTFCheckBox = new QCheckBox(tr("Enable"));
+	mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
-	this->addWidget(enableTFCheckBox);
+	this->addWidget(mEnableTFCheckBox);
 
 	// >DIR: more compact gui [2.3.2012 markus]
 	this->addSeparator();
 	//this->addWidget(new QLabel(tr("Active channel:")));
 
-	channelComboBox = new QComboBox(this);
-	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
-	this->addWidget(channelComboBox);
+	mChannelComboBox = new QComboBox(this);
+	mChannelComboBox->setStatusTip(tr("Changes the displayed color channel"));
+	this->addWidget(mChannelComboBox);
 
-	historyCombo = new QComboBox(this);
+	mHistoryCombo = new QComboBox(this);
 
-	QAction* delGradientAction = new QAction(tr("Delete"), historyCombo);
+	QAction* delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
 	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
 
-	historyCombo->addAction(delGradientAction);
-	historyCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
+	mHistoryCombo->addAction(delGradientAction);
+	mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	updateGradientHistory();
-	connect(historyCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
-	connect(historyCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
+	connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
+	connect(mHistoryCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
 
-	this->addWidget(historyCombo);
+	this->addWidget(mHistoryCombo);
 
 	createIcons();
 
-	gradient = new DkGradient(this);
-	gradient->setStatusTip(tr("Click into the field for a new slider"));
-	this->addWidget(gradient);
+	mGradient = new DkGradient(this);
+	mGradient->setStatusTip(tr("Click into the field for a new slider"));
+	this->addWidget(mGradient);
 
-	effect = new QGraphicsOpacityEffect(gradient);
-	effect->setOpacity(1);
-	gradient->setGraphicsEffect(effect);
+	mEffect = new QGraphicsOpacityEffect(mGradient);
+	mEffect->setOpacity(1);
+	mGradient->setGraphicsEffect(mEffect);
 
 	// Disable the entire transfer toolbar:
 	//enableTF(Qt::Unchecked);
 
 	// Initialize the combo box for color images:
-	imageMode = mode_uninitialized;
+	mImageMode = mode_uninitialized;
 	applyImageMode(mode_rgb);
 
 	enableToolBar(false);
-	enableTFCheckBox->setEnabled(true);	
+	mEnableTFCheckBox->setEnabled(true);	
 
-	connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
-	connect(gradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
+	connect(mEnableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
+	connect(mGradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 
 	// needed for initialization
-	connect(this, SIGNAL(gradientChanged()), gradient, SIGNAL(gradientChanged()));
+	connect(this, SIGNAL(gradientChanged()), mGradient, SIGNAL(gradientChanged()));
 
-	if (!oldGradients.empty())
-		gradient->setGradient(oldGradients.first());
+	if (!mOldGradients.empty())
+		mGradient->setGradient(mOldGradients.first());
 
 };
 
@@ -624,37 +622,37 @@ void DkTransferToolBar::createIcons() {
 	// user needs to decide...
 	//this->setIconSize(QSize(16,16));
 			
-	toolBarIcons.resize(icon_toolbar_end);
+	mToolBarIcons.resize(icon_toolbar_end);
 
-	toolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
-	toolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
-	toolBarIcons[icon_toolbar_save] = ICON("", ":/nomacs/img/save.png");
+	mToolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
+	mToolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
+	mToolBarIcons[icon_toolbar_save] = ICON("", ":/nomacs/img/save.png");
 
 	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
 		// now colorize the icons
-		toolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		toolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		toolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_save].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_save].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 	}
 	
-	toolBarActions.resize(toolbar_end);
-	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
-	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
-	connect(toolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
+	mToolBarActions.resize(toolbar_end);
+	mToolBarActions[toolbar_reset] = new QAction(mToolBarIcons[icon_toolbar_reset], tr("Reset"), this);
+	mToolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
+	connect(mToolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
 
 	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
-	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
-	toolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
-	toolBarActions[toolbar_pipette]->setCheckable(true);
-	toolBarActions[toolbar_pipette]->setChecked(false);
-	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
+	mToolBarActions[toolbar_pipette] = new QAction(mToolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
+	mToolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
+	mToolBarActions[toolbar_pipette]->setCheckable(true);
+	mToolBarActions[toolbar_pipette]->setChecked(false);
+	connect(mToolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
 
-	toolBarActions[toolbar_save] = new QAction(toolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
-	toolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
-	connect(toolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
+	mToolBarActions[toolbar_save] = new QAction(mToolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
+	mToolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
+	connect(mToolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
 
-	addActions(toolBarActions.toList());
+	addActions(mToolBarActions.toList());
 
 }
 
@@ -663,12 +661,12 @@ void DkTransferToolBar::saveSettings() {
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Pseudo Color");
 
-	settings.beginWriteArray("oldGradients", oldGradients.size());
+	settings.beginWriteArray("oldGradients", mOldGradients.size());
 
-	for (int idx = 0; idx < oldGradients.size(); idx++) {
+	for (int idx = 0; idx < mOldGradients.size(); idx++) {
 		settings.setArrayIndex(idx);
 
-		QVector<QGradientStop> stops = oldGradients.at(idx).stops();
+		QVector<QGradientStop> stops = mOldGradients.at(idx).stops();
 		settings.beginWriteArray("gradient", stops.size());
 
 		for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
@@ -709,7 +707,7 @@ void DkTransferToolBar::loadSettings() {
 
 		QLinearGradient g;
 		g.setStops(stops);
-		oldGradients.append(g);
+		mOldGradients.append(g);
 	}
 
 	settings.endArray();
@@ -721,30 +719,30 @@ void DkTransferToolBar::deleteGradientMenu(QPoint pos) {
 	QMenu* cm = new QMenu(this);
 	QAction* delAction = new QAction("Delete", this);
 	connect(delAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
-	cm->popup(historyCombo->mapToGlobal(pos));
+	cm->popup(mHistoryCombo->mapToGlobal(pos));
 	cm->exec();
 }
 
 void DkTransferToolBar::deleteGradient() {
 
-	int idx = historyCombo->currentIndex();
+	int idx = mHistoryCombo->currentIndex();
 
-	if (idx >= 0 && idx < oldGradients.size()) {
-		oldGradients.remove(idx);
-		historyCombo->removeItem(idx);
+	if (idx >= 0 && idx < mOldGradients.size()) {
+		mOldGradients.remove(idx);
+		mHistoryCombo->removeItem(idx);
 	}
 
 }
 
 void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
 
-	gradient->resize(event->size().width() - gradient->x(), 40);
+	mGradient->resize(event->size().width() - mGradient->x(), 40);
 
 };
 
 void DkTransferToolBar::insertSlider(qreal pos) {
 
-	gradient->insertSlider(pos);
+	mGradient->insertSlider(pos);
 
 };
 
@@ -758,40 +756,40 @@ void DkTransferToolBar::applyImageMode(int mode) {
 
 	// At first check if the right mode is already set. If so, don't do nothing.
 
-	if (mode == imageMode)
+	if (mode == mImageMode)
 		return;
 
-	if (imageMode == mode_invalid_format) {
+	if (mImageMode == mode_invalid_format) {
 		enableToolBar(true);
 		emit channelChanged(0);
 	}
 
-	imageMode = mode;
+	mImageMode = mode;
 	
-	if (imageMode == mode_invalid_format) {
+	if (mImageMode == mode_invalid_format) {
 		enableToolBar(false);
 		return;
 	}
 	
-	enableTFCheckBox->setEnabled(true);	
+	mEnableTFCheckBox->setEnabled(true);	
 
-	disconnect(channelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+	disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 
-	channelComboBox->clear();
+	mChannelComboBox->clear();
 
 	if (mode == mode_gray) {
-		channelComboBox->addItem(tr("Gray"));
+		mChannelComboBox->addItem(tr("Gray"));
 	}
 	else if (mode == mode_rgb) {
-		channelComboBox->addItem(tr("RGB"));
-		channelComboBox->addItem(tr("Red"));
-		channelComboBox->addItem(tr("Green"));
-		channelComboBox->addItem(tr("Blue"));
+		mChannelComboBox->addItem(tr("RGB"));
+		mChannelComboBox->addItem(tr("Red"));
+		mChannelComboBox->addItem(tr("Green"));
+		mChannelComboBox->addItem(tr("Blue"));
 	}
 
-	channelComboBox->setCurrentIndex(0);
+	mChannelComboBox->setCurrentIndex(0);
 
-	connect(channelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+	connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 
 };
 
@@ -811,12 +809,12 @@ void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
 	enableToolBar(enabled);
 
 	// At this point the checkbox is disabled, hence enable it...
-	enableTFCheckBox->setEnabled(true);
+	mEnableTFCheckBox->setEnabled(true);
 
 	if (enabled)
-		enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
+		mEnableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
 	else
-		enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
+		mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
 	emit tFEnabled(enabled);
 	emit gradientChanged();
@@ -832,16 +830,16 @@ void DkTransferToolBar::enableToolBar(bool enable) {
 	}
 	
 	if (enable)
-		effect->setOpacity(1);
+		mEffect->setOpacity(1);
 	else
-		effect->setOpacity(.5);
+		mEffect->setOpacity(.5);
 
 }
 
 
 void DkTransferToolBar::applyTF() {
 
-	QGradientStops stops = gradient->getGradientStops();
+	QGradientStops stops = mGradient->getGradientStops();
 
 	emit colorTableChanged(stops);
 
@@ -855,9 +853,9 @@ void DkTransferToolBar::changeChannel(int index) {
 
 void DkTransferToolBar::resetGradient() {
 
-	gradient->reset();
+	mGradient->reset();
 
-	QGradientStops stops = gradient->getGradientStops();
+	QGradientStops stops = mGradient->getGradientStops();
 
 	emit colorTableChanged(stops);
 }
@@ -870,31 +868,31 @@ void DkTransferToolBar::paintEvent(QPaintEvent* event) {
 
 void DkTransferToolBar::updateGradientHistory() {
 
-	historyCombo->clear();
-	historyCombo->setIconSize(QSize(50,10));
+	mHistoryCombo->clear();
+	mHistoryCombo->setIconSize(QSize(50,10));
 
-	for (int idx = 0; idx < oldGradients.size(); idx++) {
+	for (int idx = 0; idx < mOldGradients.size(); idx++) {
 
 		QPixmap cg(50, 10);
 		QLinearGradient g(QPoint(0,0), QPoint(50, 0));
-		g.setStops(oldGradients[idx].stops());
+		g.setStops(mOldGradients[idx].stops());
 		QPainter p(&cg);
 		p.fillRect(cg.rect(), g);
-		historyCombo->addItem(cg, tr(""));
+		mHistoryCombo->addItem(cg, tr(""));
 	}
 }
 
 void DkTransferToolBar::switchGradient(int idx) {
 
-	if (idx >= 0 && idx < oldGradients.size()) {
-		gradient->setGradient(oldGradients[idx]);
+	if (idx >= 0 && idx < mOldGradients.size()) {
+		mGradient->setGradient(mOldGradients[idx]);
 	}
 
 }
 
 void DkTransferToolBar::saveGradient() {
 	
-	oldGradients.prepend(gradient->getGradient());
+	mOldGradients.prepend(mGradient->getGradient());
 	updateGradientHistory();
 	saveSettings();
 }
@@ -928,11 +926,11 @@ void DkCropToolBar::loadSettings() {
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Crop");
 
-	horValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
-	verValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
-	guideBox->setCurrentIndex(settings.value("guides", 0).toInt());
-	invertAction->setChecked(settings.value("inverted", false).toBool());
-	infoAction->setChecked(settings.value("info", true).toBool());
+	mHorValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
+	mVerValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
+	mGuideBox->setCurrentIndex(settings.value("guides", 0).toInt());
+	mInvertAction->setChecked(settings.value("inverted", false).toBool());
+	mInfoAction->setChecked(settings.value("info", true).toBool());
 	settings.endGroup();
 }
 
@@ -941,33 +939,33 @@ void DkCropToolBar::saveSettings() {
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Crop");
 
-	settings.setValue("AspectRatioHorizontal", horValBox->value());
-	settings.setValue("AspectRatioVertical", verValBox->value());
-	settings.setValue("guides", guideBox->currentIndex());
-	settings.setValue("inverted", invertAction->isChecked());
-	settings.setValue("info", infoAction->isChecked());
+	settings.setValue("AspectRatioHorizontal", mHorValBox->value());
+	settings.setValue("AspectRatioVertical", mVerValBox->value());
+	settings.setValue("guides", mGuideBox->currentIndex());
+	settings.setValue("inverted", mInvertAction->isChecked());
+	settings.setValue("info", mInfoAction->isChecked());
 	settings.endGroup();
 }
 
 void DkCropToolBar::createIcons() {
 
 	// create icons
-	icons.resize(icons_end);
+	mIcons.resize(icons_end);
 
-	icons[crop_icon] = QIcon(":/nomacs/img/crop.png");
-	icons[cancel_icon] = QIcon(":/nomacs/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacs/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
-	icons[invert_icon] = QIcon(":/nomacs/img/crop-invert.png");
-	icons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
-	icons[info_icon] = QIcon(":/nomacs/img/info.png");
+	mIcons[crop_icon] = QIcon(":/nomacs/img/crop.png");
+	mIcons[cancel_icon] = QIcon(":/nomacs/img/cancel.png");
+	mIcons[pan_icon] = 	QIcon(":/nomacs/img/pan.png");
+	mIcons[pan_icon].addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	mIcons[invert_icon] = QIcon(":/nomacs/img/crop-invert.png");
+	mIcons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
+	mIcons[info_icon] = QIcon(":/nomacs/img/info.png");
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
-		for (int idx = 0; idx < icons.size(); idx++) {
+		for (int idx = 0; idx < mIcons.size(); idx++) {
 
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }
@@ -978,97 +976,97 @@ void DkCropToolBar::createLayout() {
 	enterSc.append(QKeySequence(Qt::Key_Enter));
 	enterSc.append(QKeySequence(Qt::Key_Return));
 
-	QAction* cropAction = new QAction(icons[crop_icon], tr("Crop (ENTER)"), this);
+	QAction* cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
 	cropAction->setShortcuts(enterSc);
 	cropAction->setObjectName("cropAction");
 
-	QAction* cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
+	QAction* cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
 	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
 	cancelAction->setObjectName("cancelAction");
 
-	panAction = new QAction(icons[pan_icon], tr("Pan"), this);
-	panAction->setShortcut(QKeySequence(Qt::Key_P));
-	panAction->setObjectName("panAction");
-	panAction->setCheckable(true);
-	panAction->setChecked(false);
+	mPanAction = new QAction(mIcons[pan_icon], tr("Pan"), this);
+	mPanAction->setShortcut(QKeySequence(Qt::Key_P));
+	mPanAction->setObjectName("panAction");
+	mPanAction->setCheckable(true);
+	mPanAction->setChecked(false);
 
 	QStringList ratios;
 	ratios << "1:1" << "4:3" << "5:4" << "14:10" << "14:11" << "16:9" << "16:10";
 	ratios.prepend(tr("User Defined"));
 	ratios.prepend(tr("No Aspect Ratio"));
-	ratioBox = new QComboBox(this);
-	ratioBox->addItems(ratios);
-	ratioBox->setObjectName("ratioBox");
+	mRatioBox = new QComboBox(this);
+	mRatioBox->addItems(ratios);
+	mRatioBox->setObjectName("ratioBox");
 
-	horValBox = new QDoubleSpinBox(this);
-	horValBox->setObjectName("horValBox");
-	horValBox->setSpecialValueText("  ");
-	horValBox->setToolTip(tr("Horizontal Constraint"));
-	horValBox->setStatusTip(horValBox->toolTip());
+	mHorValBox = new QDoubleSpinBox(this);
+	mHorValBox->setObjectName("horValBox");
+	mHorValBox->setSpecialValueText("  ");
+	mHorValBox->setToolTip(tr("Horizontal Constraint"));
+	mHorValBox->setStatusTip(mHorValBox->toolTip());
 
 	QAction* swapAction = new QAction(QIcon(":/nomacs/img/swap.png"), tr("Swap"), this);
 	swapAction->setObjectName("swapAction");
 	swapAction->setToolTip(tr("Swap Dimensions"));
 	swapAction->setStatusTip(swapAction->toolTip());
 
-	verValBox = new QDoubleSpinBox(this);
-	verValBox->setObjectName("verValBox");
-	verValBox->setSpecialValueText("  ");
-	horValBox->setToolTip(tr("Vertical Constraint"));
-	horValBox->setStatusTip(horValBox->toolTip());
+	mVerValBox = new QDoubleSpinBox(this);
+	mVerValBox->setObjectName("verValBox");
+	mVerValBox->setSpecialValueText("  ");
+	mHorValBox->setToolTip(tr("Vertical Constraint"));
+	mHorValBox->setStatusTip(mHorValBox->toolTip());
 
-	angleBox = new QDoubleSpinBox(this);
-	angleBox->setObjectName("angleBox");
-	angleBox->setSuffix(dk_degree_str);
-	angleBox->setMinimum(-180);
-	angleBox->setMaximum(180);
+	mAngleBox = new QDoubleSpinBox(this);
+	mAngleBox->setObjectName("angleBox");
+	mAngleBox->setSuffix(dk_degree_str);
+	mAngleBox->setMinimum(-180);
+	mAngleBox->setMaximum(180);
 
 	// background color
-	bgCol = QColor(0,0,0,0);
-	bgColButton = new QPushButton(this);
-	bgColButton->setObjectName("bgColButton");
-	bgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(bgCol) + "; border: 1px solid #888;}");
-	bgColButton->setToolTip(tr("Background Color"));
-	bgColButton->setStatusTip(bgColButton->toolTip());
+	mBgCol = QColor(0,0,0,0);
+	mBgColButton = new QPushButton(this);
+	mBgColButton->setObjectName("bgColButton");
+	mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+	mBgColButton->setToolTip(tr("Background Color"));
+	mBgColButton->setStatusTip(mBgColButton->toolTip());
 
-	colorDialog = new QColorDialog(this);
-	colorDialog->setObjectName("colorDialog");
-	colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+	mColorDialog = new QColorDialog(this);
+	mColorDialog->setObjectName("colorDialog");
+	mColorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
 
 	// crop customization
 	QStringList guides;
 	guides << tr("Guides") << tr("Rule of Thirds") << tr("Grid");
-	guideBox = new QComboBox(this);
-	guideBox->addItems(guides);
-	guideBox->setObjectName("guideBox");
-	guideBox->setToolTip(tr("Show Guides in the Preview"));
-	guideBox->setStatusTip(guideBox->toolTip());
+	mGuideBox = new QComboBox(this);
+	mGuideBox->addItems(guides);
+	mGuideBox->setObjectName("guideBox");
+	mGuideBox->setToolTip(tr("Show Guides in the Preview"));
+	mGuideBox->setStatusTip(mGuideBox->toolTip());
 
-	invertAction = new QAction(icons[invert_icon], tr("Invert Crop Tool Color"), this);
-	invertAction->setObjectName("invertAction");
-	invertAction->setCheckable(true);
-	invertAction->setChecked(false);
+	mInvertAction = new QAction(mIcons[invert_icon], tr("Invert Crop Tool Color"), this);
+	mInvertAction->setObjectName("invertAction");
+	mInvertAction->setCheckable(true);
+	mInvertAction->setChecked(false);
 
-	infoAction = new QAction(icons[info_icon], tr("Show Info"), this);
-	infoAction->setObjectName("infoAction");
-	infoAction->setCheckable(true);
-	infoAction->setChecked(false);
+	mInfoAction = new QAction(mIcons[info_icon], tr("Show Info"), this);
+	mInfoAction->setObjectName("infoAction");
+	mInfoAction->setCheckable(true);
+	mInfoAction->setChecked(false);
 
 	addAction(cropAction);
-	addAction(panAction);
+	addAction(mPanAction);
 	addAction(cancelAction);
 	addSeparator();
-	addWidget(ratioBox);
-	addWidget(horValBox);
+	addWidget(mRatioBox);
+	addWidget(mHorValBox);
 	addAction(swapAction);
-	addWidget(verValBox);
-	addWidget(angleBox);
+	addWidget(mVerValBox);
+	addWidget(mAngleBox);
 	addSeparator();
-	addWidget(bgColButton);
+	addWidget(mBgColButton);
 	addSeparator();
-	addWidget(guideBox);
-	addAction(invertAction);
-	addAction(infoAction);
+	addWidget(mGuideBox);
+	addAction(mInvertAction);
+	addAction(mInfoAction);
 }
 
 void DkCropToolBar::setVisible(bool visible) {
@@ -1076,11 +1074,11 @@ void DkCropToolBar::setVisible(bool visible) {
 	if (!visible)
 		emit colorSignal(Qt::NoBrush);
 	else
-		emit colorSignal(bgCol);
+		emit colorSignal(mBgCol);
 
 	if (visible) {
-		panAction->setChecked(false);
-		angleBox->setValue(0);
+		mPanAction->setChecked(false);
+		mAngleBox->setValue(0);
 	}
 
 	QToolBar::setVisible(visible);
@@ -1088,8 +1086,8 @@ void DkCropToolBar::setVisible(bool visible) {
 
 void DkCropToolBar::setAspectRatio(const QPointF& aRatio) {
 
-	horValBox->setValue(aRatio.x());
-	verValBox->setValue(aRatio.y());
+	mHorValBox->setValue(aRatio.x());
+	mVerValBox->setValue(aRatio.y());
 }
 
 void DkCropToolBar::on_cropAction_triggered() {
@@ -1110,9 +1108,9 @@ void DkCropToolBar::on_infoAction_toggled(bool checked) {
 
 void DkCropToolBar::on_swapAction_triggered() {
 
-	int tmpV = qRound(horValBox->value());
-	horValBox->setValue(verValBox->value());
-	verValBox->setValue(tmpV);
+	int tmpV = qRound(mHorValBox->value());
+	mHorValBox->setValue(mVerValBox->value());
+	mVerValBox->setValue(tmpV);
 
 }
 
@@ -1131,23 +1129,23 @@ void DkCropToolBar::angleChanged(double val) {
 	while (angle <= -90)
 		angle += 180;
 
-	angleBox->blockSignals(true);
-	angleBox->setValue(angle);
-	angleBox->blockSignals(false);
+	mAngleBox->blockSignals(true);
+	mAngleBox->setValue(angle);
+	mAngleBox->blockSignals(false);
 }
 
 void DkCropToolBar::on_bgColButton_clicked() {
 
-	QColor tmpCol = bgCol;
+	QColor tmpCol = mBgCol;
 	if (!tmpCol.alpha()) tmpCol.setAlpha(255);	// avoid frustrated users
 	
-	colorDialog->setCurrentColor(tmpCol);
-	int ok = colorDialog->exec();
+	mColorDialog->setCurrentColor(tmpCol);
+	int ok = mColorDialog->exec();
 
 	if (ok == QDialog::Accepted) {
-		bgCol = colorDialog->currentColor();
-		bgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(bgCol) + "; border: 1px solid #888;}");
-		emit colorSignal(bgCol);
+		mBgCol = mColorDialog->currentColor();
+		mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+		emit colorSignal(mBgCol);
 	}
 
 }
@@ -1156,13 +1154,13 @@ void DkCropToolBar::on_bgColButton_clicked() {
 void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString& text) {
 
 	// user defined -> do nothing
-	if (ratioBox->currentIndex() == 1)
+	if (mRatioBox->currentIndex() == 1)
 		return;	
 
 	// no aspect ratio -> clear boxes
-	if (ratioBox->currentIndex() == 0) {
-		horValBox->setValue(0);
-		verValBox->setValue(0);
+	if (mRatioBox->currentIndex() == 0) {
+		mHorValBox->setValue(0);
+		mVerValBox->setValue(0);
 		return;
 	}
 
@@ -1171,8 +1169,8 @@ void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString& text) {
 	qDebug() << vals;
 
 	if (vals.size() == 2) {
-		horValBox->setValue(vals[0].toDouble());
-		verValBox->setValue(vals[1].toDouble());
+		mHorValBox->setValue(vals[0].toDouble());
+		mVerValBox->setValue(vals[1].toDouble());
 	}
 }
 
@@ -1189,19 +1187,19 @@ void DkCropToolBar::on_verValBox_valueChanged(double val) {
 
 void DkCropToolBar::on_horValBox_valueChanged(double) {
 
-	DkVector diag = DkVector((float)horValBox->value(), (float)verValBox->value());
+	DkVector diag = DkVector((float)mHorValBox->value(), (float)mVerValBox->value());
 	emit aspectRatio(diag);
 
-	QString rs = QString::number(horValBox->value()) + ":" + QString::number(verValBox->value());
+	QString rs = QString::number(mHorValBox->value()) + ":" + QString::number(mVerValBox->value());
 
-	int idx = ratioBox->findText(rs);
+	int idx = mRatioBox->findText(rs);
 
 	if (idx != -1)
-		ratioBox->setCurrentIndex(idx);
-	else if (horValBox->value() == 0 && verValBox->value() == 0)
-		ratioBox->setCurrentIndex(0);
+		mRatioBox->setCurrentIndex(idx);
+	else if (mHorValBox->value() == 0 && mVerValBox->value() == 0)
+		mRatioBox->setCurrentIndex(0);
 	else
-		ratioBox->setCurrentIndex(1);	
+		mRatioBox->setCurrentIndex(1);	
 
 }
 
