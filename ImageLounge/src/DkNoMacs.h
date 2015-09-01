@@ -84,7 +84,7 @@ class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkRCManagerThread;
 class DkTransferToolBar;
-class DkPluginManager;
+class DkPluginManagerDialog;
 class DkAppManager;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;

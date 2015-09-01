@@ -114,25 +114,53 @@ struct QPairSecondComparer {
 	}
 };
 
-// Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
-class DkPluginManager : public QDialog {
-
-Q_OBJECT
+class DllExport DkPluginManager {
 
 public:
 	static DkPluginManager& instance();
 	~DkPluginManager();
+
+	void addPlugin(const QString& pluginId, const QString& filePath, DkPluginInterface* plugin);
+	QMap<QString, DkPluginInterface *> getPlugins() const;
+	DkPluginInterface* getPlugin(const QString& key) const;
+	
+	QString getPluginFilePath(const QString& key) const;
+	QMap<QString, QString> getPluginFilePaths() const;
+	
+	QMap<QString, QString> getRunId2PluginId() const;
+	void setRunId2PluginId(QMap<QString, QString> newMap);
+	
+	QList<QString> getPluginIdList() const;
+	void setPluginIdList(QList<QString> newPlugins);
+
+	void removePlugin(const QString& id);
+	void clear();
+
+	void saveSettings() const;
+	void loadPlugins();
+
+	bool singlePluginLoad(const QString& filePath);
+
+private:
+	DkPluginManager();
+
+	QMap<QString, DkPluginInterface *> loadedPlugins;
+	QMap<QString, QString> pluginFiles;
+	QList<QString> pluginIdList;
+	QMap<QString, QString> runId2PluginId;
+	QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
+
+};
+
+// Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
+class DkPluginManagerDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkPluginManagerDialog(QWidget* parent = 0);
+	~DkPluginManagerDialog();
 		
 	void loadPlugins();
-	void loadEnabledPlugins();
-	bool singlePluginLoad(QString filePath);
-	QMap<QString, DkPluginInterface *> getPlugins();
-	DkPluginInterface* getPlugin(QString key);
-	QList<QString> getPluginIdList();
-	QMap<QString, QString> getPluginFileNames();
-	void setPluginIdList(QList<QString> newPlugins);
-	QMap<QString, QString> getRunId2PluginId();
-	void setRunId2PluginId(QMap<QString, QString> newMap);
 	void deletePlugin(QString pluginID);
 	void deleteInstance(QString id);
 	QMap<QString, QString> getPreviouslyInstalledPlugins();
@@ -144,27 +172,16 @@ protected slots:
 protected:
 	int dialogWidth;
 	int dialogHeight;
+	
 	QTabWidget* tabs;
-	QMap<QString, DkPluginInterface *> loadedPlugins;
-	QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
 	DkPluginTableWidget* tableWidgetInstalled;
 	DkPluginTableWidget* tableWidgetDownload;
-	QMap<QString, QString> pluginFiles;
-	QList<QString> pluginIdList;
-	QMap<QString, QString> runId2PluginId;
 	QMap<QString, QString> previouslyInstalledPlugins;
 
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);
 	void loadPreviouslyInstalledPluginsList();
-
-	QSharedPointer<DkPluginManager> inst;
-
-private:
-	DkPluginManager();
-	DkPluginManager(DkPluginManager const&);	// remove
-	void operator=(DkPluginManager const&);	// remove
 };
 
 // widget with all plug-in information
@@ -173,13 +190,13 @@ class DkPluginTableWidget: public QWidget {
 Q_OBJECT
 
 public:    
-	DkPluginTableWidget(int tab, DkPluginManager* manager, QWidget* parent);
+	DkPluginTableWidget(int tab, DkPluginManagerDialog* manager, QWidget* parent);
 	~ DkPluginTableWidget();
 
 	void clearTableFilters();
 	void updateInstalledModel();
 	void downloadPluginInformation(int usage);
-	DkPluginManager* getPluginManager();
+	DkPluginManagerDialog* getPluginManager();
 	int getOpenedTab();
 	DkPluginDownloader* getDownloader();
 	void getPluginUpdateData();
@@ -197,7 +214,7 @@ private:
 	void getListOfUpdates();
 
 	int mOpenedTab = 0;
-	DkPluginManager* mPluginManager = 0;
+	DkPluginManagerDialog* mPluginManager = 0;
 	QSortFilterProxyModel *mProxyModel = 0;
 	QAbstractTableModel* mModel = 0;
 	DkPluginDownloader* mPluginDownloader = 0;

@@ -1922,10 +1922,14 @@ void DkNoMacs::unsharpMask() {
 }
 
 void DkNoMacs::tinyPlanet() {
+
 #ifdef WITH_OPENCV
+	
 	DkTinyPlanetDialog* tinyPlanetDialog = new DkTinyPlanetDialog(this);
 	tinyPlanetDialog->setImage(viewport()->getImage());
+	
 	int answer = tinyPlanetDialog->exec();
+
 	if (answer == QDialog::Accepted) {
 		QImage editedImage = tinyPlanetDialog->getImage();
 		viewport()->setEditedImage(editedImage);
@@ -3738,8 +3742,12 @@ void DkNoMacs::openPluginManager() {
 		return;
 	}
 
-	DkPluginManager::instance().exec();
+	DkPluginManagerDialog* pluginDialog = new DkPluginManagerDialog(this);
+	pluginDialog->exec();
+	pluginDialog->deleteLater();
+
 	createPluginsMenu();
+
 #endif // WITH_PLUGINS
 }
 

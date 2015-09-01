@@ -214,7 +214,7 @@ void DkSettingsDialog::saveSettings() {
 	bool curUseCol = DkSettings::display.useDefaultColor;
 	bool curUseIconCol = DkSettings::display.defaultIconColor;
 
-	foreach (DkSettingsWidget* curWidget, widgetList) {
+	for (DkSettingsWidget* curWidget : widgetList) {
 		curWidget->writeSettings();
 	}
 
