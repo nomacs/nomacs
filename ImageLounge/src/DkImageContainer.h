@@ -86,7 +86,6 @@ public:
 	bool isEdited() const;
 	bool isSelected() const;
 	void setEdited(bool edited);
-	int getPageIdx() const;
 	QString getTitleAttribute() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
@@ -114,27 +113,28 @@ public:
 	virtual void clear();
 
 protected:
-	QSharedPointer<QByteArray> fileBuffer;
-	QSharedPointer<DkBasicLoader> loader;
-	QSharedPointer<DkThumbNailT> thumb;
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
+	void saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+	QString saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
+	void setFilePath(const QString& filePath);
+	void init();
+
+	QSharedPointer<QByteArray> mFileBuffer;
+	QSharedPointer<DkBasicLoader> mLoader;
+	QSharedPointer<DkThumbNailT> mThumb;
+
+	int mLoadState	= not_loaded;
+	bool mEdited	= false;
+	bool mSelected	= false;
+
+	QFileInfo mFileInfo;
+
 #ifdef WITH_QUAZIP	
-	QSharedPointer<DkZipContainer> zipData;
+	QSharedPointer<DkZipContainer> mZipData;
 #endif
 #ifdef WIN32
 	std::wstring mFileNameStr;	// speeds up sorting of filenames on windows
 #endif
-
-	int loadState;
-	bool edited;
-	bool selected;
-
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-	void saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
-	QString saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-	void init();
-	void setFilePath(const QString& filePath);
-
-	QFileInfo mFileInfo;
 
 private:
 	QString mFilePath;
@@ -169,7 +169,7 @@ public:
 signals:
 	void fileLoadedSignal(bool loaded = true) const;
 	void fileSavedSignal(const QString& fileInfo, bool saved = true) const;
-	void showInfoSignal(QString msg, int time = 3000, int position = 0) const;
+	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
 	void errorDialogSignal(const QString& msg) const;
 	void thumbLoadedSignal(bool loaded = true) const;
 
@@ -191,21 +191,19 @@ protected:
 	QString saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
 	
-	QFutureWatcher<QSharedPointer<QByteArray> > bufferWatcher;
-	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
-	QFutureWatcher<QString> saveImageWatcher;
-	QFutureWatcher<bool> saveMetaDataWatcher;
+	QFutureWatcher<QSharedPointer<QByteArray> > mBufferWatcher;
+	QFutureWatcher<QSharedPointer<DkBasicLoader> > mImageWatcher;
+	QFutureWatcher<QString> mSaveImageWatcher;
+	QFutureWatcher<bool> mSaveMetaDataWatcher;
 
-	QSharedPointer<FileDownloader> fileDownloader;
+	QSharedPointer<FileDownloader> mFileDownloader;
 
-	bool fetchingImage;
-	bool fetchingBuffer;
-	bool waitForUpdate;
-	bool downloaded;
+	bool mFetchingImage = false;
+	bool mFetchingBuffer = false;
+	bool mWaitForUpdate = false;
+	bool mDownloaded = false;
 
-	QTimer fileUpdateTimer;
-	//bool savingImage;
-	//bool savingMetaData;
+	QTimer mFileUpdateTimer;
 };
 
 };
