@@ -913,8 +913,10 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 
 	if (DkSettings::display.toolbarGradient) 
 		setObjectName("toolBarWithGradient");
-	else
+	else {
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
+		setObjectName("cropToolBar");
+	}
 }
 
 DkCropToolBar::~DkCropToolBar() {

@@ -710,7 +710,6 @@ bool DkImageLoader::unloadFile() {
 		msgBox->setObjectName("saveEditDialog");
 
 		int answer = msgBox->exec();
-		msgBox->deleteLater();
 
 		// TODO: Save As dialog for unsupported files
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
