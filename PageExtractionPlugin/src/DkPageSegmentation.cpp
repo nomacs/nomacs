@@ -295,7 +295,6 @@ void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float 
 
 	std::vector<int> delIdx;
 	std::sort(rects.rbegin(), rects.rend(), &DkPolyRect::compArea);	// rbegin() -> sort descending
-	qDebug() << "area ratio: " << areaRatio;
 
 	for (int idx = 0; idx < (int)rects.size(); idx++) {
 
@@ -320,9 +319,6 @@ void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float 
 			// ignore rectangles with totally different area
 			if (oA/cA < areaRatio)	// since we sort, we know that oA is larger
 				continue;
-			else {
-				qDebug() << "area ratio:" << cA/oA;
-			}
 
 			double intersection = abs(oR.intersectArea(cR));
 
