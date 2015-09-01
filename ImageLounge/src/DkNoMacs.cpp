@@ -466,10 +466,10 @@ void DkNoMacs::createStatusbar() {
 void DkNoMacs::loadStyleSheet() {
 	
 	// TODO: if we first load from disk, people can style nomacs themselves
-	QFileInfo cssInfo(QCoreApplication::applicationDirPath(), "nomacs.qss");
+	QFileInfo cssInfo(QCoreApplication::applicationDirPath(), "nomacs.css");
 
 	if (!cssInfo.exists())
-		cssInfo = QFileInfo(":/nomacs/stylesheet.qss");
+		cssInfo = QFileInfo(":/nomacs/stylesheet.css");
 
 	QFile file(cssInfo.absoluteFilePath());
 

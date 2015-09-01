@@ -524,7 +524,7 @@ QImage DkImage::normImage(const QImage& img) {
 	return imgN;
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int flags) {
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int) {
 
 	cv::Mat mapx, mapy;
 

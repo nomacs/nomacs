@@ -196,15 +196,15 @@ private:
 	void fillDownloadTable();	
 	void getListOfUpdates();
 
-	int openedTab;
-	DkPluginManager* pluginManager;
-	QSortFilterProxyModel *proxyModel;
-	QAbstractTableModel* model;
-	DkPluginDownloader* pluginDownloader;
-	QTableView* tableView;
-	QLineEdit* filterEdit;
-	QList<XmlPluginData> pluginsToUpdate;
-	QPushButton* updateButton;
+	int mOpenedTab = 0;
+	DkPluginManager* mPluginManager = 0;
+	QSortFilterProxyModel *mProxyModel = 0;
+	QAbstractTableModel* mModel = 0;
+	DkPluginDownloader* mPluginDownloader = 0;
+	QTableView* mTableView = 0;
+	QLineEdit* mFilterEdit = 0;
+	QList<XmlPluginData> mPluginsToUpdate;
+	QPushButton* mUpdateButton = 0;
 
 protected slots:
 	void showDownloaderMessage(QString msg, QString title);
@@ -239,10 +239,10 @@ public:
 	void savePluginsEnabledSettings();
 	
 private:
-	QList<QString> pluginData;
-	QMap<QString, bool> pluginsEnabled;
-	QString dataToInsert;
-	DkPluginTableWidget* parentTable;
+	QList<QString> mPluginData;
+	QMap<QString, bool> mPluginsEnabled;
+	QString mDataToInsert;
+	DkPluginTableWidget* mParentTable = 0;
 
 };
 
@@ -269,10 +269,10 @@ public:
 	QMap<QString, bool> getInstalledData();
 	
 private:
-	QList<XmlPluginData> pluginData;
-	QMap<QString, bool> pluginsInstalled;
-	XmlPluginData dataToInsert;
-	DkPluginTableWidget* parentTable;
+	QList<XmlPluginData> mPluginData;
+	QMap<QString, bool> mPluginsInstalled;
+	XmlPluginData mDataToInsert;
+	DkPluginTableWidget* mParentTable = 0;
 };
 
 
@@ -286,7 +286,7 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 private:
-	QTableView* parentTable;
+	QTableView* mParentTable = 0;
 };
 
 // pushbutton delegate : adds mButtons in the table column
@@ -299,12 +299,12 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    void buttonClicked(const QModelIndex &index);
+    void buttonClicked(const QModelIndex &index) const;
 
 private:
-	QTableView* parentTable;
-	int currRow;
-	QStyle::State  pushButonState;
+	QTableView* mParentTable = 0;
+	int mCRow = -1;
+	QStyle::State mPushButonState = QStyle::State_Enabled;
 };
 
 // delegate for download table: icon if already downloaded or button if not
@@ -318,12 +318,12 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    void buttonClicked(const QModelIndex &index);
+    void buttonClicked(const QModelIndex &index) const;
 
 private:
-	QTableView* parentTable;
-	int currRow;
-	QStyle::State  pushButonState;
+	QTableView* mParentTable = 0;
+	int mCRow = -1;
+	QStyle::State mPushButtonState = QStyle::State_Enabled;
 };
 
 // text edit connected to tables selection
@@ -339,11 +339,11 @@ protected slots:
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-	QAbstractTableModel* dataModel;
-	QSortFilterProxyModel* proxyModel;
-	QItemSelectionModel* selectionModel;
-	DkPluginTableWidget* parentTable;
-	QString defaultString;
+	QAbstractTableModel* mDataModel = 0;
+	QSortFilterProxyModel* mProxyModel = 0;
+	QItemSelectionModel* mSelectionModel = 0;
+	DkPluginTableWidget* mParentTable = 0;
+	QString mDefaultString;
 	void updateText();
 };
 
@@ -361,11 +361,11 @@ protected slots:
 	void updateImageFromReply(QImage img);
 
 private:
-	QAbstractTableModel* dataModel;
-	QSortFilterProxyModel* proxyModel;
-	QItemSelectionModel* selectionModel;
-	DkPluginTableWidget* parentTable;
-	QImage defaultImage;
+	QAbstractTableModel* mDataModel = 0;
+	QSortFilterProxyModel* mProxyModel = 0;
+	QItemSelectionModel* mSelectionModel = 0;
+	DkPluginTableWidget* mParentTable = 0;
+	QImage mDefaultImage;
 	void updateImage();
 };
 
@@ -383,29 +383,29 @@ public:
 	QList<XmlPluginData> getXmlPluginData();
 
 signals:
-	void showDownloaderMessage(QString msg, QString title);
-	void parsingFinished(int usage);
-	void imageDownloaded(QImage img);
-	void pluginDownloaded(const QModelIndex &index);
-	void allPluginsUpdated(bool finishedSuccessfully);
-	void pluginFilesDownloadingFinished();
-	void reloadPlugins();
+	void showDownloaderMessage(QString msg, QString title) const;
+	void parsingFinished(int usage) const;
+	void imageDownloaded(QImage img) const;
+	void pluginDownloaded(const QModelIndex &index) const;
+	void allPluginsUpdated(bool finishedSuccessfully) const;
+	void pluginFilesDownloadingFinished() const;
+	void reloadPlugins() const;
 
-	protected slots:
+protected slots:
 	void replyFinished(QNetworkReply*);
 	void updateDownloadProgress(qint64 received, qint64 total);
 	void cancelUpdate();
 
 private:
-	QNetworkAccessManager* accessManagerPlugin;
-	QNetworkReply* reply;
-	QProgressDialog* progressDialog;
-	bool downloadAborted;
-	QList<XmlPluginData> xmlPluginData;
-	int requestType;
-	QString fileName;
-	int currUsage;
-	QStringList filesToDownload;
+	QNetworkAccessManager* mAccessManagerPlugin;
+	QNetworkReply* mReply;
+	QProgressDialog* mProgressDialog;
+	bool mDownloadAborted = false;
+	QList<XmlPluginData> mXmlPluginData;
+	int mRequestType;
+	QString mFileName;
+	int mCurrUsage;
+	QStringList mFilesToDownload;
 
 	void parseXml(QNetworkReply* reply);
 	void replyToImg(QNetworkReply* reply);
