@@ -458,10 +458,10 @@ void DkThumbsLoader::init() {
 
 		DkThumbNail cThumb = DkThumbNail(cFile.absoluteFilePath());
 
-		for (unsigned int idx = 0; idx < oldThumbs.size(); idx++) {
+		for (unsigned int i = 0; i < oldThumbs.size(); i++) {
 
-			if (cThumb == oldThumbs[idx]) {
-				cThumb = oldThumbs[idx];
+			if (cThumb == oldThumbs[i]) {
+				cThumb = oldThumbs[i];
 				break;
 			}
 		}

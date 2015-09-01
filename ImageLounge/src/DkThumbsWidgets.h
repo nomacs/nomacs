@@ -121,8 +121,7 @@ protected:
 	void saveSettings();
 
 private:
-	QVector<QSharedPointer<DkImageContainerT> > thumbs;
-	QWidget* parent;
+	QVector<QSharedPointer<DkImageContainerT> > mThumbs;
 	QTransform worldMatrix;
 
 	QPoint lastMousePos;
@@ -181,7 +180,7 @@ public:
 	~DkThumbLabel();
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
-	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+	QSharedPointer<DkThumbNailT> getThumb() {return mThumb;};
 	QRectF boundingRect() const;
 	QPainterPath shape() const;
 	void updateSize();
@@ -197,23 +196,21 @@ signals:
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-	void resizeEvent(QResizeEvent *event);
 	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
 	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-	QSharedPointer<DkThumbNailT> thumb;
-	QGraphicsPixmapItem icon;
-	QGraphicsTextItem text;
-	QLabel* imgLabel;
-	bool thumbInitialized;
-	bool fetchingThumb;
-	QPen noImagePen;
-	QBrush noImageBrush;
-	QPen selectPen;
-	QBrush selectBrush;
-	bool isHovered;
-	QPointF lastMove;
+	QSharedPointer<DkThumbNailT> mThumb;
+	QGraphicsPixmapItem mIcon;
+	QGraphicsTextItem mText;
+	bool mThumbInitialized = false;
+	bool mFetchingThumb = false;
+	QPen mNoImagePen;
+	QBrush mNoImageBrush;
+	QPen mSelectPen;
+	QBrush mSelectBrush;
+	bool mIsHovered = false;
+	QPointF mLastMove;
 };
 
 class DkThumbScene : public QGraphicsScene {
@@ -253,19 +250,16 @@ signals:
 	void thumbLoadedSignal() const;
 
 protected:
-	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
-	//void wheelEvent(QWheelEvent *event);
+	
+	int mXOffset = 0;
+	int mNumRows = 0;
+	int mNumCols = 0;
+	bool mFirstLayout = true;
 
-	int xOffset;
-	int numRows;
-	int numCols;
-	bool firstLayout;
-	bool itemClicked;
-
-	QVector<DkThumbLabel* > thumbLabels;
-	QList<DkThumbLabel* > thumbsNotLoaded;
-	QSharedPointer<DkImageLoader> loader;
+	QVector<DkThumbLabel* > mThumbLabels;
+	QSharedPointer<DkImageLoader> mLoader;
+	QVector<QSharedPointer<DkImageContainerT> > mThumbs;
 };
 
 class DkThumbsView : public QGraphicsView {
@@ -318,7 +312,7 @@ public:
 	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbScene* getThumbWidget() {
-		return thumbsScene;
+		return mThumbsScene;
 	};
 
 	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
@@ -344,14 +338,14 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
 
-	DkThumbScene* thumbsScene;
-	DkThumbsView* view;
+	DkThumbScene* mThumbsScene = 0;
+	DkThumbsView* mView = 0;
 
-	QMenu* contextMenu;
-	QVector<QAction*> actions;
-	QVector<QAction*> parentActions;
-	QToolBar* toolbar;
-	QLineEdit* filterEdit;
+	QMenu* mContextMenu = 0;
+	QVector<QAction*> mActions;
+	QVector<QAction*> mParentActions;
+	QToolBar* mToolbar = 0;
+	QLineEdit* mFilterEdit = 0;
 };
 
 

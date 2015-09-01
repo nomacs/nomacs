@@ -301,14 +301,14 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 
-	QColor bgCol;
-	bool blocked;
-	bool hiding;
-	bool showing;
-	bool mouseDown;
+	QColor mBgCol;
+	bool mBlocked = false;
+	bool mHiding = false;
+	bool mShowing = false;
+	bool mMouseDown = false;
 
-	QGraphicsOpacityEffect* opacityEffect;
-	QBitArray* displaySettingsBits;
+	QGraphicsOpacityEffect* mOpacityEffect = 0;
+	QBitArray* mDisplaySettingsBits = 0;
 
 	void init();
 
@@ -333,13 +333,13 @@ public slots:
 
 protected:
 
-	QFileInfo currentDir;
-	QProgressDialog* pd;
-	int cLoadIdx;
-	QVector<QSharedPointer<DkImageContainerT> > images;
-	bool stop;
-	bool forceSave;
-	int numSaved;
+	QFileInfo mCurrentDir;
+	QProgressDialog* mPd = 0;
+	int mCLoadIdx = 0;
+	bool mStop = false;
+	bool mForceSave = false;
+	int mNumSaved = false;
+	QVector<QSharedPointer<DkImageContainerT> > mImages;
 };
 
 class DkFileSystemModel : public QFileSystemModel {
@@ -473,12 +473,12 @@ public slots:
 	void on_slZoom_valueChanged(int zoomLevel);
 
 protected:
-	DkOverview* overview;
-	QSlider* slZoom;
-	QDoubleSpinBox* sbZoom;
-	bool autoHide;
-
 	void createLayout();
+
+	DkOverview* mOverview = 0;
+	QSlider* mSlZoom = 0;
+	QDoubleSpinBox* mSbZoom = 0;
+	bool mAutoHide = false;
 };
 
 class DkTransformRect : public QWidget {
@@ -697,8 +697,8 @@ public:
 	~DkHistogram();
 	void drawHistogram(QImage img);
 	void clearHistogram();
-	void setMaxHistogramValue(long maxValue);
-	void updateHistogramValues(long histValues[][256]);
+	void setMaxHistogramValue(int maxValue);
+	void updateHistogramValues(int histValues[][256]);
 	void setPainted(bool isPainted);
 
 protected:
@@ -708,11 +708,10 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 private:
-	QWidget* parent;
-	long hist[3][256];
-	long maxValue;
-	bool isPainted;
-	float scaleFactor;
+	int mHist[3][256];
+	int mMaxValue = 20;
+	bool mIsPainted = false;
+	float mScaleFactor = 1;
 				
 };
 
@@ -760,9 +759,9 @@ public:
 	void setInUse(bool inUse);
 
 protected:
-	QFileInfo fileInfo;
-	bool fileExists;
-	bool used;
+	QFileInfo mFileInfo;
+	bool mFileExists;
+	bool mUsed;
 };
 
 class DkFolderLabel : public QLabel {

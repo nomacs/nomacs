@@ -1396,16 +1396,16 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 	if (role == Qt::DisplayRole) {
 
 		if (index.column() == 0)
-			return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+			return mChecked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
 		else if (index.column() == 1)
-			return names.at(index.row());
+			return mNames.at(index.row());
 		else if (index.column() == 2)
-			return lastSeen.at(index.row());
+			return mLastSeen.at(index.row());
 		else
 			return QVariant();
 	}
 	else if (role == Qt::CheckStateRole && index.column() == 0) {
-		return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+		return mChecked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
 	}
 
 	return QVariant();
@@ -1419,7 +1419,7 @@ bool DkWhiteListViewModel::setData(const QModelIndex &index, const QVariant &val
 	}
 
 	if (index.column() == 0) {
-		checked[index.row()] = value.toBool();
+		mChecked[index.row()] = value.toBool();
 	}
 	return false;
 }
@@ -1438,16 +1438,16 @@ Qt::ItemFlags DkWhiteListViewModel::flags(const QModelIndex & index) const {
 int DkWhiteListViewModel::rowCount(const QModelIndex& parent /* = QModelIndex */) const {
 	if (parent.isValid())
 		return 0;
-	return names.size();
+	return mNames.size();
 }
 
 
 void DkWhiteListViewModel::addWhiteListEntry(bool checked, QString name, QDateTime lastSeen) {
-	this->checked.push_back(checked);
-	this->names.push_back(name);
-	this->lastSeen.push_back(lastSeen);
+	this->mChecked.push_back(checked);
+	this->mNames.push_back(name);
+	this->mLastSeen.push_back(lastSeen);
 
-	dataChanged(createIndex(this->checked.size()-1, 0, &this->checked[this->checked.size()-1]), createIndex(this->checked.size()-1, 2, &this->checked[this->checked.size()-1]));
+	dataChanged(createIndex(this->mChecked.size()-1, 0, &this->mChecked[this->mChecked.size()-1]), createIndex(this->mChecked.size()-1, 2, &this->mChecked[this->mChecked.size()-1]));
 }
 
 // DkCheckBoxDelegate --------------------------------------------------------------------

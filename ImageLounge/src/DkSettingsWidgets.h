@@ -129,13 +129,13 @@ public:
 	void addWhiteListEntry(bool checked, QString name, QDateTime lastSeen);
 	Qt::ItemFlags flags(const QModelIndex& index) const;
 
-	QVector<bool> getCheckedVector() {return checked;};
-	QVector<QString> getNamesVector() {return names;};
+	QVector<bool> getCheckedVector() {return mChecked;};
+	QVector<QString> getNamesVector() {return mNames;};
 
 private:
-	QVector<bool> checked;
-	QVector<QString> names;
-	QVector<QDateTime> lastSeen;
+	QVector<bool> mChecked;
+	QVector<QString> mNames;
+	QVector<QDateTime> mLastSeen;
 };
 
 

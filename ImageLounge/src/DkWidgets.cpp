@@ -105,7 +105,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QSlider(Qt::Horizontal, 
 	
 	setObjectName("DkFolderScrollBar");
 	init();
-	mouseDown = false;
+	mMouseDown = false;
 }
 
 DkFolderScrollBar::~DkFolderScrollBar() {
@@ -118,25 +118,25 @@ void DkFolderScrollBar::registerAction(QAction* action) {
 }
 
 void DkFolderScrollBar::block(bool blocked) {
-	this->blocked = blocked;
+	this->mBlocked = blocked;
 	setVisible(false);
 }
 
 void DkFolderScrollBar::setDisplaySettings(QBitArray* displayBits) {
-	displaySettingsBits = displayBits;
+	mDisplaySettingsBits = displayBits;
 }
 
 bool DkFolderScrollBar::getCurrentDisplaySetting() {
 
-	if (!displaySettingsBits)
+	if (!mDisplaySettingsBits)
 		return false;
 
-	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= mDisplaySettingsBits->size()) {
 		qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 		return false;
 	}
 
-	return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
+	return mDisplaySettingsBits->testBit(DkSettings::app.currentAppMode);
 }
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT> > images) {
@@ -148,7 +148,7 @@ void DkFolderScrollBar::updateFile(int idx) {
 	
 	qDebug() << "updating to: " << idx;
 
-	if (mouseDown)
+	if (mMouseDown)
 		return;
 
 	if (isVisible()) {
@@ -171,7 +171,7 @@ void DkFolderScrollBar::mousePressEvent(QMouseEvent *event) {
 
 void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
-	mouseDown = false;
+	mMouseDown = false;
 	blockSignals(false);
 	emit valueChanged(value());
 	QSlider::mouseReleaseEvent(event);
@@ -181,22 +181,22 @@ void DkFolderScrollBar::init() {
 
 	setMouseTracking(true);
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 		DkSettings::display.bgColorWidget;
 
-	showing = false;
-	hiding = false;
-	blocked = false;
-	displaySettingsBits = 0;
-	opacityEffect = 0;
+	mShowing = false;
+	mHiding = false;
+	mBlocked = false;
+	mDisplaySettingsBits = 0;
+	mOpacityEffect = 0;
 
 	// painter problems if the widget is a child of another that has the same graphicseffect
 	// widget starts on hide
-	opacityEffect = new QGraphicsOpacityEffect(this);
-	opacityEffect->setOpacity(0);
-	opacityEffect->setEnabled(false);
-	setGraphicsEffect(opacityEffect);
+	mOpacityEffect = new QGraphicsOpacityEffect(this);
+	mOpacityEffect->setOpacity(0);
+	mOpacityEffect->setEnabled(false);
+	setGraphicsEffect(mOpacityEffect);
 
 	setVisible(false);
 }
@@ -204,9 +204,9 @@ void DkFolderScrollBar::init() {
 void DkFolderScrollBar::show(bool saveSettings) {
 
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
-	if (!blocked && !showing) {
-		hiding = false;
-		showing = true;
+	if (!mBlocked && !mShowing) {
+		mHiding = false;
+		mShowing = true;
 		setVisible(true, saveSettings);
 		animateOpacityUp();
 	}
@@ -214,76 +214,76 @@ void DkFolderScrollBar::show(bool saveSettings) {
 
 void DkFolderScrollBar::hide(bool saveSettings) {
 
-	if (!hiding) {
-		hiding = true;
-		showing = false;
+	if (!mHiding) {
+		mHiding = true;
+		mShowing = false;
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
+		if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
 
 void DkFolderScrollBar::setVisible(bool visible, bool saveSettings) {
 
-	if (blocked) {
+	if (mBlocked) {
 		QWidget::setVisible(false);
 		return;
 	}
 
-	if (visible && !isVisible() && !showing)
-		opacityEffect->setOpacity(100);
+	if (visible && !isVisible() && !mShowing)
+		mOpacityEffect->setOpacity(100);
 
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 }
 
 void DkFolderScrollBar::animateOpacityUp() {
 
-	if (!showing)
+	if (!mShowing)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() >= 1.0f || !showing) {
-		opacityEffect->setOpacity(1.0f);
-		showing = false;
-		opacityEffect->setEnabled(false);
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
+		mOpacityEffect->setOpacity(1.0f);
+		mShowing = false;
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
-	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()+0.05);
 }
 
 void DkFolderScrollBar::animateOpacityDown() {
 
-	if (!hiding)
+	if (!mHiding)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() <= 0.0f) {
-		opacityEffect->setOpacity(0.0f);
-		hiding = false;
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() <= 0.0f) {
+		mOpacityEffect->setOpacity(0.0f);
+		mHiding = false;
 		setVisible(false, false);	// finally hide the widget
-		opacityEffect->setEnabled(false);
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
-	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()-0.05);
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
-	stop = false;
-	cLoadIdx = 0;
-	numSaved = 0;
+	mStop = false;
+	mCLoadIdx = 0;
+	mNumSaved = 0;
 }
 
 void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave) {
@@ -291,38 +291,38 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	if (images.empty())
 		return;
 
-	stop = false;
-	cLoadIdx = 0;
-	numSaved = 0;
+	mStop = false;
+	mCLoadIdx = 0;
+	mNumSaved = 0;
 
-	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), QApplication::activeWindow());
-	pd->setWindowTitle(tr("Thumbnails"));
+	mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), QApplication::activeWindow());
+	mPd->setWindowTitle(tr("Thumbnails"));
 
 	//pd->setWindowModality(Qt::WindowModal);
 
-	connect(this, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
-	connect(pd, SIGNAL(canceled()), this, SLOT(stopProgress()));
+	connect(this, SIGNAL(numFilesSignal(int)), mPd, SLOT(setValue(int)));
+	connect(mPd, SIGNAL(canceled()), this, SLOT(stopProgress()));
 
-	pd->show();
+	mPd->show();
 
-	this->forceSave = forceSave;
-	this->images = images;
+	this->mForceSave = forceSave;
+	this->mImages = images;
 	loadNext();
 
 }
 
 void DkThumbsSaver::thumbLoaded(bool) {
 
-	numSaved++;
-	emit numFilesSignal(numSaved);
+	mNumSaved++;
+	emit numFilesSignal(mNumSaved);
 
-	if (numSaved == images.size() || stop) {
-		if (pd) {
-			pd->close();
-			pd->deleteLater();
-			pd = 0;
+	if (mNumSaved == mImages.size() || mStop) {
+		if (mPd) {
+			mPd->close();
+			mPd->deleteLater();
+			mPd = 0;
 		}
-		stop = true;
+		mStop = true;
 	}
 	else
 		loadNext();
@@ -330,26 +330,26 @@ void DkThumbsSaver::thumbLoaded(bool) {
 
 void DkThumbsSaver::loadNext() {
 	
-	if (stop)
+	if (mStop)
 		return;
 
 	int missing = DkSettings::resources.maxThumbsLoading-DkSettings::resources.numThumbsLoading;
-	int numLoading = cLoadIdx+missing;
-	int force = (forceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
+	int numLoading = mCLoadIdx+missing;
+	int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
 	qDebug() << "missing: " << missing << " num loading: " << numLoading;
-	qDebug() << "loading bounds: " << cLoadIdx << " - " << numLoading;
+	qDebug() << "loading bounds: " << mCLoadIdx << " - " << numLoading;
 
-	for (int idx = cLoadIdx; idx < images.size() && idx < numLoading; idx++) {
-		cLoadIdx++;
-		connect(images.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
-		images.at(idx)->getThumb()->fetchThumb(force);
+	for (int idx = mCLoadIdx; idx < mImages.size() && idx < numLoading; idx++) {
+		mCLoadIdx++;
+		connect(mImages.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+		mImages.at(idx)->getThumb()->fetchThumb(force);
 	}
 }
 
 void DkThumbsSaver::stopProgress() {
 
-	stop = true;
+	mStop = true;
 }
 
 // DkFileSystemModel --------------------------------------------------------------------
@@ -646,8 +646,8 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		float panningSpeed = (float)-(mWorldMatrix->m11()/(getScaledImageMatrix().m11()/mImgMatrix->m11()));
 
 		QPointF cPos = event->pos()-QPointF(lm, tm);
-		QPointF dxy = (cPos - currentViewPoint)/mWorldMatrix->m11()*panningSpeed;
-		emit moveViewSignal(dxy);
+		QPointF lDxy = (cPos - currentViewPoint)/mWorldMatrix->m11()*panningSpeed;
+		emit moveViewSignal(lDxy);
 
 		if (event->modifiers() == DkSettings::global.altMod)
 			emit sendTransformSignal();
@@ -748,7 +748,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 // DkZoomWidget --------------------------------------------------------------------
 DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 
-	autoHide = false;
+	mAutoHide = false;
 	setObjectName("DkZoomWidget");
 	createLayout();
 
@@ -760,13 +760,13 @@ DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 
 void DkZoomWidget::createLayout() {
 
-	overview = new DkOverview(this);
+	mOverview = new DkOverview(this);
 
-	slZoom = new QSlider(Qt::Horizontal, this);
-	slZoom->setObjectName("slZoom");
-	slZoom->setCursor(Qt::ArrowCursor);
-	slZoom->setMinimum(0);	// add a mapping here
-	slZoom->setMaximum(100);
+	mSlZoom = new QSlider(Qt::Horizontal, this);
+	mSlZoom->setObjectName("slZoom");
+	mSlZoom->setCursor(Qt::ArrowCursor);
+	mSlZoom->setMinimum(0);	// add a mapping here
+	mSlZoom->setMaximum(100);
 
 	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
 		DkUtils::colorToString(DkSettings::display.fontColor) + 
@@ -775,65 +775,65 @@ void DkZoomWidget::createLayout() {
 	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
 	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
 
-	sbZoom = new QDoubleSpinBox(this);
-	sbZoom->setObjectName("sbZoom");
-	sbZoom->setStyleSheet(styleString);
-	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
-	sbZoom->setSuffix("%");
-	sbZoom->setDecimals(0);
-	sbZoom->setMinimum(0.2);
-	sbZoom->setValue(100);
-	sbZoom->setMaximum(6000);
+	mSbZoom = new QDoubleSpinBox(this);
+	mSbZoom->setObjectName("sbZoom");
+	mSbZoom->setStyleSheet(styleString);
+	mSbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
+	mSbZoom->setSuffix("%");
+	mSbZoom->setDecimals(0);
+	mSbZoom->setMinimum(0.2);
+	mSbZoom->setValue(100);
+	mSbZoom->setMaximum(6000);
 
 	QLabel* sliderWidget = new QLabel(this);
 	sliderWidget->setObjectName("DkOverviewSliderWidget");
 	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
 	sliderLayout->setContentsMargins(10,0,0,0);
 	sliderLayout->setSpacing(10);
-	sliderLayout->addWidget(slZoom);
-	sliderLayout->addWidget(sbZoom);
+	sliderLayout->addWidget(mSlZoom);
+	sliderLayout->addWidget(mSbZoom);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	//mLayout->setContentsMargins(10,10,10,10);
 	layout->setSpacing(0);
-	layout->addWidget(overview);
+	layout->addWidget(mOverview);
 	layout->addWidget(sliderWidget);
 }
 
 void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
 	updateZoom((float)zoomLevel);
-	autoHide = false;
+	mAutoHide = false;
 	emit zoomSignal((float)zoomLevel/100.0f);
 }
 
 void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)mSbZoom->maximum() + 200.0f : zoomLevel*4.0f;
 	if (level < 0.2f) level = 0.2f;
-	autoHide = false;
+	mAutoHide = false;
 	updateZoom(level);
 	emit zoomSignal(level/100.0f);
 }
 
 void DkZoomWidget::updateZoom(float zoomLevel) {
 
-	slZoom->blockSignals(true);
-	sbZoom->blockSignals(true);
+	mSlZoom->blockSignals(true);
+	mSbZoom->blockSignals(true);
 	
-	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
-	slZoom->setValue(slVal);
-	sbZoom->setValue(zoomLevel);
-	slZoom->blockSignals(false);
-	sbZoom->blockSignals(false);
+	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/mSbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
+	mSlZoom->setValue(slVal);
+	mSbZoom->setValue(zoomLevel);
+	mSlZoom->blockSignals(false);
+	mSbZoom->blockSignals(false);
 }
 
 DkOverview* DkZoomWidget::getOverview() const {
-	return overview;
+	return mOverview;
 }
 
 void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
 	
 	if (!isVisible() && visible)
-		this->autoHide = autoHide;
+		this->mAutoHide = autoHide;
 
 	if (!visible)
 		autoHide = false;
@@ -842,7 +842,7 @@ void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
 }
 
 bool DkZoomWidget::isAutoHide() const {
-	return autoHide;
+	return mAutoHide;
 }
 
 // DkButton --------------------------------------------------------------------
@@ -2190,17 +2190,11 @@ void DkColorChooser::on_colorDialog_accepted() {
 DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	
 	setObjectName("DkHistogram");
-	this->parent = parent;
-	this->setMinimumWidth(260);
-	this->setMinimumHeight(130);
-	isPainted = false;
-	maxValue = 20;
-	scaleFactor = 1;
+	setMinimumWidth(260);
+	setMinimumHeight(130);
 }
 
 DkHistogram::~DkHistogram() {
-
-
 }
 
 /**
@@ -2213,11 +2207,11 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 	painter.fillRect(1, 1, width() - 3, height() - 2, mBgCol);
 	painter.drawRect(1, 1, width() - 3, height() - 2);
 
-	if(isPainted && maxValue > 0){
+	if(mIsPainted && mMaxValue > 0){
 		for(int i = 0; i < 256; i++){
-			int rLineHeight = ((int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
-			int gLineHeight = ((int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
-			int bLineHeight = ((int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
+			int rLineHeight = ((int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
+			int gLineHeight = ((int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
+			int bLineHeight = ((int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
 			int maxLineHeight = (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) :  ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
 
 			int vCombined = qMin(qMin(rLineHeight, gLineHeight), bLineHeight);
@@ -2259,9 +2253,8 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	DkTimer dt;
 
 #ifdef WITH_OPENCV
-
-
-	long histValues[3][256];
+	
+	int histValues[3][256];
 
 	for (int idx = 0; idx < 256; idx++) {
 		histValues[0][idx] = 0;
@@ -2334,60 +2327,12 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 			maxHistValue = histValues[2][idx];
 	}
 
-	//Mat imgMat = DkImage::qImage2Mat(imgQt);
-	//
-	//vector<Mat> imgChannels;
-	//split(imgMat, imgChannels);
-
-	//int noChannels = (imgChannels.size() < 3) ? 1 : 3;
-
-	//// Set the number of bins
-	//int histSize = 256;
-	//// Set the ranges for B,G,R
-	//float range[] = { 0, 256 } ;
-	//const float* histRange = { range };
-
-	//MatND hist;
-	//// note: long == int if compiled with a 32bit compiler
-	//long histValues[3][256];
-	//long maxHistValue = 0;
-
-	//for (int i = 0; i < noChannels; i++) {
-
-	//	calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
-	//	
-	//	for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
-	//	hist.setTo(0);
-	//}
-
-	//if (noChannels == 1) {
-
-	//	for (int i = 0; i < 256; i++) {
-	//		histValues[2][i] = histValues[1][i] = histValues[0][i];
-	//		
-	//		if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
-	//	}
-	//}
-	//else {
-
-	//	for (int i = 0; i < 256; i++) {
-	//		long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
-	//			((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
-	//			((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
-
-	//		if(maxRGB > maxHistValue) maxHistValue = maxRGB;
-	//	}
-	//}
-	//qDebug() << "computing the histogram took me: " << dt.getTotal();
-
 	setMaxHistogramValue(maxHistValue);
 	updateHistogramValues(histValues);
 	setPainted(true);
 
 #else
-
 	setPainted(false);
-
 #endif
 	
 	qDebug() << "drawing the histogram took me: " << dt.getTotal();
@@ -2406,27 +2351,27 @@ void DkHistogram::clearHistogram() {
 
 void DkHistogram::setPainted(bool isPainted) {
 
-	this->isPainted = isPainted;
+	this->mIsPainted = isPainted;
 }
 
-void DkHistogram::setMaxHistogramValue(long maxValue) {
+void DkHistogram::setMaxHistogramValue(int maxValue) {
 
 	if (maxValue == 0)
 		setPainted(false);
 
-	this->maxValue = maxValue;
+	this->mMaxValue = maxValue;
 }
 
 /**
  * Updates histogram values.
  * @param values to be copied
  **/ 
-void DkHistogram::updateHistogramValues(long histValues[][256]) {
+void DkHistogram::updateHistogramValues(int histValues[][256]) {
 
 	for(int i = 0; i < 256; i++) {
-		this->hist[0][i] = histValues[0][i];
-		this->hist[1][i] = histValues[1][i];
-		this->hist[2][i] = histValues[2][i];
+		this->mHist[0][i] = histValues[0][i];
+		this->mHist[1][i] = histValues[1][i];
+		this->mHist[2][i] = histValues[2][i];
 	}
 }
 
@@ -2447,7 +2392,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 		float cp = (float)(height() - event->pos().y());
 		
 		if (cp > 0) {
-			scaleFactor = height() / cp;
+			mScaleFactor = height() / cp;
 			update();
 		}
 	}
@@ -2458,7 +2403,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 
 void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 	
-	scaleFactor = 1;
+	mScaleFactor = 1;
 	update();
 
 	if (event->buttons() != Qt::LeftButton)
@@ -2564,35 +2509,35 @@ void DkSlider::setValue(int value) {
 
 // DkFileInfo --------------------------------------------------------------------
 DkFileInfo::DkFileInfo() {
-	fileExists = false;
-	used = false;
+	mFileExists = false;
+	mUsed = false;
 }
 
 DkFileInfo::DkFileInfo(const QFileInfo& fileInfo) {
 
-	this->fileInfo = fileInfo;
-	fileExists = false;
-	used = false;
+	this->mFileInfo = fileInfo;
+	mFileExists = false;
+	mUsed = false;
 }
 
 bool DkFileInfo::exists() const {
-	return fileExists;
+	return mFileExists;
 }
 
 void DkFileInfo::setExists(bool fileExists) {
-	this->fileExists = fileExists;
+	this->mFileExists = fileExists;
 }
 
 bool DkFileInfo::inUse() const {
-	return used;
+	return mUsed;
 }
 
 void DkFileInfo::setInUse(bool inUse) {
-	used = inUse;
+	mUsed = inUse;
 }
 
 QString DkFileInfo::getFilePath() const {
-	return fileInfo.absoluteFilePath();
+	return mFileInfo.absoluteFilePath();
 }
 
 
