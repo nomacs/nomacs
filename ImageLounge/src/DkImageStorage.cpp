@@ -583,7 +583,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 		}
 	}
 
-	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, flags);
+	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, 0);
 }
 
 void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert /* = false */) {

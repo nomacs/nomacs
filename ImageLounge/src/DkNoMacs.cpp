@@ -2732,7 +2732,7 @@ void DkNoMacs::deleteFile() {
 
 	QFileInfo fileInfo = getTabWidget()->getCurrentFilePath();
 
-	if (QMessageBox::information(this, tr("Info"), tr("Do you want to permanently delete %1").arg(fileInfo.fileName())) == QMessageBox::Yes) {
+	if (QMessageBox::question(this, tr("Info"), tr("Do you want to permanently delete %1").arg(fileInfo.fileName())) == QMessageBox::Yes) {
 		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
 		
 		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())

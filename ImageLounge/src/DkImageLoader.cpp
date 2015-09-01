@@ -823,6 +823,7 @@ void DkImageLoader::reloadImage() {
 	mImages.clear();
 	mCurrentImage->clear();
 	setCurrentImage(mCurrentImage);
+	loadDir(mCurrentImage->fileInfo().absolutePath());
 	load(mCurrentImage);
 }
 
@@ -1840,7 +1841,7 @@ void DkImageLoader::sort() {
  **/ 
 QString DkImageLoader::getSavePath() const {
 
-	if (!mSaveDir.isEmpty() || !QDir(mSaveDir).exists())
+	if (mSaveDir.isEmpty() || !QDir(mSaveDir).exists())
 		return mCurrentDir;
 	else
 		return mSaveDir;
