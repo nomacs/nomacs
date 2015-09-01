@@ -1719,10 +1719,13 @@ DkZipContainer::DkZipContainer(const QString& fileName) {
 
 QString DkZipContainer::encodeZipFile(const QString& zipFile, const QString& imageFile) {
 
-	if ((zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)), (imageFile.lastIndexOf("/") < 0))
-		return imageFile;
-	else
-		return imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
+	// if you think this code is unreadable, take a look at the old line:
+	//return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+
+	QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
+	QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
+
+	return QFileInfo(dir, fileName).absoluteFilePath();
 }
 
 QString DkZipContainer::decodeZipFile(const QString& encodedFileInfo) {

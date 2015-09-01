@@ -186,9 +186,6 @@ bool DkImageLoader::loadZipArchive(const QString& zipPath) {
 	for (const QString& filePath : fileList)
 		fileInfoList.append(DkZipContainer::encodeZipFile(zipPath, filePath));
 
-	images.clear();
-	createImages(fileInfoList);
-	
 	QFileInfo zipInfo(zipPath);
 
 	// zip archives could not contain known image formats
@@ -196,6 +193,8 @@ bool DkImageLoader::loadZipArchive(const QString& zipPath) {
 		emit showInfoSignal(tr("%1 \n does not contain any image").arg(zipInfo.fileName()), 4000);	// stop mShowing
 		return false;
 	}
+
+	createImages(fileInfoList);
 
 	emit updateDirSignal(images);
 	dir = zipInfo.absoluteDir();
