@@ -157,13 +157,15 @@ public:
 
 protected:
 	bool process();
-	bool deleteExisting();
+	bool prepareDeleteExisting();
+	bool deleteOrRestoreExisting();
 	bool deleteOriginalFile();
 	bool copyFile();
 	bool renameFile();
 
 	QString mFilePathIn;
 	QString mFilePathOut;
+	QString mBackupFilePath;
 	int mMode = 0;
 	bool mDeleteOriginal = false;
 	int mCompression = -1;
