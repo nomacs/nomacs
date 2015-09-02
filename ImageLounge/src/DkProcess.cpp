@@ -30,12 +30,14 @@
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
 #include "DkPluginManager.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentMap>
 #include <QWidget>
+#include <QUuid>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -423,16 +425,24 @@ bool DkBatchProcess::process() {
 		}
 	}
 
-	deleteExisting();
+	// report we could not back-up & break here
+	if (!prepareDeleteExisting()) {
+		mFailure++;
+		return false;
+	}
 
-	if (imgC->saveImage(mFilePathOut, mCompression))
+	if (imgC->saveImage(mFilePathOut, mCompression)) {
 		mLogStrings.append(QObject::tr("%1 saved...").arg(mFilePathOut));
+	}
 	else {
 		mLogStrings.append(QObject::tr("Could not save: %1").arg(mFilePathOut));
 		mFailure++;
 	}
 
-	deleteOriginalFile();
+	if (!deleteOrRestoreExisting()) {
+		mFailure++;
+		return false;
+	}
 
 	return true;
 }
@@ -463,7 +473,7 @@ bool DkBatchProcess::copyFile() {
 	QFile file(mFilePathIn);
 
 	if (QFileInfo(mFilePathOut).exists() && mMode == DkBatchConfig::mode_overwrite) {
-		if (!deleteExisting())
+		if (!deleteOrRestoreExisting())
 			return false;	// early break
 	}
 
@@ -480,15 +490,58 @@ bool DkBatchProcess::copyFile() {
 	return true;
 }
 
-bool DkBatchProcess::deleteExisting() {
+bool DkBatchProcess::prepareDeleteExisting() {
 
 	if (QFileInfo(mFilePathOut).exists() && mMode == DkBatchConfig::mode_overwrite) {
+
+		// create unique back-up file name
+		QFileInfo buFile(mFilePathOut);
+		buFile = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix());
+
+		// check the uniqueness : )
+		if (buFile.exists()) {
+			mLogStrings.append(QObject::tr("Error: back-up (%1) file already exists").arg(buFile.absoluteFilePath()));
+			return false;
+		}
+
 		QFile file(mFilePathOut);
+
+		if (!file.rename(buFile.absoluteFilePath())) {
+			mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(buFile.absoluteFilePath()));
+			mLogStrings.append(file.errorString());
+			return false;
+		}
+		else
+			mBackupFilePath = buFile.absoluteFilePath();
+	}
+
+	return true;
+}
+
+bool DkBatchProcess::deleteOrRestoreExisting() {
+
+	QFileInfo outInfo(mFilePathOut);
+	if (outInfo.exists() && !mBackupFilePath.isEmpty() && QFileInfo(mBackupFilePath).exists()) {
+		QFile file(mBackupFilePath);
 
 		if (!file.remove()) {
 			mLogStrings.append(QObject::tr("Error: could not delete existing file"));
 			mLogStrings.append(file.errorString());
 			return false;
+		}
+	}
+	// fall-back
+	else if (!outInfo.exists()) {
+		
+		QFile file(mBackupFilePath);
+
+		if (!file.rename(mFilePathOut)) {
+			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong sorry, your original file can be found here: %1").arg(mBackupFilePath));
+			mLogStrings.append(file.errorString());
+			return false;
+		}
+		else {
+			mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mFilePathOut));
 		}
 	}
 
