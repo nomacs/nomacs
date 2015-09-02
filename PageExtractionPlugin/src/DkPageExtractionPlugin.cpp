@@ -201,9 +201,15 @@ QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString
 	// do whatever the user requested
 	if(runID == mRunIDs[id_crop_to_metadata]) {
 		
-		DkRotatingRect rect = segM.getMaxRect().toRotatingRect();
-		QSharedPointer<DkMetaDataT> m = imgC->getMetaData();
-		m->saveRectToXMP(rect, imgC->image().size());
+		if (segM.getRects().empty())
+			imgC = QSharedPointer<DkImageContainer>();	// notify parent
+		else {
+			DkRotatingRect rect = segM.getMaxRect().toRotatingRect();
+			
+			QSharedPointer<DkMetaDataT> m = imgC->getMetaData();
+			m->saveRectToXMP(rect, imgC->image().size());
+			qDebug() << "I wrote the cropping...";
+		}
 	}
 	else if(runID == mRunIDs[id_draw_to_page]) {
 		
