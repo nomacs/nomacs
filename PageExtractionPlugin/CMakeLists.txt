@@ -16,9 +16,6 @@ set(PLUGIN_ID 4acb88c461024cb080ae5cd15d0ef0ec) #GUID without hyphens generated 
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
 
-
-
-
 if (NOT BUILDING_MULTIPLE_PLUGINS)
   # prepare plugin
   NMC_PREPARE_PLUGIN()
@@ -28,6 +25,9 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
 
   # OpenCV
   NMC_FIND_OPENCV()
+  
+  
+  NMC_EXIV_INCLUDES()
 endif()
 	
 include_directories (
@@ -35,13 +35,14 @@ include_directories (
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${NOMACS_INCLUDE_DIRECTORY}
+	${EXIV2_INCLUDE_DIRS}
 )
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 
 set (PLUGIN_RESOURCES
-        src/nomacsPlugin.qrc
+    src/nomacsPlugin.qrc
 )
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})

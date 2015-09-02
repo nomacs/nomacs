@@ -26,6 +26,7 @@
 #include "DkPageSegmentation.h"
 
 #include "DkImageStorage.h"
+#include "DkMetaData.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -44,6 +45,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	runIds.resize(id_end);
 
 	runIds[id_crop_to_page] = "1638a7f56b814ee48c6eb8a7710e74b4";
+	runIds[id_crop_to_metadata] = "51fa39637199421da680699817ac2b46";
 	runIds[id_draw_to_page] = "2af5c9f018ce4a0fbfaacc5e3a48a4b5";
 	mRunIDs = runIds.toList();
 
@@ -52,6 +54,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	menuNames.resize(id_end);
 		
 	menuNames[id_crop_to_page] = tr("Crop to Page");
+	menuNames[id_crop_to_metadata] = tr("Crop to Metadata");
 	menuNames[id_draw_to_page] = tr("Draw to Page");
 	mMenuNames = menuNames.toList();
 
@@ -60,6 +63,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips.resize(id_end);
 
 	statusTips[id_crop_to_page] = tr("Finds a page in a document image and then crops the image to that page.");
+	statusTips[id_crop_to_metadata] = tr("Finds a page in a document image and then saves the coordinates to the XMP metadata.");
 	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
 	mMenuStatusTips = statusTips.toList();
 }
@@ -104,7 +108,7 @@ QString DkPageExtractionPlugin::pluginDescription() const {
 **/
 QImage DkPageExtractionPlugin::pluginDescriptionImage() const {
 
-	return QImage(":/#PLUGIN_NAME/img/your-image.png");
+	return QImage(":/PageExtractionPlugin/img/your-image.png");
 };
 
 /**
@@ -122,7 +126,7 @@ QString DkPageExtractionPlugin::pluginVersion() const {
 QStringList DkPageExtractionPlugin::runID() const {
 
 	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "#RUN_GUID";
+	return QStringList() << mRunIDs;
 };
 
 /**
@@ -140,7 +144,7 @@ QString DkPageExtractionPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkPageExtractionPlugin::pluginStatusTip(const QString &runID) const {
 
-	return tr("#MENU_STATUS_TIP");
+	return tr("This plugin detects rectangles in images.");
 };
 
 QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
@@ -150,6 +154,12 @@ QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
 		ca->setObjectName(mMenuNames[id_crop_to_page]);
 		ca->setStatusTip(mMenuStatusTips[id_crop_to_page]);
 		ca->setData(mRunIDs[id_crop_to_page]);	// runID needed for calling function runPlugin()
+		mActions.append(ca);
+
+		ca = new QAction(mMenuNames[id_crop_to_metadata], this);
+		ca->setObjectName(mMenuNames[id_crop_to_metadata]);
+		ca->setStatusTip(mMenuStatusTips[id_crop_to_metadata]);
+		ca->setData(mRunIDs[id_crop_to_metadata]);	// runID needed for calling function runPlugin()
 		mActions.append(ca);
 
 		ca = new QAction(mMenuNames[id_draw_to_page], this);
@@ -187,6 +197,13 @@ QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString
 	// do whatever the user requested
 	if(runID == mRunIDs[id_crop_to_page]) {
 		imgC->setImage(segM.getCropped(imgC->image()));
+	}
+	// do whatever the user requested
+	if(runID == mRunIDs[id_crop_to_metadata]) {
+		
+		DkRotatingRect rect = segM.getMaxRect().toRotatingRect();
+		QSharedPointer<DkMetaDataT> m = imgC->getMetaData();
+		m->saveRectToXMP(rect, imgC->image().size());
 	}
 	else if(runID == mRunIDs[id_draw_to_page]) {
 		

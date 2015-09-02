@@ -67,30 +67,8 @@ DkPolyRect DkPageSegmentation::getMaxRect() const {
 
 QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
-	// find the largest rectangle
-	std::vector<cv::Point> largeRect = getMaxRect().toCvPoints();
-	
 	if (!rects.empty()) {
-		
-		cv::RotatedRect rect = cv::minAreaRect(largeRect);
-
-		// convert to corners
-		DkVector xVec = DkVector(rect.size.width * 0.5f, 0);
-		xVec.rotate(-rect.angle*DK_DEG2RAD);
-
-		DkVector yVec = DkVector(0, rect.size.height * 0.5f);
-		yVec.rotate(-rect.angle*DK_DEG2RAD);
-
-		QPolygonF poly;
-		poly.append(DkVector(rect.center - xVec + yVec).getQPointF());
-		poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
-		poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
-		poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
-
-		DkRotatingRect rr;
-		rr.setPoly(poly);
-
-		//largeRect.clip(img.size());
+		DkRotatingRect rr = getMaxRect().toRotatingRect();
 		return cropToRect(img, rr);
 	}
 
@@ -381,6 +359,13 @@ void DkPageSegmentation::draw(QImage& img, const QColor& col) const {
 			fRects.push_back(r);
 	}
 
+	QPainter p(&img);
+	drawRects(&p, rects);
+	drawRects(&p, fRects, col);
+}
+
+void DkPageSegmentation::drawRects(QPainter * p, const std::vector<DkPolyRect>& rects, const QColor & col) const {
+
 	QColor colA = col;
 	colA.setAlpha(30);
 
@@ -388,17 +373,16 @@ void DkPageSegmentation::draw(QImage& img, const QColor& col) const {
 	pen.setColor(col);
 	pen.setWidth(10);
 
-	QPainter p(&img);
-	p.setPen(pen);
+	p->setPen(pen);
 
-	for (const DkPolyRect& r : fRects) {
+	for (const DkPolyRect& r : rects) {
 		
 		QPolygonF poly = r.toPolygon();
-		p.drawPolygon(poly);
+		p->drawPolygon(poly);
 
 		QPainterPath pa;
 		pa.addPolygon(poly);
-		p.fillPath(pa, colA);
+		p->fillPath(pa, colA);
 	}
 }
 

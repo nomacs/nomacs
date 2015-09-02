@@ -341,6 +341,35 @@ bool DkPolyRect::compArea(const DkPolyRect& pl, const DkPolyRect& pr) {
 	return pl.getAreaConst() < pr.getAreaConst();
 }
 
+DkRotatingRect DkPolyRect::toRotatingRect() const {
+
+	if (empty())
+		return DkRotatingRect();
+
+	// find the largest rectangle
+	std::vector<cv::Point> largeRect = toCvPoints();
+
+	cv::RotatedRect rect = cv::minAreaRect(largeRect);
+
+	// convert to corners
+	DkVector xVec = DkVector(rect.size.width * 0.5f, 0);
+	xVec.rotate(-rect.angle*DK_DEG2RAD);
+
+	DkVector yVec = DkVector(0, rect.size.height * 0.5f);
+	yVec.rotate(-rect.angle*DK_DEG2RAD);
+
+	QPolygonF poly;
+	poly.append(DkVector(rect.center - xVec + yVec).getQPointF());
+	poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
+	poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
+	poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
+
+	DkRotatingRect rr;
+	rr.setPoly(poly);
+
+	return rr;
+}
+
 void DkPolyRect::draw(cv::Mat& img, const cv::Scalar& col) const {
 
 	std::vector<cv::Point> cvPts = toCvPoints();

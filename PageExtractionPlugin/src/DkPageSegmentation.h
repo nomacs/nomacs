@@ -51,6 +51,7 @@ public:
 	virtual void draw(cv::Mat& img, const cv::Scalar& col = cv::Scalar(255, 222, 0)) const;
 	virtual void draw(QImage& img, const QColor& col = QColor(255, 222, 0)) const;
 	virtual void draw(cv::Mat& img, const std::vector<DkPolyRect>& rects, const cv::Scalar& col = cv::Scalar(255, 222, 0)) const;
+	DkPolyRect getMaxRect() const;
 
 	bool looseDetection;
 
@@ -63,14 +64,14 @@ protected:
 	double minArea = 12000;
 	double maxArea = 0;
 	float maxSide = 0;
-	float maxSideFactor = 0.99f;
+	float maxSideFactor = 0.97f;
 	float scale = 1.0f;
 
 	std::vector<DkPolyRect> rects;
 
 	virtual cv::Mat findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;
 	QImage cropToRect(const QImage& img, const DkRotatingRect& rect, const QColor& bgCol = QColor(0,0,0)) const;
-	DkPolyRect getMaxRect() const;
+	void drawRects(QPainter* p, const std::vector<DkPolyRect>& rects, const QColor& col = QColor(100, 100, 100)) const;
 };
 
 };

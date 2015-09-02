@@ -443,6 +443,7 @@ public:
 	float maxSide() const;
 	DkVector center() const;
 	static bool compArea(const DkPolyRect& pl, const DkPolyRect& pr);
+	DkRotatingRect toRotatingRect() const;
 
 protected:
 	std::vector<DkVector> pts;

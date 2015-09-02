@@ -33,6 +33,8 @@ NMC_FINDQT()
 # TODO ein if wenn zumindest 1 projekt ausgewählt ist das opencv braucht
 NMC_FIND_OPENCV()
 
+NMC_EXIV_INCLUDES()
+
 if(CMAKE_CL_64)
 	SET(PLUGIN_ARCHITECTURE "x64")
 else()

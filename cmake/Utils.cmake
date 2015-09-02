@@ -227,7 +227,7 @@ macro(NMC_FINDQT)
   unset(QT_QTMAIN_LIBRARY CACHE)
   
 	set(CMAKE_AUTOMOC ON)
-  set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTORCC ON)
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 	# find the Qt
 	if (NOT ENABLE_QT5)
@@ -392,4 +392,13 @@ elseif(UNIX)
 	install(TARGETS ${PROJECT_NAME} RUNTIME LIBRARY DESTINATION lib/nomacs-plugins)
 endif(MSVC)
 endmacro(NMC_CREATE_TARGETS)
+
+macro (NMC_EXIV_INCLUDES)
+
+find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
+				PATHS "${NOMACS_INCLUDE_DIRECTORY}/../../exiv2-0.25/include" 
+				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
+MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
+
+endmacro (NMC_EXIV_INCLUDES)
 
