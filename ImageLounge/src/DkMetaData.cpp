@@ -1235,12 +1235,8 @@ void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	leftStr.setNum(r.left(), 'g', 6);
 	rightStr.setNum(r.right(), 'g', 6);
 
-	double radian = rect.getAngle();
-	double degree = radian * 180 / CV_PI;
-
-	cropAngleStr.setNum(degree, 'g', 6);
-
-	qDebug() << topStr;
+	double angle = rect.getAngle()*DK_RAD2DEG;
+	cropAngleStr.setNum(angle, 'g', 6);
 
 	// Set the cropping coordinates here in percentage:
 	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", topStr);
