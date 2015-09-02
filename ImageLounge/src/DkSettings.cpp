@@ -136,19 +136,29 @@ void DkSettings::initFileFilters() {
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
+	qDebug() << "qt formats: " << qtFormats;
+
 	// formats we can save
 	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
 	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg)");
-	if (qtFormats.contains("j2k"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("jp2"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
 	if (qtFormats.contains("tif"))		app_p.saveFilters.append("TIFF (*.tif *.tiff)");
 	if (qtFormats.contains("bmp"))		app_p.saveFilters.append("Windows Bitmap (*.bmp)");
 	if (qtFormats.contains("ppm"))		app_p.saveFilters.append("Portable Pixmap (*.ppm)");
 	if (qtFormats.contains("xbm"))		app_p.saveFilters.append("X11 Bitmap (*.xbm)");
 	if (qtFormats.contains("xpm"))		app_p.saveFilters.append("X11 Pixmap (*.xpm)");
+	if (qtFormats.contains("dds"))		app_p.saveFilters.append("Direct Draw Surface (*.dds)");
+	if (qtFormats.contains("wbmp"))		app_p.saveFilters.append("Wireless Bitmap (*.wbmp)");
+	//if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
+	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
 	// internal filters
 #ifdef WITH_WEBP
-	app_p.saveFilters.append("WebP (*.webp)");
+	else								app_p.saveFilters.append("WebP (*.webp)");
+#endif
+
+#ifdef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.saveFilters.append("Icon Files (*.ico)");
 #endif
 
 	// formats we can load
@@ -156,9 +166,12 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("gif"))		app_p.openFilters.append("Graphic Interchange Format (*.gif)");
 	if (qtFormats.contains("pbm"))		app_p.openFilters.append("Portable Bitmap (*.pbm)");
 	if (qtFormats.contains("pgm"))		app_p.openFilters.append("Portable Graymap (*.pgm)");
-	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
-	if (qtFormats.contains("tga"))		app_p.openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("tga"))		app_p.openFilters.append("Truvision Graphics Adapter (*.tga)");
 	if (qtFormats.contains("mng"))		app_p.openFilters.append("Multi-Image Network Graphics (*.mng)");
+
+#ifndef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
+#endif
 
 #ifdef WITH_LIBRAW
 	// raw format
@@ -227,9 +240,9 @@ void DkSettings::initFileFilters() {
 
 	qDebug() << "supported: " << qtFormats;
 
-#ifdef Q_OS_WIN
-	app_p.fileFilters.append("*.lnk");
-#endif
+//#ifdef Q_OS_WIN
+//	app_p.fileFilters.append("*.lnk");
+//#endif
 
 }
 

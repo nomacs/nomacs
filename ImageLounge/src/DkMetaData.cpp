@@ -46,12 +46,13 @@ namespace nmc {
 // DkMetaDataT --------------------------------------------------------------------
 DkMetaDataT::DkMetaDataT() {
 
-	exifState = not_loaded;
+	mExifState = not_loaded;
 }
 
-void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
-	this->file = fileInfo;
+	mFilePath = filePath;
+	QFileInfo fileInfo(filePath);
 
 	try {
 		if (!ba || ba->isEmpty()) {
@@ -59,74 +60,74 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteAr
 #if QT_VERSION < 0x050000
 			// it was crashing here - if the thumbnail is fetched in the constructor of a label
 			// seems that the QFileInfo was corrupted?!
-			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+			std::wstring strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdWString() : filePath.toStdWString();
+			exifImg = Exiv2::ImageFactory::open(strFilePath);
 #else
-			std::wstring filePath = (file.isSymLink()) ? (wchar_t*)file.symLinkTarget().utf16() : (wchar_t*)file.absoluteFilePath().utf16();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+			std::wstring strFilePath = (fileInfo.isSymLink()) ? (wchar_t*)fileInfo.symLinkTarget().utf16() : (wchar_t*)mFilePath.utf16();
+			mExifImg = Exiv2::ImageFactory::open(strFilePath);
 #endif
 #else
-			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+			std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
+			exifImg = Exiv2::ImageFactory::open(strFilePath);
 #endif
 		}
 		else {
 			Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba->constData(), ba->size()));
-			exifImg = Exiv2::ImageFactory::open(exifBuffer);
+			mExifImg = Exiv2::ImageFactory::open(exifBuffer);
 		}
 	} 
 	catch (...) {
-		exifState = no_data;
+		mExifState = no_data;
 		qDebug() << "[Exiv2] could not open file for exif data";
 		return;
 	}
 	
 
-	if (exifImg.get() == 0) {
-		exifState = no_data;
+	if (mExifImg.get() == 0) {
+		mExifState = no_data;
 		qDebug() << "[Exiv2] image could not be opened for exif data extraction";
 		return;
 	}
 
 	try {
-		exifImg->readMetadata();
+		mExifImg->readMetadata();
 
-		if (!exifImg->good()) {
+		if (!mExifImg->good()) {
 			qDebug() << "[Exiv2] metadata could not be read";
-			exifState = no_data;
+			mExifState = no_data;
 			return;
 		}
 
 	}catch (...) {
-		exifState = no_data;
+		mExifState = no_data;
 		qDebug() << "[Exiv2] could not read metadata (exception)";
 		return;
 	}
 	
 	//qDebug() << "[Exiv2] metadata loaded";
-	exifState = loaded;
+	mExifState = loaded;
 
 	//printMetaData();
 
 }
 
-bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
+bool DkMetaDataT::saveMetaData(const QString& filePath, bool force) {
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return false;
 
-	QFile file(fileInfo.absoluteFilePath());
+	QFile file(filePath);
 	file.open(QFile::ReadOnly);
 	
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
 	file.close();
 	bool saved = saveMetaData(ba, force);
 	if (!saved) {
-		qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName();
+		qDebug() << "[DkMetaDataT] could not save: " << QFileInfo(filePath).fileName();
 		return saved;
 	}
 	else if (ba->isEmpty()) {
-		qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName() << " empty Buffer!";
+		qDebug() << "[DkMetaDataT] could not save: " << QFileInfo(filePath).fileName() << " empty Buffer!";
 		return false;
 	}
 
@@ -144,14 +145,14 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	if (!ba)
 		return false;
 
-	if (!force && exifState != dirty)
+	if (!force && mExifState != dirty)
 		return false;
-	else if (exifState == not_loaded || exifState == no_data)
+	else if (mExifState == not_loaded || mExifState == no_data)
 		return false;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
-	Exiv2::XmpData &xmpData = exifImg->xmpData();
-	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();
+	Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
 	Exiv2::Image::AutoPtr exifImgN;
 	Exiv2::MemIo::AutoPtr exifMem;
@@ -192,8 +193,8 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	} else
 		return false;
 
-	exifImg = exifImgN;
-	exifState = loaded;
+	mExifImg = exifImgN;
+	mExifState = loaded;
 
 	return true;
 }
@@ -202,11 +203,11 @@ QString DkMetaDataT::getDescription() const {
 
 	QString description;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return description;
 
 	try {
-		Exiv2::ExifData &exifData = exifImg->exifData();
+		Exiv2::ExifData &exifData = mExifImg->exifData();
 
 		if (!exifData.empty()) {
 
@@ -230,13 +231,13 @@ QString DkMetaDataT::getDescription() const {
 
 int DkMetaDataT::getOrientation() const {
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return -1;
 
 	int orientation = -1;
 
 	try {
-		Exiv2::ExifData &exifData = exifImg->exifData();
+		Exiv2::ExifData &exifData = mExifImg->exifData();
 
 		if (!exifData.empty()) {
 
@@ -277,16 +278,15 @@ int DkMetaDataT::getOrientation() const {
 
 int DkMetaDataT::getRating() const {
 	
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return -1;
 
 	float exifRating = -1;
 	float xmpRating = -1;
 	float fRating = 0;
 
-	
-	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
-	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
+	Exiv2::ExifData &exifData = mExifImg->exifData();		//Exif.Image.Rating  - short
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();			//Xmp.xmp.Rating - text
 
 	//get Rating of Exif Tag
 	if (!exifData.empty()) {
@@ -335,10 +335,10 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 
 	QString info;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return info;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 
 	if (!exifData.empty()) {
 
@@ -376,10 +376,10 @@ QString DkMetaDataT::getXmpValue(const QString& key) const {
 
 	QString info;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return info;
 
-	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
 	if (!xmpData.empty()) {
 
@@ -407,10 +407,10 @@ QString DkMetaDataT::getExifValue(const QString& key) const {
 
 	QString info;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return info;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 	std::string sKey = key.toStdString();
 
 	if (!exifData.empty()) {
@@ -422,8 +422,8 @@ QString DkMetaDataT::getExifValue(const QString& key) const {
 			pos = exifData.findKey(ekey);
 
 			if (pos == exifData.end() || pos->count() == 0) {
-				Exiv2::ExifKey ekey = Exiv2::ExifKey("Exif.Photo." + sKey);	
-				pos = exifData.findKey(ekey);
+				Exiv2::ExifKey lEkey = Exiv2::ExifKey("Exif.Photo." + sKey);	
+				pos = exifData.findKey(lEkey);
 			}
 		} catch(...) {
 			try {
@@ -449,10 +449,10 @@ QString DkMetaDataT::getIptcValue(const QString& key) const {
 
 	QString info;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return info;
 
-	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
 	if (!iptcData.empty()) {
 
@@ -476,69 +476,70 @@ QString DkMetaDataT::getIptcValue(const QString& key) const {
 
 void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const {
 
+	QFileInfo fileInfo(mFilePath);
 	fileKeys.append(QObject::tr("Filename"));
-	fileValues.append(file.fileName());
+	fileValues.append(fileInfo.fileName());
 
 	fileKeys.append(QObject::tr("Path"));
-	fileValues.append(file.absolutePath());
+	fileValues.append(fileInfo.absolutePath());
 
-	if (file.isSymLink()) {
+	if (fileInfo.isSymLink()) {
 		fileKeys.append(QObject::tr("Target"));
-		fileValues.append(file.symLinkTarget());
+		fileValues.append(fileInfo.symLinkTarget());
 	}
 
 	fileKeys.append(QObject::tr("Size"));
-	fileValues.append(DkUtils::readableByte((float)file.size()));
+	fileValues.append(DkUtils::readableByte((float)mFilePath.size()));
 
 	// date group
 	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
-	fileValues.append(file.created().toString(Qt::SystemLocaleDate));
+	fileValues.append(fileInfo.created().toString(Qt::SystemLocaleDate));
 
 	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
-	fileValues.append(file.lastModified().toString(Qt::SystemLocaleDate));
+	fileValues.append(fileInfo.lastModified().toString(Qt::SystemLocaleDate));
 
 	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Read"));
-	fileValues.append(file.lastRead().toString(Qt::SystemLocaleDate));
+	fileValues.append(fileInfo.lastRead().toString(Qt::SystemLocaleDate));
 
-	if (!file.owner().isEmpty()) {
+	if (!fileInfo.owner().isEmpty()) {
 		fileKeys.append(QObject::tr("Owner"));
-		fileValues.append(file.owner());
+		fileValues.append(fileInfo.owner());
 	}
 
 	fileKeys.append(QObject::tr("OwnerID"));
-	fileValues.append(QString::number(file.ownerId()));
+	fileValues.append(QString::number(fileInfo.ownerId()));
 
-	if (!file.group().isEmpty()) {
+	if (!fileInfo.group().isEmpty()) {
 		fileKeys.append(QObject::tr("Group"));
-		fileValues.append(file.group());
+		fileValues.append(fileInfo.group());
 	}
 
 	QString permissionString;
 	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Owner"));
-	permissionString += file.permissions() & QFile::ReadOwner	? "r" : "-";
-	permissionString += file.permissions() & QFile::WriteOwner	? "w" : "-";
-	permissionString += file.permissions() & QFile::ExeOwner	? "x" : "-";
+	permissionString += fileInfo.permissions() & QFile::ReadOwner	? "r" : "-";
+	permissionString += fileInfo.permissions() & QFile::WriteOwner	? "w" : "-";
+	permissionString += fileInfo.permissions() & QFile::ExeOwner	? "x" : "-";
 	fileValues.append(permissionString);
 
 	permissionString = "";
 	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("User"));
-	permissionString += file.permissions() & QFile::ReadUser	? "r" : "-";
-	permissionString += file.permissions() & QFile::WriteUser	? "w" : "-";
-	permissionString += file.permissions() & QFile::ExeUser		? "x" : "-";
+	permissionString += fileInfo.permissions() & QFile::ReadUser	? "r" : "-";
+	permissionString += fileInfo.permissions() & QFile::WriteUser	? "w" : "-";
+	permissionString += fileInfo.permissions() & QFile::ExeUser		? "x" : "-";
 	fileValues.append(permissionString);
 
 	permissionString = "";
 	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Group"));
-	permissionString += file.permissions() & QFile::ReadGroup	? "r" : "-";
-	permissionString += file.permissions() & QFile::WriteGroup	? "w" : "-";
-	permissionString += file.permissions() & QFile::ExeGroup	? "x" : "-";
+	permissionString += fileInfo.permissions() & QFile::ReadGroup	? "r" : "-";
+	permissionString += fileInfo.permissions() & QFile::WriteGroup	? "w" : "-";
+	permissionString += fileInfo.permissions() & QFile::ExeGroup	? "x" : "-";
 	fileValues.append(permissionString);
 
 	permissionString = "";
 	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Other"));
-	permissionString += file.permissions() & QFile::ReadOther	? "r" : "-";
-	permissionString += file.permissions() & QFile::WriteOther	? "w" : "-";
-	permissionString += file.permissions() & QFile::ExeOther	? "x" : "-";
+	permissionString += fileInfo.permissions() & QFile::ReadOther	? "r" : "-";
+	permissionString += fileInfo.permissions() & QFile::WriteOther	? "w" : "-";
+	permissionString += fileInfo.permissions() & QFile::ExeOther	? "x" : "-";
 	fileValues.append(permissionString);
 
 	QStringList tmpKeys;
@@ -599,10 +600,10 @@ QImage DkMetaDataT::getThumbnail() const {
 
 	QImage qThumb;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return qThumb;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 
 	if (exifData.empty())
 		return qThumb;
@@ -630,17 +631,17 @@ QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const {
 
 	QImage qImg;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return qImg;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 
 	if (exifData.empty())
 		return qImg;
 
 	try {
 
-		Exiv2::PreviewManager loader(*exifImg);
+		Exiv2::PreviewManager loader(*mExifImg);
 		Exiv2::PreviewPropertiesList pList = loader.getPreviewProperties();
 
 		int maxWidth = 0;
@@ -675,46 +676,45 @@ QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const {
 
 bool DkMetaDataT::hasMetaData() const {
 
-	return !(exifState == no_data || exifState == not_loaded);
+	return !(mExifState == no_data || mExifState == not_loaded);
 }
 
 bool DkMetaDataT::isLoaded() const {
 
-	return exifState == loaded || exifState == dirty || exifState == no_data;
+	return mExifState == loaded || mExifState == dirty || mExifState == no_data;
 }
 
 bool DkMetaDataT::isTiff() const {
 
-	QString newSuffix = file.suffix();
+	QString newSuffix = QFileInfo(mFilePath).suffix();
 	return newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isJpg() const {
 
-	QString newSuffix = file.suffix();
+	QString newSuffix = QFileInfo(mFilePath).suffix();
 	return newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isRaw() const {
 
-	QString newSuffix = file.suffix();
+	QString newSuffix = QFileInfo(mFilePath).suffix();
 	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isDirty() const {
 
-	return exifState == dirty;
+	return mExifState == dirty;
 }
 
 QStringList DkMetaDataT::getExifKeys() const {
 
 	QStringList exifKeys;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return exifKeys;
 
-
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 	Exiv2::ExifData::const_iterator end = exifData.end();
 
 	if (exifData.empty()) {
@@ -738,10 +738,10 @@ QStringList DkMetaDataT::getXmpKeys() const {
 
 	QStringList xmpKeys;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return xmpKeys;
 
-	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();
 	Exiv2::XmpData::const_iterator end = xmpData.end();
 
 	if (xmpData.empty()) {
@@ -764,10 +764,10 @@ QStringList DkMetaDataT::getIptcKeys() const {
 
 	QStringList iptcKeys;
 	
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return iptcKeys;
 
-	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::IptcData &iptcData = mExifImg->iptcData();
 	Exiv2::IptcData::iterator endI = iptcData.end();
 
 	if (iptcData.empty())
@@ -786,10 +786,10 @@ QStringList DkMetaDataT::getExifValues() const {
 
 	QStringList exifValues;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return QStringList();
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 	Exiv2::ExifData::const_iterator end = exifData.end();
 
 	if (exifData.empty())
@@ -809,10 +809,10 @@ QStringList DkMetaDataT::getIptcValues() const {
 	
 	QStringList iptcValues;
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return iptcValues;
 
-	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::IptcData &iptcData = mExifImg->iptcData();
 	Exiv2::IptcData::iterator endI = iptcData.end();
 
 	if (iptcData.empty())
@@ -836,8 +836,8 @@ void DkMetaDataT::setQtValues(const QImage& cImg) {
 			QString val = cImg.text(cKey).size() < 5000 ? cImg.text(cKey) : QObject::tr("<data too large to display>");
 
 			if (!val.isEmpty()) {
-				qtValues.append(val);
-				qtKeys.append(cKey);
+				mQtValues.append(val);
+				mQtKeys.append(cKey);
 			}
 		}
 	}
@@ -845,10 +845,10 @@ void DkMetaDataT::setQtValues(const QImage& cImg) {
 
 QString DkMetaDataT::getQtValue(const QString& key) const {
 
-	int idx = qtKeys.indexOf(key);
+	int idx = mQtKeys.indexOf(key);
 
-	if (idx >= 0 && idx < qtValues.size())
-		return qtValues.at(idx);
+	if (idx >= 0 && idx < mQtValues.size())
+		return mQtValues.at(idx);
 
 	return QString();
 }
@@ -856,22 +856,22 @@ QString DkMetaDataT::getQtValue(const QString& key) const {
 
 QStringList DkMetaDataT::getQtKeys() const {
 
-	return qtKeys;
+	return mQtKeys;
 }
 
 QStringList DkMetaDataT::getQtValues() const {
 	
-	return qtValues;
+	return mQtValues;
 }
 
 
 void DkMetaDataT::setThumbnail(QImage thumb) {
 
-	if (exifState == not_loaded || exifState == no_data) 
+	if (mExifState == not_loaded || mExifState == no_data) 
 		return;
 
 	try {
-		Exiv2::ExifData exifData = exifImg->exifData();
+		Exiv2::ExifData exifData = mExifImg->exifData();
 
 		if (exifData.empty())
 			exifData = Exiv2::ExifData();
@@ -899,8 +899,8 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 		eThumb.erase();	// erase all thumbnails
 		eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
 
-		exifImg->setExifData(exifData);
-		exifState = dirty;
+		mExifImg->setExifData(exifData);
+		mExifState = dirty;
 
 	} catch (...) {
 		qDebug() << "I could not save the thumbnail...";
@@ -916,7 +916,6 @@ QVector2D DkMetaDataT::getResolution() const {
 	try {
 
 		if (hasMetaData()) {
-			//metaData = DkImageLoader::imgMetaData;
 			xRes = getExifValue("XResolution");
 			QStringList res;
 			res = xRes.split("/");
@@ -933,6 +932,7 @@ QVector2D DkMetaDataT::getResolution() const {
 			//qDebug() << "Resolution"  << xRes << " " << yRes;
 			if (res.size() != 2)
 				return resV;
+
 			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
 				resV.setY(res.at(0).toFloat()/res.at(1).toFloat());
 		}
@@ -960,15 +960,15 @@ void DkMetaDataT::setResolution(const QVector2D& res) {
 
 void DkMetaDataT::clearOrientation() {
 
-	if (exifState == not_loaded || exifState == no_data)
+	if (mExifState == not_loaded || mExifState == no_data)
 		return;
 
-	setExifValue("Exif.Image.Orientation", "0");
+	setExifValue("Exif.Image.Orientation", "1");	// we wrote "0" here - that was against the standard!
 }
 
 void DkMetaDataT::setOrientation(int o) {
 
-	if (exifState == not_loaded || exifState == no_data)
+	if (mExifState == not_loaded || mExifState == no_data)
 		return;
 
 	if (o!=90 && o!=-90 && o!=180 && o!=0 && o!=270)
@@ -977,9 +977,9 @@ void DkMetaDataT::setOrientation(int o) {
 	if (o==-180) o=180;
 	if (o== 270) o=-90;
 
-	int orientation;
+	int orientation = 1;
 
-	Exiv2::ExifData& exifData = exifImg->exifData();
+	Exiv2::ExifData& exifData = mExifImg->exifData();
 	Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
 
 	// this does not really work -> *.bmp images
@@ -1025,14 +1025,14 @@ void DkMetaDataT::setOrientation(int o) {
 	rv->value_[0] = (unsigned short) orientation;
 	pos->setValue(rv.get());
 
-	exifImg->setExifData(exifData);
+	mExifImg->setExifData(exifData);
 
-	exifState = dirty;
+	mExifState = dirty;
 }
 
 bool DkMetaDataT::setDescription(const QString& description) {
 
-	if (exifState == not_loaded || exifState == no_data)
+	if (mExifState == not_loaded || mExifState == no_data)
 		return false;
 
 	return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
@@ -1040,7 +1040,7 @@ bool DkMetaDataT::setDescription(const QString& description) {
 
 void DkMetaDataT::setRating(int r) {
 
-	if (exifState == not_loaded || exifState == no_data || getRating() == r)
+	if (mExifState == not_loaded || mExifState == no_data || getRating() == r)
 		return;
 
 	unsigned short percentRating = 0;
@@ -1053,8 +1053,8 @@ void DkMetaDataT::setRating(int r) {
 	else if (r==1) {percentRating = 1; sRating = "1"; sRatingPercent = "1";}
 	else {r=0;}
 
-	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
-	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
+	Exiv2::ExifData &exifData = mExifImg->exifData();		//Exif.Image.Rating  - short
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();			//Xmp.xmp.Rating - text
 
 	if (r > 0) {
 		exifData["Exif.Image.Rating"] = uint16_t(r);
@@ -1085,10 +1085,15 @@ void DkMetaDataT::setRating(int r) {
 		if (pos2 != xmpData.end()) xmpData.erase(pos2);
 	}
 
-	exifImg->setExifData(exifData);
-	exifImg->setXmpData(xmpData);
+	try {
+		mExifImg->setExifData(exifData);
+		mExifImg->setXmpData(xmpData);
 
-	exifState = dirty;
+		mExifState = dirty;
+	}
+	catch (...) {
+		qDebug() << "[WARNING] I could not set the exif data for this image format...";
+	}
 }
 
 bool DkMetaDataT::updateImageMetaData(const QImage& img) {
@@ -1109,14 +1114,14 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 
 bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
-	if (exifState == not_loaded || exifState == no_data)
+	if (mExifState == not_loaded || mExifState == no_data)
 		return false;
 
-	if (exifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&
-		exifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
+	if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&
+		mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
 		return false;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData &exifData = mExifImg->exifData();
 
 	bool setExifSuccessfull = false;
 
@@ -1130,7 +1135,7 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 		//tag.setValue(&val);
 		if (!tag.setValue(taginfo.toStdString())) {
-			exifState = dirty;
+			mExifState = dirty;
 			setExifSuccessfull = true;
 		}
 	}
@@ -1139,7 +1144,7 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 		Exiv2::ExifKey exivKey(key.toStdString());
 		Exiv2::Exifdatum tag(exivKey);
 		if (!tag.setValue(taginfo.toStdString())) {
-			exifState = dirty;
+			mExifState = dirty;
 			setExifSuccessfull = true;
 		}
 
@@ -1166,11 +1171,11 @@ QString DkMetaDataT::exiv2ToQString(std::string exifString) {
 
 void DkMetaDataT::printMetaData() const {
 
-	if (exifState != loaded && exifState != dirty)
+	if (mExifState != loaded && mExifState != dirty)
 		return;
 
-	Exiv2::IptcData &iptcData = exifImg->iptcData();
-	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::IptcData &iptcData = mExifImg->iptcData();
+	Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
 	qDebug() << "Exif------------------------------------------------------------------";
 
@@ -1214,24 +1219,21 @@ void DkMetaDataT::printMetaData() const {
 }
 
 
-void DkMetaDataT::saveRectToXMP(DkRotatingRect rect, int imgWidth, int imgHeight) {
+void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
+
 
 	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
 	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
 
-
-
-	float top, bottom, left, right;
-
-	getRectCoordinates(rect, imgWidth, imgHeight, top, bottom, left, right);
+	QRectF r = getRectCoordinates(rect, size);
 
 	// precision = 6 is what Adobe Camera Raw uses (as it seems)
 	QString topStr, bottomStr, leftStr, rightStr, cropAngleStr;
 	
-	topStr.setNum(top, 'g', 6);
-	bottomStr.setNum(bottom, 'g', 6);
-	leftStr.setNum(left, 'g', 6);
-	rightStr.setNum(right, 'g', 6);
+	topStr.setNum(r.top(), 'g', 6);
+	bottomStr.setNum(r.bottom(), 'g', 6);
+	leftStr.setNum(r.left(), 'g', 6);
+	rightStr.setNum(r.right(), 'g', 6);
 
 	double radian = rect.getAngle();
 	double degree = radian * 180 / CV_PI;
@@ -1253,21 +1255,18 @@ void DkMetaDataT::saveRectToXMP(DkRotatingRect rect, int imgWidth, int imgHeight
 	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
 	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
 
-
 	// Save the crop coordinates to the sidecar file:
 	xmpSidecar->setXmpData(sidecarXmpData);
 	xmpSidecar->writeMetadata();
 
-	
-
 }
 
-void DkMetaDataT::getRectCoordinates(DkRotatingRect rect, int imgWidth, int imgHeight, float& top, float& bottom, float& left, float& right) {
+QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
 
-	top = imgHeight;
-	bottom = 0;
-	left = imgWidth;
-	right = 0;
+	float top = (float)imgSize.height();
+	float left = (float)imgSize.width();
+	float bottom = 0;
+	float right = 0;
 		
 	QPolygonF polygon = rect.getPoly();
 
@@ -1277,14 +1276,14 @@ void DkMetaDataT::getRectCoordinates(DkRotatingRect rect, int imgWidth, int imgH
 		QPointF point = polygon.at(i);
 		
 		if (point.x() < left)
-			left = point.x();
+			left = (float)point.x();
 		if (point.x() > right)
-			right = point.x();
+			right = (float)point.x();
 
 		if (point.y() < top)
-			top = point.y();
+			top = (float)point.y();
 		if (point.y() > bottom)
-			bottom = point.y();
+			bottom = (float)point.y();
 
 	}
 
@@ -1292,18 +1291,12 @@ void DkMetaDataT::getRectCoordinates(DkRotatingRect rect, int imgWidth, int imgH
 	// qDebug() << "polygon: " << polygon.at(i);
 
 	// Normalize the coordinates:
+	top /= imgSize.height();
+	bottom /= imgSize.height();
+	left /= imgSize.width();
+	right /= imgSize.width();
 
-	top /= imgHeight;
-	bottom /= imgHeight;
-	left /= imgWidth;
-	right /= imgWidth;
-	
-
-}
-
-float DkMetaDataT::getFloatPrecision(float value, double precision)
-{
-    return (floor((value * pow(10, precision) + 0.5)) / pow(10, precision)); 
+	return QRectF(QPointF(left, top), QSizeF(right-left, bottom-top));
 }
 
 Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
@@ -1313,9 +1306,8 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 	//TODO: check if the file type supports xmp
 
 	// Create the path to the XMP file:	
-
-	QString dir = file.absoluteFilePath();
-	QString ext = file.suffix();
+	QString dir = mFilePath;
+	QString ext = QFileInfo(mFilePath).suffix();
 	QString xmpPath = dir.left(dir.length() - ext.length() - 1);
 	QString xmpExt = ".xmp";
 	QString xmpFilePath = xmpPath + xmpExt;
@@ -1331,8 +1323,7 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 	else {
 		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:
 		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
-		xmpImg->setMetadata(*exifImg);
-
+		xmpImg->setMetadata(*mExifImg);
 	}
 
 	return xmpImg;
@@ -1341,8 +1332,6 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 
 
 bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue) {
-
-	Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
 
 	bool setXMPValueSuccessful = false;
 
@@ -1367,7 +1356,6 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString x
 			}
 			
 		}
-
 	}
 
 	return setXMPValueSuccessful;
@@ -1413,91 +1401,95 @@ void DkMetaDataT::xmpSidecarTest() {
 
 void DkMetaDataHelper::init() {
 
-	camSearchTags.append("ImageSize");
-	camSearchTags.append("Orientation");
-	camSearchTags.append("Make");
-	camSearchTags.append("Model");
-	camSearchTags.append("ApertureValue");
-	camSearchTags.append("ISOSpeedRatings");
-	camSearchTags.append("Flash");
-	camSearchTags.append("FocalLength");
-	camSearchTags.append("ExposureMode");
-	camSearchTags.append("ExposureTime");
+	mCamSearchTags.append("ImageSize");
+	mCamSearchTags.append("Orientation");
+	mCamSearchTags.append("Make");
+	mCamSearchTags.append("Model");
+	mCamSearchTags.append("ApertureValue");
+	mCamSearchTags.append("ISOSpeedRatings");
+	mCamSearchTags.append("Flash");
+	mCamSearchTags.append("FocalLength");
+	mCamSearchTags.append("ExposureMode");
+	mCamSearchTags.append("ExposureTime");
 
-	descSearchTags.append("Rating");
-	descSearchTags.append("UserComment");
-	descSearchTags.append("DateTime");
-	descSearchTags.append("DateTimeOriginal");
-	descSearchTags.append("ImageDescription");
-	descSearchTags.append("Byline");
-	descSearchTags.append("BylineTitle");
-	descSearchTags.append("City");
-	descSearchTags.append("Country");
-	descSearchTags.append("Headline");
-	descSearchTags.append("Caption");
-	descSearchTags.append("CopyRight");
-	descSearchTags.append("Keywords");
-	descSearchTags.append("Path");
-	descSearchTags.append("FileSize");
+	mDescSearchTags.append("Rating");
+	mDescSearchTags.append("UserComment");
+	mDescSearchTags.append("DateTime");
+	mDescSearchTags.append("DateTimeOriginal");
+	mDescSearchTags.append("ImageDescription");
+	mDescSearchTags.append("Byline");
+	mDescSearchTags.append("BylineTitle");
+	mDescSearchTags.append("City");
+	mDescSearchTags.append("Country");
+	mDescSearchTags.append("Headline");
+	mDescSearchTags.append("Caption");
+	mDescSearchTags.append("CopyRight");
+	mDescSearchTags.append("Keywords");
+	mDescSearchTags.append("Path");
+	mDescSearchTags.append("FileSize");
 
 	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
-		translatedCamTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
+		mTranslatedCamTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
 
 	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++)
-		translatedDescTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
+		mTranslatedDescTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
 
-	exposureModes.append(QObject::tr("not defined"));
-	exposureModes.append(QObject::tr("manual"));
-	exposureModes.append(QObject::tr("normal"));
-	exposureModes.append(QObject::tr("aperture priority"));
-	exposureModes.append(QObject::tr("shutter priority"));
-	exposureModes.append(QObject::tr("program creative"));
-	exposureModes.append(QObject::tr("high-speed program"));
-	exposureModes.append(QObject::tr("portrait mode"));
-	exposureModes.append(QObject::tr("landscape mode"));
+	mExposureModes.append(QObject::tr("not defined"));
+	mExposureModes.append(QObject::tr("manual"));
+	mExposureModes.append(QObject::tr("normal"));
+	mExposureModes.append(QObject::tr("aperture priority"));
+	mExposureModes.append(QObject::tr("shutter priority"));
+	mExposureModes.append(QObject::tr("program creative"));
+	mExposureModes.append(QObject::tr("high-speed program"));
+	mExposureModes.append(QObject::tr("portrait mode"));
+	mExposureModes.append(QObject::tr("landscape mode"));
 
 	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
-	flashModes.insert(0x0, QObject::tr("No Flash"));
-	flashModes.insert(0x1, QObject::tr("Fired"));
-	flashModes.insert(0x5, QObject::tr("Fired, Return not detected"));
-	flashModes.insert(0x7, QObject::tr("Fired, Return detected"));
-	flashModes.insert(0x8, QObject::tr("On, Did not fire"));
-	flashModes.insert(0x9, QObject::tr("On, Fired"));
-	flashModes.insert(0xd, QObject::tr("On, Return not detected"));
-	flashModes.insert(0xf, QObject::tr("On, Return detected"));
-	flashModes.insert(0x10, QObject::tr("Off, Did not fire"));
-	flashModes.insert(0x14, QObject::tr("Off, Did not fire, Return not detected"));
-	flashModes.insert(0x18, QObject::tr("Auto, Did not fire"));
-	flashModes.insert(0x19, QObject::tr("Auto, Fired"));
-	flashModes.insert(0x1d, QObject::tr("Auto, Fired, Return not detected"));
-	flashModes.insert(0x1f, QObject::tr("Auto, Fired, Return detected"));
-	flashModes.insert(0x20, QObject::tr("No flash function"));
-	flashModes.insert(0x30, QObject::tr("Off, No flash function"));
-	flashModes.insert(0x41, QObject::tr("Fired, Red-eye reduction"));
-	flashModes.insert(0x45, QObject::tr("Fired, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x47, QObject::tr("Fired, Red-eye reduction, Return detected"));
-	flashModes.insert(0x49, QObject::tr("On, Red-eye reduction"));
-	flashModes.insert(0x4d, QObject::tr("On, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x4f, QObject::tr("On, Red-eye reduction, Return detected"));
-	flashModes.insert(0x50, QObject::tr("Off, Red-eye reduction"));
-	flashModes.insert(0x58, QObject::tr("Auto, Did not fire, Red-eye reduction"));
-	flashModes.insert(0x59, QObject::tr("Auto, Fired, Red-eye reduction"));
-	flashModes.insert(0x5d, QObject::tr("Auto, Fired, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x5f, QObject::tr("Auto, Fired, Red-eye reduction, Return detected"));
+	mFlashModes.insert(0x0, QObject::tr("No Flash"));
+	mFlashModes.insert(0x1, QObject::tr("Fired"));
+	mFlashModes.insert(0x5, QObject::tr("Fired, Return not detected"));
+	mFlashModes.insert(0x7, QObject::tr("Fired, Return detected"));
+	mFlashModes.insert(0x8, QObject::tr("On, Did not fire"));
+	mFlashModes.insert(0x9, QObject::tr("On, Fired"));
+	mFlashModes.insert(0xd, QObject::tr("On, Return not detected"));
+	mFlashModes.insert(0xf, QObject::tr("On, Return detected"));
+	mFlashModes.insert(0x10, QObject::tr("Off, Did not fire"));
+	mFlashModes.insert(0x14, QObject::tr("Off, Did not fire, Return not detected"));
+	mFlashModes.insert(0x18, QObject::tr("Auto, Did not fire"));
+	mFlashModes.insert(0x19, QObject::tr("Auto, Fired"));
+	mFlashModes.insert(0x1d, QObject::tr("Auto, Fired, Return not detected"));
+	mFlashModes.insert(0x1f, QObject::tr("Auto, Fired, Return detected"));
+	mFlashModes.insert(0x20, QObject::tr("No flash function"));
+	mFlashModes.insert(0x30, QObject::tr("Off, No flash function"));
+	mFlashModes.insert(0x41, QObject::tr("Fired, Red-eye reduction"));
+	mFlashModes.insert(0x45, QObject::tr("Fired, Red-eye reduction, Return not detected"));
+	mFlashModes.insert(0x47, QObject::tr("Fired, Red-eye reduction, Return detected"));
+	mFlashModes.insert(0x49, QObject::tr("On, Red-eye reduction"));
+	mFlashModes.insert(0x4d, QObject::tr("On, Red-eye reduction, Return not detected"));
+	mFlashModes.insert(0x4f, QObject::tr("On, Red-eye reduction, Return detected"));
+	mFlashModes.insert(0x50, QObject::tr("Off, Red-eye reduction"));
+	mFlashModes.insert(0x58, QObject::tr("Auto, Did not fire, Red-eye reduction"));
+	mFlashModes.insert(0x59, QObject::tr("Auto, Fired, Red-eye reduction"));
+	mFlashModes.insert(0x5d, QObject::tr("Auto, Fired, Red-eye reduction, Return not detected"));
+	mFlashModes.insert(0x5f, QObject::tr("Auto, Fired, Red-eye reduction, Return detected"));
 }
 
 QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_aperture); 
+	QString key = mCamSearchTags.at(DkSettings::camData_aperture); 
 
 	QString value = metaData->getExifValue(key);
-	if (value.isEmpty()) value = metaData->getExifValue("FNumber");	// try alternative tag
-
 	QStringList sList = value.split('/');
 
 	if (sList.size() == 2) {
 		double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
 		value = QString::fromStdString(DkUtils::stringify(val,1));
+	}
+
+	// just divide the fnumber
+	if (value.isEmpty()) {
+		value = metaData->getExifValue("FNumber");	// try alternative tag
+		value = DkUtils::resolveFraction(value);
 	}
 
 	return value;
@@ -1506,7 +1498,7 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
 QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) const {
 
 	// focal length
-	QString key = camSearchTags.at(DkSettings::camData_focal_length);
+	QString key = mCamSearchTags.at(DkSettings::camData_focal_length);
 
 	QString value = metaData->getExifValue(key);
 
@@ -1520,7 +1512,7 @@ QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) c
 
 QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposure_time);
+	QString key = mCamSearchTags.at(DkSettings::camData_exposure_time);
 	QString value = metaData->getExifValue(key);
 	QStringList sList = value.split('/');
 
@@ -1544,22 +1536,22 @@ QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) 
 
 QString DkMetaDataHelper::getExposureMode(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposure_mode);
+	QString key = mCamSearchTags.at(DkSettings::camData_exposure_mode);
 	QString value = metaData->getExifValue(key);
 	int mode = value.toInt();
 
-	if (mode >= 0 && mode < exposureModes.size())
-		value = exposureModes[mode];
+	if (mode >= 0 && mode < mExposureModes.size())
+		value = mExposureModes[mode];
 
 	return value;
 }
 
 QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposure_mode);
+	QString key = mCamSearchTags.at(DkSettings::camData_exposure_mode);
 	QString value = metaData->getExifValue(key);
 	unsigned int mode = value.toUInt();
-	value = flashModes[mode];
+	value = mFlashModes[mode];
 
 	return value;
 }
@@ -1632,7 +1624,7 @@ QStringList DkMetaDataHelper::convertGpsCoordinates(const QString& coordString) 
 
 		if (i==0) {
 			valS.setNum((int)val1);
-			gpsInfo.append(valS + "°");
+			gpsInfo.append(valS + dk_degree_str);
 		}
 		if (i==1) {
 			if (val2 > 1)							
@@ -1674,13 +1666,13 @@ QString DkMetaDataHelper::translateKey(const QString& key) const {
 
 	QString translatedKey = key;
 
-	int keyIdx = camSearchTags.indexOf(key);
+	int keyIdx = mCamSearchTags.indexOf(key);
 	if (keyIdx != -1)
-		translatedKey = translatedCamTags.at(keyIdx);
+		translatedKey = mTranslatedCamTags.at(keyIdx);
 
-	keyIdx = descSearchTags.indexOf(key);
+	keyIdx = mDescSearchTags.indexOf(key);
 	if (keyIdx != -1)
-		translatedKey = translatedDescTags.at(keyIdx);
+		translatedKey = mTranslatedDescTags.at(keyIdx);
 
 	return translatedKey;
 }
@@ -1689,19 +1681,19 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 
 	QString rValue = value;
 
-	if (key == camSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
+	if (key == mCamSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
 		rValue = getApertureValue(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_focal_length]) {
+	else if (key == mCamSearchTags[DkSettings::camData_focal_length]) {
 		rValue = getFocalLength(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_exposure_time]) {
+	else if (key == mCamSearchTags[DkSettings::camData_exposure_time]) {
 		rValue = getExposureTime(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_exposure_mode]) {
+	else if (key == mCamSearchTags[DkSettings::camData_exposure_mode]) {
 		rValue = getExposureMode(metaData);						
 	} 
-	else if (key == camSearchTags[DkSettings::camData_flash]) {
+	else if (key == mCamSearchTags[DkSettings::camData_flash]) {
 		rValue = getFlashMode(metaData);
 	}
 	else if (key == "GPSLatitude" || key == "GPSLongitude") {
@@ -1726,7 +1718,9 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 			qDebug() << "UNICODE conversion started...";
 			rValue = QString::fromUtf16((ushort*)(rValue.data()), rValue.size());
 		}
-
+	}
+	else {
+		rValue = DkUtils::resolveFraction(rValue);	// resolve fractions
 	}
 
 	return rValue;
@@ -1739,32 +1733,32 @@ bool DkMetaDataHelper::hasGPS(QSharedPointer<DkMetaDataT> metaData) const {
 
 QStringList DkMetaDataHelper::getCamSearchTags() const {
 
-	return camSearchTags;
+	return mCamSearchTags;
 }
 
 QStringList DkMetaDataHelper::getDescSearchTags() const {
 
-	return descSearchTags;
+	return mDescSearchTags;
 }
 
 QStringList DkMetaDataHelper::getTranslatedCamTags() const {
 
-	return translatedCamTags;
+	return mTranslatedCamTags;
 }
 
 QStringList DkMetaDataHelper::getTranslatedDescTags() const {
 
-	return translatedDescTags;
+	return mTranslatedDescTags;
 }
 
 QStringList DkMetaDataHelper::getAllExposureModes() const {
 
-	return exposureModes;
+	return mExposureModes;
 }
 
 QMap<int, QString> DkMetaDataHelper::getAllFlashModes() const {
 
-	return flashModes;
+	return mFlashModes;
 }
 
 }

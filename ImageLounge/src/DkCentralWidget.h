@@ -29,7 +29,6 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
-#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -56,6 +55,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageLoader;
+class DkViewPort;
 
 class DkTabInfo : public QObject {
 	Q_OBJECT
@@ -76,8 +76,8 @@ public:
 
 	bool operator==(const DkTabInfo& o) const;
 
-	QFileInfo getFileInfo() const;
-	void setFileInfo(const QFileInfo& fileInfo);
+	QString getFilePath() const;
+	void setFilePath(const QString& filePath);
 
 	QSharedPointer<DkImageContainerT> getImage() const;
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -100,9 +100,9 @@ public:
 	void setMode(int mode);
 
 protected:
-	QSharedPointer<DkImageLoader> imageLoader;
-	int tabIdx;
-	int tabMode;
+	QSharedPointer<DkImageLoader> mImageLoader;
+	int mTabIdx = 0;
+	int mTabMode = tab_recent_files;
 };
 
 class DkViewPort;
@@ -119,25 +119,24 @@ public:
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
 	DkRecentFilesWidget* getRecentFilesWidget() const;
-	QDir getCurrentDir() const;
+	QString getCurrentDir() const;
 
 	void clearAllTabs();
-	void updateTabs();
 	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
 	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
 	void loadSettings();
 	void saveSettings(bool clearTabs = false) const;
 	int currentViewMode() const;
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
-	QFileInfo getCurrentFile() const;
+	QString getCurrentFilePath() const;
 	QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
 
 signals:
-	void loadFileSignal(QFileInfo);
-	void statusInfoSignal(QString, int);
-	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>);
-	void imageLoadedSignal(QSharedPointer<DkImageContainerT>);
-	void imageHasGPSSignal(bool);
+	void loadFileSignal(const QString&) const;
+	void statusInfoSignal(const QString&, int) const;
+	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
+	void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
+	void imageHasGPSSignal(bool) const;
 
 public slots:
 	void imageLoaded(QSharedPointer<DkImageContainerT> img);
@@ -146,7 +145,7 @@ public slots:
 	void tabMoved(int from, int to);
 	void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
 	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1);
-	void addTab(const QFileInfo& fileInfo, int idx = -1);
+	void addTab(const QString& filePath, int idx = -1);
 	void addTab(const QSharedPointer<DkTabInfo> tabInfo);
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
@@ -156,20 +155,20 @@ public slots:
 	void showRecentFiles(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
-	void loadFile(const QFileInfo& fileInfo);
-	void loadFileToTab(const QFileInfo& fileInfo);
+	void loadFile(const QString& filePath);
+	void loadFileToTab(const QString& filePath);
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 
 protected:
-	DkViewPort* viewport;
-	DkThumbScrollWidget* thumbScrollWidget;
-	DkRecentFilesWidget* recentFilesWidget;
+	DkViewPort* mViewport = 0;
+	DkThumbScrollWidget* mThumbScrollWidget = 0;
+	DkRecentFilesWidget* mRecentFilesWidget = 0;
 
-	QTabBar* tabbar;
-	QVector<QSharedPointer<DkTabInfo>> tabInfos;
+	QTabBar* mTabbar = 0;
+	QVector<QSharedPointer<DkTabInfo>> mTabInfos;
 
-	QVector<QWidget*> widgets;
-	QStackedLayout* viewLayout;
+	QVector<QWidget*> mWidgets;
+	QStackedLayout* mViewLayout = 0;
 
 	void createLayout();
 	void updateTabIdx();

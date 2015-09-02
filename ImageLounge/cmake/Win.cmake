@@ -19,11 +19,19 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
 if (MSVC11)
 	# use precompiled code if msvc 11 is found
 	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/x64/" )
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/x64/" )
 	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/Win32/" )
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/Win32/" )
 	endif()
 
+elseif (MSVC14)
+	# use precompiled code if msvc 14 is found
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/Win32/" )
+	endif()
+	
 else ()
 	# search for exiv2
 	if(CMAKE_CL_64)
@@ -34,33 +42,33 @@ else ()
 endif ()
 
 
-find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
-									"ReleaseDLL/exiv2.dll"
-									"DebugDLL/exiv2d.lib"
-									"DebugDLL/exiv2d.dll"
+find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/libexiv2.lib"
+									"ReleaseDLL/libexiv2.dll"
+									"DebugDLL/libexiv2d.lib"
+									"DebugDLL/libexiv2d.dll"
 				PATHS ${EXIV_SEARCH_PATH}
 				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 				
 find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-				PATHS "../exiv2-0.24/msvc2012-nomacs/include" 
+				PATHS "../exiv2-0.25/include" 
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 
 # copy files to the build directory
-if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
-	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.lib AND 
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib)
+if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
+	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll AND 
+	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND 
+	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
 	if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll AND 
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll)
 		if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll AND
-			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1d.dll )
+			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll )
 	
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
@@ -68,11 +76,12 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 			
-			set(EXIV2_LIBRARIES optimized exiv2.lib debug exiv2d.lib)
+			set(EXIV2_LIBRARIES optimized libexiv2.lib debug libexiv2.lib)
 			set(EXIV2_LIBRARY_DIRS "")
 			set(EXIV2_FOUND true)
+			add_definitions(-DEXV_UNICODE_PATH)
 		else()
 			message(WARNING "zlib build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/zlib1.dll and DebugDLL/zlib1d.dll")
 		endif()
@@ -80,7 +89,7 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 		message(WARNING "expat build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexpat.dll and DebugDLL/libexpat.dll")
 	endif()
 else()
-	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/exiv2.dll, ReleaseDLL/exiv2.lib, DebugDLL/exiv2d.dll and DebugDLL/exiv2d.lib")
+	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexiv2.dll, ReleaseDLL/libexiv2.lib, DebugDLL/libexiv2d.dll and DebugDLL/libexiv2d.lib")
 endif()	
 
 # search for opencv
@@ -91,6 +100,8 @@ unset(OpenCV_CONFIG_PATH CACHE)
 unset(OpenCV_LIB_DIR_DBG CACHE)
 unset(OpenCV_LIB_DIR_OPT CACHE)
 unset(OpenCV_LIBRARY_DIRS CACHE)
+# unset(OpenCV_DIR CACHE) # maa that always set it to default!
+
 if(ENABLE_OPENCV)
 	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
@@ -101,7 +112,7 @@ if(ENABLE_OPENCV)
 		unset(OpenCV_LIBS)
 		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
 		foreach(lib ${OpenCV_FIND_COMPONENTS_})
-			set(OpenCV_LIBS "${OpenCV_LIBS}debug;${lib}${OpenCV_SHORT_VERSION}d.lib;optimized;${lib}${OpenCV_SHORT_VERSION}.lib;")
+			set(OpenCV_LIBS "${OpenCV_LIBS}debug;${lib}${OpenCV_SHORT_VERSION}d.lib;optimized;${lib}${OpenCV_SHORT_VERSION}.lib;" )
 		endforeach()
 	endif()
 	SET(OpenCV_LIBRARY_DIRS ${OpenCV_LIBRARY_DIRS} ${OpenCV_LIB_DIR_DBG} ${OpenCV_LIB_DIR_OPT} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_DBG} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_OPT})
@@ -114,6 +125,12 @@ if(ENABLE_OPENCV)
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
+  
+  # unset include directories since OpenCV sets them global
+  get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
+  list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
+  set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
+  
 endif(ENABLE_OPENCV)
 
 # search for libraw
@@ -124,11 +141,19 @@ if(ENABLE_RAW)
 
 	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.16.0/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
+if (MSVC14)
 	if(CMAKE_CL_64)
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/buildfiles/x64")
+		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/build2015/bin/x64")
 	else()
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/buildfiles/Win32")
+		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/build2015/bin/Win32")
 	endif()
+else()
+	if(CMAKE_CL_64)
+		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/build2012/bin/x64")
+	else()
+		set(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/build2012/bin/Win32")
+	endif()
+endif()
 
 	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
 								PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
@@ -176,12 +201,20 @@ if(ENABLE_TIFF)
 		message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib Note: tif_config.h (which is also mandatory) is only available if you have compiled OpenCV on yourself. If you want to use the precompiled version you have to disable TIFF")
 	endif()
 
-	set(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
 	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
 
+  # copy zlib from opencv ... Qt zlib is no longer working with Qt5
+	if(EXISTS "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" AND EXISTS "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib")
+		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+	else()
+		message(FATAL_ERROR, "could not locate zlib liberaries from OpenCV. Needs OpenCV_DIR which contains /3rdparty/lib/Release/zlib.lib, /3rdparty/lib/Debug/zlibd.lib ")
+	endif()
+  set(TIFF_LIBRARIES optimized "libtiff;zlib" debug "libtiffd;zlibd")		
+  
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
 	else(NOT EXISTS ${TIFF_CONFIG_DIR})
@@ -226,14 +259,9 @@ unset(QUAZIP_LIBS CACHE)
 unset(QUAZIP_BUILD_DIRECTORY CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
-unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
 	# QT_ROOT needed by QuaZip cmake 
-    if ("${QT_ROOT}" STREQUAL "")
-        set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../..)
-    endif()    
-	
 	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
 	
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -252,11 +280,6 @@ endif(ENABLE_QUAZIP)
 #add libqpsd
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")
-IF (NOT ENABLE_QT5)
- QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ELSE()
- QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ENDIF()
 
 #add webp
 unset(WEBP_LIBRARY CACHE)

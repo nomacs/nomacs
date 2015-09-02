@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugDLL|Win32">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugDLL|x64">
+      <Configuration>DebugDLL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|Win32">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseDLL|x64">
+      <Configuration>ReleaseDLL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{831EF580-92C8-4CA8-B0CE-3D906280A54D}</ProjectGuid>
+    <RootNamespace>libexiv2</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)exiv2.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
+    <OutDir>$(SolutionDir)bin/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>build/$(Platform)/$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_DEBUG;LIBSSH_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>..\xmpsdk\$(Platform)\$(Configuration);..\expat\(PlatformName)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_DEBUG;LIBSSH_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>..\xmpsdk\$(Platform)\$(Configuration);..\expat\(PlatformName)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Message>copy expat and zlib binaries</Message>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_NDEBUG;LIBSSH_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);..\xmpsdk\$(Platform)\$(Configuration);..\expat\(PlatformName)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Message>copy expat and zlib binaries</Message>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_NDEBUG;LIBSSH_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);..\xmpsdk\$(Platform)\$(Configuration);..\expat\(PlatformName)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_DEBUG;EXV_HAVE_DLL;EXV_BUILDING_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/NODEFAULTLIB:LIBMTD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_DEBUG;EXV_HAVE_DLL;EXV_BUILDING_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/NODEFAULTLIB:LIBMTD %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_NDEBUG;EXV_HAVE_DLL;EXV_BUILDING_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)../include;$(SolutionDir)../include/exiv2;$(SolutionDir)../xmpsdk/include;$(SolutionDir)../../expat/lib;$(SolutionDir)../../zlib-1.2.7</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>HAVE_EXIV2_HPP;EXV_UNICODE_PATH;WIN32;_NDEBUG;EXV_HAVE_DLL;EXV_BUILDING_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\asfvideo.cpp" />
+    <ClCompile Include="..\..\src\basicio.cpp" />
+    <ClCompile Include="..\..\src\bmpimage.cpp" />
+    <ClCompile Include="..\..\src\canonmn.cpp" />
+    <ClCompile Include="..\..\src\casiomn.cpp" />
+    <ClCompile Include="..\..\src\convert.cpp" />
+    <ClCompile Include="..\..\src\cr2image.cpp" />
+    <ClCompile Include="..\..\src\crwimage.cpp" />
+    <ClCompile Include="..\..\src\datasets.cpp" />
+    <ClCompile Include="..\..\src\easyaccess.cpp" />
+    <ClCompile Include="..\..\src\epsimage.cpp" />
+    <ClCompile Include="..\..\src\error.cpp" />
+    <ClCompile Include="..\..\src\exif.cpp" />
+    <ClCompile Include="..\..\src\fujimn.cpp" />
+    <ClCompile Include="..\..\src\futils.cpp" />
+    <ClCompile Include="..\..\src\gifimage.cpp" />
+    <ClCompile Include="..\..\src\http.cpp" />
+    <ClCompile Include="..\..\src\image.cpp" />
+    <ClCompile Include="..\..\src\iptc.cpp" />
+    <ClCompile Include="..\..\src\jp2image.cpp" />
+    <ClCompile Include="..\..\src\jpgimage.cpp" />
+    <ClCompile Include="..\..\src\makernote.cpp" />
+    <ClCompile Include="..\..\src\matroskavideo.cpp" />
+    <ClCompile Include="..\..\src\metadatum.cpp" />
+    <ClCompile Include="..\..\src\minoltamn.cpp" />
+    <ClCompile Include="..\..\src\mrwimage.cpp" />
+    <ClCompile Include="..\..\src\nikonmn.cpp" />
+    <ClCompile Include="..\..\src\olympusmn.cpp" />
+    <ClCompile Include="..\..\src\orfimage.cpp" />
+    <ClCompile Include="..\..\src\panasonicmn.cpp" />
+    <ClCompile Include="..\..\src\pentaxmn.cpp" />
+    <ClCompile Include="..\..\src\pgfimage.cpp" />
+    <ClCompile Include="..\..\src\pngchunk.cpp" />
+    <ClCompile Include="..\..\src\pngimage.cpp" />
+    <ClCompile Include="..\..\src\preview.cpp" />
+    <ClCompile Include="..\..\src\properties.cpp" />
+    <ClCompile Include="..\..\src\psdimage.cpp" />
+    <ClCompile Include="..\..\src\quicktimevideo.cpp" />
+    <ClCompile Include="..\..\src\rafimage.cpp" />
+    <ClCompile Include="..\..\src\riffvideo.cpp" />
+    <ClCompile Include="..\..\src\rw2image.cpp" />
+    <ClCompile Include="..\..\src\samsungmn.cpp" />
+    <ClCompile Include="..\..\src\sigmamn.cpp" />
+    <ClCompile Include="..\..\src\sonymn.cpp" />
+    <ClCompile Include="..\..\src\ssh.cpp" />
+    <ClCompile Include="..\..\src\tags.cpp" />
+    <ClCompile Include="..\..\src\tgaimage.cpp" />
+    <ClCompile Include="..\..\src\tiffcomposite.cpp" />
+    <ClCompile Include="..\..\src\tiffimage.cpp" />
+    <ClCompile Include="..\..\src\tiffvisitor.cpp" />
+    <ClCompile Include="..\..\src\types.cpp" />
+    <ClCompile Include="..\..\src\value.cpp" />
+    <ClCompile Include="..\..\src\version.cpp" />
+    <ClCompile Include="..\..\src\xmp.cpp" />
+    <ClCompile Include="..\..\src\xmpsidecar.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\exiv2\asfvideo.hpp" />
+    <ClInclude Include="..\..\include\exiv2\basicio.hpp" />
+    <ClInclude Include="..\..\include\exiv2\bmpimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\config.h" />
+    <ClInclude Include="..\..\include\exiv2\convert.hpp" />
+    <ClInclude Include="..\..\include\exiv2\cr2image.hpp" />
+    <ClInclude Include="..\..\include\exiv2\crwimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\datasets.hpp" />
+    <ClInclude Include="..\..\include\exiv2\easyaccess.hpp" />
+    <ClInclude Include="..\..\include\exiv2\epsimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\error.hpp" />
+    <ClInclude Include="..\..\include\exiv2\exif.hpp" />
+    <ClInclude Include="..\..\include\exiv2\exv_msvc.h" />
+    <ClInclude Include="..\..\include\exiv2\futils.hpp" />
+    <ClInclude Include="..\..\include\exiv2\gifimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\image.hpp" />
+    <ClInclude Include="..\..\include\exiv2\iptc.hpp" />
+    <ClInclude Include="..\..\include\exiv2\jp2image.hpp" />
+    <ClInclude Include="..\..\include\exiv2\jpgimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\makernote.hpp" />
+    <ClInclude Include="..\..\include\exiv2\matroskavideo.hpp" />
+    <ClInclude Include="..\..\include\exiv2\metadatum.hpp" />
+    <ClInclude Include="..\..\include\exiv2\mrwimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\orfimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\pgfimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\pngimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\preview.hpp" />
+    <ClInclude Include="..\..\include\exiv2\properties.hpp" />
+    <ClInclude Include="..\..\include\exiv2\psdimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\quicktimevideo.hpp" />
+    <ClInclude Include="..\..\include\exiv2\rafimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\rcsid.hpp" />
+    <ClInclude Include="..\..\include\exiv2\riffvideo.hpp" />
+    <ClInclude Include="..\..\include\exiv2\rw2image.hpp" />
+    <ClInclude Include="..\..\include\exiv2\ssh.hpp" />
+    <ClInclude Include="..\..\include\exiv2\tags.hpp" />
+    <ClInclude Include="..\..\include\exiv2\tgaimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\tiffcomposite.hpp" />
+    <ClInclude Include="..\..\include\exiv2\tiffimage.hpp" />
+    <ClInclude Include="..\..\include\exiv2\tiffvisitor.hpp" />
+    <ClInclude Include="..\..\include\exiv2\types.hpp" />
+    <ClInclude Include="..\..\include\exiv2\value.hpp" />
+    <ClInclude Include="..\..\include\exiv2\version.hpp" />
+    <ClInclude Include="..\..\include\exiv2\xmp.hpp" />
+    <ClInclude Include="..\..\include\exiv2\xmpsidecar.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libexpat\libexpat.vcxproj">
+      <Project>{6c4c06a3-6f8f-4067-aa4c-d5f41e1fff9a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\xmpsdk\xmpsdk.vcxproj">
+      <Project>{09877cf4-83b6-44fe-a2e2-629aa5c8093e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\zlib\zlib.vcxproj">
+      <Project>{8308c68d-e12b-4c71-96f4-7137f6beb654}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

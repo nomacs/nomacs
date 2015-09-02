@@ -468,6 +468,31 @@ QString DkUtils::colorToString(const QColor& col) {
 	return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
 }
 
+QStringList DkUtils::filterStringList(const QString& query, const QStringList& list) {
+
+	// white space is the magic thingy
+	QStringList queries = query.split(" ");
+	QStringList resultList = list;
+
+	for (int idx = 0; idx < queries.size(); idx++) {
+		resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
+		qDebug() << "query: " << queries[idx];
+	}
+
+	// if string match returns nothing -> try a regexp
+	if (resultList.empty()) {
+		QRegExp regExp(query);
+		resultList = list.filter(regExp);
+
+		if (resultList.empty()) {
+			regExp.setPatternSyntax(QRegExp::Wildcard);
+			resultList = list.filter(regExp);
+		}
+	}
+
+	return resultList;
+}
+
 QString DkUtils::readableByte(float bytes) {
 
 	if (bytes >= 1024*1024*1024) {
@@ -510,6 +535,25 @@ QString DkUtils::cleanFraction(const QString& frac) {
 	return cleanFrac;
 }
 
+QString DkUtils::resolveFraction(const QString& frac) {
+
+	QString result = frac;
+	QStringList sList = frac.split('/');
+
+	if (sList.size() == 2) {
+	
+		bool nok = false;
+		bool dok = false;
+		int nom = sList[0].toInt(&nok);
+		int denom = sList[1].toInt(&dok);
+
+		if (nok && dok && denom)
+			result = QString::number((double)nom/denom);
+	}
+
+	return result;
+}
+
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
 std::wstring DkUtils::qStringToStdWString(const QString &str) {
 #ifdef _MSC_VER
@@ -531,9 +575,9 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 // DkConvertFileName --------------------------------------------------------------------
 DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx) {
 
-	this->fileName = fileName;
-	this->pattern = pattern;
-	this->cIdx = cIdx;
+	this->mFileName = fileName;
+	this->mPattern = pattern;
+	this->mCIdx = cIdx;
 }
 
 /**
@@ -551,7 +595,7 @@ DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString&
  **/ 
 QString DkFileNameConverter::getConvertedFileName() {
 	
-	QString newFileName = pattern;
+	QString newFileName = mPattern;
 	QRegExp rx("<.*>");
 	rx.setMinimal(true);
 
@@ -576,10 +620,10 @@ QString DkFileNameConverter::getConvertedFileName() {
 
 QString DkFileNameConverter::resolveFilename(const QString& tag) const {
 
-	QString result = fileName;
+	QString result = mFileName;
 	
 	// remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
-	result = result.replace("." + QFileInfo(fileName).suffix(), "");
+	result = result.replace("." + QFileInfo(mFileName).suffix(), "");
 
 	int attr = getIntAttribute(tag);
 
@@ -598,7 +642,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	// append zeros
 	int numZeros = getIntAttribute(tag);
 	int startIdx = getIntAttribute(tag, 2);
-	int fIdx = startIdx+cIdx;
+	int fIdx = startIdx+mCIdx;
 
 	if (numZeros > 0) {
 
@@ -618,7 +662,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 QString DkFileNameConverter::resolveExt(const QString&) const {
 
-	QString result = QFileInfo(fileName).suffix();
+	QString result = QFileInfo(mFileName).suffix();
 
 	return result;
 }

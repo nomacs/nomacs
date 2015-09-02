@@ -1,0 +1,35 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Exif Schema for Exif-specific Properties</h2>
+<p>The following table lists the XMP properties defined solely by Exif.</p>
+<p>Note: A number of Exif 2.3 properties are not included in XMP. These are generally
+ properties that relate directly to the image stream, or that are of little use without access
+ to the image stream. A general XMP principle is that XMP metadata should have value
+ in and of itself, separate from the primary file content. The omitted properties include:
+ StripOffsets, RowsPerStrip, StripByteCounts, JPEGInterchangeFormat, and
+ JPEGInterchangeFormatLength.</p>
+<p>Note: Properties beginning with "GPS" are GPS properties that are also used by DIG-35 and
+ are part of the JPEG-2000 standard.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.exif.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://ns.adobe.com/exif/1.0/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>exif</code></b></li>
+ </ul>
+Reference: <a href="http://www.adobe.com/devnet/xmp.html" title="XMP specification">XMP Specification and Documentation</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_exif__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

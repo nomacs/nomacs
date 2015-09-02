@@ -1,0 +1,27 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Qualified Dublin Core Schema</h2>
+<p>Qualified Dublin Core XMP properties are used under <a href="tags-xmp-dwc.html"><span>Darwin Core</span></a>.
+ <ul>
+  <li>Exiv2 keys are nested: <b><code>Xmp.dwc.Record/dcterms:&lt;Property&gt;</code></b></li>
+  <li>The schema namespace URI is <b><code>http://purl.org/dc/terms/</code></b></li>
+  <li>The schema namespace prefix  <b><code>dcterms</code></b> is only used for DwC Location properties: <b><code>Xmp.dcterms.Location/dwc:&lt;Property&gt;</code></b></li>
+ </ul>
+Reference: <a href="http://dublincore.org/documents/dcmi-terms/" title="DCMI Metadata Terms">DCMI Metadata Terms</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_dcterms__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

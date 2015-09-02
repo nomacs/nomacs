@@ -1,0 +1,31 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Photo One Media Pro schema</h2>
+<p>Photo One Media Pro XMP properties. Program was previously known as Microsoft Expression Media and iView Media Pro.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.mediapro.&lt;Property&gt;</code></b></li>
+  <li>The schema namespace URI is <b><code>http://ns.iview-multimedia.com/mediapro/1.0/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>mediapro</code></b></li>
+ </ul>
+Reference: ?</p>
+
+<p>Click on a column header to sort the table.</p>
+
+__xmp_mediapro__
+
+<p>While owned by Microsoft the <a href="tags-xmp-expressionmedia.html" title="Microsoft Expression Media schema">Microsoft Expression Media schema</a> was used.</p>
+
+__xmp_expressionmedia__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

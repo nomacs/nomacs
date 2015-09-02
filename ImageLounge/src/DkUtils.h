@@ -70,6 +70,9 @@
 #endif
 #endif
 
+// fixes Qt's damn no latin1 on tr() policy
+#define dk_degree_str QString::fromLatin1("°")
+
 // Qt defines
 class QComboBox;
 class QColor;
@@ -162,6 +165,7 @@ public:
 	static QFileInfo urlToLocalFile(const QUrl& url);
 	static QString colorToString(const QColor& col);
 	static QString readableByte(float bytes);
+	static QStringList filterStringList(const QString& query, const QStringList& list);
 
 #ifdef WITH_OPENCV
 	/**
@@ -365,6 +369,7 @@ public:
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString cleanFraction(const QString& frac);
+	static QString resolveFraction(const QString& frac);
 	static std::wstring qStringToStdWString(const QString &str);
 	static QString stdWStringToQString(const std::wstring &str);
 
@@ -497,10 +502,9 @@ protected:
 	QString resolveExt(const QString& tag) const;
 	int getIntAttribute(const QString& tag, int idx = 1) const;
 
-	QString fileName;
-	QString pattern;
-	QString newFileName;
-	int cIdx;
+	QString mFileName;
+	QString mPattern;
+	int mCIdx;
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html

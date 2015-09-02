@@ -27,24 +27,11 @@
 
 #pragma once
 
+#include "DkBaseViewPort.h"
+#include "DkImageContainer.h"
+#include "DkTimer.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
-// Qt
-#include <QDesktopWidget>
-#include <QGraphicsView>
-#include <QPrintDialog>
-#include <QPrintPreviewDialog>
-#include <QMessageBox>
-#include <QWidget>
-#include <QLabel>
-#include <QInputDialog>
-#include <QPainterPathStroker>
-#include <QBitmap>
-#include <QApplication>
-#include <QUrl>
-#include <QPrinter>
-#include <QGradientStops>
-#include <QSwipeGesture>
-#include <QStackedLayout>
 
 #if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
@@ -61,302 +48,16 @@
 #endif
 #endif
 
-//#ifdef Q_WS_WIN
-//#include <dwmapi.h>	// needed to see if aero is on
-//#pragma comment (lib, "dwmapi.lib")
-//#endif
-
-// my stuff
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkNetwork.h"
-#include "DkSettings.h"
-#include "DkToolbars.h"
-#include "DkBaseViewPort.h"
-#include "DkPluginInterface.h"
-#include "DkTimer.h"
-
-//#include "DkDialog.h"
-
-#include "DkMath.h"
-
-//#ifdef DK_DLL
-//#define DllExport Q_DECL_EXPORT
-//#else
-//#define DllExport
-//#endif
+class QVBoxLayout;
 
 namespace nmc {
 
 // some dummies
-class DkFilePreview;
-class DkThumbScrollWidget;
-class DkMetaDataHUD;
-class DkCommentWidget;
-
-class DkDelayedInfo : public QObject {
-	Q_OBJECT
-
-public:
-	DkDelayedInfo(int time = 0, QObject* parent = 0) : QObject(parent) {
-		timer = new QTimer();
-		timer->setSingleShot(true);
-		
-		if (time)
-			timer->start(time);
-
-		connect(timer, SIGNAL(timeout()), this, SLOT(sendInfo()));
-	}
-
-	virtual ~DkDelayedInfo() {
-
-		if (timer && timer->isActive())
-			timer->stop();
-
-		if (timer)
-			delete timer;
-
-		timer = 0;
-	}
-
-	void stop() {
-
-		if (timer && timer->isActive())
-			timer->stop();
-		else
-			emit infoSignal(1);
-	}
-
-	void setInfo(int time = 1000) {
-
-		if (!timer)
-			return;
-
-		timer->start(time);
-	}
-
-signals:
-	void infoSignal(int time);
-
-protected slots:
-	virtual void sendInfo() {
-		emit infoSignal(-1);
-	}
-
-protected:
-	QTimer* timer;
-
-};
-
-
-class DkDelayedMessage : public DkDelayedInfo {
-	Q_OBJECT
-
-public:
-	DkDelayedMessage(QString msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
-		this->msg = msg;
-	}
-
-	~DkDelayedMessage() {}
-
-	void stop() {
-		
-		if (timer && timer->isActive())
-			timer->stop();
-		else
-			emit infoSignal(msg, 1);
-	}
-
-	void setInfo(QString& msg, int time = 1000) {
-
-		DkDelayedInfo::setInfo(time);
-		this->msg = msg;
-	}
-
-signals:
-	void infoSignal(QString msg, int time);
-
-protected slots:
-	void sendInfo() {
-		
-		emit infoSignal(msg, -1);
-	}
-
-protected:
-	QString msg;
-
-};
-
-class DkViewPort;
-
-class DllExport DkControlWidget : public QWidget {
-	Q_OBJECT
-
-public:
-	
-	enum VerPos {top_scroll = 0, top_thumbs, top_metadata, top_info, ver_center, bottom_info, bottom, bottom_metadata, bottom_thumbs, ver_pos_end};
-	enum HorPos {left_thumbs = 0, left_metadata, left, hor_center, right, right_metadata, right_thumbs, hor_pos_end};
-
-	enum InfoPos {
-		center_label,
-		bottom_left_label,
-		bottom_right_label,
-		top_left_label
-	};
-
-	enum Widgets {
-		last_widget = -1,
-		hud_widget,
-		crop_widget,
-
-		widget_end
-	};
-
-	DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = 0);
-	virtual ~DkControlWidget() {};
-
-	void setFullScreen(bool fullscreen);
-
-	//DkThumbPool* getThumbPool() {
-	//	return thumbPool;
-	//}
-
-	DkFilePreview* getFilePreview() {
-		return filePreview;
-	}
-
-#ifdef WITH_FOLDER_SCROLLBAR
-	DkFolderScrollBar* getScroller() {
-		return folderScroll;
-	}
-#endif
-
-	DkMetaDataHUD* getMetaDataWidget() {
-		return metaDataInfo;
-	}
-
-	DkCommentWidget* getCommentWidget() {
-		return commentWidget;
-	}
-
-	DkOverview* getOverview() {
-		return zoomWidget->getOverview();
-	}
-
-	DkZoomWidget* getZoomWidget() const {
-		return zoomWidget;
-	}
-
-	DkPlayer* getPlayer() {
-		return player;
-	}
-
-	DkFileInfoLabel* getFileInfoLabel() {
-		return fileInfoLabel;
-	}
-
-	DkHistogram* getHistogram() {
-		return histogram;
-	}
-
-	DkCropWidget* getCropWidget() {
-		return cropWidget;
-	}
-
-	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
-
-	void stopLabels();
-	void showWidgetsSettings();
-
-	void settingsChanged();
-
-public slots:
-	void showPreview(bool visible);
-	void showMetaData(bool visible);
-	void showFileInfo(bool visible);
-	void showPlayer(bool visible);
-	void hideCrop(bool hide = true);
-	void showCrop(bool visible);
-	void showOverview(bool visible);
-	void showHistogram(bool visible);
-	void showCommentWidget(bool visible);
-	void switchWidget(QWidget* widget = 0);
-	void changeMetaDataPosition(int pos);
-	void changeThumbNailPosition(int pos);
-
-#ifdef WITH_FOLDER_SCROLLBAR
-	void showScroller(bool visible);
-#endif
-
-	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
-	void setInfo(QString msg, int time = 3000, int location = center_label);
-	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
-	virtual void setSpinner(int time = 3000);
-	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
-	void updateRating(int rating);
-
-	void imageLoaded(bool loaded);
-
-	void update();
-
-protected:
-
-	// events
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
-
-	//void resizeEvent(QResizeEvent *event);
-
-	// functions
-	void init();
-	void connectWidgets();
-	
-	QVector<QWidget*> widgets;
-	QStackedLayout* layout;
-	QWidget* lastActiveWidget;
-	QGridLayout* hudLayout;
-
-	DkViewPort* viewport;
-	DkCropWidget* cropWidget;
-
-	DkFilePreview* filePreview;
-	DkMetaDataHUD* metaDataInfo;
-	DkCommentWidget* commentWidget;
-	DkZoomWidget* zoomWidget;
-	DkPlayer* player;
-	DkHistogram* histogram;
-	
-#ifdef WITH_FOLDER_SCROLLBAR
-	DkFolderScrollBar* folderScroll;
-#endif
-	DkFileInfoLabel* fileInfoLabel;
-	DkRatingLabelBg* ratingLabel;
-
-	DkDelayedMessage* delayedInfo;
-	DkDelayedInfo* delayedSpinner;
-
-	DkAnimationLabel* spinnerLabel;
-	DkLabelBg* centerLabel;
-	DkLabelBg* bottomLabel;
-	DkLabelBg* bottomLeftLabel;
-
-//	DkThumbPool* thumbPool;
-
-	QSharedPointer<DkImageContainerT> imgC;
-
-	QLabel* wheelButton;
-
-	QPointF enterPos;
-	int rating;
-
-};
-
 class DkImageLoader;
 class DkLoader;
+class DkControlWidget;
+class DkPeer;
+class DkRotatingRect;
 
 class DllExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
@@ -387,15 +88,15 @@ public:
 	void setFullScreen(bool fullScreen);
 		
 	QTransform getWorldMatrix() { 
-		return worldMatrix;
+		return mWorldMatrix;
 	};
 
 	QTransform* getWorldMatrixPtr() {
-		return &worldMatrix;
+		return &mWorldMatrix;
 	};
 
 	QTransform* getImageMatrixPtr() {
-		return &imgMatrix;
+		return &mImgMatrix;
 	};
 
 	void setPaintWidget(QWidget* widget, bool removeWidget);
@@ -408,9 +109,9 @@ public:
 	//DkImageLoader* getImageLoader();
 	void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
 	DkControlWidget* getController();
-	bool isTestLoaded() { return testLoaded; };
+	bool isTestLoaded() { return mTestLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
-		this->visibleStatusbar = visibleStatusbar;
+		mVisibleStatusbar = visibleStatusbar;
 	};
 	
 	QString getCurrentPixelHexValue();
@@ -419,17 +120,20 @@ public:
 	void applyPluginChanges();
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
+	// fun
+	void toggleDissolve();
+
 signals:
-	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	void sendNewFileSignal(qint16 op, QString filename = "");
-	void sendImageSignal(QImage img, QString title);
-	void statusInfoSignal(QString msg, int);
-	void newClientConnectedSignal(bool connect, bool local);
-	void movieLoadedSignal(bool isMovie);
-	void infoSignal(QString msg);	// needed to forward signals
-	void addTabSignal(const QFileInfo& fileInfo);
-	void zoomSignal(float zoomLevel);
-	void mouseClickSignal(QMouseEvent* event, QPoint imgPos);
+	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
+	void sendNewFileSignal(qint16 op, QString filename = "") const;
+	void sendImageSignal(QImage img, QString title) const;
+	void statusInfoSignal(const QString& msg, int) const;
+	void newClientConnectedSignal(bool connect, bool local) const;
+	void movieLoadedSignal(bool isMovie) const;
+	void infoSignal(const QString& msg) const;	// needed to forward signals
+	void addTabSignal(const QString& filePath) const;
+	void zoomSignal(float zoomLevel) const;
+	void mouseClickSignal(QMouseEvent* event, QPoint imgPos) const;
 
 public slots:
 	void rotateCW();
@@ -452,9 +156,8 @@ public slots:
 	void tcpSendImage(bool silent = false);
 	
 	// file actions
-	void loadFile(QFileInfo file);
+	void loadFile(const QString& filePath);
 	void reloadFile();
-	void loadFullFile();
 	void loadNextFileFast();
 	void loadPrevFileFast();
 	void loadFileFast(int skipIdx);
@@ -467,7 +170,7 @@ public slots:
 	bool unloadImage(bool fileChange = true);
 	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
-	void cropImage(DkRotatingRect rect, const QColor& bgCol);
+	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
 	void repeatZoom();
 
 	// copy & paste
@@ -490,10 +193,11 @@ public slots:
 	void nextMovieFrame();
 	void previousMovieFrame();
 	void animateFade();
-	void animateMove();
 	virtual void togglePattern(bool show);
 
 protected:
+	
+	// events
 	virtual void dragLeaveEvent(QDragLeaveEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
@@ -502,43 +206,34 @@ protected:
 	virtual bool event(QEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
-	QFileInfo thumbFile;
-	bool thumbLoaded;
-	bool testLoaded;
-	bool visibleStatusbar;
-	bool gestureStarted;
+	bool mTestLoaded = false;
+	bool mVisibleStatusbar = false;
+	bool mGestureStarted = false;
 
-	QRectF oldImgRect;
-	QRectF oldImgViewRect;
-	QTransform oldWorldMatrix;
-	QTransform oldImgMatrix;
+	QRectF mOldImgRect;
 
-	QTimer* skipImageTimer;
-	QTimer* repeatZoomTimer;
+	QTimer* mRepeatZoomTimer = new QTimer(this);
 	
 	// fading stuff
-	QTimer* fadeTimer;
-	DkTimer fadeTime;
-	QImage fadeBuffer;
-	float fadeOpacity;
-	QRectF fadeImgViewRect;
-	QRectF fadeImgRect;
+	QTimer* mFadeTimer = new QTimer(this);
+	DkTimer mFadeTime;
+	QImage mFadeBuffer;
+	float mFadeOpacity;
+	QRectF mFadeImgViewRect;
+	QRectF mFadeImgRect;
 	
-	// moving stuff - not used yet
-	QPoint moveStep;
-	float targetScale;
-	QTimer* moveTimer;
+	// fun
+	bool mDissolveImage = false;
 	
-	QImage imgBg;
+	QImage mImgBg;
 
-	QVBoxLayout* paintLayout;
-	DkControlWidget* controller;
-	QSharedPointer<DkImageLoader> loader;
+	QVBoxLayout* mPaintLayout;
+	DkControlWidget* mController;
+	QSharedPointer<DkImageLoader> mLoader;
 
-	QPoint currentPixelPos;
-	//bool pluginImageWasApplied;
+	QPoint mCurrentPixelPos;
+	
 	// functions
-
 #if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
 	virtual int swipeRecognition(QNativeGestureEvent* event);
@@ -552,7 +247,6 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
 	void showZoom();
-	//QPoint newCenter(QSize s);	// for frameless
 	void toggleLena();
 	void getPixelInfo(const QPoint& pos);
 
@@ -569,11 +263,11 @@ public:
 	void addStartActions(QAction *startAction, QIcon *startIcon = 0);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	virtual void setMainGeometry(const QRect &geometry) {
-		mainScreen = geometry;
+		mMainScreen = geometry;
 	};
 
 	virtual QRect getMainGeometry() {
-		return mainScreen;
+		return mMainScreen;
 	};
 
 public slots:
@@ -588,13 +282,6 @@ protected:
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
 
-	// variables
-	QVector<QAction*> startActions;
-	QVector<QIcon*> startIcons;
-	QVector<QRectF> startActionsRects;
-	QVector<QPixmap> startActionsIcons;
-	QRect mainScreen;
-
 	// functions
 	QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
@@ -603,6 +290,13 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
+
+	// variables
+	QVector<QAction*> mStartActions;
+	QVector<QIcon*> mStartIcons;
+	QVector<QRectF> mStartActionsRects;
+	QVector<QPixmap> mStartActionsIcons;
+	QRect mMainScreen;	// TODO: let user choose which one to take
 };
 
 class DllExport DkViewPortContrast : public DkViewPort {
@@ -615,11 +309,10 @@ public:
 	void release();
 
 signals:
-	void tFSliderAdded(qreal pos);
-	void imageModeSet(int mode);
+	void tFSliderAdded(qreal pos) const;
+	void imageModeSet(int mode) const;
 
 public slots:
-	//TODO: remove the functions, which are not used anymore:
 	void changeChannel(int channel);
 	void changeColorTable(QGradientStops stops);
 	void pickColor(bool enable);
@@ -634,102 +327,18 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
+
 private:
-	QImage falseColorImg;
-	bool drawFalseColorImg;
-	bool isColorPickerActive;
-	int activeChannel;
-	//Mat origImg, cmImg, imgUC3;
+	QImage mFalseColorImg;
+	bool mDrawFalseColorImg = false;
+	bool mIsColorPickerActive = false;
+	int mActiveChannel = 0;
 		
-	QVector<QImage> imgs;
-	QVector<QRgb> colorTable;
+	QVector<QImage> mImgs;
+	QVector<QRgb> mColorTable;
+
+	// functions
 	void drawImageHistogram();
-
 };
-
-
-//// custom events --------------------------------------------------------------------
-//class DkInfoEvent : public QEvent {
-//
-//public:
-//
-//	DkInfoEvent() : QEvent(DkInfoEvent::type()) {};
-//
-//	DkInfoEvent(QString& msg, int time = 3000, int infoType = DkInfoLabel::center_label) : QEvent(DkInfoEvent::type()) {
-//		this->msg = msg;
-//		this->time = time;
-//		this->infoType = infoType;
-//	}
-//
-//	virtual ~DkInfoEvent() {}
-//
-//	QString getMessage() {
-//		
-//		return msg;
-//	}
-//
-//	int getTime() {
-//
-//		return time;
-//	}
-//
-//	int getInfoType() {
-//
-//		return infoType;
-//	}
-//
-//	static QEvent::Type type() {
-//		return infoEventType;
-//	}
-//
-//private:
-//
-//	static QEvent::Type infoEventType;
-//	QString msg;
-//	int time;
-//	int infoType;
-//
-//};
-//
-//class DkLoadImageEvent : public QEvent {
-//
-//public:
-//
-//	DkLoadImageEvent() : QEvent(DkLoadImageEvent::type()) {
-//
-//		this->title = "DkNoMacs";
-//	}
-//
-//	DkLoadImageEvent(QImage img, QString title = QString("DkNoMacs"), QString attr = QString()) : QEvent(DkLoadImageEvent::type()) {
-//		this->img = img;
-//		this->title = title;
-//		this->attr = attr;
-//	};
-//
-//	virtual ~DkLoadImageEvent() {};
-//
-//	QImage getImage() {
-//		return img;	
-//	};
-//
-//	QString getTitle() {
-//		return title;
-//	};
-//
-//	QString getAttr() {
-//		return attr;
-//	};
-//
-//	static QEvent::Type type() {
-//		return eventType;
-//	};
-//
-//private:
-//
-//	static QEvent::Type eventType;
-//	QImage img;
-//	QString title;
-//	QString attr;
-//};
 
 };

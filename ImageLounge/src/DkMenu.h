@@ -110,10 +110,10 @@ protected:
 	void leaveEvent(QEvent* event);
 
 private:
-	QList<QMenu*> menus;
-	bool active;
-	int timeToShow;
-	QPointer<QTimer> timerMenu;
+	QList<QMenu*> mMenus;
+	bool mActive = false;
+	int mTimeToShow = 5000;
+	QPointer<QTimer> mTimerMenu;
 };
 
 class DkTcpAction : public QAction {
@@ -130,9 +130,9 @@ public:
 	void setTcpActions(QList<QAction*>* actions);
 
 signals:
-	void synchronizeWithSignal(quint16);
-	void disableSynchronizeWithSignal(quint16);
-	void enableActions(bool enable);
+	void synchronizeWithSignal(quint16) const;
+	void disableSynchronizeWithSignal(quint16) const;
+	void enableActions(bool enable) const;
 
 public slots:
 	void synchronize(bool checked);
@@ -148,8 +148,7 @@ class DkTcpMenu : public QMenu {
 
 public:
 
-	DkTcpMenu(QWidget* parent = 0, DkManagerThread* clientThread = 0);
-	DkTcpMenu(const QString& title, QWidget* parent = 0, DkManagerThread* clientThread = 0);
+	DkTcpMenu(const QString& title = QString(), QWidget* parent = 0, DkManagerThread* clientThread = 0);
 	~DkTcpMenu();
 
 	void setClientManager(DkManagerThread* clientThread);
@@ -158,7 +157,7 @@ public:
 	void clear();
 
 signals:
-	void synchronizeWithSignal(quint16);
+	void synchronizeWithSignal(quint16) const;
 
 public slots:
 	void enableActions(bool enable = false, bool local = false);
@@ -168,10 +167,8 @@ protected slots:
 
 protected:
 
-	QList<DkPeer*> peers;
-	QList<QAction*> clients;
-	QList<QAction*> tcpActions;
-	DkManagerThread* clientThread;
-	bool noClientsFound;
+	QList<QAction*> mTcpActions;
+	DkManagerThread* mClientThread = 0;
+	bool mNoClientsFound = false;
 };
 };

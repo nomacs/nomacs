@@ -40,6 +40,7 @@
 #else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 #endif
 #endif
 #pragma warning(pop)		// no warnings from includes - end
@@ -80,6 +81,10 @@ public:
 #ifdef WIN32
 	static QImage fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h);
 	static QPixmap fromWinHICON(HICON icon);
+
+	static HBITMAP createIconMask(const QBitmap& bitmap);
+	static HBITMAP toWinHBITMAP(const QPixmap& pm);
+	static HICON toWinHICON(const QPixmap& pm);
 #endif
 
 #ifdef WITH_OPENCV
@@ -89,6 +94,8 @@ public:
 	static void mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable);
 	static void gammaToLinear(cv::Mat& img);
 	static void linearToGamma(cv::Mat& img);
+	static void logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int flags);
+	static void tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert = false);
 #endif
 
 	static QString getBufferSize(const QImage& img);
@@ -111,6 +118,7 @@ public:
 	static bool alphaChannelUsed(const QImage& img);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
 	static QImage createThumb(const QImage& img);
+	static bool addToImage(QImage& img, unsigned char val = 1);
 	static QColor getMeanColor(const QImage& img);
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 };
@@ -119,13 +127,13 @@ class DllExport DkImageStorage : public QObject {
 	Q_OBJECT
 
 public:
-	DkImageStorage(QImage img = QImage());
+	DkImageStorage(const QImage& img = QImage());
 
-	void setImage(QImage img);
+	void setImage(const QImage& img);
 	QImage getImageConst() const;
 	QImage getImage(float factor = 1.0f);
 	bool hasImage() const {
-		return !img.isNull();
+		return !mImg.isNull();
 	}
 
 public slots:
@@ -133,17 +141,17 @@ public slots:
 	void antiAliasingChanged(bool antiAliasing);
 
 signals:
-	void imageUpdated();
-	void infoSignal(QString msg);
+	void imageUpdated() const;
+	void infoSignal(const QString& msg) const;
 
 protected:
-	QImage img;
-	QVector<QImage> imgs;
+	QImage mImg;
+	QVector<QImage> mImgs;
 
-	QMutex mutex;
-	QThread* computeThread;
-	bool busy;
-	bool stop;
+	QMutex mMutex;
+	QThread* mComputeThread = 0;
+	bool mBusy = false;
+	bool mStop = true;
 };
 
 };
