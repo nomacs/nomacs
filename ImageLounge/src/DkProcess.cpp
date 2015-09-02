@@ -439,7 +439,12 @@ bool DkBatchProcess::process() {
 		mFailure++;
 	}
 
-	return deleteOrRestoreExisting();
+	if (!deleteOrRestoreExisting()) {
+		mFailure++;
+		return false;
+	}
+
+	return true;
 }
 
 bool DkBatchProcess::renameFile() {
