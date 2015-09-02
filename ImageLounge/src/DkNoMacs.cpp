@@ -549,7 +549,7 @@ void DkNoMacs::createIcons() {
 
 void DkNoMacs::createMenu() {
 
-	this->setMenuBar(mMenu);
+	setMenuBar(mMenu);
 	mFileMenu = mMenu->addMenu(tr("&File"));
 	mFileMenu->addAction(mFileActions[menu_file_open]);
 	mFileMenu->addAction(mFileActions[menu_file_open_dir]);
@@ -3123,6 +3123,9 @@ void DkNoMacs::showMenuBar(bool show) {
 	mPanelActions[menu_panel_menu]->setChecked(DkSettings::app.showMenuBar);
 	mMenu->setTimeToShow(tts);
 	mMenu->showMenu();
+
+	if (!show)
+		mMenu->hide();
 }
 
 void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {

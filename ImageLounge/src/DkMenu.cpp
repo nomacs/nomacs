@@ -55,6 +55,7 @@ DkMenuBar::DkMenuBar(QWidget *parent, int timeToShow) : QMenuBar(parent) {
 	mTimerMenu->setSingleShot(true);
 	connect(mTimerMenu, SIGNAL(timeout()), this, SLOT(hideMenu()));
 
+
 	// uncomment if you want to show menu on start-up
 	//if (timeToShow != -1)
 	//	timerMenu->start(timeToShow);
@@ -123,7 +124,7 @@ void DkMenuBar::hideMenu() {
 
 void DkMenuBar::setTimeToShow(int timeToShow) {
 
-	this->mTimeToShow = timeToShow;
+	mTimeToShow = timeToShow;
 }
 
 void DkMenuBar::enterEvent(QEvent* event) {
