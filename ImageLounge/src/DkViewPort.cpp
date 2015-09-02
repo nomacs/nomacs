@@ -35,6 +35,7 @@
 #include "DkThumbsWidgets.h"		// needed in the connects -> shall we move them to mController?
 #include "DkMetaDataWidgets.h"
 #include "DkToolbars.h"
+#include "DkMetaData.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -1604,8 +1605,8 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
 	// freud - we just need this if we want to manually crop...
-	//QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-	//metaData->saveRectToXMP(rect, imgC->image().width(), imgC->image().height());
+	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+	metaData->saveRectToXMP(rect, imgC->image().size());
 	
 	qDebug() << "cropping...";
 }

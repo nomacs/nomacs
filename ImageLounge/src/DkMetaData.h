@@ -117,13 +117,13 @@ public:
 	void printMetaData() const; //only for debug
 
 	//code for metadata crop:
-	void xmpSidecarTest();
 	void saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
-	Exiv2::Image::AutoPtr getExternalXmp();
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
 
 protected:
 	QRectF getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const;
+	Exiv2::Image::AutoPtr getExternalXmp();
+	//void xmpSidecarTest();
 
 	enum {
 		not_loaded,

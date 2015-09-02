@@ -1313,13 +1313,19 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 	qDebug() << "XMP sidecar path: " << xmpFilePath;
 
 	if (xmpFileInfo.exists()) {
-		xmpImg = Exiv2::ImageFactory::open(xmpFilePath.toStdString());
-		xmpImg->readMetadata();
+		try {
+			xmpImg = Exiv2::ImageFactory::open(xmpFilePath.toStdString());
+			xmpImg->readMetadata();
+		}
+		catch (...) {
+			qWarning() << "Could not read xmp from: " << xmpFilePath;
+		}
 	}
-	else {
+	if (!xmpImg.get()) {
 		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:
 		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
 		xmpImg->setMetadata(*mExifImg);
+		xmpImg->writeMetadata();	// we need that to add xmp afterwards - but why?
 	}
 
 	return xmpImg;
@@ -1358,43 +1364,33 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString x
 
 }
 
-
-void DkMetaDataT::xmpSidecarTest() {
-
-
-	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
-	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
-
-	// Set the cropping coordinates here in percentage:
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", "0.086687");
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", "0.334223");
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", "0.800616");
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", "0.567775");
-
-	// 
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", "28.074855");
-
-	
-	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
-	// These key values are set by camera raw automatically, but I have found no documentation for them
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
-	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
-	
-
-	xmpSidecar->setXmpData(sidecarXmpData);
-	xmpSidecar->writeMetadata();
-
-
-
-}
-
-
-
-
-
+//void DkMetaDataT::xmpSidecarTest() {
+//
+//
+//	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
+//	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
+//
+//	// Set the cropping coordinates here in percentage:
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", "0.086687");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", "0.334223");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", "0.800616");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", "0.567775");
+//
+//	// 
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", "28.074855");
+//
+//	
+//	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+//	// These key values are set by camera raw automatically, but I have found no documentation for them
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+//	
+//
+//	xmpSidecar->setXmpData(sidecarXmpData);
+//	xmpSidecar->writeMetadata();
+//}
 
 // DkMetaDataHelper --------------------------------------------------------------------
-
 void DkMetaDataHelper::init() {
 
 	mCamSearchTags.append("ImageSize");

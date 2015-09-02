@@ -245,7 +245,7 @@ void DkRotatingRect::setCenter(const QPointF& center) {
 double DkRotatingRect::getAngle() const {
 
 	// default upper left corner is 0
-	DkVector xV = rect[3] - rect[0];
+	DkVector xV = rect[1] - rect[0];
 	return xV.angle();
 }
 
