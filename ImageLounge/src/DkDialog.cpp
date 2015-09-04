@@ -2421,7 +2421,7 @@ void DkPrintPreviewDialog::init() {
 #ifdef WIN32
 		mPrinter = new QPrinter(QPrinter::HighResolution);
 #else
-		printer = new QPrinter;
+		mPrinter = new QPrinter;
 #endif
 	}
 	
