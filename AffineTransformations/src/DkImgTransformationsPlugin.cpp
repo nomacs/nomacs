@@ -947,7 +947,6 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	rotationBox->setToolTip(tip);
 	rotationBox->setStatusTip(tip);
 
-
 	//auto rotation selection
 	autoRotateButton = new QPushButton(tr("Auto &Rotate"), this);
 	autoRotateButton->setObjectName("autoRotateButton");

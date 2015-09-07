@@ -194,11 +194,11 @@ QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString
 	segM.compute();
 	segM.filterDuplicates();
 
-	// do whatever the user requested
+	// crop image
 	if(runID == mRunIDs[id_crop_to_page]) {
 		imgC->setImage(segM.getCropped(imgC->image()));
 	}
-	// do whatever the user requested
+	// save to metadata
 	if(runID == mRunIDs[id_crop_to_metadata]) {
 		
 		if (segM.getRects().empty())
@@ -208,9 +208,9 @@ QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString
 			
 			QSharedPointer<DkMetaDataT> m = imgC->getMetaData();
 			m->saveRectToXMP(rect, imgC->image().size());
-			qDebug() << "I wrote the cropping...";
 		}
 	}
+	// draw rectangles to the image
 	else if(runID == mRunIDs[id_draw_to_page]) {
 		
 		QImage dImg = imgC->image();
