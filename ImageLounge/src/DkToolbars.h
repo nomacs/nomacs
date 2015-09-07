@@ -89,9 +89,9 @@ public:
 	//void paintSlider(QPainter *painter);
 
 signals:
-	void sliderMoved(DkColorSlider *sender, int dragDistX, int yPos);
-	void sliderActivated(DkColorSlider *sender);
-	void colorChanged(DkColorSlider *slider);
+	void sliderMoved(DkColorSlider *sender, int dragDistX, int yPos) const;
+	void sliderActivated(DkColorSlider *sender) const;
+	void colorChanged(DkColorSlider *slider) const;
 				
 public slots:
 	virtual void paintEvent(QPaintEvent* event);
@@ -102,11 +102,11 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
-	int sliderWidth, sliderHeight, sliderHalfWidth;
-	bool isActive;
-	int dragStartX;
-	QColor color;
-	qreal normedPos;
+	int mSliderWidth = 0, mSliderHeight = 0, mSliderHalfWidth = 0;
+	bool mIsActive = false;
+	int mDragStartX = 0;
+	QColor mColor;
+	qreal mNormedPos;
 };
 
 class DkGradient : public QWidget {
@@ -122,7 +122,7 @@ public:
 	void setGradient(const QLinearGradient& gradient);
 
 signals:
-	void gradientChanged();
+	void gradientChanged() const;
 		
 public slots:
 	virtual void paintEvent(QPaintEvent* event);
@@ -144,15 +144,15 @@ private:
 	qreal getNormedPos(int pos);
 	int getAbsolutePos(qreal pos);
 
-	int clickAreaHeight;
-	int deleteSliderDist;
-	QVector<DkColorSlider*> sliders;
-	bool isSliderDragged;
-	QLinearGradient gradient;
-	int sliderWidth, halfSliderWidth;
+	int mClickAreaHeight;
+	int mDeleteSliderDist;
+	QVector<DkColorSlider*> mSliders;
+	bool mIsSliderDragged = false;
+	QLinearGradient mGradient;
+	int mSliderWidth = 0, mHalfSliderWidth = 0;
 
-	DkColorSlider *activeSlider;
-	bool isActiveSliderExisting;
+	DkColorSlider *mActiveSlider = 0;
+	bool mIsActiveSliderExisting = false;
 };
 
 enum toolBarIcons {
@@ -176,7 +176,6 @@ enum imageModes {
 	mode_rgb,
 };
 
-
 class DkTransferToolBar : public QToolBar {
 	Q_OBJECT
 
@@ -186,12 +185,12 @@ public:
 		
 
 signals:
-	void pickColorRequest(bool enabled);
-	void colorTableChanged(QGradientStops stops);
-	void channelChanged(int channel);
-	void transferFunctionChanged(int channel, QGradientStops stops);
-	void tFEnabled(bool);
-	void gradientChanged();
+	void pickColorRequest(bool enabled) const;
+	void colorTableChanged(QGradientStops stops) const;
+	void channelChanged(int channel) const;
+	void transferFunctionChanged(int channel, QGradientStops stops) const;
+	void tFEnabled(bool) const;
+	void gradientChanged() const;
 
 public slots:
 	virtual void paintEvent(QPaintEvent* event);
@@ -219,22 +218,23 @@ private:
 	void createIcons();
 	void applyImageMode(int mode);
 	void enableToolBar(bool enable);
-	QCheckBox *enableTFCheckBox;
+	
+	QCheckBox *mEnableTFCheckBox = 0;
 		
-	QImage m_shade;
-	QImage sliderImg, activeSliderImg;
+	QImage mShade;
+	QImage mSliderImg, mActiveSliderImg;
 
-	QVector<QAction *> toolBarActions;
-	QVector<QIcon> toolBarIcons;
+	QVector<QAction *> mToolBarActions;
+	QVector<QIcon> mToolBarIcons;
 		
-	DkGradient *gradient;
-	QComboBox *channelComboBox;
+	DkGradient *mGradient = 0;
+	QComboBox *mChannelComboBox = 0;
 
-	QComboBox* historyCombo;
-	QVector<QLinearGradient> oldGradients;
+	QComboBox* mHistoryCombo = 0;
+	QVector<QLinearGradient> mOldGradients;
 
-	QGraphicsOpacityEffect *effect;
-	int imageMode;
+	QGraphicsOpacityEffect *mEffect = 0;
+	int mImageMode = mode_uninitialized;
 
 };
 
@@ -258,7 +258,7 @@ public:
 	virtual ~DkCropToolBar();
 
 	QColor getColor() {
-		return bgCol;
+		return mBgCol;
 	};
 
 	void loadSettings();
@@ -296,19 +296,19 @@ protected:
 	void createIcons();
 	void saveSettings();
 
-	QComboBox* ratioBox;
-	QComboBox* guideBox;
-	QAction* invertAction;
-	QDoubleSpinBox* horValBox;
-	QDoubleSpinBox* verValBox;
-	QDoubleSpinBox* angleBox;
-	QPushButton* bgColButton;
-	QColorDialog* colorDialog;
-	QColor bgCol;
-	QAction* panAction;
-	QAction* infoAction;
+	QComboBox* mRatioBox = 0;
+	QComboBox* mGuideBox = 0;
+	QAction* mInvertAction = 0;
+	QDoubleSpinBox* mHorValBox = 0;
+	QDoubleSpinBox* mVerValBox = 0;
+	QDoubleSpinBox* mAngleBox = 0;
+	QPushButton* mBgColButton = 0;
+	QColorDialog* mColorDialog = 0;
+	QColor mBgCol;
+	QAction* mPanAction = 0;
+	QAction* mInfoAction = 0;
 
-	QVector<QIcon> icons;		// needed for colorizing
+	QVector<QIcon> mIcons;		// needed for colorizing
 };
 
 

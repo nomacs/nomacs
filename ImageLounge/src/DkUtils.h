@@ -502,10 +502,9 @@ protected:
 	QString resolveExt(const QString& tag) const;
 	int getIntAttribute(const QString& tag, int idx = 1) const;
 
-	QString fileName;
-	QString pattern;
-	QString newFileName;
-	int cIdx;
+	QString mFileName;
+	QString mPattern;
+	int mCIdx;
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html

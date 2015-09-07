@@ -6,7 +6,16 @@ QTabBar::close-button:hover {
 	image: url(:/nomacs/img/close-tab-hover.png);
 }
 
-QTabBar::tab:selected {
+QDockWidget {
+	font: light "Segoe UI";
+	color: #000;
+	border: 1px solid #ccc;
+}
+
+QDockWidget::title {
+    text-align: left; /* align the text to the left */
+    padding-left: 5px;
+	border-bottom: 1px solid #ccc;
 }
 
 /* NoMacs */

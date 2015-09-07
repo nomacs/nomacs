@@ -52,19 +52,19 @@ public:
 	void addFiles(const QStringList& filePaths);
 	void addItems(const QStringList& itemTexts, const QIcon& icon);
 
-	QStandardItemModel* getModel() const { return model; };
+	QStandardItemModel* getModel() const { return mModel; };
 	
 public slots:
 	void fireAction(const QModelIndex& index) const;
 
 signals:
-	void loadFileSignal(const QFileInfo& fileInfo) const;
+	void loadFileSignal(const QString& filePath) const;
 
 protected:
-	QStandardItemModel* model;
+	QStandardItemModel* mModel = 0;
 
-	QVector<QAction*> actions;
-	QStringList filePaths;
+	QVector<QAction*> mActions;
+	QStringList mFilePaths;
 };
 
 

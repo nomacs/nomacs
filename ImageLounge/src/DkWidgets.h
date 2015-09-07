@@ -37,6 +37,7 @@
 #include <QPen>
 #include <QFutureWatcher>
 #include <QLineEdit>
+#include <QListWidget>
 #pragma warning(pop)		// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -62,22 +63,6 @@ namespace nmc {
 
 // nomacs defines
 class DkCropToolBar;
-
-class DkGradientLabel : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkGradientLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkGradientLabel() {};
-
-protected:
-	void init();
-	void drawBackground(QPainter* painter);
-	void updateStyleSheet();
-
-	QImage gradient;
-	QImage end;
-};
 
 class DkButton : public QPushButton {
 	Q_OBJECT
@@ -129,18 +114,18 @@ public:
 	~DkRatingLabel() {};
 
 	void setRating(int rating) {
-		this->rating = rating;
+		mRating = rating;
 		updateRating();
 	};
 
 	virtual void changeRating(int newRating) {
-		rating = newRating;
+		mRating = newRating;
 		updateRating();
-		emit newRatingSignal(rating);
+		emit newRatingSignal(mRating);
 	};
 
 	int getRating() {
-		return rating;
+		return mRating;
 	};
 
 signals:
@@ -172,16 +157,14 @@ public slots:
 	};
 
 protected:
-	QVector<DkButton*> stars;
-	QBoxLayout* layout;
-	int rating;
-	QPoint margin;
-	int spacing;
+	QVector<DkButton*> mStars;
+	QBoxLayout* mLayout = 0;
+	int mRating = 0;
 
 	void updateRating() {
 		
-		for (int idx = 0; idx < stars.size(); idx++) {
-			stars[idx]->setChecked(idx < rating);
+		for (int idx = 0; idx < mStars.size(); idx++) {
+			mStars[idx]->setChecked(idx < mRating);
 		}
 	};
 
@@ -199,9 +182,9 @@ public:
 	QVector<QAction*> getActions() const;
 
 protected:
-	QVector<QAction*> actions;
-	QTimer* hideTimer;
-	int timeToDisplay;
+	QVector<QAction*> mActions;
+	QTimer* mHideTimer;
+	int mTimeToDisplay = 4000;
 	
 	virtual void paintEvent(QPaintEvent *event);
 };
@@ -214,8 +197,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file, const QString& attr);
+	void updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QString& filePath, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -225,15 +208,12 @@ public slots:
 	virtual void setVisible(bool visible, bool saveSettings = true);
 
 protected:
-	QPoint offset;
-	QFileInfo file;
+	QString mFilePath;
 
-	QBoxLayout* layout;
-	QWidget* parent;
-	QLabel* title;
-	QLabel* date;
-	DkRatingLabel* rating;
-	int minWidth;
+	QBoxLayout* mLayout;
+	QLabel* mTitleLabel;
+	QLabel* mDateLabel;
+	DkRatingLabel* mRatingLabel;
 
 	void updateWidth();
 };
@@ -322,14 +302,14 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 
-	QColor bgCol;
-	bool blocked;
-	bool hiding;
-	bool showing;
-	bool mouseDown;
+	QColor mBgCol;
+	bool mBlocked = false;
+	bool mHiding = false;
+	bool mShowing = false;
+	bool mMouseDown = false;
 
-	QGraphicsOpacityEffect* opacityEffect;
-	QBitArray* displaySettingsBits;
+	QGraphicsOpacityEffect* mOpacityEffect = 0;
+	QBitArray* mDisplaySettingsBits = 0;
 
 	void init();
 
@@ -354,13 +334,13 @@ public slots:
 
 protected:
 
-	QFileInfo currentDir;
-	QProgressDialog* pd;
-	int cLoadIdx;
-	QVector<QSharedPointer<DkImageContainerT> > images;
-	bool stop;
-	bool forceSave;
-	int numSaved;
+	QFileInfo mCurrentDir;
+	QProgressDialog* mPd = 0;
+	int mCLoadIdx = 0;
+	bool mStop = false;
+	bool mForceSave = false;
+	int mNumSaved = false;
+	QVector<QSharedPointer<DkImageContainerT> > mImages;
 };
 
 class DkFileSystemModel : public QFileSystemModel {
@@ -395,14 +375,14 @@ public:
 
 public slots:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
-	void setCurrentPath(QFileInfo fileInfo);
+	void setCurrentPath(const QString& filePath);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
 
 signals:
-	void openFile(QFileInfo fileInfo) const;
-	void openDir(QDir dir) const;
+	void openFile(const QString& filePath) const;
+	void openDir(const QString& dir) const;
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -425,21 +405,20 @@ public:
 	DkOverview(QWidget * parent = 0);
 	~DkOverview() {};
 
-	void setImage(QImage img) {
-		this->img = img;
+	void setImage(const QImage& img) {
+		mImg = img;
 
 		if (isVisible())
 			resizeImg();
 	};
 
 	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix){
-		this->worldMatrix = worldMatrix;
-		this->imgMatrix = imgMatrix;
+		mWorldMatrix = worldMatrix;
+		mImgMatrix = imgMatrix;
 	};
 
-	void setViewPortRect(QRectF viewPortRect) {
-		this->viewPortRect = viewPortRect;	
-		updateVirtualViewport();
+	void setViewPortRect(const QRectF& viewPortRect) {
+		mViewPortRect = viewPortRect;	
 	};
 
 	void setVisible(bool visible) {
@@ -451,19 +430,18 @@ public:
 	};
 
 signals:
-	void moveViewSignal(QPointF dxy);
-	void sendTransformSignal();
+	void moveViewSignal(const QPointF& dxy) const;
+	void sendTransformSignal() const;
 
 protected:
-	QImage img;
+	QImage mImg;
 	QImage imgT;
-	QTransform* scaledImgMatrix;
-	QTransform* worldMatrix;
-	QTransform* imgMatrix;
-	QRectF viewPortRect;
-	QPointF posGrab;
-	QPointF enterPos;
-	QSizeF virtualVPSize;
+	QTransform* mScaledImgMatrix;
+	QTransform* mWorldMatrix;
+	QTransform* mImgMatrix;
+	QRectF mViewPortRect;
+	QPointF mPosGrab;
+	QPointF mEnterPos;
 
 	void resizeImg();
 	void paintEvent(QPaintEvent *event);
@@ -472,7 +450,6 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent* event);
 	QRectF getImageRect() const;
-	void updateVirtualViewport();
 	QTransform getScaledImageMatrix();
 };
 
@@ -497,12 +474,12 @@ public slots:
 	void on_slZoom_valueChanged(int zoomLevel);
 
 protected:
-	DkOverview* overview;
-	QSlider* slZoom;
-	QDoubleSpinBox* sbZoom;
-	bool autoHide;
-
 	void createLayout();
+
+	DkOverview* mOverview = 0;
+	QSlider* mSlZoom = 0;
+	QDoubleSpinBox* mSbZoom = 0;
+	bool mAutoHide = false;
 };
 
 class DkTransformRect : public QWidget {
@@ -520,7 +497,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool);
+	void ctrlMovedSignal(int, const QPointF&, Qt::KeyboardModifiers, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -560,40 +537,38 @@ public:
 		scaling
 	};
 
-	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkEditableRect(const QRectF& rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
 
 	void reset();
 
 	void setWorldTransform(QTransform *worldTform) {
-		this->worldTform = worldTform;
+		mWorldTform = worldTform;
 	};	
 
 	void setImageTransform(QTransform *imgTform) {
-
-		this->imgTform = imgTform;
+		mImgTform = imgTform;
 	};
 
 	void setImageRect(QRectF* imgRect) {
-	
-		this->imgRect = imgRect;
+		mImgRect = imgRect;
 	};
 
 	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
-	void angleSignal(double angle);
-	void aRatioSignal(const QPointF& aRatio);
-	void statusInfoSignal(QString msg);
+	void enterPressedSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
+	void angleSignal(double angle) const;
+	void aRatioSignal(const QPointF& aRatio) const;
+	void statusInfoSignal(const QString& msg) const;
 
 public slots:
-	void updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifier, bool changeState = false);
+	void updateCorner(int idx, const QPointF& point, Qt::KeyboardModifiers modifier, bool changeState = false);
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);
 	void setPanning(bool panning);
-	void setPaintHint(int paintMode = no_guide);
+	void setPaintHint(int paintMode = rule_of_thirds);
 	void setShadingHint(bool invert);
 	void setShowInfo(bool showInfo);
 
@@ -604,36 +579,33 @@ protected:
 	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
+	void paintEvent(QPaintEvent *event);
+
 	QPointF clipToImage(const QPointF& pos);
 	QPointF clipToImageForce(const QPointF& pos);
 	void applyTransform();
 	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
-	
-	void paintEvent(QPaintEvent *event);
-
 	QPointF map(const QPointF &pos);
 
-	int state;
+	int mState = do_nothing;
+	QTransform *mImgTform = 0;
+	QTransform *mWorldTform = 0;
+	QTransform mTtform;
+	QTransform mRtform;
+	QPointF mPosGrab;
+	QPointF mClickPos;
+	DkVector mOldDiag = DkVector(-1.0f, -1.0f);
+	DkVector mFixedDiag;
 
-	QTransform *imgTform;
-	QTransform *worldTform;
-	QTransform tTform;
-	QTransform rTform;
-	QPointF posGrab;
-	QPointF clickPos;
-	DkVector oldDiag;
-	DkVector fixedDiag;
-
-	QWidget* parent;
-	DkRotatingRect rect;
-	QPen pen;
-	QBrush brush;
-	QVector<DkTransformRect*> ctrlPoints;
-	QCursor rotatingCursor;
-	QRectF* imgRect;
-	bool panning;
-	int paintMode;
-	bool showInfo;
+	DkRotatingRect mRect;
+	QPen mPen;
+	QBrush mBrush;
+	QVector<DkTransformRect*> mCtrlPoints;
+	QCursor mRotatingCursor;
+	QRectF* mImgRect = 0;
+	bool mPanning = false;
+	int mPaintMode = rule_of_thirds;
+	bool mShowInfo = false;
 };
 
 class DkCropWidget : public DkEditableRect {
@@ -726,8 +698,8 @@ public:
 	~DkHistogram();
 	void drawHistogram(QImage img);
 	void clearHistogram();
-	void setMaxHistogramValue(long maxValue);
-	void updateHistogramValues(long histValues[][256]);
+	void setMaxHistogramValue(int maxValue);
+	void updateHistogramValues(int histValues[][256]);
 	void setPainted(bool isPainted);
 
 protected:
@@ -737,11 +709,10 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 private:
-	QWidget* parent;
-	long hist[3][256];
-	long maxValue;
-	bool isPainted;
-	float scaleFactor;
+	int mHist[3][256];
+	int mMaxValue = 20;
+	bool mIsPainted = false;
+	float mScaleFactor = 1;
 				
 };
 
@@ -781,7 +752,7 @@ public:
 	DkFileInfo();
 	DkFileInfo(const QFileInfo& fileInfo);
 
-	QFileInfo getFileInfo() const;
+	QString getFilePath() const;
 	bool exists() const;
 	void setExists(bool fileExists);
 
@@ -789,9 +760,9 @@ public:
 	void setInUse(bool inUse);
 
 protected:
-	QFileInfo fileInfo;
-	bool fileExists;
-	bool used;
+	QFileInfo mFileInfo;
+	bool mFileExists = false;
+	bool mUsed = false;
 };
 
 class DkFolderLabel : public QLabel {
@@ -801,7 +772,7 @@ public:
 	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 signals:
-	void loadFileSignal(QFileInfo);
+	void loadFileSignal(const QString&) const;
 
 protected:
 	void mousePressEvent(QMouseEvent *ev);
@@ -813,14 +784,14 @@ class DkImageLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkImageLabel(const QFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkImageLabel(const QString& filePath, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	bool hasFile() const;
 	QSharedPointer<DkThumbNailT> getThumb() const;
 
 signals:
-	void labelLoaded();
-	void loadFileSignal(QFileInfo);
+	void labelLoaded() const;
+	void loadFileSignal(const QString&) const;
 
 public slots:
 	void thumbLoaded();
@@ -848,7 +819,7 @@ public:
 	void setCustomStyle(bool imgLoadedStyle = false);
 
 signals:
-	void loadFileSignal(QFileInfo fileInfo);
+	void loadFileSignal(const QString& filePath) const;
 
 public slots:
 	void updateFiles();
@@ -890,21 +861,130 @@ protected:
 class DkDirectoryEdit : public QLineEdit {
 	Q_OBJECT
 
-	public:	
-		DkDirectoryEdit(QWidget* parent = 0);
-		DkDirectoryEdit(QString content, QWidget* parent = 0);
+public:	
+	DkDirectoryEdit(QWidget* parent = 0);
+	DkDirectoryEdit(const QString& content, QWidget* parent = 0);
 		
-		bool existsDirectory() { return existsDirectory(text());};
+	bool existsDirectory() { return existsDirectory(text());};
 
-	signals:
-		bool directoryChanged(QDir path);
+signals:
+	bool directoryChanged(const QString& path);
 
-	public slots:
-		void lineEditChanged(QString path);
+public slots:
+	void lineEditChanged(const QString& path);
 
-	private:
-		bool existsDirectory(QString path);
-		QString oldPath;
+private:
+	bool existsDirectory(const QString& path);
+
+	QString mOldPath;
+};
+
+class DkDelayedInfo : public QObject {
+	Q_OBJECT
+
+public:
+	DkDelayedInfo(int time = 0, QObject* parent = 0) : QObject(parent) {
+		timer = new QTimer();
+		timer->setSingleShot(true);
+
+		if (time)
+			timer->start(time);
+
+		connect(timer, SIGNAL(timeout()), this, SLOT(sendInfo()));
+	}
+
+	virtual ~DkDelayedInfo() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+
+		if (timer)
+			delete timer;
+
+		timer = 0;
+	}
+
+	void stop() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoSignal(1);
+	}
+
+	void setInfo(int time = 1000) {
+
+		if (!timer)
+			return;
+
+		timer->start(time);
+	}
+
+signals:
+	void infoSignal(int time);
+
+	protected slots:
+	virtual void sendInfo() {
+		emit infoSignal(-1);
+	}
+
+protected:
+	QTimer* timer;
+
+};
+
+
+class DkDelayedMessage : public DkDelayedInfo {
+	Q_OBJECT
+
+public:
+	DkDelayedMessage(const QString& msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
+		mMsg = msg;
+	}
+
+	~DkDelayedMessage() {}
+
+	void stop() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoSignal(mMsg, 1);
+	}
+
+	void setInfo(const QString& msg, int time = 1000) {
+
+		DkDelayedInfo::setInfo(time);
+		mMsg = msg;
+	}
+
+signals:
+	void infoSignal(const QString& msg, int time = -1) const;
+
+protected:
+	QString mMsg;
+
+};
+
+class DkListWidget : public QListWidget {
+	Q_OBJECT
+
+public:
+	DkListWidget(QWidget* parent);
+
+	void startDrag(Qt::DropActions supportedActions);
+	bool isEmpty() const;
+
+	void setEmptyText(const QString& text);
+
+signals:
+	void dataDroppedSignal() const;
+
+protected:
+	void paintEvent(QPaintEvent *event);
+	void dropEvent(QDropEvent *event);
+
+	QString mEmptyText = tr("Drag Items Here");
 };
 
 };

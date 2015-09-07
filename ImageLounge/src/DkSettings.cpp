@@ -240,9 +240,9 @@ void DkSettings::initFileFilters() {
 
 	qDebug() << "supported: " << qtFormats;
 
-#ifdef Q_OS_WIN
-	app_p.fileFilters.append("*.lnk");
-#endif
+//#ifdef Q_OS_WIN
+//	app_p.fileFilters.append("*.lnk");
+//#endif
 
 }
 

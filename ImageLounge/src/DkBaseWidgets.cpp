@@ -50,22 +50,22 @@ void DkWidget::init() {
 
 	setMouseTracking(true);
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 	DkSettings::display.bgColorWidget;
 
-	showing = false;
-	hiding = false;
-	blocked = false;
-	displaySettingsBits = 0;
-	opacityEffect = 0;
+	mShowing = false;
+	mHiding = false;
+	mBlocked = false;
+	mDisplaySettingsBits = 0;
+	mOpacityEffect = 0;
 
 	// painter problems if the widget is a child of another that has the same graphicseffect
 	// widget starts on hide
-	opacityEffect = new QGraphicsOpacityEffect(this);
-	opacityEffect->setOpacity(0);
-	opacityEffect->setEnabled(false);
-	setGraphicsEffect(opacityEffect);
+	mOpacityEffect = new QGraphicsOpacityEffect(this);
+	mOpacityEffect->setOpacity(0);
+	mOpacityEffect->setEnabled(false);
+	setGraphicsEffect(mOpacityEffect);
 
 	setVisible(false);
 }
@@ -86,38 +86,38 @@ void DkWidget::registerAction(QAction* action) {
 }
 
 void DkWidget::block(bool blocked) {
-	this->blocked = blocked;
+	mBlocked = blocked;
 	setVisible(false);
 }
 
 void DkWidget::setDisplaySettings(QBitArray* displayBits) {
-	displaySettingsBits = displayBits;
+	mDisplaySettingsBits = displayBits;
 }
 
 bool DkWidget::getCurrentDisplaySetting() {
 
 
-	if (!displaySettingsBits)
+	if (!mDisplaySettingsBits)
 		return false;
 
-	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= mDisplaySettingsBits->size()) {
 		qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 		return false;
 	}
 
-	return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
+	return mDisplaySettingsBits->testBit(DkSettings::app.currentAppMode);
 };
 
 bool DkWidget::isHiding() const {
-	return hiding;
+	return mHiding;
 }
 
 void DkWidget::show(bool saveSetting) {
 
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
-	if (!blocked && !showing) {
-		hiding = false;
-		showing = true;
+	if (!mBlocked && !mShowing) {
+		mHiding = false;
+		mShowing = true;
 		setVisible(true, saveSetting);
 		animateOpacityUp();
 	}
@@ -125,106 +125,103 @@ void DkWidget::show(bool saveSetting) {
 
 void DkWidget::hide(bool saveSetting) {
 
-	if (!hiding) {
-		hiding = true;
-		showing = false;
+	if (!mHiding) {
+		mHiding = true;
+		mShowing = false;
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
+		if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
 
 void DkWidget::setVisible(bool visible, bool saveSetting) {
 
-	if (blocked) {
+	if (mBlocked) {
 		QWidget::setVisible(false);
 		return;
 	}
 
-	if (visible && !isVisible() && !showing)
-		opacityEffect->setOpacity(100);
+	if (visible && !isVisible() && !mShowing)
+		mOpacityEffect->setOpacity(100);
 
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, true);
+	if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, true);
 	}
 
 }
 
 void DkWidget::animateOpacityUp() {
 
-	if (!showing)
+	if (!mShowing)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() >= 1.0f || !showing) {
-		opacityEffect->setOpacity(1.0f);
-		showing = false;
-		opacityEffect->setEnabled(false);
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
+		mOpacityEffect->setOpacity(1.0f);
+		mShowing = false;
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
-	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()+0.05);
 }
 
 void DkWidget::animateOpacityDown() {
 
-	if (!hiding)
+	if (!mHiding)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() <= 0.0f) {
-		opacityEffect->setOpacity(0.0f);
-		hiding = false;
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() <= 0.0f) {
+		mOpacityEffect->setOpacity(0.0f);
+		mHiding = false;
 		setVisible(false, false);	// finally hide the widget
-		opacityEffect->setEnabled(false);
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
-	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()-0.05);
 }
 
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 	DkSettings::display.bgColorWidget;
 
 	setMouseTracking(true);
-	this->parent = parent;
-	this->text = text;
+	mParent = parent;
+	mText = text;
 	init();
 	hide();
 }
 
 DkLabel::~DkLabel() {
-	if (timer) delete timer;
-	timer = 0;
 }
 
 void DkLabel::init() {
 
-	time = -1;
-	fixedWidth = -1;
-	fontSize = 17;
-	textCol = QColor(255, 255, 255);
-	blocked = false;
+	mTime = -1;
+	mFixedWidth = -1;
+	mFontSize = 17;
+	mTextCol = QColor(255, 255, 255);
+	mBlocked = false;
 
-	timer = new QTimer(this);
-	timer->setSingleShot(true);
-	connect(timer, SIGNAL(timeout()), this, SLOT(hide()));
+	mTimer.setSingleShot(true);
+	connect(&mTimer, SIGNAL(timeout()), this, SLOT(hide()));
 
 	// default look and feel
 	QFont font;
-	font.setPixelSize(fontSize);
+	font.setPixelSize(mFontSize);
 	QLabel::setFont(font);
 	QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse);
 
@@ -233,16 +230,16 @@ void DkLabel::init() {
 }
 
 void DkLabel::hide() {
-	time = 0;
+	mTime = 0;
 	QLabel::hide();
 }
 
 void DkLabel::setText(const QString& msg, int time) {
 
-	this->text = msg;
-	this->time = time;
+	mText = msg;
+	mTime = time;
 
-	if (!time || msg.isEmpty()) {
+	if (!mTime || msg.isEmpty()) {
 		hide();
 		return;
 	}
@@ -251,12 +248,12 @@ void DkLabel::setText(const QString& msg, int time) {
 	show();
 
 	if (time != -1)
-		timer->start(time);
+		mTimer.start(time);
 }
 
 void DkLabel::showTimed(int time) {
 
-	this->time = time;
+	mTime = time;
 
 	if (!time) {
 		hide();
@@ -266,18 +263,18 @@ void DkLabel::showTimed(int time) {
 	show();
 
 	if (time != -1)
-		timer->start(time);
+		mTimer.start(time);
 
 }
 
 
 QString DkLabel::getText() {
-	return this->text;
+	return mText;
 }
 
 void DkLabel::setFontSize(int fontSize) {
 
-	this->fontSize = fontSize;
+	mFontSize = fontSize;
 
 	QFont font;
 	font.setPixelSize(fontSize);
@@ -286,21 +283,21 @@ void DkLabel::setFontSize(int fontSize) {
 }
 
 void DkLabel::stop() {
-	timer->stop();
+	mTimer.stop();
 	hide();
 }
 
 void DkLabel::updateStyleSheet() {
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: " + 
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px " +
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px;}");
+	QLabel::setStyleSheet("QLabel{color: " + mTextCol.name() + "; margin: " + 
+		QString::number(mMargin.y()) + "px " +
+		QString::number(mMargin.x()) + "px " +
+		QString::number(mMargin.y()) + "px " +
+		QString::number(mMargin.x()) + "px;}");
 }
 
 void DkLabel::paintEvent(QPaintEvent *event) {
 
-	if (blocked || !time)	// guarantee that the label is hidden after the time is up
+	if (mBlocked || !mTime)	// guarantee that the label is hidden after the time is up
 		return;
 
 	QPainter painter(this);
@@ -317,27 +314,27 @@ void DkLabel::draw(QPainter* painter) {
 
 void DkLabel::setFixedWidth(int fixedWidth) {
 
-	this->fixedWidth = fixedWidth;
+	mFixedWidth = fixedWidth;
 	setTextToLabel();
 }
 
 void DkLabel::setTextToLabel() {
 
-	if (fixedWidth == -1) {
-		QLabel::setText(text);
+	if (mFixedWidth == -1) {
+		QLabel::setText(mText);
 		QLabel::adjustSize();
 	}
 	else {
-		setToolTip(text);
-		QLabel::setText(fontMetrics().elidedText(text, Qt::ElideRight, fixedWidth-2*margin.x()));
-		QLabel::resize(fixedWidth, height());
+		setToolTip(mText);
+		QLabel::setText(fontMetrics().elidedText(mText, Qt::ElideRight, mFixedWidth-2*mMargin.x()));
+		QLabel::resize(mFixedWidth, height());
 	}
 
 }
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 	DkSettings::display.bgColorWidget;
 
@@ -346,18 +343,18 @@ DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, tex
 	setObjectName("DkLabelBg");
 	updateStyleSheet();
 
-	margin = QPoint(7,2);
-	setMargin(margin);
+	mMargin = QPoint(7,2);
+	setMargin(mMargin);
 }
 
 void DkLabelBg::updateStyleSheet() {
 
-	QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + textCol.name() + "; padding: " + 
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px " +
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px; " +
-		"background-color: " + DkUtils::colorToString(bgCol) + ";}");	// background
+	QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + mTextCol.name() + "; padding: " + 
+		QString::number(mMargin.y()) + "px " +
+		QString::number(mMargin.x()) + "px " +
+		QString::number(mMargin.y()) + "px " +
+		QString::number(mMargin.x()) + "px; " +
+		"background-color: " + DkUtils::colorToString(mBgCol) + ";}");	// background
 }
 
 // DkFadeLabel --------------------------------------------------------------------
@@ -367,13 +364,13 @@ DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent,
 
 void DkFadeLabel::init() {
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 	DkSettings::display.bgColorWidget;
 
 	showing = false;
 	hiding = false;
-	blocked = false;
+	mBlocked = false;
 	displaySettingsBits = 0;
 
 	// widget starts on hide
@@ -386,7 +383,7 @@ void DkFadeLabel::init() {
 }
 
 void DkFadeLabel::block(bool blocked) {
-	this->blocked = blocked;
+	mBlocked = blocked;
 	setVisible(false);
 }
 
@@ -413,7 +410,7 @@ bool DkFadeLabel::getCurrentDisplaySetting() {
 
 void DkFadeLabel::show(bool saveSettings) {
 
-	if (!blocked && !showing) {
+	if (!mBlocked && !showing) {
 		hiding = false;
 		showing = true;
 		setVisible(true, saveSettings);
@@ -436,7 +433,7 @@ void DkFadeLabel::hide(bool saveSettings) {
 
 void DkFadeLabel::setVisible(bool visible, bool saveSettings) {
 
-	if (blocked) {
+	if (mBlocked) {
 		DkLabel::setVisible(false);
 		return;
 	}
@@ -570,7 +567,7 @@ void DkResizableScrollArea::updateSize() {
 
 	updateGeometry();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
 		
 		int height = widget()->minimumSizeHint().height();
 
@@ -578,7 +575,7 @@ void DkResizableScrollArea::updateSize() {
 			height += horizontalScrollBar()->height();
 		setMinimumHeight(height);
 	}
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
 	
 		int width = widget()->minimumSizeHint().width();
 
@@ -598,9 +595,9 @@ QSize DkResizableScrollArea::sizeHint() const {
 	QSize s = QScrollArea::sizeHint();
 	QSize ws = widget()->sizeHint();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setHeight(ws.height());
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
 
 	return s;
@@ -614,9 +611,9 @@ QSize DkResizableScrollArea::minimumSizeHint() const {
 	QSize s = QScrollArea::minimumSizeHint();
 	QSize ws = widget()->minimumSizeHint();
 
-	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setHeight(ws.height());
-	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
 
 	return s;

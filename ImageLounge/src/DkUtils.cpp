@@ -575,9 +575,9 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 // DkConvertFileName --------------------------------------------------------------------
 DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx) {
 
-	this->fileName = fileName;
-	this->pattern = pattern;
-	this->cIdx = cIdx;
+	this->mFileName = fileName;
+	this->mPattern = pattern;
+	this->mCIdx = cIdx;
 }
 
 /**
@@ -595,7 +595,7 @@ DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString&
  **/ 
 QString DkFileNameConverter::getConvertedFileName() {
 	
-	QString newFileName = pattern;
+	QString newFileName = mPattern;
 	QRegExp rx("<.*>");
 	rx.setMinimal(true);
 
@@ -620,10 +620,10 @@ QString DkFileNameConverter::getConvertedFileName() {
 
 QString DkFileNameConverter::resolveFilename(const QString& tag) const {
 
-	QString result = fileName;
+	QString result = mFileName;
 	
 	// remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
-	result = result.replace("." + QFileInfo(fileName).suffix(), "");
+	result = result.replace("." + QFileInfo(mFileName).suffix(), "");
 
 	int attr = getIntAttribute(tag);
 
@@ -642,7 +642,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	// append zeros
 	int numZeros = getIntAttribute(tag);
 	int startIdx = getIntAttribute(tag, 2);
-	int fIdx = startIdx+cIdx;
+	int fIdx = startIdx+mCIdx;
 
 	if (numZeros > 0) {
 
@@ -662,7 +662,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 QString DkFileNameConverter::resolveExt(const QString&) const {
 
-	QString result = QFileInfo(fileName).suffix();
+	QString result = QFileInfo(mFileName).suffix();
 
 	return result;
 }

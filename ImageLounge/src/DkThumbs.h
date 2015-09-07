@@ -68,7 +68,7 @@ public:
 	 * @param file the corresponding file
 	 * @param img the thumbnail image
 	 **/ 
-	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage());
+	DkThumbNail(const QString& filePath = QString(), const QImage& img = QImage());
 
 	/**
 	 * Default destructor.
@@ -78,7 +78,7 @@ public:
 
 	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
 
-		return lt.file == rt.file;
+		return lt.mFile == rt.mFile;
 	};
 
 	/**
@@ -95,15 +95,15 @@ public:
 	 **/ 
 	QImage getImage() const {
 		
-		return img;
+		return mImg;
 	};
 
 	/**
 	 * Returns the file information.
 	 * @return QFileInfo the thumbnail file
 	 **/ 
-	QFileInfo getFile() const {
-		return file;
+	QString getFilePath() const {
+		return mFile;
 	};
 
 	void compute(int forceLoad = do_not_force);
@@ -114,36 +114,32 @@ public:
 	 **/ 
 	int hasImage() const {
 		
-		if (!img.isNull())
+		if (!mImg.isNull())
 			return loaded;
-		else if (img.isNull() && imgExists)
+		else if (mImg.isNull() && mImgExists)
 			return not_loaded;
 		else
 			return exists_not;
 	};
 
-	QColor getMeanColor() const {
-		return meanColor;
-	};
-
 	void setMaxThumbSize(int maxSize) {
-		this->maxThumbSize = maxSize;
+		mMaxThumbSize = maxSize;
 	};
 
 	int getMaxThumbSize() const {
-		return maxThumbSize;
+		return mMaxThumbSize;
 	};
 
 	void setMinThumbSize(int minSize) {
-		this->minThumbSize = minSize;
+		mMinThumbSize = minSize;
 	};
 
 	int getMinThumbSize() const {
-		return this->minThumbSize;
+		return mMinThumbSize;
 	};
 	
 	void setRescale(bool rescale) {
-		this->rescale = rescale;
+		mRescale = rescale;
 	};
 
 	/**
@@ -151,16 +147,8 @@ public:
 	 * @param exists a status (loaded | not loaded | exists not)
 	 **/ 
 	void setImgExists(bool exists) {
-		imgExists = exists;
+		mImgExists = exists;
 	};
-
-	///**
-	// * Returns the thumbnail size.
-	// * @return int the maximal side (either width or height)
-	// **/ 
-	//int size() {
-	//	return s;
-	//};
 
 	enum {
 		do_not_force,
@@ -171,29 +159,27 @@ public:
 	};
 
 protected:
-	QImage computeIntern(QFileInfo file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
+	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
 	QColor computeColorIntern();
 
-	QImage img;
-	QFileInfo file;
-	int s;
-	bool imgExists;
-	int maxThumbSize;
-	int minThumbSize;
-	bool rescale;
-	QColor meanColor;
-	bool colorExists;
+	QImage mImg;
+	QString mFile;
+	//int s;
+	bool mImgExists;
+	int mMaxThumbSize;
+	int mMinThumbSize;
+	bool mRescale;
+	bool mColorExists;
 };
 
 class DkThumbNailT : public QObject, public DkThumbNail {
 	Q_OBJECT
 
 public:
-	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
+	DkThumbNailT(const QString& mFile = QString(), const QImage& mImg = QImage());
 	~DkThumbNailT();
 
 	bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	void fetchColor();
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -214,21 +200,16 @@ public:
 
 signals:
 	void thumbLoadedSignal(bool loaded = true);
-	void colorUpdated();
 
 protected slots:
 	void thumbLoaded();
-	void colorLoaded();
 
 protected:
 	QImage computeCall(int forceLoad, QSharedPointer<QByteArray> ba);
-	QColor computeColorCall();
 
 	QFutureWatcher<QImage> thumbWatcher;
-	QFutureWatcher<QColor> colorWatcher;
-	bool fetching;
-	bool fetchingColor;
-	int forceLoad;
+	bool mFetching;
+	int mForceLoad;
 };
 
 /**
@@ -247,15 +228,17 @@ public:
 	~DkThumbsLoader() {};
 
 	void run();
-	int getFileIdx(QFileInfo& file);
+
+	int getFileIdx(const QString& filePath) const;
+	
 	QFileInfoList getFiles() {
-		return files;
+		return mFiles;
 	};
 	QDir getDir() {
-		return dir;
+		return mDir;
 	};
 	bool isWorking() {
-		return somethingTodo;
+		return mSomethingTodo;
 	};
 
 	enum ForceUpdate {
@@ -265,7 +248,7 @@ public:
 	};
 
 	void setForceLoad(bool forceLoad) {
-		this->forceLoad = forceLoad;
+		mForceLoad = forceLoad;
 	};
 
 signals:
@@ -279,23 +262,21 @@ public slots:
 	void stop();
 
 private:
-	std::vector<DkThumbNail>* thumbs;
-	QDir dir;
-	bool isActive;
-	bool somethingTodo;
-	int numFilesLoaded;
-	QMutex mutex;
-	int loadLimit;
-	int startIdx;
-	int endIdx;
-	bool loadAllThumbs;
-	bool forceSave;
-	bool forceLoad;
-	QFileInfoList files;
+	std::vector<DkThumbNail>* mThumbs;
+	QDir mDir;
+	bool mIsActive;
+	bool mSomethingTodo;
+	int mNumFilesLoaded;
+	QMutex mMutex;
+	int mLoadLimit;
+	int mStartIdx;
+	int mEndIdx;
+	bool mLoadAllThumbs;
+	bool mForceSave;
+	bool mForceLoad;
+	QFileInfoList mFiles;
 
-	//// function
-	//QImage getThumbNailQt(QFileInfo file);
-	//QImage getThumbNailWin(QFileInfo file);
+	// functions
 	void init();
 	void loadThumbs();
 };

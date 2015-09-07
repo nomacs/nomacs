@@ -33,7 +33,6 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
 #include <QProcess>
-#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -85,7 +84,7 @@ class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkRCManagerThread;
 class DkTransferToolBar;
-class DkPluginManager;
+class DkPluginManagerDialog;
 class DkAppManager;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
@@ -95,6 +94,7 @@ class DkCentralWidget;
 class DkMainToolBar;
 class DkDockWidget;
 class DkQuickAccess;
+class DkImageLoader;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -437,7 +437,7 @@ public:
 	DkNomacsOSXEventFilter(QObject *parent = 0);
 
 signals:
-	void loadFile(const QFileInfo& fi);
+	void loadFile(const QString& fi) const;
 
 protected:
 	/*! Handle QFileOpenEvent for mac here */
@@ -456,9 +456,9 @@ public:
 
 	void release();
 	
-	static int infoDialog(QString msg, QWidget* parent = 0, QString title = "Question");
-	static int dialog(QString msg, QWidget* parent = 0, QString title = "Error");
-	static QWidget* getDialogParent();
+	//static int infoDialog(const QString& msg, QWidget* parent = 0, QString title = "Question");
+	//static int dialog(const QString& msg, QWidget* parent = 0, QString title = "Error");
+	//static QWidget* getDialogParent();
 
 	virtual DkViewPort* viewport() const;
 	virtual DkCentralWidget* getTabWidget() const;
@@ -468,26 +468,25 @@ public:
 	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
-	void loadFile(const QFileInfo& file);
+	void loadFile(const QString& filePath);
 
 	static void updateAll();
 
-	bool saveSettings;
+	bool mSaveSettings = true;
 
-	QString getCurrRunningPlugin() {return currRunningPlugin;};
+	QString getCurrRunningPlugin() {return mActivePlugin;};
 	void colorizeIcons(const QColor& col);
 
 signals:
-	void sendTitleSignal(QString newTitle);
-	void sendPositionSignal(QRect newRect, bool overlaid);
-	void sendArrangeSignal(bool overlaid);
-	void synchronizeWithSignal(quint16);
-	void stopSynchronizeWithSignal();
-	void synchronizeWithServerPortSignal(quint16);
-	void synchronizeRemoteControl(quint16);
-	void closeSignal();
-	//void saveTempFileSignal(QImage img);
-	void sendQuitLocalClientsSignal();
+	void sendTitleSignal(const QString& newTitle) const;
+	void sendPositionSignal(QRect newRect, bool overlaid) const;
+	void sendArrangeSignal(bool overlaid) const;
+	void synchronizeWithSignal(quint16) const;
+	void stopSynchronizeWithSignal() const;
+	void synchronizeWithServerPortSignal(quint16) const;
+	void synchronizeRemoteControl(quint16) const;
+	void closeSignal() const;
+	void sendQuitLocalClientsSignal() const;
 
 public slots:
 	void restart();
@@ -522,7 +521,7 @@ public slots:
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();
-	void newInstance(QFileInfo file = QFileInfo());
+	void newInstance(const QString& filePath = QString());
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbarsTemporarily(bool show);
@@ -535,10 +534,10 @@ public slots:
 	void bugReport();
 	void featureRequest();
 	//void errorDialog(QString msg, QString title = "Error");
-	void errorDialog(const QString& msg);
+	//void errorDialog(const QString& msg);
 	void loadRecursion();
 	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
+	void setWindowTitle(const QString& filePath, const QSize& size = QSize(), bool edited = false, const QString& attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
@@ -577,7 +576,6 @@ public slots:
 	void enableMovieActions(bool enable);
 	void runLoadedPlugin();
 	void openPluginManager();
-	void initPluginManager();
 	void runPluginFromShortcut();
 	void closePlugin(bool askForSaving, bool alreadySaving);
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
@@ -589,6 +587,8 @@ public slots:
 	// batch actions
 	void computeThumbsBatch();
 	void onWindowLoaded();
+
+	void createPluginsMenu();
 
 protected:
 	
@@ -610,114 +610,103 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent* event);
 
-	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);
 
 	void assignCustomShortcuts(QVector<QAction*> actions);
 	void assignCustomPluginShortcuts();
 	void savePluginActions(QVector<QAction *> actions);
 
-	bool otherKeyPressed;
-	QPoint posGrabKey;
-	bool overlaid;
+	// needed to hide menu
+	bool mOtherKeyPressed = true;
+	QPoint mPosGrabKey;
+	bool mOverlaid = false;
 
 	// vars
-	QWidget *parent;
-	DkPluginManager* pluginManager;
-	QString currRunningPlugin;
+	QString mActivePlugin;
 
-	QVector<QShortcut*> shortcuts;	
-	QVector<QAction *> fileActions;
-	QVector<QAction *> sortActions;
-	QVector<QAction *> openWithActions;
-	QVector<QAction *> editActions;
-	QVector<QAction *> toolsActions;
-	QVector<QAction *> panelActions;
-	QVector<QAction *> viewActions;
-	QVector<QAction *> syncActions;
-	QVector<QAction *> pluginsActions;
-	QVector<QAction *> pluginsDummyActions;
-	QVector<QAction *> lanActions;
-	QVector<QAction *> helpActions;
+	QVector<QShortcut*> mShortcuts;	
+	QVector<QAction *> mFileActions;
+	QVector<QAction *> mSortActions;
+	QVector<QAction *> mOpenWithActions;
+	QVector<QAction *> mEditActions;
+	QVector<QAction *> mToolsActions;
+	QVector<QAction *> mPanelActions;
+	QVector<QAction *> mViewActions;
+	QVector<QAction *> mSyncActions;
+	QVector<QAction *> mPluginsActions;
+	QVector<QAction *> mPluginsDummyActions;
+	QVector<QAction *> mLanActions;
+	QVector<QAction *> mHelpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
 	// icons
-	QVector<QIcon> fileIcons;
-	QVector<QIcon> editIcons;
-	QVector<QIcon> viewIcons;
-	QVector<QIcon> toolsIcons;
+	QVector<QIcon> mFileIcons;
+	QVector<QIcon> mEditIcons;
+	QVector<QIcon> mViewIcons;
+	QVector<QIcon> mToolsIcons;
 
 	// menu
-	DkMenuBar* menu;
-	QMenu* fileMenu;
-	QMenu* sortMenu;
-	QMenu* openWithMenu;
-	QMenu* editMenu;
-	QMenu* toolsMenu;
-	QMenu* panelMenu;
-	QMenu* viewMenu;
-	QMenu* syncMenu;
-	QMenu* pluginsMenu;
-	QVector<QMenu*> pluginSubMenus;
-	QMenu* helpMenu;
-	QMenu* contextMenu;
+	DkMenuBar* mMenu = 0;
+	QMenu* mFileMenu = 0;
+	QMenu* mSortMenu = 0;
+	QMenu* mOpenWithMenu = 0;
+	QMenu* mEditMenu = 0;
+	QMenu* mToolsMenu = 0;
+	QMenu* mPanelMenu = 0;
+	QMenu* mViewMenu = 0;
+	QMenu* mSyncMenu = 0;
+	QMenu* mPluginsMenu = 0;
+	QVector<QMenu*> mPluginSubMenus;
+	QMenu* mHelpMenu = 0;
+	QMenu* mContextMenu = 0;
 
 	// sub menus
-	//QMenu* fileFilesMenu;
-	//QMenu* fileFoldersMenu;
-	QMenu* panelToolsMenu;
-	DkTcpMenu* tcpViewerMenu;
-	DkTcpMenu* tcpLanMenu;
+	QMenu* mPanelToolsMenu = 0;
+	DkTcpMenu* mTcpViewerMenu = 0;
+	DkTcpMenu* mTcpLanMenu = 0;
 	
-	QPoint mousePos;
+	QPoint mMousePos;
 	
 	// toolbar
-	DkMainToolBar* toolbar;
-	QToolBar* movieToolbar;
-	QStatusBar* statusbar;
-	QVector<QLabel*> statusbarLabels;
-	DkQuickAccess* quickAccess;
-	
+	DkMainToolBar* mToolbar = 0;
+	QToolBar* mMovieToolbar = 0;
+	QStatusBar* mStatusbar = 0;
+	QVector<QLabel*> mStatusbarLabels;
+	DkQuickAccess* mQuickAccess = 0;
 
 	// file dialog
-	QFileDialog* openDialog;
-	QFileDialog* saveDialog;
-	DkCompressDialog* jpgDialog;
-	DkTifDialog* tifDialog;
-	DkOpacityDialog* opacityDialog;
-	DkResizeDialog* resizeDialog;
-	DkUpdateDialog* updateDialog;
-	QProgressDialog* progressDialog;
-	QProgressDialog* progressDialogTranslations;
-	DkForceThumbDialog* forceDialog;
-	DkTrainDialog* trainDialog;
+	QFileDialog* mOpenDialog = 0;
+	QFileDialog* mSaveDialog = 0;
+	DkOpacityDialog* mOpacityDialog = 0;
+	DkResizeDialog* mResizeDialog = 0;
+	DkUpdateDialog* mUpdateDialog = 0;
+	QProgressDialog* mProgressDialog = 0;
+	QProgressDialog* mProgressDialogTranslations = 0;
+	DkForceThumbDialog* mForceDialog = 0;
+	DkTrainDialog* mTrainDialog = 0;
 #ifdef WITH_QUAZIP
-	DkArchiveExtractionDialog* archiveExtractionDialog;
+	DkArchiveExtractionDialog* mArchiveExtractionDialog = 0;
 #endif
-	DkExplorer* explorer;
-	DkMetaDataDock* metaDataDock;
-	DkDockWidget* thumbsDock;
-	DkExportTiffDialog* exportTiffDialog;
-	DkSettingsDialog* settingsDialog;
-	DkThumbsSaver* thumbSaver;
-	DkBatchDialog* batchDialog;
-	DkImageManipulationDialog* imgManipulationDialog;
+	DkExplorer* mExplorer = 0;
+	DkMetaDataDock* mMetaDataDock = 0;
+	DkDockWidget* mThumbsDock = 0;
+	DkExportTiffDialog* mExportTiffDialog = 0;
+	DkSettingsDialog* mSettingsDialog = 0;
+	DkThumbsSaver* mThumbSaver = 0;
+	DkImageManipulationDialog* mImgManipulationDialog = 0;
 
-	DkPrintPreviewDialog* printPreviewDialog;
+	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
 
-	DkAppManager* appManager;
+	DkAppManager* mAppManager = 0;
 
-	// client managers
-	//DkLocalClientManager* localClientManager;
-	//DkLANClientManager* lanClientManager;
-	DkUpdater* updater;
-	DkTranslationUpdater* translationUpdater;	
+	DkUpdater* mUpdater = 0;
+	DkTranslationUpdater* mTranslationUpdater = 0;	
 	
 
-	QRect oldGeometry;
-	QList<QToolBar *> hiddenToolbars;
+	QRect mOldGeometry;
+	QList<QToolBar *> mHiddenToolbars;
 
-	QProcess process;
+	QProcess mProcess;
 
 	// functions
 	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = 0);
@@ -739,7 +728,7 @@ protected:
 
 	// plugin functions
 	void addPluginsToMenu();
-	void createPluginsMenu();
+	bool mPluginMenuCreated = false;
 };
 
 class DllExport DkNoMacsSync : public DkNoMacs {
@@ -785,9 +774,9 @@ protected:
 	virtual void createMenu();
 
 	// network layer
-	DkLocalManagerThread* localClient;
-	DkLanManagerThread* lanClient;
-	DkRCManagerThread* rcClient;
+	DkLocalManagerThread* mLocalClient = 0;
+	DkLanManagerThread* mLanClient = 0;
+	DkRCManagerThread* mRcClient = 0;
 #ifdef WITH_UPNP
 	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
 	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
@@ -801,7 +790,6 @@ class DllExport DkNoMacsIpl : public DkNoMacsSync {
 
 public:
 	DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = 0);
-
 };
 
 
@@ -826,7 +814,7 @@ protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 	virtual void createContextMenu();
 
-	QDesktopWidget* dw;
+	QDesktopWidget* mDesktop = 0;
 };
 
 class DllExport DkNoMacsContrast : public DkNoMacsSync {
@@ -841,7 +829,7 @@ public:
 protected:
 	void createTransferToolbar();
 
-	DkTransferToolBar* transferToolBar;
+	DkTransferToolBar* mTransferToolBar = 0;
 
 };
 };

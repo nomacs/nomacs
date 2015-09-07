@@ -42,56 +42,55 @@ namespace nmc {
 // DkConnection --------------------------------------------------------------------
 
 DkConnection::DkConnection(QObject* parent) : QTcpSocket(parent) {
-	state = WaitingForGreeting;
-	currentDataType = Undefined;
-	numBytesForCurrentDataType = -1;
-	isGreetingMessageSent = false;	
-	isSynchronizeMessageSent = false;
+	
+	mNumBytesForCurrentDataType = -1;
+	mIsGreetingMessageSent = false;	
+	mIsSynchronizeMessageSent = false;
 	connectionCreated = false;
-	this->synchronizedTimer = new QTimer(this);
+	mSynchronizedTimer = new QTimer(this);
 
-	connect(synchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
+	connect(mSynchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
 	connect(this, SIGNAL(readyRead()), this, SLOT(processReadyRead()));
 
-	this->setReadBufferSize(MaxBufferSize);
+	setReadBufferSize(MaxBufferSize);
 }
 
 void DkConnection::setTitle(QString newTitle) {
-	this->currentTitle = newTitle;
+	mCurrentTitle = newTitle;
 }
 
 void DkConnection::sendStartSynchronizeMessage() {
 	//qDebug() << "sending Synchronize Message to " << this->peerName() << ":" << this->peerPort();
-	if (isSynchronizeMessageSent == false) // initialize sync message, not the response
-		synchronizedTimer->start(1000);
+	if (mIsSynchronizeMessageSent == false) // initialize sync message, not the response
+		mSynchronizedTimer->start(1000);
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << quint16(synchronizedPeersServerPorts.size());
-	for (int i=0; i < synchronizedPeersServerPorts.size();i++)
-		ds << synchronizedPeersServerPorts[i];
+	ds << quint16(mSynchronizedPeersServerPorts.size());
+	for (int i=0; i < mSynchronizedPeersServerPorts.size();i++)
+		ds << mSynchronizedPeersServerPorts[i];
 	//QByteArray data = "SYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
 	QByteArray data = "STARTSYNCHRONIZE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	if (write(data) == data.size())
-		isSynchronizeMessageSent = true;
+		mIsSynchronizeMessageSent = true;
 }
 
 void DkConnection::sendStopSynchronizeMessage() {
-	if (state == Synchronized) { // only send message if connection is synchronized
+	if (mState == Synchronized) { // only send message if connection is synchronized
 		//qDebug() << "sending disable synchronize Message to " << this->peerName() << ":" << this->peerPort();
 		QByteArray synchronize = "disable synchronizing";
 		//QByteArray data = "DISABLESYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
 		QByteArray data = "STOPSYNCHRONIZE";
 		data.append(SeparatorToken).append(QByteArray::number(synchronize.size())).append(SeparatorToken).append(synchronize);
 		if (write(data) == data.size())
-			isSynchronizeMessageSent = false;
-		state=ReadyForUse;
+			mIsSynchronizeMessageSent = false;
+		mState=ReadyForUse;
 	}
 }
 
 void DkConnection::sendNewTitleMessage(QString newtitle) {
-	this->currentTitle = newtitle;
+	mCurrentTitle = newtitle;
 	//qDebug() << "sending new Title (\"" << newtitle << "\") Message to " << this->peerName() << ":" << this->peerPort();
 
 	QByteArray newTitleBA=newtitle.toUtf8();
@@ -141,17 +140,17 @@ void DkConnection::sendNewFileMessage(qint16 op , QString filename) {
 };
 
 void DkConnection::sendNewGoodbyeMessage() {
-	qDebug() << "sending good bye to " << this->peerName() << ":" << this->peerPort();
+	qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
 
 	QByteArray ba = "GoodBye"; 
 	QByteArray data = "GOODBYE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
-	this->waitForBytesWritten();
+	waitForBytesWritten();
 }
 
 void DkConnection::synchronizedPeersListChanged(QList<quint16> newList) {
-	this->synchronizedPeersServerPorts = newList;
+	mSynchronizedPeersServerPorts = newList;
 }
 
 bool DkConnection::readProtocolHeader() {
@@ -164,40 +163,40 @@ bool DkConnection::readProtocolHeader() {
 	QByteArray newFileBA = QByteArray("NEWFILE").append(SeparatorToken);
 	QByteArray goodbyeBA = QByteArray("GOODBYE").append(SeparatorToken);
 
-	if (buffer == greetingBA) {
+	if (mBuffer == greetingBA) {
 		//qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = Greeting;
-	} else if (buffer == synchronizeBA) {
+		mCurrentDataType = Greeting;
+	} else if (mBuffer == synchronizeBA) {
 		//qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = startSynchronize;
-	} else if (buffer == disableSynchronizeBA) {
+		mCurrentDataType = startSynchronize;
+	} else if (mBuffer == disableSynchronizeBA) {
 		//qDebug() << "Disable synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = stopSynchronize;
-	} else if (buffer == newtitleBA) {
+		mCurrentDataType = stopSynchronize;
+	} else if (mBuffer == newtitleBA) {
 		//qDebug() << "New Title received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = newTitle;
-	} else if (buffer == newtransformBA) {
+		mCurrentDataType = newTitle;
+	} else if (mBuffer == newtransformBA) {
 		//qDebug() << "New Transform received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = newTransform;
-	} else if (buffer == newpositionBA) {
+		mCurrentDataType = newTransform;
+	} else if (mBuffer == newpositionBA) {
 		//qDebug() << "New Position received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = newPosition;
-	} else if (buffer == newFileBA) {
+		mCurrentDataType = newPosition;
+	} else if (mBuffer == newFileBA) {
 		//qDebug() << "New File received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = newFile;
-	} else if (buffer == goodbyeBA) {
+		mCurrentDataType = newFile;
+	} else if (mBuffer == goodbyeBA) {
 		//qDebug() << "Goodbye received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = GoodBye;
+		mCurrentDataType = GoodBye;
 	} else {
 		//qDebug() << "Undefined received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentDataType = Undefined;
+		mCurrentDataType = Undefined;
 		//abort();
 		//return false;
 		return true;
 	}
 
-	buffer.clear();
-	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	mBuffer.clear();
+	mNumBytesForCurrentDataType = dataLengthForCurrentDataType();
 	return true;
 }
 
@@ -205,31 +204,31 @@ int DkConnection::readDataIntoBuffer(int maxSize) {
 	if (maxSize > MaxBufferSize)
 		return 0;
 
-	int numBytesBeforeRead = buffer.size();
+	int numBytesBeforeRead = mBuffer.size();
 	if (numBytesBeforeRead == MaxBufferSize) {
 		qDebug() << "DkConnection::readDataIntoBuffer: Connection aborted";
 		abort();
 		return 0;
 	}
 
-	while (bytesAvailable() > 0 && buffer.size() < maxSize) {
-		buffer.append(read(1));
-		if (buffer.endsWith(SeparatorToken))
+	while (bytesAvailable() > 0 && mBuffer.size() < maxSize) {
+		mBuffer.append(read(1));
+		if (mBuffer.endsWith(SeparatorToken))
 			break;
 	}
-	return buffer.size() - numBytesBeforeRead;
+	return mBuffer.size() - numBytesBeforeRead;
 }
 
 bool DkConnection::hasEnoughData() {
-	if (numBytesForCurrentDataType <= 0) {
-		numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	if (mNumBytesForCurrentDataType <= 0) {
+		mNumBytesForCurrentDataType = dataLengthForCurrentDataType();
 	}
 	
 	//qDebug() << "numBytesForCurrentDataType:" << numBytesForCurrentDataType;
 	//qDebug() << "bytesAvailable:" << bytesAvailable();
 	//qDebug() << "buffer size:" << buffer.size();
 	
-	if (bytesAvailable() < numBytesForCurrentDataType || numBytesForCurrentDataType <= 0) {
+	if (bytesAvailable() < mNumBytesForCurrentDataType || mNumBytesForCurrentDataType <= 0) {
 		return false;
 	}
 
@@ -237,12 +236,12 @@ bool DkConnection::hasEnoughData() {
 }
 
 int DkConnection::dataLengthForCurrentDataType() {
-	if (bytesAvailable() <= 0 || readDataIntoBuffer() <= 0 || !buffer.endsWith(SeparatorToken))
+	if (bytesAvailable() <= 0 || readDataIntoBuffer() <= 0 || !mBuffer.endsWith(SeparatorToken))
 		return 0;
 
-	buffer.chop(1);
-	int number = buffer.toInt();
-	buffer.clear();
+	mBuffer.chop(1);
+	int number = mBuffer.toInt();
+	mBuffer.clear();
 	return number;
 }
 
@@ -257,8 +256,8 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
-	if (state == WaitingForGreeting) {
-		if (currentDataType != Greeting) {
+	if (mState == WaitingForGreeting) {
+		if (mCurrentDataType != Greeting) {
 			abort();
 			return;
 		}
@@ -266,8 +265,8 @@ void DkConnection::checkState() {
 		if (!hasEnoughData())
 			return;
 
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
@@ -277,31 +276,31 @@ void DkConnection::checkState() {
 			return;
 		}
 
-		if (!isGreetingMessageSent)
-			sendGreetingMessage(currentTitle);
+		if (!mIsGreetingMessageSent)
+			sendGreetingMessage(mCurrentTitle);
 
-		state = ReadyForUse;
-		portOfPeer = peerPort(); // save peer port ... otherwise connections where this instance is server can not be removed from peerList
+		mState = ReadyForUse;
+		mPortOfPeer = peerPort(); // save peer port ... otherwise connections where this instance is server can not be removed from peerList
 
 		readGreetingMessage();
 
-		buffer.clear();
-		numBytesForCurrentDataType = 0;
-		currentDataType = Undefined;
+		mBuffer.clear();
+		mNumBytesForCurrentDataType = 0;
+		mCurrentDataType = Undefined;
 		return;
 	}
 
-	if (state==ReadyForUse && currentDataType == startSynchronize) {
+	if (mState==ReadyForUse && mCurrentDataType == startSynchronize) {
 		if (!hasEnoughData())
 			return;
 
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
 
-		QDataStream ds(buffer);
+		QDataStream ds(mBuffer);
 		QList<quint16> synchronizedPeersOfOtherInstance;
 		quint16 numberOfSynchronizedPeers;
 		ds >> numberOfSynchronizedPeers;
@@ -313,47 +312,47 @@ void DkConnection::checkState() {
 			synchronizedPeersOfOtherInstance.push_back(peerId);
 			//qDebug() << peerId;
 		}
-		currentDataType = Undefined;
-		numBytesForCurrentDataType = 0;
-		buffer.clear();
+		mCurrentDataType = Undefined;
+		mNumBytesForCurrentDataType = 0;
+		mBuffer.clear();
 
 		if (!isValid()) {
 			abort();
 			return;
 		}
 
-		state = Synchronized;
-		if (!isSynchronizeMessageSent)
+		mState = Synchronized;
+		if (!mIsSynchronizeMessageSent)
 			sendStartSynchronizeMessage();
 
-		synchronizedTimer->stop();
+		mSynchronizedTimer->stop();
 		emit connectionStartSynchronize(synchronizedPeersOfOtherInstance, this);
 		return;
 	}
 
-	if (state==Synchronized && currentDataType == stopSynchronize) {
-		state=ReadyForUse;
-		this->isSynchronizeMessageSent=false;
+	if (mState==Synchronized && mCurrentDataType == stopSynchronize) {
+		mState=ReadyForUse;
+		this->mIsSynchronizeMessageSent=false;
 		emit connectionStopSynchronize(this);
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
 
-		currentDataType = Undefined;
-		numBytesForCurrentDataType = 0;
-		buffer.clear();
+		mCurrentDataType = Undefined;
+		mNumBytesForCurrentDataType = 0;
+		mBuffer.clear();
 
 		return;
 	}
 
-	if (currentDataType == GoodBye) {
+	if (mCurrentDataType == GoodBye) {
 		qDebug() << "received GoodBye";
 		emit connectionGoodBye(this);
-		currentDataType = Undefined;
-		numBytesForCurrentDataType = 0;
-		buffer.clear();
+		mCurrentDataType = Undefined;
+		mNumBytesForCurrentDataType = 0;
+		mBuffer.clear();
 		abort();
 		return;
 	}
@@ -362,7 +361,7 @@ void DkConnection::checkState() {
 
 void DkConnection::readWhileBytesAvailable() {
 	do {
-		if (currentDataType == Undefined) {
+		if (mCurrentDataType == Undefined) {
 			readDataIntoBuffer();
 			if (!readProtocolHeader())
 				return;
@@ -372,8 +371,8 @@ void DkConnection::readWhileBytesAvailable() {
 			return;
 		}
 
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
@@ -383,8 +382,8 @@ void DkConnection::readWhileBytesAvailable() {
 }
 
 bool DkConnection::readDataTypeIntoBuffer() {
-	buffer = read(numBytesForCurrentDataType);
-	if (buffer.size() != numBytesForCurrentDataType) {
+	mBuffer = read(mNumBytesForCurrentDataType);
+	if (mBuffer.size() != mNumBytesForCurrentDataType) {
 		abort();
 		return false;
 	}
@@ -393,16 +392,16 @@ bool DkConnection::readDataTypeIntoBuffer() {
 }
 
 void DkConnection::processData() {
-	switch (currentDataType) {
+	switch (mCurrentDataType) {
 	case newTitle:
-		emit connectionTitleHasChanged(this, QString::fromUtf8(buffer));
+		emit connectionTitleHasChanged(this, QString::fromUtf8(mBuffer));
 		break;
 	case newPosition: {
-		if (state == Synchronized) {
+		if (mState == Synchronized) {
 			QRect rect;
 			bool opacity;
 			bool overlaid;
-			QDataStream ds(buffer);
+			QDataStream ds(mBuffer);
 			ds >> rect;
 			ds >> opacity;
 			ds >> overlaid;
@@ -410,11 +409,11 @@ void DkConnection::processData() {
 		}
 		break;}
 	case newTransform: {
-		if (state == Synchronized) {
+		if (mState == Synchronized) {
 			QTransform transform;
 			QTransform imgTransform;
 			QPointF canvasSize;
-			QDataStream dsTransform(buffer);
+			QDataStream dsTransform(mBuffer);
 			dsTransform >> transform;
 			dsTransform >> imgTransform;
 			dsTransform >> canvasSize;
@@ -422,11 +421,11 @@ void DkConnection::processData() {
 		}
 		break;}
 	case newFile: {
-		if (state == Synchronized) {
+		if (mState == Synchronized) {
 			qint16 op;
 			QString filename;
 
-			QDataStream dsTransform(buffer);
+			QDataStream dsTransform(mBuffer);
 			dsTransform >> op;
 			dsTransform >> filename;
 			emit connectionNewFile(this, op, filename);
@@ -436,24 +435,23 @@ void DkConnection::processData() {
 		break;
 	}
 
-	currentDataType = Undefined;
-	numBytesForCurrentDataType = 0;
-	buffer.clear();
+	mCurrentDataType = Undefined;
+	mNumBytesForCurrentDataType = 0;
+	mBuffer.clear();
 }
 
 void DkConnection::synchronizedTimerTimeout() {
-	synchronizedTimer->stop();
+	mSynchronizedTimer->stop();
 	emit connectionStopSynchronize(this);
 }
 
 // DkLocalConnection --------------------------------------------------------------------
 DkLocalConnection::DkLocalConnection(QObject* parent/* =0 */) : DkConnection(parent) {
-	this->currentLocalDataType = Undefined;
 }
 
 
 void DkLocalConnection::processReadyRead() {
-	if (currentLocalDataType == Quit) { // long message (copied from lan connection) -> does this work here correctly?
+	if (mCurrentLocalDataType == Quit) { // long message (copied from lan connection) -> does this work here correctly?
 		readWhileBytesAvailable();
 		return;
 	}
@@ -467,7 +465,7 @@ void DkLocalConnection::processReadyRead() {
 }
 
 void DkLocalConnection::processData() {
-	switch (currentLocalDataType) {
+	switch (mCurrentLocalDataType) {
 	case Quit:
 		emit connectionQuitReceived();
 		break;
@@ -479,24 +477,24 @@ void DkLocalConnection::processData() {
 bool DkLocalConnection::readProtocolHeader() {
 	QByteArray quitBA = QByteArray("QUIT").append(SeparatorToken);
 
-	if (buffer == quitBA) {
-		currentLocalDataType = Quit;
+	if (mBuffer == quitBA) {
+		mCurrentLocalDataType = Quit;
 	} else {
 		return DkConnection::readProtocolHeader();
 	}
 
-	buffer.clear();
-	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	mBuffer.clear();
+	mNumBytesForCurrentDataType = dataLengthForCurrentDataType();
 	return true;
 }
 
 
 void DkLocalConnection::sendGreetingMessage(QString currentTitle) {
-	this->currentTitle = currentTitle;
+	this->mCurrentTitle = currentTitle;
 	//qDebug() << "sending Greeting Message to " << this->peerName() << ":" << this->peerPort() << " with title: " << currentTitle;
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << localTcpServerPort;
+	ds << mLocalTcpServerPort;
 	ds << currentTitle;
 
 	//QByteArray data = "GREETING" + SeparatorToken + QByteArray::number(ba.size()) + SeparatorToken + ba;
@@ -507,19 +505,19 @@ void DkLocalConnection::sendGreetingMessage(QString currentTitle) {
 	data.append(ba);
 
 	if (write(data) == data.size()) {
-		isGreetingMessageSent = true;
+		mIsGreetingMessageSent = true;
 	}
 
 }
 
 void DkLocalConnection::readGreetingMessage() {
 	QString title;
-	QDataStream ds(buffer);
-	ds >> this->peerServerPort;
+	QDataStream ds(mBuffer);
+	ds >> this->mPeerServerPort;
 	ds >> title;
 
 	//qDebug() << "emitting readyForUse";
-	emit connectionReadyForUse(peerServerPort, title, this);
+	emit connectionReadyForUse(mPeerServerPort, title, this);
 }
 
 void DkLocalConnection::sendQuitMessage() {
@@ -534,7 +532,7 @@ void DkLocalConnection::sendQuitMessage() {
 	data.append(ba);
 
 	if (write(data) == data.size()) {
-		isGreetingMessageSent = true;
+		mIsGreetingMessageSent = true;
 	}
 }
 
@@ -542,13 +540,10 @@ void DkLocalConnection::sendQuitMessage() {
 
 // DkLANConnection --------------------------------------------------------------------
 DkLANConnection::DkLANConnection(QObject* parent /* = 0 */) : DkConnection(parent) {
-	iAmServer = true;
-	showInMenu = false;
-	currentLanDataType = Undefined;
 }
 
 void DkLANConnection::sendNewUpcomingImageMessage(QString image) {
-	if (!allowImage)
+	if (!mAllowImage)
 		return;
 
 	if (image == "")
@@ -565,7 +560,7 @@ void DkLANConnection::sendNewUpcomingImageMessage(QString image) {
 
 
 void DkLANConnection::sendNewImageMessage(QImage image, QString title) {
-	if (!allowImage)
+	if (!mAllowImage)
 		return;
 
 	if (title == "")
@@ -618,7 +613,7 @@ void DkLANConnection::sendSwitchServerMessage(QHostAddress address, quint16 port
 }
 
 void DkLANConnection::sendGreetingMessage(QString currentTitle) {
-	this->currentTitle = currentTitle;
+	this->mCurrentTitle = currentTitle;
 	//qDebug() << "DKLANConnection::sendGreetingMessage to " << this->peerName() << ":" << this->peerPort() << " with title: " << currentTitle;
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
@@ -628,7 +623,7 @@ void DkLANConnection::sendGreetingMessage(QString currentTitle) {
 	ds << DkSettings::sync.allowPosition;
 	ds << DkSettings::sync.allowTransformation;
 
-	if (iAmServer) 
+	if (mIAmServer) 
 		ds << currentTitle;
 	else
 		ds << " ";
@@ -640,34 +635,34 @@ void DkLANConnection::sendGreetingMessage(QString currentTitle) {
 	data.append(SeparatorToken);
 	data.append(ba);
 	if (write(data) == data.size())
-		isGreetingMessageSent = true;
+		mIsGreetingMessageSent = true;
 }
 
 void DkLANConnection::readGreetingMessage() {
 	QString title;
 
-	if (!iAmServer) { // server controls which actions are allowed 
+	if (!mIAmServer) { // server controls which actions are allowed 
 		
-		QDataStream ds(buffer);
-		ds >> clientName;
-		ds >> allowFile;
-		ds >> allowImage;
-		ds >> allowPosition;
-		ds >> allowTransformation;
+		QDataStream ds(mBuffer);
+		ds >> mClientName;
+		ds >> mAllowFile;
+		ds >> mAllowImage;
+		ds >> mAllowPosition;
+		ds >> mAllowTransformation;
 		ds >> title;		
 	} else {
-		QDataStream ds(buffer); // only read clientname
-		ds >> clientName;
+		QDataStream ds(mBuffer); // only read clientname
+		ds >> mClientName;
 
-		allowFile = DkSettings::sync.allowFile;
-		allowImage = DkSettings::sync.allowImage;
-		allowPosition = DkSettings::sync.allowPosition;
-		allowTransformation = DkSettings::sync.allowTransformation;
+		mAllowFile = DkSettings::sync.allowFile;
+		mAllowImage = DkSettings::sync.allowImage;
+		mAllowPosition = DkSettings::sync.allowPosition;
+		mAllowTransformation = DkSettings::sync.allowTransformation;
 		title = "";
 	}
 
 	//qDebug() << "emitting readyForUse";
-	emit connectionReadyForUse(peerServerPort, title, this);
+	emit connectionReadyForUse(mPeerServerPort, title, this);
 }
 
 bool DkLANConnection::readProtocolHeader() {
@@ -676,27 +671,27 @@ bool DkLANConnection::readProtocolHeader() {
 	QByteArray upcomingImageBA = QByteArray("UPCOMINGIMAGE").append(SeparatorToken);
 	QByteArray switchServerBA = QByteArray("SWITCHSERVER").append(SeparatorToken);
 
-	if (buffer == newImageBA) {
+	if (mBuffer == newImageBA) {
 		//qDebug() << "New Image received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentLanDataType = newImage;
-	} else if (buffer == upcomingImageBA) {
+		mCurrentLanDataType = newImage;
+	} else if (mBuffer == upcomingImageBA) {
 		//qDebug() << "Upcoming Image received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentLanDataType = upcomingImage;
-	} else if (buffer == switchServerBA) {
+		mCurrentLanDataType = upcomingImage;
+	} else if (mBuffer == switchServerBA) {
 		//qDebug() << "Switch Server received from:" << this->peerAddress() << ":" << this->peerPort();
-		currentLanDataType = switchServer;
+		mCurrentLanDataType = switchServer;
 	} else {
 		return DkConnection::readProtocolHeader();
 	}
 
-	buffer.clear();
-	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	mBuffer.clear();
+	mNumBytesForCurrentDataType = dataLengthForCurrentDataType();
 	return true;
 }
 
 void DkLANConnection::processReadyRead() {
 
-	if (currentLanDataType == newImage) { // long message
+	if (mCurrentLanDataType == newImage) { // long message
 		readWhileBytesAvailable();
 		return;
 	}
@@ -716,7 +711,7 @@ void DkLANConnection::processReadyRead() {
 void DkLANConnection::readWhileBytesAvailable() {
 	//qDebug() << "DKLANConnection:" << __FUNCTION__ << " line:" << __LINE__;
 	do {
-		if (currentDataType == DkConnection::Undefined && currentLanDataType == Undefined) {
+		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == Undefined) {
 			readDataIntoBuffer();
 			if (!readProtocolHeader())
 				return;
@@ -726,8 +721,8 @@ void DkLANConnection::readWhileBytesAvailable() {
 			return;
 		}
 
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
@@ -737,13 +732,13 @@ void DkLANConnection::readWhileBytesAvailable() {
 
 
 void  DkLANConnection::processData() {
-	switch (currentLanDataType) {
+	switch (mCurrentLanDataType) {
 	case newImage: 
-			if (state == Synchronized) {
+			if (mState == Synchronized) {
 				
 				QString title;
 				QByteArray imageBA;
-				QDataStream ds(buffer);
+				QDataStream ds(mBuffer);
 				ds >> title;
 				ds >> imageBA;
 				QImage image;
@@ -754,19 +749,19 @@ void  DkLANConnection::processData() {
 			break;
 
 	case upcomingImage:
-			if (state == Synchronized) {
+			if (mState == Synchronized) {
 				//QString imageTitle = QString::fromUtf8(buffer);
 				QString imageTitle;
-				QDataStream dsUpcomingImage(buffer);
+				QDataStream dsUpcomingImage(mBuffer);
 				dsUpcomingImage >> imageTitle;
 				emit connectionUpcomingImage(this, imageTitle);
 			}
 			break;
 	case switchServer:
-		  if (state == Synchronized) {
+		  if (mState == Synchronized) {
 			  QHostAddress address;
 			  quint16 port;
-			  QDataStream ds(buffer);
+			  QDataStream ds(mBuffer);
 			  ds >> address;
 			  ds >> port;
 			  emit connectionSwitchServer(this, address, port);
@@ -778,28 +773,28 @@ void  DkLANConnection::processData() {
 		DkConnection::processData();
 	}
 		
-	currentLanDataType = Undefined;
-	currentDataType = DkConnection::Undefined;
-	numBytesForCurrentDataType = 0;
-	buffer.clear();
+	mCurrentLanDataType = Undefined;
+	mCurrentDataType = DkConnection::Undefined;
+	mNumBytesForCurrentDataType = 0;
+	mBuffer.clear();
 }
 
 void DkLANConnection::sendNewPositionMessage(QRect position, bool opacity, bool overlaid) {
-	if(!allowPosition)
+	if(!mAllowPosition)
 		return;
 
 	DkConnection::sendNewPositionMessage(position, opacity, overlaid);
 }
 
 void DkLANConnection::sendNewTransformMessage(QTransform transform, QTransform imgTransform, QPointF canvasSize) {
-	if (!allowTransformation)
+	if (!mAllowTransformation)
 		return;
 
 	DkConnection::sendNewTransformMessage(transform, imgTransform, canvasSize);
 }
 
 void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
-	if (!allowFile)
+	if (!mAllowFile)
 		return;
 
 	DkConnection::sendNewFileMessage(op, filename);
@@ -812,10 +807,10 @@ DkRCConnection::DkRCConnection(QObject* parent /* = 0 */) : DkLANConnection(pare
 
 void DkRCConnection::readGreetingMessage() {
 	DkLANConnection::readGreetingMessage();
-	allowFile = true;
-	allowImage = true;
-	allowPosition = true;
-	allowTransformation = true;
+	mAllowFile = true;
+	mAllowImage = true;
+	mAllowPosition = true;
+	mAllowTransformation = true;
 	//sendAskForPermission(); // if here to many messages are sent ... wait until readyforuse in network.cpp
 }
 
@@ -825,21 +820,21 @@ bool DkRCConnection::readProtocolHeader() {
 	QByteArray newAskPermissionBA = QByteArray("ASKPERMISSION").append(SeparatorToken);
 	QByteArray newRCType = QByteArray("RCTYPE").append(SeparatorToken);
 
-	if (buffer == newPermissionBA) {
+	if (mBuffer == newPermissionBA) {
 		//qDebug() << "New Permission received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newPermission;
-	} else if (buffer == newAskPermissionBA) {
+	} else if (mBuffer == newAskPermissionBA) {
 		//qDebug() << "New Ask Permission received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newAskPermission;
-	} else if (buffer == newRCType) {
+	} else if (mBuffer == newRCType) {
 		//qDebug() << "New RCType received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newRcType;
 	} else {
 		return DkLANConnection::readProtocolHeader();
 	}
 
-	buffer.clear();
-	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	mBuffer.clear();
+	mNumBytesForCurrentDataType = dataLengthForCurrentDataType();
 	return true;
 }
 
@@ -862,7 +857,7 @@ void DkRCConnection::processReadyRead() {
 void DkRCConnection::readWhileBytesAvailable() {
 	//qDebug() << __FUNCTION__ << " " << __LINE__;
 	do {
-		if (currentDataType == DkConnection::Undefined && currentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRCConnection::Undefined) {
+		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRCConnection::Undefined) {
 			readDataIntoBuffer();
 			if (!readProtocolHeader())
 				return;
@@ -872,8 +867,8 @@ void DkRCConnection::readWhileBytesAvailable() {
 		if (!hasEnoughData()) {
 			return;
 		}
-		buffer = read(numBytesForCurrentDataType);
-		if (buffer.size() != numBytesForCurrentDataType) {
+		mBuffer = read(mNumBytesForCurrentDataType);
+		if (mBuffer.size() != mNumBytesForCurrentDataType) {
 			abort();
 			return;
 		}
@@ -886,7 +881,7 @@ void DkRCConnection::processData() {
 	case newPermission: {
 			bool allowedToConnect;
 			QString dummy;
-			QDataStream ds(buffer);
+			QDataStream ds(mBuffer);
 			ds >> allowedToConnect;
 			ds >> dummy;
 			emit connectionNewPermission(this, allowedToConnect);
@@ -895,7 +890,7 @@ void DkRCConnection::processData() {
 		break;
 	case newAskPermission:  {
 		QString dummy;
-		QDataStream ds(buffer);
+		QDataStream ds(mBuffer);
 		ds >> dummy;
 		//qDebug() << "askPermission processed ... sending Permission";
 		sendPermission();
@@ -903,7 +898,7 @@ void DkRCConnection::processData() {
 		break;
 	case newRcType: {
 		int type;
-		QDataStream ds(buffer);
+		QDataStream ds(mBuffer);
 		ds >> type;
 		emit connectionNewRCType(this, type);
 		}
@@ -913,10 +908,10 @@ void DkRCConnection::processData() {
 	}
 
 	currentRemoteControlDataType = DkRCConnection::Undefined;
-	currentLanDataType = DkLANConnection::Undefined;
-	currentDataType = DkConnection::Undefined;
-	numBytesForCurrentDataType = 0;
-	buffer.clear();
+	mCurrentLanDataType = DkLANConnection::Undefined;
+	mCurrentDataType = DkConnection::Undefined;
+	mNumBytesForCurrentDataType = 0;
+	mBuffer.clear();
 }
 
 void DkRCConnection::sendAskForPermission() {

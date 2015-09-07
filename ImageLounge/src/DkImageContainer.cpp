@@ -60,10 +60,9 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  * This class is the basic image management class.
  * @param fileInfo the file of the given 
  **/ 
-DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
+DkImageContainer::DkImageContainer(const QString& filePath) {
 	
-	setFileInfo(fileInfo);
-	loadState = not_loaded;
+	setFilePath(filePath);
 	init();
 }
 
@@ -73,17 +72,17 @@ DkImageContainer::~DkImageContainer() {
 
 void DkImageContainer::init() {
 
-	edited = false;
-	selected = false;
+	mEdited = false;
+	mSelected = false;
 	
 	// always keep in mind that a file does not exist
-	if (!edited && loadState != exists_not)
-		loadState = not_loaded;
+	if (!mEdited && mLoadState != exists_not)
+		mLoadState = not_loaded;
 
 }
 
 bool DkImageContainer::operator==(const DkImageContainer& ric) const {
-	return fileInfo.absoluteFilePath() == ric.file().absoluteFilePath();
+	return mFilePath == ric.filePath();
 }
 
 bool DkImageContainer::operator<=(const DkImageContainer& o) const {
@@ -115,16 +114,30 @@ bool DkImageContainer::operator>=(const DkImageContainer& o) const {
 
 void DkImageContainer::clear() {
 
-	if (loader)
-		loader->release();
-	if (fileBuffer)
-		fileBuffer->clear();
+	if (mLoader)
+		mLoader->release();
+	if (mFileBuffer)
+		mFileBuffer->clear();
 	init();
 }
 
-QFileInfo DkImageContainer::file() const {
+QFileInfo DkImageContainer::fileInfo() const {
+	return mFileInfo;
+}
 
-	return fileInfo;
+QString DkImageContainer::filePath() const {
+
+	return mFilePath;
+}
+
+QString DkImageContainer::dirPath() const {
+	
+	return mFileInfo.absolutePath();
+}
+
+QString DkImageContainer::fileName() const {
+
+	return mFileInfo.fileName();
 }
 
 bool DkImageContainer::isFromZip() {
@@ -144,28 +157,27 @@ bool DkImageContainer::exists() {
 		return true;
 #endif
 
-	fileInfo.refresh();
-	return fileInfo.exists();
+	return QFileInfo(mFilePath).exists();
 }
 
 QString DkImageContainer::getTitleAttribute() const {
 
-	if (!loader || loader->getNumPages() <= 1)
+	if (!mLoader || mLoader->getNumPages() <= 1)
 		return QString();
 
-	QString attr = "[" + QString::number(loader->getPageIdx()) + "/" + 
-		QString::number(loader->getNumPages()) + "]";
+	QString attr = "[" + QString::number(mLoader->getPageIdx()) + "/" + 
+		QString::number(mLoader->getNumPages()) + "]";
 
 	return attr;
 }
 
 QSharedPointer<DkBasicLoader> DkImageContainer::getLoader() {
 
-	if (!loader) {
-		this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
+	if (!mLoader) {
+		mLoader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
 	}
 
-	return loader;
+	return mLoader;
 }
 
 QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData() {
@@ -175,43 +187,60 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData() {
 
 QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() {
 
-	if (!thumb) {
+	if (!mThumb) {
 #ifdef WITH_QUAZIP	
 		if(isFromZip()) 
-			thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFileInfo()));
+			mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFileInfo()));
 		else
-			thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
+			mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
 #else
-		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
+		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
 #endif	
 	}
 
-	return thumb;
+	return mThumb;
+}
+
+QSharedPointer<DkImageContainerT> DkImageContainerT::fromImageContainer(QSharedPointer<DkImageContainer> imgC) {
+
+	if (!imgC)
+		return QSharedPointer<DkImageContainerT>();
+
+	QSharedPointer<DkImageContainerT> imgCT = QSharedPointer<DkImageContainerT>(new DkImageContainerT(imgC->filePath()));
+	
+	imgCT->mLoader = imgC->getLoader();
+	imgCT->mEdited = imgC->isEdited();
+	imgCT->mSelected = imgC->isSelected();
+	imgCT->mThumb = imgC->getThumb();
+	imgCT->mLoadState = imgC->getLoadState();
+	imgCT->mFileBuffer = imgC->getFileBuffer();
+
+	return imgCT;
 }
 
 QSharedPointer<QByteArray> DkImageContainer::getFileBuffer() {
 
-	if (!fileBuffer) {
-		fileBuffer = QSharedPointer<QByteArray>(new QByteArray());
+	if (!mFileBuffer) {
+		mFileBuffer = QSharedPointer<QByteArray>(new QByteArray());
 	}
 
-	return fileBuffer;
+	return mFileBuffer;
 }
 
 float DkImageContainer::getMemoryUsage() const {
 
-	if (!loader)
+	if (!mLoader)
 		return 0;
 
-	float memSize = fileBuffer ? fileBuffer->size()/(1024.0f*1024.0f) : 0;
-	memSize += DkImage::getBufferSizeFloat(loader->image().size(), loader->image().depth());
+	float memSize = mFileBuffer ? mFileBuffer->size()/(1024.0f*1024.0f) : 0;
+	memSize += DkImage::getBufferSizeFloat(mLoader->image().size(), mLoader->image().depth());
 
 	return memSize;
 }
 
 float DkImageContainer::getFileSize() const {
 
-	return fileInfo.size()/(1024.0f*1024.0f);
+	return QFileInfo(mFilePath).size()/(1024.0f*1024.0f);
 }
 
 
@@ -220,64 +249,66 @@ QImage DkImageContainer::image() {
 	if (getLoader()->image().isNull() && getLoadState() == not_loaded)
 		loadImage();
 
-	return loader->image();
+	return mLoader->image();
 }
 
 void DkImageContainer::setImage(const QImage& img) {
 
-	setImage(img, fileInfo);
+	setImage(img, mFilePath);
 }
 
-void DkImageContainer::setImage(const QImage& img, const QFileInfo& fileInfo) {
+void DkImageContainer::setImage(const QImage& img, const QString& filePath) {
 
-	setFileInfo(fileInfo);
-	getLoader()->setImage(img, fileInfo);
-	edited = true;
+	setFilePath(mFilePath);
+	getLoader()->setImage(img, filePath);
+	mEdited = true;
 }
 
-void DkImageContainer::setFileInfo(const QFileInfo& fileInfo) {
+void DkImageContainer::setFilePath(const QString& filePath) {
 
-	this->fileInfo = fileInfo;
+	mFilePath = filePath;
+	mFileInfo = filePath;
 
 #ifdef WIN32
 #if QT_VERSION < 0x050000
-	this->fileNameStr = fileInfo.fileName().toStdWString();
+	mFileNameStr = fileName().toStdWString();
 #else
-	this->fileNameStr = DkUtils::qStringToStdWString(fileInfo.fileName());
+	mFileNameStr = DkUtils::qStringToStdWString(fileName());
 #endif
 #endif
+
 }
 
 bool DkImageContainer::hasImage() const {
 
-	if (!loader)
+	if (!mLoader)
 		return false;
 
-	return loader->hasImage();
+	return mLoader->hasImage();
 }
 
 int DkImageContainer::getLoadState() const {
 
-	return loadState;
+	return mLoadState;
 }
 
 bool DkImageContainer::loadImage() {
 
 	if (getFileBuffer()->isEmpty())
-		fileBuffer = loadFileToBuffer(fileInfo);
+		mFileBuffer = loadFileToBuffer(mFilePath);
 
-	loader = loadImageIntern(fileInfo, getLoader(), fileBuffer);
+	mLoader = loadImageIntern(mFilePath, getLoader(), mFileBuffer);
 
-	return loader->hasImage();
+	return mLoader->hasImage();
 }
 
-bool DkImageContainer::saveImage(const QFileInfo fileInfo, int compression /* = -1 */) {
-	return saveImage(fileInfo, getLoader()->image(), compression);
+bool DkImageContainer::saveImage(const QString& filePath, int compression /* = -1 */) {
+	return saveImage(filePath, getLoader()->image(), compression);
 }
 
-bool DkImageContainer::saveImage(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
+bool DkImageContainer::saveImage(const QString& filePath, const QImage saveImg, int compression /* = -1 */) {
 
-	QFileInfo saveFile = saveImageIntern(fileInfo, getLoader(), saveImg, compression);
+	QFileInfo saveFile = saveImageIntern(filePath, getLoader(), saveImg, compression);
 
 	saveFile.refresh();
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
@@ -285,9 +316,12 @@ bool DkImageContainer::saveImage(const QFileInfo fileInfo, const QImage saveImg,
 	return saveFile.exists() && saveFile.isFile();
 }
 
-QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
+QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QString& filePath) {
 
-	QFileInfo fInfo = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : fileInfo;
+	QFileInfo fInfo = filePath;
+
+	if (fInfo.isSymLink())
+		fInfo = fInfo.symLinkTarget();
 
 #ifdef WITH_QUAZIP
 	if (isFromZip()) 
@@ -308,45 +342,45 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 }
 
 
-QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
 
 	try {
-		loader->loadGeneral(fileInfo, fileBuffer, true);
+		loader->loadGeneral(filePath, fileBuffer, true);
 	} catch(...) {}
 
 	return loader;
 }
 
-QFileInfo DkImageContainer::saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
+QString DkImageContainer::saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
 
-	return loader->save(fileInfo, saveImg, compression);
+	return loader->save(filePath, saveImg, compression);
 }
 
 void DkImageContainer::saveMetaData() {
 
-	if (!loader)
+	if (!mLoader)
 		return;
 
-	saveMetaDataIntern(fileInfo, loader, fileBuffer);
+	saveMetaDataIntern(mFilePath, mLoader, mFileBuffer);
 }
 
-void DkImageContainer::saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
+void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
-	loader->saveMetaData(fileInfo, fileBuffer);
+	loader->saveMetaData(filePath, fileBuffer);
 }
 
 void DkImageContainer::setEdited(bool edited) {
-	this->edited = edited;
+	mEdited = edited;
 }
 
 bool DkImageContainer::isEdited() const {
 
-	return edited;
+	return mEdited;
 }
 
 bool DkImageContainer::isSelected() const {
 
-	return selected;
+	return mSelected;
 }
 
 bool DkImageContainer::setPageIdx(int skipIdx) {
@@ -358,19 +392,19 @@ bool DkImageContainer::setPageIdx(int skipIdx) {
 #ifdef WITH_QUAZIP
 QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 
-	if (!zipData) {
-		this->zipData = QSharedPointer<DkZipContainer>(new DkZipContainer(fileInfo));
-		if (zipData->isZip())
-			setFileInfo(zipData->getImageFileInfo());
+	if (!mZipData) {
+		mZipData = QSharedPointer<DkZipContainer>(new DkZipContainer(mFilePath));
+		if (mZipData->isZip())
+			setFilePath(mZipData->getImageFileInfo());
 	}
 
-	return zipData;
+	return mZipData;
 }
 #endif
 #ifdef WIN32
 std::wstring DkImageContainer::getFileNameWStr() const {
 	
-	return fileNameStr;
+	return mFileNameStr;
 }
 #endif
 
@@ -404,70 +438,65 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 		break;
 #else
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compFilename(l.file(), r.file());
+			return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
 		else
-			return DkUtils::compFilenameInv(l.file(), r.file());
+			return DkUtils::compFilenameInv(l.fileInfo(), r.fileInfo());
 		break;
 #endif
 
 	case DkSettings::sort_date_created:
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compDateCreated(l.file(), r.file());
+			return DkUtils::compDateCreated(l.fileInfo(), r.fileInfo());
 		else
-			return DkUtils::compDateCreatedInv(l.file(), r.file());
+			return DkUtils::compDateCreatedInv(l.fileInfo(), r.fileInfo());
 		break;
 
 	case DkSettings::sort_date_modified:
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compDateModified(l.file(), r.file());
+			return DkUtils::compDateModified(l.fileInfo(), r.fileInfo());
 		else
-			return DkUtils::compDateModifiedInv(l.file(), r.file());
+			return DkUtils::compDateModifiedInv(l.fileInfo(), r.fileInfo());
 
 	case DkSettings::sort_random:
-		return DkUtils::compRandom(l.file(), r.file());
+		return DkUtils::compRandom(l.fileInfo(), r.fileInfo());
 
 	default:
 		// filename
-		return DkUtils::compFilename(l.file(), r.file());
+		return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
 	}
 	
 }
 
 // DkImageContainerT --------------------------------------------------------------------
-DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(file) {
-	
-	fetchingImage = false;
-	fetchingBuffer = false;
+DkImageContainerT::DkImageContainerT(const QString& filePath) : DkImageContainer(filePath) {
 	
 	// our file watcher
-	fileUpdateTimer.setSingleShot(false);
-	fileUpdateTimer.setInterval(500);
-	waitForUpdate = false;
-	downloaded = false;
+	mFileUpdateTimer.setSingleShot(false);
+	mFileUpdateTimer.setInterval(500);
 
-	connect(&fileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()), Qt::UniqueConnection);
+	connect(&mFileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()), Qt::UniqueConnection);
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 
 DkImageContainerT::~DkImageContainerT() {
 	
-	bufferWatcher.blockSignals(true);
-	bufferWatcher.cancel();
-	imageWatcher.blockSignals(true);
-	imageWatcher.cancel();
+	mBufferWatcher.blockSignals(true);
+	mBufferWatcher.cancel();
+	mImageWatcher.blockSignals(true);
+	mImageWatcher.cancel();
 
 	saveMetaData();
 
 	// we have to wait here
-	saveMetaDataWatcher.blockSignals(true);
-	saveImageWatcher.blockSignals(true);
+	mSaveMetaDataWatcher.blockSignals(true);
+	mSaveImageWatcher.blockSignals(true);
 }
 
 void DkImageContainerT::clear() {
 
 	cancel();
 
-	if (fetchingImage || fetchingBuffer)
+	if (mFetchingImage || mFetchingBuffer)
 		return;
 
 	DkImageContainer::clear();
@@ -476,32 +505,32 @@ void DkImageContainerT::clear() {
 void DkImageContainerT::checkForFileUpdates() {
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) setFileInfo(getZipData()->getZipFileInfo());
+	if(isFromZip()) 
+		setFilePath(getZipData()->getZipFileInfo());
 #endif
 
-	QDateTime modifiedBefore = file().lastModified();
-	QFileInfo fileInfo = file();
-	fileInfo.refresh();
-	setFileInfo(fileInfo);
+	QDateTime modifiedBefore = fileInfo().lastModified();
+	mFileInfo.refresh();
 	
 	bool changed = false;
 
 	// if image exists_not don't do this
-	if (!fileInfo.exists() && loadState == loaded) {
+	if (!mFileInfo.exists() && mLoadState == loaded) {
 		changed = true;
 	}
 
-	if (fileInfo.lastModified() != modifiedBefore)
-		waitForUpdate = true;
+	if (mFileInfo.lastModified() != modifiedBefore)
+		mWaitForUpdate = true;
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) setFileInfo(getZipData()->getImageFileInfo());
+	if(isFromZip()) 
+		setFilePath(getZipData()->getImageFileInfo());
 #endif
 
 	if (changed) {
-		fileUpdateTimer.stop();
+		mFileUpdateTimer.stop();
 		if (DkSettings::global.askToSaveDeletedFiles) {
-			edited = changed;
+			mEdited = changed;
 			emit fileLoadedSignal(true);
 		}
 		return;
@@ -512,8 +541,8 @@ void DkImageContainerT::checkForFileUpdates() {
 	// be more accurate. however, the locks are pretty nasty
 	// if the user e.g. wants to delete the file while watching
 	// it in nomacs
-	if (waitForUpdate && fileInfo.isReadable()) {
-		waitForUpdate = false;
+	if (mWaitForUpdate && mFileInfo.isReadable()) {
+		mWaitForUpdate = false;
 		getThumb()->setImage(QImage());
 		loadImageThreaded(true);
 	}
@@ -524,11 +553,12 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 #ifdef WITH_QUAZIP
 	//zip archives: get zip file fileInfo for checks
-	if(isFromZip()) setFileInfo(getZipData()->getZipFileInfo());
+	if(isFromZip()) 
+		setFilePath(getZipData()->getZipFileInfo());
 #endif
 	
 	// check file for updates
-	QFileInfo fileInfo = file();
+	QFileInfo fileInfo = filePath();
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 
@@ -541,65 +571,66 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 	// null file?
 	if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
 
-		QString msg = tr("Sorry, the file: %1 does not exist... ").arg(fileInfo.fileName());
+		QString msg = tr("Sorry, the file: %1 does not exist... ").arg(fileName());
 		emit showInfoSignal(msg);
-		loadState = exists_not;
+		mLoadState = exists_not;
 		return false;
 	}
-	else if (!file().permission(QFile::ReadUser)) {
+	else if (!fileInfo.permission(QFile::ReadUser)) {
 
-		QString msg = tr("Sorry, you are not allowed to read: %1").arg(file().fileName());
+		QString msg = tr("Sorry, you are not allowed to read: %1").arg(fileName());
 		emit showInfoSignal(msg);
-		loadState = exists_not;
+		mLoadState = exists_not;
 		return false;
 	}
 
 #ifdef WITH_QUAZIP
 	//zip archives: use the image file info from now on
-	if(isFromZip()) setFileInfo(getZipData()->getImageFileInfo());
+	if(isFromZip()) 
+		setFilePath(getZipData()->getImageFileInfo());
 #endif
 	
-	loadState = loading;
+	mLoadState = loading;
 	fetchFile();
 	return true;
 }
 
 void DkImageContainerT::fetchFile() {
 	
-	if (fetchingBuffer && getLoadState() == loading_canceled) {
-		loadState = loading;	// uncancel loading - we had another call
+	if (mFetchingBuffer && getLoadState() == loading_canceled) {
+		mLoadState = loading;	// uncancel loading - we had another call
 		return;
 	}
-	if (fetchingImage)
-		imageWatcher.waitForFinished();
+	if (mFetchingImage)
+		mImageWatcher.waitForFinished();
 	// I think we missed to return here
-	if (fetchingBuffer)
+	if (mFetchingBuffer)
 		return;
 
 	// ignore doubled calls
-	if (fileBuffer && !fileBuffer->isEmpty()) {
+	if (mFileBuffer && !mFileBuffer->isEmpty()) {
 		bufferLoaded();
 		return;
 	}
 
-	fetchingBuffer = true;	// saves the threaded call
-	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
+	mFetchingBuffer = true;	// saves the threaded call
+	connect(&mBufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
 
-	bufferWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadFileToBuffer, file()));
+	mBufferWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::loadFileToBuffer, filePath()));
 }
 
 void DkImageContainerT::bufferLoaded() {
 
-	fetchingBuffer = false;
+	mFetchingBuffer = false;
 
-	if (!bufferWatcher.isCanceled())
-		fileBuffer = bufferWatcher.result();
+	if (!mBufferWatcher.isCanceled())
+		mFileBuffer = mBufferWatcher.result();
 
 	if (getLoadState() == loading)
 		fetchImage();
 	else if (getLoadState() == loading_canceled) {
-		loadState = not_loaded;
+		mLoadState = not_loaded;
 		clear();
 		return;
 	}
@@ -607,40 +638,40 @@ void DkImageContainerT::bufferLoaded() {
 
 void DkImageContainerT::fetchImage() {
 
-	if (fetchingBuffer)
-		bufferWatcher.waitForFinished();
+	if (mFetchingBuffer)
+		mBufferWatcher.waitForFinished();
 
-	if (fetchingImage) {
-		loadState = loading;
+	if (mFetchingImage) {
+		mLoadState = loading;
 		return;
 	}
 
-	if (getLoader()->hasImage() || /*!fileBuffer || fileBuffer->isEmpty() ||*/ loadState == exists_not) {
+	if (getLoader()->hasImage() || /*!fileBuffer || fileBuffer->isEmpty() ||*/ mLoadState == exists_not) {
 		loadingFinished();
 		return;
 	}
 	
-	qDebug() << "fetching: " << file().absoluteFilePath();
-	fetchingImage = true;
+	qDebug() << "fetching: " << filePath();
+	mFetchingImage = true;
 
-	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
+	connect(&mImageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
 
-	imageWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadImageIntern, file(), loader, fileBuffer));
+	mImageWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::loadImageIntern, filePath(), mLoader, mFileBuffer));
 }
 
 void DkImageContainerT::imageLoaded() {
 
-	fetchingImage = false;
+	mFetchingImage = false;
 
 	if (getLoadState() == loading_canceled) {
-		loadState = not_loaded;
+		mLoadState = not_loaded;
 		clear();
 		return;
 	}
 
 	// deliver image
-	loader = imageWatcher.result();
+	mLoader = mImageWatcher.result();
 
 	loadingFinished();
 }
@@ -650,18 +681,18 @@ void DkImageContainerT::loadingFinished() {
 	DkTimer dt;
 
 	if (getLoadState() == loading_canceled) {
-		loadState = not_loaded;
+		mLoadState = not_loaded;
 		clear();
 		return;
 	}
 
 	if (!getLoader()->hasImage()) {
-		fileUpdateTimer.stop();
-		edited = false;
-		QString msg = tr("Sorry, I could not load: %1").arg(file().fileName());
+		mFileUpdateTimer.stop();
+		mEdited = false;
+		QString msg = tr("Sorry, I could not load: %1").arg(fileName());
 		emit showInfoSignal(msg);
 		emit fileLoadedSignal(false);
-		loadState = exists_not;
+		mLoadState = exists_not;
 		return;
 	}
 	else if (!getThumb()->hasImage()) {
@@ -669,74 +700,74 @@ void DkImageContainerT::loadingFinished() {
 	}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
-	if (fileBuffer && fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
-		fileBuffer->clear();
+	if (mFileBuffer && mFileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
+		mFileBuffer->clear();
 	
-	loadState = loaded;
+	mLoadState = loaded;
 	emit fileLoadedSignal(true);
 }
 
 void DkImageContainerT::downloadFile(const QUrl& url) {
 
-	if (!fileDownloader) {
-		fileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
-		connect(fileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
+	if (!mFileDownloader) {
+		mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
+		connect(mFileDownloader.data(), SIGNAL(mDownloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
 		qDebug() << "trying to download: " << url;
 	}
 	else
-		fileDownloader->downloadFile(url);
+		mFileDownloader->downloadFile(url);
 }
 
 void DkImageContainerT::fileDownloaded() {
 
-	if (!fileDownloader) {
+	if (!mFileDownloader) {
 		qDebug() << "empty fileDownloader, where it should not be";
 		emit fileLoadedSignal(false);
 		return;
 	}
 
-	fileBuffer = fileDownloader->downloadedData();
+	mFileBuffer = mFileDownloader->downloadedData();
 
-	if (!fileBuffer || fileBuffer->isEmpty()) {
-		qDebug() << fileDownloader->getUrl() << " not downloaded...";
-		edited = false;
-		emit showInfoSignal(tr("Sorry, I could not download:\n%1").arg(fileDownloader->getUrl().toString()));
+	if (!mFileBuffer || mFileBuffer->isEmpty()) {
+		qDebug() << mFileDownloader->getUrl() << " not downloaded...";
+		mEdited = false;
+		emit showInfoSignal(tr("Sorry, I could not download:\n%1").arg(mFileDownloader->getUrl().toString()));
 		emit fileLoadedSignal(false);
-		loadState = exists_not;
+		mLoadState = exists_not;
 		return;
 	}
 
-	downloaded = true;
+	mDownloaded = true;
 	fetchImage();
 }
 
 void DkImageContainerT::cancel() {
 
-	if (loadState != loading)
+	if (mLoadState != loading)
 		return;
 
-	loadState = loading_canceled;
+	mLoadState = loading_canceled;
 }
 
 void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = true */) {
 
 	// !selected - do not connect twice
-	if (connectSignals && !selected) {
+	if (connectSignals && !mSelected) {
 		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)), Qt::UniqueConnection);
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)), Qt::UniqueConnection);
-		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)), Qt::UniqueConnection);
-		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)), Qt::UniqueConnection);
-		fileUpdateTimer.start();
+		connect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)), Qt::UniqueConnection);
+		connect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)), Qt::UniqueConnection);
+		mFileUpdateTimer.start();
 	}
 	else if (!connectSignals) {
 		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
-		disconnect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
-		disconnect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
-		fileUpdateTimer.stop();
+		disconnect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)));
+		disconnect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)));
+		mFileUpdateTimer.stop();
 	}
 
-	selected = connectSignals;
+	mSelected = connectSignals;
 
 }
 
@@ -745,119 +776,123 @@ void DkImageContainerT::saveMetaDataThreaded() {
 	if (!exists() || getLoader()->getMetaData() && !getLoader()->getMetaData()->isDirty())
 		return;
 
-	fileUpdateTimer.stop();
+	mFileUpdateTimer.stop();
 	QFuture<void> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::saveMetaDataIntern, file(), getLoader(), getFileBuffer());
+		&nmc::DkImageContainerT::saveMetaDataIntern, filePath(), getLoader(), getFileBuffer());
 
 }
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QString& filePath, int compression /* = -1 */) {
 
-	return saveImageThreaded(fileInfo, getLoader()->image(), compression);
+	return saveImageThreaded(filePath, getLoader()->image(), compression);
 }
 
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QString& filePath, const QImage saveImg, int compression /* = -1 */) {
 
-	saveImageWatcher.waitForFinished();
+	mSaveImageWatcher.waitForFinished();
+
+	QFileInfo fInfo = filePath;
 
 	if (saveImg.isNull()) {
 		QString msg = tr("I can't save an empty file, sorry...\n");
 		emit errorDialogSignal(msg);
 		return false;
 	}
-	if (!fileInfo.absoluteDir().exists()) {
-		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(fileInfo.absolutePath());
+	if (!fInfo.absoluteDir().exists()) {
+		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(filePath);
 		emit errorDialogSignal(msg);
 		return false;
 	}
-	if (fileInfo.exists() && !fileInfo.isWritable()) {
-		QString msg = tr("Sorry, I can't write to the file: %1").arg(fileInfo.fileName());
+	if (fInfo.exists() && !fInfo.isWritable()) {
+		QString msg = tr("Sorry, I can't write to the file: %1").arg(fInfo.fileName());
 		emit errorDialogSignal(msg);
 		return false;
 	}
 
-	qDebug() << "attempting to save: " << fileInfo.absoluteFilePath();
+	qDebug() << "attempting to save: " << filePath;
 
-	fileUpdateTimer.stop();
-	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()), Qt::UniqueConnection);
+	mFileUpdateTimer.stop();
+	connect(&mSaveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()), Qt::UniqueConnection);
 
-	saveImageWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::saveImageIntern, fileInfo, loader, saveImg, compression));
+	mSaveImageWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::saveImageIntern, filePath, mLoader, saveImg, compression));
 
 	return true;
 }
 
 void DkImageContainerT::savingFinished() {
 
-	QFileInfo saveFile = saveImageWatcher.result();
-	saveFile.refresh();
-	qDebug() << "save file: " << saveFile.absoluteFilePath();
+	QString savePath = mSaveImageWatcher.result();
 	
-	if (!saveFile.exists() || !saveFile.isFile())
-		emit fileSavedSignal(saveFile, false);
+	QFileInfo sInfo = savePath;
+	sInfo.refresh();
+	qDebug() << "save file: " << savePath;
+	
+	if (!sInfo.exists() || !sInfo.isFile())
+		emit fileSavedSignal(savePath, false);
 	else {
 		//// reset thumb - loadImageThreaded should do it anyway
 		//thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
 
-		if (fileBuffer)
-			fileBuffer->clear();	// do a complete clear?
-		setFileInfo(saveFile);
-		edited = false;
-		downloaded = false;
-		if (selected) {
+		if (mFileBuffer)
+			mFileBuffer->clear();	// do a complete clear?
+		setFilePath(savePath);
+		mEdited = false;
+		mDownloaded = false;
+		if (mSelected) {
 			loadImageThreaded(true);	// force a reload
-			fileUpdateTimer.start();
+			mFileUpdateTimer.start();
 		}
-		emit fileSavedSignal(saveFile);
+		emit fileSavedSignal(savePath);
 	}
 }
 
-QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
+QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QString& filePath) {
 
-	return DkImageContainer::loadFileToBuffer(fileInfo);
+	return DkImageContainer::loadFileToBuffer(filePath);
 }
 
-QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
 
-	return DkImageContainer::loadImageIntern(fileInfo, loader, fileBuffer);
+	return DkImageContainer::loadImageIntern(filePath, loader, fileBuffer);
 }
 
-QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
+QString DkImageContainerT::saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
 
-	qDebug() << "saveImage in T: " << fileInfo.absoluteFilePath();
+	qDebug() << "saveImage in T: " << filePath;
 
-	return DkImageContainer::saveImageIntern(fileInfo, loader, saveImg, compression);
+	return DkImageContainer::saveImageIntern(filePath, loader, saveImg, compression);
 }
 
-void DkImageContainerT::saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
+void DkImageContainerT::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
-	return DkImageContainer::saveMetaDataIntern(fileInfo, loader, fileBuffer);
+	return DkImageContainer::saveMetaDataIntern(filePath, loader, fileBuffer);
 }
 
 QSharedPointer<DkBasicLoader> DkImageContainerT::getLoader() {
 
-	if (!loader) {
+	if (!mLoader) {
 		DkImageContainer::getLoader();
-		connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
+		connect(mLoader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
 	}
 
-	return loader;
+	return mLoader;
 }
 
 QSharedPointer<DkThumbNailT> DkImageContainerT::getThumb() {
 
-	if (!thumb) {
+	if (!mThumb) {
 		DkImageContainer::getThumb();
-		connect(thumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SIGNAL(thumbLoadedSignal(bool)));
+		connect(mThumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SIGNAL(thumbLoadedSignal(bool)));
 	}
 
-	return thumb;
+	return mThumb;
 }
 
 bool DkImageContainerT::isFileDownloaded() const {
 
-	return downloaded;
+	return mDownloaded;
 }
 
 };

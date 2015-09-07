@@ -127,13 +127,13 @@ class DllExport DkImageStorage : public QObject {
 	Q_OBJECT
 
 public:
-	DkImageStorage(QImage img = QImage());
+	DkImageStorage(const QImage& img = QImage());
 
-	void setImage(QImage img);
+	void setImage(const QImage& img);
 	QImage getImageConst() const;
 	QImage getImage(float factor = 1.0f);
 	bool hasImage() const {
-		return !img.isNull();
+		return !mImg.isNull();
 	}
 
 public slots:
@@ -141,17 +141,17 @@ public slots:
 	void antiAliasingChanged(bool antiAliasing);
 
 signals:
-	void imageUpdated();
-	void infoSignal(QString msg);
+	void imageUpdated() const;
+	void infoSignal(const QString& msg) const;
 
 protected:
-	QImage img;
-	QVector<QImage> imgs;
+	QImage mImg;
+	QVector<QImage> mImgs;
 
-	QMutex mutex;
-	QThread* computeThread;
-	bool busy;
-	bool stop;
+	QMutex mMutex;
+	QThread* mComputeThread = 0;
+	bool mBusy = false;
+	bool mStop = true;
 };
 
 };

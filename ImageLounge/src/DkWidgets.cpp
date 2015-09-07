@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkWidgets.h"
-#include "DkNoMacs.h"
+
 #include "DkUtils.h"
 #include "DkTimer.h"
 #include "DkThumbs.h"
@@ -105,7 +105,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QSlider(Qt::Horizontal, 
 	
 	setObjectName("DkFolderScrollBar");
 	init();
-	mouseDown = false;
+	mMouseDown = false;
 }
 
 DkFolderScrollBar::~DkFolderScrollBar() {
@@ -118,25 +118,25 @@ void DkFolderScrollBar::registerAction(QAction* action) {
 }
 
 void DkFolderScrollBar::block(bool blocked) {
-	this->blocked = blocked;
+	this->mBlocked = blocked;
 	setVisible(false);
 }
 
 void DkFolderScrollBar::setDisplaySettings(QBitArray* displayBits) {
-	displaySettingsBits = displayBits;
+	mDisplaySettingsBits = displayBits;
 }
 
 bool DkFolderScrollBar::getCurrentDisplaySetting() {
 
-	if (!displaySettingsBits)
+	if (!mDisplaySettingsBits)
 		return false;
 
-	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= mDisplaySettingsBits->size()) {
 		qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 		return false;
 	}
 
-	return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
+	return mDisplaySettingsBits->testBit(DkSettings::app.currentAppMode);
 }
 
 void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT> > images) {
@@ -148,7 +148,7 @@ void DkFolderScrollBar::updateFile(int idx) {
 	
 	qDebug() << "updating to: " << idx;
 
-	if (mouseDown)
+	if (mMouseDown)
 		return;
 
 	if (isVisible()) {
@@ -171,7 +171,7 @@ void DkFolderScrollBar::mousePressEvent(QMouseEvent *event) {
 
 void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
-	mouseDown = false;
+	mMouseDown = false;
 	blockSignals(false);
 	emit valueChanged(value());
 	QSlider::mouseReleaseEvent(event);
@@ -181,22 +181,22 @@ void DkFolderScrollBar::init() {
 
 	setMouseTracking(true);
 
-	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 		DkSettings::display.bgColorWidget;
 
-	showing = false;
-	hiding = false;
-	blocked = false;
-	displaySettingsBits = 0;
-	opacityEffect = 0;
+	mShowing = false;
+	mHiding = false;
+	mBlocked = false;
+	mDisplaySettingsBits = 0;
+	mOpacityEffect = 0;
 
 	// painter problems if the widget is a child of another that has the same graphicseffect
 	// widget starts on hide
-	opacityEffect = new QGraphicsOpacityEffect(this);
-	opacityEffect->setOpacity(0);
-	opacityEffect->setEnabled(false);
-	setGraphicsEffect(opacityEffect);
+	mOpacityEffect = new QGraphicsOpacityEffect(this);
+	mOpacityEffect->setOpacity(0);
+	mOpacityEffect->setEnabled(false);
+	setGraphicsEffect(mOpacityEffect);
 
 	setVisible(false);
 }
@@ -204,9 +204,9 @@ void DkFolderScrollBar::init() {
 void DkFolderScrollBar::show(bool saveSettings) {
 
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
-	if (!blocked && !showing) {
-		hiding = false;
-		showing = true;
+	if (!mBlocked && !mShowing) {
+		mHiding = false;
+		mShowing = true;
 		setVisible(true, saveSettings);
 		animateOpacityUp();
 	}
@@ -214,76 +214,76 @@ void DkFolderScrollBar::show(bool saveSettings) {
 
 void DkFolderScrollBar::hide(bool saveSettings) {
 
-	if (!hiding) {
-		hiding = true;
-		showing = false;
+	if (!mHiding) {
+		mHiding = true;
+		mShowing = false;
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
+		if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
 
 void DkFolderScrollBar::setVisible(bool visible, bool saveSettings) {
 
-	if (blocked) {
+	if (mBlocked) {
 		QWidget::setVisible(false);
 		return;
 	}
 
-	if (visible && !isVisible() && !showing)
-		opacityEffect->setOpacity(100);
+	if (visible && !isVisible() && !mShowing)
+		mOpacityEffect->setOpacity(100);
 
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	if (saveSettings && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 }
 
 void DkFolderScrollBar::animateOpacityUp() {
 
-	if (!showing)
+	if (!mShowing)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() >= 1.0f || !showing) {
-		opacityEffect->setOpacity(1.0f);
-		showing = false;
-		opacityEffect->setEnabled(false);
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() >= 1.0f || !mShowing) {
+		mOpacityEffect->setOpacity(1.0f);
+		mShowing = false;
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
-	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()+0.05);
 }
 
 void DkFolderScrollBar::animateOpacityDown() {
 
-	if (!hiding)
+	if (!mHiding)
 		return;
 
-	opacityEffect->setEnabled(true);
-	if (opacityEffect->opacity() <= 0.0f) {
-		opacityEffect->setOpacity(0.0f);
-		hiding = false;
+	mOpacityEffect->setEnabled(true);
+	if (mOpacityEffect->opacity() <= 0.0f) {
+		mOpacityEffect->setOpacity(0.0f);
+		mHiding = false;
 		setVisible(false, false);	// finally hide the widget
-		opacityEffect->setEnabled(false);
+		mOpacityEffect->setEnabled(false);
 		return;
 	}
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
-	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+	mOpacityEffect->setOpacity(mOpacityEffect->opacity()-0.05);
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
-	stop = false;
-	cLoadIdx = 0;
-	numSaved = 0;
+	mStop = false;
+	mCLoadIdx = 0;
+	mNumSaved = 0;
 }
 
 void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave) {
@@ -291,38 +291,38 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	if (images.empty())
 		return;
 
-	stop = false;
-	cLoadIdx = 0;
-	numSaved = 0;
+	mStop = false;
+	mCLoadIdx = 0;
+	mNumSaved = 0;
 
-	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->file().absolutePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
-	pd->setWindowTitle(tr("Thumbnails"));
+	mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), QApplication::activeWindow());
+	mPd->setWindowTitle(tr("Thumbnails"));
 
 	//pd->setWindowModality(Qt::WindowModal);
 
-	connect(this, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
-	connect(pd, SIGNAL(canceled()), this, SLOT(stopProgress()));
+	connect(this, SIGNAL(numFilesSignal(int)), mPd, SLOT(setValue(int)));
+	connect(mPd, SIGNAL(canceled()), this, SLOT(stopProgress()));
 
-	pd->show();
+	mPd->show();
 
-	this->forceSave = forceSave;
-	this->images = images;
+	this->mForceSave = forceSave;
+	this->mImages = images;
 	loadNext();
 
 }
 
 void DkThumbsSaver::thumbLoaded(bool) {
 
-	numSaved++;
-	emit numFilesSignal(numSaved);
+	mNumSaved++;
+	emit numFilesSignal(mNumSaved);
 
-	if (numSaved == images.size() || stop) {
-		if (pd) {
-			pd->close();
-			pd->deleteLater();
-			pd = 0;
+	if (mNumSaved == mImages.size() || mStop) {
+		if (mPd) {
+			mPd->close();
+			mPd->deleteLater();
+			mPd = 0;
 		}
-		stop = true;
+		mStop = true;
 	}
 	else
 		loadNext();
@@ -330,26 +330,26 @@ void DkThumbsSaver::thumbLoaded(bool) {
 
 void DkThumbsSaver::loadNext() {
 	
-	if (stop)
+	if (mStop)
 		return;
 
 	int missing = DkSettings::resources.maxThumbsLoading-DkSettings::resources.numThumbsLoading;
-	int numLoading = cLoadIdx+missing;
-	int force = (forceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
+	int numLoading = mCLoadIdx+missing;
+	int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
 	qDebug() << "missing: " << missing << " num loading: " << numLoading;
-	qDebug() << "loading bounds: " << cLoadIdx << " - " << numLoading;
+	qDebug() << "loading bounds: " << mCLoadIdx << " - " << numLoading;
 
-	for (int idx = cLoadIdx; idx < images.size() && idx < numLoading; idx++) {
-		cLoadIdx++;
-		connect(images.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
-		images.at(idx)->getThumb()->fetchThumb(force);
+	for (int idx = mCLoadIdx; idx < mImages.size() && idx < numLoading; idx++) {
+		mCLoadIdx++;
+		connect(mImages.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+		mImages.at(idx)->getThumb()->fetchThumb(force);
 	}
 }
 
 void DkThumbsSaver::stopProgress() {
 
-	stop = true;
+	mStop = true;
 }
 
 // DkFileSystemModel --------------------------------------------------------------------
@@ -415,7 +415,6 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	readSettings();
 
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
-	//connect(fileTree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
 }
 
 DkExplorer::~DkExplorer() {
@@ -447,16 +446,16 @@ void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img) {
 	if (!img)
 		return;
 
-	setCurrentPath(img->file());
+	setCurrentPath(img->filePath());
 }
 
-void DkExplorer::setCurrentPath(QFileInfo fileInfo) {
+void DkExplorer::setCurrentPath(const QString& filePath) {
 
 	// expand folders
-	if (fileInfo.isDir())
-		fileTree->expand(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+	if (QFileInfo(filePath).isDir())
+		fileTree->expand(sortModel->mapFromSource(fileModel->index(filePath)));
 
-	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(filePath)));
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const {
@@ -466,9 +465,9 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 	qDebug() << "opening: " << cFile.absoluteFilePath();
 
 	if (DkUtils::isValid(cFile))
-		emit openFile(cFile);
+		emit openFile(cFile.absoluteFilePath());
 	else if (cFile.isDir())
-		emit openDir(QDir(cFile.absoluteFilePath()));
+		emit openDir(cFile.absoluteFilePath());
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
@@ -537,7 +536,6 @@ void DkExplorer::writeSettings() {
 
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
 	settings.endGroup();
-	
 }
 
 void DkExplorer::readSettings() {
@@ -557,7 +555,7 @@ void DkExplorer::readSettings() {
 		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
 
-	fileModel->setReadOnly(settings.value("ReadOnly", false).toBool());
+	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
 	settings.endGroup();
 }
 
@@ -573,7 +571,7 @@ DkOverview::DkOverview(QWidget* parent) : QLabel(parent) {
 
 void DkOverview::paintEvent(QPaintEvent *event) {
 
-	if (img.isNull() || !imgMatrix || !worldMatrix)
+	if (mImg.isNull() || !mImgMatrix || !mWorldMatrix)
 		return;
 
 	QPainter painter(this);
@@ -581,17 +579,17 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	int lm, tm, rm, bm;
 	getContentsMargins(&lm, &tm, &rm, &bm);
 
-	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
+	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the mViewport....
 	
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
-		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
+		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
+		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImg.size()));
 
 		// now render the current view
-		QRectF viewRect = viewPortRect;
-		viewRect = worldMatrix->inverted().mapRect(viewRect);
-		viewRect = imgMatrix->inverted().mapRect(viewRect);
+		QRectF viewRect = mViewPortRect;
+		viewRect = mWorldMatrix->inverted().mapRect(viewRect);
+		viewRect = mImgMatrix->inverted().mapRect(viewRect);
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
@@ -625,13 +623,13 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 
 void DkOverview::mousePressEvent(QMouseEvent *event) {
 	
-	enterPos = event->pos();
-	posGrab = event->pos();
+	mEnterPos = event->pos();
+	mPosGrab = event->pos();
 }
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 
-	QPointF dxy = enterPos-QPointF(event->pos());
+	QPointF dxy = mEnterPos-QPointF(event->pos());
 
 	if (dxy.manhattanLength() < 4) {
 		
@@ -639,17 +637,17 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		getContentsMargins(&lm, &tm, &rm, &bm);
 		
 		// move to the current position
-		QRectF viewRect = viewPortRect;
-		viewRect = worldMatrix->inverted().mapRect(viewRect);
-		viewRect = imgMatrix->inverted().mapRect(viewRect);
+		QRectF viewRect = mViewPortRect;
+		viewRect = mWorldMatrix->inverted().mapRect(viewRect);
+		viewRect = mImgMatrix->inverted().mapRect(viewRect);
 		viewRect = getScaledImageMatrix().mapRect(viewRect);
 		QPointF currentViewPoint = viewRect.center();
 
-		float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+		float panningSpeed = (float)-(mWorldMatrix->m11()/(getScaledImageMatrix().m11()/mImgMatrix->m11()));
 
 		QPointF cPos = event->pos()-QPointF(lm, tm);
-		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
-		emit moveViewSignal(dxy);
+		QPointF lDxy = (cPos - currentViewPoint)/mWorldMatrix->m11()*panningSpeed;
+		emit moveViewSignal(lDxy);
 
 		if (event->modifiers() == DkSettings::global.altMod)
 			emit sendTransformSignal();
@@ -662,11 +660,11 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() != Qt::LeftButton)
 		return;
 
-	float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+	float panningSpeed = (float)-(mWorldMatrix->m11()/(getScaledImageMatrix().m11()/mImgMatrix->m11()));
 
 	QPointF cPos = event->pos();
-	QPointF dxy = (cPos - posGrab)/worldMatrix->m11()*panningSpeed;
-	posGrab = cPos;
+	QPointF dxy = (cPos - mPosGrab)/mWorldMatrix->m11()*panningSpeed;
+	mPosGrab = cPos;
 	emit moveViewSignal(dxy);
 
 	if (event->modifiers() == DkSettings::global.altMod)
@@ -675,8 +673,6 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
-
-	updateVirtualViewport();
 
 	QWidget::resizeEvent(event);
 }
@@ -695,23 +691,13 @@ QRectF DkOverview::getImageRect() const {
 	return imgRect;
 }
 
-void DkOverview::updateVirtualViewport() {
-	
-	virtualVPSize = size();
-
-	if (virtualVPSize.width() * viewPortRect.height()/viewPortRect.width() < height())
-		virtualVPSize.setHeight(virtualVPSize.width() * viewPortRect.height()/viewPortRect.width());
-	else
-		virtualVPSize.setWidth(virtualVPSize.height() * viewPortRect.width()/viewPortRect.height());
-}
-
 void DkOverview::resizeImg() {
 
-	if (img.isNull())
+	if (mImg.isNull())
 		return;
 
 	//QRectF overviewRect = getImageRect();
-	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
+	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
 	
 	// is the overviewImgMatrix empty?
 	if (overviewImgMatrix.isIdentity())
@@ -721,13 +707,13 @@ void DkOverview::resizeImg() {
 	//	return;
 
 	// fast downscaling
-	imgT = img.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
+	imgT = mImg.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
 	imgT = imgT.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 QTransform DkOverview::getScaledImageMatrix() {
 
-	if (img.isNull())
+	if (mImg.isNull())
 		return QTransform();
 
 	int lm, tm, rm, bm;
@@ -739,7 +725,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 		return QTransform();
 
 	// the image resizes as we zoom
-	QRectF imgRect = QRectF(QPoint(lm, tm), img.size());
+	QRectF imgRect = QRectF(QPoint(lm, tm), mImg.size());
 	float ratioImg = (float)(imgRect.width()/imgRect.height());
 	float ratioWin = (float)(iSize.width())/(float)(iSize.height());
 
@@ -762,7 +748,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 // DkZoomWidget --------------------------------------------------------------------
 DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 
-	autoHide = false;
+	mAutoHide = false;
 	setObjectName("DkZoomWidget");
 	createLayout();
 
@@ -774,13 +760,13 @@ DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 
 void DkZoomWidget::createLayout() {
 
-	overview = new DkOverview(this);
+	mOverview = new DkOverview(this);
 
-	slZoom = new QSlider(Qt::Horizontal, this);
-	slZoom->setObjectName("slZoom");
-	slZoom->setCursor(Qt::ArrowCursor);
-	slZoom->setMinimum(0);	// add a mapping here
-	slZoom->setMaximum(100);
+	mSlZoom = new QSlider(Qt::Horizontal, this);
+	mSlZoom->setObjectName("slZoom");
+	mSlZoom->setCursor(Qt::ArrowCursor);
+	mSlZoom->setMinimum(0);	// add a mapping here
+	mSlZoom->setMaximum(100);
 
 	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
 		DkUtils::colorToString(DkSettings::display.fontColor) + 
@@ -789,65 +775,65 @@ void DkZoomWidget::createLayout() {
 	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
 	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
 
-	sbZoom = new QDoubleSpinBox(this);
-	sbZoom->setObjectName("sbZoom");
-	sbZoom->setStyleSheet(styleString);
-	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
-	sbZoom->setSuffix("%");
-	sbZoom->setDecimals(0);
-	sbZoom->setMinimum(0.2);
-	sbZoom->setValue(100);
-	sbZoom->setMaximum(6000);
+	mSbZoom = new QDoubleSpinBox(this);
+	mSbZoom->setObjectName("sbZoom");
+	mSbZoom->setStyleSheet(styleString);
+	mSbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
+	mSbZoom->setSuffix("%");
+	mSbZoom->setDecimals(0);
+	mSbZoom->setMinimum(0.2);
+	mSbZoom->setValue(100);
+	mSbZoom->setMaximum(6000);
 
 	QLabel* sliderWidget = new QLabel(this);
 	sliderWidget->setObjectName("DkOverviewSliderWidget");
 	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
 	sliderLayout->setContentsMargins(10,0,0,0);
 	sliderLayout->setSpacing(10);
-	sliderLayout->addWidget(slZoom);
-	sliderLayout->addWidget(sbZoom);
+	sliderLayout->addWidget(mSlZoom);
+	sliderLayout->addWidget(mSbZoom);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	//layout->setContentsMargins(10,10,10,10);
+	//mLayout->setContentsMargins(10,10,10,10);
 	layout->setSpacing(0);
-	layout->addWidget(overview);
+	layout->addWidget(mOverview);
 	layout->addWidget(sliderWidget);
 }
 
 void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
 	updateZoom((float)zoomLevel);
-	autoHide = false;
+	mAutoHide = false;
 	emit zoomSignal((float)zoomLevel/100.0f);
 }
 
 void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)mSbZoom->maximum() + 200.0f : zoomLevel*4.0f;
 	if (level < 0.2f) level = 0.2f;
-	autoHide = false;
+	mAutoHide = false;
 	updateZoom(level);
 	emit zoomSignal(level/100.0f);
 }
 
 void DkZoomWidget::updateZoom(float zoomLevel) {
 
-	slZoom->blockSignals(true);
-	sbZoom->blockSignals(true);
+	mSlZoom->blockSignals(true);
+	mSbZoom->blockSignals(true);
 	
-	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
-	slZoom->setValue(slVal);
-	sbZoom->setValue(zoomLevel);
-	slZoom->blockSignals(false);
-	sbZoom->blockSignals(false);
+	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/mSbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
+	mSlZoom->setValue(slVal);
+	mSbZoom->setValue(zoomLevel);
+	mSlZoom->blockSignals(false);
+	mSbZoom->blockSignals(false);
 }
 
 DkOverview* DkZoomWidget::getOverview() const {
-	return overview;
+	return mOverview;
 }
 
 void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
 	
 	if (!isVisible() && visible)
-		this->autoHide = autoHide;
+		this->mAutoHide = autoHide;
 
 	if (!visible)
 		autoHide = false;
@@ -856,43 +842,7 @@ void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
 }
 
 bool DkZoomWidget::isAutoHide() const {
-	return autoHide;
-}
-
-// DkGradientLabel --------------------------------------------------------------------
-DkGradientLabel::DkGradientLabel(QWidget* parent, const QString& text) : DkLabel(parent, text) {
-
-	init();
-	hide();
-}
-
-void DkGradientLabel::init() {
-
-	DkLabel::init();
-	gradient = QImage(":/nomacs/img/label-gradient.png");
-	end = QImage(":/nomacs/img/label-end.png");
-	
-	QLabel::setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: 5px " + QString::number(end.width()) + "px 5px 10px}");
-	
-}
-
-void DkGradientLabel::updateStyleSheet() {
-	
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: " + 
-		QString::number(margin.y()) + "px " +
-		QString::number(end.width()) + "px " +		// the fade-out
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px;}");
-}
-
-void DkGradientLabel::drawBackground(QPainter* painter) {
-
-	QRect textRect = QRect(QPoint(), size());
-	textRect.setWidth(textRect.width()-end.width()-1);
-	QRectF endRect = QRect(textRect.right()+1, 0, end.width(), geometry().height());
-	painter->drawImage(textRect, gradient);
-	painter->drawImage(endRect, end);
+	return mAutoHide;
 }
 
 // DkButton --------------------------------------------------------------------
@@ -1007,22 +957,22 @@ void DkButton::leaveEvent(QEvent*) {
 DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	setObjectName("DkRatingLabel");
-	this->rating = rating;
+	mRating = rating;
 	init();
 
 	int iconSize = 16;
 
-	layout = new QBoxLayout(QBoxLayout::LeftToRight);
-	layout->setContentsMargins(0,0,0,0);
-	layout->setSpacing(3);
-	layout->addStretch();
+	mLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	mLayout->setContentsMargins(0,0,0,0);
+	mLayout->setSpacing(3);
+	mLayout->addStretch();
 	
-	for (int idx = 0; idx < stars.size(); idx++) {
-		stars[idx]->setFixedSize(QSize(iconSize, iconSize));
-		layout->addWidget(stars[idx]);
+	for (int idx = 0; idx < mStars.size(); idx++) {
+		mStars[idx]->setFixedSize(QSize(iconSize, iconSize));
+		mLayout->addWidget(mStars[idx]);
 	}
 	
-	this->setLayout(layout);
+	setLayout(mLayout);
 }
 
 void DkRatingLabel::init() {
@@ -1030,96 +980,92 @@ void DkRatingLabel::init() {
 	QPixmap starDark = QPixmap(":/nomacs/img/star-dark.png");
 	QPixmap starWhite = QPixmap(":/nomacs/img/star-white.png");
 
-	stars.resize(5);
+	mStars.resize(5);
 	
-	stars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
-	stars[rating_1]->setCheckable(true);
-	connect(stars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
+	mStars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
+	mStars[rating_1]->setCheckable(true);
+	connect(mStars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
 
-	stars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
-	stars[rating_2]->setCheckable(true);
-	connect(stars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
+	mStars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
+	mStars[rating_2]->setCheckable(true);
+	connect(mStars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
 
-	stars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
-	stars[rating_3]->setCheckable(true);
-	connect(stars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
+	mStars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
+	mStars[rating_3]->setCheckable(true);
+	connect(mStars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
 
-	stars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
-	stars[rating_4]->setCheckable(true);
-	connect(stars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
+	mStars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
+	mStars[rating_4]->setCheckable(true);
+	connect(mStars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
 
-	stars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
-	stars[rating_5]->setCheckable(true);
-	connect(stars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
+	mStars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
+	mStars[rating_5]->setCheckable(true);
+	connect(mStars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
 
 }
 
 // DkRatingLabelBg --------------------------------------------------------------------
 DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags flags) : DkRatingLabel(rating, parent, flags) {
 
-	timeToDisplay = 4000;
-	hideTimer = new QTimer(this);
-	hideTimer->setInterval(timeToDisplay);
-	hideTimer->setSingleShot(true);
+	mHideTimer = new QTimer(this);
+	mHideTimer->setInterval(mTimeToDisplay);
+	mHideTimer->setSingleShot(true);
 
 	// we want a margin
-	layout->setContentsMargins(10,4,10,4);
-	layout->setSpacing(4);
+	mLayout->setContentsMargins(10,4,10,4);
+	mLayout->setSpacing(4);
 
-	actions.resize(6);
+	mActions.resize(6);
 
-	actions[rating_0] = new QAction(tr("no rating"), this);
-	actions[rating_0]->setShortcut(Qt::Key_0);
-	connect(actions[rating_0], SIGNAL(triggered()), this, SLOT(rating0()));
+	mActions[rating_0] = new QAction(tr("no rating"), this);
+	mActions[rating_0]->setShortcut(Qt::Key_0);
+	connect(mActions[rating_0], SIGNAL(triggered()), this, SLOT(rating0()));
 
-	actions[rating_1] = new QAction(tr("one star"), this);
-	actions[rating_1]->setShortcut(Qt::Key_1);
-	connect(actions[rating_1], SIGNAL(triggered()), this, SLOT(rating1()));
+	mActions[rating_1] = new QAction(tr("one star"), this);
+	mActions[rating_1]->setShortcut(Qt::Key_1);
+	connect(mActions[rating_1], SIGNAL(triggered()), this, SLOT(rating1()));
 
-	actions[rating_2] = new QAction(tr("two stars"), this);
-	actions[rating_2]->setShortcut(Qt::Key_2);
-	connect(actions[rating_2], SIGNAL(triggered()), this, SLOT(rating2()));
+	mActions[rating_2] = new QAction(tr("two stars"), this);
+	mActions[rating_2]->setShortcut(Qt::Key_2);
+	connect(mActions[rating_2], SIGNAL(triggered()), this, SLOT(rating2()));
 
-	actions[rating_3] = new QAction(tr("three stars"), this);
-	actions[rating_3]->setShortcut(Qt::Key_3);
-	connect(actions[rating_3], SIGNAL(triggered()), this, SLOT(rating3()));
+	mActions[rating_3] = new QAction(tr("three stars"), this);
+	mActions[rating_3]->setShortcut(Qt::Key_3);
+	connect(mActions[rating_3], SIGNAL(triggered()), this, SLOT(rating3()));
 
-	actions[rating_4] = new QAction(tr("four stars"), this);
-	actions[rating_4]->setShortcut(Qt::Key_4);
-	connect(actions[rating_4], SIGNAL(triggered()), this, SLOT(rating4()));
+	mActions[rating_4] = new QAction(tr("four stars"), this);
+	mActions[rating_4]->setShortcut(Qt::Key_4);
+	connect(mActions[rating_4], SIGNAL(triggered()), this, SLOT(rating4()));
 
-	actions[rating_5] = new QAction(tr("five stars"), this);
-	actions[rating_5]->setShortcut(Qt::Key_5);
-	connect(actions[rating_5], SIGNAL(triggered()), this, SLOT(rating5()));
+	mActions[rating_5] = new QAction(tr("five stars"), this);
+	mActions[rating_5]->setShortcut(Qt::Key_5);
+	connect(mActions[rating_5], SIGNAL(triggered()), this, SLOT(rating5()));
 
-	stars[rating_1]->addAction(actions[rating_1]);
-	stars[rating_2]->addAction(actions[rating_2]);
-	stars[rating_3]->addAction(actions[rating_3]);
-	stars[rating_4]->addAction(actions[rating_4]);
-	stars[rating_5]->addAction(actions[rating_5]);
+	mStars[rating_1]->addAction(mActions[rating_1]);
+	mStars[rating_2]->addAction(mActions[rating_2]);
+	mStars[rating_3]->addAction(mActions[rating_3]);
+	mStars[rating_4]->addAction(mActions[rating_4]);
+	mStars[rating_5]->addAction(mActions[rating_5]);
 	
-	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
+	connect(mHideTimer, SIGNAL(timeout()), this, SLOT(hide()));
 }
 
-DkRatingLabelBg::~DkRatingLabelBg() {
-	if (hideTimer) delete hideTimer;
-	hideTimer = 0;
-}
+DkRatingLabelBg::~DkRatingLabelBg() {}
 
 void DkRatingLabelBg::changeRating(int newRating) {
 	DkRatingLabel::changeRating(newRating);
 	show();
-	hideTimer->start();
+	mHideTimer->start();
 }
 
 QVector<QAction*> DkRatingLabelBg::getActions() const {
-	return actions;
+	return mActions;
 }
 
 void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
-	painter.fillRect(QRect(QPoint(), this->size()), bgCol);
+	painter.fillRect(QRect(QPoint(), this->size()), mBgCol);
 	painter.end();
 
 	DkRatingLabel::paintEvent(event);
@@ -1131,29 +1077,27 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	setObjectName("DkFileInfoLabel");
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
-	minWidth = 110;
-	this->parent = parent;
-	title = new QLabel(this);
-	title->setMouseTracking(true);
-	title->setTextInteractionFlags(Qt::TextSelectableByMouse);
-	date = new QLabel(this);
-	date->setMouseTracking(true);
-	date->setTextInteractionFlags(Qt::TextSelectableByMouse);
-	rating = new DkRatingLabel(0, this);
-	setMinimumWidth(minWidth);
+	mTitleLabel = new QLabel(this);
+	mTitleLabel->setMouseTracking(true);
+	mTitleLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	mDateLabel = new QLabel(this);
+	mDateLabel->setMouseTracking(true);
+	mDateLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	mRatingLabel = new DkRatingLabel(0, this);
+	setMinimumWidth(110);
 	
 	createLayout();
 }
 
 void DkFileInfoLabel::createLayout() {
 
-	layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-	layout->setSpacing(2);
+	mLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	mLayout->setSpacing(2);
 
-	layout->addWidget(title);
-	layout->addWidget(date);
-	layout->addWidget(rating);
-	//layout->addStretch();
+	mLayout->addWidget(mTitleLabel);
+	mLayout->addWidget(mDateLabel);
+	mLayout->addWidget(mRatingLabel);
+	//mLayout->addStretch();
 }
 
 void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
@@ -1163,7 +1107,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date) &&
 		!DkSettings::slideShow.display.testBit(DkSettings::display_file_rating) && visible) {
 			
-			QMessageBox infoDialog(parent);
+			QMessageBox infoDialog(QApplication::activeWindow());
 			infoDialog.setWindowTitle(tr("Info Box"));
 			infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
 			infoDialog.setIcon(QMessageBox::Information);
@@ -1184,17 +1128,17 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 	}
 
 	DkFadeLabel::setVisible(visible, saveSettings);
-	title->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
-	date->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
-	rating->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
+	mTitleLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
+	mDateLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
+	mRatingLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
 
 	int height = 32;
-	if (title->isVisible())
-		height += title->sizeHint().height();
-	if (date->isVisible())
-		height += date->sizeHint().height();
-	if (rating->isVisible())
-		height += rating->sizeHint().height();
+	if (mTitleLabel->isVisible())
+		height += mTitleLabel->sizeHint().height();
+	if (mDateLabel->isVisible())
+		height += mDateLabel->sizeHint().height();
+	if (mRatingLabel->isVisible())
+		height += mRatingLabel->sizeHint().height();
 
 	qDebug() << "my minimum height: " << height;
 	setMinimumHeight(height);
@@ -1206,54 +1150,53 @@ void DkFileInfoLabel::setEdited(bool edited) {
 	if (!isVisible() || !edited)
 		return;
 
-	QString cFileName = title->text() + "*";
-	this->title->setText(cFileName);
+	QString cFileName = mTitleLabel->text() + "*";
+	this->mTitleLabel->setText(cFileName);
 
 }
 
 DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
-	return rating;
+	return mRatingLabel;
 }
 
-void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating) {
+void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating) {
 
-	updateTitle(file, attr);
+	mFilePath = filePath;
+	updateTitle(filePath, attr);
 	updateDate(date);
 	updateRating(rating);
 
 	updateWidth();
 }
 
-void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
+void DkFileInfoLabel::updateTitle(const QString& filePath, const QString& attr) {
 	
-	this->file = file;
 	updateDate();
-	this->title->setText(file.fileName() + " " + attr);
-	this->title->setAlignment(Qt::AlignRight);
+	mTitleLabel->setText(QFileInfo(filePath).fileName() + " " + attr);
+	mTitleLabel->setAlignment(Qt::AlignRight);
 
 	updateWidth();
 }
 
 void DkFileInfoLabel::updateDate(const QString& date) {
 
-	QString dateConverted = DkUtils::convertDateString(date, file);
+	QString dateConverted = DkUtils::convertDateString(date, QFileInfo(mFilePath));
 
-	this->date->setText(dateConverted);
-	this->date->setAlignment(Qt::AlignRight);
+	mDateLabel->setText(dateConverted);
+	mDateLabel->setAlignment(Qt::AlignRight);
 
 	updateWidth();
 }
 
 void DkFileInfoLabel::updateRating(const int rating) {
 	
-	this->rating->setRating(rating);
-
+	mRatingLabel->setRating(rating);
 }
 
 void DkFileInfoLabel::updateWidth() {
 
 	int width = 20;		// mar
-	width += qMax(qMax(title->sizeHint().width(), date->sizeHint().width()), rating->sizeHint().width());
+	width += qMax(qMax(mTitleLabel->sizeHint().width(), mDateLabel->sizeHint().width()), mRatingLabel->sizeHint().width());
 	
 	if (width < minimumWidth())
 		setMinimumWidth(width);
@@ -1307,7 +1250,7 @@ void DkPlayer::init() {
 	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
-	// now add to layout
+	// now add to mLayout
 	container = new QWidget(this);
 	QHBoxLayout *layout = new QHBoxLayout(container);
 	layout->setContentsMargins(0,0,0,0);
@@ -1415,9 +1358,9 @@ void DkPlayer::show(int ms) {
 
 	DkWidget::show();
 
-	// automatic showing, don't store it in the display bits
-	if (ms > 0 && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
+	// automatic mShowing, don't store it in the display bits
+	if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
 	}
 }
  
@@ -1502,43 +1445,30 @@ void DkTransformRect::enterEvent(QEvent*) {
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
-DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
+DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
-	this->parent = parent;
-	this->rect = rect;
-
-	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
+	mRect = rect;
+	mRotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
 	
 	setAttribute(Qt::WA_MouseTracking);
-	paintMode = no_guide;
-	showInfo = false;
 
-	pen = QPen(QColor(0, 0, 0, 255), 1);
-	pen.setCosmetic(true);
-	brush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mPen = QPen(QColor(0, 0, 0, 255), 1);
+	mPen.setCosmetic(true);
+	mBrush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 		DkSettings::display.bgColorWidget;
 
-	state = do_nothing;
-	worldTform = 0;
-	imgTform = 0;
-	imgRect = 0;
-
-	oldDiag = DkVector(-1.0f, -1.0f);
-	
 	for (int idx = 0; idx < 8; idx++) {
-		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
-		ctrlPoints[idx]->hide();
-		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, QPointF, Qt::KeyboardModifiers, bool)));
-		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
+		mCtrlPoints.push_back(new DkTransformRect(idx, &this->mRect, this));
+		mCtrlPoints[idx]->hide();
+		connect(mCtrlPoints[idx], SIGNAL(ctrlMovedSignal(int, const QPointF&, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, const QPointF&, Qt::KeyboardModifiers, bool)));
+		connect(mCtrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
-	
-	panning = false;
 }
 
 void DkEditableRect::reset() {
 
-	rect = QRectF();
+	mRect = QRectF();
 	//for (int idx = 0; idx < ctrlPoints.size(); idx++)
 	//	ctrlPoints[idx]->reset();
 
@@ -1547,19 +1477,19 @@ void DkEditableRect::reset() {
 QPointF DkEditableRect::map(const QPointF &pos) {
 
 	QPointF posM = pos;
-	if (worldTform) posM = worldTform->inverted().map(posM);
-	if (imgTform)	posM = imgTform->inverted().map(posM);
+	if (mWorldTform) posM = mWorldTform->inverted().map(posM);
+	if (mImgTform)	posM = mImgTform->inverted().map(posM);
 	
 	return posM;
 }
 
 QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 	
-	if (!imgRect)
+	if (!mImgRect)
 		return QPointF(pos);
 
-	QRectF imgViewRect(*imgRect);
-	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+	QRectF imgViewRect(*mImgRect);
+	if (mWorldTform) imgViewRect = mWorldTform->mapRect(imgViewRect);
 
 	float x = (float)pos.x();
 	float y = (float)pos.y();
@@ -1580,11 +1510,11 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 
 QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
 
-	if (!imgRect)
+	if (!mImgRect)
 		return QPointF(pos);
 
-	QRectF imgViewRect(*imgRect);
-	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+	QRectF imgViewRect(*mImgRect);
+	if (mWorldTform) imgViewRect = mWorldTform->mapRect(imgViewRect);
 
 	float x = (float)pos.x();
 	float y = (float)pos.y();
@@ -1605,52 +1535,52 @@ QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
 void DkEditableRect::updateDiagonal(int idx) {
 
 	// we need to store the old diagonal in order to enable "keep aspect ratio"
-	if (rect.isEmpty())
-		oldDiag = DkVector(-1.0f, -1.0f);
+	if (mRect.isEmpty())
+		mOldDiag = DkVector(-1.0f, -1.0f);
 	else
-		oldDiag = rect.getDiagonal(idx);
+		mOldDiag = mRect.getDiagonal(idx);
 }
 
 void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
-	fixedDiag = diag;
+	mFixedDiag = diag;
 
-	qDebug() << "after rotating: " << fixedDiag.getQPointF();
+	qDebug() << "after rotating: " << mFixedDiag.getQPointF();
 
 	// don't update in that case
 	if (diag.x == 0 || diag.y == 0)
 		return;
 	else
-		fixedDiag.rotate(-rect.getAngle());
+		mFixedDiag.rotate(-mRect.getAngle());
 
-	QPointF c = rect.getCenter();
+	QPointF c = mRect.getCenter();
 
-	if (!rect.getPoly().isEmpty()) 
-		rect.updateCorner(0, rect.getPoly().at(0), fixedDiag);
+	if (!mRect.getPoly().isEmpty()) 
+		mRect.updateCorner(0, mRect.getPoly().at(0), mFixedDiag);
 
-	rect.setCenter(c);
+	mRect.setCenter(c);
 	update();
 }
 
 void DkEditableRect::setPanning(bool panning) {
-	this->panning = panning;
+	this->mPanning = panning;
 	setCursor(Qt::OpenHandCursor);
 	qDebug() << "panning set...";
 }
 
-void DkEditableRect::updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifiers, bool changeState) {
+void DkEditableRect::updateCorner(int idx, const QPointF& point, Qt::KeyboardModifiers modifiers, bool changeState) {
 
 	if (changeState)
-		state = scaling;
+		mState = scaling;
 
-	DkVector diag = (modifiers & Qt::ShiftModifier || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
+	DkVector diag = (modifiers & Qt::ShiftModifier || mFixedDiag.x != 0 && mFixedDiag.y != 0) ? mOldDiag : DkVector();
 
 	QPointF p = point;
 	
 	if ((modifiers & Qt::ControlModifier) == 0)
 		p = clipToImage(point);
 
-	rect.updateCorner(idx, map(p), diag);
+	mRect.updateCorner(idx, map(p), diag);
 
 	// edge control -> remove aspect ratio constraint
 	if (idx >= 4 && idx < 8)
@@ -1667,43 +1597,43 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	path.addRect(canvas);
 	
 	QPolygonF p;
-	if (!rect.isEmpty()) {
+	if (!mRect.isEmpty()) {
 		// TODO: directly map the points (it's easier and not slower at all)
-		p = rect.getClosedPoly();
-		p = tTform.map(p);
-		p = rTform.map(p); 
-		p = tTform.inverted().map(p);
-		if (imgTform) p = imgTform->map(p);
-		if (worldTform) p = worldTform->map(p);
+		p = mRect.getClosedPoly();
+		p = mTtform.map(p);
+		p = mRtform.map(p); 
+		p = mTtform.inverted().map(p);
+		if (mImgTform) p = mImgTform->map(p);
+		if (mWorldTform) p = mWorldTform->map(p);
 		path.addPolygon(p);
 	}
 
 	// now draw
 	QPainter painter(this);
 
-	painter.setPen(pen);
-	painter.setBrush(brush);
+	painter.setPen(mPen);
+	painter.setBrush(mBrush);
 	painter.drawPath(path);
 
-	drawGuide(&painter, p, paintMode);
+	drawGuide(&painter, p, mPaintMode);
 	
 	//// debug
 	//painter.drawPoint(rect.getCenter());
 
 	// this changes the painter -> do it at the end
-	if (!rect.isEmpty()) {
+	if (!mRect.isEmpty()) {
 		
-		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
+		for (int idx = 0; idx < mCtrlPoints.size(); idx++) {
 			
 			QPointF cp;
 			
 			if (idx < 4) {
 				QPointF c = p[idx];
-				cp = c-ctrlPoints[idx]->getCenter();
+				cp = c-mCtrlPoints[idx]->getCenter();
 			}
 			// paint control points in the middle of the edge
 			else if (idx >= 4) {
-				QPointF s = ctrlPoints[idx]->getCenter();
+				QPointF s = mCtrlPoints[idx]->getCenter();
 
 				QPointF lp = p[idx % 4];
 				QPointF rp = p[(idx+1) % 4];
@@ -1714,8 +1644,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 				cp = (lv + 0.5*(rv - lv)).toPointF();
 			}
 
-			ctrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
-			ctrlPoints[idx]->draw(&painter);
+			mCtrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
+			mCtrlPoints[idx]->draw(&painter);
 		}
 	}
  
@@ -1781,35 +1711,35 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
-		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
+		(event->modifiers() == DkSettings::global.altMod || mPanning)) {
+		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the mViewport
 		event->ignore();
 		return;
 	}
 
-	posGrab = map(QPointF(event->pos()));
-	clickPos = QPointF(event->pos());
+	mPosGrab = map(QPointF(event->pos()));
+	mClickPos = QPointF(event->pos());
 
-	if (rect.isEmpty()) {
-		state = initializing;
+	if (mRect.isEmpty()) {
+		mState = initializing;
 		setAngle(0);
 	}
-	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
-		state = moving;
+	else if (mRect.getPoly().containsPoint(mPosGrab, Qt::OddEvenFill)) {
+		mState = moving;
 	}
 	else {
-		state = rotating;
+		mState = rotating;
 	}
 
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->modifiers() == DkSettings::global.altMod ||
-		panning) {
+		mPanning) {
 		
 		if (event->buttons() != Qt::LeftButton)
 			setCursor(Qt::OpenHandCursor);
@@ -1824,32 +1754,32 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	QPointF posM = map(QPointF(event->pos()));
 	
-	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
+	if (event->buttons() != Qt::LeftButton && !mRect.isEmpty()) {
 		// show rotating - moving
-		if (rect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
+		if (mRect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
 			setCursor(Qt::SizeAllCursor);
 		else
-			setCursor(rotatingCursor);
+			setCursor(mRotatingCursor);
 	}
-	else if (rect.isEmpty())
+	else if (mRect.isEmpty())
 		setCursor(Qt::CrossCursor);
 
 	// additionally needed for showToolTip
 	double angle = 0;
 
-	if (state == initializing && event->buttons() == Qt::LeftButton) {
+	if (mState == initializing && event->buttons() == Qt::LeftButton) {
 
 		QPointF clipPos = clipToImageForce(QPointF(event->pos()));
 
-		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
+		if (!mImgRect || !mRect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
-			if (rect.isEmpty()) {
+			if (mRect.isEmpty()) {
 
-				for (int idx = 0; idx < ctrlPoints.size(); idx++)
-					ctrlPoints[idx]->show();
+				for (int idx = 0; idx < mCtrlPoints.size(); idx++)
+					mCtrlPoints[idx]->show();
 
-				QPointF p = map(clipToImageForce(clickPos));
-				rect.setAllCorners(p);
+				QPointF p = map(clipToImageForce(mClickPos));
+				mRect.setAllCorners(p);
 			}
 			
 			DkVector diag;
@@ -1858,23 +1788,23 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			if (event->modifiers() == Qt::ShiftModifier)
 				diag = DkVector(1.0f, 1.0f);
 			else
-				diag = fixedDiag;
-			rect.updateCorner(2, map(clipPos), diag);
+				diag = mFixedDiag;
+			mRect.updateCorner(2, map(clipPos), diag);
 			update();
 		}
  
 	}
-	else if (state == moving && event->buttons() == Qt::LeftButton) {
+	else if (mState == moving && event->buttons() == Qt::LeftButton) {
 		
-		QPointF dxy = posM-posGrab;
-		rTform.translate(dxy.x(), dxy.y());
-		posGrab = posM;
+		QPointF dxy = posM-mPosGrab;
+		mRtform.translate(dxy.x(), dxy.y());
+		mPosGrab = posM;
 		update();
 	}
-	else if (state == rotating && event->buttons() == Qt::LeftButton) {
+	else if (mState == rotating && event->buttons() == Qt::LeftButton) {
 
-		DkVector c(rect.getCenter());
-		DkVector xt(posGrab);
+		DkVector c(mRect.getCenter());
+		DkVector xt(mPosGrab);
 		DkVector xn(posM);
 
 		// compute the direction vector;
@@ -1884,22 +1814,22 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		// just rotate in CV_PI*0.25 steps if shift is pressed
 		if (event->modifiers() == Qt::ShiftModifier) {
-			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
+			double angleRound = DkMath::normAngleRad(angle+mRect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
 			angle -= angleRound;
 		}
 					
 		setAngle(angle, false);
 	}
 
-	if (event->buttons() == Qt::LeftButton && state != moving) {
+	if (event->buttons() == Qt::LeftButton && mState != moving) {
 
-		QPolygonF p = rect.getPoly();
+		QPolygonF p = mRect.getPoly();
 
-		float sAngle = DkMath::getReadableAngle(rect.getAngle() + angle);
+		float sAngle = DkMath::getReadableAngle(mRect.getAngle() + angle);
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 
-		if (showInfo) {
+		if (mShowInfo) {
 			QToolTip::showText(event->globalPos(),
 				QString::number(width) + " x " +
 				QString::number(height) + " px\n" +
@@ -1915,16 +1845,16 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == DkSettings::global.altMod || mPanning)) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
 		return;
 	}
 
-	state = do_nothing;
+	mState = do_nothing;
 
 	applyTransform();
 	//QWidget::mouseReleaseEvent(event);
@@ -1939,10 +1869,10 @@ void DkEditableRect::wheelEvent(QWheelEvent* event) {
 void DkEditableRect::applyTransform() {
 
 	// apply transform
-	QPolygonF p = rect.getPoly();
-	p = tTform.map(p);
-	p = rTform.map(p); 
-	p = tTform.inverted().map(p);
+	QPolygonF p = mRect.getPoly();
+	p = mTtform.map(p);
+	p = mRtform.map(p); 
+	p = mTtform.inverted().map(p);
 
 	// Cropping tool fix start
 
@@ -1956,10 +1886,10 @@ void DkEditableRect::applyTransform() {
 	}
 	// Cropping tool fix end
 
-	rect.setPoly(p);
+	mRect.setPoly(p);
 
-	rTform.reset();	
-	tTform.reset();
+	mRtform.reset();	
+	mTtform.reset();
 	update();
 
 }
@@ -1993,44 +1923,44 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */) {
 
 	qDebug() << "painting mode: " << paintMode;
-	this->paintMode = paintMode;
+	this->mPaintMode = paintMode;
 	update();
 }
 
 void DkEditableRect::setShadingHint(bool) {
 
-	QColor col = brush.color();
+	QColor col = mBrush.color();
 	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
-	brush.setColor(col);
+	mBrush.setColor(col);
 
-	col = pen.color();
+	col = mPen.color();
 	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
-	pen.setColor(col);
+	mPen.setColor(col);
 
 	update();
 }
 
 void DkEditableRect::setShowInfo(bool showInfo) {
-	this->showInfo = showInfo;
+	this->mShowInfo = showInfo;
 }
 
 void DkEditableRect::setAngle(double angle, bool apply) {
 
-	DkVector c(rect.getCenter());
+	DkVector c(mRect.getCenter());
 
-	if (!tTform.isTranslating())
-		tTform.translate(-c.x, -c.y);
+	if (!mTtform.isTranslating())
+		mTtform.translate(-c.x, -c.y);
 	
-	rTform.reset();
+	mRtform.reset();
 	if (apply)
-		rTform.rotateRadians(angle-rect.getAngle());
+		mRtform.rotateRadians(angle-mRect.getAngle());
 	else
-		rTform.rotateRadians(angle);
+		mRtform.rotateRadians(angle);
 	
 	if (apply)
 		applyTransform();
 	else {
-		emit angleSignal(rect.getAngle()+angle);
+		emit angleSignal(mRect.getAngle()+angle);
 		update();
 	}
 
@@ -2040,9 +1970,9 @@ void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
 		
-		rect = DkRotatingRect();
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->hide();
+		mRect = DkRotatingRect();
+		for (int idx = 0; idx < mCtrlPoints.size(); idx++)
+			mCtrlPoints[idx]->hide();
 	}
 	else {
 		//setFocus(Qt::ActiveWindowFocusReason);
@@ -2086,8 +2016,8 @@ void DkCropWidget::crop() {
 	if (!cropToolbar)
 		return;
 
-	if (!rect.isEmpty())
-		emit enterPressedSignal(rect, cropToolbar->getColor());
+	if (!mRect.isEmpty())
+		emit enterPressedSignal(mRect, cropToolbar->getColor());
 
 	setVisible(false);
 	setWindowOpacity(0);
@@ -2260,17 +2190,11 @@ void DkColorChooser::on_colorDialog_accepted() {
 DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	
 	setObjectName("DkHistogram");
-	this->parent = parent;
-	this->setMinimumWidth(260);
-	this->setMinimumHeight(130);
-	isPainted = false;
-	maxValue = 20;
-	scaleFactor = 1;
+	setMinimumWidth(260);
+	setMinimumHeight(130);
 }
 
 DkHistogram::~DkHistogram() {
-
-
 }
 
 /**
@@ -2280,14 +2204,14 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
 	painter.setPen(QColor(200, 200, 200));
-	painter.fillRect(1, 1, width() - 3, height() - 2, bgCol);
+	painter.fillRect(1, 1, width() - 3, height() - 2, mBgCol);
 	painter.drawRect(1, 1, width() - 3, height() - 2);
 
-	if(isPainted && maxValue > 0){
+	if(mIsPainted && mMaxValue > 0){
 		for(int i = 0; i < 256; i++){
-			int rLineHeight = ((int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
-			int gLineHeight = ((int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
-			int bLineHeight = ((int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
+			int rLineHeight = ((int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
+			int gLineHeight = ((int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
+			int bLineHeight = ((int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
 			int maxLineHeight = (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) :  ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
 
 			int vCombined = qMin(qMin(rLineHeight, gLineHeight), bLineHeight);
@@ -2329,9 +2253,8 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	DkTimer dt;
 
 #ifdef WITH_OPENCV
-
-
-	long histValues[3][256];
+	
+	int histValues[3][256];
 
 	for (int idx = 0; idx < 256; idx++) {
 		histValues[0][idx] = 0;
@@ -2404,60 +2327,12 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 			maxHistValue = histValues[2][idx];
 	}
 
-	//Mat imgMat = DkImage::qImage2Mat(imgQt);
-	//
-	//vector<Mat> imgChannels;
-	//split(imgMat, imgChannels);
-
-	//int noChannels = (imgChannels.size() < 3) ? 1 : 3;
-
-	//// Set the number of bins
-	//int histSize = 256;
-	//// Set the ranges for B,G,R
-	//float range[] = { 0, 256 } ;
-	//const float* histRange = { range };
-
-	//MatND hist;
-	//// note: long == int if compiled with a 32bit compiler
-	//long histValues[3][256];
-	//long maxHistValue = 0;
-
-	//for (int i = 0; i < noChannels; i++) {
-
-	//	calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
-	//	
-	//	for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
-	//	hist.setTo(0);
-	//}
-
-	//if (noChannels == 1) {
-
-	//	for (int i = 0; i < 256; i++) {
-	//		histValues[2][i] = histValues[1][i] = histValues[0][i];
-	//		
-	//		if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
-	//	}
-	//}
-	//else {
-
-	//	for (int i = 0; i < 256; i++) {
-	//		long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
-	//			((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
-	//			((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
-
-	//		if(maxRGB > maxHistValue) maxHistValue = maxRGB;
-	//	}
-	//}
-	//qDebug() << "computing the histogram took me: " << dt.getTotal();
-
 	setMaxHistogramValue(maxHistValue);
 	updateHistogramValues(histValues);
 	setPainted(true);
 
 #else
-
 	setPainted(false);
-
 #endif
 	
 	qDebug() << "drawing the histogram took me: " << dt.getTotal();
@@ -2476,27 +2351,27 @@ void DkHistogram::clearHistogram() {
 
 void DkHistogram::setPainted(bool isPainted) {
 
-	this->isPainted = isPainted;
+	this->mIsPainted = isPainted;
 }
 
-void DkHistogram::setMaxHistogramValue(long maxValue) {
+void DkHistogram::setMaxHistogramValue(int maxValue) {
 
 	if (maxValue == 0)
 		setPainted(false);
 
-	this->maxValue = maxValue;
+	this->mMaxValue = maxValue;
 }
 
 /**
  * Updates histogram values.
  * @param values to be copied
  **/ 
-void DkHistogram::updateHistogramValues(long histValues[][256]) {
+void DkHistogram::updateHistogramValues(int histValues[][256]) {
 
 	for(int i = 0; i < 256; i++) {
-		this->hist[0][i] = histValues[0][i];
-		this->hist[1][i] = histValues[1][i];
-		this->hist[2][i] = histValues[2][i];
+		this->mHist[0][i] = histValues[0][i];
+		this->mHist[1][i] = histValues[1][i];
+		this->mHist[2][i] = histValues[2][i];
 	}
 }
 
@@ -2517,7 +2392,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 		float cp = (float)(height() - event->pos().y());
 		
 		if (cp > 0) {
-			scaleFactor = height() / cp;
+			mScaleFactor = height() / cp;
 			update();
 		}
 	}
@@ -2528,7 +2403,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 
 void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 	
-	scaleFactor = 1;
+	mScaleFactor = 1;
 	update();
 
 	if (event->buttons() != Qt::LeftButton)
@@ -2634,45 +2509,44 @@ void DkSlider::setValue(int value) {
 
 // DkFileInfo --------------------------------------------------------------------
 DkFileInfo::DkFileInfo() {
-	fileExists = false;
-	used = false;
+	mFileExists = false;
+	mUsed = false;
 }
 
 DkFileInfo::DkFileInfo(const QFileInfo& fileInfo) {
 
-	this->fileInfo = fileInfo;
-	fileExists = false;
-	used = false;
+	mFileInfo = fileInfo;
 }
 
 bool DkFileInfo::exists() const {
-	return fileExists;
+	return mFileExists;
 }
 
 void DkFileInfo::setExists(bool fileExists) {
-	this->fileExists = fileExists;
+	mFileExists = fileExists;
 }
 
 bool DkFileInfo::inUse() const {
-	return used;
+	return mUsed;
 }
 
 void DkFileInfo::setInUse(bool inUse) {
-	used = inUse;
+	mUsed = inUse;
 }
 
-QFileInfo DkFileInfo::getFileInfo() const {
-	return fileInfo;
+QString DkFileInfo::getFilePath() const {
+	return mFileInfo.absoluteFilePath();
 }
 
 
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	if (fileInfo.getFileInfo().isDir())
-		setText(fileInfo.getFileInfo().absoluteFilePath());
+	QFileInfo fInfo(fileInfo.getFilePath());
+	if (fInfo.isDir())
+		setText(fInfo.absoluteFilePath());
 	else
-		setText(fileInfo.getFileInfo().fileName());
+		setText(fInfo.fileName());
 
 	this->fileInfo = fileInfo;
 	setObjectName("DkFileLabel");
@@ -2680,23 +2554,24 @@ DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 
 
 void DkFolderLabel::mousePressEvent(QMouseEvent *ev) {
 
-	emit loadFileSignal(fileInfo.getFileInfo());
+	emit loadFileSignal(fileInfo.getFilePath());
 
 	QLabel::mousePressEvent(ev);
 }
 
 // DkImageLabel --------------------------------------------------------------------
-DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+DkImageLabel::DkImageLabel(const QString& filePath, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
+	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
 
 	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
 	setMouseTracking(true);
 
-	setStatusTip(fileInfo.fileName());
-	setToolTip(fileInfo.fileName());
+	QFileInfo fInfo(filePath);
+	setStatusTip(fInfo.fileName());
+	setToolTip(fInfo.fileName());
 	
 	createLayout();
 }
@@ -2737,10 +2612,9 @@ QSharedPointer<DkThumbNailT> DkImageLabel::getThumb() const {
 void DkImageLabel::thumbLoaded() {
 
 	if (thumb->getImage().isNull()) {
-		qDebug() << thumb->getFile().fileName() << " not loaded...";
+		qDebug() << QFileInfo(thumb->getFilePath()).fileName() << " not loaded...";
 		return;
 	}
-	//qDebug() << thumb->getFile().fileName() << " loaded...";
 	
 	QPixmap pm = QPixmap::fromImage(thumb->getImage());
 
@@ -2769,7 +2643,7 @@ void DkImageLabel::removeFileFromList() {
 
 	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {
 
-		if (thumb->getFile().absoluteFilePath() == DkSettings::global.recentFiles.at(idx))
+		if (thumb->getFilePath() == DkSettings::global.recentFiles.at(idx))
 			DkSettings::global.recentFiles.removeAt(idx);
 	}
 }
@@ -2793,7 +2667,7 @@ void DkImageLabel::leaveEvent(QEvent *ev) {
 
 void DkImageLabel::mousePressEvent(QMouseEvent *ev) {
 
-	emit loadFileSignal(thumb->getFile());
+	emit loadFileSignal(thumb->getFilePath());
 
 	QLabel::mousePressEvent(ev);
 }
@@ -2871,7 +2745,7 @@ void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
 	
 	if (visible && !isVisible()) {
 		updateFileList();
-		qDebug() << "showing recent files...";
+		qDebug() << "mShowing recent files...";
 	}
 
 	DkWidget::setVisible(saveSettings);
@@ -2949,7 +2823,7 @@ void DkRecentFilesWidget::updateFiles() {
 		fileLabels.at(rFileIdx)->hide();
 
 		// remove files which we can't load to keep the list clean...
-		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFile().absoluteFilePath());		// remove recent files which we could not load...
+		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFilePath());		// remove recent files which we could not load...
 	}
 
 	if (!fileLabels.empty())
@@ -2957,13 +2831,13 @@ void DkRecentFilesWidget::updateFiles() {
 
 	// load next
 	if ((rFileIdx/(float)columns*DkSettings::display.thumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
-		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx), this);
+		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx).absoluteFilePath(), this);
 		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
 		
 		fileLabels.append(cLabel);
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
-		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+		connect(cLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
 	else {
@@ -2990,7 +2864,7 @@ void DkRecentFilesWidget::updateFolders() {
 			fi.setInUse(true);
 
 			DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
-			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+			connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 			folderLayout->addWidget(fLabel);
 			folderLabels.append(fLabel);
 
@@ -3005,7 +2879,7 @@ void DkRecentFilesWidget::updateFolders() {
 
 void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
 
-	fileInfo.setExists(fileInfo.getFileInfo().exists());
+	fileInfo.setExists(QFileInfo(fileInfo.getFilePath()).exists());
 }
 
 
@@ -3021,9 +2895,10 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) 
 	setCompleter(completer);
 }
 
-DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
+DkDirectoryEdit::DkDirectoryEdit(const QString& content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
+	
 	setObjectName("DkWarningEdit");
-	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(lineEditChanged(const QString&)));
 	setText(content);
 
 	QCompleter *completer = new QCompleter(this);
@@ -3033,7 +2908,7 @@ DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : Q
 	setCompleter(completer);
 }
 
-void DkDirectoryEdit::lineEditChanged(QString path) {
+void DkDirectoryEdit::lineEditChanged(const QString& path) {
 	
 	setProperty("error", !existsDirectory(path));
 	style()->unpolish(this);
@@ -3041,16 +2916,68 @@ void DkDirectoryEdit::lineEditChanged(QString path) {
 	update();
 	
 	// converting to QDir since D:/img == D:/img/ then
-	if (QDir(path).absolutePath() != QDir(oldPath).absolutePath() && existsDirectory(path)) {
-		oldPath = path;
-		emit directoryChanged(QDir(path));
+	if (QDir(path).absolutePath() != QDir(mOldPath).absolutePath() && existsDirectory(path)) {
+		mOldPath = path;
+		emit directoryChanged(path);
 	}
 }
 
-bool DkDirectoryEdit::existsDirectory(QString path) {
+bool DkDirectoryEdit::existsDirectory(const QString& path) {
 	
 	return QDir(path).exists();
 }
+
+// DkGmmListWidget --------------------------------------------------------------------
+DkListWidget::DkListWidget(QWidget* parent) : QListWidget(parent) {
+
+	setAcceptDrops(true);
+	setDragEnabled(true);
+	setMinimumHeight(100);
+	setDropIndicatorShown(true);
+
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+}
+
+void DkListWidget::startDrag(Qt::DropActions) {
+
+	QListWidget::startDrag(Qt::MoveAction);
+}
+
+bool DkListWidget::isEmpty() const {
+	return count() == 0;
+}
+
+void DkListWidget::setEmptyText(const QString & text) {
+	mEmptyText = text;
+}
+
+void DkListWidget::dropEvent(QDropEvent *event) {
+
+	if (event->source() != this)
+		QListWidget::dropEvent(event);
+
+	// work arround for the empty rows
+	emit dataDroppedSignal();
+}
+
+void DkListWidget::paintEvent(QPaintEvent *event) {
+
+	QListView::paintEvent(event);
+
+	if (model() && model()->rowCount(rootIndex())) 
+		return;
+
+	// The view is empty.
+	QPainter p(viewport());
+	p.setPen(Qt::NoPen);
+	p.setBrush(QBrush(QColor(200,200,200), Qt::BDiagPattern));
+	p.drawRect(QRect(QPoint(), size()));
+
+	p.setPen(QPen(QColor(100,100,100)));
+	p.drawText(rect(), Qt::AlignCenter, mEmptyText);
+}
+
 
 }
 

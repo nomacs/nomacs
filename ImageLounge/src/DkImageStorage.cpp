@@ -28,6 +28,7 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkError.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
@@ -523,7 +524,7 @@ QImage DkImage::normImage(const QImage& img) {
 	return imgN;
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int flags) {
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int) {
 
 	cv::Mat mapx, mapy;
 
@@ -548,8 +549,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 	for( x = 0; x < dsize.width; x++ )
 		bufx.ptr<float>()[x] = (float)x - center.x;
 
-	for( y = 0; y < dsize.height; y++ )
-	{
+	for( y = 0; y < dsize.height; y++ ) {
 		float* mx = mapx.ptr<float>(y);
 		float* my = mapy.ptr<float>(y);
 
@@ -565,8 +565,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 
 		cv::log(bufp, bufp);
 
-		for( x = 0; x < dsize.width; x++ )
-		{
+		for( x = 0; x < dsize.width; x++ ) {
 			double rho = bufp.ptr<float>()[x]*scale;
 			double phi = bufa.ptr<float>()[x] + angle;
 
@@ -1135,22 +1134,19 @@ QColor DkImage::getMeanColor(const QImage& img) {
 
 
 // DkImageStorage --------------------------------------------------------------------
-DkImageStorage::DkImageStorage(QImage img) {
-	this->img = img;
+DkImageStorage::DkImageStorage(const QImage& img) {
+	mImg = img;
 
-	computeThread = new QThread;
-	computeThread->start();
-	moveToThread(computeThread);
-
-	busy = false;
-	stop = true;
+	mComputeThread = new QThread;
+	mComputeThread->start();
+	moveToThread(mComputeThread);
 }
 
-void DkImageStorage::setImage(QImage img) {
+void DkImageStorage::setImage(const QImage& img) {
 
-	stop = true;
-	imgs.clear();	// is it save (if the thread is still working?)
-	this->img = img;
+	mStop = true;
+	mImgs.clear();	// is it save (if the thread is still working?)
+	mImg = img;
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
@@ -1158,8 +1154,8 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 	DkSettings::display.antiAliasing = antiAliasing;
 
 	if (!antiAliasing) {
-		stop = true;
-		imgs.clear();
+		mStop = true;
+		mImgs.clear();
 	}
 
 	emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
@@ -1169,45 +1165,45 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
 QImage DkImageStorage::getImageConst() const {
 	
-	return img;
+	return mImg;
 }
 
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 0.5f || img.isNull() || !DkSettings::display.antiAliasing)
-		return img;
+	if (factor >= 0.5f || mImg.isNull() || !DkSettings::display.antiAliasing)
+		return mImg;
 
 	// check if we have an image similar to that requested
-	for (int idx = 0; idx < imgs.size(); idx++) {
+	for (int idx = 0; idx < mImgs.size(); idx++) {
 
-		if ((float)imgs.at(idx).height()/img.height() >= factor)
-			return imgs.at(idx);
+		if ((float)mImgs.at(idx).height()/mImg.height() >= factor)
+			return mImgs.at(idx);
 	}
 
 	// if the image does not exist - create it
-	if (!busy && imgs.empty() && /*img.colorTable().isEmpty() &&*/ img.width() > 32 && img.height() > 32) {
-		stop = false;
+	if (!mBusy && mImgs.empty() && /*img.colorTable().isEmpty() &&*/ mImg.width() > 32 && mImg.height() > 32) {
+		mStop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
 	}
 
 	// currently no alternative is available
-	return img;
+	return mImg;
 }
 
 void DkImageStorage::computeImage() {
 
 	// obviously, computeImage gets called multiple times in some wired cases...
-	if (!imgs.empty())
+	if (!mImgs.empty())
 		return;
 
 	DkTimer dt;
-	busy = true;
-	QImage resizedImg = img;
+	mBusy = true;
+	QImage resizedImg = mImg;
 	
 
 	// down sample the image until it is twice times full HD
-	QSize iSize = img.size();
+	QSize iSize = mImg.size();
 	while (iSize.width() > 2*1920 && iSize.height() > 2*1920)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
 		iSize *= 0.5;
 
@@ -1224,9 +1220,6 @@ void DkImageStorage::computeImage() {
 		if (s.width() < 32 || s.height() < 32)
 			break;
 
-		// // mapping here introduces bugs
-		//DkImage::gammaToLinear(resizedImg);
-
 #ifdef WITH_OPENCV
 		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
 		cv::Mat tmp;
@@ -1236,29 +1229,24 @@ void DkImageStorage::computeImage() {
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
-		// // mapping here introduces bugs
-		//DkImage::linearToGamma(resizedImg);
-		
-		//resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
-
 		// new image assigned?
-		if (stop)
+		if (mStop)
 			break;
 
-		mutex.lock();
-		imgs.push_front(resizedImg);
-		mutex.unlock();
+		mMutex.lock();
+		mImgs.push_front(resizedImg);
+		mMutex.unlock();
 	}
 
-	busy = false;
+	mBusy = false;
 
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << imgs.size();
+	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << mImgs.size();
 
-	if (imgs.size() > 6)
-		qDebug() << "layer size > 6: " << img.size();
+	if (mImgs.size() > 6)
+		qDebug() << "layer size > 6: " << mImg.size();
 
 }
 

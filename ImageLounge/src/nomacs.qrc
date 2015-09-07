@@ -75,11 +75,12 @@
         <file>img/sort.png</file>
         <file>img/show-filename.png</file>
         <file>descriptions/nomacs-device.xml</file>
-		    <file>descriptions/nomacs-service.xml</file>
-		    <file>descriptions/nomacs_avtransport_scpd.xml</file>
-		    <file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
-		    <file>descriptions/nomacs_mediarenderer_description.xml</file>
-		    <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
-        <file>stylesheet.qss</file>
-        </qresource>
+        <file>descriptions/nomacs-service.xml</file>
+        <file>descriptions/nomacs_avtransport_scpd.xml</file>
+        <file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
+        <file>descriptions/nomacs_mediarenderer_description.xml</file>
+        <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
+        <file>stylesheet.css</file>
+
+    </qresource>
 </RCC>

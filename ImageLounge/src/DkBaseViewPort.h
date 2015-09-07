@@ -102,7 +102,7 @@ public:
 	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {
-		this->forceFastRendering = fastRendering;
+		mForceFastRendering = fastRendering;
 	};
 	
 	/**
@@ -113,15 +113,15 @@ public:
 	float get100Factor() {
 		
 		updateImageMatrix();
-		return 1.0f/(float)imgMatrix.m11();
+		return 1.0f/(float)mImgMatrix.m11();
 	};
 
 	void setPanControl(QPointF panControl) {
-		this->panControl = panControl;
+		mPanControl = panControl;
 	};
 	
 	virtual QTransform getWorldMatrix() { 
-		return worldMatrix;
+		return mWorldMatrix;
 	};
 	virtual QRect getMainGeometry() {
 		return geometry();
@@ -130,7 +130,7 @@ public:
 	QImage getCurrentImageRegion();
 
 	virtual DkImageStorage* getImageStorage() {
-		return &imgStorage;
+		return &mImgStorage;
 	};
 
 	//virtual QImage getScaledImage(float factor);
@@ -146,14 +146,11 @@ public:
 	virtual bool imageInside();	// always return false?!
 
 signals:
-	void enableNoImageSignal(bool enable);
-	void showStatusBar(bool show, bool permanent);
-	void imageUpdated();	// this waits ~50 ms before triggering
-	void newImageSignal(QImage* img);
-	
-//#ifdef DK_DLL
-	void keyReleaseSignal(QKeyEvent* event);	// make key presses available
-//#endif
+	void enableNoImageSignal(bool enable) const;
+	void showStatusBar(bool show, bool permanent) const;
+	void imageUpdated() const;	// this waits ~50 ms before triggering
+	void newImageSignal(QImage* img) const;
+	void keyReleaseSignal(QKeyEvent* event) const;	// make key presses available
 
 public slots:
 	virtual void togglePattern(bool show);
@@ -161,14 +158,13 @@ public slots:
 	virtual void shiftRight();
 	virtual void shiftUp();
 	virtual void shiftDown();
-	virtual void moveView(QPointF);
+	virtual void moveView(const QPointF&);
 	virtual void zoomIn();
 	virtual void zoomOut();
 	virtual void resetView();
 	virtual void fullView();
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void stopBlockZooming();
-	//virtual void setBackgroundColor();
 	virtual void setBackgroundBrush(const QBrush &brush);
 
 	virtual bool unloadImage(bool fileChange = true);
@@ -194,37 +190,34 @@ protected:
 	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void swipeAction(int) {};
 
-	QVector<QShortcut*> shortcuts;	
+	QVector<QShortcut*> mShortcuts;		// TODO: add to actionManager
 
-	QPainter* painter;
-	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
-	Qt::KeyboardModifier ctrlMod;
+	Qt::KeyboardModifier mAltMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
+	Qt::KeyboardModifier mCtrlMod;
 
-	QWidget *parent;
-	//QImage imgQt;
-	//QMap<int, QImage> imgPyramid;
-	DkImageStorage imgStorage;
-	QMovie* movie;
-	QBrush pattern;
+	DkImageStorage mImgStorage;
+	QSharedPointer<QMovie> mMovie;
+	QBrush mPattern;
 
+	QTransform mImgMatrix;
+	QTransform mWorldMatrix;
+	QRectF mImgViewRect;
+	QRectF mViewportRect;
+	QRectF mImgRect;
 
-	QTransform imgMatrix;
-	QTransform worldMatrix;
-	QRectF imgViewRect;
-	QRectF viewportRect;
-	QRectF imgRect;
+	QPointF mPanControl;	// controls how far we can pan outside an image
+	QPointF mPosGrab;
+	float mMinZoom;
+	float mMaxZoom;
 
-	QPointF panControl;	// controls how far we can pan outside an image
-	QPointF posGrab;
-	float minZoom;
-	float maxZoom;
-	float lastZoom;
-	float startZoom;
-	int swipeGesture;
+	// TODO: test if gestures are fully supported in Qt5 then remove this
+	float mLastZoom;
+	float mStartZoom;
+	int mSwipeGesture;
 
-	bool forceFastRendering;
-	bool blockZooming;
-	QTimer* zoomTimer;
+	bool mForceFastRendering;
+	bool mBlockZooming;
+	QTimer* mZoomTimer;
 
 	// functions
 	virtual void draw(QPainter *painter, float opacity = 1.0f);
@@ -234,7 +227,7 @@ protected:
 	virtual void centerImage();
 	virtual void changeCursor();
 	virtual void createShortcuts();
-
+	QWidget* parentWidget() const;
 };
 
 };

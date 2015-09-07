@@ -148,6 +148,6 @@ endif()
 if(UNIX AND ENABLE_PLUGINS)
   SET(NOMACS_FOUND true)
   SET(NOMACS_VARS_ALREADY_SET true)
-	add_subdirectory(plugins)
+#	add_subdirectory(plugins)
 endif()
 
