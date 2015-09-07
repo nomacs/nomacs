@@ -146,7 +146,7 @@ endif()
 # endforeach()
 
 if(UNIX AND ENABLE_PLUGINS)
-  if(EXISTS "plugins")
+  if(EXISTS "${CMAKE_SOURCE_DIR}/plugins")
     SET(NOMACS_FOUND true)
     SET(NOMACS_VARS_ALREADY_SET true)
     add_subdirectory(plugins)
