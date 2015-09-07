@@ -478,6 +478,11 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo) {
 
 void DkCentralWidget::removeTab(int tabIdx) {
 
+	if (mTabInfos.size() <= 1) {
+		qDebug() << "This tab is the last man standing - I will not destroy it!";
+		return;
+	}
+
 	if (tabIdx == -1)
 		tabIdx = mTabbar->currentIndex();
 
@@ -497,12 +502,11 @@ void DkCentralWidget::removeTab(int tabIdx) {
 
 void DkCentralWidget::clearAllTabs() {
 	
+	// the last tab will never be destroyed (it results in real issues!) - do you need that??
 	for (int idx = 0; idx < mTabInfos.size(); idx++)
 		mTabbar->removeTab(mTabInfos.at(idx)->getTabIdx());
 	
-	mTabInfos.clear();
-
-	mTabbar->hide();
+	//mTabbar->hide();
 }
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo) {
