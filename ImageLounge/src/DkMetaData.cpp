@@ -61,14 +61,14 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 			// it was crashing here - if the thumbnail is fetched in the constructor of a label
 			// seems that the QFileInfo was corrupted?!
 			std::wstring strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdWString() : filePath.toStdWString();
-			exifImg = Exiv2::ImageFactory::open(strFilePath);
+			mExifImg = Exiv2::ImageFactory::open(strFilePath);
 #else
 			std::wstring strFilePath = (fileInfo.isSymLink()) ? (wchar_t*)fileInfo.symLinkTarget().utf16() : (wchar_t*)mFilePath.utf16();
 			mExifImg = Exiv2::ImageFactory::open(strFilePath);
 #endif
 #else
 			std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
-			exifImg = Exiv2::ImageFactory::open(strFilePath);
+			mExifImg = Exiv2::ImageFactory::open(strFilePath);
 #endif
 		}
 		else {
