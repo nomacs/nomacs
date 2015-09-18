@@ -1259,32 +1259,18 @@ void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 
 QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
 
-	float top = (float)imgSize.height();
-	float left = (float)imgSize.width();
-	float bottom = 0;
-	float right = 0;
-		
 	QPolygonF polygon = rect.getPoly();
+	DkVector v1 = polygon[0];
+	QPointF center = rect.getCenter();
+	DkVector v1T = v1 - center;
 
+	v1T.rotate(rect.getAngle());
+	v1T.abs();
 
-	for (int i = 0; i < polygon.size(); i++) {
-
-		QPointF point = polygon.at(i);
-		
-		if (point.x() < left)
-			left = (float)point.x();
-		if (point.x() > right)
-			right = (float)point.x();
-
-		if (point.y() < top)
-			top = (float)point.y();
-		if (point.y() > bottom)
-			bottom = (float)point.y();
-
-	}
-
-	// qDebug() << "boundary: " << "left: " << left << " right: " << right << " top: " << top << " bottom: " << bottom;	
-	// qDebug() << "polygon: " << polygon.at(i);
+	float left = center.x() - v1T.x;
+	float right = center.x() + v1T.x;
+	float top = center.y() - v1T.y;
+	float bottom = center.y() + v1T.y;
 
 	// Normalize the coordinates:
 	top /= imgSize.height();
@@ -1292,7 +1278,36 @@ QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& 
 	left /= imgSize.width();
 	right /= imgSize.width();
 
-	return QRectF(QPointF(left, top), QSizeF(right-left, bottom-top));
+	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
+
+
+	//float top = (float)imgSize.height();
+	//float left = (float)imgSize.width();
+	//float bottom = 0;
+	//float right = 0;
+	//	
+	//QPolygonF polygon = rect.getPoly();
+
+
+	//for (int i = 0; i < polygon.size(); i++) {
+
+	//	QPointF point = polygon.at(i);
+	//	
+	//	if (point.x() < left)
+	//		left = (float)point.x();
+	//	if (point.x() > right)
+	//		right = (float)point.x();
+
+	//	if (point.y() < top)
+	//		top = (float)point.y();
+	//	if (point.y() > bottom)
+	//		bottom = (float)point.y();
+
+	//}
+
+	//// qDebug() << "boundary: " << "left: " << left << " right: " << right << " top: " << top << " bottom: " << bottom;	
+	//// qDebug() << "polygon: " << polygon.at(i);
+	
 }
 
 Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
