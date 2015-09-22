@@ -1236,6 +1236,12 @@ void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	rightStr.setNum(r.right(), 'g', 6);
 
 	double angle = rect.getAngle()*DK_RAD2DEG;
+
+	if (angle > 45)
+		angle = angle - 90;
+	else if (angle < -45)
+		angle = angle + 90;
+
 	cropAngleStr.setNum(angle, 'g', 6);
 
 	// Set the cropping coordinates here in percentage:
@@ -1259,18 +1265,27 @@ void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 
 QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
 
-	QPolygonF polygon = rect.getPoly();
-	DkVector v1 = polygon[0];
 	QPointF center = rect.getCenter();
-	DkVector v1T = v1 - center;
 
-	v1T.rotate(rect.getAngle());
-	v1T.abs();
+	QPolygonF polygon = rect.getPoly();
+	DkVector vec;
 
-	float left = center.x() - v1T.x;
-	float right = center.x() + v1T.x;
-	float top = center.y() - v1T.y;
-	float bottom = center.y() + v1T.y;
+	for (int i = 0; i < 4; i++) {
+		// We need the second quadrant, but I do not know why... just tried it out.
+		vec = polygon[i] - center;
+		if (vec.x <= 0 && vec.y > 0)
+			break;
+	}
+
+	double angle = rect.getAngle();
+	vec.rotate(angle * 2);
+
+	vec.abs();
+
+	float left = (float) center.x() - vec.x;
+	float right = (float) center.x() + vec.x;
+	float top = (float) center.y() - vec.y;
+	float bottom = (float) center.y() + vec.y;
 
 	// Normalize the coordinates:
 	top /= imgSize.height();
@@ -1280,33 +1295,6 @@ QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& 
 
 	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
 
-
-	//float top = (float)imgSize.height();
-	//float left = (float)imgSize.width();
-	//float bottom = 0;
-	//float right = 0;
-	//	
-	//QPolygonF polygon = rect.getPoly();
-
-
-	//for (int i = 0; i < polygon.size(); i++) {
-
-	//	QPointF point = polygon.at(i);
-	//	
-	//	if (point.x() < left)
-	//		left = (float)point.x();
-	//	if (point.x() > right)
-	//		right = (float)point.x();
-
-	//	if (point.y() < top)
-	//		top = (float)point.y();
-	//	if (point.y() > bottom)
-	//		bottom = (float)point.y();
-
-	//}
-
-	//// qDebug() << "boundary: " << "left: " << left << " right: " << right << " top: " << top << " bottom: " << bottom;	
-	//// qDebug() << "polygon: " << polygon.at(i);
 	
 }
 
@@ -1337,8 +1325,11 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 		}
 	}
 	if (!xmpImg.get()) {
-		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:
-		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
+		
+		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
+		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.utf16());
+		xmpFilePath.utf16();
+
 		xmpImg->setMetadata(*mExifImg);
 		xmpImg->writeMetadata();	// we need that to add xmp afterwards - but why?
 	}
