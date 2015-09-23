@@ -1664,10 +1664,10 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 	if (event->button() != Qt::LeftButton || viewport() && viewport()->getImage().isNull())
 		return;
 
-	if (isFullScreen())
-		exitFullScreen();
-	else
-		enterFullScreen();
+	//if (isFullScreen())
+	//	exitFullScreen();
+	//else
+	//	enterFullScreen();
 
 	//QMainWindow::mouseDoubleClickEvent(event);
 }
