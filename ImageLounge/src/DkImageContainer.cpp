@@ -194,7 +194,7 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() {
 		else
 			mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
 #else
-		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
+		mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(mFilePath));
 #endif	
 	}
 
