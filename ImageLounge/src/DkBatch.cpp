@@ -238,7 +238,7 @@ void DkInputTextEdit::dropEvent(QDropEvent *event) {
 
 	appendFromMime(event->mimeData());
 
-	QTextEdit::dropEvent(event);
+	//QTextEdit::dropEvent(event);
 }
 
 QStringList DkInputTextEdit::getFileList() const {
