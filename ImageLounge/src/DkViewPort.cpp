@@ -1612,10 +1612,9 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
-	// freud - we just need this if we want to manually crop...
-	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-	metaData->saveRectToXMP(rect, imgC->image().size());
-	
+	imgC->setImage(img);
+	setEditedImage(imgC);
+
 	qDebug() << "cropping...";
 }
 

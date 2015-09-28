@@ -206,6 +206,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		imgLoaded = loadPSDFile(mFile, ba);
 		if (imgLoaded) mLoader = psd_loader;
 	}
+
 #if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
 	// WEBP loader
 	if (!imgLoaded) {
