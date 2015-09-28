@@ -39,6 +39,7 @@
 #endif
 #endif
 
+#include <QTimer>	// needed to construct mTimers
 #pragma warning(pop)		// no warnings from includes - end
 
 // OpenCV
@@ -212,10 +213,10 @@ protected:
 
 	QRectF mOldImgRect;
 
-	QTimer* mRepeatZoomTimer = new QTimer(this);
+	QTimer* mRepeatZoomTimer;// = new QTimer(this);
 	
 	// fading stuff
-	QTimer* mFadeTimer = new QTimer(this);
+	QTimer* mFadeTimer;// = new QTimer(this);
 	DkTimer mFadeTime;
 	QImage mFadeBuffer;
 	float mFadeOpacity;

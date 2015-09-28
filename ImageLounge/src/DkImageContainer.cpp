@@ -294,6 +294,9 @@ int DkImageContainer::getLoadState() const {
 
 bool DkImageContainer::loadImage() {
 
+	if (!QFileInfo(mFileInfo).exists())
+		return false;
+
 	if (getFileBuffer()->isEmpty())
 		mFileBuffer = loadFileToBuffer(mFilePath);
 

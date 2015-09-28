@@ -103,6 +103,7 @@ public:
 	void setDir(const QString& dir);
 	void setSaveDir(const QString& dir);
 	
+	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
 	QSharedPointer<DkImageContainerT> findFile(const QString& filePath) const;
 	int findFileIdx(const QString& filePath, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
 	
@@ -117,6 +118,14 @@ public:
 	int numFiles() const;
 	QImage getImage();
 	bool dirtyTiff();
+
+	QStringList ignoreKeywords() const;
+	void setIgnoreKeywords(const QStringList& ignoreKeywords);
+	void appendIgnoreKeyword(const QString& keyword);
+
+	QStringList keywords() const;
+	void setKeywords(const QStringList& ignoreKeywords);
+	void appendKeyword(const QString& keyword);
 
 	static bool restoreFile(const QString &filePath);
 
@@ -170,9 +179,6 @@ protected:
 	void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images);
 	void createImages(const QFileInfoList& files, bool sort = true);
 	QVector<QSharedPointer<DkImageContainerT > > sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const;
-
-	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
-
 
 	QStringList mIgnoreKeywords;
 	QStringList mKeywords;

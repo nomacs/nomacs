@@ -1884,6 +1884,30 @@ bool DkImageLoader::dirtyTiff() {
 	return mCurrentImage->getLoader()->isDirty();
 }
 
+QStringList DkImageLoader::ignoreKeywords() const {
+	return mIgnoreKeywords;
+}
+
+void DkImageLoader::setIgnoreKeywords(const QStringList& ignoreKeywords) {
+	mIgnoreKeywords = ignoreKeywords;
+}
+
+void DkImageLoader::appendIgnoreKeyword(const QString& keyword) {
+	mIgnoreKeywords.append(keyword);
+}
+
+QStringList DkImageLoader::keywords() const {
+	return mKeywords;
+}
+
+void DkImageLoader::setKeywords(const QStringList& keywords) {
+	mKeywords = keywords;
+}
+
+void DkImageLoader::appendKeyword(const QString& keyword) {
+	mKeywords.append(keyword);
+}
+
 void DkImageLoader::loadLastDir() {
 
 	if (DkSettings::global.recentFolders.empty())

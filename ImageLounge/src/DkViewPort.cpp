@@ -57,9 +57,13 @@ namespace nmc {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
-	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
-	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<nmc::DkImageContainerT>");
-	qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
+	//qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
+	//qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<nmc::DkImageContainerT>");
+	//qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
+
+	mRepeatZoomTimer = new QTimer(this);
+	mFadeTimer = new QTimer(this);
+
 
 	mImgBg.load(":/nomacs/img/nomacs-bg.png");
 
@@ -1253,6 +1257,10 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	}
 
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
+
+	if (!imgC)
+		imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT());
+
 	imgC->setImage(newImg);
 	unloadImage(false);
 	mLoader->setImage(imgC);
