@@ -807,6 +807,7 @@ protected:
 	QLabel* highLightLabel;
 	QPushButton* removeFileButton;
 	QSharedPointer<DkThumbNailT> thumb;
+	int mThumbSize = 64;
 };
 
 class DkRecentFilesWidget : public DkWidget {

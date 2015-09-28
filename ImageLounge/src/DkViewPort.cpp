@@ -660,7 +660,8 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	if (s.height() > size().height()*0.6)
 		s = s*((size().height()*0.6)/s.height());
 
-	QRect bgRect(QPoint(qRound(size().width()-s.width()-size().width()*0.05), qRound(size().height()-s.height()-size().height()*0.05)), s);
+	QRect bgRect(QPoint(), s);
+	bgRect.moveBottomRight(QPoint(width()-20, height()-20));
 
 	painter->drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 }

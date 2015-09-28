@@ -2562,11 +2562,13 @@ void DkFolderLabel::mousePressEvent(QMouseEvent *ev) {
 // DkImageLabel --------------------------------------------------------------------
 DkImageLabel::DkImageLabel(const QString& filePath, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
+	mThumbSize = DkSettings::display.thumbSize;
+
 	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
 
-	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	setFixedSize(mThumbSize, mThumbSize);
 	setMouseTracking(true);
 
 	QFileInfo fInfo(filePath);
@@ -2579,14 +2581,14 @@ DkImageLabel::DkImageLabel(const QString& filePath, QWidget* parent /* = 0 */, Q
 void DkImageLabel::createLayout() {
 
 	imageLabel = new QLabel(this);
-	imageLabel->setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	imageLabel->setFixedSize(mThumbSize, mThumbSize);
 	imageLabel->setScaledContents(true);
 	imageLabel->setStyleSheet("QLabel{margin: 0 0 0 0; padding: 0 0 0 0; border: 1px solid " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
 
 	QColor cA = DkSettings::display.highlightColor;
 	cA.setAlpha(100);
 	highLightLabel = new QLabel(this);
-	highLightLabel->setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	highLightLabel->setFixedSize(mThumbSize, mThumbSize);
 	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(cA) + "; border: 1px solid " + DkUtils::colorToString(DkSettings::display.highlightColor) + ";}");
 	highLightLabel->hide();
 

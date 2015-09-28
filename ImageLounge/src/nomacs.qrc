@@ -81,6 +81,5 @@
         <file>descriptions/nomacs_mediarenderer_description.xml</file>
         <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
         <file>stylesheet.css</file>
-
     </qresource>
 </RCC>
