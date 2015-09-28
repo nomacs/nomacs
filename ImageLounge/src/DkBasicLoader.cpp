@@ -164,9 +164,10 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			if (!DkSettings::metaData.ignoreExifOrientation) {
 				orientation = mMetaData->getOrientation();
 				
-				if (orientation == 0) {
+				if (orientation <= 0 || orientation > 9) {
 					mMetaData->clearOrientation();
 					mMetaData->saveMetaData(ba);
+					qWarning() << "deleting illegal EXIV orientation: " << orientation;
 				}
 			}
 		}
@@ -175,7 +176,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	else if (!mMetaData) {
 		qDebug() << "metaData is NULL!";
 	}
-
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = fInfo.suffix().toLower();
