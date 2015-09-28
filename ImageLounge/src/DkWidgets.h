@@ -815,7 +815,6 @@ class DkRecentFilesWidget : public DkWidget {
 public:
 	DkRecentFilesWidget(QWidget* parent = 0);
 	~DkRecentFilesWidget();
-	static void mappedFileExists(DkFileInfo& fileInfo);
 	void setCustomStyle(bool imgLoadedStyle = false);
 
 signals:
@@ -836,7 +835,6 @@ protected:
 	QVector<QFileInfo> recentFiles;
 	QVector<DkFileInfo> recentFolders;
 	//QFutureWatcher<void> fileWatcher;
-	QFutureWatcher<void> folderWatcher;
 	QVector<DkImageLabel*> fileLabels;
 	QVector<DkFolderLabel*> folderLabels;
 

@@ -2683,7 +2683,6 @@ DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(p
 	createLayout();
 
 	//connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
-	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
 }
 
 DkRecentFilesWidget::~DkRecentFilesWidget() {
@@ -2691,11 +2690,6 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 	//fileWatcher.blockSignals(true);
 	//fileWatcher.cancel();
 	//fileWatcher.waitForFinished();
-
-	folderWatcher.blockSignals(true);
-	folderWatcher.cancel();
-	folderWatcher.waitForFinished();
-
 }
 
 void DkRecentFilesWidget::createLayout() {
@@ -2759,9 +2753,6 @@ void DkRecentFilesWidget::hide(bool saveSettings) {
 
 void DkRecentFilesWidget::updateFileList() {
 
-	if (folderWatcher.isRunning())
-		return;
-
 	delete folderLayout;
 	delete filesLayout;
 	rFileIdx = 0;
@@ -2787,8 +2778,6 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
-	folderWatcher.cancel();
-	folderWatcher.waitForFinished();
 	fileLabels.clear();
 	folderLabels.clear();
 	recentFiles.clear();
@@ -2800,7 +2789,7 @@ void DkRecentFilesWidget::updateFileList() {
 		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
 
 	updateFiles();
-	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
+	updateFolders();
 }
 
 void DkRecentFilesWidget::updateFiles() {
@@ -2857,31 +2846,18 @@ void DkRecentFilesWidget::updateFolders() {
 
 	for (DkFileInfo& fi : recentFolders) {
 
-		if (fi.inUse())
-			continue;
+		DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
+		connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		folderLayout->addWidget(fLabel);
+		folderLabels.append(fLabel);
 
-		if (fi.exists()) {
-			fi.setInUse(true);
-
-			DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
-			connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
-			folderLayout->addWidget(fLabel);
-			folderLabels.append(fLabel);
-
-			cHeight += fLabel->height();
-			if (cHeight > folderWidget->height())
-				break;
-		}
+		cHeight += fLabel->height();
+		if (cHeight > folderWidget->height())
+			break;
 	}
 
 	folderLayout->addStretch();
 }
-
-void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
-
-	fileInfo.setExists(QFileInfo(fileInfo.getFilePath()).exists());
-}
-
 
 // DkDirectoryEdit --------------------------------------------------------------------
 DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) {
