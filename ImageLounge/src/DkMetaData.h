@@ -32,9 +32,13 @@
 #include <QStringList>
 #include <QMap>
 
+//code for metadata crop:
+#include "DkMath.h"
+
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
+#include <exiv2/xmpsidecar.hpp>
 #include <exiv2/image.hpp>
 #include <exiv2/preview.hpp>
 #include <iomanip>
@@ -112,7 +116,15 @@ public:
 	bool isDirty() const;
 	void printMetaData() const; //only for debug
 
+	//code for metadata crop:
+	void saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
+	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
+
 protected:
+	QRectF getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const;
+	Exiv2::Image::AutoPtr getExternalXmp();
+	//void xmpSidecarTest();
+
 	enum {
 		not_loaded,
 		no_data,

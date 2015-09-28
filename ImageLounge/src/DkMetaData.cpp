@@ -81,6 +81,7 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 		qDebug() << "[Exiv2] could not open file for exif data";
 		return;
 	}
+	
 
 	if (mExifImg.get() == 0) {
 		mExifState = no_data;
@@ -1208,10 +1209,194 @@ void DkMetaDataT::printMetaData() const {
 			<< std::endl;
 	}
 
+
+	std::string xmpPacket;
+	if (0 != Exiv2::XmpParser::encode(xmpPacket, xmpData)) {
+		throw Exiv2::Error(1, "Failed to serialize XMP data");
+	}
+	std::cout << xmpPacket << "\n";
+	
 }
 
-// DkMetaDataHelper --------------------------------------------------------------------
 
+void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
+
+
+	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
+	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
+
+	QRectF r = getRectCoordinates(rect, size);
+
+	// precision = 6 is what Adobe Camera Raw uses (as it seems)
+	QString topStr, bottomStr, leftStr, rightStr, cropAngleStr;
+	
+	topStr.setNum(r.top(), 'g', 6);
+	bottomStr.setNum(r.bottom(), 'g', 6);
+	leftStr.setNum(r.left(), 'g', 6);
+	rightStr.setNum(r.right(), 'g', 6);
+
+	double angle = rect.getAngle()*DK_RAD2DEG;
+
+	if (angle > 45)
+		angle = angle - 90;
+	else if (angle < -45)
+		angle = angle + 90;
+
+	cropAngleStr.setNum(angle, 'g', 6);
+
+	// Set the cropping coordinates here in percentage:
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", topStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", leftStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", bottomStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", rightStr);
+
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", cropAngleStr);
+
+	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+	// These key values are set by camera raw automatically, but I have found no documentation for them:
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
+	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+
+	// Save the crop coordinates to the sidecar file:
+	xmpSidecar->setXmpData(sidecarXmpData);
+	xmpSidecar->writeMetadata();
+
+}
+
+QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
+
+	QPointF center = rect.getCenter();
+
+	QPolygonF polygon = rect.getPoly();
+	DkVector vec;
+
+	for (int i = 0; i < 4; i++) {
+		// We need the second quadrant, but I do not know why... just tried it out.
+		vec = polygon[i] - center;
+		if (vec.x <= 0 && vec.y > 0)
+			break;
+	}
+
+	double angle = rect.getAngle();
+	vec.rotate(angle * 2);
+
+	vec.abs();
+
+	float left = (float) center.x() - vec.x;
+	float right = (float) center.x() + vec.x;
+	float top = (float) center.y() - vec.y;
+	float bottom = (float) center.y() + vec.y;
+
+	// Normalize the coordinates:
+	top /= imgSize.height();
+	bottom /= imgSize.height();
+	left /= imgSize.width();
+	right /= imgSize.width();
+
+	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
+
+	
+}
+
+Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
+
+	Exiv2::Image::AutoPtr xmpImg;
+
+	//TODO: check if the file type supports xmp
+
+	// Create the path to the XMP file:	
+	QString dir = mFilePath;
+	QString ext = QFileInfo(mFilePath).suffix();
+	QString xmpPath = dir.left(dir.length() - ext.length() - 1);
+	QString xmpExt = ".xmp";
+	QString xmpFilePath = xmpPath + xmpExt;
+
+	QFileInfo xmpFileInfo = QFileInfo(xmpFilePath);
+
+	qDebug() << "XMP sidecar path: " << xmpFilePath;
+
+	if (xmpFileInfo.exists()) {
+		try {
+			xmpImg = Exiv2::ImageFactory::open(xmpFilePath.toStdString());
+			xmpImg->readMetadata();
+		}
+		catch (...) {
+			qWarning() << "Could not read xmp from: " << xmpFilePath;
+		}
+	}
+	if (!xmpImg.get()) {
+		
+		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
+		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.utf16());
+		xmpFilePath.utf16();
+
+		xmpImg->setMetadata(*mExifImg);
+		xmpImg->writeMetadata();	// we need that to add xmp afterwards - but why?
+	}
+
+	return xmpImg;
+
+}
+
+
+bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue) {
+
+	bool setXMPValueSuccessful = false;
+
+	if (!xmpData.empty()) {
+
+		Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
+
+		Exiv2::XmpData::iterator pos = xmpData.findKey(key);
+
+
+		//Update the tag if it is set:
+		if (pos != xmpData.end() && pos->count() != 0) {
+			//sidecarXmpData.erase(pos);
+			if (!pos->setValue(xmpValue.toStdString())) 
+				setXMPValueSuccessful = true;
+		}
+		else {
+			Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+			if (!v->read(xmpValue.toStdString())) {
+				if (!xmpData.add(Exiv2::XmpKey(key), v.get()))
+					setXMPValueSuccessful = true;
+			}
+			
+		}
+	}
+
+	return setXMPValueSuccessful;
+
+}
+
+//void DkMetaDataT::xmpSidecarTest() {
+//
+//
+//	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
+//	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
+//
+//	// Set the cropping coordinates here in percentage:
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", "0.086687");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", "0.334223");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", "0.800616");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", "0.567775");
+//
+//	// 
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", "28.074855");
+//
+//	
+//	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+//	// These key values are set by camera raw automatically, but I have found no documentation for them
+//	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
+//	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+//	
+//
+//	xmpSidecar->setXmpData(sidecarXmpData);
+//	xmpSidecar->writeMetadata();
+//}
+
+// DkMetaDataHelper --------------------------------------------------------------------
 void DkMetaDataHelper::init() {
 
 	mCamSearchTags.append("ImageSize");
