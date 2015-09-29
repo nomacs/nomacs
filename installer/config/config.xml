@@ -9,3 +9,12 @@
 	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
 	<InstallerApplicationIcon>nomacs.ico</InstallerApplicationIcon>
 </Installer>
+<RemoteRepositories>
+     <Repository>
+             <Url>https://github.com/nomacs/nomacs/releases/latest</Url>
+             <Enabled>1</Enabled>
+             <Username></Username>
+             <Password></Password>
+             <DisplayName>nomacs - Image Lounge</DisplayName>
+     </Repository>
+</RemoteRepositories>
