@@ -41,6 +41,10 @@
 #include <QStyledItemDelegate>
 #include <QDir>
 #include <QApplication>
+
+#ifdef WIN32
+#include "Shobjidl.h"
+#endif
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -859,10 +863,10 @@ QSettings& Settings::getSettings() {
 	return *m_settings;
 }
 
-void DkFileFilterHandling::registerNomacs() {
+void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 
 #ifdef WIN32
-
+	
 	// TODO: this is still not working for me on win8??
 	QString capName = "Capabilities";
 	QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\" + capName;
@@ -885,12 +889,11 @@ void DkFileFilterHandling::registerNomacs() {
 			QStringList extList = getExtensions(rFilters.at(idx));
 			
 			for (QString cExt : extList)
-				settings.setValue(cExt, "nomacs Image");
+				settings.setValue(cExt, "nomacs" + cExt + ".2");
 		}
 	}
 	settings.endGroup();
-
-
+	
 	QString softwarePath = "HKEY_CURRENT_USER\\Software\\";
 	QSettings wsettings(softwarePath, QSettings::NativeFormat);
 
@@ -900,6 +903,25 @@ void DkFileFilterHandling::registerNomacs() {
 
 	qDebug() << "nomacs registered ============================";
 
+	// TODO: add a button?!
+
+	if (showDefaultApps) {
+		IApplicationActivationManager* manager = 0;
+		CoCreateInstance(CLSID_ApplicationActivationManager,
+			0,
+			CLSCTX_LOCAL_SERVER,
+			IID_IApplicationActivationManager,
+			(LPVOID*)&manager);
+
+		if (manager) {
+			DWORD pid = GetCurrentProcessId();
+			manager->ActivateApplication(
+				L"windows.immersivecontrolpanel_cw5n1h2txyewy"
+				L"!microsoft.windows.immersivecontrolpanel",
+				L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
+			qDebug() << "launching application registration...";
+		}
+	}
 #endif
 
 }
@@ -965,8 +987,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 
 	if (DkSettings::app.privateMode)
 		return;
-
-
+	
 	QString friendlyName;
 	QStringList extList = getExtensions(filterString, friendlyName);
 	friendlyName += attribute;
@@ -978,7 +999,9 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	for (int idx = 0; idx < extList.size(); idx++) {
 
 		qDebug() << "registering: " << extList.at(idx);
+
 		registerExtension(extList.at(idx), progKey, add);
+		registerDefaultApp(extList.at(idx), progKey, add);
 		setAsDefaultApp(extList.at(idx), progKey, add);		// this is not working on Win8
 	}
 
@@ -1015,6 +1038,23 @@ QStringList DkFileFilterHandling::getExtensions(const QString& filter, QString& 
 	return extList;
 }
 
+void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString& progKey, bool add) {
+
+#ifdef WIN32
+
+	QSettings settings("HKEY_CURRENT_USER\\Software\\Classes\\Applications\\nomacs.exe", QSettings::NativeFormat);
+	
+	if (add) {
+		settings.beginGroup("SupportedTypes");
+		settings.setValue(ext, "");
+		qDebug() << ext << "registered...";
+	}
+	else
+		settings.remove(ext);
+#endif
+
+}
+
 void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
 
 #ifdef WIN32
@@ -1023,8 +1063,13 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 	settings.beginGroup(ext);
 
 	if (add) {
+		// windows 7 only
 		settings.beginGroup("UserChoice");
 		settings.setValue("ProgId", progKey);
+		settings.endGroup();
+
+		settings.beginGroup("OpenWithProgids");
+		settings.setValue("nomacs" + ext + ".2","");
 		qDebug() << "default app set";
 	}
 	else

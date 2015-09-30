@@ -3050,7 +3050,7 @@ void DkNoMacs::showRecentFiles(bool show) {
 void DkNoMacs::onWindowLoaded() {
 
 	QSettings& settings = Settings::instance().getSettings();
-	bool firstTime = settings.value("AppSettings/firstTime", true).toBool();
+	bool firstTime = settings.value("AppSettings/firstTime.nomacs.3", true).toBool();
 
 	if (DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer))
 		showExplorer(true);
@@ -3063,7 +3063,7 @@ void DkNoMacs::onWindowLoaded() {
 		DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
 		wecomeDialog->exec();
 
-		settings.setValue("AppSettings/firstTime", false);
+		settings.setValue("AppSettings/firstTime.nomacs.3", false);
 
 		if (wecomeDialog->isLanguageChanged()) {
 			restartWithTranslationUpdate();

@@ -58,13 +58,14 @@ class DkFileFilterHandling {
 
 public:
 	DkFileFilterHandling() {};
-	void registerNomacs();
+	void registerNomacs(bool showDefaultApps = false);
 	void registerFileType(const QString& filterString, const QString& attribute, bool add);
 
 protected:
 	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);
 	void registerExtension(const QString& ext, const QString& progKey, bool add);
 	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
+	void registerDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
 	
 	QStringList getExtensions(const QString& filter) const;
 	QStringList getExtensions(const QString& filter, QString& friendlyName) const;

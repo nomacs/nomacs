@@ -4534,23 +4534,26 @@ void DkWelcomeDialog::createLayout() {
 }
 
 void DkWelcomeDialog::accept() {
-	
+
+	DkFileFilterHandling fh;
+
 	// register file associations
 	if (registerFilesCheckBox->isChecked()) {
-		DkFileFilterHandling fh;
 
 		QStringList rFilters = DkSettings::app.openFilters;
 		
-		for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++)
-			rFilters.removeAll(DkSettings::app.containerFilters.at(idx));
+		for (const QString& filter : DkSettings::app.containerFilters)
+			rFilters.removeAll(filter);
 
-		for (int idx = 0; idx < rFilters.size(); idx++) {
+		for (const QString& filter : rFilters) {
 
 			// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
-			if (!rFilters.at(idx).contains("ico"))	
-				fh.registerFileType(rFilters.at(idx), tr("Image"), true);
+			if (!filter.contains("ico"))	
+				fh.registerFileType(filter, tr("Image"), true);
 		}
 	}
+	
+	fh.registerNomacs(true);	// register nomacs again - to be save
 
 	// change language
 	if (languageCombo->currentIndex() != languages.indexOf(DkSettings::global.language) && languageCombo->currentIndex() >= 0) {

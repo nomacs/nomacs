@@ -1328,7 +1328,7 @@ void DkFileFilterSettingWidget::writeSettings() {
 	DkFileFilterHandling fh;
 	DkSettings::app.browseFilters.clear();
 	DkSettings::app.registerFilters.clear();
-	
+		
 	for (int idx = 0; idx < model->rowCount(); idx++) {
 
 		QStandardItem* item = model->item(idx, 0);
@@ -1358,6 +1358,7 @@ void DkFileFilterSettingWidget::writeSettings() {
 			qDebug() << item->text() << " unregistered";
 	}
 
+	fh.registerNomacs();	// register nomacs again - to be save
 }
 
 // DkWhiteListViewModel --------------------------------------------------------------------
