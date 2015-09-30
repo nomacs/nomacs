@@ -1,0 +1,24 @@
+<widget class="QWidget" name="TargetWidget">
+  <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Please specify the folder where Miam-Player will be installed.</string>
+       </property>
+      </widget>
+    </item>
+    <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="targetDirectory"/>
+       </item>
+       <item>
+        <widget class="QToolButton" name="targetChooser"/>
+       </item>
+      </layout>
+    </item>
+    <item>
+      <widget class="QLabel" name="labelOverwrite"/>
+    </item>
+  </layout>
+</widget>
