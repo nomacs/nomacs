@@ -79,9 +79,11 @@ Component.prototype.createOperations = function()
 	
 		if (installer.componentByName("nomacs.x86").installationRequested()) {
 			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x86].lnk", "workingDirectory=@TargetDir@");
+			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x86].exe.lnk", "workingDirectory=@TargetDir@");
 		}
 		else if (installer.componentByName("nomacs.x64").installationRequested()) {
 			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x64].lnk", "workingDirectory=@TargetDir@");
+			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x64].exe.lnk", "workingDirectory=@TargetDir@");
 		}
 	} catch (e) {
         console.log(e);
@@ -115,7 +117,7 @@ Component.prototype.installationFinished = function()
         if (installer.isInstaller() && installer.status == QInstaller.Success) {
 
 			// open nomacs
-			var isOpenAppCheckBoxChecked = component.userInterface( "OpenAppCheckBoxForm" ).openAppCheckBox.checked;
+			var isOpenAppCheckBoxChecked = component.userInterface("OpenAppCheckBoxForm").openAppCheckBox.checked;
             if (isOpenAppCheckBoxChecked) {
 				
 				if (installer.componentByName("nomacs.x64").installationRequested())
