@@ -1545,7 +1545,7 @@ void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
 	mFixedDiag = diag;
 
-	qDebug() << "after rotating: " << mFixedDiag.getQPointF();
+	qDebug() << "after rotating: " << mFixedDiag.toQPointF();
 
 	// don't update in that case
 	if (diag.x == 0 || diag.y == 0)
@@ -1680,7 +1680,7 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[1]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		QLineF l = QLineF(DkVector(p[1]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}
@@ -1699,7 +1699,7 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[3]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		QLineF l = QLineF(DkVector(p[3]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}

@@ -155,8 +155,8 @@ void DkRotatingRect::updateCorner(int cIdx, QPointF nC, DkVector oldDiag) {
 		// compute the offset vector
 		DkVector oV = n * n.scalarProduct(nC-c0);
 
-		rect[cIdx % 4] = (rect[cIdx % 4] + oV).getQPointF();
-		rect[(cIdx+1) % 4] = (rect[(cIdx+1) % 4] + oV).getQPointF();
+		rect[cIdx % 4] = (rect[cIdx % 4] + oV).toQPointF();
+		rect[(cIdx+1) % 4] = (rect[(cIdx+1) % 4] + oV).toQPointF();
 	}
 	else {
 
@@ -191,9 +191,9 @@ void DkRotatingRect::updateCorner(int cIdx, QPointF nC, DkVector oldDiag) {
 		DkVector nc3 = DkVector((newLength), 0);
 		nc3.rotate(-c3Angle);
 
-		rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();			
-		rect[(cIdx+3) % 4] = (nc3+cN).getQPointF();
-		rect[cIdx] = cN.getQPointF();
+		rect[(cIdx+1) % 4] = (nc1+cN).toQPointF();			
+		rect[(cIdx+3) % 4] = (nc3+cN).toQPointF();
+		rect[cIdx] = cN.toQPointF();
 	}
 }
 
@@ -226,7 +226,7 @@ QPointF DkRotatingRect::getCenter() const {
 	DkVector c1 = rect[0];
 	DkVector c2 = rect[2];
 
-	return ((c2-c1)*0.5f + c1).getQPointF();
+	return ((c2-c1)*0.5f + c1).toQPointF();
 }
 
 void DkRotatingRect::setCenter(const QPointF& center) {
@@ -238,7 +238,7 @@ void DkRotatingRect::setCenter(const QPointF& center) {
 
 	for (int idx = 0; idx < rect.size(); idx++) {
 
-		rect[idx] = rect[idx] - diff.getQPointF();
+		rect[idx] = rect[idx] - diff.toQPointF();
 	}
 }
 
@@ -275,7 +275,7 @@ void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) const {
 	QPointF ul = QPointF(qRound(rect[0].x()), qRound(rect[0].y()));
 	size = QPointF(xV.norm(), yV.norm());
 
-	qDebug() << xV.getQPointF();
+	qDebug() << xV.toQPointF();
 	qDebug() << "size: " << size;
 
 

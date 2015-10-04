@@ -67,9 +67,13 @@ public:
 	void setForegroundColor(const QColor& col);
 	QColor foregroundColor() const;
 
+	void setTotalScore(int maxScore);
+	int totalScore() const;
+
 protected:
 	QRect mField;
 	int mUnit = 10;
+	int mTotalScore = 5;
 
 	QColor mBgCol = QColor(0,0,0);
 	QColor mFgCol = QColor(255,255,255);
@@ -90,6 +94,8 @@ public:
 
 	void updateSize();
 	void increaseScore();
+
+	void resetScore();
 	int score() const;
 
 protected:
@@ -110,6 +116,7 @@ public:
 	DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 	void reset();
+	void updateSize();
 
 	QRect rect() const;
 	QPoint direction() const;
@@ -126,6 +133,7 @@ protected:
 	QSharedPointer<DkPongSettings> mS;
 
 	void fixAngle();
+	void setDirection(const DkVector& dir);
 };
 
 class DllExport DkScoreLabel : public QLabel {
@@ -151,6 +159,7 @@ public:
 
 public slots:
 	void gameLoop();
+	void countDown();
 	
 protected:
 	virtual void paintEvent(QPaintEvent* event);
@@ -163,7 +172,9 @@ protected:
 	void pauseGame(bool pause = true);
 
 private:
-	QTimer *eventLoop;
+	QTimer *mEventLoop;
+	QTimer *mCountDownTimer;
+	int mCountDownSecs = 3;
 
 	int mPlayerSpeed;
 
@@ -179,6 +190,8 @@ private:
 
 	DkScoreLabel* mLargeInfo;
 	DkScoreLabel* mSmallInfo;
+
+	void startCountDown(int sec = 3);
 };
 
 class DllExport DkPong : public QMainWindow {
