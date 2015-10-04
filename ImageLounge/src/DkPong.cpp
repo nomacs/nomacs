@@ -32,19 +32,57 @@
 #include <QDebug>
 #include <QVector2D>
 #include <QKeyEvent>
+#include <QStyleOption>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
-// DkPlayer --------------------------------------------------------------------
-DkPongPlayer::DkPongPlayer(int unit, const QRect& field) {
 
-	mUnit = unit;
+// DkPongSettings --------------------------------------------------------------------
+DkPongSettings::DkPongSettings() {
+
+}
+
+void DkPongSettings::setField(const QRect & field) {
 	mField = field;
+}
+
+QRect DkPongSettings::field() const {
+	return mField;
+}
+
+void DkPongSettings::setUnit(int unit) {
+	mUnit = unit;
+}
+
+int DkPongSettings::unit() const {
+	return mUnit;
+}
+
+void DkPongSettings::setBackgroundColor(const QColor & col) {
+	mBgCol = col;
+}
+
+QColor DkPongSettings::backgroundColor() const {
+	return mBgCol;
+}
+
+void DkPongSettings::setForegroundColor(const QColor & col) {
+	mFgCol = col;
+}
+
+QColor DkPongSettings::foregroundColor() const {
+	return mFgCol;
+}
+
+// DkPlayer --------------------------------------------------------------------
+DkPongPlayer::DkPongPlayer(QSharedPointer<DkPongSettings> settings) {
+
+	mS = settings;
 	mSpeed = 0;
 	mPos = INT_MAX;
 
-	mRect = QRect(QPoint(), QSize(unit, 2*unit));
+	mRect = QRect(QPoint(), QSize(settings->unit(), 2*settings->unit()));
 }
 
 void DkPongPlayer::reset(const QPoint& pos) {
@@ -67,8 +105,8 @@ void DkPongPlayer::move() {
 
 	if (mRect.top() + mSpeed < 0)
 		mRect.moveTop(0);
-	else if (mRect.bottom() + mSpeed > mField.height())
-		mRect.moveBottom(mField.height());
+	else if (mRect.bottom() + mSpeed > mS->field().height())
+		mRect.moveBottom(mS->field().height());
 	else
 		mRect.moveTop(mRect.top() + mSpeed);
 }
@@ -83,9 +121,8 @@ void DkPongPlayer::setSpeed(int speed) {
 		mPos = INT_MAX;
 }
 
-void DkPongPlayer::setField(const QRect& field) {
-	mField = field;
-	mRect.setHeight(qRound(field.height()*0.3));
+void DkPongPlayer::updateSize() {
+	mRect.setHeight(qRound(mS->field().height()*mPlayerRatio));
 }
 
 void DkPongPlayer::increaseScore() {
@@ -96,36 +133,91 @@ int DkPongPlayer::score() const {
 	return mScore;
 }
 
+// DkScoreLabel --------------------------------------------------------------------
+DkScoreLabel::DkScoreLabel(Qt::Alignment align, QWidget* parent, QSharedPointer<DkPongSettings> settings) : QLabel(parent) {
+	
+	mS = settings;
+	mAlign = align;
+	setStyleSheet("QLabel{ color: #fff;}");
+	setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+	
+	mFont = QFont("terminal", 7);
+	setFont(mFont);
+	qDebug() << "using:" << mFont.family();
+}
+
+void DkScoreLabel::paintEvent(QPaintEvent* /*ev*/) {
+
+	QFontMetrics m(mFont);
+	
+	QPixmap buffer(m.width(text())-1, m.height());
+	buffer.fill(Qt::transparent);
+
+	// draw font
+	QPen fontPen(mS->foregroundColor());
+
+	QPainter bp(&buffer);
+	bp.setPen(fontPen);
+	bp.setFont(mFont);
+	bp.drawText(buffer.rect(), Qt::AlignHCenter, text());
+	bp.end();
+
+	buffer = buffer.scaled(size(), Qt::KeepAspectRatio);
+
+	qDebug() << "buffer size: " << buffer.size() << "my size:" << size();
+
+	QRect r(buffer.rect());
+	if (mAlign & Qt::AlignRight)
+		r.moveLeft(width() - (mS->unit() * 3 + buffer.width()));
+	else if (mAlign & Qt::AlignHCenter)
+		r.moveLeft(qRound((width() - buffer.width())*0.5f));
+	else
+		r.moveLeft(mS->unit() * 3);
+
+	if (mAlign & Qt::AlignBottom)
+		r.moveBottom(height());
+
+	QPainter p(this);
+	p.drawPixmap(r, buffer);
+
+	//QLabel::paintEvent(ev);
+}
+
 // DkPongPort --------------------------------------------------------------------
 DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags) : QGraphicsView(parent) {
 
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
-	field = rect();
-	fieldColor = QColor(0,0,0);
-	playerColor = QColor(255, 255, 255);
+	mS = QSharedPointer<DkPongSettings>(new DkPongSettings());
+	mPlayerSpeed = qRound(mS->unit()*0.5);
 
-	unit = 10;
-	mPlayerSpeed = qRound(unit*0.5);
+	mBall = DkBall(mS);
+	mPlayer1 = DkPongPlayer(mS);
+	mPlayer2 = DkPongPlayer(mS);
 
-	mBall = DkBall(unit, field);
-	mPlayer1 = DkPongPlayer(unit);
-	mPlayer2 = DkPongPlayer(unit);
-
-	initGame();
+	mP1Score = new DkScoreLabel(Qt::AlignRight, this, mS);
+	mP2Score = new DkScoreLabel(Qt::AlignLeft, this, mS);
+	mLargeInfo = new DkScoreLabel(Qt::AlignHCenter | Qt::AlignBottom, this, mS);
+	mSmallInfo = new DkScoreLabel(Qt::AlignHCenter, this, mS);
 	 
 	eventLoop = new QTimer(this);
 	eventLoop->setInterval(10);
 	//eventLoop->start();
 
 	connect(eventLoop, SIGNAL(timeout()), this, SLOT(gameLoop()));
+
+	initGame();
+	pauseGame();
 }
 
 void DkPongPort::initGame() {
 	
 	mBall.reset();
-	mPlayer1.reset(QPoint(unit, qRound(height()*0.5f)));
-	mPlayer2.reset(QPoint(qRound(width()-unit*1.5f), qRound(height()*0.5f)));
+	mPlayer1.reset(QPoint(mS->unit(), qRound(height()*0.5f)));
+	mPlayer2.reset(QPoint(qRound(width()-mS->unit()*1.5f), qRound(height()*0.5f)));
+
+	mP1Score->setText(QString::number(mPlayer1.score()));
+	mP2Score->setText(QString::number(mPlayer2.score()));
 
 	qDebug() << mPlayer1.score() << ":" << mPlayer2.score();
 
@@ -134,48 +226,97 @@ void DkPongPort::initGame() {
 
 void DkPongPort::togglePause() {
 
-	if (eventLoop->isActive())
-		eventLoop->stop();
-	else
-		eventLoop->start();
+	pauseGame(eventLoop->isActive());
 }
 
 void DkPongPort::pauseGame(bool pause) {
 
-	if (pause)
+	if (pause) {
 		eventLoop->stop();
-	else
+		mLargeInfo->setText(tr("PAUSED"));
+		mSmallInfo->setText(tr("Press <SPACE> to start."));
+	}
+	else {
 		eventLoop->start();
+	}
+
+	mLargeInfo->setVisible(pause);
+	mSmallInfo->setVisible(pause);
 }
 
 void DkPongPort::paintEvent(QPaintEvent* event) {
 
-	QPainter painter(viewport());
-	painter.setBackgroundMode(Qt::TransparentMode);
-
-	painter.fillRect(QRect(QPoint(), size()), fieldColor);
-
-	painter.fillRect(mBall.rect(), playerColor);
-	painter.fillRect(mPlayer1.rect(), playerColor);
-	painter.fillRect(mPlayer2.rect(), playerColor);
-
-	painter.end();
-
 	// propagate
 	QGraphicsView::paintEvent(event);
+
+	QPainter p(viewport());
+	p.setBackgroundMode(Qt::TransparentMode);
+
+	p.fillRect(QRect(QPoint(), size()), mS->backgroundColor());
+	drawField(p);
+
+	if (mLargeInfo->isVisible())
+		p.fillRect(mLargeInfo->geometry(), mS->backgroundColor());
+
+	if (mSmallInfo->isVisible())
+		p.fillRect(mSmallInfo->geometry(), mS->backgroundColor());
+
+	p.fillRect(mBall.rect(), mS->foregroundColor());
+	p.fillRect(mPlayer1.rect(), mS->foregroundColor());
+	p.fillRect(mPlayer2.rect(), mS->foregroundColor());
+
+	p.end();
+
+}
+
+void DkPongPort::drawField(QPainter& p) {
+
+	QPen cPen = p.pen();
 	
+	// set dash pattern
+	QVector<qreal> dashes;
+	dashes << 0.1 << 3;
+
+	// create style
+	QPen linePen;
+	linePen.setColor(mS->foregroundColor());
+	linePen.setWidth(qRound(mS->unit()*0.5));
+	linePen.setDashPattern(dashes);
+	p.setPen(linePen);
+
+	// set line
+	QLine line(QPoint(qRound(width()*0.5f), 0), QPoint(qRound(width()*0.5f),height()));
+	p.drawLine(line);
+
+	p.setPen(cPen);
 }
 
 void DkPongPort::resizeEvent(QResizeEvent *event) {
 
 	//resize(event->size());
 
-	field = QRect(QPoint(), event->size());
-	mPlayer1.setField(field);
-	mPlayer2.setField(field);
-	mBall.setField(field);
+	mS->setField(QRect(QPoint(), event->size()));
+	mPlayer1.updateSize();
+	mPlayer2.updateSize();
 
 	initGame();
+
+	// resize player scores
+	QRect sR(QPoint(0, mS->unit()*3), QSize(width()*0.5, width()*0.1));
+	QRect sR1 = sR;
+	QRect sR2 = sR;
+	sR2.moveLeft(qRound(width()*0.5));
+	mP1Score->setGeometry(sR1);
+	mP2Score->setGeometry(sR2);
+	
+	// resize info labels
+	QRect lIR(QPoint(width()*0.15,0), QSize(width()*0.7, width()*0.1));
+	lIR.moveBottom(qRound(height()*0.5 - mS->unit()));
+	mLargeInfo->setGeometry(lIR);
+	
+	QRect sIR(QPoint(width()*0.15,0), QSize(width()*0.7, width()*0.05));
+	sIR.moveTop(qRound(height()*0.5 + mS->unit()));
+	mSmallInfo->setGeometry(sIR);
 
 	QWidget::resizeEvent(event);
 	
@@ -233,16 +374,15 @@ void DkPongPort::keyReleaseEvent(QKeyEvent* event) {
 }
 
 // DkBall --------------------------------------------------------------------
-DkBall::DkBall(int unit, const QRect& field) {
+DkBall::DkBall(QSharedPointer<DkPongSettings> settings) {
 
 	qsrand(1);
-	mUnit = unit;
-	mField = field;
+	mS = settings;
 
-	mMinSpeed = qRound(unit*0.5);
-	mMaxSpeed = qRound(unit*0.8);
+	mMinSpeed = qRound(mS->unit()*0.5);
+	mMaxSpeed = qRound(mS->unit()*0.8);
 
-	mRect = QRect(QPoint(), QSize(unit, unit));
+	mRect = QRect(QPoint(), QSize(mS->unit(), mS->unit()));
 
 	reset();
 }
@@ -250,7 +390,7 @@ DkBall::DkBall(int unit, const QRect& field) {
 void DkBall::reset() {
 	
 	mDirection = DkVector(3, 0);// DkVector(mUnit*0.15f, mUnit*0.15f);
-	mRect.moveCenter(QPoint(qRound(mField.width()*0.5f), qRound(mField.height()*0.5f)));
+	mRect.moveCenter(QPoint(qRound(mS->field().width()*0.5f), qRound(mS->field().height()*0.5f)));
 }
 
 QRect DkBall::rect() const {
@@ -264,7 +404,7 @@ QPoint DkBall::direction() const {
 bool DkBall::move(DkPongPlayer& player1, DkPongPlayer& player2) {
 
 	// collision detection top & bottom
-	if (mRect.top() <= mField.top() && mDirection.y < 0 || mRect.bottom() >= mField.bottom() && mDirection.y > 0) {
+	if (mRect.top() <= mS->field().top() && mDirection.y < 0 || mRect.bottom() >= mS->field().bottom() && mDirection.y > 0) {
 		mDirection.rotate(mDirection.angle()*2);
 		//qDebug() << "collision...";
 	}
@@ -276,22 +416,22 @@ bool DkBall::move(DkPongPlayer& player1, DkPongPlayer& player2) {
 	if (player1.rect().intersects(mRect) && mDirection.x < 0) {
 
 		mDirection.rotate((nAngle*2)+magic);
-		double mod = (player1.pos() != INT_MAX) ? (player1.rect().center().y() - player1.pos())/(float)mField.height() : 0;
-		mDirection.y += (float)mod*mUnit;
+		double mod = (player1.pos() != INT_MAX) ? (player1.rect().center().y() - player1.pos())/(float)mS->field().height() : 0;
+		mDirection.y += (float)mod*mS->unit();
 	}
 	else if (player2.rect().intersects(mRect) && mDirection.x > 0) {
 
 		mDirection.rotate((nAngle*2)+magic);
-		double mod = (player2.pos() != INT_MAX) ? (player2.rect().center().y() - player2.pos())/(float)mField.height() : 0;
-		mDirection.y += (float)mod*mUnit;
+		double mod = (player2.pos() != INT_MAX) ? (player2.rect().center().y() - player2.pos())/(float)mS->field().height() : 0;
+		mDirection.y += (float)mod*mS->unit();
 	}
 	// collision detection left & right
-	else if (mRect.left() <= mField.left()) {
+	else if (mRect.left() <= mS->field().left()) {
 		//ballDir.rotate(-ballDir.angle()*2);
 		player2.increaseScore();
 		return false;
 	}
-	else if (mRect.right() >= mField.right()) {
+	else if (mRect.right() >= mS->field().right()) {
 		player1.increaseScore();
 		return false;
 	}
@@ -334,10 +474,6 @@ void DkBall::fixAngle() {
 		mDirection.rotate(mDirection.angle() - (newAngle*sign));
 		qDebug() << "angle: " << angle << " new angle: " << newAngle;
 	}
-}
-
-void DkBall::setField(const QRect& field) {
-	mField = field;
 }
 
 // DkBall --------------------------------------------------------------------

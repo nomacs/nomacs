@@ -31,9 +31,12 @@
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QRect>
+#include <QLabel>
+#include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMath.h"
+#pragma warning(disable: 4251)
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -47,10 +50,35 @@
 
 namespace nmc {
 
+class DllExport DkPongSettings {
+
+public:
+	DkPongSettings();
+
+	void setField(const QRect& field);
+	QRect field() const;
+
+	void setUnit(int unit);
+	int unit() const;
+
+	void setBackgroundColor(const QColor& col);
+	QColor backgroundColor() const;
+
+	void setForegroundColor(const QColor& col);
+	QColor foregroundColor() const;
+
+protected:
+	QRect mField;
+	int mUnit = 10;
+
+	QColor mBgCol = QColor(0,0,0);
+	QColor mFgCol = QColor(255,255,255);
+};
+
 class DllExport DkPongPlayer {
 	
 public:
-	DkPongPlayer(int unit = 1, const QRect& field = QRect());
+	DkPongPlayer(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 	void reset(const QPoint& pos);
 	QRect rect() const;
@@ -60,32 +88,31 @@ public:
 	void move();
 	void setSpeed(int speed);
 
-	void setField(const QRect& field);
+	void updateSize();
 	void increaseScore();
 	int score() const;
 
 protected:
-	int mUnit;
 	int mSpeed;
 	int mVelocity;
+	float mPlayerRatio = 0.3f;
 
 	int mScore = 0;
 	int mPos = INT_MAX;
 
+	QSharedPointer<DkPongSettings> mS;
 	QRect mRect;
-	QRect mField;
 };
 
 class DllExport DkBall {
 
 public:
-	DkBall(int unit = 1, const QRect& field = QRect());
+	DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 	void reset();
 
 	QRect rect() const;
 	QPoint direction() const;
-	void setField(const QRect& field);
 
 	bool move(DkPongPlayer& player1, DkPongPlayer& player2);
 
@@ -93,14 +120,26 @@ protected:
 	int mMinSpeed;
 	int mMaxSpeed;
 
-	int mUnit;
-
 	DkVector mDirection;
 	QRect mRect;
 
-	QRect mField;
+	QSharedPointer<DkPongSettings> mS;
 
 	void fixAngle();
+};
+
+class DllExport DkScoreLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkScoreLabel(Qt::Alignment align = Qt::AlignLeft, QWidget* parent = 0, QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+
+protected:
+	void paintEvent(QPaintEvent* ev);
+	QFont mFont;
+	Qt::Alignment mAlign;
+
+	QSharedPointer<DkPongSettings> mS;
 };
 
 class DllExport DkPongPort : public QGraphicsView {
@@ -125,18 +164,21 @@ protected:
 
 private:
 	QTimer *eventLoop;
-	int unit;
-
-	QRect field;
-
-	QColor fieldColor;
-	QColor playerColor;
 
 	int mPlayerSpeed;
 
 	DkBall mBall;
 	DkPongPlayer mPlayer1;
 	DkPongPlayer mPlayer2;
+
+	QSharedPointer<DkPongSettings> mS;
+	void drawField(QPainter& p);
+
+	DkScoreLabel* mP1Score;
+	DkScoreLabel* mP2Score;
+
+	DkScoreLabel* mLargeInfo;
+	DkScoreLabel* mSmallInfo;
 };
 
 class DllExport DkPong : public QMainWindow {
