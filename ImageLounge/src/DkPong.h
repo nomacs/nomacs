@@ -30,13 +30,80 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
 #include <QGraphicsView>
+#include <QRect>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMath.h"
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
-class DkPongPort : public QGraphicsView {
+class DllExport DkPongPlayer {
+	
+public:
+	DkPongPlayer(int unit = 1, const QRect& field = QRect());
+
+	void reset(const QPoint& pos);
+	QRect rect() const;
+	int pos() const;
+	void setHeight(int newHeight);
+
+	void move();
+	void setSpeed(int speed);
+
+	void setField(const QRect& field);
+	void increaseScore();
+	int score() const;
+
+protected:
+	int mUnit;
+	int mSpeed;
+	int mVelocity;
+
+	int mScore = 0;
+	int mPos = INT_MAX;
+
+	QRect mRect;
+	QRect mField;
+};
+
+class DllExport DkBall {
+
+public:
+	DkBall(int unit = 1, const QRect& field = QRect());
+
+	void reset();
+
+	QRect rect() const;
+	QPoint direction() const;
+	void setField(const QRect& field);
+
+	bool move(DkPongPlayer& player1, DkPongPlayer& player2);
+
+protected:
+	int mMinSpeed;
+	int mMaxSpeed;
+
+	int mUnit;
+
+	DkVector mDirection;
+	QRect mRect;
+
+	QRect mField;
+
+	void fixAngle();
+};
+
+class DllExport DkPongPort : public QGraphicsView {
 	Q_OBJECT
 
 public:
@@ -52,36 +119,27 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* event);
 	virtual void keyReleaseEvent(QKeyEvent* event);
 
-	void moveBall();
 	void initGame();
-	void movePlayer(QRect& player, int velocity);
+	void togglePause();
+	void pauseGame(bool pause = true);
 
 private:
 	QTimer *eventLoop;
 	int unit;
-	int playerSpeed;
-	int minBallSpeed;
-	int maxBallSpeed;
-	
-	DkVector ballDir;
-	int player1Speed;
-	int player2Speed;
-
-	int player1Pos;
-	int player2Pos;
-
-	QRect ball;
-	QRect player1;
-	QRect player2;
 
 	QRect field;
 
 	QColor fieldColor;
 	QColor playerColor;
+
+	int mPlayerSpeed;
+
+	DkBall mBall;
+	DkPongPlayer mPlayer1;
+	DkPongPlayer mPlayer2;
 };
 
-
-class DkPong : public QMainWindow {
+class DllExport DkPong : public QMainWindow {
 	Q_OBJECT
 
 public:
