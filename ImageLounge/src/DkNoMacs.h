@@ -368,6 +368,7 @@ enum helpActions {
 enum shortcuts {
 	sc_test_img,
 	sc_test_rec,
+	sc_test_pong,
 
 	sc_end,	// nothing beyond this point
 };
@@ -570,6 +571,7 @@ public slots:
 	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate(bool silent = false);
 	void setFrameless(bool frameless);
+	void startPong() const;
 	void fitFrame();
 	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);

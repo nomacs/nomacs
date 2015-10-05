@@ -70,19 +70,33 @@ public:
 	void setTotalScore(int maxScore);
 	int totalScore() const;
 
+	void writeSettings();
+
+	QString player1Name() const;
+	QString player2Name() const;
+
+	float playerRatio() const;
+
 protected:
 	QRect mField;
 	int mUnit = 10;
-	int mTotalScore = 5;
+	int mTotalScore = 10;
 
-	QColor mBgCol = QColor(0,0,0);
+	QColor mBgCol = QColor(0,0,0,100);
 	QColor mFgCol = QColor(255,255,255);
+
+	QString mPlayer1Name = QObject::tr("Player 1");
+	QString mPlayer2Name = QObject::tr("Player 2");
+
+	float mPlayerRatio = 0.15f;
+
+	void loadSettings();
 };
 
 class DllExport DkPongPlayer {
 	
 public:
-	DkPongPlayer(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+	DkPongPlayer(const QString& playerName = QObject::tr("Anonymous"), QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 	void reset(const QPoint& pos);
 	QRect rect() const;
@@ -98,16 +112,19 @@ public:
 	void resetScore();
 	int score() const;
 
+	QString name() const;
+
 protected:
 	int mSpeed;
 	int mVelocity;
-	float mPlayerRatio = 0.3f;
 
 	int mScore = 0;
 	int mPos = INT_MAX;
 
 	QSharedPointer<DkPongSettings> mS;
 	QRect mRect;
+
+	QString mPlayerName;
 };
 
 class DllExport DkBall {
@@ -155,7 +172,9 @@ class DllExport DkPongPort : public QGraphicsView {
 
 public:
 	DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
-	virtual ~DkPongPort() {};
+	virtual ~DkPongPort();
+
+	QSharedPointer<DkPongSettings> settings() const;
 
 public slots:
 	void gameLoop();
@@ -201,9 +220,11 @@ public:
 	DkPong(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkPong() {};
 
-protected slots:
-	void keyPressEvent(QKeyEvent *event);
+protected:
+	void keyPressEvent(QKeyEvent *event) override;
+	void closeEvent(QCloseEvent* event) override;
 	
+	DkPongPort* mViewport;
 };
 
 

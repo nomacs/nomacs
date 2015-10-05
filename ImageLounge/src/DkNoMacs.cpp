@@ -1474,6 +1474,9 @@ void DkNoMacs::createShortcuts() {
 	mShortcuts[sc_test_rec] = new QShortcut(shortcut_test_rec, this);
 	QObject::connect(mShortcuts[sc_test_rec], SIGNAL(activated()), this, SLOT(loadRecursion()));
 
+	mShortcuts[sc_test_pong] = new QShortcut(shortcut_pong, this);
+	QObject::connect(mShortcuts[sc_test_pong], SIGNAL(activated()), this, SLOT(startPong()));
+
 	for (int idx = 0; idx < mShortcuts.size(); idx++) {
 
 		// assign widget shortcuts to all of them
@@ -2067,6 +2070,17 @@ void DkNoMacs::setFrameless(bool) {
 		close();
 
 	qDebug() << "frameless arguments: " << args;
+}
+
+void DkNoMacs::startPong() const {
+
+	QString exe = QApplication::applicationFilePath();
+	QStringList args;
+
+	args.append("-pong");
+
+	bool started = mProcess.startDetached(exe, args);
+	qDebug() << "pong started: " << started;
 }
 
 void DkNoMacs::fitFrame() {

@@ -27,12 +27,17 @@
 
 #include "DkPong.h"
 
+#include "DkSettings.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>
 #include <QDebug>
 #include <QVector2D>
 #include <QKeyEvent>
 #include <QTime>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QSettings>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -40,7 +45,7 @@ namespace nmc {
 
 // DkPongSettings --------------------------------------------------------------------
 DkPongSettings::DkPongSettings() {
-
+	loadSettings();
 }
 
 void DkPongSettings::setField(const QRect & field) {
@@ -83,9 +88,73 @@ int DkPongSettings::totalScore() const {
 	return mTotalScore;
 }
 
-// DkPlayer --------------------------------------------------------------------
-DkPongPlayer::DkPongPlayer(QSharedPointer<DkPongSettings> settings) {
+void DkPongSettings::writeSettings() {
 
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup("DkPong");
+
+	settings.setValue("field", mField);
+	settings.setValue("unit", mUnit);
+	settings.setValue("totalScore", mTotalScore);
+
+	settings.setValue("backgroundColor", mBgCol.name());
+	settings.setValue("foregroundColor", mFgCol.name());
+
+	settings.setValue("backgroundAlpha", mBgCol.alpha());
+	settings.setValue("foregroundAlpha", mFgCol.alpha());
+
+	settings.setValue("player1Name", mPlayer1Name);
+	settings.setValue("player2Name", mPlayer2Name);
+	
+	settings.setValue("playerRatio", qRound(mPlayerRatio*100.0f));
+
+	settings.endGroup();
+
+	qDebug() << "settings written...";
+}
+
+QString DkPongSettings::player1Name() const {
+	return mPlayer1Name;
+}
+
+QString DkPongSettings::player2Name() const {
+	return mPlayer2Name;
+}
+
+float DkPongSettings::playerRatio() const {
+	return mPlayerRatio;
+}
+
+void DkPongSettings::loadSettings() {
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup("DkPong");
+
+	mField = settings.value("field", mField).toRect();
+	mUnit = settings.value("unit", mUnit).toInt();
+	mTotalScore = settings.value("totalScore", mTotalScore).toInt();
+
+	mPlayer1Name = settings.value("player1Name", mPlayer1Name).toString();
+	mPlayer2Name = settings.value("player2Name", mPlayer2Name).toString();
+
+	mPlayerRatio = settings.value("playerRatio", qRound(mPlayerRatio*100)).toInt()/100.0f;
+
+	int bgAlpha = settings.value("backgroundAlpha", mBgCol.alpha()).toInt();
+	int fgAlpha = settings.value("foregroundAlpha", mFgCol.alpha()).toInt();
+
+	mBgCol.setNamedColor(settings.value("backgroundColor", mBgCol.name()).toString());
+	mFgCol.setNamedColor(settings.value("foregroundColor", mFgCol.name()).toString());
+
+	mBgCol.setAlpha(bgAlpha);
+	mFgCol.setAlpha(fgAlpha);
+
+	settings.endGroup();
+}
+
+// DkPlayer --------------------------------------------------------------------
+DkPongPlayer::DkPongPlayer(const QString& playerName, QSharedPointer<DkPongSettings> settings) {
+
+	mPlayerName = playerName;
 	mS = settings;
 	mSpeed = 0;
 	mPos = INT_MAX;
@@ -130,7 +199,7 @@ void DkPongPlayer::setSpeed(int speed) {
 }
 
 void DkPongPlayer::updateSize() {
-	mRect.setHeight(qRound(mS->field().height()*mPlayerRatio));
+	mRect.setHeight(qRound(mS->field().height()*mS->playerRatio()));
 }
 
 void DkPongPlayer::increaseScore() {
@@ -145,6 +214,10 @@ int DkPongPlayer::score() const {
 	return mScore;
 }
 
+QString DkPongPlayer::name() const {
+	return mPlayerName;
+}
+
 // DkScoreLabel --------------------------------------------------------------------
 DkScoreLabel::DkScoreLabel(Qt::Alignment align, QWidget* parent, QSharedPointer<DkPongSettings> settings) : QLabel(parent) {
 	
@@ -153,7 +226,7 @@ DkScoreLabel::DkScoreLabel(Qt::Alignment align, QWidget* parent, QSharedPointer<
 	setStyleSheet("QLabel{ color: #fff;}");
 	setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 	
-	mFont = QFont("terminal", 7);
+	mFont = QFont("terminal", 6);
 	setFont(mFont);
 	qDebug() << "using:" << mFont.family();
 }
@@ -162,7 +235,7 @@ void DkScoreLabel::paintEvent(QPaintEvent* /*ev*/) {
 
 	QFontMetrics m(mFont);
 	
-	QPixmap buffer(m.width(text())-1, m.height()+3);
+	QPixmap buffer(m.width(text())-1, m.height());
 	buffer.fill(Qt::transparent);
 	//buffer.fill(Qt::red);
 
@@ -175,9 +248,12 @@ void DkScoreLabel::paintEvent(QPaintEvent* /*ev*/) {
 	bp.drawText(buffer.rect(), Qt::AlignHCenter | Qt::AlignVCenter, text());
 	bp.end();
 
-	buffer = buffer.scaled(size(), Qt::KeepAspectRatio);
+	QSize bSize(size());
+	bSize.setHeight(qRound(bSize.height() - mS->unit()*0.5));
+	buffer = buffer.scaled(bSize, Qt::KeepAspectRatio);
 
 	QRect r(buffer.rect());
+
 	if (mAlign & Qt::AlignRight)
 		r.moveLeft(width() - (mS->unit() * 3 + buffer.width()));
 	else if (mAlign & Qt::AlignHCenter)
@@ -187,6 +263,8 @@ void DkScoreLabel::paintEvent(QPaintEvent* /*ev*/) {
 
 	if (mAlign & Qt::AlignBottom)
 		r.moveBottom(height());
+	else
+		r.moveTop(qRound((height()-buffer.height())/2.0f));	// default: center
 
 	QPainter p(this);
 	p.drawPixmap(r, buffer);
@@ -203,8 +281,8 @@ DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags) : QGraphicsView(parent)
 	mPlayerSpeed = qRound(mS->field().width()*0.007);
 
 	mBall = DkBall(mS);
-	mPlayer1 = DkPongPlayer(mS);
-	mPlayer2 = DkPongPlayer(mS);
+	mPlayer1 = DkPongPlayer(mS->player1Name(), mS);
+	mPlayer2 = DkPongPlayer(mS->player2Name(), mS);
 
 	mP1Score = new DkScoreLabel(Qt::AlignRight, this, mS);
 	mP2Score = new DkScoreLabel(Qt::AlignLeft, this, mS);
@@ -231,8 +309,14 @@ void DkPongPort::initGame() {
 	mPlayer1.reset(QPoint(mS->unit(), qRound(height()*0.5f)));
 	mPlayer2.reset(QPoint(qRound(width()-mS->unit()*1.5f), qRound(height()*0.5f)));
 
-	mP1Score->setText(QString::number(mPlayer1.score()));
-	mP2Score->setText(QString::number(mPlayer2.score()));
+	if (mPlayer1.score() == 0 && mPlayer2.score() == 0) {
+		mP1Score->setText(mPlayer1.name());
+		mP2Score->setText(mPlayer2.name());
+	}
+	else {
+		mP1Score->setText(QString::number(mPlayer1.score()));
+		mP2Score->setText(QString::number(mPlayer2.score()));
+	}
 
 	qDebug() << mPlayer1.score() << ":" << mPlayer2.score();
 
@@ -254,6 +338,9 @@ void DkPongPort::pauseGame(bool pause) {
 	}
 	else {
 
+		mP1Score->setText(QString::number(mPlayer1.score()));
+		mP2Score->setText(QString::number(mPlayer2.score()));
+
 		if (mPlayer1.score() >= mS->totalScore() || mPlayer2.score() >= mS->totalScore()) {
 			mPlayer1.resetScore();
 			mPlayer2.resetScore();
@@ -265,6 +352,13 @@ void DkPongPort::pauseGame(bool pause) {
 
 	mLargeInfo->setVisible(pause);
 	mSmallInfo->setVisible(pause);
+}
+
+DkPongPort::~DkPongPort() {
+}
+
+QSharedPointer<DkPongSettings> DkPongPort::settings() const {
+	return mS;
 }
 
 void DkPongPort::countDown() {
@@ -290,15 +384,25 @@ void DkPongPort::paintEvent(QPaintEvent* event) {
 	p.fillRect(QRect(QPoint(), size()), mS->backgroundColor());
 	drawField(p);
 
-	if (mLargeInfo->isVisible())
-		p.fillRect(mLargeInfo->geometry(), mS->backgroundColor());
-
-	if (mSmallInfo->isVisible())
-		p.fillRect(mSmallInfo->geometry(), mS->backgroundColor());
-
 	p.fillRect(mBall.rect(), mS->foregroundColor());
 	p.fillRect(mPlayer1.rect(), mS->foregroundColor());
 	p.fillRect(mPlayer2.rect(), mS->foregroundColor());
+
+	// clear area under text
+	if (mLargeInfo->isVisible()) {
+		p.fillRect(mLargeInfo->geometry(), mS->foregroundColor());
+		p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+		p.fillRect(mLargeInfo->geometry(), mS->backgroundColor());
+		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+	}
+
+	// clear area under small text
+	if (mSmallInfo->isVisible()) {
+		p.fillRect(mSmallInfo->geometry(), mS->foregroundColor());
+		p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+		p.fillRect(mSmallInfo->geometry(), mS->backgroundColor());
+		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+	}
 
 	p.end();
 }
@@ -348,7 +452,7 @@ void DkPongPort::resizeEvent(QResizeEvent *event) {
 	initGame();
 
 	// resize player scores
-	QRect sR(QPoint(0, mS->unit()*3), QSize(width()*0.5, width()*0.1));
+	QRect sR(QPoint(0, mS->unit()*3), QSize(qRound(width()*0.5), qRound(height()*0.15)));
 	QRect sR1 = sR;
 	QRect sR2 = sR;
 	sR2.moveLeft(qRound(width()*0.5));
@@ -356,12 +460,12 @@ void DkPongPort::resizeEvent(QResizeEvent *event) {
 	mP2Score->setGeometry(sR2);
 	
 	// resize info labels
-	QRect lIR(QPoint(width()*0.15,0), QSize(width()*0.7, width()*0.05));
-	lIR.moveBottom(qRound(height()*0.5 - mS->unit()));
+	QRect lIR(QPoint(qRound(width()*0.15),0), QSize(qRound(width()*0.7), qRound(height()*0.15)));
+	lIR.moveBottom(qRound(height()*0.5 + mS->unit()));
 	mLargeInfo->setGeometry(lIR);
 	
-	QRect sIR(QPoint(width()*0.15,0), QSize(width()*0.7, width()*0.025));
-	sIR.moveTop(qRound(height()*0.5 + mS->unit()));
+	QRect sIR(QPoint(qRound(width()*0.15),0), QSize(qRound(width()*0.7), qRound(height()*0.08)));
+	sIR.moveTop(qRound(height()*0.5 + mS->unit()*2));
 	mSmallInfo->setGeometry(sIR);
 
 	QWidget::resizeEvent(event);
@@ -376,10 +480,10 @@ void DkPongPort::gameLoop() {
 		initGame();
 
 		// check if somebody won
-		if (mPlayer1.score() >= mS->totalScore() || mPlayer2.score() > mS->totalScore()) {
+		if (mPlayer1.score() >= mS->totalScore() || mPlayer2.score() >= mS->totalScore()) {
 			pauseGame();
-			mLargeInfo->setText(tr("Player %1 won!").arg(mPlayer1.score() > mPlayer2.score() ? 1 : 2));
-			mSmallInfo->setText(tr("Hit <SPACE> to start a new Game").arg(mPlayer1.score() > mPlayer2.score() ? 1 : 2));
+			mLargeInfo->setText(tr("%1 won!").arg(mPlayer1.score() > mPlayer2.score() ? mPlayer1.name() : mPlayer2.name()));
+			mSmallInfo->setText(tr("Hit <SPACE> to start a new Game"));
 		}
 		else
 			startCountDown();
@@ -413,8 +517,6 @@ void DkPongPort::keyPressEvent(QKeyEvent *event) {
 	if (event->key() == Qt::Key_Space) {
 		togglePause();
 	}
-
-	qDebug() << "playerSpeed: " << mPlayerSpeed;
 
 	QWidget::keyPressEvent(event);
 }
@@ -457,7 +559,7 @@ void DkBall::reset() {
 void DkBall::updateSize() {
 	mMinSpeed = qRound(mS->field().width()*0.005);
 	mMaxSpeed = qRound(mS->field().width()*0.01);
-	setDirection(DkVector((float)qrand()/RAND_MAX*10.0f, (float)qrand()/RAND_MAX*3.0f));
+	setDirection(DkVector((float)qrand()/RAND_MAX*10.0f-5.0f, (float)qrand()/RAND_MAX*5.0f-2.5f));
 	//setDirection(DkVector(10,10));
 }
 
@@ -498,11 +600,17 @@ bool DkBall::move(DkPongPlayer& player1, DkPongPlayer& player2) {
 	// collision detection left & right
 	else if (mRect.left() <= mS->field().left()) {
 		dir = QPointF(player2.rect().center())-mS->field().center();
+		dir.normalize();
+		dir *= (float)mMinSpeed;
+		setDirection(dir);
 		player2.increaseScore();
 		return false;
 	}
 	else if (mRect.right() >= mS->field().right()) {
 		dir = QPointF(player1.rect().center())-mS->field().center();
+		dir.normalize();
+		dir *= (float)mMinSpeed;
+		setDirection(dir);
 		player1.increaseScore();
 		return false;
 	}
@@ -530,8 +638,6 @@ void DkBall::setDirection(const DkVector& dir) {
 		mDirection.normalize();
 		mDirection *= (float)mMinSpeed;
 	}
-
-	qDebug() << "new direction: " << mDirection.toQPointF() << "dir:" << dir.toQPointF();
 }
 
 void DkBall::fixAngle() {
@@ -551,33 +657,45 @@ void DkBall::fixAngle() {
 
 	if (newAngle != 0.0) {
 		mDirection.rotate(mDirection.angle() - (newAngle*sign));
-		qDebug() << "angle: " << angle << " new angle: " << newAngle;
+		//qDebug() << "angle: " << angle << " new angle: " << newAngle;
 	}
 }
 
 // DkBall --------------------------------------------------------------------
 DkPong::DkPong(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags) {
 
-	//resize(800, 600);
-	resize(1920, 1080);
-
-	//showFullScreen();
+	setStyleSheet("QWidget{background-color: rgba(0,0,0,0); border: none;}");
 	setWindowFlags(Qt::FramelessWindowHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	
-	DkPongPort* viewport = new DkPongPort(this);
-	setCentralWidget(viewport);
-	//setWindowOpacity(20);
 
+	mViewport = new DkPongPort(this);
+
+	QRect screenRect = QApplication::desktop()->screenGeometry();
+	QRect winRect = screenRect;
+	
+	if (mViewport->settings()->field() == QRect())
+		winRect.setSize(screenRect.size()*0.5);
+	else
+		winRect = mViewport->settings()->field();
+
+	winRect.moveCenter(screenRect.center());
+	setGeometry(winRect);
+	
+	setCentralWidget(mViewport);
 	show();
 }
 
 void DkPong::keyPressEvent(QKeyEvent *event) {
 
-	qDebug() << "escape pressed";
-
 	if (event->key() == Qt::Key_Escape)
 		close();
+}
+
+void DkPong::closeEvent(QCloseEvent * event) {
+
+	mViewport->settings()->writeSettings();
+
+	QMainWindow::closeEvent(event);
 }
 
 }

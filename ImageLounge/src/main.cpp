@@ -103,7 +103,8 @@ int main(int argc, char *argv[]) {
 
 	createPluginsPath();
 
-	nmc::DkNoMacs* w;
+	nmc::DkNoMacs* w = 0;
+	nmc::DkPong* pw = 0;	// pong
 
 #ifdef _DEBUG
 	// DEBUG --------------------------------------------------------------------
@@ -114,75 +115,80 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 #endif
 
-	nmc::DkPong* window = new nmc::DkPong();
-	window->show();
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	
+	QTranslator translator;
+	nmc::DkSettings::loadTranslation(translationName, translator);
+	a.installTranslator(&translator);
+	
+	QTranslator translatorQt;
+	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
+	a.installTranslator(&translatorQt);
 
-//	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
-//	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
-//	
-//	QTranslator translator;
-//	nmc::DkSettings::loadTranslation(translationName, translator);
-//	a.installTranslator(&translator);
-//	
-//	QTranslator translatorQt;
-//	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
-//	a.installTranslator(&translatorQt);
-//
-//	// show pink icons if nomacs is in private mode
-//	if(args.size() > 1 && args[1] == "-p") {
-//		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
-//		nmc::DkSettings::app.privateMode = true;
-//	}
-//
-//	nmc::DkTimer dt;
-//
-//	// initialize nomacs
-//	if (mode == nmc::DkSettings::mode_frameless) {
-//		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
-//		qDebug() << "this is the frameless nomacs...";
-//	}
-//	else if (mode == nmc::DkSettings::mode_contrast) {
-//		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
-//		qDebug() << "this is the contrast nomacs...";
-//	}
-//	else
-//		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
-//
-//	if (w)
-//		w->onWindowLoaded();
-//
-//	qDebug() << "Initialization takes: " << dt.getTotal();
-//
-//	// TODO: time to switch -> qt 5 has a command line parser
-//	if (args.size() > 1 && args[1] == "-p") {
-//	}
-//	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
-//		w->loadFile(args[args.size()-1]);	// update folder + be silent
-//	}
-//	else if (nmc::DkSettings::app.showRecentFiles)
-//		w->showRecentFiles();
-//
-//	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
-//
-//	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
-//		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
-//		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
-//		w->enterFullScreen();
-//		qDebug() << "trying to enter fullscreen...";
-//	}
-//
-//#ifdef Q_WS_MAC
-//	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
-//	a.installEventFilter(osxEventFilter);
-//	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
-//		w, SLOT(loadFile(const QFileInfo&)));
-//#endif
+	// show pink icons if nomacs is in private mode
+	if(args.size() > 1 && args[1] == "-p") {
+		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
+		nmc::DkSettings::app.privateMode = true;
+	}
+
+	nmc::DkTimer dt;
+
+	// initialize nomacs
+	if (mode == nmc::DkSettings::mode_frameless) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
+		qDebug() << "this is the frameless nomacs...";
+	}
+	else if (mode == nmc::DkSettings::mode_contrast) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
+		qDebug() << "this is the contrast nomacs...";
+	}
+	else if (args.size() > 1 && args[1] == "-pong") {
+		pw = new nmc::DkPong();
+		int rVal = a.exec();
+		return rVal;
+	}
+	else
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
+
+	if (w)
+		w->onWindowLoaded();
+
+	qDebug() << "Initialization takes: " << dt.getTotal();
+
+	// TODO: time to switch -> qt 5 has a command line parser
+	if (args.size() > 1 && args[1] == "-p") {
+	}
+	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
+		w->loadFile(args[args.size()-1]);	// update folder + be silent
+	}
+	else if (nmc::DkSettings::app.showRecentFiles)
+		w->showRecentFiles();
+
+	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
+
+	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
+		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
+		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
+		w->enterFullScreen();
+		qDebug() << "trying to enter fullscreen...";
+	}
+
+#ifdef Q_WS_MAC
+	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
+	a.installEventFilter(osxEventFilter);
+	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
+		w, SLOT(loadFile(const QFileInfo&)));
+#endif
 
 	int rVal = a.exec();
 
-//#if QT_VERSION < 0x050000
-	//delete w;	// we need delete so that settings are saved (from destructors)
-//#endif
+#if QT_VERSION < 0x050000
+	if (w)
+		delete w;	// we need delete so that settings are saved (from destructors)
+	if (pw)
+		delete pw;
+#endif
 
 	return rVal;
 }
