@@ -986,11 +986,10 @@ void DkLANTcpServer::udpNewServerFound(const QHostAddress& address , quint16 por
 }
 
 void DkLANTcpServer::incomingConnection (qintptr socketDescriptor)  {
-	emit serverReiceivedNewConnection(socketDescriptor);
+	emit serverReiceivedNewConnection((int)socketDescriptor);
 }
 
 // DkUpdSocket --------------------------------------------------------------------
-
 DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* parent ) : QUdpSocket(parent) {
 	this->mStartPort = startPort;
 	this->mEndPort = endPort;
