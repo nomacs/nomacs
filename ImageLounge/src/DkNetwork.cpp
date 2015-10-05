@@ -951,8 +951,8 @@ DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
 	qDebug() << "TCP Listening on port " << this->serverPort();
 }
 
-void DkLocalTcpServer::incomingConnection ( int socketDescriptor )  {
-	emit serverReiceivedNewConnection(socketDescriptor);
+void DkLocalTcpServer::incomingConnection (qintptr socketDescriptor)  {
+	emit serverReiceivedNewConnection((int)socketDescriptor);
 	//qDebug() << "Server: NEW CONNECTION AVAIABLE";
 }
 
@@ -983,7 +983,7 @@ void DkLANTcpServer::udpNewServerFound(QHostAddress address , quint16 port , con
 	emit(serverReiceivedNewConnection(address , port , clientName));
 }
 
-void DkLANTcpServer::incomingConnection ( int socketDescriptor )  {
+void DkLANTcpServer::incomingConnection (qintptr socketDescriptor)  {
 	emit serverReiceivedNewConnection(socketDescriptor);
 }
 

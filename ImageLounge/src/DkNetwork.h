@@ -258,8 +258,6 @@ class DkLocalTcpServer : public QTcpServer {
 	public:
 		DkLocalTcpServer(QObject* parent = 0);
 
-		quint16 startServer();
-
 		quint16 startPort;
 		quint16 endPort;
 		
@@ -269,7 +267,7 @@ class DkLocalTcpServer : public QTcpServer {
 
 
 	protected:
-		void incomingConnection(int socketDescriptor);
+		void incomingConnection(qintptr socketDescriptor) override;
 };
 
 class DkLANTcpServer : public QTcpServer {
@@ -290,7 +288,7 @@ class DkLANTcpServer : public QTcpServer {
 		void udpNewServerFound(QHostAddress address , quint16 port , const QString& clientName);
 	
 	protected:
-		void incomingConnection(int socketDescriptor);
+		void incomingConnection(qintptr socketDescriptor) override;		// f* updating this interface just costs 3hrs
 		DkLANUdpSocket* udpSocket;
 
 	private:
