@@ -190,6 +190,9 @@ int main(int argc, char *argv[]) {
 		delete pw;
 #endif
 
+	if (w)
+		delete w;	// we need delete so that settings are saved (from destructors)
+
 	return rVal;
 }
 
