@@ -55,7 +55,7 @@ DkConnection::DkConnection(QObject* parent) : QTcpSocket(parent) {
 	setReadBufferSize(MaxBufferSize);
 }
 
-void DkConnection::setTitle(QString newTitle) {
+void DkConnection::setTitle(const QString& newTitle) {
 	mCurrentTitle = newTitle;
 }
 
@@ -89,7 +89,7 @@ void DkConnection::sendStopSynchronizeMessage() {
 	}
 }
 
-void DkConnection::sendNewTitleMessage(QString newtitle) {
+void DkConnection::sendNewTitleMessage(const QString& newtitle) {
 	mCurrentTitle = newtitle;
 	//qDebug() << "sending new Title (\"" << newtitle << "\") Message to " << this->peerName() << ":" << this->peerPort();
 
@@ -128,7 +128,7 @@ void DkConnection::sendNewTransformMessage(QTransform transform, QTransform imgT
 	write(data);
 }
 
-void DkConnection::sendNewFileMessage(qint16 op , QString filename) {
+void DkConnection::sendNewFileMessage(qint16 op, const QString& filename) {
 	//qDebug() << "sending new File Message to " << this->peerName() << ":" << this->peerPort();
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
@@ -142,7 +142,7 @@ void DkConnection::sendNewFileMessage(qint16 op , QString filename) {
 void DkConnection::sendNewGoodbyeMessage() {
 	qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
 
-	QByteArray ba = "GoodBye"; 
+	QByteArray ba = "GoodBye";  // scherz?
 	QByteArray data = "GOODBYE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
@@ -164,10 +164,10 @@ bool DkConnection::readProtocolHeader() {
 	QByteArray goodbyeBA = QByteArray("GOODBYE").append(SeparatorToken);
 
 	if (mBuffer == greetingBA) {
-		//qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
+		qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Greeting;
 	} else if (mBuffer == synchronizeBA) {
-		//qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
+		qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = startSynchronize;
 	} else if (mBuffer == disableSynchronizeBA) {
 		//qDebug() << "Disable synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
@@ -256,6 +256,7 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
+	
 	if (mState == WaitingForGreeting) {
 		if (mCurrentDataType != Greeting) {
 			abort();
@@ -356,7 +357,6 @@ void DkConnection::checkState() {
 		abort();
 		return;
 	}
-
 }
 
 void DkConnection::readWhileBytesAvailable() {
@@ -489,20 +489,25 @@ bool DkLocalConnection::readProtocolHeader() {
 }
 
 
-void DkLocalConnection::sendGreetingMessage(QString currentTitle) {
-	this->mCurrentTitle = currentTitle;
-	//qDebug() << "sending Greeting Message to " << this->peerName() << ":" << this->peerPort() << " with title: " << currentTitle;
+void DkLocalConnection::sendGreetingMessage(const QString& currentTitle) {
+	
+	mCurrentTitle = currentTitle;
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << mLocalTcpServerPort;
-	ds << currentTitle;
+	ds << mCurrentTitle;
 
-	//QByteArray data = "GREETING" + SeparatorToken + QByteArray::number(ba.size()) + SeparatorToken + ba;
+	qDebug() << "title: " << mCurrentTitle;
+	qDebug() << "local tcp: " << mLocalTcpServerPort;
+	qDebug() << "peer id: " << mPeerId;
+
 	QByteArray data = "GREETING";
 	data.append(SeparatorToken);
 	data.append(QByteArray::number(ba.size()));
 	data.append(SeparatorToken);
 	data.append(ba);
+
+	qDebug() << "greeting message: " << data;
 
 	if (write(data) == data.size()) {
 		mIsGreetingMessageSent = true;
@@ -542,16 +547,17 @@ void DkLocalConnection::sendQuitMessage() {
 DkLANConnection::DkLANConnection(QObject* parent /* = 0 */) : DkConnection(parent) {
 }
 
-void DkLANConnection::sendNewUpcomingImageMessage(QString image) {
+void DkLANConnection::sendNewUpcomingImageMessage(const QString& imageTitle) {
 	if (!mAllowImage)
 		return;
 
-	if (image == "")
-		image = "nomacs - ImageLounge";
+	QString title = imageTitle;
+	if (title == "")
+		title = "nomacs - ImageLounge";
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << image;
+	ds << title;
 
 	QByteArray data = "UPCOMINGIMAGE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
@@ -559,9 +565,11 @@ void DkLANConnection::sendNewUpcomingImageMessage(QString image) {
 };
 
 
-void DkLANConnection::sendNewImageMessage(QImage image, QString title) {
+void DkLANConnection::sendNewImageMessage(const QImage& image, const QString& imageTitle) {
 	if (!mAllowImage)
 		return;
+
+	QString title = imageTitle;
 
 	if (title == "")
 		title = "nomacs - ImageLounge";
@@ -600,7 +608,7 @@ void DkLANConnection::sendNewImageMessage(QImage image, QString title) {
 	}
 };
 
-void DkLANConnection::sendSwitchServerMessage(QHostAddress address, quint16 port) {
+void DkLANConnection::sendSwitchServerMessage(const QHostAddress& address, quint16 port) {
 	//qDebug() << "sending switch server message";
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
@@ -612,8 +620,9 @@ void DkLANConnection::sendSwitchServerMessage(QHostAddress address, quint16 port
 	write(data);
 }
 
-void DkLANConnection::sendGreetingMessage(QString currentTitle) {
-	this->mCurrentTitle = currentTitle;
+void DkLANConnection::sendGreetingMessage(const QString& currentTitle) {
+	
+	mCurrentTitle = currentTitle;
 	//qDebug() << "DKLANConnection::sendGreetingMessage to " << this->peerName() << ":" << this->peerPort() << " with title: " << currentTitle;
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
@@ -779,21 +788,21 @@ void  DkLANConnection::processData() {
 	mBuffer.clear();
 }
 
-void DkLANConnection::sendNewPositionMessage(QRect position, bool opacity, bool overlaid) {
+void DkLANConnection::sendNewPositionMessage(const QRect& position, bool opacity, bool overlaid) {
 	if(!mAllowPosition)
 		return;
 
 	DkConnection::sendNewPositionMessage(position, opacity, overlaid);
 }
 
-void DkLANConnection::sendNewTransformMessage(QTransform transform, QTransform imgTransform, QPointF canvasSize) {
+void DkLANConnection::sendNewTransformMessage(const QTransform& transform, const QTransform& imgTransform, const QPointF& canvasSize) {
 	if (!mAllowTransformation)
 		return;
 
 	DkConnection::sendNewTransformMessage(transform, imgTransform, canvasSize);
 }
 
-void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
+void DkLANConnection::sendNewFileMessage(qint16 op, const QString& filename) {
 	if (!mAllowFile)
 		return;
 

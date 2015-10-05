@@ -63,29 +63,29 @@ class DkConnection : public QTcpSocket {
 		quint16 getPeerPort() { return mPortOfPeer;};
 		quint16 getPeerId() {return mPeerId;};
 		void setPeerId(quint16 peerId) { mPeerId = peerId;};
-		void setTitle(QString newTitle);
+		void setTitle(const QString& newTitle);
 
 		bool connectionCreated;
 
 	signals:
-		void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection) const;
+		void connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* connection) const;
 		void connectionStartSynchronize(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) const;
 		void connectionStopSynchronize(DkConnection* connection) const;
-		void connectionTitleHasChanged(DkConnection* connection, QString newTitle) const;
+		void connectionTitleHasChanged(DkConnection* connection, const QString& newTitle) const;
 		void connectionNewPosition(DkConnection* connection, QRect position, bool opacity, bool overlaid) const;
 		void connectionNewTransform(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
-		void connectionNewFile(DkConnection* connection, qint16 op, QString filename) const;
+		void connectionNewFile(DkConnection* connection, qint16 op, const QString& filename) const;
 		void connectionGoodBye(DkConnection* connection) const;
-		void connectionShowStatusMessage(DkConnection* connection, QString msg) const;
+		void connectionShowStatusMessage(DkConnection* connection, const QString& msg) const;
 
 	public slots:
-		virtual void sendGreetingMessage(QString currenTitle) = 0;
+		virtual void sendGreetingMessage(const QString& currenTitle) = 0;
 		void sendStartSynchronizeMessage();
 		void sendStopSynchronizeMessage();
-		void sendNewTitleMessage(QString newtitle);
+		void sendNewTitleMessage(const QString& newtitle);
 		virtual void sendNewPositionMessage(QRect position, bool opacity, bool overlaid);
 		virtual void sendNewTransformMessage(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-		virtual void sendNewFileMessage(qint16 op , QString filename);
+		virtual void sendNewFileMessage(qint16 op, const QString& filename);
 		void sendNewGoodbyeMessage();
 		void synchronizedPeersListChanged(QList<quint16> newList);
 
@@ -135,7 +135,7 @@ class DkConnection : public QTcpSocket {
 	private slots:
 		void synchronizedTimerTimeout();
 
-	private:
+	protected:
 
 		QTimer* mSynchronizedTimer;
 		QList<quint16> mSynchronizedPeersServerPorts;
@@ -150,7 +150,7 @@ class DkLocalConnection : public DkConnection {
 
 		quint16 getLocalTcpServerPort() { return mLocalTcpServerPort;};
 		void setLocalTcpServerPort(quint16 localTcpServerPort) { mLocalTcpServerPort = localTcpServerPort;};
-		void sendGreetingMessage(QString currentTitle);
+		void sendGreetingMessage(const QString& currentTitle);
 		
 
 	signals:
@@ -182,29 +182,29 @@ class DkLANConnection : public DkConnection {
 		DkLANConnection(QObject* parent = 0) ;
 
 		QString getClientName() { return mClientName;};
-		void setClientName(QString clientName) { this->mClientName = clientName;} ;
+		void setClientName(const QString& clientName) { this->mClientName = clientName;} ;
 
 		bool getShowInMenu() {return mShowInMenu;};
 		void setShowInMenu(bool flag) {mShowInMenu = flag;};
-		void sendGreetingMessage(QString currentTitle);
+		void sendGreetingMessage(const QString& currentTitle);
 		bool getIAmServer() {return mIAmServer;};
 		void setIAmServer(bool iAmServer) { this->mIAmServer = iAmServer;};
 
 	signals:	
-		void connectionNewImage(DkConnection* connection, QImage image, QString title);
-		void connectionUpcomingImage(DkConnection* connection, QString imageTitle);
-		void connectionSwitchServer(DkConnection* connection, QHostAddress address, quint16 port);
+		void connectionNewImage(DkConnection* connection, const QImage& image, const QString& title);
+		void connectionUpcomingImage(DkConnection* connection, const QString& imageTitle);
+		void connectionSwitchServer(DkConnection* connection, const QHostAddress& address, quint16 port);
 
 	protected slots:
 		void processReadyRead();
 
 	public slots:
-		void sendNewImageMessage(QImage image, QString title);
-		void sendNewUpcomingImageMessage(QString imageTitle);
-		void sendNewPositionMessage(QRect position, bool opacity, bool overlaid);
-		void sendNewTransformMessage(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-		void sendNewFileMessage(qint16 op , QString filename);
-		void sendSwitchServerMessage(QHostAddress address, quint16 port);
+		void sendNewImageMessage(const QImage& image, const QString& title);
+		void sendNewUpcomingImageMessage(const QString& imageTitle);
+		void sendNewPositionMessage(const QRect& position, bool opacity, bool overlaid);
+		void sendNewTransformMessage(const QTransform& transform, const QTransform& imgTransform, const QPointF& canvasSize);
+		void sendNewFileMessage(qint16 op , const QString& filename);
+		void sendSwitchServerMessage(const QHostAddress& address, quint16 port);
 
 
 	protected:
