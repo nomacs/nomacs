@@ -340,6 +340,7 @@ protected:
 	QDoubleSpinBox* mSbPercent;
 };
 
+#ifdef WITH_PLUGINS
 class DkBatchPluginWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
@@ -363,6 +364,7 @@ protected:
 	DkListWidget* mPluginListWidget;
 
 };
+#endif
 
 class DkBatchTransformWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
@@ -433,7 +435,11 @@ private:
 	DkFileSelection* mFileSelection;
 	DkBatchOutput* mOutputSelection;
 	DkBatchResizeWidget* mResizeWidget;
+
+#ifdef WITH_PLUGINS
 	DkBatchPluginWidget* mPluginWidget;
+#endif
+
 	DkBatchTransformWidget* mTransformWidget;
 	DkBatchProcessing* mBatchProcessing;
 	QPushButton* mLogButton;

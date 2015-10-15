@@ -997,6 +997,7 @@ bool DkBatchResizeWidget::requiresUserInput() const {
 	return false;
 }
 
+#ifdef WITH_PLUGINS
 // DkBatchPlugin --------------------------------------------------------------------
 DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
@@ -1067,6 +1068,7 @@ void DkBatchPluginWidget::updateHeader() const {
 
 	// TODO: counting is wrong! (if you remove plugins
 }
+#endif
 
 // DkBatchTransform --------------------------------------------------------------------
 DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
@@ -1206,10 +1208,12 @@ void DkBatchDialog::createLayout() {
 	mWidgets[batch_transform]->setContentWidget(mTransformWidget);
 	mWidgets[batch_transform]->showContent(false);
 
+#ifdef WITH_PLUGINS
 	mWidgets[batch_plugin] = new DkBatchWidget(tr("Plugins"), tr("inactive"), this);
 	mPluginWidget = new DkBatchPluginWidget(mWidgets[batch_plugin]);
 	mWidgets[batch_plugin]->setContentWidget(mPluginWidget);
 	mWidgets[batch_plugin]->showContent(false);
+#endif
 
 	mWidgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	mOutputSelection = new DkBatchOutput(mWidgets[batch_output]);
@@ -1349,9 +1353,11 @@ void DkBatchDialog::accept() {
 	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
 	mTransformWidget->transferProperties(transformBatch);
 
+#ifdef WITH_PLUGINS
 	// create processing functions
 	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
 	mPluginWidget->transferProperties(pluginBatch);
+#endif
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	
@@ -1361,8 +1367,10 @@ void DkBatchDialog::accept() {
 	if (transformBatch->isActive())
 		processFunctions.append(transformBatch);
 
+#ifdef WITH_PLUGINS
 	if (pluginBatch->isActive())
 		processFunctions.append(pluginBatch);
+#endif
 
 	config.setProcessFunctions(processFunctions);
 	mBatchProcessing->setBatchConfig(config);

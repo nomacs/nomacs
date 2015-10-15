@@ -106,6 +106,7 @@ protected:
 	bool mCorrectGamma = false;
 };
 
+#ifdef WITH_PLUGINS
 class DkPluginBatch : public DkAbstractBatch {
 
 public:
@@ -122,6 +123,7 @@ protected:
 
 	QStringList mPluginList;
 };
+#endif
 
 class DkBatchTransform : public DkAbstractBatch {
 

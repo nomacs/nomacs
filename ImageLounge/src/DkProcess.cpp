@@ -226,6 +226,7 @@ bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
 	return true;
 }
 
+#ifdef WITH_PLUGINS
 // DkPluginBatch --------------------------------------------------------------------
 DkPluginBatch::DkPluginBatch() {
 }
@@ -306,6 +307,7 @@ void DkPluginBatch::resolvePluginString(const QString & pluginString, QString & 
 		}
 	}
 }
+#endif
 
 // DkBatchProcess --------------------------------------------------------------------
 DkBatchProcess::DkBatchProcess(const QString& filePathIn, const QString& filePathOut) {
