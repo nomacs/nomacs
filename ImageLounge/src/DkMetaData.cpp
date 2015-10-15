@@ -1326,9 +1326,14 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 	}
 	if (!xmpImg.get()) {
 		
+
+#ifdef EXV_UNICODE_PATH
 		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
 		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.utf16());
-		xmpFilePath.utf16();
+#else
+		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
+		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
+#endif
 
 		xmpImg->setMetadata(*mExifImg);
 		xmpImg->writeMetadata();	// we need that to add xmp afterwards - but why?
