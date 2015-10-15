@@ -306,7 +306,7 @@ int DkSkewEstimator::randInt(int low, int high) {
 
 QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int direction) {
 
-	vector<Vec4i> lines;
+	std::vector<Vec4i> lines;
 	QVector4D maxLine = QVector4D();
 	HoughLinesP(edgeMap, lines, 1, CV_PI/180, 50, minLineLength, 20 ); //params: rho resolution, theta resolution, threshold, min Line length, max line gap
 

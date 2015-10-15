@@ -121,7 +121,8 @@ QSharedPointer<DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString
 		else 
 			fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
-		fakeMiniaturesDialog->setImage(&imgC->image());
+    QImage img = imgC->image();
+		fakeMiniaturesDialog->setImage(&img);
 
 		bool done = fakeMiniaturesDialog->exec();
 

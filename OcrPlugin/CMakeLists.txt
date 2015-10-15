@@ -1,5 +1,5 @@
 
-PROJECT(pageExtractionPlugin)
+PROJECT(ocrPlugin)
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
@@ -9,8 +9,8 @@ ENDIF()
 include("../cmake/Utils.cmake")
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 0.1.0)
-set(PLUGIN_ID 4acb88c461024cb080ae5cd15d0ef0ec) #GUID without hyphens generated at http://www.guidgenerator.com/
+set(PLUGIN_VERSION 0.0.1)
+set(PLUGIN_ID 9791acc7e9654ff7888a9e857290956d) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")

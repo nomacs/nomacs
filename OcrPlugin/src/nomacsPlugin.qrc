@@ -1,0 +1,4 @@
+<RCC>
+    <qresource prefix="/OcrPlugin">
+    </qresource>
+</RCC>
