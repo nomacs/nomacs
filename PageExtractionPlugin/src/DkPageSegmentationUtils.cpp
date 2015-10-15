@@ -359,10 +359,10 @@ DkRotatingRect DkPolyRect::toRotatingRect() const {
 	yVec.rotate(-rect.angle*DK_DEG2RAD);
 
 	QPolygonF poly;
-	poly.append(DkVector(rect.center - xVec + yVec).getQPointF());
-	poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
-	poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
-	poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
+	poly.append(DkVector(rect.center - xVec + yVec).toQPointF());
+	poly.append(DkVector(rect.center + xVec + yVec).toQPointF());
+	poly.append(DkVector(rect.center + xVec - yVec).toQPointF());
+	poly.append(DkVector(rect.center - xVec - yVec).toQPointF());
 
 	DkRotatingRect rr;
 	rr.setPoly(poly);
@@ -419,7 +419,7 @@ QPolygonF DkPolyRect::toPolygon() const {
 	QPolygonF poly;
 
 	for (const DkVector& v : pts) {
-		poly.append(v.getQPointF());
+		poly.append(v.toQPointF());
 	}
 
 	return poly;

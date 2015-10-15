@@ -579,7 +579,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[1]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		QLineF l = QLineF(DkVector(p[1]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}
@@ -598,7 +598,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[3]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		QLineF l = QLineF(DkVector(p[3]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}

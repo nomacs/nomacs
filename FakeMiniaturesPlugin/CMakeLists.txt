@@ -26,8 +26,6 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
   # OpenCV
   NMC_FIND_OPENCV()
 endif()
-
-	          
 	
 include_directories (
 	${QT_INCLUDES}

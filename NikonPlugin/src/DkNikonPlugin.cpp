@@ -143,19 +143,17 @@ QString DkNikonPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QImage DkNikonPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainer> DkNikonPlugin::runPlugin(const QString &runID, const QSharedPointer<DkImageContainer> image) const {
 	
 	//for a viewport plugin runID and image are null
 	if (viewport) {
 
 		DkNikonViewPort* paintViewport = dynamic_cast<DkNikonViewPort*>(viewport);
 
-		QImage retImg = QImage();
 		//if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
-
 		viewport->setVisible(false);
 	
-		return retImg;
+		return image;
 	}
 	
 	return image;
@@ -241,10 +239,6 @@ void DkNikonPlugin::deleteViewPort() {
 	}
 
 }
-
-/* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkNikonPlugin/1.0", DkNikonPlugin)
-
 
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
 

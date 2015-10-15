@@ -29,10 +29,12 @@
 #include "DkViewPort.h"
 #include "DkMetaData.h"
 #include "DkCentralWidget.h"
+#include "DkImageLoader.h"
 
 #include <QFileDialog>
 #include <QImageWriter>
 #include <QVector2D>
+#include <QMouseEvent>
 
 namespace nmc {
 
@@ -144,19 +146,19 @@ QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
 * @param runID runID of the plugin 
 * @param image current image in the Nomacs viewport
 **/
-QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainer> DkDocAnalysisPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> image) const  {
 	
 	//for a viewport plugin runID and image are null
-	if (viewport) {
+	if (viewport && image) {
 
 		DkDocAnalysisViewPort* docAnalysisViewport = dynamic_cast<DkDocAnalysisViewPort*>(viewport);
 
-		QImage retImg = QImage();
-		if (!docAnalysisViewport->isCanceled()) retImg = docAnalysisViewport->getPaintedImage();
+		if (!docAnalysisViewport->isCanceled()) 
+			image->setImage(docAnalysisViewport->getPaintedImage());
 
 		viewport->setVisible(false);
 
-		return retImg;
+		return image;
 	}
 	
 	return image;
@@ -239,15 +241,13 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	saveNameAppendix.append(QString("_%1").arg(yCoord));
 
 	if (loader && loader->hasFile()) {
-		saveFile = loader->file();
+		saveFile = loader->filePath();
 		saveName = saveFile.fileName();
 
 		qDebug() << "saveName: " << saveName; //.toStdString();
 		
-		qDebug() << "save dir: " << loader->getSaveDir();
-
-		if (loader->getSaveDir() != saveFile.absoluteDir())
-			saveFile = QFileInfo(loader->getSaveDir(), saveName);
+		if (loader->getSavePath() != saveFile.absolutePath())
+			saveFile = QFileInfo(loader->getSavePath(), saveName);
 
 		int filterIdx = -1;
 
@@ -345,8 +345,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 			jpgDialog = new DkCompressDialog(nmcWin);
 
 		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
-
-		jpgDialog->setImage(&saveImage);
+		jpgDialog->setImage(saveImage);
 
 		if (!jpgDialog->exec())
 			return;
@@ -389,11 +388,6 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	//bool saved = sImg.save(filePath, 0, compression);
 	//qDebug() << "jpg compression: " << compression;
 }
-
-
-/* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkDocAnalysisPlugin/1.0", DkDocAnalysisPlugin)
-
 
 /*-----------------------------------DkDocAnalysisViewPort ---------------------------------------------*/
 
@@ -487,7 +481,7 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 			
 			if(viewport) {
 		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
+				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
 					
 					switch(editMode) {
 
@@ -505,10 +499,10 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 						} else {
 							this->setCursor(Qt::CrossCursor);
 						}
-						//imgPos = worldMatrix.inverted().map(event->pos());
-						//imgPos = imgMatrix.inverted().map(imgPos);
+						//imgPos = mWorldMatrix.inverted().map(event->pos());
+						//imgPos = mImgMatrix.inverted().map(imgPos);
 						QPointF imgPos;
-						imgPos = mapToImage(event->posF());
+						imgPos = mapToImage(event->pos());
 						distance->setCurPoint(imgPos.toPoint());
 						update();
 						break;
@@ -552,7 +546,7 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	QPointF imgPos;
 	QPoint xy;
-	imgPos = mapToImage(event->posF());
+	imgPos = mapToImage(event->pos());
 	xy = imgPos.toPoint();
 
 	if(parent()) {
@@ -565,8 +559,8 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 				switch(editMode) {
 
 				case mode_pickSeedpoint:
-					//imgPos = worldMatrix.inverted().map(event->pos());
-					//imgPos = imgMatrix.inverted().map(imgPos);
+					//imgPos = mWorldMatrix.inverted().map(event->pos());
+					//imgPos = mImgMatrix.inverted().map(imgPos);
 					
 					if (event->button() == Qt::LeftButton)
 						if(!magicCut->magicwand(xy)) {
@@ -724,8 +718,8 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 	
 	QPainter painter(this);
 	
-	if (worldMatrix)
-		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
+	if (mWorldMatrix)
+		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
 	if(parent()) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
@@ -807,10 +801,10 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	}
 
 	QPoint point = distance->getStartPoint();
-	point = imgMatrix->map(point);
+	point = mImgMatrix->map(point);
 	
 	// special handling of drawing cross - to avoid zooming of cross lines
-	QPointF startPointMapped = worldMatrix->map(point);
+	QPointF startPointMapped = mWorldMatrix->map(point);
 	QPointF crossTransP1 = startPointMapped;
 	crossTransP1.setY(crossTransP1.y() + 7);
 	QPointF crossTransP2 = startPointMapped;
@@ -831,7 +825,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	// draw the text containing the current distance
 
 	QPoint point_end = distance->getCurPoint();
-	point_end = imgMatrix->map(point_end);
+	point_end = mImgMatrix->map(point_end);
 
 	QString dist_text = QString::number(distance->getDistanceInCm(), 'f', 2) + " cm";
 	QPoint pos_text = QPoint(point_end.x(), point_end.y());
@@ -843,7 +837,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 
 	QFontMetricsF fm(font);
 	QRectF rect = fm.boundingRect(dist_text);
-	QPointF transP = worldMatrix->map(pos_text);
+	QPointF transP = mWorldMatrix->map(pos_text);
 
 	if (point_end.x() < point.x())
 		transP.setX(transP.x());
@@ -860,10 +854,10 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	painter->setWorldMatrixEnabled(true);
 
 	point = distance->getCurPoint();
-	point = imgMatrix->map(point);
+	point = mImgMatrix->map(point);
 
 	// special handling of drawing cross - to avoid zooming of cross lines
-	QPointF endPointMapped = worldMatrix->map(point);
+	QPointF endPointMapped = mWorldMatrix->map(point);
 	crossTransP1 = endPointMapped;
 	crossTransP1.setY(crossTransP1.y() + 7);
 	crossTransP2 = endPointMapped;
@@ -884,7 +878,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 
 	/*if(distance->hastStartAndEndPoint()) {
 		point = distance->getEndPoint();
-		point = imgMatrix.map(point);
+		point = mImgMatrix.map(point);
 		painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
 		painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
 	}*/
@@ -957,7 +951,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	if (!image.isNull()) {
 		cv::Mat img = DkImage::qImage2Mat(image);
 		// set image for magic cut
-		magicCut->setImage(img, imgMatrix);
+		magicCut->setImage(img, mImgMatrix);
 		// disable the save region button
 		emit enableSaveCutSignal(false);
 		// the line detection part
