@@ -1024,7 +1024,7 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 	QString selectedFilter;
-	QString saveName;
+	QString saveName = fileName();
 	QFileInfo saveFileInfo;
 
 	if (hasFile()) {
@@ -1094,7 +1094,6 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		}
 	}
 
-	// TODO: if more than one file is opened -> open new threads
 	QFileInfo sFile = QFileInfo(fileName);
 	int compression = -1;	// default value
 
