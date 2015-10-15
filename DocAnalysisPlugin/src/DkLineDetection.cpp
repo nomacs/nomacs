@@ -302,8 +302,8 @@ void DkLineDetection::startLineDetection() {
 		// find the local minima for each projection profile
 		findLocalMinima();
 
-		/*cv::namedWindow( "lower text lines", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-		cv::imshow( "lower text lines", lowerTextLines);*/
+		/*cv::namedWindow( "Step 2: local minima and non-extrema", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "Step 2: local minima and non-extrema", lowerTextLines);*/
 
 		// make lines a little thicker (for better visualisation)
 		cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
@@ -321,19 +321,23 @@ void DkLineDetection::startLineDetection() {
 
 	// optimize the line image (clear borders)
 	if (params.optimizeImage) {
-		const clock_t begin_time = clock();
+		//const clock_t begin_time = clock();
 		
 		lowerTextLines = basicLowerTextLines.clone();
 		upperTextLines = basicUpperTextLines.clone();
 		// optimize the text line images
 		optimizeLineImg(&image, &lowerTextLines, &upperTextLines);
 
-		std::cout << "Duration for optimization: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
+		//std::cout << "Duration for optimization: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
 
 	}
 
 	// create a Qt image with transparency
 	createTextLineImages();
+
+	/*cv::namedWindow( "Step 3: Optimization", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+	cv::imshow( "Step 3: Optimization", lowerTextLines);*/
+
 
 	// check if lines have been found
 	double maxValLower, maxValUpper;
@@ -409,7 +413,7 @@ void DkLineDetection::findLocalMinima() {
 	cv::Mat histogram, extrHist, maxima, minima;
 	cv::Mat diffkernel = (cv::Mat_<double>(2,1) << -1, 1);
 	cv::Mat sxkernel = (cv::Mat_<double>(2,1) << 1, -1);
-
+	/*
 	if (debug)
 			debugOutputMat(&diffkernel, "diffkernel");
 
@@ -460,28 +464,13 @@ void DkLineDetection::findLocalMinima() {
 
 	// now find local maxima and minima
 	maxima = extrHist > 0;
-	minima = extrHist < 0;
+	minima = extrHist < 0;*/
 
-	if (debug) {
-			debugOutputMat(&maxima, "maxima");
-			//cv::namedWindow( "filtered with sx kernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			//cv::imshow( "filtered with sx kernel", extrHist);
-	}
 
-	if (debug) {
-			debugOutputMat(&minima, "minima");
+	//cv::Mat lower, upper;
+	//const clock_t begin_time_n = clock();
 
-			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
-			// in order to display debug output - you can either draw them in the viewport or save these images
-			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
-
-			//cv::namedWindow( "minima", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			//cv::imshow( "minima", minima);
-	}
-
-	cv::Mat lower, upper;
-	const clock_t begin_time_n = clock();
-
+	/*
 	//if (true) {
 		nonExtremaSuppression2D(&filtered, &maxima, &minima);
 		minima.copyTo(lowerTextLines);
@@ -492,7 +481,7 @@ void DkLineDetection::findLocalMinima() {
 	std::cout << "Duration for 2D approach: " << float( clock () - begin_time_n ) /  CLOCKS_PER_SEC << std::endl;
 
 	const clock_t begin_time_o = clock();
-	//} else { // old 1d approach
+	//} else { // old 1d approach*/
 	for(int i=0; i<filtered.cols; i++) {
 		
 		// compute extrema in "histogram"
@@ -516,7 +505,7 @@ void DkLineDetection::findLocalMinima() {
 		maxima.copyTo(upperTextLines.col(i));
 
 	}
-	std::cout << "Duration for 1D approach: " <<  float( clock () - begin_time_o ) /  CLOCKS_PER_SEC << std::endl;
+	//std::cout << "Duration for 1D approach: " <<  float( clock () - begin_time_o ) /  CLOCKS_PER_SEC << std::endl;
 
 	//	}
 	//bool equal = compareMat(lower, lowerTextLines, "diff lower");
@@ -759,8 +748,6 @@ void DkLineDetection::nonExtremaSuppression(cv::Mat *histogram, cv::Mat *maxima,
 	cv::Mat max_indices, min_indices;
 	max_indices = *maxima > 0;
     min_indices = *minima > 0; 
-	//cv::findNonZero(*maxima, max_indices);
-	//cv::findNonZero(*minima, min_indices);
 	
 	for(int i=0; i<max_indices.rows-1; i++) {
 
@@ -880,26 +867,31 @@ void DkLineDetection::optimizeLineImg(cv::Mat *segLineImg,cv::Mat *lowertextLine
 	lowertextLineImg->convertTo(*lowertextLineImg, CV_32FC1, 1.0f/255.0f);
 	uppertextLineImg->convertTo(*uppertextLineImg, CV_32FC1, 1.0f/255.0f);
 
-	cv::Mat mixed;
-	if(params.sobelFilterX && params.sobelFilterY) {
-		mixed = filtered_gradY.mul(filtered_gradX);
-	} else if (params.sobelFilterX) {
-		mixed = filtered_gradX;
-	} else {
-		mixed = filtered_gradY;
+	
+	if (params.sobelFilterX || params.sobelFilterY) {
+		cv::Mat mixed;
+		if(params.sobelFilterX && params.sobelFilterY) {
+			mixed = filtered_gradY.mul(filtered_gradX);
+		} else if (params.sobelFilterX) {
+			mixed = filtered_gradX;
+		} else {
+			mixed = filtered_gradY;
+		}
+
+		/*
+		cv::namedWindow( "otsu mixed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "otsu mixed", mixed);
+		*/
+		cv::morphologyEx(mixed, mixed, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20,20/*15, 15*/)));
+		/*
+		cv::namedWindow( "otsu mixed closed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "otsu mixed closed", mixed);
+		*/
+		*lowertextLineImg = lowertextLineImg->mul(mixed);
+		*uppertextLineImg = uppertextLineImg->mul(mixed);
 	}
 
-	/*
-	cv::namedWindow( "otsu mixed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-	cv::imshow( "otsu mixed", mixed);
-	*/
-	cv::morphologyEx(mixed, mixed, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20,20/*15, 15*/)));
-	/*
-	cv::namedWindow( "otsu mixed closed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-	cv::imshow( "otsu mixed closed", mixed);
-	*/
-	*lowertextLineImg = lowertextLineImg->mul(mixed);
-	*uppertextLineImg = uppertextLineImg->mul(mixed);
+	
 
 	/*cv::namedWindow( "before removing short text lines lower", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 	cv::imshow( "before removing short text lines lower", *lowertextLineImg);
@@ -1098,11 +1090,12 @@ cv::Mat DkLineDetection::convolveIntegralImage(const cv::Mat src, const int kern
 * creates a new instance of the dialog responsible for setting up and executing the line detection
 * calculations
 **/
-DkLineDetectionDialog::DkLineDetectionDialog(DkLineDetection *lineDetector, QWidget* parent, 
-											 Qt::WindowFlags flags) : QDialog(parent, flags) {
+DkLineDetectionDialog::DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<DkMetaDataT> metaData,
+											 QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	this->lineDetector = lineDetector;
 	this->margin = 10;
+	this->metaData = metaData;
 	init();
 }
 
@@ -1133,13 +1126,31 @@ void DkLineDetectionDialog::createLayout() {
 	QWidget *centralWidget = new QWidget(this);
 	QGridLayout* centralWidgetGridLayout = new QGridLayout(centralWidget);
 
-	QLabel *labelStripeLength = new QLabel(tr("Word length (in Pixel):"), centralWidget);
+	QLabel *labelStripeLength = new QLabel(tr("Word length in Pixel:"), centralWidget);
 	labelStripeLength->move(margin, margin);
 	spinnerStripeLength = new QSpinBox(centralWidget);
 	spinnerStripeLength->setMinimumWidth(50);
 
-	QLabel *labelNonExtKernelSize = new QLabel(tr("Line height (in Pixel):"), centralWidget);	
+	connect(spinnerStripeLength, SIGNAL(valueChanged(int)), this, SLOT(stripeLengthSliderValChanged(int)));
+
+	QLabel *labelStripeLengthCM = new QLabel(tr("                       or cm:"), centralWidget);
+	labelStripeLengthCM->move(margin, margin);
+	spinnerStripeLengthCM = new QDoubleSpinBox(centralWidget);
+	spinnerStripeLengthCM->setMinimumWidth(50);
+	spinnerStripeLengthCM->setSingleStep(0.1);
+
+	connect(spinnerStripeLengthCM, SIGNAL(valueChanged(double)), this, SLOT(stripeLengthSliderValChangedCM(double)));
+
+	QLabel *labelNonExtKernelSize = new QLabel(tr("Line height in Pixel:"), centralWidget);	
 	spinnerNonExtKernelSize = new QSpinBox(centralWidget);
+
+	connect(spinnerNonExtKernelSize, SIGNAL(valueChanged(int)), this, SLOT(lineHeightSliderValChanged(int)));
+
+	QLabel *labelNonExtKernelSizeCM = new QLabel(tr("                     or cm:"), centralWidget);	
+	spinnerNonExtKernelSizeCM = new QDoubleSpinBox(centralWidget);
+	spinnerNonExtKernelSizeCM->setSingleStep(0.1);
+
+	connect(spinnerNonExtKernelSizeCM, SIGNAL(valueChanged(double)), this, SLOT(lineHeightSliderValChangedCM(double)));
 
 	QLabel *labelOptimize = new QLabel(tr("Optimize line image:"), centralWidget);
 	labelOptimize->setToolTip("Optimizes the line image by removing noise on the borders");
@@ -1174,22 +1185,26 @@ void DkLineDetectionDialog::createLayout() {
 
 	centralWidgetGridLayout->addWidget(labelStripeLength, 1, 1);
 	centralWidgetGridLayout->addWidget(spinnerStripeLength, 1, 2);
-	centralWidgetGridLayout->addWidget(labelNonExtKernelSize, 2, 1);
-	centralWidgetGridLayout->addWidget(spinnerNonExtKernelSize, 2, 2);
-	centralWidgetGridLayout->addWidget(labelOptimize, 3, 1);
-	centralWidgetGridLayout->addWidget(checkOptimize, 3, 2);
-	centralWidgetGridLayout->addWidget(labelSobelFilterX, 4, 1);
-	centralWidgetGridLayout->addWidget(checkSobelX, 4, 2);
-	centralWidgetGridLayout->addWidget(labelSobelFilterY, 5, 1);
-	centralWidgetGridLayout->addWidget(checkSobelY, 5, 2);
-	centralWidgetGridLayout->addWidget(labelSobelFilterSize, 6, 1);
-	centralWidgetGridLayout->addWidget(comboBoxSobelSize, 6, 2);
-	centralWidgetGridLayout->addWidget(labelFilterSizeX, 7, 1);
-	centralWidgetGridLayout->addWidget(spinnerFilterSizeX, 7, 2);
-	centralWidgetGridLayout->addWidget(labelFilterSizeY, 8, 1);
-	centralWidgetGridLayout->addWidget(spinnerFilterSizeY, 8, 2);
-	centralWidgetGridLayout->addWidget(labelRemoveShort, 9, 1);
-	centralWidgetGridLayout->addWidget(checkRemoveShort, 9, 2);
+	centralWidgetGridLayout->addWidget(labelStripeLengthCM, 2, 1);
+	centralWidgetGridLayout->addWidget(spinnerStripeLengthCM, 2, 2);
+	centralWidgetGridLayout->addWidget(labelNonExtKernelSize, 3, 1);
+	centralWidgetGridLayout->addWidget(spinnerNonExtKernelSize, 3, 2);
+	centralWidgetGridLayout->addWidget(labelNonExtKernelSizeCM, 4, 1);
+	centralWidgetGridLayout->addWidget(spinnerNonExtKernelSizeCM, 4, 2);
+	centralWidgetGridLayout->addWidget(labelOptimize, 5, 1);
+	centralWidgetGridLayout->addWidget(checkOptimize, 5, 2);
+	centralWidgetGridLayout->addWidget(labelSobelFilterX, 6, 1);
+	centralWidgetGridLayout->addWidget(checkSobelX, 6, 2);
+	centralWidgetGridLayout->addWidget(labelSobelFilterY, 7, 1);
+	centralWidgetGridLayout->addWidget(checkSobelY, 7, 2);
+	centralWidgetGridLayout->addWidget(labelSobelFilterSize, 8, 1);
+	centralWidgetGridLayout->addWidget(comboBoxSobelSize, 8, 2);
+	centralWidgetGridLayout->addWidget(labelFilterSizeX, 9, 1);
+	centralWidgetGridLayout->addWidget(spinnerFilterSizeX, 9, 2);
+	centralWidgetGridLayout->addWidget(labelFilterSizeY, 10, 1);
+	centralWidgetGridLayout->addWidget(spinnerFilterSizeY, 10, 2);
+	centralWidgetGridLayout->addWidget(labelRemoveShort, 11, 1);
+	centralWidgetGridLayout->addWidget(checkRemoveShort, 11, 2);
 	/*centralWidgetGridLayout->addWidget(labelRescale, 6, 1);
 	centralWidgetGridLayout->addWidget(spinnerRescale, 6, 2);*/
 	
@@ -1303,6 +1318,11 @@ void DkLineDetectionDialog::setDefaultConfiguration() {
 	spinnerRescale->setValue(defaultRescale);*/
 }
 
+void DkLineDetectionDialog::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
+
+	this->metaData = metaData;
+}
+
 /**
 * Closes the dialog.
 **/
@@ -1360,6 +1380,112 @@ void DkLineDetectionDialog::detectLinesPressed() {
 	}
 	// finished - now close dialog
 	this->close();
+}
+
+/**
+* Receives the changed value of the spinner which is the strip length in pixel,
+* converts them to cm and sets the other slider to this value
+**/
+void DkLineDetectionDialog::stripeLengthSliderValChanged(int val) {
+	if (changingStripeSlider) {
+		changingStripeSlider = false;
+		return;
+	}
+	changingStripeSlider = true;
+	// get the image resolution for distance calculation
+	float x_res = 72;		// markus: 72 dpi is the default value assumed
+
+	// >DIR: get metadata resolution if available [21.10.2014 markus]
+	if (metaData) {
+		QVector2D res = metaData->getResolution();
+		x_res = res.x();
+	}
+	// convert into cm and put into corresponding spinner
+	float length_inch;
+
+	length_inch = val / x_res;
+
+	float length_cm = length_inch * 2.54;
+	spinnerStripeLengthCM->setValue(length_cm);
+}
+
+/**
+* Receives the changed value of the spinner which is the strip length in cm,
+* converts them to pixel and sets the other slider to this value
+**/
+void DkLineDetectionDialog::stripeLengthSliderValChangedCM(double val) {
+	if (changingStripeSlider) {
+		changingStripeSlider = false;
+		return;
+	}
+	changingStripeSlider = true;
+	// get the image resolution for distance calculation
+	float x_res = 72;		// markus: 72 dpi is the default value assumed
+
+	// >DIR: get metadata resolution if available [21.10.2014 markus]
+	if (metaData) {
+		QVector2D res = metaData->getResolution();
+		x_res = res.x();
+	}
+	// convert into cm and put into corresponding spinner
+	float length_pixel;
+
+	length_pixel = (val/2.54) * x_res;
+
+	spinnerStripeLength->setValue(length_pixel);
+}
+
+/**
+* Receives the changed value of the spinner which is the strip length in pixel,
+* converts them to cm and sets the other slider to this value
+**/
+void DkLineDetectionDialog::lineHeightSliderValChanged(int val) {
+	if (changingLineHeightSlider) {
+		changingLineHeightSlider = false;
+		return;
+	}
+	changingLineHeightSlider = true;
+	// get the image resolution for distance calculation
+	float y_res = 72;		// markus: 72 dpi is the default value assumed
+
+	// >DIR: get metadata resolution if available [21.10.2014 markus]
+	if (metaData) {
+		QVector2D res = metaData->getResolution();
+		y_res = res.y();
+	}
+	// convert into cm and put into corresponding spinner
+	float length_inch;
+
+	length_inch = val / y_res;
+
+	float length_cm = length_inch * 2.54;
+	spinnerNonExtKernelSizeCM->setValue(length_cm);
+}
+
+/**
+* Receives the changed value of the spinner which is the strip length in cm,
+* converts them to pixel and sets the other slider to this value
+**/
+void DkLineDetectionDialog::lineHeightSliderValChangedCM(double val) {
+	if (changingLineHeightSlider) {
+		changingLineHeightSlider = false;
+		return;
+	}
+	changingLineHeightSlider = true;
+	// get the image resolution for distance calculation
+	float y_res = 72;		// markus: 72 dpi is the default value assumed
+
+	// >DIR: get metadata resolution if available [21.10.2014 markus]
+	if (metaData) {
+		QVector2D res = metaData->getResolution();
+		y_res = res.y();
+	}
+	// convert into cm and put into corresponding spinner
+	float length_pixel;
+
+	length_pixel = (val/2.54) * y_res;
+
+	spinnerNonExtKernelSize->setValue(length_pixel);
 }
 
 

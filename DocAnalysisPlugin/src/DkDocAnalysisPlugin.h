@@ -150,6 +150,7 @@ public slots:
 	void setMagicCutTolerance(int tol);
 	void pickResetRegionPoint(bool pick);
 	void clearMagicCut();
+	void undoSelection();
 	void openMagicCutDialog();
 	//// animation of contours
 	void updateAnimatedContours();
@@ -219,7 +220,7 @@ private:
 	// line detection variables
 	DkLineDetection *lineDetection; /**< Tool for detecting text lines within an image **/
 	DkLineDetectionDialog *lineDetectionDialog;
-
+	QSharedPointer<DkMetaDataT> metadata;
 };
 
 
@@ -240,6 +241,7 @@ public:
 		clearselection_icon,
 		clearsingleselection_icon,
 		cancel_icon,
+		undoselection_icon,
 
 		icons_end,
 	};
@@ -255,6 +257,7 @@ public:
 		clearselection_action,
 		clearsingleselection_action,
 		cancelplugin_action,
+		undoselection_action,
 
 		actions_end,
 	};
@@ -280,6 +283,7 @@ public slots:
 	void on_cancelpluginAction_triggered();
 	void on_clearsingleselectionAction_toggled(bool checked);
 	void on_toleranceBox_valueChanged(int val);
+	void on_undoselectionAction_triggered();
 
 	// slots for signals coming from the view port
 	void pickSeedpointCanceled();
@@ -298,6 +302,7 @@ signals:
 	void pickSeedpointRequest(bool);  /**< Signal to either start or cancel the magic cut selection tool **/
 	void clearSingleSelectionRequest(bool); /**<Signal to either start or cancel the clear a single region of the magic cut selections **/
 	void clearSelectionSignal(); /**< Signal to declare that the current selection shall be resetted **/
+	void undoSelectionSignal(); /**< Signal to notify that the last selected region should be resetted **/
 	void toleranceChanged(int); /**< Signal to signal if the tolerance setting has been changed **/
 	void measureDistanceRequest(bool); /**< Signal to either start or cancel the distance measure tool **/
 	void openCutDialogSignal(); /**< Signal to open the save magic cut dialog **/

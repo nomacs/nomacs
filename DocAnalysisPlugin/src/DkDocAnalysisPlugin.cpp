@@ -437,6 +437,7 @@ void DkDocAnalysisViewPort::init() {
 	connect(docAnalysisToolbar, SIGNAL(measureDistanceRequest(bool)), this, SLOT(pickDistancePoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(clearSelectionSignal()), this, SLOT(clearMagicCut()));
+	connect(docAnalysisToolbar, SIGNAL(undoSelectionSignal()), this, SLOT(undoSelection()));
 	connect(docAnalysisToolbar, SIGNAL(toleranceChanged(int)), this, SLOT(setMagicCutTolerance(int)));
 	connect(docAnalysisToolbar, SIGNAL(openCutDialogSignal()), this, SLOT(openMagicCutDialog()));
 	connect(docAnalysisToolbar, SIGNAL(detectLinesSignal()), this, SLOT(openLineDetectionDialog()));
@@ -905,7 +906,6 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	this->win = win;
 	brightnessThreshold = 0.3;
 
-	QSharedPointer<DkMetaDataT> metadata;
 	QImage image;
 	// >DIR: OK, let's get the current image metadata [21.10.2014 markus]
 	// all ifs are to be 100% save : )
@@ -958,6 +958,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 		lineDetection->setImage(img);
 		if(lineDetectionDialog) {
 			lineDetectionDialog->setDefaultConfiguration();
+			lineDetectionDialog->setMetaData(metadata);
 		}
 		// disable the display text lines button
 		showBottomTextLines(false);
@@ -1152,6 +1153,13 @@ void DkDocAnalysisViewPort::setMagicCutTolerance(int tol) {
 	magicCut->setTolerance(tol);
 }
 
+void DkDocAnalysisViewPort::undoSelection() {
+	bool hasmore = magicCut->undoSelection();
+	if (!hasmore) {
+		emit enableSaveCutSignal(false);
+	}
+}
+
 /**
 * Clears all selected regions and resets the region mask in the magic cut tool.
 * \sa DkMagicCut::resetRegionMask()
@@ -1206,7 +1214,7 @@ void DkDocAnalysisViewPort::openLineDetectionDialog() {
 	if (viewport->getImage().isNull()) return;
 
 	if (!lineDetectionDialog) {
-		lineDetectionDialog = new DkLineDetectionDialog(lineDetection, this, 0);
+		lineDetectionDialog = new DkLineDetectionDialog(lineDetection, metadata, this, 0);
 		//connect(magicCutDialog, SIGNAL(savePressed(QImage, QString)), this, SLOT(saveMagicCutPressed(QImage, QString)));
 	}
 
@@ -1329,6 +1337,7 @@ void DkDocAnalysisToolBar::createIcons() {
 	icons[clearselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut.png");
 	icons[clearsingleselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut_single.png");
 	icons[cancel_icon] = QIcon(":/nomacsPluginDocAnalysis/img/cancel.png");
+	icons[undoselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/selection_undo.png");
 
 
 	if (!DkSettings::display.defaultIconColor) {
@@ -1404,6 +1413,16 @@ void DkDocAnalysisToolBar::createLayout() {
 	savecutAction->setObjectName("savecutAction");
 	actions[savecut_action] = savecutAction;
 
+	QAction* undoselectionAction = new QAction(icons[undoselection_icon], tr("Clear previous selected region"), this);
+	undoselectionAction->setShortcut(Qt::CTRL + Qt::Key_Z);
+	undoselectionAction->setStatusTip(tr("Clears the previously selected region"));
+	undoselectionAction->setCheckable(false);
+	undoselectionAction->setChecked(false);
+	undoselectionAction->setEnabled(false);
+	undoselectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	undoselectionAction->setObjectName("undoselectionAction");
+	actions[undoselection_action] = undoselectionAction;
+
 	QAction* clearsingleselectionAction = new QAction(icons[clearsingleselection_icon], tr("Clear selection of a single region"), this);
 	clearsingleselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
 	clearsingleselectionAction->setStatusTip(tr("Select selected region to cleared"));
@@ -1454,6 +1473,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	addSeparator();
 	addAction(magicAction);
 	addAction(savecutAction);
+	addAction(undoselectionAction);
 	addAction(clearsingleselectionAction);
 	addAction(clearselectionAction);
 	addWidget(lbl_tolerance);
@@ -1534,6 +1554,15 @@ void DkDocAnalysisToolBar::on_savecutAction_triggered() {
 **/
 void DkDocAnalysisToolBar::on_clearsingleselectionAction_toggled(bool checked) {
 	emit clearSingleSelectionRequest(actions[clearsingleselection_action]->isChecked());
+}
+
+/**
+* Called when the undo previously selected region icon is clicked.
+* Emits a signal to reset the last selected region (in any)
+* \sa undoSelectionSignal() DkMagicCut
+**/
+void DkDocAnalysisToolBar::on_undoselectionAction_triggered() {
+	emit undoSelectionSignal();
 }
 
 /**
@@ -1620,6 +1649,7 @@ void DkDocAnalysisToolBar::enableButtonSaveCut(bool enable) {
 	// also enable the clear selection, since something has been selected
 	actions[clearselection_action]->setEnabled(enable);
 	actions[clearsingleselection_action]->setEnabled(enable);
+	actions[undoselection_action]->setEnabled(enable);
 }
 
 /**
