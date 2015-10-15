@@ -89,6 +89,7 @@
 #include <QMimeData>
 #include <QNetworkProxyFactory>
 #include <QInputDialog>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
