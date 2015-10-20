@@ -365,6 +365,8 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 	
 	bool imgLoaded = false;
 
+	DkTimer dt;
+
 	try {
 
 		// try to get preview image from exiv2
@@ -396,7 +398,8 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 		int error = LIBRAW_DATA_ERROR;
 
 		//use iprocessor from libraw to read the data
-		if (!ba || ba->isEmpty()) {
+		// OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
+		if (QFileInfo(filePath).suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
 			error = iProcessor.open_file(filePath.toStdString().c_str());
 		}
 		else {
@@ -507,7 +510,8 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 
 		//qDebug() << "----------------";
 
-		if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
+		if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) 
+			throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
 
 		// 1. read raw image and normalize it according to dynamic range and black point
 		
@@ -750,6 +754,9 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 		//// silently ignore, maybe it's not a raw image
 		//qWarning() << "failed to load raw image...";
 	}
+
+	if (imgLoaded) 
+		qDebug() << "[RAW] image loaded from RAW in: " << dt.getTotal();
 
 	return imgLoaded;
 }
