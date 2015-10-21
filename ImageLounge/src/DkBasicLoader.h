@@ -78,10 +78,10 @@ class DllExport DkZipContainer {
 public:
 	DkZipContainer(const QString& fileName);
 
-	bool isZip();
-	QString getZipFileInfo();
-	QString getImageFileInfo();
-	QString getEncodedFileInfo();
+	bool isZip() const;
+	QString getZipFilePath() const;
+	QString getImageFileName() const;
+	QString getEncodedFilePath() const;
 	static QString zipMarker();
 	static QSharedPointer<QByteArray> extractImage(const QString& zipFile, const QString& imageFile);
 	static void extractImage(const QString& zipFile, const QString& imageFile, QByteArray& ba);
@@ -90,9 +90,9 @@ public:
 	static QString encodeZipFile(const QString& zipFile, const QString& imageFile);
 
 protected:
-	QString mEncodedFileInfo;
-	QString mZipFileInfo;
-	QString mImageFileInfo;
+	QString mEncodedFilePath;
+	QString mZipFilePath;
+	QString mImageFileName;
 	bool mImageInZip;
 	static QString mZipMarker;
 };

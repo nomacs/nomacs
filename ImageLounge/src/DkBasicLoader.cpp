@@ -1713,13 +1713,13 @@ QUrl FileDownloader::getUrl() const {
 #ifdef WITH_QUAZIP
 
 // DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QString& fileName) {
+DkZipContainer::DkZipContainer(const QString& encodedFilePath) {
 
-	if(fileName.contains(mZipMarker)) {
+	if(encodedFilePath.contains(mZipMarker)) {
 		mImageInZip = true;
-		mEncodedFileInfo = fileName;
-		mZipFileInfo = decodeZipFile(fileName);
-		mImageFileInfo = decodeImageFile(fileName);
+		mEncodedFilePath = encodedFilePath;
+		mZipFilePath = decodeZipFile(encodedFilePath);
+		mImageFileName = decodeImageFile(encodedFilePath);
 	}
 	else
 		mImageInZip = false;
@@ -1738,16 +1738,14 @@ QString DkZipContainer::encodeZipFile(const QString& zipFile, const QString& ima
 
 QString DkZipContainer::decodeZipFile(const QString& encodedFileInfo) {
 
-	QString encodedDir = QFileInfo(encodedFileInfo).dir().path();
+	QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
 
 	return encodedDir.left(encodedDir.indexOf(mZipMarker));
 }
 
 QString DkZipContainer::decodeImageFile(const QString& encodedFileInfo) {
 
-	QString encodedDir = QFileInfo(encodedFileInfo).dir().path();
-
-	return encodedDir.right(encodedDir.size() - encodedDir.indexOf(mZipMarker) - QString(mZipMarker).size()).replace(mZipMarker,"/") + QFileInfo(encodedFileInfo).fileName();
+	return QFileInfo(encodedFileInfo).fileName();
 }
 
 QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile) {
@@ -1787,24 +1785,24 @@ void DkZipContainer::extractImage(const QString& zipFile, const QString& imageFi
 
 }
 
-bool DkZipContainer::isZip() {
+bool DkZipContainer::isZip() const {
 
 	return mImageInZip;
 }
 
-QString DkZipContainer::getZipFileInfo() {
+QString DkZipContainer::getZipFilePath() const {
 
-	return mZipFileInfo;
+	return mZipFilePath;
 }
 
-QString DkZipContainer::getImageFileInfo() {
+QString DkZipContainer::getImageFileName() const {
 
-	return mImageFileInfo;
+	return mImageFileName;
 }
 
-QString DkZipContainer::getEncodedFileInfo() {
+QString DkZipContainer::getEncodedFilePath() const {
 
-	return mEncodedFileInfo;
+	return mEncodedFilePath;
 }
 
 QString DkZipContainer::zipMarker() {

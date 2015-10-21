@@ -118,8 +118,10 @@ DkImageLoader::DkImageLoader(const QString& filePath) {
 
 	//saveDir = DkSettings::global.lastSaveDir;	// loading save dir is obsolete ?!
 	 
-	if (QFileInfo(filePath).exists())
-		loadDir(filePath);
+	QFileInfo fInfo(filePath);
+
+	if (fInfo.exists())
+		loadDir(fInfo.absolutePath());
 	else
 		mCurrentDir = DkSettings::global.lastDir;
 }
@@ -195,6 +197,8 @@ bool DkImageLoader::loadZipArchive(const QString& zipPath) {
 	emit updateDirSignal(mImages);
 	mCurrentDir = zipInfo.absolutePath();
 
+	qDebug() << "ZIP FOLDER set: " << mCurrentDir;
+
 	return true;
 }
 #endif
@@ -261,16 +265,16 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 		// ok new folder, this should speed-up loading
 		mImages.clear();
 		
-		// TODO: creating ~120 000 images takes about 2 secs
-		// but sorting (just filenames) takes ages (on windows)
-		// so we should fix this using 2 strategies: 
-		// - thread the image creation process
-		// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
-		if (files.size() > 2000) {
-			createImages(files, false);
-			sortImagesThreaded(mImages);
-		}
-		else
+		//// TODO: creating ~120 000 images takes about 2 secs
+		//// but sorting (just filenames) takes ages (on windows)
+		//// so we should fix this using 2 strategies: 
+		//// - thread the image creation process
+		//// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
+		//if (files.size() > 2000) {
+		//	createImages(files, false);
+		//	sortImagesThreaded(mImages);
+		//}
+		//else
 			createImages(files, true);
 
 		qDebug() << "new folder path: " << newDirPath << " contains: " << mImages.size() << " images";
@@ -410,7 +414,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	//	qDebug() << "old dir: " << dir.absolutePath();
 	
 	if (!recursive)
-		loadDir(mCurrentImage->filePath(), false);
+		loadDir(mCurrentImage->dirPath(), false);
 
 	// locate the current file
 	int newFileIdx = 0;
@@ -576,7 +580,7 @@ void DkImageLoader::loadFileAt(int idx) {
 	QDir cDir(mCurrentDir);
 
 	if (mCurrentImage && !cDir.exists())
-		loadDir(mCurrentImage->filePath());
+		loadDir(mCurrentImage->dirPath());
 
 	if(mImages.empty())
 		return;
@@ -758,13 +762,17 @@ void DkImageLoader::activate(bool isActive /* = true */) {
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
+	if (mCurrentImage && newImg && mCurrentImage->isFromZip() && !newImg->isFromZip())
+		mFolderUpdated = true;
+
 	if (signalsBlocked()) {
 		mCurrentImage = newImg;
 		return;
 	}
 
+
 	if (newImg)
-		loadDir(newImg->filePath());
+		loadDir(newImg->dirPath());
 	else
 		qDebug() << "empty image assigned";
 	
@@ -823,7 +831,7 @@ void DkImageLoader::reloadImage() {
 	mImages.clear();
 	mCurrentImage->clear();
 	setCurrentImage(mCurrentImage);
-	loadDir(mCurrentImage->fileInfo().absolutePath());
+	loadDir(mCurrentImage->dirPath());
 	load(mCurrentImage);
 }
 
@@ -1231,7 +1239,7 @@ void DkImageLoader::imageSaved(const QString& filePath, bool saved) {
 		return;
 
 	mFolderUpdated = true;
-	loadDir(filePath);
+	loadDir(mCurrentImage->dirPath());
 
 	emit imageLoadedSignal(mCurrentImage, true);
 	emit imageUpdatedSignal(mCurrentImage);
