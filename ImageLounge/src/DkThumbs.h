@@ -138,10 +138,6 @@ public:
 		return mMinThumbSize;
 	};
 	
-	void setRescale(bool rescale) {
-		mRescale = rescale;
-	};
-
 	/**
 	 * Manipulates the file loaded status.
 	 * @param exists a status (loaded | not loaded | exists not)
@@ -159,8 +155,7 @@ public:
 	};
 
 protected:
-	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
-	QColor computeColorIntern();
+	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize);
 
 	QImage mImg;
 	QString mFile;
@@ -168,8 +163,6 @@ protected:
 	bool mImgExists;
 	int mMaxThumbSize;
 	int mMinThumbSize;
-	bool mRescale;
-	bool mColorExists;
 };
 
 class DkThumbNailT : public QObject, public DkThumbNail {
@@ -205,7 +198,7 @@ protected slots:
 	void thumbLoaded();
 
 protected:
-	QImage computeCall(int forceLoad, QSharedPointer<QByteArray> ba);
+	QImage computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize);
 
 	QFutureWatcher<QImage> thumbWatcher;
 	bool mFetching;

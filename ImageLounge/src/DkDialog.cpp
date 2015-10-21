@@ -4028,7 +4028,7 @@ int DkMosaicDialog::computeMosaic(const QString& filter, const QString& suffix, 
 
 			DkThumbNail thumb = DkThumbNail(imgPath);
 			thumb.setMinThumbSize(patchResO);
-			thumb.setRescale(false);
+			//thumb.setRescale(false);
 			thumb.compute();
 
 			if (!thumb.hasImage()) {

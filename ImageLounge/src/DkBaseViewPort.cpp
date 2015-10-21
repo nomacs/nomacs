@@ -672,7 +672,6 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
 	if (mSvg && mSvg->isValid()) {
 		mSvg->render(painter, mImgViewRect);
-		qDebug() << "rendering genuine svg...";
 	}
 	else if (mMovie && mMovie->isValid())
 		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());

@@ -748,6 +748,7 @@ void DkTransferToolBar::insertSlider(qreal pos) {
 
 void DkTransferToolBar::setImageMode(int mode) {
 
+	qDebug() << "and I received...";
 	applyImageMode(mode);
 
 };
@@ -759,22 +760,20 @@ void DkTransferToolBar::applyImageMode(int mode) {
 	if (mode == mImageMode)
 		return;
 
-	if (mImageMode == mode_invalid_format) {
-		enableToolBar(true);
-		emit channelChanged(0);
-	}
+	//if (mImageMode != mode_invalid_format) {
+	//	enableToolBar(true);
+	//	emit channelChanged(0);
+	//}
 
 	mImageMode = mode;
-	
+	mEnableTFCheckBox->setEnabled(mImageMode != mode_invalid_format);	
+
 	if (mImageMode == mode_invalid_format) {
 		enableToolBar(false);
 		return;
 	}
-	
-	mEnableTFCheckBox->setEnabled(true);	
 
 	disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
-
 	mChannelComboBox->clear();
 
 	if (mode == mode_gray) {

@@ -1770,7 +1770,13 @@ void DkViewPortFrameless::draw(QPainter *painter, float) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	if (!mMovie || !mMovie->isValid()) {
+	if (mSvg && mSvg->isValid()) {
+		mSvg->render(painter, mImgViewRect);
+	}
+	else if (mMovie && mMovie->isValid()) {
+		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+	}
+	else {
 		QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
 		if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
@@ -1786,9 +1792,6 @@ void DkViewPortFrameless::draw(QPainter *painter, float) {
 		}
 
 		painter->drawImage(mImgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
-	}
-	else {
-		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
 	}
 
 }
@@ -2165,7 +2168,12 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	
 }
 
-void DkViewPortContrast::draw(QPainter *painter, float) {
+void DkViewPortContrast::draw(QPainter *painter, float opacity) {
+
+	if (!mDrawFalseColorImg || mSvg || mMovie) {
+		DkBaseViewPort::draw(painter, opacity);
+		return;
+	}
 
 	if (parentWidget() && parentWidget()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
@@ -2188,16 +2196,13 @@ void DkViewPortContrast::draw(QPainter *painter, float) {
 	}
 
 	if (mDrawFalseColorImg)
-		painter->drawImage(mImgViewRect, mFalseColorImg, mImgRect);		// TODO: add storage class for falseColorImg
-	else 
-		painter->drawImage(mImgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
-
+		painter->drawImage(mImgViewRect, mFalseColorImg, mImgRect);
 }
 
 void DkViewPortContrast::setImage(QImage newImg) {
 
 	DkViewPort::setImage(newImg);
-
+	
 	if (newImg.isNull())
 		return;
 
@@ -2206,7 +2211,6 @@ void DkViewPortContrast::setImage(QImage newImg) {
 		mImgs[0] = mImgStorage.getImage();
 		mActiveChannel = 0;
 	}
-
 #ifdef WITH_OPENCV
 
 	else {	
@@ -2255,7 +2259,9 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	mFalseColorImg.setColorTable(mColorTable);
 	
 	// images with valid color table return img.isGrayScale() false...
-	if (mImgs.size() == 1) 
+	if (mSvg || mMovie)
+		emit imageModeSet(mode_invalid_format);
+	else if (mImgs.size() == 1) 
 		emit imageModeSet(mode_gray);
 	else
 		emit imageModeSet(mode_rgb);

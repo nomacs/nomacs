@@ -52,9 +52,8 @@ namespace nmc {
 DkThumbNail::DkThumbNail(const QString& filePath, const QImage& img) {
 	mImg = DkImage::createThumb(img);
 	mFile = filePath;
-	mMaxThumbSize = 160;
+	mMaxThumbSize = max_thumb_size;
 	mMinThumbSize = DkSettings::display.thumbSize;
-	mRescale = true;
 	mImgExists = true;
 };
 
@@ -68,22 +67,7 @@ void DkThumbNail::compute(int forceLoad) {
 	
 	// we do this that complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
-	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize, mMinThumbSize, mRescale);
-}
-
-/**
- * Compute the mean color of an image.
- * @return QColor the mean color.
- **/ 
-QColor DkThumbNail::computeColorIntern() {
-
-	// TODO: crash detected if nomacs is closed while computin colors!
-	QImage img = computeIntern(mFile, QSharedPointer<QByteArray>(), force_exif_thumb, mMaxThumbSize, mMinThumbSize, mRescale);
-
-	if (!img.isNull())
-		return DkImage::getMeanColor(img);
-
-	return DkSettings::display.bgColorWidget;
+	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize, mMinThumbSize);
 }
 
 /**
@@ -95,13 +79,11 @@ QColor DkThumbNail::computeColorIntern() {
  * @param forceLoad the loading flag (e.g. exiv only)
  * @param maxThumbSize the maximal thumbnail size to be loaded
  * @param minThumbSize the minimal thumbnail size to be loaded
- * @param mRescale if true, the thumbnail is rescaled to maxThumbSize
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
 QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<QByteArray> ba, 
-								  int forceLoad, int maxThumbSize, int minThumbSize, 
-								  bool rescale) {
+								  int forceLoad, int maxThumbSize, int minThumbSize) {
 	
 	DkTimer dt;
 	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
@@ -165,7 +147,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		imgH = imageReader->size().height();	// locks the file!
 	}
 	
-	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
+	if (forceLoad != DkThumbNailT::force_exif_thumb && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = qRound((float)maxThumbSize / imgW * imgH);
 			imgW = maxThumbSize;
@@ -179,6 +161,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 			imgH = maxThumbSize;
 		}
 	}
+
+	bool rescale = forceLoad == force_save_thumb;
 
 	if (forceLoad != force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
 		
@@ -250,7 +234,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
-	if (forceLoad == force_save_thumb || (forceLoad == save_thumb && !exifThumb)) {
+	if (rescale || (forceLoad == save_thumb && !exifThumb)) {
 		
 		try {
 
@@ -362,8 +346,13 @@ DkThumbNailT::DkThumbNailT(const QString& filePath, const QImage& img) : DkThumb
 
 DkThumbNailT::~DkThumbNailT() {
 
+	if (thumbWatcher.isStarted() && !thumbWatcher.isRunning()) {
+		qDebug() << "[WARNING]: thumb watcher is started but not running while releasing!";
+	}
+
 	if (mFetching && DkSettings::resources.numThumbsLoading > 0)
 		DkSettings::resources.numThumbsLoading--;
+
 	thumbWatcher.blockSignals(true);
 	thumbWatcher.cancel();
 }
@@ -383,21 +372,17 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 
 	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 	thumbWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkThumbNailT::computeCall, forceLoad, ba));
-	
+		&nmc::DkThumbNailT::computeCall, mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize));
+
 	DkSettings::resources.numThumbsLoading++;
 
 	return true;
 }
 
 
-QImage DkThumbNailT::computeCall(int forceLoad, QSharedPointer<QByteArray> ba) {
+QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize) {
 
-	// no mRescale if we load from exif - memory should not be an issue here
-	if (forceLoad == DkThumbNailT::force_exif_thumb)
-		mRescale = false;
-
-	return DkThumbNail::computeIntern(mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize, mRescale);
+	return DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize, minThumbSize);
 }
 
 void DkThumbNailT::thumbLoaded() {
