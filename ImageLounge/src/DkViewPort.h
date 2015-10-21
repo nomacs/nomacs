@@ -249,7 +249,7 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
 	void showZoom();
-	void toggleLena();
+	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
 
 };

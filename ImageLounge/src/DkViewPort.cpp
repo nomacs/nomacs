@@ -1046,7 +1046,7 @@ void DkViewPort::swipeAction(int swipeGesture) {
 void DkViewPort::setFullScreen(bool fullScreen) {
 
 	mController->setFullScreen(fullScreen);
-	toggleLena();
+	toggleLena(fullScreen);
 }
 
 QPoint DkViewPort::mapToImage(const QPoint& windowPos) const {
@@ -1220,7 +1220,7 @@ void DkViewPort::loadLena() {
 	// pass phrase
 	if (ok && !text.isEmpty() && text == "lena") {
 		mTestLoaded = true;
-		toggleLena();
+		toggleLena(QApplication::activeWindow()->isFullScreen());
 	}
 	else if (!ok) {
 		QMessageBox warningDialog(QApplication::activeWindow());
@@ -1247,13 +1247,13 @@ void DkViewPort::toggleDissolve() {
 	update();
 }
 
-void DkViewPort::toggleLena() {
+void DkViewPort::toggleLena(bool fullscreen) {
 
 	if (!mTestLoaded)
 		return;
 
 	if (mLoader) {
-		if (parentWidget() && parentWidget()->isFullScreen())
+		if (fullscreen)
 			mLoader->load(":/nomacs/img/lena-full.jpg");
 		else
 			mLoader->load(":/nomacs/img/lena.jpg");

@@ -762,6 +762,7 @@ void DkImageLoader::activate(bool isActive /* = true */) {
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
+	// force index folder if we dir out of the zip
 	if (mCurrentImage && newImg && mCurrentImage->isFromZip() && !newImg->isFromZip())
 		mFolderUpdated = true;
 
@@ -769,7 +770,6 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		mCurrentImage = newImg;
 		return;
 	}
-
 
 	if (newImg)
 		loadDir(newImg->dirPath());
