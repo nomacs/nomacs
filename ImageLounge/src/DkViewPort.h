@@ -191,6 +191,7 @@ public slots:
 	void pauseMovie(bool paused);
 	void stopMovie();
 	virtual void loadMovie();
+	virtual void loadSvg();
 	void nextMovieFrame();
 	void previousMovieFrame();
 	void animateFade();

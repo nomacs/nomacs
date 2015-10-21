@@ -109,6 +109,7 @@ public:
 	
 	bool hasFile() const;
 	bool hasMovie() const;
+	bool hasSvg() const;
 	QString fileName() const;
 
 	void deactivate();

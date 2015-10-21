@@ -1472,6 +1472,16 @@ bool DkImageLoader::hasMovie() const {
 
 }
 
+bool DkImageLoader::hasSvg() const {
+
+	if (!mCurrentImage || !mCurrentImage->exists())
+		return false;
+
+	QString newSuffix = QFileInfo(mCurrentImage->filePath()).suffix();
+	return newSuffix.contains(QRegExp("(svg)", Qt::CaseInsensitive)) != 0;
+
+}
+
 /**
  * Returns the currently loaded file information.
  * @return QFileInfo the current file info

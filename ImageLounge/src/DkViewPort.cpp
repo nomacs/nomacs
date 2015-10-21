@@ -50,6 +50,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QDesktopWidget>
+#include <QSvgRenderer>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -245,6 +246,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	if (mLoader->hasMovie() && !mLoader->isEdited())
 		loadMovie();
+	if (mLoader->hasSvg() && !mLoader->isEdited())
+		loadSvg();
 
 	emit enableNoImageSignal(!newImg.isNull());
 
@@ -679,6 +682,15 @@ void DkViewPort::loadMovie() {
 	mMovie->start();
 
 	emit movieLoadedSignal(true);
+}
+
+void DkViewPort::loadSvg() {
+
+	if (!mLoader)
+		return;
+
+	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
+
 }
 
 void DkViewPort::pauseMovie(bool pause) {
@@ -1316,6 +1328,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 		mMovie->stop();
 		mMovie = QSharedPointer<QMovie>();
 	}
+
+	if (mSvg && success)
+		mSvg = QSharedPointer<QSvgRenderer>();
 
 	return success != 0;
 }

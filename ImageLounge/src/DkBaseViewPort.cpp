@@ -312,6 +312,7 @@ QImage DkBaseViewPort::getImage() {
 	
 	if (mMovie && mMovie->isValid())
 		return mMovie->currentImage();
+	// TODO: svg
 
 	return mImgStorage.getImage();
 }
@@ -612,7 +613,7 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 	factor /= -1200.0f;
 	factor += 1.0f;
 
-	qDebug() << "zoom factor..." << factor;
+	//qDebug() << "zoom factor..." << factor;
 	zoom(factor, event->pos());
 }
 
@@ -660,7 +661,8 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 	painter->setOpacity(opacity);
 
 	if (mSvg && mSvg->isValid()) {
-
+		mSvg->render(painter, mImgViewRect);
+		qDebug() << "rendering genuine svg...";
 	}
 	else if (mMovie && mMovie->isValid())
 		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
