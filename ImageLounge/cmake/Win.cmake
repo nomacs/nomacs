@@ -9,7 +9,6 @@ if(ENABLE_PLUGINS)
 	add_definitions(-DWITH_PLUGINS)
 endif()
 
-
 # prepare build directory
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Debug)
@@ -263,8 +262,8 @@ unset(QUAZIP_FOUND CACHE)
 if(ENABLE_QUAZIP)
 	# QT_ROOT needed by QuaZip cmake 
 	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
-  # add build directory to cmake path - otherwise the QuaZipConfig.cmake is no longer found
-  SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_BINARY_DIR}) 
+	# add build directory to cmake path - otherwise the QuaZipConfig.cmake is no longer found
+	SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_BINARY_DIR}) 
   
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)

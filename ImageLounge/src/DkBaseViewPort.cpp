@@ -36,6 +36,7 @@
 #include <QShortcut>
 #include <QDebug>
 #include <QTimer>
+#include <QSvgRenderer>
 
 // gestures
 #include <QSwipeGesture>
@@ -658,10 +659,13 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 	float oldOp = (float)painter->opacity();
 	painter->setOpacity(opacity);
 
-	if (!mMovie || !mMovie->isValid())
-		painter->drawImage(mImgViewRect, imgQt, imgQt.rect());
-	else
+	if (mSvg && mSvg->isValid()) {
+
+	}
+	else if (mMovie && mMovie->isValid())
 		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+	else
+		painter->drawImage(mImgViewRect, imgQt, imgQt.rect());
 
 	painter->setOpacity(oldOp);
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();

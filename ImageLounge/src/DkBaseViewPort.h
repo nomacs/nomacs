@@ -49,6 +49,7 @@
 class QNativeGestureEvent;
 class QGestureEvent;
 class QShortcut;
+class QSvgRenderer;
 
 namespace nmc {
 
@@ -197,6 +198,7 @@ protected:
 
 	DkImageStorage mImgStorage;
 	QSharedPointer<QMovie> mMovie;
+	QSharedPointer<QSvgRenderer> mSvg;
 	QBrush mPattern;
 
 	QTransform mImgMatrix;

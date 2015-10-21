@@ -13,11 +13,7 @@ if(NOT ENABLE_PLUGINS)
 	endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
   
-  IF (NOT ENABLE_QT5 AND CMAKE_VERSION VERSION_LESS 3.0.0)
-    QT4_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
-  ELSEIF(CMAKE_VERSION VERSION_LESS 3.0.0)
-    QT5_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
-  ENDIF()
+  QT5_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
   
   #create the targets
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
@@ -30,10 +26,7 @@ if(NOT ENABLE_PLUGINS)
   ENDIF()
   target_link_libraries(${BINARY_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB} ${TIFF_LIBRARY} ${ZLIB_LIBRARY} ${WEBP_LIBRARIES} ${QUAZIP_LIBRARIES} ${WEBP_STATIC_LIBRARIES})
 
-  if (ENABLE_QT5)
-    qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-  ENDIF()
-
+  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
   
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	  SET_TARGET_PROPERTIES(${BINARY_NAME} PROPERTIES LINK_FLAGS -fopenmp)
@@ -85,12 +78,7 @@ else()
 	endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
-  IF (NOT ENABLE_QT5 AND CMAKE_VERSION VERSION_LESS 3.0.0)
-    QT4_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
-  ELSEIF(CMAKE_VERSION VERSION_LESS 3.0.0)
-    QT5_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
-  ENDIF()
-
+  QT5_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
   
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
   set(DLL_NAME lib${CMAKE_PROJECT_NAME})
@@ -109,11 +97,8 @@ else()
   add_dependencies(${BINARY_NAME} ${DLL_NAME})
   set_target_properties(${DLL_NAME} PROPERTIES PREFIX "")
 
-  if (ENABLE_QT5)
-	  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
-	  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-  ENDIF()
-
+  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
+  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
 
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)

@@ -33,7 +33,6 @@ option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
@@ -121,11 +120,7 @@ set (NOMACS_RESOURCES
 
 file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
-IF (NOT ENABLE_QT5)
- QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
-ELSE()
- QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
-ENDIF()
+QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
 
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/WinBuildTarget.cmake)
