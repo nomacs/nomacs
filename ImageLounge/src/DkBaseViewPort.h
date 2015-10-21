@@ -140,11 +140,11 @@ public:
 	virtual void setImage(cv::Mat newImg);
 #endif
 
-	virtual QImage getImage();
+	virtual QImage getImage() const;
+	virtual QSize getImageSize() const;
+	virtual QRectF getImageViewRect() const;
+	virtual bool imageInside() const;
 
-	virtual QRectF getImageViewRect();
-
-	virtual bool imageInside();	// always return false?!
 
 signals:
 	void enableNoImageSignal(bool enable) const;

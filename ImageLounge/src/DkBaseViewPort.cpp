@@ -296,7 +296,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	mImgStorage.setImage(newImg);
 	QRectF oldImgRect = mImgRect;
-	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
+	mImgRect = QRectF(QPoint(), getImageSize());
 	
 	emit enableNoImageSignal(!newImg.isNull());
 
@@ -308,16 +308,26 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	emit newImageSignal(&newImg);
 }
 
-QImage DkBaseViewPort::getImage() {
+QImage DkBaseViewPort::getImage() const {
 	
 	if (mMovie && mMovie->isValid())
 		return mMovie->currentImage();
 	// TODO: svg
 
-	return mImgStorage.getImage();
+	return mImgStorage.getImageConst();
 }
 
-QRectF DkBaseViewPort::getImageViewRect() {
+QSize DkBaseViewPort::getImageSize() const {
+
+	if (mSvg) {
+		qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" << mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
+		return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
+	}
+
+	return mImgStorage.getImageConst().size();
+}
+
+QRectF DkBaseViewPort::getImageViewRect() const {
 
 	return mWorldMatrix.mapRect(mImgViewRect);
 }
@@ -673,7 +683,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 
-bool DkBaseViewPort::imageInside() {
+bool DkBaseViewPort::imageInside() const {
 
 	return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(mWorldMatrix.mapRect(mImgViewRect));
 }
@@ -688,11 +698,13 @@ void DkBaseViewPort::updateImageMatrix() {
 
 	mImgMatrix.reset();
 
+	QSize imgSize = getImageSize();
+
 	// if the image is smaller or zoom is active: paint the image as is
 	if (!mViewportRect.contains(mImgRect))
 		mImgMatrix = getScaledImageMatrix();
 	else {
-		mImgMatrix.translate((float)(width()-mImgStorage.getImage().width())*0.5f, (float)(height()-mImgStorage.getImage().height())*0.5f);
+		mImgMatrix.translate((float)(width()-imgSize.width())*0.5f, (float)(height()-imgSize.height())*0.5f);
 		mImgMatrix.scale(1.0f, 1.0f);
 	}
 

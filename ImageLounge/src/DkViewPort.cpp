@@ -242,12 +242,13 @@ void DkViewPort::setImage(QImage newImg) {
 	mController->getOverview()->setImage(QImage());	// clear overview
 
 	mImgStorage.setImage(newImg);
-	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
 	if (mLoader->hasMovie() && !mLoader->isEdited())
 		loadMovie();
 	if (mLoader->hasSvg() && !mLoader->isEdited())
 		loadSvg();
+
+	mImgRect = QRectF(QPoint(), getImageSize());
 
 	emit enableNoImageSignal(!newImg.isNull());
 
@@ -299,7 +300,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	mImgStorage.setImage(newImg);
 	QRectF oldImgRect = mImgRect;
-	this->mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
+	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
 	emit enableNoImageSignal(true);
 
@@ -417,7 +418,7 @@ void DkViewPort::resetView() {
 
 void DkViewPort::zoomToFit() {
 
-	QSizeF imgSize = mImgStorage.getImage().size();
+	QSizeF imgSize = getImageSize();
 	QSizeF winSize = size();
 
 	float zoomLevel = (float)qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
@@ -472,11 +473,13 @@ void DkViewPort::updateImageMatrix() {
 
 	mImgMatrix.reset();
 
+	QSize imgSize = getImageSize();
+
 	// if the image is smaller or zoom is active: paint the image as is
 	if (!mViewportRect.contains(mImgRect.toRect()))
 		mImgMatrix = getScaledImageMatrix();
 	else {
-		mImgMatrix.translate((float)(getMainGeometry().width()-mImgStorage.getImage().width())*0.5f, (float)(getMainGeometry().height()-mImgStorage.getImage().height())*0.5f);
+		mImgMatrix.translate((float)(getMainGeometry().width()-imgSize.width())*0.5f, (float)(getMainGeometry().height()-imgSize.height())*0.5f);
 		mImgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -492,6 +495,8 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
+
+	qDebug() << "mImgMatrix: " << mImgMatrix;
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {
@@ -690,6 +695,8 @@ void DkViewPort::loadSvg() {
 		return;
 
 	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
+
+	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
 
 }
 
@@ -1623,7 +1630,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	if (minD > FLT_EPSILON)
 		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 	
-	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
+	painter.drawImage(QRect(QPoint(), getImageSize()), getImage(), QRect(QPoint(), getImageSize()));
 	painter.end();
 
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
