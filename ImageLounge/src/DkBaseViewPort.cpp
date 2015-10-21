@@ -721,23 +721,27 @@ void DkBaseViewPort::updateImageMatrix() {
 	}
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix() {
+QTransform DkBaseViewPort::getScaledImageMatrix() const {
+	return getScaledImageMatrix(size());
+}
+
+QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size) const {
 
 	// the image resizes as we zoom
 	float ratioImg = (float)mImgRect.width()/(float)mImgRect.height();
-	float ratioWin = (float)width()/(float)height();
+	float ratioWin = (float)size.width()/(float)size.height();
 
 	QTransform imgMatrix;
 	float s;
 	if (mImgRect.width() == 0 || mImgRect.height() == 0)
 		s = 1.0f;
 	else
-		s = (ratioImg > ratioWin) ? (float)width()/(float)mImgRect.width() : (float)height()/(float)mImgRect.height();
+		s = (ratioImg > ratioWin) ? (float)size.width()/(float)mImgRect.width() : (float)size.height()/(float)mImgRect.height();
 
 	imgMatrix.scale(s, s);
 
 	QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-	imgMatrix.translate((width()-imgViewRect.width())*0.5f/s, (height()-imgViewRect.height())*0.5f/s);
+	imgMatrix.translate((size.width()-imgViewRect.width())*0.5f/s, (size.height()-imgViewRect.height())*0.5f/s);
 
 	return imgMatrix;
 }

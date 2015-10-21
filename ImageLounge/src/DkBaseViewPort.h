@@ -224,7 +224,8 @@ protected:
 	// functions
 	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	virtual void updateImageMatrix();
-	virtual QTransform getScaledImageMatrix();
+	virtual QTransform getScaledImageMatrix() const;
+	virtual QTransform getScaledImageMatrix(const QSize& size) const;
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();

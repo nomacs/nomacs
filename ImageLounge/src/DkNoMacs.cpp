@@ -4523,8 +4523,7 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 	if (!mDesktop)
 		return;
 
-	// for now: set to fullscreen
-
+	//TODO: let user choose which screen
 	int sc = mDesktop->screenCount();
 	QRect screenRects = mDesktop->availableGeometry();
 
@@ -4540,10 +4539,12 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 
 	qDebug() << "set up geometry: " << screenRects;
 
-	this->setGeometry(screenRects);
 
 	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
 	vp->setMainGeometry(mDesktop->screenGeometry());
+	
+	this->setGeometry(screenRects);
+	//this->setGeometry(mDesktop->screenGeometry());
 
 }
 

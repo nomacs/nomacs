@@ -1998,7 +1998,7 @@ void DkViewPortFrameless::centerImage() {
 
 void DkViewPortFrameless::updateImageMatrix() {
 
-	if (!mImgStorage.hasImage())
+	if (mImgStorage.getImage().isNull())
 		return;
 
 	QRectF oldImgRect = mImgViewRect;
@@ -2006,14 +2006,16 @@ void DkViewPortFrameless::updateImageMatrix() {
 
 	mImgMatrix.reset();
 
-	// if the image is smaller or zoom is active: paint the image as is
-	if (!getMainGeometry().contains(mImgRect.toRect()))
-		mImgMatrix = getScaledImageMatrix();
-	else {
+	QSize imgSize = getImageSize();
 
-		QPointF p = (mImgViewRect.isEmpty()) ? getMainGeometry().center() : mImgViewRect.center();
-		p -= mImgStorage.getImage().rect().center();
-		mImgMatrix.translate(p.x()-1, p.y()-1);	// -1 is needed due to float -> int
+	// if the image is smaller or zoom is active: paint the image as is
+	if (!mViewportRect.contains(mImgRect.toRect())) {
+		mImgMatrix = getScaledImageMatrix(mMainScreen.size()*0.9f);
+		QSize shift = mMainScreen.size()*0.1f;
+		mImgMatrix.translate(shift.width(), shift.height());
+	}
+	else {
+		mImgMatrix.translate((float)(getMainGeometry().width()-imgSize.width())*0.5f, (float)(getMainGeometry().height()-imgSize.height())*0.5f);
 		mImgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -2029,40 +2031,45 @@ void DkViewPortFrameless::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
+
+	qDebug() << "mImgMatrix: " << mImgMatrix;
 }
 
-QTransform DkViewPortFrameless::getScaledImageMatrix() {
+//QTransform DkViewPortFrameless::getScaledImageMatrix() {
+//
+//	return DkViewPort::getScaledImageMatrix();
+//
+//	//QRectF initialRect = mMainScreen;
+//	//QPointF oldCenter = mImgViewRect.isEmpty() ? initialRect.center() : mImgViewRect.center();
+//	//qDebug() << "initial rect: " << initialRect;
+//
+//	//QTransform cT;
+//	//cT.scale(800/initialRect.width(), 800/initialRect.width());
+//	//cT.translate(initialRect.center().x(), initialRect.center().y());
+//	//initialRect = cT.mapRect(initialRect);
+//	//initialRect.moveCenter(oldCenter);
+//
+//	//// the image resizes as we zoom
+//	//float ratioImg = (float)(mImgRect.width()/mImgRect.height());
+//	//float ratioWin = (float)(initialRect.width()/initialRect.height());
+//
+//	//QTransform imgMatrix;
+//	//float s;
+//	//if (mImgRect.width() == 0 || mImgRect.height() == 0)
+//	//	s = 1.0f;
+//	//else
+//	//	s = (ratioImg > ratioWin) ? (float)(initialRect.width()/mImgRect.width()) : (float)(initialRect.height()/mImgRect.height());
+//
+//	//imgMatrix.scale(s, s);
+//
+//	//QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
+//	//QSizeF sDiff = (initialRect.size() - imgViewRect.size())*0.5f/s;
+//	//imgMatrix.translate(initialRect.left()/s+sDiff.width(), initialRect.top()/s+sDiff.height());
+//
+//	//return imgMatrix;
+//}
 
-	QRectF initialRect = mMainScreen;
-	QPointF oldCenter = mImgViewRect.isEmpty() ? initialRect.center() : mImgViewRect.center();
-	qDebug() << "initial rect: " << initialRect;
-
-	QTransform cT;
-	cT.scale(800/initialRect.width(), 800/initialRect.width());
-	cT.translate(initialRect.center().x(), initialRect.center().y());
-	initialRect = cT.mapRect(initialRect);
-	initialRect.moveCenter(oldCenter);
-
-	// the image resizes as we zoom
-	float ratioImg = (float)(mImgRect.width()/mImgRect.height());
-	float ratioWin = (float)(initialRect.width()/initialRect.height());
-
-	QTransform imgMatrix;
-	float s;
-	if (mImgRect.width() == 0 || mImgRect.height() == 0)
-		s = 1.0f;
-	else
-		s = (ratioImg > ratioWin) ? (float)(initialRect.width()/mImgRect.width()) : (float)(initialRect.height()/mImgRect.height());
-
-	imgMatrix.scale(s, s);
-
-	QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-	QSizeF sDiff = (initialRect.size() - imgViewRect.size())*0.5f/s;
-	imgMatrix.translate(initialRect.left()/s+sDiff.width(), initialRect.top()/s+sDiff.height());
-
-	return imgMatrix;
-}
-
+// DkViewPortContrast --------------------------------------------------------------------
 DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
 
 	mColorTable = QVector<QRgb>(256);

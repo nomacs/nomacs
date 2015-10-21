@@ -285,7 +285,7 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 	// functions
-	QTransform getScaledImageMatrix();
+	//QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	void drawFrame(QPainter* painter);
