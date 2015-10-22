@@ -138,7 +138,7 @@ else()
   # generate configuration file
   set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
   set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(NOMACS_LIBS ${DLL_NAME})
+  set(NOMACS_LIBS ${CMAKE_PROJECT_NAME})
   
   configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
   
