@@ -81,7 +81,7 @@ else()
   QT5_ADD_RESOURCES(NOMACS_RESOURCES ${NOMACS_RESOURCES})
   
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
-  set(DLL_NAME lib${CMAKE_PROJECT_NAME})
+  set(DLL_NAME ${CMAKE_PROJECT_NAME}lib)
   #set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
   LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
   link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
@@ -138,7 +138,7 @@ else()
   # generate configuration file
   set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
   set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(NOMACS_LIBS ${CMAKE_PROJECT_NAME})
+  set(NOMACS_LIBS ${CMAKE_PROJECT_NAME}lib)
   
   configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
   
