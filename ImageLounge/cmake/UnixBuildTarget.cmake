@@ -26,7 +26,7 @@ if(NOT ENABLE_PLUGINS)
   ENDIF()
   target_link_libraries(${BINARY_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB} ${TIFF_LIBRARY} ${ZLIB_LIBRARY} ${WEBP_LIBRARIES} ${QUAZIP_LIBRARIES} ${WEBP_STATIC_LIBRARIES})
 
-  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
+  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
   
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	  SET_TARGET_PROPERTIES(${BINARY_NAME} PROPERTIES LINK_FLAGS -fopenmp)
@@ -98,7 +98,7 @@ else()
   set_target_properties(${DLL_NAME} PROPERTIES PREFIX "")
 
   qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
-  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
+  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)

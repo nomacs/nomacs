@@ -283,12 +283,11 @@ macro(NMC_FINDQT)
 	GET_FILENAME_COMPONENT(QT_QMAKE_PATH ${QT_QMAKE_EXECUTABLE} PATH)
 	set(QT_ROOT ${QT_QMAKE_PATH}/)
 	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5)
-	find_package(Qt5 REQUIRED Widgets Network LinguistTools PrintSupport Concurrent Gui)
+	find_package(Qt5 REQUIRED Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
 	if (NOT Qt5_FOUND)
 		message(FATAL_ERROR "Qt5Widgets not found. Check your QT_QMAKE_EXECUTABLE path and set it to the correct location")
 	endif()
 	add_definitions(-DQT5)
-	
 endmacro(NMC_FINDQT)
 
 # enables webp

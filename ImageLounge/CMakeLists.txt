@@ -137,7 +137,7 @@ endif()
 #debug for printing out all variables 
 # get_cmake_property(_variableNames VARIABLES)
 # foreach (_variableName ${_variableNames})
-    # message(STATUS "${_variableName}=${${_variableName}}")
+#     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
 if(UNIX AND ENABLE_PLUGINS)
@@ -146,7 +146,8 @@ if(UNIX AND ENABLE_PLUGINS)
     SET(NOMACS_VARS_ALREADY_SET true)
     add_subdirectory(plugins)
   else()
-    message(FATAL_ERROR "plugins directory not found. You have to check out the nomacs-plugins git to 'plugins' folder or disable plugins")
+    #message(FATAL_ERROR "plugins directory not found. You have to check out the nomacs-plugins git to 'plugins' folder or disable plugins")
+    message(WARNING "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them")
   endif()
 endif()
 
