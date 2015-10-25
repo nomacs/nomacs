@@ -282,11 +282,11 @@ void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) const {
 	double angle = xV.angle();
 	angle = DkMath::normAngleRad(angle, -CV_PI, CV_PI);
 
-	if (abs(angle) > DBL_EPSILON)
+	if (std::abs(angle) > DBL_EPSILON)
 		qDebug() << "angle is > eps...";
 
 	// switch width/height for /\ and \/ quadrants
-	if (abs(angle) > CV_PI*0.25 && abs(angle) < CV_PI*0.75) {
+	if (std::abs(angle) > CV_PI*0.25 && std::abs(angle) < CV_PI*0.75) {
 		float x = (float)size.x();
 		size.setX(size.y());
 		size.setY(x);
