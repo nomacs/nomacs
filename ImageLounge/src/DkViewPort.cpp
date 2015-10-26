@@ -275,7 +275,7 @@ void DkViewPort::setImage(QImage newImg) {
 	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) { // braces
 		mFadeTimer->start();
 		mFadeTime.start();
 	}
@@ -447,11 +447,11 @@ void DkViewPort::showZoom() {
 void DkViewPort::repeatZoom() {
 
 	qDebug() << "repeating...";
-	if (DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
-		!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+	if (DkSettings::display.invertZoom && (QApplication::mouseButtons() == Qt::XButton1 ||
+		!DkSettings::display.invertZoom) && QApplication::mouseButtons() == Qt::XButton2)
 		zoom(1.1f);
-	else if (!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
-		DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+	else if (!DkSettings::display.invertZoom && (QApplication::mouseButtons() == Qt::XButton1 ||
+		DkSettings::display.invertZoom) && QApplication::mouseButtons() == Qt::XButton2)
 		zoom(0.9f);
 	else
 		mRepeatZoomTimer->stop();	// safety if we don't catch the release
@@ -1282,6 +1282,8 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	if (!imgC)
 		imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(""));
 
+	if (!imgC)
+		imgC = QSharedPointer<DkImageContainerT>();
 	imgC->setImage(newImg);
 	unloadImage(false);
 	mLoader->setImage(imgC);
@@ -1320,7 +1322,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
 	/*if (!pluginImageWasApplied)*/ applyPluginChanges(); //prevent recursion
 	
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {	// braces
 		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;
@@ -1617,7 +1619,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	qDebug() << cImgSize;
 
 	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
-	double minD = qMin(abs(angle), abs(angle-CV_PI*0.5));
+	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
 
 	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
 	img.fill(bgCol.rgba());
@@ -1863,7 +1865,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	// TODO: replace hasAlphaChannel with has alphaBorder
-	if (mImgStorage.hasImage() && mImgStorage.getImage().hasAlphaChannel() || !DkSettings::display.showBorder)
+	if (mImgStorage.hasImage() && mImgStorage.getImage().hasAlphaChannel() || !DkSettings::display.showBorder)	// braces
 		return;
 
 	painter->setBrush(QColor(255, 255, 255, 200));

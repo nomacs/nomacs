@@ -363,14 +363,14 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 	for (int i = 0; i < mSliders.size(); i++) {
 		dist = mSliders.at(i)->getNormedPos() - pos;
 		if (dist < 0) {
-			if (abs(dist) < leftDist) {
-				leftDist = (abs(dist));
+			if (std::abs(dist) < leftDist) {
+				leftDist = (std::abs(dist));
 				leftIdx = i;
 			}
 		}
 		else if (dist > 0){
-			if (abs(dist) < rightDist) {
-				rightDist = (abs(dist));
+			if (std::abs(dist) < rightDist) {
+				rightDist = (std::abs(dist));
 				rightIdx = i;
 			}
 		}

@@ -423,7 +423,7 @@ void DkCentralWidget::tabMoved(int from, int to) {
 	updateTabIdx();
 }
 
-void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex /* = -1 */) {
+void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo> > tabInfos, int activeIndex /* = -1 */) {
 
 	mTabInfos = tabInfos;
 	
@@ -752,7 +752,7 @@ void DkCentralWidget::loadFile(const QString& filePath) {
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
-	if (mTabInfos.size() > 1 || !mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty) {
+	if (mTabInfos.size() > 1 || !mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty) { // braces
 		addTab(filePath);
 	}
 	else
@@ -796,7 +796,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 	if (!mimeData)
 		return false;
 
-	if (mimeData->hasUrls() && mimeData->urls().size() > 0 || mimeData->hasText()) {
+	if ((mimeData->hasUrls() && mimeData->urls().size() > 0) || mimeData->hasText()) {
 		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
 
 		// try manual conversion first, this fixes the DSC#josef.jpg problems (url fragments)

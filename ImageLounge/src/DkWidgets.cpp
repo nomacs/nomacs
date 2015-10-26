@@ -1573,8 +1573,7 @@ void DkEditableRect::updateCorner(int idx, const QPointF& point, Qt::KeyboardMod
 	if (changeState)
 		mState = scaling;
 
-	DkVector diag = (modifiers & Qt::ShiftModifier || mFixedDiag.x != 0 && mFixedDiag.y != 0) ? mOldDiag : DkVector();
-
+	DkVector diag = (modifiers & Qt::ShiftModifier || mFixedDiag.x != 0 && mFixedDiag.y != 0) ? mOldDiag : DkVector();	// braces
 	QPointF p = point;
 	
 	if ((modifiers & Qt::ControlModifier) == 0)
@@ -1837,7 +1836,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				this);
 		}
 
-		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);
+		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);	// braces
 	}
 
 	//QWidget::mouseMoveEvent(event);

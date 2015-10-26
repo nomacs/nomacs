@@ -157,7 +157,7 @@ public:
 	static double normAngleRad(double angle) {
 
 		// this could be a bottleneck
-		if (abs(angle) > 1000)
+		if (std::abs(angle) > 1000)
 			return angle;
 
 		while (angle < 0)
@@ -178,7 +178,7 @@ public:
 	static double normAngleRad(double angle, double startIvl, double endIvl) {
 
 		// this could be a bottleneck
-		if (abs(angle) > 1000)
+		if (std::abs(angle) > 1000)
 			return angle;
 
 		while(angle <= startIvl)
@@ -199,7 +199,7 @@ public:
 	static float normAngleRad(float angle, float startIvl, float endIvl) {
 
 		// this could be a bottleneck
-		if (abs(angle) > 1000)
+		if (std::abs(angle) > 1000)
 			return angle;
 
 		while(angle <= startIvl)
@@ -220,7 +220,7 @@ public:
 	static float normAngleRad(float angle) {
 
 		// this could be a bottleneck
-		if (abs(angle) > 1000)
+		if (std::abs(angle) > 1000)
 			return angle;
 
 		while (angle < 0)
@@ -250,7 +250,7 @@ public:
 		double nAngle1 = normAngleRad(angle1);
 		double nAngle2 = normAngleRad(angle2);
 
-		double angle = abs(nAngle1 - nAngle2);
+		double angle = std::abs(nAngle1 - nAngle2);
 
 		return (angle > CV_PI) ? 2*CV_PI - angle : angle;
 	}
