@@ -1640,7 +1640,7 @@ void DkEditableRect::updateCorner(int idx, QPointF point, Qt::KeyboardModifiers 
 	if (changeState)
 		state = scaling;
 
-	DkVector diag = (modifiers & (Qt::ShiftModifier || fixedDiag.x != 0) && fixedDiag.y != 0) ? oldDiag : DkVector();
+	DkVector diag = ((modifiers & Qt::ShiftModifier) || (fixedDiag.x != 0 && fixedDiag.y != 0)) ? oldDiag : DkVector();
 
 	QPointF p = point;
 	
