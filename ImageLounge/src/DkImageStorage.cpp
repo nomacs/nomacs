@@ -453,7 +453,7 @@ bool DkImage::normImage(QImage& img) {
 		mPtr += pad;
 	}
 
-	if (minVal == 0 && maxVal == 255 || maxVal-minVal == 0)
+	if (minVal == 0 && (maxVal == 255 || maxVal-minVal == 0))
 		return false;
 
 	uchar* ptr = img.bits();

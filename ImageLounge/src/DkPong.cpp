@@ -130,7 +130,7 @@ void DkPongPort::moveBall() {
 	QPoint newCenter = ball.center() + ballDir.getQPointF().toPoint();
 	
 	// collision detection
-	if (ball.top() <= field.top() && ballDir.y < 0 || ball.bottom() >= field.bottom() && ballDir.y > 0) {
+	if (ball.top() <= field.top() && (ballDir.y < 0 || ball.bottom() >= field.bottom()) && ballDir.y > 0) {
 		ballDir.rotate(ballDir.angle()*2);
 		qDebug() << "collision...";
 	}
@@ -142,7 +142,7 @@ void DkPongPort::moveBall() {
 	}
 
 	// player collition
-	if ((player1.contains(ball.topLeft()) || player1.contains(ball.bottomLeft())) && ballDir.x < 0) {
+	if (((player1.contains(ball.topLeft()) || player1.contains(ball.bottomLeft()))) && ballDir.x < 0) {
 		
 		ballDir.rotate(-ballDir.angle()*2);
 		double mod = (player1Pos != INT_MAX) ? (player1.center().y() - player1Pos)/(float)field.height() : 0;
@@ -235,11 +235,11 @@ void DkPongPort::keyPressEvent(QKeyEvent *event) {
 
 void DkPongPort::keyReleaseEvent(QKeyEvent* event) {
 
-	if (event->key() == Qt::Key_Up && !event->isAutoRepeat() || event->key() == Qt::Key_Down && !event->isAutoRepeat()) {
+	if (event->key() == Qt::Key_Up && (!event->isAutoRepeat() || event->key() == Qt::Key_Down) && !event->isAutoRepeat()) {
 		player2Speed = 0;
 		player2Pos = INT_MAX;
 	}
-	if (event->key() == Qt::Key_W && !event->isAutoRepeat() || event->key() == Qt::Key_S && !event->isAutoRepeat()) {
+	if (event->key() == Qt::Key_W && (!event->isAutoRepeat() || event->key() == Qt::Key_S) && !event->isAutoRepeat()) {
 		player1Speed = 0;
 		player1Pos = INT_MAX;
 	}

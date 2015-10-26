@@ -977,20 +977,20 @@ void DkNoMacs::createActions() {
 
 	editActions.resize(menu_edit_end);
 
-	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0° Clockwise"), this);
+	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0\u00B0 Clockwise"), this);
 	editActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
-	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90° clockwise"));
+	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90\u00B0 clockwise"));
 	connect(editActions[menu_edit_rotate_cw], SIGNAL(triggered()), vp, SLOT(rotateCW()));
 
-	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90° Counter Clockwise"), this);
+	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90\u00B0 Counter Clockwise"), this);
 	editActions[menu_edit_rotate_ccw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
-	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
+	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90\u00B0 counter clockwise"));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
 
-	editActions[menu_edit_rotate_180] = new QAction(tr("1&80°"), this);
-	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
+	editActions[menu_edit_rotate_180] = new QAction(tr("1&80\u00B0"), this);
+	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180\u00B0"));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
 	editActions[menu_edit_copy] = new QAction(editIcons[icon_edit_copy], tr("&Copy"), this);
@@ -1700,7 +1700,7 @@ void DkNoMacs::moveEvent(QMoveEvent *event) {
 
 void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 
-	if (event->button() != Qt::LeftButton || viewport() && viewport()->getImage().isNull())
+	if ((event->button() != Qt::LeftButton || viewport()) && viewport()->getImage().isNull())
 		return;
 
 	if (isFullScreen())
@@ -3337,7 +3337,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 #ifndef Q_WS_X11
 
 	// do we really need to check for update?
-	if (!silent || !DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
+	if ((!silent || !DkSettings::sync.updateDialogShown) && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
 
 		DkTimer dt;
 
