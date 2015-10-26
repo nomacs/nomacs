@@ -1977,6 +1977,8 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	}
 
 	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	if (!imgC)
+		imgC = QSharedPointer<DkImageContainerT>();
 	imgC->setImage(newImg);
 	unloadImage(false);
 	loader->setImage(imgC);
