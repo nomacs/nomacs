@@ -1031,6 +1031,9 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 
 void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
+	// the subsequent modals destroy the active window
+	QWidget* dialogParent = QApplication::activeWindow();
+
 	QString selectedFilter;
 	QString saveName = fileName();
 	QFileInfo saveFileInfo;
@@ -1069,7 +1072,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		fileName = filePath();
 		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Overwrite File"), 
 			tr("Do you want to overwrite:\n%1?").arg(fileName), 
-			(QMessageBox::Yes | QMessageBox::No), qApp->activeWindow());
+			(QMessageBox::Yes | QMessageBox::No), dialogParent);
 		msg->setObjectName("overwriteDialog");
 
 		//msg->show();
@@ -1080,7 +1083,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		// note: basename removes the whole file name from the first dot...
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFileInfo.absoluteFilePath() : QFileInfo(saveFileInfo.absoluteDir(), saveName).absoluteFilePath();
 
-		fileName = QFileDialog::getSaveFileName(qApp->activeWindow(), tr("Save File %1").arg(saveName),
+		fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
 			savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
 	}
 
@@ -1111,7 +1114,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 		
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(qApp->activeWindow());
+			jpgDialog = new DkCompressDialog(dialogParent);
 
 		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
 			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
@@ -1121,9 +1124,10 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		jpgDialog->setImage(saveImg);
 
-
-		if (!jpgDialog->exec())
+		if (!jpgDialog->exec()) {
+			jpgDialog->deleteLater();
 			return;
+		}
 
 		compression = jpgDialog->getCompression();
 
@@ -1144,14 +1148,15 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(qApp->activeWindow());
+			jpgDialog = new DkCompressDialog(dialogParent);
 
 		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
-
 		jpgDialog->setImage(saveImg);
 
-		if (!jpgDialog->exec())
+		if (!jpgDialog->exec()) {
+			jpgDialog->deleteLater();
 			return;
+		}
 
 		compression = jpgDialog->getCompression();
 	}
@@ -1161,10 +1166,12 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	if (selectedFilter.contains("tif")) {
 
 		if (!tifDialog)
-			tifDialog = new DkTifDialog(qApp->activeWindow());
+			tifDialog = new DkTifDialog(dialogParent);
 
-		if (!tifDialog->exec())
+		if (!tifDialog->exec()) {
+			tifDialog->deleteLater();
 			return;
+		}
 
 		compression = tifDialog->getCompression();
 	}

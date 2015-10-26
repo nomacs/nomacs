@@ -65,7 +65,6 @@ namespace nmc {
 class DkTcpMenu;
 class DkCompressDialog;
 class DkSettingsDialog;
-class DkTifDialog;
 class DkOpacityDialog;
 class DkResizeDialog;
 class DkUpdateDialog;

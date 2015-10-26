@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>nomacs - Image Lounge</DisplayName>
     <Description>nomacs - Image Lounge</Description>
-    <Version>3.0.0-2</Version>
+    <Version>3.0.0-3</Version>
     <ReleaseDate>2015-09-29</ReleaseDate>
     <Script>installscript.qs</Script>
 	<Licenses>
