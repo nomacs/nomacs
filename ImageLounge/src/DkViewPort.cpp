@@ -36,6 +36,7 @@
 #include "DkMetaDataWidgets.h"
 #include "DkToolbars.h"
 #include "DkMetaData.h"
+#include "DkPluginManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -275,7 +276,7 @@ void DkViewPort::setImage(QImage newImg) {
 	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) { // braces
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (parentWidget() && parentWidget()->isFullScreen()))) {
 		mFadeTimer->start();
 		mFadeTime.start();
 	}
@@ -1188,8 +1189,6 @@ void DkViewPort::togglePattern(bool show) {
 // edit image --------------------------------------------------------------------
 void DkViewPort::rotateCW() {
 
-	applyPluginChanges();
-
 	if (mLoader != 0)
 		mLoader->rotateImage(90);
 
@@ -1197,16 +1196,12 @@ void DkViewPort::rotateCW() {
 
 void DkViewPort::rotateCCW() {
 
-	applyPluginChanges();
-
 	if (mLoader != 0)
 		mLoader->rotateImage(-90);
 
 }
 
 void DkViewPort::rotate180() {
-
-	applyPluginChanges();
 
 	if (mLoader != 0)
 		mLoader->rotateImage(180);
@@ -1307,24 +1302,14 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 	mLoader->setImage(img);
 }
 
-void DkViewPort::applyPluginChanges() {
+bool DkViewPort::unloadImage(bool fileChange) {
 
-	// TODO: that's dangerous! - remove -> pluginManager is singelton soon anyway
-	//DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parentWidget());
-
-	//if (!noMacs) 
-	//	return;
+	//DkPluginManager::instance().get;	// TODO: apply plugin changes
 
 	//if(!noMacs->getCurrRunningPlugin().isEmpty()) 
 	//	noMacs->applyPluginChanges(true, false);
-}
 
-bool DkViewPort::unloadImage(bool fileChange) {
-
-	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
-	/*if (!pluginImageWasApplied)*/ applyPluginChanges(); //prevent recursion
-	
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || parentWidget() && parentWidget()->isFullScreen())) {	// braces
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (parentWidget() && parentWidget()->isFullScreen()))) {
 		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;

@@ -118,7 +118,6 @@ public:
 	QString getCurrentPixelHexValue();
 	QPoint mapToImage(const QPoint& windowPos) const;
 	
-	void applyPluginChanges();
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
 	// fun

@@ -443,8 +443,6 @@ void DkControlWidget::hideCrop(bool hide /* = true */) {
 
 void DkControlWidget::showCrop(bool visible) {
 
-	mViewport->applyPluginChanges();
-
 	if (visible) {
 		mCropWidget->reset();
 		switchWidget(mWidgets[crop_widget]);

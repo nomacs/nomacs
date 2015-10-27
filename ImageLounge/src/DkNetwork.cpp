@@ -247,7 +247,7 @@ QList<DkPeer*> DkLocalClientManager::getPeerList() {
 }
 
 quint16 DkLocalClientManager::getServerPort() {
-	qDebug() << "SERVER PORT: " << server->serverPort();
+	//qDebug() << "SERVER PORT: " << server->serverPort();
 	return server->serverPort();
 }
 
@@ -264,7 +264,7 @@ void DkLocalClientManager::searchForOtherClients() {
 	for (int i = server->startPort; i <= server->endPort; i++) {
 		if (i == server->serverPort())
 			continue;
-		qDebug() << "search For other clients on port:" << i;
+		//qDebug() << "search For other clients on port:" << i;
 		DkConnection* connection = createConnection();
 		connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
 
@@ -411,7 +411,7 @@ void DkLocalClientManager::connectionReceivedQuit() {
 
 DkLocalConnection* DkLocalClientManager::createConnection() {
 
-	qDebug() << "SERVER server port: " << server->serverPort();
+	//qDebug() << "SERVER server port: " << server->serverPort();
 	DkLocalConnection* connection = new DkLocalConnection(this);
 	connection->setLocalTcpServerPort(server->serverPort());
 	connection->setTitle(mCurrentTitle);
