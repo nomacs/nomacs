@@ -488,6 +488,9 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 	if (mLayout->currentWidget() == widget || !widget && mLayout->currentWidget() == mWidgets[hud_widget])
 		return;
 
+	if (widget != mWidgets[hud_widget])
+		applyPluginChanges(true);
+
 	if (widget)
 		mLayout->setCurrentWidget(widget);
 	else

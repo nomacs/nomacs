@@ -1810,6 +1810,8 @@ void DkNoMacs::flipImageHorizontal() {
 	if (!vp)
 		return;
 
+	viewport()->getController()->applyPluginChanges(true);
+
 	QImage img = vp->getImage();
 	img = img.mirrored(true, false);
 
@@ -1825,6 +1827,8 @@ void DkNoMacs::flipImageVertical() {
 
 	if (!vp)
 		return;
+
+	viewport()->getController()->applyPluginChanges(true);
 
 	QImage img = vp->getImage();
 	img = img.mirrored(false, true);
@@ -1843,6 +1847,8 @@ void DkNoMacs::invertImage() {
 	if (!vp)
 		return;
 
+	viewport()->getController()->applyPluginChanges(true);
+
 	QImage img = vp->getImage();
 	img.invertPixels();
 
@@ -1859,6 +1865,8 @@ void DkNoMacs::convert2gray() {
 
 	if (!vp)
 		return;
+
+	viewport()->getController()->applyPluginChanges(true);
 
 	QImage img = vp->getImage();
 
@@ -1881,6 +1889,8 @@ void DkNoMacs::normalizeImage() {
 	if (!vp)
 		return;
 
+	viewport()->getController()->applyPluginChanges(true);
+
 	QImage img = vp->getImage();
 	
 	bool normalized = DkImage::normImage(img);
@@ -1898,6 +1908,8 @@ void DkNoMacs::autoAdjustImage() {
 	if (!vp)
 		return;
 
+	viewport()->getController()->applyPluginChanges(true);
+
 	QImage img = vp->getImage();
 
 	bool normalized = DkImage::autoAdjustImage(img);
@@ -1910,6 +1922,8 @@ void DkNoMacs::autoAdjustImage() {
 
 void DkNoMacs::unsharpMask() {
 #ifdef WITH_OPENCV
+	viewport()->getController()->applyPluginChanges(true);
+
 	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
 	unsharpDialog->setImage(viewport()->getImage());
 	int answer = unsharpDialog->exec();
@@ -1926,6 +1940,8 @@ void DkNoMacs::tinyPlanet() {
 
 #ifdef WITH_OPENCV
 	
+	viewport()->getController()->applyPluginChanges(true);
+
 	DkTinyPlanetDialog* tinyPlanetDialog = new DkTinyPlanetDialog(this);
 	tinyPlanetDialog->setImage(viewport()->getImage());
 	
@@ -2683,6 +2699,8 @@ void DkNoMacs::resizeImage() {
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
 
+	viewport()->getController()->applyPluginChanges(true);
+
 	if (!mResizeDialog)
 		mResizeDialog = new DkResizeDialog(this);
 
@@ -2729,6 +2747,8 @@ void DkNoMacs::deleteFile() {
 
 	if (!viewport() || viewport()->getImage().isNull() || !getTabWidget()->getCurrentImageLoader())
 		return;
+	
+	viewport()->getController()->applyPluginChanges(true);
 
 	QFileInfo fileInfo = getTabWidget()->getCurrentFilePath();
 
