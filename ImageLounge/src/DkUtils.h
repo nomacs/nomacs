@@ -70,8 +70,12 @@
 #endif
 #endif
 
+#ifdef WIN32
 // fixes Qt's damn no latin1 on tr() policy
 #define dk_degree_str QString::fromLatin1("°")
+#else
+#define dk_degree_str "\u00B0"
+#endif
 
 // Qt defines
 class QComboBox;
