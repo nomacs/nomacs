@@ -146,7 +146,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dragMoveEvent(QDragMoveEvent *event);
-	void appendFromMime(const QMimeData* mimeData);
+	void appendFromMime(const QMimeData* mimeData, bool recursive = false);
 
 	QList<int> mResultList;
 };
@@ -266,6 +266,7 @@ public:
 	virtual bool hasUserInput() const;
 	virtual bool requiresUserInput() const {return mRUserInput;};
 	int overwriteMode() const;
+	bool useInputDir() const;
 	bool deleteOriginal() const;
 	QString getOutputDirectory();
 	QString getFilePattern();

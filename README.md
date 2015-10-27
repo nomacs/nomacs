@@ -9,7 +9,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 - `LibRaw` (>= 0.17) _optional_
 
 ### Compile LibRaw
-_only needed ENABLE_RAW is checked_
+_only needed if ENABLE_RAW is checked_
 - open LibRaw-0.xx.0/LibRaw-nomacs-2015.sln
 - build LibRaw (Debug & Release)
 
@@ -31,7 +31,7 @@ _only needed ENABLE_RAW is checked_
 
 ## Build nomacs (Ubuntu)
 
-### Get the required packages
+Get the required packages:
 
 ``` console
 sudo apt-get install debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git
@@ -52,9 +52,10 @@ Compile nomacs:
 make
 ```
 
-You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use 
-
+You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use: 
+``` console
 sudo make install
+```
 
 ## Links
 - [nomacs.org](http://nomacs.org)

@@ -181,7 +181,7 @@ void DkInputTextEdit::appendDir(const QString& newDir, bool recursive) {
 	appendFiles(strFileList);
 }
 
-void DkInputTextEdit::appendFromMime(const QMimeData* mimeData) {
+void DkInputTextEdit::appendFromMime(const QMimeData* mimeData, bool recursive) {
 
 	if (!mimeData || !mimeData->hasUrls())
 		return;
@@ -193,7 +193,7 @@ void DkInputTextEdit::appendFromMime(const QMimeData* mimeData) {
 		QFileInfo cFile = DkUtils::urlToLocalFile(url);
 
 		if (cFile.isDir())
-			appendDir(cFile.absoluteFilePath(), false);	// TODO: ask user for recursive??
+			appendDir(cFile.absoluteFilePath(), recursive);
 		else if (cFile.exists() && DkUtils::isValid(cFile))
 			cFiles.append(cFile.absoluteFilePath());
 	}
@@ -236,8 +236,9 @@ void DkInputTextEdit::dropEvent(QDropEvent *event) {
 		return;
 	}
 
-	appendFromMime(event->mimeData());
+	appendFromMime(event->mimeData(), (event->keyboardModifiers() & Qt::ControlModifier) != 0);
 
+	// do not propagate!
 	//QTextEdit::dropEvent(event);
 }
 
@@ -410,7 +411,7 @@ void DkFileSelection::setDir(const QString& dirPath) {
 	mDirectoryEdit->setText(mCDirPath);
 	emit newHeaderText(mCDirPath);
 	emit updateInputDir(mCDirPath);
-	mLoader->setDir(mCDirPath);
+	mLoader->loadDir(mCDirPath, false);
 	mThumbScrollWidget->updateThumbs(mLoader->getImages());
 }
 
@@ -851,6 +852,7 @@ void DkBatchOutput::updateFileLabelPreview() {
 
 QString DkBatchOutput::getOutputDirectory() {
 	qDebug() << "ouptut dir: " << QDir(mOutputlineEdit->text()).absolutePath();
+
 	return mOutputlineEdit->text();
 }
 
@@ -891,6 +893,10 @@ int DkBatchOutput::overwriteMode() const {
 		return DkBatchConfig::mode_overwrite;
 
 	return DkBatchConfig::mode_skip_existing;
+}
+
+bool DkBatchOutput::useInputDir() const {
+	return mCbUseInput->isChecked();
 }
 
 bool DkBatchOutput::deleteOriginal() const {
@@ -1300,6 +1306,7 @@ void DkBatchDialog::accept() {
 	DkBatchConfig config(mFileSelection->getSelectedFilesBatch(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setMode(outputWidget->overwriteMode());
 	config.setDeleteOriginal(outputWidget->deleteOriginal());
+	config.setInputDirIsOutputDir(outputWidget->useInputDir());
 
 	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
 

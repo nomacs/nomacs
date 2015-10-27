@@ -627,9 +627,10 @@ void DkBatchProcessing::init() {
 	for (int idx = 0; idx < fileList.size(); idx++) {
 
 		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
+		QString outDir = batchConfig.inputDirIsOutputDir() ? cFileInfo.absolutePath() : batchConfig.getOutputDirPath();
 
 		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
-		QFileInfo newFileInfo(batchConfig.getOutputDirPath(), converter.getConvertedFileName());
+		QFileInfo newFileInfo(outDir, converter.getConvertedFileName());
 
 		DkBatchProcess cProcess(fileList.at(idx), newFileInfo.absoluteFilePath());
 		cProcess.setMode(batchConfig.getMode());

@@ -104,7 +104,8 @@ void DkTabInfo::setFilePath(const QString& filePath) {
 }
 
 void DkTabInfo::setDirPath(const QString& dirPath) {
-	mImageLoader->setDir(dirPath);
+	
+	mImageLoader->loadDir(dirPath);
 	setMode(tab_thumb_preview);
 }
 

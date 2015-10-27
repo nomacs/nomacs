@@ -346,9 +346,9 @@ DkThumbNailT::DkThumbNailT(const QString& filePath, const QImage& img) : DkThumb
 
 DkThumbNailT::~DkThumbNailT() {
 
-	if (thumbWatcher.isStarted() && !thumbWatcher.isRunning()) {
-		qDebug() << "[WARNING]: thumb watcher is started but not running while releasing!";
-	}
+	//if (thumbWatcher.isStarted() && !thumbWatcher.isRunning()) {
+	//	qDebug() << "[WARNING]: thumb watcher is started but not running while releasing!";
+	//}
 
 	if (mFetching && DkSettings::resources.numThumbsLoading > 0)
 		DkSettings::resources.numThumbsLoading--;

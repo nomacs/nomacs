@@ -193,6 +193,7 @@ public:
 	void setCompression(int compression) { mCompression = compression; };
 	void setMode(int mode) { mMode = mode; };
 	void setDeleteOriginal(bool deleteOriginal) { mDeleteOriginal = deleteOriginal; };
+	void setInputDirIsOutputDir(bool isOutputDir) { mInputDirIsOutputDir = isOutputDir; };
 
 	QStringList getFileList() const { return mFileList; };
 	QString getOutputDirPath() const { return mOutputDirPath; };
@@ -201,6 +202,7 @@ public:
 	int getCompression() const { return mCompression; };
 	int getMode() const { return mMode; };
 	bool getDeleteOriginal() const { return mDeleteOriginal; };
+	bool inputDirIsOutputDir() const { return mInputDirIsOutputDir; };
 
 	enum {
 		mode_overwrite,
@@ -218,6 +220,7 @@ protected:
 	int mCompression;
 	int mMode;
 	bool mDeleteOriginal;
+	bool mInputDirIsOutputDir;
 	
 	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
 };
