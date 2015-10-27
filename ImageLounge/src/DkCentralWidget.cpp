@@ -103,6 +103,11 @@ void DkTabInfo::setFilePath(const QString& filePath) {
 	mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath)));
 }
 
+void DkTabInfo::setDirPath(const QString& dirPath) {
+	mImageLoader->setDir(dirPath);
+	setMode(tab_thumb_preview);
+}
+
 QString DkTabInfo::getFilePath() const {
 
 	return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : QString();
@@ -752,11 +757,21 @@ void DkCentralWidget::loadFile(const QString& filePath) {
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
-	if (mTabInfos.size() > 1 || !mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty) { // braces
+	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
 		addTab(filePath);
 	}
 	else
 		mViewport->loadFile(filePath);
+}
+
+void DkCentralWidget::loadDirToTab(const QString& dirPath) {
+
+	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
+		addTab();
+	}
+	
+	mTabInfos.at(mTabbar->currentIndex())->setDirPath(dirPath);
+	showThumbView();
 }
 
 void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {

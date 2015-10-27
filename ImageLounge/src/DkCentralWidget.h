@@ -78,6 +78,7 @@ public:
 
 	QString getFilePath() const;
 	void setFilePath(const QString& filePath);
+	void setDirPath(const QString& dirPath);
 
 	QSharedPointer<DkImageContainerT> getImage() const;
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -157,6 +158,7 @@ public slots:
 	void pasteImage();
 	void loadFile(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
+	void loadDirToTab(const QString& dirPath);
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 
 protected:

@@ -2489,7 +2489,12 @@ void DkNoMacs::loadFile(const QString& filePath) {
 	if (!viewport())
 		return;
 
-	getTabWidget()->loadFileToTab(filePath);
+
+	if (QFileInfo(filePath).isDir())
+		getTabWidget()->showThumbView(true);
+	else
+		getTabWidget()->loadFileToTab(filePath);
+
 }
 
 void DkNoMacs::renameFile() {
