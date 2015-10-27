@@ -787,7 +787,7 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 
 void DkImageContainerT::saveMetaDataThreaded() {
 
-	if ((!exists() || getLoader()->getMetaData()) && !getLoader()->getMetaData()->isDirty())
+	if (!exists() || (getLoader()->getMetaData() && !getLoader()->getMetaData()->isDirty()))
 		return;
 
 	mFileUpdateTimer.stop();

@@ -1707,7 +1707,7 @@ void DkNoMacs::moveEvent(QMoveEvent *event) {
 
 void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 
-	if ((event->button() != Qt::LeftButton || viewport()) && viewport()->getImage().isNull())
+	if (event->button() != Qt::LeftButton || (viewport() && viewport()->getImage().isNull()))
 		return;
 
 	if (isFullScreen())
@@ -3407,7 +3407,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 #ifndef Q_WS_X11
 
 	// do we really need to check for update?
-	if ((!silent || !DkSettings::sync.updateDialogShown) && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
+	if (!silent || (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)) {
 
 		DkTimer dt;
 

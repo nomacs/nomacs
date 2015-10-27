@@ -523,10 +523,10 @@ void DkPongPort::keyPressEvent(QKeyEvent *event) {
 
 void DkPongPort::keyReleaseEvent(QKeyEvent* event) {
 
-	if (event->key() == Qt::Key_Up && (!event->isAutoRepeat() || event->key() == Qt::Key_Down) && !event->isAutoRepeat()) {
+	if ((event->key() == Qt::Key_Up && !event->isAutoRepeat()) || (event->key() == Qt::Key_Down && !event->isAutoRepeat())) {
 		mPlayer2.setSpeed(0);
 	}
-	if (event->key() == Qt::Key_W && (!event->isAutoRepeat() || event->key() == Qt::Key_S) && !event->isAutoRepeat()) {
+	if ((event->key() == Qt::Key_W && !event->isAutoRepeat()) || (event->key() == Qt::Key_S && !event->isAutoRepeat())) {
 		mPlayer1.setSpeed(0);
 	}
 

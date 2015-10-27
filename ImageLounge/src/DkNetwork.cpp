@@ -1413,7 +1413,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	qDebug() << "x86:" << x86;
 	qDebug() << "mac:" << mac;
 
-	if (!version.isEmpty() && (!x64.isEmpty() || !x86.isEmpty())) {		
+	if ((!version.isEmpty() && !x64.isEmpty()) || !x86.isEmpty()) {		
 		QStringList cVersion = QApplication::applicationVersion().split('.');
 		QStringList nVersion = version.split('.');
 
@@ -1426,11 +1426,11 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			return;
 		}
 		
-		if ((nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
-			nVersion[0].toInt() == cVersion[0].toInt()) &&	// major release
-			(nVersion[1].toInt() > cVersion[1].toInt()  ||	// minor release
-			nVersion[0].toInt() == cVersion[0].toInt()) &&	// major release
-			nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
+		if (nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
+			(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+			nVersion[1].toInt() > cVersion[1].toInt())  ||	// minor release
+			(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+			nVersion[1].toInt() == cVersion[1].toInt()) &&	// minor release
 			nVersion[2].toInt() >  cVersion[2].toInt()) {	// minor-minor release
 		
 			QString msg = tr("A new version") % " (" % sl[0] % ") " % tr("is available");
