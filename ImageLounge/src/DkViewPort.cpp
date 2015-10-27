@@ -1189,6 +1189,10 @@ void DkViewPort::togglePattern(bool show) {
 // edit image --------------------------------------------------------------------
 void DkViewPort::rotateCW() {
 
+	if (!mController->applyPluginChanges(true))
+		return;
+
+
 	if (mLoader != 0)
 		mLoader->rotateImage(90);
 
@@ -1196,12 +1200,18 @@ void DkViewPort::rotateCW() {
 
 void DkViewPort::rotateCCW() {
 
+	if (!mController->applyPluginChanges(true))
+		return;
+
 	if (mLoader != 0)
 		mLoader->rotateImage(-90);
 
 }
 
 void DkViewPort::rotate180() {
+
+	if (!mController->applyPluginChanges(true))
+		return;
 
 	if (mLoader != 0)
 		mLoader->rotateImage(180);
@@ -1269,6 +1279,9 @@ void DkViewPort::settingsChanged() {
 
 void DkViewPort::setEditedImage(QImage newImg) {
 
+	if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
+		return;
+
 	if (newImg.isNull()) {
 		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
@@ -1287,11 +1300,12 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	qDebug() << "mLoader gets this size: " << newImg.size();
 
 	// TODO: contrast mViewport does not add * 
-
-	// TODO: add functions such as save file on unload
 }
 
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
+
+	if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
+		return;
 
 	if (!img) {
 		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
@@ -1304,11 +1318,6 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-	//DkPluginManager::instance().get;	// TODO: apply plugin changes
-
-	//if(!noMacs->getCurrRunningPlugin().isEmpty()) 
-	//	noMacs->applyPluginChanges(true, false);
-
 	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (parentWidget() && parentWidget()->isFullScreen()))) {
 		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
@@ -1317,6 +1326,10 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	}
 
 	int success = true;
+
+	if (!mController->applyPluginChanges(true))		// user wants to apply changes first
+		return false;
+
 	if (fileChange)
 		success = mLoader->unloadFile();		// returns false if the user cancels
 	
@@ -1523,10 +1536,13 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 	//DkSettings::sync.syncMode = oldMode;
 }
 
-//DkImageLoader* DkViewPort::getImageLoader() {
-//
-//	return mLoader;
-//}
+QSharedPointer<DkImageContainerT> DkViewPort::imageContainer() const {
+
+	if (!mLoader)
+		return QSharedPointer<DkImageContainerT>();
+
+	return mLoader->getCurrentImage();
+}
 
 void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader) {
 	
@@ -2020,8 +2036,6 @@ void DkViewPortFrameless::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
-
-	qDebug() << "mImgMatrix: " << mImgMatrix;
 }
 
 //QTransform DkViewPortFrameless::getScaledImageMatrix() {

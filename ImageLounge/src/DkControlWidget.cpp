@@ -35,6 +35,8 @@
 #include "DkSettings.h"
 #include "DkPluginInterface.h"
 #include "DkToolbars.h"
+#include "DkPluginManager.h"
+#include "DkMessageBox.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStackedLayout>
@@ -500,6 +502,71 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 		showFileInfo(true);
 	}
 
+}
+
+bool DkControlWidget::closePlugin(bool askForSaving) {
+#ifdef WITH_PLUGINS
+
+	DkPluginInterface* cPlugin = DkPluginManager::instance().getRunningPlugin();
+
+	if (!cPlugin)
+		return true;
+	
+	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+
+	if (!vPlugin) 
+		return true;
+
+	// this is that complicated because we do not want plugins to have threaded containers - this could get weird
+	QSharedPointer<DkImageContainerT> pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));	// empty vars - mViewport plugin doesn't need them
+
+	if (pluginImage) {
+		if (askForSaving) {
+
+			DkMessageBox* msgBox = new DkMessageBox(
+				QMessageBox::Question, 
+				tr("Closing Plugin"), 
+				tr("Apply plugin changes?"), 
+				QMessageBox::Yes | QMessageBox::No, 
+				this);
+			msgBox->setDefaultButton(QMessageBox::Yes);
+			msgBox->setObjectName("SavePluginChanges");
+
+			if (msgBox->exec() != QMessageBox::Yes)
+				pluginImage = QSharedPointer<DkImageContainerT>();
+			
+		}				
+	}
+
+	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+
+	setPluginWidget(vPlugin, true);	// handles deletion
+	DkPluginManager::instance().clearRunningPluginKey();	// handles states
+
+	if (pluginImage) {
+		mViewport->setEditedImage(pluginImage);
+		return false;
+	}
+
+	return true;
+
+#endif // WITH_PLUGINS
+}
+
+bool DkControlWidget::applyPluginChanges(bool askForSaving) {
+
+#ifdef WITH_PLUGINS
+	DkPluginInterface* cPlugin = DkPluginManager::instance().getRunningPlugin();
+
+	if (!cPlugin)
+		return true;
+
+	// does the plugin want to be closed on image changes?
+	if (!cPlugin->closesOnImageChange())
+		return true;
+
+	return closePlugin(askForSaving);
+#endif // WITH_PLUGINS
 }
 
 void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {

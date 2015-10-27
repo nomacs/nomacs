@@ -145,6 +145,12 @@ public:
 
 	QVector<DkPluginInterface*> getBasicPlugins() const;
 
+	// functions for active plugin
+	QString getRunningPluginKey() const {return mRunningPlugin; };
+	void clearRunningPluginKey();
+	DkPluginInterface* getRunningPlugin() const;
+	DkPluginInterface* runPlugin(const QString& key);
+
 private:
 	DkPluginManager();
 
@@ -154,6 +160,7 @@ private:
 	QMap<QString, QString> runId2PluginId;
 	QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
 
+	QString mRunningPlugin;
 };
 
 // Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones

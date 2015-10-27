@@ -474,7 +474,6 @@ public:
 
 	bool mSaveSettings = true;
 
-	QString getCurrRunningPlugin() {return mActivePlugin;};
 	void colorizeIcons(const QColor& col);
 
 signals:
@@ -578,8 +577,6 @@ public slots:
 	void runLoadedPlugin();
 	void openPluginManager();
 	void runPluginFromShortcut();
-	void closePlugin(bool askForSaving, bool alreadySaving);
-	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
 	//void shareFacebook();
@@ -623,8 +620,6 @@ protected:
 	bool mOverlaid = false;
 
 	// vars
-	QString mActivePlugin;
-
 	QVector<QShortcut*> mShortcuts;	
 	QVector<QAction *> mFileActions;
 	QVector<QAction *> mSortActions;

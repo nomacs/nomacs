@@ -107,7 +107,7 @@ public:
 #endif
 
 	// getter
-	//DkImageLoader* getImageLoader();
+	QSharedPointer<DkImageContainerT> imageContainer() const;
 	void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
 	DkControlWidget* getController();
 	bool isTestLoaded() { return mTestLoaded; };

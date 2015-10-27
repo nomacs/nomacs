@@ -1844,5 +1844,42 @@ QVector<DkPluginInterface*> DkPluginManager::getBasicPlugins() const {
 	return plugins;
 }
 
+DkPluginInterface* DkPluginManager::getRunningPlugin() const {
+
+	if (!mRunningPlugin.isEmpty())
+		return getPlugin(mRunningPlugin);
+
+	return 0;
+}
+
+void DkPluginManager::clearRunningPluginKey() {
+	mRunningPlugin = "";
+}
+
+DkPluginInterface* DkPluginManager::runPlugin(const QString& key) {
+
+	if (!mRunningPlugin.isEmpty()) {
+
+		// the plugin is not closed in time
+		QMessageBox infoDialog(QApplication::activeWindow());
+		infoDialog.setWindowTitle("Close plugin");
+		infoDialog.setIcon(QMessageBox::Information);
+		infoDialog.setText("Please first close the currently opened plugin.");
+		infoDialog.show();
+
+		infoDialog.exec();
+
+		//TODO: dialog with yes/no - unload plugin if user wants to
+
+		return 0;
+	}
+
+	DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(key);
+	mRunningPlugin = key;
+
+	return cPlugin;
+}
+
+
 };
 

@@ -147,8 +147,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	mArchiveExtractionDialog = 0;
 #endif 
 
-	mActivePlugin = QString();
-
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
 	//localClientManger->start();
@@ -823,7 +821,7 @@ void DkNoMacs::createActions() {
 	connect(mFileActions[menu_file_open_dir], SIGNAL(triggered()), this, SLOT(openDir()));
 
 	mFileActions[menu_file_quick_launch] = new QAction(tr("&Quick Launch"), this);
-	mFileActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mFileActions[menu_file_quick_launch]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 	connect(mFileActions[menu_file_quick_launch], SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
 
@@ -2546,9 +2544,6 @@ void DkNoMacs::renameFile() {
 
 void DkNoMacs::find(bool filterAction) {
 
-	if(!getCurrRunningPlugin().isEmpty()) 
-		applyPluginChanges(true, false);
-
 	if (!viewport() || !getTabWidget()->getCurrentImageLoader())
 		return;
 
@@ -2609,9 +2604,6 @@ void DkNoMacs::changeSorting(bool change) {
 }
 
 void DkNoMacs::goTo() {
-
-	if(!getCurrRunningPlugin().isEmpty()) 
-		applyPluginChanges(true, false);
 
 	if (!viewport() || !getTabWidget()->getCurrentImageLoader())
 		return;
@@ -2676,9 +2668,6 @@ void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
-	if(!mActivePlugin.isEmpty()) 
-		applyPluginChanges(true, true);
-
 	if (getTabWidget()->getCurrentImageLoader())
 		getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
 }
@@ -2690,10 +2679,6 @@ void DkNoMacs::saveFileWeb() {
 }
 
 void DkNoMacs::resizeImage() {
-
-
-	if(!getCurrRunningPlugin().isEmpty()) 
-		applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2742,9 +2727,6 @@ void DkNoMacs::resizeImage() {
 
 void DkNoMacs::deleteFile() {
 
-	if(!getCurrRunningPlugin().isEmpty()) 
-		applyPluginChanges(false, false);
-
 	if (!viewport() || viewport()->getImage().isNull() || !getTabWidget()->getCurrentImageLoader())
 		return;
 
@@ -2784,9 +2766,6 @@ void DkNoMacs::exportTiff() {
 void DkNoMacs::computeMosaic() {
 #ifdef WITH_OPENCV
 
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
-
-	//if (!mosaicDialog)
 	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
 	mosaicDialog->setFile(getTabWidget()->getCurrentFilePath());
@@ -2804,8 +2783,6 @@ void DkNoMacs::computeMosaic() {
 }
 
 void DkNoMacs::openImgManipulationDialog() {
-
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2864,8 +2841,6 @@ void DkNoMacs::setWallpaper() {
 }
 
 void DkNoMacs::printDialog() {
-
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QPrinter printer;
 
@@ -3743,11 +3718,9 @@ void DkNoMacs::createPluginsMenu() {
 void DkNoMacs::openPluginManager() {
 #ifdef WITH_PLUGINS
 
-	if (!mActivePlugin.isEmpty()) {
-		closePlugin(true, false);
-	}
+	viewport()->getController()->closePlugin(true);
 
-	if (!mActivePlugin.isEmpty()) {
+	if (DkPluginManager::instance().getRunningPlugin()) {
 	   	   
 		QMessageBox infoDialog(this);
 		infoDialog.setWindowTitle("Close plugin");
@@ -3769,6 +3742,7 @@ void DkNoMacs::openPluginManager() {
 }
 
 void DkNoMacs::runLoadedPlugin() {
+
 #ifdef WITH_PLUGINS
 
    QAction* action = qobject_cast<QAction*>(sender());
@@ -3776,31 +3750,11 @@ void DkNoMacs::runLoadedPlugin() {
    if (!action)
 	   return;
 
-   if (!mActivePlugin.isEmpty())
-	   closePlugin(true, false);
-
-   if (!mActivePlugin.isEmpty()) {
-	   
-	    // the plugin is not closed in time
-	   
-	   	QMessageBox infoDialog(this);
-		infoDialog.setWindowTitle("Close plugin");
-		infoDialog.setIcon(QMessageBox::Information);
-		infoDialog.setText("Please first close the currently opened plugin.");
-		infoDialog.show();
-
-		infoDialog.exec();
-		return;
-   }
+   viewport()->getController()->closePlugin(true);
 
    QString key = action->data().toString();
-   DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(key);
 
-   // something is wrong if no plugin is loaded
-   if (!cPlugin) {
-	   qDebug() << "plugin is NULL";
-	   return;
-   }
+   DkPluginInterface* cPlugin = DkPluginManager::instance().runPlugin(key);
 
 	if(viewport()->getImage().isNull() && cPlugin->closesOnImageChange()){
 		QMessageBox msgBox(this);
@@ -3817,11 +3771,9 @@ void DkNoMacs::runLoadedPlugin() {
 	   if(!vPlugin || !vPlugin->getViewPort()) 
 		   return;
 
-	   mActivePlugin = key;
-	   	   
-	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(closePlugin(bool, bool)));
+	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool)), viewport()->getController(), SLOT(closePlugin(bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
-	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadImage(QImage)), viewport(), SLOT(setImage(QImage)));
 	   
 	   viewport()->getController()->setPluginWidget(vPlugin, false);
@@ -3860,80 +3812,6 @@ void DkNoMacs::runPluginFromShortcut() {
 			allPluginActions.at(i)->trigger();
 			break;
 		}
-#endif // WITH_PLUGINS
-}
-
-void DkNoMacs::closePlugin(bool askForSaving, bool) {
-#ifdef WITH_PLUGINS
-
-	if (mActivePlugin.isEmpty())
-		return;
-
-	if (!viewport())
-		return;
-
-	DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(mActivePlugin);
-
-
-	mActivePlugin = QString();
-	bool isSaveNeeded = false;
-
-	if (!cPlugin) 
-		return;
-	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
-
-	if (!vPlugin) 
-		return;
-
-	// this is that complicated because we do not want plugins to have threaded containers - this could get weird
-	QSharedPointer<DkImageContainerT> pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", getTabWidget()->getCurrentImage()));	// empty vars - mViewport plugin doesn't need them
-
-	if (pluginImage) {
-		if (askForSaving) {
-
-			QMessageBox msgBox(this);
-			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-			msgBox.setDefaultButton(QMessageBox::No);
-			msgBox.setEscapeButton(QMessageBox::No);
-			msgBox.setIcon(QMessageBox::Question);
-			msgBox.setWindowTitle(tr("Closing plugin..."));
-
-			msgBox.setText(tr("Do you want to apply plugin changes?"));
-
-			if(msgBox.exec() == QMessageBox::Yes) {
-				viewport()->setEditedImage(pluginImage);
-				isSaveNeeded = true;
-			}
-			msgBox.deleteLater();
-		}				
-		else 
-			viewport()->setEditedImage(pluginImage);
-	}
-
-	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
-
-	viewport()->getController()->setPluginWidget(vPlugin, true);
-
-	//if(!alreadySaving && isSaveNeeded) saveFileAs();
-
-	//mViewport()->setPluginImageWasApplied(true);
-
-#endif // WITH_PLUGINS
-}
-
-void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
-
-#ifdef WITH_PLUGINS
-	if (mActivePlugin.isEmpty())
-		return;
-
-	DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(mActivePlugin);
-
-	// does the plugin want to be closed on image changes?
-	if (!cPlugin->closesOnImageChange())
-		return;
-
-	closePlugin(askForSaving, alreadySaving);
 #endif // WITH_PLUGINS
 }
 

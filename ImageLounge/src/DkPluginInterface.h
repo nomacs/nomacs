@@ -118,9 +118,9 @@ public:
 	};
 
 signals:
-	void closePlugin(bool askForSaving = false, bool alreadySaving = false);
+	void closePlugin(bool askForSaving = false);
 	void showToolbar(QToolBar* toolbar, bool show);
-	void loadFile(QFileInfo file);
+	void loadFile(const QString& filePath);
 	void loadImage(QImage image);
 
 protected:

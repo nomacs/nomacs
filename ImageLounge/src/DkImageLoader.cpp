@@ -722,9 +722,6 @@ bool DkImageLoader::unloadFile() {
 		else if (answer == QMessageBox::Cancel) {
 			return false;
 		}
-		else {
-			mCurrentImage->saveMetaDataThreaded();
-		}
 	}
 
 	return true;
