@@ -164,7 +164,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			if (!DkSettings::metaData.ignoreExifOrientation) {
 				orientation = mMetaData->getOrientation();
 				
-				if (orientation <= 0 || orientation > 9) {
+				if (orientation == -1) {
 					mMetaData->clearOrientation();
 					mMetaData->saveMetaData(ba);
 					qWarning() << "deleting illegal EXIV orientation: " << orientation;

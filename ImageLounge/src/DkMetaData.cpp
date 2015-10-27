@@ -263,14 +263,14 @@ int DkMetaDataT::getOrientation() const {
 					break;
 				case 5: orientation = -90;
 					break;
-				default: orientation = 0;
+				default: orientation = -1;
 					break;
 				}	
 			}
 		}
 	}
 	catch(...) {
-		return 0;
+		return -1;
 	}
 
 	return orientation;

@@ -375,16 +375,6 @@ void DkMetaDataDock::createLayout() {
 	QWidget* widget = new QWidget(this);
 	QVBoxLayout* layout = new QVBoxLayout(widget);
 
-	//// register our special shortcut editor
-	//QItemEditorFactory *factory = new QItemEditorFactory;
-
-	//QItemEditorCreatorBase *shortcutListCreator =
-	//	new QStandardItemEditorCreator<DkShortcutEditor>();
-
-	//factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
-
-	//QItemEditorFactory::setDefaultFactory(factory);
-
 	// create our beautiful shortcut view
 	mModel = new DkMetaDataModel(this);
 	mTreeView = new QTreeView(this);
@@ -399,6 +389,7 @@ void DkMetaDataDock::createLayout() {
 	// thumb layout
 	QWidget* thumbWidget = new QWidget(this);
 	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbWidget);
+	thumbLayout->setContentsMargins(0, 0, 0, 0);
 	thumbLayout->addStretch();
 	thumbLayout->addWidget(mThumbNailLabel);
 	thumbLayout->addStretch();
@@ -457,13 +448,17 @@ void DkMetaDataDock::thumbLoaded(bool loaded) {
 	if (loaded) {
 		QImage thumbImg = mThumb->getImage();
 		
-		if (thumbImg.width() > width()) {
-			mThumbNailLabel->setFixedWidth(width()-20);
-			thumbImg = thumbImg.scaled(QSize(width(), thumbImg.height()), Qt::KeepAspectRatio);
-		}
-		else
-			mThumbNailLabel->setFixedHeight(thumbImg.height());
+		//if (thumbImg.width() > width()) {
+		//	mThumbNailLabel->setFixedWidth(width()-20);
+		//	thumbImg = thumbImg.scaled(QSize(width(), thumbImg.height()), Qt::KeepAspectRatio);
+		//}
+		//else
+		//	mThumbNailLabel->setFixedHeight(thumbImg.height());
 
+		QSize tSize = thumbImg.size();
+		thumbImg = thumbImg.scaled(tSize.boundedTo(QSize(mTreeView->width(), mTreeView->width())), Qt::KeepAspectRatio);
+
+		mThumbNailLabel->setScaledContents(true);
 		mThumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
 		mThumbNailLabel->show();
 	}
