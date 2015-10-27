@@ -158,9 +158,9 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		buffer.close();
 	}
 
-	if ((thumb.isNull() || thumb.width() < tS) && thumb.height() < tS) {
+	if (thumb.isNull() || (thumb.width() < tS && thumb.height() < tS)) {
 
-		imgW = imageReader->size().width();		// crash detected: Unhandled exception at 0x66850E9A (msvcr110d.dll) in nomacs.exe: 0xC0000005: Access violation reading location 0x0000C788.
+		imgW = imageReader->size().width();		// crash detected: unhandled exception at 0x66850E9A (msvcr110d.dll) in nomacs.exe: 0xC0000005: Access violation reading location 0x0000C788.
 		imgH = imageReader->size().height();	// locks the file!
 	}
 	
@@ -179,7 +179,9 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		}
 	}
 
-	if (forceLoad != force_exif_thumb && ((thumb.isNull() || thumb.width() < tS) && (thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb))) {
+	if (	forceLoad != force_exif_thumb && 
+			(thumb.isNull() || (thumb.width() < tS && thumb.height() < tS) || 
+			forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
