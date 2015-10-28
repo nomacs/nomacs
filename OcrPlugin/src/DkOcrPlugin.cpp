@@ -41,6 +41,12 @@
   * #ACTION_TIPP1		- your action status tip (e.g. Flips an image horizontally - user friendly!)
   *******************************************************************************************************/
 
+#include <iostream>
+//#include <QLibrary>
+#include "DkOcr.h"
+#include <DkBaseViewPort.h>
+#include "../../ThresholdPlugin/src/DkThresholdPlugin.h"
+
 namespace nmc {
 
 /**
@@ -51,23 +57,44 @@ namespace nmc {
 	// create run IDs
 	QVector<QString> runIds;
 	runIds.resize(id_end);
-
-	runIds[ID_ACTION1] = "#RUN_ID_1";
+	runIds[ACTION_TEST] = "RUN_OCR_TEST";
+	runIds[ACTION_TEST_FLIP] = "RUN_OCR_TEST_FLIP";
 	mRunIDs = runIds.toList();
 
 	// create menu actions
 	QVector<QString> menuNames;
 	menuNames.resize(id_end);
 
-	menuNames[ID_ACTION1] = tr("#ACTION_NAME1");
+	menuNames[ACTION_TEST] = tr("menu_action");
+	menuNames[ACTION_TEST_FLIP] = tr("menu_action2");
 	mMenuNames = menuNames.toList();
 
 	// create menu status tips
 	QVector<QString> statusTips;
 	statusTips.resize(id_end);
 
-	statusTips[ID_ACTION1] = tr("#ACTION_TIPP1");
+	statusTips[ACTION_TEST] = tr("#ACTION_TIPP1");
+	statusTips[ACTION_TEST_FLIP] = tr("#ACTION_TIPP2");
 	mMenuStatusTips = statusTips.toList();
+
+
+//		
+
+	/*QLibrary libTesseract("E:/dev/tesseract/build_x86/bin/Debug/tesseract305d.dll"); 
+	libTesseract.load();
+	if(!libTesseract.isLoaded())
+	{
+		std::cout << "could not load lib Tesseract" << std::endl;
+		exit(1);
+	}
+
+	QLibrary libLept("E:/dev/tesseract/build_x86/bin/Debug/liblept171.dll");
+	libLept.load();
+	if (!libLept.isLoaded())
+	{
+		std::cout << "could not load lib lib Leptonica" << std::endl;
+		exit(1);
+	}*/
 }
 /**
 *	Destructor
@@ -91,7 +118,7 @@ QString DkOcrPlugin::pluginID() const {
 **/
 QString DkOcrPlugin::pluginName() const {
 
-	return tr("#MENU_NAME");
+	return tr("Ocr Plugin");
 };
 
 /**
@@ -136,7 +163,7 @@ QStringList DkOcrPlugin::runID() const {
 **/
 QString DkOcrPlugin::pluginMenuName(const QString &runID) const {
 
-	return tr("OcrMenu_Placeholder");
+	return tr("Run Ocr");
 };
 
 /**
@@ -151,17 +178,17 @@ QString DkOcrPlugin::pluginStatusTip(const QString &runID) const {
 QList<QAction*> DkOcrPlugin::pluginActions(QWidget* parent) {
 
 	if (mActions.empty()) {
-		QAction* ca = new QAction(mMenuNames[ID_ACTION1], this);
-		ca->setObjectName(mMenuNames[ID_ACTION1]);
-		ca->setStatusTip(mMenuStatusTips[ID_ACTION1]);
-		ca->setData(mRunIDs[ID_ACTION1]);	// runID needed for calling function runPlugin()
+		QAction* ca = new QAction(mMenuNames[ACTION_TEST], this);
+		ca->setObjectName(mMenuNames[ACTION_TEST]);
+		ca->setStatusTip(mMenuStatusTips[ACTION_TEST]);
+		ca->setData(mRunIDs[ACTION_TEST]);	// runID needed for calling function runPlugin()
 		mActions.append(ca);
 
-		//QAction* ca = new QAction(mMenuNames[ID_ACTION2], this);
-		//ca->setObjectName(mMenuNames[ID_ACTION2]);
-		//ca->setStatusTip(mMenuStatusTips[ID_ACTION2]);
-		//ca->setData(mRunIDs[ID_ACTION2]);	// runID needed for calling function runPlugin()
-		//mActions.append(ca);
+		ca = new QAction(mMenuNames[ACTION_TEST_FLIP], this);
+		ca->setObjectName(mMenuNames[ACTION_TEST_FLIP]);
+		ca->setStatusTip(mMenuStatusTips[ACTION_TEST_FLIP]);
+		ca->setData(mRunIDs[ACTION_TEST_FLIP]);	// runID needed for calling function runPlugin()
+		mActions.append(ca);
 	}
 
 	return mActions;
@@ -169,24 +196,39 @@ QList<QAction*> DkOcrPlugin::pluginActions(QWidget* parent) {
 
 QSharedPointer<DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<DkImageContainer> imgC) const
 {
-	return imgC;
-}
+	std::cout << "run plugin funcs " << runID.toStdString() << std::endl;
+	if(runID == this->runID()[0]) {//mRunIDs[ACTION_TEST]) {
 
-	/**
-* Main function: runs plugin based on its ID
-* @param plugin ID
-* @param image to be processed
-**/
-/*QImage DkOcrPlugin::runPlugin(const QString &runID, const QImage &image) const {
+		if (parent()) {
+			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+			DkOcrToolbar* toolbar = new DkOcrToolbar(viewport);
+		}
 
-	if(runID == mRunIDs[ID_ACTION1]) {
-		// do what every you want e.g.:
-		return image.mirrored(true, false);
+		auto img = imgC->image();
+		Ocr::testOcr(img);
+		imgC->setImage(img);
+
+		std::cout << "run plugin" << std::endl;
 	}
 
 	// wrong runID? - do nothing
-	return image;
-};*/
+	return imgC;
+}
 
+
+DkPluginViewPort* DkOcrPlugin::getViewPort() {
+
+	if (!viewport) {
+		viewport = new DkPluginViewPort();
+		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+	}
+	return viewport;
+}
+
+	void DkOcrPlugin::deleteViewPort()
+	{
+		if (!viewport)
+			delete viewport;
+	}
 };
 
