@@ -51,6 +51,12 @@ public:
 	QString pluginMenuName(const QString &runID = QString()) const override;
 	QString pluginStatusTip(const QString &runID = QString()) const override;
 	QList<QAction*> pluginActions(QWidget* parent);
+
+	// DIEM: I think this should solve the sub-menu: 	
+	// getMainWindow() call if you need a (or the) parent
+	// virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
+	// virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
+	
 	//QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override;
 
