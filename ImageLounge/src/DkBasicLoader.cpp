@@ -79,17 +79,17 @@
 #include "tif_config.h"	
 #endif
 
-#ifdef Q_WS_MAC
+#if defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
 #define uint64 uint64_hack_
 #define int64 int64_hack_
-#endif // Q_WS_MAC
+#endif // defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
 
 #include "tiffio.h"
 
-#ifdef Q_WS_MAC
+#if defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
 #undef uint64
 #undef int64
-#endif // Q_WS_MAC
+#endif // defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
 #endif
 
 #endif
