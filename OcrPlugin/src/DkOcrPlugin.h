@@ -25,10 +25,13 @@
 #pragma once
 
 #include "DkPluginInterface.h"
+#include "DkOcrToolbar.h"
 
 namespace nmc {
 
-class DkOcrPlugin : public QObject, DkPluginInterface {
+class DkOcrPlugin : public QObject, DkViewPortInterface {
+
+private:
 	Q_OBJECT
 	Q_INTERFACES(nmc::DkPluginInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkOcrPlugin/2.0" FILE "DkOcrPlugin.json")
@@ -51,8 +54,13 @@ public:
 	//QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override;
 
+	DkPluginViewPort* getViewPort() override;
+	void deleteViewPort() override;
+
 	enum {
-		ID_ACTION1,
+		ACTION_TEST_FLIP,
+		ACTION_TEST,
+
 		// add actions here
 
 		id_end
@@ -63,6 +71,8 @@ protected:
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
+
+	DkPluginViewPort* viewport;
 };
 
 };

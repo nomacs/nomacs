@@ -53,7 +53,19 @@ link_directories(${OpenCV_LIBRARY_DIRS} ${NOMACS_BUILD_DIRECTORY}/$(CONFIGURATIO
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
 target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OpenCV_LIBS} ${NOMACS_LIBS})
 
+### Add Tesseract Dependency ##########################################
+find_package(Tesseract REQUIRED)
+message(${Tesseract_INCLUDE_DIRS})
+include_directories(${Tesseract_INCLUDE_DIRS})
+include_directories( E:/dev/tesseract/ccutil )
+include_directories( E:/dev/tesseract/ccmain )
+include_directories( E:/dev/tesseract/ccstruct )
+target_link_libraries(${PROJECT_NAME} ${Tesseract_LIBRARIES})
+#######################################################################
+
 NMC_CREATE_TARGETS()
+
+
 
 
 qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)

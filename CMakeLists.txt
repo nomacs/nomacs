@@ -20,7 +20,7 @@ OPTION (ENABLE_THRESHOLD "Compile Threshold plugin" ON)
 OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
 OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
-
+OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 
 NMC_PREPARE_PLUGIN()
 
@@ -72,3 +72,7 @@ ENDIF(ENABLE_DOC)
 IF (ENABLE_PAGE)
 	add_subdirectory(PageExtractionPlugin)
 ENDIF(ENABLE_PAGE)
+
+IF (ENABLE_OCR)
+	add_subdirectory(OcrPlugin)
+ENDIF(ENABLE_OCR)
