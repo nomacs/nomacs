@@ -9,9 +9,6 @@ ENDIF()
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET(ENABLE_QT5 ON)
-
-OPTION (ENABLE_JP2K "Compile JPEG2000 plugin (jasper and qtjp2)" OFF)
 OPTION (ENABLE_FAKE_MINIATURES "Compile FakeMiniatures plugin" ON)
 if(NOT CMAKE_CL_64 AND MSVC)
 	OPTION (ENABLE_NIKON "Compile Nikon plugin" ON)
@@ -42,14 +39,7 @@ else()
 endif()
 
 
-set(BUILDING_MULTIPLE_PLUGINS true)
-
-IF (ENABLE_JP2K)
-	add_subdirectory(jasper-1.900.1)
-	add_subdirectory(qtjp2imageformat)
-	add_dependencies(qtjp22 libjasper)
-ENDIF(ENABLE_JP2K)
-	
+set(BUILDING_MULTIPLE_PLUGINS true)	
 
 IF (ENABLE_FAKE_MINIATURES)
 	add_subdirectory(FakeMiniaturesPlugin)
