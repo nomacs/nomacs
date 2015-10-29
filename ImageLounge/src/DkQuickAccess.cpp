@@ -32,6 +32,8 @@
 #include <QAction>
 #include <QStandardItemModel>
 #include <QDebug>
+#include <QCompleter>
+#include <QKeyEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
 
@@ -59,7 +61,7 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 		}
 
 		QAction* a = actions[rIdx];
-		QIcon icon = a->icon().isNull() ? QIcon(":/nomacs/img/movie-next.png") : a->icon();
+		QIcon icon = a->icon().isNull() ? QIcon(":/nomacs/img/dummy.png") : a->icon();
 
 		QString text = a->text().replace("&", "");
 		QStandardItem* item = new QStandardItem(text);
@@ -106,6 +108,8 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 
 	QString key = index.data().toString();
 
+	emit hideEdit();
+
 	if (mFilePaths.contains(key)) {
 		emit loadFileSignal(key);
 		return;
@@ -125,166 +129,52 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 	}
 }
 
-//void DkQuickFilterCompleter::setCompletionPrefix(const QString &prefix) {
-//
-//	//QStringListModel* sm = static_cast<QStringListModel*>(model());
-//
-//	//if (!sm)
-//	//	QCompleter::setCompletionPrefix(prefix);
-//
-//
-//	//QStringList strings = sm->stringList();
-//	//strings = DkUtils::filterStringList(prefix, strings);
-//	//sm->setStringList(strings);
-//
-//}
+// DkQuickAcessEdit --------------------------------------------------------------------
+DkQuickAccessEdit::DkQuickAccessEdit(QWidget* parent) : QLineEdit("", parent) {
+	
+	setPlaceholderText(tr("Quick Launch (Ctrl + Q)"));
+	setMinimumWidth(150);
+	setMaximumWidth(350);
+	hide();
 
+	mCompleter = new QCompleter(this);
 
-//// DkMetaDataModel --------------------------------------------------------------------
-//DkQuickAcessModel::DkQuickAcessModel(QObject* parent /* = 0 */) : QAbstractItemModel(parent) {
-//
-//	// create root
-//	QVector<QVariant> rootData;
-//	rootData << tr("Key") << tr("Value");
-//
-//	rootItem = new TreeItem(rootData);
-//}
-//
-//DkQuickAcessModel::~DkQuickAcessModel() {
-//
-//	delete rootItem;
-//}
-//
-//void DkQuickAcessModel::clear() {
-//
-//	beginResetModel();
-//	rootItem->clear();
-//	endResetModel();
-//}
-//
-//void DkQuickAcessModel::addActions(const QVector<QAction*>& actions) {
-//
-//	for (QAction* a : actions)
-//		createItem(tr("Action"), a->text());
-//
-//}
-//
-//void DkQuickAcessModel::addPaths(const QStringList& filePaths) {
-//
-//	for (QString s : filePaths)
-//		createItem(tr("File Path"), s);
-//}
-//
-//void DkQuickAcessModel::createItem(const QString& key, const QVariant& value) {
-//
-//	TreeItem* item = rootItem;
-//
-//	QVector<QVariant> entry;
-//	entry << value;
-//	entry << key;
-//
-//	TreeItem* dataItem = new TreeItem(entry, item);
-//	item->appendChild(dataItem);
-//}
-//
-//QModelIndex DkQuickAcessModel::index(int row, int column, const QModelIndex &parent) const {
-//
-//	if (!hasIndex(row, column, parent))
-//		return QModelIndex();
-//
-//	TreeItem *parentItem;
-//
-//	if (!parent.isValid())
-//		parentItem = rootItem;
-//	else
-//		parentItem = static_cast<TreeItem*>(parent.internalPointer());
-//
-//	TreeItem *childItem = parentItem->child(row);
-//
-//	if (childItem)
-//		return createIndex(row, column, childItem);
-//	else
-//		return QModelIndex();
-//}
-//
-//QModelIndex DkQuickAcessModel::parent(const QModelIndex &index) const {
-//
-//	if (!index.isValid())
-//		return QModelIndex();
-//
-//	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-//	TreeItem *parentItem = childItem->parent();
-//
-//	if (!parentItem || parentItem == rootItem)
-//		return QModelIndex();
-//
-//	//qDebug() << "parent is: " << childItem->data(0);
-//
-//	return createIndex(parentItem->row(), 0, parentItem);
-//}
-//
-//int DkQuickAcessModel::rowCount(const QModelIndex& parent) const {
-//
-//	TreeItem *parentItem;
-//	if (parent.column() > 0)
-//		return 0;
-//
-//	if (!parent.isValid())
-//		parentItem = rootItem;
-//	else
-//		parentItem = static_cast<TreeItem*>(parent.internalPointer());
-//
-//	return parentItem->childCount();
-//}
-//
-//int DkQuickAcessModel::columnCount(const QModelIndex& parent) const {
-//
-//	if (parent.isValid())
-//		return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
-//	else
-//		return rootItem->columnCount();
-//}
-//
-//QVariant DkQuickAcessModel::data(const QModelIndex& index, int role) const {
-//
-//	if (!index.isValid()) {
-//		return QVariant();
-//	}
-//
-//	if (role == Qt::DisplayRole || role == Qt::EditRole) {
-//
-//		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-//
-//		return item->data(index.column());
-//	}
-//
-//	return QVariant();
-//}
-//
-//QVariant DkQuickAcessModel::headerData(int section, Qt::Orientation orientation, int role) const {
-//
-//	if (orientation != Qt::Horizontal || role != Qt::DisplayRole) 
-//		return QVariant();
-//
-//	return rootItem->data(section);
-//} 
-//
-//Qt::ItemFlags DkQuickAcessModel::flags(const QModelIndex& index) const {
-//
-//	if (!index.isValid())
-//		return Qt::ItemIsEditable;
-//
-//	Qt::ItemFlags flags;
-//
-//	if (index.column() == 0)
-//		flags = QAbstractItemModel::flags(index);
-//	if (index.column() == 1)
-//		flags = QAbstractItemModel::flags(index);
-//
-//	return flags;
-//}
-//
-//
-//
-//
+#if QT_VERSION >= 0x050000
+	mCompleter->setFilterMode(Qt::MatchContains);
+#endif
+	mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+	setCompleter(mCompleter);
+}
+
+void DkQuickAccessEdit::setModel(QStandardItemModel* model) {
+
+	mCompleter->setModel(model);
+	clear();
+	show();
+
+	setFocus(Qt::MouseFocusReason);
+}
+
+void DkQuickAccessEdit::focusOutEvent(QFocusEvent* ev) {
+
+	QLineEdit::focusOutEvent(ev);
+	clearAccess();
+}
+
+void DkQuickAccessEdit::keyReleaseEvent(QKeyEvent* ev) {
+
+	QLineEdit::keyReleaseEvent(ev);
+	
+	if (ev->key() == Qt::Key_Escape) {
+		clearAccess();
+	}
+
+}
+
+void DkQuickAccessEdit::clearAccess() {
+
+	clear();
+	hide();
+}
+
 }

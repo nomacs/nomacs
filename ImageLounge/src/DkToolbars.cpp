@@ -78,41 +78,19 @@ DkMainToolBar::DkMainToolBar(const QString & title, QWidget * parent /* = 0 */) 
 
 void DkMainToolBar::createLayout() {
 
-	quickFilterEdit = new QLineEdit("", this);
-	quickFilterEdit->setPlaceholderText(tr("Quick Launch (Ctrl + Q)"));
-	quickFilterEdit->setMaximumWidth(250);
-	quickFilterEdit->hide();
-
-	completer = new QCompleter(this);
-	connect(completer, SIGNAL(activated(const QModelIndex&)), this, SLOT(closeQuickAccess()));
-	connect(quickFilterEdit, SIGNAL(editingFinished()), this, SLOT(quickAccessFinished()));
-#if QT_VERSION >= 0x050000
-	completer->setFilterMode(Qt::MatchContains);
-#endif
-	completer->setCaseSensitivity(Qt::CaseInsensitive);
-	quickFilterEdit->setCompleter(completer);
+	mQuickAccessEdit = new DkQuickAccessEdit(this);
 }
 
 void DkMainToolBar::setQuickAccessModel(QStandardItemModel* model) {
 	
-	completer->setModel(model);
-	quickFilterEdit->show();
-	quickFilterEdit->clear();
-	filterAction = addWidget(quickFilterEdit);
-
-	quickFilterEdit->setFocus(Qt::MouseFocusReason);
-	qDebug() << "should get the focus";
+	mQuickAccessEdit->setModel(model);
+	addWidget(mQuickAccessEdit);
+	mQuickAccessEdit->setFocus(Qt::MouseFocusReason);
 }
 
 void DkMainToolBar::closeQuickAccess() {
 
-	//quickFilterEdit->editingFinished();
-	quickFilterEdit->clear();
-	//quickFilterEdit->clearFocus();
-	quickFilterEdit->hide();
-	//this->setFocus(Qt::MouseFocusReason);
-	//removeAction(filterAction);
-	qDebug() << "here";
+	mQuickAccessEdit->clearAccess();
 }
 
 void DkMainToolBar::allActionsAdded() {
@@ -122,6 +100,10 @@ void DkMainToolBar::allActionsAdded() {
 	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	addWidget(spacer);
 	//addWidget(quickFilterEdit);
+}
+
+DkQuickAccessEdit* DkMainToolBar::getQuickAccess() const {
+	return mQuickAccessEdit;
 }
 
 // DkColorSlider:
@@ -193,7 +175,6 @@ DkColorSlider::~DkColorSlider() {
 QColor DkColorSlider::getColor() {
 
 	return mColor;
-
 };
 
 qreal DkColorSlider::getNormedPos() {

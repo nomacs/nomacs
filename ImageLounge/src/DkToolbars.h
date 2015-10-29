@@ -50,6 +50,7 @@ namespace nmc {
 class DkTransferToolBar;
 class DkVector;
 class DkQuickAccess;
+class DkQuickAccessEdit;
 
 class DkMainToolBar : public QToolBar {
 	Q_OBJECT
@@ -59,7 +60,7 @@ public:
 
 	void allActionsAdded();	// fast fix for now
 	void setQuickAccessModel(QStandardItemModel* model);
-	QCompleter* getCompleter() { return completer; };
+	DkQuickAccessEdit* getQuickAccess() const;
 
 public slots:
 	void closeQuickAccess();
@@ -67,9 +68,7 @@ public slots:
 protected:
 	void createLayout();
 
-	QLineEdit* quickFilterEdit;
-	QCompleter* completer;
-	QAction* filterAction;
+	DkQuickAccessEdit* mQuickAccessEdit;
 };
 
 class DkColorSlider : public QWidget {

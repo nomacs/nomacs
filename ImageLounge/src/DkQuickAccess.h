@@ -32,6 +32,7 @@
 #include <QFileInfo>
 #include <QVector>
 #include <QStringList>
+#include <QLineEdit>
 #pragma warning(pop)		// no warnings from includes - end
 
 class QAction;
@@ -59,6 +60,7 @@ public slots:
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
+	void hideEdit() const;
 
 protected:
 	QStandardItemModel* mModel = 0;
@@ -67,40 +69,23 @@ protected:
 	QStringList mFilePaths;
 };
 
+class DkQuickAccessEdit : public QLineEdit {
+	Q_OBJECT
 
-//// nomacs defines
-//class TreeItem;
-//
-//class DkQuickAcessModel : public QAbstractItemModel {
-//	Q_OBJECT
-//
-//public:
-//	DkQuickAcessModel(QObject* parent = 0);
-//	~DkQuickAcessModel();
-//
-//	QModelIndex index(int row, int column, const QModelIndex &parent) const;
-//	QModelIndex parent(const QModelIndex &index) const;
-//
-//	// return item of the model
-//	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
-//	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
-//	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-//	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-//
-//	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
-//	//virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-//
-//	virtual void addActions(const QVector<QAction*>& actions);
-//	virtual void addPaths(const QStringList& filePaths);
-//	void clear();
-//
-//protected:
-//	TreeItem* rootItem;
-//
-//	void createItem(const QString& key, const QVariant& value);
-//};
+public:
+	DkQuickAccessEdit(QWidget* parent = 0);
 
+	void setModel(QStandardItemModel* model);
 
+public slots:
+	void clearAccess();
 
+protected:
+	void focusOutEvent(QFocusEvent* ev) override;
+	void keyReleaseEvent(QKeyEvent* ev) override;
+
+	QCompleter* mCompleter;
+
+};
 
 }

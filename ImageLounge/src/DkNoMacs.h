@@ -94,6 +94,7 @@ class DkMainToolBar;
 class DkDockWidget;
 class DkQuickAccess;
 class DkImageLoader;
+class DkQuickAccessEdit;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -304,6 +305,7 @@ protected:
 	
 	// toolbar
 	DkMainToolBar* mToolbar = 0;
+	DkQuickAccessEdit* mQuickAccessEdit = 0;
 	QToolBar* mMovieToolbar = 0;
 	QStatusBar* mStatusbar = 0;
 	QVector<QLabel*> mStatusbarLabels;
