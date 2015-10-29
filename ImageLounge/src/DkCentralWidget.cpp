@@ -39,6 +39,7 @@
 #include "DkImageLoader.h"
 #include "DkSettings.h"
 #include "DkWidgets.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -236,6 +237,7 @@ void DkCentralWidget::createLayout() {
 
 	mThumbScrollWidget = new DkThumbScrollWidget(this);
 	mThumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
+	mThumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 	//thumbScrollWidget->hide();
 
 	mTabbar = new QTabBar(this);
@@ -264,7 +266,8 @@ void DkCentralWidget::createLayout() {
 	mRecentFilesWidget = new DkRecentFilesWidget(viewWidget);
 	QRect screenRect = QApplication::desktop()->availableGeometry(this);
 	mRecentFilesWidget->setFixedSize(screenRect.width(), screenRect.height());
-	
+	mRecentFilesWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
+
 	// connections
 	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(mViewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
@@ -279,6 +282,8 @@ void DkCentralWidget::createLayout() {
 	// thumbnail preview widget
 	connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
+
+	connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
 
 }
 

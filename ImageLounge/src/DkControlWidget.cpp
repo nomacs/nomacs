@@ -37,6 +37,7 @@
 #include "DkToolbars.h"
 #include "DkPluginManager.h"
 #include "DkMessageBox.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStackedLayout>
@@ -133,6 +134,17 @@ void DkControlWidget::init() {
 	mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	mSpinnerLabel->halfSize();
 	mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+	// register actions
+	DkActionManager& am = DkActionManager::instance();
+	mFilePreview->registerAction(am.action(DkActionManager::menu_panel_preview));
+	mMetaDataInfo->registerAction(am.action(DkActionManager::menu_panel_exif));
+	mPlayer->registerAction(am.action(DkActionManager::menu_panel_player));
+	mCropWidget->registerAction(am.action(DkActionManager::menu_edit_crop));
+	mFileInfoLabel->registerAction(am.action(DkActionManager::menu_panel_info));
+	mHistogram->registerAction(am.action(DkActionManager::menu_panel_histogram));
+	mCommentWidget->registerAction(am.action(DkActionManager::menu_panel_comment));
+	mFolderScroll->registerAction(am.action(DkActionManager::menu_panel_scroller));
 
 	// dummy - needed for three equal columns @markus: do not delete!
 	QWidget* dw = new QWidget(this);

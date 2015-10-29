@@ -66,6 +66,7 @@ class TreeItem;
 class DkSlider;
 class DkButton;
 class DkThumbNail;
+class DkAppManager;
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
@@ -173,49 +174,6 @@ protected:
 	
 	QString mAcceptedFile;
 	QString mFile;
-};
-
-class DkAppManager : public QObject{
-	Q_OBJECT
-
-public:
-	DkAppManager(QWidget* parent = 0);
-	~DkAppManager();
-
-	void setActions(QVector<QAction* > actions);
-	QVector<QAction* > getActions() const;
-	QAction* createAction(const QString& filePath);
-	QAction* findAction(const QString& appPath) const;
-
-	enum defaultAppIdx {
-
-		app_photohsop,
-		app_picasa,
-		app_picasa_viewer,
-		app_irfan_view,
-		app_explorer,
-
-		app_idx_end
-	};
-
-public slots:
-	void openTriggered() const;
-
-signals:
-	void openFileSignal(QAction* action) const;
-
-protected:
-	void saveSettings() const;
-	void loadSettings();
-	void assignIcon(QAction* app) const;
-	bool containsApp(QVector<QAction* > apps, const QString& appName) const;
-
-	QString searchForSoftware(const QString& organization, const QString& application, const QString& pathKey = "", const QString& exeName = "") const;
-	void findDefaultSoftware();
-
-	QVector<QString> mDefaultNames;
-	QVector<QAction* > mApps;
-	bool mFirstTime = true;
 };
 
 class DkAppManagerDialog : public QDialog {

@@ -37,6 +37,7 @@
 #include "DkToolbars.h"
 #include "DkMetaData.h"
 #include "DkPluginManager.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -98,6 +99,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 	
+	DkActionManager& am = DkActionManager::instance();
+	addActions(am.allActions().toList());
+
 	qDebug() << "viewer created...";
 
 	// TODO:
@@ -1658,6 +1662,13 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 	mMainScreen = geometry();
 
+	DkActionManager& am = DkActionManager::instance();
+	mStartActions.append(am.action(DkActionManager::menu_file_open));
+	mStartActions.append(am.action(DkActionManager::menu_file_open_dir));
+	
+	mStartIcons.append(am.icon(DkActionManager::icon_file_open_large));
+	mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
+
 	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
 	// always set the size to be full screen -> bad for OS that are not able to show transparent frames!!
 }
@@ -1670,12 +1681,6 @@ DkViewPortFrameless::~DkViewPortFrameless() {
 void DkViewPortFrameless::release() {
 
 	DkViewPort::release();
-}
-
-void DkViewPortFrameless::addStartActions(QAction* startAction, QIcon* startIcon) {
-
-	mStartActions.append(startAction);
-	mStartIcons.append(startIcon);
 }
 
 void DkViewPortFrameless::setImage(QImage newImg) {
@@ -1838,7 +1843,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 		for (int idx = 0; idx < mStartActions.size(); idx++) {
 
 			QRectF iconRect = QRectF(offset, iconSize);
-			QPixmap ci = mStartIcons[idx] ? mStartIcons[idx]->pixmap(iconSize) : mStartActions[idx]->icon().pixmap(iconSize);
+			QPixmap ci = !mStartIcons[idx].isNull() ? mStartIcons[idx].pixmap(iconSize) : mStartActions[idx]->icon().pixmap(iconSize);
 			mStartActionsRects.push_back(iconRect);
 			mStartActionsIcons.push_back(ci);
 
@@ -1849,7 +1854,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	// draw start actions
 	for (int idx = 0; idx < mStartActions.size(); idx++) {
 		
-		if (mStartIcons[idx])
+		if (!mStartIcons[idx].isNull())
 			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		else
 			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));

@@ -261,7 +261,6 @@ public:
 	virtual ~DkViewPortFrameless();
 
 	void release();
-	void addStartActions(QAction *startAction, QIcon *startIcon = 0);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	virtual void setMainGeometry(const QRect &geometry) {
 		mMainScreen = geometry;
@@ -294,7 +293,7 @@ protected:
 
 	// variables
 	QVector<QAction*> mStartActions;
-	QVector<QIcon*> mStartIcons;
+	QVector<QIcon> mStartIcons;
 	QVector<QRectF> mStartActionsRects;
 	QVector<QPixmap> mStartActionsIcons;
 	QRect mMainScreen;	// TODO: let user choose which one to take
