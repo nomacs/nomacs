@@ -52,6 +52,7 @@ namespace nmc {
 // nomacs defines
 class DkManagerThread;
 class DkTcpMenu;
+class DkPluginActionManager;
 
 class DkAppManager : public QObject {
 	Q_OBJECT
@@ -96,16 +97,15 @@ protected:
 	bool mFirstTime = true;
 };
 
-//class DkDialogManager : public QObject {
-//	Q_OBJECT
-//
-//public:
-//	DkDialogManager(QObject* parent = 0);
-//
-//public slots:
-//	void openWorkingDirDialog();
-//	void createPluginMenu();
-//};
+class DkDialogManager : public QObject {
+	Q_OBJECT
+
+public:
+	DkDialogManager(QObject* parent = 0);
+
+public slots:
+	void openShortcutsDialog() const;
+};
 
 class DllExport DkActionManager {
 
@@ -279,6 +279,16 @@ public:
 		sc_test_rec,
 		sc_test_pong,
 
+		sc_first_file,
+		sc_last_file,
+		sc_skip_prev,
+		sc_skip_next,
+		sc_skip_next_sync,
+		sc_skip_prev_sync,
+		sc_first_file_sync,
+		sc_last_file_sync,
+		sc_delete_silent,
+
 		sc_end,	// nothing beyond this point
 	};
 
@@ -352,8 +362,8 @@ public:
 
 		shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 		shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
-		shortcut_prev_file_sync	= Qt::ALT + Qt::Key_Left,
-		shortcut_next_file_sync	= Qt::ALT + Qt::Key_Right,
+		shortcut_skip_prev_sync	= Qt::ALT + Qt::Key_Left,
+		shortcut_skip_next_sync	= Qt::ALT + Qt::Key_Right,
 
 		// view
 		shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
@@ -452,7 +462,7 @@ public:
 	QAction* action(ToolsMenuActions action) const;
 	QAction* action(PanelMenuActions action) const;
 	QAction* action(SyncMenuActions action) const;
-	//QAction* action(PluginMenuActions action) const;
+	QAction* action(PluginMenuActions action) const;
 	QAction* action(LanMenuActions action) const;
 	QAction* action(HelpMenuActions action) const;
 	QAction* action(HiddenActions action) const;
@@ -470,14 +480,16 @@ public:
 	QVector<QAction *> toolsActions() const;
 	QVector<QAction *> panelActions() const;
 	QVector<QAction *> syncActions() const;
-	//QVector<QAction *> pluginActions() const;
-	//QVector<QAction *> pluginDummyActions() const;
+	QVector<QAction *> pluginActions() const;
 	QVector<QAction *> lanActions() const;
 	QVector<QAction *> helpActions() const;
 	QVector<QAction *> allActions() const;
 
 	QVector<QAction*> hiddenActions() const;	
 	DkAppManager* appManager() const;
+	DkPluginActionManager* pluginActionManager() const;
+
+	void assignCustomShortcuts(QVector<QAction*> actions) const;
 
 protected:
 	DkActionManager();
@@ -488,7 +500,6 @@ protected:
 	void createIcons();
 	void colorizeIcons(const QColor& col);
 	void connectDefaultActions();
-	void assignCustomShortcuts(QVector<QAction*> actions) const;
 
 	QMenu* createFileMenu(QWidget* parent);
 	QMenu* createSortMenu(QWidget* parent);
@@ -510,7 +521,7 @@ protected:
 	QVector<QAction *> mPanelActions;
 	QVector<QAction *> mViewActions;
 	QVector<QAction *> mSyncActions;
-	//QVector<QAction *> mPluginsActions;
+	QVector<QAction *> mPluginActions;
 	//QVector<QAction *> mPluginsDummyActions;
 	QVector<QAction *> mLanActions;
 	QVector<QAction *> mHelpActions;
@@ -540,8 +551,9 @@ protected:
 	QVector<QIcon> mViewIcons;
 	QVector<QIcon> mToolsIcons;
 
-	//DkDialogManager* mDialogManager;
+	DkDialogManager* mDialogManager;
 	DkAppManager* mAppManager;
+	DkPluginActionManager* mPluginManager;
 
 	QSharedPointer<DkActionManager> inst;
 };

@@ -59,26 +59,12 @@ class DkLoader;
 class DkControlWidget;
 class DkPeer;
 class DkRotatingRect;
+class DkPluginInterface;
 
 class DllExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
-	enum shortcutsFiles{
-		sc_first_file = sc_end,
-		sc_last_file,
-		sc_skip_prev,
-		sc_skip_next,
-		sc_next_sync,
-		sc_prev_sync,
-		sc_first_sync,
-		sc_last_sync,
-		sc_delete_silent,
-		//sc_play,
-
-		scf_end,
-	};
-
 	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
 
@@ -172,6 +158,8 @@ public slots:
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
 	void repeatZoom();
+
+	void applyPlugin(DkPluginInterface* plugin, const QString& key);
 
 	// copy & paste
 	void copyPixelColorValue();

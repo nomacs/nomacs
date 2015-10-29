@@ -31,6 +31,12 @@
 #include "DkImageStorage.h"
 #include "DkUtils.h"
 
+#include "DkDialog.h"
+
+#ifdef WITH_PLUGINS
+#include "DkPluginManager.h"
+#endif
+
 #if defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
@@ -322,6 +328,42 @@ void DkAppManager::openTriggered() const {
 
 
 // DkDialogManager --------------------------------------------------------------------
+DkDialogManager::DkDialogManager(QObject* parent) : QObject(parent) {
+
+}
+
+void DkDialogManager::openShortcutsDialog() const {
+
+	DkActionManager& am = DkActionManager::instance();
+
+	QList<QAction* > openWithActionList = am.openWithMenu()->actions();
+
+	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(QApplication::activeWindow());
+	shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
+	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
+	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
+	shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
+	shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
+	shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
+	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
+	shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
+//#ifdef WITH_PLUGINS	// TODO
+//	createPluginsMenu();
+//
+//	QVector<QAction*> allPluginActions = mPluginsActions;
+//
+//	for (const QMenu* m : mPluginSubMenus) {
+//		allPluginActions << m->actions().toVector();
+//	}
+//
+//	shortcutsDialog->addActions(allPluginActions, mPluginsMenu->title());
+//#endif // WITH_PLUGINS
+	shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
+	shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
+
+	shortcutsDialog->exec();
+	shortcutsDialog->deleteLater();
+}
 
 // DkActionManager --------------------------------------------------------------------
 DkActionManager::DkActionManager() {
@@ -704,6 +746,10 @@ QAction* DkActionManager::action(HelpMenuActions action) const {
 	return mHelpActions[action];
 }
 
+QAction* DkActionManager::action(PluginMenuActions action) const {
+	return mPluginActions[action];
+}
+
 QAction* DkActionManager::action(HiddenActions action) const {
 	return mHiddenActions[action];
 }
@@ -764,12 +810,20 @@ QVector<QAction*> DkActionManager::helpActions() const {
 	return mHelpActions;
 }
 
+QVector<QAction*> DkActionManager::pluginActions() const {
+	return mPluginActions;
+}
+
 QVector<QAction*> DkActionManager::hiddenActions() const {
 	return mHiddenActions;
 }
 
 DkAppManager* DkActionManager::appManager() const {
 	return mAppManager;
+}
+
+DkPluginActionManager* DkActionManager::pluginActionManager() const {
+	return mPluginManager;
 }
 
 QMenu* DkActionManager::fileMenu() const {
@@ -836,11 +890,11 @@ void DkActionManager::createMenus(QWidget* parent) {
 
 void DkActionManager::init() {
 
-	//mDialogManager = new DkDialogManager(QApplication::activeWindow());
+	mDialogManager = new DkDialogManager(QApplication::activeWindow());
 	mAppManager = new DkAppManager(QApplication::activeWindow());
+	mPluginManager = new DkPluginActionManager(QApplication::activeWindow());
 
 	createIcons();
-	connectDefaultActions();
 }
 
 void DkActionManager::createIcons() {
@@ -1424,6 +1478,11 @@ void DkActionManager::createActions(QWidget* parent) {
 	mLanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	mLanActions[menu_lan_image]->setToolTip(QObject::tr("Sends the current image to all clients."));
 
+	// plugin actions
+	mPluginActions.resize(menu_plugins_end);
+	mPluginActions[menu_plugin_manager] = new QAction(QObject::tr("&Plugin Manager"), parent);
+	mPluginActions[menu_plugin_manager]->setStatusTip(QObject::tr("manage installed plugins and download new ones"));
+
 	// hidden actions
 	mHiddenActions.resize(sc_end);
 
@@ -1439,11 +1498,49 @@ void DkActionManager::createActions(QWidget* parent) {
 	mHiddenActions[sc_test_pong]->setStatusTip(QObject::tr("Start pong"));
 	mHiddenActions[sc_test_pong]->setShortcut(QKeySequence(shortcut_test_pong));
 
+	mHiddenActions[sc_first_file] = new QAction(QObject::tr("First File"), parent);
+	mHiddenActions[sc_first_file]->setStatusTip(QObject::tr("Jump to first file"));
+	mHiddenActions[sc_first_file]->setShortcut(QKeySequence(shortcut_first_file));
+
+	mHiddenActions[sc_last_file] = new QAction(QObject::tr("Last File"), parent);
+	mHiddenActions[sc_last_file]->setStatusTip(QObject::tr("Jump to the end of the current folder"));
+	mHiddenActions[sc_last_file]->setShortcut(QKeySequence(shortcut_last_file));
+
+	mHiddenActions[sc_skip_prev] = new QAction(QObject::tr("Skip Previous Images"), parent);
+	mHiddenActions[sc_skip_prev]->setStatusTip(QObject::tr("Jumps 10 images before the current image"));
+	mHiddenActions[sc_skip_prev]->setShortcut(QKeySequence(shortcut_skip_prev));
+
+	mHiddenActions[sc_skip_next] = new QAction(QObject::tr("Skip Next Images"), parent);
+	mHiddenActions[sc_skip_next]->setStatusTip(QObject::tr("Jumps 10 images after the current image"));
+	mHiddenActions[sc_skip_next]->setShortcut(QKeySequence(shortcut_skip_next));
+
+	mHiddenActions[sc_first_file_sync] = new QAction(QObject::tr("First File Sync"), parent);
+	mHiddenActions[sc_first_file_sync]->setStatusTip(QObject::tr("Jump to first file"));
+	mHiddenActions[sc_first_file_sync]->setShortcut(QKeySequence(shortcut_first_file_sync));
+
+	mHiddenActions[sc_last_file_sync] = new QAction(QObject::tr("Last File Sync"), parent);
+	mHiddenActions[sc_last_file_sync]->setStatusTip(QObject::tr("Jump to the end of the current folder"));
+	mHiddenActions[sc_last_file_sync]->setShortcut(QKeySequence(shortcut_last_file_sync));
+
+	mHiddenActions[sc_skip_prev_sync] = new QAction(QObject::tr("Skip Previous Images Sync"), parent);
+	mHiddenActions[sc_skip_prev_sync]->setStatusTip(QObject::tr("Jumps 10 images before the current image"));
+	mHiddenActions[sc_skip_prev_sync]->setShortcut(QKeySequence(shortcut_skip_prev_sync));
+
+	mHiddenActions[sc_skip_next_sync] = new QAction(QObject::tr("Skip Next Images Sync"), parent);
+	mHiddenActions[sc_skip_next_sync]->setStatusTip(QObject::tr("Jumps 10 images after the current image"));
+	mHiddenActions[sc_skip_next_sync]->setShortcut(QKeySequence(shortcut_skip_next_sync));
+
+	mHiddenActions[sc_delete_silent] = new QAction(QObject::tr("Delete File Silent"), parent);
+	mHiddenActions[sc_delete_silent]->setStatusTip(QObject::tr("Deletes a file without warning"));
+	mHiddenActions[sc_delete_silent]->setShortcut(QKeySequence(shortcut_delete_silent));
+
 	assignCustomShortcuts(allActions());
 
 	// automatically add status tip as tool tip
 	for (QAction* a: allActions())
 		a->setToolTip(a->statusTip());
+
+	connectDefaultActions();
 }
 
 QVector<QAction*> DkActionManager::allActions() const {
@@ -1457,8 +1554,8 @@ QVector<QAction*> DkActionManager::allActions() const {
 	all += toolsActions();
 	all += panelActions();
 	all += syncActions();
-	//all += pluginActions();
-	//all += pluginDummyActions();
+	all += pluginActions();
+	//all += pluginDummyActions();	// TODO?!
 	all += lanActions();
 	all += helpActions();
 
@@ -1487,7 +1584,8 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 
 void DkActionManager::connectDefaultActions() {
 
-	// TODO
+	QObject::connect(action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), mDialogManager, SLOT(openShortcutsDialog()));
+
 }
 
 

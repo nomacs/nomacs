@@ -115,9 +115,6 @@ public:
 	DkHistogram* getHistogram() const;
 	DkCropWidget* getCropWidget() const;
 
-	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
-	bool applyPluginChanges(bool askForSaving);
-
 	void stopLabels();
 	void showWidgetsSettings();
 
@@ -137,8 +134,10 @@ public slots:
 	void changeMetaDataPosition(int pos);
 	void changeThumbNailPosition(int pos);
 	void showScroller(bool visible);
-	
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
+
 	bool closePlugin(bool askForSaving);
+	bool applyPluginChanges(bool askForSaving);
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(const QString& msg, int time = 3000, int location = center_label);

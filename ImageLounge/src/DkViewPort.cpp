@@ -96,11 +96,13 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mController->getCropWidget()->setImageTransform(&mImgMatrix);
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
-	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
-	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
-	
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.allActions().toList());
+
+	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
+	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
+
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginInterface*, const QString&)), this, SLOT(applyPlugin(DkPluginInterface*, const QString&)));
 
 	qDebug() << "viewer created...";
 
@@ -124,44 +126,15 @@ void DkViewPort::release() {
 
 void DkViewPort::createShortcuts() {
 
-	//DkBaseViewPort::createShortcuts();
-
-	mShortcuts.resize(scf_end);
-
-	// TODO: make actions!!
-
-	//// files
-	//mShortcuts[sc_first_file] = new QShortcut(shortcut_first_file, this);
-	//connect(mShortcuts[sc_first_file], SIGNAL(activated()), this, SLOT(loadFirst()));
-	//mShortcuts[sc_last_file] = new QShortcut(shortcut_last_file, this);
-	//connect(mShortcuts[sc_last_file], SIGNAL(activated()), this, SLOT(loadLast()));
-
-	//mShortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
-	//mShortcuts[sc_skip_prev]->setContext(Qt::WidgetWithChildrenShortcut);
-	//connect(mShortcuts[sc_skip_prev], SIGNAL(activated()), this, SLOT(loadSkipPrev10()));
-	//mShortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
-	//mShortcuts[sc_skip_next]->setContext(Qt::WidgetWithChildrenShortcut);
-	//connect(mShortcuts[sc_skip_next], SIGNAL(activated()), this, SLOT(loadSkipNext10()));
-	//
-	//mShortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
-	//connect(mShortcuts[sc_first_sync], SIGNAL(activated()), this, SLOT(loadFirst()));
-
-	//mShortcuts[sc_last_sync] = new QShortcut(shortcut_last_file_sync, this);
-	//connect(mShortcuts[sc_last_sync], SIGNAL(activated()), this, SLOT(loadLast()));
-
-	//mShortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
-	//connect(mShortcuts[sc_next_sync], SIGNAL(activated()), this, SLOT(loadNextFileFast()));
-
-	//mShortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
-	//connect(mShortcuts[sc_prev_sync], SIGNAL(activated()), this, SLOT(loadPrevFileFast()));
-
-	//mShortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
-
-	//for (int idx = 0; idx < mShortcuts.size(); idx++) {
-	//	// assign widget shortcuts to all of them
-	//	mShortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
-	//}
-
+	DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::sc_first_file), SIGNAL(triggered()), this, SLOT(loadFirst()));
+	connect(am.action(DkActionManager::sc_last_file), SIGNAL(triggered()), this, SLOT(loadLast()));
+	connect(am.action(DkActionManager::sc_skip_prev), SIGNAL(triggered()), this, SLOT(loadSkipPrev10()));
+	connect(am.action(DkActionManager::sc_skip_next), SIGNAL(triggered()), this, SLOT(loadSkipNext10()));
+	connect(am.action(DkActionManager::sc_first_file_sync), SIGNAL(triggered()), this, SLOT(loadFirst()));
+	connect(am.action(DkActionManager::sc_last_file_sync), SIGNAL(triggered()), this, SLOT(loadLast()));
+	connect(am.action(DkActionManager::sc_skip_next_sync), SIGNAL(triggered()), this, SLOT(loadNextFileFast()));
+	connect(am.action(DkActionManager::sc_skip_prev_sync), SIGNAL(triggered()), this, SLOT(loadPrevFileFast()));
 
 }
 
@@ -502,8 +475,6 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
-
-	qDebug() << "mImgMatrix: " << mImgMatrix;
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {
@@ -597,6 +568,15 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 
 	mController->setInfo(newPeers);
 	update();
+}
+
+void DkViewPort::applyPlugin(DkPluginInterface* plugin, const QString& key) {
+	
+	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->runPlugin(key, imageContainer()));
+	if (result) 
+		setEditedImage(result);
+
+	DkPluginManager::instance().clearRunningPluginKey();
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {
@@ -1308,8 +1288,8 @@ void DkViewPort::setEditedImage(QImage newImg) {
 
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
-	if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
-		return;
+	//if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
+	//	return;
 
 	if (!img) {
 		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
@@ -1580,8 +1560,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), mController->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
 		connect(mController->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
 
-		// not sure if this is elegant?!
-		connect(mShortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()), Qt::UniqueConnection);
+		connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), loader.data(), SLOT(deleteFile()), Qt::UniqueConnection);
 	}
 	else {
 		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
@@ -1601,7 +1580,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
 		
 		// not sure if this is elegant?!
-		disconnect(mShortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()));
+		disconnect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), loader.data(), SLOT(deleteFile()));
 	}
 }
 

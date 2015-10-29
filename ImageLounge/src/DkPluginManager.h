@@ -114,7 +114,38 @@ struct QPairSecondComparer {
 	}
 };
 
-class DllExport DkPluginManager {
+class DkPluginActionManager : public QObject {
+	Q_OBJECT
+
+public:
+	DkPluginActionManager(QObject* parent = 0);
+
+	void setMenu(QMenu* menu);
+	QMenu* menu() const;
+
+public slots:
+	void runLoadedPlugin();
+	void runPluginFromShortcut();
+	void addPluginsToMenu();
+	void updateMenu();
+
+signals:
+	void runPlugin(DkViewPortInterface* plugin, bool close) const;
+	void runPlugin(DkPluginInterface* plugin, const QString& key) const;
+	void applyPluginChanges(bool askForSaving) const;
+
+protected:
+	void assignCustomPluginShortcuts();
+
+	void savePluginActions(QVector<QAction *> actions) const;
+
+	QVector<QAction *> mPluginsActions;
+	QVector<QAction *> mPluginsDummyActions;
+	QMenu* mMenu = 0;
+	QVector<QMenu*> mPluginSubMenus;
+};
+
+class DkPluginManager {
 
 public:
 	static DkPluginManager& instance();

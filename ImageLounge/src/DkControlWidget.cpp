@@ -340,6 +340,10 @@ void DkControlWidget::connectWidgets() {
 
 	// mViewport
 	connect(mViewport, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
+
+	// plugins
+	connect(DkActionManager::instance().pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
+	connect(DkActionManager::instance().pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
 }
 
 void DkControlWidget::update() {
@@ -553,7 +557,7 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 		}				
 	}
 
-	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWidnow(), SLOT(showToolbar(QToolBar*, bool)));
 
 	setPluginWidget(vPlugin, true);	// handles deletion
 	DkPluginManager::instance().clearRunningPluginKey();	// handles states
@@ -593,6 +597,10 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 	if (!removeWidget) {
 		pluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
 		pluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
+
+		connect(pluginWidget->getViewPort(), SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)));
+		connect(pluginWidget->getViewPort(), SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)));
+		connect(pluginWidget->getViewPort(), SIGNAL(loadImage(QImage)), mViewport, SLOT(setImage(QImage)));
 	}
 
 	mViewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);

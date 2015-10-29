@@ -177,7 +177,6 @@ public slots:
 	void toggleFullScreen();
 	void enterFullScreen();
 	void exitFullScreen();
-	void openKeyboardShortcuts();
 	void openSettings();
 	void showExplorer(bool show, bool saveSettings = true);
 	void showMetaDataDock(bool show, bool saveSettings = true);
@@ -259,9 +258,7 @@ public slots:
 	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
-	void runLoadedPlugin();
 	void openPluginManager();
-	void runPluginFromShortcut();
 	void clearFileHistory();
 	void clearFolderHistory();
 	//void shareFacebook();
@@ -270,8 +267,6 @@ public slots:
 	// batch actions
 	void computeThumbsBatch();
 	void onWindowLoaded();
-
-	void createPluginsMenu();
 
 protected:
 	
@@ -295,24 +290,15 @@ protected:
 
 	bool gestureEvent(QGestureEvent *event);
 
-	void assignCustomShortcuts(QVector<QAction*> actions);
-	void assignCustomPluginShortcuts();
-	void savePluginActions(QVector<QAction *> actions);
-
 	// needed to hide menu
 	bool mOtherKeyPressed = true;
 	QPoint mPosGrabKey;
 	bool mOverlaid = false;
-
-	// vars
-	QVector<QAction *> mPluginsActions;
-	QVector<QAction *> mPluginsDummyActions;
 	
 	// menu
 	DkMenuBar* mMenu = 0;
 	QMenu* mPluginsMenu = 0;
 	QMenu* mSyncMenu = 0;
-	QVector<QMenu*> mPluginSubMenus;
 
 	QPoint mMousePos;
 	

@@ -497,9 +497,9 @@ void DkLocalConnection::sendGreetingMessage(const QString& currentTitle) {
 	ds << mLocalTcpServerPort;
 	ds << mCurrentTitle;
 
-	qDebug() << "title: " << mCurrentTitle;
-	qDebug() << "local tcp: " << mLocalTcpServerPort;
-	qDebug() << "peer id: " << mPeerId;
+	//qDebug() << "title: " << mCurrentTitle;
+	//qDebug() << "local tcp: " << mLocalTcpServerPort;
+	//qDebug() << "peer id: " << mPeerId;
 
 	QByteArray data = "GREETING";
 	data.append(SeparatorToken);
@@ -507,7 +507,7 @@ void DkLocalConnection::sendGreetingMessage(const QString& currentTitle) {
 	data.append(SeparatorToken);
 	data.append(ba);
 
-	qDebug() << "greeting message: " << data;
+	//qDebug() << "greeting message: " << data;
 
 	if (write(data) == data.size()) {
 		mIsGreetingMessageSent = true;
