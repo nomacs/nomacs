@@ -27,9 +27,12 @@
 #include "DkPluginInterface.h"
 #include "DkOcrToolbar.h"
 
+#include <QDockWidget>
+#include <QtWidgets>
+
 namespace nmc {
 
-class DkOcrPlugin : public QObject, DkViewPortInterface {
+class DkOcrPlugin : public QObject, DkPluginInterface {
 
 private:
 	Q_OBJECT
@@ -50,7 +53,8 @@ public:
 	QStringList runID() const override;
 	QString pluginMenuName(const QString &runID = QString()) const override;
 	QString pluginStatusTip(const QString &runID = QString()) const override;
-	QList<QAction*> pluginActions(QWidget* parent);
+	QList<QAction*> pluginActions() const override;
+	QList<QAction*> createActions(QWidget*) override;
 
 	// DIEM: I think this should solve the sub-menu: 	
 	// getMainWindow() call if you need a (or the) parent
@@ -60,12 +64,8 @@ public:
 	//QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override;
 
-	DkPluginViewPort* getViewPort() override;
-	void deleteViewPort() override;
-
 	enum {
-		ACTION_TEST_FLIP,
-		ACTION_TEST,
+		ACTION_TESTRUN,
 
 		// add actions here
 
@@ -73,12 +73,16 @@ public:
 	};
 
 protected:
+
 	QList<QAction*> mActions;
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
 
-	DkPluginViewPort* viewport;
+	QDockWidget* mDockWidgetSettings;
+	QTextEdit* te_resultText;
+
+	QString GetRandomString() const;
 };
 
 };

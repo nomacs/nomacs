@@ -4,7 +4,7 @@
 #include <QtGui/QImage>
 
 namespace Ocr {
-	void testOcr(QImage& image);
+	QString testOcr(QImage& image);
 }
 
 #endif

@@ -1,28 +1,21 @@
 #include "DkOcr.h"
 
 #include <baseapi.h> //Tesseract
-#include <iostream>
 #include <QtGui/QPainter>
 
-#include "DkSettingsDialog.h"
-
-void Ocr::testOcr(QImage& image)
+QString Ocr::testOcr(QImage& image)
 {
-	FindDialog fd;
-	fd.show();
-
-	std::cout << "testOcr" << std::endl;
-
 	tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
 	// Initialize tesseract-ocr with English, without specifying tessdata path
 	if (api->Init("E:/dev/tesseract", "eng")) {
-		std::cout <<  "Could not initialize tesseract" << std::endl;
+		qCritical("Could not initialize tesseract");
 	}
 
-	Pix* thresholded_image = api->GetThresholdedImage();
+	//Pix* thresholded_image = api->GetThresholdedImage();
 
 	api->SetImage(image.bits(), image.width(), image.height(), image.bytesPerLine() / image.width(), image.bytesPerLine());
 	char* rectext = api->GetUTF8Text();
+	qDebug("text: %s", rectext);
 
 	QVector<QRect> rects;
 	tesseract::PageIterator *iter = api->AnalyseLayout();
@@ -45,8 +38,10 @@ void Ocr::testOcr(QImage& image)
 	painter.drawRects(rects);
 	image = px.toImage();
 
-	std::cout << "read text: " << rectext << std::endl;
-	std::cout << "drew " << rects.size() << " Rects" << std::endl;
+	auto text = QString(rectext);
+
 	api->End();
 	delete[] rectext;
+
+	return text;
 }

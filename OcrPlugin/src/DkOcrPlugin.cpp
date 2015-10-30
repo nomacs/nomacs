@@ -45,190 +45,244 @@
 //#include <QLibrary>
 #include "DkOcr.h"
 #include <DkBaseViewPort.h>
-#include "../../ThresholdPlugin/src/DkThresholdPlugin.h"
 
 namespace nmc {
 
-/**
-*	Constructor
-**/
+	/**
+	*	Constructor
+	**/
 	DkOcrPlugin::DkOcrPlugin(QObject* parent) : QObject(parent) {
 
-	// create run IDs
-	QVector<QString> runIds;
-	runIds.resize(id_end);
-	runIds[ACTION_TEST] = "RUN_OCR_TEST";
-	runIds[ACTION_TEST_FLIP] = "RUN_OCR_TEST_FLIP";
-	mRunIDs = runIds.toList();
 
-	// create menu actions
-	QVector<QString> menuNames;
-	menuNames.resize(id_end);
+		// Create Settings Toolbar
 
-	menuNames[ACTION_TEST] = tr("menu_action");
-	menuNames[ACTION_TEST_FLIP] = tr("menu_action2");
-	mMenuNames = menuNames.toList();
+		auto* mainWindow = getMainWidnow();
+		mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
+		mainWindow->addDockWidget(Qt::RightDockWidgetArea, mDockWidgetSettings);
+		
+		te_resultText = new QTextEdit();
+		//te_resultText->minimumHeight(100);
 
-	// create menu status tips
-	QVector<QString> statusTips;
-	statusTips.resize(id_end);
+		QPushButton* btn_runocr = new QPushButton(tr("Run Ocr"));
+		QPushButton* btn_copytoclipboard = new QPushButton(tr("Copy to Clipboard"));
+		QPushButton* btn_sendtoeditor = new QPushButton(tr("Open in Editor"));
 
-	statusTips[ACTION_TEST] = tr("#ACTION_TIPP1");
-	statusTips[ACTION_TEST_FLIP] = tr("#ACTION_TIPP2");
-	mMenuStatusTips = statusTips.toList();
+		connect(btn_runocr, &QPushButton::pressed, [&]()
+		{
+			qDebug("run ocr pressed");
+			mActions[ACTION_TESTRUN]->trigger();
+		});
+
+		connect(btn_copytoclipboard, &QPushButton::pressed, [&]()
+		{
+			qDebug("copy to clip pressed");
+
+			QApplication::clipboard()->setText(te_resultText->toPlainText());
+		});
+
+		connect(btn_sendtoeditor, &QPushButton::pressed, [&]()
+		{
+			qDebug("open in editor pressed");
+			QString filename = GetRandomString()+".txt";
+			auto saveloc = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + filename;
+			qDebug("temp file location %s", saveloc);
+
+			QFile outputFile(saveloc);
+			outputFile.open(QIODevice::WriteOnly);
+
+			if (!outputFile.isOpen()) {
+				qDebug() << "Error, unable to open" << saveloc;
+				return;
+			}
+
+			QTextStream outStream(&outputFile);
+			outStream << te_resultText->toPlainText();
+			outputFile.close();
+
+			QDesktopServices::openUrl(QUrl("file:///"+saveloc));
+		});
+
+		QVBoxLayout* layout = new QVBoxLayout();
+		layout->addWidget(te_resultText);
+
+		QHBoxLayout* btn_layout = new QHBoxLayout();
+		btn_layout->addWidget(btn_runocr);
+		btn_layout->addWidget(btn_copytoclipboard);
+		btn_layout->addWidget(btn_sendtoeditor);
+		layout->addLayout(btn_layout);
+
+		mDockWidgetSettings->setLayout(layout);
+		QGroupBox* widget = new QGroupBox();
+		widget->setLayout(layout);
+		mDockWidgetSettings->setWidget(widget);
+
+		// create run IDs
+		QVector<QString> runIds;
+		runIds.resize(id_end);
+		runIds[ACTION_TESTRUN] = "OCR_PLUGIN_TEST_RUN";
+		mRunIDs = runIds.toList();
+
+		// create menu actions
+		QVector<QString> menuNames;
+		menuNames.resize(id_end);
+
+		menuNames[ACTION_TESTRUN] = tr("Testrun");
+		mMenuNames = menuNames.toList();
+
+		// create menu status tips
+		QVector<QString> statusTips;
+		statusTips.resize(id_end);
+
+		statusTips[ACTION_TESTRUN] = tr("#ACTION_TIPP2");
+		mMenuStatusTips = statusTips.toList();
 
 
-//		
+		//		
 
-	/*QLibrary libTesseract("E:/dev/tesseract/build_x86/bin/Debug/tesseract305d.dll"); 
-	libTesseract.load();
-	if(!libTesseract.isLoaded())
-	{
-		std::cout << "could not load lib Tesseract" << std::endl;
-		exit(1);
+			/*QLibrary libTesseract("E:/dev/tesseract/build_x86/bin/Debug/tesseract305d.dll");
+			libTesseract.load();
+			if(!libTesseract.isLoaded())
+			{
+				std::cout << "could not load lib Tesseract" << std::endl;
+				exit(1);
+			}
+
+			QLibrary libLept("E:/dev/tesseract/build_x86/bin/Debug/liblept171.dll");
+			libLept.load();
+			if (!libLept.isLoaded())
+			{
+				std::cout << "could not load lib lib Leptonica" << std::endl;
+				exit(1);
+			}*/
+	}
+	/**
+	*	Destructor
+	**/
+	DkOcrPlugin::~DkOcrPlugin() {
 	}
 
-	QLibrary libLept("E:/dev/tesseract/build_x86/bin/Debug/liblept171.dll");
-	libLept.load();
-	if (!libLept.isLoaded())
-	{
-		std::cout << "could not load lib lib Leptonica" << std::endl;
-		exit(1);
-	}*/
-}
-/**
-*	Destructor
-**/
-DkOcrPlugin::~DkOcrPlugin() {
-}
+
+	/**
+	* Returns unique ID for the generated dll
+	**/
+	QString DkOcrPlugin::pluginID() const {
+
+		return PLUGIN_ID;
+	};
 
 
-/**
-* Returns unique ID for the generated dll
-**/
-QString DkOcrPlugin::pluginID() const {
+	/**
+	* Returns plugin name
+	* @param plugin ID
+	**/
+	QString DkOcrPlugin::pluginName() const {
 
-	return PLUGIN_ID;
-};
+		return tr("Ocr Plugin");
+	};
 
+	/**
+	* Returns long description for every ID
+	* @param plugin ID
+	**/
+	QString DkOcrPlugin::pluginDescription() const {
 
-/**
-* Returns plugin name
-* @param plugin ID
-**/
-QString DkOcrPlugin::pluginName() const {
+		return "<b>Created by:</b> Dominik Schörkhuber <br><b>Modified:</b>9.10.2015<br><b>Description:</b> #DESCRIPTION.";
+	};
 
-	return tr("Ocr Plugin");
-};
+	/**
+	* Returns descriptive iamge for every ID
+	* @param plugin ID
+	**/
+	QImage DkOcrPlugin::pluginDescriptionImage() const {
 
-/**
-* Returns long description for every ID
-* @param plugin ID
-**/
-QString DkOcrPlugin::pluginDescription() const {
+		return QImage(":/#PLUGIN_NAME/img/your-image.png");
+	};
 
-	return "<b>Created by:</b> Dominik Schörkhuber <br><b>Modified:</b>9.10.2015<br><b>Description:</b> #DESCRIPTION.";
-};
+	/**
+	* Returns plugin version for every ID
+	* @param plugin ID
+	**/
+	QString DkOcrPlugin::pluginVersion() const {
 
-/**
-* Returns descriptive iamge for every ID
-* @param plugin ID
-**/
-QImage DkOcrPlugin::pluginDescriptionImage() const {
+		return PLUGIN_VERSION;
+	};
 
-	return QImage(":/#PLUGIN_NAME/img/your-image.png");
-};
+	/**
+	* Returns unique IDs for every plugin in this dll
+	**/
+	QStringList DkOcrPlugin::runID() const {
 
-/**
-* Returns plugin version for every ID
-* @param plugin ID
-**/
-QString DkOcrPlugin::pluginVersion() const {
+		//GUID without hyphens generated at http://www.guidgenerator.com/
+		return QStringList() << "4acb88c461024cb080ae5cd15d0ef0ec";
+	};
 
-	return PLUGIN_VERSION;
-};
+	/**
+	* Returns plugin name for every ID
+	* @param plugin ID
+	**/
+	QString DkOcrPlugin::pluginMenuName(const QString &runID) const {
 
-/**
-* Returns unique IDs for every plugin in this dll
-**/
-QStringList DkOcrPlugin::runID() const {
+		return tr("Run Ocr");
+	};
 
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "4acb88c461024cb080ae5cd15d0ef0ec";
-};
+	/**
+	* Returns short description for status tip for every ID
+	* @param plugin ID
+	**/
+	QString DkOcrPlugin::pluginStatusTip(const QString &runID) const {
 
-/**
-* Returns plugin name for every ID
-* @param plugin ID
-**/
-QString DkOcrPlugin::pluginMenuName(const QString &runID) const {
+		return tr("#MENU_STATUS_TIP");
+	};
 
-	return tr("Run Ocr");
-};
+	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
 
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkOcrPlugin::pluginStatusTip(const QString &runID) const {
+		if (mActions.empty()) {			
+			
+			auto* ca = new QAction(mMenuNames[ACTION_TESTRUN], this);
+			ca->setObjectName(mMenuNames[ACTION_TESTRUN]);
+			ca->setStatusTip(mMenuStatusTips[ACTION_TESTRUN]);
+			ca->setData(mRunIDs[ACTION_TESTRUN]);	// runID needed for calling function runPlugin()
+			mActions.append(ca);
 
-	return tr("#MENU_STATUS_TIP");
-};
-
-QList<QAction*> DkOcrPlugin::pluginActions(QWidget* parent) {
-
-	if (mActions.empty()) {
-		QAction* ca = new QAction(mMenuNames[ACTION_TEST], this);
-		ca->setObjectName(mMenuNames[ACTION_TEST]);
-		ca->setStatusTip(mMenuStatusTips[ACTION_TEST]);
-		ca->setData(mRunIDs[ACTION_TEST]);	// runID needed for calling function runPlugin()
-		mActions.append(ca);
-
-		ca = new QAction(mMenuNames[ACTION_TEST_FLIP], this);
-		ca->setObjectName(mMenuNames[ACTION_TEST_FLIP]);
-		ca->setStatusTip(mMenuStatusTips[ACTION_TEST_FLIP]);
-		ca->setData(mRunIDs[ACTION_TEST_FLIP]);	// runID needed for calling function runPlugin()
-		mActions.append(ca);
-	}
-
-	return mActions;
-}
-
-QSharedPointer<DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<DkImageContainer> imgC) const
-{
-	std::cout << "run plugin funcs " << runID.toStdString() << std::endl;
-	if(runID == this->runID()[0]) {//mRunIDs[ACTION_TEST]) {
-
-		if (parent()) {
-			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-			DkOcrToolbar* toolbar = new DkOcrToolbar(viewport);
+			// additional action
+			mActions.append(mDockWidgetSettings->toggleViewAction());
 		}
 
-		auto img = imgC->image();
-		Ocr::testOcr(img);
-		imgC->setImage(img);
-
-		std::cout << "run plugin" << std::endl;
+		return mActions;
 	}
 
-	// wrong runID? - do nothing
-	return imgC;
-}
-
-
-DkPluginViewPort* DkOcrPlugin::getViewPort() {
-
-	if (!viewport) {
-		viewport = new DkPluginViewPort();
-		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+	QList<QAction*> DkOcrPlugin::pluginActions() const {
+		return mActions;
 	}
-	return viewport;
-}
 
-	void DkOcrPlugin::deleteViewPort()
+	QSharedPointer<DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<DkImageContainer> imgC) const
 	{
-		if (!viewport)
-			delete viewport;
-	}
-};
+		if (runID == mRunIDs[ACTION_TESTRUN]) {
 
+			qInfo("testrun action");
+
+			auto img = imgC->image();
+			auto text = Ocr::testOcr(img);
+			te_resultText->setText(text);
+			imgC->setImage(img);
+		}
+
+		// wrong runID? - do nothing
+		return imgC;
+	}
+
+	QString DkOcrPlugin::GetRandomString() const
+	{
+		const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+		const int randomStringLength = 12; // assuming you want random strings of 12 characters
+
+		QString randomString;
+		for (int i = 0; i<randomStringLength; ++i)
+		{
+			int index = qrand() % possibleCharacters.length();
+			QChar nextChar = possibleCharacters.at(index);
+			randomString.append(nextChar);
+		}
+		return randomString;
+	}
+}
