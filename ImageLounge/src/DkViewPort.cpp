@@ -98,7 +98,18 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
 	DkActionManager& am = DkActionManager::instance();
-	addActions(am.allActions().toList());
+	addActions(am.fileActions().toList());
+	addActions(am.viewActions().toList());
+	addActions(am.editActions().toList());
+	addActions(am.sortActions().toList());
+	addActions(am.toolsActions().toList());
+	addActions(am.panelActions().toList());
+	addActions(am.syncActions().toList());
+	addActions(am.pluginActions().toList());
+	addActions(am.lanActions().toList());
+	addActions(am.helpActions().toList());
+	addActions(am.hiddenActions().toList());
+
 	addActions(am.openWithMenu()->actions());
 #ifdef WITH_PLUGINS
 	addActions(am.pluginActionManager()->pluginDummyActions().toList());

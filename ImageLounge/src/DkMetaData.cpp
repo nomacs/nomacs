@@ -489,7 +489,7 @@ void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues
 	}
 
 	fileKeys.append(QObject::tr("Size"));
-	fileValues.append(DkUtils::readableByte((float)mFilePath.size()));
+	fileValues.append(DkUtils::readableByte((float)fileInfo.size()));
 
 	// date group
 	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));

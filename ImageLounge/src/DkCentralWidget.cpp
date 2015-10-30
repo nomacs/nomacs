@@ -265,8 +265,14 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(viewWidget);
 
 	mRecentFilesWidget = new DkRecentFilesWidget(viewWidget);
-	QRect screenRect = QApplication::desktop()->availableGeometry(this);
-	mRecentFilesWidget->setFixedSize(screenRect.width(), screenRect.height());
+	
+	// get the maximum resolution available
+	QSize recentFilesSize;
+	for (int idx = 0; idx < QApplication::desktop()->screenCount(); idx++) {
+		recentFilesSize = recentFilesSize.expandedTo(QApplication::desktop()->availableGeometry(idx).size());
+	}
+
+	mRecentFilesWidget->setFixedSize(recentFilesSize);
 	mRecentFilesWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
 	// connections

@@ -3178,7 +3178,6 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
 	vp->setMainGeometry(mDesktop->screenGeometry());
 	
-	this->setGeometry(screenRects);
 	//this->setGeometry(mDesktop->screenGeometry());
 
 }

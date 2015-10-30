@@ -57,7 +57,6 @@
 #include <QPointer>
 #include <QTimer>
 #include <QMap>
-#include <QDesktopServices>
 #include <QVector2D>
 #include <qmath.h>
 #include <QScrollBar>
@@ -2678,7 +2677,6 @@ void DkImageLabel::mousePressEvent(QMouseEvent *ev) {
 DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(parent) {
 
 	setObjectName("DkRecentFilesWidget");
-
 	rFileIdx = 0;
 
 	createLayout();

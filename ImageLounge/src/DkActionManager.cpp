@@ -1538,8 +1538,8 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPreviewActions[preview_show_labels]->setChecked(DkSettings::display.showThumbLabel);
 
 	mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
-	mPreviewActions[preview_filter]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-
+	mPreviewActions[preview_filter]->setShortcut(QKeySequence::Find);
+	
 	mPreviewActions[preview_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), QObject::tr("&Delete"), parent);
 	mPreviewActions[preview_delete]->setShortcut(QKeySequence::Delete);
 
@@ -1628,7 +1628,6 @@ QVector<QAction*> DkActionManager::allActions() const {
 	all += panelActions();
 	all += syncActions();
 	all += pluginActions();
-	//all += pluginDummyActions();	// TODO?!
 	all += lanActions();
 	all += helpActions();
 	all += previewActions();

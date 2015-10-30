@@ -1954,6 +1954,7 @@ void DkPluginActionManager::updateMenu() {
 
 	if (pluginIdList.isEmpty()) { // no  plugins
 		mMenu->addAction(mPluginActions[DkActionManager::menu_plugin_manager]);
+		mPluginActions.resize(DkActionManager::menu_plugin_manager);	// reduce the size again
 	}
 	else {
 		// delete old plugin actions	
