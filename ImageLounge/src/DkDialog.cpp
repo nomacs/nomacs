@@ -1301,7 +1301,6 @@ void DkResizeDialog::on_sizeBox_currentIndexChanged(int idx) {
 
 	updatePixelHeight();
 	updatePixelWidth();
-
 }
 
 void DkResizeDialog::on_resUnitBox_currentIndexChanged(int) {
@@ -1388,9 +1387,9 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	QSize newSize;
 
 	if (mSizeBox->currentIndex() == size_percent)
-		newSize = QSize(qRound(mWPixelEdit->text().toFloat()/100.0f * mImg.width()), qRound(mHPixelEdit->text().toFloat()/100.0f * mImg.height()));
+		newSize = QSize(qRound(mWPixelEdit->value()/100.0f * mImg.width()), qRound(mHPixelEdit->value()/100.0f * mImg.height()));
 	else
-		newSize = QSize(mWPixelEdit->text().toInt(), mHPixelEdit->text().toInt());
+		newSize = QSize(qRound(mWPixelEdit->value()), qRound(mHPixelEdit->value()));
 
 	QSize imgSize = mImg.size();
 
