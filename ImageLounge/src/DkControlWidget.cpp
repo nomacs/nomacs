@@ -719,12 +719,8 @@ void DkControlWidget::stopLabels() {
 
 	mCenterLabel->stop();
 	mBottomLabel->stop();
-	//topLeftLabel->stop();
 	mSpinnerLabel->stop();
 
-	//showCrop(false);
-	//showThumbView(false);
-	//showRecentFiles(false);
 	switchWidget();
 }
 

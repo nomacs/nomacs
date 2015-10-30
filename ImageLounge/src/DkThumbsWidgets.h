@@ -293,22 +293,6 @@ class DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	enum {
-		action_select_all,
-		action_zoom_in,
-		action_zoom_out,
-		action_display_squares,
-		action_show_labels,
-		action_copy,
-		action_paste,
-		action_rename,
-		action_delete,
-		action_filter,
-		action_batch,
-
-		actions_end
-	};
-
 	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbScene* getThumbWidget() {
@@ -342,8 +326,8 @@ protected:
 	DkThumbsView* mView = 0;
 
 	QMenu* mContextMenu = 0;
-	QVector<QAction*> mActions;
-	QVector<QAction*> mParentActions;
+	//QVector<QAction*> mActions;
+	//QVector<QAction*> mParentActions;
 	QToolBar* mToolbar = 0;
 	QLineEdit* mFilterEdit = 0;
 };

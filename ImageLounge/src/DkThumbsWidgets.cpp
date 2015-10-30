@@ -32,6 +32,7 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkImageLoader.h"
+#include "DkActionManager.h"
 #include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -1831,35 +1832,35 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 
 void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle) {
 
-	mParentActions = actions;
+	//mParentActions = actions;
 
-	if (!menuTitle.isEmpty()) {
-		QMenu* m = mContextMenu->addMenu(menuTitle);
-		m->addActions(mParentActions.toList());
+	//if (!menuTitle.isEmpty()) {
+	//	QMenu* m = mContextMenu->addMenu(menuTitle);
+	//	m->addActions(mParentActions.toList());
 
-		QToolButton* toolButton = new QToolButton(this);
-		toolButton->setObjectName("DkThumbToolButton");
-		toolButton->setMenu(m);
-		toolButton->setAccessibleName(menuTitle);
-		toolButton->setText(menuTitle);
+	//	QToolButton* toolButton = new QToolButton(this);
+	//	toolButton->setObjectName("DkThumbToolButton");
+	//	toolButton->setMenu(m);
+	//	toolButton->setAccessibleName(menuTitle);
+	//	toolButton->setText(menuTitle);
 
-		if (menuTitle == tr("&Sort")) {	// that's an awful hack
-			QPixmap pm(":/nomacs/img/sort.png");
-			
-			if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
-				pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
-			
-			toolButton->setIcon(pm);
-		}
-		toolButton->setPopupMode(QToolButton::InstantPopup);
-		mToolbar->insertWidget(actions[action_display_squares], toolButton);
+	//	if (menuTitle == tr("&Sort")) {	// that's an awful hack
+	//		QPixmap pm(":/nomacs/img/sort.png");
+	//		
+	//		if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
+	//			pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
+	//		
+	//		toolButton->setIcon(pm);
+	//	}
+	//	toolButton->setPopupMode(QToolButton::InstantPopup);
+	//	mToolbar->insertWidget(actions[action_display_squares], toolButton);
 
-		addActions(actions.toList());
-	}
-	else {
-		mContextMenu->addSeparator();
-		mContextMenu->addActions(mParentActions.toList());
-	}
+	//	addActions(actions.toList());
+	//}
+	//else {
+	//	mContextMenu->addSeparator();
+	//	mContextMenu->addActions(mParentActions.toList());
+	//}
 }
 
 void DkThumbScrollWidget::createToolbar() {
@@ -1877,18 +1878,41 @@ void DkThumbScrollWidget::createToolbar() {
 		mToolbar->setObjectName("toolBarWithGradient");
 	}
 
-	mToolbar->addAction(mActions[action_zoom_in]);
-	mToolbar->addAction(mActions[action_zoom_out]);
-	mToolbar->addAction(mActions[action_display_squares]);
-	mToolbar->addAction(mActions[action_show_labels]);
+	DkActionManager& am = DkActionManager::instance();
+	mToolbar->addAction(am.action(DkActionManager::preview_zoom_in));
+	mToolbar->addAction(am.action(DkActionManager::preview_zoom_out));
+	mToolbar->addAction(am.action(DkActionManager::preview_display_squares));
+	mToolbar->addAction(am.action(DkActionManager::preview_show_labels));
 	mToolbar->addSeparator();
-	mToolbar->addAction(mActions[action_copy]);
-	mToolbar->addAction(mActions[action_paste]);
-	mToolbar->addAction(mActions[action_rename]);
-	mToolbar->addAction(mActions[action_delete]);
+	mToolbar->addAction(am.action(DkActionManager::preview_copy));
+	mToolbar->addAction(am.action(DkActionManager::preview_paste));
+	mToolbar->addAction(am.action(DkActionManager::preview_rename));
+	mToolbar->addAction(am.action(DkActionManager::preview_delete));
 	mToolbar->addSeparator();
-	mToolbar->addAction(mActions[action_batch]);
+	mToolbar->addAction(am.action(DkActionManager::preview_batch));
 
+	// add sorting
+	QString menuTitle = tr("&Sort");
+	QMenu* m = mContextMenu->addMenu(menuTitle);
+	m->addActions(am.sortActions().toList());
+
+	QToolButton* toolButton = new QToolButton(this);
+	toolButton->setObjectName("DkThumbToolButton");
+	toolButton->setMenu(m);
+	toolButton->setAccessibleName(menuTitle);
+	toolButton->setText(menuTitle);
+	QPixmap pm(":/nomacs/img/sort.png");
+
+	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
+		pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
+
+	toolButton->setIcon(pm);
+	toolButton->setPopupMode(QToolButton::InstantPopup);
+	mToolbar->addWidget(toolButton);
+
+	addActions(am.sortActions().toList());
+
+	// filter edit
 	mFilterEdit = new QLineEdit("", this);
 	mFilterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
 	mFilterEdit->setMaximumWidth(250);
@@ -1903,73 +1927,32 @@ void DkThumbScrollWidget::createToolbar() {
 
 void DkThumbScrollWidget::createActions() {
 
-	mActions.resize(actions_end);
 
-	mActions[action_select_all] = new QAction(tr("Select &All"), this);
-	mActions[action_select_all]->setShortcut(QKeySequence::SelectAll);
-	mActions[action_select_all]->setCheckable(true);
-	connect(mActions[action_select_all], SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
+	DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
+	connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
+	connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
+	connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
+	connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
+	connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
+	connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
+	connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
+	connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
+	connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
+	connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
 
-	mActions[action_zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.png"), tr("Zoom &In"), this);
-	mActions[action_zoom_in]->setShortcut(QKeySequence::ZoomIn);
-	connect(mActions[action_zoom_in], SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
-
-	mActions[action_zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.png"), tr("Zoom &Out"), this);
-	mActions[action_zoom_out]->setShortcut(QKeySequence::ZoomOut);
-	connect(mActions[action_zoom_out], SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
-
-	mActions[action_display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.png"), tr("Display &Squares"), this);
-	mActions[action_display_squares]->setCheckable(true);
-	mActions[action_display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
-	connect(mActions[action_display_squares], SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
-
-	mActions[action_show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("Show &Filename"), this);
-	mActions[action_show_labels]->setCheckable(true);
-	mActions[action_show_labels]->setChecked(DkSettings::display.showThumbLabel);
-	connect(mActions[action_show_labels], SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
-
-	mActions[action_filter] = new QAction(tr("&Filter"), this);
-	mActions[action_filter]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-	connect(mActions[action_filter], SIGNAL(triggered()), this, SLOT(setFilterFocus()));
-
-	mActions[action_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), tr("&Delete"), this);
-	mActions[action_delete]->setShortcut(QKeySequence::Delete);
-	connect(mActions[action_delete], SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
-
-	mActions[action_copy] = new QAction(QIcon(":/nomacs/img/copy.png"), tr("&Copy"), this);
-	mActions[action_copy]->setShortcut(QKeySequence::Copy);
-	connect(mActions[action_copy], SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
-
-	mActions[action_paste] = new QAction(QIcon(":/nomacs/img/paste.png"), tr("&Paste"), this);
-	mActions[action_paste]->setShortcut(QKeySequence::Paste);
-	connect(mActions[action_paste], SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
-
-	mActions[action_rename] = new QAction(QIcon(":/nomacs/img/rename.png"), tr("&Rename"), this);
-	mActions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
-	connect(mActions[action_rename], SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
-
-	mActions[action_batch] = new QAction(QIcon(":/nomacs/img/batch-processing.png"), tr("&Batch Process"), this);
-	mActions[action_batch]->setToolTip(tr("Adds selected files to batch processing."));
-	mActions[action_batch]->setShortcut(QKeySequence(Qt::Key_B));
-	connect(mActions[action_batch], SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
-
+	// create context menu
 	mContextMenu = new QMenu(tr("Thumb"), this);
-	for (int idx = 0; idx < mActions.size(); idx++) {
+	QVector<QAction*> actions = am.previewActions();
+	for (int idx = 0; idx < actions.size(); idx++) {
 
-		mActions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-		mContextMenu->addAction(mActions.at(idx));
+		mContextMenu->addAction(actions.at(idx));
 
-		if (idx == action_show_labels)
+		if (idx == DkActionManager::preview_show_labels)
 			mContextMenu->addSeparator();
 	}
 
-	// now colorize all icons
-	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
-		for (QAction* action : mActions)
-			action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(32), DkSettings::display.iconColor));
-	}
-
-	addActions(mActions.toList());
+	addActions(actions.toList());
 }
 
 void DkThumbScrollWidget::batchProcessFiles() const {
@@ -2032,12 +2015,13 @@ void DkThumbScrollWidget::enableSelectionActions() {
 
 	bool enable = !mThumbsScene->getSelectedFiles().isEmpty();
 
-	mActions[action_copy]->setEnabled(enable);
-	mActions[action_rename]->setEnabled(enable);
-	mActions[action_delete]->setEnabled(enable);
-	mActions[action_batch]->setEnabled(enable);
+	DkActionManager& am = DkActionManager::instance();
+	am.action(DkActionManager::preview_copy)->setEnabled(enable);
+	am.action(DkActionManager::preview_rename)->setEnabled(enable);
+	am.action(DkActionManager::preview_delete)->setEnabled(enable);
+	am.action(DkActionManager::preview_batch)->setEnabled(enable);
 
-	mActions[action_select_all]->setChecked(mThumbsScene->allThumbsSelected());
+	am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
 
 }

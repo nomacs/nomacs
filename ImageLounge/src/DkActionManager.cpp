@@ -347,6 +347,7 @@ void DkDialogManager::openShortcutsDialog() const {
 	shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
 	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
 	shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
+	shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
 //#ifdef WITH_PLUGINS	// TODO
 //	createPluginsMenu();
 //
@@ -767,6 +768,10 @@ QAction* DkActionManager::action(HiddenActions action) const {
 	return mHiddenActions[action];
 }
 
+QAction* DkActionManager::action(PreviewActions action) const {
+	return mPreviewActions[action];
+}
+
 QIcon DkActionManager::icon(FileIcons icon) const {
 	return mFileIcons[icon];
 }
@@ -829,6 +834,10 @@ QVector<QAction*> DkActionManager::pluginActions() const {
 
 QVector<QAction*> DkActionManager::hiddenActions() const {
 	return mHiddenActions;
+}
+
+QVector<QAction*> DkActionManager::previewActions() const {
+	return mPreviewActions;
 }
 
 DkAppManager* DkActionManager::appManager() const {
@@ -988,6 +997,9 @@ void DkActionManager::colorizeIcons(const QColor& col) {
 
 	for (QIcon& icon : mToolsIcons)
 		icon.addPixmap(DkImage::colorizePixmap(icon.pixmap(100), col));
+
+	for (QAction* action : mPreviewActions)
+		action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(100), DkSettings::display.iconColor));
 }
 
 void DkActionManager::createActions(QWidget* parent) {
@@ -1499,18 +1511,58 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPluginActions[menu_plugin_manager] = new QAction(QObject::tr("&Plugin Manager"), parent);
 	mPluginActions[menu_plugin_manager]->setStatusTip(QObject::tr("manage installed plugins and download new ones"));
 
+	// preview actions
+	mPreviewActions.resize(actions_end);
+
+	mPreviewActions[preview_select_all] = new QAction(QObject::tr("Select &All"), parent);
+	mPreviewActions[preview_select_all]->setShortcut(QKeySequence::SelectAll);
+	mPreviewActions[preview_select_all]->setCheckable(true);
+
+	mPreviewActions[preview_zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.png"), QObject::tr("Zoom &In"), parent);
+	mPreviewActions[preview_zoom_in]->setShortcut(QKeySequence::ZoomIn);
+
+	mPreviewActions[preview_zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.png"), QObject::tr("Zoom &Out"), parent);
+	mPreviewActions[preview_zoom_out]->setShortcut(QKeySequence::ZoomOut);
+
+	mPreviewActions[preview_display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.png"), QObject::tr("Display &Squares"), parent);
+	mPreviewActions[preview_display_squares]->setCheckable(true);
+	mPreviewActions[preview_display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
+
+	mPreviewActions[preview_show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.png"), QObject::tr("Show &Filename"), parent);
+	mPreviewActions[preview_show_labels]->setCheckable(true);
+	mPreviewActions[preview_show_labels]->setChecked(DkSettings::display.showThumbLabel);
+
+	mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
+	mPreviewActions[preview_filter]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+
+	mPreviewActions[preview_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), QObject::tr("&Delete"), parent);
+	mPreviewActions[preview_delete]->setShortcut(QKeySequence::Delete);
+
+	mPreviewActions[preview_copy] = new QAction(QIcon(":/nomacs/img/copy.png"), QObject::tr("&Copy"), parent);
+	mPreviewActions[preview_copy]->setShortcut(QKeySequence::Copy);
+
+	mPreviewActions[preview_paste] = new QAction(QIcon(":/nomacs/img/paste.png"), QObject::tr("&Paste"), parent);
+	mPreviewActions[preview_paste]->setShortcut(QKeySequence::Paste);
+
+	mPreviewActions[preview_rename] = new QAction(QIcon(":/nomacs/img/rename.png"), QObject::tr("&Rename"), parent);
+	mPreviewActions[preview_rename]->setShortcut(QKeySequence(Qt::Key_F2));
+
+	mPreviewActions[preview_batch] = new QAction(QIcon(":/nomacs/img/batch-processing.png"), QObject::tr("&Batch Process"), parent);
+	mPreviewActions[preview_batch]->setToolTip(QObject::tr("Adds selected files to batch processing."));
+	mPreviewActions[preview_batch]->setShortcut(QKeySequence(Qt::Key_B));
+
 	// hidden actions
 	mHiddenActions.resize(sc_end);
 
-	mHiddenActions[sc_test_img] = new QAction(QObject::tr("Lena"), parent);
-	mHiddenActions[sc_test_img]->setStatusTip(QObject::tr("Show test image"));
+	mHiddenActions[sc_test_img] = new QAction(QObject::QObject::tr("Lena"), parent);
+	mHiddenActions[sc_test_img]->setStatusTip(QObject::QObject::tr("Show test image"));
 	mHiddenActions[sc_test_img]->setShortcut(QKeySequence(shortcut_test_img));
 
-	mHiddenActions[sc_test_rec] = new QAction(QObject::tr("All Images"), parent);
-	mHiddenActions[sc_test_rec]->setStatusTip(QObject::tr("Generates all images in the world"));
+	mHiddenActions[sc_test_rec] = new QAction(QObject::QObject::tr("All Images"), parent);
+	mHiddenActions[sc_test_rec]->setStatusTip(QObject::QObject::tr("Generates all images in the world"));
 	mHiddenActions[sc_test_rec]->setShortcut(QKeySequence(shortcut_test_rec));
 
-	mHiddenActions[sc_test_pong] = new QAction(QObject::tr("Pong"), parent);
+	mHiddenActions[sc_test_pong] = new QAction(QObject::QObject::tr("Pong"), parent);
 	mHiddenActions[sc_test_pong]->setStatusTip(QObject::tr("Start pong"));
 	mHiddenActions[sc_test_pong]->setShortcut(QKeySequence(shortcut_test_pong));
 
@@ -1574,6 +1626,7 @@ QVector<QAction*> DkActionManager::allActions() const {
 	//all += pluginDummyActions();	// TODO?!
 	all += lanActions();
 	all += helpActions();
+	all += previewActions();
 
 	all += hiddenActions();
 	

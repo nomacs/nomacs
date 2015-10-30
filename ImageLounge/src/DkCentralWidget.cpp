@@ -218,16 +218,8 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	mViewport = viewport;
 	setObjectName("DkCentralWidget");
 	createLayout();
-	//loadSettings();
 
 	setAcceptDrops(true);
-
-	//if (tabInfos.empty()) {
-	//	QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
-	//	info->setMode(DkTabInfo::tab_empty);
-	//	info->setTabIdx(0);
-	//	addTab(info);
-	//}
 
 	DkActionManager& am = DkActionManager::instance();
 	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
@@ -236,6 +228,7 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(startBatchProcessing()));
+	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 }
 
 DkCentralWidget::~DkCentralWidget() {

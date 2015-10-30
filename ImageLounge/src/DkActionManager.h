@@ -294,6 +294,22 @@ public:
 		sc_end,	// nothing beyond this point
 	};
 
+	enum PreviewActions {
+		preview_select_all,
+		preview_zoom_in,
+		preview_zoom_out,
+		preview_display_squares,
+		preview_show_labels,
+		preview_copy,
+		preview_paste,
+		preview_rename,
+		preview_delete,
+		preview_filter,
+		preview_batch,
+
+		actions_end
+	};
+
 	enum FileIcons {
 		icon_file_prev,
 		icon_file_next,
@@ -470,6 +486,7 @@ public:
 	QAction* action(LanMenuActions action) const;
 	QAction* action(HelpMenuActions action) const;
 	QAction* action(HiddenActions action) const;
+	QAction* action(PreviewActions action) const;
 
 	QIcon icon(FileIcons icon) const;
 	QIcon icon(ViewIcons icon) const;
@@ -487,6 +504,7 @@ public:
 	QVector<QAction *> pluginActions() const;
 	QVector<QAction *> lanActions() const;
 	QVector<QAction *> helpActions() const;
+	QVector<QAction *> previewActions() const;
 
 	QVector<QAction *> allActions() const;
 
@@ -531,6 +549,7 @@ protected:
 	//QVector<QAction *> mPluginsDummyActions;
 	QVector<QAction *> mLanActions;
 	QVector<QAction *> mHelpActions;
+	QVector<QAction *> mPreviewActions;
 
 	QVector<QAction *> mHiddenActions;	
 
