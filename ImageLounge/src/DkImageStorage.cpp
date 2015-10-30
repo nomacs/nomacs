@@ -525,85 +525,6 @@ QImage DkImage::normImage(const QImage& img) {
 	return imgN;
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int) {
-
-	cv::Mat mapx, mapy;
-
-	cv::Size ssize, dsize;
-	ssize = src.size();
-	dsize = dst.size();
-
-	mapx = cv::Mat( dsize.height, dsize.width, CV_32F );
-	mapy = cv::Mat( dsize.height, dsize.width, CV_32F );
-
-	int x, y;
-	cv::Mat bufx, bufy, bufp, bufa;
-	double ascale = ssize.height/(2*CV_PI);
-	cv::AutoBuffer<float> _buf(4*dsize.width);
-	float* buf = _buf;
-
-	bufx = cv::Mat( 1, dsize.width, CV_32F, buf );
-	bufy = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width );
-	bufp = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*2 );
-	bufa = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*3 );
-
-	for( x = 0; x < dsize.width; x++ )
-		bufx.ptr<float>()[x] = (float)x - center.x;
-
-	for( y = 0; y < dsize.height; y++ ) {
-		float* mx = mapx.ptr<float>(y);
-		float* my = mapy.ptr<float>(y);
-
-		for( x = 0; x < dsize.width; x++ )
-			bufy.ptr<float>()[x] = (float)y - center.y;
-
-		cv::cartToPolar(bufx, bufy, bufp, bufa);
-
-		for( x = 0; x < dsize.width; x++ ) {
-			bufp.ptr<float>()[x] /= (float)scaleLog;
-			bufp.ptr<float>()[x] += 1.0f;
-		}
-
-		cv::log(bufp, bufp);
-
-		for( x = 0; x < dsize.width; x++ ) {
-			double rho = bufp.ptr<float>()[x]*scale;
-			double phi = bufa.ptr<float>()[x] + angle;
-
-			if (phi < 0)
-				phi += 2*CV_PI;
-			else if (phi > 2*CV_PI)
-				phi -= 2*CV_PI;
-
-			phi *= ascale;
-
-			//qDebug() << "phi: " << bufa.data.fl[x];
-
-			mx[x] = (float)rho;
-			my[x] = (float)phi;
-		}
-	}
-
-	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, 0);
-}
-
-void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert /* = false */) {
-
-	QTransform rotationMatrix;
-	rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
-	img = img.transformed(rotationMatrix);
-
-	// make square
-	img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-	cv::Mat mImg = DkImage::qImage2Mat(img);
-
-	qDebug() << "scale log: " << scaleLog << " scale: " << scale << " inverted: " << invert;
-	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, scale, angle, CV_WARP_INVERSE_MAP+CV_WARP_FILL_OUTLIERS);
-
-	img = DkImage::mat2QImage(mImg);
-}
-
 bool DkImage::normImage(QImage& img) {
 
 	uchar maxVal = 0;
@@ -987,6 +908,85 @@ void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTa
 	}
 
 	qDebug() << "gamma computation takes: " << dt.getTotal();
+}
+
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int) {
+
+	cv::Mat mapx, mapy;
+
+	cv::Size ssize, dsize;
+	ssize = src.size();
+	dsize = dst.size();
+
+	mapx = cv::Mat( dsize.height, dsize.width, CV_32F );
+	mapy = cv::Mat( dsize.height, dsize.width, CV_32F );
+
+	int x, y;
+	cv::Mat bufx, bufy, bufp, bufa;
+	double ascale = ssize.height/(2*CV_PI);
+	cv::AutoBuffer<float> _buf(4*dsize.width);
+	float* buf = _buf;
+
+	bufx = cv::Mat( 1, dsize.width, CV_32F, buf );
+	bufy = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width );
+	bufp = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*2 );
+	bufa = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*3 );
+
+	for( x = 0; x < dsize.width; x++ )
+		bufx.ptr<float>()[x] = (float)x - center.x;
+
+	for( y = 0; y < dsize.height; y++ ) {
+		float* mx = mapx.ptr<float>(y);
+		float* my = mapy.ptr<float>(y);
+
+		for( x = 0; x < dsize.width; x++ )
+			bufy.ptr<float>()[x] = (float)y - center.y;
+
+		cv::cartToPolar(bufx, bufy, bufp, bufa);
+
+		for( x = 0; x < dsize.width; x++ ) {
+			bufp.ptr<float>()[x] /= (float)scaleLog;
+			bufp.ptr<float>()[x] += 1.0f;
+		}
+
+		cv::log(bufp, bufp);
+
+		for( x = 0; x < dsize.width; x++ ) {
+			double rho = bufp.ptr<float>()[x]*scale;
+			double phi = bufa.ptr<float>()[x] + angle;
+
+			if (phi < 0)
+				phi += 2*CV_PI;
+			else if (phi > 2*CV_PI)
+				phi -= 2*CV_PI;
+
+			phi *= ascale;
+
+			//qDebug() << "phi: " << bufa.data.fl[x];
+
+			mx[x] = (float)rho;
+			my[x] = (float)phi;
+		}
+	}
+
+	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, 0);
+}
+
+void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert /* = false */) {
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
+	img = img.transformed(rotationMatrix);
+
+	// make square
+	img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+	cv::Mat mImg = DkImage::qImage2Mat(img);
+
+	qDebug() << "scale log: " << scaleLog << " scale: " << scale << " inverted: " << invert;
+	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, scale, angle, CV_WARP_INVERSE_MAP+CV_WARP_FILL_OUTLIERS);
+
+	img = DkImage::mat2QImage(mImg);
 }
 
 #endif

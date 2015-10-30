@@ -581,7 +581,8 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 	}
 
 	return true;
-
+#else
+	return false;
 #endif // WITH_PLUGINS
 }
 
@@ -598,6 +599,8 @@ bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 		return true;
 
 	return closePlugin(askForSaving);
+#else
+	return true;
 #endif // WITH_PLUGINS
 }
 

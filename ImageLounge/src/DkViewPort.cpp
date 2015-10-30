@@ -100,7 +100,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.allActions().toList());
 	addActions(am.openWithMenu()->actions());
+#ifdef WITH_PLUGINS
 	addActions(am.pluginActionManager()->pluginDummyActions().toList());
+#endif
 
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
@@ -595,11 +597,13 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 
 void DkViewPort::applyPlugin(DkPluginInterface* plugin, const QString& key) {
 	
+#ifdef WITH_PLUGINS
 	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->runPlugin(key, imageContainer()));
 	if (result) 
 		setEditedImage(result);
 
 	DkPluginManager::instance().clearRunningPluginKey();
+#endif
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {

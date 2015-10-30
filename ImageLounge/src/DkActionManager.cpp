@@ -916,7 +916,10 @@ void DkActionManager::init() {
 
 	mDialogManager = new DkDialogManager(QApplication::activeWindow());
 	mAppManager = new DkAppManager(QApplication::activeWindow());
+
+#ifdef WITH_PLUGINS
 	mPluginManager = new DkPluginActionManager(QApplication::activeWindow());
+#endif
 
 	createIcons();
 }

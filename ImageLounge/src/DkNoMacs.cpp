@@ -605,12 +605,12 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(enable);
 #else
-	editActions[menu_edit_unsharp)->setEnabled(false);
+	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(false);
 #endif
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_edit_tiny_planet)->setEnabled(enable);
 #else
-	editActions[menu_edit_tiny_planet)->setEnabled(false);
+	am.action(DkActionManager::menu_edit_tiny_planet)->setEnabled(false);
 #endif
 
 	am.action(DkActionManager::menu_edit_invert)->setEnabled(enable);
@@ -622,7 +622,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_panel_histogram)->setEnabled(enable);
 #else
-	panelActions[menu_panel_histogram)->setEnabled(false);
+	am.action(DkActionManager::menu_panel_histogram)->setEnabled(false);
 #endif
 	am.action(DkActionManager::menu_panel_scroller)->setEnabled(enable);
 	am.action(DkActionManager::menu_panel_comment)->setEnabled(enable);
@@ -641,7 +641,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(enable);
 #else
-	toolsActions[menu_tools_manipulation)->setEnabled(false);
+	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(false);
 #endif
 
 	// disable open with actions

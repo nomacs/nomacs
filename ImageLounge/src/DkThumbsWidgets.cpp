@@ -315,9 +315,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		// update the buffer dim
 		if (orientation == Qt::Horizontal)
-			bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
+			bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + qCeil(xOffset/2.0f));
 		else
-			bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + cvCeil(xOffset/2.0f));
+			bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + qCeil(xOffset/2.0f));
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);

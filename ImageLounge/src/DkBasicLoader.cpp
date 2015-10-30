@@ -94,6 +94,9 @@
 #endif // defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
 #endif
 
+#else
+#include <olectl.h>
+#pragma comment(lib, "oleaut32.lib")
 #endif
 
 #pragma warning(pop)
@@ -1550,9 +1553,6 @@ bool DkBasicLoader::saveWindowsIcon(const QString& filePath, const QImage& img) 
 
 	return false;
 }
-
-//#include <olectl.h>
-//#pragma comment(lib, "oleaut32.lib")
 
 struct ICONDIRENTRY
 {

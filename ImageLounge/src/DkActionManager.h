@@ -576,9 +576,9 @@ protected:
 	QVector<QIcon> mViewIcons;
 	QVector<QIcon> mToolsIcons;
 
-	DkDialogManager* mDialogManager;
-	DkAppManager* mAppManager;
-	DkPluginActionManager* mPluginManager;
+	DkDialogManager* mDialogManager = 0;
+	DkAppManager* mAppManager = 0;
+	DkPluginActionManager* mPluginManager = 0;
 
 	QSharedPointer<DkActionManager> inst;
 };
