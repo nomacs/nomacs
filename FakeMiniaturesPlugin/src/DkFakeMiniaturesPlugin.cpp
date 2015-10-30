@@ -114,7 +114,7 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 QSharedPointer<DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
 
 	if (runID == "4d29da2b322f44979c55ea0ed4ff158b" && imgC) {
-		QMainWindow* mainWindow = this->getMainWidnow();
+		QMainWindow* mainWindow = getMainWindow();
 		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
 		if(mainWindow) 
 			fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);

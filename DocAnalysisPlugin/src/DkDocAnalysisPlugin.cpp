@@ -173,7 +173,7 @@ DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 
 	if (!viewport) {
 		DkDocAnalysisViewPort* vp = new DkDocAnalysisViewPort();
-		vp->setMainWindow(getMainWidnow());
+		vp->setMainWindow(getMainWindow());
 
 		viewport = vp;
 
@@ -217,11 +217,11 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	QSharedPointer<DkImageLoader> loader;
 	DkNoMacs* nmcWin;
-	QMainWindow* win = getMainWidnow();
+	QMainWindow* win = getMainWindow();
 	if (win) {
 
 		// this should usually work - since we are a nomacs plugin
-		nmcWin = dynamic_cast<DkNoMacs*>(getMainWidnow());
+		nmcWin = dynamic_cast<DkNoMacs*>(win);
 
 		if (nmcWin) {
 			DkCentralWidget* cw = nmcWin->getTabWidget();
