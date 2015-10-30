@@ -41,7 +41,6 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
-#include <QShortcut>
 #include <QMovie>
 #include <QMimeData>
 #include <QAction>

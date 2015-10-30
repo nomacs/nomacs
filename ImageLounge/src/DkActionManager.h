@@ -328,6 +328,8 @@ public:
 		icon_view_movie_play,
 		icon_view_movie_prev,
 		icon_view_movie_next,
+		icon_view_zoom_in,
+		icon_view_zoom_out,
 
 		icon_view_end,	// nothing beyond this point
 	};
@@ -485,6 +487,7 @@ public:
 	QVector<QAction *> pluginActions() const;
 	QVector<QAction *> lanActions() const;
 	QVector<QAction *> helpActions() const;
+
 	QVector<QAction *> allActions() const;
 
 	QVector<QAction*> hiddenActions() const;	

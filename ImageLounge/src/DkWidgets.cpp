@@ -50,7 +50,6 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QMouseEvent>
-#include <QShortcut>
 #include <QToolButton>
 #include <QComboBox>
 #include <QMessageBox>

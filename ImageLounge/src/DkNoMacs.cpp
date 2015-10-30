@@ -63,7 +63,6 @@
 #endif // WITH_UPNP
 
 #include <QBoxLayout>
-#include <QShortcut>
 #include <QResizeEvent>
 #include <QAction>
 #include <QFileDialog>
@@ -1976,7 +1975,6 @@ void DkNoMacs::printDialog() {
 
 	mPrintPreviewDialog->show();
 	mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
-
 }
 
 void DkNoMacs::computeThumbsBatch() {

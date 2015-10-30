@@ -123,13 +123,6 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 
 	setFixedSize(imgLabel->size());
 
-	//// create exit shortcuts
-	//QShortcut* escExit = new QShortcut(Qt::Key_Escape, this);
-	//QObject::connect(escExit, SIGNAL(activated()), this, SLOT(close()));
-
-	//QPushButton* exitButton = new QPushButton(tr("Close"));
-	//exitButton->setFlat(true);
-
 	exitButton = new QPushButton(tr("CLOSE"), this);
 	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
@@ -617,18 +610,12 @@ void DkSearchDialog::init() {
 	mResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	mResultListView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-	//// TODO: add cursor down - cursor up action
-	//QAction* focusAction = new QAction(tr("Focus Action"), searchBar);
-	//focusAction->setShortcut(Qt::Key_Down);
-	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
-
 	mFilterButton = new QPushButton(tr("&Filter"), this);
 	mFilterButton->setObjectName("filterButton");
 
 	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	mButtons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
-	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	mButtons->addButton(mFilterButton, QDialogButtonBox::ActionRole);
 
 	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -712,12 +699,6 @@ void DkSearchDialog::on_resultListView_clicked(const QModelIndex& modelIndex) {
 
 void DkSearchDialog::accept() {
 
-	on_okButton_pressed();
-	QDialog::accept();
-}
-
-void DkSearchDialog::on_okButton_pressed() {
-
 	if (mResultListView->selectionModel()->currentIndex().data().toString() == mEndMessage) {
 		mStringModel->setStringList(makeViewable(mResultList, true));
 		return;
@@ -731,6 +712,8 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	if (!fileName.isEmpty())
 		emit loadFileSignal(QFileInfo(mPath, fileName).absoluteFilePath());
+
+	QDialog::accept();
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
@@ -2096,6 +2079,7 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, float dpi, QPrinte
 	mPrintDialog = 0;
 	mImgTransform = QTransform();
 	init();
+	setWindowTitle(tr("Print Preview"));
 	if (!img.isNull() && img.width() > img.height()) 
 		mPreview->setLandscapeOrientation();
 
@@ -2359,6 +2343,7 @@ void DkPrintPreviewDialog::fitImage(QAction* action) {
 	else
 		mPreview->fitToWidth();
 	updateZoomFactor();
+	qDebug() << "fitting image...";
 }
 
 bool DkPrintPreviewDialog::isFitting() {
@@ -2380,6 +2365,7 @@ void DkPrintPreviewDialog::centerImage() {
 }
 
 void DkPrintPreviewDialog::setFitting(bool on) {
+	
 	if (isFitting() == on)
 		return;
 	mFitGroup->setExclusive(on);
@@ -2423,8 +2409,7 @@ void DkPrintPreviewDialog::zoomFactorChanged() {
 	updateZoomFactor();
 }
 
-void DkPrintPreviewDialog::updateZoomFactor()
-{
+void DkPrintPreviewDialog::updateZoomFactor() {
 	mZoomFactor->lineEdit()->setText(QString().sprintf("%.1f%%", mPreview->zoomFactor()*100));
 }
 

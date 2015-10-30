@@ -948,6 +948,9 @@ void DkActionManager::createIcons() {
 	mViewIcons[icon_view_reset] = ICON("zoom-draw", ":/nomacs/img/zoomReset.png");
 	mViewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
 	mViewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
+	mViewIcons[icon_view_zoom_in] = ICON("", ":/nomacs/img/zoom-in.png");
+	mViewIcons[icon_view_zoom_out] = ICON("", ":/nomacs/img/zoom-out.png");
+
 	mViewIcons[icon_view_movie_play] = QIcon();
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-play.png"), QIcon::Normal, QIcon::On);
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.png"), QIcon::Normal, QIcon::Off);
@@ -1309,11 +1312,11 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
 	mViewActions[menu_view_100]->setStatusTip(QObject::tr("Shows the image at 100%"));
 
-	mViewActions[menu_view_zoom_in] = new QAction(QObject::tr("Zoom &In"), parent);
+	mViewActions[menu_view_zoom_in] = new QAction(mViewIcons[icon_view_zoom_in], QObject::tr("Zoom &In"), parent);
 	mViewActions[menu_view_zoom_in]->setShortcut(QKeySequence::ZoomIn);
 	mViewActions[menu_view_zoom_in]->setStatusTip(QObject::tr("zoom in"));
 
-	mViewActions[menu_view_zoom_out] = new QAction(QObject::tr("&Zoom Out"), parent);
+	mViewActions[menu_view_zoom_out] = new QAction(mViewIcons[icon_view_zoom_out], QObject::tr("&Zoom Out"), parent);
 	mViewActions[menu_view_zoom_out]->setShortcut(QKeySequence::ZoomOut);
 	mViewActions[menu_view_zoom_out]->setStatusTip(QObject::tr("zoom out"));
 
