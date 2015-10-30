@@ -401,7 +401,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addAction(mFileActions[menu_file_open_dir]);
 
 	// add open with menu
-	mFileMenu->addMenu(createOpenWithMenu(mFileMenu));
+	mFileMenu->addMenu(openWithMenu());
 	mFileMenu->addAction(mFileActions[menu_file_quick_launch]);
 
 	mFileMenu->addSeparator();
@@ -416,7 +416,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addSeparator();
 
 	// add sort menu
-	mFileMenu->addMenu(createSortMenu(mFileMenu));
+	mFileMenu->addMenu(sortMenu());
 	mFileMenu->addAction(mFileActions[menu_file_recursive]);
 	mFileMenu->addAction(mFileActions[menu_file_goto]);
 	mFileMenu->addAction(mFileActions[menu_file_find]);
@@ -788,11 +788,11 @@ QVector<QAction*> DkActionManager::fileActions() const {
 }
 
 QVector<QAction*> DkActionManager::sortActions() const {
-	return mOpenWithActions;
+	return mSortActions;
 }
 
 QVector<QAction*> DkActionManager::openWithActions() const {
-	return mSortActions;
+	return mOpenWithActions;
 }
 
 QVector<QAction*> DkActionManager::viewActions() const {
@@ -844,11 +844,11 @@ QMenu* DkActionManager::fileMenu() const {
 }
 
 QMenu* DkActionManager::sortMenu() const {
-	return mOpenWithMenu;
+	return mSortMenu;
 }
 
 QMenu* DkActionManager::openWithMenu() const {
-	return mSortMenu;
+	return mOpenWithMenu;
 }
 
 QMenu* DkActionManager::viewMenu() const {
@@ -888,10 +888,10 @@ DkTcpMenu* DkActionManager::lanMenu() const {
 }
 
 void DkActionManager::createMenus(QWidget* parent) {
-	
-	createFileMenu(parent);
+
 	createSortMenu(parent);
 	createOpenWithMenu(parent);
+	createFileMenu(parent);
 	createViewMenu(parent);
 	createEditMenu(parent);
 	createToolsMenu(parent);
