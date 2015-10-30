@@ -232,9 +232,9 @@ QString DkMetaDataT::getDescription() const {
 int DkMetaDataT::getOrientation() const {
 
 	if (mExifState != loaded && mExifState != dirty)
-		return -1;
+		return 0;
 
-	int orientation = -1;
+	int orientation = 0;
 
 	try {
 		Exiv2::ExifData &exifData = mExifImg->exifData();
@@ -270,7 +270,7 @@ int DkMetaDataT::getOrientation() const {
 		}
 	}
 	catch(...) {
-		return -1;
+		return 0;
 	}
 
 	return orientation;

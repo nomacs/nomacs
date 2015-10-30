@@ -28,11 +28,7 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-//#include <QColor>
 #include <QTimer>
-//#include <QThread>
-//#include <QMutex>
-//#include <QStringList>
 #include <QImage>
 #pragma warning(pop)	// no warnings from includes - end
 

@@ -180,6 +180,8 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		qDebug() << "metaData is NULL!";
 	}
 
+	qDebug() << "ba size: " << ba;
+
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = fInfo.suffix().toLower();
 
@@ -1747,7 +1749,11 @@ QString DkZipContainer::decodeZipFile(const QString& encodedFileInfo) {
 
 QString DkZipContainer::decodeImageFile(const QString& encodedFileInfo) {
 
-	return QFileInfo(encodedFileInfo).fileName();
+	// get relative zip path
+	QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
+	tmp = tmp.replace(mZipMarker, "/");
+	tmp = tmp.replace("//", "/");
+	return tmp;
 }
 
 QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile) {
@@ -1755,6 +1761,9 @@ QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString& zipFile, 
 	QuaZip zip(zipFile);		
 	if(!zip.open(QuaZip::mdUnzip)) 
 		return QSharedPointer<QByteArray>(new QByteArray());
+
+	qDebug() << "DkZip::extractImage filePath: " << zipFile;
+	qDebug() << "3.0 image file" << imageFile;
 
 	zip.setCurrentFile(imageFile);
 	QuaZipFile extractedFile(&zip);
