@@ -195,6 +195,7 @@ void DkRotatingRect::updateCorner(int cIdx, QPointF nC, DkVector oldDiag) {
 		rect[(cIdx+3) % 4] = (nc3+cN).toQPointF();
 		rect[cIdx] = cN.toQPointF();
 	}
+
 }
 
 const QPolygonF& DkRotatingRect::getPoly() const {

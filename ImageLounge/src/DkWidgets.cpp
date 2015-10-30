@@ -1591,7 +1591,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 
 	// create path
 	QPainterPath path;
-	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
+	QRect canvas(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
 	path.addRect(canvas);
 	
 	QPolygonF p;
@@ -1603,7 +1603,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 		p = mTtform.inverted().map(p);
 		if (mImgTform) p = mImgTform->map(p);
 		if (mWorldTform) p = mWorldTform->map(p);
-		path.addPolygon(p);
+		QPolygon pr = p.toPolygon();	// round coordinates
+		path.addPolygon(pr);
 	}
 
 	// now draw
@@ -1642,7 +1643,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 				cp = (lv + 0.5*(rv - lv)).toPointF();
 			}
 
-			mCtrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
+			mCtrlPoints[idx]->move(qRound(cp.x()), qRound(cp.y()));
 			mCtrlPoints[idx]->draw(&painter);
 		}
 	}
