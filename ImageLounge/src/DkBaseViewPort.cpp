@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkBaseViewPort.h"
+#include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
 
@@ -37,6 +38,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QSvgRenderer>
+#include <QMainWindow>
 
 // gestures
 #include <QSwipeGesture>
@@ -638,9 +640,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
-	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
-	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
-	if (parentWidget() && parentWidget()->isFullScreen()) {
+	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
 		painter->setWorldMatrixEnabled(true);

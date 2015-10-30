@@ -71,7 +71,7 @@ public:
     virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};
-	QMainWindow* getMainWidnow() const {
+	QMainWindow* getMainWindow() const {
 
 		QWidgetList widgets = QApplication::topLevelWidgets();
 

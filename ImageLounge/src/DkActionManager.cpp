@@ -348,17 +348,19 @@ void DkDialogManager::openShortcutsDialog() const {
 	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
 	shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
 	shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
-//#ifdef WITH_PLUGINS	// TODO
-//	createPluginsMenu();
-//
-//	QVector<QAction*> allPluginActions = mPluginsActions;
-//
-//	for (const QMenu* m : mPluginSubMenus) {
-//		allPluginActions << m->actions().toVector();
-//	}
-//
-//	shortcutsDialog->addActions(allPluginActions, mPluginsMenu->title());
-//#endif // WITH_PLUGINS
+#ifdef WITH_PLUGINS	// TODO
+
+	DkPluginActionManager* pm = am.pluginActionManager();
+	pm->updateMenu();
+
+	QVector<QAction*> allPluginActions = pm->pluginActions();
+
+	for (const QMenu* m : pm->pluginSubMenus()) {
+		allPluginActions << m->actions().toVector();
+	}
+
+	shortcutsDialog->addActions(allPluginActions, pm->menu()->title());
+#endif // WITH_PLUGINS
 	shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
 	shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
 
@@ -370,7 +372,7 @@ void DkDialogManager::openAppManager() const {
 
 	DkActionManager& am = DkActionManager::instance();
 
-	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWidnow());
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWindow());
 	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), am.appManager(), SIGNAL(openFileSignal(QAction*)));	// forward
 	appManagerDialog->exec();
 
@@ -1658,7 +1660,7 @@ void DkActionManager::connectDefaultActions() {
 }
 
 
-QMainWindow* DkActionManager::getMainWidnow() const {
+QMainWindow* DkActionManager::getMainWindow() const {
 
 	QWidgetList widgets = QApplication::topLevelWidgets();
 

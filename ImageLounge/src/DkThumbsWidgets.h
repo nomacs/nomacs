@@ -299,8 +299,6 @@ public:
 		return mThumbsScene;
 	};
 
-	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
-
 	void clear();
 
 public slots:
@@ -326,8 +324,6 @@ protected:
 	DkThumbsView* mView = 0;
 
 	QMenu* mContextMenu = 0;
-	//QVector<QAction*> mActions;
-	//QVector<QAction*> mParentActions;
 	QToolBar* mToolbar = 0;
 	QLineEdit* mFilterEdit = 0;
 };

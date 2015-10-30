@@ -570,7 +570,7 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 		}				
 	}
 
-	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWidnow(), SLOT(showToolbar(QToolBar*, bool)));
+	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 
 	setPluginWidget(vPlugin, true);	// handles deletion
 	DkPluginManager::instance().clearRunningPluginKey();	// handles states

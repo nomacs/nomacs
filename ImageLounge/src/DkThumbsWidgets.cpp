@@ -1830,39 +1830,6 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	enableSelectionActions();
 }
 
-void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle) {
-
-	//mParentActions = actions;
-
-	//if (!menuTitle.isEmpty()) {
-	//	QMenu* m = mContextMenu->addMenu(menuTitle);
-	//	m->addActions(mParentActions.toList());
-
-	//	QToolButton* toolButton = new QToolButton(this);
-	//	toolButton->setObjectName("DkThumbToolButton");
-	//	toolButton->setMenu(m);
-	//	toolButton->setAccessibleName(menuTitle);
-	//	toolButton->setText(menuTitle);
-
-	//	if (menuTitle == tr("&Sort")) {	// that's an awful hack
-	//		QPixmap pm(":/nomacs/img/sort.png");
-	//		
-	//		if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
-	//			pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
-	//		
-	//		toolButton->setIcon(pm);
-	//	}
-	//	toolButton->setPopupMode(QToolButton::InstantPopup);
-	//	mToolbar->insertWidget(actions[action_display_squares], toolButton);
-
-	//	addActions(actions.toList());
-	//}
-	//else {
-	//	mContextMenu->addSeparator();
-	//	mContextMenu->addActions(mParentActions.toList());
-	//}
-}
-
 void DkThumbScrollWidget::createToolbar() {
 
 	mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);

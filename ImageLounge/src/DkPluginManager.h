@@ -123,6 +123,10 @@ public:
 	void setMenu(QMenu* menu);
 	QMenu* menu() const;
 
+	QVector<QAction*> pluginDummyActions() const;
+	QVector<QAction*> pluginActions() const;
+	QVector<QMenu*> pluginSubMenus() const;
+
 public slots:
 	void runLoadedPlugin();
 	void runPluginFromShortcut();
@@ -139,8 +143,8 @@ protected:
 
 	void savePluginActions(QVector<QAction *> actions) const;
 
-	QVector<QAction *> mPluginsActions;
-	QVector<QAction *> mPluginsDummyActions;
+	QVector<QAction *> mPluginActions;
+	QVector<QAction *> mPluginDummyActions;
 	QMenu* mMenu = 0;
 	QVector<QMenu*> mPluginSubMenus;
 };

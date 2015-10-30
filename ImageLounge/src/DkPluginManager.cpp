@@ -1885,6 +1885,7 @@ DkPluginInterface* DkPluginManager::runPlugin(const QString& key) {
 // DkPluginActionManager --------------------------------------------------------------------
 DkPluginActionManager::DkPluginActionManager(QObject* parent) : QObject(parent) {
 
+	assignCustomPluginShortcuts();
 }
 
 void DkPluginActionManager::assignCustomPluginShortcuts() {
@@ -1898,7 +1899,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts() {
 
 		settings.beginGroup("CustomShortcuts");
 
-		mPluginsDummyActions = QVector<QAction *>();
+		mPluginDummyActions = QVector<QAction *>();
 
 		for (int i = 0; i< psKeys.size(); i++) {
 
@@ -1909,7 +1910,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts() {
 			connect(action, SIGNAL(triggered()), this, SLOT(runPluginFromShortcut()));
 			// assign widget shortcuts to all of them
 			action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-			mPluginsDummyActions.append(action);
+			mPluginDummyActions.append(action);
 			qDebug() << "new plugin action: " << psKeys.at(i);
 		}
 
@@ -1926,6 +1927,18 @@ QMenu* DkPluginActionManager::menu() const {
 	return mMenu;
 }
 
+QVector<QAction*> DkPluginActionManager::pluginDummyActions() const {
+	return mPluginDummyActions;
+}
+
+QVector<QAction*> DkPluginActionManager::pluginActions() const {
+	return mPluginActions;
+}
+
+QVector<QMenu*> DkPluginActionManager::pluginSubMenus() const {
+	return mPluginSubMenus;
+}
+
 void DkPluginActionManager::updateMenu() {
 	qDebug() << "CREATING plugin menu";
 
@@ -1940,14 +1953,14 @@ void DkPluginActionManager::updateMenu() {
 	qDebug() << "id list: " << pluginIdList;
 
 	if (pluginIdList.isEmpty()) { // no  plugins
-		mMenu->addAction(mPluginsActions[DkActionManager::menu_plugin_manager]);
+		mMenu->addAction(mPluginActions[DkActionManager::menu_plugin_manager]);
 	}
 	else {
 		// delete old plugin actions	
-		for (int idx = mPluginsActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
-			mPluginsActions.last()->deleteLater();
-			mPluginsActions.last() = 0;
-			mPluginsActions.pop_back();
+		for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
+			mPluginActions.last()->deleteLater();
+			mPluginActions.last() = 0;
+			mPluginActions.pop_back();
 		}
 		addPluginsToMenu();
 	}
@@ -2032,7 +2045,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 			mMenu->addAction(pluginAction);
 			pluginAction->setToolTip(pluginAction->statusTip());
 
-			mPluginsActions.append(pluginAction);
+			mPluginActions.append(pluginAction);
 		}		
 	}
 
@@ -2045,7 +2058,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 
 	DkPluginManager::instance().setRunId2PluginId(runId2PluginId);
 
-	QVector<QAction*> allPluginActions = mPluginsActions;
+	QVector<QAction*> allPluginActions = mPluginActions;
 
 	for (const QMenu* m : mPluginSubMenus) {
 		allPluginActions << m->actions().toVector();
@@ -2064,7 +2077,7 @@ void DkPluginActionManager::runPluginFromShortcut() {
 
 	updateMenu();
 
-	QVector<QAction*> allPluginActions = mPluginsActions;
+	QVector<QAction*> allPluginActions = mPluginActions;
 
 	for (const QMenu* m : mPluginSubMenus) {
 		allPluginActions << m->actions().toVector();
@@ -2099,7 +2112,7 @@ void DkPluginActionManager::runLoadedPlugin() {
 		if(!vPlugin || !vPlugin->getViewPort()) 
 			return;
 
-		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWidnow(), SLOT(showToolbar(QToolBar*, bool)));
+		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 
 		emit runPlugin(vPlugin, false);
 	}

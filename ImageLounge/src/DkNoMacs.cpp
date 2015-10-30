@@ -115,7 +115,10 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	QMainWindow::setWindowTitle("nomacs | Image Lounge");
 	setObjectName("DkNoMacs");
 
+	mMenu = new DkMenuBar(this, -1);
+
 	DkActionManager::instance().createActions(this);
+	DkActionManager::instance().createMenus(mMenu);
 	registerFileVersion();
 
 	mSaveSettings = true;
@@ -153,8 +156,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	mOldGeometry = geometry();
 	mOverlaid = false;
-
-	mMenu = new DkMenuBar(this, -1);
 
 	resize(850, 504);
 	setMinimumSize(20, 20);
@@ -440,7 +441,6 @@ void DkNoMacs::createMenu() {
 
 	setMenuBar(mMenu);
 	DkActionManager& am = DkActionManager::instance();
-	am.createMenus(mMenu);
 	mMenu->addMenu(am.fileMenu());
 	mMenu->addMenu(am.editMenu());
 	mMenu->addMenu(am.viewMenu());
@@ -3047,7 +3047,7 @@ void DkNoMacsSync::clientInitialized() {
 
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
 
-		// init members
+	// init members
 	DkViewPort* vp = new DkViewPort(this);
 	vp->setAlignment(Qt::AlignHCenter);
 

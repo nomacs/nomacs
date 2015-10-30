@@ -52,6 +52,8 @@
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QSvgRenderer>
+#include <QMenu>
+
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -97,6 +99,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.allActions().toList());
+	addActions(am.openWithMenu()->actions());
+	addActions(am.pluginActionManager()->pluginDummyActions().toList());
 
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
@@ -272,7 +276,7 @@ void DkViewPort::setImage(QImage newImg) {
 	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (parentWidget() && parentWidget()->isFullScreen()))) {
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
 		mFadeTimer->start();
 		mFadeTime.start();
 	}
@@ -1230,7 +1234,7 @@ void DkViewPort::loadLena() {
 	// pass phrase
 	if (ok && !text.isEmpty() && text == "lena") {
 		mTestLoaded = true;
-		toggleLena(QApplication::activeWindow()->isFullScreen());
+		toggleLena(DkActionManager::instance().getMainWindow()->isFullScreen());
 	}
 	else if (!ok) {
 		QMessageBox warningDialog(QApplication::activeWindow());
@@ -1321,7 +1325,7 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (parentWidget() && parentWidget()->isFullScreen()))) {
+	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
 		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;
@@ -1757,7 +1761,7 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
-	if (parentWidget() && !parentWidget()->isFullScreen()) {
+	if (!DkActionManager::instance().getMainWindow()->isFullScreen()) {
 
 		QPainter painter(viewport());
 		painter.setWorldTransform(mWorldMatrix);
@@ -1770,7 +1774,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
 void DkViewPortFrameless::draw(QPainter *painter, float) {
 	
-	if (parentWidget() && parentWidget()->isFullScreen()) {
+	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		QColor col = QColor(0,0,0);
 		col.setAlpha(150);
 		painter->setWorldMatrixEnabled(false);
@@ -2188,7 +2192,7 @@ void DkViewPortContrast::draw(QPainter *painter, float opacity) {
 		return;
 	}
 
-	if (parentWidget() && parentWidget()->isFullScreen()) {
+	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
 		painter->setWorldMatrixEnabled(true);
