@@ -27,6 +27,7 @@
 
 #include "DkQuickAccess.h"
 #include "DkUtils.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -65,6 +66,7 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 
 		QString text = a->text().replace("&", "");
 		QStandardItem* item = new QStandardItem(text);
+		item->setSizeHint(QSize(18, 18));
 		item->setIcon(icon);
 		item->setToolTip(a->toolTip());
 		mModel->setItem(nRows+rIdx, 0, item);
@@ -98,7 +100,7 @@ void DkQuickAccess::addItems(const QStringList& itemTexts, const QIcon& icon) {
 
 		QStandardItem* item = new QStandardItem(text);
 		item->setIcon(icon);
-		//item->setToolTip(a->toolTip());
+		item->setSizeHint(QSize(18, 18));
 		mModel->setItem(nRows + rIdx, 0, item);
 		mFilePaths.append(text);
 	}

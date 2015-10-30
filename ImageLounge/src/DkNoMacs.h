@@ -84,7 +84,6 @@ class DkLanManagerThread;
 class DkRCManagerThread;
 class DkTransferToolBar;
 class DkPluginManagerDialog;
-class DkAppManager;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class DkBatchDialog;
@@ -201,7 +200,6 @@ public slots:
 	void exportTiff();
 	void computeMosaic();
 	void deleteFile();
-	void openAppManager();
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();

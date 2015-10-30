@@ -46,6 +46,7 @@
 
 // Qt defines
 class QMenu;
+class QMainWindow;
 
 namespace nmc {
 	
@@ -105,6 +106,7 @@ public:
 
 public slots:
 	void openShortcutsDialog() const;
+	void openAppManager() const;
 };
 
 class DllExport DkActionManager {
@@ -488,6 +490,7 @@ public:
 	QVector<QAction*> hiddenActions() const;	
 	DkAppManager* appManager() const;
 	DkPluginActionManager* pluginActionManager() const;
+	QMainWindow* getMainWidnow() const;
 
 	void assignCustomShortcuts(QVector<QAction*> actions) const;
 

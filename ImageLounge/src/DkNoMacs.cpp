@@ -407,7 +407,6 @@ void DkNoMacs::createStatusbar() {
 
 void DkNoMacs::loadStyleSheet() {
 	
-	// TODO: if we first load from disk, people can style nomacs themselves
 	QFileInfo cssInfo(QCoreApplication::applicationDirPath(), "nomacs.css");
 
 	if (!cssInfo.exists())
@@ -496,7 +495,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_open), SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(am.action(DkActionManager::menu_file_open_dir), SIGNAL(triggered()), this, SLOT(openDir()));
 	connect(am.action(DkActionManager::menu_file_quick_launch), SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
-	connect(am.action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), this, SLOT(openAppManager()));
 	connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
 	connect(am.action(DkActionManager::menu_file_save), SIGNAL(triggered()), this, SLOT(saveFile()));
@@ -511,47 +509,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_recursive), SIGNAL(triggered(bool)), this, SLOT(setRecursiveScan(bool)));
 	connect(am.action(DkActionManager::menu_file_exit), SIGNAL(triggered()), this, SLOT(close()));
 	
-	// TODO: move to viewport
-	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), vp, SLOT(reloadFile()));
-	connect(am.action(DkActionManager::menu_file_next), SIGNAL(triggered()), vp, SLOT(loadNextFileFast()));
-	connect(am.action(DkActionManager::menu_file_prev), SIGNAL(triggered()), vp, SLOT(loadPrevFileFast()));
-	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), vp, SLOT(rotateCW()));
-	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), vp, SLOT(rotateCCW()));
-	connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), vp, SLOT(rotate180()));
-	connect(am.action(DkActionManager::menu_edit_copy), SIGNAL(triggered()), vp, SLOT(copyImage()));
-	connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), vp, SLOT(copyImageBuffer()));
-	connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), vp, SLOT(copyPixelColorValue()));
-	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), centralWidget(), SLOT(pasteImage()));
-	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered(bool)), vp->getController(), SLOT(showCrop(bool)));
-
-	connect(am.action(DkActionManager::menu_panel_overview), SIGNAL(toggled(bool)), vp->getController(), SLOT(showOverview(bool)));
-	connect(am.action(DkActionManager::menu_panel_player), SIGNAL(toggled(bool)), vp->getController(), SLOT(showPlayer(bool)));
-	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
-	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(toggled(bool)), getTabWidget(), SLOT(showThumbView(bool)));
-	connect(am.action(DkActionManager::menu_panel_scroller), SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
-	connect(am.action(DkActionManager::menu_panel_exif), SIGNAL(toggled(bool)), vp->getController(), SLOT(showMetaData(bool)));
-	connect(am.action(DkActionManager::menu_panel_info), SIGNAL(toggled(bool)), vp->getController(), SLOT(showFileInfo(bool)));
-	connect(am.action(DkActionManager::menu_panel_histogram), SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
-	connect(am.action(DkActionManager::menu_panel_comment), SIGNAL(toggled(bool)), vp->getController(), SLOT(showCommentWidget(bool)));
-
-	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), vp, SLOT(zoomToFit()));
-	connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), vp, SLOT(fullView()));
-	connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), vp, SLOT(zoomIn()));
-	connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), vp, SLOT(zoomOut()));
-	connect(am.action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), vp->getImageStorage(), SLOT(antiAliasingChanged(bool)));
-	connect(am.action(DkActionManager::menu_view_tp_pattern), SIGNAL(toggled(bool)), vp, SLOT(togglePattern(bool)));
-	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), centralWidget(), SLOT(addTab()));
-	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), centralWidget(), SLOT(removeTab()));
-	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), centralWidget(), SLOT(previousTab()));
-	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), centralWidget(), SLOT(nextTab()));
-	connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), vp, SLOT(pauseMovie(bool)));
-	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), vp, SLOT(previousMovieFrame()));
-	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), vp, SLOT(nextMovieFrame()));
-
-	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), getTabWidget(), SLOT(startBatchProcessing()));
-
-	// TODO end
-
 	connect(am.action(DkActionManager::menu_sort_filename), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 	connect(am.action(DkActionManager::menu_sort_date_created), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 	connect(am.action(DkActionManager::menu_sort_date_modified), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
@@ -610,6 +567,8 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_help_feature), SIGNAL(triggered()), this, SLOT(featureRequest()));
 	connect(am.action(DkActionManager::menu_help_update), SIGNAL(triggered()), this, SLOT(checkForUpdate()));
 	connect(am.action(DkActionManager::menu_help_update_translation), SIGNAL(triggered()), this, SLOT(updateTranslations()));
+
+	connect(am.appManager(), SIGNAL(openFileSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
 
 	//// add sort actions to the thumbscene
 	//getTabWidget()->getThumbScrollWidget()->addContextMenuActions(mSortActions, tr("&Sort"));
@@ -1908,17 +1867,6 @@ void DkNoMacs::deleteFile() {
 		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())
 			viewport()->loadMovie();	// load the movie again, if we could not delete it
 	}
-}
-
-void DkNoMacs::openAppManager() {
-
-	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(DkActionManager::instance().appManager(), this, windowFlags());
-	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
-	appManagerDialog->exec();
-
-	appManagerDialog->deleteLater();
-
-	DkActionManager::instance().openWithMenu();	// update
 }
 
 void DkNoMacs::exportTiff() {

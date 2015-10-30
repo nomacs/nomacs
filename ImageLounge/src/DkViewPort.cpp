@@ -104,6 +104,26 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginInterface*, const QString&)), this, SLOT(applyPlugin(DkPluginInterface*, const QString&)));
 
+	// connect
+	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
+	connect(am.action(DkActionManager::menu_file_next), SIGNAL(triggered()), this, SLOT(loadNextFileFast()));
+	connect(am.action(DkActionManager::menu_file_prev), SIGNAL(triggered()), this, SLOT(loadPrevFileFast()));
+	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
+	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
+	connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), this, SLOT(rotate180()));
+	connect(am.action(DkActionManager::menu_edit_copy), SIGNAL(triggered()), this, SLOT(copyImage()));
+	connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
+	connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
+
+	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(zoomToFit()));
+	connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), this, SLOT(fullView()));
+	connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), this, SLOT(zoomIn()));
+	connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), this, SLOT(zoomOut()));
+	connect(am.action(DkActionManager::menu_view_tp_pattern), SIGNAL(toggled(bool)), this, SLOT(togglePattern(bool)));
+	connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), this, SLOT(pauseMovie(bool)));
+	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
+	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
+
 	qDebug() << "viewer created...";
 
 	// TODO:

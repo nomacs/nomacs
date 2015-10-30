@@ -228,6 +228,14 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	//	info->setTabIdx(0);
 	//	addTab(info);
 	//}
+
+	DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
+	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
+	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
+	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
+	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(startBatchProcessing()));
 }
 
 DkCentralWidget::~DkCentralWidget() {
@@ -787,7 +795,6 @@ void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {
 
 	batchDialog->exec();
 	batchDialog->deleteLater();
-
 }
 
 void DkCentralWidget::pasteImage() {

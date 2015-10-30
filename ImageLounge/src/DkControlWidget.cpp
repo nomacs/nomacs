@@ -341,9 +341,22 @@ void DkControlWidget::connectWidgets() {
 	// mViewport
 	connect(mViewport, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
 
+	DkActionManager& am = DkActionManager::instance();
+
 	// plugins
-	connect(DkActionManager::instance().pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
-	connect(DkActionManager::instance().pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
+	connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
+
+	// actions
+	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered(bool)), this, SLOT(showCrop(bool)));
+	connect(am.action(DkActionManager::menu_panel_overview), SIGNAL(toggled(bool)), this, SLOT(showOverview(bool)));
+	connect(am.action(DkActionManager::menu_panel_player), SIGNAL(toggled(bool)), this, SLOT(showPlayer(bool)));
+	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showPreview(bool)));
+	connect(am.action(DkActionManager::menu_panel_scroller), SIGNAL(toggled(bool)), this, SLOT(showScroller(bool)));
+	connect(am.action(DkActionManager::menu_panel_exif), SIGNAL(toggled(bool)), this, SLOT(showMetaData(bool)));
+	connect(am.action(DkActionManager::menu_panel_info), SIGNAL(toggled(bool)), this, SLOT(showFileInfo(bool)));
+	connect(am.action(DkActionManager::menu_panel_histogram), SIGNAL(toggled(bool)), this, SLOT(showHistogram(bool)));
+	connect(am.action(DkActionManager::menu_panel_comment), SIGNAL(toggled(bool)), this, SLOT(showCommentWidget(bool)));
 }
 
 void DkControlWidget::update() {

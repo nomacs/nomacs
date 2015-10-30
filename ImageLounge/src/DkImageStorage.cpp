@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkImageStorage.h"
+#include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkError.h"
@@ -1140,6 +1141,8 @@ DkImageStorage::DkImageStorage(const QImage& img) {
 	mComputeThread = new QThread;
 	mComputeThread->start();
 	moveToThread(mComputeThread);
+
+	connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), this, SLOT(antiAliasingChanged(bool)));
 }
 
 void DkImageStorage::setImage(const QImage& img) {

@@ -56,9 +56,9 @@ namespace nmc {
 DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 
 	mDefaultNames.resize(app_idx_end);
-	mDefaultNames[app_photohsop]		= "PhotoshopAction";
+	mDefaultNames[app_photohsop]	= "PhotoshopAction";
 	mDefaultNames[app_picasa]		= "PicasaAction";
-	mDefaultNames[app_picasa_viewer] = "PicasaViewerAction";
+	mDefaultNames[app_picasa_viewer]= "PicasaViewerAction";
 	mDefaultNames[app_irfan_view]	= "IrfanViewAction";
 	mDefaultNames[app_explorer]		= "ExplorerAction";
 
@@ -363,6 +363,19 @@ void DkDialogManager::openShortcutsDialog() const {
 
 	shortcutsDialog->exec();
 	shortcutsDialog->deleteLater();
+}
+
+void DkDialogManager::openAppManager() const {
+
+	DkActionManager& am = DkActionManager::instance();
+
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWidnow());
+	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), am.appManager(), SIGNAL(openFileSignal(QAction*)));	// forward
+	appManagerDialog->exec();
+
+	appManagerDialog->deleteLater();
+
+	DkActionManager::instance().openWithMenu();	// update
 }
 
 // DkActionManager --------------------------------------------------------------------
@@ -1585,8 +1598,25 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 void DkActionManager::connectDefaultActions() {
 
 	QObject::connect(action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), mDialogManager, SLOT(openShortcutsDialog()));
-
+	QObject::connect(action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), mDialogManager, SLOT(openAppManager()));
 }
 
+
+QMainWindow* DkActionManager::getMainWidnow() const {
+
+	QWidgetList widgets = QApplication::topLevelWidgets();
+
+	QMainWindow* win = 0;
+
+	for (int idx = 0; idx < widgets.size(); idx++) {
+
+		if (widgets.at(idx)->inherits("QMainWindow")) {
+			win = qobject_cast<QMainWindow*>(widgets.at(idx));
+			break;
+		}
+	}
+
+	return win;
+}
 
 }
