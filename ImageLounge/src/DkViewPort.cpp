@@ -370,6 +370,23 @@ void DkViewPort::zoom(float factor, QPointF center) {
 		return;
 	}
 
+	// reset view & block if we pass the '100%' on zoom out
+	if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
+
+		fullView();
+		mBlockZooming = true;
+		mZoomTimer->start(500);
+		return;
+	}
+
+	// reset view if we pass the '100%' on zoom in
+	if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
+
+		fullView();
+		return;
+	}
+
+
 	//limit zoom in ---
 	if (mWorldMatrix.m11()*mImgMatrix.m11() > mMaxZoom && factor > 1)
 		return;
