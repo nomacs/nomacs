@@ -356,7 +356,7 @@ void DkTrainDialog::loadFile(const QString& filePath) {
 	basicLoader.setTraining(true);
 
 	// TODO: archives cannot be trained currently
-	bool imgLoaded = basicLoader.loadGeneral(filePath, true);
+	bool imgLoaded = basicLoader.loadGeneral(lFilePath, true);
 
 	if (!imgLoaded) {
 		mViewport->setImage(QImage());	// remove the image

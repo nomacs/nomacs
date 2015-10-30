@@ -234,6 +234,8 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		loadFileToBuffer(mFile, lba);
 		imgLoaded = mImg.loadFromData(lba);
 		
+		qDebug() << "lba size: " << lba.size();
+
 		if (imgLoaded) mLoader = qt_loader;
 	}  
 
