@@ -66,7 +66,8 @@ protected:
 	void registerExtension(const QString& ext, const QString& progKey, bool add);
 	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
 	void registerDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
-	
+	QString getIconID(const QString& ext) const;
+
 	QStringList getExtensions(const QString& filter) const;
 	QStringList getExtensions(const QString& filter, QString& friendlyName) const;
 };
@@ -165,6 +166,7 @@ public:
 		QStringList fileFilters;	// just the filters
 		QStringList openFilters;	// for open dialog
 		QStringList saveFilters;	// for save dialog
+		QStringList rawFilters;
 		QStringList containerFilters;
 		QString containerRawFilters;
 	};
