@@ -1352,6 +1352,9 @@ void DkThumbScene::selectAllThumbs(bool selected) {
 
 void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
 
+	//if (mThumbLabels.empty())
+	//	return;
+
 	if (to == -1)
 		to = mThumbLabels.size()-1;
 
@@ -1814,8 +1817,6 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 
 	mView = new DkThumbsView(mThumbsScene, this);
 	mView->setFocusPolicy(Qt::StrongFocus);
-	connect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
-	connect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
 
 	createActions();
 	createToolbar();
@@ -1883,7 +1884,6 @@ void DkThumbScrollWidget::createToolbar() {
 	mFilterEdit = new QLineEdit("", this);
 	mFilterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
 	mFilterEdit->setMaximumWidth(250);
-	connect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
 
 	// right align search filters
 	QWidget* spacer = new QWidget(this);
@@ -1894,23 +1894,9 @@ void DkThumbScrollWidget::createToolbar() {
 
 void DkThumbScrollWidget::createActions() {
 
-
-	DkActionManager& am = DkActionManager::instance();
-	connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
-	connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
-	connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
-	connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
-	connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
-	connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
-	connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
-	connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
-	connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
-	connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
-	connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
-
 	// create context menu
 	mContextMenu = new QMenu(tr("Thumb"), this);
-	QVector<QAction*> actions = am.previewActions();
+	QVector<QAction*> actions = DkActionManager::instance().previewActions();
 	for (int idx = 0; idx < actions.size(); idx++) {
 
 		mContextMenu->addAction(actions.at(idx));
@@ -1946,6 +1932,11 @@ void DkThumbScrollWidget::setDir(const QString& dirPath) {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
+	if (visible)
+		connectToActions();
+	else
+		disconnect();
+
 	DkWidget::setVisible(visible);
 
 	if (visible) {
@@ -1953,6 +1944,27 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 		mFilterEdit->setText("");
 		qDebug() << "mShowing thumb scroll widget...";
 	}
+}
+
+void DkThumbScrollWidget::connectToActions() {
+	
+	DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
+	connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
+	connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
+	connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
+	connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
+	connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
+	connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
+	connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
+	connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
+	connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
+	connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+
+	connect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
+	connect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
+	connect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+
 }
 
 void DkThumbScrollWidget::setFilterFocus() const {
