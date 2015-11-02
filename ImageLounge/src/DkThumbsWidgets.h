@@ -319,7 +319,7 @@ protected:
 	void createToolbar();
 	void resizeEvent(QResizeEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
-	void connectToActions();
+	void connectToActions(bool activate = true);
 
 	DkThumbScene* mThumbsScene = 0;
 	DkThumbsView* mView = 0;

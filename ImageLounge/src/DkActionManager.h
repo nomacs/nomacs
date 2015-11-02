@@ -436,6 +436,9 @@ public:
 		shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
 		shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
+		// tools
+		shortcut_batch_processing = Qt::CTRL + Qt::SHIFT + Qt::Key_B,
+
 		// tcp
 		shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
 		shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,

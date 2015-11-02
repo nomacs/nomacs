@@ -1095,7 +1095,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mFileActions[menu_file_exit] = new QAction(QObject::tr("&Exit"), parent);
 	mFileActions[menu_file_exit]->setStatusTip(QObject::tr("Exit"));
-	
+
 	// sort actions
 	mSortActions.resize(menu_sort_end);
 
@@ -1203,10 +1203,10 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_auto_adjust]->setStatusTip(QObject::tr("Auto Adjust Image Contrast and Color Balance"));
 
 	mEditActions[menu_edit_invert] = new QAction(QObject::tr("&Invert Image"), parent);
-	mEditActions[menu_edit_invert]->setStatusTip(QObject::tr("Invert the Image"));		    
+	mEditActions[menu_edit_invert]->setStatusTip(QObject::tr("Invert the Image"));
 
-	mEditActions[menu_edit_gray_convert] = new QAction(QObject::tr("&Convert to Grayscale"), parent);	
-	mEditActions[menu_edit_gray_convert]->setStatusTip(QObject::tr("Convert to Grayscale"));		   
+	mEditActions[menu_edit_gray_convert] = new QAction(QObject::tr("&Convert to Grayscale"), parent);
+	mEditActions[menu_edit_gray_convert]->setStatusTip(QObject::tr("Convert to Grayscale"));
 
 	mEditActions[menu_edit_unsharp] = new QAction(QObject::tr("&Unsharp Mask"), parent);
 	mEditActions[menu_edit_unsharp]->setStatusTip(QObject::tr("Stretches the Local Contrast of an Image"));
@@ -1366,7 +1366,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_previous_tab] = new QAction(QObject::tr("&Previous Tab"), parent);
 	mViewActions[menu_view_previous_tab]->setShortcut(QKeySequence(shortcut_previous_tab));
 	mViewActions[menu_view_previous_tab]->setStatusTip(QObject::tr("Switch to previous tab"));
-	
+
 	mViewActions[menu_view_next_tab] = new QAction(QObject::tr("&Next Tab"), parent);
 	mViewActions[menu_view_next_tab]->setShortcut(QKeySequence(shortcut_next_tab));
 	mViewActions[menu_view_next_tab]->setStatusTip(QObject::tr("Switch to next tab"));
@@ -1428,7 +1428,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mToolsActions[menu_tools_export_tiff]->setStatusTip(QObject::tr("Export TIFF pages to multiple tiff files"));
 
 	mToolsActions[menu_tools_extract_archive] = new QAction(QObject::tr("Extract From Archive"), parent);
-	mToolsActions[menu_tools_extract_archive]->setStatusTip(QObject::tr("Extract images from an archive (%1)").arg(DkSettings::app.containerRawFilters));		
+	mToolsActions[menu_tools_extract_archive]->setStatusTip(QObject::tr("Extract images from an archive (%1)").arg(DkSettings::app.containerRawFilters));
 	mToolsActions[menu_tools_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
 
 	mToolsActions[menu_tools_mosaic] = new QAction(QObject::tr("&Mosaic Image"), parent);
@@ -1436,6 +1436,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mToolsActions[menu_tools_batch] = new QAction(QObject::tr("Batch Processing"), parent);
 	mToolsActions[menu_tools_batch]->setStatusTip(QObject::tr("Apply actions to multiple images"));
+	mToolsActions[menu_tools_batch]->setShortcut(QKeySequence(shortcut_batch_processing));
 
 	// help menu
 	mHelpActions.resize(menu_help_end);
@@ -1539,7 +1540,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
 	mPreviewActions[preview_filter]->setShortcut(QKeySequence::Find);
-	
+
 	mPreviewActions[preview_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), QObject::tr("&Delete"), parent);
 	mPreviewActions[preview_delete]->setShortcut(QKeySequence::Delete);
 
@@ -1610,8 +1611,10 @@ void DkActionManager::createActions(QWidget* parent) {
 	assignCustomShortcuts(allActions());
 
 	// automatically add status tip as tool tip
-	for (QAction* a: allActions())
+	for (QAction* a : allActions()) {
 		a->setToolTip(a->statusTip());
+		a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	}
 
 	connectDefaultActions();
 }

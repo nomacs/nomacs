@@ -1878,8 +1878,6 @@ void DkThumbScrollWidget::createToolbar() {
 	toolButton->setPopupMode(QToolButton::InstantPopup);
 	mToolbar->addWidget(toolButton);
 
-	addActions(am.sortActions().toList());
-
 	// filter edit
 	mFilterEdit = new QLineEdit("", this);
 	mFilterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
@@ -1905,7 +1903,8 @@ void DkThumbScrollWidget::createActions() {
 			mContextMenu->addSeparator();
 	}
 
-	addActions(actions.toList());
+	DkActionManager& am = DkActionManager::instance();
+	addActions(am.allActions().toList());
 }
 
 void DkThumbScrollWidget::batchProcessFiles() const {
@@ -1932,10 +1931,7 @@ void DkThumbScrollWidget::setDir(const QString& dirPath) {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
-	if (visible)
-		connectToActions();
-	else
-		disconnect();
+	connectToActions(visible);
 
 	DkWidget::setVisible(visible);
 
@@ -1946,25 +1942,44 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 	}
 }
 
-void DkThumbScrollWidget::connectToActions() {
+void DkThumbScrollWidget::connectToActions(bool activate) {
 	
 	DkActionManager& am = DkActionManager::instance();
-	connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
-	connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
-	connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
-	connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
-	connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
-	connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
-	connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
-	connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
-	connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
-	connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
-	connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+	
+	if (activate) {
+		connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
+		connect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
+		connect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
+		connect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
+		connect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
+		connect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
+		connect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
+		connect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
+		connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
+		connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
+		connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
 
-	connect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
-	connect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
-	connect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+		connect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
+		connect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
+		connect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+	}
+	else {
+		disconnect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
+		disconnect(am.action(DkActionManager::preview_zoom_in), SIGNAL(triggered()), mThumbsScene, SLOT(increaseThumbs()));
+		disconnect(am.action(DkActionManager::preview_zoom_out), SIGNAL(triggered()), mThumbsScene, SLOT(decreaseThumbs()));
+		disconnect(am.action(DkActionManager::preview_display_squares), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleSquaredThumbs(bool)));
+		disconnect(am.action(DkActionManager::preview_show_labels), SIGNAL(triggered(bool)), mThumbsScene, SLOT(toggleThumbLabels(bool)));
+		disconnect(am.action(DkActionManager::preview_filter), SIGNAL(triggered()), this, SLOT(setFilterFocus()));
+		disconnect(am.action(DkActionManager::preview_delete), SIGNAL(triggered()), mThumbsScene, SLOT(deleteSelected()));
+		disconnect(am.action(DkActionManager::preview_copy), SIGNAL(triggered()), mThumbsScene, SLOT(copySelected()));
+		disconnect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
+		disconnect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
+		disconnect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
 
+		disconnect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
+		disconnect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
+		disconnect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+	}
 }
 
 void DkThumbScrollWidget::setFilterFocus() const {
