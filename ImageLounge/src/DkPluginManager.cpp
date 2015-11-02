@@ -468,9 +468,7 @@ void DkPluginTableWidget::pluginUpdateFinished(bool finishedSuccessfully) {
 
 void DkPluginTableWidget::filterTextChanged() {
 
-	Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive; //filterCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
-
-	QRegExp regExp(mFilterEdit->text(), caseSensitivity, QRegExp::FixedString);
+	QRegExp regExp(mFilterEdit->text(), Qt::CaseInsensitive, QRegExp::FixedString);
 	mProxyModel->setFilterRegExp(regExp);
 	mTableView->resizeRowsToContents();
 }

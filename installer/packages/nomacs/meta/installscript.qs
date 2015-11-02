@@ -47,7 +47,7 @@ function Component()
         installer.componentByName("nomacs.x64").setValue("Default", "true");
 		installer.componentByName("nomacs.x86").setValue("Default", "false");
 		
-		var programFiles = installer.environmentVariable("ProgramFiles");
+		// var programFiles = installer.environmentVariable("ProgramFiles");
 		
 		// if (programFiles !== "") {
 			// installer.setValue("TargetDir", programFiles + "/nomacs");
@@ -91,20 +91,20 @@ Component.prototype.createOperations = function()
 
 }
 
-Component.prototype.loaded = function ()
-{
-    var page = gui.pageByObjectName("DynamicPage");
-    if (page != null) {
-        console.log("Connecting the dynamic page entered signal.");
-        page.entered.connect(Component.prototype.dynamicPageEntered);
-    }
-}
+// Component.prototype.loaded = function ()
+// {
+    // var page = gui.pageByObjectName("DynamicPage");
+    // if (page != null) {
+        // console.log("Connecting the dynamic page entered signal.");
+        // page.entered.connect(Component.prototype.dynamicPageEntered);
+    // }
+// }
 
 Component.prototype.installationFinishedPageIsShown = function()
 {
     try {
         if (installer.isInstaller() && installer.status == QInstaller.Success) {
-            installer.addWizardPageItem( component, "OpenAppCheckBoxForm", QInstaller.InstallationFinished );
+            installer.addWizardPageItem(component, "OpenAppCheckBoxForm", QInstaller.InstallationFinished);
         }
     } catch(e) {
         console.log(e);
