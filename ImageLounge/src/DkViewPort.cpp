@@ -97,6 +97,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mController->getCropWidget()->setImageTransform(&mImgMatrix);
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
+	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.fileActions().toList());
 	addActions(am.viewActions().toList());

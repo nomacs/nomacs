@@ -1900,6 +1900,7 @@ void DkShortcutsDialog::createLayout() {
 	treeView->setItemDelegate(scDelegate);
 	treeView->setAlternatingRowColors(true);
 	treeView->setIndentation(8);
+	treeView->header()->resizeSection(0, 200);
 
 	mNotificationLabel = new QLabel(this);
 	mNotificationLabel->setObjectName("DkDecentInfo");
@@ -1931,6 +1932,7 @@ void DkShortcutsDialog::createLayout() {
 	layout->addWidget(mNotificationLabel);
 	//layout->addSpacing()
 	layout->addWidget(buttons);
+	setMinimumSize(350, 350);
 }
 
 void DkShortcutsDialog::addActions(const QVector<QAction*>& actions, const QString& name) {

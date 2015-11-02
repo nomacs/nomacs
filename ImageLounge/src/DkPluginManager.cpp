@@ -1884,7 +1884,7 @@ DkPluginInterface* DkPluginManager::runPlugin(const QString& key) {
 
 // DkPluginActionManager --------------------------------------------------------------------
 DkPluginActionManager::DkPluginActionManager(QObject* parent) : QObject(parent) {
-
+	
 	assignCustomPluginShortcuts();
 }
 
@@ -1944,6 +1944,11 @@ void DkPluginActionManager::updateMenu() {
 
 	if (!mMenu) {
 		qWarning() << "plugin menu is NULL where it should not be!";
+	}
+
+	if (mPluginActions.empty()) {
+		//mPluginActions.resize(DkActionManager::menu_plugins_end);
+		mPluginActions = DkActionManager::instance().pluginActions();
 	}
 
 	mMenu->clear();

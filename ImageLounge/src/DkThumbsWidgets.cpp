@@ -1904,7 +1904,10 @@ void DkThumbScrollWidget::createActions() {
 	}
 
 	DkActionManager& am = DkActionManager::instance();
-	addActions(am.allActions().toList());
+	//addActions(am.allActions().toList());
+	addActions(am.previewActions().toList());
+
+	qDebug() << "adding action: " << am.allActions()[1];
 }
 
 void DkThumbScrollWidget::batchProcessFiles() const {
@@ -1945,6 +1948,8 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 void DkThumbScrollWidget::connectToActions(bool activate) {
 	
 	DkActionManager& am = DkActionManager::instance();
+	for (QAction* a : am.previewActions())
+		a->setEnabled(activate);
 	
 	if (activate) {
 		connect(am.action(DkActionManager::preview_select_all), SIGNAL(triggered(bool)), mThumbsScene, SLOT(selectAllThumbs(bool)));
@@ -1979,6 +1984,7 @@ void DkThumbScrollWidget::connectToActions(bool activate) {
 		disconnect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
 		disconnect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
 		disconnect(mThumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+
 	}
 }
 
