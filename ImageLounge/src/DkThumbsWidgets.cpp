@@ -1352,8 +1352,8 @@ void DkThumbScene::selectAllThumbs(bool selected) {
 
 void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
 
-	//if (mThumbLabels.empty())
-	//	return;
+	if (mThumbLabels.empty())
+		return;
 
 	if (to == -1)
 		to = mThumbLabels.size()-1;

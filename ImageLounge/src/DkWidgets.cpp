@@ -2188,7 +2188,7 @@ void DkColorChooser::on_colorDialog_accepted() {
 DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	
 	setObjectName("DkHistogram");
-	setMinimumWidth(260);
+	setMinimumWidth(265);
 	setMinimumHeight(130);
 }
 
@@ -2201,38 +2201,34 @@ DkHistogram::~DkHistogram() {
 void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
-	painter.setPen(QColor(200, 200, 200));
-	painter.fillRect(1, 1, width() - 3, height() - 2, mBgCol);
-	painter.drawRect(1, 1, width() - 3, height() - 2);
+	//painter.setPen(QColor(200, 200, 200));
+	painter.fillRect(1, 1, width(), height(), mBgCol);
+	//painter.drawRect(1, 1, width(), height());
+
+	int margin = 5;
+	int binHeight = height() - margin * 2;
 
 	if(mIsPainted && mMaxValue > 0){
-		for(int i = 0; i < 256; i++){
-			int rLineHeight = ((int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[0][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
-			int gLineHeight = ((int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[1][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
-			int bLineHeight = ((int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) < height() - 4) ? (int) (mHist[2][i] * (height() - 4) * mScaleFactor / mMaxValue) : height() - 4;
-			int maxLineHeight = (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) :  ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
+		
+		for(int x = 0; x < 256; x++){
+			
+			// get bounded values
+			int rLineHeight = qMax(qMin(qRound((float)mHist[0][x] * binHeight * mScaleFactor/mMaxValue), binHeight), 0);
+			int gLineHeight = qMax(qMin(qRound((float)mHist[1][x] * binHeight * mScaleFactor/mMaxValue), binHeight), 0);
+			int bLineHeight = qMax(qMin(qRound((float)mHist[2][x] * binHeight * mScaleFactor/mMaxValue), binHeight), 0);
+			int maxLineHeight = qMax(qMax(rLineHeight, gLineHeight), bLineHeight); // (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) : ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
 
-			int vCombined = qMin(qMin(rLineHeight, gLineHeight), bLineHeight);
+			painter.setCompositionMode(QPainter::CompositionMode_Clear);
+			painter.setPen(Qt::black);
+			painter.drawLine(QPoint(x + margin, height() - margin), QPoint(x + margin, height()-margin - maxLineHeight));
 
-			for(int j = 0; j <= maxLineHeight; j++) {
-
-				if(j <= rLineHeight && j <= gLineHeight && j <= bLineHeight) {
-				
-					// make last pixel lighter -> enhances visual appearence
-					int c = (j == vCombined && rLineHeight == gLineHeight && gLineHeight == bLineHeight) ? 200 : 100;
-					painter.setPen(QColor(c,c,c));
-				}
-				else if(j <= rLineHeight && j <= gLineHeight) painter.setPen(Qt::yellow);
-				else if(j <= rLineHeight && j <= bLineHeight) painter.setPen(Qt::magenta);
-				else if(j <= gLineHeight && j <= bLineHeight) painter.setPen(Qt::cyan);
-				else if(j <= rLineHeight) painter.setPen(Qt::red);
-				else if(j <= gLineHeight) painter.setPen(Qt::green);
-				else if(j <= bLineHeight) painter.setPen(Qt::blue);
-				else 
-					continue;
-
-				painter.drawPoint(2 + i, height() - j - 2);
-			}
+			painter.setCompositionMode(QPainter::CompositionMode_Screen);
+			painter.setPen(Qt::red);
+			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-rLineHeight));
+			painter.setPen(Qt::green);
+			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-gLineHeight));
+			painter.setPen(Qt::blue);
+			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-bLineHeight));
 		}
 	}
 }
