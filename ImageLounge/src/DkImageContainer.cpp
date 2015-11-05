@@ -725,7 +725,7 @@ void DkImageContainerT::downloadFile(const QUrl& url) {
 
 	if (!mFileDownloader) {
 		mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
-		connect(mFileDownloader.data(), SIGNAL(mDownloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
+		connect(mFileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
 		qDebug() << "trying to download: " << url;
 	}
 	else

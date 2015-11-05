@@ -34,7 +34,7 @@ _only needed if ENABLE_RAW is checked_
 Get the required packages:
 
 ``` console
-sudo apt-get install debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git
+sudo apt-get install debhelper cdbs qt5-qmake libqt5-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git
 ```
 Get the nomacs sources from github:
 ``` console

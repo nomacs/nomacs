@@ -1700,6 +1700,13 @@ void FileDownloader::downloadFile(const QUrl& url) {
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
+
+	if (pReply->error() != QNetworkReply::NoError) {
+		qWarning() << "I could not download: " << mUrl;
+		qWarning() << pReply->errorString();
+	}
+
+
 	mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
 	//emit a signal
 	pReply->deleteLater();

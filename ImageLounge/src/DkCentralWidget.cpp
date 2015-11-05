@@ -849,7 +849,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		if (!file.exists())	// try an alternative conversion
 			file = QFileInfo(url.toLocalFile());
 		
-		qDebug() << "dropping: " << file.absoluteFilePath();
+		qDebug() << "dropping: " << url.toLocalFile();// file.absoluteFilePath();
 
 		QList<QUrl> urls = mimeData->urls();
 
