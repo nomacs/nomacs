@@ -4210,7 +4210,7 @@ DkWelcomeDialog::DkWelcomeDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(p
 
 	setWindowTitle(tr("Welcome"));
 	createLayout();
-	languageChanged = false;
+	mLanguageChanged = false;
 }
 
 void DkWelcomeDialog::createLayout() {
@@ -4219,11 +4219,14 @@ void DkWelcomeDialog::createLayout() {
 
 	QLabel* welcomeLabel = new QLabel(tr("Welcome to nomacs, please choose your preferred language below."), this);
 
-	languageCombo = new QComboBox(this);
-	DkUtils::addLanguages(languageCombo, languages);
+	mLanguageCombo = new QComboBox(this);
+	DkUtils::addLanguages(mLanguageCombo, mLanguages);
 
-	registerFilesCheckBox = new QCheckBox(tr("Register File Associations"), this);
-	registerFilesCheckBox->setChecked(true);
+	mRegisterFilesCheckBox = new QCheckBox(tr("&Register File Associations"), this);
+	mRegisterFilesCheckBox->setChecked(!DkSettings::isPortable());
+
+	mSetAsDefaultCheckBox = new QCheckBox(tr("Set As &Default Viewer"), this);
+	mSetAsDefaultCheckBox->setChecked(!DkSettings::isPortable());
 
 	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -4235,16 +4238,19 @@ void DkWelcomeDialog::createLayout() {
 	layout->addItem(new QSpacerItem(10, 10), 0, 0, -1, -1);
 	layout->addWidget(welcomeLabel, 1, 0, 1, 3);
 	layout->addItem(new QSpacerItem(10, 10), 2, 0, -1, -1);
-	layout->addWidget(languageCombo, 3, 1);
+	layout->addWidget(mLanguageCombo, 3, 1);
 
 #ifdef WIN32
-	layout->addWidget(registerFilesCheckBox, 4, 1);
+	layout->addWidget(mRegisterFilesCheckBox, 4, 1);
+	layout->addWidget(mSetAsDefaultCheckBox, 5, 1);
 #else
-	registerFilesCheckBox->setChecked(false);
-	registerFilesCheckBox->hide();
+	mRegisterFilesCheckBox->setChecked(false);
+	mRegisterFilesCheckBox->hide();
+	mSetAsDefaultCheckBox->setChecked(false);
+	mSetAsDefaultCheckBox->hide();
 #endif
 	
-	layout->addWidget(buttons, 5, 0, 1, 3);
+	layout->addWidget(buttons, 6, 0, 1, 3);
 }
 
 void DkWelcomeDialog::accept() {
@@ -4252,7 +4258,7 @@ void DkWelcomeDialog::accept() {
 	DkFileFilterHandling fh;
 
 	// register file associations
-	if (registerFilesCheckBox->isChecked()) {
+	if (mRegisterFilesCheckBox->isChecked()) {
 
 		QStringList rFilters = DkSettings::app.openFilters;
 		
@@ -4267,12 +4273,12 @@ void DkWelcomeDialog::accept() {
 		}
 	}
 	
-	fh.registerNomacs(true);	// register nomacs again - to be save
+	fh.registerNomacs(mSetAsDefaultCheckBox->isChecked());	// register nomacs again - to be save
 
 	// change language
-	if (languageCombo->currentIndex() != languages.indexOf(DkSettings::global.language) && languageCombo->currentIndex() >= 0) {
-		DkSettings::global.language = languages.at(languageCombo->currentIndex());
-		languageChanged = true;
+	if (mLanguageCombo->currentIndex() != mLanguages.indexOf(DkSettings::global.language) && mLanguageCombo->currentIndex() >= 0) {
+		DkSettings::global.language = mLanguages.at(mLanguageCombo->currentIndex());
+		mLanguageChanged = true;
 	}
 
 	QDialog::accept();
@@ -4280,7 +4286,7 @@ void DkWelcomeDialog::accept() {
 
 bool DkWelcomeDialog::isLanguageChanged() {
 
-	return languageChanged;
+	return mLanguageChanged;
 }
 
 

@@ -78,6 +78,7 @@ class DkMetaDataDock;
 class DkExportTiffDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
+class DkInstallUpdater;
 class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
@@ -332,6 +333,7 @@ protected:
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
 
+	DkInstallUpdater* mInstallUpdater = 0;
 	DkUpdater* mUpdater = 0;
 	DkTranslationUpdater* mTranslationUpdater = 0;	
 

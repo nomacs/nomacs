@@ -1718,7 +1718,6 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 		qWarning() << pReply->errorString();
 	}
 
-
 	mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
 	//emit a signal
 	pReply->deleteLater();

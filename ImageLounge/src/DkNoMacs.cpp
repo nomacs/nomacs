@@ -2444,14 +2444,22 @@ void DkNoMacs::checkForUpdate(bool silent) {
 
 		DkTimer dt;
 
-		if (!mUpdater) {
-			mUpdater = new DkUpdater(this);
-			connect(mUpdater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-			connect(mUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+		if (!DkSettings::isPortable()) {
+			
+			if (!mInstallUpdater)
+				mInstallUpdater = new DkInstallUpdater(this);
+			mInstallUpdater->checkForUpdates(silent);
 		}
-		mUpdater->silent = silent;
-		mUpdater->checkForUpdates();
+		else {
 
+			if (!mUpdater) {
+				mUpdater = new DkUpdater(this);
+				connect(mUpdater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+				connect(mUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+			}
+			mUpdater->silent = silent;
+			mUpdater->checkForUpdates();
+		}
 		qDebug() << "checking for updates takes: " << dt.getTotal();
 	}
 #endif // !#ifndef Q_WS_X11

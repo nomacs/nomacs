@@ -44,6 +44,8 @@
 
 #include "DkConnection.h"
 
+class QXmlStreamReader;
+
 namespace nmc {
 
 // nomacs defines
@@ -480,6 +482,53 @@ signals:
 
 protected:
 	void createClient(const QString& title);
+
+};
+
+class DkPackage {
+
+public:
+	DkPackage(const QString& name = "", const QString& version = "");
+
+	bool isEmpty() const;
+	bool operator==(const DkPackage& o) const;
+
+	QString name() const;
+	QString version() const;
+
+protected:
+	QString mName;
+	QString mVersion;
+
+};
+
+class DkXmlUpdateChecker {
+
+public:
+	DkXmlUpdateChecker();
+
+	QVector<DkPackage> updatesAvailable(QXmlStreamReader& localXml, QXmlStreamReader& remoteXml) const;
+
+protected:
+	QVector<DkPackage> parse(QXmlStreamReader& reader) const;
+};
+
+class DkInstallUpdater : public QObject {
+	Q_OBJECT
+
+public:
+	DkInstallUpdater(QObject* parent = 0);
+
+	void checkForUpdates(bool silent = true);
+
+public slots:
+	void replyFinished(QNetworkReply* reply);
+
+protected:
+	bool updateNomacs() const;
+
+	QNetworkAccessManager* mManager = 0;
+	bool mSilent = true;
 
 };
 

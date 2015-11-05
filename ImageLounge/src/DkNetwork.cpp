@@ -49,6 +49,10 @@
 #include <QDesktopServices>
 #include <QDebug>
 #include <QNetworkProxyFactory>
+#include <QXmlStreamReader>
+#include <QMessageBox>
+#include <QAbstractButton>
+#include <QProcess>
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
@@ -1321,6 +1325,230 @@ void DkPeerList::print() const {
 		qDebug() << peer->peerId << " " << peer->clientName << " " << peer->hostAddress << " serverPort:" << peer->peerServerPort << 
 			" localPort:" << peer->localServerPort << " " << peer->title << " sync:" << peer->isSynchronized() << " menu:" << peer->showInMenu << " connection:" << peer->connection;
 	}
+}
+
+// DkPackage --------------------------------------------------------------------
+DkPackage::DkPackage(const QString& name, const QString& version) {
+	mName = name;
+	mVersion = version;
+}
+
+bool DkPackage::isEmpty() const {
+	return mName.isEmpty();
+}
+
+bool DkPackage::operator==(const DkPackage& o) const {
+
+	return mName == o.name();
+}
+
+QString DkPackage::version() const {
+	return mVersion;
+}
+
+QString DkPackage::name() const {
+	return mName;
+}
+
+// DkXmlUpdateChecker --------------------------------------------------------------------
+DkXmlUpdateChecker::DkXmlUpdateChecker() {
+}
+
+QVector<DkPackage> DkXmlUpdateChecker::updatesAvailable(QXmlStreamReader& localXml, QXmlStreamReader& remoteXml) const {
+
+	QVector<DkPackage> localPackages = parse(localXml);
+	QVector<DkPackage> remotePackages = parse(remoteXml);
+	QVector<DkPackage> updatePackages;
+
+	for (const DkPackage& p : localPackages) {
+		
+		int idx = remotePackages.indexOf(p);
+
+		if (idx != -1) {
+			bool isEqual = remotePackages[idx].version() == p.version();
+			qDebug() << "checking" << p.name() << "v" << p.version();
+
+			if (!isEqual)	// we assume that the remote is _always_ newer than the local version
+				updatePackages.append(remotePackages[idx]);
+			else
+				qDebug() << "up-to-date";
+		}
+		else
+			qDebug() << "I could not find" << p.name() << "in the repository";
+	}
+
+	if (localPackages.empty() || remotePackages.empty())
+		qDebug() << "WARNING: I could not find any packages local (" << localPackages.size() << ") remote (" << remotePackages.size() << ")";
+
+	return updatePackages;
+}
+
+QVector<DkPackage> DkXmlUpdateChecker::parse(QXmlStreamReader& reader) const {
+
+	QVector<DkPackage> packages;
+	QString pName;
+
+	while (!reader.atEnd()) {
+
+		// e.g. <Name>nomacs</Name>
+		if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName() == "Name") {
+			reader.readNext();
+			pName = reader.text().toString();
+		}
+		// e.g. <Version>3.0.0-3</Version>
+		else if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName() == "Version") {
+			reader.readNext();
+
+			if (!pName.isEmpty()) {
+				packages.append(DkPackage(pName, reader.text().toString()));
+				pName = "";	// reset
+			}
+			else {
+				qWarning() << "version: " << reader.text().toString() << "without a valid package name detected";
+			}
+		}
+
+		reader.readNext();
+	}
+
+	return packages;
+}
+
+
+// DkInstallUpdater --------------------------------------------------------------------
+DkInstallUpdater::DkInstallUpdater(QObject* parent) : QObject(parent) {
+
+}
+
+void DkInstallUpdater::checkForUpdates(bool silent) {
+
+	mSilent = silent;
+
+	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
+	DkSettings::save();
+
+	QUrl url ("http://download.nomacs.org/repository/Updates.xml");
+
+	// this is crucial since every item creates it's own http thread
+	if (!mManager) {
+		mManager = new QNetworkAccessManager(this);
+		connect(mManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+	}
+	
+	// the proxy settings take > 2 sec on Win7
+	// that is why proxy settings are only set
+	// for manual updates
+	if (!silent) {
+		DkTimer dt;
+		QNetworkProxyQuery npq(url);
+		QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+
+		if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+			mManager->setProxy(listOfProxies[0]);
+		}
+		qDebug() << "checking for proxy takes: " << dt.getTotal();
+	}
+
+	mManager->get(QNetworkRequest(url));
+	qDebug() << "checking updates at: " << url;
+
+}
+
+void DkInstallUpdater::replyFinished(QNetworkReply* reply) {
+
+	QString redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+	qDebug() << "--------------------------";
+
+	if (!redirect.isEmpty()) {
+		//qDebug() << "redirecting: " << redirect;
+		checkForUpdates(false);
+		reply->close();
+		return;
+	}
+
+	if (!reply->isFinished()) {
+		qDebug() << "reply not finished...";
+		reply->close();		
+		return;
+	}
+
+	if (reply->error() != QNetworkReply::NoError) {
+		qDebug() << "could not check for updates: " << reply->errorString();
+		reply->close();
+		return;
+	}
+
+	QFile componentsXml(QCoreApplication::applicationDirPath() + "/../components.xml");
+
+	if (!componentsXml.exists()) {
+		qDebug() << "Sorry, " << componentsXml.fileName() << "does not exist";
+		return;
+	}
+
+	componentsXml.open(QIODevice::ReadOnly);
+	QXmlStreamReader localReader(componentsXml.readAll());
+	QXmlStreamReader remoteReader(reply);
+
+	DkXmlUpdateChecker checker;
+	QVector<DkPackage> newPackages = checker.updatesAvailable(localReader, remoteReader);
+	if (!newPackages.empty()) {
+
+		bool update = true;
+
+		if (mSilent) {	// ask user before updating if a silent check was performed
+			QString msg = tr("There are new packages available: ") + "\n";
+			
+			for (const DkPackage& p : newPackages)
+				msg += "\t" + p.name() + " " + p.version() + "\n";
+
+			QMessageBox* msgBox = new QMessageBox(
+				QMessageBox::Information, 
+				tr("Updates Available"), 
+				msg, 
+				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+				QApplication::activeWindow());
+
+			msgBox->button(QMessageBox::Yes)->setText(tr("&Upgrade"));
+			msgBox->button(QMessageBox::Cancel)->setText(tr("Remind Me &Later"));
+			msgBox->button(QMessageBox::No)->setText(tr("&Skip this Version"));
+
+			int result = msgBox->exec();
+
+			update = result == QMessageBox::Accepted || result == QMessageBox::Yes;
+			
+			if (result == QMessageBox::No)	// do not show again
+				DkSettings::sync.updateDialogShown = true;	
+
+			msgBox->deleteLater();
+		}
+
+		if (update)
+			updateNomacs();
+	}
+	else if (!mSilent) {
+		QMessageBox::information(QApplication::activeWindow(), tr("nomacs Updates"), tr("nomacs is up-to-date"));
+	}
+	else
+		qDebug() << "nomacs is up-to-date...";
+	qDebug() << "--------------------------";
+}
+
+bool DkInstallUpdater::updateNomacs() const {
+	
+	QFileInfo updater(QCoreApplication::applicationDirPath() + "/../maintenancetool.exe");
+	
+	if (!updater.exists()) {
+		qDebug() << "Sorry, " << updater.absoluteFilePath() << "does not exist";
+		return false;
+	}
+
+	qDebug() << "wooo I am updating...";
+
+	QStringList args;
+	args << "--updater";
+
+	QProcess process;
+	return process.startDetached(updater.absoluteFilePath(), args);
 }
 
 // DkUpdater  --------------------------------------------------------------------

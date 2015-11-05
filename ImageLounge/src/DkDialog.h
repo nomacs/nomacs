@@ -894,10 +894,11 @@ public slots:
 protected:
 	void createLayout();
 	
-	QComboBox* languageCombo;
-	QCheckBox* registerFilesCheckBox;
-	QStringList languages;
-	bool languageChanged;
+	QComboBox* mLanguageCombo = 0;
+	QCheckBox* mRegisterFilesCheckBox = 0;
+	QCheckBox* mSetAsDefaultCheckBox = 0;
+	QStringList mLanguages;
+	bool mLanguageChanged = false;
 };
 
 #ifdef WITH_QUAZIP

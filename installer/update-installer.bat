@@ -9,3 +9,5 @@ REM C:\Qt\QtIFW2.0.1\bin\binarycreator.exe -c config\config.xml -p packages -r c
 
 REM use for final online installer
 C:\Qt\QtIFW2.0.1\bin\binarycreator.exe -n -c config\config.xml -p packages -r config/resources.qrc nomacs-setup
+
+pause
