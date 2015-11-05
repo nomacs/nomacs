@@ -926,53 +926,44 @@ void DkActionManager::init() {
 
 void DkActionManager::createIcons() {
 
-	// this is unbelievable dirty - but for now the quickest way to turn themes off if someone uses customized icons...
-	if (DkSettings::display.defaultIconColor) {
-#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
-	}
-	else {
-#undef ICON
-#define ICON(theme, backup) QIcon(backup), QIcon(backup)
-	}
-
 	mFileIcons.resize(icon_file_end);
-	mFileIcons[icon_file_dir] = ICON("document-open-folder", ":/nomacs/img/dir.png");
-	mFileIcons[icon_file_open] = ICON("document-open", ":/nomacs/img/open.png");
-	mFileIcons[icon_file_save] = ICON("document-save", ":/nomacs/img/save.png");
-	mFileIcons[icon_file_print] = ICON("document-print", ":/nomacs/img/printer.png");
-	mFileIcons[icon_file_open_large] = ICON("document-open-large", ":/nomacs/img/open-large.png");
-	mFileIcons[icon_file_dir_large] = ICON("document-open-folder-large", ":/nomacs/img/dir-large.png");
-	mFileIcons[icon_file_prev] = ICON("go-previous", ":/nomacs/img/previous.png");
-	mFileIcons[icon_file_next] = ICON("go-next", ":/nomacs/img/next.png");
+	mFileIcons[icon_file_dir] = QIcon(":/nomacs/img/dir.png");
+	mFileIcons[icon_file_open] = QIcon(":/nomacs/img/open.png");
+	mFileIcons[icon_file_save] = QIcon(":/nomacs/img/save.png");
+	mFileIcons[icon_file_print] = QIcon(":/nomacs/img/printer.png");
+	mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open-large.png");
+	mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir-large.png");
+	mFileIcons[icon_file_prev] = QIcon(":/nomacs/img/previous.png");
+	mFileIcons[icon_file_next] = QIcon(":/nomacs/img/next.png");
 	mFileIcons[icon_file_filter] = QIcon();
 	mFileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/filter.png"), QIcon::Normal, QIcon::On);
 	mFileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/nofilter.png"), QIcon::Normal, QIcon::Off);
 
 	mEditIcons.resize(icon_edit_end);
-	mEditIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
-	mEditIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
-	mEditIcons[icon_edit_crop] = ICON("object-edit-crop", ":/nomacs/img/crop.png");
-	mEditIcons[icon_edit_resize] = ICON("object-edit-resize", ":/nomacs/img/resize.png");
-	mEditIcons[icon_edit_copy] = ICON("object-edit-copy", ":/nomacs/img/copy.png");
-	mEditIcons[icon_edit_paste] = ICON("object-edit-paste", ":/nomacs/img/paste.png");
-	mEditIcons[icon_edit_delete] = ICON("object-edit-delete", ":/nomacs/img/trash.png");
+	mEditIcons[icon_edit_rotate_cw] = QIcon(":/nomacs/img/rotate-cw.png");
+	mEditIcons[icon_edit_rotate_ccw] = QIcon(":/nomacs/img/rotate-cc.png");
+	mEditIcons[icon_edit_crop] = QIcon(":/nomacs/img/crop.png");
+	mEditIcons[icon_edit_resize] = QIcon(":/nomacs/img/resize.png");
+	mEditIcons[icon_edit_copy] = QIcon(":/nomacs/img/copy.png");
+	mEditIcons[icon_edit_paste] = QIcon(":/nomacs/img/paste.png");
+	mEditIcons[icon_edit_delete] = QIcon(":/nomacs/img/trash.png");
 
 	mViewIcons.resize(icon_view_end);
-	mViewIcons[icon_view_fullscreen] = ICON("view-fullscreen", ":/nomacs/img/fullscreen.png");
-	mViewIcons[icon_view_reset] = ICON("zoom-draw", ":/nomacs/img/zoomReset.png");
-	mViewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
-	mViewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
-	mViewIcons[icon_view_zoom_in] = ICON("", ":/nomacs/img/zoom-in.png");
-	mViewIcons[icon_view_zoom_out] = ICON("", ":/nomacs/img/zoom-out.png");
+	mViewIcons[icon_view_fullscreen] = QIcon(":/nomacs/img/fullscreen.png");
+	mViewIcons[icon_view_reset] = QIcon(":/nomacs/img/zoomReset.png");
+	mViewIcons[icon_view_100] = QIcon(":/nomacs/img/zoom100.png");
+	mViewIcons[icon_view_gps] = QIcon(":/nomacs/img/gps-globe.png");
+	mViewIcons[icon_view_zoom_in] = QIcon(":/nomacs/img/zoom-in.png");
+	mViewIcons[icon_view_zoom_out] = QIcon(":/nomacs/img/zoom-out.png");
 
 	mViewIcons[icon_view_movie_play] = QIcon();
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-play.png"), QIcon::Normal, QIcon::On);
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.png"), QIcon::Normal, QIcon::Off);
-	mViewIcons[icon_view_movie_prev] = ICON("", ":/nomacs/img/movie-prev.png");
-	mViewIcons[icon_view_movie_next] = ICON("", ":/nomacs/img/movie-next.png");
+	mViewIcons[icon_view_movie_prev] = QIcon(":/nomacs/img/movie-prev.png");
+	mViewIcons[icon_view_movie_next] = QIcon(":/nomacs/img/movie-next.png");
 
 	mToolsIcons.resize(icon_tools_end);
-	mToolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
+	mToolsIcons[icon_tools_manipulation] = QIcon(":/nomacs/img/manipulation.png");
 
 	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
 		colorizeIcons(DkSettings::display.iconColor);
