@@ -1322,16 +1322,16 @@ bool DkImageLoader::deleteFile() {
 	
 	if (mCurrentImage && mCurrentImage->exists()) {
 
-		QFile fileHandle(mCurrentImage->filePath());
+		QString fileName = mCurrentImage->fileName();
 
-		if (fileHandle.remove()) {
+		if (DkUtils::moveToTrash(mCurrentImage->filePath())) {
 			QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
 			load(imgC);
-			emit showInfoSignal(tr("%1 deleted...").arg(QFileInfo(fileHandle.fileName()).fileName()));
+			emit showInfoSignal(tr("%1 deleted...").arg(fileName));
 			return true;
 		}
 		else
-			emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(mCurrentImage->fileName()));
+			emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(fileName));
 	}
 
 	return false;

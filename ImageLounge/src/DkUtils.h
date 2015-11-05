@@ -170,6 +170,7 @@ public:
 	static QString colorToString(const QColor& col);
 	static QString readableByte(float bytes);
 	static QStringList filterStringList(const QString& query, const QStringList& list);
+	static bool moveToTrash(const QString& filePath);
 
 #ifdef WITH_OPENCV
 	/**
@@ -447,41 +448,6 @@ public:
 	static int getDebug() {
 		return debugLevel;
 	};
-
-
-
-
-#ifdef DK_DEBUG
-	
-	/**
-	 * Prints a debug message according the message level and the current debug level defined in DkUtils.
-	 * The debug command prints only a message if DK_DEBUG is defined.
-	 * Debug levels are: DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL.
-	 * @param level the debug level of the message.
-	 * @param fmt the format string of the message.
-	 **/
-	static void printDebug(int level,const char *fmt,...) {
-		va_list ap;
-
-
-		if (debugLevel >= DK_WARNING && level == DK_WARNING)
-			printf("WARNING: ");
-		else if (debugLevel >= DK_MODULE && level == DK_MODULE)
-			printf(">> ");
-
-		va_start(ap,fmt);
-		if ((fmt) && (level <= debugLevel)) {
-			vprintf(fmt, ap);
-			fflush(stdout);
-		}
-		va_end(ap);
-	}
-#else
-	/**
-	 * If DK_DEBUG is undefined do nothing.
-	 **/
-	inline static void printDebug(...) {};
-#endif
 
 };
 

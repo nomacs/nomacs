@@ -1336,8 +1336,6 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 
 	this->mOverlaid = overlaid;
 
-	DkUtils::printDebug(DK_MODULE, "arranging...\n");
-
 	// we are currently overlaid...
 	if (!overlaid) {
 
@@ -1840,7 +1838,27 @@ void DkNoMacs::deleteFile() {
 
 	QFileInfo fileInfo = getTabWidget()->getCurrentFilePath();
 
-	if (QMessageBox::question(this, tr("Info"), tr("Do you want to permanently delete %1").arg(fileInfo.fileName())) == QMessageBox::Yes) {
+	QString question;
+
+#if defined(WIN32) || defined(W_OS_LINUX)
+	question = tr("Shall I move %1 to trash?").arg(fileInfo.fileName());
+#else
+	question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());
+#endif
+
+	DkMessageBox* msgBox = new DkMessageBox(
+		QMessageBox::Question, 
+		tr("Delete File"), 
+		question, 
+		(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
+		qApp->activeWindow());
+
+	msgBox->setDefaultButton(QMessageBox::Yes);
+	msgBox->setObjectName("deleteFileDialog");
+
+	int answer = msgBox->exec();
+
+	if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
 		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
 		
 		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())

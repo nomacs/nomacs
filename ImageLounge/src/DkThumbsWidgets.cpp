@@ -34,6 +34,7 @@
 #include "DkImageLoader.h"
 #include "DkActionManager.h"
 #include "DkUtils.h"
+#include "DkMessageBox.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>
@@ -1433,20 +1434,38 @@ void DkThumbScene::deleteSelected() const {
 	if (fileList.empty())
 		return;
 
-	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size()), QMessageBox::Yes | QMessageBox::No);
+	QString question;
+
+#if defined(WIN32) || defined(W_OS_LINUX)
+	question = tr("Shall I move %1 file(s) to trash?").arg(fileList.size());
+#else
+	question = tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size());
+#endif
+
+	DkMessageBox* msgBox = new DkMessageBox(
+		QMessageBox::Question, 
+		tr("Delete File"), 
+		question, 
+		(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
+		qApp->activeWindow());
+
+	msgBox->setDefaultButton(QMessageBox::Yes);
+	msgBox->setObjectName("deleteThumbFileDialog");
+
+	int answer = msgBox->exec();
 
 	if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
 		
 		if (mLoader && fileList.size() > 100)	// saves CPU
 			mLoader->deactivate();
 
-		for (QString fString : fileList) {
+		for (const QString& fString : fileList) {
 
-			QFileInfo file(fString);
-			QFile f(file.absoluteFilePath());
+			QString fName = QFileInfo(fString).fileName();
+			qDebug() << "deleting: " << fString;
 
-			if (!f.remove()) {
-				answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot delete:\n%1").arg(file.fileName()), QMessageBox::Ok | QMessageBox::Cancel);
+			if (!DkUtils::moveToTrash(fString)) {
+				answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot delete:\n%1").arg(fName), QMessageBox::Ok | QMessageBox::Cancel);
 
 				if (answer == QMessageBox::Cancel) {
 					break;
