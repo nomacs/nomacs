@@ -3305,7 +3305,6 @@ void DkNoMacsContrast::createTransferToolbar() {
 	else
 		mTransferToolBar->setIconSize(QSize(32, 32));
 
-
 	if (DkSettings::display.toolbarGradient)
 		mTransferToolBar->setObjectName("toolBarWithGradient");
 

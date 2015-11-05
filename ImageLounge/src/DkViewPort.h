@@ -305,7 +305,7 @@ public slots:
 	void changeColorTable(QGradientStops stops);
 	void pickColor(bool enable);
 	void enableTF(bool enable);
-	QImage getImage();
+	QImage getImage() const override;
 
 	virtual void setImage(QImage newImg);
 

@@ -312,7 +312,6 @@ QImage DkBaseViewPort::getImage() const {
 	
 	if (mMovie && mMovie->isValid())
 		return mMovie->currentImage();
-	// TODO: svg
 
 	return mImgStorage.getImageConst();
 }

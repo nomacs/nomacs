@@ -2393,12 +2393,12 @@ void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
 		DkViewPort::keyPressEvent(event);
 }
 
-QImage DkViewPortContrast::getImage() {
+QImage DkViewPortContrast::getImage() const {
 
 	if (mDrawFalseColorImg)
 		return mFalseColorImg;
 	else
-		return mImgStorage.getImage();
+		return mImgStorage.getImageConst();
 
 }
 
