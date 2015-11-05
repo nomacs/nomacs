@@ -81,7 +81,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	connect(mZoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
 	connect(&mImgStorage, SIGNAL(imageUpdated()), this, SLOT(update()));
 
-	mPattern.setTexture(QPixmap(":/nomacs/img/tp-mPattern.png"));
+	mPattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
 
 	if (DkSettings::display.useDefaultColor) {
 
@@ -677,6 +677,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 		painter->drawImage(mImgViewRect, imgQt, imgQt.rect());
 
 	painter->setOpacity(oldOp);
+
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 

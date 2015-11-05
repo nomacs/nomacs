@@ -468,9 +468,7 @@ void DkPluginTableWidget::pluginUpdateFinished(bool finishedSuccessfully) {
 
 void DkPluginTableWidget::filterTextChanged() {
 
-	Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive; //filterCaseSensitivityCheckBox->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
-
-	QRegExp regExp(mFilterEdit->text(), caseSensitivity, QRegExp::FixedString);
+	QRegExp regExp(mFilterEdit->text(), Qt::CaseInsensitive, QRegExp::FixedString);
 	mProxyModel->setFilterRegExp(regExp);
 	mTableView->resizeRowsToContents();
 }
@@ -1884,7 +1882,7 @@ DkPluginInterface* DkPluginManager::runPlugin(const QString& key) {
 
 // DkPluginActionManager --------------------------------------------------------------------
 DkPluginActionManager::DkPluginActionManager(QObject* parent) : QObject(parent) {
-
+	
 	assignCustomPluginShortcuts();
 }
 
@@ -1944,6 +1942,11 @@ void DkPluginActionManager::updateMenu() {
 
 	if (!mMenu) {
 		qWarning() << "plugin menu is NULL where it should not be!";
+	}
+
+	if (mPluginActions.empty()) {
+		//mPluginActions.resize(DkActionManager::menu_plugins_end);
+		mPluginActions = DkActionManager::instance().pluginActions();
 	}
 
 	mMenu->clear();

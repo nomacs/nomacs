@@ -35,7 +35,6 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 // Qt defines
-class BorderLayout;
 class QGroupBox;
 class QSpinBox;
 class QDoubleSpinBox;
@@ -347,9 +346,6 @@ private:
 	void createLayout();
 
 	DkDoubleSpinBoxWidget* displayTimeSpin;
-	QCheckBox* cbShowMenu;
-	QCheckBox* cbShowToolbar;
-	QCheckBox* cbShowStatusbar;
 	QCheckBox* cbSmallIcons;
 	QCheckBox* cbToolbarGradient;
 	QCheckBox* cbCloseOnEsc;
@@ -422,7 +418,6 @@ private slots:
 	void advancedSettingsChanged(int idx);
 
 protected:
-	BorderLayout* borderLayout;
 	DkSettingsListView* listView;
 	QWidget* rightWidget;
 	QLabel* leftLabel;

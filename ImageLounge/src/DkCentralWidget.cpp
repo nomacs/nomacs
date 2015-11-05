@@ -239,6 +239,21 @@ void DkCentralWidget::createLayout() {
 	mThumbScrollWidget = new DkThumbScrollWidget(this);
 	mThumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 	mThumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
+	
+	// add actions
+	DkActionManager& am = DkActionManager::instance();
+	mThumbScrollWidget->addActions(am.fileActions().toList());
+	mThumbScrollWidget->addActions(am.viewActions().toList());
+	mThumbScrollWidget->addActions(am.editActions().toList());
+	mThumbScrollWidget->addActions(am.sortActions().toList());
+	mThumbScrollWidget->addActions(am.toolsActions().toList());
+	mThumbScrollWidget->addActions(am.panelActions().toList());
+	mThumbScrollWidget->addActions(am.syncActions().toList());
+	mThumbScrollWidget->addActions(am.pluginActions().toList());
+	mThumbScrollWidget->addActions(am.lanActions().toList());
+	mThumbScrollWidget->addActions(am.helpActions().toList());
+	mThumbScrollWidget->addActions(am.hiddenActions().toList());
+	
 	//thumbScrollWidget->hide();
 
 	mTabbar = new QTabBar(this);

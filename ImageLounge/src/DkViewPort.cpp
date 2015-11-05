@@ -97,6 +97,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mController->getCropWidget()->setImageTransform(&mImgMatrix);
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
+	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.fileActions().toList());
 	addActions(am.viewActions().toList());
@@ -372,18 +373,20 @@ void DkViewPort::zoom(float factor, QPointF center) {
 
 	// reset view & block if we pass the '100%' on zoom out
 	if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
-
-		fullView();
+		
 		mBlockZooming = true;
 		mZoomTimer->start(500);
-		return;
+		mWorldMatrix.reset();
+		factor = 1.0f / (float)mImgMatrix.m11();
 	}
 
 	// reset view if we pass the '100%' on zoom in
 	if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
 
-		fullView();
-		return;
+		mBlockZooming = true;
+		mZoomTimer->start(500);
+		mWorldMatrix.reset();
+		factor = 1.0f / (float)mImgMatrix.m11();
 	}
 
 

@@ -460,28 +460,6 @@ void DkNoMacs::createMenu() {
 	mMenu->addMenu(am.helpMenu());
 }
 
-//void DkNoMacs::createOpenWithMenu(QMenu*) {
-//
-//	QList<QAction* > oldActions = mOpenWithMenu->findChildren<QAction* >();
-//
-//	// remove old actions
-//	for (int idx = 0; idx < oldActions.size(); idx++)
-//		viewport()->removeAction(oldActions.at(idx));
-//
-//	QVector<QAction* > appActions = mAppManager->getActions();
-//
-//	for (int idx = 0; idx < appActions.size(); idx++)
-//		qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
-//
-//	assignCustomShortcuts(appActions);
-//	mOpenWithMenu->addActions(appActions.toList());
-//	
-//	if (!appActions.empty())
-//		mOpenWithMenu->addSeparator();
-//	mOpenWithMenu->addAction(mFileActions[menu_file_app_manager]);
-//	centralWidget()->addActions(appActions.toList());
-//}
-
 void DkNoMacs::createContextMenu() {
 }
 
@@ -637,6 +615,8 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_view_fit_frame)->setEnabled(enable);
 	am.action(DkActionManager::menu_view_zoom_in)->setEnabled(enable);
 	am.action(DkActionManager::menu_view_zoom_out)->setEnabled(enable);
+	am.action(DkActionManager::menu_view_tp_pattern)->setEnabled(enable);
+	am.action(DkActionManager::menu_view_anti_aliasing)->setEnabled(enable);
 
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(enable);
