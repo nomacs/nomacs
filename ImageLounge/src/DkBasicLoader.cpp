@@ -45,6 +45,7 @@
 #include <QBuffer>
 #include <QNetworkProxyFactory>
 #include <QPixmap>
+#include <QIcon>
 
 #include <qmath.h>
 
@@ -190,6 +191,17 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 		if (imgLoaded)
 			mLoader = qt_loader;
+	}
+
+	// load large icons
+	if (!imgLoaded && suf == "ico") {
+
+		QIcon icon(mFile);
+
+		if (!icon.isNull()) {
+			mImg = icon.pixmap(QSize(256, 256)).toImage();
+			imgLoaded = true;
+		}
 	}
 
 	// default Qt loader
