@@ -1062,14 +1062,14 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_prev] = new QAction(mFileIcons[icon_file_prev], QObject::tr("Pre&vious File"), parent);
 	mFileActions[menu_file_prev]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	mFileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
-	mFileActions[menu_file_prev]->setStatusTip(QObject::tr("Load previous fileInfo"));
+	mFileActions[menu_file_prev]->setStatusTip(QObject::tr("Load previous file"));
 
 	mFileActions[menu_file_train_format] = new QAction(QObject::tr("Add Image Format"), parent);
 	mFileActions[menu_file_train_format]->setStatusTip(QObject::tr("Add a new image format to nomacs"));
 
 	mFileActions[menu_file_new_instance] = new QAction(QObject::tr("St&art New Instance"), parent);
 	mFileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
-	mFileActions[menu_file_new_instance]->setStatusTip(QObject::tr("Open fileInfo in new instance"));
+	mFileActions[menu_file_new_instance]->setStatusTip(QObject::tr("Open file in new instance"));
 
 	mFileActions[menu_file_private_instance] = new QAction(QObject::tr("St&art Private Instance"), parent);
 	mFileActions[menu_file_private_instance]->setShortcut(QKeySequence(shortcut_private_instance));
