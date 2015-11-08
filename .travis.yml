@@ -1,7 +1,7 @@
 language: c++
 
 os:
-#  - linux
+  - linux
   - osx
 
 compiler:
