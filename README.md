@@ -2,7 +2,7 @@
 nomacs is a free image viewer for Windows, Linux, and OSX.
 
 # Installation
-Download and install [CMake](https://cmake.org/download/) which we will use for generating the project files on the different platforms.
+Download and install [CMake](https://cmake.org/download/) for generating the project files used to build nomacs on different platforms.
 
 ## Get the code
 Checkout the code from github:
@@ -13,16 +13,24 @@ $ cd workspace
 $ git clone https://github.com/nomacs/nomacs.git
 ```
 
-## Linux
-On Linux, nomacs should be easy to compile (following tested on 64 bit Ubuntu 14.04, but should work the same on all Debian-based systems):
+## Linux/OSX
+**Tested on**: Ubuntu x86_64 and OSX El Capitan (AppleClang 7.0.0)
 
-Get the required packages:
-
+### Install required dependencies on Linux
 ```
 $ sudo apt-get install debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git
 ```
 
-Go to the `nomacs` directory and run cmake to get the Makefiles
+### Install required dependencies on OSX
+Install [Homebrew](http://brew.sh/) for easier installation of the nomacs dependencies.
+
+```
+$ brew install qt4 exiv2 homebrew/science/opencv libraw quazip
+
+```
+
+### Build
+Go to the `nomacs` directory and run the following commands to get the Makefiles:
 
 ```
 $ mkdir build
@@ -33,17 +41,19 @@ $ cmake ../ImageLounge/.
 Run make:
 
 ```
-$ make
+$ make   # Use -j<noOfThreads> option to compile with more than one thread
 ```
 
-You will now have a binary (`build/nomacs`), which you can test (or use directly). To install it to `/usr/local/bin`, use
+You will now have a binary (`nomacs` or `nomac.app`), which you can test (or use directly).
+
+To install it to `/usr/local/bin`, use
 
 ```
 $ sudo make install
 ```
 
 
-## Windows
+## Building on Windows
 You need the Qt SDK or the compiled sources (>= 4.7.0) to compile nomacs.
 
 ### Compile dependencies
@@ -83,33 +93,3 @@ nomacs should start now.
 If nomacs starts but no images can be loaded (check your qt_install_dir/plugin/imageformats).
 If necessary copy this folder to your release/debug path
 
-
-## OSX
-Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
-
-Install required dependencies:
-
-```
-$ brew install qt4 exiv2 homebrew/science/opencv libraw quazip
-
-```
-
-Go to the `nomacs` directory and run cmake to get the Makefiles
-
-```
-$ mkdir build
-$ cd build
-$ cmake ../ImageLounge/.
-```
-
-Run make:
-
-```
-$ make
-```
-
-You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
-
-```
-$ sudo make install
-```
