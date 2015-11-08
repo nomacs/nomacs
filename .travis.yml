@@ -1,11 +1,11 @@
 language: c++
 
 os:
-  - linux
+#  - linux
   - osx
 
 compiler:
-  - gcc
+ # - gcc
   - clang
 
 sudo: required
