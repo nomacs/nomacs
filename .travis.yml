@@ -1,0 +1,13 @@
+language: c++
+
+os:
+  - osx
+
+install:
+  - brew install cmake qt4 exiv2 homebrew/science/opencv libraw quazip
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ../ImageLounge/.
+  - make
