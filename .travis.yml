@@ -8,6 +8,9 @@ compiler:
   - gcc
   - clang
 
+sudo: required
+dist: trusty
+
 before_script:
   # OSX dependencies
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
