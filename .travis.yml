@@ -18,6 +18,9 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
 
+  # Linux dependencies
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev ; fi
+
   - mkdir build
   - cd build
 
