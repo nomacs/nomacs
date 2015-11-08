@@ -7,7 +7,7 @@ before_install:
   - brew install cmake
   - brew install qt4
   - brew install exiv2
-  - brew install homebrew/science/opencv
+  - brew install Homebrew/science/opencv
   - brew install libraw
   - brew install quazip
 
