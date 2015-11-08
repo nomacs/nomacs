@@ -30,4 +30,4 @@ before_script:
 
 script:
   - cmake ../ImageLounge/.
-  - make -j4
+  - make -j8
