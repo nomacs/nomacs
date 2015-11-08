@@ -3,7 +3,7 @@ language: c++
 os:
   - osx
 
-install:
+before_install:
   - brew install cmake qt4 exiv2 homebrew/science/opencv libraw quazip
 
 script:
