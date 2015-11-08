@@ -4,7 +4,12 @@ os:
   - osx
 
 before_install:
-  - brew install cmake qt4 exiv2 homebrew/science/opencv libraw quazip
+  - brew install cmake
+  - brew install qt4
+  - brew install exiv2
+  - brew install homebrew/science/opencv
+  - brew install libraw
+  - brew install quazip
 
 script:
   - mkdir build
