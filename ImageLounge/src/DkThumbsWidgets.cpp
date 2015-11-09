@@ -2010,6 +2010,7 @@ void DkThumbScrollWidget::connectToActions(bool activate) {
 void DkThumbScrollWidget::setFilterFocus() const {
 
 	mFilterEdit->setFocus(Qt::MouseFocusReason);
+	qDebug() << "focus set...";
 }
 
 void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {

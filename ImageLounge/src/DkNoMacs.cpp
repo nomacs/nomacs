@@ -334,6 +334,11 @@ void DkNoMacs::createToolbar() {
 	mToolbar->addAction(am.action(DkActionManager::menu_tools_filter));
 	mToolbar->addSeparator();
 
+	// view
+	mToolbar->addAction(am.action(DkActionManager::menu_view_zoom_in));
+	mToolbar->addAction(am.action(DkActionManager::menu_view_zoom_out));
+	mToolbar->addSeparator();
+
 	// edit
 	mToolbar->addAction(am.action(DkActionManager::menu_edit_copy));
 	mToolbar->addAction(am.action(DkActionManager::menu_edit_paste));

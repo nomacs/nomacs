@@ -217,12 +217,12 @@ void DkBaseViewPort::moveView(const QPointF& delta) {
 
 void DkBaseViewPort::zoomIn() {
 
-	zoom(1.1f);
+	zoom(1.5f);
 }
 
 void DkBaseViewPort::zoomOut() {
 
-	zoom(0.9f);
+	zoom(0.5f);
 }
 
 void DkBaseViewPort::zoom(float factor, QPointF center) {

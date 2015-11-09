@@ -371,23 +371,24 @@ void DkViewPort::zoom(float factor, QPointF center) {
 		return;
 	}
 
-	// reset view & block if we pass the '100%' on zoom out
-	if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
-		
-		mBlockZooming = true;
-		mZoomTimer->start(500);
-		mWorldMatrix.reset();
-		factor = 1.0f / (float)mImgMatrix.m11();
-	}
+	// TODO: the reset in mWorldMatrix introduces wrong pans
+	//// reset view & block if we pass the '100%' on zoom out
+	//if (mWorldMatrix.m11()*mImgMatrix.m11()-FLT_EPSILON > 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor < 1) {
+	//	
+	//	mBlockZooming = true;
+	//	mZoomTimer->start(500);
+	//	mWorldMatrix.reset();
+	//	factor = 1.0f / (float)mImgMatrix.m11();
+	//}
 
-	// reset view if we pass the '100%' on zoom in
-	if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
+	//// reset view if we pass the '100%' on zoom in
+	//if (mWorldMatrix.m11()*mImgMatrix.m11()+FLT_EPSILON < 1 && mWorldMatrix.m11()*mImgMatrix.m11()*factor > 1) {
 
-		mBlockZooming = true;
-		mZoomTimer->start(500);
-		mWorldMatrix.reset();
-		factor = 1.0f / (float)mImgMatrix.m11();
-	}
+	//	mBlockZooming = true;
+	//	mZoomTimer->start(500);
+	//	mWorldMatrix.reset();
+	//	factor = 1.0f / (float)mImgMatrix.m11();
+	//}
 
 
 	//limit zoom in ---
