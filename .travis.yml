@@ -1,0 +1,33 @@
+language: c++
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
+sudo: required
+dist: trusty
+
+before_script:
+  # OSX dependencies
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install qt4; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install exiv2; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install quazip; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
+
+  # Linux dependencies
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev ; fi
+
+  - mkdir build
+  - cd build
+
+script:
+  - cmake ../ImageLounge/.
+  - make -j8
