@@ -29,7 +29,7 @@
 #include "DkMath.h"
 #include "DkSettings.h"
 
-#ifdef Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#if defined(Q_WS_X11) and not defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
 #endif
 
