@@ -520,66 +520,66 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	
 	return retVal == 0;		// true if no error code
 
-#elif Q_OS_LINUX
-	bool TrashInitialized = false;
-	QString TrashPath;
-	QString TrashPathInfo;
-	QString TrashPathFiles;
-
-	if( !TrashInitialized ) {
-		QStringList paths;
-		const char* xdg_data_home = getenv( "XDG_DATA_HOME" );
-		if( xdg_data_home ){
-			qDebug() << "XDG_DATA_HOME not yet tested";
-			QString xdgTrash( xdg_data_home );
-			paths.append( xdgTrash + "/Trash" );
-		}
-		QString home = QStandardPaths::writableLocation( QStandardPaths::HomeLocation );
-		paths.append( home + "/.local/share/Trash" );
-		paths.append( home + "/.trash" );
-		foreach( QString path, paths ){
-			if( TrashPath.isEmpty() ){
-				QDir dir( path );
-				if( dir.exists() ){
-					TrashPath = path;
-				}
-			}
-		}
-		if (TrashPath.isEmpty())
-			return false;
-		TrashPathInfo = TrashPath + "/info";
-		TrashPathFiles = TrashPath + "/files";
-		if (!QDir(TrashPathInfo).exists() || !QDir(TrashPathFiles).exists())
-			return false;
-		TrashInitialized = true;
-	}
-
-	QString info;
-	info += "[Trash Info]\nPath=";
-	info += filePath;
-	info += "\nDeletionDate=";
-	info += QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzzZ");
-	info += "\n";
-	QString trashname = fileInfo.fileName();
-	QString infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
-	QString trashPath = TrashPathFiles + "/" + trashname;
-	int nr = 1;
-	while( QFileInfo( infopath ).exists() || QFileInfo( trashPath ).exists() ){
-		nr++;
-		trashname = fileInfo.baseName() + "." + QString::number( nr );
-		if( !fileInfo.completeSuffix().isEmpty() ){
-			trashname += QString( "." ) + fileInfo.completeSuffix();
-		}
-		infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
-		trashPath = TrashPathFiles + "/" + trashname;
-	}
-	QDir dir;
-	if( !dir.rename( filePath, trashPath )) {
-		return false;
-	}
-	File infofile;
-	infofile.createUtf8( infopath, info );
-	return true;
+//#elif Q_OS_LINUX
+//	bool TrashInitialized = false;
+//	QString TrashPath;
+//	QString TrashPathInfo;
+//	QString TrashPathFiles;
+//
+//	if( !TrashInitialized ) {
+//		QStringList paths;
+//		const char* xdg_data_home = getenv( "XDG_DATA_HOME" );
+//		if( xdg_data_home ){
+//			qDebug() << "XDG_DATA_HOME not yet tested";
+//			QString xdgTrash( xdg_data_home );
+//			paths.append( xdgTrash + "/Trash" );
+//		}
+//		QString home = QStandardPaths::writableLocation( QStandardPaths::HomeLocation );
+//		paths.append( home + "/.local/share/Trash" );
+//		paths.append( home + "/.trash" );
+//		foreach( QString path, paths ){
+//			if( TrashPath.isEmpty() ){
+//				QDir dir( path );
+//				if( dir.exists() ){
+//					TrashPath = path;
+//				}
+//			}
+//		}
+//		if (TrashPath.isEmpty())
+//			return false;
+//		TrashPathInfo = TrashPath + "/info";
+//		TrashPathFiles = TrashPath + "/files";
+//		if (!QDir(TrashPathInfo).exists() || !QDir(TrashPathFiles).exists())
+//			return false;
+//		TrashInitialized = true;
+//	}
+//
+//	QString info;
+//	info += "[Trash Info]\nPath=";
+//	info += filePath;
+//	info += "\nDeletionDate=";
+//	info += QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzzZ");
+//	info += "\n";
+//	QString trashname = fileInfo.fileName();
+//	QString infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
+//	QString trashPath = TrashPathFiles + "/" + trashname;
+//	int nr = 1;
+//	while( QFileInfo( infopath ).exists() || QFileInfo( trashPath ).exists() ){
+//		nr++;
+//		trashname = fileInfo.baseName() + "." + QString::number( nr );
+//		if( !fileInfo.completeSuffix().isEmpty() ){
+//			trashname += QString( "." ) + fileInfo.completeSuffix();
+//		}
+//		infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
+//		trashPath = TrashPathFiles + "/" + trashname;
+//	}
+//	QDir dir;
+//	if( !dir.rename( filePath, trashPath )) {
+//		return false;
+//	}
+//	File infofile;
+//	infofile.createUtf8( infopath, info );
+//	return true;
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
