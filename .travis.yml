@@ -32,3 +32,4 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
+  
