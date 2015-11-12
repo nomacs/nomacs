@@ -53,7 +53,7 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QProcess>
-
+#include <qmath.h>
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
 #endif // WITH_UPNP
@@ -373,7 +373,7 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 		return;
 	int instancesPerRow = (connectedInstances == 2 || connectedInstances == 4) ? 2 : 3;
 
-	int rows = (int)ceil((float)connectedInstances / (float)instancesPerRow);	// TODO: ceil should not be used
+	int rows = (int)qCeil((float)connectedInstances / (float)instancesPerRow);
 	int width = screenGeometry.width() / instancesPerRow;
 	int height = screenGeometry.height() / rows;
 
@@ -602,7 +602,7 @@ void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
 	//qDebug() << "stop synchronize with:" << peerId;
 
 	// disconnect all
-	if (peerId == -1) {
+	if (peerId == -1) {	// TODO: that does not make sense - it is unsigned!
 		QList<DkPeer*> synchronizedPeers = mPeerList.getSynchronizedPeers();
 		foreach (DkPeer* peer, synchronizedPeers) {
 			
