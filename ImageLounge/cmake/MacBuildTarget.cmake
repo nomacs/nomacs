@@ -6,7 +6,7 @@ add_executable(${BINARY_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI}
 target_include_directories(${BINARY_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${BINARY_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${ZLIB_LIBRARIES})
 
-qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
+qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
