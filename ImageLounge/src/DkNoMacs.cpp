@@ -2031,7 +2031,7 @@ void DkNoMacs::bugReport() {
 	url += "Linux 64bit";
 #elif defined Q_WS_X11 && __i386__
 	url += "Linux 32bit";
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	url += "Mac OS";
 #else
 	url += "";
@@ -2048,7 +2048,7 @@ void DkNoMacs::featureRequest() {
 		% QApplication::applicationVersion();
 
 	url += "&issue[custom_field_values][4]=";
-#if defined WIN32 &&	_MSC_VER == 1600
+#if defined WIN32 && _MSC_VER == 1600
 	url += "Windows Vista/XP";
 #elif defined WIN32 && _WIN64
 	url += "Windows 7/8/10 64bit";
@@ -2058,7 +2058,7 @@ void DkNoMacs::featureRequest() {
 	url += "Linux 64bit";
 #elif defined Q_WS_X11 && __i386__
 	url += "Linux 32bit";
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	url += "Mac OS";
 #else
 	url += "";

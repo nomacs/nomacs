@@ -29,7 +29,7 @@
 #include "DkMath.h"
 #include "DkSettings.h"
 
-#ifdef Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#if defined(Q_WS_X11) && !defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
 #endif
 
@@ -88,7 +88,7 @@ double DkMemory::getTotalMemory() {
 		mem = info.totalram;
 
 
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	// TODO: could somebody (with a mac please add the corresponding calls?
 #endif
 
@@ -122,7 +122,7 @@ double DkMemory::getFreeMemory() {
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 
 	// TODO: could somebody with a mac please add the corresponding calls?
 

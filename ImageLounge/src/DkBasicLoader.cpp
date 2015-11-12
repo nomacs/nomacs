@@ -82,19 +82,19 @@
 #include "tif_config.h"	
 #endif
 
-//#if defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
+//#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 // here we clash (typedef redefinition with different types ('long' vs 'int64_t' (aka 'long long'))) 
 // so we simply define our own int64 before including tiffio
 #define uint64 uint64_hack_
 #define int64 int64_hack_
-//#endif // defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
+//#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 
 #include "tiffio.h"
 
-//#if defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
+//#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #undef uint64
 #undef int64
-//#endif // defined(Q_WS_MAC) || defined(Q_OS_OPENBSD)
+//#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #endif
 
 #else

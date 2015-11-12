@@ -1691,7 +1691,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
 	
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	parent->setAttribute(Qt::WA_MacNoShadow);
 #endif
 

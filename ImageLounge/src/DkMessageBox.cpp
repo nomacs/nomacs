@@ -84,7 +84,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 
 	textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 	textLabel->setOpenExternalLinks(true);
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
 	textLabel->setContentsMargins(16, 0, 0, 0);
 #else
 	textLabel->setContentsMargins(2, 0, 0, 0);
@@ -108,7 +108,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 	buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
 	
 	QGridLayout *grid = new QGridLayout;
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
 	grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
 	grid->addWidget(textLabel, 0, 1, 1, 1);
 	grid->addWidget(showAgain, 2, 1, 1, 2);
@@ -131,7 +131,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 
 	setModal(true);
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	QFont f = font();
 	f.setBold(true);
 	textLabel->setFont(f);
@@ -219,7 +219,7 @@ void DkMessageBox::updateSize() {
 	if (screenSize.width() <= 1024)
 		hardLimit = screenSize.width();
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	int softLimit = qMin(screenSize.width()/2, 420);
 #else
 	// note: ideally on windows, hard and soft limits but it breaks compat

@@ -1572,7 +1572,7 @@ void DkUpdater::checkForUpdates() {
 	QUrl url ("http://www.nomacs.org/version_win_stable");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	QUrl url ("http://www.nomacs.org/version_mac_stable");
 #else
 	QUrl url ("http://www.nomacs.org/version");
@@ -1632,7 +1632,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	url = x64;
 #elif _WIN32
 	url = x86;
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	url = mac;
 #endif 
 

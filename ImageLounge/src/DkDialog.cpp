@@ -106,7 +106,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	setMouseTracking(true);
     
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     setObjectName("DkSplashScreenMac");
 #else
 	setObjectName("DkSplashScreen");

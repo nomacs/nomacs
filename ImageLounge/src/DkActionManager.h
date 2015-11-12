@@ -394,7 +394,7 @@ public:
 		shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 		shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
 		shortcut_show_transfer	= Qt::CTRL + Qt::Key_U,
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 		shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
 		shortcut_frameless		= Qt::CTRL + Qt::Key_R,
 #else
