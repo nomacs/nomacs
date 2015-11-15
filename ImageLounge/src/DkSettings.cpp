@@ -182,7 +182,7 @@ void DkSettings::initFileFilters() {
 
 #ifdef WITH_LIBRAW
 	// raw format
-	app_p.rawFilters.append("Nikon Raw (*.nef)");
+	app_p.rawFilters.append("Nikon Raw (*.nef *.nrw)");
 	app_p.rawFilters.append("Canon Raw (*.crw *.cr2)");
 	app_p.rawFilters.append("Sony Raw (*.arw)");
 	app_p.rawFilters.append("Digital Negativ (*.dng)");
