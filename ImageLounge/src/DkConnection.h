@@ -172,7 +172,7 @@ class DkLocalConnection : public DkConnection {
 		void readGreetingMessage();
 
 		quint16 mLocalTcpServerPort;
-		LocalDataType mCurrentLocalDataType;
+		LocalDataType mCurrentLocalDataType = Undefined;
 };
 
 class DkLANConnection : public DkConnection {

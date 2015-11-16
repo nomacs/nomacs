@@ -67,11 +67,14 @@ void DkConnection::sendStartSynchronizeMessage() {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << quint16(mSynchronizedPeersServerPorts.size());
-	for (int i=0; i < mSynchronizedPeersServerPorts.size();i++)
+	for (int i = 0; i < mSynchronizedPeersServerPorts.size(); i++) {
+		qDebug() << "mSynchronizedPeersServerPorts: " << mSynchronizedPeersServerPorts[i];
 		ds << mSynchronizedPeersServerPorts[i];
+	}
 	//QByteArray data = "SYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
 	QByteArray data = "STARTSYNCHRONIZE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
+	qDebug() << "sending startsynchronize:" << data;
 	if (write(data) == data.size())
 		mIsSynchronizeMessageSent = true;
 }
@@ -164,10 +167,10 @@ bool DkConnection::readProtocolHeader() {
 	QByteArray goodbyeBA = QByteArray("GOODBYE").append(SeparatorToken);
 
 	if (mBuffer == greetingBA) {
-		qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Greeting;
 	} else if (mBuffer == synchronizeBA) {
-		qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = startSynchronize;
 	} else if (mBuffer == disableSynchronizeBA) {
 		//qDebug() << "Disable synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
@@ -188,7 +191,7 @@ bool DkConnection::readProtocolHeader() {
 		//qDebug() << "Goodbye received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = GoodBye;
 	} else {
-		//qDebug() << "Undefined received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "Undefined received (or not handled here) from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Undefined;
 		//abort();
 		//return false;
@@ -213,8 +216,9 @@ int DkConnection::readDataIntoBuffer(int maxSize) {
 
 	while (bytesAvailable() > 0 && mBuffer.size() < maxSize) {
 		mBuffer.append(read(1));
-		if (mBuffer.endsWith(SeparatorToken))
+		if (mBuffer.endsWith(SeparatorToken)) {
 			break;
+		}
 	}
 	return mBuffer.size() - numBytesBeforeRead;
 }
