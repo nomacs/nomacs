@@ -1007,11 +1007,10 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
 	mLocalIpAddresses.clear();
-	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
-	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
-		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
-		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-			mLocalIpAddresses << itr->ip();
+	QList<QHostAddress> localAddresses = QNetworkInterface::allAddresses();
+	for (int i = 0; i < localAddresses.size(); i++) {
+		if (localAddresses.at(i).toIPv4Address()) {
+			mLocalIpAddresses << localAddresses.at(i);
 		}
 	}
 	mBroadcasting = false;
@@ -1097,7 +1096,7 @@ void DkLANUdpSocket::readBroadcast() {
 
 bool DkLANUdpSocket::isLocalHostAddress(const QHostAddress &address) {
 	foreach (QHostAddress localAddress, mLocalIpAddresses) {
-		if (address == localAddress)
+		if (address.toIPv4Address() == localAddress.toIPv4Address() )
 			return true;
 	}
 	return false;
