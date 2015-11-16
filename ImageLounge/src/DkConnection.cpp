@@ -191,7 +191,8 @@ bool DkConnection::readProtocolHeader() {
 		//qDebug() << "Goodbye received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = GoodBye;
 	} else {
-		//qDebug() << "Undefined received (or not handled here) from:" << this->peerAddress() << ":" << this->peerPort();
+		qDebug() << QString(mBuffer);
+		qDebug() << "Undefined received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Undefined;
 		//abort();
 		//return false;
@@ -366,7 +367,8 @@ void DkConnection::checkState() {
 void DkConnection::readWhileBytesAvailable() {
 	do {
 		if (mCurrentDataType == Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();
@@ -725,7 +727,8 @@ void DkLANConnection::readWhileBytesAvailable() {
 	//qDebug() << "DKLANConnection:" << __FUNCTION__ << " line:" << __LINE__;
 	do {
 		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();
@@ -871,7 +874,8 @@ void DkRCConnection::readWhileBytesAvailable() {
 	//qDebug() << __FUNCTION__ << " " << __LINE__;
 	do {
 		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRCConnection::Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();
