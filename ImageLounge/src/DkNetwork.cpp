@@ -1007,11 +1007,9 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
 	mLocalIpAddresses.clear();
-	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
 	QList<QHostAddress> localAddresses = QNetworkInterface::allAddresses();
 	for (int i = 0; i < localAddresses.size(); i++) {
-		if (localAddresses.at(i) != QHostAddress::LocalHost && localAddresses.at(i).toIPv4Address()) {
-			qDebug() << "addr:" << localAddresses.at(i).toIPv4Address();
+		if (localAddresses.at(i).toIPv4Address()) {
 			mLocalIpAddresses << localAddresses.at(i);
 		}
 	}
