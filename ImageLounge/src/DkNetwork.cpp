@@ -602,7 +602,8 @@ void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
 	//qDebug() << "stop synchronize with:" << peerId;
 
 	// disconnect all
-	if (peerId == -1) {	// TODO: that does not make sense - it is unsigned!
+	if (peerId == USHRT_MAX) {
+		qDebug() << "stopSynchronize with all synchronized peers";
 		QList<DkPeer*> synchronizedPeers = mPeerList.getSynchronizedPeers();
 		foreach (DkPeer* peer, synchronizedPeers) {
 			
@@ -1006,13 +1007,9 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	qDebug() << "UpdBroadcastserver listening on " << mServerPort;
 	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
-	mLocalIpAddresses.clear();
-	QList<QHostAddress> localAddresses = QNetworkInterface::allAddresses();
-	for (int i = 0; i < localAddresses.size(); i++) {
-		if (localAddresses.at(i).toIPv4Address()) {
-			mLocalIpAddresses << localAddresses.at(i);
-		}
-	}
+	
+	checkLocalIpAddresses();
+
 	mBroadcasting = false;
 }
 
@@ -1094,15 +1091,28 @@ void DkLANUdpSocket::readBroadcast() {
 	}
 }
 
-bool DkLANUdpSocket::isLocalHostAddress(const QHostAddress &address) {
-	foreach (QHostAddress localAddress, mLocalIpAddresses) {
-		if (address.toIPv4Address() == localAddress.toIPv4Address() )
+bool DkLANUdpSocket::isLocalHostAddress(const QHostAddress & address) {
+	if (mLocalIpAddresses.empty())
+		checkLocalIpAddresses();
+	foreach(QHostAddress localAddress, mLocalIpAddresses) {
+		//qDebug() << "comparing addresses: " << localAddress << " or " << address.toIPv4Address() << " vs " << localAddress.toIPv4Address() << (address.toIPv4Address() == localAddress.toIPv4Address());
+		if (address.toIPv4Address() == localAddress.toIPv4Address()) {
 			return true;
+		}
 	}
 	return false;
 }
 
-
+void DkLANUdpSocket::checkLocalIpAddresses() {
+	mLocalIpAddresses.clear();
+	QList<QHostAddress> localAddresses = QNetworkInterface::allAddresses();
+	for (int i = 0; i < localAddresses.size(); i++) {
+		if (localAddresses.at(i).toIPv4Address()) {
+			//qDebug() << "adding local address:" << localAddresses.at(i);
+			mLocalIpAddresses << localAddresses.at(i);
+		}
+	}
+}
 // DkPeer --------------------------------------------------------------------
 
 //DkPeer::DkPeer(QObject* parent) : QObject(parent) {

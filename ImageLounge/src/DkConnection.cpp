@@ -67,11 +67,14 @@ void DkConnection::sendStartSynchronizeMessage() {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << quint16(mSynchronizedPeersServerPorts.size());
-	for (int i=0; i < mSynchronizedPeersServerPorts.size();i++)
+	for (int i = 0; i < mSynchronizedPeersServerPorts.size(); i++) {
+		qDebug() << "mSynchronizedPeersServerPorts: " << mSynchronizedPeersServerPorts[i];
 		ds << mSynchronizedPeersServerPorts[i];
+	}
 	//QByteArray data = "SYNCHRONIZE" + SeparatorToken + QByteArray::number(synchronize.size()) + SeparatorToken + synchronize;
 	QByteArray data = "STARTSYNCHRONIZE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
+	qDebug() << "sending startsynchronize:" << data;
 	if (write(data) == data.size())
 		mIsSynchronizeMessageSent = true;
 }
@@ -164,13 +167,13 @@ bool DkConnection::readProtocolHeader() {
 	QByteArray goodbyeBA = QByteArray("GOODBYE").append(SeparatorToken);
 
 	if (mBuffer == greetingBA) {
-		qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "Greeting received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Greeting;
 	} else if (mBuffer == synchronizeBA) {
-		qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = startSynchronize;
 	} else if (mBuffer == disableSynchronizeBA) {
-		//qDebug() << "Disable synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "StopSynchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = stopSynchronize;
 	} else if (mBuffer == newtitleBA) {
 		//qDebug() << "New Title received from:" << this->peerAddress() << ":" << this->peerPort();
@@ -188,7 +191,8 @@ bool DkConnection::readProtocolHeader() {
 		//qDebug() << "Goodbye received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = GoodBye;
 	} else {
-		//qDebug() << "Undefined received from:" << this->peerAddress() << ":" << this->peerPort();
+		qDebug() << QString(mBuffer);
+		qDebug() << "Undefined received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = Undefined;
 		//abort();
 		//return false;
@@ -213,8 +217,9 @@ int DkConnection::readDataIntoBuffer(int maxSize) {
 
 	while (bytesAvailable() > 0 && mBuffer.size() < maxSize) {
 		mBuffer.append(read(1));
-		if (mBuffer.endsWith(SeparatorToken))
+		if (mBuffer.endsWith(SeparatorToken)) {
 			break;
+		}
 	}
 	return mBuffer.size() - numBytesBeforeRead;
 }
@@ -349,7 +354,7 @@ void DkConnection::checkState() {
 	}
 
 	if (mCurrentDataType == GoodBye) {
-		qDebug() << "received GoodBye";
+		//qDebug() << "received GoodBye from " << peerAddress() << ":" << peerPort();
 		emit connectionGoodBye(this);
 		mCurrentDataType = Undefined;
 		mNumBytesForCurrentDataType = 0;
@@ -362,7 +367,8 @@ void DkConnection::checkState() {
 void DkConnection::readWhileBytesAvailable() {
 	do {
 		if (mCurrentDataType == Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();
@@ -721,7 +727,8 @@ void DkLANConnection::readWhileBytesAvailable() {
 	//qDebug() << "DKLANConnection:" << __FUNCTION__ << " line:" << __LINE__;
 	do {
 		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();
@@ -867,7 +874,8 @@ void DkRCConnection::readWhileBytesAvailable() {
 	//qDebug() << __FUNCTION__ << " " << __LINE__;
 	do {
 		if (mCurrentDataType == DkConnection::Undefined && mCurrentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRCConnection::Undefined) {
-			readDataIntoBuffer();
+			if (readDataIntoBuffer() <= 0)
+				return;
 			if (!readProtocolHeader())
 				return;
 			checkState();

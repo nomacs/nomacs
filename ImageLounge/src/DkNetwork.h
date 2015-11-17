@@ -233,7 +233,7 @@ class DkLANClientManager : public DkClientManager {
 	public slots:
 		void sendTitle(const QString& newTitle);
 		virtual void synchronizeWithServerPort(quint16) {}; // dummy
-		void stopSynchronizeWith(quint16 peerId = -1);
+		void stopSynchronizeWith(quint16 peerId = USHRT_MAX);
 		void startServer(bool flag);
 		void sendNewImage(QImage image, const QString& title);
 		void synchronizeWith(quint16 peerId);
@@ -357,6 +357,7 @@ class DkLANUdpSocket : public QUdpSocket {
 
 	private:
 		bool isLocalHostAddress(const QHostAddress & address);
+		void checkLocalIpAddresses();
 		quint16 mStartPort;
 		quint16 mEndPort;
 		quint16 mServerPort;
