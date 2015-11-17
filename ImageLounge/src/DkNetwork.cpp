@@ -1546,8 +1546,7 @@ bool DkInstallUpdater::updateNomacs() const {
 	QStringList args;
 	args << "--updater";
 
-	QProcess process;
-	return process.startDetached(updater.absoluteFilePath(), args);
+	return QProcess::startDetached(updater.absoluteFilePath(), args);
 }
 
 // DkUpdater  --------------------------------------------------------------------
