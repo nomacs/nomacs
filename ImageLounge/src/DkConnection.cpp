@@ -173,7 +173,7 @@ bool DkConnection::readProtocolHeader() {
 		//qDebug() << "Synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = startSynchronize;
 	} else if (mBuffer == disableSynchronizeBA) {
-		//qDebug() << "Disable synchronize received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "StopSynchronize received from:" << this->peerAddress() << ":" << this->peerPort();
 		mCurrentDataType = stopSynchronize;
 	} else if (mBuffer == newtitleBA) {
 		//qDebug() << "New Title received from:" << this->peerAddress() << ":" << this->peerPort();
@@ -354,7 +354,7 @@ void DkConnection::checkState() {
 	}
 
 	if (mCurrentDataType == GoodBye) {
-		qDebug() << "received GoodBye";
+		//qDebug() << "received GoodBye from " << peerAddress() << ":" << peerPort();
 		emit connectionGoodBye(this);
 		mCurrentDataType = Undefined;
 		mNumBytesForCurrentDataType = 0;
