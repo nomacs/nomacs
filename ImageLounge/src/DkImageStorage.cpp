@@ -918,47 +918,54 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 	ssize = src.size();
 	dsize = dst.size();
 
-	mapx = cv::Mat( dsize.height, dsize.width, CV_32F );
-	mapy = cv::Mat( dsize.height, dsize.width, CV_32F );
+	mapx = cv::Mat(dsize.height, dsize.width, CV_32F);
+	mapy = cv::Mat(dsize.height, dsize.width, CV_32F);
+
+	float xDist = dst.cols - center.x;
+	float yDist = dst.rows - center.y;
+
+	double radius = std::sqrt(xDist*xDist + yDist*yDist);
+
+	scale = src.cols / std::log(radius / scaleLog + 1.0);
 
 	int x, y;
 	cv::Mat bufx, bufy, bufp, bufa;
-	double ascale = ssize.height/(2*CV_PI);
-	cv::AutoBuffer<float> _buf(4*dsize.width);
+	double ascale = ssize.height / (2 * CV_PI);
+	cv::AutoBuffer<float> _buf(4 * dsize.width);
 	float* buf = _buf;
 
-	bufx = cv::Mat( 1, dsize.width, CV_32F, buf );
-	bufy = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width );
-	bufp = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*2 );
-	bufa = cv::Mat( 1, dsize.width, CV_32F, buf + dsize.width*3 );
+	bufx = cv::Mat(1, dsize.width, CV_32F, buf);
+	bufy = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width);
+	bufp = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 2);
+	bufa = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 3);
 
-	for( x = 0; x < dsize.width; x++ )
+	for (x = 0; x < dsize.width; x++)
 		bufx.ptr<float>()[x] = (float)x - center.x;
 
-	for( y = 0; y < dsize.height; y++ ) {
+	for (y = 0; y < dsize.height; y++) {
 		float* mx = mapx.ptr<float>(y);
 		float* my = mapy.ptr<float>(y);
 
-		for( x = 0; x < dsize.width; x++ )
+		for (x = 0; x < dsize.width; x++)
 			bufy.ptr<float>()[x] = (float)y - center.y;
 
 		cv::cartToPolar(bufx, bufy, bufp, bufa);
 
-		for( x = 0; x < dsize.width; x++ ) {
+		for (x = 0; x < dsize.width; x++) {
 			bufp.ptr<float>()[x] /= (float)scaleLog;
 			bufp.ptr<float>()[x] += 1.0f;
 		}
 
 		cv::log(bufp, bufp);
 
-		for( x = 0; x < dsize.width; x++ ) {
-			double rho = bufp.ptr<float>()[x]*scale;
+		for (x = 0; x < dsize.width; x++) {
+			double rho = bufp.ptr<float>()[x] * scale;
 			double phi = bufa.ptr<float>()[x] + angle;
 
 			if (phi < 0)
-				phi += 2*CV_PI;
-			else if (phi > 2*CV_PI)
-				phi -= 2*CV_PI;
+				phi += 2 * CV_PI;
+			else if (phi > 2 * CV_PI)
+				phi -= 2 * CV_PI;
 
 			phi *= ascale;
 
@@ -969,7 +976,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 		}
 	}
 
-	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, 0);
+	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
 }
 
 void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert /* = false */) {
