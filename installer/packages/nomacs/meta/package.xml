@@ -5,6 +5,7 @@
     <Version>3.0.0-3</Version>
     <ReleaseDate>2015-09-29</ReleaseDate>
     <Script>installscript.qs</Script>
+	<RequiresAdminRights>true</RequiresAdminRights>
 	<Licenses>
         <License name="GNU General Public License" file="license.txt" />
     </Licenses>

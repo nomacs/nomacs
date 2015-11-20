@@ -2536,11 +2536,13 @@ QString DkFileInfo::getFilePath() const {
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	QFileInfo fInfo(fileInfo.getFilePath());
-	if (fInfo.isDir())
-		setText(fInfo.absoluteFilePath());
-	else
-		setText(fInfo.fileName());
+	// we don't use the file labels anymore
+	// + isDir() might hang - if we try to get an unavailable network resource on windows
+	//QFileInfo fInfo(fileInfo.getFilePath());
+	//if (fInfo.isDir())
+		setText(fileInfo.getFilePath());
+	//else
+	//	setText(fInfo.fileName());
 
 	this->fileInfo = fileInfo;
 	setObjectName("DkFileLabel");
