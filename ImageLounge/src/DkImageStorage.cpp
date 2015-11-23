@@ -910,7 +910,7 @@ void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTa
 	qDebug() << "gamma computation takes: " << dt.getTotal();
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int) {
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale) {
 
 	cv::Mat mapx, mapy;
 
@@ -926,7 +926,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 
 	double radius = std::sqrt(xDist*xDist + yDist*yDist);
 
-	scale = src.cols / std::log(radius / scaleLog + 1.0);
+	scale *= src.cols / std::log(radius / scaleLog + 1.0);
 
 	int x, y;
 	cv::Mat bufx, bufy, bufp, bufa;
@@ -979,7 +979,7 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, do
 	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
 }
 
-void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert /* = false */) {
+void DkImage::tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bool invert /* = false */) {
 
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
@@ -990,8 +990,8 @@ void DkImage::tinyPlanet(QImage& img, double scaleLog, double scale, double angl
 
 	cv::Mat mImg = DkImage::qImage2Mat(img);
 
-	qDebug() << "scale log: " << scaleLog << " scale: " << scale << " inverted: " << invert;
-	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, scale, angle, CV_WARP_INVERSE_MAP+CV_WARP_FILL_OUTLIERS);
+	qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
+	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, angle);
 
 	img = DkImage::mat2QImage(mImg);
 }

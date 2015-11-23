@@ -737,7 +737,6 @@ public:
 	QImage getImage();
 
 public slots:
-	void on_scaleSlider_valueChanged(int i);
 	void on_scaleLogSlider_valueChanged(int i);
 	void on_angleSlider_valueChanged(int i);
 	void on_invertBox_toggled(bool t);
@@ -746,7 +745,7 @@ public slots:
 	void computePreview();
 	void updateImageSlot(const QImage&);
 	void reject();
-	QImage computeTinyPlanet(const QImage& img, float scaleLog, float scale, double angle, QSize s);
+	QImage computeTinyPlanet(const QImage& img, float scaleLog, double angle, QSize s);
 	void tinyPlanetFinished();
 
 signals:
@@ -761,9 +760,8 @@ protected:
 	QLabel* mImgPreview = 0;
 	QLabel* mPreviewLabel = 0;
 	QDialogButtonBox* mButtons = 0;
-	QFutureWatcher<QImage> mUnsharpWatcher;
+	QFutureWatcher<QImage> mTinyPlanetWatcher;
 
-	DkSlider* mScaleSlider = 0;
 	DkSlider* mScaleLogSlider = 0;
 	DkSlider* mAngleSlider = 0;
 	QCheckBox* mInvertBox = 0;

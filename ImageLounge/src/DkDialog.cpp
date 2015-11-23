@@ -3016,7 +3016,7 @@ DkTinyPlanetDialog::DkTinyPlanetDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 	setAcceptDrops(true);
 
 	connect(this, SIGNAL(updateImage(const QImage&)), this, SLOT(updateImageSlot(const QImage&)));
-	connect(&mUnsharpWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
+	connect(&mTinyPlanetWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
 	QMetaObject::connectSlotsByName(this);
 }
 
@@ -3053,12 +3053,6 @@ void DkTinyPlanetDialog::createLayout() {
 
 	//darkenSlider->hide();
 
-	mScaleSlider = new DkSlider(tr("Scale"), this);
-	mScaleSlider->setObjectName("scaleSlider");
-	mScaleSlider->setMinimum(1);
-	mScaleSlider->setMaximum(3000);
-	mScaleSlider->setValue(300);
-
 	mAngleSlider = new DkSlider(tr("Angle"), this);
 	mAngleSlider->setObjectName("angleSlider");
 	mAngleSlider->setValue(0);
@@ -3071,7 +3065,6 @@ void DkTinyPlanetDialog::createLayout() {
 	QWidget* sliderWidget = new QWidget(this);
 	QVBoxLayout* sliderLayout = new QVBoxLayout(sliderWidget);
 	sliderLayout->addWidget(mScaleLogSlider);
-	sliderLayout->addWidget(mScaleSlider);
 	sliderLayout->addWidget(mAngleSlider);
 	sliderLayout->addWidget(mInvertBox);
 
@@ -3106,15 +3099,9 @@ void DkTinyPlanetDialog::createLayout() {
 	layout->addWidget(mButtons);
 }
 
-void DkTinyPlanetDialog::on_scaleSlider_valueChanged(int) {
-
-	computePreview();
-}
-
 void DkTinyPlanetDialog::on_scaleLogSlider_valueChanged(int) {
 
-	mScaleSlider->setValue(std::max(mScaleLogSlider->value()*10, 200));
-	//computePreview();
+	computePreview();
 }
 
 void DkTinyPlanetDialog::on_angleSlider_valueChanged(int) {
@@ -3145,7 +3132,7 @@ QImage DkTinyPlanetDialog::getImage() {
 	if (mInvertBox->isChecked())
 		slInv *= -1.0f;
 
-	return computeTinyPlanet(mImg, slInv, mScaleSlider->value()*f, mAngleSlider->value()*DK_DEG2RAD, s);
+	return computeTinyPlanet(mImg, slInv, mAngleSlider->value()*DK_DEG2RAD, s);
 }
 
 void DkTinyPlanetDialog::reject() {
@@ -3174,20 +3161,18 @@ void DkTinyPlanetDialog::computePreview() {
 	if (mInvertBox->isChecked())
 		slVal *= -1;
 
-	QFuture<QImage> future = QtConcurrent::run(this, 
+	mTinyPlanetWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkTinyPlanetDialog::computeTinyPlanet,
 		rImg,
 		slVal,
-		mScaleSlider->value(),
 		mAngleSlider->value()*DK_DEG2RAD,
-		QSize(mSide, mSide)); 
-	mUnsharpWatcher.setFuture(future);
+		QSize(mSide, mSide))); 
 	mProcessing = true;
 }
 
 void DkTinyPlanetDialog::tinyPlanetFinished() {
 
-	QImage img = mUnsharpWatcher.result();
+	QImage img = mTinyPlanetWatcher.result();
 	img = img.scaled(mPreviewLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 
@@ -3195,13 +3180,13 @@ void DkTinyPlanetDialog::tinyPlanetFinished() {
 	mProcessing = false;
 }
 
-QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage& img, float scaleLog, float scale, double angle, QSize s) {
+QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage& img, float scaleLog, double angle, QSize s) {
 
 	bool inverted = scaleLog < 0;
 	scaleLog = fabs(scaleLog);
 
 	QImage imgC = img.copy();
-	DkImage::tinyPlanet(imgC, (double)scaleLog, (double) scale, angle, s, inverted);
+	DkImage::tinyPlanet(imgC, (double)scaleLog, angle, s, inverted);
 	return imgC;
 }
 

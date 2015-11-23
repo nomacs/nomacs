@@ -94,8 +94,8 @@ public:
 	static void mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable);
 	static void gammaToLinear(cv::Mat& img);
 	static void linearToGamma(cv::Mat& img);
-	static void logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int flags);
-	static void tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert = false);
+	static void logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale = 1.0);
+	static void tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bool invert = false);
 #endif
 
 	static QString getBufferSize(const QImage& img);
