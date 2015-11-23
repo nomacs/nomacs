@@ -378,23 +378,6 @@ public:
 	static std::wstring qStringToStdWString(const QString &str);
 	static QString stdWStringToQString(const std::wstring &str);
 
-#ifdef WIN32
-	//static LPCWSTR stringToWchar(std::string str) {
-	//	wchar_t *wChar = new wchar_t[(int)str.length()+1];
-	//	size_t convertedChars = 0;
-	//	mbstowcs_s(&convertedChars, wChar, str.length()+1, str.c_str(), _TRUNCATE);
-	//	//mbstowcs(wChar, str.c_str(), str.length()+1);
-
-	//	return (LPCWSTR)wChar;
-	//};
-#endif
-
-#ifdef Q_WS_X11
-	static const char* stringToWchar(std::string str) {
-		return str.c_str();
-	};
-#endif
-
 	static std::string stringTrim(const std::string str) {
 
 
