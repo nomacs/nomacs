@@ -1142,14 +1142,13 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 
 	DkTimer dt;
 	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
+	
 
 	if (!tiff)
 		return imgLoaded;
 
 	uint32 width = 0;
 	uint32 height = 0;
-	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
-	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
 	// go to current directory
 	for (int idx = 1; idx < pageIdx; idx++) {
@@ -1157,6 +1156,9 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 		if (!TIFFReadDirectory(tiff))
 			return false;
 	}
+
+	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
 	// init the qImage
 	mImg = QImage(width, height, QImage::Format_ARGB32);
