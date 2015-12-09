@@ -1064,7 +1064,7 @@ bool DkImage::addToImage(QImage& img, unsigned char val) {
 
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 
-		for (int cIdx = 0; cIdx < bpl; ) {
+		for (int cIdx = 0; cIdx < bpl; cIdx++) {
 
 			// add it & we're done
 			if (*ptr <= 255-val) {

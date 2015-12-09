@@ -1775,6 +1775,11 @@ QString DkZipContainer::decodeImageFile(const QString& encodedFileInfo) {
 	QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
 	tmp = tmp.replace(mZipMarker, "/");
 	tmp = tmp.replace("//", "/");
+
+	// diem: this fixes an issue with images that are in a zip's root folder
+	if (tmp.startsWith("/"))
+		tmp = tmp.right(tmp.length()-1);
+
 	return tmp;
 }
 
