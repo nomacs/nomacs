@@ -1387,7 +1387,7 @@ QVector<DkPackage> DkXmlUpdateChecker::updatesAvailable(QXmlStreamReader& localX
 	}
 
 	if (localPackages.empty() || remotePackages.empty())
-		qDebug() << "WARNING: I could not find any packages local (" << localPackages.size() << ") remote (" << remotePackages.size() << ")";
+		qDebug() << "WARNING: I could not find any packages. local (" << localPackages.size() << ") remote (" << remotePackages.size() << ")";
 
 	return updatePackages;
 }

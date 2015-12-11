@@ -582,18 +582,28 @@ bool DkBall::move(DkPongPlayer& player1, DkPongPlayer& player2) {
 	}
 
 	double nAngle = dir.angle() + CV_PI*0.5;//DkMath::normAngleRad(dir.angle()+CV_PI*0.5, 0, CV_PI*0.5);
-	double magic = (double)qrand() / RAND_MAX * 0.1 - 0.05;
+	double magic = (double)qrand() / RAND_MAX * 0.5 - 0.25;
 
 	// player collision
 	if (player1.rect().intersects(mRect) && dir.x < 0) {
 
 		dir.rotate((nAngle*2)+magic);
+		
+		// change the angle if the ball becomes horizontal
+		if (DkMath::distAngle(dir.angle(), 0.0) > 0.01)
+			dir.rotate(0.7);
+
 		double mod = (player1.pos() != INT_MAX) ? (player1.rect().center().y() - player1.pos())/(float)mS->field().height() : 0;
 		dir.y += (float)mod*mS->unit();
 	}
 	else if (player2.rect().intersects(mRect) && dir.x > 0) {
 
 		dir.rotate((nAngle*2)+magic);
+
+		// change the angle if the ball becomes horizontal
+		if (DkMath::distAngle(dir.angle(), 0.0) > 0.01)
+			dir.rotate(0.7);
+
 		double mod = (player2.pos() != INT_MAX) ? (player2.rect().center().y() - player2.pos())/(float)mS->field().height() : 0;
 		dir.y += (float)mod*mS->unit();
 	}
