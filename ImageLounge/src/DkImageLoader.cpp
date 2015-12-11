@@ -512,6 +512,17 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 	}
 
+	if (mCurrentImage && (newFileIdx < 0 || newFileIdx >= mImages.size()) && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
+
+		// load the zip again and go on from there
+		setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(mCurrentImage->getZipData()->getZipFilePath())));
+
+		if (newFileIdx >= mImages.size())
+			newFileIdx -= mImages.size() - 1;
+
+		return getSkippedImage(newFileIdx);
+	}
+
 	// this should never happen!
 	if (mImages.empty()) {
 		qDebug() << "file list is empty, where it should not be";
@@ -522,7 +533,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	if (DkSettings::global.loop) {
 		newFileIdx %= mImages.size();
 
-		while (newFileIdx < 0)
+		while (newFileIdx < 0)	// should be hit once
 			newFileIdx = mImages.size() + newFileIdx;
 
 	}
