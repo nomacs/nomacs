@@ -50,12 +50,14 @@
 #include <QDir>
 #include <QTextStream>
 #include <QDesktopServices>
+#include <QCommandLineParser>
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkPong.h"
+#include "DkUtils.h"
 
 #include <iostream>
 #include <cassert>
@@ -81,7 +83,9 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
-	
+	QCoreApplication::setApplicationVersion("da fuck");
+	nmc::DkUtils::registerFileVersion();
+
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
 #if !defined(Q_WS_MAC) && !defined(QT5)
@@ -90,8 +94,24 @@ int main(int argc, char *argv[]) {
 //	if (mode != nmc::DkSettings::mode_frameless)
 //		QApplication::setGraphicsSystem("raster");
 #endif
-
+	
 	QApplication a(argc, (char**)argv);
+
+	// CMD parser --------------------------------------------------------------------
+	QCommandLineParser parser;
+
+	//parser.setApplicationDescription("Test helper");
+	parser.addHelpOption();
+	parser.addVersionOption();
+	parser.addPositionalArgument("image", QObject::tr("An input image."));
+
+	// fullscreen (-f)
+	QCommandLineOption fullScreenOpt("f", QObject::tr("Start in fullscreen."));
+	parser.addOption(fullScreenOpt);
+
+	parser.process(a);
+	// CMD parser --------------------------------------------------------------------
+
 	QStringList args = a.arguments();
 	nmc::DkSettings::initFileFilters();
 	QSettings& settings = nmc::Settings::instance().getSettings();
@@ -169,7 +189,8 @@ int main(int argc, char *argv[]) {
 
 	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
 		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
-		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
+		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		||
+		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
 		qDebug() << "trying to enter fullscreen...";
 	}

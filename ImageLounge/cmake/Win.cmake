@@ -99,6 +99,7 @@ unset(OpenCV_CONFIG_PATH CACHE)
 unset(OpenCV_LIB_DIR_DBG CACHE)
 unset(OpenCV_LIB_DIR_OPT CACHE)
 unset(OpenCV_LIBRARY_DIRS CACHE)
+unset(OpenCV_DIR)
 # unset(OpenCV_DIR CACHE) # maa that always set it to default!
 
 if(ENABLE_OPENCV)

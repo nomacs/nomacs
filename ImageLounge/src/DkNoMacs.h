@@ -348,7 +348,6 @@ protected:
 	virtual void init();
 	
 	void loadStyleSheet();
-	void registerFileVersion();
 	virtual void createToolbar();
 	virtual void createActions();
 	virtual void createMenu();

@@ -50,6 +50,7 @@
 #include <QTranslator>
 #include <QUrl>
 #include <QStandardPaths>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -298,6 +299,61 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
+}
+
+void DkUtils::registerFileVersion() {
+
+#ifdef WIN32
+	// this function is based on code from:
+	// http://stackoverflow.com/questions/316626/how-do-i-read-from-a-version-resource-in-visual-c
+
+	QString version(NOMACS_VERSION);	// default version (we do not know the build)
+
+	try {
+		// get the filename of the executable containing the version resource
+		TCHAR szFilename[MAX_PATH + 1] = {0};
+		if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) {
+			DkFileException("Sorry, I can't read the module fileInfo name\n", __LINE__, __FILE__);
+		}
+
+		// allocate a block of memory for the version info
+		DWORD dummy;
+		DWORD dwSize = GetFileVersionInfoSize(szFilename, &dummy);
+		if (dwSize == 0) {
+			throw DkFileException("The version info size is zero\n", __LINE__, __FILE__);
+		}
+		std::vector<BYTE> bytes(dwSize);
+
+		if (bytes.empty())
+			throw DkFileException("The version info is empty\n", __LINE__, __FILE__);
+
+		// load the version info
+		if (!bytes.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &bytes[0])) {
+			throw DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
+		}
+
+		// get the name and version strings
+		UINT                uiVerLen = 0;
+		VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
+
+		if (!bytes.empty() && !VerQueryValue(&bytes[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
+			throw DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
+		}
+
+		// pFixedInfo contains a lot more information...
+		version = QString::number(HIWORD(pFixedInfo->dwFileVersionMS)) + "."
+			+ QString::number(LOWORD(pFixedInfo->dwFileVersionMS)) + "."
+			+ QString::number(HIWORD(pFixedInfo->dwFileVersionLS)) + "."
+			+ QString::number(LOWORD(pFixedInfo->dwFileVersionLS));
+
+	} catch (DkFileException dfe) {
+		qDebug() << QString::fromStdString(dfe.Msg());
+	}
+
+#else
+	QString version(NOMACS_VERSION);	// default version (we do not know the build)
+#endif
+	QApplication::setApplicationVersion(version);
 }
 
 

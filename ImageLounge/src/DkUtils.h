@@ -144,6 +144,7 @@ public:
 
 	static void addLanguages(QComboBox* langCombo, QStringList& languages);
 
+	static void registerFileVersion();
 
 	/**
 	 * Sleeps n ms.
