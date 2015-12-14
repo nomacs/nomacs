@@ -1558,8 +1558,8 @@ bool DkInstallUpdater::updateNomacs() const {
 
 #ifdef WIN32
 
-	// diem: 14.12.2015 - NOTE we need this win API command only to fix a qt installer bug
-	// hence after updating the installer we can safely fall back to the Qt cmd....
+	// diem: 14.12.2015 - NOTE we need this win API command only to fix a qt installer bug: https://bugreports.qt.io/browse/QTIFW-746
+	// hence after updating the installer (> 2.0.1) we can safely fall back to the Qt cmd....
 	std::wstring upath = DkUtils::qStringToStdWString(updater.absoluteFilePath());
 
 	qDebug() << "wooo I am updating...";
