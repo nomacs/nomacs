@@ -116,11 +116,15 @@ int main(int argc, char *argv[]) {
 	QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
 	parser.addOption(privateOpt);
 
-	// An option with a value
 	QCommandLineOption sourceDirOpt(QStringList() << "d" << "directory",
 		QObject::tr("Load all files of a <directory>."),
 		QObject::tr("directory"));
 	parser.addOption(sourceDirOpt);
+
+	QCommandLineOption tabOpt(QStringList() << "t" << "tab",
+		QObject::tr("Load <images> to tabs."),
+		QObject::tr("images"));
+	parser.addOption(tabOpt);
 
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
@@ -187,7 +191,14 @@ int main(int argc, char *argv[]) {
 	if (!parser.value(sourceDirOpt).isEmpty()) {
 		nmc::DkCentralWidget* cw = w->getTabWidget();
 		cw->loadDirToTab(parser.value(sourceDirOpt));
+	}
+	if (!parser.value(tabOpt).isEmpty()) {
+		nmc::DkCentralWidget* cw = w->getTabWidget();
 		
+		QStringList tabPaths = parser.values(tabOpt);
+		
+		for (const QString& filePath : tabPaths)
+			cw->addTab(filePath);
 	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
