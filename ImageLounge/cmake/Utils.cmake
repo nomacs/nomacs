@@ -271,7 +271,8 @@ macro(NMC_FINDQT)
   unset(QT_QTMAIN_LIBRARY CACHE)
   
 	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC ON)
+	#set(CMAKE_AUTORCC ON)
+
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 	if(NOT QT_QMAKE_EXECUTABLE)
 		find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
@@ -288,6 +289,7 @@ macro(NMC_FINDQT)
 		message(FATAL_ERROR "Qt5Widgets not found. Check your QT_QMAKE_EXECUTABLE path and set it to the correct location")
 	endif()
 	add_definitions(-DQT5)
+	
 endmacro(NMC_FINDQT)
 
 # enables webp

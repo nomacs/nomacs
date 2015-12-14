@@ -56,15 +56,18 @@ namespace nmc {
 // nomacs defines
 class DkImageLoader;
 class DkViewPort;
+class DkPreferenceWidget;
 
 class DkTabInfo : public QObject {
 	Q_OBJECT
 
 public:
 
-	enum {
+	enum TabMode {
 		tab_single_image,
 		tab_thumb_preview,
+		tab_preferences,
+		
 		tab_recent_files,
 		tab_empty,
 
@@ -72,6 +75,7 @@ public:
 	};
 
 	DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1, QObject* parent = 0);
+	DkTabInfo(TabMode mode, int idx = -1, QObject* parent = 0);
 	~DkTabInfo();
 
 	bool operator==(const DkTabInfo& o) const;
@@ -154,17 +158,20 @@ public slots:
 	void showThumbView(bool show = true);
 	void showViewPort(bool show = true);
 	void showRecentFiles(bool show = true);
+	void showPreferences(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
 	void loadFile(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
+	void openPreferences();
 
 protected:
 	DkViewPort* mViewport = 0;
 	DkThumbScrollWidget* mThumbScrollWidget = 0;
 	DkRecentFilesWidget* mRecentFilesWidget = 0;
+	DkPreferenceWidget* mPreferenceWidget = 0;
 
 	QTabBar* mTabbar = 0;
 	QVector<QSharedPointer<DkTabInfo> > mTabInfos;
@@ -184,6 +191,7 @@ protected:
 	enum {
 		viewport_widget,
 		thumbs_widget,
+		preference_widget,
 
 		widget_end
 	};

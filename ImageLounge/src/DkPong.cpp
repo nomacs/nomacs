@@ -250,7 +250,7 @@ void DkScoreLabel::paintEvent(QPaintEvent* /*ev*/) {
 
 	QSize bSize(size());
 	bSize.setHeight(qRound(bSize.height() - mS->unit()*0.5));
-	buffer = buffer.scaled(bSize, Qt::KeepAspectRatio);
+	buffer = buffer.scaled(bSize, Qt::KeepAspectRatio, Qt::FastTransformation);
 
 	QRect r(buffer.rect());
 

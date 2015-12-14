@@ -191,6 +191,15 @@ void DkWidget::animateOpacityDown() {
 	mOpacityEffect->setOpacity(mOpacityEffect->opacity()-0.05);
 }
 
+// DkNamedWidget --------------------------------------------------------------------
+DkNamedWidget::DkNamedWidget(const QString& name, QWidget* parent) : DkWidget(parent) {
+	mName = name;
+}
+
+QString DkNamedWidget::name() const {
+	return mName;
+}
+
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
