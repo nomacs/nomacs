@@ -910,24 +910,31 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 	qDebug() << "nomacs registered ============================";
 
 	if (showDefaultApps) {
-		IApplicationActivationManager* manager = 0;
-		CoCreateInstance(CLSID_ApplicationActivationManager,
-			0,
-			CLSCTX_LOCAL_SERVER,
-			IID_IApplicationActivationManager,
-			(LPVOID*)&manager);
-
-		if (manager) {
-			DWORD pid = GetCurrentProcessId();
-			manager->ActivateApplication(
-				L"windows.immersivecontrolpanel_cw5n1h2txyewy"
-				L"!microsoft.windows.immersivecontrolpanel",
-				L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
-			qDebug() << "launching application registration...";
-		}
+		showDefaultSoftware();
 	}
 #endif
 
+}
+
+void DkFileFilterHandling::showDefaultSoftware() const {
+
+#ifdef WIN32
+	IApplicationActivationManager* manager = 0;
+	CoCreateInstance(CLSID_ApplicationActivationManager,
+		0,
+		CLSCTX_LOCAL_SERVER,
+		IID_IApplicationActivationManager,
+		(LPVOID*)&manager);
+
+	if (manager) {
+		DWORD pid = GetCurrentProcessId();
+		manager->ActivateApplication(
+			L"windows.immersivecontrolpanel_cw5n1h2txyewy"
+			L"!microsoft.windows.immersivecontrolpanel",
+			L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
+		qDebug() << "launching application registration...";
+	}
+#endif
 }
 
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {

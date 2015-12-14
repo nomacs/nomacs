@@ -1270,9 +1270,17 @@ void DkFileFilterSettingWidget::createLayout() {
 	filterTableView->resizeRowsToContents();
 	filterTableView->setWordWrap(false);
 	
+	QPushButton* openDefault = new QPushButton(tr("Set as Default Viewer"), this);
+	connect(openDefault, SIGNAL(clicked()), this, SLOT(openDefault()));
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(filterTableView);
+	
+#ifdef WIN32
+	layout->addWidget(openDefault);
+#endif
+
 	setLayout(layout);
 	//show();
 }
@@ -1316,6 +1324,12 @@ QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter,
 void DkFileFilterSettingWidget::itemChanged(QStandardItem*) {
 
 	saveSettings = true;
+}
+
+void DkFileFilterSettingWidget::openDefault() const {
+
+	DkFileFilterHandling fh;
+	fh.showDefaultSoftware();
 }
 
 void DkFileFilterSettingWidget::writeSettings() {

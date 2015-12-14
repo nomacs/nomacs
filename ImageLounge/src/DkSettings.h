@@ -60,6 +60,7 @@ public:
 	DkFileFilterHandling() {};
 	void registerNomacs(bool showDefaultApps = false);
 	void registerFileType(const QString& filterString, const QString& attribute, bool add);
+	void showDefaultSoftware() const;
 
 protected:
 	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);

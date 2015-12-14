@@ -242,6 +242,7 @@ public:
 
 public slots:
 	void itemChanged(QStandardItem* item);
+	void openDefault() const;
 
 protected:
 	void createLayout();
