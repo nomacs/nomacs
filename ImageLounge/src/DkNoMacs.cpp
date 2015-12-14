@@ -2029,9 +2029,6 @@ void DkNoMacs::newInstance(const QString& filePath) {
 		args.append(getTabWidget()->getCurrentFilePath());
 	else
 		args.append(filePath);
-
-	if (objectName() == "DkNoMacsFrameless")
-		args.append("1");	
 	
 	QProcess::startDetached(exe, args);
 }
@@ -3129,7 +3126,11 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
 	vp->setMainGeometry(mDesktop->screenGeometry());
 	
-	//this->setGeometry(mDesktop->screenGeometry());
+	setGeometry(screenRects);
+
+
+	//vp->setMainGeometry(mDesktop->screenGeometry());
+	//setGeometry(mDesktop->screenGeometry());
 
 }
 
