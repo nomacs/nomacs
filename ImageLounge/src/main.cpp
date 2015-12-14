@@ -54,6 +54,7 @@
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
+#include "DkCentralWidget.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkPong.h"
@@ -106,13 +107,24 @@ int main(int argc, char *argv[]) {
 	parser.addPositionalArgument("image", QObject::tr("An input image."));
 
 	// fullscreen (-f)
-	QCommandLineOption fullScreenOpt("f", QObject::tr("Start in fullscreen."));
+	QCommandLineOption fullScreenOpt(QStringList() << "f" << "fullscreen", QObject::tr("Start in fullscreen."));
 	parser.addOption(fullScreenOpt);
+
+	QCommandLineOption pongOpt(QStringList() << "x" << "pong", QObject::tr("Start Pong."));
+	parser.addOption(pongOpt);
+
+	QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
+	parser.addOption(privateOpt);
+
+	// An option with a value
+	QCommandLineOption sourceDirOpt(QStringList() << "d" << "directory",
+		QObject::tr("Load all files of a <directory>."),
+		QObject::tr("directory"));
+	parser.addOption(sourceDirOpt);
 
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
 
-	QStringList args = a.arguments();
 	nmc::DkSettings::initFileFilters();
 	QSettings& settings = nmc::Settings::instance().getSettings();
 	
@@ -126,15 +138,6 @@ int main(int argc, char *argv[]) {
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
 
-#ifdef _DEBUG
-	// DEBUG --------------------------------------------------------------------
-	qDebug() << "input arguments:";
-	for (int idx = 0; idx < args.size(); idx++)
-		qDebug() << args[idx];
-	qDebug() << "\n";
-	// DEBUG --------------------------------------------------------------------
-#endif
-
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	
@@ -147,7 +150,7 @@ int main(int argc, char *argv[]) {
 	a.installTranslator(&translatorQt);
 
 	// show pink icons if nomacs is in private mode
-	if(args.size() > 1 && args[1] == "-p") {
+	if(parser.isSet(privateOpt)) {
 		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
 		nmc::DkSettings::app.privateMode = true;
 	}
@@ -163,7 +166,7 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
-	else if (args.size() > 1 && args[1] == "-pong") {
+	else if (parser.isSet(pongOpt)) {
 		pw = new nmc::DkPong();
 		int rVal = a.exec();
 		return rVal;
@@ -176,14 +179,16 @@ int main(int argc, char *argv[]) {
 
 	qDebug() << "Initialization takes: " << dt.getTotal();
 
-	// TODO: time to switch -> qt 5 has a command line parser
-	if (args.size() > 1 && args[1] == "-p") {
-	}
-	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
-		w->loadFile(args[args.size()-1]);	// update folder + be silent
+	if (!parser.positionalArguments().empty()) {
+		w->loadFile(parser.positionalArguments()[0]);	// update folder + be silent
 	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
+	if (!parser.value(sourceDirOpt).isEmpty()) {
+		nmc::DkCentralWidget* cw = w->getTabWidget();
+		cw->loadDirToTab(parser.value(sourceDirOpt));
+		
+	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 
@@ -204,15 +209,10 @@ int main(int argc, char *argv[]) {
 
 	int rVal = a.exec();
 
-#if QT_VERSION < 0x050000
 	if (w)
 		delete w;	// we need delete so that settings are saved (from destructors)
 	if (pw)
 		delete pw;
-#endif
-
-	if (w)
-		delete w;	// we need delete so that settings are saved (from destructors)
 
 	return rVal;
 }
