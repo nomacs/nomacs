@@ -1083,16 +1083,13 @@ void DkNoMacs::setFrameless(bool) {
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
 
+	if (objectName() != "DkNoMacsFrameless")
+		args << "-m" << "frameless";
+	else
+		args << "-m" << "default";
+
 	if (getTabWidget()->getCurrentImage())
 		args.append(getTabWidget()->getCurrentImage()->filePath());
-	
-	if (objectName() != "DkNoMacsFrameless") {
-		DkSettings::app.appMode = DkSettings::mode_frameless;
-        //args.append("-graphicssystem");
-        //args.append("native");
-    } else {
-		DkSettings::app.appMode = DkSettings::mode_default;
-    }
 	
 	DkSettings::save();
 	
@@ -2069,13 +2066,18 @@ void DkNoMacs::setContrast(bool contrast) {
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
+
+	if (contrast)
+		args << "-m" << "pseudocolor";
+	else
+		args << "-m" << "default";
 	args.append(getTabWidget()->getCurrentFilePath());
 	
-	if (contrast)
-		DkSettings::app.appMode = DkSettings::mode_contrast;
-	else
-		DkSettings::app.appMode = DkSettings::mode_default;
-
+	//if (contrast)
+	//	DkSettings::app.appMode = DkSettings::mode_contrast;
+	//else
+	//	DkSettings::app.appMode = DkSettings::mode_default;
+	
 	bool started = mProcess.startDetached(exe, args);
 
 	// close me if the new instance started

@@ -116,6 +116,11 @@ int main(int argc, char *argv[]) {
 	QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
 	parser.addOption(privateOpt);
 
+	QCommandLineOption modeOpt(QStringList() << "m" << "mode",
+		QObject::tr("Set the viewing mode <mode>."),
+		QObject::tr("default | frameless | pseudocolor"));
+	parser.addOption(modeOpt);
+
 	QCommandLineOption sourceDirOpt(QStringList() << "d" << "directory",
 		QObject::tr("Load all files of a <directory>."),
 		QObject::tr("directory"));
@@ -159,6 +164,21 @@ int main(int argc, char *argv[]) {
 		nmc::DkSettings::app.privateMode = true;
 	}
 
+	if (parser.isSet(modeOpt)) {
+		QString pm = parser.value(modeOpt);// .trimmed();
+
+		if (pm == "default")
+			mode = nmc::DkSettings::mode_default;
+		else if (pm == "frameless")
+			mode = nmc::DkSettings::mode_frameless;
+		else if (pm == "pseudocolor")
+			mode = nmc::DkSettings::mode_contrast;
+		else
+			qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
+	}
+
+	qDebug() << "mode: " << mode;
+
 	nmc::DkTimer dt;
 
 	// initialize nomacs
@@ -188,10 +208,14 @@ int main(int argc, char *argv[]) {
 	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
+	
+	// load directory preview
 	if (!parser.value(sourceDirOpt).isEmpty()) {
 		nmc::DkCentralWidget* cw = w->getTabWidget();
 		cw->loadDirToTab(parser.value(sourceDirOpt));
 	}
+
+	// load to tabs
 	if (!parser.value(tabOpt).isEmpty()) {
 		nmc::DkCentralWidget* cw = w->getTabWidget();
 		
