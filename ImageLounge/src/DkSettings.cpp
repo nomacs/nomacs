@@ -195,6 +195,7 @@ void DkSettings::initFileFilters() {
 	app_p.rawFilters.append("Leaf Raw (*.mos)");
 	app_p.rawFilters.append("Pentax Raw (*.pef)");
 	app_p.rawFilters.append("Phase One (*.iiq)");
+	app_p.rawFilters.append("Fujifilm Raw (*.raf)");
 
 	app_p.openFilters += app_p.rawFilters;
 #endif
