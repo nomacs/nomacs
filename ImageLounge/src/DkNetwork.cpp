@@ -29,6 +29,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkControlWidget.h"	// needed for a connection
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTcpSocket>
@@ -60,6 +61,10 @@
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
+
+#ifdef WIN32
+#include <windows.h>
 #endif
 
 #pragma warning(pop)		// no warnings from includes - end
@@ -1551,12 +1556,28 @@ bool DkInstallUpdater::updateNomacs() const {
 		return false;
 	}
 
-	qDebug() << "wooo I am updating...";
+#ifdef WIN32
 
+	// diem: 14.12.2015 - NOTE we need this win API command only to fix a qt installer bug
+	// hence after updating the installer we can safely fall back to the Qt cmd....
+	std::wstring upath = DkUtils::qStringToStdWString(updater.absoluteFilePath());
+
+	qDebug() << "wooo I am updating...";
+	HINSTANCE h = ShellExecuteW( NULL, 
+		L"runas",  
+		upath.data(),  
+		L" --updater",     
+		NULL,                        // default dir 
+		SW_SHOWNORMAL  
+		); 
+
+	return h != NULL;
+#else
 	QStringList args;
 	args << "--updater";
 
 	return QProcess::startDetached(updater.absoluteFilePath(), args);
+#endif
 }
 
 // DkUpdater  --------------------------------------------------------------------
