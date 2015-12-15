@@ -2130,13 +2130,13 @@ void DkPrintPreviewDialog::scaleImage() {
 
 void DkPrintPreviewDialog::init() {
 	
-	if (!mPrintDialog)
-		mPrintDialog = new QPrintDialog(this);
-
-	// see http://doc.qt.io/qt-4.8/porting4.html#qprinter
-	if (!mPrinter)
-		mPrinter = mPrintDialog->printer();
-
+	if (!mPrinter) {
+#ifdef WIN32
+		mPrinter = new QPrinter(QPrinter::HighResolution);
+#else
+		mPrinter = new QPrinter;
+#endif
+	}
 	qDebug() << "printer is valid: " << mPrinter->isValid();
 	
 	mPreview = new DkPrintPreviewWidget(mPrinter, this);
@@ -2460,15 +2460,9 @@ void DkPrintPreviewDialog::pageSetup() {
 }
 
 void DkPrintPreviewDialog::print() {
-	
-	qDebug() << "starting print dialog";
 	if (!mPrintDialog)
 		mPrintDialog = new QPrintDialog(mPrinter, this);
-
-	qDebug() << "executing print dialog";
-	int answer = mPrintDialog->exec();
-	qDebug() << "print dialog executed, answer: " << answer;
-	if (answer == QDialog::Accepted) {
+	if (mPrintDialog->exec() == QDialog::Accepted) {
 		mPreview->print();
 		close();
 	}

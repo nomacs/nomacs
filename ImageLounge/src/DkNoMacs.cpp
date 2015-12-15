@@ -2457,12 +2457,12 @@ void DkNoMacs::performUpdate() {
 		//connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
 		connect(mUpdater, SIGNAL(downloadFinished(QString)), this, SLOT(startSetup(QString)));
 	}
-	mProgressDialog->setWindowModality(Qt::ApplicationModal);
+	//mProgressDialog->setWindowModality(Qt::ApplicationModal);
 
 	mProgressDialog->show();
 	//progressDialog->raise();
 	//progressDialog->activateWindow();
-	mProgressDialog->setWindowModality(Qt::NonModal);
+	//mProgressDialog->setWindowModality(Qt::NonModal);
 }
 
 void DkNoMacs::updateProgress(qint64 received, qint64 total) {
@@ -2505,12 +2505,12 @@ void DkNoMacs::updateTranslations() {
 		connect(mTranslationUpdater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgressTranslations(qint64, qint64)));
 		connect(mTranslationUpdater, SIGNAL(downloadFinished()), mProgressDialogTranslations, SLOT(close()));
 	}
-	mProgressDialogTranslations->setWindowModality(Qt::ApplicationModal);
+	//mProgressDialogTranslations->setWindowModality(Qt::ApplicationModal);
 
 	mProgressDialogTranslations->show();
 	//progressDialog->raise();
 	//progressDialog->activateWindow();
-	mProgressDialogTranslations->setWindowModality(Qt::NonModal);
+	//mProgressDialogTranslations->setWindowModality(Qt::NonModal);
 
 	mTranslationUpdater->checkForUpdates();
 }

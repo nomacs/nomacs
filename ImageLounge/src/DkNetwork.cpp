@@ -1825,6 +1825,7 @@ void DkTranslationUpdater::checkForUpdates() {
 }
 
 void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
+	
 	bool qtTranslation = false;
 	if (reply->url().toString().contains("qt_"))
 		qtTranslation = true;
@@ -1900,7 +1901,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 		qDebug() << "translation updated";
 	} else {
 		qDebug() << "no newer translations available";
-		if (!qtTranslation && !silent)
+		if (!silent)
 			emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
 	}
 	if (reply->isFinished() && mReplyQt->isFinished()) {
