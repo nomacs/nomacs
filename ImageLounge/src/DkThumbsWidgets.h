@@ -36,7 +36,6 @@
 #include <QPen>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QDir>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
@@ -76,7 +75,7 @@ public:
 
 	void setCurrentDx(float dx) {
 		scrollToCurrentImage = false;	// external move events
-		this->currentDx = dx;
+		currentDx = dx;
 	};
 
 	QTimer* getMoveImageTimer() {
@@ -104,11 +103,10 @@ public slots:
 	void newPosition();
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	//void loadThumbsSignal(int start, int end);
-	void changeFileSignal(int idx);
-	void positionChangeSignal(int pos);
-	void showThumbsDockSignal(bool show);
+	void loadFileSignal(const QString& filePath) const;
+	void changeFileSignal(int idx) const;
+	void positionChangeSignal(int pos) const;
+	void showThumbsDockSignal(bool show) const;
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -123,8 +121,7 @@ protected:
 	void saveSettings();
 
 private:
-	QVector<QSharedPointer<DkImageContainerT> > thumbs;
-	QWidget* parent;
+	QVector<QSharedPointer<DkImageContainerT> > mThumbs;
 	QTransform worldMatrix;
 
 	QPoint lastMousePos;
@@ -183,7 +180,7 @@ public:
 	~DkThumbLabel();
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
-	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+	QSharedPointer<DkThumbNailT> getThumb() {return mThumb;};
 	QRectF boundingRect() const;
 	QPainterPath shape() const;
 	void updateSize();
@@ -194,28 +191,26 @@ public slots:
 	void updateLabel();
 
 signals:
-	void loadFileSignal(QFileInfo& file);
-	void showFileSignal(const QFileInfo& file);
+	void loadFileSignal(const QString& filePath) const;
+	void showFileSignal(const QString& filePath = QString()) const;
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-	void resizeEvent(QResizeEvent *event);
 	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
 	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-	QSharedPointer<DkThumbNailT> thumb;
-	QGraphicsPixmapItem icon;
-	QGraphicsTextItem text;
-	QLabel* imgLabel;
-	bool thumbInitialized;
-	bool fetchingThumb;
-	QPen noImagePen;
-	QBrush noImageBrush;
-	QPen selectPen;
-	QBrush selectBrush;
-	bool isHovered;
-	QPointF lastMove;
+	QSharedPointer<DkThumbNailT> mThumb;
+	QGraphicsPixmapItem mIcon;
+	QGraphicsTextItem mText;
+	bool mThumbInitialized = false;
+	bool mFetchingThumb = false;
+	QPen mNoImagePen;
+	QBrush mNoImageBrush;
+	QPen mSelectPen;
+	QBrush mSelectBrush;
+	bool mIsHovered = false;
+	QPointF mLastMove;
 };
 
 class DkThumbScene : public QGraphicsScene {
@@ -234,13 +229,13 @@ public:
 
 public slots:
 	void updateThumbLabels();
-	void loadFile(QFileInfo& file);
+	void loadFile(const QString& filePath) const;
 	void increaseThumbs();
 	void decreaseThumbs();
 	void toggleSquaredThumbs(bool squares);
 	void toggleThumbLabels(bool show);
 	void resizeThumbs(float dx);
-	void showFile(const QFileInfo& file);
+	void showFile(const QString& filePath = QString());
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
@@ -250,24 +245,21 @@ public slots:
 	void renameSelected() const;
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	void statusInfoSignal(QString msg, int pos = 0);
-	void thumbLoadedSignal();
+	void loadFileSignal(const QString& filePath) const;
+	void statusInfoSignal(const QString& msg, int pos = 0) const;
+	void thumbLoadedSignal() const;
 
 protected:
-	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
-	//void wheelEvent(QWheelEvent *event);
+	
+	int mXOffset = 0;
+	int mNumRows = 0;
+	int mNumCols = 0;
+	bool mFirstLayout = true;
 
-	int xOffset;
-	int numRows;
-	int numCols;
-	bool firstLayout;
-	bool itemClicked;
-
-	QVector<DkThumbLabel* > thumbLabels;
-	QList<DkThumbLabel* > thumbsNotLoaded;
-	QSharedPointer<DkImageLoader> loader;
+	QVector<DkThumbLabel* > mThumbLabels;
+	QSharedPointer<DkImageLoader> mLoader;
+	QVector<QSharedPointer<DkImageContainerT> > mThumbs;
 };
 
 class DkThumbsView : public QGraphicsView {
@@ -277,7 +269,7 @@ public:
 	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
 
 signals:
-	void updateDirSignal(QDir dir);
+	void updateDirSignal(const QString& dir) const;
 
 public slots:
 	void fetchThumbs();
@@ -301,42 +293,24 @@ class DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	enum {
-		action_select_all,
-		action_zoom_in,
-		action_zoom_out,
-		action_display_squares,
-		action_show_labels,
-		action_copy,
-		action_paste,
-		action_rename,
-		action_delete,
-		action_filter,
-		action_batch,
-
-		actions_end
-	};
-
 	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbScene* getThumbWidget() {
-		return thumbsScene;
+		return mThumbsScene;
 	};
-
-	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
 
 	void clear();
 
 public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-	void setDir(QDir dir);
+	void setDir(const QString& dirPath);
 	void enableSelectionActions();
 	void setFilterFocus() const;
 	void batchProcessFiles() const;
 
 signals:
-	void updateDirSignal(QDir dir);
+	void updateDirSignal(const QString& dir);
 	void filterChangedSignal(const QString& filters);
 	void batchProcessFilesSignal(const QStringList& fileList) const;
 
@@ -345,15 +319,14 @@ protected:
 	void createToolbar();
 	void resizeEvent(QResizeEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
+	void connectToActions(bool activate = true);
 
-	DkThumbScene* thumbsScene;
-	DkThumbsView* view;
+	DkThumbScene* mThumbsScene = 0;
+	DkThumbsView* mView = 0;
 
-	QMenu* contextMenu;
-	QVector<QAction*> actions;
-	QVector<QAction*> parentActions;
-	QToolBar* toolbar;
-	QLineEdit* filterEdit;
+	QMenu* mContextMenu = 0;
+	QToolBar* mToolbar = 0;
+	QLineEdit* mFilterEdit = 0;
 };
 
 

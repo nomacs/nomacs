@@ -114,25 +114,99 @@ struct QPairSecondComparer {
 	}
 };
 
-// Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
-class DkPluginManager : public QDialog {
-
-Q_OBJECT
+class DkPluginActionManager : public QObject {
+	Q_OBJECT
 
 public:
-	DkPluginManager(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPluginActionManager(QObject* parent = 0);
+
+	void setMenu(QMenu* menu);
+	QMenu* menu() const;
+
+	QVector<QAction*> pluginDummyActions() const;
+	QVector<QAction*> pluginActions() const;
+	QVector<QMenu*> pluginSubMenus() const;
+
+public slots:
+	void runLoadedPlugin();
+	void runPluginFromShortcut();
+	void addPluginsToMenu();
+	void updateMenu();
+
+signals:
+	void runPlugin(DkViewPortInterface* plugin, bool close) const;
+	void runPlugin(DkPluginInterface* plugin, const QString& key) const;
+	void applyPluginChanges(bool askForSaving) const;
+
+protected:
+	void assignCustomPluginShortcuts();
+
+	void savePluginActions(QVector<QAction *> actions) const;
+
+	QVector<QAction *> mPluginActions;
+	QVector<QAction *> mPluginDummyActions;
+	QMenu* mMenu = 0;
+	QVector<QMenu*> mPluginSubMenus;
+};
+
+class DkPluginManager {
+
+public:
+	static DkPluginManager& instance();
 	~DkPluginManager();
+
+	void addPlugin(const QString& pluginId, const QString& filePath, DkPluginInterface* plugin);
+	QMap<QString, DkPluginInterface *> getPlugins() const;
+	DkPluginInterface* getPlugin(const QString& key) const;
+	DkPluginInterface* getPluginByName(const QString& pluginName) const;
+	QString actionNameToRunId(const QString& pluginId, const QString& actionName) const;
+	
+	QString getPluginFilePath(const QString& key) const;
+	QMap<QString, QString> getPluginFilePaths() const;
+	
+	QMap<QString, QString> getRunId2PluginId() const;
+	void setRunId2PluginId(QMap<QString, QString> newMap);
+	
+	QList<QString> getPluginIdList() const;
+	void setPluginIdList(QList<QString> newPlugins);
+
+	void removePlugin(const QString& id);
+	void clear();
+
+	void saveSettings() const;
+	void loadPlugins();
+
+	bool singlePluginLoad(const QString& filePath);
+
+	QVector<DkPluginInterface*> getBasicPlugins() const;
+
+	// functions for active plugin
+	QString getRunningPluginKey() const {return mRunningPlugin; };
+	void clearRunningPluginKey();
+	DkPluginInterface* getRunningPlugin() const;
+	DkPluginInterface* runPlugin(const QString& key);
+
+private:
+	DkPluginManager();
+
+	QMap<QString, DkPluginInterface *> loadedPlugins;
+	QMap<QString, QString> pluginFiles;
+	QList<QString> pluginIdList;
+	QMap<QString, QString> runId2PluginId;
+	QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
+
+	QString mRunningPlugin;
+};
+
+// Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
+class DkPluginManagerDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkPluginManagerDialog(QWidget* parent = 0);
+	~DkPluginManagerDialog();
 		
 	void loadPlugins();
-	void loadEnabledPlugins();
-	bool singlePluginLoad(QString filePath);
-	QMap<QString, DkPluginInterface *> getPlugins();
-	DkPluginInterface* getPlugin(QString key);
-	QList<QString> getPluginIdList();
-	QMap<QString, QString> getPluginFileNames();
-	void setPluginIdList(QList<QString> newPlugins);
-	QMap<QString, QString> getRunId2PluginId();
-	void setRunId2PluginId(QMap<QString, QString> newMap);
 	void deletePlugin(QString pluginID);
 	void deleteInstance(QString id);
 	QMap<QString, QString> getPreviouslyInstalledPlugins();
@@ -144,14 +218,10 @@ protected slots:
 protected:
 	int dialogWidth;
 	int dialogHeight;
+	
 	QTabWidget* tabs;
-	QMap<QString, DkPluginInterface *> loadedPlugins;
-	QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
 	DkPluginTableWidget* tableWidgetInstalled;
 	DkPluginTableWidget* tableWidgetDownload;
-	QMap<QString, QString> pluginFiles;
-	QList<QString> pluginIdList;
-	QMap<QString, QString> runId2PluginId;
 	QMap<QString, QString> previouslyInstalledPlugins;
 
 	void init();
@@ -166,13 +236,13 @@ class DkPluginTableWidget: public QWidget {
 Q_OBJECT
 
 public:    
-	DkPluginTableWidget(int tab, DkPluginManager* manager, QWidget* parent);
+	DkPluginTableWidget(int tab, DkPluginManagerDialog* manager, QWidget* parent);
 	~ DkPluginTableWidget();
 
 	void clearTableFilters();
 	void updateInstalledModel();
 	void downloadPluginInformation(int usage);
-	DkPluginManager* getPluginManager();
+	DkPluginManagerDialog* getPluginManager();
 	int getOpenedTab();
 	DkPluginDownloader* getDownloader();
 	void getPluginUpdateData();
@@ -189,15 +259,15 @@ private:
 	void fillDownloadTable();	
 	void getListOfUpdates();
 
-	int openedTab;
-	DkPluginManager* pluginManager;
-	QSortFilterProxyModel *proxyModel;
-	QAbstractTableModel* model;
-	DkPluginDownloader* pluginDownloader;
-	QTableView* tableView;
-	QLineEdit* filterEdit;
-	QList<XmlPluginData> pluginsToUpdate;
-	QPushButton* updateButton;
+	int mOpenedTab = 0;
+	DkPluginManagerDialog* mPluginManager = 0;
+	QSortFilterProxyModel *mProxyModel = 0;
+	QAbstractTableModel* mModel = 0;
+	DkPluginDownloader* mPluginDownloader = 0;
+	QTableView* mTableView = 0;
+	QLineEdit* mFilterEdit = 0;
+	QList<XmlPluginData> mPluginsToUpdate;
+	QPushButton* mUpdateButton = 0;
 
 protected slots:
 	void showDownloaderMessage(QString msg, QString title);
@@ -232,10 +302,10 @@ public:
 	void savePluginsEnabledSettings();
 	
 private:
-	QList<QString> pluginData;
-	QMap<QString, bool> pluginsEnabled;
-	QString dataToInsert;
-	DkPluginTableWidget* parentTable;
+	QList<QString> mPluginData;
+	QMap<QString, bool> mPluginsEnabled;
+	QString mDataToInsert;
+	DkPluginTableWidget* mParentTable = 0;
 
 };
 
@@ -262,10 +332,10 @@ public:
 	QMap<QString, bool> getInstalledData();
 	
 private:
-	QList<XmlPluginData> pluginData;
-	QMap<QString, bool> pluginsInstalled;
-	XmlPluginData dataToInsert;
-	DkPluginTableWidget* parentTable;
+	QList<XmlPluginData> mPluginData;
+	QMap<QString, bool> mPluginsInstalled;
+	XmlPluginData mDataToInsert;
+	DkPluginTableWidget* mParentTable = 0;
 };
 
 
@@ -279,10 +349,10 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 private:
-	QTableView* parentTable;
+	QTableView* mParentTable = 0;
 };
 
-// pushbutton delegate : adds buttons in the table column
+// pushbutton delegate : adds mButtons in the table column
 class DkPushButtonDelegate : public QStyledItemDelegate {
 	Q_OBJECT
 
@@ -292,12 +362,12 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    void buttonClicked(const QModelIndex &index);
+    void buttonClicked(const QModelIndex &index) const;
 
 private:
-	QTableView* parentTable;
-	int currRow;
-	QStyle::State  pushButonState;
+	QTableView* mParentTable = 0;
+	int mCRow = -1;
+	QStyle::State mPushButonState = QStyle::State_Enabled;
 };
 
 // delegate for download table: icon if already downloaded or button if not
@@ -311,12 +381,12 @@ public:
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    void buttonClicked(const QModelIndex &index);
+    void buttonClicked(const QModelIndex &index) const;
 
 private:
-	QTableView* parentTable;
-	int currRow;
-	QStyle::State  pushButonState;
+	QTableView* mParentTable = 0;
+	int mCRow = -1;
+	QStyle::State mPushButtonState = QStyle::State_Enabled;
 };
 
 // text edit connected to tables selection
@@ -332,11 +402,11 @@ protected slots:
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-	QAbstractTableModel* dataModel;
-	QSortFilterProxyModel* proxyModel;
-	QItemSelectionModel* selectionModel;
-	DkPluginTableWidget* parentTable;
-	QString defaultString;
+	QAbstractTableModel* mDataModel = 0;
+	QSortFilterProxyModel* mProxyModel = 0;
+	QItemSelectionModel* mSelectionModel = 0;
+	DkPluginTableWidget* mParentTable = 0;
+	QString mDefaultString;
 	void updateText();
 };
 
@@ -354,11 +424,11 @@ protected slots:
 	void updateImageFromReply(QImage img);
 
 private:
-	QAbstractTableModel* dataModel;
-	QSortFilterProxyModel* proxyModel;
-	QItemSelectionModel* selectionModel;
-	DkPluginTableWidget* parentTable;
-	QImage defaultImage;
+	QAbstractTableModel* mDataModel = 0;
+	QSortFilterProxyModel* mProxyModel = 0;
+	QItemSelectionModel* mSelectionModel = 0;
+	DkPluginTableWidget* mParentTable = 0;
+	QImage mDefaultImage;
 	void updateImage();
 };
 
@@ -376,28 +446,29 @@ public:
 	QList<XmlPluginData> getXmlPluginData();
 
 signals:
-	void showDownloaderMessage(QString msg, QString title);
-	void parsingFinished(int usage);
-	void imageDownloaded(QImage img);
-	void pluginDownloaded(const QModelIndex &index);
-	void allPluginsUpdated(bool finishedSuccessfully);
-	void pluginFilesDownloadingFinished();
-	void reloadPlugins();
+	void showDownloaderMessage(QString msg, QString title) const;
+	void parsingFinished(int usage) const;
+	void imageDownloaded(QImage img) const;
+	void pluginDownloaded(const QModelIndex &index) const;
+	void allPluginsUpdated(bool finishedSuccessfully) const;
+	void pluginFilesDownloadingFinished() const;
+	void reloadPlugins() const;
+
 protected slots:
 	void replyFinished(QNetworkReply*);
 	void updateDownloadProgress(qint64 received, qint64 total);
 	void cancelUpdate();
 
 private:
-	QNetworkAccessManager* accessManagerPlugin;
-	QNetworkReply* reply;
-	QProgressDialog* progressDialog;
-	bool downloadAborted;
-	QList<XmlPluginData> xmlPluginData;
-	int requestType;
-	QString fileName;
-	int currUsage;
-	QStringList filesToDownload;
+	QNetworkAccessManager* mAccessManagerPlugin;
+	QNetworkReply* mReply;
+	QProgressDialog* mProgressDialog;
+	bool mDownloadAborted = false;
+	QList<XmlPluginData> mXmlPluginData;
+	int mRequestType;
+	QString mFileName;
+	int mCurrUsage;
+	QStringList mFilesToDownload;
 
 	void parseXml(QNetworkReply* reply);
 	void replyToImg(QNetworkReply* reply);
@@ -405,6 +476,7 @@ private:
 	void parseFileList(QNetworkReply* reply);
 	void downloadSingleFile(QString url);
 	void downloadPluginFileList(QString url);
+	void createProgressDialog();
 };
 
 

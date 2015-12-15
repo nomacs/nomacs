@@ -49,10 +49,16 @@
 #include <QDebug>
 #include <QDir>
 #include <QTextStream>
+#include <QDesktopServices>
+#include <QCommandLineParser>
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
+#include "DkCentralWidget.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
+#include "DkPong.h"
+#include "DkUtils.h"
 
 #include <iostream>
 #include <cassert>
@@ -61,32 +67,7 @@
 #include <shlobj.h>
 #endif
 
-void createPluginsPath() {
-
-#ifdef WITH_PLUGINS
-	// initialize plugin paths -----------------------------------------
-#ifdef WIN32
-	QDir pluginsDir;
-	if (!nmc::DkSettings::isPortable())
-		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
-	else
-		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
-#else
-	QDir pluginsDir = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/plugins/");
-#endif // WIN32
-
-
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
-	
-	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
-
-#endif // WITH_PLUGINS
-
-}
+void createPluginsPath();
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
@@ -96,14 +77,6 @@ int main(int argc, char *argv[]) {
 
 	qDebug() << "nomacs - Image Lounge\n";
 
-	//QImage img(QString("D:/img/raws/small-bug/xbmpcc_1_2013-11-13_1251_C0000_000047.dng"));
-
-	//nmc::DkThumbNail* t1 = new nmc::DkThumbNail();
-	//t1->compute();
-
-	//qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
-	//qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
-
 	//! \warning those QSettings setup *must* go before QApplication object
     //           to prevent random crashes (well, crashes are regular on mac
     //           opening from Finder)
@@ -111,8 +84,8 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
-	
-	//qDebug() << "settings: " << settings.fileName();
+	QCoreApplication::setApplicationVersion("da fuck");
+	nmc::DkUtils::registerFileVersion();
 
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
@@ -122,9 +95,45 @@ int main(int argc, char *argv[]) {
 //	if (mode != nmc::DkSettings::mode_frameless)
 //		QApplication::setGraphicsSystem("raster");
 #endif
-
+	
 	QApplication a(argc, (char**)argv);
-	QStringList args = a.arguments();
+
+	// CMD parser --------------------------------------------------------------------
+	QCommandLineParser parser;
+
+	//parser.setApplicationDescription("Test helper");
+	parser.addHelpOption();
+	parser.addVersionOption();
+	parser.addPositionalArgument("image", QObject::tr("An input image."));
+
+	// fullscreen (-f)
+	QCommandLineOption fullScreenOpt(QStringList() << "f" << "fullscreen", QObject::tr("Start in fullscreen."));
+	parser.addOption(fullScreenOpt);
+
+	QCommandLineOption pongOpt(QStringList() << "x" << "pong", QObject::tr("Start Pong."));
+	parser.addOption(pongOpt);
+
+	QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
+	parser.addOption(privateOpt);
+
+	QCommandLineOption modeOpt(QStringList() << "m" << "mode",
+		QObject::tr("Set the viewing mode <mode>."),
+		QObject::tr("default | frameless | pseudocolor"));
+	parser.addOption(modeOpt);
+
+	QCommandLineOption sourceDirOpt(QStringList() << "d" << "directory",
+		QObject::tr("Load all files of a <directory>."),
+		QObject::tr("directory"));
+	parser.addOption(sourceDirOpt);
+
+	QCommandLineOption tabOpt(QStringList() << "t" << "tab",
+		QObject::tr("Load <images> to tabs."),
+		QObject::tr("images"));
+	parser.addOption(tabOpt);
+
+	parser.process(a);
+	// CMD parser --------------------------------------------------------------------
+
 	nmc::DkSettings::initFileFilters();
 	QSettings& settings = nmc::Settings::instance().getSettings();
 	
@@ -135,42 +144,44 @@ int main(int argc, char *argv[]) {
 
 	createPluginsPath();
 
-	//// pong --------------------------------------------------------------------
-	//nmc::DkPong *p = new nmc::DkPong();
-	//int pVal = a.exec();
-	//return pVal;
-	//// pong --------------------------------------------------------------------
-
-	nmc::DkNoMacs* w;
-
-	// DEBUG --------------------------------------------------------------------
-	qDebug() << "input arguments:";
-	for (int idx = 0; idx < args.size(); idx++)
-		qDebug() << args[idx];
-	qDebug() << "\n";
-	// DEBUG --------------------------------------------------------------------
-
-//  	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
-	//QSettings settings;
+	nmc::DkNoMacs* w = 0;
+	nmc::DkPong* pw = 0;	// pong
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
+	
 	QTranslator translatorQt;
 	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
 	a.installTranslator(&translatorQt);
 
-	//QStringList xxx = nmc::DkSettings::saveFilters;
-	//qDebug() << xxx;
-
 	// show pink icons if nomacs is in private mode
-	if(args.size() > 1 && args[1] == "-p") {
+	if(parser.isSet(privateOpt)) {
 		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
 		nmc::DkSettings::app.privateMode = true;
 	}
 
+	if (parser.isSet(modeOpt)) {
+		QString pm = parser.value(modeOpt);// .trimmed();
+
+		if (pm == "default")
+			mode = nmc::DkSettings::mode_default;
+		else if (pm == "frameless")
+			mode = nmc::DkSettings::mode_frameless;
+		else if (pm == "pseudocolor")
+			mode = nmc::DkSettings::mode_contrast;
+		else
+			qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
+	}
+
+	qDebug() << "mode: " << mode;
+
+	nmc::DkTimer dt;
+
+	// initialize nomacs
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -179,28 +190,47 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
+	else if (parser.isSet(pongOpt)) {
+		pw = new nmc::DkPong();
+		int rVal = a.exec();
+		return rVal;
+	}
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (w)
 		w->onWindowLoaded();
 
-	//qDebug() << "Initialization takes: " << dt.getTotal();
+	qDebug() << "Initialization takes: " << dt.getTotal();
 
-	// TODO: time to switch -> qt 5 has a command line parser
-	if (args.size() > 1 && args[1] == "-p") {
-	}
-	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
-		w->loadFile(QFileInfo(args[args.size()-1]));	// update folder + be silent
+	if (!parser.positionalArguments().empty()) {
+		w->loadFile(parser.positionalArguments()[0]);	// update folder + be silent
 	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
+	
+	// load directory preview
+	if (!parser.value(sourceDirOpt).isEmpty()) {
+		nmc::DkCentralWidget* cw = w->getTabWidget();
+		cw->loadDirToTab(parser.value(sourceDirOpt));
+	}
+
+	// load to tabs
+	if (!parser.value(tabOpt).isEmpty()) {
+		nmc::DkCentralWidget* cw = w->getTabWidget();
+		
+		QStringList tabPaths = parser.values(tabOpt);
+		
+		for (const QString& filePath : tabPaths)
+			cw->addTab(filePath);
+	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 
 	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
 		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
-		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
+		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		||
+		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
 		qDebug() << "trying to enter fullscreen...";
 	}
@@ -213,7 +243,40 @@ int main(int argc, char *argv[]) {
 #endif
 
 	int rVal = a.exec();
-	delete w;	// we need delete so that settings are saved (from destructors)
+
+	if (w)
+		delete w;	// we need delete so that settings are saved (from destructors)
+	if (pw)
+		delete pw;
 
 	return rVal;
+}
+
+void createPluginsPath() {
+
+#ifdef WITH_PLUGINS
+	// initialize plugin paths -----------------------------------------
+#ifdef WIN32
+	QDir pluginsDir;
+	if (!nmc::DkSettings::isPortable())
+		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	else
+		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#else
+	QDir pluginsDir = QDir("/usr/lib/nomacs-plugins/");
+#endif // WIN32
+
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
+
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+
+	QCoreApplication::addLibraryPath("./imageformats");
+
+#endif // WITH_PLUGINS
+
 }

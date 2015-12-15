@@ -1,0 +1,27 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Lightroom Schema</h2>
+<p>This schema specifies hierarchical keyword XMP properties used by Adobe Lightroom.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.lr.&lt;Property&gt;</code></b></li>
+  <li>The schema namespace URI is <b><code>http://ns.adobe.com/lightroom/1.0/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>lr</code></b></li>
+ </ul>
+Reference: <a href="https://helpx.adobe.com/lightroom/help/keywords.html" title="Adobe Lightroom Keywords">Adobe Lightroom Keywords</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_lr__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

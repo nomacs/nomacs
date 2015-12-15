@@ -26,14 +26,17 @@
  *******************************************************************************************************/
 
 #include "DkImageStorage.h"
+#include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkError.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <QThread>
 #include <QPixmap>
 #include <QPainter>
+#include <QBitmap>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -152,6 +155,102 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 	DeleteDC(hdc);
 	return QPixmap::fromImage(image);
 }
+
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
+HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
+	
+	if (pm.isNull())
+		return 0;
+
+	HBITMAP bitmap = 0;
+
+	int w = pm.width();
+	int h = pm.height();
+
+	HDC display_dc = GetDC(0);
+
+	// Define the header
+	BITMAPINFO bmi;
+	memset(&bmi, 0, sizeof(bmi));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = w;
+	bmi.bmiHeader.biHeight = -h;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = w * h * 4;
+
+	// Create the pixmap
+	uchar *pixels = 0;
+	bitmap = CreateDIBSection(display_dc, &bmi, DIB_RGB_COLORS, (void **)&pixels, 0, 0);
+	ReleaseDC(0, display_dc);
+	if (!bitmap) {
+		qErrnoWarning("QPixmap::toWinHBITMAP(), failed to create dibsection");
+		return 0;
+	}
+	if (!pixels) {
+		qErrnoWarning("QPixmap::toWinHBITMAP(), did not allocate pixel data");
+		return 0;
+	}
+
+	// Copy over the data
+	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32);
+	
+	int bytes_per_line = w * 4;
+	for (int y = 0; y<h; ++y)
+		memcpy(pixels + y * bytes_per_line, image.scanLine(y), bytes_per_line);
+
+	return bitmap;
+}
+
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
+HBITMAP DkImage::createIconMask(const QBitmap& bitmap) {
+	
+	QImage bm = bitmap.toImage().convertToFormat(QImage::Format_Mono);
+	int w = bm.width();
+	int h = bm.height();
+	int bpl = ((w + 15) / 16) * 2;                        // bpl, 16 bit alignment
+	uchar *bits = new uchar[bpl*h];
+	bm.invertPixels();
+	for (int y = 0; y<h; y++)
+		memcpy(bits + y*bpl, bm.scanLine(y), bpl);
+	HBITMAP hbm = CreateBitmap(w, h, 1, 1, bits);
+	delete[] bits;
+	
+	return hbm;
+}
+
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
+HICON DkImage::toWinHICON(const QPixmap& pm) {
+	
+	QBitmap maskBitmap = pm.mask();
+	
+	if (maskBitmap.isNull()) {
+		maskBitmap = QBitmap(pm.size());
+		maskBitmap.fill(Qt::color1);
+	}
+
+	ICONINFO ii;
+	ii.fIcon = true;
+	ii.hbmMask = createIconMask(maskBitmap);
+	ii.hbmColor = toWinHBITMAP(pm);
+	ii.xHotspot = 0;
+	ii.yHotspot = 0;
+
+	HICON hIcon = CreateIconIndirect(&ii);
+
+	DeleteObject(ii.hbmColor);
+	DeleteObject(ii.hbmMask);
+
+	return hIcon;
+}
+
 #endif
 
 /**
@@ -811,6 +910,92 @@ void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTa
 	qDebug() << "gamma computation takes: " << dt.getTotal();
 }
 
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale) {
+
+	cv::Mat mapx, mapy;
+
+	cv::Size ssize, dsize;
+	ssize = src.size();
+	dsize = dst.size();
+
+	mapx = cv::Mat(dsize.height, dsize.width, CV_32F);
+	mapy = cv::Mat(dsize.height, dsize.width, CV_32F);
+
+	float xDist = dst.cols - center.x;
+	float yDist = dst.rows - center.y;
+
+	double radius = std::sqrt(xDist*xDist + yDist*yDist);
+
+	scale *= src.cols / std::log(radius / scaleLog + 1.0);
+
+	int x, y;
+	cv::Mat bufx, bufy, bufp, bufa;
+	double ascale = ssize.height / (2 * CV_PI);
+	cv::AutoBuffer<float> _buf(4 * dsize.width);
+	float* buf = _buf;
+
+	bufx = cv::Mat(1, dsize.width, CV_32F, buf);
+	bufy = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width);
+	bufp = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 2);
+	bufa = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 3);
+
+	for (x = 0; x < dsize.width; x++)
+		bufx.ptr<float>()[x] = (float)x - center.x;
+
+	for (y = 0; y < dsize.height; y++) {
+		float* mx = mapx.ptr<float>(y);
+		float* my = mapy.ptr<float>(y);
+
+		for (x = 0; x < dsize.width; x++)
+			bufy.ptr<float>()[x] = (float)y - center.y;
+
+		cv::cartToPolar(bufx, bufy, bufp, bufa);
+
+		for (x = 0; x < dsize.width; x++) {
+			bufp.ptr<float>()[x] /= (float)scaleLog;
+			bufp.ptr<float>()[x] += 1.0f;
+		}
+
+		cv::log(bufp, bufp);
+
+		for (x = 0; x < dsize.width; x++) {
+			double rho = bufp.ptr<float>()[x] * scale;
+			double phi = bufa.ptr<float>()[x] + angle;
+
+			if (phi < 0)
+				phi += 2 * CV_PI;
+			else if (phi > 2 * CV_PI)
+				phi -= 2 * CV_PI;
+
+			phi *= ascale;
+
+			//qDebug() << "phi: " << bufa.data.fl[x];
+
+			mx[x] = (float)rho;
+			my[x] = (float)phi;
+		}
+	}
+
+	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
+}
+
+void DkImage::tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bool invert /* = false */) {
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
+	img = img.transformed(rotationMatrix);
+
+	// make square
+	img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+	cv::Mat mImg = DkImage::qImage2Mat(img);
+
+	qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
+	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, angle);
+
+	img = DkImage::mat2QImage(mImg);
+}
+
 #endif
 
 bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
@@ -869,6 +1054,41 @@ QImage DkImage::createThumb(const QImage& image) {
 	return thumb;
 };
 
+bool DkImage::addToImage(QImage& img, unsigned char val) {
+
+	// number of bytes per line used
+	int bpl = (img.width() * img.depth() + 7) / 8;
+	int pad = img.bytesPerLine() - bpl;
+	uchar* ptr = img.bits();
+	bool done = false;
+
+	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+
+		for (int cIdx = 0; cIdx < bpl; cIdx++) {
+
+			// add it & we're done
+			if (*ptr <= 255-val) {
+				*ptr += val;
+				done = true;
+				break;
+			}
+
+			int ov = *ptr+(int)val;	// compute the overflow
+			val = (char)(ov-255);
+
+			*ptr = val;
+			ptr++;
+		}
+
+		if (done)
+			break;
+
+		ptr += pad;
+	}
+
+	return done;
+};
+
 QColor DkImage::getMeanColor(const QImage& img) {
 
 	// some speed-up params
@@ -922,22 +1142,21 @@ QColor DkImage::getMeanColor(const QImage& img) {
 
 
 // DkImageStorage --------------------------------------------------------------------
-DkImageStorage::DkImageStorage(QImage img) {
-	this->img = img;
+DkImageStorage::DkImageStorage(const QImage& img) {
+	mImg = img;
 
-	computeThread = new QThread;
-	computeThread->start();
-	moveToThread(computeThread);
+	mComputeThread = new QThread;
+	mComputeThread->start();
+	moveToThread(mComputeThread);
 
-	busy = false;
-	stop = true;
+	connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), this, SLOT(antiAliasingChanged(bool)));
 }
 
-void DkImageStorage::setImage(QImage img) {
+void DkImageStorage::setImage(const QImage& img) {
 
-	stop = true;
-	imgs.clear();	// is it save (if the thread is still working?)
-	this->img = img;
+	mStop = true;
+	mImgs.clear();	// is it save (if the thread is still working?)
+	mImg = img;
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
@@ -945,8 +1164,8 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 	DkSettings::display.antiAliasing = antiAliasing;
 
 	if (!antiAliasing) {
-		stop = true;
-		imgs.clear();
+		mStop = true;
+		mImgs.clear();
 	}
 
 	emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
@@ -956,45 +1175,45 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
 QImage DkImageStorage::getImageConst() const {
 	
-	return img;
+	return mImg;
 }
 
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 0.5f || img.isNull() || !DkSettings::display.antiAliasing)
-		return img;
+	if (factor >= 0.5f || mImg.isNull() || !DkSettings::display.antiAliasing)
+		return mImg;
 
 	// check if we have an image similar to that requested
-	for (int idx = 0; idx < imgs.size(); idx++) {
+	for (int idx = 0; idx < mImgs.size(); idx++) {
 
-		if ((float)imgs.at(idx).height()/img.height() >= factor)
-			return imgs.at(idx);
+		if ((float)mImgs.at(idx).height()/mImg.height() >= factor)
+			return mImgs.at(idx);
 	}
 
 	// if the image does not exist - create it
-	if (!busy && imgs.empty() && /*img.colorTable().isEmpty() &&*/ img.width() > 32 && img.height() > 32) {
-		stop = false;
+	if (!mBusy && mImgs.empty() && /*img.colorTable().isEmpty() &&*/ mImg.width() > 32 && mImg.height() > 32) {
+		mStop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
 	}
 
 	// currently no alternative is available
-	return img;
+	return mImg;
 }
 
 void DkImageStorage::computeImage() {
 
 	// obviously, computeImage gets called multiple times in some wired cases...
-	if (!imgs.empty())
+	if (!mImgs.empty())
 		return;
 
 	DkTimer dt;
-	busy = true;
-	QImage resizedImg = img;
+	mBusy = true;
+	QImage resizedImg = mImg;
 	
 
 	// down sample the image until it is twice times full HD
-	QSize iSize = img.size();
+	QSize iSize = mImg.size();
 	while (iSize.width() > 2*1920 && iSize.height() > 2*1920)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
 		iSize *= 0.5;
 
@@ -1011,9 +1230,6 @@ void DkImageStorage::computeImage() {
 		if (s.width() < 32 || s.height() < 32)
 			break;
 
-		// // mapping here introduces bugs
-		//DkImage::gammaToLinear(resizedImg);
-
 #ifdef WITH_OPENCV
 		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
 		cv::Mat tmp;
@@ -1023,29 +1239,24 @@ void DkImageStorage::computeImage() {
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
-		// // mapping here introduces bugs
-		//DkImage::linearToGamma(resizedImg);
-		
-		//resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
-
 		// new image assigned?
-		if (stop)
+		if (mStop)
 			break;
 
-		mutex.lock();
-		imgs.push_front(resizedImg);
-		mutex.unlock();
+		mMutex.lock();
+		mImgs.push_front(resizedImg);
+		mMutex.unlock();
 	}
 
-	busy = false;
+	mBusy = false;
 
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << imgs.size();
+	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << mImgs.size();
 
-	if (imgs.size() > 6)
-		qDebug() << "layer size > 6: " << img.size();
+	if (mImgs.size() > 6)
+		qDebug() << "layer size > 6: " << mImg.size();
 
 }
 

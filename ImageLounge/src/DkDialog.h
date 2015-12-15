@@ -1,5 +1,5 @@
 /*******************************************************************************************************
- DkImage.h
+ DkDialog.h
  Created on:	21.04.2011
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
@@ -66,6 +66,7 @@ class TreeItem;
 class DkSlider;
 class DkButton;
 class DkThumbNail;
+class DkAppManager;
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
@@ -126,16 +127,16 @@ class DkFileValidator : public QValidator {
 	Q_OBJECT
 
 public:
-	DkFileValidator(QString lastFile = "", QObject * parent = 0);
+	DkFileValidator(const QString& lastFile = QString(), QObject * parent = 0);
 
-	void setLastFile(QString lastFile) {
-		this->lastFile = lastFile;
+	void setLastFile(const QString& lastFile) {
+		mLastFile = lastFile;
 	};
 	virtual void fixup(QString& input) const;
 	virtual State validate(QString& input, int& pos) const;
 
 protected:
-	QString lastFile;
+	QString mLastFile;
 };
 
 class DkTrainDialog : public QDialog {
@@ -144,17 +145,17 @@ class DkTrainDialog : public QDialog {
 public:
 	DkTrainDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	QFileInfo getAcceptedFile() {
-		return acceptedFile;
+	QString getAcceptedFile() {
+		return mAcceptedFile;
 	};
 
-	void setCurrentFile(const QFileInfo& file) {
-		cFile = file;
+	void setCurrentFile(const QString& file) {
+		mFile = file;
 	};
 
 public slots:
-	void textChanged(QString text);
-	void loadFile(QString filePath = "");
+	void textChanged(const QString& text);
+	void loadFile(const QString& filePath = "");
 	void openFile();
 	void accept();
 
@@ -165,58 +166,14 @@ protected:
 	void createLayout();
 	void userFeedback(const QString& msg, bool error = false);
 
-	DkFileValidator fileValidator;
-	QDialogButtonBox* buttons;
-	QLineEdit* pathEdit;
-	QLabel* feedbackLabel;
-	DkBaseViewPort* viewport;
+	DkFileValidator mFileValidator;
+	QDialogButtonBox* mButtons;
+	QLineEdit* mPathEdit;
+	QLabel* mFeedbackLabel;
+	DkBaseViewPort* mViewport;
 	
-	QFileInfo acceptedFile;
-	QFileInfo cFile;
-};
-
-class DkAppManager : public QObject{
-	Q_OBJECT
-
-public:
-	DkAppManager(QWidget* parent = 0);
-	~DkAppManager();
-
-	void setActions(QVector<QAction* > actions);
-	QVector<QAction* >& getActions();
-	QAction* createAction(QString filePath);
-	QAction* findAction(QString appPath);
-
-	enum defaultAppIdx {
-
-		app_photohsop,
-		app_picasa,
-		app_picasa_viewer,
-		app_irfan_view,
-		app_explorer,
-
-		app_idx_end
-	};
-
-public slots:
-	void openTriggered();
-
-signals:
-	void openFileSignal(QAction* action);
-
-protected:
-	void saveSettings();
-	void loadSettings();
-	void assignIcon(QAction* app);
-	bool containsApp(QVector<QAction* > apps, QString appName);
-
-	QString searchForSoftware(QString organization, QString application, QString pathKey = "", QString exeName = "");
-	void findDefaultSoftware();
-
-	QVector<QString> defaultNames;
-	QVector<QAction* > apps;
-	QWidget* parent;
-	bool firstTime;
+	QString mAcceptedFile;
+	QString mFile;
 };
 
 class DkAppManagerDialog : public QDialog {
@@ -258,22 +215,21 @@ public:
 
 	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	void setFiles(QStringList fileList);
-	void setPath(QDir path);
-	bool filterPressed();
+	void setFiles(const QStringList& fileList);
+	void setPath(const QString& dirPath);
+	bool filterPressed() const;
 	void setDefaultButton(int defaultButton = find_button);
 
 public slots:
 	void on_searchBar_textChanged(const QString& text);
-	void on_okButton_pressed();
 	void on_filterButton_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
 	void on_resultListView_clicked(const QModelIndex& modelIndex);
 	virtual void accept();
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	void filterSignal(QStringList);
+	void loadFileSignal(const QString& filePath) const;
+	void filterSignal(const QStringList&) const;
 
 protected:
 
@@ -281,24 +237,23 @@ protected:
 	void init();
 	QStringList makeViewable(const QStringList& resultList, bool forceAll = false);
 
-	QStringListModel* stringModel;
-	QListView* resultListView;
-	QLineEdit* searchBar;
-	QDialogButtonBox* buttons;
+	QStringListModel* mStringModel = 0;
+	QListView* mResultListView = 0;
+	QLineEdit* mSearchBar = 0;
+	QDialogButtonBox* mButtons = 0;
 
-	QPushButton* filterButton;
-	//QVector<QPushButton*> buttons;
+	QPushButton* mFilterButton = 0;
 
-	QString currentSearch;
+	QString mCurrentSearch;
 
-	QDir path;
-	QStringList fileList;
-	QStringList resultList;
+	QString mPath;
+	QStringList mFileList;
+	QStringList mResultList;
 
-	QString endMessage;
+	QString mEndMessage;
 
-	bool allDisplayed;
-	bool isFilterPressed;
+	bool mAllDisplayed = true;
+	bool mIsFilterPressed = false;
 };
 
 class DkResizeDialog : public QDialog {
@@ -313,7 +268,7 @@ public:
 	enum{unit_cm, unit_mm, unit_inch, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
-	void setImage(QImage img);
+	void setImage(const QImage& img);
 	QImage getResizedImage();
 	void setExifDpi(float exifDpi);
 	float getExifDpi();
@@ -323,12 +278,12 @@ protected slots:
 	void on_lockButtonDim_clicked();
 	void on_lockButton_clicked();
 
-	void on_wPixelEdit_valueChanged(QString text);
-	void on_hPixelEdit_valueChanged(QString text);
+	void on_wPixelEdit_valueChanged(const QString& text);
+	void on_hPixelEdit_valueChanged(const QString& text);
 
-	void on_widthEdit_valueChanged(QString text);
-	void on_heightEdit_valueChanged(QString text);
-	void on_resolutionEdit_valueChanged(QString text);
+	void on_widthEdit_valueChanged(const QString& text);
+	void on_heightEdit_valueChanged(const QString& text);
+	void on_resolutionEdit_valueChanged(const QString& text);
 
 	void on_sizeBox_currentIndexChanged(int idx);
 	void on_unitBox_currentIndexChanged(int idx);
@@ -351,36 +306,31 @@ public slots:
 	virtual void accept();
 
 protected:
-	int leftSpacing;
-	int margin;
-	QImage img;
-	QImage origImg;
-	QImage newImg;
-	QWidget* centralWidget;
-	QLabel* previewLabel;
+	QImage mImg;
+	QLabel* mPreviewLabel = 0;
 	
-	DkBaseViewPort* origView;
+	DkBaseViewPort* mOrigView = 0;
 
 	// resize gui:
-	QDoubleSpinBox* wPixelEdit;
-	QDoubleSpinBox* hPixelEdit;
-	DkButton* lockButton;
+	QDoubleSpinBox* mWPixelEdit = 0;
+	QDoubleSpinBox* mHPixelEdit = 0;
+	DkButton* mLockButton = 0;
 
-	QDoubleSpinBox* widthEdit;
-	QDoubleSpinBox* heightEdit;
-	QComboBox* unitBox;
-	QComboBox* sizeBox;
-	DkButton* lockButtonDim;
+	QDoubleSpinBox* mWidthEdit = 0;
+	QDoubleSpinBox* mHeightEdit = 0;
+	QComboBox* mUnitBox = 0;
+	QComboBox* mSizeBox = 0;
+	DkButton* mLockButtonDim = 0;
 
-	QDoubleSpinBox* resolutionEdit;
-	QComboBox* resUnitBox;
-	QCheckBox* resampleCheck;
-	QCheckBox* gammaCorrection;
-	QComboBox* resampleBox;
+	QDoubleSpinBox* mResolutionEdit = 0;
+	QComboBox* mResUnitBox = 0;
+	QCheckBox* mResampleCheck = 0;
+	QCheckBox* mGammaCorrection = 0;
+	QComboBox* mResampleBox = 0;
 
-	float exifDpi;
-	QVector<float> unitFactor;
-	QVector<float> resFactor;
+	float mExifDpi = 72;
+	QVector<float> mUnitFactor;
+	QVector<float> mResFactor;
 
 	void init();
 	void initBoxes(bool updateSettings = false);
@@ -405,16 +355,13 @@ public:
 	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
 signals:
-	void checkDuplicateSignal(QString text, void* item);
+	void checkDuplicateSignal(const QString& text, void* item);
 	void checkDuplicateSignal(const QKeySequence& keySequence, void* item);
 	void clearDuplicateSignal() const;
 
 protected slots:
-#if QT_VERSION < 0x050000
-	void textChanged(QString text = QString());
-#else
+	void textChanged(const QString& text = QString());
 	void keySequenceChanged(const QKeySequence& keySequence);
-#endif
 
 protected:
 	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
@@ -462,25 +409,22 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
-	void addDataActions(QVector<QAction*> actions, QString name);
+	void addDataActions(QVector<QAction*> actions, const QString& name);
 
 	void resetActions();
-	void saveActions();
+	void saveActions() const;
 
 public slots:
-	void checkDuplicate(QString text, void* item);		// deprecated (Qt4)
+	void checkDuplicate(const QString& text, void* item);		// deprecated (Qt4)
 	void checkDuplicate(const QKeySequence& ks, void* item);
 	void clearDuplicateInfo() const;
 
 signals:
-	void duplicateSignal(QString info) const;
+	void duplicateSignal(const QString& info) const;
 
 protected:
-
-	void setupModelData(const QVector<QAction*> actions, TreeItem* parent = 0);
-
-	TreeItem* rootItem;
-	QVector<QVector<QAction*> > actions;
+	TreeItem* mRootItem;
+	QVector<QVector<QAction*> > mActions;
 
 };
 
@@ -493,7 +437,7 @@ public:
 	void addActions(const QVector<QAction*>& actions, const QString& name);
 
 public slots:
-	void accept();
+	void accept() override;
 
 protected slots:
 	void contextMenu(const QPoint& cur);
@@ -502,12 +446,9 @@ protected slots:
 protected:
 	void createLayout();
 	
-	QVector<QAction*> actions;
-	QTreeView* treeView;
-	QTableView* actionTable;
-	DkShortcutsModel* model;
-	QLabel* notificationLabel;
-	QPushButton* defaultButton;
+	DkShortcutsModel* mModel;
+	QLabel* mNotificationLabel;
+	QPushButton* mDefaultButton;
 
 };
 
@@ -558,10 +499,7 @@ public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 signals:
-	void zoomChanged();
-
-//public slots:
-	//virtual void paintEvent(QPaintEvent* event);
+	void zoomChanged() const;
 
 protected:
 	virtual void wheelEvent(QWheelEvent *event);		
@@ -572,7 +510,7 @@ protected:
 class DkPrintPreviewValidator : public QDoubleValidator {
 	
 public:
-	DkPrintPreviewValidator(QString suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
+	DkPrintPreviewValidator(const QString& suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
 	State validate(QString &input, int &pos) const {
 		bool replaceSuffix = false;
 		if (input.endsWith(suffix)) {
@@ -589,7 +527,7 @@ public:
 				|| (i != -1 && i > num_size))
 				return Invalid;
 		}
-			
+
 		return state;			
 	}
 private:
@@ -615,15 +553,15 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	void setImage(QImage img, float dpi);
+	DkPrintPreviewDialog(const QImage& img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	void setImage(const QImage& img, float dpi);
 	void init();
 
 public slots:
 	void updateZoomFactor();
 
 protected:
-	void setup_Actions();
+	void setupActions();
 	void createLayout();
 	void setIcon(QAction* action, const QLatin1String &name);
 	void createIcons();
@@ -646,42 +584,42 @@ private:
 	void scaleImage();
 	bool isFitting();
 		
-	QImage img;
+	QImage mImg;
 
-	QActionGroup* fitGroup;
-	QAction *fitWidthAction;
-	QAction *fitPageAction;
+	QActionGroup* mFitGroup = 0;
+	QAction* mFitWidthAction = 0;
+	QAction* mFitPageAction = 0;
+	
+	QActionGroup* mZoomGroup = 0;
+	QAction* mZoomInAction = 0;
+	QAction* mZoomOutAction = 0;
 
-	QActionGroup* zoomGroup;
-	QAction *zoomInAction;
-	QAction *zoomOutAction;
+	QActionGroup* mOrientationGroup = 0;
+	QAction* mPortraitAction = 0;
+	QAction* mLandscapeAction = 0;
 
-	QActionGroup* orientationGroup;
-	QAction *portraitAction;
-	QAction *landscapeAction;
+	QActionGroup* mPrinterGroup = 0;
+	QAction* mPrintAction = 0;
+	QAction* mPageSetupAction = 0;
 
-	QActionGroup *printerGroup;
-	QAction *printAction;
-	QAction *pageSetupAction;
+	QActionGroup* mDpiGroup = 0;
+	QAction* mResetDpiAction = 0;
 
-	QActionGroup *dpiGroup;
-	QAction *resetDpiAction;
-
-	QComboBox *zoomFactor;
-	QComboBox *dpiFactor;
-	QString dpiEditorSuffix;
+	QComboBox* mZoomFactor = 0;
+	QComboBox* mDpiFactor = 0;
+	QString mDpiEditorSuffix;
 
 
-	DkPrintPreviewWidget* preview;
-	QPrinter* printer;
-	QPrintDialog* printDialog;
+	DkPrintPreviewWidget* mPreview = 0;
+	QPrinter* mPrinter = 0;
+	QPrintDialog* mPrintDialog = 0;
 
-	QVector<QIcon> icons;
+	QVector<QIcon> mIcons;
 
-	QTransform imgTransform;
+	QTransform mImgTransform;
 
-	float dpi, origdpi;
-	bool initialPaint;
+	float mDpi = 150;
+	float mOrigDpi = 150;
 };
 
 class DkOpacityDialog : public QDialog {
@@ -707,16 +645,16 @@ public slots:
 	void on_openButton_pressed();
 	void on_saveButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
-	void setFile(const QFileInfo& file);
+	void setFile(const QString& filePath);
 	void accept();
 	void reject();
-	int exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	int exportImages(const QString& saveFilePath, int from, int to, bool overwrite);
 	void processingFinished();
 
 signals:
-	void updateImage(QImage img);
-	void updateProgress(int);
-	void infoMessage(QString msg);
+	void updateImage(const QImage& img) const;
+	void updateProgress(int) const;
+	void infoMessage(const QString& msg) const;
 
 protected:
 	void createLayout();
@@ -725,25 +663,25 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
-	DkBaseViewPort* viewport;
-	QLabel* tiffLabel;
-	QLabel* folderLabel;
-	QLineEdit* fileEdit;
-	QComboBox* suffixBox;
-	QSpinBox* fromPage;
-	QSpinBox* toPage;
-	QDialogButtonBox* buttons;
-	QProgressBar* progress;
-	QLabel* msgLabel;
-	QWidget* controlWidget;
-	QCheckBox* overwrite;
+	DkBaseViewPort* mViewport;
+	QLabel* mTiffLabel;
+	QLabel* mFolderLabel;
+	QLineEdit* mFileEdit;
+	QComboBox* mSuffixBox;
+	QSpinBox* mFromPage;
+	QSpinBox* mToPage;
+	QDialogButtonBox* mButtons;
+	QProgressBar* mProgress;
+	QLabel* mMsgLabel;
+	QWidget* mControlWidget;
+	QCheckBox* mOverwrite;
 
-	QFileInfo cFile;
-	QDir saveDir;
-	DkBasicLoader loader;
-	QFutureWatcher<int> watcher;
+	QString mFilePath;
+	QString mSaveDirPath;
+	DkBasicLoader mLoader;
+	QFutureWatcher<int> mWatcher;
 
-	bool processing;
+	bool mProcessing = false;
 
 	enum {
 		finished,
@@ -752,6 +690,7 @@ protected:
 
 	};
 };
+
 #ifdef WITH_OPENCV
 class DkUnsharpDialog : public QDialog {
 	Q_OBJECT
@@ -763,31 +702,72 @@ public:
 public slots:
 	void on_sigmaSlider_valueChanged(int i);
 	void on_amountSlider_valueChanged(int i);
-	void setFile(const QFileInfo& file);
+	void setFile(const QString& filePath);
 	void setImage(const QImage& img);
 	void computePreview();
 	void reject();
-	QImage computeUnsharp(const QImage img, int sigma, int amount);
+	QImage computeUnsharp(const QImage& img, int sigma, int amount);
 	void unsharpFinished();
 
 signals:
-	void updateImage(QImage img);
+	void updateImage(const QImage& img) const;
 
 protected:
 	void createLayout();
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
-	DkBaseViewPort* viewport;
-	QLabel* preview;
-	QDialogButtonBox* buttons;
-	QFutureWatcher<QImage> unsharpWatcher;
+	DkBaseViewPort* mViewport;
+	QLabel* mPreview;
+	QDialogButtonBox* mButtons;
+	QFutureWatcher<QImage> mUnsharpWatcher;
 
-	DkSlider* sigmaSlider;
-	DkSlider* amountSlider;
+	DkSlider* mSigmaSlider;
+	DkSlider* mAmountSlider;
 
-	bool processing;
-	QImage img;
+	bool mProcessing = false;
+	QImage mImg;
+};
+
+class DkTinyPlanetDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkTinyPlanetDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	QImage getImage();
+
+public slots:
+	void on_scaleLogSlider_valueChanged(int i);
+	void on_angleSlider_valueChanged(int i);
+	void on_invertBox_toggled(bool t);
+	void setFile(const QString& filePath);
+	void setImage(const QImage& img);
+	void computePreview();
+	void updateImageSlot(const QImage&);
+	void reject();
+	QImage computeTinyPlanet(const QImage& img, float scaleLog, double angle, QSize s);
+	void tinyPlanetFinished();
+
+signals:
+	void updateImage(const QImage& img);
+
+protected:
+	void createLayout();
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void resizeEvent(QResizeEvent *event);
+
+	QLabel* mImgPreview = 0;
+	QLabel* mPreviewLabel = 0;
+	QDialogButtonBox* mButtons = 0;
+	QFutureWatcher<QImage> mTinyPlanetWatcher;
+
+	DkSlider* mScaleLogSlider = 0;
+	DkSlider* mAngleSlider = 0;
+	QCheckBox* mInvertBox = 0;
+
+	bool mProcessing = false;
+	QImage mImg;
 };
 
 class DkMosaicDialog : public QDialog {
@@ -808,19 +788,20 @@ public slots:
 	void on_darkenSlider_valueChanged(int i);
 	void on_lightenSlider_valueChanged(int i);
 	void on_saturationSlider_valueChanged(int i);
-	void setFile(const QFileInfo& file);
+	
+	void setFile(const QString& file);
 	void compute();
 	void reject();
-	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
+	int computeMosaic(const QString& filter, const QString& suffix, int from, int to);		// TODO: make const!
 	void mosaicFinished();
 	void postProcessFinished();
 	void buttonClicked(QAbstractButton* button);
 	void updatePatchRes();
 
 signals:
-	void updateImage(QImage img);
-	void updateProgress(int);
-	void infoMessage(QString msg);
+	void updateImage(const QImage& img) const;
+	void updateProgress(int) const;
+	void infoMessage(const QString& msg) const;
 
 protected:
 	void updatePostProcess();
@@ -834,44 +815,43 @@ protected:
 	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
 	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
 	
-	DkBaseViewPort* viewport;
-	DkBaseViewPort* preview;
-	QLabel* fileLabel;
-	QLabel* folderLabel;
-	QLineEdit* filterEdit;
-	QComboBox* suffixBox;
-	QSpinBox* newWidthBox;
-	QSpinBox* newHeightBox;
-	QSpinBox* numPatchesV;
-	QSpinBox* numPatchesH;
-	QDialogButtonBox* buttons;
-	QProgressBar* progress;
-	QLabel* msgLabel;
-	QWidget* controlWidget;
-	QCheckBox* overwrite;
-	QLabel* realResLabel;
-	QLabel* patchResLabel;
+	DkBaseViewPort* mViewport = 0;
+	DkBaseViewPort* mPreview = 0;
+	QLabel* mFileLabel = 0;
+	QLabel* mFolderLabel = 0;
+	QLineEdit* mFilterEdit = 0;
+	QComboBox* mSuffixBox = 0;
+	QSpinBox* mNewWidthBox = 0;
+	QSpinBox* mNewHeightBox = 0;
+	QSpinBox* mNumPatchesV = 0;
+	QSpinBox* mNumPatchesH = 0;
+	QDialogButtonBox* mButtons = 0;
+	QProgressBar* mProgress = 0;
+	QLabel* mMsgLabel = 0;
+	QWidget* mControlWidget = 0;
+	QCheckBox* mOverwrite = 0;
+	QLabel* mRealResLabel = 0;
+	QLabel* mPatchResLabel = 0;
 	
-	QWidget* sliderWidget;
-	QSlider* darkenSlider;
-	QSlider* lightenSlider;
-	QSlider* saturationSlider;
+	QWidget* mSliderWidget = 0;
+	QSlider* mDarkenSlider = 0;
+	QSlider* mLightenSlider = 0;
+	QSlider* mSaturationSlider = 0;
 
-	QFileInfo cFile;
-	QDir saveDir;
-	DkBasicLoader loader;
-	QFutureWatcher<int> mosaicWatcher;
-	QFutureWatcher<bool> postProcessWatcher;
+	QString mFilePath;
+	QString mSavePath;
+	DkBasicLoader mLoader;
+	QFutureWatcher<int> mMosaicWatcher;
+	QFutureWatcher<bool> mPostProcessWatcher;
 
-	bool updatePostProcessing;
-	bool postProcessing;
-	bool processing;
-	cv::Mat origImg;
-	cv::Mat mosaicMat;
-	cv::Mat mosaicMatSmall;
-	QImage mosaic;
-	QVector<QFileInfo> filesUsed;
-
+	bool mUpdatePostProcessing = false;
+	bool mPostProcessing = false;
+	bool mProcessing = false;
+	cv::Mat mOrigImg;
+	cv::Mat mMosaicMat;
+	cv::Mat mMosaicMatSmall;
+	QImage mMosaic;
+	QVector<QFileInfo> mFilesUsed;
 
 	enum {
 		finished,
@@ -912,10 +892,11 @@ public slots:
 protected:
 	void createLayout();
 	
-	QComboBox* languageCombo;
-	QCheckBox* registerFilesCheckBox;
-	QStringList languages;
-	bool languageChanged;
+	QComboBox* mLanguageCombo = 0;
+	QCheckBox* mRegisterFilesCheckBox = 0;
+	QCheckBox* mSetAsDefaultCheckBox = 0;
+	QStringList mLanguages;
+	bool mLanguageChanged = false;
 };
 
 #ifdef WITH_QUAZIP
@@ -925,13 +906,13 @@ class DkArchiveExtractionDialog : public QDialog {
 public:
 	DkArchiveExtractionDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	void setCurrentFile(const QFileInfo& file, bool isZip);
+	void setCurrentFile(const QString& filePath, bool isZip);
 
 public slots:
-	void textChanged(QString text);
+	void textChanged(const QString& text);
 	void checkbocChecked(int state);
-	void dirTextChanged(QString text);
-	void loadArchive(QString filePath = "");
+	void dirTextChanged(const QString& text);
+	void loadArchive(const QString& filePath = "");
 	void openArchive();
 	void openDir();
 	void accept();
@@ -942,18 +923,18 @@ protected:
 
 	void createLayout();
 	void userFeedback(const QString& msg, bool error = false);
-	QStringList extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders);
+	QStringList extractFilesWithProgress(const QString& fileCompressed, const QStringList& files, const QString& dir, bool removeSubfolders);
 
-	DkFileValidator fileValidator;
-	QDialogButtonBox* buttons;
-	QLineEdit* archivePathEdit;
-	QLineEdit* dirPathEdit;
-	QListWidget* fileListDisplay;
-	QLabel* feedbackLabel;
-	QCheckBox* removeSubfolders;
+	DkFileValidator mFileValidator;
+	QDialogButtonBox* mButtons = 0;
+	QLineEdit* mArchivePathEdit = 0;
+	QLineEdit* mDirPathEdit = 0;
+	QListWidget* mFileListDisplay = 0;
+	QLabel* mFeedbackLabel = 0;
+	QCheckBox* mRemoveSubfolders = 0;
 
-	QStringList fileList;
-	QFileInfo cFile;
+	QStringList mFileList;
+	QString mFilePath;
 };
 #endif
 

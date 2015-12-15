@@ -1,0 +1,1239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>LibRaw: Data Structures and Constants</title>
+  </head>
+
+  <body>
+    <a href=index.html>[back to Index]</a>
+    <h1>LibRaw: Data Structures and Constants</h1>
+    <p>
+      LibRaw data structures are defined in header file libraw/libraw_types.h<br/>
+      Constants used in its work are defined in file libraw/libraw_const.h
+    </p>
+    <h2>Contents:</h2>
+    <ol>
+      <li><a href="#datastruct">Data structures</a>
+        <ol>
+          <li><a href="#libraw_data_t">libraw_data_t: Main Data Structure in LibRaw</a></li>
+          <li><a href="#libraw_iparams_t">Structure libraw_iparams_t: Main Parameters of the Image</a></li>
+          <li><a href="#libraw_image_sizes_t">Structure libraw_image_sizes_t: Image Dimensions</a></li>
+          <li><a href="#libraw_colordata_t">Structure libraw_colordata_t: Color Information</a></li>
+          <li><a href="#libraw_imgother_t">Structure  libraw_imgother_t: Other Parameters of the Image</a></li>
+          <li><a href="#libraw_rawdata_t">Structure  libraw_rawdata_t: holds unpacked RAW data</a></li>
+          <li><a href="#libraw_thumbnail_t">Structure libraw_thumbnail_t: Description of Thumbnail</a></li>
+	  <li><a href="#libraw_lensinfo_t">Structure libraw_lensinfo_t - lens data, extracted from EXIF/Makernotes</a></li>
+          <li><a href="#libraw_output_params_t">Structure libraw_output_params_t: Management of dcraw-Style Postprocessing</a>.</li>
+          <li><a href="#libraw_processed_image_t">Stucture libraw_processed_image_t - result set for  dcraw_make_mem_image()/dcraw_make_mem_thumb() functions</a></li>
+        </ol>
+      </li>
+      <li>
+        <a href="#datastream">Input abstraction layer</a>
+        <ul>
+          <li><a href="#datastream_data">Data fields</a></li>
+        </ul>
+      </li>
+      <li><a href="#const">Constants</a>
+        <ol>
+          <li><a href="#LibRaw_errors">enum LibRaw_errors: Error Codes</a></li>
+          <li><a href="#decoder_flags">enum LibRaw_decoder_flags - RAW data format description</a></li>
+          <li><a href="#progress">enum LibRaw_progress: Current State of LibRaw Object</a></li>
+          <li><a href="#LibRaw_thumbnail_formats">enum LibRaw_thumbnail_formats: Thumbnail Data Formats</a></li>
+          <li><a href="#warnings">Nonstandard Situations (Warnings) during RAW Data Processing</a></li>
+          <li><a href="#LibRaw_image_formats">enum LibRaw_image_formats - possible types of data, contains in  libraw_processed_image_t structure</a>
+        </ol>
+      </li>
+    </ol>
+
+    <a name="datastruct"></a>
+    <h2>Data Structures</h2>
+    <a name="libraw_data_t"></a>
+    <h3>libraw_data_t: Main Data Structure of LibRaw</h3>
+    <p>
+      Structure libraw_data_t is a &quot;wrapping&quot; for data structures accessible to the user of the library.<br/>
+      When one uses C++ API, it is accessible as LibRaw::imgdata (class_instance.imgdata). The data in this structure appear after
+      a file is opened through open_file (and other open_ calls), except for the image itself (filled by unpack()) and data containing
+the preview information (filled by calling unpack_thumb()).<br/>
+     Data fields:
+    </p>
+    <dl>
+      <dt><b>unsigned int                progress_flags;</b></dt>
+      <dd>
+        This field records the past <a href="#progress">phases of image processing</a>.
+      </dd>
+      <dt><b>unsigned int                progress_flags;</b></dt>
+      <dd>
+        This field records <a href="#warnings">suspicious situations (warnings)</a> that have emerged during image processing.
+      </dd>
+      <dt><b>libraw_iparams_t            idata;</b></dt>
+      <dd>
+        The structure describes the main image parameters retrieved from the RAW file. Fields of this structure
+are described in detail <a href="#libraw_iparams_t">below</a>.
+      </dd>
+      <dt><b>libraw_image_sizes_t        sizes;</b></dt>
+      <dd>
+        The structure describes the geometrical parameters of the image. Fields of this structure
+ are described in detail <a href="#libraw_image_sizes_t">below</a>.
+      </dd>
+      <dt><b>libraw_colordata_t          color;</b></dt>
+      <dd>
+   The structure contains color data retrieved from the file. Fields of this structure
+are described in detail <a href="#libraw_colordata_t">below</a>.
+      </dd>
+      <dt><b>libraw_imgother_t           other;</b></dt>
+      <dd>
+Data structure for information purposes: it contains the image parameters that have been extracted from the file but are
+not needed in further file processing. Fields of this structure are described in detail <a href="#libraw_imgother_t">below</a>.
+      </dd>
+
+      <dt><b>libraw_thumbnail_t          thumbnail;</b></dt>
+      <dd>
+        Data structure containing information on the preview and the preview data themselves. All fields of this
+        structure but thumbnail itself are filled when open_file() is called. Thumbnail readed by unpack_thumb() call.
+        The fields are described in detail <a href="#libraw_thumbnail_t">below</a>.
+      </dd>
+      <dt><b>libraw_rawdata_t          rawdata;</b></dt>
+      <dd>
+        Data structure with pointer to raw-data buffer.
+        Details are described  <a href="#libraw_rawdata_t">below</a>.
+      </dd>
+      <dt><b>ushort                      (*image)[4];</b></dt>
+      <dd>
+        The memory area that contains the image pixels per se. It is filled when raw2image() or dcraw_process() is called.
+      </dd>
+
+      <dt><b>libraw_output_params_t     params;</b></dt>
+      <dd>
+        Data structure intended for management of image postprocessing (using the dcraw emulator).
+Fields of this structure are described in detail <a href="#libraw_iparams_t">below</a>.
+      </dd>
+    </dl>
+    <a name="libraw_iparams_t"></a>
+    <h3> Structure libraw_iparams_t: Main Parameters of the Image</h3>
+    <p>
+
+    </p>
+    <dl>
+      <dt><b>char        make[64];</b></dt>
+      <dd>
+        Camera manufacturer.
+      </dd>
+      <dt><b>char        model[64];</b></dt>
+      <dd>
+        Camera model.
+      </dd>
+      <dt><b>char        software[64];</b></dt>
+      <dd>
+        Softwary name/version (mostly for DNG files, to distinguish in-camera DNGs from Adobe DNG Converter produced ones).
+      </dd>
+      <dt><b>unsigned    raw_count;</b></dt>
+      <dd>
+        Number of  RAW images in file (0 means that the file has not been recognized).
+      </dd>
+      <dt><b>unsigned    dng_version;</b></dt>
+      <dd>
+        DNG version (for the DNG format).
+      </dd>
+      <dd>
+        1 for Foveon matrices, 0 for others. Foveon is supported in LibRaw-demosaic-pack-GPL2.
+        </p>
+      </dd>
+      <dt><b>int         colors;</b></dt>
+      <dd>
+        Number of colors in the file.
+      </dd>
+      <dt><b>unsigned    filters;</b></dt>
+      <dd>
+        Bit mask describing the order of color pixels in the matrix (0 for full-color images). 32 bits of this field describe 16 pixels
+(8 rows with two pixels in each, from left to right and from top to bottom). Each two bits have values 0 to 3, which
+correspond to four possible colors. Convenient work with this field is ensured by the COLOR(row,column) function,
+which returns the number of the active color for a given pixel.
+<p>
+	values less than 1000 are reserved as special cases:
+<ul>
+<li><b>1</b> - Leaf Catchlight with 16x16 bayer matrix;
+<li><b>9</b> - Fuji X-Trans (6x6 matrix)
+<li>3..8 and 10..999 - are unused.
+</ul>
+
+      </dd>
+      <dt><b>char        xtrans[6][6];</b></dt>
+      <dt><b>char        xtrans_abs[6][6];</b></dt>
+      <dd>
+        These matrices contains Fuji X-Trans row/col to color mapping. First one is relative to visible area,
+	while second is positioned relative to sensor edges.
+      </dd>
+      <dt><b>char        cdesc[5];</b></dt>
+      <dd>
+        Description of colors numbered from 0 to 3 (RGBG,RGBE,GMCY, or GBTG).
+      </dd>
+      <dt><b>unsigned xmplen; char *xmpdata;</b></dt>
+      <dd>
+        XMP packed data length and pointer to extracted XMP packet.
+      </dd>
+    </dl>
+    <a name="libraw_image_sizes_t"></a>
+    <h3>Structure libraw_image_sizes_t: Image Dimensions</h3>
+    <p>Structure libraw_image_sizes_t is a collection of all file data that describe the size of the image.<br/>
+      Data fields:
+      </p>
+    <dl>
+      <dt><b>ushort    raw_height, raw_width;</b></dt>
+      <dd>
+        Full size of RAW image (including the frame) in pixels.
+      </dd>
+      <dt><b>ushort    height, width;</b></dt>
+      <dd>
+       Size of visible (&quot;meaningful&quot;) part of the image (without the frame).
+      </dd>
+      <dt><b>ushort    top_margin, left_margin;</b></dt>
+      <dd>
+        Coordinates of the top left corner of the frame (the second corner is calculated from the full size of the image and size of its visible part).
+      </dd>
+      <dt><b>ushort      iheight, iwidth;</b></dt>
+      <dd>
+        Size of the output image (may differ from height/width for cameras that require image rotation or have non-square pixels).
+      </dd>
+       <dt><b>unsigned raw_pitch;</b></dt>
+	<dd>
+	Full size of raw data row in bytes.
+	</dd>
+      <dt><b>double      pixel_aspect;</b></dt>
+      <dd>
+      Pixel width/height ratio. If it is not unity, scaling of the image along one of the axes is required during output.
+       </dd>
+      <dt><b>int         flip;</b></dt>
+      <dd>
+        Image orientation (0 if does not require rotation; 3 if requires 180-deg rotation; 5 if 90 deg counterclockwise, 6 if 90 deg clockwise).
+      </dd>
+    </dl>
+    <a name="libraw_colordata_t"></a>
+    <h3>Structure libraw_colordata_t: Color Information</h3>
+    <p>Structure libraw_colordata_t unites all color data, both retrieved from the RAW file and calculated on the basis of the
+image itself. For different cameras, there are different ways of color handling. <br/>
+     Data fields:
+    </p>
+    <dl>
+      <dt><b>ushort      curve[0x10000];</b></dt>
+      <dd>
+        Camera tone curve. May be read from file as is, or calculated, depending on file format;
+      </dd>
+      <dt><b>unsigned    black;</b></dt>
+      <dd>
+      Black level. Depending on the camera, it may be zero (this means that black has been subtracted at the unpacking stage
+or by the camera itself), calculated at the unpacking stage, read from the RAW file, or hardcoded.
+      </dd>
+      <dt><b>unsigned    cblack[4102];</b></dt>
+      <dd>
+        Per-channel black level correction. First 4 values are per-channel correction, next two are black level
+        pattern block size, than cblack[5]*cblack[6] correction values.
+      </dd>
+      <dt><b>unsigned    maximum;</b></dt>
+      <dd>
+       Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
+        This value may be changed on postprocessing stage (when black subtraction performed) and by
+        automated maximum adjustment (this adjustment performed if <b>params.adjust_maximum_thr</b>
+        is set to nonzero).
+      </dd>
+      <dt><b>unsigned    data_maximum;</b></dt>
+      <dd>
+       Maximum pixel value in real image (not including masked area). Calculated from RAW data on black
+        subtraction stage.
+      </dd>
+      <dt><b>ushort      white[8][8];</b></dt>
+      <dd>
+     Block of white pixels extracted from files CIFF/CRW. Not extracted for other formats. Used to calculate white
+balance coefficients.
+      </dd>
+      <dt><b>float       cam_xyz[4][3]; </b></dt>
+      <dd>
+        Camera RGB - XYZ conversion matrix. This matrix is constant (different for different models).
+        Last row is zero for RGB cameras and non-zero for different color models (CMYG and so on).
+      </dd>
+      <dt><b>float       cam_mul[4]; </b></dt>
+      <dd>
+        White balance coefficients (as shot). Either read from file or calculated.
+      </dd>
+      <dt><b>float       pre_mul[4]; </b></dt>
+      <dd>
+        White balance coefficients for daylight (daylight balance). Either read from file, or calculated on the basis of file data,
+or taken from hardcoded constants.
+      </dd>
+      <dt><b>float       cmatrix[3][4];</b></dt>
+      <dd>
+        Camera color data read from RAW file (if any)
+      </dd>
+      <dt><b>float       rgb_cam[3][4];</b></dt>
+      <dd>
+        Camera to sRGB conversion matrix
+      </dd>
+      <dt><b>ph1_t       phase_one_data;</b></dt>
+      <dd>
+        Color data block that is read for Phase One cameras.
+      </dd>
+      <dt><b>float       flash_used;</b></dt>
+      <dt><b>float       canon_ev;</b></dt>
+      <dd>
+        Fields used for white balance calculations (for some P&amp;S Canon cameras).
+      </dd>
+      <dt><b>char          model2[64];</b></dt>
+      <dd>
+        Firmware revision (for some cameras).
+      </dd>
+      <dt><b>void    *profile;</b></dt>
+      <dd>
+        Pointer to the retrieved ICC profile (if it is present in the RAW file).
+      </dd>
+      <dt><b>unsigned    profile_length;</b></dt>
+      <dd>
+        Length of ICC profile in bytes.
+      </dd>
+      <dt><b>unsigned   black_stat[8];</b></dt>
+      <dd>
+        Black level statistics if calcluated from masked area: 4 sum of pixel values, than 4 pixel counts (per channel).
+      </dd>
+      <dt><b>libraw_dng_color_t  dng_color[2];</b></dt>
+      <dd>
+        Color data read from DNG: illuminant, calbiration matrix and color matrix for two light sources.
+        (see DNG specs for details).
+      </dd>
+      <dt><b>libraw_canon_makernotes_t canon_makernotes;</b></dt>
+      <dd>
+ 	Canon specific data: color data version, saturation level, average black level.
+      </dd>
+      <dt><b>  float	      baseline_exposure;</b></dt>
+      <dd>
+	DNG-files: value of BaselineExposure tag.
+      </dd>
+      <dt><b>int		  OlympusSensorCalibration[2]</b></dt>
+      <dd>
+	Olympus file: sensor calibration values (midtone and max).
+      </dd>
+      <dt><b>float		  FujiExpoMidPointShift</b></dt>
+      <dd>
+	Fujifilm file: indicates the shift of metering point relative to SOS calibration standard, can be used as an instruction to raw converter to compensate raw image brightness. If the raw file contains 2 frames, each one may have its own value for FujiExpoMidPointShift.
+      </dd>
+      <dt><b>int		digitalBack_color</b></dt>
+      <dd>
+	Set to non-zero if current file is from Leaf/PhaseOne digital back and color data is read from file.
+      </dd>
+    </dl>
+    <a name="libraw_imgother_t"></a>
+    <h3>Structure  libraw_imgother_t: Other Parameters of the Image</h3>
+    <p>
+      Structure libraw_imgother_t is a collection of data that have been read from the RAW file but are not needed for image postprocessing.<br/>
+      Data fields:
+    </p>
+    <dl>
+      <dt><b>float       iso_speed; </b></dt>
+      <dd>
+        ISO sensitivity.
+      </dd>
+      <dt><b>float       shutter;</b></dt>
+      <dd>
+        Shutter speed.
+      </dd>
+      <dt><b>float       aperture;</b></dt>
+      <dd>
+        Aperture.
+      </dd>
+      <dt><b>float       focal_len;</b></dt>
+      <dd>
+        Focal length.
+      </dd>
+      <dt><b>time_t      timestamp; </b></dt>
+      <dd>
+        Date of shooting.
+      </dd>
+      <dt><b>unsigned    shot_order;</b></dt>
+      <dd>
+        Serial number of image.
+      </dd>
+      <dt><b>unsigned    gpsdata[32];</b></dt>
+      <dd>
+        GPS data (unparsed block, to write to output as is).
+      </dd>
+      </dd>
+      <dt><b>libraw_gps_info_t parsed_gps;</b></dt>
+      <dd>
+         Parsed GPS-data: longtitude/lattitude/altitude and time stamp.
+       </dd>
+      <dt><b>char        desc[512];</b></dt>
+      <dd>
+        Image description.
+      </dd>
+      <dt><b>char          artist[64];</b></dt>
+      <dd>
+        Author of image.
+      </dd>
+    </dl>
+    <a name="libraw_rawdata_t"></a>
+    <h3>Structure  libraw_rawdata_t: holds unpacked RAW data</h3>
+    <p>
+      Structure libraw_rawdata_t holds:
+    </p>
+    <ul>
+      <li>RAW-data from sensor, readed and unpacked by the <a href="API-CXX.html#unpack">unpack()</a> call.
+      </li>
+      <li>"backup" copy of color and over data modified during postprocessing. When postprocessing calls repeats,
+         the needed data is restored from this backup.
+    </ul>
+    <p>
+      Data fields:
+    </p>
+    <dl>
+      <dt>    void        *raw_alloc;</dt>
+      <dd>Buffer allocated to hold RAW-data</dd>
+      <dt>    unsigned short                      *raw_image;</dt>
+      <dd>Pointer to buffer with one-component (bayer) data.</dd>
+      <dt>    unsigned short                      (*color3_image)[3] ;</dt>
+      <dd>Pointer to 3-component pixel array.</dd>
+      <dt>    unsigned short                      (*color4_image)[4] ;</dt>
+      <dd>Pointer to buffer with 4-component pixel data data</dd>
+    </dl>
+    After call to <a href="API-CXX.html#unpack">unpack()</a> only one of these fields is non-NULL.
+<p>
+    All other fields of this structure are for internal use and should not be touched by user code.
+
+    <a name="libraw_thumbnail_t"></a>
+    <h3>Structure libraw_thumbnail_t: Description of Thumbnail</h3>
+    <p>Structure libraw_thumbnail_t describes all parameters associated with the preview saved in the RAW file.<br/>
+      Data fields:
+    </p>
+    <dl>
+      <dt><b>LibRaw_thumbnail_formats tformat;</b></dt>
+      <dd>
+        Thumbnail data format. One of the values among enum <a
+          href="#LibRaw_thumbnail_formats">LibRaw_thumbnail_formats</a>.
+      </dd>
+      <dt><b>ushort      twidth, theight;</b></dt>
+      <dd>
+        Dimensions of the preview image in pixels.
+      </dd>
+      <dt><b>unsigned    tlength;</b></dt>
+      <dd>
+        Thumbnail length in bytes.
+      </dd>
+      <dt><b>int         tcolors;</b></dt>
+      <dd>
+        Number of colors in the preview.
+      </dd>
+      <dt><b>char       *thumb;</b></dt>
+      <dd>
+        Pointer to thumbmail, extracted from the data file.
+      </dd>
+    </dl>
+
+    <a name="libraw_lensinfo_t"></a>
+    <h3>Structure libraw_lensinfo_t: parsed lens data</h3>
+    <p>
+      The following parameters are extracted from Makernotes and EXIF, to help identify which lens
+      was mounted on the camera. If  the value is missing in Makernotes or EXIF, the parameter is set
+      to zero with some exceptions noted below. In some cases the values for the fields like
+      CameraFormat and CameraMount are set based on the camera model and/or camera ID.
+   <h4>libraw_makernotes_lens_t structure:</h4>
+   <ul>
+   <li>LensID (if not -1) and CamID (camera id, if non-zero) values are compatible with
+       those used in exiftool, like |0x0010 CanonModelID| and |22	LensType|
+       see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Canon.html
+       or 0x0207/CameraType and 0x0201/LensType (see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Olympus.html )
+   <li>Lens string, if not empty, contains the lens name present in Makernotes.
+   <li>LensFormat and CameraFormat' currently provide one of value from enum LibRaw_camera_formats;
+   <li> In a similar manner, values for 'LensMount' and 'CameraMount' follow the enum LibRaw_camera_mounts;
+   <li>In some cases, the Makernotes for MF cameras contain either an id for the body, or a string containing the name of the body. The name is copied to 'body' field, while the id is converted to the appropriate body name and also copied to 'body' field. In other cases the 'body' field is empty.
+   <li>FocalType is set based on Makernotes tag, if present. The values are: -1 Undefined; 0  Unknown;1  Fixed focal length lens; 2  Zoom lens
+   <li>LensFeatures_pre - lens name prefix and LensFeatures_suf - lens name suffix:
+      (if not empty) some cameras record alphabet soup that characterizes the lens in separate Makernote tags (see, for example, 0xb02a	LensSpec at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Sony.html ), and for some lenses those acronyms can be derived from the 'Lens' field itself (see processCanonCameraInfo). Those can also help better lens identification.
+   <li>'MinFocal' and 'MaxFocal' , if non-zero, contain the minimum and maximum focal lengths for the lens mounted on the camera.
+   <li>'MaxAp4MinFocal', 'MaxAp4MaxFocal', 'MinAp4MinFocal', 'MinAp4MaxFocal' - if non-zero,
+contain maximum aperture available at minimal focal length, maximum aperture available at maximum focal length, minimum aperture available at minimal focal length, minimum aperture available at maximum focal length, respectively.
+   <li>'MaxAp' and 'MinAp', if non-zero, contain the maximum aperture for the lens (usually it is the maximum aperture for minimal focal length) and the minimum aperture across the focal length range. For zooms with variable maximum aperture this is usually the minimum aperture for the maximum focal length.
+   <li>'CurFocal', if non-zero, is current focal length - that is the focal length used to take the shot.
+   <li>'CurAp', if non-zero, is current aperture.
+   <li>'MaxAp4CurFocal' and 'MinAp4CurFocal', if non-zero, contain the minimum and maximum apertures for the current focal length.
+   <li>'LensFStops' - if non-zero, contains the number of aperture "clicks" or the number of f-stops, depending on the model of the camera.
+   <li>'TeleconverterID', 'AdapterID', 'AttachmentID', if non-zero, are the numbers extracted from Makernotes to identify lens accessories used to take the shot.
+   <li>'Teleconverter', 'Adapter', 'Attachment', if non-empty, are the strings containing the names of the accessories as they appear in Makernotes, or for some cameras, decoded from a numeric field in Makernotes.
+   <li>'CanonFocalUnits' - an auxiliary field, should not be needed most of the cases. See  Canon.pm module in exiftool for more information on this value.
+   <li>'FocalLengthIn35mmFormat', if non-zero: for some reason certain Samsung cameras record this value in Makernotes instead of the EXIF proper. Also used for Sigma cameras.
+  </ul>
+  <h4>libraw_nikonlens_t structure:</h4>
+   Contains additional parameters needed to identify the lens on a Nikon camera using a table -
+   please see Nikon LensID Values at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Nikon.html
+  <h4>libraw_dnglens_t structure:</h4>
+   Contains minimum focal length, maximum focal length, maximum aperture available at minimal focal length,
+   and maximum aperture available at maximum focal length, extracted from EXIF field of a DNG raw file.
+  <h4>libraw_lensinfo_t structure:</h4>
+  Contains all the structures described above, plus parameters extracted directly from EXIF fields:
+   <ul>
+   <li>'MinFocal' and 'MaxFocal' , if non-zero, contain the minimum and maximum focal lengths for the lens mounted on the camera.
+   <li>'MaxAp4MinFocal', 'MaxAp4MaxFocal' - if non-zero, contain maximum aperture available at minimal focal length and maximum aperture available at maximum focal length
+   <li>'LensMake', if not empty, contains a string with the lens manufacturer name.
+   <li>'Lens', if not empty, contains the lens name as recorded in EXIF
+   <li>'FocalLengthIn35mmFormat' - if non-zero, same as FocalLengthIn35mmFilm in EXIF standard, tag 0xa405.
+   <li>'EXIF_MaxAp' - if non-zero, contains the value derived from EXIF tag 0x9205.
+   </ul>
+
+    <a name="libraw_output_params_t"></a>
+    <h3>Structure libraw_output_params_t: Management of dcraw-Style Postprocessing</h3>
+    <p>Structure libraw_output_params_t is used for management of dcraw-compatible calls dcraw_process(),
+      dcraw_ppm_tiff_writer(), and dcraw_thumb_writer(). Fields of this structure
+correspond to command line keys of dcraw.<br/>
+      Data fields:
+    </p>
+    <dl>
+      <dt><b>unsigned    greybox[4];</b></dt>
+      <dd>
+        <b>dcraw keys:</b> -A  x y w h <br/>
+       4 numbers corresponding to the coordinates (in pixels) of the rectangle that is used to calculate the white
+        balance. X and Y are coordinates of the left-top rectangle corner; w and h are the rectangle's width and
+        height, respectively.
+      </dd>
+      <dt><b>unsigned    cropbox[4];</b></dt>
+      <dd>
+        <b>dcraw keys:</b>none<br/>
+        This field sets the image cropping rectangle. Cropbox[0] and cropbox[1] are the rectangle's top-left
+        corner coordinates, remaining two values are width and height respectively. All coordinates are
+        applied before any image rotation.
+      </dd>
+      <dt><b>double      aber[4];</b></dt>
+      <dd>
+        <b>dcraw keys:</b>         -C <br/>
+        Correction of chromatic aberrations; the only specified values are<br/>
+        aber[0], the red multiplier<br/>
+        aber[2], the green multiplier.
+        For some formats, it affects <a href=API-notes.html>RAW data reading</a>, since correction of aberrations
+changes the output size.
+      </dd>
+      <dt><b>double      gamm[6];</b></dt>
+      <dd>
+        <b>dcraw keys:</b>         -g power toe_slope <br/>
+        Sets user gamma-curve. Library user should set first two fields of gamm array:<br/>
+        gamm[0] -  <b>inverted</b> gamma value)<br/>
+        gamm[1] - slope for linear part (so called toe slope). Set to zero for simple power curve.
+        <br/>
+        Remaining 4 values are filled automatically.
+        <p>
+          By default settings for rec. BT.709 are used: power 2.222 (i.e. gamm[0]=1/2.222) and slope 4.5.
+          For sRGB curve use gamm[0]=1/2.4 and gamm[1]=12.92, for linear curve set gamm[0]/gamm[1] to 1.0.
+      </dd>
+      <dt><b>float       user_mul[4];</b></dt>
+      <dd>
+        <b>dcraw keys:</b>     -r mul0 mul1 mul2 mul3 <br/>
+        4 multipliers (r,g,b,g) of the user's white balance.
+      </dd>
+      <dt><b>unsigned    shot_select;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>  -s <br/>
+        Selection of image number for processing (for formats that contain several RAW images in one file).
+      </dd>
+      <dt><b>float       bright;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>          -b <br/>
+        Brightness (default 1.0).
+      </dd>
+      <dt><b>float       threshold;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>        -n <br/>
+        Parameter for noise reduction through wavelet denoising.
+      </dd>
+      <dt><b>int         half_size;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>       -h <br/>
+        Outputs the image in 50% size. For some formats, it affects <a href=API-notes.html>RAW data reading</a>.
+      </dd>
+      <dt><b>int         four_color_rgb;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>  -f <br/>
+     Switches on separate interpolations for two green components.
+      </dd>
+      <dt><b>int         highlight;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>       -H <br/>
+         0-9: Highlight mode (0=clip, 1=unclip, 2=blend, 3+=rebuild).
+      </dd>
+      <dt><b>int         use_auto_wb;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>     -a <br/>
+       Use automatic white balance obtained after averaging over the entire image.
+      </dd>
+      <dt><b>int         use_camera_wb;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>   -w <br/>
+        If possible, use the white balance from the camera.
+      </dd>
+      <dt><b>int         use_camera_matrix;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>  +M/-M <br/>
+        <ul>
+	<li>0: do not use embedded color profile
+	<li>1 (default): use embedded color profile (if present) for DNG files (always); for other files only if use_camera_wb is set;
+	<li>3: use embedded color data (if present) regardless of white balance setting.
+      </dd>
+      <dt><b>int         output_color;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>    -o <br/>
+        [0-5]  Output colorspace (raw, sRGB, Adobe, Wide, ProPhoto, XYZ).
+      </dd>
+      <dt><b>char*         output_profile;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>    -o filename<br/>
+        Path to output profile ICC file (used only if LibRaw compiled with LCMS support)
+      </dd>
+      <dt><b>char*         camera_profile;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>    -p file<br/>
+        Path to input (camera) profile ICC file (or 'embed' for embedded profile). Used only if LCMS support compiled in.
+      </dd>
+      <dt><b>char*         bad_pixels;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>    -P file<br/>
+        Path to file with bad pixels map (in dcraw format: "column row date-of-pixel-death-in-UNIX-format", one pixel
+        per row).
+      </dd>
+      <dt><b>char*         dark_frame;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>    -K file<br/>
+        Path to dark frame file (in 16-bit PGM format)
+      </dd>
+      <dt><b>int         output_bps;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>      -4 <br/>
+        8 bit (default)/16 bit (key -4).
+      </dd>
+      <dt><b>int         output_tiff;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>     -T <br/>
+        0/1: output PPM/TIFF.
+      </dd>
+      <dt><b>int         user_flip;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>       -t <br/>
+        [0-7]  Flip image (0=none, 3=180, 5=90CCW, 6=90CW).
+        Default -1, which means taking the corresponding value from RAW. <br/>
+        For some formats, <a href=API-notes.html>affects RAW data reading</a>, e.g., unpacking of thumbnails
+      from Kodak cameras.
+      </dd>
+      <dt><b>int         user_qual;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>       -q <br/>
+        0-10: interpolation quality:
+        <ul>
+          <li>0 - linear interpolation</li>
+          <li>1 - VNG interpolation</li>
+          <li>2 - PPG interpolation</li>
+          <li>3 - AHD interpolation</li>
+          <li>4 - DCB interpolation</li>
+          <li>5 - Modified AHD interpolation by Paul Lee</li>
+          <li>6 - AFD interpolation (5-pass)</li>
+          <li>7 - VCD interpolation</li>
+          <li>8 - Mixed VCD/Modified AHD interpolation</li>
+          <li>9 - LMMSE interpolation</li>
+          <li>10 - AMaZE intepolation</li>
+          <li>11 - DHT intepolation</li>
+          <li>12 - Modified AHD intepolation (by Anton Petrusevich)</li>
+          </ul>
+        Values 5-9 are useful only if "LibRaw demosaic pack GPL2" compiled in (see README.demosaic-packs in
+        your distribution for details). Value 10 is useful only if LibRaw compiled with "LibRaw demosaic pack GPL3".
+        If some interpolation method is unsupported because LibRaw compiled without corresponding demosaic pack,
+        AHD interpolation will be used without any notice.
+      </dd>
+      <dt><b>int         user_black;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>      -k <br/>
+        User black level.
+     </dd>
+      <dt><b>int         user_cblack[4];</b></dt>
+      <dd>
+        <b>dcraw keys:</b>      none<br/>
+        Per-channel corrections to user_black.
+      </dd>
+      <dt><b>int         user_sat;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>        -S <br/>
+        Saturation adjustment.
+      </dd>
+      <dt><b>int         med_passes;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>      -m <br/>
+        Number of median filter passes.
+      </dd>
+      <dt><b>int         no_auto_bright;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>  -W <br/>
+        Don't use automatic increase of brightness by histogram.
+      </dd>
+      <dt><b>float         auto_bright_thr;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>none<br/>
+        Portion of clipped pixels when auto brighness increase is used. Default value is 0.01 (1%) for dcraw
+        compatibility. Recommended value for modern low-noise multimegapixel cameras depends on shooting style. Values
+        in 0.001-0.00003 range looks reasonable.
+      </dd>
+      <dt><b>float         adjust_maximum_thr;</b></dt>
+      <dd>
+        <b>dcraw keys:</b>none<br/>
+        This parameters controls auto-adjusting of maximum value based on channel_maximum[] data, calculated from
+        real frame data. If calculated maximum is greater than adjust_maximum_thr*maximum, than maximum is
+        set to calculated_maximum.
+        <br/>Default: 0.75. If you set this value above 0.99999, than default value will be used. If you set
+        this value below 0.00001, than no maximum adjustment will be performed.
+        <br/>
+        Adjusting maximum should not damage any picture (esp. if you use default value) and is very useful for
+        correcting channel overflow problems (magenta clouds on landscape shots, green-blue highlights for
+        indoor shots).
+      </dd>
+      <dt><b>int         use_fuji_rotate;</b></dt>
+      <dd>
+        <b>dcraw keys:</b> -j <br/>
+         Default -1 (use), 0 - don't use rotation for cameras on a Fuji sensor.
+      </dd>
+      <dt><b>int         green_matching;</b></dt>
+      <dd>
+        Turns on fixing of green channels disbalance.
+        <b>dcraw keys:</b> none <br/>
+         Default:  0 (not use), 1 - turns on this postprocessing stage. green_matching requires additional memory for
+        image data.
+      </dd>
+      <dt><b>int dcb_iterations</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        Number of DCB correction passes. Default is -1 (no correction). Useful only for DCB interpolation.
+      </dd>
+      <dt><b>int dcb_enhance_fl</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        nonzero: DCB interpolation with enhance interpolated colors.
+      </dd>
+      <dt><b>int fbdd_noiserd</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        Controls FBDD noise reduction before demosaic.
+        <ul>
+          <li>0 - do not use FBDD noise reduction</li>
+          <li>1 - light FBDD reduction</li>
+          <li>2 (and more) - full FBDD reduction</li>
+        </ul>
+      </dd>
+      <dt><b>int eeci_refine</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        nonzero- Use EECI refine for VCD interpolation.
+      </dd>
+      <dt><b>int es_med_passes</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        Number of edge-sensitive median filter passes after VCD+AHD demosaic.
+        Value above 1 is highly not recommended.
+      </dd>
+      <dt><b>int ca_correc</b></dt>
+      <dd>
+        <b>dcraw keys:</b>none<br/>
+        positive value turns on chromatic aberrations suppression (default:0 i.e. off).
+      </dd>
+      <dt><b>float cared,cablue</b></dt>
+      <dd>
+        <b>dcraw keys:</b> none <br/>
+        If one of these fields is non-zero, then these values will be used instead of automatic ones.
+        Useable range is +-0.1..+-4.0.
+      </dd>
+      <dt><b>int cfaline; float linenoise;</b></dt>
+      <dd>Line noise (banding) reduction.
+        <br/>
+          positive value turns this feature on (default: off).
+        <br/>
+        linenoise - amount of reduction. Useful range is 0.001 to 0.02. Default value is 0.0 i.e. not clean anything.
+      </dd>
+      <dt><b>int cfa_clean; float lclean,cclean;</b></dt>
+      <dd>
+        Reduce impulse noise and Gaussian high frequency.
+        <br/>
+        cfa_clean: positive value turns the feature on (default: off).
+        <br/>
+        lclean,cclean - amount of noise reduction for (L)uminance and (C)olor. Useable range from 0.005 to 0.05,
+        common value 0.01
+      </dd>
+      <dt><b>int cfa_green; float green_thresh;</b></dt>
+      <dd>
+        Reduces maze artifacts produced by bad balance of green channels.
+        <br/>
+        cfa_green: positive value turns the feature on (default: off).
+        <br/>
+        green_thresh - max difference between channels allowed for equalization. Useful range between 0.01 and 0.1.
+      </dd>
+      <dt><b>int exp_correc; float exp_shift,exp_preser;</b></dt>
+      <dd>
+        Exposure correction before demosaic.
+        <br/>
+        <ul>
+          <li>exp_correc: positive value turns the feature on (default: off).</li>
+          <li>exp_shift: exposure shift in linear scale. Usable range from 0.25 (2-stop darken) to
+            8.0 (3-stop lighter). Default: 1.0 (no exposure shift).</li>
+          <li>exp_preser: preserve highlights when lighten the image. Usable range from 0.0 (no preservation) to 1.0
+            (full preservation). 0.0 is the default value.
+      </dd>
+
+      <dt><b>int wf_debanding; float wf_deband_treshold[4];</b></dt>
+      <dd>
+          wf_debanding: 1 turns on banding suppression (slow!), 0 turns it off.
+<p>
+	  wf_deband_treshold[] - per channel debanding thresholds.
+      </dd>
+      <dt><b>int use_rawspeed;</b></dt>
+      <dd>
+        Turns on using RawSpeed library for data unpacking (only if RawSpeed support compiled in).
+      </dd>
+      <dt><b>int no_auto_scale;</b></dt>
+      <dd>
+        Disables pixel values scaling (call to LibRaw::scale_colors()) in LibRaw::dcraw_process()
+      </dd>
+      <dt><b>int no_interpolation;</b></dt>
+      <dd>
+        Disables call to demosaic code in LibRaw::dcraw_process()
+      </dd>
+      <dt><b>int sraw_ycc;</b></dt>
+      <dd>
+        Disables YCbCr to RGB conversion for Canon sRAW/mRAW files.
+      </dd>
+      <dt><b>int force_foveon_x3f</b></dt>
+      <dd>
+         Turns on LibRaw standard Foveon files processing based on X3F Tools even if LibRaw compiled with
+         Demosaic-Pack-GPL2 (with dcraw-based foveon code).
+      </dd>
+      <dt><b>int x3f_flags</b></dt>
+      <dd>
+ Sigma Quattro decoding flags:
+ <ul>
+ <li>LIBRAW_DP2QOPT_NONE - just unpack the data;
+ <li>LIBRAW_DP2Q_INTERPOLATERG - turn on R/G channels interpolation
+ <li>LIBRAW_DP2Q_INTERPOLATEAF - turn on data interpolation of low-sensitivity (AF or overexposure control) points on
+   Quattro sensors.
+ </ul>
+ </dd>
+ <dt><b>int sony_arw2_options</b></dt>
+ <dd>
+  Sony ARW2.3 processing options:
+  (for more details see http://www.rawdigger.com/howtouse/sony-craw-arw2-posterization-detection)
+ <ul>
+ <li>  LIBRAW_SONYARW2_NONE - normal decoding;
+ <li>  LIBRAW_SONYARW2_BASEONLY - decode only base pixels, leave delta pixels as zero;
+ <li>  LIBRAW_SONYARW2_DELTAONLY - decode only delta pixels with base pixels zeroed;
+ <li>  LIBRAW_SONYARW2_DELTAZEROBASE - decode delta pixels, do not add base value;
+ <li>  LIBRAW_SONYARW2_DELTATOVALUE - show possible posterization areas;
+ </ul>
+      </dd>
+      <dt><b>int sony_arw2_posterization_thr</b></dt>
+      <dd>
+  If LIBRAW_SONYARW2_DELTATOVALUE used for arw2_options, sets the level to suppress posterization display in shadows.
+      </dd>
+      <dt><b>  float coolscan_nef_gamma;</b></dt>
+      <dd>
+ Gamma value for Coolscan NEF decoding (no way to get if from file, it should be set by calling application).
+	</dd>
+    </dl>
+
+    <a name="libraw_decoder_info_t"></a>
+    <h3>Structure libraw_decoder_info_t: RAW decoder name and data format</h3>
+    <p>
+      This structure describes RAW format decoder name and data format:
+    </P>
+    <dl>
+      <dt>const char          *decoder_name</dt>
+      <dd>Decoder function name</dd>
+      <dt>unsigned             decoder_flags</dt>
+      <dd>Decoder data format. See <a href="#decoder_flags">list of LibRaw_decoder_flags</a> for details.
+      </dd>
+      </dl>
+
+    <a name="libraw_processed_image_t"></a>
+    <h3>Stucture libraw_processed_image_t - result set for  dcraw_make_mem_image()/dcraw_make_mem_thumb() functions</h3>
+    <p>Structure libraw_processed_image_t is produced by call of dcraw_make_mem_image()/dcraw_make_mem_thumb() and contains
+      in-memory image of interpolated data or thumbnail.<br/>
+      Data fields:
+    </p>
+    <dl>
+      <dt><b>LibRaw_image_formats type</b></dt>
+      <dd> This field records type of data, containing in remaining fields of structure.
+        <ul>
+          <li><b>LIBRAW_IMAGE_BITMAP</b> - structure contains RGB bitmap. All metadata fields (see below) are valid
+            and describes image data.
+          <li><b>LIBRAW_IMAGE_JPEG</b> - structure contain in-memory image of JPEG file. Only type, data_size and
+            data fields are valid (and nonzero);
+        </ul>
+      </dd>
+      <dt><b>ushort height,width</b></dt>
+      <dd> Image size (in pixels). Valid only if  type==LIBRAW_IMAGE_BITMAP.</dd>
+      <dt><b>ushort colors, bits</b></dt>
+      <dd> Number of colors components (1 or 3) and color depth in bits (8 or 16). These fields are valid only  if
+        type==LIBRAW_IMAGE_BITMAP.
+        </dd>
+      <dt><b>ushort gamma_corrected</b></dt>
+      <dd> Is bitmap data gamma-corrected (always 1 for 8-bit data, may be 0 or 1 for 16-bit).
+        Valid only if  type==LIBRAW_IMAGE_BITMAP.</dd>
+      <dt><b>unsigned int data_size</b></dt>
+      <dd> Size of <b>data</b> field (in bytes). For bitmap image equal to (height*width*colors * (bits/8)).
+        For JPEG image - exact JPEG size (i.e. extracted  thnumbnail size + JPEG header + EXIF header).
+      </dd>
+      <dt><b>unsigned char data[]</b></dt>
+      <dd> Data array itself. Should be interpreted as RGB triplets for bitmap type and as JPEG file for JPEG type.
+        </dd>
+      </dl>
+
+    <a name="datastream"></a>
+    <h2>Input abstraction layer</h2>
+    <p>
+      RAW data input (read) in LibRaw implemented by calling methods of object derived from
+      <b>LibRaw_abstract_datastream</b> abstract class. Full list of methods is described in
+        href="API-CXX.html#datastream">C++ API reference</a>.
+    </p>
+    <p>
+      There is two ready to use implementations of datastream objects:
+    </p>
+    <ul>
+      <li><a href="API-CXX.html#file_datastream">LibRaw_file_datastream</a> - file input (filename provided
+        to LibRaw).</li>
+      <li><a href="API-CXX.html#buffer_datastream">LibRaw_buffer_datastream</a> - input from memory buffer.</li>
+    </ul>
+    <p>
+      LibRaw user can create own datastream object derived from
+      <a href="API-CXX.html#datastream">LibRaw_abstract_datastream</a>. For example, such object may
+      implement reading RAW data directly from camera (by remote interface). LibRaw can use these
+      objects via
+      <a href="API-CXX.html#open_datastream">LibRaw::open_datastream()</a> interface.
+    </p>
+    <p>
+      Datastreams can be used either via
+      <a href="API-CXX.html#open_datastream">LibRaw::open_datastream()</a> call (in this case datastream
+      object should be created an maintained by user) or via
+      <a href="API-CXX.html#open_file">LibRaw::open_file()</a> and
+      <a href="API-CXX.html#open_buffer">LibRaw::open_buffer()</a> shortcuts.
+    </p>
+    <p>
+      Only <a href="API-CXX.html">C++ API</a> users may use object-oriented interface and
+      implement own input interfaces. For <a href="API-C.html">C API</a> users only
+      built-on <b>libraw_open_file()/libraw_open_buffer()</b> shortcuts are avaliable.
+    </p>
+    <a name="datastream_data"></a>
+    <h3>Data fields</h3>
+    <p>Definition:</p>
+    <pre>
+class LibRaw_abstract_datastream {
+...
+protected:
+    LibRaw_abstract_datastream *substream;
+}
+</pre>
+    <p><b>Description:</b>
+      Ojects derived from LibRaw_abstract_datastream always contains pointer to secondary data stream
+      (substream). This substream initialized internally when needed (really used only for Sony RAW data) and
+      used for temporary switch input stream to temporary memory buffer allocated internally in LibRaw.
+    </p>
+    <p>
+      Substream usage details described more precisely in
+      <a href="API-CXX.html#own_datastreams">own datastream objects creation guide</a>.
+    </p>
+
+    <a name="const"></a>
+    <h2>Constants</h2>
+    <a name=LibRaw_errors></a>
+    <h3>enum LibRaw_errors: Error Codes</h3>
+    <p>All functions returning integer numbers must return either errno or one of the following error codes (see also <a
+        href="API-notes.html#errors">error code conventions</a>).</p>
+    <p><b>Fatal errors</b> (return of such an error code implies that file processing has to be terminated, since
+the state of data structures is unknown).</p>
+    <dl>
+      <dt><b> LIBRAW_UNSUFFICIENT_MEMORY</b></dt>
+      <dd>Attempt to get memory from the system has failed.<br/>
+      All allocated resources will be freed, <a href="API-CXX.html#recycle">recycle()</a> will be called, and the LibRaw
+object will be brought to the state &quot;right after creation.&quot;
+        </dd>
+    <dt><b>LIBRAW_DATA_ERROR</b></dt>
+      <dd>A fatal error emerged during data unpacking.<br/>
+        All allocated resources will be freed, <a href="API-CXX.html#recycle">recycle()</a> will be called, and the LibRaw
+object will be brought to the state &quot;right after creation.&quot;
+      </dd>
+    <dt><b>LIBRAW_IO_ERROR</b></dt>
+      <dd>A fatal error emerged during file reading (premature end-of-file encountered or file is corrupt).<br/>
+        All allocated resources will be freed, <a href="API-CXX.html#recycle">recycle()</a> will be called, and the LibRaw
+object will be brought to the state &quot;right after creation.&quot;
+        </dd>
+    <dt><b>LIBRAW_CANCELLED_BY_CALLBACK</b></dt>
+      <dd>Processing cancelled due to calling application demand (by returning nonzero code from
+        <a  href="API-CXX.html#progress">progress callback</a>).<br/>
+        All allocated resources will be freed, <a href="API-CXX.html#recycle">recycle()</a> will be called, and
+        the LibRaw  object will be brought to the state &quot;right after creation.&quot;
+        </dd>
+    <dt><b>LIBRAW_BAD_CROP</b></dt>
+      <dd>The incorrect cropping coordinates are set via params.cropbox[]: the left-top corner of cropping
+        rectangle is outside the image.
+        The processing will be cancelled, all allocated resources will be freed, <a
+          href="API-CXX.html#recycle">recycle()</a> will be called, and the LibRaw  object will be brought to the
+        state &quot;right after creation.&quot;
+    </dl>
+    <p><b>Non-Fatal Errors</b></p>
+    <dl>
+      <dt><b>LIBRAW_SUCCESS=0</b></dt>
+      <dd>No error; function terminated successfully.</dd>
+      <dt><b>LIBRAW_UNSPECIFIED_ERROR</b></dt>
+      <dd>An unknown error has been encountered. This code should never be generated.</dd>
+      <dt><b>LIBRAW_FILE_UNSUPPORTED</b></dt>
+      <dd>Unsupported file format (attempt to open a RAW file with a format unknown to the program).</dd>
+      <dt><b>LIBRAW_REQUEST_FOR_NONEXISTENT_IMAGE</b></dt>
+      <dd>Attempt to retrieve a RAW image with a number absent in the data file (only for formats supporting storage
+      of several images in a file).</dd>
+      <dt><b>LIBRAW_OUT_OF_ORDER_CALL</b></dt>
+      <dd>API functions have been called in wrong order (e.g., <a href="API-CXX.html#unpack">unpack()</a> before
+        <a href="API-CXX.html#open_file">open_file()</a>) or the previous stage has ended with an error (e.g.,
+         <a href="API-CXX.html#unpack">unpack()</a> is called after <a
+          href="API-CXX.html#open_file">open_file()</a> has returned an error).
+      </dd>
+      <dt><b>LIBRAW_NO_THUMBNAIL</b></dt>
+      <dd>Returned upon an attempt to retrieve a thumbnail from a file containing no preview.</dd>
+      <dt><b>LIBRAW_UNSUPPORTED_THUMBNAIL</b></dt>
+      <dd>RAW file contains a preview of unsupported format.</dd>
+    </dl>
+
+    <a name="decoder_flags"></a>
+    <h3>enum LibRaw_decoder_flags - RAW data format description</h3>
+    <p>
+      Depending of capabilities of given data format, the buffer with RAW data may have different layouts:
+    </p>
+    <dl>
+      <dt><b>LIBRAW_DECODER_HASCURVE</b></dt>
+      <dd>This flag is set if decoder uses RAW tone curve and curve data may be modified before call
+         to decoder (i.e. curve values are not read or calculated within decoder).
+      </dd>
+      <dt><b>LIBRAW_DECODER_SONYARW2</b></dt>
+      <dd>This flag is set if file format is Sony ARW2.3, so sony_arw2_options is applicable.
+      </dd>
+      <dt><b>LIBRAW_DECODER_TRYRAWSPEED</b></dt>
+      <dd>This flag is set if file format is (possibly) supported by RawSpeed library, so unpack() will try to use it.
+      </dd>
+      <dt><b>LIBRAW_DECODER_FIXEDMAXC</b></dt>
+      <dd>Do not use automated maximum calculation for this data format.
+      </dd>
+      </dl>
+
+    <a name="progress"></a>
+    <h3>enum LibRaw_progress: Current State of LibRaw Object</h3>
+    <p>LibRaw::imgdata.progress_flags contains a bit mask describing all stages of file processing that have already been performed.
+    </p>
+    <p><b>File opening and RAW data extraction phase.</b></p>
+    <dl>
+      <dt><b>LIBRAW_PROGRESS_START=0</b></dt>
+      <dd>
+        Object just created, no processing carried out.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_OPEN</b></dt>
+      <dd>
+        File to be processed has been opened.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_IDENTIFY</b></dt>
+      <dd>
+        Data identification performed, format recognized, metadata extracted.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_SIZE_ADJUST</b></dt>
+      <dd>
+        Data sizes adjusted (for files that require such adjustment, namely, certain files from Kodak cameras).
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_LOAD_RAW</b></dt>
+      <dd>
+        RAW data loaded.
+      </dd>
+    </dl>
+    <p><b>The following flags are set during usage of image processing that has been taken from dcraw.</b></p>
+    <dl>
+      <dt><b>LIBRAW_PROGRESS_RAW2_IMAGE</b></dt>
+      <dd>
+	imgdata.image array allocated and filled with data.
+      </dd>
+
+      <dt><b>LIBRAW_PROGRESS_REMOVE_ZEROES</b></dt>
+      <dd>
+        Zero values removed for cameras that require such removal (Panasonic cameras).
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_BAD_PIXELS</b></dt>
+      <dd>
+        Bad (dead) pixels removed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_DARK_FRAME</b></dt>
+      <dd>
+        Dark frame subtracted from RAW data.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_FOVEON_INTERPOLATE</b></dt>
+      <dd>
+        Interpolation for cameras with a Foveon sensor performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_SCALE_COLORS</b></dt>
+      <dd>
+        White balance performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_PRE_INTERPOLATE</b></dt>
+      <dd>
+       Image size reduction (for the half_size mode) performed, as well as copying of 2nd green channel to the 1st one in points
+    where the second channel is present and the first one is absent.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_INTERPOLATE</b></dt>
+      <dd>
+        Interpolation (debayer) performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_MIX_GREEN</b></dt>
+      <dd>
+        Averaging of green channels performed.
+       </dd>
+      <dt><b>LIBRAW_PROGRESS_MEDIAN_FILTER</b></dt>
+      <dd>
+        Median filtration performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_HIGHLIGHTS</b></dt>
+      <dd>
+        Work with highlights performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_FUJI_ROTATE</b></dt>
+      <dd>
+        For images from Fuji cameras, rotation performed (or adjust_sizes_info_only() called).
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_FLIP</b></dt>
+      <dd>
+        Dimensions recalculated for images shot with a rotated camera (sizes.iwidth/sizes.iheight swapped).
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_CONVERT_RGB</b></dt>
+      <dd>
+        Conversion into output RGB space performed.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_STRETCH</b></dt>
+      <dd>
+        Image dimensions changed for cameras with non-square pixels.
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_STAGE17 - LIBRAW_PROGRESS_STAGE27</b></dt>
+      <dd>
+        Reserved for possible appearance of other processing stages.
+      </dd>
+    </dl>
+    <p><b>The following flags are set during loading of thumbnails.</b></p>
+      <dt><b>LIBRAW_PROGRESS_THUMB_LOAD</b></dt>
+      <dd>
+        Thumbnail data have been loaded (for Kodak cameras, the necessary conversions have also been made).
+      </dd>
+      <dt><b>LIBRAW_PROGRESS_TRESERVED1 - LIBRAW_PROGRESS_TRESERVED3</b></dt>
+      <dd>
+        Reserved for possible future processing stages.
+      </dd>
+    </dl>
+
+    <a name="LibRaw_thumbnail_formats"></a>
+    <h3>enum LibRaw_thumbnail_formats: Thumbnail Data Formats</h3>
+    <p>Thumbnail data format is written in the imgdata.thumbnail.tformat data field.<br/>
+      Presently LibRaw knows about four thumbnail formats, among which two are unpacked:
+    </p>
+    <dl>
+      <dt><b>LIBRAW_THUMBNAIL_UNKNOWN</b></dt>
+      <dd>Format unknown or thumbnail  not yet read.
+      </dd>
+      <dt><b>LIBRAW_THUMBNAIL_JPEG</b></dt>
+      <dd>The thumbnail buffer contains a JPEG file (read from the RAW file &quot;as is,&quot; without any manipulations performed on it).
+      </dd>
+      <dt><b>LIBRAW_THUMBNAIL_BITMAP</b></dt>
+      <dd>
+        The thumbnail buffer contains the gamma-adjusted RGB bitmap (for Kodak cameras, the gamma correction is performed with allowance
+       for maximum values and the white balance is set in accordance with the camera settings).<br/>
+        In this format, each pixel of the image is represented by a 8-bit RGB triplet.
+      </dd>
+      <dt><b>LIBRAW_THUMBNAIL_LAYER</b></dt>
+      <dd>
+        Data format is presently recognized upon opening of RAW file but not supported: not unpacked into LibRaw::unpack_thumb.
+      </dd>
+      <dt><b>LIBRAW_THUMBNAIL_ROLLEI</b></dt>
+      <dd>
+        Data format is presently recognized upon opening of RAW file but not supported: not unpacked into LibRaw::unpack_thumb.
+      </dd>
+    </dl>
+    <a name="warnings"></a>
+    <h3>Nonstandard Situations (Warnings) during RAW Data Processing</h3>
+    <p>Some suspicious situations emerging during image processing are not fatal but may affect the result of data
+retrieval or postprocessing. Such states are indicated by setting a bit in the imgdata.process_warnings field.</p>
+    <dl>
+      <dt><b>LIBRAW_WARN_FOVEON_NOMATRIX</b></dt>
+      <dd>
+      Only for cameras with Foveon: extraction of one of data matrices has failed.
+      </dd>
+      <dt><b>LIBRAW_WARN_FOVEON_INVALIDWB</b></dt>
+      <dd>
+        Only for cameras with Foveon: extraction of white balance data has failed.
+      </dd>
+      <dt><b>LIBRAW_WARN_BAD_CAMERA_WB</b></dt>
+      <dd>
+       Postprocessing must use white balance of the camera but this balance is not suitable for use.
+      </dd>
+      <dt><b>LIBRAW_WARN_NO_METADATA</b></dt>
+      <dd>
+        Only for cameras where the metadata are taken from an external JPEG file: metadata extraction has failed.
+      </dd>
+      <dt><b>LIBRAW_WARN_NO_JPEGLIB</b></dt>
+      <dd>
+        Only for P&S Kodak cameras: data in JPEG format. At the same time, open_file() will return LIBRAW_FILE_UNSUPPORTED.
+     </dd>
+      <dt><b>LIBRAW_WARN_NO_EMBEDDED_PROFILE</b></dt>
+      <dd>
+        (only if LCMS support compiled in).
+        Caller set embedded input profile use, but no such profile exists in RAW.
+      </dd>
+      <dt><b>LIBRAW_WARN_NO_INPUT_PROFILE</b></dt>
+      <dd>
+        (only if LCMS support compiled in).
+        Error when opening input profile ICC file.
+      </dd>
+      <dt><b>LIBRAW_WARN_BAD_OUTPUT_PROFILE</b></dt>
+      <dd>
+        (only if LCMS support compiled in).
+        Error when opening output profile ICC file.
+      </dd>
+      <dt><b>LIBRAW_WARN_NO_BADPIXELMAP</b></dt>
+      <dd>
+        Error when opening bad pixels map file.
+      </dd>
+      <dt><b>LIBRAW_WARN_BAD_DARKFRAME_FILE</b></dt>
+      <dd>
+        Error when opening dark frame file.
+      </dd>
+      <dt><b>LIBRAW_WARN_BAD_DARKFRAME_DIM</b></dt>
+      <dd>
+        Dark frame file either differs in dimensions from RAW-file processed, or have wrong format.
+        Dark frame should be in 16-bit PGM format (one can generate it using simple_dcraw -4 -D).
+      </dd>
+      <dt><b>LIBRAW_WARN_RAWSPEED_PROBLEM</b></dt>
+	<dd>
+	Problems detected in RawSpeed decompressor. The image data processed by LibRaw own decoder.
+        </dd>
+    <dt><b>LIBRAW_WARN_RAWSPEED_UNSUPPORTED</b></dt>
+	<dd>
+	This file not supported by RawSpeed (although compatible decoder exists).
+        </dd>
+    <dt><b>LIBRAW_WARN_RAWSPEED_PROCESSED</b></dt>
+	<dd>
+	  Not warning, but information. The file was decoded by RawSpeed.
+	</dd>
+    <dt><b>LIBRAW_WARN_FALLBACK_TO_AHD</b></dt>
+	<dd>
+	  Incorrect/unsupported user_qual was set, AHD demosaic used instead.
+	</dd>
+    </dl>
+
+    <a name="LibRaw_image_formats"></a>
+    <h3>enum LibRaw_image_formats - possible types of data, contains in  libraw_processed_image_t structure</h3>
+    <p><b>type</b> field of  libraw_processed_image_t structure may have one of these values:
+      </p>
+    <dl>
+      <dt><b>LIBRAW_IMAGE_BITMAP</b></dt>
+      <dd>
+        The structure contains RGB-bitmap, metadata described in other fields of  libraw_processed_image_t.
+      </dd>
+      <dt><b>LIBRAW_IMAGE_JPEG</b></dt>
+      <dd>
+        libraw_processed_image_t structure contains JPEG image (in memory). Only data_size field is meaningful.
+      </dd>
+    </dl>
+
+    <a href=index.html>[back to Index]</a>
+  </body>
+</html>

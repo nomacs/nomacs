@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Copyright (c) 2008-2015, Gilles Caulier, <caulier dot gilles at gmail dot com>
+#
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+#
+# Arguments : $1 : install path '/opt/local' (default).
+#             $2 : build type   'debugfull' to hack (default), 'release' for production.
+#             $3 : target type  'x86_64' for OSX Lion and later (default), 'i386' for Snow Leopard.
+#             $4 : extra CXX flags (empty by default)
+#
+
+INSTALL_PREFIX=$1
+if [ "$INSTALL_PREFIX" = "" ]; then
+    # Standard Macports install
+    INSTALL_PREFIX=/opt/local
+    BUNDLE_INSTALL_DIR=/Applications/
+else
+    # Specific install path as /opt/exiv2 to build bundle PKG for example
+    BUNDLE_INSTALL_DIR=${INSTALL_PREFIX}/Applications/
+fi
+
+BUILD_TYPE=$2
+if [ "$BUILD_TYPE" = "" ]; then
+    BUILD_TYPE=debugfull
+fi
+
+TARGET_TYPE=$3
+if [ "$TARGET_TYPE" = "" ]; then
+    TARGET_TYPE=x86_64
+fi
+
+EXTRA_CXX_FLAGS=$4
+
+# Set devel env from MacOS-X through MacPorts
+export QTDIR=${INSTALL_PREFIX}/lib
+export QT_INCLUDE_DIR=${INSTALL_PREFIX}/include
+export PATH=$QTDIR/bin:$PATH
+export PKG_CONFIG_PATH=${INSTALL_PREFIX}/lib/pkgconfig:$PKG_CONFIG_PATH
+
+# We will work on command line using GNU make
+export MAKEFILES_TYPE='Unix Makefiles'
+
+echo "Installing to $INSTALL_PREFIX for target $TARGET_TYPE with build mode $BUILD_TYPE and extra CXX flags $EXTRA_CXX_FLAGS"
+
+if [ ! -d "build.cmake" ]; then
+    mkdir build.cmake
+fi
+
+cd build.cmake
+
+cmake -G "$MAKEFILES_TYPE" . \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+      -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
+      -DCMAKE_OSX_ARCHITECTURES=${TARGET_TYPE} \
+      -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} ${EXTRA_CXX_FLAGS}" \
+      -DCMAKE_COLOR_MAKEFILE=ON \
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+      -DCMAKE_INSTALL_NAME_DIR=${INSTALL_PREFIX}/lib \
+      -DCMAKE_SYSTEM_PREFIX_PATH="${INSTALL_PREFIX};/usr" \
+      -DCMAKE_MODULE_PATH="${INSTALL_PREFIX}/share/cmake/modules" \
+      -DEXIV2_ENABLE_SHARED=ON \
+      -DEXIV2_ENABLE_XMP=ON \
+      -DEXIV2_ENABLE_LIBXMP=ON \
+      -DEXIV2_ENABLE_VIDEO=ON \
+      -DEXIV2_ENABLE_PNG=ON \
+      -DEXIV2_ENABLE_NLS=ON \
+      -DEXIV2_ENABLE_PRINTUCS2=ON \
+      -DEXIV2_ENABLE_LENSDATA=ON \
+      -DEXIV2_ENABLE_COMMERCIAL=OFF \
+      -DEXIV2_ENABLE_BUILD_SAMPLES=ON \
+      -DEXIV2_ENABLE_BUILD_PO=ON \
+      -DEXIV2_ENABLE_VIDEO=ON \
+      -DEXIV2_ENABLE_WEBREADY=ON \
+      -DEXIV2_ENABLE_CURL=ON \
+      -DEXIV2_ENABLE_SSH=ON \
+      -Wno-dev \
+      ..

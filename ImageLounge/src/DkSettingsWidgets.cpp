@@ -79,7 +79,7 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	init();
 
 	//setMinimumSize(1000,1000);
-	this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	//setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
 	connect(listView, SIGNAL(activated(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
 	connect(listView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
@@ -100,7 +100,9 @@ DkSettingsDialog::~DkSettingsDialog() {
 }
 
 void DkSettingsDialog::init() {
+	
 	setWindowTitle(tr("Settings"));
+	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->hide();
 		curWidget->toggleAdvancedOptions(DkSettings::app.advancedSettings);
@@ -112,54 +114,56 @@ void DkSettingsDialog::init() {
 
 void DkSettingsDialog::createLayout() {
 
-	QWidget* leftWidget = new QWidget(this);
 	QWidget* bottomWidget = new QWidget(this);
 
-	// left Widget
-	QVBoxLayout* leftWidgetVBoxLayout = new QVBoxLayout(leftWidget);
-	leftLabel = new QLabel;
-	leftLabel->setText(tr("Categories"));
-
 	listView = new DkSettingsListView(this); 
-	listView->setMaximumWidth(100);
 	//listView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("File Filters") << tr("Resources") << tr("Whitelist");
-	QItemSelectionModel *m = listView->selectionModel();
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("File Filters") << tr("Resources") /*<< tr("Whitelist")*/;
 	listView->setModel(new QStringListModel(stringList, this));
-	delete m;
-
-	leftWidgetVBoxLayout->addWidget(leftLabel);
-	leftWidgetVBoxLayout->addWidget(listView);
+	listView->setMinimumWidth(100);
+	listView->setMaximumWidth(200);
+	listView->adjustSize();
 
 	// bottom widget
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-	buttonOk = new QPushButton;
+	buttonOk = new QPushButton(this);
 	buttonOk->setText(tr("Ok"));
 
-	buttonCancel = new QPushButton;
+	buttonCancel = new QPushButton(this);
 	buttonCancel->setText(tr("Cancel"));
 
-	cbAdvancedSettings = new QCheckBox(tr("Advanced"));
+	cbAdvancedSettings = new QCheckBox(tr("Advanced"), this);
 
+	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
+	bottomWidgetHBoxLayout->setContentsMargins(0, 0, 0, 0);
 	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
 	bottomWidgetHBoxLayout->addStretch();
 	bottomWidgetHBoxLayout->addWidget(buttonOk);
 	bottomWidgetHBoxLayout->addWidget(buttonCancel);
 
-	borderLayout = new BorderLayout(this);
-	borderLayout->addWidget(leftWidget, BorderLayout::West);
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
+	//borderLayout = new BorderLayout(this);
+	//borderLayout->addWidget(leftWidget, BorderLayout::West);
+	//borderLayout->addWidget(bottomWidget, BorderLayout::South);
 	this->setSizeGripEnabled(false);
 
 	// central widget
 	centralWidget = new QWidget(this);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
+
+	QWidget* hWidget = new QWidget(this);
+	QHBoxLayout* horLayout = new QHBoxLayout(hWidget);
+	horLayout->setContentsMargins(0, 0, 0, 0);
+	horLayout->addWidget(listView);
+	horLayout->addWidget(centralWidget);
+
+	QVBoxLayout* verLayout = new QVBoxLayout(this);
+	verLayout->addWidget(hWidget);
+	verLayout->addWidget(bottomWidget);
 
 	centralLayout = new QHBoxLayout(centralWidget);
+	centralLayout->setContentsMargins(0, 0, 0, 0);
 }
 
 void DkSettingsDialog::createSettingsWidgets() {
@@ -214,13 +218,13 @@ void DkSettingsDialog::saveSettings() {
 	bool curUseCol = DkSettings::display.useDefaultColor;
 	bool curUseIconCol = DkSettings::display.defaultIconColor;
 
-	foreach (DkSettingsWidget* curWidget, widgetList) {
+	for (DkSettingsWidget* curWidget : widgetList) {
 		curWidget->writeSettings();
 	}
 
 	DkSettings* settings = new DkSettings();
 	settings->save();
-	this->close();
+	close();
 
 	if (DkSettings::app.privateMode) {
 		QMessageBox::information(this, tr("Private Mode"), tr("Settings are not saved in the private mode"), QMessageBox::Ok, QMessageBox::Ok);
@@ -292,9 +296,7 @@ DkGlobalSettingsWidget::DkGlobalSettingsWidget(QWidget* parent) : DkSettingsWidg
 }
 
 void DkGlobalSettingsWidget::init() {
-	cbShowMenu->setChecked(DkSettings::app.showMenuBar);
-	cbShowStatusbar->setChecked(DkSettings::app.showStatusBar);
-	cbShowToolbar->setChecked(DkSettings::app.showToolBar);
+
 	cbSmallIcons->setChecked(DkSettings::display.smallIcons);
 	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
 	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
@@ -321,6 +323,7 @@ void DkGlobalSettingsWidget::init() {
 void DkGlobalSettingsWidget::createLayout() {
 
 	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
+	widgetLayout->setContentsMargins(0, 0, 0, 0);
 	QVBoxLayout* leftLayout = new QVBoxLayout();
 	QVBoxLayout* rightLayout = new QVBoxLayout();
 	QWidget* rightWidget = new QWidget(this);
@@ -348,8 +351,7 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	QWidget* langWidget = new QWidget(rightWidget);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
-	langLayout->setMargin(0);
-	QLabel* langLabel = new QLabel("choose language:", langWidget);
+	langLayout->setContentsMargins(0,0,0,0);
 	langCombo = new QComboBox(langWidget);
 	DkUtils::addLanguages(langCombo, languages);
 
@@ -360,15 +362,11 @@ void DkGlobalSettingsWidget::createLayout() {
 	translateLabel->setFont(font);
 	translateLabel->setOpenExternalLinks(true);
 
-	langLayout->addWidget(langLabel,0,0);
 	langLayout->addWidget(langCombo,1,0);
 	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
 
 	QWidget* showBarsWidget = new QWidget(rightWidget);
 	QVBoxLayout* showBarsLayout = new QVBoxLayout(showBarsWidget);
-	cbShowMenu = new QCheckBox(tr("Show Menu"), showBarsWidget);
-	cbShowToolbar = new QCheckBox(tr("Show Toolbar"), showBarsWidget);
-	cbShowStatusbar = new QCheckBox(tr("Show Statusbar"), showBarsWidget);
 	cbSmallIcons = new QCheckBox(tr("Small Icons"), showBarsWidget);
 	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
 	cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), showBarsWidget);
@@ -377,9 +375,6 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
 	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
 	cbCheckForUpdates = new QCheckBox(tr("Check for Updates"), showBarsWidget);
-	showBarsLayout->addWidget(cbShowMenu);
-	showBarsLayout->addWidget(cbShowToolbar);
-	showBarsLayout->addWidget(cbShowStatusbar);
 	showBarsLayout->addWidget(cbShowRecentFiles);
 	showBarsLayout->addWidget(cbSmallIcons);
 	showBarsLayout->addWidget(cbToolbarGradient);
@@ -387,7 +382,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbZoomOnWheel);
 	showBarsLayout->addWidget(cbCheckForUpdates);
 
-#ifdef Q_WS_X11 // hide checkbox in linux
+#ifdef Q_OS_LINUX // hide checkbox in linux
 	cbCheckForUpdates->hide();
 #endif
 
@@ -421,9 +416,6 @@ void DkGlobalSettingsWidget::createLayout() {
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
-	DkSettings::app.showMenuBar = cbShowMenu->isChecked();
-	DkSettings::app.showStatusBar = cbShowStatusbar->isChecked();
-	DkSettings::app.showToolBar = cbShowToolbar->isChecked();
 	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
 	DkSettings::app.showRecentFiles = cbShowRecentFiles->isChecked();
 	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
@@ -497,6 +489,7 @@ void DkDisplaySettingsWidget::init() {
 void DkDisplaySettingsWidget::createLayout() {
 	
 	QGridLayout* gridLayout = new QGridLayout(this);
+	gridLayout->setContentsMargins(0, 0, 0, 0);
 
 	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"), this);
 	gbZoom->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -522,6 +515,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	QWidget* keepZoomWidget = new QWidget(this);
 	keepZoomWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* keepZoomButtonLayout = new QVBoxLayout(keepZoomWidget);
+	keepZoomButtonLayout->setContentsMargins(0, 0, 0, 0);
 
 	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
 		keepZoomButtonGroup->addButton(keepZoomButtons[idx]);
@@ -659,6 +653,7 @@ void DkFileWidget::init() {
 void DkFileWidget::createLayout() {
 	
 	QVBoxLayout* widgetLayout = new QVBoxLayout(this);
+	widgetLayout->setContentsMargins(0, 0, 0, 0);
 	
 	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
 	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
@@ -727,14 +722,15 @@ void DkFileWidget::createLayout() {
 	widgetLayout->addWidget(gbDragDrop);
 	widgetLayout->addWidget(imgWidget);
 
-	QGridLayout* leftLayout = new QGridLayout(this);
+	QWidget* leftWidget = new QWidget(this);
+	QGridLayout* leftLayout = new QGridLayout(leftWidget);
 	leftLayout->addWidget(skipImgWidget, 0, 0);
 	leftLayout->addWidget(cbWrapImages, 1, 0);
 	leftLayout->addWidget(cbLogRecentFiles, 2, 0);
 	leftLayout->addWidget(cbAskToSaveDeletedFiles, 1, 1);
 	leftLayout->setRowStretch(3, 10);
 	leftLayout->setColumnStretch(3, 10);
-	widgetLayout->addLayout(leftLayout);
+	widgetLayout->addWidget(leftWidget);
 }
 
 void DkFileWidget::writeSettings() {
@@ -951,6 +947,7 @@ void DkResourceSettingsWidgets::init() {
 
 void DkResourceSettingsWidgets::createLayout() {
 	QVBoxLayout* widgetVBoxLayout = new QVBoxLayout(this);
+	widgetVBoxLayout->setContentsMargins(0, 0, 0, 0);
 
 	QGroupBox* gbCache = new QGroupBox(tr("Cache Settings"));
 	QGridLayout* cacheLayout = new QGridLayout(gbCache);
@@ -1273,8 +1270,17 @@ void DkFileFilterSettingWidget::createLayout() {
 	filterTableView->resizeRowsToContents();
 	filterTableView->setWordWrap(false);
 	
+	QPushButton* openDefault = new QPushButton(tr("Set as Default Viewer"), this);
+	connect(openDefault, SIGNAL(clicked()), this, SLOT(openDefault()));
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(filterTableView);
+	
+#ifdef WIN32
+	layout->addWidget(openDefault);
+#endif
+
 	setLayout(layout);
 	//show();
 }
@@ -1320,6 +1326,12 @@ void DkFileFilterSettingWidget::itemChanged(QStandardItem*) {
 	saveSettings = true;
 }
 
+void DkFileFilterSettingWidget::openDefault() const {
+
+	DkFileFilterHandling fh;
+	fh.showDefaultSoftware();
+}
+
 void DkFileFilterSettingWidget::writeSettings() {
 
 	if (!saveSettings)
@@ -1328,7 +1340,7 @@ void DkFileFilterSettingWidget::writeSettings() {
 	DkFileFilterHandling fh;
 	DkSettings::app.browseFilters.clear();
 	DkSettings::app.registerFilters.clear();
-	
+		
 	for (int idx = 0; idx < model->rowCount(); idx++) {
 
 		QStandardItem* item = model->item(idx, 0);
@@ -1358,6 +1370,7 @@ void DkFileFilterSettingWidget::writeSettings() {
 			qDebug() << item->text() << " unregistered";
 	}
 
+	fh.registerNomacs();	// register nomacs again - to be save
 }
 
 // DkWhiteListViewModel --------------------------------------------------------------------
@@ -1396,16 +1409,16 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 	if (role == Qt::DisplayRole) {
 
 		if (index.column() == 0)
-			return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+			return mChecked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
 		else if (index.column() == 1)
-			return names.at(index.row());
+			return mNames.at(index.row());
 		else if (index.column() == 2)
-			return lastSeen.at(index.row());
+			return mLastSeen.at(index.row());
 		else
 			return QVariant();
 	}
 	else if (role == Qt::CheckStateRole && index.column() == 0) {
-		return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+		return mChecked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
 	}
 
 	return QVariant();
@@ -1419,7 +1432,7 @@ bool DkWhiteListViewModel::setData(const QModelIndex &index, const QVariant &val
 	}
 
 	if (index.column() == 0) {
-		checked[index.row()] = value.toBool();
+		mChecked[index.row()] = value.toBool();
 	}
 	return false;
 }
@@ -1438,16 +1451,16 @@ Qt::ItemFlags DkWhiteListViewModel::flags(const QModelIndex & index) const {
 int DkWhiteListViewModel::rowCount(const QModelIndex& parent /* = QModelIndex */) const {
 	if (parent.isValid())
 		return 0;
-	return names.size();
+	return mNames.size();
 }
 
 
 void DkWhiteListViewModel::addWhiteListEntry(bool checked, QString name, QDateTime lastSeen) {
-	this->checked.push_back(checked);
-	this->names.push_back(name);
-	this->lastSeen.push_back(lastSeen);
+	this->mChecked.push_back(checked);
+	this->mNames.push_back(name);
+	this->mLastSeen.push_back(lastSeen);
 
-	dataChanged(createIndex(this->checked.size()-1, 0, &this->checked[this->checked.size()-1]), createIndex(this->checked.size()-1, 2, &this->checked[this->checked.size()-1]));
+	dataChanged(createIndex(this->mChecked.size()-1, 0, &this->mChecked[this->mChecked.size()-1]), createIndex(this->mChecked.size()-1, 2, &this->mChecked[this->mChecked.size()-1]));
 }
 
 // DkCheckBoxDelegate --------------------------------------------------------------------

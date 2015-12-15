@@ -44,15 +44,56 @@
 
 #include "DkConnection.h"
 
+class QXmlStreamReader;
+
 namespace nmc {
 
 // nomacs defines
-class DkPeer;
 class DkLocalTcpServer;
 class DkLANTcpServer;
 class DkLANUdpSocket;
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
+
+class DkPeer : public QObject{
+	Q_OBJECT;
+
+public:
+	//DkPeer(QObject* parent = 0);
+	DkPeer(quint16 port, quint16 peerId, const QHostAddress& hostAddress, quint16 peerServerPort, const QString& title, DkConnection* connection, bool sychronized = false, const QString& clientName="", bool showInMenu = false, QObject* parent = NULL);
+
+	//DkPeer(const DkPeer& peer);
+	~DkPeer();
+
+	bool operator==(const DkPeer& peer) const;
+	//DkPeer& operator=(const DkPeer& peer);
+
+	bool isActive() {return hasChangedRecently;};
+	void setSynchronized(bool flag);
+	bool isSynchronized() {return sychronized;};
+	bool isLocal() {
+		return hostAddress == QHostAddress::LocalHost;
+	};
+
+	quint16 peerId;
+	quint16 localServerPort;
+	quint16 peerServerPort;
+	QHostAddress hostAddress;
+	QString clientName;
+	QString title;
+	DkConnection* connection;
+	QTimer* timer;
+	bool showInMenu;
+
+signals:
+	void sendGoodByeMessage();
+	private slots:
+	void timerTimeout() {hasChangedRecently = false;};
+
+private:
+	bool hasChangedRecently;
+	bool sychronized;
+};
 
 class DkPeerList {
 
@@ -61,19 +102,19 @@ public:
 	bool addPeer(DkPeer* peer);
 	bool removePeer(quint16 peerId);
 	bool setSynchronized(quint16 peerId, bool synchronized);
-	bool setTitle(quint16 peerId, QString title);
+	bool setTitle(quint16 peerId, const QString& title);
 	bool setShowInMenu(quint16 peerId, bool showInMenu);
 	QList<DkPeer*> getPeerList();
 	DkPeer* getPeerById(quint16 id);
-	DkPeer* getPeerByAddress(QHostAddress address, quint16 port);
+	DkPeer* getPeerByAddress(const QHostAddress& address, quint16 port) const;
 
-	QList<DkPeer*> getSynchronizedPeers();
-	QList<quint16> getSynchronizedPeerServerPorts();
-	QList<DkPeer*> getActivePeers();
+	QList<DkPeer*> getSynchronizedPeers() const;
+	QList<quint16> getSynchronizedPeerServerPorts() const;
+	QList<DkPeer*> getActivePeers() const;
 
-	DkPeer* getPeerByServerport(quint16 port);
-	bool alreadyConnectedTo(QHostAddress address, quint16 port);
-	void print();
+	DkPeer* getPeerByServerport(quint16 port) const;
+	bool alreadyConnectedTo(const QHostAddress& address, quint16 port) const;
+	void print() const;
 
 private:
 	QMultiHash<quint16, DkPeer*> peerList;
@@ -82,26 +123,26 @@ private:
 class DkClientManager : public QThread {
 	Q_OBJECT;
 	public:
-		DkClientManager(QString title, QObject* parent = 0);
+		DkClientManager(const QString& title, QObject* parent = 0);
 		~DkClientManager();
 		virtual	QList<DkPeer*> getPeerList() = 0;
 
 	signals:
 		void receivedTransformation(QTransform transform, QTransform imgTransform, QPointF canvasSize);
 		void receivedPosition(QRect position, bool opacity, bool overlaid);
-		void receivedNewFile(qint16 op, QString filename);
+		void receivedNewFile(qint16 op, const QString& filename);
 		void receivedImage(QImage image);
-		void receivedImageTitle( QString title);
-		void sendInfoSignal(QString msg, int time = 3000);
-		void sendGreetingMessage(QString title);
+		void receivedImageTitle(const QString& title);
+		void sendInfoSignal(const QString& msg, int time = 3000);
+		void sendGreetingMessage(const QString& title);
 		void sendSynchronizeMessage();
 		void sendDisableSynchronizeMessage();
-		void sendNewTitleMessage(QString newtitle);
+		void sendNewTitleMessage(const QString& newtitle);
 		void sendNewPositionMessage(QRect position, bool opacity, bool overlaid);
 		void sendNewTransformMessage(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-		void sendNewFileMessage(qint16 op, QString filename);
-		void sendNewImageMessage(QImage image, QString title);
-		void sendNewUpcomingImageMessage(QString imageTitle);
+		void sendNewFileMessage(qint16 op, const QString& filename);
+		void sendNewImageMessage(QImage image, const QString& title);
+		void sendNewUpcomingImageMessage(const QString& imageTitle);
 		void sendGoodByeMessage();
 		void synchronizedPeersListChanged(QList<quint16> newList);
 		void updateConnectionSignal(QList<DkPeer*> peers);
@@ -112,25 +153,25 @@ class DkClientManager : public QThread {
 		virtual void synchronizeWith(quint16 peerId) = 0;
 		virtual void synchronizeWithServerPort(quint16 port) = 0;
 		virtual void stopSynchronizeWith(quint16 peerId) = 0;
-		virtual void sendTitle(QString newTitle);
+		virtual void sendTitle(const QString& newTitle);
 		void sendTransform(QTransform transform, QTransform imgTransform, QPointF canvasSize);
 		void sendPosition(QRect newRect, bool overlaid);
 
-		void sendNewFile(qint16 op, QString filename);
-		virtual void sendNewImage(QImage image, QString title) {}; // dummy
+		void sendNewFile(qint16 op, const QString& filename);
+		virtual void sendNewImage(QImage, const QString&) {}; // dummy
 		void sendGoodByeToAll();
 
 	protected slots:
 		void newConnection( int socketDescriptor );
-		virtual void connectionReadyForUse(quint16 peerId, QString title, DkConnection* connection);
+		virtual void connectionReadyForUse(quint16 peerId, const QString& title, DkConnection* connection);
 		virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) = 0;
 		virtual void connectionStopSynchronized(DkConnection* connection) = 0;
-		virtual void connectionSentNewTitle(DkConnection* connection, QString newTitle);
-		virtual void connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize);
-		virtual void connectionReceivedPosition(DkConnection* connection, QRect rect, bool opacity, bool overlaid);
-		virtual void connectionReceivedNewFile(DkConnection* connection, qint16 op, QString filename);
+		virtual void connectionSentNewTitle(DkConnection* connection, const QString& newTitle);
+		virtual void connectionReceivedTransformation(DkConnection* connection, const QTransform& transform, const QTransform& imgTransform, const QPointF& canvasSize);
+		virtual void connectionReceivedPosition(DkConnection* connection, const QRect& rect, bool opacity, bool overlaid);
+		virtual void connectionReceivedNewFile(DkConnection* connection, qint16 op, const QString& filename);
 		virtual void connectionReceivedGoodBye(DkConnection* connection);
-		void connectionShowStatusMessage(DkConnection* connection, QString msg);
+		void connectionShowStatusMessage(DkConnection* connection, const QString& msg);
 		void disconnected();
 
 	protected:
@@ -138,17 +179,17 @@ class DkClientManager : public QThread {
 		void connectConnection(DkConnection* connection);
 		virtual DkConnection* createConnection() = 0;
 
-		DkPeerList peerList;
-		QString currentTitle;
-		quint16 newPeerId;
-		QList<DkConnection*> startUpConnections;
+		DkPeerList mPeerList;
+		QString mCurrentTitle;
+		quint16 mNewPeerId;
+		QList<DkConnection*> mStartUpConnections;
 
 };
 
 class DkLocalClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLocalClientManager(QString title, QObject* parent = 0);
+		DkLocalClientManager(const QString& title, QObject* parent = 0);
 		QList<DkPeer*> getPeerList();
 		quint16 getServerPort();
 		void run();
@@ -181,20 +222,20 @@ class DkLocalClientManager : public DkClientManager {
 class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
+		DkLANClientManager(const QString& title, QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 		virtual ~DkLANClientManager(); 
 		virtual QList<DkPeer*> getPeerList();
 
 	signals:
-		void sendSwitchServerMessage(QHostAddress address, quint16 port);
+		void sendSwitchServerMessage(const QHostAddress& address, quint16 port);
 		void serverPortChanged(quint16 port);
 
 	public slots:
-		void sendTitle(QString newTitle);
+		void sendTitle(const QString& newTitle);
 		virtual void synchronizeWithServerPort(quint16) {}; // dummy
-		void stopSynchronizeWith(quint16 peerId = -1);
+		void stopSynchronizeWith(quint16 peerId = USHRT_MAX);
 		void startServer(bool flag);
-		void sendNewImage(QImage image, QString title);
+		void sendNewImage(QImage image, const QString& title);
 		void synchronizeWith(quint16 peerId);
 
 	protected:
@@ -203,21 +244,21 @@ class DkLANClientManager : public DkClientManager {
 		DkLANTcpServer* server;
 
 	protected slots:
-		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
+		virtual void connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* connection);
 
 	private slots:
-		void connectionReceivedNewImage(DkConnection* connection, QImage image, QString title);
-		void startConnection(QHostAddress address, quint16 port, QString clientName);
+		void connectionReceivedNewImage(DkConnection* connection, const QImage& image, const QString& title);
+		void startConnection(const QHostAddress& address, quint16 port, const QString& clientName);
 		void sendStopSynchronizationToAll();
 		
 		virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		virtual void connectionStopSynchronized(DkConnection* connection);
-		void connectionSentNewTitle(DkConnection* connection, QString newTitle);
+		void connectionSentNewTitle(DkConnection* connection, const QString& newTitle);
 		void connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize);
 		void connectionReceivedPosition(DkConnection* connection, QRect rect, bool opacity, bool overlaid);
-		void connectionReceivedNewFile(DkConnection* connection, qint16 op, QString filename);
-		void connectionReceivedUpcomingImage(DkConnection* connection, QString imageTitle);
-		void connectionReceivedSwitchServer(DkConnection* connection, QHostAddress address, quint16 port);
+		void connectionReceivedNewFile(DkConnection* connection, qint16 op, const QString& filename);
+		void connectionReceivedUpcomingImage(DkConnection* connection, const QString& imageTitle);
+		void connectionReceivedSwitchServer(DkConnection* connection, const QHostAddress& address, quint16 port);
 	private:
 		virtual DkLANConnection* createConnection();
 
@@ -226,7 +267,7 @@ class DkLANClientManager : public DkClientManager {
 class DkRCClientManager : public DkLANClientManager {
 	Q_OBJECT
 	public:
-		DkRCClientManager(QString title, QObject* parent = 0);
+		DkRCClientManager(const QString& title, QObject* parent = 0);
 		QList<DkPeer*> getPeerList();
 
 	public slots:
@@ -245,7 +286,7 @@ signals:
 		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
 		void connectionReceivedRCType(DkConnection* connection, int type);
-		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
+		virtual void connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* connection);
 		virtual void connectionReceivedGoodBye(DkConnection* connection);
 
 	private:
@@ -258,8 +299,6 @@ class DkLocalTcpServer : public QTcpServer {
 	public:
 		DkLocalTcpServer(QObject* parent = 0);
 
-		quint16 startServer();
-
 		quint16 startPort;
 		quint16 endPort;
 		
@@ -269,7 +308,7 @@ class DkLocalTcpServer : public QTcpServer {
 
 
 	protected:
-		void incomingConnection(int socketDescriptor);
+		void incomingConnection(qintptr socketDescriptor) override;
 };
 
 class DkLANTcpServer : public QTcpServer {
@@ -278,7 +317,7 @@ class DkLANTcpServer : public QTcpServer {
 		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 
 	signals:
-		void serverReiceivedNewConnection(QHostAddress address , quint16 port , QString clientName);
+		void serverReiceivedNewConnection(const QHostAddress& address , quint16 port , const QString& clientName);
 		void serverReiceivedNewConnection(int DkDescriptor);
 		void sendStopSynchronizationToAll();
 		void sendNewClientBroadcast();
@@ -287,10 +326,10 @@ class DkLANTcpServer : public QTcpServer {
 		void startServer(bool flag);
 
 	private slots:
-		void udpNewServerFound(QHostAddress address , quint16 port , QString clientName);
+		void udpNewServerFound(const QHostAddress& address , quint16 port , const QString& clientName);
 	
 	protected:
-		void incomingConnection(int socketDescriptor);
+		void incomingConnection(qintptr socketDescriptor) override;		// f* updating this interface just costs 3hrs
 		DkLANUdpSocket* udpSocket;
 
 	private:
@@ -307,7 +346,7 @@ class DkLANUdpSocket : public QUdpSocket {
 		
 	
 	signals:
-		void udpSocketNewServerOnline(QHostAddress address, quint16 port, QString clientName);
+		void udpSocketNewServerOnline(const QHostAddress& address, quint16 port, const QString& clientName);
 	
 	public slots:
 		void sendBroadcast();
@@ -318,53 +357,14 @@ class DkLANUdpSocket : public QUdpSocket {
 
 	private:
 		bool isLocalHostAddress(const QHostAddress & address);
-		quint16 startPort;
-		quint16 endPort;
-		quint16 serverPort;
-		quint16 tcpServerPort;
-		QList<QHostAddress> localIpAddresses;
-		QTimer* broadcastTimer;
-		bool broadcasting;
-};
-
-class DkPeer : public QObject{
-	Q_OBJECT;
-	
-public:
-	//DkPeer(QObject* parent = 0);
-	DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized = false, QString clientName="", bool showInMenu = false, QObject* parent = NULL);
-		
-	//DkPeer(const DkPeer& peer);
-	~DkPeer();
-
-	bool operator==(const DkPeer& peer) const;
-	//DkPeer& operator=(const DkPeer& peer);
-
-	bool isActive() {return hasChangedRecently;};
-	void setSynchronized(bool flag);
-	bool isSynchronized() {return sychronized;};
-	bool isLocal() {
-		return hostAddress == QHostAddress::LocalHost;
-	};
-
-	quint16 peerId;
-	quint16 localServerPort;
-	quint16 peerServerPort;
-	QHostAddress hostAddress;
-	QString clientName;
-	QString title;
-	DkConnection* connection;
-	QTimer* timer;
-	bool showInMenu;
-
-signals:
-	void sendGoodByeMessage();
-private slots:
-	void timerTimeout() {hasChangedRecently = false;};
-
-private:
-	bool hasChangedRecently;
-	bool sychronized;
+		void checkLocalIpAddresses();
+		quint16 mStartPort;
+		quint16 mEndPort;
+		quint16 mServerPort;
+		quint16 mTcpServerPort;
+		QList<QHostAddress> mLocalIpAddresses;
+		QTimer* mBroadcastTimer = 0;
+		bool mBroadcasting = false;
 };
 
 class DkNoMacs;
@@ -414,7 +414,7 @@ public slots:
 	void quit();
 
 protected:
-	virtual void createClient(QString title) = 0;
+	virtual void createClient(const QString& title) = 0;
 	
 	DkClientManager* clientManager;
 	DkNoMacs *parent;
@@ -435,7 +435,7 @@ public:
 	};
 
 protected:
-	void createClient(QString title);
+	void createClient(const QString& title);
 
 };
 
@@ -462,7 +462,7 @@ public slots:
 
 
 protected:
-	void createClient(QString title);
+	void createClient(const QString& title);
 
 
 
@@ -482,7 +482,54 @@ signals:
 	void newModeSignal(int mode);
 
 protected:
-	void createClient(QString title);
+	void createClient(const QString& title);
+
+};
+
+class DkPackage {
+
+public:
+	DkPackage(const QString& name = "", const QString& version = "");
+
+	bool isEmpty() const;
+	bool operator==(const DkPackage& o) const;
+
+	QString name() const;
+	QString version() const;
+
+protected:
+	QString mName;
+	QString mVersion;
+
+};
+
+class DkXmlUpdateChecker {
+
+public:
+	DkXmlUpdateChecker();
+
+	QVector<DkPackage> updatesAvailable(QXmlStreamReader& localXml, QXmlStreamReader& remoteXml) const;
+
+protected:
+	QVector<DkPackage> parse(QXmlStreamReader& reader) const;
+};
+
+class DkInstallUpdater : public QObject {
+	Q_OBJECT
+
+public:
+	DkInstallUpdater(QObject* parent = 0);
+
+	void checkForUpdates(bool silent = true);
+
+public slots:
+	void replyFinished(QNetworkReply* reply);
+
+protected:
+	bool updateNomacs() const;
+
+	QNetworkAccessManager* mManager = 0;
+	bool mSilent = true;
 
 };
 
@@ -504,23 +551,24 @@ public slots:
 	void cancelUpdate();
 
 signals:
-	void displayUpdateDialog(QString msg, QString title);
-	void showUpdaterMessage(QString msg, QString title);
-	void downloadFinished(QString filePath);
-	void downloadProgress(qint64, qint64);
+	void displayUpdateDialog(const QString& msg, const QString& title) const;
+	void showUpdaterMessage(const QString& msg, const QString& title) const;
+	void downloadFinished(const QString& filePath) const;
+	void downloadProgress(qint64, qint64) const;
 
 protected:
 	void startDownload(QUrl downloadUrl);
 	void downloadUpdate();
-	QNetworkAccessManager accessManagerVersion;
-	QNetworkAccessManager accessManagerSetup;
-	QNetworkReply* reply;
+	
+	QNetworkAccessManager mAccessManagerVersion;
+	QNetworkAccessManager mAccessManagerSetup;
+	
+	QNetworkReply* mReply = 0;
+	QNetworkCookieJar* mCookie = 0;
 
-	QNetworkCookieJar* cookie;
-
-	QUrl nomacsSetupUrl;
-	QString setupVersion;
-	bool updateAborted;
+	QUrl mNomacsSetupUrl;
+	QString mSetupVersion;
+	bool mUpdateAborted = false;
 };
 
 class DkTranslationUpdater : public QObject {
@@ -539,17 +587,18 @@ class DkTranslationUpdater : public QObject {
 
 	signals:
 		void translationUpdated();
-		void showUpdaterMessage(QString, QString);
+		void showUpdaterMessage(const QString&, const QString&);
 		void downloadProgress(qint64, qint64);
 		void downloadFinished();
 
 	private:
-		bool isRemoteFileNewer(QDateTime lastModifiedRemote, QString localTranslationName);
+		bool isRemoteFileNewer(QDateTime lastModifiedRemote, const QString& localTranslationName);
 		bool updateAborted, updateAbortedQt;
-		qint64 total, totalQt, received, receivedQt;
-		QNetworkAccessManager accessManager;
-		QNetworkReply* reply;
-		QNetworkReply* replyQt;
+		
+		qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
+		QNetworkAccessManager mAccessManager;
+		QNetworkReply* mReply = 0;
+		QNetworkReply* mReplyQt = 0;
 };
 
 //// this code is based on code from: 
@@ -597,7 +646,7 @@ class DkTranslationUpdater : public QObject {
 //	}
 //
 //signals:
-//	void authStatus(QString mAccessToken);
+//	void authStatus(const QString& mAccessToken);
 //
 //protected:
 //

@@ -2,15 +2,15 @@ set(NOMACS_RC src/nomacs.rc) #add resource file when compiling with MSVC
 set(VERSION_LIB Version.lib)
 set(EXIV2_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/libs) #add libs directory to library dirs 
 
-
 # create the targets
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 set(DLL_NAME lib${CMAKE_PROJECT_NAME})
 set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
-target_link_libraries(${BINARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
+add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
+
+target_link_libraries(${BINARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
 
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
@@ -18,14 +18,14 @@ set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_
 set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
 		
-add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC})
-target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY} ${WEBP_LIBRARY}) 
+add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_RESOURCES} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_RCC})
+target_include_directories(${DLL_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${BINARY_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY} ${WEBP_LIBRARY}) 
 add_dependencies(${BINARY_NAME} ${DLL_NAME} ${QUAZIP_DEPENDENCY} ${LIBQPSD_LIBRARY} ${WEBP_LIBRARY}) #QUAZIP_DEPENDENCY, LIBQPSD_LIBRARY, and WEBP_LIBRARY are empty when disabled
 
-if (ENABLE_QT5)
-	qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-	qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-ENDIF()
+qt5_use_modules(${BINARY_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
+qt5_use_modules(${DLL_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 
 SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
 
@@ -40,9 +40,8 @@ set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKE
 set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
 set_target_properties(${DLL_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_NAME})
 
-
 # copy required dlls to the directories
-set(OpenCV_REQUIRED_MODULES core imgproc)
+set(OpenCV_REQUIRED_MODULES core imgproc FORCE)
 foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
 	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
@@ -52,36 +51,13 @@ foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 endforeach(opencvlib)
 
-if(NOT ENABLE_QT5)
-	if(ENABLE_UPNP)
-		set(QTLIBLIST QtCore QtGui QtNetwork QtXml)
-	else()
-		SET (QTLIBLIST QtCore QtGui QtNetwork)
-	endif(ENABLE_UPNP)
-	
-	foreach(qtlib ${QTLIBLIST})
-		get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-	endforeach(qtlib)
-else()
-	set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent)
-	foreach(qtlib ${QTLIBLIST})
-		get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-		file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-	endforeach(qtlib)
-
-	# file(COPY ${QT_DLL_PATH_tmp}//libGLESv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-	# file(COPY ${QT_DLL_PATH_tmp}//libGLESv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-	# file(COPY ${QT_DLL_PATH_tmp}//libGLESv2d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-
-	# file(COPY ${QT_DLL_PATH_tmp}//libEGL.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-	# file(COPY ${QT_DLL_PATH_tmp}//libEGL.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-	# file(COPY ${QT_DLL_PATH_tmp}//libEGLd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-endif(NOT ENABLE_QT5)
+set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent Qt5Svg)
+foreach(qtlib ${QTLIBLIST})
+	get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+endforeach(qtlib)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo)
@@ -116,14 +92,33 @@ if(CMAKE_CL_64)
 else()
 	set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x86/Microsoft.VC${VS_VERSION}0.CRT")
 endif()
-find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
-find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
-if(MSVCP)
-	file(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-	file(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-else()
-	message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
-endif()
+
+# copy msvc dlls
+# if (MSVC14)
+
+	# # diem: TODO not working yet!
+	# find_file(MSVCP NAMES msvcp140.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+	# find_file(MSVCR NAMES msvcr140.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+	# if(MSVCP)
+		# file(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		# file(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+	# else()
+		# message(STATUS "Could not copy msvcp140.dll from ${VC_RUNTIME_DIR}")
+		# message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
+	# endif()
+
+# else
+if (MSVC11)
+	find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+	find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+	if(MSVCP)
+		file(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		file(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+	else()
+		message(STATUS "Could not copy msvcp11${VS_VERSION}0.dll")
+		message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
+	endif()
+endif() # if (MSVC14)
 
 # copy translation files after each build
 add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
@@ -144,9 +139,8 @@ set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_E
 set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 
-set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp")
-source_group("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
+source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
 

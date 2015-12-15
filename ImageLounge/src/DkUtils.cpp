@@ -29,7 +29,7 @@
 #include "DkMath.h"
 #include "DkSettings.h"
 
-#if defined(Q_WS_X11) && !defined(Q_OS_OPENBSD)
+#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
 #endif
 
@@ -49,6 +49,8 @@
 #include <QCoreApplication>
 #include <QTranslator>
 #include <QUrl>
+#include <QStandardPaths>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -79,7 +81,7 @@ double DkMemory::getTotalMemory() {
 		mem = (double)MemoryStatus.ullTotalPhys;
 	}
 
-#elif defined Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#elif defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
 
 	struct sysinfo info;
 
@@ -87,7 +89,7 @@ double DkMemory::getTotalMemory() {
 		mem = info.totalram;
 
 
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 	// TODO: could somebody (with a mac please add the corresponding calls?
 #endif
 
@@ -114,14 +116,14 @@ double DkMemory::getFreeMemory() {
 		mem = (double)MemoryStatus.ullAvailPhys;
 	}
 
-#elif defined Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#elif defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
 
 	struct sysinfo info;
 	
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
-#elif defined Q_WS_MAC
+#elif defined Q_OS_MAC
 
 	// TODO: could somebody with a mac please add the corresponding calls?
 
@@ -299,6 +301,61 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 
 }
 
+void DkUtils::registerFileVersion() {
+
+#ifdef WIN32
+	// this function is based on code from:
+	// http://stackoverflow.com/questions/316626/how-do-i-read-from-a-version-resource-in-visual-c
+
+	QString version(NOMACS_VERSION);	// default version (we do not know the build)
+
+	try {
+		// get the filename of the executable containing the version resource
+		TCHAR szFilename[MAX_PATH + 1] = {0};
+		if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) {
+			DkFileException("Sorry, I can't read the module fileInfo name\n", __LINE__, __FILE__);
+		}
+
+		// allocate a block of memory for the version info
+		DWORD dummy;
+		DWORD dwSize = GetFileVersionInfoSize(szFilename, &dummy);
+		if (dwSize == 0) {
+			throw DkFileException("The version info size is zero\n", __LINE__, __FILE__);
+		}
+		std::vector<BYTE> bytes(dwSize);
+
+		if (bytes.empty())
+			throw DkFileException("The version info is empty\n", __LINE__, __FILE__);
+
+		// load the version info
+		if (!bytes.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &bytes[0])) {
+			throw DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
+		}
+
+		// get the name and version strings
+		UINT                uiVerLen = 0;
+		VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
+
+		if (!bytes.empty() && !VerQueryValue(&bytes[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
+			throw DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
+		}
+
+		// pFixedInfo contains a lot more information...
+		version = QString::number(HIWORD(pFixedInfo->dwFileVersionMS)) + "."
+			+ QString::number(LOWORD(pFixedInfo->dwFileVersionMS)) + "."
+			+ QString::number(HIWORD(pFixedInfo->dwFileVersionLS)) + "."
+			+ QString::number(LOWORD(pFixedInfo->dwFileVersionLS));
+
+	} catch (DkFileException dfe) {
+		qDebug() << QString::fromStdString(dfe.Msg());
+	}
+
+#else
+	QString version(NOMACS_VERSION);	// default version (we do not know the build)
+#endif
+	QApplication::setApplicationVersion(version);
+}
+
 
 void DkUtils::mSleep(int ms) {
 
@@ -468,6 +525,125 @@ QString DkUtils::colorToString(const QColor& col) {
 	return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
 }
 
+QStringList DkUtils::filterStringList(const QString& query, const QStringList& list) {
+
+	// white space is the magic thingy
+	QStringList queries = query.split(" ");
+	QStringList resultList = list;
+
+	for (int idx = 0; idx < queries.size(); idx++) {
+		resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
+		qDebug() << "query: " << queries[idx];
+	}
+
+	// if string match returns nothing -> try a regexp
+	if (resultList.empty()) {
+		QRegExp regExp(query);
+		resultList = list.filter(regExp);
+
+		if (resultList.empty()) {
+			regExp.setPatternSyntax(QRegExp::Wildcard);
+			resultList = list.filter(regExp);
+		}
+	}
+
+	return resultList;
+}
+
+bool DkUtils::moveToTrash(const QString& filePath) {
+
+	QFileInfo fileInfo(filePath);
+
+	if (!fileInfo.exists()) {
+		qDebug() << "Sorry, I cannot delete a non-existing file: " << filePath;
+		return false;
+	}
+
+// code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
+#ifdef WIN32
+	
+	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
+	winPath.append(1, L'\0');	// path string must be double nul-terminated
+
+	SHFILEOPSTRUCTW shfos = {};
+	shfos.hwnd   = nullptr;		// handle to window that will own generated windows, if applicable
+	shfos.wFunc  = FO_DELETE;
+	shfos.pFrom  = winPath.c_str();
+	shfos.pTo    = nullptr;		// not used for deletion operations
+	shfos.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT; // use the recycle bin
+
+	const int retVal = SHFileOperationW(&shfos);
+	
+	return retVal == 0;		// true if no error code
+
+//#elif Q_OS_LINUX
+//	bool TrashInitialized = false;
+//	QString TrashPath;
+//	QString TrashPathInfo;
+//	QString TrashPathFiles;
+//
+//	if( !TrashInitialized ) {
+//		QStringList paths;
+//		const char* xdg_data_home = getenv( "XDG_DATA_HOME" );
+//		if( xdg_data_home ){
+//			qDebug() << "XDG_DATA_HOME not yet tested";
+//			QString xdgTrash( xdg_data_home );
+//			paths.append( xdgTrash + "/Trash" );
+//		}
+//		QString home = QStandardPaths::writableLocation( QStandardPaths::HomeLocation );
+//		paths.append( home + "/.local/share/Trash" );
+//		paths.append( home + "/.trash" );
+//		foreach( QString path, paths ){
+//			if( TrashPath.isEmpty() ){
+//				QDir dir( path );
+//				if( dir.exists() ){
+//					TrashPath = path;
+//				}
+//			}
+//		}
+//		if (TrashPath.isEmpty())
+//			return false;
+//		TrashPathInfo = TrashPath + "/info";
+//		TrashPathFiles = TrashPath + "/files";
+//		if (!QDir(TrashPathInfo).exists() || !QDir(TrashPathFiles).exists())
+//			return false;
+//		TrashInitialized = true;
+//	}
+//
+//	QString info;
+//	info += "[Trash Info]\nPath=";
+//	info += filePath;
+//	info += "\nDeletionDate=";
+//	info += QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzzZ");
+//	info += "\n";
+//	QString trashname = fileInfo.fileName();
+//	QString infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
+//	QString trashPath = TrashPathFiles + "/" + trashname;
+//	int nr = 1;
+//	while( QFileInfo( infopath ).exists() || QFileInfo( trashPath ).exists() ){
+//		nr++;
+//		trashname = fileInfo.baseName() + "." + QString::number( nr );
+//		if( !fileInfo.completeSuffix().isEmpty() ){
+//			trashname += QString( "." ) + fileInfo.completeSuffix();
+//		}
+//		infopath = TrashPathInfo + "/" + trashname + ".trashinfo";
+//		trashPath = TrashPathFiles + "/" + trashname;
+//	}
+//	QDir dir;
+//	if( !dir.rename( filePath, trashPath )) {
+//		return false;
+//	}
+//	File infofile;
+//	infofile.createUtf8( infopath, info );
+//	return true;
+#else
+	QFile fileHandle(filePath);
+	return fileHandle.remove();
+#endif
+
+	return false;	// should never be hit
+}
+
 QString DkUtils::readableByte(float bytes) {
 
 	if (bytes >= 1024*1024*1024) {
@@ -510,6 +686,25 @@ QString DkUtils::cleanFraction(const QString& frac) {
 	return cleanFrac;
 }
 
+QString DkUtils::resolveFraction(const QString& frac) {
+
+	QString result = frac;
+	QStringList sList = frac.split('/');
+
+	if (sList.size() == 2) {
+	
+		bool nok = false;
+		bool dok = false;
+		int nom = sList[0].toInt(&nok);
+		int denom = sList[1].toInt(&dok);
+
+		if (nok && dok && denom)
+			result = QString::number((double)nom/denom);
+	}
+
+	return result;
+}
+
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
 std::wstring DkUtils::qStringToStdWString(const QString &str) {
 #ifdef _MSC_VER
@@ -531,9 +726,9 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 // DkConvertFileName --------------------------------------------------------------------
 DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx) {
 
-	this->fileName = fileName;
-	this->pattern = pattern;
-	this->cIdx = cIdx;
+	this->mFileName = fileName;
+	this->mPattern = pattern;
+	this->mCIdx = cIdx;
 }
 
 /**
@@ -551,7 +746,7 @@ DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString&
  **/ 
 QString DkFileNameConverter::getConvertedFileName() {
 	
-	QString newFileName = pattern;
+	QString newFileName = mPattern;
 	QRegExp rx("<.*>");
 	rx.setMinimal(true);
 
@@ -576,10 +771,10 @@ QString DkFileNameConverter::getConvertedFileName() {
 
 QString DkFileNameConverter::resolveFilename(const QString& tag) const {
 
-	QString result = fileName;
+	QString result = mFileName;
 	
 	// remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
-	result = result.replace("." + QFileInfo(fileName).suffix(), "");
+	result = result.replace("." + QFileInfo(mFileName).suffix(), "");
 
 	int attr = getIntAttribute(tag);
 
@@ -598,7 +793,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	// append zeros
 	int numZeros = getIntAttribute(tag);
 	int startIdx = getIntAttribute(tag, 2);
-	int fIdx = startIdx+cIdx;
+	int fIdx = startIdx+mCIdx;
 
 	if (numZeros > 0) {
 
@@ -618,7 +813,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 QString DkFileNameConverter::resolveExt(const QString&) const {
 
-	QString result = QFileInfo(fileName).suffix();
+	QString result = QFileInfo(mFileName).suffix();
 
 	return result;
 }

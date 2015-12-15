@@ -12,12 +12,20 @@ if(NOT ENABLE_PLUGINS)
 					message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+  
   #create the targets
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
   link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-  add_executable(${BINARY_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC} ${WEBP_SOURCE} ${QUAZIP_SOURCES} ${QUAZIP_MOC_SRC})
+  add_executable(${BINARY_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${WEBP_SOURCE} ${QUAZIP_SOURCES} ${NOMACS_RESOURCES} ${NOMACS_RCC})
+  IF(CMAKE_VERSION VERSION_GREATER 2.8.7)
+    target_include_directories(${BINARY_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS})
+  ELSE()
+    include_directories(${OpenCV_INCLUDE_DIRS})
+  ENDIF()
   target_link_libraries(${BINARY_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB} ${TIFF_LIBRARY} ${ZLIB_LIBRARY} ${WEBP_LIBRARIES} ${QUAZIP_LIBRARIES} ${WEBP_STATIC_LIBRARIES})
 
+  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
+  
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	  SET_TARGET_PROPERTIES(${BINARY_NAME} PROPERTIES LINK_FLAGS -fopenmp)
   endif()
@@ -58,7 +66,6 @@ if(NOT ENABLE_PLUGINS)
   
   
 else()
-  message(WARNING "ENABLE_PLUGINS is highly experimentally for Unix/Linux")
   add_definitions(-DWITH_PLUGINS)
 
 	include(CheckCXXCompilerFlag)
@@ -72,28 +79,26 @@ else()
 					message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-
   
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
-  set(DLL_NAME lib${CMAKE_PROJECT_NAME})
+  set(DLL_NAME lib${CMAKE_PROJECT_NAME}lib)
   #set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
   LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
   link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS} ${CMAKE_BINARY_DIR})
-  add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
+  add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
   target_link_libraries(${BINARY_NAME} ${QT_LIBRARIES} ${VERSION_LIB} ${DLL_NAME})
 
   set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
   set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
 		  
-  add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC} ${WEBP_SOURCE}  ${QUAZIP_SOURCES} ${QUAZIP_MOC_SRC})
+  add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_HEADERS} ${NOMACS_RC} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${WEBP_SOURCE}  ${QUAZIP_SOURCES} ${NOMACS_RESOURCES} ${NOMACS_RCC})
+  target_include_directories(${DLL_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS})
   target_link_libraries(${DLL_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${WEBP_LIBRARIES} ${WEBP_STATIC_LIBRARIES})
   add_dependencies(${BINARY_NAME} ${DLL_NAME})
+  set_target_properties(${DLL_NAME} PROPERTIES PREFIX "")
 
-  if (ENABLE_QT5)
-	  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
-	  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport)
-  ENDIF()
-
+  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
+  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
   set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -133,7 +138,7 @@ else()
   # generate configuration file
   set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
   set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(NOMACS_LIBS ${DLL_NAME})
+  set(NOMACS_LIBS ${CMAKE_PROJECT_NAME}lib)
   
   configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
   

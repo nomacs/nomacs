@@ -1,0 +1,46 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Microsoft Photo 1.2 Region schema</h2>
+<p>The Microsoft XMP schemas for people tagging define a set of properties to tag individuals in digital photos.
+ <ul>
+  <li>Exiv2 keys are nested <b><code>Xmp.MP.RegionInfo/MPRI:Regions/MPReg:&lt;Property&gt;</code></b></li>
+ </ul>
+ <ul>
+  <li>The MP schema namespace URI is <b><code>http://ns.microsoft.com/photo/1.2/</code></b></li>
+  <li>This schema namespace prefix is <b><code>MP</code></b></li>
+ </ul>
+ <ul>
+  <li>The MPRI schema namespace URI is <b><code>http://ns.microsoft.com/photo/1.2/t/RegionInfo#</code></b></li>
+  <li>This schema namespace prefix is <b><code>MPRI</code></b></li>
+ </ul>
+ <ul>
+   <li>The MPReg schema namespace URI is <b><code>http://ns.microsoft.com/photo/1.2/t/Region#</code></b></li>
+  <li>This schema namespace prefix is <b><code>MPReg</code></b></li>
+ </ul>
+
+Reference: <a href="http://msdn.microsoft.com/en-us/library/ee719905%28VS.85%29.aspx" title="People Tagging Overview">People Tagging Overview</a></p>
+
+<p>Click on a column header to sort the table.</p>
+
+__xmp_MP__
+
+<p></p>
+
+__xmp_MPRI__
+
+<p></p>
+
+__xmp_MPReg__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

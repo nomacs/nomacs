@@ -70,6 +70,13 @@
 #endif
 #endif
 
+#ifdef WIN32
+// fixes Qt's damn no latin1 on tr() policy
+#define dk_degree_str QString::fromLatin1("°")
+#else
+#define dk_degree_str "\u00B0"
+#endif
+
 // Qt defines
 class QComboBox;
 class QColor;
@@ -137,6 +144,7 @@ public:
 
 	static void addLanguages(QComboBox* langCombo, QStringList& languages);
 
+	static void registerFileVersion();
 
 	/**
 	 * Sleeps n ms.
@@ -162,6 +170,8 @@ public:
 	static QFileInfo urlToLocalFile(const QUrl& url);
 	static QString colorToString(const QColor& col);
 	static QString readableByte(float bytes);
+	static QStringList filterStringList(const QString& query, const QStringList& list);
+	static bool moveToTrash(const QString& filePath);
 
 #ifdef WITH_OPENCV
 	/**
@@ -365,25 +375,9 @@ public:
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString cleanFraction(const QString& frac);
+	static QString resolveFraction(const QString& frac);
 	static std::wstring qStringToStdWString(const QString &str);
 	static QString stdWStringToQString(const std::wstring &str);
-
-#ifdef WIN32
-	//static LPCWSTR stringToWchar(std::string str) {
-	//	wchar_t *wChar = new wchar_t[(int)str.length()+1];
-	//	size_t convertedChars = 0;
-	//	mbstowcs_s(&convertedChars, wChar, str.length()+1, str.c_str(), _TRUNCATE);
-	//	//mbstowcs(wChar, str.c_str(), str.length()+1);
-
-	//	return (LPCWSTR)wChar;
-	//};
-#endif
-
-#ifdef Q_WS_X11
-	static const char* stringToWchar(std::string str) {
-		return str.c_str();
-	};
-#endif
 
 	static std::string stringTrim(const std::string str) {
 
@@ -439,41 +433,6 @@ public:
 		return debugLevel;
 	};
 
-
-
-
-#ifdef DK_DEBUG
-	
-	/**
-	 * Prints a debug message according the message level and the current debug level defined in DkUtils.
-	 * The debug command prints only a message if DK_DEBUG is defined.
-	 * Debug levels are: DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL.
-	 * @param level the debug level of the message.
-	 * @param fmt the format string of the message.
-	 **/
-	static void printDebug(int level,const char *fmt,...) {
-		va_list ap;
-
-
-		if (debugLevel >= DK_WARNING && level == DK_WARNING)
-			printf("WARNING: ");
-		else if (debugLevel >= DK_MODULE && level == DK_MODULE)
-			printf(">> ");
-
-		va_start(ap,fmt);
-		if ((fmt) && (level <= debugLevel)) {
-			vprintf(fmt, ap);
-			fflush(stdout);
-		}
-		va_end(ap);
-	}
-#else
-	/**
-	 * If DK_DEBUG is undefined do nothing.
-	 **/
-	inline static void printDebug(...) {};
-#endif
-
 };
 
 class DkMemory {
@@ -497,10 +456,9 @@ protected:
 	QString resolveExt(const QString& tag) const;
 	int getIntAttribute(const QString& tag, int idx = 1) const;
 
-	QString fileName;
-	QString pattern;
-	QString newFileName;
-	int cIdx;
+	QString mFileName;
+	QString mPattern;
+	int mCIdx;
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html

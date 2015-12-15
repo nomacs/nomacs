@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>nomacs - Image Lounge [x64]</DisplayName>
+    <Description>nomacs for 64-bit systems.</Description>
+    <Version>3.0.0-16</Version>
+    <ReleaseDate>2015-12-15</ReleaseDate>
+    <Default>true</Default>
+</Package>

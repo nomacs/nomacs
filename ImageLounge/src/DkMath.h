@@ -635,7 +635,7 @@ public:
 		return s << "[" << x << ", " << y << "]";
 	};
 
-	bool isEmpty() {
+	bool isEmpty() const {
 
 		return x == 0 && y == 0;
 	};
@@ -654,7 +654,7 @@ public:
 	 * Returns the largest coordinate.
 	 * @return float the largest coordinate.
 	 **/ 
-	virtual float minCoord() {
+	virtual float minCoord() const {
 
 		return qMin(x, y);
 	};
@@ -694,12 +694,25 @@ public:
 		y = xtmp;
 	}
 
+	/** 
+	* Returns the angle between two vectors
+	*  @param vec vector
+	*  @return the angle between two vectors
+	*/
+	double angle(const DkVector &vec) const {
+		return acos(cosv(vec));
+	};
+
+	double cosv(const DkVector& vec) const {
+		return (this->x*vec.x + this->y*vec.y) / (sqrt(this->x*this->x + this->y*this->y)*sqrt(vec.x*vec.x + vec.y*vec.y));
+	};
+
 	/**
 	 * Returns the vector's angle in radians.
 	 * The angle is computed by: atan2(y,x).
 	 * @return the vector's angle in radians.
 	 **/
-	double angle() {
+	double angle() const {
 		return atan2(y, x);
 	};
 
@@ -742,6 +755,24 @@ public:
 		else if (y < minBound)	y = minBound;
 
 	};
+
+	/**
+	* Clips the vector's coordinates to the bounds given.
+	* @param maxBound the maximum bound.
+	* @param minBound the minimum bound.
+	**/
+	virtual void clipTo(const DkVector& maxBound) {
+
+		if (maxBound.x < 0  || maxBound.y < 0) {
+
+			DkVector nonConst = maxBound;
+			//qWarning() << "[WARNING] clipTo maxBound < 0: " << nonConst.toString();
+			return;
+		}
+
+		maxVec(DkVector(0.0f,0.0f));
+		minVec(maxBound);
+	};
 	
 	/** 
 	 * Normal vector.
@@ -770,15 +801,6 @@ public:
 		float n = norm();
 		x /= n; 
 		y /= n;
-	};
-
-	/** 
-	 * Returns the angle between two vectors
-	 *  @param vec vector
-	 *  @return the angle between two vectors
-	 */
-	double angle(const DkVector &vec) {
-		return acos((this->x*vec.x + this->y*vec.y) / (sqrt(this->x*this->x + this->y*this->y)*sqrt(vec.x*vec.x + vec.y*vec.y)));
 	};
 
 	/** Returns euclidean distance between two vectors
@@ -820,7 +842,7 @@ public:
 		return (vec.x - this->x) != 0 ? (vec.y - this->y) / (vec.x - this->x) : FLT_MAX;
 	}
 
-	virtual QPointF getQPointF() const {
+	virtual QPointF toQPointF() const {
 		return QPointF(x, y);
 	};
 
@@ -856,7 +878,7 @@ public:
 #endif
 };
 
-class DkRotatingRect {
+class DllExport DkRotatingRect {
 
 public:
 	DkRotatingRect(QRectF rect = QRectF());

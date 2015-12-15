@@ -35,7 +35,6 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 // Qt defines
-class BorderLayout;
 class QGroupBox;
 class QSpinBox;
 class QDoubleSpinBox;
@@ -129,13 +128,13 @@ public:
 	void addWhiteListEntry(bool checked, QString name, QDateTime lastSeen);
 	Qt::ItemFlags flags(const QModelIndex& index) const;
 
-	QVector<bool> getCheckedVector() {return checked;};
-	QVector<QString> getNamesVector() {return names;};
+	QVector<bool> getCheckedVector() {return mChecked;};
+	QVector<QString> getNamesVector() {return mNames;};
 
 private:
-	QVector<bool> checked;
-	QVector<QString> names;
-	QVector<QDateTime> lastSeen;
+	QVector<bool> mChecked;
+	QVector<QString> mNames;
+	QVector<QDateTime> mLastSeen;
 };
 
 
@@ -145,7 +144,7 @@ class DkSettingsListView : public QListView {
 
 public:
 	DkSettingsListView(QWidget* parent) : QListView(parent) {};
-	~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};
+	~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};	// wtf?
 
 public slots:
 	void keyPressEvent(QKeyEvent *event);
@@ -243,6 +242,7 @@ public:
 
 public slots:
 	void itemChanged(QStandardItem* item);
+	void openDefault() const;
 
 protected:
 	void createLayout();
@@ -347,9 +347,6 @@ private:
 	void createLayout();
 
 	DkDoubleSpinBoxWidget* displayTimeSpin;
-	QCheckBox* cbShowMenu;
-	QCheckBox* cbShowToolbar;
-	QCheckBox* cbShowStatusbar;
 	QCheckBox* cbSmallIcons;
 	QCheckBox* cbToolbarGradient;
 	QCheckBox* cbCloseOnEsc;
@@ -422,7 +419,6 @@ private slots:
 	void advancedSettingsChanged(int idx);
 
 protected:
-	BorderLayout* borderLayout;
 	DkSettingsListView* listView;
 	QWidget* rightWidget;
 	QLabel* leftLabel;

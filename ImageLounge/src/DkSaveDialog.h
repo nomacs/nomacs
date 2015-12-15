@@ -91,7 +91,7 @@ public:
 	QColor getBackgroundColor() const;
 	int getCompression();
 	float getResizeFactor();
-	void setImage(QImage* img);
+	void setImage(const QImage& img);
 	void setDialogMode(int dialogMode);
 	virtual void accept();
 
@@ -106,26 +106,26 @@ protected slots:
 	void updateFileSizeLabel(float bufferSize = -1, QSize bufferImgSize = QSize(), float factor = -1);
 	
 protected:
-	int dialogMode;
-	bool hasAlpha;
-	QColor bgCol;
-
-	QCheckBox* cbLossless;
-	DkSlider* slider;
-	DkColorChooser* colChooser;
-	QImage* img;
-	QImage origImg;
-	QImage newImg;
-	QLabel* previewLabel;
-	QLabel* previewSizeLabel;
-	DkBaseViewPort* origView;
-	QComboBox* sizeCombo;
-
 	void init();
 	void createLayout();
 	void updateSnippets();
 	void saveSettings();
 	void loadSettings();
+
+	int mDialogMode = jpg_dialog;
+	bool mHasAlpha = false;
+	QColor mBgCol = QColor(255, 255, 255);
+
+	QCheckBox* mCbLossless = 0;
+	DkSlider* mSlider = 0;
+	DkColorChooser* mColChooser = 0;
+	QLabel* mPreviewLabel = 0;
+	QLabel* mPreviewSizeLabel = 0;
+	DkBaseViewPort* mOrigView = 0;
+	QComboBox* mSizeCombo = 0;
+
+	QImage mImg;
+	QImage mNewImg;
 };
 
 };

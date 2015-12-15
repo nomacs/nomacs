@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -41,6 +41,10 @@
 #include <QStyledItemDelegate>
 #include <QDir>
 #include <QApplication>
+
+#ifdef WIN32
+#include "Shobjidl.h"
+#endif
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -136,19 +140,29 @@ void DkSettings::initFileFilters() {
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
+	qDebug() << "qt formats: " << qtFormats;
+
 	// formats we can save
 	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
 	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg)");
-	if (qtFormats.contains("j2k"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("jp2"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
 	if (qtFormats.contains("tif"))		app_p.saveFilters.append("TIFF (*.tif *.tiff)");
 	if (qtFormats.contains("bmp"))		app_p.saveFilters.append("Windows Bitmap (*.bmp)");
 	if (qtFormats.contains("ppm"))		app_p.saveFilters.append("Portable Pixmap (*.ppm)");
 	if (qtFormats.contains("xbm"))		app_p.saveFilters.append("X11 Bitmap (*.xbm)");
 	if (qtFormats.contains("xpm"))		app_p.saveFilters.append("X11 Pixmap (*.xpm)");
+	if (qtFormats.contains("dds"))		app_p.saveFilters.append("Direct Draw Surface (*.dds)");
+	if (qtFormats.contains("wbmp"))		app_p.saveFilters.append("Wireless Bitmap (*.wbmp)");
+	//if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
+	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
 	// internal filters
 #ifdef WITH_WEBP
-	app_p.saveFilters.append("WebP (*.webp)");
+	else								app_p.saveFilters.append("WebP (*.webp)");
+#endif
+
+#ifdef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.saveFilters.append("Icon Files (*.ico)");
 #endif
 
 	// formats we can load
@@ -156,25 +170,34 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("gif"))		app_p.openFilters.append("Graphic Interchange Format (*.gif)");
 	if (qtFormats.contains("pbm"))		app_p.openFilters.append("Portable Bitmap (*.pbm)");
 	if (qtFormats.contains("pgm"))		app_p.openFilters.append("Portable Graymap (*.pgm)");
-	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
-	if (qtFormats.contains("tga"))		app_p.openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("tga"))		app_p.openFilters.append("Truvision Graphics Adapter (*.tga)");
 	if (qtFormats.contains("mng"))		app_p.openFilters.append("Multi-Image Network Graphics (*.mng)");
+	if (qtFormats.contains("cur"))		app_p.openFilters.append("Windows Cursor Files (*.cur)");
+	if (qtFormats.contains("icns"))		app_p.openFilters.append("Apple Icon Image (*.icns)");
+	if (qtFormats.contains("svgz"))		app_p.openFilters.append("Scalable Vector Graphics (*.svg *.svgz)");
+
+#ifndef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
+#endif
 
 #ifdef WITH_LIBRAW
 	// raw format
-	app_p.openFilters.append("Nikon Raw (*.nef)");
-	app_p.openFilters.append("Canon Raw (*.crw *.cr2)");
-	app_p.openFilters.append("Sony Raw (*.arw)");
-	app_p.openFilters.append("Digital Negativ (*.dng)");
-	app_p.openFilters.append("Panasonic Raw (*.raw *.rw2)");
-	app_p.openFilters.append("Minolta Raw (*.mrw)");
-	app_p.openFilters.append("Samsung Raw (*.srw)");
-	app_p.openFilters.append("Olympus Raw (*.orf)");
-	app_p.openFilters.append("Hasselblad Raw (*.3fr)");
-	app_p.openFilters.append("Sigma Raw (*.x3f)");
-	app_p.openFilters.append("Leaf Raw (*.mos)");
-	app_p.openFilters.append("Pentax Raw (*.pef)");
-	app_p.openFilters.append("Phase One (*.iiq)");
+	app_p.rawFilters.append("Nikon Raw (*.nef *.nrw)");
+	app_p.rawFilters.append("Canon Raw (*.crw *.cr2)");
+	app_p.rawFilters.append("Sony Raw (*.arw)");
+	app_p.rawFilters.append("Digital Negativ (*.dng)");
+	app_p.rawFilters.append("Panasonic Raw (*.raw *.rw2)");
+	app_p.rawFilters.append("Minolta Raw (*.mrw)");
+	app_p.rawFilters.append("Samsung Raw (*.srw)");
+	app_p.rawFilters.append("Olympus Raw (*.orf)");
+	app_p.rawFilters.append("Hasselblad Raw (*.3fr)");
+	app_p.rawFilters.append("Sigma Raw (*.x3f)");
+	app_p.rawFilters.append("Leaf Raw (*.mos)");
+	app_p.rawFilters.append("Pentax Raw (*.pef)");
+	app_p.rawFilters.append("Phase One (*.iiq)");
+	app_p.rawFilters.append("Fujifilm Raw (*.raf)");
+
+	app_p.openFilters += app_p.rawFilters;
 #endif
 
 	// stereo formats
@@ -227,9 +250,9 @@ void DkSettings::initFileFilters() {
 
 	qDebug() << "supported: " << qtFormats;
 
-#ifdef Q_OS_WIN
-	app_p.fileFilters.append("*.lnk");
-#endif
+//#ifdef Q_OS_WIN
+//	app_p.fileFilters.append("*.lnk");
+//#endif
 
 }
 
@@ -741,14 +764,14 @@ void DkSettings::setToDefaultSettings() {
 	global_p.useTmpPath = false;
 	global_p.askToSaveDeletedFiles = false;
 	global_p.tmpPath = QString();
-	global_p.language = QString();
+	global_p.language = "en";
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
 	global_p.zoomOnWheel = true;
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 	sync_p.switchModifier = true;
 	global_p.altMod = Qt::ControlModifier;
 	global_p.ctrlMod = Qt::AltModifier;
@@ -846,10 +869,10 @@ QSettings& Settings::getSettings() {
 	return *m_settings;
 }
 
-void DkFileFilterHandling::registerNomacs() {
+void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 
 #ifdef WIN32
-
+	
 	// TODO: this is still not working for me on win8??
 	QString capName = "Capabilities";
 	QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\" + capName;
@@ -872,12 +895,11 @@ void DkFileFilterHandling::registerNomacs() {
 			QStringList extList = getExtensions(rFilters.at(idx));
 			
 			for (QString cExt : extList)
-				settings.setValue(cExt, "nomacs Image");
+				settings.setValue(cExt, "nomacs" + cExt + ".3");
 		}
 	}
 	settings.endGroup();
-
-
+	
 	QString softwarePath = "HKEY_CURRENT_USER\\Software\\";
 	QSettings wsettings(softwarePath, QSettings::NativeFormat);
 
@@ -887,8 +909,32 @@ void DkFileFilterHandling::registerNomacs() {
 
 	qDebug() << "nomacs registered ============================";
 
+	if (showDefaultApps) {
+		showDefaultSoftware();
+	}
 #endif
 
+}
+
+void DkFileFilterHandling::showDefaultSoftware() const {
+
+#ifdef WIN32
+	IApplicationActivationManager* manager = 0;
+	CoCreateInstance(CLSID_ApplicationActivationManager,
+		0,
+		CLSCTX_LOCAL_SERVER,
+		IID_IApplicationActivationManager,
+		(LPVOID*)&manager);
+
+	if (manager) {
+		DWORD pid = GetCurrentProcessId();
+		manager->ActivateApplication(
+			L"windows.immersivecontrolpanel_cw5n1h2txyewy"
+			L"!microsoft.windows.immersivecontrolpanel",
+			L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
+		qDebug() << "launching application registration...";
+	}
+#endif
 }
 
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
@@ -896,18 +942,21 @@ QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& 
 #ifdef WIN32
 
 	QString nomacsPath = "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\";
-	QString nomacsKey = "nomacs" + ext + ".2";
+	QString nomacsKey = "nomacs" + ext + ".3";
 
 	QSettings settings(nomacsPath, QSettings::NativeFormat);
 	
 	if (add) {
+	
+		QString iconID = getIconID(ext);
+
 		settings.beginGroup(nomacsKey);
 		settings.setValue("Default", friendlyName);
 		//settings.setValue("AppUserModelID", "nomacs.ImageLounge");
 		//settings.setValue("EditFlags", 1);
 		//settings.setValue("CurVer", nomacsKey);
 		settings.beginGroup("DefaultIcon");
-		settings.setValue("Default","\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\", 1");
+		settings.setValue("Default",QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "," + iconID);
 		settings.endGroup();
 		settings.beginGroup("shell");
 		settings.beginGroup("open");
@@ -926,6 +975,28 @@ QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& 
 #else
 	return QString();
 #endif
+}
+
+QString DkFileFilterHandling::getIconID(const QString& ext) const {
+
+	qDebug() << "ID: " << ext;
+	if (ext.contains(".jpg") || ext.contains(".jpeg")) {
+		return "1";
+	}
+	else if (ext.contains(".gif") || ext.contains(".mng")) {
+		return "2";
+	}
+	else if (ext.contains(".png")) {
+		return "3";
+	}
+	else if (ext.contains(".tif") || ext.contains(".tiff") || ext.contains(".bmp") || ext.contains(".pgm") || ext.contains(".webp")) {
+		return "4";
+	}
+	else if (!DkSettings::app.rawFilters.filter(ext).empty()) {
+		return "5";
+	}
+	else
+		return "0";
 }
 
 void DkFileFilterHandling::registerExtension(const QString& ext, const QString& progKey, bool add) {
@@ -952,8 +1023,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 
 	if (DkSettings::app.privateMode)
 		return;
-
-
+	
 	QString friendlyName;
 	QStringList extList = getExtensions(filterString, friendlyName);
 	friendlyName += attribute;
@@ -965,7 +1035,9 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	for (int idx = 0; idx < extList.size(); idx++) {
 
 		qDebug() << "registering: " << extList.at(idx);
+
 		registerExtension(extList.at(idx), progKey, add);
+		registerDefaultApp(extList.at(idx), progKey, add);
 		setAsDefaultApp(extList.at(idx), progKey, add);		// this is not working on Win8
 	}
 
@@ -1002,6 +1074,23 @@ QStringList DkFileFilterHandling::getExtensions(const QString& filter, QString& 
 	return extList;
 }
 
+void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString& progKey, bool add) {
+
+#ifdef WIN32
+
+	QSettings settings("HKEY_CURRENT_USER\\Software\\Classes\\Applications\\nomacs.exe", QSettings::NativeFormat);
+	
+	if (add) {
+		settings.beginGroup("SupportedTypes");
+		settings.setValue(ext, "");
+		qDebug() << ext << "registered...";
+	}
+	else
+		settings.remove(ext);
+#endif
+
+}
+
 void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
 
 #ifdef WIN32
@@ -1010,8 +1099,13 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 	settings.beginGroup(ext);
 
 	if (add) {
+		// windows 7 only
 		settings.beginGroup("UserChoice");
 		settings.setValue("ProgId", progKey);
+		settings.endGroup();
+
+		settings.beginGroup("OpenWithProgids");
+		settings.setValue("nomacs" + ext + ".3","");
 		qDebug() << "default app set";
 	}
 	else

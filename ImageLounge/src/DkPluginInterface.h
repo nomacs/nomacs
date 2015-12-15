@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "DkImageContainer.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStringList>
 #include <QString>
@@ -64,11 +66,12 @@ public:
     virtual QStringList runID() const = 0;
     virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
     virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
-	virtual QList<QAction*> pluginActions(QWidget*) { return QList<QAction*>();};
-    virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
+	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
+	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
+    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};
-	QMainWindow* getMainWidnow() const {
+	QMainWindow* getMainWindow() const {
 
 		QWidgetList widgets = QApplication::topLevelWidgets();
 
@@ -84,8 +87,6 @@ public:
 
 		return win;
 	}
-
-
 };
 
 class DkViewPortInterface : public DkPluginInterface {
@@ -109,17 +110,17 @@ public:
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
-		this->worldMatrix = worldMatrix;
+		mWorldMatrix = worldMatrix;
 	};
 
 	void setImgMatrix(QTransform* imgMatrix) {
-		this->imgMatrix = imgMatrix;
+		mImgMatrix = imgMatrix;
 	};
 
 signals:
-	void closePlugin(bool askForSaving = false, bool alreadySaving = false);
+	void closePlugin(bool askForSaving = false);
 	void showToolbar(QToolBar* toolbar, bool show);
-	void loadFile(QFileInfo file);
+	void loadFile(const QString& filePath);
 	void loadImage(QImage image);
 
 protected:
@@ -130,38 +131,36 @@ protected:
 
 	virtual QPointF mapToImage(const QPointF& pos) const {
 		
-		if (!worldMatrix || !imgMatrix)
+		if (!mWorldMatrix || !mImgMatrix)
 			return pos;
 		
-		QPointF imgPos = worldMatrix->inverted().map(pos);
-		imgPos = imgMatrix->inverted().map(imgPos);
+		QPointF imgPos = mWorldMatrix->inverted().map(pos);
+		imgPos = mImgMatrix->inverted().map(imgPos);
 
 		return imgPos;
 	};
 
 	virtual QPointF mapToViewport(const QPointF& pos) const {
 
-		if (!worldMatrix)
+		if (!mWorldMatrix)
 			return pos;
 
-		return worldMatrix->inverted().map(pos);
+		return mWorldMatrix->inverted().map(pos);
 	};
 
 	virtual void init() {
-		worldMatrix = 0;
-		imgMatrix = 0;
 
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 		//setMouseTracking(true);
 	};
 
-	QTransform* worldMatrix;
-	QTransform* imgMatrix;
+	QTransform* mWorldMatrix = 0;
+	QTransform* mImgMatrix = 0;
 };
 
 };
 
 // Change this version number if DkPluginInterface is changed!
-Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/1.0")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/1.0")
+Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/2.0")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/2.0")
