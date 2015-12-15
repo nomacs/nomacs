@@ -29,7 +29,7 @@
 #include "DkMath.h"
 #include "DkSettings.h"
 
-#if defined(Q_WS_X11) && !defined(Q_OS_OPENBSD)
+#if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
 #endif
 
@@ -81,7 +81,7 @@ double DkMemory::getTotalMemory() {
 		mem = (double)MemoryStatus.ullTotalPhys;
 	}
 
-#elif defined Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#elif defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
 
 	struct sysinfo info;
 
@@ -116,7 +116,7 @@ double DkMemory::getFreeMemory() {
 		mem = (double)MemoryStatus.ullAvailPhys;
 	}
 
-#elif defined Q_WS_X11 and not defined(Q_OS_OPENBSD)
+#elif defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
 
 	struct sysinfo info;
 	

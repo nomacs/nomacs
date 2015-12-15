@@ -382,7 +382,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbZoomOnWheel);
 	showBarsLayout->addWidget(cbCheckForUpdates);
 
-#ifdef Q_WS_X11 // hide checkbox in linux
+#ifdef Q_OS_LINUX // hide checkbox in linux
 	cbCheckForUpdates->hide();
 #endif
 

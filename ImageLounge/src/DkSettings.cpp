@@ -764,14 +764,14 @@ void DkSettings::setToDefaultSettings() {
 	global_p.useTmpPath = false;
 	global_p.askToSaveDeletedFiles = false;
 	global_p.tmpPath = QString();
-	global_p.language = QString();
+	global_p.language = "en";
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
 	global_p.zoomOnWheel = true;
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 	sync_p.switchModifier = true;
 	global_p.altMod = Qt::ControlModifier;
 	global_p.ctrlMod = Qt::AltModifier;

@@ -653,9 +653,9 @@ QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 
 	mHelpMenu = new QMenu(QObject::tr("&?"), parent);
 
-#ifndef Q_WS_X11
+#ifndef Q_OS_LINUX
 	mHelpMenu->addAction(mHelpActions[menu_help_update]);
-#endif // !Q_WS_X11
+#endif // !Q_OS_LINUX
 	mHelpMenu->addAction(mHelpActions[menu_help_update_translation]);
 	mHelpMenu->addSeparator();
 	mHelpMenu->addAction(mHelpActions[menu_help_bug]);
