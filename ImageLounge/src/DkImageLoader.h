@@ -45,7 +45,7 @@
 // my classes
 #include "DkImageContainer.h"
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 	typedef  unsigned char byte;
 #endif
 
