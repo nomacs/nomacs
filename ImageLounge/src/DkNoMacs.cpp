@@ -1962,9 +1962,9 @@ void DkNoMacs::bugReport() {
 	url += "Windows Vista/7/8 64bit";
 #elif defined WIN32 && _WIN32
 	url += "Windows Vista/7/8 32bit";
-#elif defined Q_WS_X11 && __x86_64__	// >DIR: check if qt5 still supports these flags [19.2.2014 markus]
+#elif defined Q_OS_LINUX && __x86_64__	// >DIR: check if qt5 still supports these flags [19.2.2014 markus]
 	url += "Linux 64bit";
-#elif defined Q_WS_X11 && __i386__
+#elif defined Q_OS_LINUX && __i386__
 	url += "Linux 32bit";
 #elif defined Q_OS_MAC
 	url += "Mac OS";
@@ -1989,9 +1989,9 @@ void DkNoMacs::featureRequest() {
 	url += "Windows 7/8/10 64bit";
 #elif defined WIN32 && _WIN32
 	url += "Windows 7/8/10 32bit";
-#elif defined Q_WS_X11 && __x86_64__
+#elif defined Q_OS_LINUX && __x86_64__
 	url += "Linux 64bit";
-#elif defined Q_WS_X11 && __i386__
+#elif defined Q_OS_LINUX && __i386__
 	url += "Linux 32bit";
 #elif defined Q_OS_MAC
 	url += "Mac OS";
@@ -2379,7 +2379,7 @@ void DkNoMacs::settingsChanged() {
 void DkNoMacs::checkForUpdate(bool silent) {
 
 	// updates are supported on windows only
-#ifndef Q_WS_X11
+#ifndef Q_OS_LINUX
 
 	// do we really need to check for update?
 	if (!silent || (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)) {
@@ -2404,7 +2404,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 		}
 		qDebug() << "checking for updates takes: " << dt.getTotal();
 	}
-#endif // !#ifndef Q_WS_X11
+#endif // !#ifndef Q_OS_LINUX
 }
 
 void DkNoMacs::showUpdaterMessage(QString msg, QString title) {

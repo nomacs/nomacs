@@ -764,7 +764,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.useTmpPath = false;
 	global_p.askToSaveDeletedFiles = false;
 	global_p.tmpPath = QString();
-	global_p.language = QString();
+	global_p.language = "en";
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
