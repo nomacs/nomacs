@@ -373,11 +373,12 @@
     <message>
         <location filename="../src/DkActionManager.cpp" line="1142"/>
         <source>1&amp;80%1</source>
-        <translation type="unfinished">1&amp;80° {1&amp;80%1?}</translation>
+        <translation type="unfinished">1&amp;80°</translation>
     </message>
     <message>
         <location filename="../src/DkActionManager.cpp" line="1143"/>
         <source>rotate the image by 180%1</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/DkActionManager.cpp" line="1145"/>
@@ -2343,6 +2344,7 @@ This option might destroy your images - so be careful!</source>
     <message>
         <location filename="../src/DkBatch.cpp" line="1091"/>
         <source>&amp;180%1</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/DkBatch.cpp" line="1100"/>
