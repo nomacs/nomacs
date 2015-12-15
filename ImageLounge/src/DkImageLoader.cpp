@@ -989,6 +989,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 
 void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	
+	QWidget* dialogParent = QApplication::activeWindow();
 	QString saveName;
 	QFileInfo saveFileInfo;
 
@@ -1013,13 +1014,13 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	if (saveFileInfo.exists())
 		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + suffix);
 
-	QString fileName = QFileDialog::getSaveFileName(qApp->activeWindow(), tr("Save File %1").arg(saveName),
+	QString fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
 		saveFileInfo.absoluteFilePath(), saveFilterGui);
 
 	if (fileName.isEmpty())
 		return;
 
-	DkCompressDialog* jpgDialog = new DkCompressDialog(qApp->activeWindow());
+	DkCompressDialog* jpgDialog = new DkCompressDialog(dialogParent);
 	jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
 	jpgDialog->imageHasAlpha(imgHasAlpha);
 	jpgDialog->setImage(saveImg);

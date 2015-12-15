@@ -1496,7 +1496,7 @@ void DkNoMacs::openQuickLaunch() {
 		}
 
 		mQuickAccessEdit->setFixedWidth(qRound(width()/3.0f));
-		mQuickAccessEdit->move(QPoint(width()-mQuickAccessEdit->width()-10, 40));
+		mQuickAccessEdit->move(QPoint(width()-mQuickAccessEdit->width()-10, qRound(height()*0.25)));
 		mQuickAccessEdit->setModel(mQuickAccess->getModel());
 		mQuickAccessEdit->show();
 	}
@@ -1710,12 +1710,14 @@ void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
+	// TODO: move to current image loader
 	if (getTabWidget()->getCurrentImageLoader())
 		getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
 }
 
 void DkNoMacs::saveFileWeb() {
 
+	// TODO: move to current image loader
 	if (getTabWidget()->getCurrentImageLoader())
 		getTabWidget()->getCurrentImageLoader()->saveFileWeb(getTabWidget()->getViewPort()->getImage());
 }
