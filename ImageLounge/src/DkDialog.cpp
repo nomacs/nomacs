@@ -2130,13 +2130,14 @@ void DkPrintPreviewDialog::scaleImage() {
 
 void DkPrintPreviewDialog::init() {
 	
-	if (!mPrinter) {
-#ifdef WIN32
-		mPrinter = new QPrinter(QPrinter::HighResolution);
-#else
-		mPrinter = new QPrinter;
-#endif
-	}
+	if (!mPrintDialog)
+		mPrintDialog = new QPrintDialog(this);
+
+	// see http://doc.qt.io/qt-4.8/porting4.html#qprinter
+	if (!mPrinter)
+		mPrinter = mPrintDialog->printer();
+
+	qDebug() << "printer is valid: " << mPrinter->isValid();
 	
 	mPreview = new DkPrintPreviewWidget(mPrinter, this);
 
@@ -2176,8 +2177,8 @@ void DkPrintPreviewDialog::setupActions() {
 
 	mFitGroup = new QActionGroup(this);
 
-	mFitWidthAction = mFitGroup->addAction(mIcons[print_fit_width], tr("Fit width"));
-	mFitPageAction = mFitGroup->addAction(mIcons[print_fit_page], tr("Fit page"));
+	mFitWidthAction = mFitGroup->addAction(mIcons[print_fit_width], tr("Fit Width"));
+	mFitPageAction = mFitGroup->addAction(mIcons[print_fit_page], tr("Fit Page"));
 	mFitWidthAction->setObjectName(QLatin1String("fitWidthAction"));
 	mFitPageAction->setObjectName(QLatin1String("fitPageAction"));
 	mFitWidthAction->setCheckable(true);
@@ -2459,9 +2460,15 @@ void DkPrintPreviewDialog::pageSetup() {
 }
 
 void DkPrintPreviewDialog::print() {
+	
+	qDebug() << "starting print dialog";
 	if (!mPrintDialog)
 		mPrintDialog = new QPrintDialog(mPrinter, this);
-	if (mPrintDialog->exec() == QDialog::Accepted) {
+
+	qDebug() << "executing print dialog";
+	int answer = mPrintDialog->exec();
+	qDebug() << "print dialog executed, answer: " << answer;
+	if (answer == QDialog::Accepted) {
 		mPreview->print();
 		close();
 	}
