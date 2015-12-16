@@ -1264,7 +1264,7 @@ void DkResizeDialog::on_heightSpin_valueChanged(double val) {
 
 void DkResizeDialog::on_resolutionSpin_valueChanged(double val) {
 
-	mExifDpi = val;
+	mExifDpi = (float)val;
 
 	if (!mResolutionSpin->hasFocus())
 		return;

@@ -206,6 +206,7 @@ void DkPluginManagerDialog::tabChanged(int tab){
 void DkPluginManagerDialog::deletePlugin(QString pluginID) {
 
 	QFile file(DkPluginManager::instance().getPluginFilePath(pluginID));
+	DkPluginManager::instance().removePlugin(pluginID);
 
 	if (!file.remove()) {
 		qDebug() << "Failed to delete plugin file!";
@@ -215,9 +216,9 @@ void DkPluginManagerDialog::deletePlugin(QString pluginID) {
 		DkPluginManager::instance().removePlugin(pluginID);
 }
 
-//*********************************************************************************
-//DkPluginTableWidget : Widget with table views containing plugin data
-//*********************************************************************************
+/**********************************************************************************
+ * DkPluginTableWidget : Widget with table views containing plugin data
+ **********************************************************************************/
 
 DkPluginTableWidget::DkPluginTableWidget(int tab, DkPluginManagerDialog* manager, QWidget* parent) : QWidget(parent) {
 
@@ -1691,6 +1692,12 @@ void DkPluginManager::removePlugin(const QString& id) {
 	loadedPlugins.remove(id);
 
 	QPluginLoader* loaderToDelete = pluginLoaders.take(id);
+
+	if (!loaderToDelete) {
+		qDebug() << "cannot remove plugin - empty plugin loader...";
+		return;
+	}
+
 	if(!loaderToDelete->unload()) 
 		qDebug() << "Could not unload plugin loader!";
 	delete loaderToDelete;
