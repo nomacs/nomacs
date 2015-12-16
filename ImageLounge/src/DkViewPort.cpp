@@ -1014,10 +1014,8 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 
 	DkVector vec((float)(start.x()-end.x()), (float)(start.y()-end.y()));
 
-	if (fabs(vec.norm()) < 100) {
-		qDebug() << "ignoring, too small: " << vec.norm();
+	if (fabs(vec.norm()) < 100)
 		return no_swipe;
-	}
 
 	double angle = DkMath::normAngleRad(vec.angle(DkVector(0,1)), 0.0, CV_PI);
 	bool horizontal = false;

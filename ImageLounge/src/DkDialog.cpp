@@ -789,8 +789,8 @@ void DkResizeDialog::saveSettings() {
 	settings.setValue("CorrectGamma", mGammaCorrection->isChecked());
 
 	if (mSizeBox->currentIndex() == size_percent) {
-		settings.setValue("Width", mWPixelEdit->value());
-		settings.setValue("Height", mHPixelEdit->value());
+		settings.setValue("Width", mWPixelSpin->value());
+		settings.setValue("Height", mHPixelSpin->value());
 	}
 	else {
 		settings.setValue("Width", 0);
@@ -824,8 +824,8 @@ void DkResizeDialog::loadSettings() {
 		}
 		mSizeBox->setCurrentIndex(size_percent);
 
-		mWPixelEdit->setValue(w);
-		mHPixelEdit->setValue(h);
+		mWPixelSpin->setValue(w);
+		mHPixelSpin->setValue(h);
 		
 		updateWidth();
 		updateHeight();
@@ -852,7 +852,7 @@ void DkResizeDialog::init() {
 	createLayout();
 	initBoxes();
 
-	mWPixelEdit->setFocus(Qt::ActiveWindowFocusReason);
+	mWPixelSpin->setFocus(Qt::ActiveWindowFocusReason);
 
 	QMetaObject::connectSlotsByName(this);
 }
@@ -899,10 +899,10 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* wPixelLabel = new QLabel(tr("Width: "), this);
 	wPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mWPixelEdit = new DkSelectAllDoubleSpinBox(this);
-	mWPixelEdit->setObjectName("wPixelEdit");
-	mWPixelEdit->setRange(minPx, maxPx);
-	mWPixelEdit->setDecimals(0);
+	mWPixelSpin = new DkSelectAllDoubleSpinBox(this);
+	mWPixelSpin->setObjectName("wPixelSpin");
+	mWPixelSpin->setRange(minPx, maxPx);
+	mWPixelSpin->setDecimals(0);
 
 	mLockButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock", this);
 	mLockButton->setFixedSize(QSize(16,16));
@@ -912,10 +912,10 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* hPixelLabel = new QLabel(tr("Height: "), this);
 	hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mHPixelEdit = new DkSelectAllDoubleSpinBox();
-	mHPixelEdit->setObjectName("hPixelEdit");
-	mHPixelEdit->setRange(minPx, maxPx);
-	mHPixelEdit->setDecimals(0);
+	mHPixelSpin = new DkSelectAllDoubleSpinBox();
+	mHPixelSpin->setObjectName("hPixelSpin");
+	mHPixelSpin->setRange(minPx, maxPx);
+	mHPixelSpin->setDecimals(0);
 
 	mSizeBox = new QComboBox(this);
 	QStringList sizeList;
@@ -927,19 +927,19 @@ void DkResizeDialog::createLayout() {
 	// first row
 	int rIdx = 0;
 	gridLayout->addWidget(wPixelLabel, 0, rIdx);
-	gridLayout->addWidget(mWPixelEdit, 0, ++rIdx);
+	gridLayout->addWidget(mWPixelSpin, 0, ++rIdx);
 	gridLayout->addWidget(mLockButton, 0, ++rIdx);
 	gridLayout->addWidget(hPixelLabel, 0, ++rIdx);
-	gridLayout->addWidget(mHPixelEdit, 0, ++rIdx);
+	gridLayout->addWidget(mHPixelSpin, 0, ++rIdx);
 	gridLayout->addWidget(mSizeBox, 0, ++rIdx);
 
 	// Document dimensions
 	QLabel* widthLabel = new QLabel(tr("Width: "));
 	widthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mWidthEdit = new DkSelectAllDoubleSpinBox();
-	mWidthEdit->setObjectName("widthEdit");
-	mWidthEdit->setRange(minWidth, maxWidth);
-	mWidthEdit->setDecimals(decimals);
+	mWidthSpin = new DkSelectAllDoubleSpinBox();
+	mWidthSpin->setObjectName("widthSpin");
+	mWidthSpin->setRange(minWidth, maxWidth);
+	mWidthSpin->setDecimals(decimals);
 
 
 	mLockButtonDim = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
@@ -951,10 +951,10 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* heightLabel = new QLabel(tr("Height: "));
 	heightLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mHeightEdit = new DkSelectAllDoubleSpinBox();
-	mHeightEdit->setObjectName("heightEdit");
-	mHeightEdit->setRange(minWidth, maxWidth);
-	mHeightEdit->setDecimals(decimals);
+	mHeightSpin = new DkSelectAllDoubleSpinBox();
+	mHeightSpin->setObjectName("heightSpin");
+	mHeightSpin->setRange(minWidth, maxWidth);
+	mHeightSpin->setDecimals(decimals);
 
 	mUnitBox = new QComboBox();
 	QStringList unitList;
@@ -968,19 +968,19 @@ void DkResizeDialog::createLayout() {
 	// second row
 	rIdx = 0;
 	gridLayout->addWidget(widthLabel, 1, rIdx);
-	gridLayout->addWidget(mWidthEdit, 1, ++rIdx);
+	gridLayout->addWidget(mWidthSpin, 1, ++rIdx);
 	gridLayout->addWidget(mLockButtonDim, 1, ++rIdx);
 	gridLayout->addWidget(heightLabel, 1, ++rIdx);
-	gridLayout->addWidget(mHeightEdit, 1, ++rIdx);
+	gridLayout->addWidget(mHeightSpin, 1, ++rIdx);
 	gridLayout->addWidget(mUnitBox, 1, ++rIdx);
 
 	// resolution
 	QLabel* resolutionLabel = new QLabel(tr("Resolution: "));
 	resolutionLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mResolutionEdit = new DkSelectAllDoubleSpinBox();
-	mResolutionEdit->setObjectName("resolutionEdit");
-	mResolutionEdit->setRange(minWidth, maxWidth);
-	mResolutionEdit->setDecimals(decimals);
+	mResolutionSpin = new DkSelectAllDoubleSpinBox();
+	mResolutionSpin->setObjectName("resolutionSpin");
+	mResolutionSpin->setRange(minWidth, maxWidth);
+	mResolutionSpin->setDecimals(decimals);
 
 	mResUnitBox = new QComboBox();
 	QStringList resUnitList;
@@ -992,7 +992,7 @@ void DkResizeDialog::createLayout() {
 	// third row
 	rIdx = 0;
 	gridLayout->addWidget(resolutionLabel, 2, rIdx);
-	gridLayout->addWidget(mResolutionEdit, 2, ++rIdx);
+	gridLayout->addWidget(mResolutionSpin, 2, ++rIdx);
 	gridLayout->addWidget(mResUnitBox, 2, ++rIdx, 1, 2);
 
 	// resample
@@ -1054,20 +1054,20 @@ void DkResizeDialog::initBoxes(bool updateSettings) {
 		return;
 
 	if (mSizeBox->currentIndex() == size_pixel) {
-		mWPixelEdit->setValue(mImg.width());
-		mHPixelEdit->setValue(mImg.height());
+		mWPixelSpin->setValue(mImg.width());
+		mHPixelSpin->setValue(mImg.height());
 	}
 	else {
-		mWPixelEdit->setValue(100);
-		mHPixelEdit->setValue(100);
+		mWPixelSpin->setValue(100);
+		mHPixelSpin->setValue(100);
 	}
 
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float width = (float)mImg.width()/mExifDpi * units;
-	mWidthEdit->setValue(width);
+	mWidthSpin->setValue(width);
 
 	float height = (float)mImg.height()/mExifDpi * units;
-	mHeightEdit->setValue(height);
+	mHeightSpin->setValue(height);
 
 	if (updateSettings)
 		loadSettings();
@@ -1079,7 +1079,7 @@ void DkResizeDialog::setImage(const QImage& img) {
 	initBoxes(true);
 	updateSnippets();
 	drawPreview();
-	mWPixelEdit->selectAll();
+	mWPixelSpin->selectAll();
 }
 
 QImage DkResizeDialog::getResizedImage() {
@@ -1090,9 +1090,9 @@ QImage DkResizeDialog::getResizedImage() {
 void DkResizeDialog::setExifDpi(float exifDpi) {
 
 	mExifDpi = exifDpi;
-	mResolutionEdit->blockSignals(true);
-	mResolutionEdit->setValue(exifDpi);
-	mResolutionEdit->blockSignals(false);
+	mResolutionSpin->blockSignals(true);
+	mResolutionSpin->setValue(exifDpi);
+	mResolutionSpin->blockSignals(false);
 }
 
 float DkResizeDialog::getExifDpi() {
@@ -1105,57 +1105,57 @@ bool DkResizeDialog::resample() {
 
 void DkResizeDialog::updateWidth() {
 
-	float pWidth = (float)mWPixelEdit->value();
+	float pWidth = (float)mWPixelSpin->value();
 
 	if (mSizeBox->currentIndex() == size_percent)
 		pWidth = (float)qRound(pWidth/100 * mImg.width()); 
 
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float width = pWidth/mExifDpi * units;
-	mWidthEdit->setValue(width);
+	mWidthSpin->setValue(width);
 }
 
 void DkResizeDialog::updateHeight() {
 
-	float pHeight = (float)mHPixelEdit->value();
+	float pHeight = (float)mHPixelSpin->value();
 
 	if (mSizeBox->currentIndex() == size_percent)
 		pHeight = (float)qRound(pHeight/100 * mImg.height()); 
 
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float height = pHeight/mExifDpi * units;
-	mHeightEdit->setValue(height);
+	mHeightSpin->setValue(height);
 }
 
 void DkResizeDialog::updateResolution() {
 
 	qDebug() << "updating resolution...";
-	float wPixel = (float)mWPixelEdit->value();
-	float width = (float)mWidthEdit->value();
+	float wPixel = (float)mWPixelSpin->value();
+	float width = (float)mWidthSpin->value();
 
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float resolution = wPixel/width * units;
-	mResolutionEdit->setValue(resolution);
+	mResolutionSpin->setValue(resolution);
 }
 
 void DkResizeDialog::updatePixelHeight() {
 
-	float height = (float)mHeightEdit->value();
+	float height = (float)mHeightSpin->value();
 
 	// *1000/10 is for more beautiful values
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float pixelHeight = (mSizeBox->currentIndex() != size_percent) ? qRound(height*mExifDpi / units) : qRound(1000.0f*height*mExifDpi / (units * mImg.height()))/10.0f;
 
-	mHPixelEdit->setValue(pixelHeight);
+	mHPixelSpin->setValue(pixelHeight);
 }
 
 void DkResizeDialog::updatePixelWidth() {
 
-	float width = (float)mWidthEdit->value();
+	float width = (float)mWidthSpin->value();
 
 	float units = mResFactor.at(mResUnitBox->currentIndex()) * mUnitFactor.at(mUnitBox->currentIndex());
 	float pixelWidth = (mSizeBox->currentIndex() != size_percent) ? qRound(width*mExifDpi / units) : qRound(1000.0f*width*mExifDpi / (units * mImg.width()))/10.0f;
-	mWPixelEdit->setValue(pixelWidth);
+	mWPixelSpin->setValue(pixelWidth);
 }
 
 void DkResizeDialog::on_lockButtonDim_clicked() {
@@ -1179,9 +1179,9 @@ void DkResizeDialog::on_lockButton_clicked() {
 	drawPreview();
 }
 
-void DkResizeDialog::on_wPixelEdit_valueChanged(const QString& text) {
+void DkResizeDialog::on_wPixelSpin_valueChanged(double val) {
 
-	if (!mWPixelEdit->hasFocus())
+	if (!mWPixelSpin->hasFocus())
 		return;
 
 	updateWidth();
@@ -1191,15 +1191,15 @@ void DkResizeDialog::on_wPixelEdit_valueChanged(const QString& text) {
 		return;
 	}
 
-	int newHeight = (mSizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)mImg.width() * mImg.height()) : qRound(text.toFloat());
-	mHPixelEdit->setValue(newHeight);
+	int newHeight = (mSizeBox->currentIndex() != size_percent) ? qRound((float)val/(float)mImg.width() * mImg.height()) : qRound(val);
+	mHPixelSpin->setValue(newHeight);
 	updateHeight();
 	drawPreview();
 }
 
-void DkResizeDialog::on_hPixelEdit_valueChanged(const QString& text) {
+void DkResizeDialog::on_hPixelSpin_valueChanged(double val) {
 
-	if(!mHPixelEdit->hasFocus())
+	if(!mHPixelSpin->hasFocus())
 		return;
 	
 	updateHeight();
@@ -1209,15 +1209,15 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(const QString& text) {
 		return;
 	}
 
-	int newWidth = (mSizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)mImg.height() * (float)mImg.width()) : qRound(text.toFloat());
-	mWPixelEdit->setValue(newWidth);
+	int newWidth = (mSizeBox->currentIndex() != size_percent) ? qRound(val/(float)mImg.height() * (float)mImg.width()) : qRound(val);
+	mWPixelSpin->setValue(newWidth);
 	updateWidth();
 	drawPreview();
 }
 
-void DkResizeDialog::on_widthEdit_valueChanged(const QString& text) {
+void DkResizeDialog::on_widthSpin_valueChanged(double val) {
 
-	if (!mWidthEdit->hasFocus())
+	if (!mWidthSpin->hasFocus())
 		return;
 
 	if (mResampleCheck->isChecked()) 
@@ -1228,7 +1228,7 @@ void DkResizeDialog::on_widthEdit_valueChanged(const QString& text) {
 		return;
 	}
 
-	mHeightEdit->setValue(text.toFloat()/(float)mImg.width() * (float)mImg.height());
+	mHeightSpin->setValue(val/(float)mImg.width() * (float)mImg.height());
 
 	if (mResampleCheck->isChecked()) 
 		updatePixelHeight();
@@ -1239,9 +1239,9 @@ void DkResizeDialog::on_widthEdit_valueChanged(const QString& text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_heightEdit_valueChanged(const QString& text) {
+void DkResizeDialog::on_heightSpin_valueChanged(double val) {
 
-	if (!mHeightEdit->hasFocus())
+	if (!mHeightSpin->hasFocus())
 		return;
 
 	if (mResampleCheck->isChecked()) 
@@ -1252,7 +1252,7 @@ void DkResizeDialog::on_heightEdit_valueChanged(const QString& text) {
 		return;
 	}
 
-	mWidthEdit->setValue(text.toFloat()/(float)mImg.height() * (float)mImg.width());
+	mWidthSpin->setValue(val/(float)mImg.height() * (float)mImg.width());
 
 	if (mResampleCheck->isChecked()) 
 		updatePixelWidth();
@@ -1262,11 +1262,11 @@ void DkResizeDialog::on_heightEdit_valueChanged(const QString& text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_resolutionEdit_valueChanged(const QString& text) {
+void DkResizeDialog::on_resolutionSpin_valueChanged(double val) {
 
-	mExifDpi = (float)text.toDouble();
+	mExifDpi = val;
 
-	if (!mResolutionEdit->hasFocus())
+	if (!mResolutionSpin->hasFocus())
 		return;
 
 	updatePixelWidth();
@@ -1291,12 +1291,12 @@ void DkResizeDialog::on_unitBox_currentIndexChanged(int) {
 void DkResizeDialog::on_sizeBox_currentIndexChanged(int idx) {
 
 	if (idx == size_pixel) {
-		mWPixelEdit->setDecimals(0);
-		mHPixelEdit->setDecimals(0);
+		mWPixelSpin->setDecimals(0);
+		mHPixelSpin->setDecimals(0);
 	}
 	else {
-		mWPixelEdit->setDecimals(2);
-		mHPixelEdit->setDecimals(2);
+		mWPixelSpin->setDecimals(2);
+		mHPixelSpin->setDecimals(2);
 	}
 
 	updatePixelHeight();
@@ -1312,8 +1312,8 @@ void DkResizeDialog::on_resUnitBox_currentIndexChanged(int) {
 void DkResizeDialog::on_resampleCheck_clicked() {
 
 	mResampleBox->setEnabled(mResampleCheck->isChecked());
-	mWPixelEdit->setEnabled(mResampleCheck->isChecked());
-	mHPixelEdit->setEnabled(mResampleCheck->isChecked());
+	mWPixelSpin->setEnabled(mResampleCheck->isChecked());
+	mHPixelSpin->setEnabled(mResampleCheck->isChecked());
 
 	if (!mResampleCheck->isChecked()) {
 		mLockButton->setChecked(true);
@@ -1387,9 +1387,9 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	QSize newSize;
 
 	if (mSizeBox->currentIndex() == size_percent)
-		newSize = QSize(qRound(mWPixelEdit->value()/100.0f * mImg.width()), qRound(mHPixelEdit->value()/100.0f * mImg.height()));
+		newSize = QSize(qRound(mWPixelSpin->value()/100.0f * mImg.width()), qRound(mHPixelSpin->value()/100.0f * mImg.height()));
 	else
-		newSize = QSize(qRound(mWPixelEdit->value()), qRound(mHPixelEdit->value()));
+		newSize = QSize(qRound(mWPixelSpin->value()), qRound(mHPixelSpin->value()));
 
 	QSize imgSize = mImg.size();
 
@@ -1409,8 +1409,8 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		newSize = QSize(qRound(img.width()*relWidth), qRound(img.height()*relHeight));
 	}
 
-	if (newSize.width() < mWPixelEdit->minimum() || newSize.width() > mWPixelEdit->maximum() || 
-		newSize.height() < mHPixelEdit->minimum() || newSize.height() > mHPixelEdit->maximum()) {
+	if (newSize.width() < mWPixelSpin->minimum() || newSize.width() > mWPixelSpin->maximum() || 
+		newSize.height() < mHPixelSpin->minimum() || newSize.height() > mHPixelSpin->maximum()) {
 
 		if (!silent) {
 			QMessageBox errorDialog(this);

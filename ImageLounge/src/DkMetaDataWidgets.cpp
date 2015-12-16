@@ -494,7 +494,6 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 		return;
 
 	if (expandedNames.contains(mModel->data(index).toString())) {
-		qDebug() << "expanding: " << mModel->data(index).toString();
 		mTreeView->setExpanded(index, true);
 	}
 

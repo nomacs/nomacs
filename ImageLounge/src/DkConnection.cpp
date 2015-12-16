@@ -143,7 +143,7 @@ void DkConnection::sendNewFileMessage(qint16 op, const QString& filename) {
 };
 
 void DkConnection::sendNewGoodbyeMessage() {
-	qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
+	//qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
 
 	QByteArray ba = "GoodBye";  // scherz?
 	QByteArray data = "GOODBYE";

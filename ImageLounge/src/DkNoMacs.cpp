@@ -1107,7 +1107,7 @@ void DkNoMacs::startPong() const {
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
 
-	args.append("-pong");
+	args.append("--pong");
 
 	bool started = mProcess.startDetached(exe, args);
 	qDebug() << "pong started: " << started;

@@ -278,12 +278,12 @@ protected slots:
 	void on_lockButtonDim_clicked();
 	void on_lockButton_clicked();
 
-	void on_wPixelEdit_valueChanged(const QString& text);
-	void on_hPixelEdit_valueChanged(const QString& text);
+	void on_wPixelSpin_valueChanged(double val);
+	void on_hPixelSpin_valueChanged(double val);
 
-	void on_widthEdit_valueChanged(const QString& text);
-	void on_heightEdit_valueChanged(const QString& text);
-	void on_resolutionEdit_valueChanged(const QString& text);
+	void on_widthSpin_valueChanged(double val);
+	void on_heightSpin_valueChanged(double val);
+	void on_resolutionSpin_valueChanged(double val);
 
 	void on_sizeBox_currentIndexChanged(int idx);
 	void on_unitBox_currentIndexChanged(int idx);
@@ -312,17 +312,17 @@ protected:
 	DkBaseViewPort* mOrigView = 0;
 
 	// resize gui:
-	QDoubleSpinBox* mWPixelEdit = 0;
-	QDoubleSpinBox* mHPixelEdit = 0;
+	QDoubleSpinBox* mWPixelSpin = 0;
+	QDoubleSpinBox* mHPixelSpin = 0;
 	DkButton* mLockButton = 0;
 
-	QDoubleSpinBox* mWidthEdit = 0;
-	QDoubleSpinBox* mHeightEdit = 0;
+	QDoubleSpinBox* mWidthSpin = 0;
+	QDoubleSpinBox* mHeightSpin = 0;
 	QComboBox* mUnitBox = 0;
 	QComboBox* mSizeBox = 0;
 	DkButton* mLockButtonDim = 0;
 
-	QDoubleSpinBox* mResolutionEdit = 0;
+	QDoubleSpinBox* mResolutionSpin = 0;
 	QComboBox* mResUnitBox = 0;
 	QCheckBox* mResampleCheck = 0;
 	QCheckBox* mGammaCorrection = 0;

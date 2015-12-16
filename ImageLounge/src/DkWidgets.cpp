@@ -144,8 +144,6 @@ void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT> > im
 
 void DkFolderScrollBar::updateFile(int idx) {
 	
-	qDebug() << "updating to: " << idx;
-
 	if (mMouseDown)
 		return;
 

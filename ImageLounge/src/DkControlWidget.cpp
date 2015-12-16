@@ -550,9 +550,12 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 		return true;
 
 	// this is that complicated because we do not want plugins to have threaded containers - this could get weird
-	QSharedPointer<DkImageContainerT> pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));	// empty vars - mViewport plugin doesn't need them
+	QSharedPointer<DkImageContainerT> pluginImage;
+	
+	if (mViewport->imageContainer()) {
+		
+		bool applyChanges = true;
 
-	if (pluginImage) {
 		if (askForSaving) {
 
 			DkMessageBox* msgBox = new DkMessageBox(
@@ -564,11 +567,15 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 			msgBox->setDefaultButton(QMessageBox::Yes);
 			msgBox->setObjectName("SavePluginChanges");
 
-			if (msgBox->exec() != QMessageBox::Yes)
-				pluginImage = QSharedPointer<DkImageContainerT>();
-			
-		}				
+			int answer = msgBox->exec();
+			applyChanges = (answer == QMessageBox::Accepted || answer == QMessageBox::Yes);
+		}	
+
+		if (applyChanges)
+			pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));
 	}
+	else
+		qDebug() << "[DkControlWidget] I cannot close a plugin if the image container is NULL";
 
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 

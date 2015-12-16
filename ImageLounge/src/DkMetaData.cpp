@@ -1555,7 +1555,7 @@ QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) con
 	QString value = metaData->getExifValue(key);
 	unsigned int mode = value.toUInt();
 
-	if (mode < mFlashModes.size())
+	if (mode < (unsigned int)mFlashModes.size())
 		value = mFlashModes[mode];
 	else {
 		value = mFlashModes.first();	// assuming no flash to be first
