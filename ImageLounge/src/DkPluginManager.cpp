@@ -102,7 +102,7 @@ void DkPluginManagerDialog::createLayout() {
 	connect(tabs, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
     verticalLayout->addWidget(tabs);
 	
-    QHBoxLayout* horizontalLayout = new QHBoxLayout();
+    QHBoxLayout* horizontalLayout = new QHBoxLayout(this);
     QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     horizontalLayout->addItem(horizontalSpacer);

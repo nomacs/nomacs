@@ -1925,8 +1925,6 @@ void DkThumbScrollWidget::createActions() {
 	DkActionManager& am = DkActionManager::instance();
 	//addActions(am.allActions().toList());
 	addActions(am.previewActions().toList());
-
-	qDebug() << "adding action: " << am.allActions()[1];
 }
 
 void DkThumbScrollWidget::batchProcessFiles() const {
