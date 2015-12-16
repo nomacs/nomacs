@@ -7,7 +7,7 @@
     <StartMenuDir>nomacs - Image Lounge</StartMenuDir>
     <TargetDir>@ApplicationsDir@/nomacs</TargetDir>
 	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
-	<InstallerApplicationIcon>nomacs.ico</InstallerApplicationIcon>
+	<InstallerApplicationIcon>nomacs</InstallerApplicationIcon>
 
  	<RemoteRepositories>
 		 <Repository>

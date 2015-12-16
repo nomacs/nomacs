@@ -34,7 +34,7 @@
 
 function Component()
 {
-	console.log("30.09 --------------------------------");
+	console.log("v 16.12 --------------------------------");
 	installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 	
@@ -63,6 +63,7 @@ function Component()
 	
 	// hide ready for installation page:
 	installer.setDefaultPageVisible(QInstaller.ReadyForInstallation, false);
+	installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
 }
 
 Component.prototype.isDefault = function()

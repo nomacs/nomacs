@@ -1554,7 +1554,13 @@ QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) con
 	QString key = mCamSearchTags.at(DkSettings::camData_exposure_mode);
 	QString value = metaData->getExifValue(key);
 	unsigned int mode = value.toUInt();
-	value = mFlashModes[mode];
+
+	if (mode < mFlashModes.size())
+		value = mFlashModes[mode];
+	else {
+		value = mFlashModes.first();	// assuming no flash to be first
+		qWarning() << "illegal flash mode dected: " << mode;
+	}
 
 	return value;
 }
