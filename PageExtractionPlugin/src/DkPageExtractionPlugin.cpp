@@ -99,7 +99,7 @@ QString DkPageExtractionPlugin::pluginName() const {
 **/
 QString DkPageExtractionPlugin::pluginDescription() const {
 
-	return "<b>Created by:</b> Markus Diem <br><b>Modified:</b>27.08.2015<br><b>Description:</b> Detects document pages in images.";
+	return "<b>Created by:</b> Markus Diem and Fabian Hollaus<br><b>Modified:</b>27.08.2015<br><b>Description:</b> Detects document pages in images.";
 };
 
 /**
