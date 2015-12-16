@@ -139,7 +139,7 @@ QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 QSharedPointer<DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> image) const {
 	
 	if (!image)
-		image = QSharedPointer<DkImageContainer>();
+		return image;
 
 	//for a viewport plugin runID and image are null
 	if (viewport) {

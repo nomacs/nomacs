@@ -1,5 +1,7 @@
 PROJECT(nomacs-plugins)
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
 # include macros needed
 include("cmake/Utils.cmake")
 
@@ -7,7 +9,7 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+NMC_POLICY()
 
 OPTION (ENABLE_FAKE_MINIATURES "Compile FakeMiniatures plugin" ON)
 if(NOT CMAKE_CL_64 AND MSVC)

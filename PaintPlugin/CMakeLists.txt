@@ -8,6 +8,8 @@ ENDIF()
 # include macros needed
 include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
 
+NMC_POLICY()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 2.0.0)
 set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated at http://www.guidgenerator.com/

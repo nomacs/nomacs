@@ -1,3 +1,17 @@
+macro(NMC_POLICY)
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+if(COMMAND cmake_policy)
+	cmake_policy(SET CMP0003 NEW)
+	cmake_policy(SET CMP0043 NEW)
+	  
+	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
+		cmake_policy(SET CMP0020 NEW)	# qt warnings
+	ENDIF()
+endif(COMMAND cmake_policy)
+endmacro(NMC_POLICY)
+
 # Searches for Qt with the required components
 macro(NMC_FINDQT)
   # unsetting all QT variables manually (when switching from Qt4 to Qt5 in the gui)

@@ -6,7 +6,9 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
 # include macros needed
-include("../cmake/Utils.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
+
+NMC_POLICY()
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 0.0.1)
