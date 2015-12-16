@@ -11,7 +11,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
 NMC_POLICY()
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 0.1.0)
+set(PLUGIN_VERSION 2.0.0)
 set(PLUGIN_ID 4acb88c461024cb080ae5cd15d0ef0ec) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 

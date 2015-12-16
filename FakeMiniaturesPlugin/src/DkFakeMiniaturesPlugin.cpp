@@ -134,7 +134,7 @@ QSharedPointer<DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString
 
 		imgC->setImage(returnImg);
 	}
-	else {
+	else if (imgC) {
 		QMessageBox msgBox;
 		msgBox.setText("Wrong GUID!");
 		msgBox.setIcon(QMessageBox::Warning);

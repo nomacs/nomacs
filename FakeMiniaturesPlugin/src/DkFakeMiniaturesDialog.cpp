@@ -319,22 +319,15 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 
 	cv::Mat integralImg;
-	src.convertTo(integralImg, CV_32FC1, 1.0f/255.0f);
 
 	cv::Mat blurImg(src.size(), src.depth());
 
 	// a template function would have more 'style' here
-	const float* itgrl32Ptr = 0;
 	const double* itgrl64Ptr = 0;
 
 	// images with an area below 4000*4000 can be compuated using 32 bit 
-	if (src.rows*src.cols < 16000000) {
-		cv::integral(integralImg, integralImg, CV_32F);
-		itgrl32Ptr = integralImg.ptr<float>();	
-	} else {
-		cv::integral(integralImg, integralImg, CV_64F);
-		itgrl64Ptr = integralImg.ptr<double>();
-	}
+	cv::integral(src, integralImg, CV_32S);
+	const unsigned int* itgrl32Ptr = integralImg.ptr<unsigned int>();
 
 	for (int rIdx = 0; rIdx < src.rows; rIdx++) {
 
@@ -375,17 +368,15 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 			// compute mean kernel
 			if (area && itgrl32Ptr && ks > 1)
 				tmp = (*(itgrl32Ptr + top+right) + *(itgrl32Ptr + bottom+left) - *(itgrl32Ptr + top+left) - *(itgrl32Ptr + bottom+right))/area;
-			else if (area && itgrl64Ptr && ks > 1)
-				tmp = (*(itgrl64Ptr + top+right) + *(itgrl64Ptr + bottom+left) - *(itgrl64Ptr + top+left) - *(itgrl64Ptr + bottom+right))/area;
 			else
 				tmp = srcPtr[cIdx];
 
 			if (tmp < 0)
 				tmp = 0.0f;
-			if (tmp > 1)
-				tmp = 1.0f;
+			if (tmp > 255)
+				tmp = 255.0f;
 
-			blurPtr[cIdx] = qRound(tmp * 255);
+			blurPtr[cIdx] = qRound(tmp);
 		}
 	}
 
