@@ -1013,8 +1013,11 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
 	mFileActions[menu_file_quick_launch]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#ifdef WIN32
 	mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-
+#else
+	mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+#endif
 	mFileActions[menu_file_app_manager] = new QAction(QObject::tr("&Manage Applications"), parent);
 	mFileActions[menu_file_app_manager]->setStatusTip(QObject::tr("Manage Applications which are Automatically Opened"));
 	mFileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));

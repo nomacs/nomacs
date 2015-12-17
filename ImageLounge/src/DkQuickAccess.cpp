@@ -28,6 +28,7 @@
 #include "DkQuickAccess.h"
 #include "DkUtils.h"
 #include "DkImageStorage.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -134,7 +135,8 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 // DkQuickAcessEdit --------------------------------------------------------------------
 DkQuickAccessEdit::DkQuickAccessEdit(QWidget* parent) : QLineEdit("", parent) {
 	
-	setPlaceholderText(tr("Quick Launch (Ctrl + Q)"));
+	QString shortcutText = DkActionManager::instance().action(DkActionManager::menu_file_quick_launch)->shortcut().toString();
+	setPlaceholderText(tr("Quick Launch (%1)").arg(shortcutText));
 	setMinimumWidth(150);
 	setMaximumWidth(350);
 	hide();

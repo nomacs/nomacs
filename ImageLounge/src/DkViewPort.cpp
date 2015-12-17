@@ -844,9 +844,10 @@ bool DkViewPort::event(QEvent *event) {
 		// mouse events that double are now fixed, since the mViewport is now overlayed by the mController
 		return QWidget::event(event);
 	}
-	else
+	else {
+		//qDebug() << "not redirecting - type: " << event->type();
 		return DkBaseViewPort::event(event);
-	
+	}
 }
 
 void DkViewPort::dragLeaveEvent(QDragLeaveEvent *event) {
