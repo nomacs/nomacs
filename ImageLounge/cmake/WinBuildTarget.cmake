@@ -8,7 +8,9 @@ set(DLL_NAME lib${CMAKE_PROJECT_NAME})
 set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
 link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
+set (CHANGLOG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/changelog.txt)
+add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC} ${CHANGLOG_FILE}) #changelog is added here, so that i appears in visual studio
+set_source_files_properties(${CHANGLOG_FILE} PROPERTIES HEADER_FILE_ONLY TRUE) # define that changelog should not be compiled
 
 target_link_libraries(${BINARY_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
 
@@ -143,6 +145,7 @@ file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp")
 source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
+source_group("Changelog" FILES ${CHANGLOG_FILE})
 
 # generate configuration file
 if(DLL_NAME)
