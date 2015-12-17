@@ -121,15 +121,15 @@ void DkBaseViewPort::createShortcuts() {
 	mShortcuts[sc_pan_down] = new QShortcut(shortcut_panning_down, this);
 	connect(mShortcuts[sc_pan_down], SIGNAL(activated()), this, SLOT(shiftDown()));
 
-	// zoom
-	mShortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
-	connect(mShortcuts[sc_zoom_in], SIGNAL(activated()), this, SLOT(zoomIn()));
-	mShortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
-	connect(mShortcuts[sc_zoom_out], SIGNAL(activated()), this, SLOT(zoomOut()));
-	mShortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
-	connect(mShortcuts[sc_zoom_in_alt], SIGNAL(activated()), this, SLOT(zoomIn()));
-	mShortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
-	connect(mShortcuts[sc_zoom_out_alt], SIGNAL(activated()), this, SLOT(zoomOut()));
+	//// zoom
+	//mShortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
+	////connect(mShortcuts[sc_zoom_in], SIGNAL(activated()), this, SLOT(zoomIn()));
+	//mShortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
+	//connect(mShortcuts[sc_zoom_out], SIGNAL(activated()), this, SLOT(zoomOut()));
+	//mShortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
+	//connect(mShortcuts[sc_zoom_in_alt], SIGNAL(activated()), this, SLOT(zoomIn()));
+	//mShortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
+	//connect(mShortcuts[sc_zoom_out_alt], SIGNAL(activated()), this, SLOT(zoomOut()));
 
 	for (int idx = 0; idx < mShortcuts.size(); idx++) {
 		// assign widget shortcuts to all of them
@@ -543,6 +543,16 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 // key events --------------------------------------------------------------------
 void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 
+	// we want to change the behaviour on auto-repeat - so we cannot use QShortcuts here...
+	if (event->key() == shortcut_zoom_in || event->key() == shortcut_zoom_in_alt) {
+		zoom(event->isAutoRepeat() ? 1.1f : 1.5f);
+	}
+	if (event->key() == shortcut_zoom_out || event->key() == shortcut_zoom_out_alt) {
+		zoom(event->isAutoRepeat() ? 0.9f : 0.5f);
+	}
+
+	qDebug() << "keypress event: " << event->key() << "sc" << shortcut_zoom_in;
+
 	QWidget::keyPressEvent(event);
 }
 
@@ -605,7 +615,8 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 			if (!DkSettings::app.showStatusBar)
 				emit showStatusBar(false, false);
 
-			unsetCursor();
+			if (cursor().shape() != Qt::ArrowCursor)
+				unsetCursor();
 		}
 
 	}
