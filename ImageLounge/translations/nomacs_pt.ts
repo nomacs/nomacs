@@ -1808,17 +1808,17 @@
     <message>
       <location filename="../src/main.cpp" line="120"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Definir o modo de visualização &lt;mode&gt;.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="121"/>
       <source>default | frameless | pseudocolor</source>
-      <translation type="unfinished">default | frameless | pseudocolor</translation>
+      <translation>padrão| contornos| pseudocor</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="125"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Carregar todos os ficheiros de &lt;directory&gt;.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="126"/>
@@ -1828,7 +1828,7 @@
     <message>
       <location filename="../src/main.cpp" line="130"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Carregar &lt;images&gt; em separadores.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="131"/>
@@ -2628,7 +2628,7 @@ Tenha cuidado!</translation>
     <message>
       <location filename="../src/DkToolbars.cpp" line="1018"/>
       <source>Rule of Thirds</source>
-      <translation type="unfinished">Rule of Thirds</translation>
+      <translation>Regra dos Thirds</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="1018"/>
