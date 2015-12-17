@@ -1495,8 +1495,9 @@ void DkNoMacs::openQuickLaunch() {
 			connect(mQuickAccess, SIGNAL(hideEdit()), mQuickAccessEdit, SLOT(clearAccess()));
 		}
 
+		int right = viewport()->geometry().right();
 		mQuickAccessEdit->setFixedWidth(qRound(width()/3.0f));
-		mQuickAccessEdit->move(QPoint(width()-mQuickAccessEdit->width()-10, qRound(height()*0.25)));
+		mQuickAccessEdit->move(QPoint(right-mQuickAccessEdit->width()-10, qRound(height()*0.25)));
 		mQuickAccessEdit->setModel(mQuickAccess->getModel());
 		mQuickAccessEdit->show();
 	}
