@@ -32,7 +32,7 @@
 #include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
 
-namespace nmc {
+namespace nmp {
 
 class DkRotatingRect;
 
@@ -70,7 +70,7 @@ protected:
 	std::vector<DkPolyRect> rects;
 
 	virtual cv::Mat findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;
-	QImage cropToRect(const QImage& img, const DkRotatingRect& rect, const QColor& bgCol = QColor(0,0,0)) const;
+	QImage cropToRect(const QImage& img, const nmc::DkRotatingRect& rect, const QColor& bgCol = QColor(0,0,0)) const;
 	void drawRects(QPainter* p, const std::vector<DkPolyRect>& rects, const QColor& col = QColor(100, 100, 100)) const;
 };
 

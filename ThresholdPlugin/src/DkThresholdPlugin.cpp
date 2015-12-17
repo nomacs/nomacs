@@ -29,12 +29,12 @@
 
 #include <QMouseEvent>
 
-namespace nmc {
+namespace nmp {
 
 /*-----------------------------------DkThresholdPlugin ---------------------------------------------*/
 
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
+nmc::DkSettings::Global& settingsGlobal = nmc::DkSettings::getGlobalSettings();
 
 /**
 *	Constructor
@@ -134,7 +134,7 @@ QString DkThresholdPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkThresholdPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
+QSharedPointer<nmc::DkImageContainer> DkThresholdPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
 	//for a viewport plugin runID and imgC are null
 	if (viewport && imgC) {
@@ -146,7 +146,7 @@ QSharedPointer<DkImageContainer> DkThresholdPlugin::runPlugin(const QString &run
 			imgC->setImage(thresholdViewport->getThresholdedImage(true));
 		else {
 			if (parent()) {
-				DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 				if (viewport) 
 					viewport->setImage(thresholdViewport->getOriginalImage());
 			}
@@ -161,7 +161,7 @@ QSharedPointer<DkImageContainer> DkThresholdPlugin::runPlugin(const QString &run
 /**
 * returns ThresholdViewPort
 **/
-DkPluginViewPort* DkThresholdPlugin::getViewPort() {
+nmc::DkPluginViewPort* DkThresholdPlugin::getViewPort() {
 
 	if (!viewport) {
 		viewport = new DkThresholdViewPort();
@@ -235,7 +235,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == settingsGlobal.altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -248,7 +248,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod ||
+	if (event->modifiers() == settingsGlobal.altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -261,7 +261,7 @@ void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod || panning) {
+	if (event->modifiers() == settingsGlobal.altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -283,7 +283,7 @@ QImage DkThresholdViewPort::getThresholdedImage(bool thrEnabled) {
 
 
 	if(parent() && !origImgSet) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 			origImg = viewport->getImage();
 			origImgSet = true;
@@ -379,7 +379,7 @@ void DkThresholdViewPort::setThrValue(int val) {
 
 	this->thrValue = val;
 	if (parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
 	}
 	this->repaint();
@@ -389,7 +389,7 @@ void DkThresholdViewPort::setThrValueUpper(int val) {
 
 	this->thrValueUpper = val;
 	if (parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
 	}
 	this->repaint();
@@ -399,7 +399,7 @@ void DkThresholdViewPort::setThrEnabled(bool enabled) {
 
 	this->thrEnabled = enabled;
 	if (parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
 	}
 	this->repaint();
@@ -409,7 +409,7 @@ void DkThresholdViewPort::setThrChannel(int val) {
 
 	this->thrChannel = val;
 	if (parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
 	}
 	this->repaint();
@@ -471,7 +471,7 @@ void DkThresholdViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
 	if(parent() && origImgSet) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(origImg);
 	}
 	emit closePlugin();
@@ -484,7 +484,7 @@ bool DkThresholdViewPort::isCanceled() {
 void DkThresholdViewPort::setVisible(bool visible) {
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 			if (viewport->getImage().depth() == 8 && thresholdToolbar)
 				thresholdToolbar->disableColorChannels();
@@ -504,14 +504,14 @@ DkThresholdToolBar::DkThresholdToolBar(const QString & title, QWidget * parent /
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	if (DkSettings::display.smallIcons)
+	if (settingsDisplay.smallIcons)
 		setIconSize(QSize(16, 16));
 	else
 		setIconSize(QSize(32, 32));
 
-	if (DkSettings::display.toolbarGradient) {
+	if (settingsDisplay.toolbarGradient) {
 
-		QColor hCol = DkSettings::display.highlightColor;
+		QColor hCol = settingsDisplay.highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -519,7 +519,7 @@ DkThresholdToolBar::DkThresholdToolBar(const QString & title, QWidget * parent /
 			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	else
@@ -540,12 +540,12 @@ void DkThresholdToolBar::createIcons() {
 	icons[pan_icon] = 	QIcon(":/nomacsPluginThr/img/pan.png");
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginThr/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!settingsDisplay.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

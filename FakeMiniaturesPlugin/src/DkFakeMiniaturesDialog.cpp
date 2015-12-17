@@ -32,7 +32,7 @@
 #define INIT_WIDTH 1
 #define INIT_HEIGHT 0.1941
 
-namespace nmc {
+namespace nmp {
 
 /**************************************************************
 * DkFakeMiniaturesDialog: Dialog for creating fake miniatures

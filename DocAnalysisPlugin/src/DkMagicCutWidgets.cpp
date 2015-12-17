@@ -31,7 +31,7 @@
 #include <QPainter>
 #include <QShowEvent>
 
-namespace nmc {
+namespace nmp {
 
 
 // class: DkMagicCut start
@@ -525,11 +525,11 @@ void DkMagicCutDialog::createImgPreview() {
 		cv::split(imgRoi, ImgChannels);
 		ImgChannels.push_back(((*(magicCut->getMask()))(*roiRect)).clone()*255);
 		cv::merge(ImgChannels, imgUC4);
-		imgQt = DkImage::mat2QImage(imgUC4);
+		imgQt = nmc::DkImage::mat2QImage(imgUC4);
 
 	} else {
 		
-		imgQt = DkImage::mat2QImage(imgRoi);
+		imgQt = nmc::DkImage::mat2QImage(imgRoi);
 	}
 
 	

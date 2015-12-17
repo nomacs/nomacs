@@ -26,9 +26,9 @@
 
 #include "DkPluginInterface.h"
 
-namespace nmc {
+namespace nmp {
 
-class DkPageExtractionPlugin : public QObject, DkPluginInterface {
+class DkPageExtractionPlugin : public QObject, nmc::DkPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(nmc::DkPluginInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/2.0" FILE "DkPageExtractionPlugin.json")
@@ -49,7 +49,7 @@ public:
 	QString pluginStatusTip(const QString &runID = QString()) const;
 	QList<QAction*> createActions(QWidget* parent);
 	QList<QAction*> pluginActions() const;
-	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> image = QSharedPointer<DkImageContainer>()) const override;
+	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 
 	enum {
 		id_crop_to_page,

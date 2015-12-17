@@ -30,13 +30,13 @@
 #include <QDebug>
 #include <QMouseEvent>
 
-namespace nmc {
+namespace nmp {
 
 /*-----------------------------------DkPaintPlugin ---------------------------------------------*/
 
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
-DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
+nmc::DkSettings::Display& displaySettings = nmc::DkSettings::getDisplaySettings();
+nmc::DkSettings::Global& globalSettings = nmc::DkSettings::getGlobalSettings();
+nmc::DkSettings::App& appSettings = nmc::DkSettings::getAppSettings();
 
 /**
 *	Constructor
@@ -136,7 +136,7 @@ QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> image) const {
+QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const {
 	
 	if (!image)
 		return image;
@@ -159,7 +159,7 @@ QSharedPointer<DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, 
 /**
 * returns paintViewPort
 **/
-DkPluginViewPort* DkPaintPlugin::getViewPort() {
+nmc::DkPluginViewPort* DkPaintPlugin::getViewPort() {
 
 	if (!viewport) {
 		viewport = new DkPaintViewPort();
@@ -209,7 +209,7 @@ DkPaintViewPort::~DkPaintViewPort() {
 
 void DkPaintViewPort::saveSettings() const {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = nmc::Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
 	settings.setValue("penColor", pen.color().rgba());
@@ -220,7 +220,7 @@ void DkPaintViewPort::saveSettings() const {
 
 void DkPaintViewPort::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = nmc:: Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
 	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
@@ -271,7 +271,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == globalSettings.altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -281,7 +281,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 		if(parent()) {
 
-			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+			nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 			if(viewport) {
 		
 				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
@@ -304,7 +304,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod ||
+	if (event->modifiers() == globalSettings.altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -315,7 +315,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
 		if(parent()) {
-			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+			nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 
 			if(viewport) {
 		
@@ -343,7 +343,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod || panning) {
+	if (event->modifiers() == globalSettings.altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -372,7 +372,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 QImage DkPaintViewPort::getPaintedImage() {
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 
 			if (!paths.isEmpty()) {   // if nothing is drawn there is no need to change the image
@@ -467,14 +467,14 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	if (DkSettings::display.smallIcons)
+	if (displaySettings.smallIcons)
 		setIconSize(QSize(16, 16));
 	else
 		setIconSize(QSize(32, 32));
 
-	if (DkSettings::display.toolbarGradient) {
+	if (displaySettings.toolbarGradient) {
 
-		QColor hCol = DkSettings::display.highlightColor;
+		QColor hCol = displaySettings.highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -482,7 +482,7 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	else
@@ -507,12 +507,12 @@ void DkPaintToolBar::createIcons() {
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 	icons[undo_icon] = 	QIcon(":/nomacsPluginPaint/img/undo.png");
 
-	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
+	if (!displaySettings.defaultIconColor || appSettings.privateMode) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), displaySettings.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), displaySettings.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }
@@ -541,7 +541,7 @@ void DkPaintToolBar::createLayout() {
 	penCol = QColor(0,0,0);
 	penColButton = new QPushButton(this);
 	penColButton->setObjectName("penColButton");
-	penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+	penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
 	penColButton->setToolTip(tr("Background Color"));
 	penColButton->setStatusTip(penColButton->toolTip());
 
@@ -597,7 +597,7 @@ void DkPaintToolBar::setVisible(bool visible) {
 void DkPaintToolBar::setPenColor(const QColor& col) {
 
 	penCol = col;
-	penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+	penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
 	penAlpha = col.alpha();
 	alphaBox->setValue(col.alphaF()*100);
 }
@@ -646,7 +646,7 @@ void DkPaintToolBar::on_penColButton_clicked() {
 
 	if (ok == QDialog::Accepted) {
 		penCol = colorDialog->currentColor();
-		penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+		penColButton->setStyleSheet("QPushButton {background-color: " + nmc::DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
 		
 		QColor penColWA = penCol;
 		penColWA.setAlphaF(penAlpha/100.0);

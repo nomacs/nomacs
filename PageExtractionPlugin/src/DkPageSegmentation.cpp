@@ -32,7 +32,7 @@
 #include <QPainter>
 #pragma warning(pop)		// no warnings from includes - end
 
-namespace nmc {
+namespace nmp {
 
 // DkSegmentBurger --------------------------------------------------------------------
 // This code is based on OpenCV's rectangle sample (squares.cpp)
@@ -68,7 +68,7 @@ DkPolyRect DkPageSegmentation::getMaxRect() const {
 QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
 	if (!rects.empty()) {
-		DkRotatingRect rr = getMaxRect().toRotatingRect();
+		nmc::DkRotatingRect rr = getMaxRect().toRotatingRect();
 		return cropToRect(img, rr);
 	}
 
@@ -224,7 +224,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 	return lImg;
 }
 
-QImage DkPageSegmentation::cropToRect(const QImage & img, const DkRotatingRect & rect, const QColor & bgCol) const {
+QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingRect & rect, const QColor & bgCol) const {
 	
 	QTransform tForm; 
 	QPointF cImgSize;
@@ -238,7 +238,7 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const DkRotatingRect &
 	qDebug() << cImgSize;
 	qDebug() << "transform: " << tForm;
 
-	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
+	double angle = nmc::DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
 	double minD = qMin(abs(angle), abs(angle-CV_PI*0.5));
 
 	QImage cImg = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);

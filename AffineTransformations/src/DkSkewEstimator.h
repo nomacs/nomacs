@@ -58,7 +58,7 @@ using namespace cv;
 #endif
 
 
-namespace nmc {
+namespace nmp {
 
 
 class DkSkewEstimator {

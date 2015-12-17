@@ -30,7 +30,7 @@
 
 #include <QVector2D>
 
-namespace nmc {
+namespace nmp {
 
 /**
 * Constructor for the distance measure tool.
@@ -49,7 +49,7 @@ DkDistanceMeasure::~DkDistanceMeasure() {
 	
 }
 
-void DkDistanceMeasure::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
+void DkDistanceMeasure::setMetaData(QSharedPointer<nmc::DkMetaDataT> metadata) {
 
 	this->metaData = metaData;
 

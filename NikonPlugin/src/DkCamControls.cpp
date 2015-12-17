@@ -34,7 +34,7 @@
 #include <QFileDialog>
 #include <QCloseEvent>
 
-namespace nmc {
+namespace nmp {
 
 const int DkCamControls::stateRefreshInterval = 1000; // in ms
 const int DkCamControls::liveViewImageInterval = 100;

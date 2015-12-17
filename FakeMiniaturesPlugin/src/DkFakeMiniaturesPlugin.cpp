@@ -27,7 +27,7 @@
 
 #include "DkFakeMiniaturesPlugin.h"
 
-namespace nmc {
+namespace nmp {
 
 /**
 * Returns unique ID for the generated dll
@@ -111,7 +111,7 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 * @param plug-in ID
 * @param current imgC in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
+QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
 	if (runID == "4d29da2b322f44979c55ea0ed4ff158b" && imgC) {
 		QMainWindow* mainWindow = getMainWindow();

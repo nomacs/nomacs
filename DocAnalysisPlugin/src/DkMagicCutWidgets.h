@@ -40,7 +40,7 @@
 #include "DkWidgets.h"
 
 
-namespace nmc {
+namespace nmp {
 
 class DkMagicCutDialog;
 
