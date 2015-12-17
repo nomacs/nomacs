@@ -1,6 +1,7 @@
 nomacs 3.0.0
 ============
-- New online installer
+- New online installer (Windows)
+- Plugins are now available on Linux
 - Full SVG support
 - Quick Launch added
 - Tiny planet option added
@@ -9,3 +10,6 @@ nomacs 3.0.0
 - Libraries updated (Qt 5.5, OpenCV 3)
 - Command line arguments added
 - Zoom control improved
+- nomacs learned two new languages: Bulgarian and Ukrainian
+
+- new plugin: Page Extraction (detects and/or crops document pages)
