@@ -69,8 +69,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mRepeatZoomTimer = new QTimer(this);
 	mFadeTimer = new QTimer(this);
 
-
-	mImgBg.load(":/nomacs/img/nomacs-bg.png");
+	// try loading a custom file
+	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
+	if (mImgBg.isNull())
+		mImgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	mRepeatZoomTimer->setInterval(20);
 	connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
@@ -1695,7 +1697,10 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 #endif
 
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	mImgBg.load(":/nomacs/img/splash-screen.png");
+	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bgf.png").absoluteFilePath());
+	
+	if (mImgBg.isNull())
+		mImgBg.load(":/nomacs/img/splash-screen.png");
 
 	mMainScreen = geometry();
 
