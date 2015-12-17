@@ -522,7 +522,7 @@
       <location filename="../src/DkActionManager.cpp" line="1208"/>
       <location filename="../src/DkActionManager.cpp" line="1535"/>
       <source>&amp;Delete</source>
-      <translation>E&amp;liminar</translation>
+      <translation>&amp;Apagar</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1211"/>
@@ -1265,7 +1265,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1599"/>
       <source>Deletes a file without warning</source>
-      <translation>Elimina um ficheiro sem confirmação</translation>
+      <translation>Apagar um ficheiro sem confirmação</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="365"/>
@@ -1738,7 +1738,7 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="530"/>
       <source>Error: could not delete existing file</source>
-      <translation>Erro: não foi possível eliminar o ficheiro existente</translation>
+      <translation>Erro: não foi possível apagar o ficheiro existente</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="541"/>
@@ -1753,17 +1753,17 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="562"/>
       <source>%1 deleted.</source>
-      <translation>%1 eliminada.</translation>
+      <translation>%1 apagada.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="565"/>
       <source>I could not delete %1</source>
-      <translation>Não foi possível eliminar %1.</translation>
+      <translation>Não foi possível apagar %1.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="570"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation>Não foi possível eliminar a imagem original porque foram detetadas %1 falha(s).</translation>
+      <translation>Não foi possível apagar a imagem original porque foram detetadas %1 falha(s).</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="881"/>
@@ -1788,22 +1788,22 @@
     <message>
       <location filename="../src/main.cpp" line="107"/>
       <source>An input image.</source>
-      <translation type="unfinished">An input image.</translation>
+      <translation>Uma imagem de entrada.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="110"/>
       <source>Start in fullscreen.</source>
-      <translation type="unfinished">Start in fullscreen.</translation>
+      <translation>Iniciar em ecrã completo.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="113"/>
       <source>Start Pong.</source>
-      <translation type="unfinished">Start Pong.</translation>
+      <translation>Iniciar pong.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="116"/>
       <source>Start in private mode.</source>
-      <translation type="unfinished">Start in private mode.</translation>
+      <translation>Iniciar no modo privado.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="120"/>
@@ -1823,7 +1823,7 @@
     <message>
       <location filename="../src/main.cpp" line="126"/>
       <source>directory</source>
-      <translation type="unfinished">directory</translation>
+      <translation>diretório</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="130"/>
@@ -1833,7 +1833,7 @@
     <message>
       <location filename="../src/main.cpp" line="131"/>
       <source>images</source>
-      <translation type="unfinished">images</translation>
+      <translation>imagens</translation>
     </message>
   </context>
   <context>
@@ -1884,7 +1884,7 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="463"/>
       <source>&amp;Delete</source>
-      <translation>E&amp;liminar</translation>
+      <translation>&amp;Apagar</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="469"/>
@@ -2186,14 +2186,14 @@ Esta opção pode destruir os seus ficheiros. Tenha cuidado!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="678"/>
       <source>Delete Input Files</source>
-      <translation>Eliminar ficheiros originais</translation>
+      <translation>Apagar ficheiros originais</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="679"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation>Se ativa, o ficheiro original será eliminado se a conversão for efetuada com sucesso.
-Tenha cuidado!</translation>
+      <translation type="unfinished">If checked, the original file will be deleted if the conversion was successful.
+ So be careful!</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="697"/>
@@ -2941,7 +2941,7 @@ Tenha cuidado!</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1273"/>
       <source>Set as Default Viewer</source>
-      <translation type="unfinished">Set as Default Viewer</translation>
+      <translation>Utilizar como visualizador padrão</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1363"/>
@@ -3545,32 +3545,32 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1513"/>
       <source>There are new packages available: </source>
-      <translation type="unfinished">There are new packages available: </translation>
+      <translation>Existem novos pacotes disponíveis: </translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1520"/>
       <source>Updates Available</source>
-      <translation type="unfinished">Updates Available</translation>
+      <translation>Atualizações disponíveis</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1525"/>
       <source>&amp;Upgrade</source>
-      <translation type="unfinished">&amp;Upgrade</translation>
+      <translation>At&amp;ualizar</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1526"/>
       <source>Remind Me &amp;Later</source>
-      <translation type="unfinished">Remind Me &amp;Later</translation>
+      <translation>&amp;Lembrar mais tarde</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1527"/>
       <source>&amp;Skip this Version</source>
-      <translation type="unfinished">&amp;Skip this Version</translation>
+      <translation>&amp;Ignorar esta versão</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
       <source>nomacs Updates</source>
-      <translation type="unfinished">nomacs Updates</translation>
+      <translation>Atualizações do nomacs</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
@@ -4232,17 +4232,17 @@ trabalhar na janela.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1784"/>
       <source>Shall I move %1 to trash?</source>
-      <translation type="unfinished">Shall I move %1 to trash?</translation>
+      <translation>Mover %1 para o lixo?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1786"/>
       <source>Do you want to permanently delete %1?</source>
-      <translation type="unfinished">Do you want to permanently delete %1?</translation>
+      <translation>Deseja apagar %1 permanentemente?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1791"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Apagar ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1881"/>
@@ -5165,7 +5165,7 @@ Prima Esc para cancelar as alterações</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1440"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation type="unfinished">Shall I move %1 file(s) to trash?</translation>
+      <translation>Mover %1 ficheiro(s) para o lixo?</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1442"/>
@@ -5175,7 +5175,7 @@ Prima Esc para cancelar as alterações</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1447"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Apagar ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1468"/>
@@ -5662,12 +5662,12 @@ Criação de miniaturas...
     <message>
       <location filename="../src/DkDialog.cpp" line="4210"/>
       <source>&amp;Register File Associations</source>
-      <translation type="unfinished">&amp;Register File Associations</translation>
+      <translation>&amp;Registar associação de ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4213"/>
       <source>Set As &amp;Default Viewer</source>
-      <translation type="unfinished">Set As &amp;Default Viewer</translation>
+      <translation>Utilizar como visualizador pa&amp;drão</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4218"/>
