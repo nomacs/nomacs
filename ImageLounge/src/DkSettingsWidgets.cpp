@@ -1279,6 +1279,8 @@ void DkFileFilterSettingWidget::createLayout() {
 	
 #ifdef WIN32
 	layout->addWidget(openDefault);
+#else
+	openDefault->hide();
 #endif
 
 	setLayout(layout);

@@ -1,2 +1,11 @@
 nomacs 3.0.0
 ============
+- New online installer
+- Full SVG support
+- Quick Launch added
+- Tiny planet option added
+- Batch processing improved
+- Signed executable (Windows only)
+- Libraries updated (Qt 5.5, OpenCV 3)
+- Command line arguments added
+- Zoom control improved
