@@ -1508,7 +1508,6 @@ void DkNoMacs::loadFile(const QString& filePath) {
 	if (!viewport())
 		return;
 
-
 	if (QFileInfo(filePath).isDir())
 		getTabWidget()->loadDirToTab(filePath);
 	else
