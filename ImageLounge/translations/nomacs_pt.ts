@@ -2192,8 +2192,8 @@ Esta opção pode destruir os seus ficheiros. Tenha cuidado!</translation>
       <location filename="../src/DkBatch.cpp" line="679"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation type="unfinished">If checked, the original file will be deleted if the conversion was successful.
- So be careful!</translation>
+      <translation>Se ativa, o ficheiro original será apagado se a conversão for efetuada com sucesso.
+Tenha cuidado!</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="697"/>
@@ -3174,12 +3174,12 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="712"/>
       <source>Ask to Save Deleted Files</source>
-      <translation>Pedir para guardar ficheiros eliminados</translation>
+      <translation>Pedir para guardar ficheiros apagados</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="713"/>
       <source>If checked, nomacs asks if you want to save files that are deleted while displaying.</source>
-      <translation>Se ativa, o nomacs pergunta ao utilizador se quer guardar os ficheiros que foram eliminados.</translation>
+      <translation>Se ativa, o nomacs pergunta ao utilizador se quer guardar os ficheiros que foram apagados.</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="714"/>
@@ -3492,12 +3492,12 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="1341"/>
       <source>%1 deleted...</source>
-      <translation>%1 eliminada...</translation>
+      <translation>%1 apagada...</translation>
     </message>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="1345"/>
       <source>Sorry, I could not delete: %1</source>
-      <translation>Não foi possível eliminar %1</translation>
+      <translation>Não foi possível apagar %1</translation>
     </message>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="191"/>
@@ -4212,7 +4212,7 @@ trabalhar na janela.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1561"/>
       <source>Sorry, I can't delete: %1</source>
-      <translation>Não foi possível eliminar %1</translation>
+      <translation>Não é possível apagar %1</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1576"/>
@@ -4450,7 +4450,7 @@ Gostaria de as substituir?</translation>
       <location filename="../src/DkPluginManager.cpp" line="212"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation>Não foi possível eliminar a Dll!
+      <translation>Não foi possível remover a DLL!
 Reinicie o nomacs e tente novamente.</translation>
     </message>
   </context>
@@ -5170,7 +5170,7 @@ Prima Esc para cancelar as alterações</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1442"/>
       <source>Are you sure you want to permanently delete %1 file(s)?</source>
-      <translation>Tem a certeza que deseja eliminar permanentemente %1 ficheiro(s)?</translation>
+      <translation>Tem a certeza de que deseja apagar permanentemente %1 ficheiro(s)?</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1447"/>
@@ -5181,7 +5181,7 @@ Prima Esc para cancelar as alterações</translation>
       <location filename="../src/DkThumbsWidgets.cpp" line="1468"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation>Não é possível eliminar:
+      <translation>Não é possível apagar:
 %1</translation>
     </message>
     <message>
@@ -5384,7 +5384,7 @@ Criação de miniaturas...
     <message>
       <location filename="../src/DkToolbars.cpp" line="552"/>
       <source>Delete</source>
-      <translation>Eliminar</translation>
+      <translation>Apagar</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="567"/>
