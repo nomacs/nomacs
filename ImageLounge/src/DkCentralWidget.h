@@ -157,6 +157,7 @@ public slots:
 	void showTabs(bool show = true);
 	void pasteImage();
 	void loadFile(const QString& filePath);
+	void loadDir(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
