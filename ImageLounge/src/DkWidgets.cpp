@@ -433,6 +433,7 @@ void DkExplorer::createLayout() {
 
 	// by default descendingOrder is set
 	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
+	fileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
 	setWidget(fileTree);
 }
@@ -468,17 +469,23 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 
-	QMenu* cm = new QMenu();
+	QMenu* cm = new QMenu(this);
 
 	// enable editing
 	QAction* editAction = new QAction(tr("Editable"), this);
 	editAction->setCheckable(true);
 	editAction->setChecked(!fileModel->isReadOnly());
-	connect(editAction, SIGNAL(toggled(bool)), this, SLOT(setEditable(bool)));
+	connect(editAction, SIGNAL(triggered(bool)), this, SLOT(setEditable(bool)));
 	
 	cm->addAction(editAction);
 	cm->addSeparator();
 
+	// adjust sizes
+	QAction* sizeAction = new QAction(tr("Adjust Columns"), this);
+	connect(sizeAction, SIGNAL(triggered()), this, SLOT(adjustColumnWidth()));
+
+	cm->addAction(sizeAction);
+	cm->addSeparator();
 
 	columnActions.clear();	// quick&dirty
 
@@ -511,6 +518,13 @@ void DkExplorer::showColumn(bool show) {
 
 void DkExplorer::setEditable(bool editable) {
 	fileModel->setReadOnly(!editable);	
+}
+
+void DkExplorer::adjustColumnWidth() {
+
+	for (int idx = 0; idx < fileTree->model()->columnCount(); idx++)
+		fileTree->resizeColumnToContents(idx);
+	qDebug() << "size adjusted...";
 }
 
 void DkExplorer::closeEvent(QCloseEvent* event) {

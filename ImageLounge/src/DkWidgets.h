@@ -379,6 +379,7 @@ public slots:
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
+	void adjustColumnWidth();
 
 signals:
 	void openFile(const QString& filePath) const;
