@@ -679,6 +679,7 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	mContextMenu->addSeparator();
 
 	mContextMenu->addAction(mViewActions[menu_view_frameless]);
+	mContextMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mContextMenu->addSeparator();
 
 	QMenu* panelMenu = mContextMenu->addMenu(QObject::tr("&Panels"));
@@ -710,6 +711,8 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	editContextMenu->addAction(mEditActions[menu_edit_transform]);
 	editContextMenu->addAction(mEditActions[menu_edit_crop]);
 	editContextMenu->addAction(mEditActions[menu_edit_delete]);
+
+	mContextMenu->addMenu(mOpenWithMenu);
 
 	mContextMenu->addSeparator();
 	mContextMenu->addAction(mEditActions[menu_edit_preferences]);
