@@ -278,7 +278,7 @@ void DkLocalClientManager::searchForOtherClients() {
 		connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
 
 		if (connection->waitForConnected(20)) {
-			qDebug() << "Connected to " << i ;
+			//qDebug() << "Connected to " << i ;
 			connection->sendGreetingMessage(mCurrentTitle);		// WTF: who owns DkConnection??
 			mStartUpConnections.append(connection);
 		} else

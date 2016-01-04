@@ -2592,9 +2592,11 @@ void DkImageLabel::createLayout() {
 	highLightLabel->hide();
 
 	removeFileButton = new QPushButton(QIcon(":/nomacs/img/close.svg"), tr(""), this);
+	removeFileButton->setIconSize(QSize(12, 12));
+	removeFileButton->setFixedSize(QSize(12, 12));
 	removeFileButton->setFlat(true);
 	removeFileButton->setObjectName("removeFileButton");
-	removeFileButton->move(width()-17, 0);
+	removeFileButton->move(width()-17, 5);
 	removeFileButton->hide();
 
 	connect(removeFileButton, SIGNAL(clicked()), this, SLOT(removeFileFromList()));

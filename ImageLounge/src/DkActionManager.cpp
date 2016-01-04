@@ -934,8 +934,8 @@ void DkActionManager::createIcons() {
 	mFileIcons[icon_file_open] = QIcon(":/nomacs/img/open.svg");
 	mFileIcons[icon_file_save] = QIcon(":/nomacs/img/save.svg");
 	mFileIcons[icon_file_print] = QIcon(":/nomacs/img/printer.svg");
-	mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open-large.svg");
-	mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir-large.svg");
+	mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open.svg");
+	mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir.svg");
 	mFileIcons[icon_file_prev] = QIcon(":/nomacs/img/previous.svg");
 	mFileIcons[icon_file_next] = QIcon(":/nomacs/img/next.svg");
 	mFileIcons[icon_file_filter] = QIcon();
