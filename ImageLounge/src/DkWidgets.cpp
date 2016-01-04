@@ -411,6 +411,9 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	readSettings();
 
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+	
+	if (mLoadSelected)
+		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
 }
 
 DkExplorer::~DkExplorer() {
@@ -476,8 +479,15 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 	editAction->setCheckable(true);
 	editAction->setChecked(!fileModel->isReadOnly());
 	connect(editAction, SIGNAL(triggered(bool)), this, SLOT(setEditable(bool)));
-	
+
+	// open selected images
+	QAction* selAction = new QAction(tr("Open Selected Image"), this);
+	selAction->setCheckable(true);
+	selAction->setChecked(mLoadSelected);
+	connect(selAction, SIGNAL(triggered(bool)), this, SLOT(loadSelectedToggled(bool)));
+
 	cm->addAction(editAction);
+	cm->addAction(selAction);
 	cm->addSeparator();
 
 	// adjust sizes
@@ -516,6 +526,16 @@ void DkExplorer::showColumn(bool show) {
 	fileTree->setColumnHidden(idx, !show);
 }
 
+void DkExplorer::loadSelectedToggled(bool checked) {
+
+	mLoadSelected = checked;
+
+	if (mLoadSelected)
+		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
+	else
+		disconnect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+}
+
 void DkExplorer::setEditable(bool editable) {
 	fileModel->setReadOnly(!editable);	
 }
@@ -544,6 +564,7 @@ void DkExplorer::writeSettings() {
 		settings.setValue(headerVal + "Hidden", fileTree->isColumnHidden(idx));
 	}
 
+	settings.setValue("LoadSelected", mLoadSelected);
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
 	settings.endGroup();
 }
@@ -565,6 +586,7 @@ void DkExplorer::readSettings() {
 		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
 
+	mLoadSelected = settings.value("LoadSelected", mLoadSelected).toBool();
 	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
 	settings.endGroup();
 }

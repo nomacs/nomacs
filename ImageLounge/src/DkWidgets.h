@@ -380,6 +380,7 @@ public slots:
 	void showColumn(bool show);
 	void setEditable(bool editable);
 	void adjustColumnWidth();
+	void loadSelectedToggled(bool checked);
 
 signals:
 	void openFile(const QString& filePath) const;
@@ -397,6 +398,7 @@ protected:
 	DkSortFileProxyModel* sortModel;
 	QTreeView* fileTree;
 	QVector<QAction*> columnActions;
+	bool mLoadSelected = false;
 };
 
 class DkOverview : public QLabel {
