@@ -329,11 +329,6 @@ nmc--DkMetaDataHUD {
 	background-color: HUD_BACKGROUND_COLOR;
 }
 
-QLabel#DkAnimationLabel {
-	background-color: HUD_BACKGROUND_COLOR;
-	border-radius: 10px;
-}
-
 QPushButton#removeFileButton {
 	margin: 0 0 0 0; 
 	padding: 0 0 0 0; 

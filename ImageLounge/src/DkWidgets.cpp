@@ -89,10 +89,7 @@
 #include <QColorDialog>
 #include <QCompleter>
 #include <QDirModel>
-
-#if QT_VERSION < 0x050000
-#include <QPlastiqueStyle>
-#endif
+#include <QSvgRenderer>
 
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -2071,64 +2068,42 @@ DkAnimationLabel::DkAnimationLabel(QString animationPath, QSize size, QWidget* p
 }
 
 DkAnimationLabel::~DkAnimationLabel() {
-
-	animation->deleteLater();
 }
 
 void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	
 	setObjectName("DkAnimationLabel");
-	animation = new QMovie(animationPath);
-	margin = QSize(14, 14);
+
+	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(animationPath));
+	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
 
 	QSize s = size;
-	if(s.isEmpty()) {
-		animation->jumpToNextFrame();
-		s = animation->currentPixmap().size();
-		animation->jumpToFrame(0);
-
-		// padding
-		s += margin;
-	}
+	if(s.isEmpty())
+		s = mSvg->defaultSize();
 
 	setFixedSize(s);
-	setMovie(animation);
 	hide();
-		
-}
-
-void DkAnimationLabel::halfSize() {
-
-	// allows for anti-aliased edges of gif animations
-	if (animation) {
-		QSize s = (size()-margin)*0.5f;
-		animation->setScaledSize(s);
-		setFixedSize(s+margin);
-	}
 }
 
 void DkAnimationLabel::showTimed(int time) {
 	
-	if(!this->animation.isNull() &&
-		(this->animation->state() == QMovie::NotRunning ||
-		 this->animation->state() == QMovie::Paused)) {
-		
-			this->animation->start();
-	}
 	DkLabel::showTimed(time);
 }
 
 
 void DkAnimationLabel::hide() {
 	
-	if(!this->animation.isNull()) {
-		if(this->animation->state() == QMovie::Running) {
-			
-			this->animation->stop();
-		}
+	DkLabel::hide();
+}
+
+void DkAnimationLabel::paintEvent(QPaintEvent* ev) {
+	
+	if (mSvg) {
+		QPainter p(this);
+		mSvg->render(&p, QRect(QPoint(), size()));
 	}
 
-	DkLabel::hide();
+	DkLabel::paintEvent(ev);
 }
 
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {

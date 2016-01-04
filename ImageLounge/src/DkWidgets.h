@@ -58,6 +58,7 @@ class QTreeView;
 class QSlider;
 class QGridLayout;
 class QVBoxLayout;
+class QSvgRenderer;
 
 namespace nmc {
 
@@ -649,12 +650,11 @@ public:
 
 	virtual void showTimed(int time = 3000);
 	virtual void hide();
-	void halfSize();
 
 private:
-	QSize margin;
-	QPointer<QMovie> animation;
+	QSharedPointer<QSvgRenderer> mSvg;
 
+	void paintEvent(QPaintEvent* ev);
 	void init(const QString& animationPath, const QSize& size);
 };
 

@@ -80,7 +80,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mDelayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
-	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
+	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(DkSettings::display.iconSize, DkSettings::display.iconSize), this);
 	mCenterLabel = new DkLabelBg(this, "");
 	mBottomLabel = new DkLabelBg(this, "");
 	mBottomLeftLabel = new DkLabelBg(this, "");
@@ -133,7 +133,6 @@ void DkControlWidget::init() {
 	mCenterLabel->setAlignment(Qt::AlignCenter);
 	mZoomWidget->setContentsMargins(10, 10, 0, 0);
 	mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	mSpinnerLabel->halfSize();
 	mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	// register actions
@@ -768,7 +767,7 @@ void DkControlWidget::setFullScreen(bool fullscreen) {
 	showWidgetsSettings();
 
 	if (fullscreen &&!mPlayer->isVisible())
-		mPlayer->show(3000);		
+		mPlayer->show(3000);
 }
 
 DkMetaDataHUD * DkControlWidget::getMetaDataWidget() const {
