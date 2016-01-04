@@ -84,7 +84,6 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
-	QCoreApplication::setApplicationVersion("da fuck");
 	nmc::DkUtils::registerFileVersion();
 
 	// NOTE: raster option destroys the frameless view on mac
