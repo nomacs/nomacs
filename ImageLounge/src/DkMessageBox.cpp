@@ -184,8 +184,7 @@ void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button) {
 		return;
 
 	b->setDefault(true);
-	//b->setFocus();
-
+	b->setFocus();
 }
 
 void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QString &text) {
