@@ -126,7 +126,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	exitButton = new QPushButton(tr("CLOSE"), this);
 	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
-	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/cancel2.png"), QColor(0,0,0,200), 1.0f)));
+	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(DkSettings::display.iconSize), QColor(0,0,0,200), 1.0f)));
 	exitButton->setToolTip(tr("Close (ESC)"));
 	exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
 	exitButton->move(10, 435);
@@ -904,7 +904,7 @@ void DkResizeDialog::createLayout() {
 	mWPixelSpin->setRange(minPx, maxPx);
 	mWPixelSpin->setDecimals(0);
 
-	mLockButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock", this);
+	mLockButton = new DkButton(QIcon(":/nomacs/img/lock.svg"), QIcon(":/nomacs/img/lock-unlocked.svg"), "lock", this);
 	mLockButton->setFixedSize(QSize(16,16));
 	mLockButton->setObjectName("lockButton");
 	mLockButton->setCheckable(true);
@@ -942,8 +942,8 @@ void DkResizeDialog::createLayout() {
 	mWidthSpin->setDecimals(decimals);
 
 
-	mLockButtonDim = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
-	//lockButtonDim->setIcon(QIcon(":/nomacs/img/lock.png"));
+	mLockButtonDim = new DkButton(QIcon(":/nomacs/img/lock.svg"), QIcon(":/nomacs/img/lock-unlocked.svg"), "lock");
+	//lockButtonDim->setIcon(QIcon(":/nomacs/img/lock.svg"));
 	mLockButtonDim->setFixedSize(QSize(16,16));
 	mLockButtonDim->setObjectName("lockButtonDim");
 	mLockButtonDim->setCheckable(true);
@@ -2156,20 +2156,20 @@ void DkPrintPreviewDialog::createIcons() {
 
 	mIcons.resize(print_end);
 
-	mIcons[print_fit_width]	= QIcon(":/nomacs/img/fit-width.png");
-	mIcons[print_fit_page]	= QIcon(":/nomacs/img/zoomReset.png");
-	mIcons[print_zoom_in]	= QIcon(":/nomacs/img/zoom-in.png");
-	mIcons[print_zoom_out]	= QIcon(":/nomacs/img/zoom-out.png");
-	mIcons[print_reset_dpi]	= QIcon(":/nomacs/img/zoom100.png");
-	mIcons[print_landscape]	= QIcon(":/nomacs/img/landscape.png");
-	mIcons[print_portrait]	= QIcon(":/nomacs/img/portrait.png");
-	mIcons[print_setup]		= QIcon(":/nomacs/img/print-setup.png");
-	mIcons[print_printer]	= QIcon(":/nomacs/img/printer.png");
+	mIcons[print_fit_width]	= QIcon(":/nomacs/img/fit-width.svg");
+	mIcons[print_fit_page]	= QIcon(":/nomacs/img/zoomReset.svg");
+	mIcons[print_zoom_in]	= QIcon(":/nomacs/img/zoom-in.svg");
+	mIcons[print_zoom_out]	= QIcon(":/nomacs/img/zoom-out.svg");
+	mIcons[print_reset_dpi]	= QIcon(":/nomacs/img/zoom100.svg");
+	mIcons[print_landscape]	= QIcon(":/nomacs/img/landscape.svg");
+	mIcons[print_portrait]	= QIcon(":/nomacs/img/portrait.svg");
+	mIcons[print_setup]		= QIcon(":/nomacs/img/print-setup.svg");
+	mIcons[print_printer]	= QIcon(":/nomacs/img/printer.svg");
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < mIcons.size(); idx++)
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettings::display.iconSize), DkSettings::display.iconColor));
 	}
 }
 
@@ -2293,11 +2293,7 @@ void DkPrintPreviewDialog::createLayout() {
 	if (DkSettings::display.toolbarGradient)
 		toolbar->setObjectName("toolbarWithGradient");
 
-	if (DkSettings::display.smallIcons)
-		toolbar->setIconSize(QSize(16, 16));
-	else
-		toolbar->setIconSize(QSize(32, 32));
-
+	toolbar->setIconSize(QSize(32, 32));
 
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
 	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(mZoomInAction));
@@ -2318,6 +2314,8 @@ void DkPrintPreviewDialog::createLayout() {
 }
 
 void DkPrintPreviewDialog::setIcon(QAction* action, const QLatin1String &name) {
+	
+	// deprecated?? (didn't find a call here)
 	QLatin1String imagePrefix(":/trolltech/dialogs/qprintpreviewdialog/images/");
 	QIcon icon;
 	icon.addFile(imagePrefix + name + QLatin1String("-24.png"), QSize(24, 24));

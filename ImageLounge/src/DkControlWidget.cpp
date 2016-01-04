@@ -86,7 +86,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mBottomLeftLabel = new DkLabelBg(this, "");
 
 	// wheel label
-	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
+	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");
+
 	mWheelButton = new QLabel(this);
 	mWheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	mWheelButton->setPixmap(wp);

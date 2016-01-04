@@ -393,6 +393,7 @@ void DkSettings::load() {
 
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
+	display_p.iconSize = settings.value("iconSize", display_p.iconSize).toInt();
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
@@ -601,6 +602,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
 	if (!force && display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
+	if (!force && display_p.iconSize != display_d.iconSize)
+		settings.setValue("iconSize", display_p.iconSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
 		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
 	//if (!force && display_p.saveThumb != display_d.saveThumb)
@@ -791,6 +794,7 @@ void DkSettings::setToDefaultSettings() {
 	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
+	display_p.iconSize = 64;
 	display_p.thumbPreviewSize = 64;
 	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;

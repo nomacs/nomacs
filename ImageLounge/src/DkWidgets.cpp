@@ -1264,20 +1264,20 @@ void DkPlayer::init() {
 	actions[play_action] = new QAction(tr("play"), this);
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
 
-	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
+	QIcon icon = QIcon(":/nomacs/img/player-back.svg");
 	previousButton = new DkButton(icon, tr("previous"), this);
 	previousButton->keepAspectRatio = false;
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
-	icon = QPixmap(":/nomacs/img/player-pause.png");
-	QPixmap icon2 = QPixmap(":/nomacs/img/player-play.png");
+	icon = QIcon(":/nomacs/img/player-pause.svg");
+	QIcon icon2 = QIcon(":/nomacs/img/player-play.svg");
 	playButton = new DkButton(icon, icon2, tr("play"), this);
 	playButton->keepAspectRatio = false;
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
 	connect(playButton, SIGNAL(toggled(bool)), this, SLOT(play(bool)));
 
-	icon = QPixmap(":/nomacs/img/player-next.png");
+	icon = QIcon(":/nomacs/img/player-next.svg");
 	nextButton = new DkButton(icon, tr("next"), this);
 	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
@@ -2622,7 +2622,7 @@ void DkImageLabel::createLayout() {
 	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(cA) + "; border: 1px solid " + DkUtils::colorToString(DkSettings::display.highlightColor) + ";}");
 	highLightLabel->hide();
 
-	removeFileButton = new QPushButton(QIcon(":/nomacs/img/close.png"), tr(""), this);
+	removeFileButton = new QPushButton(QIcon(":/nomacs/img/close.svg"), tr(""), this);
 	removeFileButton->setFlat(true);
 	removeFileButton->setObjectName("removeFileButton");
 	removeFileButton->move(width()-17, 0);

@@ -185,6 +185,7 @@ public:
 		bool useDefaultColor;
 		bool defaultIconColor;
 		int thumbSize;
+		int iconSize;
 		int thumbPreviewSize;
 		//bool saveThumb;
 		int interpolateZoomLevel;

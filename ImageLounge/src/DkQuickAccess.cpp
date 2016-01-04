@@ -63,7 +63,7 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 		}
 
 		QAction* a = actions[rIdx];
-		QIcon icon = a->icon().isNull() ? QIcon(":/nomacs/img/dummy.png") : a->icon();
+		QIcon icon = a->icon().isNull() ? QIcon(":/nomacs/img/dummy.svg") : a->icon();
 
 		QString text = a->text().replace("&", "");
 		QStandardItem* item = new QStandardItem(text);
@@ -79,12 +79,12 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 
 void DkQuickAccess::addFiles(const QStringList& filePaths) {
 
-	addItems(filePaths, QIcon(":/nomacs/img/nomacs32.png"));
+	addItems(filePaths, QIcon(":/nomacs/img/nomacs.svg"));
 }
 
 void DkQuickAccess::addDirs(const QStringList& dirPaths) {
 	
-	addItems(dirPaths, QIcon(":/nomacs/img/dir.png"));
+	addItems(dirPaths, QIcon(":/nomacs/img/dir.svg"));
 }
 
 void DkQuickAccess::addItems(const QStringList& itemTexts, const QIcon& icon) {

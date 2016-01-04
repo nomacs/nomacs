@@ -116,7 +116,7 @@ void DkFilePreview::init() {
 	selected = -1;
 
 	// wheel label
-	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
+	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.svg");
 	wheelButton = new QLabel(this);
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	wheelButton->setPixmap(wp);
@@ -1853,11 +1853,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 void DkThumbScrollWidget::createToolbar() {
 
 	mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
-
-	if (DkSettings::display.smallIcons)
-		mToolbar->setIconSize(QSize(16, 16));
-	else
-		mToolbar->setIconSize(QSize(32, 32));
+	mToolbar->setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
 	qDebug() << mToolbar->styleSheet();
 
@@ -1888,7 +1884,7 @@ void DkThumbScrollWidget::createToolbar() {
 	toolButton->setMenu(m);
 	toolButton->setAccessibleName(menuTitle);
 	toolButton->setText(menuTitle);
-	QPixmap pm(":/nomacs/img/sort.png");
+	QPixmap pm(":/nomacs/img/sort.svg");
 
 	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
 		pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);

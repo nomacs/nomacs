@@ -177,12 +177,7 @@ void DkNoMacs::release() {
 void DkNoMacs::init() {
 
 // assign icon -> in windows the 32px version
-#ifdef WIN32
-	QString iconPath = ":/nomacs/img/nomacs32.png";
-#else
-	QString iconPath = ":/nomacs/img/nomacs.png";
-#endif
-
+	QString iconPath = ":/nomacs/img/nomacs.svg";
 	loadStyleSheet();
 
 	QIcon nmcIcon = QIcon(iconPath);
@@ -249,10 +244,7 @@ void DkNoMacs::createToolbar() {
 	mToolbar = new DkMainToolBar(tr("Edit"), this);
 	mToolbar->setObjectName("EditToolBar");
 
-	if (DkSettings::display.smallIcons)
-		mToolbar->setIconSize(QSize(16, 16));
-	else
-		mToolbar->setIconSize(QSize(32, 32));
+	mToolbar->setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 	
 	qDebug() << mToolbar->styleSheet();
 
@@ -308,10 +300,7 @@ void DkNoMacs::createToolbar() {
 	if (DkSettings::display.toolbarGradient)
 		mMovieToolbar->setObjectName("toolBarWithGradient");
 
-	if (DkSettings::display.smallIcons)
-		mMovieToolbar->setIconSize(QSize(16, 16));
-	else
-		mMovieToolbar->setIconSize(QSize(32, 32));
+	mMovieToolbar->setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
 	mToolbar->allActionsAdded();
 
@@ -3256,10 +3245,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect((DkViewPortContrast*)viewport(), SIGNAL(tFSliderAdded(qreal)), mTransferToolBar, SLOT(insertSlider(qreal)));
 	connect((DkViewPortContrast*)viewport(), SIGNAL(imageModeSet(int)), mTransferToolBar, SLOT(setImageMode(int)));
 
-	if (DkSettings::display.smallIcons)
-		mTransferToolBar->setIconSize(QSize(16, 16));
-	else
-		mTransferToolBar->setIconSize(QSize(32, 32));
+	mTransferToolBar->setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
 	if (DkSettings::display.toolbarGradient)
 		mTransferToolBar->setObjectName("toolBarWithGradient");

@@ -1235,7 +1235,7 @@ DkDescriptionImage::DkDescriptionImage(QAbstractTableModel* data, QSortFilterPro
 	mDataModel = data;
 	mProxyModel = proxy;
 	mSelectionModel = selection;
-	mDefaultImage = QImage(":/nomacs/img/imgDescriptionMissing.png");
+	mDefaultImage = QImage(":/nomacs/img/plugin-banner.svg");
 	this->setPixmap(QPixmap::fromImage(mDefaultImage));	
 }
 

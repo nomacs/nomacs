@@ -72,7 +72,7 @@ DkBatchWidget::DkBatchWidget(const QString& titleString, const QString& headerSt
 
 void DkBatchWidget::createLayout() {
 	
-	mShowButton = new DkButton(QIcon(":/nomacs/img/minus.png"), QIcon(":/nomacs/img/plus.png"), tr("Plus"));
+	mShowButton = new DkButton(QIcon(":/nomacs/img/minus.svg"), QIcon(":/nomacs/img/plus.svg"), tr("Plus"));
 	mShowButton->setFixedSize(QSize(16,16));
 	mShowButton->setObjectName("showSelectionButton");
 	mShowButton->setCheckable(true);
@@ -309,8 +309,8 @@ void DkFileSelection::createLayout() {
 
 	// tab widget
 	mInputTabs = new QTabWidget(this);
-	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/thumbs-view.png"), tr("Thumbnails"));
-	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/batch-processing.png"), tr("File List"));
+	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/thumbs-view.svg"), tr("Thumbnails"));
+	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/batch-processing.svg"), tr("File List"));
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
 	widgetLayout->addWidget(mExplorer, 0, 0, 3, 1);

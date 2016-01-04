@@ -72,7 +72,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	// try loading a custom file
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
 	if (mImgBg.isNull())
-		mImgBg.load(":/nomacs/img/nomacs-bg.png");
+		mImgBg.load(":/nomacs/img/nomacs-bg.svg");
 
 	mRepeatZoomTimer->setInterval(20);
 	connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
