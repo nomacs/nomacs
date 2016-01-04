@@ -1884,7 +1884,7 @@ void DkThumbScrollWidget::createToolbar() {
 	toolButton->setMenu(m);
 	toolButton->setAccessibleName(menuTitle);
 	toolButton->setText(menuTitle);
-	QPixmap pm(":/nomacs/img/sort.svg");
+	QPixmap pm = QIcon(":/nomacs/img/sort.svg").pixmap(DkSettings::display.iconSize);
 
 	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
 		pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
