@@ -782,6 +782,14 @@ void DkCentralWidget::loadFile(const QString& filePath) {
 	mViewport->loadFile(filePath);
 }
 
+void DkCentralWidget::loadDir(const QString& filePath) {
+
+	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview)
+		mThumbScrollWidget->setDir(filePath);
+	else
+		mViewport->loadFile(filePath);
+}
+
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 

@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 #endif
 	
 	QApplication a(argc, (char**)argv);
+	qDebug() << "argument count: " << argc;
 
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;
@@ -203,11 +204,12 @@ int main(int argc, char *argv[]) {
 	qDebug() << "Initialization takes: " << dt.getTotal();
 
 	if (!parser.positionalArguments().empty()) {
-		w->loadFile(parser.positionalArguments()[0]);	// update folder + be silent
+		w->loadFile(QFileInfo(parser.positionalArguments()[0]).absoluteFilePath());	// update folder + be silent
+		qDebug() << "loading: " << parser.positionalArguments()[0];
 	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
-	
+
 	// load directory preview
 	if (!parser.value(sourceDirOpt).isEmpty()) {
 		nmc::DkCentralWidget* cw = w->getTabWidget();

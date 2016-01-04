@@ -1338,7 +1338,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 		addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
 		connect(mExplorer, SIGNAL(openFile(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
-		connect(mExplorer, SIGNAL(openDir(const QString&)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(const QString&)));
+		connect(mExplorer, SIGNAL(openDir(const QString&)), getTabWidget(), SLOT(loadDir(const QString&)));
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mExplorer, SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
 	}
 

@@ -588,6 +588,11 @@ void DkImageLoader::loadFileAt(int idx) {
 	//if (basicLoader.hasImage() && !file.exists())
 	//	return;
 
+	if (mCurrentImage)
+		qDebug() << "current image: " << mCurrentImage->filePath();
+	else
+		qDebug() << "current image is NULL";
+
 	QDir cDir(mCurrentDir);
 
 	if (mCurrentImage && !cDir.exists())
@@ -664,9 +669,13 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QString& filePat
 
 int DkImageLoader::findFileIdx(const QString& filePath, const QVector<QSharedPointer<DkImageContainerT> >& images) const {
 
+	// this seems a bit bizare...
+	// however, in converting the string from a fileInfo - we quarantee that the separators are the same (/ vs \)
+	QString lFilePath = QFileInfo(filePath).absoluteFilePath();
+
 	for (int idx = 0; idx < images.size(); idx++) {
 
-		if (images[idx]->filePath() == filePath)
+		if (images[idx]->filePath() == lFilePath)
 			return idx;
 	}
 
