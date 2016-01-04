@@ -78,13 +78,15 @@ Component.prototype.createOperations = function()
         // call the base create operations function
         component.createOperations();
 	
-		if (installer.componentByName("nomacs.x86").installationRequested()) {
-			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x86].lnk", "workingDirectory=@TargetDir@");
-			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x86].exe.lnk", "workingDirectory=@TargetDir@");
-		}
-		else if (installer.componentByName("nomacs.x64").installationRequested()) {
-			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x64].lnk", "workingDirectory=@TargetDir@");
-			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x64].exe.lnk", "workingDirectory=@TargetDir@");
+		if (!installer.isUpdater()) {
+			if (installer.componentByName("nomacs.x86").installationRequested()) {
+				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x86].lnk", "workingDirectory=@TargetDir@");
+				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x86].exe.lnk", "workingDirectory=@TargetDir@");
+			}
+			else if (installer.componentByName("nomacs.x64").installationRequested()) {
+				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x64].lnk", "workingDirectory=@TargetDir@");
+				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x64].exe.lnk", "workingDirectory=@TargetDir@");
+			}
 		}
 	} catch (e) {
         console.log(e);
