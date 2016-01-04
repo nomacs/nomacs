@@ -1240,6 +1240,61 @@ void DkFileInfoLabel::updateWidth() {
 DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 
 	init();
+	createLayout();
+}
+
+void DkPlayer::createLayout() {
+
+	previousButton = new QPushButton(QIcon(":/nomacs/img/player-previous.svg"), "", this);
+	previousButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	previousButton->setIconSize(QSize(100, 50));
+	previousButton->setMaximumHeight(50);
+	previousButton->setToolTip(tr("Show previous image"));
+	previousButton->setObjectName("DkPlayerButton");
+	previousButton->setFlat(true);
+	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
+
+	QIcon icon;
+	icon.addPixmap(QIcon(":/nomacs/img/player-pause.svg").pixmap(100), QIcon::Normal, QIcon::On);
+	icon.addPixmap(QIcon(":/nomacs/img/player-play.svg").pixmap(100), QIcon::Normal, QIcon::Off);
+	playButton = new QPushButton(icon, "", this);
+	playButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	playButton->setIconSize(QSize(100, 50));
+	playButton->setMaximumHeight(50);
+	playButton->setToolTip(tr("Play/Pause"));
+	playButton->setObjectName("DkPlayerButton");
+	playButton->setFlat(true);
+	playButton->setCheckable(true);
+	playButton->setChecked(false);
+	playButton->addAction(actions[play_action]);
+	connect(playButton, SIGNAL(clicked(bool)), this, SLOT(play(bool)));
+
+	nextButton = new QPushButton(QIcon(":/nomacs/img/player-next.svg"), "",  this);
+	nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	nextButton->setIconSize(QSize(100, 50));
+	nextButton->setMaximumHeight(50);
+	nextButton->setToolTip(tr("Show next image"));
+	nextButton->setObjectName("DkPlayerButton");
+	nextButton->setFlat(true);
+	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
+
+	// now add to mLayout
+	container = new QWidget(this);
+	QHBoxLayout *layout = new QHBoxLayout(container);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addStretch();
+	layout->addWidget(previousButton);
+	layout->addWidget(playButton);
+	layout->addWidget(nextButton);
+	layout->addStretch();
+
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->setContentsMargins(0, 0, 0, 0);
+	l->addWidget(container);
+	l->addStretch();
+
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
 }
 
 void DkPlayer::init() {
@@ -1263,67 +1318,6 @@ void DkPlayer::init() {
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
-
-	QIcon icon = QIcon(":/nomacs/img/player-back.svg");
-	previousButton = new DkButton(icon, tr("previous"), this);
-	previousButton->keepAspectRatio = false;
-	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
-
-	icon = QIcon(":/nomacs/img/player-pause.svg");
-	QIcon icon2 = QIcon(":/nomacs/img/player-play.svg");
-	playButton = new DkButton(icon, icon2, tr("play"), this);
-	playButton->keepAspectRatio = false;
-	playButton->setChecked(false);
-	playButton->addAction(actions[play_action]);
-	connect(playButton, SIGNAL(toggled(bool)), this, SLOT(play(bool)));
-
-	icon = QIcon(":/nomacs/img/player-next.svg");
-	nextButton = new DkButton(icon, tr("next"), this);
-	nextButton->keepAspectRatio = false;
-	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
-
-	// now add to mLayout
-	container = new QWidget(this);
-	QHBoxLayout *layout = new QHBoxLayout(container);
-	layout->setContentsMargins(0,0,0,0);
-	layout->addWidget(previousButton);
-	layout->addWidget(playButton);
-	layout->addWidget(nextButton);
-
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	setMinimumSize(15, 5);
-	setMaximumSize(315, 113);
-}
-
-void DkPlayer::resizeEvent(QResizeEvent *event) {
-
-	if (event->oldSize() == event->size())
-		return;
-
-	// always preserve the player's aspect ratio
-	QSizeF s = event->size();
-	QSizeF ms = maximumSize();
-	float aRatio = (float)(s.width()/s.height());
-	float amRatio = (float)(ms.width()/ms.height());
-	
-	if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
-		s.setHeight(s.width() / amRatio);
-
-		QRect r = QRect(QPoint(), s.toSize());
-		r.moveBottom(event->size().height()-1);
-		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
-		container->setGeometry(r);
-	}
-	else {
-		s.setWidth(s.height() * amRatio);
-
-		QRect r = QRect(QPoint(), s.toSize());
-		r.moveBottom(event->size().height()-1);
-		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
-		container->setGeometry(r);
-	}
-
-	QWidget::resizeEvent(event);
 }
 
 void DkPlayer::play(bool play) {

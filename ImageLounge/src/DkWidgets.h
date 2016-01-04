@@ -229,7 +229,6 @@ public:
 	DkPlayer(QWidget* parent = 0);
 	~DkPlayer() {};
 
-	void draw(QPainter* painter);
 	void setTimeToDisplay(int ms = 1000);
 
 	QVector<QAction*> getActions() {
@@ -251,17 +250,18 @@ public slots:
 	bool isPlaying() const;
 
 protected:
-	void resizeEvent(QResizeEvent *event);
 	void init();
-	bool playing;
+	void createLayout();
+
+	bool playing = false;
 
 	int timeToDisplay;
 	QTimer* displayTimer;
 	QTimer* hideTimer;
 
-	DkButton* previousButton;
-	DkButton* nextButton;
-	DkButton* playButton;
+	QPushButton* previousButton;
+	QPushButton* nextButton;
+	QPushButton* playButton;
 	QWidget* container;
 
 	QVector<QAction*> actions;

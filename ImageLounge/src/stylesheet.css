@@ -18,6 +18,21 @@ QDockWidget::title {
 	border-bottom: 1px solid #ccc;
 }
 
+QPushButton#DkPlayerButton {
+	margin: 0px;
+	border: none;
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
+QPushButton#DkPlayerButton:hover{
+	background-color: rgba(0,0,0,.6);
+} 
+
+QPushButton#DkPlayerButton:pressed {
+	background-color: HIGHLIGHT_COLOR;
+}
+
+
 /* NoMacs */
 QToolBar#toolBarWithGradient {
 	border: none; 
