@@ -176,7 +176,7 @@ void DkFolderScrollBar::init() {
 
 	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-		DkSettings::display.bgColorWidget;
+		DkSettings::display.hudBgColor;
 
 	mShowing = false;
 	mHiding = false;
@@ -629,7 +629,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 
 		//draw the image's location
 		painter.setRenderHints(QPainter::SmoothPixmapTransform);
-		painter.setBrush(DkSettings::display.bgColorWidget);
+		painter.setBrush(DkSettings::display.hudBgColor);
 		painter.setPen(QColor(200, 200, 200));
 		//painter.drawRect(overviewRect);
 		painter.setOpacity(0.8f);
@@ -1479,7 +1479,7 @@ DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFl
 	mPen.setCosmetic(true);
 	mBrush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-		DkSettings::display.bgColorWidget;
+		DkSettings::display.hudBgColor;
 
 	for (int idx = 0; idx < 8; idx++) {
 		mCtrlPoints.push_back(new DkTransformRect(idx, &this->mRect, this));
@@ -2109,7 +2109,7 @@ void DkAnimationLabel::paintEvent(QPaintEvent* ev) {
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	this->defaultColor = defaultColor;
-	this->text = text;
+	this->mText = text;
 
 	init();
 
@@ -2117,7 +2117,7 @@ DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* paren
 
 void DkColorChooser::init() {
 
-	accept = false;
+	mAccepted = false;
 
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
@@ -2126,7 +2126,7 @@ void DkColorChooser::init() {
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(11,0,11,0);
 	
-	QLabel* colorLabel = new QLabel(text, this);
+	QLabel* colorLabel = new QLabel(mText, this);
 	colorButton = new QPushButton("", this);
 	colorButton->setFlat(true);
 	colorButton->setObjectName("colorButton");
@@ -2152,18 +2152,30 @@ void DkColorChooser::init() {
 }
 
 bool DkColorChooser::isAccept() const {
-	return accept;
+	return mAccepted;
 }
 
 void DkColorChooser::enableAlpha(bool enable) {
 	colorDialog->setOption(QColorDialog::ShowAlphaChannel, enable);
 }
 
-void DkColorChooser::setColor(QColor color) {
+void DkColorChooser::setColor(const QColor& color) {
 
 	colorDialog->setCurrentColor(color);
 	colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border: 1px solid #888; min-height: 24px}");
+	if (mSettingColor)
+		*mSettingColor = color;
+
 }
+
+void DkColorChooser::setColor(QColor* color) {
+
+	if (color) {
+		mSettingColor = color;
+		setColor(*color);
+	}
+}
+
 
 QColor DkColorChooser::getColor() {
 	return colorDialog->currentColor();
@@ -2183,7 +2195,7 @@ void DkColorChooser::on_colorButton_clicked() {
 void DkColorChooser::on_colorDialog_accepted() {
 	
 	setColor(colorDialog->currentColor());
-	accept = true;
+	mAccepted = true;
 	emit accepted();
 }
 
@@ -2582,7 +2594,7 @@ void DkImageLabel::createLayout() {
 	imageLabel = new QLabel(this);
 	imageLabel->setFixedSize(mThumbSize, mThumbSize);
 	imageLabel->setScaledContents(true);
-	imageLabel->setStyleSheet("QLabel{margin: 0 0 0 0; padding: 0 0 0 0; border: 1px solid " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
+	imageLabel->setStyleSheet("QLabel{margin: 0 0 0 0; padding: 0 0 0 0; border: 1px solid " + DkUtils::colorToString(DkSettings::display.hudBgColor) + ";}");
 
 	QColor cA = DkSettings::display.highlightColor;
 	cA.setAlpha(100);
@@ -2641,7 +2653,7 @@ void DkImageLabel::removeFileFromList() {
 	imageLabel->hide();
 	//highLightLabel->hide();
 	removeFileButton->hide();
-	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + "; border: 1px solid black;}");
+	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(DkSettings::display.hudBgColor) + "; border: 1px solid black;}");
 	highLightLabel->show();
 
 	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {

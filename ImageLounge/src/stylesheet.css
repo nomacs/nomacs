@@ -1,9 +1,9 @@
 QTabBar::close-button {
-    image: url(:/nomacs/img/close-tab.png);
+    image: url(:/nomacs/img/close-tab.svg);
 }
 
 QTabBar::close-button:hover {
-	image: url(:/nomacs/img/close-tab-hover.png);
+	image: url(:/nomacs/img/close-tab-hover.svg);
 }
 
 QDockWidget {
@@ -386,7 +386,7 @@ QLabel#DkInfoLabel {
 	font: light "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
-	color: HIGHLIGHT_COLOR;
+	color: #cc0000;
 }
 
 QWidget#DkPreferenceWidget {
@@ -398,4 +398,9 @@ QLabel#subTitle {
 	margin-top: 10px;
 	font-size: 14pt;
 	color: #666;
+}
+
+/* preferences widgets */
+QComboBox#languageCombo {
+	max-width: 200px;
 }

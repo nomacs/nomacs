@@ -1137,7 +1137,7 @@ QColor DkImage::getMeanColor(const QImage& img) {
 	if (maxColCount > 0)
 		return QColor(qRound((float)qRed(maxCol)/numCols*255), qRound((float)qGreen(maxCol)/numCols*255), qRound((float)qBlue(maxCol)/numCols*255));
 	else
-		return DkSettings::display.bgColorWidget;
+		return DkSettings::display.hudBgColor;
 }
 
 

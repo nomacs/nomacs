@@ -28,7 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkPreferenceWidgets.h"
 
 #include "DkImageStorage.h"
+#include "DkWidgets.h"
 #include "DkSettings.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -38,6 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QAction>
 #include <QFileInfo>
 #include <QCheckBox>
+#include <QComboBox>
+
+#include <QDebug>
 #pragma warning(pop)
 
 namespace nmc {
@@ -225,6 +230,196 @@ DkGeneralPreference::DkGeneralPreference(QWidget* parent) : QWidget(parent) {
 
 void DkGeneralPreference::createLayout() {
 
+	// color settings
+	QLabel* colorLabel = new QLabel(tr("Color Settings"), this);
+	colorLabel->setObjectName("subTitle");
+
+	DkColorChooser* highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
+	highlightColorChooser->setObjectName("highlightColor");
+	highlightColorChooser->setColor(&DkSettings::display.highlightColor);
+	connect(highlightColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
+	iconColorChooser->setObjectName("iconColor");
+	iconColorChooser->setColor(&DkSettings::display.iconColor);
+	connect(iconColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"), this);
+	bgColorChooser->setObjectName("backgroundColor");
+	bgColorChooser->setColor(&DkSettings::display.bgColor);
+	connect(bgColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("HUD Background Color"), this);
+	bgColorWidgetChooser->setObjectName("backgroundHUDColor");
+	bgColorWidgetChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		&DkSettings::display.bgColorFrameless : &DkSettings::display.hudBgColor);
+	connect(bgColorWidgetChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* fullscreenColorChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
+	fullscreenColorChooser->setObjectName("fullscreenColor");
+	fullscreenColorChooser->setColor(&DkSettings::slideShow.backgroundColor);
+	connect(fullscreenColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	// the left column (holding all color settings)
+	QWidget* colorWidget = new QWidget(this);
+	QVBoxLayout* colorLayout = new QVBoxLayout(colorWidget);
+	colorLayout->setAlignment(Qt::AlignTop);
+	colorLayout->addWidget(colorLabel);
+	colorLayout->addWidget(highlightColorChooser);
+	colorLayout->addWidget(iconColorChooser);
+	colorLayout->addWidget(bgColorChooser);
+	colorLayout->addWidget(bgColorWidgetChooser);
+	colorLayout->addWidget(fullscreenColorChooser);
+
+	// checkboxes
+	QLabel* generalLabel = new QLabel(tr("General"), this);
+	generalLabel->setObjectName("subTitle");
+
+	QCheckBox* cbRecentFiles = new QCheckBox(tr("Show Recent Files on Start-Up"), this);
+	cbRecentFiles->setObjectName("showRecentFiles");
+	cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
+	cbRecentFiles->setChecked(DkSettings::app.showRecentFiles);
+
+	QCheckBox* cbLoopImages = new QCheckBox(tr("Loop Images"), this);
+	cbLoopImages->setObjectName("loopImages");
+	cbLoopImages->setToolTip(tr("Start with the first image in a folder after showing the last."));
+	cbLoopImages->setChecked(DkSettings::global.loop);
+
+	QCheckBox* cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), this);
+	cbZoomOnWheel->setObjectName("zoomOnWheel");
+	cbZoomOnWheel->setToolTip(tr("If checked, the mouse wheel zooms - otherwise it is used to switch between images."));
+	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
+
+	QCheckBox* cbSwitchModifier = new QCheckBox(tr("Switch CTRL with ALT"), this);
+	cbSwitchModifier->setObjectName("switchModifier");
+	cbSwitchModifier->setToolTip(tr("If checked, CTRL + Mouse is switched with ALT + Mouse."));
+	cbSwitchModifier->setChecked(DkSettings::sync.switchModifier);
+
+	QCheckBox* cbEnableNetworkSync = new QCheckBox(tr("Enable LAN Sync"), this);
+	cbEnableNetworkSync->setObjectName("networkSync");
+	cbEnableNetworkSync->setToolTip(tr("If checked, syncing in your LAN is enabled."));
+	cbEnableNetworkSync->setChecked(DkSettings::sync.enableNetworkSync);
+
+	QCheckBox* cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), this);
+	cbCloseOnEsc->setObjectName("closeOnEsc");
+	cbCloseOnEsc->setToolTip(tr("Close nomacs if ESC is pressed."));
+	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
+
+	QCheckBox* cbCheckForUpdates = new QCheckBox(tr("Check For Updates"), this);
+	cbCheckForUpdates->setObjectName("checkForUpdates");
+	cbCheckForUpdates->setToolTip(tr("Check for updates on start-up."));
+	cbCheckForUpdates->setChecked(DkSettings::sync.checkForUpdates);
+
+	// language
+	QLabel* languageLabel = new QLabel(tr("Language"), this);
+	languageLabel->setObjectName("subTitle");
+
+	QStringList languages;
+	QComboBox* languageCombo = new QComboBox(this);
+	languageCombo->setObjectName("languageCombo");
+	languageCombo->setToolTip(tr("Choose your preferred language."));
+	DkUtils::addLanguages(languageCombo, languages);
+
+	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
+	translateLabel->setToolTip(tr("Info on how to translate nomacs."));
+	translateLabel->setOpenExternalLinks(true);
+
+	// the right column (holding all checkboxes)
+	QWidget* cbWidget = new QWidget(this);
+	QVBoxLayout* cbLayout = new QVBoxLayout(cbWidget);
+	cbLayout->setAlignment(Qt::AlignTop);
+	cbLayout->addWidget(generalLabel);
+	cbLayout->addWidget(cbRecentFiles);
+	cbLayout->addWidget(cbLoopImages);
+	cbLayout->addWidget(cbZoomOnWheel);
+	cbLayout->addWidget(cbSwitchModifier);
+	cbLayout->addWidget(cbEnableNetworkSync);
+	cbLayout->addWidget(cbCloseOnEsc);
+	cbLayout->addWidget(cbCheckForUpdates);
+
+	// add language
+	cbLayout->addWidget(languageLabel);
+	cbLayout->addWidget(languageCombo);
+	cbLayout->addWidget(translateLabel);
+
+	// the column widget
+	QWidget* contentWidget = new QWidget(this);
+	contentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+	QHBoxLayout* contentLayout = new QHBoxLayout(contentWidget);
+	contentLayout->addWidget(colorWidget);
+	contentLayout->addWidget(cbWidget);
+
+	// finally my layout
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->addWidget(contentWidget);
+
+}
+
+void DkGeneralPreference::showRestartLabel() const {
+	emit infoSignal(tr("Please Restart nomacs to apply changes"));
+}
+
+void DkGeneralPreference::on_showRecentFiles_toggled(bool checked) const {
+
+	if (DkSettings::app.showRecentFiles != checked)
+		DkSettings::app.showRecentFiles = checked;
+}
+
+void DkGeneralPreference::on_closeOnEsc_toggled(bool checked) const {
+
+	if (DkSettings::app.closeOnEsc != checked)
+		DkSettings::app.closeOnEsc = checked;
+}
+
+void DkGeneralPreference::on_zoomOnWheel_toggled(bool checked) const {
+
+	if (DkSettings::global.zoomOnWheel != checked) {
+		DkSettings::global.zoomOnWheel = checked;
+	}
+}
+
+void DkGeneralPreference::on_checkForUpdates_toggled(bool checked) const {
+
+	if (DkSettings::sync.checkForUpdates != checked)
+		DkSettings::sync.checkForUpdates = checked;
+}
+
+void DkGeneralPreference::on_switchModifier_toggled(bool checked) const {
+
+	if (DkSettings::sync.switchModifier != checked) {
+
+		DkSettings::sync.switchModifier = checked;
+
+		if (DkSettings::sync.switchModifier) {
+			DkSettings::global.altMod = Qt::ControlModifier;
+			DkSettings::global.ctrlMod = Qt::AltModifier;
+		}
+		else {
+			DkSettings::global.altMod = Qt::AltModifier;
+			DkSettings::global.ctrlMod = Qt::ControlModifier;
+		}
+	}
+}
+
+void DkGeneralPreference::on_loopImages_toggled(bool checked) const {
+
+	if (DkSettings::global.loop != checked)
+		DkSettings::global.loop = checked;
+}
+
+void DkGeneralPreference::on_networkSync_toggled(bool checked) const {
+
+	if (DkSettings::sync.enableNetworkSync != checked)
+		DkSettings::sync.enableNetworkSync = checked;
+}
+
+void DkGeneralPreference::on_languageCombo_currentIndexChanged(const QString& text) const {
+
+	if (DkSettings::global.language != text) {
+		DkSettings::global.language = text;
+		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	}
 }
 
 void DkGeneralPreference::paintEvent(QPaintEvent *event) {

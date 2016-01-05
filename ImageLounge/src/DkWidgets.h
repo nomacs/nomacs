@@ -665,7 +665,8 @@ public:
 	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkColorChooser() {};
 
-	void setColor(QColor color);
+	void setColor(const QColor& color);
+	void setColor(QColor* color);
 	QColor getColor();
 	bool isAccept() const;
 	void enableAlpha(bool enable = true);
@@ -680,12 +681,13 @@ signals:
 	void accepted();
 
 protected:
-	QColorDialog* colorDialog;
-	QPushButton* colorButton;
+	QColorDialog* colorDialog = 0;
+	QPushButton* colorButton = 0;
 
 	QColor defaultColor;
-	QString text;
-	bool accept;
+	QColor* mSettingColor = 0;
+	QString mText;
+	bool mAccepted = false;
 
 	void init();
 

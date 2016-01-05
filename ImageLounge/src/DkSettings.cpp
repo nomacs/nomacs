@@ -386,7 +386,7 @@ void DkSettings::load() {
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
-	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
 	display_p.fontColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.fontColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
@@ -398,7 +398,6 @@ void DkSettings::load() {
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
-	display_p.smallIcons = settings.value("smallIcons", display_p.smallIcons).toBool();
 	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
@@ -590,8 +589,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
 		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
-	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
-		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
+	if (!force && display_p.hudBgColor != display_d.hudBgColor)
+		settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
 	if (!force && display_p.fontColor != display_d.fontColor)
 		settings.setValue("fontColorRGBA", display_p.fontColor.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
@@ -612,8 +611,6 @@ void DkSettings::save(bool force) {
 		settings.setValue("antiAliasing", display_p.antiAliasing);
 	if (!force && display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
-	if (!force && display_p.smallIcons != display_d.smallIcons)
-		settings.setValue("smallIcons", display_p.smallIcons);
 	if (!force && display_p.toolbarGradient != display_d.toolbarGradient)
 		settings.setValue("toolbarGradient", display_p.toolbarGradient);
 	if (!force && display_p.showBorder != display_d.showBorder)
@@ -787,7 +784,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.keepZoom = zoom_keep_same_size;
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
-	display_p.bgColorWidget = QColor(0, 0, 0, 100);
+	display_p.hudBgColor = QColor(0, 0, 0, 100);
 	display_p.fontColor = QColor(255, 255, 255);
 	display_p.bgColor = QColor(100, 100, 100, 255);
 	display_p.iconColor = QColor(100,100,100,255);
@@ -799,7 +796,6 @@ void DkSettings::setToDefaultSettings() {
 	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;
 	display_p.tpPattern = false;
-	display_p.smallIcons = true;
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;

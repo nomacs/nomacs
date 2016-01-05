@@ -52,7 +52,7 @@ void DkWidget::init() {
 
 	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-	DkSettings::display.bgColorWidget;
+	DkSettings::display.hudBgColor;
 
 	mShowing = false;
 	mHiding = false;
@@ -205,7 +205,7 @@ DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
 	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-	DkSettings::display.bgColorWidget;
+	DkSettings::display.hudBgColor;
 
 	setMouseTracking(true);
 	mParent = parent;
@@ -345,7 +345,7 @@ DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, tex
 
 	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-	DkSettings::display.bgColorWidget;
+	DkSettings::display.hudBgColor;
 
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
 
@@ -375,7 +375,7 @@ void DkFadeLabel::init() {
 
 	mBgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
-	DkSettings::display.bgColorWidget;
+	DkSettings::display.hudBgColor;
 
 	showing = false;
 	hiding = false;

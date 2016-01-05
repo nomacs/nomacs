@@ -177,7 +177,7 @@ public:
 		bool invertZoom;
 		bool tpPattern;
 		QColor highlightColor;
-		QColor bgColorWidget;
+		QColor hudBgColor;
 		QColor bgColor;
 		QColor bgColorFrameless;
 		QColor fontColor;
@@ -190,8 +190,7 @@ public:
 		//bool saveThumb;
 		int interpolateZoomLevel;
 		bool antiAliasing;
-		bool smallIcons;
-		bool toolbarGradient;
+		bool toolbarGradient;	// 05.01.2016 - deprecated
 		bool showBorder;
 		bool displaySquaredThumbs;
 		bool showThumbLabel;

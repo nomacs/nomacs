@@ -416,7 +416,7 @@ public:
 	};
 
 public slots:
-	virtual void accept();
+	virtual void accept() override;
 	virtual void reject();
 	void widgetChanged();
 	void logButtonClicked();

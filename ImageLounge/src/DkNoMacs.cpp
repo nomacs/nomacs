@@ -356,7 +356,7 @@ void DkNoMacs::loadStyleSheet() {
 		// replace color placeholders
 		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettings::display.highlightColor));
 		cssString.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
-		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColorWidget));
+		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.hudBgColor));
 		cssString.replace("HUD_FONT_COLOR", DkUtils::colorToString(QColor(255,255,255)));
 		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColor));
 		cssString.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));

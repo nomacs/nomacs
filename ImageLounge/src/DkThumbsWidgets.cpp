@@ -1102,7 +1102,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		r.setWidth(boundingRect().width());
 		painter->setPen(Qt::NoPen);
 		painter->setWorldTransform(tt);
-		painter->setBrush(DkSettings::display.bgColorWidget);
+		painter->setBrush(DkSettings::display.hudBgColor);
 		painter->drawRect(r);
 		mText.paint(painter, &noSelOption, widget);
 		painter->setWorldTransform(mt);

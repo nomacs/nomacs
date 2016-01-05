@@ -209,11 +209,10 @@ void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
 void DkSettingsDialog::saveSettings() {
 
 	QString curLanguage = DkSettings::global.language;
-	QColor curBgColWidget = DkSettings::display.bgColorWidget;
+	QColor curBgColWidget = DkSettings::display.hudBgColor;
 	QColor curBgCol = DkSettings::display.bgColor;
 	QColor curIconCol = DkSettings::display.iconColor;
 	QColor curBgColFrameless = DkSettings::display.bgColorFrameless;
-	bool curIcons = DkSettings::display.smallIcons;
 	bool curGradient = DkSettings::display.toolbarGradient;
 	bool curUseCol = DkSettings::display.useDefaultColor;
 	bool curUseIconCol = DkSettings::display.defaultIconColor;
@@ -237,11 +236,10 @@ void DkSettingsDialog::saveSettings() {
 	if (!DkSettings::app.privateMode && 
 		(DkSettings::display.bgColor != curBgCol ||
 		DkSettings::display.iconColor != curIconCol ||
-		DkSettings::display.bgColorWidget != curBgColWidget ||
+		DkSettings::display.hudBgColor != curBgColWidget ||
 		DkSettings::display.bgColorFrameless != curBgColFrameless ||
 		DkSettings::display.useDefaultColor != curUseCol ||
 		DkSettings::display.defaultIconColor != curUseIconCol ||
-		DkSettings::display.smallIcons != curIcons ||
 		DkSettings::display.toolbarGradient != curGradient))
 		emit settingsChangedRestart();
 	else
@@ -297,7 +295,6 @@ DkGlobalSettingsWidget::DkGlobalSettingsWidget(QWidget* parent) : DkSettingsWidg
 
 void DkGlobalSettingsWidget::init() {
 
-	cbSmallIcons->setChecked(DkSettings::display.smallIcons);
 	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
 	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
 	cbShowRecentFiles->setChecked(DkSettings::app.showRecentFiles);
@@ -342,7 +339,7 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Widget Color"), this);
 	bgColorWidgetChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
-		DkSettings::display.bgColorFrameless : DkSettings::display.bgColorWidget);
+		DkSettings::display.bgColorFrameless : DkSettings::display.hudBgColor);
 
 	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
 	fullscreenColChooser->setColor(DkSettings::slideShow.backgroundColor);
@@ -419,7 +416,6 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
 	DkSettings::app.showRecentFiles = cbShowRecentFiles->isChecked();
 	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
-	DkSettings::display.smallIcons = cbSmallIcons->isChecked();
 	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::slideShow.time = displayTimeSpin->getSpinBoxValue();
 	DkSettings::sync.checkForUpdates = cbCheckForUpdates->isChecked();
@@ -427,7 +423,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	if (DkSettings::app.appMode == DkSettings::mode_frameless)
 		DkSettings::display.bgColorFrameless = bgColorWidgetChooser->getColor();
 	else
-		DkSettings::display.bgColorWidget = bgColorWidgetChooser->getColor();
+		DkSettings::display.hudBgColor = bgColorWidgetChooser->getColor();
 
 	if (bgColorChooser->isAccept())
 		DkSettings::display.useDefaultColor = false;
