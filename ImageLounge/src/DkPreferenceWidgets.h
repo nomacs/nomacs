@@ -130,6 +130,7 @@ public slots:
 	void on_switchModifier_toggled(bool checked) const;
 	void on_loopImages_toggled(bool checked) const;
 	void on_networkSync_toggled(bool checked) const;
+	void on_defaultSettings_clicked();
 	void on_languageCombo_currentIndexChanged(int index) const;
 	void showRestartLabel() const;
 
@@ -146,6 +147,23 @@ protected:
 	void paintEvent(QPaintEvent* ev);
 
 	QStringList mLanguages;
+};
+
+class DkDisplayPreference : public QWidget {
+	Q_OBJECT
+
+public:
+	DkDisplayPreference(QWidget* parent = 0);
+
+public slots:
+
+signals:
+	void infoSignal(const QString& msg) const;
+
+protected:
+	void createLayout();
+	void paintEvent(QPaintEvent* ev);
+
 };
 
 class DkAdvancedPreference : public QWidget {

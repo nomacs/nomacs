@@ -2139,10 +2139,10 @@ void DkColorChooser::init() {
 	QWidget* colWidget = new QWidget(this);
 	QHBoxLayout* hLayout = new QHBoxLayout(colWidget);
 	hLayout->setContentsMargins(11,0,11,0);
+	hLayout->setAlignment(Qt::AlignLeft);
 
 	hLayout->addWidget(colorButton);
 	hLayout->addWidget(resetButton);
-	hLayout->addStretch();
 
 	vLayout->addWidget(colorLabel);
 	vLayout->addWidget(colWidget);

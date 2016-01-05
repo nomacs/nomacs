@@ -285,13 +285,19 @@ void DkCentralWidget::createLayout() {
 	mPreferenceWidget->addActions(am.hiddenActions().toList());
 	
 	// general preferences
-	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.png"), tr("General"), this);
+	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.svg"), tr("General"), this);
 	DkGeneralPreference* gp = new DkGeneralPreference(this);
 	tab->setWidget(gp);
 	mPreferenceWidget->addTabWidget(tab);
 
-	// plot preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.png"), tr("Advanced"), this);
+	// display preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
+	DkDisplayPreference* dp = new DkDisplayPreference(this);
+	tab->setWidget(dp);
+	mPreferenceWidget->addTabWidget(tab);
+	
+	// advanced preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
 	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
 	tab->setWidget(ap);
 	mPreferenceWidget->addTabWidget(tab);

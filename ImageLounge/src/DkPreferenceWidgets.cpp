@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QFileInfo>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QMessageBox>
 
 #include <QDebug>
 #pragma warning(pop)
@@ -265,8 +266,18 @@ void DkGeneralPreference::createLayout() {
 		&DkSettings::display.bgColorFrameless : &DkSettings::display.hudBgColor);
 	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
+	// default pushbutton
+	QLabel* resetLabel = new QLabel(tr("Default Settings"), this);
+	resetLabel->setObjectName("subTitle");
+
+	QPushButton* defaultSettings = new QPushButton(tr("Reset All Settings"));
+	defaultSettings->setObjectName("defaultSettings");
+	defaultSettings->setMaximumWidth(300);
+
 	// the left column (holding all color settings)
 	QWidget* colorWidget = new QWidget(this);
+	colorWidget->setMinimumWidth(400);
+
 	QVBoxLayout* colorLayout = new QVBoxLayout(colorWidget);
 	colorLayout->setAlignment(Qt::AlignTop);
 	colorLayout->addWidget(colorLabel);
@@ -277,6 +288,8 @@ void DkGeneralPreference::createLayout() {
 	colorLayout->addWidget(fgdHUDColorChooser);
 	colorLayout->addWidget(bgHUDColorChooser);
 
+	colorLayout->addWidget(resetLabel);
+	colorLayout->addWidget(defaultSettings);
 
 	// checkboxes
 	QLabel* generalLabel = new QLabel(tr("General"), this);
@@ -349,17 +362,10 @@ void DkGeneralPreference::createLayout() {
 	cbLayout->addWidget(languageCombo);
 	cbLayout->addWidget(translateLabel);
 
-	// the column widget
-	QWidget* contentWidget = new QWidget(this);
-	contentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-	QHBoxLayout* contentLayout = new QHBoxLayout(contentWidget);
+	QHBoxLayout* contentLayout = new QHBoxLayout(this);
+	contentLayout->setAlignment(Qt::AlignLeft);
 	contentLayout->addWidget(colorWidget);
 	contentLayout->addWidget(cbWidget);
-
-	// finally my layout
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->addWidget(contentWidget);
 
 }
 
@@ -437,6 +443,18 @@ void DkGeneralPreference::on_networkSync_toggled(bool checked) const {
 		DkSettings::sync.enableNetworkSync = checked;
 }
 
+void DkGeneralPreference::on_defaultSettings_clicked() {
+
+	int answer = QMessageBox::warning(this, tr("Reset All Settings"), tr("This will reset all personal settings!"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	
+	if (answer == QMessageBox::Yes) {
+		DkSettings::setToDefaultSettings();
+		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+		qDebug() << "answer is: " << answer << "flushing all settings...";
+	}
+
+}
+
 void DkGeneralPreference::on_languageCombo_currentIndexChanged(int index) const {
 
 	if (index >= 0 && index < mLanguages.size()) {
@@ -450,6 +468,28 @@ void DkGeneralPreference::on_languageCombo_currentIndexChanged(int index) const 
 }
 
 void DkGeneralPreference::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
+// DkDisplaySettings --------------------------------------------------------------------
+DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkDisplayPreference::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+}
+void DkDisplayPreference::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
 	QStyleOption opt;
