@@ -130,15 +130,14 @@ public slots:
 	void on_switchModifier_toggled(bool checked) const;
 	void on_loopImages_toggled(bool checked) const;
 	void on_networkSync_toggled(bool checked) const;
-	void on_languageCombo_currentIndexChanged(const QString& text) const;
+	void on_languageCombo_currentIndexChanged(int index) const;
 	void showRestartLabel() const;
 
 	void on_backgroundColor_accepted() const;
 	void on_backgroundColor_resetClicked() const;
 	void on_iconColor_accepted() const;
 	void on_iconColor_resetClicked() const;
-
-
+	
 signals:
 	void infoSignal(const QString& msg) const;
 
@@ -146,7 +145,7 @@ protected:
 	void createLayout();
 	void paintEvent(QPaintEvent* ev);
 
-	DkWorkingDirWidget* mWorkingDir = 0;
+	QStringList mLanguages;
 };
 
 class DkAdvancedPreference : public QWidget {

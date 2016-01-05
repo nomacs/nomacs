@@ -277,6 +277,7 @@ void DkGeneralPreference::createLayout() {
 	colorLayout->addWidget(fgdHUDColorChooser);
 	colorLayout->addWidget(bgHUDColorChooser);
 
+
 	// checkboxes
 	QLabel* generalLabel = new QLabel(tr("General"), this);
 	generalLabel->setObjectName("subTitle");
@@ -320,11 +321,11 @@ void DkGeneralPreference::createLayout() {
 	QLabel* languageLabel = new QLabel(tr("Language"), this);
 	languageLabel->setObjectName("subTitle");
 
-	QStringList languages;
 	QComboBox* languageCombo = new QComboBox(this);
 	languageCombo->setObjectName("languageCombo");
 	languageCombo->setToolTip(tr("Choose your preferred language."));
-	DkUtils::addLanguages(languageCombo, languages);
+	DkUtils::addLanguages(languageCombo, mLanguages);
+	languageCombo->setCurrentIndex(mLanguages.indexOf(DkSettings::global.language));
 
 	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
 	translateLabel->setToolTip(tr("Info on how to translate nomacs."));
@@ -436,11 +437,15 @@ void DkGeneralPreference::on_networkSync_toggled(bool checked) const {
 		DkSettings::sync.enableNetworkSync = checked;
 }
 
-void DkGeneralPreference::on_languageCombo_currentIndexChanged(const QString& text) const {
+void DkGeneralPreference::on_languageCombo_currentIndexChanged(int index) const {
 
-	if (DkSettings::global.language != text) {
-		DkSettings::global.language = text;
-		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	if (index >= 0 && index < mLanguages.size()) {
+		QString language = mLanguages[index];
+
+		if (DkSettings::global.language != language) {
+			DkSettings::global.language = language;
+			emit infoSignal(tr("Please Restart nomacs to apply changes"));
+		}
 	}
 }
 
