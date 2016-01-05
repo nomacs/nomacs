@@ -156,6 +156,10 @@ public:
 	DkDisplayPreference(QWidget* parent = 0);
 
 public slots:
+	void on_interpolationBox_valueChanged(int value) const;
+	void on_iconSizeBox_valueChanged(int value) const;
+	void on_keepZoom_buttonClicked(int buttonId) const;
+	void on_invertZoom_toggled(bool checked) const;
 
 signals:
 	void infoSignal(const QString& msg) const;

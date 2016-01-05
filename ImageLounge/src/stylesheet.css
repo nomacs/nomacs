@@ -405,3 +405,8 @@ QLabel#subTitle {
 QComboBox#languageCombo {
 	max-width: 200px;
 }
+
+QLabel#settingsInfoLabel {
+	padding-top: 6px;
+	font: italic;
+}

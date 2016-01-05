@@ -42,6 +42,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QCheckBox>
 #include <QComboBox>
 #include <QMessageBox>
+#include <QSpinBox>
+
+#include <QButtonGroup>
+#include <QRadioButton>
 
 #include <QDebug>
 #pragma warning(pop)
@@ -487,8 +491,115 @@ DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
 
 void DkDisplayPreference::createLayout() {
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
+	// zoom settings
+	QLabel* zoomLabel = new QLabel(tr("Zoom"), this);
+	zoomLabel->setObjectName("subTitle");
+
+	QLabel* interpolationLabel = new QLabel(tr("Show pixels if zoom level is above"), this);
+
+	QSpinBox* sbInterpolation = new QSpinBox(this);
+	sbInterpolation->setObjectName("interpolationBox");
+	sbInterpolation->setToolTip(tr("nomacs will not interpolate images if the zoom level is larger."));
+	sbInterpolation->setSuffix("%");
+	sbInterpolation->setMinimum(0);
+	sbInterpolation->setMaximum(10000);
+	sbInterpolation->setAlignment(Qt::AlignRight);
+	sbInterpolation->setValue(DkSettings::display.interpolateZoomLevel);
+
+	QCheckBox* invertZoom = new QCheckBox(tr("Invert Zoom Wheel Behaviour"), this);
+	invertZoom->setObjectName("invertZoom");
+	invertZoom->setChecked(DkSettings::display.invertZoom);
+
+	// keep zoom radio buttons
+	QLabel* keepZoomLabel = new QLabel(tr("When Displaying New Images"), this);
+	keepZoomLabel->setObjectName("settingsInfoLabel");
+
+	QVector<QRadioButton*> keepZoomButtons;
+	keepZoomButtons.resize(DkSettings::raw_thumb_end);
+	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
+	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
+
+	// check wrt the current settings
+	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
+
+	QButtonGroup* keepZoomButtonGroup = new QButtonGroup(this);
+	keepZoomButtonGroup->setObjectName("keepZoom");
+	keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_always_keep], DkSettings::zoom_always_keep);
+	keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
+	keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
+
+	// icon size
+	QLabel* iconLabel = new QLabel(tr("Icon Size"), this);
+	iconLabel->setObjectName("settingsInfoLabel");
+
+	QSpinBox* sbIconSize = new QSpinBox(this);
+	sbIconSize->setObjectName("iconSizeBox");
+	sbIconSize->setToolTip(tr("Define the icon size in pixel."));
+	sbIconSize->setSuffix(" px");
+	sbIconSize->setMinimum(16);
+	sbIconSize->setMaximum(200);
+	sbIconSize->setValue(DkSettings::display.iconSize);
+
+	// left column
+	QWidget* leftWidget = new QWidget(this);
+	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
+	leftLayout->setAlignment(Qt::AlignTop);
+	leftLayout->addWidget(zoomLabel);
+	leftLayout->addWidget(interpolationLabel);
+	leftLayout->addWidget(sbInterpolation);
+	leftLayout->addWidget(invertZoom);
+
+	leftLayout->addWidget(keepZoomLabel);
+	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
+	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
+	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
+
+	leftLayout->addWidget(iconLabel);
+	leftLayout->addWidget(sbIconSize);
+
+	// right column
+	QWidget* rightWidget = new QWidget(this);
+	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
+	rightLayout->setAlignment(Qt::AlignTop);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+
+	layout->addWidget(leftWidget);
+	layout->addWidget(rightWidget);
 }
+
+void DkDisplayPreference::on_interpolationBox_valueChanged(int value) const {
+
+	if (DkSettings::display.interpolateZoomLevel != value)
+		DkSettings::display.interpolateZoomLevel = value;
+
+}
+
+void DkDisplayPreference::on_iconSizeBox_valueChanged(int value) const {
+
+	if (DkSettings::display.iconSize != value) {
+		DkSettings::display.iconSize = value;
+		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	}
+
+}
+
+void DkDisplayPreference::on_keepZoom_buttonClicked(int buttonId) const {
+	
+	if (DkSettings::display.keepZoom != buttonId)
+		DkSettings::display.keepZoom = buttonId;
+}
+
+void DkDisplayPreference::on_invertZoom_toggled(bool checked) const {
+
+	if (DkSettings::display.invertZoom != checked)
+		DkSettings::display.invertZoom = checked;
+}
+
+
 void DkDisplayPreference::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
