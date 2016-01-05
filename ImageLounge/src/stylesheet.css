@@ -344,4 +344,58 @@ QWidget#memoryGradient {
 	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);
 }
  
- 
+/* preferences */
+daf--DkPreferenceWidget {
+	border: 1px solid #ccc;
+}
+
+QWidget#DkPreferenceTabs {
+	background-color: #333;
+}
+
+QPushButton#DkTabEntryWidget {
+	color: #fff;
+	font: thin "Segoe UI";
+	font-size: 14pt;
+	padding: 10px 20px;
+	text-align: left;
+}
+
+QPushButton#DkTabEntryWidget:hover {
+	background-color: rgba(255, 255, 255, 30);
+}
+
+QPushButton#DkTabEntryWidget:checked {
+	background-color: rgba(0, 0, 0, 80);
+	border: none;	/* clear border styles first */
+	border-left: 4px solid HIGHLIGHT_COLOR;
+}
+
+QLabel#DkPreferenceTitle {
+	text-transform: uppercase;
+	padding: 10px 20px;
+	font: light "Segoe UI";
+	font-size: 24pt;
+	font-weight: 100;
+	border-bottom: 1px solid #333;
+	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
+}
+
+QLabel#DkInfoLabel {
+	padding: 100px 20px 10px 20px;
+	font: light "Segoe UI";
+	font-size: 16pt;
+	font-weight: 100;
+	color: HIGHLIGHT_COLOR;
+}
+
+QWidget#DkPreferenceWidget {
+	margin-top: 10px; /* not working?! */
+	margin-left: 10px;
+}
+
+QLabel#subTitle {
+	margin-top: 10px;
+	font-size: 14pt;
+	color: #666;
+}

@@ -100,6 +100,18 @@ protected:
 	void paintEvent(QPaintEvent *event);
 };
 
+class DkNamedWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkNamedWidget(const QString& name, QWidget* parent);
+
+	QString name() const;
+
+protected:
+	QString mName;
+};
+
 class DllExport DkLabel : public QLabel {
 	Q_OBJECT
 

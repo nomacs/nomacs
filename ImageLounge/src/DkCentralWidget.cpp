@@ -40,6 +40,7 @@
 #include "DkSettings.h"
 #include "DkWidgets.h"
 #include "DkActionManager.h"
+#include "DkPreferenceWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -65,6 +66,15 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
 	mImageLoader->setCurrentImage(imgC);
 
 	mTabMode = (!imgC) ? tab_recent_files : tab_single_image;
+	mTabIdx = idx;
+}
+
+DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject* parent) : QObject(parent) {
+
+	mImageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	deactivate();
+	
+	mTabMode = mode;
 	mTabIdx = idx;
 }
 
@@ -186,6 +196,8 @@ QString DkTabInfo::getTabText() const {
 
 	if (mTabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
+	else if (mTabMode == tab_preferences)
+		return QObject::tr("Settings");
 
 	QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
 
@@ -256,6 +268,35 @@ void DkCentralWidget::createLayout() {
 	
 	//thumbScrollWidget->hide();
 
+	// add preference widget ------------------------------
+	mPreferenceWidget = new DkPreferenceWidget(this);
+	
+	// add actions
+	mPreferenceWidget->addActions(am.fileActions().toList());
+	mPreferenceWidget->addActions(am.viewActions().toList());
+	mPreferenceWidget->addActions(am.editActions().toList());
+	mPreferenceWidget->addActions(am.sortActions().toList());
+	mPreferenceWidget->addActions(am.toolsActions().toList());
+	mPreferenceWidget->addActions(am.panelActions().toList());
+	mPreferenceWidget->addActions(am.syncActions().toList());
+	mPreferenceWidget->addActions(am.pluginActions().toList());
+	mPreferenceWidget->addActions(am.lanActions().toList());
+	mPreferenceWidget->addActions(am.helpActions().toList());
+	mPreferenceWidget->addActions(am.hiddenActions().toList());
+	
+	// general preferences
+	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.png"), tr("General"), this);
+	DkGeneralPreference* gp = new DkGeneralPreference(this);
+	tab->setWidget(gp);
+	mPreferenceWidget->addTabWidget(tab);
+
+	// plot preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.png"), tr("Advanced"), this);
+	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
+	tab->setWidget(ap);
+	mPreferenceWidget->addTabWidget(tab);
+	// add preference widget ------------------------------
+
 	mTabbar = new QTabBar(this);
 	mTabbar->setShape(QTabBar::RoundedNorth);
 	mTabbar->setTabsClosable(true);
@@ -266,6 +307,7 @@ void DkCentralWidget::createLayout() {
 	mWidgets.resize(widget_end);
 	mWidgets[viewport_widget] = mViewport;
 	mWidgets[thumbs_widget] = mThumbScrollWidget;
+	mWidgets[preference_widget] = mPreferenceWidget;
 
 	QWidget* viewWidget = new QWidget(this);
 	mViewLayout = new QStackedLayout(viewWidget);
@@ -306,6 +348,9 @@ void DkCentralWidget::createLayout() {
 	connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
 
 	connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
+
+	// preferences
+	connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openPreferences()));
 
 }
 
@@ -400,6 +445,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_thumb_preview) {
 		showThumbView();
+	}
+	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
+		showPreferences();
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
 		showViewPort();
@@ -508,6 +556,22 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo) {
 	//
 	//tabbar->setTabButton(0, QTabBar::RightSide, tb);
 }
+
+void DkCentralWidget::openPreferences() {
+
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
+
+		if (tabInfo->getMode() == DkTabInfo::tab_preferences) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
+	addTab(info);
+}
+
 
 void DkCentralWidget::removeTab(int tabIdx) {
 
@@ -663,6 +727,22 @@ void DkCentralWidget::showRecentFiles(bool show) {
 		mRecentFilesWidget->hide();
 }
 
+void DkCentralWidget::showPreferences(bool show) {
+
+	if (show) {
+
+		// create the preferences...
+		if (!mPreferenceWidget) {
+			mPreferenceWidget = new DkPreferenceWidget(this);
+		}
+		
+		switchWidget(mWidgets[preference_widget]);
+		qDebug() << "recent files size: " << mRecentFilesWidget->size();
+	}
+	//else
+	//	mRecentFilesWidget->hide();
+}
+
 void DkCentralWidget::showTabs(bool show) {
 
 	if (show && mTabInfos.size() > 1)
@@ -677,6 +757,8 @@ void DkCentralWidget::switchWidget(int widget) {
 		switchWidget(mWidgets[viewport_widget]);
 	else if (widget == DkTabInfo::tab_thumb_preview)
 		switchWidget(mWidgets[thumbs_widget]);
+	else if (widget == DkTabInfo::tab_preferences)
+		switchWidget(mWidgets[preference_widget]);
 	else
 		qDebug() << "Sorry, I cannot switch to widget: " << widget;
 
@@ -697,7 +779,13 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 
 	if (!mTabInfos.isEmpty()) {
 		
-		int mode = widget == mWidgets[viewport_widget] ? DkTabInfo::tab_single_image : DkTabInfo::tab_thumb_preview;
+		int mode = DkTabInfo::tab_single_image;
+
+		if (widget == mWidgets[thumbs_widget])
+			mode = DkTabInfo::tab_thumb_preview;
+		else if (widget == mWidgets[preference_widget])
+			mode = DkTabInfo::tab_preferences;
+
 		mTabInfos[mTabbar->currentIndex()]->setMode(mode);
 		updateTab(mTabInfos[mTabbar->currentIndex()]);
 	}
