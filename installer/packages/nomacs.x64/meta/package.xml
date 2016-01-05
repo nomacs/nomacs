@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>nomacs - Image Lounge [x64]</DisplayName>
     <Description>nomacs for 64-bit systems.</Description>
-    <Version>3.0.0-20</Version>
-    <ReleaseDate>2015-12-17</ReleaseDate>
+    <Version>3.1.0-4</Version>
+    <ReleaseDate>2016-01-05</ReleaseDate>
     <Default>true</Default>
 </Package>

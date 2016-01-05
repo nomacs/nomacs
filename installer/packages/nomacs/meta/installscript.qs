@@ -34,7 +34,7 @@
 
 function Component()
 {
-	console.log("v 16.12 --------------------------------");
+	console.log("v 05.01 --------------------------------");
 	installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 	
@@ -78,16 +78,35 @@ Component.prototype.createOperations = function()
         // call the base create operations function
         component.createOperations();
 	
-		if (!installer.isUpdater()) {
+		var bitness = new Array();
+	
+		if (!installer.isUpdater()) { // new installer
+			// diem 05.01.2016 - installationRequested() is always true in the updater?!
 			if (installer.componentByName("nomacs.x86").installationRequested()) {
-				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x86].lnk", "workingDirectory=@TargetDir@");
-				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x86/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x86].exe.lnk", "workingDirectory=@TargetDir@");
+				bitness.push("x86");
+				console.log("x86 installation requested...");
 			}
-			else if (installer.componentByName("nomacs.x64").installationRequested()) {
-				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [x64].lnk", "workingDirectory=@TargetDir@");
-				component.addOperation("CreateShortcut", "@TargetDir@/nomacs-x64/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [x64].exe.lnk", "workingDirectory=@TargetDir@");
+			if (installer.componentByName("nomacs.x64").installationRequested()) {
+				bitness.push("x64");
+				console.log("x64 installation requested...");
 			}
 		}
+		else {	// updater
+			if (installer.componentByName("nomacs.x86").isInstalled()) {
+				bitness.push("x86");
+				console.log("x86 is installed...");
+			}
+			if (installer.componentByName("nomacs.x64").isInstalled()) {
+				bitness.push("x64");
+				console.log("x64 is installed...");
+			}			
+		}
+
+		for (idx = 0; idx < bitness.length; idx++) {
+			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-" + bitness[idx] + "/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge [" + bitness[idx] + "].lnk", "workingDirectory=@TargetDir@");
+			component.addOperation("CreateShortcut", "@TargetDir@/nomacs-" + bitness[idx] + "/nomacs.exe",   "@TargetDir@/nomacs - Image Lounge [" + bitness[idx] + "].exe.lnk", "workingDirectory=@TargetDir@");
+		}
+
 	} catch (e) {
         console.log(e);
     }
