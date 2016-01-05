@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>nomacs | Image Lounge</Name>
+    <Version>3.1.0</Version>
+    <Title>nomacs</Title>
+    <Publisher>nomacs</Publisher>
+    <StartMenuDir>nomacs - Image Lounge Beta</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/nomacs</TargetDir>
+	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
+	<InstallerApplicationIcon>nomacs</InstallerApplicationIcon>
+
+ 	<RemoteRepositories>
+		 <Repository>
+				 <Url>http://download.nomacs.org/beta-repository/</Url>
+				 <Enabled>1</Enabled>
+				 <Username></Username>
+				 <Password></Password>
+				 <DisplayName>nomacs - Image Lounge</DisplayName>
+		 </Repository>
+	</RemoteRepositories>
+</Installer>
