@@ -387,7 +387,7 @@ void DkSettings::load() {
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
 	display_p.hudBgColor = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.hudBgColor.rgba()).toInt());
-	display_p.fontColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.fontColor.rgba()).toInt());
+	display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
@@ -403,7 +403,7 @@ void DkSettings::load() {
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
 	display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
 	display_p.fadeSec = settings.value("fadeSec", display_p.fadeSec).toFloat();
-	display_p.useDefaultColor = settings.value("useDefaultColor", display_p.useDefaultColor).toBool();
+	display_p.defaultBackgroundColor = settings.value("useDefaultColor", display_p.defaultBackgroundColor).toBool();
 	display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
 
@@ -591,8 +591,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.hudBgColor != display_d.hudBgColor)
 		settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
-	if (!force && display_p.fontColor != display_d.fontColor)
-		settings.setValue("fontColorRGBA", display_p.fontColor.rgba());
+	if (!force && display_p.hudFgdColor != display_d.hudFgdColor)
+		settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
@@ -621,8 +621,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("showThumbLabel", display_p.showThumbLabel);
 	if (!force && display_p.fadeSec != display_d.fadeSec)
 		settings.setValue("fadeSec", display_p.fadeSec);
-	if (!force && display_p.useDefaultColor != display_d.useDefaultColor)
-		settings.setValue("useDefaultColor", display_p.useDefaultColor);
+	if (!force && display_p.defaultBackgroundColor != display_d.defaultBackgroundColor)
+		settings.setValue("useDefaultColor", display_p.defaultBackgroundColor);
 	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
 		settings.setValue("defaultIconColor", display_p.defaultIconColor);
 	if (!force && display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
@@ -785,7 +785,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.hudBgColor = QColor(0, 0, 0, 100);
-	display_p.fontColor = QColor(255, 255, 255);
+	display_p.hudFgdColor = QColor(255, 255, 255);
 	display_p.bgColor = QColor(100, 100, 100, 255);
 	display_p.iconColor = QColor(100,100,100,255);
 	//display_p.bgColor = QColor(219, 89, 2, 255);
@@ -801,7 +801,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.displaySquaredThumbs = true;
 	display_p.showThumbLabel = true;
 	display_p.fadeSec = 0.5f;
-	display_p.useDefaultColor = true;
+	display_p.defaultBackgroundColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
 

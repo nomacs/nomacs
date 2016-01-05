@@ -180,9 +180,9 @@ public:
 		QColor hudBgColor;
 		QColor bgColor;
 		QColor bgColorFrameless;
-		QColor fontColor;
+		QColor hudFgdColor;
 		QColor iconColor;
-		bool useDefaultColor;
+		bool defaultBackgroundColor;
 		bool defaultIconColor;
 		int thumbSize;
 		int iconSize;

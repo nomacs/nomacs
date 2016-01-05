@@ -798,7 +798,7 @@ void DkZoomWidget::createLayout() {
 	mSlZoom->setMaximum(100);
 
 	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
-		DkUtils::colorToString(DkSettings::display.fontColor) + 
+		DkUtils::colorToString(DkSettings::display.hudFgdColor) + 
 		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
 		DkUtils::colorToString(DkSettings::display.highlightColor) + ";}";
 	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";

@@ -214,7 +214,7 @@ void DkSettingsDialog::saveSettings() {
 	QColor curIconCol = DkSettings::display.iconColor;
 	QColor curBgColFrameless = DkSettings::display.bgColorFrameless;
 	bool curGradient = DkSettings::display.toolbarGradient;
-	bool curUseCol = DkSettings::display.useDefaultColor;
+	bool curUseCol = DkSettings::display.defaultBackgroundColor;
 	bool curUseIconCol = DkSettings::display.defaultIconColor;
 
 	for (DkSettingsWidget* curWidget : widgetList) {
@@ -238,7 +238,7 @@ void DkSettingsDialog::saveSettings() {
 		DkSettings::display.iconColor != curIconCol ||
 		DkSettings::display.hudBgColor != curBgColWidget ||
 		DkSettings::display.bgColorFrameless != curBgColFrameless ||
-		DkSettings::display.useDefaultColor != curUseCol ||
+		DkSettings::display.defaultBackgroundColor != curUseCol ||
 		DkSettings::display.defaultIconColor != curUseIconCol ||
 		DkSettings::display.toolbarGradient != curGradient))
 		emit settingsChangedRestart();
@@ -426,7 +426,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 		DkSettings::display.hudBgColor = bgColorWidgetChooser->getColor();
 
 	if (bgColorChooser->isAccept())
-		DkSettings::display.useDefaultColor = false;
+		DkSettings::display.defaultBackgroundColor = false;
 
 	if (iconColorChooser->isAccept())
 		DkSettings::display.defaultIconColor = false;
@@ -445,7 +445,7 @@ void DkGlobalSettingsWidget::setToDefaultPressed() {
 }
 
 void DkGlobalSettingsWidget::bgColorReset() {
-	DkSettings::display.useDefaultColor = true;
+	DkSettings::display.defaultBackgroundColor = true;
 }
 
 void DkGlobalSettingsWidget::iconColorReset() {

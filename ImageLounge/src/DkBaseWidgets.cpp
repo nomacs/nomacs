@@ -222,7 +222,7 @@ void DkLabel::init() {
 	mTime = -1;
 	mFixedWidth = -1;
 	mFontSize = 17;
-	mTextCol = QColor(255, 255, 255);
+	mTextCol = DkSettings::display.hudFgdColor;
 	mBlocked = false;
 
 	mTimer.setSingleShot(true);

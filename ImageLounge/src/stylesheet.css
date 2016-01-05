@@ -29,7 +29,7 @@ QPushButton#DkPlayerButton:hover{
 } 
 
 QPushButton#DkPlayerButton:pressed {
-	background-color: HIGHLIGHT_COLOR;
+	background-color: HIGHLIGHT_LIGHT;
 }
 
 
@@ -161,12 +161,12 @@ nmc--DkRecentFilesWidget QLabel {
 }
 
 nmc--DkRecentFilesWidget QLabel#DkFileLabel:hover {
-	color: #FFF;
+	color: HUD_FOREGROUND_COLOR;
 	background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 HUD_BACKGROUND_COLOR, stop: 1 rgba(0,0,0,0));
 }
 
 nmc--DkRecentFilesWidget[imageLoaded="true"] QLabel {
-	color: #FFF; 
+	color: HUD_FOREGROUND_COLOR; 
 }
 
 nmc--DkRecentFilesWidget[imageLoaded="true"] > QLabel#bgLabel {
@@ -226,18 +226,19 @@ QSlider#DkHueSlider::handle:horizontal {
 
 /* HUD Widgets */
 QLabel#DkCommentWidget{
+	color: #f00;
 	background-color: HUD_BACKGROUND_COLOR;
 }
 
 QSlider#slZoom::groove:horizontal {
     height: 5px;
-    border: 1px solid HUD_FONT_COLOR;
+    border: 1px solid HUD_FOREGROUND_COLOR;
 }
 
 QSlider#slZoom::handle:horizontal {
     width: 10px;
     border-radius: 3px;
-	background: HUD_FONT_COLOR;
+	background: HUD_FOREGROUND_COLOR;
 }
 
 QLabel#DkOverview {
@@ -248,8 +249,8 @@ QLabel#DkOverviewSliderWidget {
 	background: HUD_BACKGROUND_COLOR;
 }
 
-QLabel#commentTitleLabel{
-	color: HUD_FONT_COLOR; 
+QLabel#commentTitleLabel {
+	color: HUD_FOREGROUND_COLOR;
 	margin: 0; 
 	padding: 0; 
 	font-size: 25px; 
@@ -261,14 +262,14 @@ nmc--DkCommentWidget > nmc--DkCommentTextEdit {
 	border: 0; 
 	padding-top: 10px; 
 	background-color: rgba(0,0,0,0);
-	border-top: 2px dotted HUD_FONT_COLOR; 
-	color: HUD_FONT_COLOR; 
+	border-top: 2px dotted HUD_FOREGROUND_COLOR; 
+	color: HUD_FOREGROUND_COLOR; 
 	font-size: 15px; 
 	selection-background-color: HIGHLIGHT_COLOR; 
 }
 
 QLabel#DkMetaDataHUDTitle {
-	color: HUD_FONT_COLOR; 
+	color: HUD_FOREGROUND_COLOR; 
 	margin: 0; 
 	font-size: 21px; 
 	font-family: Segoe UI; 
@@ -276,7 +277,7 @@ QLabel#DkMetaDataHUDTitle {
 }
 
 QLabel#DkSeparator {
-	border-top: 2px dotted HUD_FONT_COLOR; 
+	border-top: 2px dotted HUD_FOREGROUND_COLOR; 
 }
 
 nmc--DkFolderScrollBar {
@@ -300,15 +301,15 @@ nmc--DkFolderScrollBar::groove:horizontal {
 
 nmc--DkFileInfoLabel {
 	background-color: HUD_BACKGROUND_COLOR;
-	color: HUD_FONT_COLOR;
+	color: HUD_FOREGROUND_COLOR;
 }
 
 QLabel#DkMetaDataLabel {
-	color: HUD_FONT_COLOR;
+	color: HUD_FOREGROUND_COLOR;
 }
 
 QLabel#DkMetaDataKeyLabel {
-	color: HUD_FONT_COLOR;
+	color: HUD_FOREGROUND_COLOR;
 }
 
 QLabel#DkMetadataValueLabel {

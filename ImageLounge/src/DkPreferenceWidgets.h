@@ -133,6 +133,12 @@ public slots:
 	void on_languageCombo_currentIndexChanged(const QString& text) const;
 	void showRestartLabel() const;
 
+	void on_backgroundColor_accepted() const;
+	void on_backgroundColor_resetClicked() const;
+	void on_iconColor_accepted() const;
+	void on_iconColor_resetClicked() const;
+
+
 signals:
 	void infoSignal(const QString& msg) const;
 

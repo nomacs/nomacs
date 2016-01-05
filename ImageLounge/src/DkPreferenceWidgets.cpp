@@ -249,16 +249,21 @@ void DkGeneralPreference::createLayout() {
 	bgColorChooser->setColor(&DkSettings::display.bgColor);
 	connect(bgColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
-	DkColorChooser* bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("HUD Background Color"), this);
-	bgColorWidgetChooser->setObjectName("backgroundHUDColor");
-	bgColorWidgetChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
-		&DkSettings::display.bgColorFrameless : &DkSettings::display.hudBgColor);
-	connect(bgColorWidgetChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
-
 	DkColorChooser* fullscreenColorChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
 	fullscreenColorChooser->setObjectName("fullscreenColor");
 	fullscreenColorChooser->setColor(&DkSettings::slideShow.backgroundColor);
 	connect(fullscreenColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* fgdHUDColorChooser = new DkColorChooser(QColor(255, 255, 255, 255), tr("HUD Foreground Color"), this);
+	fgdHUDColorChooser->setObjectName("fgdHUDColor");
+	fgdHUDColorChooser->setColor(&DkSettings::display.hudFgdColor);
+	connect(fgdHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
+
+	DkColorChooser* bgHUDColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("HUD Background Color"), this);
+	bgHUDColorChooser->setObjectName("bgHUDColor");
+	bgHUDColorChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		&DkSettings::display.bgColorFrameless : &DkSettings::display.hudBgColor);
+	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
 	// the left column (holding all color settings)
 	QWidget* colorWidget = new QWidget(this);
@@ -268,8 +273,9 @@ void DkGeneralPreference::createLayout() {
 	colorLayout->addWidget(highlightColorChooser);
 	colorLayout->addWidget(iconColorChooser);
 	colorLayout->addWidget(bgColorChooser);
-	colorLayout->addWidget(bgColorWidgetChooser);
 	colorLayout->addWidget(fullscreenColorChooser);
+	colorLayout->addWidget(fgdHUDColorChooser);
+	colorLayout->addWidget(bgHUDColorChooser);
 
 	// checkboxes
 	QLabel* generalLabel = new QLabel(tr("General"), this);
@@ -358,6 +364,22 @@ void DkGeneralPreference::createLayout() {
 
 void DkGeneralPreference::showRestartLabel() const {
 	emit infoSignal(tr("Please Restart nomacs to apply changes"));
+}
+
+void DkGeneralPreference::on_backgroundColor_accepted() const {
+	DkSettings::display.defaultBackgroundColor = false;
+}
+
+void DkGeneralPreference::on_backgroundColor_resetClicked() const {
+	DkSettings::display.defaultBackgroundColor = true;
+}
+
+void DkGeneralPreference::on_iconColor_accepted() const {
+	DkSettings::display.defaultIconColor = false;
+}
+
+void DkGeneralPreference::on_iconColor_resetClicked() const {
+	DkSettings::display.defaultIconColor = true;
 }
 
 void DkGeneralPreference::on_showRecentFiles_toggled(bool checked) const {
