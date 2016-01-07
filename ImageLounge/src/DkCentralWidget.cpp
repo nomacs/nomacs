@@ -176,6 +176,8 @@ QIcon DkTabInfo::getIcon() {
 
 	if (mTabMode == tab_thumb_preview)
 		return QIcon(":/nomacs/img/thumbs-view.svg");
+	else if (mTabMode == tab_preferences)
+		return QIcon(":/nomacs/img/settings.svg");
 
 	QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
 

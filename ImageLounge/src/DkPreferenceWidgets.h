@@ -116,6 +116,22 @@ protected:
 
 };
 
+class DkGroupWidget : public QWidget {
+	Q_OBJECT
+
+public:
+	DkGroupWidget(const QString& title, QWidget* parent);
+
+	void addWidget(QWidget* widget);
+
+protected:
+	void paintEvent(QPaintEvent* event);
+	void createLayout();
+
+	QString mTitle;
+	QVBoxLayout* mContentLayout = 0;
+};
+
 class DkGeneralPreference : public QWidget {
 	Q_OBJECT
 

@@ -226,6 +226,46 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event) {
 	QPushButton::paintEvent(event);
 }
 
+// DkGroupWidget --------------------------------------------------------------------
+DkGroupWidget::DkGroupWidget(const QString& title, QWidget* parent) : QWidget(parent) {
+
+	setObjectName("DkGroupWidget");
+	mTitle = title;
+
+	createLayout();
+}
+
+void DkGroupWidget::createLayout() {
+
+	QLabel* titleLabel = new QLabel(mTitle, this);
+	titleLabel->setObjectName("subTitle");
+
+	// we create a content widget to have control over the margins
+	QWidget* contentWidget = new QWidget(this);
+	mContentLayout = new QVBoxLayout(contentWidget);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(titleLabel);
+	layout->addWidget(contentWidget);
+}
+
+void DkGroupWidget::addWidget(QWidget* widget) {
+	
+	mContentLayout->addWidget(widget);
+}
+
+void DkGroupWidget::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
 // DkGeneralPreference --------------------------------------------------------------------
 DkGeneralPreference::DkGeneralPreference(QWidget* parent) : QWidget(parent) {
 
@@ -236,9 +276,6 @@ DkGeneralPreference::DkGeneralPreference(QWidget* parent) : QWidget(parent) {
 void DkGeneralPreference::createLayout() {
 
 	// color settings
-	QLabel* colorLabel = new QLabel(tr("Color Settings"), this);
-	colorLabel->setObjectName("subTitle");
-
 	DkColorChooser* highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
 	highlightColorChooser->setObjectName("highlightColor");
 	highlightColorChooser->setColor(&DkSettings::display.highlightColor);
@@ -270,35 +307,32 @@ void DkGeneralPreference::createLayout() {
 		&DkSettings::display.bgColorFrameless : &DkSettings::display.hudBgColor);
 	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
-	// default pushbutton
-	QLabel* resetLabel = new QLabel(tr("Default Settings"), this);
-	resetLabel->setObjectName("subTitle");
+	DkGroupWidget* colorGroup = new DkGroupWidget(tr("Color Settings"), this);
+	colorGroup->addWidget(highlightColorChooser);
+	colorGroup->addWidget(iconColorChooser);
+	colorGroup->addWidget(bgColorChooser);
+	colorGroup->addWidget(fullscreenColorChooser);
+	colorGroup->addWidget(fgdHUDColorChooser);
+	colorGroup->addWidget(bgHUDColorChooser);
 
+	// default pushbutton
 	QPushButton* defaultSettings = new QPushButton(tr("Reset All Settings"));
 	defaultSettings->setObjectName("defaultSettings");
 	defaultSettings->setMaximumWidth(300);
 
+	DkGroupWidget* defaultGroup = new DkGroupWidget(tr("Default Settings"), this);
+	defaultGroup->addWidget(defaultSettings);
+
 	// the left column (holding all color settings)
-	QWidget* colorWidget = new QWidget(this);
-	colorWidget->setMinimumWidth(400);
+	QWidget* leftColumn = new QWidget(this);
+	leftColumn->setMinimumWidth(400);
 
-	QVBoxLayout* colorLayout = new QVBoxLayout(colorWidget);
-	colorLayout->setAlignment(Qt::AlignTop);
-	colorLayout->addWidget(colorLabel);
-	colorLayout->addWidget(highlightColorChooser);
-	colorLayout->addWidget(iconColorChooser);
-	colorLayout->addWidget(bgColorChooser);
-	colorLayout->addWidget(fullscreenColorChooser);
-	colorLayout->addWidget(fgdHUDColorChooser);
-	colorLayout->addWidget(bgHUDColorChooser);
-
-	colorLayout->addWidget(resetLabel);
-	colorLayout->addWidget(defaultSettings);
+	QVBoxLayout* leftColumnLayout = new QVBoxLayout(leftColumn);
+	leftColumnLayout->setAlignment(Qt::AlignTop);
+	leftColumnLayout->addWidget(colorGroup);
+	leftColumnLayout->addWidget(defaultGroup);
 
 	// checkboxes
-	QLabel* generalLabel = new QLabel(tr("General"), this);
-	generalLabel->setObjectName("subTitle");
-
 	QCheckBox* cbRecentFiles = new QCheckBox(tr("Show Recent Files on Start-Up"), this);
 	cbRecentFiles->setObjectName("showRecentFiles");
 	cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
@@ -334,10 +368,16 @@ void DkGeneralPreference::createLayout() {
 	cbCheckForUpdates->setToolTip(tr("Check for updates on start-up."));
 	cbCheckForUpdates->setChecked(DkSettings::sync.checkForUpdates);
 
-	// language
-	QLabel* languageLabel = new QLabel(tr("Language"), this);
-	languageLabel->setObjectName("subTitle");
+	DkGroupWidget* generalGroup = new DkGroupWidget(tr("General"), this);
+	generalGroup->addWidget(cbRecentFiles);
+	generalGroup->addWidget(cbLoopImages);
+	generalGroup->addWidget(cbZoomOnWheel);
+	generalGroup->addWidget(cbSwitchModifier);
+	generalGroup->addWidget(cbEnableNetworkSync);
+	generalGroup->addWidget(cbCloseOnEsc);
+	generalGroup->addWidget(cbCheckForUpdates);
 
+	// language
 	QComboBox* languageCombo = new QComboBox(this);
 	languageCombo->setObjectName("languageCombo");
 	languageCombo->setToolTip(tr("Choose your preferred language."));
@@ -348,27 +388,22 @@ void DkGeneralPreference::createLayout() {
 	translateLabel->setToolTip(tr("Info on how to translate nomacs."));
 	translateLabel->setOpenExternalLinks(true);
 
+	DkGroupWidget* languageGroup = new DkGroupWidget(tr("Language"), this);
+	languageGroup->addWidget(languageCombo);
+	languageGroup->addWidget(translateLabel);
+
 	// the right column (holding all checkboxes)
 	QWidget* cbWidget = new QWidget(this);
 	QVBoxLayout* cbLayout = new QVBoxLayout(cbWidget);
 	cbLayout->setAlignment(Qt::AlignTop);
-	cbLayout->addWidget(generalLabel);
-	cbLayout->addWidget(cbRecentFiles);
-	cbLayout->addWidget(cbLoopImages);
-	cbLayout->addWidget(cbZoomOnWheel);
-	cbLayout->addWidget(cbSwitchModifier);
-	cbLayout->addWidget(cbEnableNetworkSync);
-	cbLayout->addWidget(cbCloseOnEsc);
-	cbLayout->addWidget(cbCheckForUpdates);
+	cbLayout->addWidget(generalGroup);
 
 	// add language
-	cbLayout->addWidget(languageLabel);
-	cbLayout->addWidget(languageCombo);
-	cbLayout->addWidget(translateLabel);
+	cbLayout->addWidget(languageGroup);
 
 	QHBoxLayout* contentLayout = new QHBoxLayout(this);
 	contentLayout->setAlignment(Qt::AlignLeft);
-	contentLayout->addWidget(colorWidget);
+	contentLayout->addWidget(leftColumn);
 	contentLayout->addWidget(cbWidget);
 
 }
@@ -492,8 +527,9 @@ DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
 void DkDisplayPreference::createLayout() {
 
 	// zoom settings
-	QLabel* zoomLabel = new QLabel(tr("Zoom"), this);
-	zoomLabel->setObjectName("subTitle");
+	QCheckBox* invertZoom = new QCheckBox(tr("Invert Zoom Wheel Behaviour"), this);
+	invertZoom->setObjectName("invertZoom");
+	invertZoom->setChecked(DkSettings::display.invertZoom);
 
 	QLabel* interpolationLabel = new QLabel(tr("Show pixels if zoom level is above"), this);
 
@@ -506,14 +542,12 @@ void DkDisplayPreference::createLayout() {
 	sbInterpolation->setAlignment(Qt::AlignRight);
 	sbInterpolation->setValue(DkSettings::display.interpolateZoomLevel);
 
-	QCheckBox* invertZoom = new QCheckBox(tr("Invert Zoom Wheel Behaviour"), this);
-	invertZoom->setObjectName("invertZoom");
-	invertZoom->setChecked(DkSettings::display.invertZoom);
+	DkGroupWidget* zoomGroup = new DkGroupWidget(tr("Zoom"), this);
+	zoomGroup->addWidget(invertZoom);
+	zoomGroup->addWidget(interpolationLabel);
+	zoomGroup->addWidget(sbInterpolation);
 
 	// keep zoom radio buttons
-	QLabel* keepZoomLabel = new QLabel(tr("When Displaying New Images"), this);
-	keepZoomLabel->setObjectName("settingsInfoLabel");
-
 	QVector<QRadioButton*> keepZoomButtons;
 	keepZoomButtons.resize(DkSettings::raw_thumb_end);
 	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
@@ -530,34 +564,30 @@ void DkDisplayPreference::createLayout() {
 	keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_keep_same_size], DkSettings::zoom_keep_same_size);
 	keepZoomButtonGroup->addButton(keepZoomButtons[DkSettings::zoom_never_keep], DkSettings::zoom_never_keep);
 
+	DkGroupWidget* keepZoomGroup = new DkGroupWidget(tr("When Displaying New Images"), this);
+	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
+	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
+	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
+	
 	// icon size
-	QLabel* iconLabel = new QLabel(tr("Icon Size"), this);
-	iconLabel->setObjectName("settingsInfoLabel");
-
 	QSpinBox* sbIconSize = new QSpinBox(this);
 	sbIconSize->setObjectName("iconSizeBox");
 	sbIconSize->setToolTip(tr("Define the icon size in pixel."));
 	sbIconSize->setSuffix(" px");
 	sbIconSize->setMinimum(16);
-	sbIconSize->setMaximum(200);
+	sbIconSize->setMaximum(1024);
 	sbIconSize->setValue(DkSettings::display.iconSize);
+
+	DkGroupWidget* iconGroup = new DkGroupWidget(tr("Icon Size"), this);
+	iconGroup->addWidget(sbIconSize);
 
 	// left column
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->setAlignment(Qt::AlignTop);
-	leftLayout->addWidget(zoomLabel);
-	leftLayout->addWidget(interpolationLabel);
-	leftLayout->addWidget(sbInterpolation);
-	leftLayout->addWidget(invertZoom);
-
-	leftLayout->addWidget(keepZoomLabel);
-	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
-	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
-	leftLayout->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
-
-	leftLayout->addWidget(iconLabel);
-	leftLayout->addWidget(sbIconSize);
+	leftLayout->addWidget(zoomGroup);
+	leftLayout->addWidget(keepZoomGroup);
+	leftLayout->addWidget(iconGroup);
 
 	// right column
 	QWidget* rightWidget = new QWidget(this);
