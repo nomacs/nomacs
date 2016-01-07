@@ -861,7 +861,6 @@ protected:
 	int numActiveLabels;
 };
 
-
 class DkDirectoryEdit : public QLineEdit {
 	Q_OBJECT
 
@@ -881,6 +880,25 @@ private:
 	bool existsDirectory(const QString& path);
 
 	QString mOldPath;
+	bool showFolderButton = false;
+};
+
+class DkDirectoryChooser : public QWidget {
+	Q_OBJECT
+public:
+	DkDirectoryChooser(const QString& dirPath = "", QWidget* parent = 0);
+
+public slots:
+	void on_dirButton_clicked();
+
+signals:
+	void directoryChanged(const QString& dirPath) const;
+
+protected:
+	void createLayout(const QString& dirPath);
+
+	DkDirectoryEdit* mDirEdit = 0;
+
 };
 
 class DkDelayedInfo : public QObject {

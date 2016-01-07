@@ -90,6 +90,7 @@
 #include <QCompleter>
 #include <QDirModel>
 #include <QSvgRenderer>
+#include <QFileDialog>
 
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -2106,6 +2107,7 @@ void DkAnimationLabel::paintEvent(QPaintEvent* ev) {
 	DkLabel::paintEvent(ev);
 }
 
+// DkColorChooser ------------------------------------
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	this->defaultColor = defaultColor;
@@ -2917,7 +2919,42 @@ bool DkDirectoryEdit::existsDirectory(const QString& path) {
 	return QDir(path).exists();
 }
 
-// DkGmmListWidget --------------------------------------------------------------------
+
+// DkDirectoryChooser --------------------------------------------------------------------
+DkDirectoryChooser::DkDirectoryChooser(const QString& dirPath, QWidget* parent) : QWidget(parent) {
+	
+	createLayout(dirPath);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkDirectoryChooser::createLayout(const QString& dirPath) {
+
+	mDirEdit = new DkDirectoryEdit(dirPath, this);
+	mDirEdit->setObjectName("dirEdit");
+
+	QPushButton* dirButton = new QPushButton(tr("..."), this);
+	dirButton->setObjectName("dirButton");
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(mDirEdit);
+	layout->addWidget(dirButton);
+
+	connect(mDirEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(directoryChanged(const QString&)));
+}
+
+void DkDirectoryChooser::on_dirButton_clicked() {
+
+	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mDirEdit->text());
+
+	if (dirPath.isEmpty())
+		return;
+
+	mDirEdit->setText(dirPath);
+}
+
+// DkListWidget --------------------------------------------------------------------
 DkListWidget::DkListWidget(QWidget* parent) : QListWidget(parent) {
 
 	setAcceptDrops(true);

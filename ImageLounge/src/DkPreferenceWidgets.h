@@ -174,8 +174,28 @@ public:
 public slots:
 	void on_interpolationBox_valueChanged(int value) const;
 	void on_iconSizeBox_valueChanged(int value) const;
+	void on_fadeImageBox_valueChanged(double value) const;
+	void on_displayTimeBox_valueChanged(double value) const;
 	void on_keepZoom_buttonClicked(int buttonId) const;
 	void on_invertZoom_toggled(bool checked) const;
+
+signals:
+	void infoSignal(const QString& msg) const;
+
+protected:
+	void createLayout();
+	void paintEvent(QPaintEvent* ev);
+
+};
+
+class DkFilePreference : public QWidget {
+	Q_OBJECT
+
+public:
+	DkFilePreference(QWidget* parent = 0);
+
+public slots:
+	void on_dirChooser_directoryChanged(const QString& dirPath);
 
 signals:
 	void infoSignal(const QString& msg) const;
@@ -202,5 +222,22 @@ protected:
 	void paintEvent(QPaintEvent* ev);
 
 };
+
+//class DkDummyPreference : public QWidget {
+//	Q_OBJECT
+//
+//public:
+//	DkDummyPreference(QWidget* parent = 0);
+//
+//public slots:
+//
+//signals:
+//   void infoSignal(const QString& msg) const;
+//
+//protected:
+//	void createLayout();
+//	void paintEvent(QPaintEvent* ev);
+//
+//};
 
 };

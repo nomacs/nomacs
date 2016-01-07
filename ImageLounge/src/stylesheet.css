@@ -414,13 +414,17 @@ QLabel#settingsInfoLabel {
 nmc--DkGroupWidget QCheckBox,
 nmc--DkGroupWidget QRadioButton,
 nmc--DkGroupWidget QPushButton,
+nmc--DkGroupWidget QSpinBox,
+nmc--DkGroupWidget QDoubleSpinBox,
 nmc--DkGroupWidget QComboBox,
+nmc--DkGroupWidget QLineEdit,
 nmc--DkGroupWidget QLabel {
 	font-size: 10pt;
 }
 
 nmc--DkGroupWidget QCheckBox,
 nmc--DkGroupWidget QRadioButton,
+nmc--DkGroupWidget QLineEdit,
 nmc--DkGroupWidget QLabel {
 	color: #666;
 }

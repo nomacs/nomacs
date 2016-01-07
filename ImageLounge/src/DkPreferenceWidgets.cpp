@@ -527,7 +527,7 @@ DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
 void DkDisplayPreference::createLayout() {
 
 	// zoom settings
-	QCheckBox* invertZoom = new QCheckBox(tr("Invert Zoom Wheel Behaviour"), this);
+	QCheckBox* invertZoom = new QCheckBox(tr("Invert zoom wheel behaviour"), this);
 	invertZoom->setObjectName("invertZoom");
 	invertZoom->setChecked(DkSettings::display.invertZoom);
 
@@ -539,7 +539,6 @@ void DkDisplayPreference::createLayout() {
 	sbInterpolation->setSuffix("%");
 	sbInterpolation->setMinimum(0);
 	sbInterpolation->setMaximum(10000);
-	sbInterpolation->setAlignment(Qt::AlignRight);
 	sbInterpolation->setValue(DkSettings::display.interpolateZoomLevel);
 
 	DkGroupWidget* zoomGroup = new DkGroupWidget(tr("Zoom"), this);
@@ -581,6 +580,35 @@ void DkDisplayPreference::createLayout() {
 	DkGroupWidget* iconGroup = new DkGroupWidget(tr("Icon Size"), this);
 	iconGroup->addWidget(sbIconSize);
 
+	// slideshow
+	QLabel* fadeImageLabel = new QLabel(tr("Image Transition"), this);
+
+	QDoubleSpinBox* fadeImageBox = new QDoubleSpinBox(this);
+	fadeImageBox->setObjectName("fadeImageBox");
+	fadeImageBox->setToolTip(tr("Define the image transition speed."));
+	fadeImageBox->setSuffix(" sec");
+	fadeImageBox->setMinimum(0.0);
+	fadeImageBox->setMaximum(3);
+	fadeImageBox->setSingleStep(.2);
+	fadeImageBox->setValue(DkSettings::display.fadeSec);
+
+	QLabel* displayTimeLabel = new QLabel(tr("Display Time"), this);
+
+	QDoubleSpinBox* displayTimeBox = new QDoubleSpinBox(this);
+	displayTimeBox->setObjectName("displayTimeBox");
+	displayTimeBox->setToolTip(tr("Define the time an image is displayed."));
+	displayTimeBox->setSuffix(" sec");
+	displayTimeBox->setMinimum(0.0);
+	displayTimeBox->setMaximum(30);
+	displayTimeBox->setSingleStep(.2);
+	displayTimeBox->setValue(DkSettings::slideShow.time);
+
+	DkGroupWidget* slideshowGroup = new DkGroupWidget(tr("Slideshow"), this);
+	slideshowGroup->addWidget(fadeImageLabel);
+	slideshowGroup->addWidget(fadeImageBox);
+	slideshowGroup->addWidget(displayTimeLabel);
+	slideshowGroup->addWidget(displayTimeBox);
+
 	// left column
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
@@ -588,6 +616,7 @@ void DkDisplayPreference::createLayout() {
 	leftLayout->addWidget(zoomGroup);
 	leftLayout->addWidget(keepZoomGroup);
 	leftLayout->addWidget(iconGroup);
+	leftLayout->addWidget(slideshowGroup);
 
 	// right column
 	QWidget* rightWidget = new QWidget(this);
@@ -605,6 +634,20 @@ void DkDisplayPreference::on_interpolationBox_valueChanged(int value) const {
 
 	if (DkSettings::display.interpolateZoomLevel != value)
 		DkSettings::display.interpolateZoomLevel = value;
+
+}
+
+void DkDisplayPreference::on_fadeImageBox_valueChanged(double value) const {
+
+	if (DkSettings::display.fadeSec != value)
+		DkSettings::display.fadeSec = (float)value;
+
+}
+
+void DkDisplayPreference::on_displayTimeBox_valueChanged(double value) const {
+
+	if (DkSettings::slideShow.time != value)
+		DkSettings::slideShow.time = (float)value;
 
 }
 
@@ -641,6 +684,49 @@ void DkDisplayPreference::paintEvent(QPaintEvent *event) {
 	QWidget::paintEvent(event);
 }
 
+// DkDummySettings --------------------------------------------------------------------
+DkFilePreference::DkFilePreference(QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkFilePreference::createLayout() {
+
+	// temp folder
+	DkDirectoryChooser* dirChooser = new DkDirectoryChooser(DkSettings::global.tmpPath, this);
+	dirChooser->setObjectName("dirChooser");
+
+	DkGroupWidget* tempFolderGroup = new DkGroupWidget(tr("Use Temporary Folder"), this);
+	tempFolderGroup->addWidget(dirChooser);
+
+	QWidget* leftWidget = new QWidget(this);
+	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
+	leftLayout->addWidget(tempFolderGroup);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+
+	layout->addWidget(leftWidget);
+}
+
+void DkFilePreference::on_dirChooser_directoryChanged(const QString& dirPath) {
+
+	if (DkSettings::global.tmpPath != dirPath && QDir(dirPath).exists())
+		DkSettings::global.tmpPath = dirPath;
+}
+
+void DkFilePreference::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
 // DkAdvancedSettings --------------------------------------------------------------------
 DkAdvancedPreference::DkAdvancedPreference(QWidget* parent) : QWidget(parent) {
 
@@ -662,5 +748,31 @@ void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 
 	QWidget::paintEvent(event);
 }
+
+//// DkDummySettings --------------------------------------------------------------------
+//DkDummyPreference::DkDummyPreference(QWidget* parent) : QWidget(parent) {
+//
+//	createLayout();
+//	QMetaObject::connectSlotsByName(this);
+//}
+//
+//void DkDummyPreference::createLayout() {
+
+	//QHBoxLayout* layout = new QHBoxLayout(this);
+	//layout->setAlignment(Qt::AlignLeft);
+
+	//layout->addWidget(leftWidget);
+
+//}
+//void DkDummyPreference::paintEvent(QPaintEvent *event) {
+//
+//	// fixes stylesheets which are not applied to custom widgets
+//	QStyleOption opt;
+//	opt.init(this);
+//	QPainter p(this);
+//	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+//
+//	QWidget::paintEvent(event);
+//}
 
 }
