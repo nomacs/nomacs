@@ -299,13 +299,13 @@ void DkCentralWidget::createLayout() {
 	mPreferenceWidget->addTabWidget(tab);
 
 	// file preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("File"), this);
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/dir.svg"), tr("File"), this);
 	DkFilePreference* fp = new DkFilePreference(this);
 	tab->setWidget(fp);
 	mPreferenceWidget->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("Display"), this);
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
 	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
 	tab->setWidget(fap);
 	mPreferenceWidget->addTabWidget(tab);

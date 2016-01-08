@@ -126,6 +126,7 @@ public:
 	DkGroupWidget(const QString& title, QWidget* parent);
 
 	void addWidget(QWidget* widget);
+	void addSpace();
 
 protected:
 	void paintEvent(QPaintEvent* event);
@@ -202,6 +203,7 @@ public slots:
 	void on_dirChooser_directoryChanged(const QString& dirPath) const;
 	void on_loadGroup_buttonClicked(int buttonId) const;
 	void on_skipBox_valueChanged(int value) const;
+	void on_cacheBox_valueChanged(int value) const;
 
 signals:
 	void infoSignal(const QString& msg) const;
@@ -244,6 +246,11 @@ public:
 	DkAdvancedPreference(QWidget* parent = 0);
 
 public slots:
+	void on_loadRaw_buttonClicked(int buttonId) const;
+	void on_filterRaw_toggled(bool checked) const;
+	void on_saveDeleted_toggled(bool checked) const;
+	void on_ignoreExif_toggled(bool checked) const;
+	void on_saveExif_toggled(bool checked) const;
 
 signals:
 	void infoSignal(const QString& msg) const;

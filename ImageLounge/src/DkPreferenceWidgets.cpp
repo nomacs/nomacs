@@ -258,6 +258,11 @@ void DkGroupWidget::addWidget(QWidget* widget) {
 	mContentLayout->addWidget(widget);
 }
 
+void DkGroupWidget::addSpace() {
+
+	mContentLayout->addSpacing(10);
+}
+
 void DkGroupWidget::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
@@ -712,8 +717,28 @@ void DkFilePreference::createLayout() {
 	DkDirectoryChooser* dirChooser = new DkDirectoryChooser(DkSettings::global.tmpPath, this);
 	dirChooser->setObjectName("dirChooser");
 
+	QLabel* tLabel = new QLabel(tr("Screenshots are automatically saved to this folder"), this);
+	
 	DkGroupWidget* tempFolderGroup = new DkGroupWidget(tr("Use Temporary Folder"), this);
 	tempFolderGroup->addWidget(dirChooser);
+	tempFolderGroup->addWidget(tLabel);
+
+	// cache size
+	int maxCache = qMax(qRound(DkMemory::getTotalMemory()*0.1), 512);
+	qDebug() << "max cache" << maxCache;
+	QSpinBox* cacheBox = new QSpinBox(this);
+	cacheBox->setObjectName("cacheBox");
+	cacheBox->setMinimum(0);
+	cacheBox->setMaximum(maxCache);
+	cacheBox->setSuffix(" MB");
+	cacheBox->setMaximumWidth(200);
+	cacheBox->setValue(qRound(DkSettings::resources.cacheMemory));
+
+	QLabel* cLabel = new QLabel(tr("We recommend to set a moderate cache value arround 100 MB"), this);
+	
+	DkGroupWidget* cacheGroup = new DkGroupWidget(tr("Maximal Cache Size"), this);
+	cacheGroup->addWidget(cacheBox);
+	cacheGroup->addWidget(cLabel);
 
 	// loading policy
 	QVector<QRadioButton*> loadButtons;
@@ -750,6 +775,7 @@ void DkFilePreference::createLayout() {
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->addWidget(tempFolderGroup);
+	leftLayout->addWidget(cacheGroup);
 	leftLayout->addWidget(loadGroup);
 	leftLayout->addWidget(skipGroup);
 
@@ -780,6 +806,14 @@ void DkFilePreference::on_skipBox_valueChanged(int value) const {
 
 	if (DkSettings::global.skipImgs != value) {
 		DkSettings::global.skipImgs = value;
+	}
+
+}
+
+void DkFilePreference::on_cacheBox_valueChanged(int value) const {
+
+	if (DkSettings::resources.cacheMemory != value) {
+		DkSettings::resources.cacheMemory = (float)value;
 	}
 
 }
@@ -958,8 +992,91 @@ DkAdvancedPreference::DkAdvancedPreference(QWidget* parent) : QWidget(parent) {
 
 void DkAdvancedPreference::createLayout() {
 
+	// load RAW radio buttons
+	QVector<QRadioButton*> loadRawButtons;
+	loadRawButtons.resize(DkSettings::raw_thumb_end);
+	loadRawButtons[DkSettings::raw_thumb_always] = new QRadioButton(tr("Always Load JPG if Embedded"), this);
+	loadRawButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it Fits the Screen Resolution"), this);
+	loadRawButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Always Load RAW Data"), this);
+
+	// check wrt the current settings
+	loadRawButtons[DkSettings::resources.loadRawThumb]->setChecked(true);
+
+	QButtonGroup* loadRawButtonGroup = new QButtonGroup(this);
+	loadRawButtonGroup->setObjectName("loadRaw");
+	loadRawButtonGroup->addButton(loadRawButtons[DkSettings::raw_thumb_always], DkSettings::raw_thumb_always);
+	loadRawButtonGroup->addButton(loadRawButtons[DkSettings::raw_thumb_if_large], DkSettings::raw_thumb_if_large);
+	loadRawButtonGroup->addButton(loadRawButtons[DkSettings::raw_thumb_never], DkSettings::raw_thumb_never);
+
+	QCheckBox* cbFilterRaw = new QCheckBox(tr("Apply Noise Filtering to RAW Images"), this);
+	cbFilterRaw->setObjectName("filterRaw");
+	cbFilterRaw->setStatusTip(tr("If checked, a noise filter is applied which reduced color noise"));
+	cbFilterRaw->setChecked(DkSettings::resources.filterRawImages);
+
+	DkGroupWidget* loadRawGroup = new DkGroupWidget(tr("RAW Loader Settings"), this);
+	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_always]);
+	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_if_large]);
+	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_never]);
+	loadRawGroup->addSpace();
+	loadRawGroup->addWidget(cbFilterRaw);
+
+	// file loading
+	QCheckBox* cbSaveDeleted = new QCheckBox(tr("Ask to Save Deleted Files"), this);
+	cbSaveDeleted->setObjectName("saveDeleted");
+	cbSaveDeleted->setStatusTip(tr("If checked, nomacs asked to save files which were deleted by other applications"));
+	cbSaveDeleted->setChecked(DkSettings::global.askToSaveDeletedFiles);
+
+	QCheckBox* cbIgnoreExif = new QCheckBox(tr("Ignore Exif Orientation when Loading"), this);
+	cbIgnoreExif->setObjectName("ignoreExif");
+	cbIgnoreExif->setStatusTip(tr("If checked, images are NOT rotated with respect to their Exif orientation"));
+	cbIgnoreExif->setChecked(DkSettings::metaData.ignoreExifOrientation);
+
+	QCheckBox* cbSaveExif = new QCheckBox(tr("Save Exif Orientation"), this);
+	cbSaveExif->setObjectName("saveExif");
+	cbSaveExif->setStatusTip(tr("If checked, orientation is written to the Exif rather than rotating the image Matrix\n") +
+		tr("NOTE: this allows for rotating JPGs without loosing information."));
+	cbSaveExif->setChecked(DkSettings::metaData.saveExifOrientation);
+
+	DkGroupWidget* loadFileGroup = new DkGroupWidget(tr("File Loading/Saving"), this);
+	loadFileGroup->addWidget(cbSaveDeleted);
+	loadFileGroup->addWidget(cbIgnoreExif);
+	loadFileGroup->addWidget(cbSaveExif);
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(loadRawGroup);
+	layout->addWidget(loadFileGroup);
 }
+
+void DkAdvancedPreference::on_loadRaw_buttonClicked(int buttonId) const {
+
+	if (DkSettings::resources.loadRawThumb != buttonId)
+		DkSettings::resources.loadRawThumb = buttonId;
+}
+
+void DkAdvancedPreference::on_filterRaw_toggled(bool checked) const {
+
+	if (DkSettings::resources.filterRawImages != checked)
+		DkSettings::resources.filterRawImages = checked;
+}
+
+void DkAdvancedPreference::on_saveDeleted_toggled(bool checked) const {
+
+	if (DkSettings::global.askToSaveDeletedFiles != checked)
+		DkSettings::global.askToSaveDeletedFiles = checked;
+}
+
+void DkAdvancedPreference::on_ignoreExif_toggled(bool checked) const {
+
+	if (DkSettings::metaData.ignoreExifOrientation != checked)
+		DkSettings::metaData.ignoreExifOrientation = checked;
+}
+
+void DkAdvancedPreference::on_saveExif_toggled(bool checked) const {
+
+	if (DkSettings::metaData.saveExifOrientation != checked)
+		DkSettings::metaData.saveExifOrientation = checked;
+}
+
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
