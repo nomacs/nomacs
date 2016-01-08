@@ -33,6 +33,7 @@
 #pragma warning(push, 0)	// no warnings from includes
 #include <QIcon>
 #include <QPushButton>
+#include <QList>
 #pragma warning(pop)
 
 #ifndef DllExport
@@ -48,6 +49,8 @@
 class QStackedLayout;
 class QVBoxLayout;
 class QGridLayout;
+class QStandardItem;
+class QStandardItemModel;
 
 namespace nmc {
 
@@ -63,7 +66,7 @@ public:
 
 	void addTabWidget(DkPreferenceTabWidget* tabWidget);
 
-	public slots:
+public slots:
 	void changeTab();
 	void setCurrentIndex(int index);
 	void previousTab();
@@ -92,7 +95,7 @@ public:
 
 	QIcon icon() const;
 
-	public slots:
+public slots:
 	void setInfoMessage(const QString& msg);
 
 protected:
@@ -140,6 +143,7 @@ public:
 
 public slots:
 	void on_showRecentFiles_toggled(bool checked) const;
+	void on_logRecentFiles_toggled(bool checked) const;
 	void on_closeOnEsc_toggled(bool checked) const;
 	void on_zoomOnWheel_toggled(bool checked) const;
 	void on_checkForUpdates_toggled(bool checked) const;
@@ -195,7 +199,9 @@ public:
 	DkFilePreference(QWidget* parent = 0);
 
 public slots:
-	void on_dirChooser_directoryChanged(const QString& dirPath);
+	void on_dirChooser_directoryChanged(const QString& dirPath) const;
+	void on_loadGroup_buttonClicked(int buttonId) const;
+	void on_skipBox_valueChanged(int value) const;
 
 signals:
 	void infoSignal(const QString& msg) const;
@@ -204,6 +210,31 @@ protected:
 	void createLayout();
 	void paintEvent(QPaintEvent* ev);
 
+};
+
+class DkFileAssociationsPreference : public QWidget {
+	Q_OBJECT
+
+public:
+	DkFileAssociationsPreference(QWidget* parent = 0);
+	virtual ~DkFileAssociationsPreference();
+public slots:
+	void on_fileModel_itemChanged(QStandardItem*);
+	void on_openDefault_clicked() const;
+
+signals:
+   void infoSignal(const QString& msg) const;
+
+protected:
+	void createLayout();
+	void paintEvent(QPaintEvent* ev);
+
+	bool checkFilter(const QString& cFilter, const QStringList& filters) const;
+	QList<QStandardItem*> getItems(const QString& filter, bool browse, bool reg);
+	void writeSettings() const;
+
+	bool mSaveSettings = false;
+	QStandardItemModel* mModel = 0;
 };
 
 class DkAdvancedPreference : public QWidget {

@@ -43,6 +43,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QComboBox>
 #include <QMessageBox>
 #include <QSpinBox>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <QHeaderView>
 
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -338,6 +341,11 @@ void DkGeneralPreference::createLayout() {
 	cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
 	cbRecentFiles->setChecked(DkSettings::app.showRecentFiles);
 
+	QCheckBox* cbLogRecentFiles = new QCheckBox(tr("Log Recent Files"), this);
+	cbLogRecentFiles->setObjectName("logRecentFiles");
+	cbLogRecentFiles->setToolTip(tr("If checked, recent files will be saved."));
+	cbLogRecentFiles->setChecked(DkSettings::global.logRecentFiles);
+
 	QCheckBox* cbLoopImages = new QCheckBox(tr("Loop Images"), this);
 	cbLoopImages->setObjectName("loopImages");
 	cbLoopImages->setToolTip(tr("Start with the first image in a folder after showing the last."));
@@ -370,6 +378,7 @@ void DkGeneralPreference::createLayout() {
 
 	DkGroupWidget* generalGroup = new DkGroupWidget(tr("General"), this);
 	generalGroup->addWidget(cbRecentFiles);
+	generalGroup->addWidget(cbLogRecentFiles);
 	generalGroup->addWidget(cbLoopImages);
 	generalGroup->addWidget(cbZoomOnWheel);
 	generalGroup->addWidget(cbSwitchModifier);
@@ -432,6 +441,12 @@ void DkGeneralPreference::on_showRecentFiles_toggled(bool checked) const {
 
 	if (DkSettings::app.showRecentFiles != checked)
 		DkSettings::app.showRecentFiles = checked;
+}
+
+void DkGeneralPreference::on_logRecentFiles_toggled(bool checked) const {
+
+	if (DkSettings::global.logRecentFiles != checked)
+		DkSettings::global.logRecentFiles = checked;
 }
 
 void DkGeneralPreference::on_closeOnEsc_toggled(bool checked) const {
@@ -548,7 +563,7 @@ void DkDisplayPreference::createLayout() {
 
 	// keep zoom radio buttons
 	QVector<QRadioButton*> keepZoomButtons;
-	keepZoomButtons.resize(DkSettings::raw_thumb_end);
+	keepZoomButtons.resize(DkSettings::zoom_end);
 	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
 	keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if the size is the same"), this);
 	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
@@ -700,23 +715,230 @@ void DkFilePreference::createLayout() {
 	DkGroupWidget* tempFolderGroup = new DkGroupWidget(tr("Use Temporary Folder"), this);
 	tempFolderGroup->addWidget(dirChooser);
 
+	// loading policy
+	QVector<QRadioButton*> loadButtons;
+	loadButtons.append(new QRadioButton(tr("Skip Images"), this));
+	loadButtons[0]->setToolTip(tr("Images are skipped until the Next key is released"));
+	loadButtons.append(new QRadioButton(tr("Wait for Images to be Loaded"), this));
+	loadButtons[1]->setToolTip(tr("The next image is loaded after the current image is shown."));
+
+	// check wrt the current settings
+	loadButtons[0]->setChecked(!DkSettings::resources.waitForLastImg);
+	loadButtons[1]->setChecked(DkSettings::resources.waitForLastImg);
+
+	QButtonGroup* loadButtonGroup = new QButtonGroup(this);
+	loadButtonGroup->setObjectName("loadGroup");
+	loadButtonGroup->addButton(loadButtons[0], 0);
+	loadButtonGroup->addButton(loadButtons[1], 1);
+
+	DkGroupWidget* loadGroup = new DkGroupWidget(tr("Image Loading Policy"), this);
+	loadGroup->addWidget(loadButtons[0]);
+	loadGroup->addWidget(loadButtons[1]);
+
+	// skip images
+	QSpinBox* skipBox = new QSpinBox(this);
+	skipBox->setObjectName("skipBox");
+	skipBox->setMinimum(2);
+	skipBox->setMaximum(1000);
+	skipBox->setValue(DkSettings::global.skipImgs);
+	skipBox->setMaximumWidth(200);
+
+	DkGroupWidget* skipGroup = new DkGroupWidget(tr("Number of Skipped Images on PgUp/PgDown"), this);
+	skipGroup->addWidget(skipBox);
+
+	// left column
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->addWidget(tempFolderGroup);
+	leftLayout->addWidget(loadGroup);
+	leftLayout->addWidget(skipGroup);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setAlignment(Qt::AlignLeft);
-
 	layout->addWidget(leftWidget);
 }
 
-void DkFilePreference::on_dirChooser_directoryChanged(const QString& dirPath) {
+void DkFilePreference::on_dirChooser_directoryChanged(const QString& dirPath) const {
 
-	if (DkSettings::global.tmpPath != dirPath && QDir(dirPath).exists())
+	bool dirExists = QDir(dirPath).exists();
+	DkSettings::global.useTmpPath = dirExists;
+
+	if (DkSettings::global.tmpPath != dirPath && dirExists) {
 		DkSettings::global.tmpPath = dirPath;
+	}
+
+}
+
+void DkFilePreference::on_loadGroup_buttonClicked(int buttonId) const {
+
+	if (DkSettings::resources.waitForLastImg != (buttonId == 1))
+		DkSettings::resources.waitForLastImg = (buttonId == 1);
+
+}
+
+void DkFilePreference::on_skipBox_valueChanged(int value) const {
+
+	if (DkSettings::global.skipImgs != value) {
+		DkSettings::global.skipImgs = value;
+	}
+
 }
 
 void DkFilePreference::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
+// DkFileAssocationsSettings --------------------------------------------------------------------
+DkFileAssociationsPreference::DkFileAssociationsPreference(QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+DkFileAssociationsPreference::~DkFileAssociationsPreference() {
+
+	if (mSaveSettings) {
+		writeSettings();
+		mSaveSettings = false;
+		DkSettings::save();
+	}
+}
+
+void DkFileAssociationsPreference::createLayout() {
+	
+	QStringList fileFilters = DkSettings::app.openFilters;
+
+	mModel = new QStandardItemModel(this);
+	mModel->setObjectName("fileModel");
+	for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
+		mModel->appendRow(getItems(fileFilters.at(rIdx), checkFilter(fileFilters.at(rIdx), DkSettings::app.browseFilters), checkFilter(fileFilters.at(rIdx), DkSettings::app.registerFilters)));
+
+	mModel->setHeaderData(0, Qt::Horizontal, tr("Filter"));
+	mModel->setHeaderData(1, Qt::Horizontal, tr("Browse"));
+	mModel->setHeaderData(2, Qt::Horizontal, tr("Register"));
+
+	QTableView* filterTableView = new QTableView(this);
+	filterTableView->setModel(mModel);
+	filterTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	filterTableView->verticalHeader()->hide();
+	//filterTableView->horizontalHeader()->hide();
+	filterTableView->setShowGrid(false);
+	filterTableView->resizeColumnsToContents();
+	filterTableView->resizeRowsToContents();
+	filterTableView->setWordWrap(false);
+
+	QPushButton* openDefault = new QPushButton(tr("Set as Default Viewer"), this);
+	openDefault->setObjectName("openDefault");
+
+	// now the final widgets
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(filterTableView);
+
+#ifdef WIN32
+	layout->addWidget(openDefault);
+#else
+	openDefault->hide();
+#endif
+
+}
+
+void DkFileAssociationsPreference::on_fileModel_itemChanged(QStandardItem*) {
+
+	mSaveSettings = true;
+	emit infoSignal(tr("Please Restart nomacs to apply changes"));
+}
+
+void DkFileAssociationsPreference::on_openDefault_clicked() const {
+	
+	DkFileFilterHandling fh;
+	fh.showDefaultSoftware();
+}
+
+bool DkFileAssociationsPreference::checkFilter(const QString& cFilter, const QStringList& filters) const {
+
+	if (filters.empty() && (DkSettings::app.containerFilters.contains(cFilter) || cFilter.contains("ico")))
+		return false;
+
+	if (filters.empty())
+		return true;
+
+	for (int idx = 0; idx < filters.size(); idx++)
+		if (cFilter.contains(filters[idx]))
+			return true;
+
+	return filters.indexOf(cFilter) != -1;
+}
+
+QList<QStandardItem*> DkFileAssociationsPreference::getItems(const QString& filter, bool browse, bool reg) {
+
+	QList<QStandardItem* > items;
+	QStandardItem* item = new QStandardItem(filter);
+	item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	items.append(item);
+	item = new QStandardItem("");
+	//item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+	item->setCheckable(true);
+	item->setCheckState(browse ? Qt::Checked : Qt::Unchecked);
+	items.append(item);
+	item = new QStandardItem("");
+	//item->setFlags(Qt::Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+	item->setCheckable(true);
+	item->setCheckState(reg ? Qt::Checked : Qt::Unchecked);
+#ifndef WIN32	// registering is windows only
+	item->setEnabled(false);
+#endif
+	items.append(item);
+
+	return items;
+
+}
+
+void DkFileAssociationsPreference::writeSettings() const {
+
+	DkFileFilterHandling fh;
+	DkSettings::app.browseFilters.clear();
+	DkSettings::app.registerFilters.clear();
+
+	for (int idx = 0; idx < mModel->rowCount(); idx++) {
+
+		QStandardItem* item = mModel->item(idx, 0);
+
+		if (!item)
+			continue;
+
+		QStandardItem* browseItem = mModel->item(idx, 1);
+		QStandardItem* regItem = mModel->item(idx, 2);
+
+		if (browseItem && browseItem->checkState() == Qt::Checked) {
+
+			QString cFilter = item->text();
+			cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+			cFilter = cFilter.replace(")", "");
+
+			DkSettings::app.browseFilters += cFilter.split(" ");
+		}
+
+		fh.registerFileType(item->text(), tr("Image"), regItem->checkState() == Qt::Checked);
+
+		if (regItem->checkState() == Qt::Checked) {
+			DkSettings::app.registerFilters.append(item->text());
+			qDebug() << item->text() << " registered";
+		}
+		else
+			qDebug() << item->text() << " unregistered";
+	}
+
+	fh.registerNomacs();	// register nomacs again - to be save
+}
+
+void DkFileAssociationsPreference::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
 	QStyleOption opt;
