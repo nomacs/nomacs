@@ -80,7 +80,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mDelayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
-	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(DkSettings::display.iconSize, DkSettings::display.iconSize), this);
+	int loadSize = qMax(DkSettings::display.iconSize, 64);
+	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(loadSize, loadSize), this);
 	mCenterLabel = new DkLabelBg(this, "");
 	mBottomLabel = new DkLabelBg(this, "");
 	mBottomLeftLabel = new DkLabelBg(this, "");

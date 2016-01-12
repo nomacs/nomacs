@@ -1506,7 +1506,8 @@ void DkNoMacs::loadFile(const QString& filePath) {
 
 void DkNoMacs::renameFile() {
 
-	QFileInfo file = getTabWidget()->getCurrentFilePath();
+	QString filePath = getTabWidget()->getCurrentFilePath();
+	QFileInfo file(filePath);
 
 	if (!file.absoluteDir().exists()) {
 		viewport()->getController()->setInfo(tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath()));
@@ -1517,23 +1518,27 @@ void DkNoMacs::renameFile() {
 		return;
 	}
 
-	bool ok;
-	QString filename = QInputDialog::getText(this, file.baseName(), tr("Rename:"), QLineEdit::Normal, file.baseName(), &ok);
+	QString fileName = file.fileName();
+	int dotIdx = fileName.lastIndexOf(".");
+	QString baseName = dotIdx != -1 ? fileName.left(dotIdx) : fileName;
 
-	if (ok && !filename.isEmpty() && filename != file.baseName()) {
+	bool ok;
+	QString newFileName = QInputDialog::getText(this, baseName, tr("Rename:"), QLineEdit::Normal, baseName, &ok);
+
+	if (ok && !newFileName.isEmpty() && newFileName != baseName) {
 		
 		if (!file.suffix().isEmpty())
-			filename.append("." + file.suffix());
+			newFileName.append("." + file.suffix());
 		
-		qDebug() << "renaming: " << file.fileName() << " -> " << filename;
-		QFileInfo renamedFile = QFileInfo(file.absoluteDir(), filename);
+		qDebug() << "renaming: " << file.fileName() << " -> " << newFileName;
+		QFileInfo renamedFile = QFileInfo(file.absoluteDir(), newFileName);
 
 		// overwrite file?
 		if (renamedFile.exists()) {
 
 			QMessageBox infoDialog(this);
 			infoDialog.setWindowTitle(tr("Question"));
-			infoDialog.setText(tr("The fileInfo: %1  already exists.\n Do you want to replace it?").arg(filename));
+			infoDialog.setText(tr("The fileInfo: %1  already exists.\n Do you want to replace it?").arg(newFileName));
 			infoDialog.setIcon(QMessageBox::Question);
 			infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			infoDialog.setDefaultButton(QMessageBox::No);
