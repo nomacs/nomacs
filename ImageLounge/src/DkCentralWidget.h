@@ -138,7 +138,6 @@ public:
 
 signals:
 	void loadFileSignal(const QString&) const;
-	void statusInfoSignal(const QString&, int) const;
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageHasGPSSignal(bool) const;

@@ -138,7 +138,7 @@ signals:
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
 	void imageUpdatedSignal(int idx);	// folder scrollbar needs that
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
-	void showInfoSignal(const QString& msg, int time = 3000, int position = 0);
+	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
 	void imageHasGPSSignal(bool hasGPS);
 

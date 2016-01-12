@@ -97,9 +97,6 @@ public:
 	void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
 	DkControlWidget* getController();
 	bool isTestLoaded() { return mTestLoaded; };
-	void setVisibleStatusbar(bool visibleStatusbar) {
-		mVisibleStatusbar = visibleStatusbar;
-	};
 	
 	QString getCurrentPixelHexValue();
 	QPoint mapToImage(const QPoint& windowPos) const;
@@ -113,7 +110,6 @@ signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
 	void sendNewFileSignal(qint16 op, QString filename = "") const;
 	void sendImageSignal(QImage img, QString title) const;
-	void statusInfoSignal(const QString& msg, int) const;
 	void newClientConnectedSignal(bool connect, bool local) const;
 	void movieLoadedSignal(bool isMovie) const;
 	void infoSignal(const QString& msg) const;	// needed to forward signals
@@ -196,7 +192,6 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 	bool mTestLoaded = false;
-	bool mVisibleStatusbar = false;
 	bool mGestureStarted = false;
 
 	QRectF mOldImgRect;

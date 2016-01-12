@@ -564,7 +564,6 @@ signals:
 	void enterPressedSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
 	void angleSignal(double angle) const;
 	void aRatioSignal(const QPointF& aRatio) const;
-	void statusInfoSignal(const QString& msg) const;
 
 public slots:
 	void updateCorner(int idx, const QPointF& point, Qt::KeyboardModifiers modifier, bool changeState = false);

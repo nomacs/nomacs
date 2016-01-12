@@ -38,6 +38,7 @@
 #include "DkMetaData.h"
 #include "DkPluginManager.h"
 #include "DkActionManager.h"
+#include "DkStatusBar.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -251,7 +252,6 @@ void DkViewPort::setImage(QImage newImg) {
 	DkTimer dt;
 
 	emit movieLoadedSignal(false);
-
 	stopMovie();	// just to be sure
 
 	//imgPyramid.clear();
@@ -308,6 +308,9 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit newImageSignal(&newImg);
 	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
+
+	// status info
+	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -433,7 +436,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	tcpSynchronize();
 
 	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
-	
+	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
 }
 
 void DkViewPort::zoomTo(float zoomLevel, const QPoint&) {
@@ -916,7 +919,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	//changeCursor();
 	mCurrentPixelPos = event->pos();
 
-	if (mVisibleStatusbar)
+	if (DkStatusBarManager::instance().statusbar()->isVisible())
 		getPixelInfo(event->pos());
 
 	if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
@@ -1129,7 +1132,7 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	msg += " | <font color=#555555>" + col.name().toUpper() + "</font>";
 
-	emit statusInfoSignal(msg, 0);// status_pixel_info); TODO: fix include
+	DkStatusBarManager::instance().setMessage(msg, DkStatusBar::status_pixel_info);
 }
 
 QString DkViewPort::getCurrentPixelHexValue() {
@@ -1989,7 +1992,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		//	setCursor(Qt::OpenHandCursor);
 	}
 
-	if (mVisibleStatusbar)
+	if (DkStatusBarManager::instance().statusbar()->isVisible())
 		getPixelInfo(event->pos());
 
 	if (event->buttons() == Qt::LeftButton) {
@@ -2354,7 +2357,7 @@ void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event) {
 
 	if (!mIsColorPickerActive)
 		DkViewPort::mouseMoveEvent(event); // just propagate events, if the color picker is not active
-	else if (mVisibleStatusbar)
+	else if (DkStatusBarManager::instance().statusbar()->isVisible())
 		getPixelInfo(event->pos());
 }
 

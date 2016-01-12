@@ -38,6 +38,7 @@
 #include "DkMessageBox.h"
 #include "DkSaveDialog.h"
 #include "DkUtils.h"
+#include "DkStatusBar.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -932,6 +933,14 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	if (mCurrentImage)
 		emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(mCurrentImage->getMetaData()));
+
+
+	// update status bar info
+	if (mCurrentImage && !mImages.empty() && mImages.indexOf(mCurrentImage) >= 0)
+		DkStatusBarManager::instance().setMessage(tr("%1 of %2").arg(mImages.indexOf(mCurrentImage)+1).arg(mImages.size()), DkStatusBar::status_filenumber_info);
+	else
+		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_filenumber_info);
+
 }
 
 void DkImageLoader::downloadFile(const QUrl& url) {

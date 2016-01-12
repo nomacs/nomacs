@@ -102,15 +102,6 @@ class DkUpnpDeviceHost;
 class DkUpnpRendererDeviceHost;
 #endif // WITH_UPNP
 
-enum statusbarLabels {
-	status_pixel_info,
-	status_filesize_info,
-	status_time_info,
-
-	status_end,
-
-};
-
 /*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
@@ -233,7 +224,6 @@ public slots:
 	void tcpSendWindowRect();
 	void tcpSendArrange();
 	virtual void newClientConnected(bool connected, bool local);
-	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void flipImageHorizontal();
 	void flipImageVertical();
 	void normalizeImage();
@@ -306,8 +296,6 @@ protected:
 	DkMainToolBar* mToolbar = 0;
 	DkQuickAccessEdit* mQuickAccessEdit = 0;
 	QToolBar* mMovieToolbar = 0;
-	QStatusBar* mStatusbar = 0;
-	QVector<QLabel*> mStatusbarLabels;
 	DkQuickAccess* mQuickAccess = 0;
 
 	// file dialog

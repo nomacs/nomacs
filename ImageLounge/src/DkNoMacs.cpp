@@ -51,6 +51,7 @@
 #include "DkImageLoader.h"
 #include "DkTimer.h"
 #include "DkActionManager.h"
+#include "DkStatusBar.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -209,8 +210,6 @@ void DkNoMacs::init() {
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
-	connect(viewport(), SIGNAL(statusInfoSignal(const QString&, int)), this, SLOT(showStatusMessage(const QString&, int)));
-	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(const QString&)), this, SLOT(showStatusMessage(const QString&)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	// connections to the image loader
@@ -219,7 +218,6 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
-	connect(centralWidget(), SIGNAL(statusInfoSignal(const QString&, int)), this, SLOT(showStatusMessage(const QString&, int)));
 
 	enableMovieActions(false);
 
@@ -310,31 +308,7 @@ void DkNoMacs::createToolbar() {
 
 void DkNoMacs::createStatusbar() {
 
-	mStatusbarLabels.resize(status_end);
-
-	mStatusbarLabels[status_pixel_info] = new QLabel();
-	mStatusbarLabels[status_pixel_info]->hide();
-	mStatusbarLabels[status_pixel_info]->setToolTip(tr("CTRL activates the crosshair cursor"));
-
-	mStatusbar = new QStatusBar(this);
-	mStatusbar->setObjectName("DkStatusBar");
-	QColor col = QColor(200, 200, 230, 100);
-
-	if (DkSettings::display.toolbarGradient)
-		mStatusbar->setObjectName("statusBarWithGradient");	
-
-	mStatusbar->addWidget(mStatusbarLabels[status_pixel_info]);
-	mStatusbar->hide();
-
-	for (int idx = 1; idx < mStatusbarLabels.size(); idx++) {
-		mStatusbarLabels[idx] = new QLabel(this);
-		mStatusbarLabels[idx]->setObjectName("statusBarLabel");
-		mStatusbarLabels[idx]->hide();
-		mStatusbar->addPermanentWidget(mStatusbarLabels[idx]);
-	}
-
-	//statusbar->addPermanentWidget()
-	this->setStatusBar(mStatusbar);
+	setStatusBar(DkStatusBarManager::instance().statusbar());
 }
 
 void DkNoMacs::loadStyleSheet() {
@@ -1018,7 +992,7 @@ void DkNoMacs::enterFullScreen() {
 	menuBar()->hide();
 	mToolbar->hide();
 	mMovieToolbar->hide();
-	mStatusbar->hide();
+	DkStatusBarManager::instance().statusbar()->hide();
 	getTabWidget()->showTabs(false);
 
 	showExplorer(DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer), false);
@@ -1044,7 +1018,7 @@ void DkNoMacs::exitFullScreen() {
 
 		if (DkSettings::app.showMenuBar) mMenu->show();
 		if (DkSettings::app.showToolBar) mToolbar->show();
-		if (DkSettings::app.showStatusBar) mStatusbar->show();
+		if (DkSettings::app.showStatusBar) DkStatusBarManager::instance().statusbar()->show();
 		if (DkSettings::app.showMovieToolBar) mMovieToolbar->show();
 		showExplorer(DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer), false);
 		showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettings::app.showMetaDataDock), false);
@@ -2218,25 +2192,14 @@ void DkNoMacs::showToolbar(bool show) {
 
 void DkNoMacs::showStatusBar(bool show, bool permanent) {
 
-	if (mStatusbar->isVisible() == show)
+	if (DkStatusBarManager::instance().statusbar()->isVisible() == show)
 		return;
 
 	if (permanent)
 		DkSettings::app.showStatusBar = show;
 	DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(DkSettings::app.showStatusBar);
 
-	mStatusbar->setVisible(show);
-
-	viewport()->setVisibleStatusbar(show);
-}
-
-void DkNoMacs::showStatusMessage(QString msg, int which) {
-
-	if (which < 0 || which >= mStatusbarLabels.size())
-		return;
-
-	mStatusbarLabels[which]->setVisible(!msg.isEmpty());
-	mStatusbarLabels[which]->setText(msg);
+	DkStatusBarManager::instance().statusbar()->setVisible(show);
 }
 
 void DkNoMacs::openFileWith(QAction* action) {
@@ -2328,6 +2291,8 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	emit sendTitleSignal(windowTitle());
 	setWindowModified(edited);
 
+	DkStatusBar* bar = DkStatusBarManager::instance().statusbar();
+
 	if ((!viewport()->getController()->getFileInfoLabel()->isVisible() || 
 		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date)) && getTabWidget()->getCurrentImage()) {
 		
@@ -2335,15 +2300,15 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 		QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
 		QString dateString = metaData->getExifValue("DateTimeOriginal");
 		dateString = DkUtils::convertDateString(dateString, fInfo);
-		showStatusMessage(dateString, status_time_info);
+		bar->setMessage(dateString, DkStatusBar::status_time_info);
 	}
 	else 
-		showStatusMessage("", status_time_info);	// hide label
+		bar->setMessage("", DkStatusBar::status_time_info);	// hide label
 
 	if (fInfo.exists())
-		showStatusMessage(DkUtils::readableByte((float)fInfo.size()), status_filesize_info);
+		bar->setMessage(DkUtils::readableByte((float)fInfo.size()), DkStatusBar::status_filesize_info);
 	else 
-		showStatusMessage("", status_filesize_info);
+		bar->setMessage("", DkStatusBar::status_filesize_info);
 
 }
 

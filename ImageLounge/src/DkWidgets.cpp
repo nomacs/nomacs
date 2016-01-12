@@ -34,6 +34,7 @@
 #include "DkToolbars.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkStatusBar.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -1864,7 +1865,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				this);
 		}
 
-		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);	// braces
+		DkStatusBarManager::instance().setMessage(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);
 	}
 
 	//QWidget::mouseMoveEvent(event);
