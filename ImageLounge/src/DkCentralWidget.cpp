@@ -968,8 +968,6 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 			fString = url.toLocalFile();
 		}
 		
-		qDebug() << "dropping: " << url.toLocalFile() << "exists" << file.exists() << "is file" << file.isFile();// file.absoluteFilePath();
-
 		QList<QUrl> urls = mimeData->urls();
 
 		// merge OpenCV vec files if multiple vec files are dropped

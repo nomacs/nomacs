@@ -332,6 +332,10 @@ void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
 	this->mDeleteOriginal = deleteOriginal;
 }
 
+void DkBatchProcess::setCompression(int compression) {
+	mCompression = compression;
+}
+
 QString DkBatchProcess::inputFile() const {
 
 	return mFilePathIn;
@@ -636,6 +640,7 @@ void DkBatchProcessing::init() {
 		cProcess.setMode(batchConfig.getMode());
 		cProcess.setDeleteOriginal(batchConfig.getDeleteOriginal());
 		cProcess.setProcessChain(batchConfig.getProcessFunctions());
+		cProcess.setCompression(batchConfig.getCompression());
 
 		batchItems.push_back(cProcess);
 	}

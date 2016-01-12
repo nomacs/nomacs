@@ -717,11 +717,22 @@ void DkBatchOutput::createLayout() {
 
 	mCbNewExtension = new QComboBox(this);
 	mCbNewExtension->addItems(DkSettings::app.saveFilters);
+	mCbNewExtension->setFixedWidth(150);
 	mCbNewExtension->setEnabled(false);
+
+	QLabel* compressionLabel = new QLabel(tr("Compression"), this);
+
+	mSbCompression = new QSpinBox(this);
+	mSbCompression->setValue(90);
+	mSbCompression->setMinimum(1);
+	mSbCompression->setMaximum(100);
+	mSbCompression->setEnabled(false);
 
 	extensionLayout->addWidget(mCbExtension);
 	extensionLayout->addWidget(mCbNewExtension);
-	extensionLayout->addStretch();
+	extensionLayout->addWidget(compressionLabel);
+	extensionLayout->addWidget(mSbCompression);
+	//extensionLayout->addStretch();
 	mFilenameVBLayout->addWidget(extensionWidget);
 	
 	QLabel* oldLabel = new QLabel(tr("Old: "));
@@ -822,6 +833,7 @@ void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
 void DkBatchOutput::extensionCBChanged(int index) {
 	
 	mCbNewExtension->setEnabled(index > 0);
+	mSbCompression->setEnabled(index > 0);
 	emitChangedSignal();
 }
 
@@ -885,6 +897,10 @@ QString DkBatchOutput::getFilePattern() {
 	}
 
 	return pattern;
+}
+
+int DkBatchOutput::getCompression() const {
+	return mSbCompression->value();
 }
 
 int DkBatchOutput::overwriteMode() const {
@@ -1307,6 +1323,7 @@ void DkBatchDialog::accept() {
 	config.setMode(outputWidget->overwriteMode());
 	config.setDeleteOriginal(outputWidget->deleteOriginal());
 	config.setInputDirIsOutputDir(outputWidget->useInputDir());
+	config.setCompression(outputWidget->getCompression());
 
 	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
 

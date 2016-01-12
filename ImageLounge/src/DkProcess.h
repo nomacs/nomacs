@@ -150,6 +150,7 @@ public:
 	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
 	void setMode(int mode);
 	void setDeleteOriginal(bool deleteOriginal);
+	void setCompression(int compression);
 	bool compute();	// do the work
 	QStringList getLog() const;
 	bool hasFailed() const;

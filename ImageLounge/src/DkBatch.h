@@ -271,6 +271,7 @@ public:
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
+	int getCompression() const;
 
 signals:
 	void newHeaderText(const QString&) const;
@@ -308,6 +309,7 @@ private:
 
 	QComboBox* mCbExtension = 0;
 	QComboBox* mCbNewExtension = 0;
+	QSpinBox* mSbCompression = 0;
 	QLabel* mOldFileNameLabel = 0;
 	QLabel* mNewFileNameLabel = 0;
 	QString mExampleName = 0;
