@@ -1010,7 +1010,7 @@ void DkAdvancedPreference::createLayout() {
 
 	QCheckBox* cbFilterRaw = new QCheckBox(tr("Apply Noise Filtering to RAW Images"), this);
 	cbFilterRaw->setObjectName("filterRaw");
-	cbFilterRaw->setStatusTip(tr("If checked, a noise filter is applied which reduced color noise"));
+	cbFilterRaw->setToolTip(tr("If checked, a noise filter is applied which reduced color noise"));
 	cbFilterRaw->setChecked(DkSettings::resources.filterRawImages);
 
 	DkGroupWidget* loadRawGroup = new DkGroupWidget(tr("RAW Loader Settings"), this);
@@ -1023,17 +1023,17 @@ void DkAdvancedPreference::createLayout() {
 	// file loading
 	QCheckBox* cbSaveDeleted = new QCheckBox(tr("Ask to Save Deleted Files"), this);
 	cbSaveDeleted->setObjectName("saveDeleted");
-	cbSaveDeleted->setStatusTip(tr("If checked, nomacs asked to save files which were deleted by other applications"));
+	cbSaveDeleted->setToolTip(tr("If checked, nomacs asked to save files which were deleted by other applications"));
 	cbSaveDeleted->setChecked(DkSettings::global.askToSaveDeletedFiles);
 
 	QCheckBox* cbIgnoreExif = new QCheckBox(tr("Ignore Exif Orientation when Loading"), this);
 	cbIgnoreExif->setObjectName("ignoreExif");
-	cbIgnoreExif->setStatusTip(tr("If checked, images are NOT rotated with respect to their Exif orientation"));
+	cbIgnoreExif->setToolTip(tr("If checked, images are NOT rotated with respect to their Exif orientation"));
 	cbIgnoreExif->setChecked(DkSettings::metaData.ignoreExifOrientation);
 
 	QCheckBox* cbSaveExif = new QCheckBox(tr("Save Exif Orientation"), this);
 	cbSaveExif->setObjectName("saveExif");
-	cbSaveExif->setStatusTip(tr("If checked, orientation is written to the Exif rather than rotating the image Matrix\n") +
+	cbSaveExif->setToolTip(tr("If checked, orientation is written to the Exif rather than rotating the image Matrix\n") +
 		tr("NOTE: this allows for rotating JPGs without loosing information."));
 	cbSaveExif->setChecked(DkSettings::metaData.saveExifOrientation);
 

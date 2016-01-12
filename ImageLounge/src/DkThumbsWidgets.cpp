@@ -529,7 +529,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	unsetCursor();
+	if (cursor().shape() != Qt::ArrowCursor)
+		setCursor(Qt::ArrowCursor);
 
 	int ndx = limit - qRound(eventPos);
 	int pdx = qRound(eventPos);

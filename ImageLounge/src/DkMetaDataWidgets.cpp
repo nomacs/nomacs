@@ -657,6 +657,7 @@ void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData, QS
 DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
 
 	setObjectName("DkMetaDataHUD");
+	setCursor(Qt::ArrowCursor);
 
 	// some inits
 	mKeyValues = getDefaultKeys();

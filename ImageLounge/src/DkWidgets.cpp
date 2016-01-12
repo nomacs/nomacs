@@ -1037,6 +1037,8 @@ void DkRatingLabel::init() {
 // DkRatingLabelBg --------------------------------------------------------------------
 DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags flags) : DkRatingLabel(rating, parent, flags) {
 
+	setCursor(Qt::ArrowCursor);
+
 	mHideTimer = new QTimer(this);
 	mHideTimer->setInterval(mTimeToDisplay);
 	mHideTimer->setSingleShot(true);
@@ -1044,7 +1046,7 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags fl
 	// we want a margin
 	mLayout->setContentsMargins(10,4,10,4);
 	mLayout->setSpacing(4);
-
+	
 	mActions.resize(6);
 
 	mActions[rating_0] = new QAction(tr("no rating"), this);
@@ -1115,6 +1117,7 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	mDateLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 	mRatingLabel = new DkRatingLabel(0, this);
 	setMinimumWidth(110);
+	setCursor(Qt::ArrowCursor);
 	
 	createLayout();
 }
@@ -2207,6 +2210,7 @@ DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	setObjectName("DkHistogram");
 	setMinimumWidth(265);
 	setMinimumHeight(130);
+	setCursor(Qt::ArrowCursor);
 }
 
 DkHistogram::~DkHistogram() {
