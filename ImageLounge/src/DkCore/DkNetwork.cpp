@@ -28,7 +28,7 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkControlWidget.h"	// needed for a connection
+//#include "DkControlWidget.h"	// needed for a connection
 #include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -1989,9 +1989,9 @@ void DkTranslationUpdater::cancelUpdate() {
 
 }
 
-// that's a bit nasty
-#include "DkNoMacs.h"
-#include "DkViewPort.h"
+//// that's a bit nasty
+//#include "DkNoMacs.h"
+//#include "DkViewPort.h"
 
 namespace nmc {
 
