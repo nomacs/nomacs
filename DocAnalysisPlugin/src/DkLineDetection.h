@@ -47,7 +47,7 @@
 //#include "DkImage.h"
 #include "DkImageStorage.h"
 
-namespace nmc {
+namespace nmp {
 
 class DkLineDetectionDialog;
 
@@ -135,11 +135,11 @@ class DkLineDetectionDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<DkMetaDataT> metaData, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<nmc::DkMetaDataT> metaData, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 		~DkLineDetectionDialog();
 
 		void setDefaultConfiguration();
-		void setMetaData(QSharedPointer<DkMetaDataT> metaData);
+		void setMetaData(QSharedPointer<nmc::DkMetaDataT> metaData);
 
 	protected:
 		int dialogWidth;
@@ -161,7 +161,7 @@ class DkLineDetectionDialog : public QDialog {
 
 	private:
 		DkLineDetection *lineDetector; /**< The corresponding line detector tool **/
-		QSharedPointer<DkMetaDataT> metaData; /**< metadata containing the image resolution **/
+		QSharedPointer<nmc::DkMetaDataT> metaData; /**< metadata containing the image resolution **/
 
 		int margin;
 		// UI elements

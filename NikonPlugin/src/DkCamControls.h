@@ -73,7 +73,7 @@ class QHBoxLayout;
 class QSpacerItem;
 class QVBoxLayout;
 
-namespace nmc {
+namespace nmp {
 
 class DkPaintToolBar;
 class ConnectDeviceDialog;

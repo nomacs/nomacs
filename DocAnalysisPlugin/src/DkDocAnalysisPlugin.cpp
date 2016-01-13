@@ -36,13 +36,12 @@
 #include <QVector2D>
 #include <QMouseEvent>
 
-namespace nmc {
+namespace nmp {
 
 /*-----------------------------------DkDocAnalysisPlugin ---------------------------------------------*/
 
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
-DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
+nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
+nmc::DkSettings::App& settingsApp = nmc::DkSettings::getAppSettings();
 
 /**
 *	Constructor
@@ -146,7 +145,7 @@ QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
 * @param runID runID of the plugin 
 * @param image current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkDocAnalysisPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> image) const  {
+QSharedPointer<nmc::DkImageContainer> DkDocAnalysisPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const  {
 	
 	//for a viewport plugin runID and image are null
 	if (viewport && image) {
@@ -169,7 +168,7 @@ QSharedPointer<DkImageContainer> DkDocAnalysisPlugin::runPlugin(const QString &r
 /**
 * returns paintViewPort
 **/
-DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
+nmc::DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 
 	if (!viewport) {
 		DkDocAnalysisViewPort* vp = new DkDocAnalysisViewPort();
@@ -215,16 +214,16 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width/* QString saveNameAppendix*/) {
 	qDebug() << "saving...";
 
-	QSharedPointer<DkImageLoader> loader;
-	DkNoMacs* nmcWin;
+	QSharedPointer<nmc::DkImageLoader> loader;
+	nmc::DkNoMacs* nmcWin;
 	QMainWindow* win = getMainWindow();
 	if (win) {
 
 		// this should usually work - since we are a nomacs plugin
-		nmcWin = dynamic_cast<DkNoMacs*>(win);
+		nmcWin = dynamic_cast<nmc::DkNoMacs*>(win);
 
 		if (nmcWin) {
-			DkCentralWidget* cw = nmcWin->getTabWidget();
+			nmc::DkCentralWidget* cw = nmcWin->getTabWidget();
 
 			if (cw) {
 				loader = cw->getCurrentImageLoader();
@@ -251,7 +250,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 		int filterIdx = -1;
 
-		QStringList sF = nmc::DkSettings::app.saveFilters;
+		QStringList sF = settingsApp.saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -280,7 +279,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	savePath.insert(savePath.length()-saveFile.completeSuffix().length()-1, saveNameAppendix);
 
 	QString fileName = QFileDialog::getSaveFileName(viewport, tr("Save Magic Cut"),
-		savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
+		savePath, settingsApp.saveFilters.join(";;"), &selectedFilter);
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -291,7 +290,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkSettings::app.saveFilters;
+		QStringList sF = settingsApp.saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
@@ -310,12 +309,12 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(nmcWin);
+			jpgDialog = new nmc::DkCompressDialog(nmcWin);
 
 		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
-			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
+			jpgDialog->setDialogMode(nmc::DkCompressDialog::j2k_dialog);
 		else
-			jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+			jpgDialog->setDialogMode(nmc::DkCompressDialog::jpg_dialog);
 
 		jpgDialog->imageHasAlpha(saveImage.hasAlphaChannel());
 		//jpgDialog->show();
@@ -342,9 +341,9 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(nmcWin);
+			jpgDialog = new nmc::DkCompressDialog(nmcWin);
 
-		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
+		jpgDialog->setDialogMode(nmc::DkCompressDialog::webp_dialog);
 		jpgDialog->setImage(saveImage);
 
 		if (!jpgDialog->exec())
@@ -478,7 +477,7 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	if (editingActive()) {
 		if(parent()) {
-			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+			nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 			
 			if(viewport) {
 		
@@ -551,7 +550,7 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	xy = imgPos.toPoint();
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 
 		if(viewport) {
 			// check if point is within image
@@ -723,7 +722,7 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		
 		// show the bottom text lines if toggled
 		if (showBottomLines) {
@@ -892,7 +891,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 QImage DkDocAnalysisViewPort::getPaintedImage() {
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 			QImage img = viewport->getImage();
 			return img;
@@ -913,17 +912,17 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	if (win) {
 
 		// this should usually work - since we are a nomacs plugin
-		DkNoMacs* nmcWin = dynamic_cast<DkNoMacs*>(win);
+		nmc::DkNoMacs* nmcWin = dynamic_cast<nmc::DkNoMacs*>(win);
 
 		if (nmcWin) {
 
-			DkCentralWidget* cw = nmcWin->getTabWidget();
+			nmc::DkCentralWidget* cw = nmcWin->getTabWidget();
 
 			if (cw) {
-				QSharedPointer<DkImageLoader> loader = cw->getCurrentImageLoader();
+				QSharedPointer<nmc::DkImageLoader> loader = cw->getCurrentImageLoader();
 				
 				if (loader) {
-					QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+					QSharedPointer<nmc::DkImageContainerT> imgC = loader->getCurrentImage();
 					
 					if (imgC) {
 
@@ -949,7 +948,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	distance->setMetaData(metadata);
 
 	if (!image.isNull()) {
-		cv::Mat img = DkImage::qImage2Mat(image);
+		cv::Mat img = nmc::DkImage::qImage2Mat(image);
 		// set image for magic cut
 		magicCut->setImage(img, mImgMatrix);
 		// disable the save region button
@@ -1119,7 +1118,7 @@ void DkDocAnalysisViewPort::pickResetRegionPoint(bool pick) {
 **/
 void DkDocAnalysisViewPort::openMagicCutDialog() {
 
-	DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+	nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 	if (viewport->getImage().isNull()) return;
 
 	// make sure that at least one region is outlined
@@ -1210,7 +1209,7 @@ void DkDocAnalysisViewPort::magicCutSaved(bool saved) {
 **/
 void DkDocAnalysisViewPort::openLineDetectionDialog() {
 
-	DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+	nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 	if (viewport->getImage().isNull()) return;
 
 	if (!lineDetectionDialog) {
@@ -1286,9 +1285,9 @@ DkDocAnalysisToolBar::DkDocAnalysisToolBar(const QString & title, QWidget * pare
 
 	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
-	if (DkSettings::display.toolbarGradient) {
+	if (settingsDisplay.toolbarGradient) {
 
-		QColor hCol = DkSettings::display.highlightColor;
+		QColor hCol = settingsDisplay.highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -1296,7 +1295,7 @@ DkDocAnalysisToolBar::DkDocAnalysisToolBar(const QString & title, QWidget * pare
 			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	else
@@ -1337,12 +1336,12 @@ void DkDocAnalysisToolBar::createIcons() {
 	icons[undoselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/selection_undo.png");
 
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!settingsDisplay.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

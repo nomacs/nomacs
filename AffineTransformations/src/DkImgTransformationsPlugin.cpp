@@ -31,12 +31,12 @@
 
 #define PI 3.14159265
 
-namespace nmc {
+namespace nmp {
 
 /*-----------------------------------DkImgTransformationsPlugin ---------------------------------------------*/
 
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
+nmc::DkSettings::Global& settingsGlobal = nmc::DkSettings::getGlobalSettings();
 
 /**
 *	Constructor
@@ -137,7 +137,7 @@ QString DkImgTransformationsPlugin::pluginStatusTip(const QString &runID) const 
 * @param run ID
 * @param current imgC in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
+QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
 	//for a viewport plugin runID and imgC are null
 	if (viewport && imgC) {
@@ -160,7 +160,7 @@ QSharedPointer<DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QSt
 /**
 * returns ImgTransformationsViewPort
 **/
-DkPluginViewPort* DkImgTransformationsPlugin::getViewPort() {
+nmc::DkPluginViewPort* DkImgTransformationsPlugin::getViewPort() {
 
 	if (!viewport) {
 		viewport = new DkImgTransformationsViewPort();
@@ -187,7 +187,7 @@ void DkImgTransformationsPlugin::deleteViewPort() {
 
 /*-----------------------------------DkImgTransformationsViewPort ---------------------------------------------*/
 
-DkImgTransformationsViewPort::DkImgTransformationsViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
+DkImgTransformationsViewPort::DkImgTransformationsViewPort(QWidget* parent, Qt::WindowFlags flags) : nmc::DkPluginViewPort(parent, flags) {
 
 	init();
 }
@@ -251,7 +251,7 @@ void DkImgTransformationsViewPort::init() {
 	connect(imgTransformationsToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(imgTransformationsToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 
-	DkPluginViewPort::init();
+	nmc::DkPluginViewPort::init();
 }
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos) {
@@ -267,7 +267,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton &&
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == settingsGlobal.altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -302,8 +302,8 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
 			shearValuesDir = QPointF(1,0);
 
-			DkVector c(rotationCenter);
-			DkVector xn(map(event->pos()));
+			nmc::DkVector c(rotationCenter);
+			nmc::DkVector xn(map(event->pos()));
 			xn = c-xn;
 
 			if ((xn.angle() > imgRatioAngle && xn.angle() < PI-imgRatioAngle) || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI-imgRatioAngle))) {
@@ -322,7 +322,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 	
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod ||
+	if (event->modifiers() == settingsGlobal.altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -379,9 +379,9 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		if (event->buttons() == Qt::LeftButton) {
 			
-			DkVector c(rotationCenter);
-			DkVector xt(referencePoint);
-			DkVector xn(map(event->pos()));
+			nmc::DkVector c(rotationCenter);
+			nmc::DkVector xt(referencePoint);
+			nmc::DkVector xn(map(event->pos()));
 
 			// compute the direction vector;
 			xt = c-xt;
@@ -400,8 +400,8 @@ void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		if (event->buttons() != Qt::LeftButton) {
 
-			DkVector c(rotationCenter);
-			DkVector xn(map(event->pos()));
+			nmc::DkVector c(rotationCenter);
+			nmc::DkVector xn(map(event->pos()));
 			xn = c-xn;
 
 			if ((xn.angle() > imgRatioAngle && xn.angle() < PI-imgRatioAngle) || (xn.angle() < -imgRatioAngle && xn.angle() > -(PI-imgRatioAngle))) setCursor(Qt::SizeVerCursor);
@@ -425,7 +425,7 @@ void DkImgTransformationsViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	intrIdx = 100;
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod || panning) {
+	if (event->modifiers() == settingsGlobal.altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -439,7 +439,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	QRect imgRect = QRect();
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 
 			imgRect = viewport->getImage().rect();
@@ -453,7 +453,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
 
-	painter.fillRect(this->rect(), DkSettings::display.bgColor);
+	painter.fillRect(this->rect(), settingsDisplay.bgColor);
 
 
 	if (mWorldMatrix)
@@ -511,7 +511,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	else if (selectedMode == mode_rotate) {
 
 		if (angleLinesEnabled) {
-			QPen linePen(DkSettings::display.highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QPen linePen(settingsDisplay.highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
 			QColor hCAlpha(50,50,50);
 			hCAlpha.setAlpha(200);
 
@@ -519,7 +519,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 			QVector<QVector4D> lines = skewEstimator.getLines();
 			QVector<int> lineTypes = skewEstimator.getLineTypes();
 			for (int i = 0; i < lines.size(); i++) {
-				(lineTypes.at(i)) ? linePen.setColor(DkSettings::display.highlightColor) : linePen.setColor(hCAlpha);
+				(lineTypes.at(i)) ? linePen.setColor(settingsDisplay.highlightColor) : linePen.setColor(hCAlpha);
 				painter.setPen(linePen);
 				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
 			}
@@ -566,20 +566,20 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	painter->setPen(cPen);
 
 	// vertical
-	DkVector lp = p[1]-p[0];	// parallel to drawing
-	DkVector l9 = p[3]-p[0];	// perpendicular to drawing
+	nmc::DkVector lp = p[1]-p[0];	// parallel to drawing
+	nmc::DkVector l9 = p[3]-p[0];	// perpendicular to drawing
 
 	int nLines = (paintMode == guide_rule_of_thirds) ? 3 : l9.norm()/20;
-	DkVector offset = l9;
+	nmc::DkVector offset = l9;
 	offset.normalize();
 	offset *= l9.norm()/nLines;
 
-	DkVector offsetVec = offset;
+	nmc::DkVector offsetVec = offset;
 
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[1]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
+		QLineF l = QLineF(nmc::DkVector(p[1]+offsetVec).toQPointF(), nmc::DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}
@@ -598,7 +598,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	for (int idx = 0; idx < (nLines-1); idx++) {
 
 		// step through & paint
-		QLineF l = QLineF(DkVector(p[3]+offsetVec).toQPointF(), DkVector(p[0]+offsetVec).toQPointF());
+		QLineF l = QLineF(nmc::DkVector(p[3]+offsetVec).toQPointF(), nmc::DkVector(p[0]+offsetVec).toQPointF());
 		painter->drawLine(l);
 		offsetVec += offset;
 	}
@@ -610,7 +610,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 QImage DkImgTransformationsViewPort::getTransformedImage() {
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 
 			QImage inImage = viewport->getImage();
@@ -752,7 +752,7 @@ void DkImgTransformationsViewPort::setAngleLinesEnabled(bool enabled) {
 void DkImgTransformationsViewPort::calculateAutoRotation() {
 	
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 
 			QImage img = viewport->getImage();
@@ -807,7 +807,7 @@ void DkImgTransformationsViewPort::setGuideStyle(int guideMode) {
 void DkImgTransformationsViewPort::setVisible(bool visible) {
 
 	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if (viewport) {
 			intrRect->setInitialValues(viewport->getImage().rect());
 			rotationCenter = QPoint(viewport->getImage().width()/2,viewport->getImage().height()/2);
@@ -832,9 +832,9 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, 
 
 	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
-	if (DkSettings::display.toolbarGradient) {
+	if (settingsDisplay.toolbarGradient) {
 
-		QColor hCol = DkSettings::display.highlightColor;
+		QColor hCol = settingsDisplay.highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -842,7 +842,7 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, 
 			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	else
@@ -866,12 +866,12 @@ void DkImgTransformationsToolBar::createIcons() {
 	icons[rotate_icon] = QIcon(":/nomacsPluginImgTrans/img/rotate.png");
 	icons[shear_icon] = QIcon(":/nomacsPluginImgTrans/img/shear.png");
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!settingsDisplay.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

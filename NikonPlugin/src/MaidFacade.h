@@ -22,7 +22,7 @@ NKERROR CALLPASCAL CALLBACK dataProc(NKREF ref, LPVOID info, LPVOID data);
 void CALLPASCAL CALLBACK completionProc(LPNkMAIDObject pObject, ULONG ulCommand, ULONG ulParam, ULONG ulDataType, NKPARAM data, NKREF refComplete, NKERROR nResult);
 void CALLPASCAL CALLBACK progressProc(ULONG command, ULONG param, NKREF ref, ULONG done, ULONG total);
 
-namespace nmc {
+namespace nmp {
 
 class DkNoMacs;
 

@@ -58,7 +58,7 @@
 #include "DkMath.h"
 #include "DkSkewEstimator.h"
 
-namespace nmc {
+namespace nmp {
 
 class DkImgTransformationsViewPort;
 class DkImgTransformationsToolBar;
@@ -80,7 +80,7 @@ enum {
 	guide_end,
 };
 
-class DkImgTransformationsPlugin : public QObject, DkViewPortInterface {
+class DkImgTransformationsPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/2.0" FILE "DkAffineTransformationsPlugin.json")
@@ -99,18 +99,18 @@ public:
     QStringList runID() const;
     QString pluginMenuName(const QString &runID = QString()) const;
     QString pluginStatusTip(const QString &runID = QString()) const;
-    QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> image = QSharedPointer<DkImageContainer>()) const override;
-	DkPluginViewPort* getViewPort();
+    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+	nmc::DkPluginViewPort* getViewPort();
 	void deleteViewPort();
 
 protected:
-	DkPluginViewPort* viewport;
+	nmc::DkPluginViewPort* viewport;
 
 protected slots:
 	void viewportDestroyed();
 };
 
-class DkImgTransformationsViewPort : public DkPluginViewPort {
+class DkImgTransformationsViewPort : public nmc::DkPluginViewPort {
 	Q_OBJECT
 
 public:

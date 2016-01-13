@@ -33,7 +33,7 @@
 #include <QDebug>
 #pragma warning(pop)		// no warnings from includes - end
 
-namespace nmc {
+namespace nmp {
 
 /**
 *	Constructor
@@ -182,12 +182,12 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions() const {
 * @param plugin ID
 * @param image to be processed
 **/
-QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC) const {
+QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
 	if (!mRunIDs.contains(runID) || !imgC)
 		return imgC;
 
-	cv::Mat img = DkImage::qImage2Mat(imgC->image());
+	cv::Mat img = nmc::DkImage::qImage2Mat(imgC->image());
 
 	// run the page segmentation
 	DkPageSegmentation segM(img);
@@ -202,11 +202,11 @@ QSharedPointer<DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString
 	if(runID == mRunIDs[id_crop_to_metadata]) {
 		
 		if (segM.getRects().empty())
-			imgC = QSharedPointer<DkImageContainer>();	// notify parent
+			imgC = QSharedPointer<nmc::DkImageContainer>();	// notify parent
 		else {
-			DkRotatingRect rect = segM.getMaxRect().toRotatingRect();
+			nmc::DkRotatingRect rect = segM.getMaxRect().toRotatingRect();
 			
-			QSharedPointer<DkMetaDataT> m = imgC->getMetaData();
+			QSharedPointer<nmc::DkMetaDataT> m = imgC->getMetaData();
 			m->saveRectToXMP(rect, imgC->image().size());
 		}
 	}

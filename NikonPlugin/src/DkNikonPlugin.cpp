@@ -29,11 +29,10 @@
 
 #include "MaidError.h"
 
-namespace nmc {
+namespace nmp {
 
 /*-----------------------------------DkNikonPlugin ---------------------------------------------*/
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+
 
 /**
 *	Constructor
@@ -143,7 +142,7 @@ QString DkNikonPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QSharedPointer<DkImageContainer> DkNikonPlugin::runPlugin(const QString &runID, const QSharedPointer<DkImageContainer> image) const {
+QSharedPointer<nmc::DkImageContainer> DkNikonPlugin::runPlugin(const QString &runID, const QSharedPointer<nmc::DkImageContainer> image) const {
 	
 	//for a viewport plugin runID and image are null
 	if (viewport) {
@@ -162,7 +161,7 @@ QSharedPointer<DkImageContainer> DkNikonPlugin::runPlugin(const QString &runID, 
 /**
 * returns paintViewPort
 **/
-DkPluginViewPort* DkNikonPlugin::getViewPort() {
+nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 
 	if (!viewport) {
 		// >DIR: dummy viewport [4.7.2014 markus]

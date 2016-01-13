@@ -15,9 +15,11 @@
 #include "MaidError.h"
 #include "DkSettings.h"
 
-using nmc::MaidFacade;
+using nmp::MaidFacade;
 using Maid::MaidUtil;
 using Maid::MaidObject;
+
+nmc::DkSettings::Global& globalSettings = nmc::DkSettings::getGlobalSettings();
 
 MaidFacade::MaidFacade(QWidget* const dialogParent) 
 	: lensAttached(false), prevFileNumber(0), captureCount(0), allItemsAcquired(false), 
@@ -507,7 +509,7 @@ void MaidFacade::acquireItemObjectsFinished() {
 
 	[&] () {
 
-		QFileInfo fileInfo(QDir(DkSettings::global.lastDir), makePictureFilename());
+		QFileInfo fileInfo(QDir(globalSettings.lastDir), makePictureFilename());
 		QString filename = getCapturedFileName(fileInfo);
 
 		QFileInfo firstFilenameInfo = QFileInfo(firstFilename);

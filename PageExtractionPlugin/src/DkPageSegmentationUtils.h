@@ -31,7 +31,7 @@
 #include <QString>
 #pragma warning(pop)		// no warnings from includes - end
 
-namespace nmc {
+namespace nmp {
 
 /**
 * Box class DK_CORE_API, defines a non-skewed rectangle e.g. Bounding Box
@@ -51,7 +51,7 @@ public:
 	* @param uc the upper left corner of the box.
 	* @param size the size of the box.
 	**/
-	DkBox(DkVector uc, DkVector size) {
+	DkBox(nmc::DkVector uc, nmc::DkVector size) {
 
 		this->uc = uc;
 		this->lc = uc+size;
@@ -68,9 +68,9 @@ public:
 	**/
 	DkBox(float x, float y, float width, float height) {
 
-		DkVector size = DkVector(width, height);
+		nmc::DkVector size = nmc::DkVector(width, height);
 
-		uc = DkVector(x,y);
+		uc = nmc::DkVector(x,y);
 		lc = uc+size;
 
 		//if (size.width < 0 || size.height < 0)
@@ -83,7 +83,7 @@ public:
 	**/
 	DkBox(cv::Rect r) {
 
-		DkVector size((float)r.width, (float)r.height);
+		nmc::DkVector size((float)r.width, (float)r.height);
 
 		uc.x = (float)r.x;
 		uc.y = (float)r.y;
@@ -156,7 +156,7 @@ public:
 		return s << b.toString().toStdString();
 	};
 
-	void moveBy(const DkVector& dxy) {
+	void moveBy(const nmc::DkVector& dxy) {
 
 		uc += dxy;
 		lc += dxy;
@@ -221,7 +221,7 @@ public:
 	* Clips the box according the vector s (the box is only clipped but not expanded).
 	* @param s the clip vector.
 	**/
-	void clip(DkVector s) {
+	void clip(nmc::DkVector s) {
 
 		uc.round();
 		lc.round();
@@ -233,22 +233,22 @@ public:
 		//	mout << "I did not clip..." << dkendl;
 	};
 
-	bool within(const DkVector& p) const {
+	bool within(const nmc::DkVector& p) const {
 
 		return (p.x >= uc.x && p.x < lc.x && 
 			p.y >= uc.y && p.y < lc.y);
 	};
 
-	DkVector center() const {
+	nmc::DkVector center() const {
 		return uc + size() * 0.5f;
 	};
 
 	void scaleAboutCenter(float s) {
 
-		DkVector c = center();
+		nmc::DkVector c = center();
 
-		uc = DkVector(uc-c)*s+c;
-		lc = DkVector(lc-c)*s+c;
+		uc = nmc::DkVector(uc-c)*s+c;
+		lc = nmc::DkVector(lc-c)*s+c;
 	};
 
 	/**
@@ -301,26 +301,26 @@ public:
 		return cv::Size(getWidth(), getHeight());
 	};
 
-	DkVector size() const {
+	nmc::DkVector size() const {
 
 		return lc-uc;
 	};
 
-	void setSize(DkVector size) {
+	void setSize(nmc::DkVector size) {
 
 		lc = uc+size;
 	};
 
 	float area() const {
 
-		DkVector s = size();
+		nmc::DkVector s = size();
 		return s.width*s.height;
 	};
 
 	float intersectArea(const DkBox& box) const {
 
-		DkVector tmp1 = lc.maxVec(box.lc);
-		DkVector tmp2 = uc.maxVec(box.uc);
+		nmc::DkVector tmp1 = lc.maxVec(box.lc);
+		nmc::DkVector tmp2 = uc.maxVec(box.uc);
 
 		// no intersection?
 		if (lc.x < uc.x || lc.y < lc.y)
@@ -339,8 +339,8 @@ public:
 		return QString();
 	};
 
-	DkVector uc;		/**< upper left corner of the box **/
-	DkVector lc;		/**< lower right corner of the box **/
+	nmc::DkVector uc;		/**< upper left corner of the box **/
+	nmc::DkVector lc;		/**< lower right corner of the box **/
 };
 
 /**
@@ -396,18 +396,18 @@ class DkIntersectPoly {
 public:
 
 	DkIntersectPoly();
-	DkIntersectPoly(std::vector<DkVector> vecA, std::vector<DkVector> vecB);
+	DkIntersectPoly(std::vector<nmc::DkVector> vecA, std::vector<nmc::DkVector> vecB);
 
 	double compute();
 
 private:
 
-	std::vector<DkVector> vecA;
-	std::vector<DkVector> vecB;
+	std::vector<nmc::DkVector> vecA;
+	std::vector<nmc::DkVector> vecB;
 	int64 interArea;
-	DkVector maxRange;
-	DkVector minRange;
-	DkVector scale;
+	nmc::DkVector maxRange;
+	nmc::DkVector minRange;
+	nmc::DkVector scale;
 	float gamut;
 
 	void inness(std::vector<DkVertex> ipA, std::vector<DkVertex> ipB);
@@ -415,42 +415,42 @@ private:
 	void cntrib(int fx, int fy, int tx, int ty, int w);
 	int64 area(DkIPoint a, DkIPoint p, DkIPoint q);
 	bool ovl(DkIPoint p, DkIPoint q);
-	void getVertices(const std::vector<DkVector>& vec, std::vector<DkVertex> *ip, int noise);
-	void computeBoundingBox(std::vector<DkVector> vec, DkVector *minRange, DkVector *maxRange);
+	void getVertices(const std::vector<nmc::DkVector>& vec, std::vector<DkVertex> *ip, int noise);
+	void computeBoundingBox(std::vector<nmc::DkVector> vec, nmc::DkVector *minRange, nmc::DkVector *maxRange);
 };
 
 // data class
 class DkPolyRect {
 
 public:
-	//DkPolyRect(DkVector p1, DkVector p2, DkVector p3, DkVector p4);
+	//DkPolyRect(nmc::DkVector p1, nmc::DkVector p2, nmc::DkVector p3, nmc::DkVector p4);
 	DkPolyRect(const std::vector<cv::Point>& pts = std::vector<cv::Point>());
-	DkPolyRect(const std::vector<DkVector>& pts);
+	DkPolyRect(const std::vector<nmc::DkVector>& pts);
 
 	bool empty() const;
 	double getMaxCosine() const { return maxCosine; };
 	void draw(cv::Mat& img, const cv::Scalar& col = cv::Scalar(0, 100, 255)) const;
 	std::vector<cv::Point> toCvPoints() const;
 	QPolygonF toPolygon() const;
-	std::vector<DkVector> getCorners() const;
+	std::vector<nmc::DkVector> getCorners() const;
 	DkBox getBBox() const;
 	double intersectArea(const DkPolyRect& pr) const;
 	double getArea();
 	double getAreaConst() const;
 	void scale(float s);
 	void scaleCenter(float s);
-	bool inside(const DkVector& vec) const;
+	bool inside(const nmc::DkVector& vec) const;
 	float maxSide() const;
-	DkVector center() const;
+	nmc::DkVector center() const;
 	static bool compArea(const DkPolyRect& pl, const DkPolyRect& pr);
-	DkRotatingRect toRotatingRect() const;
+	nmc::DkRotatingRect toRotatingRect() const;
 
 protected:
-	std::vector<DkVector> pts;
+	std::vector<nmc::DkVector> pts;
 	double maxCosine;
 	double area;
 
-	void toDkVectors(const std::vector<cv::Point>& pts, std::vector<DkVector>& dkPts) const;
+	void toDkVectors(const std::vector<cv::Point>& pts, std::vector<nmc::DkVector>& dkPts) const;
 	void computeMaxCosine();
 };
 

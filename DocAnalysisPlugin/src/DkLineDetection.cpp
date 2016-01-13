@@ -30,7 +30,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-namespace nmc {
+namespace nmp {
 
 // class: DkLineDetection start
 
@@ -255,7 +255,7 @@ void DkLineDetection::createTextLineImages() {
 
 	cv::merge(ImgChannels, imgUC4);
 
-	bottomLines = DkImage::mat2QImage(imgUC4);
+	bottomLines = nmc::DkImage::mat2QImage(imgUC4);
 
 	// top text lines
 	ImgChannels.clear();
@@ -266,7 +266,7 @@ void DkLineDetection::createTextLineImages() {
 
 	cv::merge(ImgChannels, imgUC4);
 
-	topLines = DkImage::mat2QImage(imgUC4);
+	topLines = nmc::DkImage::mat2QImage(imgUC4);
 }
 
 /**
@@ -1090,7 +1090,7 @@ cv::Mat DkLineDetection::convolveIntegralImage(const cv::Mat src, const int kern
 * creates a new instance of the dialog responsible for setting up and executing the line detection
 * calculations
 **/
-DkLineDetectionDialog::DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<DkMetaDataT> metaData,
+DkLineDetectionDialog::DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<nmc::DkMetaDataT> metadata,
 											 QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	this->lineDetector = lineDetector;
@@ -1318,7 +1318,7 @@ void DkLineDetectionDialog::setDefaultConfiguration() {
 	spinnerRescale->setValue(defaultRescale);*/
 }
 
-void DkLineDetectionDialog::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
+void DkLineDetectionDialog::setMetaData(QSharedPointer<nmc::DkMetaDataT> metadata) {
 
 	this->metaData = metaData;
 }

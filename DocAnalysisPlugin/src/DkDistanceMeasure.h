@@ -32,7 +32,7 @@
 
 #include "DkWidgets.h"
 
-namespace nmc {
+namespace nmp {
 
 class DkMetaDataT;
 
@@ -56,14 +56,14 @@ public:
 	bool hasStartPoint();
 	void setSnapping(bool snap);
 	bool isSnapping();
-	void setMetaData(QSharedPointer<DkMetaDataT> metaData);
+	void setMetaData(QSharedPointer<nmc::DkMetaDataT> metadata);
 	
 	QPoint getStartPoint() { return points[0]; };
 	QPoint getEndPoint() { return points[1]; };
 	QPoint getCurPoint() { return curPoint; };
 
 private:
-	QSharedPointer<DkMetaDataT> metaData; /**< metadata containing the image resolution **/
+	QSharedPointer<nmc::DkMetaDataT> metaData; /**< metadata containing the image resolution **/
 	QPoint points[2]; /**< start and end point **/
 	QPoint curPoint; /**< The current point when moving the mouse **/
 	float dist_cm; /**< The current distance in cm **/ 

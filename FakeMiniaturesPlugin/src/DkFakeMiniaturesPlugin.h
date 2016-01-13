@@ -38,9 +38,9 @@
 #include "DkPluginInterface.h"
 #include "DkFakeMiniaturesDialog.h"
 
-namespace nmc {
+namespace nmp {
 
-class DkFakeMiniaturesPlugin : public QObject, DkPluginInterface {
+class DkFakeMiniaturesPlugin : public QObject, nmc::DkPluginInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkPluginInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/2.0" FILE "DkFakeMiniaturesPlugin.json")
@@ -55,7 +55,7 @@ public:
     QStringList runID() const;
     QString pluginMenuName(const QString &runID = QString()) const;
     QString pluginStatusTip(const QString &runID = QString()) const;
-	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> image = QSharedPointer<DkImageContainer>()) const override;
+	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 };
 
 };

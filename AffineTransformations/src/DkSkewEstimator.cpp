@@ -30,7 +30,7 @@
 
 #include <QDebug>
 
-namespace nmc {
+namespace nmp {
 
 DkSkewEstimator::DkSkewEstimator(QWidget* mainWin) {
 
@@ -57,7 +57,7 @@ DkSkewEstimator::~DkSkewEstimator() {
 
 void DkSkewEstimator::setImage(QImage inImage) {
 
-	matImg = DkImage::qImage2Mat(inImage);
+	matImg = nmc::DkImage::qImage2Mat(inImage);
 	
 	sepDims = QSize(qRound(inImage.width()/1430.0*49.0),qRound(inImage.height()/700.0*12.0));
 	delta = qRound(inImage.width()/1430.0*20.0);

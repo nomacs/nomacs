@@ -52,7 +52,7 @@
 using namespace cv;
 #endif
 
-namespace nmc {
+namespace nmp {
 
 class DkPreviewLabel;
 class DkKernelSize;
