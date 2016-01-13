@@ -114,7 +114,7 @@ struct QPairSecondComparer {
 	}
 };
 
-class DkPluginActionManager : public QObject {
+class DllExport DkPluginActionManager : public QObject {
 	Q_OBJECT
 
 public:

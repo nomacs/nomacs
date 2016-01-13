@@ -55,36 +55,9 @@ class QStandardItemModel;
 namespace nmc {
 
 class DkWorkingDirWidget;
-class DkPreferenceTabWidget;
-class DkTabEntryWidget;
-
-class DllExport DkPreferenceWidget : public DkWidget {
-	Q_OBJECT
-
-public:
-	DkPreferenceWidget(QWidget* parent);
-
-	void addTabWidget(DkPreferenceTabWidget* tabWidget);
-
-public slots:
-	void changeTab();
-	void setCurrentIndex(int index);
-	void previousTab();
-	void nextTab();
-
-protected:
-	void createLayout();
-
-	int mCurrentIndex = 0;
-	QVector<DkTabEntryWidget*> mTabEntries;
-	QVector<DkPreferenceTabWidget*> mWidgets;
-
-	QStackedLayout* mCentralLayout = 0;
-	QVBoxLayout* mTabLayout = 0;
-};
 
 // extend this class if you want to add general preference functions
-class DkPreferenceTabWidget : public DkNamedWidget {
+class DllExport DkPreferenceTabWidget : public DkNamedWidget {
 	Q_OBJECT
 
 public:
@@ -108,7 +81,7 @@ protected:
 	QIcon mIcon;
 };
 
-class DkTabEntryWidget : public QPushButton {
+class DllExport DkTabEntryWidget : public QPushButton {
 	Q_OBJECT
 
 public:
@@ -117,6 +90,31 @@ public:
 protected:
 	void paintEvent(QPaintEvent* event);
 
+};
+
+class DllExport DkPreferenceWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkPreferenceWidget(QWidget* parent);
+
+	void addTabWidget(DkPreferenceTabWidget* tabWidget);
+
+	public slots:
+	void changeTab();
+	void setCurrentIndex(int index);
+	void previousTab();
+	void nextTab();
+
+protected:
+	void createLayout();
+
+	int mCurrentIndex = 0;
+	QVector<DkTabEntryWidget*> mTabEntries;
+	QVector<DkPreferenceTabWidget*> mWidgets;
+
+	QStackedLayout* mCentralLayout = 0;
+	QVBoxLayout* mTabLayout = 0;
 };
 
 class DkGroupWidget : public QWidget {

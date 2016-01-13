@@ -294,7 +294,7 @@ public:
 	void setToDefaultSettings();
 
 	bool isPortable();
-	QFileInfo getSettingsFile();
+	QString settingsPath() const;
 
 	App& app();
 	Global& global();

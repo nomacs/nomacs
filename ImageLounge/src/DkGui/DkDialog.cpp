@@ -32,9 +32,11 @@
 #include "DkBaseViewPort.h"
 #include "DkTimer.h"
 #include "DkWidgets.h"
+#include "DkBasicWidgets.h"
 #include "DkThumbs.h"
 #include "DkUtils.h"
 #include "DkActionManager.h"
+#include "DkPluginManager.h"
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
@@ -85,10 +87,8 @@
 #include <qmath.h>
 #include <QDesktopServices>
 #include <QSplashScreen>
-
-#if QT_VERSION >= 0x050000
+#include <QMenu>
 #include <QKeySequenceEdit>
-#endif
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -171,8 +171,8 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 
 	QString qtVersion = "Qt " + QString::fromUtf8(qVersion());
 
-	if (!DkSettings::isPortable())
-		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
+	if (!Settings::param().isPortable())
+		qDebug() << "nomacs is not portable: " << Settings::param().settingsPath();
 
 	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform + "<br>" +
 #ifdef WITH_LIBRAW
@@ -181,7 +181,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 		"RAW support: No<br>"
 #endif  		
 		+ qtVersion + "<br>"
-		+ (DkSettings::isPortable() ? tr("Portable") : "")
+		+ (Settings::param().isPortable() ? tr("Portable") : "")
 		);
 
 	versionLabel->move(360, 280);
@@ -4207,10 +4207,10 @@ void DkWelcomeDialog::createLayout() {
 	DkUtils::addLanguages(mLanguageCombo, mLanguages);
 
 	mRegisterFilesCheckBox = new QCheckBox(tr("&Register File Associations"), this);
-	mRegisterFilesCheckBox->setChecked(!DkSettings::isPortable());
+	mRegisterFilesCheckBox->setChecked(!Settings::param().isPortable());
 
 	mSetAsDefaultCheckBox = new QCheckBox(tr("Set As &Default Viewer"), this);
-	mSetAsDefaultCheckBox->setChecked(!DkSettings::isPortable());
+	mSetAsDefaultCheckBox->setChecked(!Settings::param().isPortable());
 
 	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);

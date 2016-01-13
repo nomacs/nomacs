@@ -1443,7 +1443,7 @@ void DkInstallUpdater::checkForUpdates(bool silent) {
 	mSilent = silent;
 
 	Settings::param().sync().lastUpdateCheck = QDate::currentDate();
-	DkSettings::save();
+	Settings::param().save();
 
 	QUrl url ("http://download.nomacs.org/repository/Updates.xml");
 
@@ -1598,8 +1598,7 @@ DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 void DkUpdater::checkForUpdates() {
 
 	Settings::param().sync().lastUpdateCheck = QDate::currentDate();
-
-	DkSettings::save();
+	Settings::param().save();
 
 #ifdef WIN32
 	QUrl url ("http://www.nomacs.org/version_win_stable");
@@ -1760,8 +1759,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		Settings::param().global().setupVersion = mSetupVersion;
 		Settings::param().global().setupPath = absoluteFilePath;
-
-		DkSettings::save();
+		Settings::param().save();
 
 		emit downloadFinished(absoluteFilePath);
 	}
@@ -1854,7 +1852,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 #ifdef  WIN32
 	QDir storageLocation;
-	if (DkSettings::isPortable()) {
+	if (Settings::param().isPortable()) {
 		storageLocation = QDir(QCoreApplication::applicationDirPath());
 		storageLocation.cd("translations");
 	}
@@ -1963,7 +1961,7 @@ bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const
 
 #ifdef  WIN32
 	QDir storageLocation;
-	if (DkSettings::isPortable()) {
+	if (Settings::param().isPortable()) {
 		storageLocation = QDir(QCoreApplication::applicationDirPath());
 		storageLocation.cd("translations");
 	}

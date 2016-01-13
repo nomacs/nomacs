@@ -45,7 +45,6 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 #include "DkQuickAccess.h"
-#include "DkError.h"
 #include "DkUtils.h"
 #include "DkControlWidget.h"
 #include "DkImageLoader.h"
@@ -2349,7 +2348,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 
 		DkTimer dt;
 
-		if (!DkSettings::isPortable()) {
+		if (!Settings::param().isPortable()) {
 			
 			if (!mInstallUpdater)
 				mInstallUpdater = new DkInstallUpdater(this);

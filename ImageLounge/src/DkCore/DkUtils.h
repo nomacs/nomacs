@@ -418,7 +418,7 @@ public:
 	static double getFreeMemory();
 };
 
-class DkFileNameConverter {
+class DllExport DkFileNameConverter {
 
 public:
 	DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx);

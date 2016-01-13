@@ -803,13 +803,13 @@ void DkSettings::setToDefaultSettings() {
 
 bool DkSettings::isPortable() {
 
-	QFileInfo settingsFile = getSettingsFile();
+	QFileInfo settingsFile(settingsPath());
 	return settingsFile.isFile() && settingsFile.exists();
 }
 
-QFileInfo DkSettings::getSettingsFile() {
+QString DkSettings::settingsPath() const {
 
-	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo");
+	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo").absoluteFilePath();
 }
 
 DkSettings::App & DkSettings::app() {
@@ -843,7 +843,7 @@ DkSettings::Resources & DkSettings::resources() {
 Settings::Settings() {
 	
 	m_params = QSharedPointer<DkSettings>(new DkSettings());
-	m_settings = m_params->isPortable() ? QSharedPointer<QSettings>(new QSettings(m_params->getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
+	m_settings = m_params->isPortable() ? QSharedPointer<QSettings>(new QSettings(m_params->settingsPath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
 
 	qDebug() << "portable nomacs: " << m_params->isPortable();
 }

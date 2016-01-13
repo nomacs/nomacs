@@ -95,6 +95,7 @@ class DkDockWidget;
 class DkQuickAccess;
 class DkImageLoader;
 class DkQuickAccessEdit;
+class DkDialogManager;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -320,7 +321,6 @@ protected:
 	DkImageManipulationDialog* mImgManipulationDialog = 0;
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
-
 	DkDialogManager* mDialogManager = 0;
 
 	DkInstallUpdater* mInstallUpdater = 0;

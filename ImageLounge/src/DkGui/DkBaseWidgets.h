@@ -100,7 +100,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 };
 
-class DkNamedWidget : public DkWidget {
+class DllExport DkNamedWidget : public DkWidget {
 	Q_OBJECT
 
 public:
