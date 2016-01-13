@@ -830,10 +830,7 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, 
 	createLayout(defaultMode);
 	QMetaObject::connectSlotsByName(this);
 
-	if (DkSettings::display.smallIcons)
-		setIconSize(QSize(16, 16));
-	else
-		setIconSize(QSize(32, 32));
+	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
 
 	if (DkSettings::display.toolbarGradient) {
 
