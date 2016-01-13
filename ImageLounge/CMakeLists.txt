@@ -20,7 +20,6 @@ add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -84,12 +83,30 @@ else()
 	include(${CMAKE_SOURCE_DIR}/cmake/Unix.cmake)
 endif()
 
+file(GLOB NOMACS_EXE_SOURCES "src/*.cpp")
+file(GLOB NOMACS_EXE_HEADERS "src/*.h")
+
+# gui
+file(GLOB GUI_SOURCES "src/DkGui/*.cpp")
+file(GLOB GUI_HEADERS "src/DkGui/*.h")
+
+# loader
+file(GLOB LOADER_SOURCES "src/DkLoader/*.cpp")
+file(GLOB LOADER_HEADERS "src/DkLoader/*.h")
+
+# core
+file(GLOB CORE_SOURCES "src/DkCore/*.cpp")
+file(GLOB CORE_HEADERS "src/DkCore/*.h")
+
 # gather information for building
 include_directories (
 	${EXIV2_INCLUDE_DIRS} 
 	${LIBRAW_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
+	${CMAKE_SOURCE_DIR}/src/DkCore
+	${CMAKE_SOURCE_DIR}/src/DkLoader
+	${CMAKE_SOURCE_DIR}/src/DkGui
 	${WEBP_INCLUDEDIR}
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
@@ -99,25 +116,19 @@ include_directories (
 	${CMAKE_SOURCE_DIR}/3rdparty/libqpsd
 )
 
-file(GLOB NOMACS_SOURCES "src/*.cpp")
-file(GLOB NOMACS_HEADERS "src/*.h")
-
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
 endif (APPLE)
 
-file(GLOB NOMACS_MOCS "src/*.h")
-
  IF(NOT ENABLE_UPNP)
-	 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
-	 LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
-	 LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
+	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
+	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
  ENDIF(NOT ENABLE_UPNP)
 
  IF(NOT ENABLE_PLUGINS)
-	 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkPluginManager.cpp)
-	 LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
-	 LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
+	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_SOURCE_DIR}/src/DkPluginManager.cpp)
+	 LIST(REMOVE_ITEM GUI_MOCS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
+	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
  ENDIF(NOT ENABLE_PLUGINS)
 
 

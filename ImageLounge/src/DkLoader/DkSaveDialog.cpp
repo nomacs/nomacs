@@ -27,7 +27,7 @@
 
 #include "DkSaveDialog.h"
 #include "DkUtils.h"
-#include "DkWidgets.h"
+#include "DkBasicWidgets.h"
 #include "DkBasicLoader.h"
 #include "DkBaseViewPort.h"
 #include "DkSettings.h"
@@ -43,6 +43,8 @@
 #include <QCheckBox>
 #include <QSettings>
 #include <QComboBox>
+#include <QDebug>
+#include <QLabel>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

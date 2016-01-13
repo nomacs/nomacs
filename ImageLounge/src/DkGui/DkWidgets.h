@@ -657,41 +657,6 @@ private:
 	void init(const QString& animationPath, const QSize& size);
 };
 
-class DkColorChooser : public QWidget {
-	Q_OBJECT
-
-public:
-	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	virtual ~DkColorChooser() {};
-
-	void setColor(const QColor& color);
-	void setColor(QColor* color);
-	QColor getColor();
-	bool isAccept() const;
-	void enableAlpha(bool enable = true);
-
-public slots:
-	void on_resetButton_clicked();
-	void on_colorButton_clicked();
-	void on_colorDialog_accepted();
-
-signals:
-	void resetClicked();
-	void accepted();
-
-protected:
-	QColorDialog* colorDialog = 0;
-	QPushButton* colorButton = 0;
-
-	QColor defaultColor;
-	QColor* mSettingColor = 0;
-	QString mText;
-	bool mAccepted = false;
-
-	void init();
-
-};
-
 // Image histogram display
 class DkHistogram : public DkWidget {
 
@@ -718,36 +683,6 @@ private:
 	bool mIsPainted = false;
 	float mScaleFactor = 1;
 				
-};
-
-class DkSlider : public QWidget {
-	Q_OBJECT
-
-public:
-	DkSlider(QString title = "", QWidget* parent = 0);
-
-	QSlider* getSlider() const;
-	void setMinimum(int minValue);
-	void setMaximum(int maxValue);
-	void setTickInterval(int ticValue);
-	int value() const;
-	void setFocus(Qt::FocusReason reason);
-
-public slots:
-	void setValue(int value);
-
-signals:
-	void sliderMoved(int value);
-	void valueChanged(int value);
-
-protected:
-	void createLayout();
-
-	QLabel* titleLabel;
-	QLabel* minValLabel;
-	QLabel* maxValLabel;
-	QSlider* slider;
-	QSpinBox* sliderBox;
 };
 
 class DkFileInfo {

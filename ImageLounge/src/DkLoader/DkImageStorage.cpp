@@ -29,7 +29,6 @@
 #include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-#include "DkError.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
@@ -860,11 +859,10 @@ cv::Mat DkImage::get1DGauss(double sigma) {
 		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
 	}
 
-
-	if (sum(gKernel).val[0] == 0)
-		throw DkIllegalArgumentException("The kernel sum is zero\n", __LINE__, __FILE__);
-	else
+	if (sum(gKernel).val[0] != 0)
 		gKernel *= 1.0f/sum(gKernel).val[0];
+	else
+		qWarning() << "The kernel sum is zero\n";
 
 	return gKernel;
 }
