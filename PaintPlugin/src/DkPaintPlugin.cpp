@@ -467,7 +467,7 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
+	setIconSize(QSize(displaySettings.iconSize, displaySettings.iconSize));
 
 	if (displaySettings.toolbarGradient) {
 
