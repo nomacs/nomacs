@@ -1078,7 +1078,7 @@ QStringList DkFileFilterHandling::getExtensions(const QString& filter, QString& 
 	return extList;
 }
 
-void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString& progKey, bool add) {
+void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString&, bool add) {
 
 #ifdef WIN32
 

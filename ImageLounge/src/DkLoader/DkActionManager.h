@@ -98,17 +98,6 @@ protected:
 	bool mFirstTime = true;
 };
 
-class DkDialogManager : public QObject {
-	Q_OBJECT
-
-public:
-	DkDialogManager(QObject* parent = 0);
-
-public slots:
-	void openShortcutsDialog() const;
-	void openAppManager() const;
-};
-
 class DllExport DkActionManager {
 
 public:
@@ -476,7 +465,7 @@ public:
 	void createActions(QWidget* parent);
 	void createMenus(QWidget* parent);
 	
-	QMenu* createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient);
+	//QMenu* createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient);
 
 	QAction* action(FileMenuActions action) const;
 	QAction* action(SortMenuActions action) const;
@@ -526,7 +515,6 @@ protected:
 	void init();
 	void createIcons();
 	void colorizeIcons(const QColor& col);
-	void connectDefaultActions();
 
 	QMenu* createFileMenu(QWidget* parent);
 	QMenu* createSortMenu(QWidget* parent);
@@ -579,7 +567,6 @@ protected:
 	QVector<QIcon> mViewIcons;
 	QVector<QIcon> mToolsIcons;
 
-	DkDialogManager* mDialogManager = 0;
 	DkAppManager* mAppManager = 0;
 	DkPluginActionManager* mPluginManager = 0;
 

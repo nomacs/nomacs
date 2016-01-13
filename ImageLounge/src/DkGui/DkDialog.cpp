@@ -4577,4 +4577,62 @@ QStringList DkArchiveExtractionDialog::extractFilesWithProgress(const QString& f
 
 #endif
 
+
+// DkDialogManager --------------------------------------------------------------------
+DkDialogManager::DkDialogManager(QObject* parent) : QObject(parent) {
+
+	QObject::connect(DkActionManager::instance().action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), this, SLOT(openShortcutsDialog()));
+	QObject::connect(DkActionManager::instance().action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), this, SLOT(openAppManager()));
+
+}
+
+void DkDialogManager::openShortcutsDialog() const {
+
+	DkActionManager& am = DkActionManager::instance();
+
+	QList<QAction* > openWithActionList = am.openWithMenu()->actions();
+
+	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(QApplication::activeWindow());
+	shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
+	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
+	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
+	shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
+	shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
+	shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
+	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
+	shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
+	shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
+#ifdef WITH_PLUGINS	// TODO
+
+	DkPluginActionManager* pm = am.pluginActionManager();
+	pm->updateMenu();
+
+	QVector<QAction*> allPluginActions = pm->pluginActions();
+
+	for (const QMenu* m : pm->pluginSubMenus()) {
+		allPluginActions << m->actions().toVector();
+	}
+
+	shortcutsDialog->addActions(allPluginActions, pm->menu()->title());
+#endif // WITH_PLUGINS
+	shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
+	shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
+
+	shortcutsDialog->exec();
+	shortcutsDialog->deleteLater();
+}
+
+void DkDialogManager::openAppManager() const {
+
+	DkActionManager& am = DkActionManager::instance();
+
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWindow());
+	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), am.appManager(), SIGNAL(openFileSignal(QAction*)));	// forward
+	appManagerDialog->exec();
+
+	appManagerDialog->deleteLater();
+
+	DkActionManager::instance().openWithMenu();	// update
+}
+
 } // close namespace

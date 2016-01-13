@@ -11,6 +11,8 @@
 
 #include "DkUpnp.h"
 
+#ifdef WITH_UPNP
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QNetworkProxyFactory>
 
@@ -551,3 +553,5 @@ void DkUpnpRendererConnection::finished() {
 }
 
 }
+
+#endif //#ifdef WITH_UPNP

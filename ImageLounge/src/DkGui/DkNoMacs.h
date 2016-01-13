@@ -321,6 +321,8 @@ protected:
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
 
+	DkDialogManager* mDialogManager = 0;
+
 	DkInstallUpdater* mInstallUpdater = 0;
 	DkUpdater* mUpdater = 0;
 	DkTranslationUpdater* mTranslationUpdater = 0;	

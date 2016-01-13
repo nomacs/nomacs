@@ -157,6 +157,8 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	mOldGeometry = geometry();
 	mOverlaid = false;
 
+	mDialogManager = new DkDialogManager(this);
+
 	resize(850, 504);
 	setMinimumSize(20, 20);
 

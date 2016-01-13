@@ -27,11 +27,11 @@
 
 #include "DkActionManager.h"
 #include "DkSettings.h"
-#include "DkMenu.h"
 #include "DkImageStorage.h"
 #include "DkUtils.h"
 
 #include "DkDialog.h"
+#include "DkMenu.h"
 
 #ifdef WITH_PLUGINS
 #include "DkPluginManager.h"
@@ -326,61 +326,6 @@ void DkAppManager::openTriggered() const {
 		openFileSignal(a);
 }
 
-
-// DkDialogManager --------------------------------------------------------------------
-DkDialogManager::DkDialogManager(QObject* parent) : QObject(parent) {
-
-}
-
-void DkDialogManager::openShortcutsDialog() const {
-
-	DkActionManager& am = DkActionManager::instance();
-
-	QList<QAction* > openWithActionList = am.openWithMenu()->actions();
-
-	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(QApplication::activeWindow());
-	shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
-	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
-	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
-	shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
-	shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
-	shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
-	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());
-	shortcutsDialog->addActions(am.syncActions(), am.syncMenu()->title());
-	shortcutsDialog->addActions(am.previewActions(), tr("Preview"));
-#ifdef WITH_PLUGINS	// TODO
-
-	DkPluginActionManager* pm = am.pluginActionManager();
-	pm->updateMenu();
-
-	QVector<QAction*> allPluginActions = pm->pluginActions();
-
-	for (const QMenu* m : pm->pluginSubMenus()) {
-		allPluginActions << m->actions().toVector();
-	}
-
-	shortcutsDialog->addActions(allPluginActions, pm->menu()->title());
-#endif // WITH_PLUGINS
-	shortcutsDialog->addActions(am.helpActions(), am.helpMenu()->title());
-	shortcutsDialog->addActions(am.hiddenActions(), tr("Shortcuts"));
-
-	shortcutsDialog->exec();
-	shortcutsDialog->deleteLater();
-}
-
-void DkDialogManager::openAppManager() const {
-
-	DkActionManager& am = DkActionManager::instance();
-
-	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWindow());
-	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), am.appManager(), SIGNAL(openFileSignal(QAction*)));	// forward
-	appManagerDialog->exec();
-
-	appManagerDialog->deleteLater();
-
-	DkActionManager::instance().openWithMenu();	// update
-}
-
 // DkActionManager --------------------------------------------------------------------
 DkActionManager::DkActionManager() {
 	init();
@@ -615,39 +560,39 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	return mToolsMenu;
 }
 
-QMenu* DkActionManager::createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient) {
-
-	mSyncMenu = syncMenu;
-
-	// local host menu
-	mLocalMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, localClient);
-	mLocalMenu->showNoClientsFound(true);
-
-	// add connect all action
-	mLocalMenu->addTcpAction(mSyncActions[menu_sync_connect_all]);
-	
-	mSyncMenu->addMenu(mLocalMenu);
-
-	// LAN menu
-	mLanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, lanClient);	// TODO: replace
-	mSyncMenu->addMenu(mLanMenu);
-
-	mSyncMenu->addAction(mSyncActions[menu_sync_remote_control]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_remote_display]);
-	mSyncMenu->addAction(mLanActions[menu_lan_image]);
-	mSyncMenu->addSeparator();
-
-	mSyncMenu->addAction(mSyncActions[menu_sync]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
-#ifdef WITH_UPNP
-	// disable this action since it does not work using herqq
-	//mSyncMenu->addAction(syncActions[menu_sync_start_upnp]);
-#endif // WITH_UPNP
-
-	return mSortMenu;
-}
+//QMenu* DkActionManager::createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient) {
+//
+//	mSyncMenu = syncMenu;
+//
+//	// local host menu
+//	mLocalMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, localClient);
+//	mLocalMenu->showNoClientsFound(true);
+//
+//	// add connect all action
+//	mLocalMenu->addTcpAction(mSyncActions[menu_sync_connect_all]);
+//	
+//	mSyncMenu->addMenu(mLocalMenu);
+//
+//	// LAN menu
+//	mLanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, lanClient);	// TODO: replace
+//	mSyncMenu->addMenu(mLanMenu);
+//
+//	mSyncMenu->addAction(mSyncActions[menu_sync_remote_control]);
+//	mSyncMenu->addAction(mSyncActions[menu_sync_remote_display]);
+//	mSyncMenu->addAction(mLanActions[menu_lan_image]);
+//	mSyncMenu->addSeparator();
+//
+//	mSyncMenu->addAction(mSyncActions[menu_sync]);
+//	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
+//	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
+//	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
+//#ifdef WITH_UPNP
+//	// disable this action since it does not work using herqq
+//	//mSyncMenu->addAction(syncActions[menu_sync_start_upnp]);
+//#endif // WITH_UPNP
+//
+//	return mSyncMenu;
+//}
 
 QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 
@@ -917,7 +862,6 @@ void DkActionManager::createMenus(QWidget* parent) {
 
 void DkActionManager::init() {
 
-	mDialogManager = new DkDialogManager(QApplication::activeWindow());
 	mAppManager = new DkAppManager(QApplication::activeWindow());
 
 #ifdef WITH_PLUGINS
@@ -1612,8 +1556,6 @@ void DkActionManager::createActions(QWidget* parent) {
 		a->setToolTip(a->statusTip());
 		a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
-
-	connectDefaultActions();
 }
 
 QVector<QAction*> DkActionManager::allActions() const {
@@ -1654,13 +1596,6 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 
 	settings.endGroup();
 }
-
-void DkActionManager::connectDefaultActions() {
-
-	QObject::connect(action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), mDialogManager, SLOT(openShortcutsDialog()));
-	QObject::connect(action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), mDialogManager, SLOT(openAppManager()));
-}
-
 
 QMainWindow* DkActionManager::getMainWindow() const {
 

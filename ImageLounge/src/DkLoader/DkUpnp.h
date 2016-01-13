@@ -11,6 +11,8 @@
 
 #pragma once
 
+#ifdef WITH_UPNP
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <QFile>
@@ -182,3 +184,5 @@ namespace nmc {
 	};
 
 };
+
+#endif //#ifdef WITH_UPNP

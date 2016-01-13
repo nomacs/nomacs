@@ -938,4 +938,15 @@ protected:
 };
 #endif
 
+class DkDialogManager : public QObject {
+	Q_OBJECT
+
+public:
+	DkDialogManager(QObject* parent = 0);
+
+	public slots:
+	void openShortcutsDialog() const;
+	void openAppManager() const;
+};
+
 }

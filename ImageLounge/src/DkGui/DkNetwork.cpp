@@ -28,8 +28,12 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
-//#include "DkControlWidget.h"	// needed for a connection
+#include "DkControlWidget.h"	// needed for a connection
 #include "DkUtils.h"
+
+// that's a bit nasty
+#include "DkNoMacs.h"
+#include "DkViewPort.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTcpSocket>
@@ -1986,15 +1990,6 @@ void DkTranslationUpdater::cancelUpdate() {
 	updateAbortedQt = true;
 }
 
-
-}
-
-//// that's a bit nasty
-//#include "DkNoMacs.h"
-//#include "DkViewPort.h"
-
-namespace nmc {
-
 // DkManagerThread  --------------------------------------------------------------------
 DkManagerThread::DkManagerThread(DkNoMacs* parent) {
 	this->parent = parent;
@@ -2099,10 +2094,13 @@ void DkLanManagerThread::connectClient() {
 
 	connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, const QString&)), clientManager, SLOT(sendNewImage(QImage, const QString&)));
 	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
-	connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->viewport()->getController(), SLOT(setInfo(const QString&, int)));
 	connect(clientManager, SIGNAL(receivedImageTitle(const QString&)), parent, SLOT(setWindowTitle(const QString&)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(goodByeToAllSignal()), clientManager, SLOT(sendGoodByeToAll()));
+
+	// TODO: uncomment OR do a better signaling here...
+	//connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->viewport()->getController(), SLOT(setInfo(const QString&, int)));
+
 
 #ifdef WITH_UPNP
 	qRegisterMetaType<QHostAddress>("QHostAddress");
