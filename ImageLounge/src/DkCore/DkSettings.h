@@ -282,6 +282,9 @@ public:
 		display_end
 	};
 
+	QStringList translatedCamData() const;
+	QStringList translatedDescriptionData() const;
+
 	void initFileFilters();
 	void loadTranslation(const QString& fileName, QTranslator& translator);
 	QStringList getTranslationDirs();

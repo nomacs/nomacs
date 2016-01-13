@@ -70,7 +70,7 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	createLayout();
 	createSettingsWidgets();
 	for (int i = 0; i < widgetList.size(); i++) {
-		if (!DkSettings::app.advancedSettings) {
+		if (!Settings::param().app().advancedSettings) {
 			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
 		}
 		else
@@ -105,11 +105,11 @@ void DkSettingsDialog::init() {
 	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->hide();
-		curWidget->toggleAdvancedOptions(DkSettings::app.advancedSettings);
+		curWidget->toggleAdvancedOptions(Settings::param().app().advancedSettings);
 		centralLayout->addWidget(curWidget);
 	}
 	widgetList[0]->show(); // display first;
-	cbAdvancedSettings->setChecked(DkSettings::app.advancedSettings);
+	cbAdvancedSettings->setChecked(Settings::param().app().advancedSettings);
 }
 
 void DkSettingsDialog::createLayout() {
@@ -208,14 +208,14 @@ void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
 
 void DkSettingsDialog::saveSettings() {
 
-	QString curLanguage = DkSettings::global.language;
-	QColor curBgColWidget = DkSettings::display.hudBgColor;
-	QColor curBgCol = DkSettings::display.bgColor;
-	QColor curIconCol = DkSettings::display.iconColor;
-	QColor curBgColFrameless = DkSettings::display.bgColorFrameless;
-	bool curGradient = DkSettings::display.toolbarGradient;
-	bool curUseCol = DkSettings::display.defaultBackgroundColor;
-	bool curUseIconCol = DkSettings::display.defaultIconColor;
+	QString curLanguage = Settings::param().global().language;
+	QColor curBgColWidget = Settings::param().display().hudBgColor;
+	QColor curBgCol = Settings::param().display().bgColor;
+	QColor curIconCol = Settings::param().display().iconColor;
+	QColor curBgColFrameless = Settings::param().display().bgColorFrameless;
+	bool curGradient = Settings::param().display().toolbarGradient;
+	bool curUseCol = Settings::param().display().defaultBackgroundColor;
+	bool curUseIconCol = Settings::param().display().defaultIconColor;
 
 	for (DkSettingsWidget* curWidget : widgetList) {
 		curWidget->writeSettings();
@@ -225,22 +225,22 @@ void DkSettingsDialog::saveSettings() {
 	settings->save();
 	close();
 
-	if (DkSettings::app.privateMode) {
+	if (Settings::param().app().privateMode) {
 		QMessageBox::information(this, tr("Private Mode"), tr("Settings are not saved in the private mode"), QMessageBox::Ok, QMessageBox::Ok);
 	}
 
-	if (!DkSettings::app.privateMode && curLanguage != DkSettings::global.language)
+	if (!Settings::param().app().privateMode && curLanguage != Settings::param().global().language)
 		emit languageChanged();
 
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
-	if (!DkSettings::app.privateMode && 
-		(DkSettings::display.bgColor != curBgCol ||
-		DkSettings::display.iconColor != curIconCol ||
-		DkSettings::display.hudBgColor != curBgColWidget ||
-		DkSettings::display.bgColorFrameless != curBgColFrameless ||
-		DkSettings::display.defaultBackgroundColor != curUseCol ||
-		DkSettings::display.defaultIconColor != curUseIconCol ||
-		DkSettings::display.toolbarGradient != curGradient))
+	if (!Settings::param().app().privateMode && 
+		(Settings::param().display().bgColor != curBgCol ||
+		Settings::param().display().iconColor != curIconCol ||
+		Settings::param().display().hudBgColor != curBgColWidget ||
+		Settings::param().display().bgColorFrameless != curBgColFrameless ||
+		Settings::param().display().defaultBackgroundColor != curUseCol ||
+		Settings::param().display().defaultIconColor != curUseIconCol ||
+		Settings::param().display().toolbarGradient != curGradient))
 		emit settingsChangedRestart();
 	else
 		emit settingsChanged();
@@ -259,17 +259,17 @@ void DkSettingsDialog::initWidgets() {
 
 void DkSettingsDialog::advancedSettingsChanged(int) {
 
-	DkSettings::app.advancedSettings = cbAdvancedSettings->isChecked();
+	Settings::param().app().advancedSettings = cbAdvancedSettings->isChecked();
 
 	QModelIndex selection = listView->currentIndex();
 
 	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->toggleAdvancedOptions(DkSettings::app.advancedSettings);
+		curWidget->toggleAdvancedOptions(Settings::param().app().advancedSettings);
 	}
 
 	bool wasSelected = false;
 	for (int i = 0; i < widgetList.size(); i++) {
-		if (!DkSettings::app.advancedSettings) {
+		if (!Settings::param().app().advancedSettings) {
 			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
 			if (widgetList[i]->showOnlyInAdvancedMode && selection.row() == i) wasSelected = true;
 		}
@@ -295,18 +295,18 @@ DkGlobalSettingsWidget::DkGlobalSettingsWidget(QWidget* parent) : DkSettingsWidg
 
 void DkGlobalSettingsWidget::init() {
 
-	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
-	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
-	cbShowRecentFiles->setChecked(DkSettings::app.showRecentFiles);
-	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
-	cbCheckForUpdates->setChecked(DkSettings::sync.checkForUpdates);
+	cbToolbarGradient->setChecked(Settings::param().display().toolbarGradient);
+	cbCloseOnEsc->setChecked(Settings::param().app().closeOnEsc);
+	cbShowRecentFiles->setChecked(Settings::param().app().showRecentFiles);
+	cbZoomOnWheel->setChecked(Settings::param().global().zoomOnWheel);
+	cbCheckForUpdates->setChecked(Settings::param().sync().checkForUpdates);
 
-	curLanguage = DkSettings::global.language;
+	curLanguage = Settings::param().global().language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
-	displayTimeSpin->setSpinBoxValue(DkSettings::slideShow.time);
+	displayTimeSpin->setSpinBoxValue(Settings::param().slideShow().time);
 
 	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
 	connect(buttonDefaultSettings, SIGNAL(clicked()), highlightColorChooser, SLOT(on_resetButton_clicked()));
@@ -327,22 +327,22 @@ void DkGlobalSettingsWidget::createLayout() {
 	rightWidget->setLayout(rightLayout);
 
 	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
-	highlightColorChooser->setColor(DkSettings::display.highlightColor);
+	highlightColorChooser->setColor(Settings::param().display().highlightColor);
 
 	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
-	iconColorChooser->setColor(DkSettings::display.iconColor);
+	iconColorChooser->setColor(Settings::param().display().iconColor);
 	connect(iconColorChooser, SIGNAL(resetClicked()), this, SLOT(iconColorReset()));
 
 	bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"), this);
-	bgColorChooser->setColor(DkSettings::display.bgColor);
+	bgColorChooser->setColor(Settings::param().display().bgColor);
 	connect(bgColorChooser, SIGNAL(resetClicked()), this, SLOT(bgColorReset()));
 
 	bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Widget Color"), this);
-	bgColorWidgetChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
-		DkSettings::display.bgColorFrameless : DkSettings::display.hudBgColor);
+	bgColorWidgetChooser->setColor((Settings::param().app().appMode == DkSettings::mode_frameless) ?
+		Settings::param().display().bgColorFrameless : Settings::param().display().hudBgColor);
 
 	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
-	fullscreenColChooser->setColor(DkSettings::slideShow.backgroundColor);
+	fullscreenColChooser->setColor(Settings::param().slideShow().backgroundColor);
 
 	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
 
@@ -413,30 +413,30 @@ void DkGlobalSettingsWidget::createLayout() {
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
-	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
-	DkSettings::app.showRecentFiles = cbShowRecentFiles->isChecked();
-	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
-	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
-	DkSettings::slideShow.time = displayTimeSpin->getSpinBoxValue();
-	DkSettings::sync.checkForUpdates = cbCheckForUpdates->isChecked();
+	Settings::param().app().closeOnEsc = cbCloseOnEsc->isChecked();
+	Settings::param().app().showRecentFiles = cbShowRecentFiles->isChecked();
+	Settings::param().global().zoomOnWheel = cbZoomOnWheel->isChecked();
+	Settings::param().display().toolbarGradient = cbToolbarGradient->isChecked();
+	Settings::param().slideShow().time = displayTimeSpin->getSpinBoxValue();
+	Settings::param().sync().checkForUpdates = cbCheckForUpdates->isChecked();
 
-	if (DkSettings::app.appMode == DkSettings::mode_frameless)
-		DkSettings::display.bgColorFrameless = bgColorWidgetChooser->getColor();
+	if (Settings::param().app().appMode == DkSettings::mode_frameless)
+		Settings::param().display().bgColorFrameless = bgColorWidgetChooser->getColor();
 	else
-		DkSettings::display.hudBgColor = bgColorWidgetChooser->getColor();
+		Settings::param().display().hudBgColor = bgColorWidgetChooser->getColor();
 
 	if (bgColorChooser->isAccept())
-		DkSettings::display.defaultBackgroundColor = false;
+		Settings::param().display().defaultBackgroundColor = false;
 
 	if (iconColorChooser->isAccept())
-		DkSettings::display.defaultIconColor = false;
+		Settings::param().display().defaultIconColor = false;
 
-	DkSettings::display.iconColor = iconColorChooser->getColor();
-	DkSettings::display.bgColor = bgColorChooser->getColor();
-	DkSettings::display.highlightColor = highlightColorChooser->getColor();
-	DkSettings::slideShow.backgroundColor = fullscreenColChooser->getColor();
+	Settings::param().display().iconColor = iconColorChooser->getColor();
+	Settings::param().display().bgColor = bgColorChooser->getColor();
+	Settings::param().display().highlightColor = highlightColorChooser->getColor();
+	Settings::param().slideShow().backgroundColor = fullscreenColChooser->getColor();
 
-	DkSettings::global.language = languages.at(langCombo->currentIndex());
+	Settings::param().global().language = languages.at(langCombo->currentIndex());
 }
 
 void DkGlobalSettingsWidget::setToDefaultPressed() {
@@ -445,11 +445,11 @@ void DkGlobalSettingsWidget::setToDefaultPressed() {
 }
 
 void DkGlobalSettingsWidget::bgColorReset() {
-	DkSettings::display.defaultBackgroundColor = true;
+	Settings::param().display().defaultBackgroundColor = true;
 }
 
 void DkGlobalSettingsWidget::iconColorReset() {
-	DkSettings::display.defaultIconColor = true;
+	Settings::param().display().defaultIconColor = true;
 }
 
 
@@ -467,19 +467,19 @@ DkDisplaySettingsWidget::DkDisplaySettingsWidget(QWidget* parent) : DkSettingsWi
 }
 
 void DkDisplaySettingsWidget::init() {
-	cbName->setChecked(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
-	cbCreationDate->setChecked(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
-	cbRating->setChecked(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
+	cbName->setChecked(Settings::param().slideShow().display.testBit(DkSettings::display_file_name));
+	cbCreationDate->setChecked(Settings::param().slideShow().display.testBit(DkSettings::display_creation_date));
+	cbRating->setChecked(Settings::param().slideShow().display.testBit(DkSettings::display_file_rating));
 
-	cbInvertZoom->setChecked(DkSettings::display.invertZoom);
-	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
-	fadeSlideShow->setSpinBoxValue(DkSettings::display.fadeSec);
-	//cbSaveThumb->setChecked(DkSettings::display.saveThumb);
-	interpolateWidget->setSpinBoxValue(DkSettings::display.interpolateZoomLevel);
+	cbInvertZoom->setChecked(Settings::param().display().invertZoom);
+	keepZoomButtons[Settings::param().display().keepZoom]->setChecked(true);
+	maximalThumbSizeWidget->setSpinBoxValue(Settings::param().display().thumbSize);
+	fadeSlideShow->setSpinBoxValue(Settings::param().display().fadeSec);
+	//cbSaveThumb->setChecked(Settings::param().display().saveThumb);
+	interpolateWidget->setSpinBoxValue(Settings::param().display().interpolateZoomLevel);
 
-	cbShowBorder->setChecked(DkSettings::display.showBorder);
-	cbSilentFullscreen->setChecked(DkSettings::slideShow.silentFullscreen);
+	cbShowBorder->setChecked(Settings::param().display().showBorder);
+	cbSilentFullscreen->setChecked(Settings::param().slideShow().silentFullscreen);
 }
 
 void DkDisplaySettingsWidget::createLayout() {
@@ -534,7 +534,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"), this);
 	QVBoxLayout* gbThumbsLayout = new QVBoxLayout(gbThumbs);
 	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 16, 160, gbThumbs);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
+	maximalThumbSizeWidget->setSpinBoxValue(Settings::param().display().thumbSize);
 	//cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
 	//cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
 	gbThumbsLayout->addWidget(maximalThumbSizeWidget);
@@ -562,7 +562,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGroupBox* gbSlideShow = new QGroupBox(tr("Slide Show"), this);
 	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
 	fadeSlideShow = new DkDoubleSpinBoxWidget(tr("Fade Images:"), tr("sec"), 0, 16, this);
-	fadeSlideShow->setSpinBoxValue(DkSettings::display.fadeSec);
+	fadeSlideShow->setSpinBoxValue(Settings::param().display().fadeSec);
 	gbSlideShowLayout->addWidget(fadeSlideShow);
 
 	gridLayout->addWidget(gbZoom, 0, 0, 3, 1);
@@ -579,38 +579,38 @@ void DkDisplaySettingsWidget::createLayout() {
 
 void DkDisplaySettingsWidget::writeSettings() {
 
-	DkSettings::display.invertZoom = (cbInvertZoom->isChecked()) ? true : false;
+	Settings::param().display().invertZoom = (cbInvertZoom->isChecked()) ? true : false;
 
 	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
 		if (keepZoomButtons[idx]->isChecked()) {
-			DkSettings::display.keepZoom = idx;
+			Settings::param().display().keepZoom = idx;
 			break;
 		}
 	}
 
-	DkSettings::slideShow.silentFullscreen = cbSilentFullscreen->isChecked();
+	Settings::param().slideShow().silentFullscreen = cbSilentFullscreen->isChecked();
 
-	DkSettings::slideShow.display.setBit(DkSettings::display_file_name, cbName->isChecked());
-	DkSettings::slideShow.display.setBit(DkSettings::display_creation_date, cbCreationDate->isChecked());
-	DkSettings::slideShow.display.setBit(DkSettings::display_file_rating, cbRating->isChecked());
+	Settings::param().slideShow().display.setBit(DkSettings::display_file_name, cbName->isChecked());
+	Settings::param().slideShow().display.setBit(DkSettings::display_creation_date, cbCreationDate->isChecked());
+	Settings::param().slideShow().display.setBit(DkSettings::display_file_rating, cbRating->isChecked());
 
-	DkSettings::display.thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
-	DkSettings::display.fadeSec = fadeSlideShow->getSpinBoxValue();
-	//DkSettings::display.saveThumb = cbSaveThumb->isChecked();
-	DkSettings::display.interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
-	DkSettings::display.showBorder = cbShowBorder->isChecked();
+	Settings::param().display().thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
+	Settings::param().display().fadeSec = fadeSlideShow->getSpinBoxValue();
+	//Settings::param().display().saveThumb = cbSaveThumb->isChecked();
+	Settings::param().display().interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
+	Settings::param().display().showBorder = cbShowBorder->isChecked();
 }
 
 void DkDisplaySettingsWidget::showFileName(bool checked) {
-	DkSettings::slideShow.display.setBit(DkSettings::display_file_name, checked);
+	Settings::param().slideShow().display.setBit(DkSettings::display_file_name, checked);
 }
 
 void DkDisplaySettingsWidget::showCreationDate(bool checked) {
-	DkSettings::slideShow.display.setBit(DkSettings::display_creation_date, checked);
+	Settings::param().slideShow().display.setBit(DkSettings::display_creation_date, checked);
 }
 
 void DkDisplaySettingsWidget::showRating(bool checked) {
-	DkSettings::slideShow.display.setBit(DkSettings::display_file_rating, checked);
+	Settings::param().slideShow().display.setBit(DkSettings::display_file_rating, checked);
 }
 
 
@@ -625,17 +625,17 @@ DkFileWidget::DkFileWidget(QWidget* parent) : DkSettingsWidget(parent) {
 
 void DkFileWidget::init() {
 
-	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
+	//spFilter->setValue(Settings::param().slideShow()Settings::filter);
 
-	cbWrapImages->setChecked(DkSettings::global.loop);
-	cbAskToSaveDeletedFiles->setChecked(DkSettings::global.askToSaveDeletedFiles);
-	cbLogRecentFiles->setChecked(DkSettings::global.logRecentFiles);
-	skipImgWidget->setSpinBoxValue(DkSettings::global.skipImgs);
-	//numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
-	cbUseTmpPath->setChecked(DkSettings::global.useTmpPath);
-	tmpPath = DkSettings::global.tmpPath;
+	cbWrapImages->setChecked(Settings::param().global().loop);
+	cbAskToSaveDeletedFiles->setChecked(Settings::param().global().askToSaveDeletedFiles);
+	cbLogRecentFiles->setChecked(Settings::param().global().logRecentFiles);
+	skipImgWidget->setSpinBoxValue(Settings::param().global().skipImgs);
+	//numberFiles->setSpinBoxValue(Settings::param().global().numFiles);
+	cbUseTmpPath->setChecked(Settings::param().global().useTmpPath);
+	tmpPath = Settings::param().global().tmpPath;
 	leTmpPath->setText(tmpPath);
-	if (!DkSettings::global.useTmpPath) {
+	if (!Settings::param().global().useTmpPath) {
 		leTmpPath->setDisabled(true);
 		pbTmpPath->setDisabled(true);
 	}
@@ -674,19 +674,19 @@ void DkFileWidget::createLayout() {
 	// image loading
 	rbSkipImage = new QRadioButton(tr("Skip Images"), this);
 	rbSkipImage->setToolTip(tr("Images are skipped until the next button is released."));
-	rbSkipImage->setChecked(!DkSettings::resources.waitForLastImg);
+	rbSkipImage->setChecked(!Settings::param().resources().waitForLastImg);
 	rbWaitForImage = new QRadioButton(tr("Wait for Images to be Loaded"), this);
 	rbWaitForImage->setToolTip(tr("A new image is loaded after displaying the last image"));
-	rbWaitForImage->setChecked(DkSettings::resources.waitForLastImg);
+	rbWaitForImage->setChecked(Settings::param().resources().waitForLastImg);
 
 	QGroupBox* gbOrientation = new QGroupBox(tr("Exif Orientation"), this);
 
 	cbIgnoreOrientation = new QCheckBox(tr("Ignore Exif Orientation"), gbOrientation);
-	cbIgnoreOrientation->setChecked(DkSettings::metaData.ignoreExifOrientation);
+	cbIgnoreOrientation->setChecked(Settings::param().metaData().ignoreExifOrientation);
 	cbIgnoreOrientation->setToolTip(tr("Note: instead of checking this option\n you should fix your images."));
 
 	cbSaveOrientation = new QCheckBox(tr("Save Exif Orientation"), gbOrientation);
-	cbSaveOrientation->setChecked(DkSettings::metaData.saveExifOrientation);
+	cbSaveOrientation->setChecked(Settings::param().metaData().saveExifOrientation);
 	cbSaveOrientation->setToolTip(tr("Note: unchecking this option decreases the speed of rotating images."));
 
 	QVBoxLayout* orientationLayout = new QVBoxLayout(gbOrientation);
@@ -731,18 +731,18 @@ void DkFileWidget::createLayout() {
 
 void DkFileWidget::writeSettings() {
 
-	DkSettings::global.skipImgs = skipImgWidget->getSpinBoxValue();
-	//DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
-	DkSettings::global.loop = cbWrapImages->isChecked();
-	DkSettings::global.logRecentFiles = cbLogRecentFiles->isChecked();
-	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
-	DkSettings::global.askToSaveDeletedFiles = cbAskToSaveDeletedFiles->isChecked();
+	Settings::param().global().skipImgs = skipImgWidget->getSpinBoxValue();
+	//Settings::param().global().numFiles = numberFiles->getSpinBoxValue();
+	Settings::param().global().loop = cbWrapImages->isChecked();
+	Settings::param().global().logRecentFiles = cbLogRecentFiles->isChecked();
+	Settings::param().global().useTmpPath = cbUseTmpPath->isChecked();
+	Settings::param().global().askToSaveDeletedFiles = cbAskToSaveDeletedFiles->isChecked();
 	QFileInfo fi = QFileInfo(leTmpPath->text());
-	DkSettings::global.tmpPath = fi.exists() ? leTmpPath->text() : QString();
-	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();
+	Settings::param().global().tmpPath = fi.exists() ? leTmpPath->text() : QString();
+	Settings::param().resources().waitForLastImg = rbWaitForImage->isChecked();
 
-	DkSettings::metaData.ignoreExifOrientation = cbIgnoreOrientation->isChecked();
-	DkSettings::metaData.saveExifOrientation = cbSaveOrientation->isChecked();
+	Settings::param().metaData().ignoreExifOrientation = cbIgnoreOrientation->isChecked();
+	Settings::param().metaData().saveExifOrientation = cbSaveOrientation->isChecked();
 
 }
 
@@ -785,13 +785,13 @@ DkSynchronizeSettingsWidget::DkSynchronizeSettingsWidget(QWidget* parent) : DkSe
 void DkSynchronizeSettingsWidget::init() {
 	connect(cbEnableNetwork, SIGNAL(stateChanged(int)), this, SLOT(enableNetworkCheckBoxChanged(int)));
 
-	cbAllowFile->setChecked(DkSettings::sync.allowFile);
-	cbAllowImage->setChecked(DkSettings::sync.allowImage);
-	cbAllowPosition->setChecked(DkSettings::sync.allowPosition);
-	cbAllowTransformation->setChecked(DkSettings::sync.allowTransformation);
-	cbEnableNetwork->setChecked(DkSettings::sync.enableNetworkSync);
-	DkSettings::sync.syncAbsoluteTransform ? rbSyncAbsoluteTransform->setChecked(true) : rbSyncRelativeTransform->setChecked(true);
-	cbSwitchModifier->setChecked(DkSettings::sync.switchModifier);
+	cbAllowFile->setChecked(Settings::param().sync().allowFile);
+	cbAllowImage->setChecked(Settings::param().sync().allowImage);
+	cbAllowPosition->setChecked(Settings::param().sync().allowPosition);
+	cbAllowTransformation->setChecked(Settings::param().sync().allowTransformation);
+	cbEnableNetwork->setChecked(Settings::param().sync().enableNetworkSync);
+	Settings::param().sync().syncAbsoluteTransform ? rbSyncAbsoluteTransform->setChecked(true) : rbSyncRelativeTransform->setChecked(true);
+	cbSwitchModifier->setChecked(Settings::param().sync().switchModifier);
 
 	enableNetworkCheckBoxChanged(0);
 }
@@ -847,20 +847,20 @@ void DkSynchronizeSettingsWidget::createLayout() {
 }
 
 void DkSynchronizeSettingsWidget::writeSettings() {
-	DkSettings::sync.enableNetworkSync = cbEnableNetwork->isChecked();
-	DkSettings::sync.allowFile = cbAllowFile->isChecked();
-	DkSettings::sync.allowImage = cbAllowImage->isChecked();
-	DkSettings::sync.allowPosition = cbAllowPosition->isChecked();
-	DkSettings::sync.allowTransformation = cbAllowTransformation->isChecked();
-	DkSettings::sync.syncAbsoluteTransform = rbSyncAbsoluteTransform->isChecked();
-	DkSettings::sync.switchModifier = cbSwitchModifier->isChecked();
-	if (DkSettings::sync.switchModifier) {
-		DkSettings::global.altMod = Qt::ControlModifier;
-		DkSettings::global.ctrlMod = Qt::AltModifier;
+	Settings::param().sync().enableNetworkSync = cbEnableNetwork->isChecked();
+	Settings::param().sync().allowFile = cbAllowFile->isChecked();
+	Settings::param().sync().allowImage = cbAllowImage->isChecked();
+	Settings::param().sync().allowPosition = cbAllowPosition->isChecked();
+	Settings::param().sync().allowTransformation = cbAllowTransformation->isChecked();
+	Settings::param().sync().syncAbsoluteTransform = rbSyncAbsoluteTransform->isChecked();
+	Settings::param().sync().switchModifier = cbSwitchModifier->isChecked();
+	if (Settings::param().sync().switchModifier) {
+		Settings::param().global().altMod = Qt::ControlModifier;
+		Settings::param().global().ctrlMod = Qt::AltModifier;
 	}
 	else {
-		DkSettings::global.altMod = Qt::AltModifier;
-		DkSettings::global.ctrlMod = Qt::ControlModifier;
+		Settings::param().global().altMod = Qt::AltModifier;
+		Settings::param().global().ctrlMod = Qt::ControlModifier;
 	}
 }
 
@@ -929,16 +929,16 @@ void DkResourceSettingsWidgets::init() {
 	if (totalMemory <= 0)
 		totalMemory = 2048;	// assume at least 2048 MB RAM
 
-	float curCache = (float)(DkSettings::resources.cacheMemory/totalMemory * stepSize * 100);
+	float curCache = (float)(Settings::param().resources().cacheMemory/totalMemory * stepSize * 100);
 
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
 
 	sliderMemory->setValue(qRound(curCache));
 	this->memorySliderChanged(qRound(curCache));
-	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
-	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
+	cbFilterRawImages->setChecked(Settings::param().resources().filterRawImages);
+	cbRemoveDuplicates->setChecked(Settings::param().resources().filterDuplicats);
 
-	rawThumbButtons[DkSettings::resources.loadRawThumb]->setChecked(true);
+	rawThumbButtons[Settings::param().resources().loadRawThumb]->setChecked(true);
 }
 
 void DkResourceSettingsWidgets::createLayout() {
@@ -1016,16 +1016,16 @@ void DkResourceSettingsWidgets::createLayout() {
 	hLayout->setContentsMargins(0,0,0,0);
 
 	cbRemoveDuplicates = new QCheckBox(tr("Hide Duplicates"));
-	cbRemoveDuplicates->setChecked(DkSettings::resources.filterRawImages);
+	cbRemoveDuplicates->setChecked(Settings::param().resources().filterRawImages);
 	cbRemoveDuplicates->setToolTip(tr("If checked, duplicated images are not shown (e.g. RAW+JPG"));
 
 	QLabel* preferredLabel = new QLabel(tr("Preferred Extension: "));
 
-	QString pExt = DkSettings::resources.preferredExtension;
+	QString pExt = Settings::param().resources().preferredExtension;
 	if (pExt.isEmpty()) pExt = "*.jpg";	// best default
 	cmExtensions = new QComboBox();
-	cmExtensions->addItems(DkSettings::app.fileFilters);
-	cmExtensions->setCurrentIndex(DkSettings::app.fileFilters.indexOf(pExt));
+	cmExtensions->addItems(Settings::param().app().fileFilters);
+	cmExtensions->setCurrentIndex(Settings::param().app().fileFilters.indexOf(pExt));
 
 	qDebug() << "preferred extension: " << pExt;
 
@@ -1048,14 +1048,14 @@ void DkResourceSettingsWidgets::createLayout() {
 
 void DkResourceSettingsWidgets::writeSettings() {
 
-	DkSettings::resources.cacheMemory = (float)((sliderMemory->value()/stepSize)/100.0 * totalMemory);
-	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
-	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
-	DkSettings::resources.preferredExtension = DkSettings::app.fileFilters.at(cmExtensions->currentIndex());
+	Settings::param().resources().cacheMemory = (float)((sliderMemory->value()/stepSize)/100.0 * totalMemory);
+	Settings::param().resources().filterRawImages = cbFilterRawImages->isChecked();
+	Settings::param().resources().filterDuplicats = cbRemoveDuplicates->isChecked();
+	Settings::param().resources().preferredExtension = Settings::param().app().fileFilters.at(cmExtensions->currentIndex());
 
 	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
 		if (rawThumbButtons[idx]->isChecked()) {
-			DkSettings::resources.loadRawThumb = idx;
+			Settings::param().resources().loadRawThumb = idx;
 			break;
 		}
 	}
@@ -1074,8 +1074,8 @@ DkRemoteControlWidget::DkRemoteControlWidget(QWidget* parent) : DkSettingsWidget
 }
 
 void DkRemoteControlWidget::init() {
-	QStringList clients = DkSettings::sync.recentSyncNames;
-	clients << DkSettings::sync.syncWhiteList;
+	QStringList clients = Settings::param().sync().recentSyncNames;
+	clients << Settings::param().sync().syncWhiteList;
 	clients.removeDuplicates();
 
 	whiteListModel = new DkWhiteListViewModel(table);
@@ -1087,7 +1087,7 @@ void DkRemoteControlWidget::init() {
 	table->setSortingEnabled(true);
 
 	for(int i = 0; i < clients.size();i++) {
-		whiteListModel->addWhiteListEntry(DkSettings::sync.syncWhiteList.contains(clients[i]) != 0, clients[i], DkSettings::sync.recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
+		whiteListModel->addWhiteListEntry(Settings::param().sync().syncWhiteList.contains(clients[i]) != 0, clients[i], Settings::param().sync().recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
 	}
 	table->setModel(proxyModel);
 	table->resizeColumnsToContents();
@@ -1109,13 +1109,13 @@ void DkRemoteControlWidget::createLayout() {
 }
 
 void DkRemoteControlWidget::writeSettings() {
-	DkSettings::sync.syncWhiteList = QStringList();
+	Settings::param().sync().syncWhiteList = QStringList();
 	QVector<bool> checked = whiteListModel->getCheckedVector();
 	QVector<QString> names = whiteListModel->getNamesVector();
 
 	for (int i=0; i < checked.size(); i++) {
 		if(checked.at(i))
-			DkSettings::sync.syncWhiteList << names.at(i);
+			Settings::param().sync().syncWhiteList << names.at(i);
 	}
 }
 
@@ -1244,11 +1244,11 @@ void DkFileFilterSettingWidget::init() {
 
 void DkFileFilterSettingWidget::createLayout() {
 
-	QStringList fileFilters = DkSettings::app.openFilters;
+	QStringList fileFilters = Settings::param().app().openFilters;
 
 	model = new QStandardItemModel(this);
 	for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
-		model->appendRow(getItems(fileFilters.at(rIdx), checkFilter(fileFilters.at(rIdx), DkSettings::app.browseFilters), checkFilter(fileFilters.at(rIdx), DkSettings::app.registerFilters)));
+		model->appendRow(getItems(fileFilters.at(rIdx), checkFilter(fileFilters.at(rIdx), Settings::param().app().browseFilters), checkFilter(fileFilters.at(rIdx), Settings::param().app().registerFilters)));
 	
 	model->setHeaderData(0, Qt::Horizontal, tr("Filter"));
 	model->setHeaderData(1, Qt::Horizontal, tr("Browse"));
@@ -1285,7 +1285,7 @@ void DkFileFilterSettingWidget::createLayout() {
 
 bool DkFileFilterSettingWidget::checkFilter(const QString& cFilter, const QStringList& filters) const {
 
-	if (filters.empty() && (DkSettings::app.containerFilters.contains(cFilter) || cFilter.contains(".ico")))
+	if (filters.empty() && (Settings::param().app().containerFilters.contains(cFilter) || cFilter.contains(".ico")))
 		return false;
 
 	if (filters.empty())
@@ -1336,8 +1336,8 @@ void DkFileFilterSettingWidget::writeSettings() {
 		return;
 
 	DkFileFilterHandling fh;
-	DkSettings::app.browseFilters.clear();
-	DkSettings::app.registerFilters.clear();
+	Settings::param().app().browseFilters.clear();
+	Settings::param().app().registerFilters.clear();
 		
 	for (int idx = 0; idx < model->rowCount(); idx++) {
 
@@ -1355,13 +1355,13 @@ void DkFileFilterSettingWidget::writeSettings() {
 			cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
 			cFilter = cFilter.replace(")", "");
 
-			DkSettings::app.browseFilters += cFilter.split(" ");
+			Settings::param().app().browseFilters += cFilter.split(" ");
 		}
 		
 		fh.registerFileType(item->text(), tr("Image"), regItem->checkState() == Qt::Checked);
 		
 		if (regItem->checkState() == Qt::Checked) {
-			DkSettings::app.registerFilters.append(item->text());
+			Settings::param().app().registerFilters.append(item->text());
 			qDebug() << item->text() << " registered";
 		}
 		else

@@ -126,7 +126,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	exitButton = new QPushButton(tr("CLOSE"), this);
 	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
-	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(DkSettings::display.iconSize), QColor(0,0,0,200), 1.0f)));
+	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(Settings::param().display().iconSize), QColor(0,0,0,200), 1.0f)));
 	exitButton->setToolTip(tr("Close (ESC)"));
 	exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
 	exitButton->move(10, 435);
@@ -365,7 +365,7 @@ void DkTrainDialog::loadFile(const QString& filePath) {
 		return;
 	}
 
-	if (DkSettings::app.fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
+	if (Settings::param().app().fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
 		userFeedback(tr("*.%1 is already supported.").arg(fileInfo.suffix()), false);
 		imgLoaded = false;
 	}
@@ -385,7 +385,7 @@ void DkTrainDialog::accept() {
 	QFileInfo acceptedFileInfo(mAcceptedFile);
 
 	// add the extension to user filters
-	if (!DkSettings::app.fileFilters.join(" ").contains(acceptedFileInfo.suffix(), Qt::CaseInsensitive)) {
+	if (!Settings::param().app().fileFilters.join(" ").contains(acceptedFileInfo.suffix(), Qt::CaseInsensitive)) {
 
 		QString name = QInputDialog::getText(this, "Format Name", tr("Please name the new format:"), QLineEdit::Normal, "Your File Format");
 		QString tag = name + " (*." + acceptedFileInfo.suffix() + ")";
@@ -395,9 +395,9 @@ void DkTrainDialog::accept() {
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
-		DkSettings::app.openFilters.append(tag);
-		DkSettings::app.fileFilters.append("*." + acceptedFileInfo.suffix());
-		DkSettings::app.browseFilters += acceptedFileInfo.suffix();
+		Settings::param().app().openFilters.append(tag);
+		Settings::param().app().fileFilters.append("*." + acceptedFileInfo.suffix());
+		Settings::param().app().browseFilters += acceptedFileInfo.suffix();
 	}
 
 	QDialog::accept();
@@ -595,7 +595,7 @@ void DkSearchDialog::init() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	QCompleter* history = new QCompleter(DkSettings::global.searchHistory, this);
+	QCompleter* history = new QCompleter(Settings::param().global().searchHistory, this);
 	history->setCompletionMode(QCompleter::InlineCompletion);
 	mSearchBar = new QLineEdit();
 	mSearchBar->setObjectName("searchBar");
@@ -736,13 +736,13 @@ void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
 
 void DkSearchDialog::updateHistory() {
 	
-	DkSettings::global.searchHistory.append(mCurrentSearch);
+	Settings::param().global().searchHistory.append(mCurrentSearch);
 
 	// keep the history small
-	if (DkSettings::global.searchHistory.size() > 50)
-		DkSettings::global.searchHistory.pop_front();
+	if (Settings::param().global().searchHistory.size() > 50)
+		Settings::param().global().searchHistory.pop_front();
 
-	//QCompleter* history = new QCompleter(DkSettings::global.searchHistory);
+	//QCompleter* history = new QCompleter(Settings::param().global().searchHistory);
 	//searchBar->setCompleter(history);
 }
 
@@ -1996,7 +1996,7 @@ void DkTextDialog::setText(const QStringList& text) {
 
 void DkTextDialog::save() {
 
-	QStringList folders = DkSettings::global.recentFolders;
+	QStringList folders = Settings::param().global().recentFolders;
 	QString savePath = QDir::rootPath();
 
 	if (folders.size() > 0)
@@ -2166,10 +2166,10 @@ void DkPrintPreviewDialog::createIcons() {
 	mIcons[print_setup]		= QIcon(":/nomacs/img/print-setup.svg");
 	mIcons[print_printer]	= QIcon(":/nomacs/img/printer.svg");
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!Settings::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < mIcons.size(); idx++)
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettings::display.iconSize), DkSettings::display.iconColor));
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize), Settings::param().display().iconColor));
 	}
 }
 
@@ -2290,7 +2290,7 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addAction(mPageSetupAction);
 	toolbar->addAction(mPrintAction);
 
-	if (DkSettings::display.toolbarGradient)
+	if (Settings::param().display().toolbarGradient)
 		toolbar->setObjectName("toolbarWithGradient");
 
 	toolbar->setIconSize(QSize(32, 32));
@@ -2485,7 +2485,7 @@ void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event) {
 
 
 	qreal delta = event->delta();
-	if (DkSettings::display.invertZoom)
+	if (Settings::param().display().invertZoom)
 		delta *= -1;
 	if (event->delta() > 0)
 		zoomIn();
@@ -2598,8 +2598,8 @@ void DkExportTiffDialog::createLayout() {
 	mFileEdit->setObjectName("fileEdit");
 
 	mSuffixBox = new QComboBox(this);
-	mSuffixBox->addItems(DkSettings::app.saveFilters);
-	mSuffixBox->setCurrentIndex(DkSettings::app.saveFilters.indexOf(QRegExp(".*tif.*")));
+	mSuffixBox->addItems(Settings::param().app().saveFilters);
+	mSuffixBox->setCurrentIndex(Settings::param().app().saveFilters.indexOf(QRegExp(".*tif.*")));
 
 	// export handles
 	QLabel* exportLabel = new QLabel(tr("Export Pages"));
@@ -2661,7 +2661,7 @@ void DkExportTiffDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		mFilePath, 
-		DkSettings::app.saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		Settings::param().app().saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
 
 	setFile(fileName);
 }
@@ -2706,9 +2706,9 @@ void DkExportTiffDialog::accept() {
 
 	QString suffix = mSuffixBox->currentText();
 
-	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
-		if (suffix.contains("(" + DkSettings::app.fileFilters.at(idx))) {
-			suffix = DkSettings::app.fileFilters.at(idx);
+	for (int idx = 0; idx < Settings::param().app().fileFilters.size(); idx++) {
+		if (suffix.contains("(" + Settings::param().app().fileFilters.at(idx))) {
+			suffix = Settings::param().app().fileFilters.at(idx);
 			suffix.replace("*","");
 			break;
 		}
@@ -3343,7 +3343,7 @@ void DkMosaicDialog::createLayout() {
 	mFilterEdit->setObjectName("fileEdit");
 	mFilterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
 
-	QStringList filters = DkSettings::app.openFilters;
+	QStringList filters = Settings::param().app().openFilters;
 	filters.pop_front();	// replace for better readability
 	filters.push_front(tr("All Images"));
 	mSuffixBox = new QComboBox(this);
@@ -3417,7 +3417,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
-		mFilePath, DkSettings::app.openFilters.join(";;"));
+		mFilePath, Settings::param().app().openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3590,9 +3590,9 @@ void DkMosaicDialog::compute() {
 	QString suffixTmp = mSuffixBox->currentText();
 	QString suffix;
 
-	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
-		if (suffixTmp.contains("(" + DkSettings::app.fileFilters.at(idx))) {
-			suffix = DkSettings::app.fileFilters.at(idx);
+	for (int idx = 0; idx < Settings::param().app().fileFilters.size(); idx++) {
+		if (suffixTmp.contains("(" + Settings::param().app().fileFilters.at(idx))) {
+			suffix = Settings::param().app().fileFilters.at(idx);
 			break;
 		}
 	}
@@ -3930,7 +3930,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 
 	// TODO: remove hierarchy
 
-	QStringList fileFilters = (suffix.isEmpty()) ? DkSettings::app.fileFilters : QStringList(suffix);
+	QStringList fileFilters = (suffix.isEmpty()) ? Settings::param().app().fileFilters : QStringList(suffix);
 
 	// get all dirs
 	QFileInfoList entries = QDir(cPath).entryInfoList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -4244,9 +4244,9 @@ void DkWelcomeDialog::accept() {
 	// register file associations
 	if (mRegisterFilesCheckBox->isChecked()) {
 
-		QStringList rFilters = DkSettings::app.openFilters;
+		QStringList rFilters = Settings::param().app().openFilters;
 		
-		for (const QString& filter : DkSettings::app.containerFilters)
+		for (const QString& filter : Settings::param().app().containerFilters)
 			rFilters.removeAll(filter);
 
 		for (const QString& filter : rFilters) {
@@ -4260,8 +4260,8 @@ void DkWelcomeDialog::accept() {
 	fh.registerNomacs(mSetAsDefaultCheckBox->isChecked());	// register nomacs again - to be save
 
 	// change language
-	if (mLanguageCombo->currentIndex() != mLanguages.indexOf(DkSettings::global.language) && mLanguageCombo->currentIndex() >= 0) {
-		DkSettings::global.language = mLanguages.at(mLanguageCombo->currentIndex());
+	if (mLanguageCombo->currentIndex() != mLanguages.indexOf(Settings::param().global().language) && mLanguageCombo->currentIndex() >= 0) {
+		Settings::param().global().language = mLanguages.at(mLanguageCombo->currentIndex());
 		mLanguageChanged = true;
 	}
 
@@ -4288,7 +4288,7 @@ DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget* parent, Qt::Window
 void DkArchiveExtractionDialog::createLayout() {
 
 	// archive file path
-	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::app.containerRawFilters.replace(" *", ", *")), this);
+	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(Settings::param().app().containerRawFilters.replace(" *", ", *")), this);
 	mArchivePathEdit = new QLineEdit(this);
 	mArchivePathEdit->setObjectName("DkWarningEdit");
 	mArchivePathEdit->setValidator(&mFileValidator);
@@ -4400,7 +4400,7 @@ void DkArchiveExtractionDialog::openArchive() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Archive"),
-		(mArchivePathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mArchivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::app.containerRawFilters.remove(",")));
+		(mArchivePathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mArchivePathEdit->text(), tr("Archives (%1)").arg(Settings::param().app().containerRawFilters.remove(",")));
 
 	if (QFileInfo(filePath).exists()) {
 		mArchivePathEdit->setText(filePath);
@@ -4458,7 +4458,7 @@ void DkArchiveExtractionDialog::loadArchive(const QString& filePath) {
 	QStringList fileNameList = JlCompress::getFileList(lFilePath);
 	
 	// remove the * in fileFilters
-	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	QStringList fileFiltersClean = Settings::param().app().browseFilters;
 	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 

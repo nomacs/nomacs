@@ -53,7 +53,7 @@ DkThumbNail::DkThumbNail(const QString& filePath, const QImage& img) {
 	mImg = DkImage::createThumb(img);
 	mFile = filePath;
 	mMaxThumbSize = max_thumb_size;
-	mMinThumbSize = DkSettings::display.thumbSize;
+	mMinThumbSize = Settings::param().display().thumbSize;
 	mImgExists = true;
 };
 
@@ -350,8 +350,8 @@ DkThumbNailT::~DkThumbNailT() {
 	//	qDebug() << "[WARNING]: thumb watcher is started but not running while releasing!";
 	//}
 
-	if (mFetching && DkSettings::resources.numThumbsLoading > 0)
-		DkSettings::resources.numThumbsLoading--;
+	if (mFetching && Settings::param().resources().numThumbsLoading > 0)
+		Settings::param().resources().numThumbsLoading--;
 
 	thumbWatcher.blockSignals(true);
 	thumbWatcher.cancel();
@@ -374,7 +374,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	thumbWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkThumbNailT::computeCall, mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize));
 
-	DkSettings::resources.numThumbsLoading++;
+	Settings::param().resources().numThumbsLoading++;
 
 	return true;
 }
@@ -395,7 +395,7 @@ void DkThumbNailT::thumbLoaded() {
 		mImgExists = false;
 
 	mFetching = false;
-	DkSettings::resources.numThumbsLoading--;
+	Settings::param().resources().numThumbsLoading--;
 	emit thumbLoadedSignal(!mImg.isNull());
 }
 

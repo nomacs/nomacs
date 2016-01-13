@@ -62,8 +62,6 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
-int nmc::DkUtils::debugLevel = DK_MODULE;
-
 namespace nmc {
 
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
@@ -268,7 +266,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 	QDir qmDir = qApp->applicationDirPath();
 	
 	// find all translations
-	QStringList translationDirs = DkSettings::getTranslationDirs();
+	QStringList translationDirs = Settings::param().getTranslationDirs();
 	QStringList fileNames;
 
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
@@ -284,7 +282,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 		locale.chop(3);
 
 		QTranslator translator;
-		DkSettings::loadTranslation(fileNames[i], translator);
+		Settings::param().loadTranslation(fileNames[i], translator);
 
 		//: this should be the name of the language in which nomacs is translated to
 		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
@@ -295,7 +293,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 		languages << locale;
 	}
 	
-	langCombo->setCurrentIndex(languages.indexOf(DkSettings::global.language));
+	langCombo->setCurrentIndex(languages.indexOf(Settings::param().global().language));
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
@@ -309,46 +307,47 @@ void DkUtils::registerFileVersion() {
 
 	QString version(NOMACS_VERSION);	// default version (we do not know the build)
 
-	try {
-		// get the filename of the executable containing the version resource
-		TCHAR szFilename[MAX_PATH + 1] = {0};
-		if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) {
-			DkFileException("Sorry, I can't read the module fileInfo name\n", __LINE__, __FILE__);
-		}
-
-		// allocate a block of memory for the version info
-		DWORD dummy;
-		DWORD dwSize = GetFileVersionInfoSize(szFilename, &dummy);
-		if (dwSize == 0) {
-			throw DkFileException("The version info size is zero\n", __LINE__, __FILE__);
-		}
-		std::vector<BYTE> bytes(dwSize);
-
-		if (bytes.empty())
-			throw DkFileException("The version info is empty\n", __LINE__, __FILE__);
-
-		// load the version info
-		if (!bytes.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &bytes[0])) {
-			throw DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
-		}
-
-		// get the name and version strings
-		UINT                uiVerLen = 0;
-		VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
-
-		if (!bytes.empty() && !VerQueryValue(&bytes[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
-			throw DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
-		}
-
-		// pFixedInfo contains a lot more information...
-		version = QString::number(HIWORD(pFixedInfo->dwFileVersionMS)) + "."
-			+ QString::number(LOWORD(pFixedInfo->dwFileVersionMS)) + "."
-			+ QString::number(HIWORD(pFixedInfo->dwFileVersionLS)) + "."
-			+ QString::number(LOWORD(pFixedInfo->dwFileVersionLS));
-
-	} catch (DkFileException dfe) {
-		qDebug() << QString::fromStdString(dfe.Msg());
+	// get the filename of the executable containing the version resource
+	TCHAR szFilename[MAX_PATH + 1] = {0};
+	if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) {
+		qWarning() << "Sorry, I can't read the module fileInfo name";
+		return;
 	}
+
+	// allocate a block of memory for the version info
+	DWORD dummy;
+	DWORD dwSize = GetFileVersionInfoSize(szFilename, &dummy);
+	if (dwSize == 0) {
+		qWarning() << "The version info size is zero\n";
+		return;
+	}
+	std::vector<BYTE> bytes(dwSize);
+
+	if (bytes.empty()) {
+		qWarning() << "The version info is empty\n";
+		return;
+	}
+
+	// load the version info
+	if (!bytes.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &bytes[0])) {
+		qWarning() << "Sorry, I can't read the version info\n";
+		return;
+	}
+
+	// get the name and version strings
+	UINT                uiVerLen = 0;
+	VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
+
+	if (!bytes.empty() && !VerQueryValue(&bytes[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
+		qWarning() << "Sorry, I can't get the version values...\n";
+		return;
+	}
+
+	// pFixedInfo contains a lot more information...
+	version = QString::number(HIWORD(pFixedInfo->dwFileVersionMS)) + "."
+		+ QString::number(LOWORD(pFixedInfo->dwFileVersionMS)) + "."
+		+ QString::number(HIWORD(pFixedInfo->dwFileVersionLS)) + "."
+		+ QString::number(LOWORD(pFixedInfo->dwFileVersionLS));
 
 #else
 	QString version(NOMACS_VERSION);	// default version (we do not know the build)
@@ -432,9 +431,9 @@ bool DkUtils::isValid(const QFileInfo& fileInfo) {
 
 bool DkUtils::hasValidSuffix(const QString& fileName) {
 
-	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
+	for (int idx = 0; idx < Settings::param().app().fileFilters.size(); idx++) {
 
-		QRegExp exp = QRegExp(DkSettings::app.fileFilters.at(idx), Qt::CaseInsensitive);
+		QRegExp exp = QRegExp(Settings::param().app().fileFilters.at(idx), Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;

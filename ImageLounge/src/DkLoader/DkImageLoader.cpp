@@ -117,14 +117,14 @@ DkImageLoader::DkImageLoader(const QString& filePath) {
 	mDelayedUpdateTimer.setSingleShot(true);
 	connect(&mDelayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
 
-	//saveDir = DkSettings::global.lastSaveDir;	// loading save dir is obsolete ?!
+	//saveDir = Settings::param().global().lastSaveDir;	// loading save dir is obsolete ?!
 	 
 	QFileInfo fInfo(filePath);
 
 	if (fInfo.exists())
 		loadDir(fInfo.absolutePath());
 	else
-		mCurrentDir = DkSettings::global.lastDir;
+		mCurrentDir = Settings::param().global().lastDir;
 }
 
 /**
@@ -164,7 +164,7 @@ bool DkImageLoader::loadZipArchive(const QString& zipPath) {
 	QStringList fileNameList = JlCompress::getFileList(zipPath);
 	
 	// remove the * in fileFilters
-	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	QStringList fileFiltersClean = Settings::param().app().browseFilters;
 	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 
@@ -244,7 +244,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 
 		QFileInfoList files;
 
-		//newDir.setNameFilters(DkSettings::app.fileFilters);
+		//newDir.setNameFilters(Settings::param().app().fileFilters);
 		//newDir.setSorting(QDir::LocaleAware);		// TODO: extend
 
 		// update save directory
@@ -253,7 +253,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 
 		mFolderKeywords.clear();	// delete key words -> otherwise user may be confused
 
-		if (scanRecursive && DkSettings::global.scanSubFolders)
+		if (scanRecursive && Settings::param().global().scanSubFolders)
 			files = updateSubFolders(mCurrentDir);
 		else 
 			files = getFilteredFileInfoList(mCurrentDir, mIgnoreKeywords, mKeywords, mFolderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
@@ -429,7 +429,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 	if (searchFile) {
 
-		QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : DkSettings::global.recentFiles.first();
+		QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : Settings::param().global().recentFiles.first();
 
 		mTmpFileIdx = findFileIdx(file, mImages);
 
@@ -453,9 +453,9 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	}
 	newFileIdx = mTmpFileIdx + skipIdx;
 
-	//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
+	//qDebug() << "subfolders: " << Settings::param().global().scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
-	if (DkSettings::global.scanSubFolders && mSubFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= mImages.size())) {
+	if (Settings::param().global().scanSubFolders && mSubFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= mImages.size())) {
 
 		int folderIdx = 0;
 
@@ -474,7 +474,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 		qDebug() << "new folder idx: " << folderIdx;
 			
-		//if (DkSettings::global.loop)
+		//if (Settings::param().global().loop)
 		//	folderIdx %= subFolders.size();
 
 		if (folderIdx >= 0 && folderIdx < mSubFolders.size()) {
@@ -531,7 +531,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	}
 
 	// loop the directory
-	if (DkSettings::global.loop) {
+	if (Settings::param().global().loop) {
 		newFileIdx %= mImages.size();
 
 		while (newFileIdx < 0)	// should be hit once
@@ -558,7 +558,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	else if (newFileIdx >= mImages.size()) {
 		QString msg = tr("You have reached the end");
 			
-		if (!DkSettings::global.loop)
+		if (!Settings::param().global().loop)
 			emit setPlayer(false);
 
 		showInfoSignal(msg, 1000);
@@ -607,21 +607,21 @@ void DkImageLoader::loadFileAt(int idx) {
 		if (idx == -1) {
 			idx = mImages.size()-1;
 		}
-		else if (DkSettings::global.loop) {
+		else if (Settings::param().global().loop) {
 			idx %= mImages.size();
 
 			while (idx < 0)
 				idx = mImages.size() + idx;
 
 		}
-		else if (idx < 0 && !DkSettings::global.loop) {
+		else if (idx < 0 && !Settings::param().global().loop) {
 			QString msg = tr("You have reached the beginning");
 			emit showInfoSignal(msg, 1000);
 			return;
 		}
 		else if (idx >= mImages.size()) {
 			QString msg = tr("You have reached the end");
-			if (!DkSettings::global.loop)
+			if (!Settings::param().global().loop)
 				emit(setPlayer(false));
 			emit showInfoSignal(msg, 1000);
 			return;
@@ -727,7 +727,7 @@ bool DkImageLoader::unloadFile() {
 		return true;
 
 	// if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask the user
-	if (mCurrentImage->isEdited() && (DkSettings::sync.syncMode == DkSettings::sync_mode_default)) {
+	if (mCurrentImage->isEdited() && (Settings::param().sync().syncMode == DkSettings::sync_mode_default)) {
 		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(QFileInfo(mCurrentImage->filePath()).fileName()), 
 			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), QApplication::activeWindow());
 
@@ -798,7 +798,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 	bool updatePointer = newImg && mCurrentImage && newImg->filePath() == mCurrentImage->filePath();
 
 	// cancel action if the image is currently loading
-	if (DkSettings::resources.waitForLastImg &&
+	if (Settings::param().resources().waitForLastImg &&
 		mCurrentImage && mCurrentImage->getLoadState() == DkImageContainerT::loading && 
 		newImg && newImg->dirPath() == mCurrentImage->dirPath())
 		return;
@@ -819,7 +819,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 			// anyhow we don't need to save the metadata twice
 			//currentImage->saveMetaDataThreaded();
 
-			if (!DkSettings::resources.cacheMemory)
+			if (!Settings::param().resources().cacheMemory)
 				mCurrentImage->clear();
 
 			mCurrentImage->getLoader()->resetPageIdx();
@@ -959,16 +959,16 @@ void DkImageLoader::downloadFile(const QUrl& url) {
 QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, const QString& fileExt, bool force, bool threaded) {
 
 	// do not save temp images if we are remote control or remote display
-	if (DkSettings::sync.syncMode != DkSettings::sync_mode_default)
+	if (Settings::param().sync().syncMode != DkSettings::sync_mode_default)
 		return QString();
 
-	QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
+	QFileInfo tmpPath = QFileInfo(Settings::param().global().tmpPath + "\\");
 	
-	if (!force && (!DkSettings::global.useTmpPath || !tmpPath.exists())) {
+	if (!force && (!Settings::param().global().useTmpPath || !tmpPath.exists())) {
 		qDebug() << tmpPath.absolutePath() << "does not exist";
 		return QString();
 	}
-	else if ((!DkSettings::global.useTmpPath || !tmpPath.exists())) {
+	else if ((!Settings::param().global().useTmpPath || !tmpPath.exists())) {
 
 #ifdef WIN32
 		
@@ -1021,10 +1021,10 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	QString suffix = imgHasAlpha ? ".png" : ".jpg";
 	QString saveFilterGui;
 
-	for (int idx = 0; idx < DkSettings::app.saveFilters.size(); idx++) {
+	for (int idx = 0; idx < Settings::param().app().saveFilters.size(); idx++) {
 
-		if (DkSettings::app.saveFilters.at(idx).contains(suffix)) {
-			saveFilterGui = DkSettings::app.saveFilters.at(idx);
+		if (Settings::param().app().saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = Settings::param().app().saveFilters.at(idx);
 			break;
 		}
 	}
@@ -1071,7 +1071,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 		int filterIdx = -1;
 
-		QStringList sF = DkSettings::app.saveFilters;
+		QStringList sF = Settings::param().app().saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFileInfo.suffix() + "*", Qt::CaseInsensitive);
@@ -1111,7 +1111,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFileInfo.absoluteFilePath() : QFileInfo(saveFileInfo.absoluteDir(), saveName).absoluteFilePath();
 
 		fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
-			savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
+			savePath, Settings::param().app().saveFilters.join(";;"), &selectedFilter);
 	}
 
 	if (fileName.isEmpty())
@@ -1121,7 +1121,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkSettings::app.saveFilters;
+		QStringList sF = Settings::param().app().saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
@@ -1286,7 +1286,7 @@ void DkImageLoader::imageSaved(const QString& filePath, bool saved) {
  **/ 
 void DkImageLoader::updateHistory() {
 
-	if (!DkSettings::global.logRecentFiles || DkSettings::app.privateMode)
+	if (!Settings::param().global().logRecentFiles || Settings::param().app().privateMode)
 		return;
 
 	if (!mCurrentImage || mCurrentImage->hasImage() != DkImageContainer::loaded || !mCurrentImage->exists())
@@ -1297,47 +1297,47 @@ void DkImageLoader::updateHistory() {
 	// sync with other instances
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("GlobalSettings");
-	DkSettings::global.recentFolders = settings.value("recentFolders", DkSettings::global.recentFolders).toStringList();
-	DkSettings::global.recentFiles = settings.value("recentFiles", DkSettings::global.recentFiles).toStringList();
+	Settings::param().global().recentFolders = settings.value("recentFolders", Settings::param().global().recentFolders).toStringList();
+	Settings::param().global().recentFiles = settings.value("recentFiles", Settings::param().global().recentFiles).toStringList();
 
-	DkSettings::global.lastDir = file.absolutePath();
+	Settings::param().global().lastDir = file.absolutePath();
 
-	DkSettings::global.recentFiles.removeAll(file.absoluteFilePath());
-	DkSettings::global.recentFolders.removeAll(file.absolutePath());
+	Settings::param().global().recentFiles.removeAll(file.absoluteFilePath());
+	Settings::param().global().recentFolders.removeAll(file.absolutePath());
 
 	QStringList tmpRecentFiles;
 
 	// try to collect images from different folders
-	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {
+	for (int idx = 0; idx < Settings::param().global().recentFiles.size(); idx++) {
 		
-		if (DkSettings::global.recentFiles.at(idx).contains(file.absolutePath()))
-			tmpRecentFiles.append(DkSettings::global.recentFiles.at(idx));
+		if (Settings::param().global().recentFiles.at(idx).contains(file.absolutePath()))
+			tmpRecentFiles.append(Settings::param().global().recentFiles.at(idx));
 	}
 
-	if (tmpRecentFiles.size() < qFloor(0.5f*DkSettings::global.numFiles)) {
+	if (tmpRecentFiles.size() < qFloor(0.5f*Settings::param().global().numFiles)) {
 
 		// maximum 4 most recent images from the same folder
 		for (int idx = tmpRecentFiles.size()-1; idx > 3; idx--) {
-			DkSettings::global.recentFiles.removeAll(tmpRecentFiles.at(idx));
+			Settings::param().global().recentFiles.removeAll(tmpRecentFiles.at(idx));
 
 		}
 	}
 
-	DkSettings::global.recentFiles.push_front(file.absoluteFilePath());
-	DkSettings::global.recentFolders.push_front(file.absolutePath());
+	Settings::param().global().recentFiles.push_front(file.absoluteFilePath());
+	Settings::param().global().recentFolders.push_front(file.absolutePath());
 
-	DkSettings::global.recentFiles.removeDuplicates();
-	DkSettings::global.recentFolders.removeDuplicates();
+	Settings::param().global().recentFiles.removeDuplicates();
+	Settings::param().global().recentFolders.removeDuplicates();
 
-	for (int idx = 0; idx < DkSettings::global.recentFiles.size()-DkSettings::global.numFiles-10; idx++)
-		DkSettings::global.recentFiles.pop_back();
+	for (int idx = 0; idx < Settings::param().global().recentFiles.size()-Settings::param().global().numFiles-10; idx++)
+		Settings::param().global().recentFiles.pop_back();
 
-	for (int idx = 0; idx < DkSettings::global.recentFolders.size()-DkSettings::global.numFiles-10; idx++)
-		DkSettings::global.recentFolders.pop_back();
+	for (int idx = 0; idx < Settings::param().global().recentFolders.size()-Settings::param().global().numFiles-10; idx++)
+		Settings::param().global().recentFolders.pop_back();
 
 	// sync with other instances
-	settings.setValue("recentFolders", DkSettings::global.recentFolders);
-	settings.setValue("recentFiles", DkSettings::global.recentFiles);
+	settings.setValue("recentFolders", Settings::param().global().recentFolders);
+	settings.setValue("recentFiles", Settings::param().global().recentFiles);
 	settings.endGroup();
 
 	//DkSettings s = DkSettings();
@@ -1391,7 +1391,7 @@ void DkImageLoader::rotateImage(double angle) {
 	QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData();
 	bool metaDataSet = false;
 
-	if (metaData->hasMetaData() && DkSettings::metaData.saveExifOrientation) {
+	if (metaData->hasMetaData() && Settings::param().metaData().saveExifOrientation) {
 		try {
 			if (!metaData->isJpg())
 				metaData->setThumbnail(thumb);
@@ -1562,7 +1562,7 @@ QStringList DkImageLoader::getFoldersRecursive(const QString& dirPath) {
 	QStringList subFolders;
 	//qDebug() << "scanning recursively: " << dir.absolutePath();
 
-	if (DkSettings::global.scanSubFolders) {
+	if (Settings::param().global().scanSubFolders) {
 
 		QDirIterator dirs(dirPath, QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 	
@@ -1620,7 +1620,7 @@ int DkImageLoader::getNextFolderIdx(int folderIdx) {
 		
 		int tmpNextIdx = folderIdx + idx;
 
-		if (DkSettings::global.loop)
+		if (Settings::param().global().loop)
 			tmpNextIdx %= mSubFolders.size();
 		else if (tmpNextIdx >= mSubFolders.size())
 			return -1;
@@ -1648,7 +1648,7 @@ int DkImageLoader::getPrevFolderIdx(int folderIdx) {
 
 		int tmpPrevIdx = folderIdx - idx;
 
-		if (DkSettings::global.loop && tmpPrevIdx < 0)
+		if (Settings::param().global().loop && tmpPrevIdx < 0)
 			tmpPrevIdx += mSubFolders.size();
 		else if (tmpPrevIdx < 0)
 			return -1;
@@ -1677,13 +1677,13 @@ void DkImageLoader::errorDialog(const QString& msg) const {
 
 void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 
-	if (!imgC || !DkSettings::resources.cacheMemory)
+	if (!imgC || !Settings::param().resources().cacheMemory)
 		return;
 
 	DkTimer dt;
 
 	//// no caching? delete all
-	//if (!DkSettings::resources.cacheMemory) {
+	//if (!Settings::param().resources().cacheMemory) {
 	//	for (int idx = 0; idx < images.size(); idx++) {
 	//		images.at(idx)->clear();
 	//	}
@@ -1706,7 +1706,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			continue;
 		}
 
-		if (idx >= cIdx-1 && idx <= cIdx+DkSettings::resources.maxImagesCached)
+		if (idx >= cIdx-1 && idx <= cIdx+Settings::param().resources().maxImagesCached)
 			mem += mImages.at(idx)->getMemoryUsage();
 		else {
 			mImages.at(idx)->clear();
@@ -1718,11 +1718,11 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			continue;
 		}
 		// fully load the next image
-		else if (idx == cIdx+1 && mem < DkSettings::resources.cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
+		else if (idx == cIdx+1 && mem < Settings::param().resources().cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
 			mImages.at(idx)->loadImageThreaded();
 			qDebug() << "[Cacher] " << mImages.at(idx)->filePath() << " fully cached...";
 		}
-		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
+		else if (idx > cIdx && idx < cIdx+Settings::param().resources().maxImagesCached-2 && mem < Settings::param().resources().cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
 			//dt.getIvl();
 			mImages.at(idx)->fetchFile();		// TODO: crash detected here
 			qDebug() << "[Cacher] " << mImages.at(idx)->filePath() << " file fetched...";
@@ -1771,11 +1771,11 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 	FindClose(MyHandle);
 	
 	// remove the * in fileFilters
-	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	QStringList fileFiltersClean = Settings::param().app().browseFilters;
 	for (QString& filter : fileFiltersClean)
 		filter.replace("*", "");
 
-	qDebug() << "browse filters: " << DkSettings::app.browseFilters;
+	qDebug() << "browse filters: " << Settings::param().app().browseFilters;
 
 	QStringList fileList;
 	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
@@ -1802,7 +1802,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 	// true file list
 	QDir tmpDir = dirPath;
 	tmpDir.setSorting(QDir::LocaleAware);
-	QStringList fileList = tmpDir.entryList(DkSettings::app.browseFilters);
+	QStringList fileList = tmpDir.entryList(Settings::param().app().browseFilters);
 	qDebug() << "Qt, sorted file list computed in: " << dt.getIvl();
 	qDebug() << fileList;
 
@@ -1834,9 +1834,9 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 		fileList = resultList;
 	}
 
-	if (DkSettings::resources.filterDuplicats) {
+	if (Settings::param().resources().filterDuplicats) {
 
-		QString preferredExtension = DkSettings::resources.preferredExtension;
+		QString preferredExtension = Settings::param().resources().preferredExtension;
 		preferredExtension = preferredExtension.replace("*.", "");
 		qDebug() << "preferred extension: " << preferredExtension;
 
@@ -1961,10 +1961,10 @@ void DkImageLoader::appendKeyword(const QString& keyword) {
 
 void DkImageLoader::loadLastDir() {
 
-	if (DkSettings::global.recentFolders.empty())
+	if (Settings::param().global().recentFolders.empty())
 		return;
 
-	setDir(DkSettings::global.recentFolders[0]);
+	setDir(Settings::param().global().recentFolders[0]);
 }
 
 void DkImageLoader::setFolderFilter(const QString& filter) {

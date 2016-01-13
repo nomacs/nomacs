@@ -32,8 +32,6 @@
 #include <QVector>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkError.h"
-
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
 #endif
@@ -87,21 +85,14 @@ namespace nmc {
 // nomacs defines
 class TreeItem;
 
-enum morphTypes {DK_ERODE=0, DK_DILATE};
-enum DebugLevel {DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL};
-enum SpeedLebel {DK_NO_SPEED_UP=0, DK_SPEED_UP, DK_APPROXIMATE};
-
-
 /**
  * This class contains general functions which are useful.
  **/
 class DllExport DkUtils {
 
 private:
-	static int debugLevel;
 
 public:
-
 
 #ifdef WIN32
 	
@@ -415,22 +406,6 @@ public:
 		}
 
 		return strR;
-	};
-
-	/**
-	 * Sets the actual debug level.
-	 * @param l the debug level of the application.
-	 **/
-	static void setDebug(int l) {
-		debugLevel = l;
-	};
-
-	/**
-	 * Returns the current debug level.
-	 * @return the debug level of the application.
-	 **/
-	static int getDebug() {
-		return debugLevel;
 	};
 
 };

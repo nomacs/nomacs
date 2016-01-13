@@ -432,7 +432,7 @@ bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const Q
 
 bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r) {
 
-	switch(DkSettings::global.sortMode) {
+	switch(Settings::param().global().sortMode) {
 
 	case DkSettings::sort_filename:
 #ifdef WIN32
@@ -445,13 +445,13 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 		//		WinAPI, indexed ( 73872 ) files in:  " 63 ms"
 		//		[DkImageLoader]  73872  containers created in  " 1.203 sec"
 		//		[DkImageLoader] after sorting:  " 14.407 sec"
-		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+		if (Settings::param().global().sortDir == DkSettings::sort_ascending)
 			return DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
 		else
 			return !DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
 		break;
 #else
-		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+		if (Settings::param().global().sortDir == DkSettings::sort_ascending)
 			return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
 		else
 			return DkUtils::compFilenameInv(l.fileInfo(), r.fileInfo());
@@ -459,14 +459,14 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 #endif
 
 	case DkSettings::sort_date_created:
-		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+		if (Settings::param().global().sortDir == DkSettings::sort_ascending)
 			return DkUtils::compDateCreated(l.fileInfo(), r.fileInfo());
 		else
 			return DkUtils::compDateCreatedInv(l.fileInfo(), r.fileInfo());
 		break;
 
 	case DkSettings::sort_date_modified:
-		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+		if (Settings::param().global().sortDir == DkSettings::sort_ascending)
 			return DkUtils::compDateModified(l.fileInfo(), r.fileInfo());
 		else
 			return DkUtils::compDateModifiedInv(l.fileInfo(), r.fileInfo());
@@ -543,7 +543,7 @@ void DkImageContainerT::checkForFileUpdates() {
 
 	if (changed) {
 		mFileUpdateTimer.stop();
-		if (DkSettings::global.askToSaveDeletedFiles) {
+		if (Settings::param().global().askToSaveDeletedFiles) {
 			mEdited = changed;
 			emit fileLoadedSignal(true);
 		}
@@ -714,7 +714,7 @@ void DkImageContainerT::loadingFinished() {
 	}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
-	if (mFileBuffer && mFileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
+	if (mFileBuffer && mFileBuffer->size()/(1024.0f*1024.0f) > Settings::param().resources().cacheMemory*0.5f)
 		mFileBuffer->clear();
 	
 	mLoadState = loaded;

@@ -139,16 +139,16 @@ int main(int argc, char *argv[]) {
 	
 	nmc::DkSettings::load();
 
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
-	nmc::DkSettings::app.currentAppMode = mode;
+	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
+	nmc::Settings::param().app().currentAppMode = mode;
 
 	createPluginsPath();
 
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
 
-	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
-	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::Settings::param().global().language).toString() + ".qm";
+	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::Settings::param().global().language).toString() + ".qm";
 	
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
@@ -160,8 +160,8 @@ int main(int argc, char *argv[]) {
 
 	// show pink icons if nomacs is in private mode
 	if(parser.isSet(privateOpt)) {
-		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
-		nmc::DkSettings::app.privateMode = true;
+		nmc::Settings::param().display().iconColor = QColor(136, 0, 125);
+		nmc::Settings::param().app().privateMode = true;
 	}
 
 	if (parser.isSet(modeOpt)) {
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 		w->loadFile(QFileInfo(parser.positionalArguments()[0]).absoluteFilePath());	// update folder + be silent
 		qDebug() << "loading: " << parser.positionalArguments()[0];
 	}
-	else if (nmc::DkSettings::app.showRecentFiles)
+	else if (nmc::Settings::param().app().showRecentFiles)
 		w->showRecentFiles();
 
 	// load directory preview
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 			cw->addTab(filePath);
 	}
 
-	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
+	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::Settings::param().app().currentAppMode).toInt();
 
 	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
 		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
@@ -271,10 +271,10 @@ void createPluginsPath() {
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
+	nmc::Settings::param().global().pluginsDir = pluginsDir.absolutePath();
+	qDebug() << "plugins dir set to: " << nmc::Settings::param().global().pluginsDir;
 
-	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+	QCoreApplication::addLibraryPath(nmc::Settings::param().global().pluginsDir);
 
 	QCoreApplication::addLibraryPath("./imageformats");
 

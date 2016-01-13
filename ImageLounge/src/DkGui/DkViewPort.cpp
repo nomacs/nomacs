@@ -270,10 +270,10 @@ void DkViewPort::setImage(QImage newImg) {
 	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (mViewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
-	//qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
+	//qDebug() << "keep zoom is always: " << (Settings::param().display().keepZoom == DkSettings::zoom_always_keep);
 
-	if (!DkSettings::slideShow.moveSpeed && (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || 
-		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
+	if (!Settings::param().slideShow().moveSpeed && (Settings::param().display().keepZoom == DkSettings::zoom_never_keep || 
+		(Settings::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
 		 mOldImgRect.isEmpty())
 		mWorldMatrix.reset();
 
@@ -292,7 +292,7 @@ void DkViewPort::setImage(QImage newImg) {
 	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
+	if (Settings::param().display().fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
 		mFadeTimer->start();
 		mFadeTime.start();
 	}
@@ -303,7 +303,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	// draw a histogram from the image -> does nothing if the histogram is invisible
 	if (mController->getHistogram()) mController->getHistogram()->drawHistogram(newImg);
-	if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display)
+	if (Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display)
 		tcpSendImage(true);
 
 	emit newImageSignal(&newImg);
@@ -324,7 +324,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	emit enableNoImageSignal(true);
 
-	if (!DkSettings::display.keepZoom || mImgRect != oldImgRect)
+	if (!Settings::param().display().keepZoom || mImgRect != oldImgRect)
 		mWorldMatrix.reset();							
 
 	updateImageMatrix();
@@ -487,12 +487,12 @@ void DkViewPort::showZoom() {
 void DkViewPort::repeatZoom() {
 
 	qDebug() << "repeating...";
-	if ( (DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1) ||
-		(!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
+	if ( (Settings::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton1) ||
+		(!Settings::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
 		zoom(1.1f);
 	}
-	else if (	(!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1) ||
-				( DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
+	else if (	(!Settings::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton1) ||
+				( Settings::param().display().invertZoom && QApplication::mouseButtons() == Qt::XButton2)) {
 		zoom(0.9f);
 	}
 	else {
@@ -502,7 +502,7 @@ void DkViewPort::repeatZoom() {
 
 void DkViewPort::toggleResetMatrix() {
 
-	DkSettings::display.keepZoom = !DkSettings::display.keepZoom;
+	Settings::param().display().keepZoom = !Settings::param().display().keepZoom;
 }
 
 void DkViewPort::updateImageMatrix() {
@@ -580,7 +580,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 
 	// check if we need a synchronization
 	if ((qApp->keyboardModifiers() == mAltMod ||
-		DkSettings::sync.syncMode != DkSettings::sync_mode_default || DkSettings::sync.syncActions) &&
+		Settings::param().sync().syncMode != DkSettings::sync_mode_default || Settings::param().sync().syncActions) &&
 		(hasFocus() || mController->hasFocus())) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = mWorldMatrix.inverted().map(size);
@@ -593,10 +593,10 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 
 void DkViewPort::tcpForceSynchronize() {
 
-	int oldMode = DkSettings::sync.syncMode;
-	DkSettings::sync.syncMode = DkSettings::sync_mode_remote_display;
+	int oldMode = Settings::param().sync().syncMode;
+	Settings::param().sync().syncMode = DkSettings::sync_mode_remote_display;
 	tcpSynchronize();
-	DkSettings::sync.syncMode = oldMode;
+	Settings::param().sync().syncMode = oldMode;
 }
 
 void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
@@ -653,7 +653,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
 		if (!mForceFastRendering && // force?
 			fabs(mImgMatrix.m11()*mWorldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
-			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettings::display.interpolateZoomLevel/100.0f) {	// > max zoom level
+			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)Settings::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
@@ -685,7 +685,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	////in mode zoom/panning
 	//if (worldMatrix.m11() > 1 && !imageInside() && 
-	//	DkSettings::app.showOverview.testBit(DkSettings::app.currentAppMode)) {
+	//	Settings::param().app().showOverview.testBit(Settings::param().app().currentAppMode)) {
 
 	//	if (!zw->isVisible())
 	//		zw->setVisible(true, true);
@@ -864,7 +864,7 @@ void DkViewPort::dragLeaveEvent(QDragLeaveEvent *event) {
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// if zoom on wheel, the additional keys should be used for switching files
-	if (DkSettings::global.zoomOnWheel) {
+	if (Settings::param().global().zoomOnWheel) {
 		if(event->buttons() == Qt::XButton1)
 			loadPrevFileFast();
 		else if(event->buttons() == Qt::XButton2)
@@ -930,9 +930,9 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		moveView(dxy/mWorldMatrix.m11());
 
 		// with shift also a hotkey for fast switching...
-		if ((DkSettings::sync.syncAbsoluteTransform &&
+		if ((Settings::param().sync().syncAbsoluteTransform &&
 			event->modifiers() == (mAltMod | Qt::ShiftModifier)) || 
-			(!DkSettings::sync.syncAbsoluteTransform &&
+			(!Settings::param().sync().syncAbsoluteTransform &&
 			event->modifiers() == (mAltMod))) {
 			
 			if (dxy.x() != 0 || dxy.y() != 0) {
@@ -986,8 +986,8 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 	//if (event->modifiers() & altMod)
 	//	qDebug() << "ALT modifier";
 
-	if ((!DkSettings::global.zoomOnWheel && event->modifiers() != mCtrlMod) || 
-		(DkSettings::global.zoomOnWheel && (event->modifiers() & mCtrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
+	if ((!Settings::param().global().zoomOnWheel && event->modifiers() != mCtrlMod) || 
+		(Settings::param().global().zoomOnWheel && (event->modifiers() & mCtrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();
@@ -1213,7 +1213,7 @@ void DkViewPort::copyImageBuffer() {
 
 void DkViewPort::animateFade() {
 
-	mFadeOpacity = 1.0f-(float)mFadeTime.getTotalTime()/DkSettings::display.fadeSec;
+	mFadeOpacity = 1.0f-(float)mFadeTime.getTotalTime()/Settings::param().display().fadeSec;
 	
 	if (mFadeOpacity <= 0) {
 		mFadeBuffer = QImage();
@@ -1318,8 +1318,8 @@ void DkViewPort::settingsChanged() {
 
 	reloadFile();
 
-	mAltMod = DkSettings::global.altMod;
-	mCtrlMod = DkSettings::global.ctrlMod;
+	mAltMod = Settings::param().global().altMod;
+	mCtrlMod = Settings::param().global().ctrlMod;
 
 	mController->settingsChanged();
 }
@@ -1365,7 +1365,7 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-	if (DkSettings::display.fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
+	if (Settings::param().display().fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
 		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;
@@ -1409,8 +1409,8 @@ void DkViewPort::loadFile(const QString& filePath) {
 	else if (mLoader)
 		mLoader->load(filePath);
 
-	qDebug() << "sync mode: " << (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display);
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || mController->hasFocus()) && mLoader->hasFile())
+	qDebug() << "sync mode: " << (Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display);
+	if ((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || mController->hasFocus()) && mLoader->hasFile())
 		tcpLoadFile(0, filePath);
 }
 
@@ -1432,7 +1432,7 @@ void DkViewPort::loadFile(int skipIdx) {
 		mLoader->changeFile(skipIdx);
 
 	// alt mod
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus())) {
+	if ((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display || Settings::param().sync().syncActions) && (hasFocus() || mController->hasFocus())) {
 		emit sendNewFileSignal((qint16)skipIdx);
 		qDebug() << "emitting load next";
 	}
@@ -1454,8 +1454,8 @@ void DkViewPort::loadFileFast(int skipIdx) {
 	if (!unloadImage())
 		return;
 
-	if (!((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncActions) &&
-		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control)) {
+	if (!((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncActions) &&
+		Settings::param().sync().syncMode == DkSettings::sync_mode_remote_control)) {
 		QApplication::sendPostedEvents();
 
 		int sIdx = skipIdx;
@@ -1485,8 +1485,8 @@ void DkViewPort::loadFileFast(int skipIdx) {
 		}
 	}	
 
-	if (((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncActions) &&
-		DkSettings::sync.syncMode != DkSettings::sync_mode_remote_display) && 
+	if (((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncActions) &&
+		Settings::param().sync().syncMode != DkSettings::sync_mode_remote_display) && 
 		(hasFocus() || 
 		mController->hasFocus())) {
 		emit sendNewFileSignal((qint16)skipIdx);
@@ -1504,7 +1504,7 @@ void DkViewPort::loadFirst() {
 	if (mLoader && !mTestLoaded)
 		mLoader->firstFile();
 
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus()))
+	if ((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display || Settings::param().sync().syncActions) && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1516,33 +1516,33 @@ void DkViewPort::loadLast() {
 	if (mLoader && !mTestLoaded)
 		mLoader->lastFile();
 
-	if ((qApp->keyboardModifiers() == mAltMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && (hasFocus() || mController->hasFocus()))
+	if ((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncMode == DkSettings::sync_mode_remote_display || Settings::param().sync().syncActions) && (hasFocus() || mController->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
 
 void DkViewPort::loadSkipPrev10() {
 
-	loadFileFast(-DkSettings::global.skipImgs);
+	loadFileFast(-Settings::param().global().skipImgs);
 	//unloadImage();
 
 	//if (mLoader && !testLoaded)
-	//	mLoader->changeFile(-DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	//	mLoader->changeFile(-Settings::param().global().skipImgs, (parent->isFullScreen() && Settings::param().slideShow().silentFullscreen));
 
 	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
-		emit sendNewFileSignal((qint16)-DkSettings::global.skipImgs);
+		emit sendNewFileSignal((qint16)-Settings::param().global().skipImgs);
 }
 
 void DkViewPort::loadSkipNext10() {
 
-	loadFileFast(DkSettings::global.skipImgs);
+	loadFileFast(Settings::param().global().skipImgs);
 	//unloadImage();
 
 	//if (mLoader && !testLoaded)
-	//	mLoader->changeFile(DkSettings::global.skipImgs, (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	//	mLoader->changeFile(Settings::param().global().skipImgs, (parent->isFullScreen() && Settings::param().slideShow().silentFullscreen));
 
 	if (qApp->keyboardModifiers() == mAltMod && (hasFocus() || mController->hasFocus()))
-		emit sendNewFileSignal((qint16)DkSettings::global.skipImgs);
+		emit sendNewFileSignal((qint16)Settings::param().global().skipImgs);
 }
 
 void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
@@ -1551,8 +1551,8 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
 	// should be mostly harmless
-	//int oldMode = DkSettings::sync.syncMode;
-	//DkSettings::sync.syncMode = DkSettings::sync_mode_receiveing_command;
+	//int oldMode = Settings::param().sync().syncMode;
+	//Settings::param().sync().syncMode = DkSettings::sync_mode_receiveing_command;
 
 	if (filename.isEmpty()) {
 
@@ -1580,7 +1580,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "loading file: " << filename;
 
-	//DkSettings::sync.syncMode = oldMode;
+	//Settings::param().sync().syncMode = oldMode;
 }
 
 QSharedPointer<DkImageContainerT> DkViewPort::imageContainer() const {
@@ -1834,7 +1834,7 @@ void DkViewPortFrameless::draw(QPainter *painter, float) {
 	else {
 		QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
-		if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
+		if (Settings::param().display().tpPattern && imgQt.hasAlphaChannel()) {
 
 			// don't scale the pattern...
 			QTransform scaleIv;
@@ -1918,7 +1918,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	// TODO: replace hasAlphaChannel with has alphaBorder
-	if (mImgStorage.hasImage() && mImgStorage.getImage().hasAlphaChannel() || !DkSettings::display.showBorder)	// braces
+	if (mImgStorage.hasImage() && mImgStorage.getImage().hasAlphaChannel() || !Settings::param().display().showBorder)	// braces
 		return;
 
 	painter->setBrush(QColor(255, 255, 255, 200));
@@ -2237,13 +2237,13 @@ void DkViewPortContrast::draw(QPainter *painter, float opacity) {
 
 	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
+		painter->fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
 		painter->setWorldMatrixEnabled(true);
 	}
 
 	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
-	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
+	if (Settings::param().display().tpPattern && imgQt.hasAlphaChannel()) {
 
 		// don't scale the pattern...
 		QTransform scaleIv;

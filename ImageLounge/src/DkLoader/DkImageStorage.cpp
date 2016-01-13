@@ -1137,7 +1137,7 @@ QColor DkImage::getMeanColor(const QImage& img) {
 	if (maxColCount > 0)
 		return QColor(qRound((float)qRed(maxCol)/numCols*255), qRound((float)qGreen(maxCol)/numCols*255), qRound((float)qBlue(maxCol)/numCols*255));
 	else
-		return DkSettings::display.hudBgColor;
+		return Settings::param().display().hudBgColor;
 }
 
 
@@ -1161,7 +1161,7 @@ void DkImageStorage::setImage(const QImage& img) {
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
-	DkSettings::display.antiAliasing = antiAliasing;
+	Settings::param().display().antiAliasing = antiAliasing;
 
 	if (!antiAliasing) {
 		mStop = true;
@@ -1180,7 +1180,7 @@ QImage DkImageStorage::getImageConst() const {
 
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 0.5f || mImg.isNull() || !DkSettings::display.antiAliasing)
+	if (factor >= 0.5f || mImg.isNull() || !Settings::param().display().antiAliasing)
 		return mImg;
 
 	// check if we have an image similar to that requested

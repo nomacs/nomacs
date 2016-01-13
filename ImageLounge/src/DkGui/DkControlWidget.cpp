@@ -80,7 +80,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mDelayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
-	int loadSize = qMax(DkSettings::display.iconSize, 64);
+	int loadSize = qMax(Settings::param().display().iconSize, 64);
 	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(loadSize, loadSize), this);
 	mCenterLabel = new DkLabelBg(this, "");
 	mBottomLabel = new DkLabelBg(this, "");
@@ -118,14 +118,14 @@ void DkControlWidget::init() {
 	setMouseTracking(true);
 
 	// connect widgets with their settings
-	mFilePreview->setDisplaySettings(&DkSettings::app.showFilePreview);
-	mMetaDataInfo->setDisplaySettings(&DkSettings::app.showMetaData);
-	mFileInfoLabel->setDisplaySettings(&DkSettings::app.showFileInfoLabel);
-	mPlayer->setDisplaySettings(&DkSettings::app.showPlayer);
-	mHistogram->setDisplaySettings(&DkSettings::app.showHistogram);
-	mCommentWidget->setDisplaySettings(&DkSettings::app.showComment);
-	mZoomWidget->setDisplaySettings(&DkSettings::app.showOverview);
-	mFolderScroll->setDisplaySettings(&DkSettings::app.showScroller);
+	mFilePreview->setDisplaySettings(&Settings::param().app().showFilePreview);
+	mMetaDataInfo->setDisplaySettings(&Settings::param().app().showMetaData);
+	mFileInfoLabel->setDisplaySettings(&Settings::param().app().showFileInfoLabel);
+	mPlayer->setDisplaySettings(&Settings::param().app().showPlayer);
+	mHistogram->setDisplaySettings(&Settings::param().app().showHistogram);
+	mCommentWidget->setDisplaySettings(&Settings::param().app().showComment);
+	mZoomWidget->setDisplaySettings(&Settings::param().app().showOverview);
+	mFolderScroll->setDisplaySettings(&Settings::param().app().showScroller);
 
 	// some adjustments
 	mBottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -381,7 +381,7 @@ void DkControlWidget::showWidgetsSettings() {
 		return;
 	}
 
-	//qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
+	//qDebug() << "current app mode: " << Settings::param().app().currentAppMode;
 
 	showOverview(mZoomWidget->getCurrentDisplaySetting());
 	showPreview(mFilePreview->getCurrentDisplaySetting());

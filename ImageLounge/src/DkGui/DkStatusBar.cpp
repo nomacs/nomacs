@@ -44,7 +44,7 @@ void DkStatusBar::createLayout() {
 	mLabels.resize(status_end);
 
 	setObjectName("DkStatusBar");
-	if (DkSettings::display.toolbarGradient)
+	if (Settings::param().display().toolbarGradient)
 		setObjectName("statusBarWithGradient");	
 
 	for (int idx = 0; idx < mLabels.size(); idx++) {

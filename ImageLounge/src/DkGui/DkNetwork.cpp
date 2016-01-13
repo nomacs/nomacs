@@ -536,8 +536,8 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	DkPeer* syncedPeer = mPeerList.getPeerById(connection->getPeerId());
 	if (!syncedPeer)
 		return;
-	DkSettings::sync.recentSyncNames << syncedPeer->clientName;
-	DkSettings::sync.recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
+	Settings::param().sync().recentSyncNames << syncedPeer->clientName;
+	Settings::param().sync().recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
 	qDebug() << "added " << syncedPeer->clientName << " to recently seen list";
 }
 
@@ -883,8 +883,8 @@ void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersO
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	DkSettings::sync.recentSyncNames << peer->clientName;
-	DkSettings::sync.recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
+	Settings::param().sync().recentSyncNames << peer->clientName;
+	Settings::param().sync().recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
 
 }
 
@@ -1442,7 +1442,7 @@ void DkInstallUpdater::checkForUpdates(bool silent) {
 
 	mSilent = silent;
 
-	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
+	Settings::param().sync().lastUpdateCheck = QDate::currentDate();
 	DkSettings::save();
 
 	QUrl url ("http://download.nomacs.org/repository/Updates.xml");
@@ -1535,7 +1535,7 @@ void DkInstallUpdater::replyFinished(QNetworkReply* reply) {
 			update = result == QMessageBox::Accepted || result == QMessageBox::Yes;
 			
 			if (result == QMessageBox::No)	// do not show again
-				DkSettings::sync.updateDialogShown = true;	
+				Settings::param().sync().updateDialogShown = true;	
 
 			msgBox->deleteLater();
 		}
@@ -1597,7 +1597,7 @@ DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 
 void DkUpdater::checkForUpdates() {
 
-	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
+	Settings::param().sync().lastUpdateCheck = QDate::currentDate();
 
 	DkSettings::save();
 
@@ -1758,8 +1758,8 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		file.close();
 
-		DkSettings::global.setupVersion = mSetupVersion;
-		DkSettings::global.setupPath = absoluteFilePath;
+		Settings::param().global().setupVersion = mSetupVersion;
+		Settings::param().global().setupPath = absoluteFilePath;
 
 		DkSettings::save();
 
@@ -1813,14 +1813,14 @@ void DkTranslationUpdater::checkForUpdates() {
 		mAccessManager.setProxy(listOfProxies[0]);
 	}
 
-	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
+	QUrl url ("http://www.nomacs.org/translations/" + Settings::param().global().language + "/nomacs_" + Settings::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	mReply = mAccessManager.get(QNetworkRequest(url));
 	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
-	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettings::global.language + ".qm");
+	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + Settings::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
@@ -1869,10 +1869,10 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 #endif //  WIN32
 
-	QString translationName = qtTranslation ? "qt_"+ DkSettings::global.language + ".qm" : "nomacs_"+ DkSettings::global.language + ".qm";
+	QString translationName = qtTranslation ? "qt_"+ Settings::param().global().language + ".qm" : "nomacs_"+ Settings::param().global().language + ".qm";
 
 	if (isRemoteFileNewer(lastModifiedRemote, translationName)) {
-		QString basename = qtTranslation ? "qt_" + DkSettings::global.language : "nomacs_" + DkSettings::global.language;
+		QString basename = qtTranslation ? "qt_" + Settings::param().global().language : "nomacs_" + Settings::param().global().language;
 		QString extension = ".qm";
 
 		if (!storageLocation.exists()) {
@@ -1920,7 +1920,7 @@ void DkTranslationUpdater::updateDownloadProgress(qint64 received, qint64 total)
 		return;
 
 	QDateTime lastModifiedRemote = mReply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
-	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
+	QString translationName = "nomacs_"+ Settings::param().global().language + ".qm";
 	qDebug() << "isRemoteFileNewer:" << isRemoteFileNewer(lastModifiedRemote, translationName);
 	if (!isRemoteFileNewer(lastModifiedRemote, translationName)) {
 		updateAborted = true;
@@ -1941,7 +1941,7 @@ void DkTranslationUpdater::updateDownloadProgressQt(qint64 received, qint64 tota
 		return;
 
 	QDateTime lastModifiedRemote = mReplyQt->header(QNetworkRequest::LastModifiedHeader).toDateTime();
-	QString translationName = "qt_"+ DkSettings::global.language + ".qm";
+	QString translationName = "qt_"+ Settings::param().global().language + ".qm";
 	qDebug() << "isRemoteFileNewer:" << isRemoteFileNewer(lastModifiedRemote, translationName);
 	if (!isRemoteFileNewer(lastModifiedRemote, translationName)) {
 		updateAbortedQt = true;

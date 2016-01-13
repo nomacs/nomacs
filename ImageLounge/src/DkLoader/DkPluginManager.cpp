@@ -517,12 +517,12 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 
 	//QDir pluginsDir = QDir(qApp->applicationDirPath());
     //pluginsDir.mkdir("plugins");
-	QDir pluginsDir = DkSettings::global.pluginsDir;
+	QDir pluginsDir = Settings::param().global().pluginsDir;
 	
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
-	qDebug() << "install path: " << DkSettings::global.pluginsDir;
+	qDebug() << "install path: " << Settings::param().global().pluginsDir;
 
 	mPluginDownloader->downloadPlugin(sourceIndex, downloadFileListUrl, downloadPluginsModel->getPluginData().at(selectedRow).name);	
 }
@@ -533,7 +533,7 @@ void DkPluginTableWidget::pluginInstalled(const QModelIndex &index) {
 	downloadPluginsModel->updateInstalledData(index, true);
 	mPluginManager->loadPlugins();
 
-	qDebug() << "plugin saved to: " << DkSettings::global.pluginsDir;
+	qDebug() << "plugin saved to: " << Settings::param().global().pluginsDir;
 }
 
 void DkPluginTableWidget::clearTableFilters(){
@@ -1516,7 +1516,7 @@ void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 	if (!reply)
 		return;
 
-	QDir pluginsDir = DkSettings::global.pluginsDir;
+	QDir pluginsDir = Settings::param().global().pluginsDir;
 
 	QFile file(pluginsDir.absolutePath().append("/").append(mFileName));
 

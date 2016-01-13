@@ -73,8 +73,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	mMaxZoom = 50;
 
 	mBlockZooming = false;
-	mAltMod = DkSettings::global.altMod;
-	mCtrlMod = DkSettings::global.ctrlMod;
+	mAltMod = Settings::param().global().altMod;
+	mCtrlMod = Settings::param().global().ctrlMod;
 
 	mZoomTimer = new QTimer(this);
 	mZoomTimer->setSingleShot(true);
@@ -83,9 +83,9 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 
 	mPattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
 
-	if (DkSettings::display.defaultBackgroundColor) {
+	if (Settings::param().display().defaultBackgroundColor) {
 
-		if (DkSettings::display.toolbarGradient)
+		if (Settings::param().display().toolbarGradient)
 			setObjectName("DkBaseViewPortGradient");
 		else
 			setObjectName("DkBaseViewPortDefaultColor");		
@@ -172,7 +172,7 @@ void DkBaseViewPort::fullView() {
 
 void DkBaseViewPort::togglePattern(bool show) {
 
-	DkSettings::display.tpPattern = show;
+	Settings::param().display().tpPattern = show;
 	update();
 }
 
@@ -300,7 +300,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	
 	emit enableNoImageSignal(!newImg.isNull());
 
-	if (!DkSettings::display.keepZoom || mImgRect != oldImgRect)
+	if (!Settings::param().display().keepZoom || mImgRect != oldImgRect)
 		mWorldMatrix.reset();							
 
 	updateImageMatrix();
@@ -364,7 +364,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
 		if (!mForceFastRendering && // force?
 			fabs(mImgMatrix.m11()*mWorldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
-			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettings::display.interpolateZoomLevel/100.0f) {	// > max zoom level
+			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)Settings::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
 				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
@@ -612,7 +612,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 			setCursor(Qt::OpenHandCursor);
 		else {
 
-			if (!DkSettings::app.showStatusBar)
+			if (!Settings::param().app().showStatusBar)
 				emit showStatusBar(false, false);
 
 			if (cursor().shape() != Qt::ArrowCursor)
@@ -628,7 +628,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
 	float factor = (float)-event->delta();
-	if (DkSettings::display.invertZoom) factor *= -1.0f;
+	if (Settings::param().display().invertZoom) factor *= -1.0f;
 
 	factor /= -1200.0f;
 	factor += 1.0f;
@@ -650,7 +650,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
 	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
+		painter->fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
 		painter->setWorldMatrixEnabled(true);
 	}
 
@@ -663,7 +663,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
 	// opacity == 1.0f -> do not show pattern if we crossfade two images
-	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel() && opacity == 1.0f) {
+	if (Settings::param().display().tpPattern && imgQt.hasAlphaChannel() && opacity == 1.0f) {
 
 		// don't scale the pattern...
 		QTransform scaleIv;

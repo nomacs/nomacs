@@ -601,7 +601,7 @@ DkTransferToolBar::~DkTransferToolBar() {
 void DkTransferToolBar::createIcons() {
 
 	// user needs to decide...
-	//this->setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
+	//this->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
 			
 	mToolBarIcons.resize(icon_toolbar_end);
 
@@ -609,11 +609,11 @@ void DkTransferToolBar::createIcons() {
 	mToolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.svg");
 	mToolBarIcons[icon_toolbar_save] = ICON("", ":/nomacs/img/save.svg");
 
-	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
+	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode) {
 		// now colorize the icons
-		mToolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_reset].pixmap(DkSettings::display.iconSize, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		mToolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_pipette].pixmap(DkSettings::display.iconSize, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		mToolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_save].pixmap(DkSettings::display.iconSize, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_reset].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_pipette].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
+		mToolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_save].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 	}
 	
 	mToolBarActions.resize(toolbar_end);
@@ -884,9 +884,9 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
+	setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
 
-	if (DkSettings::display.toolbarGradient) 
+	if (Settings::param().display().toolbarGradient) 
 		setObjectName("toolBarWithGradient");
 	else {
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
@@ -937,12 +937,12 @@ void DkCropToolBar::createIcons() {
 	mIcons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
 	mIcons[info_icon] = QIcon(":/nomacs/img/info.svg");
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!Settings::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < mIcons.size(); idx++) {
 
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettings::display.iconSize, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettings::display.iconSize, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::On), Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

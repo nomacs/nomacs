@@ -85,6 +85,14 @@ void DkSettings::init() {
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 }
 
+QStringList DkSettings::translatedCamData() const {
+	return scamDataDesc;
+}
+
+QStringList DkSettings::translatedDescriptionData() const {
+	return sdescriptionDesc;
+}
+
 void DkSettings::initFileFilters() {
 
 	if (!app_p.openFilters.empty())
@@ -436,7 +444,7 @@ void DkSettings::load() {
 
 void DkSettings::save(bool force) {
 		
-	if (DkSettings::app.privateMode)
+	if (Settings::param().app().privateMode)
 		return;
 
 	QSettings& settings = Settings::instance().getSettings();
@@ -804,40 +812,40 @@ QFileInfo DkSettings::getSettingsFile() {
 	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo");
 }
 
-App& DkSettings::app() {
+DkSettings::App & DkSettings::app() {
 	return app_p;
 }
 
-Global& DkSettings::global() {
+DkSettings::Global & DkSettings::global() {
 	return global_p;
 }
 
-Display & DkSettings::display() {
-	display_p;
+DkSettings::Display & DkSettings::display() {
+	return display_p;
 }
 
-SlideShow & DkSettings::slideShow() {
+DkSettings::SlideShow & DkSettings::slideShow() {
 	return slideShow_p;
 }
 
-Sync & DkSettings::sync() {
+DkSettings::Sync & DkSettings::sync() {
 	return sync_p;
 }
 
-MetaData & DkSettings::metaData() {
-	return metaData_p;
+DkSettings::MetaData & DkSettings::metaData() {
+	return meta_p;
 }
 
-Resources & DkSettings::resources() {
+DkSettings::Resources & DkSettings::resources() {
 	return resources_p;
 }
 
 Settings::Settings() {
 	
 	m_params = QSharedPointer<DkSettings>(new DkSettings());
-	m_settings = DkSettings::isPortable() ? QSharedPointer<QSettings>(new QSettings(DkSettings::getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
+	m_settings = m_params->isPortable() ? QSharedPointer<QSettings>(new QSettings(m_params->getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
 
-	qDebug() << "portable nomacs: " << m_params.isPortable();
+	qDebug() << "portable nomacs: " << m_params->isPortable();
 }
 
 Settings& Settings::instance() { 
@@ -866,7 +874,7 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 #ifdef WIN32
 	
 	// do not register if nomacs is portable
-	if (DkSettings::isPortable() && !showDefaultApps)
+	if (Settings::param().isPortable() && !showDefaultApps)
 		return;
 
 	// TODO: this is still not working for me on win8??
@@ -879,10 +887,10 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 	settings.setValue("ApplicationIcon", QApplication::applicationFilePath() + ",0");
 
 	settings.beginGroup("FileAssociations");
-	QStringList rFilters = DkSettings::app.openFilters;
+	QStringList rFilters = Settings::param().app().openFilters;
 
-	for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++)
-		rFilters.removeAll(DkSettings::app.containerFilters.at(idx));
+	for (int idx = 0; idx < Settings::param().app().containerFilters.size(); idx++)
+		rFilters.removeAll(Settings::param().app().containerFilters.at(idx));
 
 	for (int idx = 0; idx < rFilters.size(); idx++) {
 
@@ -988,7 +996,7 @@ QString DkFileFilterHandling::getIconID(const QString& ext) const {
 	else if (ext.contains(".tif") || ext.contains(".tiff") || ext.contains(".bmp") || ext.contains(".pgm") || ext.contains(".webp")) {
 		return "4";
 	}
-	else if (!DkSettings::app.rawFilters.filter(ext).empty()) {
+	else if (!Settings::param().app().rawFilters.filter(ext).empty()) {
 		return "5";
 	}
 	else
@@ -1017,7 +1025,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 
 #ifdef WIN32
 
-	if (DkSettings::app.privateMode)
+	if (Settings::param().app().privateMode)
 		return;
 	
 	QString friendlyName;

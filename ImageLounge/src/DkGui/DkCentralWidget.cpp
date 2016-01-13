@@ -251,7 +251,7 @@ DkCentralWidget::~DkCentralWidget() {
 void DkCentralWidget::createLayout() {
 
 	mThumbScrollWidget = new DkThumbScrollWidget(this);
-	mThumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
+	mThumbScrollWidget->getThumbWidget()->setBackgroundBrush(Settings::param().slideShow().backgroundColor);
 	mThumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 	
 	// add actions
