@@ -20,9 +20,6 @@ add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 # include macros needed
 include("cmake/Utils.cmake")
 

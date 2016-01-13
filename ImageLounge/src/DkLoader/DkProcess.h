@@ -54,7 +54,7 @@ class QImage;
 namespace nmc {
 
 // nomacs defines
-class DllLoaderExport DkImageContainer;
+class DkImageContainer;
 
 class DllLoaderExport DkAbstractBatch {
 
