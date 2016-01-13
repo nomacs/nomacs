@@ -73,21 +73,10 @@ protected:
 	QStringList getExtensions(const QString& filter, QString& friendlyName) const;
 };
 
-class DllExport Settings {
-
-public:
-	static Settings& instance();
-	QSettings& getSettings();
-	
-private:
-	Settings();
-
-	QSharedPointer<QSettings> m_settings;
-};
-
 class DllExport DkSettings {
 
 public:
+	DkSettings();
 
 	enum modes {
 		mode_default = 0,
@@ -293,51 +282,61 @@ public:
 		display_end
 	};
 
-	static QStringList scamDataDesc;
-	static QStringList sdescriptionDesc;
+	void initFileFilters();
+	void loadTranslation(const QString& fileName, QTranslator& translator);
+	QStringList getTranslationDirs();
 
-	static App& getAppSettings();
-	static Display& getDisplaySettings();
-	static Global& getGlobalSettings();
-	static SlideShow& getSlideShowSettings();
-	static Sync& getSyncSettings();
-	static MetaData& getMetaDataSettings();
-	static Resources& getResourceSettings();
-	static void initFileFilters();
-	static void loadTranslation(const QString& fileName, QTranslator& translator);
-	static QStringList getTranslationDirs();
+	void load();
+	void save(bool force = false);
+	void setToDefaultSettings();
 
-	static void load();
-	static void save(bool force = false);
-	static void setToDefaultSettings();
+	bool isPortable();
+	QFileInfo getSettingsFile();
 
-	static bool isPortable();
-	static QFileInfo getSettingsFile();
-
-	static App& app;
-	static Global& global;
-	static Display& display;
-	static SlideShow& slideShow;
-	static Sync& sync;
-	static MetaData& metaData;
-	static Resources& resources;
+	App& app();
+	Global& global();
+	Display& display();
+	SlideShow& slideShow();
+	Sync& sync();
+	MetaData& metaData();
+	Resources& resources();
 
 protected:
-	static App app_p;
-	static Global global_p;
-	static Display display_p;
-	static SlideShow slideShow_p;
-	static Sync sync_p;
-	static MetaData meta_p;
-	static Resources resources_p;
+	QStringList scamDataDesc;
+	QStringList sdescriptionDesc;
 
-	static App app_d;
-	static Global global_d;
-	static Display display_d;
-	static SlideShow slideShow_d;
-	static Sync sync_d;
-	static MetaData meta_d;
-	static Resources resources_d;
+	App app_p;
+	Global global_p;
+	Display display_p;
+	SlideShow slideShow_p;
+	Sync sync_p;
+	MetaData meta_p;
+	Resources resources_p;
+
+	App app_d;
+	Global global_d;
+	Display display_d;
+	SlideShow slideShow_d;
+	Sync sync_d;
+	MetaData meta_d;
+	Resources resources_d;
+
+	void init();
+};
+
+class DllExport Settings {
+
+public:
+	static Settings& instance();
+	static DkSettings& param();		// convenience
+	QSettings& getSettings();
+	DkSettings& settings();			// rename
+
+private:
+	Settings();
+
+	QSharedPointer<QSettings> m_settings;
+	QSharedPointer<DkSettings> m_params;
 };
 
 };

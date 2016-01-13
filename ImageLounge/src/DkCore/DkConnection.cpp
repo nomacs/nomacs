@@ -633,7 +633,7 @@ void DkLANConnection::sendGreetingMessage(const QString& currentTitle) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << QHostInfo::localHostName();
-	ds << DkSettings::sync.allowFile;
+	ds << Settings::instance().settings().sync().allowFile;
 	ds << DkSettings::sync.allowImage;
 	ds << DkSettings::sync.allowPosition;
 	ds << DkSettings::sync.allowTransformation;

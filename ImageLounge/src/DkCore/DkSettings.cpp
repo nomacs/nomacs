@@ -49,88 +49,40 @@
 
 namespace nmc {
 
-QStringList DkSettings::scamDataDesc = QStringList() << 
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Orientation") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Make") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Model") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Aperture Value") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","ISO") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Flash") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Focal Length") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time");
+DkSettings::DkSettings() {
 
-QStringList DkSettings::sdescriptionDesc = QStringList() <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","User Comment") << 
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time Original") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Description") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator Title") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","City") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Country") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Headline") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Caption") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Copyright") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Keywords") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
-												QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
-
-
-// settings
-DkSettings::App DkSettings::app_p;
-DkSettings::Display DkSettings::display_p;
-DkSettings::Global DkSettings::global_p;
-DkSettings::SlideShow DkSettings::slideShow_p;
-DkSettings::Sync DkSettings::sync_p;
-DkSettings::MetaData DkSettings::meta_p;
-DkSettings::Resources DkSettings::resources_p;
-
-// load settings
-DkSettings::App DkSettings::app_d;
-DkSettings::Display DkSettings::display_d;
-DkSettings::Global DkSettings::global_d;
-DkSettings::SlideShow DkSettings::slideShow_d;
-DkSettings::Sync DkSettings::sync_d;
-DkSettings::MetaData DkSettings::meta_d;
-DkSettings::Resources DkSettings::resources_d;
-
-DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
-DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
-DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
-DkSettings::SlideShow& DkSettings::slideShow = DkSettings::getSlideShowSettings();
-DkSettings::Sync& DkSettings::sync = DkSettings::getSyncSettings();
-DkSettings::MetaData& DkSettings::metaData = DkSettings::getMetaDataSettings();
-DkSettings::Resources& DkSettings::resources = DkSettings::getResourceSettings();
-
-DkSettings::App& DkSettings::getAppSettings() {
-	return app_p;
+	init();
 }
 
-DkSettings::Display& DkSettings::getDisplaySettings() {
-	return display_p;
-}
+void DkSettings::init() {
+	scamDataDesc = QStringList() << 
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Orientation") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Make") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Model") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Aperture Value") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","ISO") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Flash") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Focal Length") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time");
 
-DkSettings::Global& DkSettings::getGlobalSettings() {
-	return global_p;
-}
-
-DkSettings::SlideShow& DkSettings::getSlideShowSettings() {
-	return slideShow_p;
-}
-
-DkSettings::Sync& DkSettings::getSyncSettings() {
-	return sync_p;
-}
-
-DkSettings::MetaData& DkSettings::getMetaDataSettings() {
-	return meta_p;
-}
-
-DkSettings::Resources& DkSettings::getResourceSettings() {
-	return resources_p;
+	sdescriptionDesc = QStringList() <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","User Comment") << 
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time Original") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Description") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator Title") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","City") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Country") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Headline") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Caption") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Copyright") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Keywords") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 }
 
 void DkSettings::initFileFilters() {
@@ -273,7 +225,7 @@ QStringList DkSettings::getTranslationDirs() {
 	QStringList translationDirs;
 	
   #ifdef  WIN32
-	if (!DkSettings::isPortable())
+	if (!isPortable())
 		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
   #endif	
 #if QT_VERSION >= 0x050000
@@ -852,9 +804,40 @@ QFileInfo DkSettings::getSettingsFile() {
 	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo");
 }
 
+App& DkSettings::app() {
+	return app_p;
+}
+
+Global& DkSettings::global() {
+	return global_p;
+}
+
+Display & DkSettings::display() {
+	display_p;
+}
+
+SlideShow & DkSettings::slideShow() {
+	return slideShow_p;
+}
+
+Sync & DkSettings::sync() {
+	return sync_p;
+}
+
+MetaData & DkSettings::metaData() {
+	return metaData_p;
+}
+
+Resources & DkSettings::resources() {
+	return resources_p;
+}
+
 Settings::Settings() {
+	
+	m_params = QSharedPointer<DkSettings>(new DkSettings());
 	m_settings = DkSettings::isPortable() ? QSharedPointer<QSettings>(new QSettings(DkSettings::getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
-	qDebug() << "portable nomacs: " << DkSettings::isPortable();
+
+	qDebug() << "portable nomacs: " << m_params.isPortable();
 }
 
 Settings& Settings::instance() { 
@@ -864,9 +847,18 @@ Settings& Settings::instance() {
 	return *inst; 
 }
 
+DkSettings& Settings::param() {
+	return instance().settings();
+}
+
 QSettings& Settings::getSettings() {
 	//QMutexLocker(&mutex);
 	return *m_settings;
+}
+
+DkSettings& Settings::settings() {
+	//QMutexLocker(&mutex);
+	return *m_params;
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
