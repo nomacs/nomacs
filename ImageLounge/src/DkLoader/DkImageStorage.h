@@ -49,13 +49,13 @@
 #pragma warning(disable: 4251)	// TODO: remove
 #endif
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -71,7 +71,7 @@ namespace nmc {
  * DkImage holds some basic image processing
  * methods that are generally needed.
  **/ 
-class DllExport DkImage {
+class DllLoaderExport DkImage {
 
 public:
 
@@ -123,7 +123,7 @@ public:
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 };
 
-class DllExport DkImageStorage : public QObject {
+class DllLoaderExport DkImageStorage : public QObject {
 	Q_OBJECT
 
 public:

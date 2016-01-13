@@ -1,3 +1,10 @@
+nomacs 3.1.0
+============
+- New preferences
+- Statusbar improved (e.g. zoom level)
+- All Icons are SVG
+- Compression added to Batch
+
 nomacs 3.0.0
 ============
 - New online installer (Windows)

@@ -32,13 +32,13 @@
 #include <QImage>
 #pragma warning(pop)	// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -62,7 +62,7 @@ namespace nmc {
  * calls the load routines
  * and saves the image or the image metadata.
  **/ 
-class DllExport DkImageLoader : public QObject {
+class DllLoaderExport DkImageLoader : public QObject {
 	Q_OBJECT
 
 public:

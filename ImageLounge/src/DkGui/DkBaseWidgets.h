@@ -35,13 +35,13 @@
 #include <QTimer>
 #pragma warning(pop)	// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllGuiExport
 #endif
 #endif
 
@@ -51,7 +51,7 @@ class QGraphicsOpacityEffect;
 
 namespace nmc {
 
-class DllExport DkWidget : public QWidget {
+class DllGuiExport DkWidget : public QWidget {
 	Q_OBJECT
 
 public:
@@ -100,7 +100,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 };
 
-class DllExport DkNamedWidget : public DkWidget {
+class DllGuiExport DkNamedWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -112,7 +112,7 @@ protected:
 	QString mName;
 };
 
-class DllExport DkLabel : public QLabel {
+class DllGuiExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:

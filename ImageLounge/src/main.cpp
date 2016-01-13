@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 #if !defined(Q_WS_MAC) && !defined(QT5)
 	QApplication::setGraphicsSystem("raster");
 //#elif !defined(QT5)
-//	if (mode != nmc::DkSettings::mode_frameless)
+//	if (mode != nmc::Settings::param().mode_frameless)
 //		QApplication::setGraphicsSystem("raster");
 #endif
 	
@@ -134,10 +134,10 @@ int main(int argc, char *argv[]) {
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
 
-	nmc::DkSettings::initFileFilters();
+	nmc::Settings::param().initFileFilters();
 	QSettings& settings = nmc::Settings::instance().getSettings();
 	
-	nmc::DkSettings::load();
+	nmc::Settings::param().load();	// load in constructor??
 
 	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
 	nmc::Settings::param().app().currentAppMode = mode;
@@ -151,11 +151,11 @@ int main(int argc, char *argv[]) {
 	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::Settings::param().global().language).toString() + ".qm";
 	
 	QTranslator translator;
-	nmc::DkSettings::loadTranslation(translationName, translator);
+	nmc::Settings::param().loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
 	
 	QTranslator translatorQt;
-	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
+	nmc::Settings::param().loadTranslation(translationNameQt, translatorQt);
 	a.installTranslator(&translatorQt);
 
 	// show pink icons if nomacs is in private mode
@@ -168,11 +168,11 @@ int main(int argc, char *argv[]) {
 		QString pm = parser.value(modeOpt);// .trimmed();
 
 		if (pm == "default")
-			mode = nmc::DkSettings::mode_default;
+			mode = nmc::Settings::param().mode_default;
 		else if (pm == "frameless")
-			mode = nmc::DkSettings::mode_frameless;
+			mode = nmc::Settings::param().mode_frameless;
 		else if (pm == "pseudocolor")
-			mode = nmc::DkSettings::mode_contrast;
+			mode = nmc::Settings::param().mode_contrast;
 		else
 			qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
 	}
@@ -182,11 +182,11 @@ int main(int argc, char *argv[]) {
 	nmc::DkTimer dt;
 
 	// initialize nomacs
-	if (mode == nmc::DkSettings::mode_frameless) {
+	if (mode == nmc::Settings::param().mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
-	else if (mode == nmc::DkSettings::mode_contrast) {
+	else if (mode == nmc::Settings::param().mode_contrast) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
@@ -228,9 +228,9 @@ int main(int argc, char *argv[]) {
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::Settings::param().app().currentAppMode).toInt();
 
-	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
-		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
-		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		||
+	if (fullScreenMode == nmc::Settings::param().mode_default_fullscreen		||
+		fullScreenMode == nmc::Settings::param().mode_frameless_fullscreen	||
+		fullScreenMode == nmc::Settings::param().mode_contrast_fullscreen		||
 		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
 		qDebug() << "trying to enter fullscreen...";

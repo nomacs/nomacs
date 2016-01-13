@@ -36,15 +36,27 @@
 #include <QUrl>
 #pragma warning(pop)		// no warnings from includes - end
 
+#pragma warning(disable: 4251)	// TODO: remove
+
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
+#else
+#define DllLoaderExport
+#endif
+#endif
+
 // Qt defines
 class QImage;
 
 namespace nmc {
 
 // nomacs defines
-class DkImageContainer;
+class DllLoaderExport DkImageContainer;
 
-class DkAbstractBatch {
+class DllLoaderExport DkAbstractBatch {
 
 public:
 	DkAbstractBatch() {};
@@ -67,7 +79,7 @@ private:
 
 };
 
-class DkResizeBatch : public DkAbstractBatch {
+class DllLoaderExport DkResizeBatch : public DkAbstractBatch {
 
 public:
 	DkResizeBatch();
@@ -107,7 +119,7 @@ protected:
 };
 
 #ifdef WITH_PLUGINS
-class DkPluginBatch : public DkAbstractBatch {
+class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
 
 public:
 	DkPluginBatch();
@@ -125,7 +137,7 @@ protected:
 };
 #endif
 
-class DkBatchTransform : public DkAbstractBatch {
+class DllLoaderExport DkBatchTransform : public DkAbstractBatch {
 
 public:
 	DkBatchTransform();
@@ -142,7 +154,7 @@ protected:
 	bool mVerticalFlip = false;
 };
 
-class DkBatchProcess {
+class DllLoaderExport DkBatchProcess {
 
 public:
 	DkBatchProcess(const QString& filePathIn = QString(), const QString& filePathOut = QString());
@@ -179,7 +191,7 @@ protected:
 	QStringList mLogStrings;
 };
 
-class DkBatchConfig {
+class DllLoaderExport DkBatchConfig {
 
 public:
 	DkBatchConfig() { init(); };
@@ -226,7 +238,7 @@ protected:
 	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
 };
 
-class DkBatchProcessing : public QObject {
+class DllLoaderExport DkBatchProcessing : public QObject {
 	Q_OBJECT
 
 public:

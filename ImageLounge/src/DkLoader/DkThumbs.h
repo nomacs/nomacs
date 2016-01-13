@@ -36,13 +36,15 @@
 #include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#pragma warning(disable: 4251)	// TODO: remove
+
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -53,7 +55,7 @@ namespace nmc {
 /**
  * This class holds thumbnails.
  **/ 
-class DllExport DkThumbNail {
+class DllLoaderExport DkThumbNail {
 
 public:
 	enum {
@@ -165,7 +167,7 @@ protected:
 	int mMinThumbSize;
 };
 
-class DkThumbNailT : public QObject, public DkThumbNail {
+class DllLoaderExport DkThumbNailT : public QObject, public DkThumbNail {
 	Q_OBJECT
 
 public:

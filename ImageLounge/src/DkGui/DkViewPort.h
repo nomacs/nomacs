@@ -32,15 +32,20 @@
 #include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
-
 #include <QTimer>	// needed to construct mTimers
 #pragma warning(pop)		// no warnings from includes - end
+
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
+#else
+#define DllGuiExport
+#endif
+#endif
+
+#pragma warning(disable: 4275)	// no dll interface of base class
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -61,7 +66,7 @@ class DkPeer;
 class DkRotatingRect;
 class DkPluginInterface;
 
-class DllExport DkViewPort : public DkBaseViewPort {
+class DllGuiExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
@@ -236,7 +241,7 @@ protected:
 
 };
 
-class DllExport DkViewPortFrameless : public DkViewPort {
+class DllGuiExport DkViewPortFrameless : public DkViewPort {
 	Q_OBJECT
 
 public:
@@ -282,7 +287,7 @@ protected:
 	QRect mMainScreen;	// TODO: let user choose which one to take
 };
 
-class DllExport DkViewPortContrast : public DkViewPort {
+class DllGuiExport DkViewPortContrast : public DkViewPort {
 	Q_OBJECT
 
 public:

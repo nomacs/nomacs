@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkWidgets.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
+#include "DkBasicWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -507,7 +508,7 @@ void DkGeneralPreference::on_defaultSettings_clicked() {
 	int answer = QMessageBox::warning(this, tr("Reset All Settings"), tr("This will reset all personal settings!"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 	
 	if (answer == QMessageBox::Yes) {
-		DkSettings::setToDefaultSettings();
+		Settings::param().setToDefaultSettings();
 		emit infoSignal(tr("Please Restart nomacs to apply changes"));
 		qDebug() << "answer is: " << answer << "flushing all settings...";
 	}
@@ -841,7 +842,7 @@ DkFileAssociationsPreference::~DkFileAssociationsPreference() {
 	if (mSaveSettings) {
 		writeSettings();
 		mSaveSettings = false;
-		DkSettings::save();
+		Settings::param().save();
 	}
 }
 

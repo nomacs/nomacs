@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "BorderLayout.h"
 #include "DkWidgets.h"
 #include "DkSettings.h"
+#include "DkBasicWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -188,7 +189,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 
 void DkSettingsDialog::setToDefault() {
 
-	DkSettings::setToDefaultSettings();
+	Settings::param().setToDefaultSettings();
 	initWidgets();
 
 	// for main window

@@ -114,7 +114,7 @@ struct QPairSecondComparer {
 	}
 };
 
-class DllExport DkPluginActionManager : public QObject {
+class DllLoaderExport DkPluginActionManager : public QObject {
 	Q_OBJECT
 
 public:
@@ -149,7 +149,7 @@ protected:
 	QVector<QMenu*> mPluginSubMenus;
 };
 
-class DkPluginManager {
+class DllLoaderExport DkPluginManager {
 
 public:
 	static DkPluginManager& instance();
@@ -199,7 +199,7 @@ private:
 };
 
 // Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
-class DkPluginManagerDialog : public QDialog {
+class DllLoaderExport DkPluginManagerDialog : public QDialog {
 	Q_OBJECT
 
 public:

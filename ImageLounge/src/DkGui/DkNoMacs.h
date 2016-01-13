@@ -42,13 +42,13 @@
 	#pragma warning(disable: 4251)	// TODO: remove
 #endif
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllGuiExport
 #endif
 #endif
 
@@ -132,7 +132,7 @@ enum PluginMenuActions {
 };
 
 
-class DllExport DkNoMacs : public QMainWindow {
+class DllGuiExport DkNoMacs : public QMainWindow {
 	Q_OBJECT
 
 public:
@@ -351,7 +351,7 @@ protected:
 	bool mPluginMenuCreated = false;
 };
 
-class DllExport DkNoMacsSync : public DkNoMacs {
+class DllGuiExport DkNoMacsSync : public DkNoMacs {
 	Q_OBJECT
 
 public:
@@ -405,7 +405,7 @@ protected:
 
 };
 
-class DllExport DkNoMacsIpl : public DkNoMacsSync {
+class DllGuiExport DkNoMacsIpl : public DkNoMacsSync {
 	Q_OBJECT
 
 public:
@@ -414,7 +414,7 @@ public:
 
 
 
-class DllExport DkNoMacsFrameless : public DkNoMacs {
+class DllGuiExport DkNoMacsFrameless : public DkNoMacs {
 	Q_OBJECT
 
 public:
@@ -437,7 +437,7 @@ protected:
 	QDesktopWidget* mDesktop = 0;
 };
 
-class DllExport DkNoMacsContrast : public DkNoMacsSync {
+class DllGuiExport DkNoMacsContrast : public DkNoMacsSync {
 	Q_OBJECT
 
 public:

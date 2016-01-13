@@ -640,7 +640,7 @@ protected:
  * Uses animation from the path
  * to display it in a DkLabel.
  */
-class DllExport DkAnimationLabel : public DkLabel {
+class DllGuiExport DkAnimationLabel : public DkLabel {
 
 public:
 	DkAnimationLabel(QString animationPath = QString(), QWidget* parent = 0);

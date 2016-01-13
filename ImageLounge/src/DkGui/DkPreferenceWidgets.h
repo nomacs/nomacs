@@ -36,13 +36,15 @@
 #include <QList>
 #pragma warning(pop)
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#pragma warning(disable: 4251)	// TODO: remove
+
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllGuiExport
 #endif
 #endif
 
@@ -57,7 +59,7 @@ namespace nmc {
 class DkWorkingDirWidget;
 
 // extend this class if you want to add general preference functions
-class DllExport DkPreferenceTabWidget : public DkNamedWidget {
+class DllGuiExport DkPreferenceTabWidget : public DkNamedWidget {
 	Q_OBJECT
 
 public:
@@ -81,7 +83,7 @@ protected:
 	QIcon mIcon;
 };
 
-class DllExport DkTabEntryWidget : public QPushButton {
+class DllGuiExport DkTabEntryWidget : public QPushButton {
 	Q_OBJECT
 
 public:
@@ -92,7 +94,7 @@ protected:
 
 };
 
-class DllExport DkPreferenceWidget : public DkWidget {
+class DllGuiExport DkPreferenceWidget : public DkWidget {
 	Q_OBJECT
 
 public:

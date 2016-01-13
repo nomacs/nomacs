@@ -32,6 +32,8 @@
 #include <QVector>
 #pragma warning(pop)		// no warnings from includes - end
 
+#pragma warning(disable: 4251)	// TODO: remove
+
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
 #endif
@@ -58,13 +60,13 @@
 #define CV_PI 3.141592653589793238462643383279
 #endif
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllCoreExport
 #endif
 #endif
 
@@ -88,7 +90,7 @@ class TreeItem;
 /**
  * This class contains general functions which are useful.
  **/
-class DllExport DkUtils {
+class DllCoreExport DkUtils {
 
 private:
 
@@ -410,7 +412,7 @@ public:
 
 };
 
-class DkMemory {
+class DllCoreExport DkMemory {
 
 public:
 
@@ -418,7 +420,7 @@ public:
 	static double getFreeMemory();
 };
 
-class DllExport DkFileNameConverter {
+class DllCoreExport DkFileNameConverter {
 
 public:
 	DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx);
@@ -437,7 +439,7 @@ protected:
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
-class TreeItem {
+class DllCoreExport TreeItem {
 
 public:
 	TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);

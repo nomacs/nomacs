@@ -34,6 +34,7 @@
 #include <QImage>
 #pragma warning(pop)
 
+#pragma warning(disable: 4251)	// TODO: remove
 //#include "DkImageStorage.h"
 
 #ifndef WIN32
@@ -51,13 +52,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -69,7 +70,7 @@ namespace nmc {
 class DkMetaDataT;
 
 #ifdef WITH_QUAZIP
-class DllExport DkZipContainer {
+class DllLoaderExport DkZipContainer {
 
 public:
 	DkZipContainer(const QString& fileName);
@@ -98,7 +99,7 @@ protected:
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.
  **/ 
-class DkBasicLoader : public QObject {
+class DllLoaderExport DkBasicLoader : public QObject {
 	Q_OBJECT
 
 public:

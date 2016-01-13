@@ -35,8 +35,20 @@
 #include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
 
+#pragma warning(disable: 4251)
+
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
+
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
+#else
+#define DllGuiExport
+#endif
 #endif
 
 // Qt defines
@@ -47,7 +59,7 @@ namespace nmc {
 static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
 
-class DkConnection : public QTcpSocket {
+class DllGuiExport DkConnection : public QTcpSocket {
 	Q_OBJECT;
 
 	public:
@@ -142,7 +154,7 @@ class DkConnection : public QTcpSocket {
 		quint16 mPeerId;
 };
 
-class DkLocalConnection : public DkConnection {
+class DllGuiExport DkLocalConnection : public DkConnection {
 	Q_OBJECT;
 
 	public:
@@ -175,7 +187,7 @@ class DkLocalConnection : public DkConnection {
 		LocalDataType mCurrentLocalDataType = Undefined;
 };
 
-class DkLANConnection : public DkConnection {
+class DllGuiExport DkLANConnection : public DkConnection {
 	Q_OBJECT;
 
 	public:
@@ -233,7 +245,7 @@ class DkLANConnection : public DkConnection {
 };
 
 
-class DkRCConnection : public DkLANConnection {
+class DllGuiExport DkRCConnection : public DkLANConnection {
 	Q_OBJECT
 
 	public:

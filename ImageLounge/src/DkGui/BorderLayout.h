@@ -47,17 +47,17 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllGuiExport
 #endif
 #endif
 
-class DllExport BorderLayout : public QLayout {
+class DllGuiExport BorderLayout : public QLayout {
 
 public:
      enum Position { West, North, South, East, Center };

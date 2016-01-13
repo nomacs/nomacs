@@ -32,13 +32,13 @@
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -55,7 +55,7 @@ class DkManagerThread;
 class DkTcpMenu;
 class DkPluginActionManager;
 
-class DkAppManager : public QObject {
+class DllLoaderExport DkAppManager : public QObject {
 	Q_OBJECT
 
 public:
@@ -98,7 +98,7 @@ protected:
 	bool mFirstTime = true;
 };
 
-class DllExport DkActionManager {
+class DllLoaderExport DkActionManager {
 
 public:
 	static DkActionManager& instance();

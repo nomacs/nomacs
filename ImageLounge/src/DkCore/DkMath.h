@@ -68,13 +68,13 @@ int cvFloor(float num);
 #undef min
 #undef max
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllCoreExport
 #endif
 #endif
 
@@ -326,7 +326,7 @@ public:
 /**
  * A simple 2D vector class.
  */
-class DllExport DkVector {
+class DllCoreExport DkVector {
 
 public:
 	
@@ -878,7 +878,7 @@ public:
 #endif
 };
 
-class DllExport DkRotatingRect {
+class DllCoreExport DkRotatingRect {
 
 public:
 	DkRotatingRect(QRectF rect = QRectF());

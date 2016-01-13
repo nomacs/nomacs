@@ -32,13 +32,13 @@
 #include <QMessageBox>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -48,7 +48,7 @@ class QCheckBox;
 
 namespace nmc {
 
-class DllExport DkMessageBox : public QDialog {
+class DllLoaderExport DkMessageBox : public QDialog {
 	Q_OBJECT
 
 public:

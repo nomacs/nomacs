@@ -37,13 +37,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllCoreExport
 #endif
 #endif
 
@@ -54,7 +54,7 @@ namespace nmc {
 
 class DkWhiteListViewModel;
 
-class DkFileFilterHandling {
+class DllCoreExport DkFileFilterHandling {
 
 public:
 	DkFileFilterHandling() {};
@@ -73,7 +73,7 @@ protected:
 	QStringList getExtensions(const QString& filter, QString& friendlyName) const;
 };
 
-class DllExport DkSettings {
+class DllCoreExport DkSettings {
 
 public:
 	DkSettings();
@@ -327,7 +327,7 @@ protected:
 	void init();
 };
 
-class DllExport Settings {
+class DllCoreExport Settings {
 
 public:
 	static Settings& instance();

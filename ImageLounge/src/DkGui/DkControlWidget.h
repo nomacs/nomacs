@@ -27,18 +27,20 @@
 
 #pragma once
 
+#include "DkImageContainer.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllGuiExport
 #endif
 #endif
 
@@ -71,12 +73,11 @@ class DkLabelBg;
 class DkAnimationLabel;
 class DkPluginViewPort;
 class DkMetaDataT;
-class DkImageContainerT;
 class DkDelayedInfo;
 class DkOverview;
 class DkViewPortInterface;
 
-class DllExport DkControlWidget : public QWidget {
+class DllGuiExport DkControlWidget : public QWidget {
 	Q_OBJECT
 
 public:

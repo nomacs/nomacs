@@ -32,13 +32,13 @@
 #include <QWidget>
 #pragma warning(pop)
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -53,7 +53,7 @@ namespace nmc {
 
 // nomacs defines
 
-class DkSlider : public QWidget {
+class DllLoaderExport DkSlider : public QWidget {
 	Q_OBJECT
 
 public:
@@ -83,7 +83,7 @@ protected:
 	QSpinBox* sliderBox;
 };
 
-class DkColorChooser : public QWidget {
+class DllLoaderExport DkColorChooser : public QWidget {
 	Q_OBJECT
 
 public:

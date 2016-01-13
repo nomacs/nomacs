@@ -35,13 +35,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllLoaderExport
 #endif
 #endif
 
@@ -55,7 +55,7 @@ class DkMetaDataT;
 class DkZipContainer;
 class FileDownloader;
 
-class DllExport DkImageContainer {
+class DllLoaderExport DkImageContainer {
 
 public:
 	enum {
@@ -144,7 +144,7 @@ private:
 bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);
 bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
-class DllExport DkImageContainerT : public QObject, public DkImageContainer {
+class DllLoaderExport DkImageContainerT : public QObject, public DkImageContainer {
 	Q_OBJECT
 
 public:

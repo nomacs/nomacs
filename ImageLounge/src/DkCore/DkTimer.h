@@ -32,13 +32,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QObject>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllExport
-#ifdef DK_DLL_EXPORT
-#define DllExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllExport
+#define DllCoreExport
 #endif
 #endif
 
@@ -49,7 +49,7 @@ namespace nmc {
  * This class is designed to measure the time of a method, especially
  * intervals and the total time can be measured.
  **/
-class DllExport DkTimer {
+class DllCoreExport DkTimer {
 
 protected:
 	clock_t firstTick;	/**< the first tick**/
