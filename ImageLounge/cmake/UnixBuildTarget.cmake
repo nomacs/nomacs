@@ -36,7 +36,7 @@ if(NOT ENABLE_PLUGINS)
   #  desktop file
   install(FILES nomacs.desktop DESTINATION share/applications)
   #  icon
-  install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
+  install(FILES src/img/nomacs.svg DESTINATION share/pixmaps)
   #  translations
   install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
   #  manpage
@@ -114,7 +114,7 @@ else()
   #  desktop file
   install(FILES nomacs.desktop DESTINATION share/applications)
   #  icon
-  install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
+  install(FILES src/img/nomacs.svg DESTINATION share/pixmaps)
   #  translations
   install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
   #  manpage

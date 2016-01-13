@@ -873,6 +873,10 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 
 #ifdef WIN32
 	
+	// do not register if nomacs is portable
+	if (DkSettings::isPortable() && !showDefaultApps)
+		return;
+
 	// TODO: this is still not working for me on win8??
 	QString capName = "Capabilities";
 	QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\" + capName;
