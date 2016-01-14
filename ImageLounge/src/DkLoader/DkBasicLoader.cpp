@@ -97,8 +97,10 @@
 #endif
 
 #else
+#ifdef WIN32
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
+#endif
 #endif
 
 #pragma warning(pop)
