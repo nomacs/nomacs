@@ -513,6 +513,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 	}
 
+#ifdef WITH_QUAZIP
 	if (mCurrentImage && (newFileIdx < 0 || newFileIdx >= mImages.size()) && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
 
 		// load the zip again and go on from there
@@ -523,6 +524,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 		return getSkippedImage(newFileIdx);
 	}
+#endif
 
 	// this should never happen!
 	if (mImages.empty()) {
