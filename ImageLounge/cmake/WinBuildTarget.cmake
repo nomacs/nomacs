@@ -17,7 +17,7 @@ link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_D
 set(CHANGLOG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/changelog.txt)
 add_executable(${BINARY_NAME} WIN32  MACOSX_BUNDLE ${NOMACS_EXE_SOURCES} ${NOMACS_EXE_HEADERS} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC} ${CHANGLOG_FILE}) #changelog is added here, so that i appears in visual studio
 set_source_files_properties(${CHANGLOG_FILE} PROPERTIES HEADER_FILE_ONLY TRUE) # define that changelog should not be compiled
-target_link_libraries(${BINARY_NAME} ${LIB_GUI_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_NAME} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY} ${WEBP_LIBRARY}) 
+target_link_libraries(${BINARY_NAME} ${LIB_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_NAME} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY} ${WEBP_LIBRARY}) 
 		
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
@@ -40,7 +40,6 @@ target_link_libraries(${DLL_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_NAME} ${EXIV2_LI
 
 add_dependencies(${DLL_LOADER_NAME} ${DLL_CORE_NAME})
 add_dependencies(${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME})
-add_dependencies(${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME})
 add_dependencies(${BINARY_NAME} ${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} ${QUAZIP_DEPENDENCY} ${LIBQPSD_LIBRARY} ${WEBP_LIBRARY}) 
 
 target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
@@ -52,6 +51,8 @@ qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport 
 qt5_use_modules(${DLL_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 qt5_use_modules(${DLL_LOADER_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
+
+# qt_wrap_cpp(${DLL_NAME} ${GUI_SOURCES} ${LOADER_HEADERS});
 
 # core flags
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -89,8 +90,6 @@ set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKE
 set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
 set_target_properties(${DLL_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_NAME})
 
-
-# LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
 target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY} ${WEBP_LIBRARY}) 
 
 SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)

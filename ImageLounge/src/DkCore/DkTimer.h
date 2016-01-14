@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #elif DK_DLL_IMPORT
 #define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllCoreExport
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 

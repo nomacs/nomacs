@@ -74,7 +74,7 @@ int cvFloor(float num);
 #elif DK_DLL_IMPORT
 #define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllCoreExport
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 

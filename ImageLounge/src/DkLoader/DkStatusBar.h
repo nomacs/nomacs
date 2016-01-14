@@ -39,7 +39,7 @@
 #elif DK_DLL_IMPORT
 #define DllLoaderExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport
+#define DllLoaderExport Q_DECL_IMPORT
 #endif
 #endif
 

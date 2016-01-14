@@ -2620,9 +2620,10 @@ void DkNoMacsSync::initLanClient() {
 		mLanClient = 0;
 		mRcClient = 0;
 
-		DkActionManager::instance().lanMenu()->setEnabled(false);
-		DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
-		DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setEnabled(false);
+		// TODO: refactor - uncomment again...
+		//DkActionManager::instance().lanMenu()->setEnabled(false);
+		//DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
+		//DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setEnabled(false);
 		return;
 	}
 

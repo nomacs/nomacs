@@ -40,7 +40,7 @@
 #elif DK_DLL_IMPORT
 #define DllGuiExport Q_DECL_IMPORT
 #else
-#define DllGuiExport
+#define DllGuiExport Q_DECL_IMPORT
 #endif
 #endif
 
