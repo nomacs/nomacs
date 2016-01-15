@@ -103,7 +103,8 @@ unset(OpenCV_DIR)
 # unset(OpenCV_DIR CACHE) # maa that always set it to default!
 
 if(ENABLE_OPENCV)
-	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+	find_package(OpenCV REQUIRED core imgproc)
+	
 	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
 		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
 		set(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
