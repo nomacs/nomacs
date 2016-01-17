@@ -36,7 +36,6 @@
 #include "DkMenu.h"
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
-#include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
 #include "DkThumbsWidgets.h"
@@ -141,7 +140,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	mTrainDialog = 0;
 	mExplorer = 0;
 	mMetaDataDock = 0;
-	mSettingsDialog = 0;
 	mPrintPreviewDialog = 0;
 	mThumbsDock = 0;
 	mQuickAccess = 0;
@@ -2311,22 +2309,6 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	else 
 		bar->setMessage("", DkStatusBar::status_filesize_info);
 
-}
-
-void DkNoMacs::openSettings() {
-
-	if (!mSettingsDialog) {
-		mSettingsDialog = new DkSettingsDialog(this);
-		connect(mSettingsDialog, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
-		connect(mSettingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
-		connect(mSettingsDialog, SIGNAL(languageChanged()), this, SLOT(restartWithTranslationUpdate()));
-		connect(mSettingsDialog, SIGNAL(settingsChangedRestart()), this, SLOT(restart()));
-		connect(mSettingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
-	}
-
-	mSettingsDialog->exec();
-
-	qDebug() << "hier könnte ihre werbung stehen...";
 }
 
 void DkNoMacs::settingsChanged() {

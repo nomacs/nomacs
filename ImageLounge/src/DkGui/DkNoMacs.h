@@ -64,7 +64,6 @@ namespace nmc {
 
 class DkTcpMenu;
 class DkCompressDialog;
-class DkSettingsDialog;
 class DkOpacityDialog;
 class DkResizeDialog;
 class DkUpdateDialog;
@@ -170,7 +169,6 @@ public slots:
 	void toggleFullScreen();
 	void enterFullScreen();
 	void exitFullScreen();
-	void openSettings();
 	void showExplorer(bool show, bool saveSettings = true);
 	void showMetaDataDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
@@ -316,7 +314,6 @@ protected:
 	DkMetaDataDock* mMetaDataDock = 0;
 	DkDockWidget* mThumbsDock = 0;
 	DkExportTiffDialog* mExportTiffDialog = 0;
-	DkSettingsDialog* mSettingsDialog = 0;
 	DkThumbsSaver* mThumbSaver = 0;
 	DkImageManipulationDialog* mImgManipulationDialog = 0;
 
