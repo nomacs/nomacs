@@ -466,6 +466,7 @@ public:
 	void createMenus(QWidget* parent);
 	
 	//QMenu* createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient);
+	void addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMenu* lanMenu);
 
 	QAction* action(FileMenuActions action) const;
 	QAction* action(SortMenuActions action) const;

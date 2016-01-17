@@ -594,6 +594,31 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 //	return mSyncMenu;
 //}
 
+void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMenu* lanMenu) {
+
+	mSyncMenu = syncMenu;
+	mLocalMenu = localMenu;
+	mLanMenu = lanMenu;
+
+	mSyncMenu->addMenu(localMenu);
+	mSyncMenu->addMenu(lanMenu);
+
+	mSyncMenu->addAction(mSyncActions[menu_sync_remote_control]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_remote_display]);
+	mSyncMenu->addAction(mLanActions[menu_lan_image]);
+	mSyncMenu->addSeparator();
+	
+	mSyncMenu->addAction(mSyncActions[menu_sync]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
+#ifdef WITH_UPNP
+	// disable this action since it does not work using herqq
+	mSyncMenu->addAction(syncActions[menu_sync_start_upnp]);
+#endif // WITH_UPNP
+
+}
+
 QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 
 	mHelpMenu = new QMenu(QObject::tr("&?"), parent);

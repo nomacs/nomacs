@@ -1998,6 +1998,9 @@ void DkManagerThread::connectClient() {
 	if (!parent)
 		return;
 
+	// this is definitely not elegant
+	// we connect on the thread (don't know exactly why)
+	// however, the issues we get is some nasty includes here...
 	DkViewPort* vp = parent->viewport();
 
 	connect(this, SIGNAL(clientInitializedSignal()), parent, SLOT(clientInitialized()));

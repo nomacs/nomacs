@@ -2712,7 +2712,19 @@ void DkNoMacsSync::createMenu() {
 
 	DkNoMacs::createMenu();
 
-	// TODO: refactor uncomment
+	DkActionManager& am = DkActionManager::instance();
+	
+	// local host menu
+	DkTcpMenu* localMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, mLocalClient);
+	localMenu->showNoClientsFound(true);
+	
+	// add connect all action
+	localMenu->addTcpAction(am.action(DkActionManager::menu_sync_connect_all));
+	
+	// LAN menu
+	DkTcpMenu* lanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, mLanClient);	// TODO: replace
+
+	am.addSyncMenu(mSyncMenu, localMenu, lanMenu);
 	//DkActionManager::instance().createSyncMenu(mSyncMenu, mLocalClient, mLanClient);
 }
 
