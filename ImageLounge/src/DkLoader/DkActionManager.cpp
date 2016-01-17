@@ -560,40 +560,6 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	return mToolsMenu;
 }
 
-//QMenu* DkActionManager::createSyncMenu(QMenu* syncMenu, DkManagerThread* localClient, DkManagerThread* lanClient) {
-//
-//	mSyncMenu = syncMenu;
-//
-//	// local host menu
-//	mLocalMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, localClient);
-//	mLocalMenu->showNoClientsFound(true);
-//
-//	// add connect all action
-//	mLocalMenu->addTcpAction(mSyncActions[menu_sync_connect_all]);
-//	
-//	mSyncMenu->addMenu(mLocalMenu);
-//
-//	// LAN menu
-//	mLanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, lanClient);	// TODO: replace
-//	mSyncMenu->addMenu(mLanMenu);
-//
-//	mSyncMenu->addAction(mSyncActions[menu_sync_remote_control]);
-//	mSyncMenu->addAction(mSyncActions[menu_sync_remote_display]);
-//	mSyncMenu->addAction(mLanActions[menu_lan_image]);
-//	mSyncMenu->addSeparator();
-//
-//	mSyncMenu->addAction(mSyncActions[menu_sync]);
-//	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
-//	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
-//	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
-//#ifdef WITH_UPNP
-//	// disable this action since it does not work using herqq
-//	//mSyncMenu->addAction(syncActions[menu_sync_start_upnp]);
-//#endif // WITH_UPNP
-//
-//	return mSyncMenu;
-//}
-
 void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMenu* lanMenu) {
 
 	mSyncMenu = syncMenu;

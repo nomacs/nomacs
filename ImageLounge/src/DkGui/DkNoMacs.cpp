@@ -2620,10 +2620,9 @@ void DkNoMacsSync::initLanClient() {
 		mLanClient = 0;
 		mRcClient = 0;
 
-		// TODO: refactor - uncomment again...
-		//DkActionManager::instance().lanMenu()->setEnabled(false);
-		//DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
-		//DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setEnabled(false);
+		DkActionManager::instance().lanMenu()->setEnabled(false);
+		DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
+		DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setEnabled(false);
 		return;
 	}
 
@@ -2717,7 +2716,6 @@ void DkNoMacsSync::createMenu() {
 	// local host menu
 	DkTcpMenu* localMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, mLocalClient);
 	localMenu->showNoClientsFound(true);
-	
 	// add connect all action
 	localMenu->addTcpAction(am.action(DkActionManager::menu_sync_connect_all));
 	
@@ -2725,7 +2723,6 @@ void DkNoMacsSync::createMenu() {
 	DkTcpMenu* lanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, mLanClient);	// TODO: replace
 
 	am.addSyncMenu(mSyncMenu, localMenu, lanMenu);
-	//DkActionManager::instance().createSyncMenu(mSyncMenu, mLocalClient, mLanClient);
 }
 
 // mouse events
