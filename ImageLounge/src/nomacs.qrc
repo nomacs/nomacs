@@ -73,7 +73,7 @@
         <file>img/dummy.svg</file>
         <file>img/settings.svg</file>
         <file>img/display-settings.svg</file>
-		<file>img/advanced-settings.svg</file>
+        <file>img/advanced-settings.svg</file>
         <file>descriptions/nomacs-device.xml</file>
         <file>descriptions/nomacs-service.xml</file>
         <file>descriptions/nomacs_avtransport_scpd.xml</file>
@@ -81,5 +81,6 @@
         <file>descriptions/nomacs_mediarenderer_description.xml</file>
         <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
         <file>stylesheet.css</file>
+        <file>img/power.svg</file>
     </qresource>
 </RCC>

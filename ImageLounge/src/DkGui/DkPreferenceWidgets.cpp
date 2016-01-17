@@ -67,6 +67,7 @@ DkPreferenceWidget::DkPreferenceWidget(QWidget* parent) : DkWidget(parent) {
 
 	QAction* previousAction = new QAction(tr("previous"), this);
 	previousAction->setShortcut(Qt::Key_Up);
+	previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
 	addAction(previousAction);
 }
@@ -77,10 +78,21 @@ void DkPreferenceWidget::createLayout() {
 	QWidget* tabs = new QWidget(this);
 	tabs->setObjectName("DkPreferenceTabs");
 
+	QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/power.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
+	QPushButton* restartButton = new QPushButton(pm, "", this);
+	restartButton->setObjectName("DkPlayerButton");
+	restartButton->setFlat(true);
+	restartButton->setIconSize(QSize(32, 32));
+	restartButton->setObjectName("DkRestartButton");
+	restartButton->setStatusTip(tr("Restart nomacs"));
+	connect(restartButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
+
 	mTabLayout = new QVBoxLayout(tabs);
 	mTabLayout->setContentsMargins(0, 60, 0, 0);
 	mTabLayout->setSpacing(0);
 	mTabLayout->setAlignment(Qt::AlignTop);
+	mTabLayout->addStretch();
+	mTabLayout->addWidget(restartButton);
 
 	// create central widget
 	QWidget* centralWidget = new QWidget(this);
@@ -105,7 +117,6 @@ void DkPreferenceWidget::createLayout() {
 	QVBoxLayout* sL = new QVBoxLayout(this);
 	sL->setContentsMargins(1, 1, 1, 1);	// 1 to get the border
 	sL->addWidget(scrollArea);
-
 }
 
 void DkPreferenceWidget::addTabWidget(DkPreferenceTabWidget* tabWidget) {
@@ -114,7 +125,7 @@ void DkPreferenceWidget::addTabWidget(DkPreferenceTabWidget* tabWidget) {
 	mCentralLayout->addWidget(tabWidget);
 
 	DkTabEntryWidget* tabEntry = new DkTabEntryWidget(tabWidget->icon(), tabWidget->name(), this);
-	mTabLayout->addWidget(tabEntry);
+	mTabLayout->insertWidget(mTabLayout->count()-2, tabEntry);	// -2 -> insert before stretch
 	connect(tabEntry, SIGNAL(clicked()), this, SLOT(changeTab()));
 	mTabEntries.append(tabEntry);
 
@@ -182,7 +193,7 @@ void DkPreferenceTabWidget::createLayout() {
 	mLayout->setContentsMargins(0, 0, 0, 0);
 	mLayout->setAlignment(Qt::AlignTop);
 	mLayout->addWidget(titleLabel, 0, 0);
-	mLayout->addWidget(mInfoLabel, 2, 0);
+	mLayout->addWidget(mInfoLabel, 2, 0, Qt::AlignBottom);
 }
 
 void DkPreferenceTabWidget::setWidget(QWidget* w) {

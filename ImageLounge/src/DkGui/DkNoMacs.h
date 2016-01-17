@@ -165,7 +165,6 @@ signals:
 	void sendQuitLocalClientsSignal() const;
 
 public slots:
-	void restart();
 	void toggleFullScreen();
 	void enterFullScreen();
 	void exitFullScreen();

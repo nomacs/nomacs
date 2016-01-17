@@ -108,6 +108,9 @@ public:
 	void previousTab();
 	void nextTab();
 
+signals:
+	void restartSignal() const;
+
 protected:
 	void createLayout();
 

@@ -954,24 +954,6 @@ void DkNoMacs::readSettings() {
 	restoreState(settings.value("windowState").toByteArray());
 }
 
-void DkNoMacs::restart() {
-	
-	if (!viewport()) 
-		return;
-
-	QString exe = QApplication::applicationFilePath();
-	QStringList args;
-
-	if (getTabWidget()->getCurrentImage())
-		args.append(getTabWidget()->getCurrentImage()->filePath());
-
-	bool started = mProcess.startDetached(exe, args);
-
-	// close me if the new instance started
-	if (started)
-		close();
-}
-
 void DkNoMacs::toggleFullScreen() {
 
 	if (isFullScreen())
@@ -1640,9 +1622,8 @@ void DkNoMacs::trainFormat() {
 
 	if (okPressed && getTabWidget()->getCurrentImageLoader()) {
 		getTabWidget()->getCurrentImageLoader()->load(mTrainDialog->getAcceptedFile());
-		restart();	// quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
+		getTabWidget()->restart();	// quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
 	}
-
 
 }
 

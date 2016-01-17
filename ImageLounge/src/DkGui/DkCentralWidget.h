@@ -141,7 +141,7 @@ signals:
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageHasGPSSignal(bool) const;
-
+	
 public slots:
 	void imageLoaded(QSharedPointer<DkImageContainerT> img);
 	void currentTabChanged(int idx);
@@ -166,6 +166,7 @@ public slots:
 	void loadDirToTab(const QString& dirPath);
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 	void openPreferences();
+	void restart() const;
 
 protected:
 	DkViewPort* mViewport = 0;

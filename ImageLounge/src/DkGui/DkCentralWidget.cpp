@@ -272,6 +272,7 @@ void DkCentralWidget::createLayout() {
 
 	// add preference widget ------------------------------
 	mPreferenceWidget = new DkPreferenceWidget(this);
+	connect(mPreferenceWidget, SIGNAL(restartSignal()), this, SLOT(restart()));
 	
 	// add actions
 	mPreferenceWidget->addActions(am.fileActions().toList());
@@ -753,6 +754,7 @@ void DkCentralWidget::showPreferences(bool show) {
 		// create the preferences...
 		if (!mPreferenceWidget) {
 			mPreferenceWidget = new DkPreferenceWidget(this);
+			connect(mPreferenceWidget, SIGNAL(restartSignal()), this, SLOT(restart()));
 		}
 		
 		switchWidget(mWidgets[preference_widget]);
@@ -816,6 +818,25 @@ int DkCentralWidget::currentViewMode() const {
 		return DkTabInfo::tab_empty;
 
 	return mTabInfos[mTabbar->currentIndex()]->getMode();
+}
+
+void DkCentralWidget::restart() const {
+
+	// safe settings first - since the intention of a restart is often a global settings change
+	Settings::param().save();
+
+	QString exe = QApplication::applicationFilePath();
+	QStringList args;
+
+	if (getCurrentImage())
+		args.append(getCurrentImage()->filePath());
+
+	QProcess p;
+	bool started = p.startDetached(exe, args);
+
+	// close me if the new instance started
+	if (started)
+		QApplication::closeAllWindows();
 }
 
 QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
