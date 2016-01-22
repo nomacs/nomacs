@@ -121,6 +121,16 @@ void DkImageContainer::clear() {
 	init();
 }
 
+void DkImageContainer::undo() {
+
+	getLoader()->undo();
+}
+
+void DkImageContainer::redo() {
+
+	getLoader()->redo();
+}
+
 QFileInfo DkImageContainer::fileInfo() const {
 	return mFileInfo;
 }
@@ -260,15 +270,15 @@ QImage DkImageContainer::image() {
 	return mLoader->image();
 }
 
-void DkImageContainer::setImage(const QImage& img) {
+void DkImageContainer::setImage(const QImage& img, const QString& editName) {
 
-	setImage(img, mFilePath);
+	setImage(img, editName, mFilePath);
 }
 
-void DkImageContainer::setImage(const QImage& img, const QString& filePath) {
+void DkImageContainer::setImage(const QImage& img, const QString& editName, const QString& filePath) {
 
 	setFilePath(mFilePath);
-	getLoader()->setImage(img, filePath);
+	getLoader()->setImage(img, editName, filePath);
 	mEdited = true;
 }
 

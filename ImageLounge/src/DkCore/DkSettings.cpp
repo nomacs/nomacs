@@ -413,6 +413,7 @@ void DkSettings::load() {
 	settings.beginGroup("ResourceSettings");
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
+	resources_p.historyMemory = settings.value("historyMemory", resources_p.historyMemory).toFloat();
 	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toInt();
 	resources_p.waitForLastImg = settings.value("waitForLastImg", resources_p.waitForLastImg).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
@@ -655,6 +656,8 @@ void DkSettings::save(bool force) {
 
 	if (!force && resources_p.cacheMemory != resources_d.cacheMemory)
 		settings.setValue("cacheMemory", resources_p.cacheMemory);
+	if (!force && resources_p.historyMemory != resources_d.historyMemory)
+		settings.setValue("historyMemory", resources_p.historyMemory);
 	if (!force && resources_p.maxImagesCached != resources_d.maxImagesCached)
 		settings.setValue("maxImagesCached", resources_p.maxImagesCached);
 	if (!force && resources_p.waitForLastImg != resources_d.waitForLastImg)
@@ -788,6 +791,7 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.syncActions = false;
 
 	resources_p.cacheMemory = 0;
+	resources_p.historyMemory = 128;
 	resources_p.maxImagesCached = 5;
 	resources_p.filterRawImages = true;
 	resources_p.loadRawThumb = raw_thumb_always;

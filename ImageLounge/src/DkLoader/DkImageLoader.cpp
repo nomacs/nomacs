@@ -39,6 +39,7 @@
 #include "DkSaveDialog.h"
 #include "DkUtils.h"
 #include "DkStatusBar.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -116,6 +117,9 @@ DkImageLoader::DkImageLoader(const QString& filePath) {
 
 	mDelayedUpdateTimer.setSingleShot(true);
 	connect(&mDelayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
+
+	connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
+	connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), SIGNAL(triggered()), this, SLOT(redo()));
 
 	//saveDir = Settings::param().global().lastSaveDir;	// loading save dir is obsolete ?!
 	 
@@ -1917,6 +1921,24 @@ int DkImageLoader::numFiles() const {
 	return mImages.size();
 };
 
+void DkImageLoader::undo() {
+
+	if (!mCurrentImage)
+		return;
+
+	mCurrentImage->undo();
+	emit imageUpdatedSignal(mCurrentImage);
+}
+
+void DkImageLoader::redo() {
+
+	if (!mCurrentImage)
+		return;
+
+	mCurrentImage->redo();
+	emit imageUpdatedSignal(mCurrentImage);
+}
+
 /**
 	* Returns the currently loaded image.
 	* @return QImage the current image
@@ -2011,12 +2033,12 @@ void DkImageLoader::setSaveDir(const QString& dirPath) {
  * Sets the current image to img.
  * @param img the loader's new image.
  **/ 
-QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage& img, const QString& editFilePath) {
+QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage& img, const QString& editName, const QString& editFilePath) {
 	
 	qDebug() << "edited file: " << editFilePath;
 
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFilePath);
-	newImg->setImage(img, editFilePath);
+	newImg->setImage(img, editName, editFilePath);
 	
 	setCurrentImage(newImg);
 	emit imageUpdatedSignal(mCurrentImage);

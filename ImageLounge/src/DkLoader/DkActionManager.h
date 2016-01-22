@@ -145,6 +145,8 @@ public:
 		menu_edit_rotate_cw,
 		menu_edit_rotate_ccw,
 		menu_edit_rotate_180,
+		menu_edit_undo,
+		menu_edit_redo,
 		menu_edit_copy,
 		menu_edit_copy_buffer,
 		menu_edit_copy_color,

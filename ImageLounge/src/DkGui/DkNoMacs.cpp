@@ -799,7 +799,7 @@ void DkNoMacs::flipImageHorizontal() {
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Flipped"));
 }
 
 void DkNoMacs::flipImageVertical() {
@@ -817,7 +817,7 @@ void DkNoMacs::flipImageVertical() {
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Flipped"));
 
 }
 
@@ -836,7 +836,7 @@ void DkNoMacs::invertImage() {
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot Invert the Image..."));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Inverted"));
 
 }
 
@@ -860,7 +860,7 @@ void DkNoMacs::convert2gray() {
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot convert the Image..."));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Grayscale"));
 }
 
 void DkNoMacs::normalizeImage() {
@@ -879,7 +879,7 @@ void DkNoMacs::normalizeImage() {
 	if (!normalized || img.isNull())
 		vp->getController()->setInfo(tr("The Image is Already Normalized..."));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Normalized"));
 }
 
 void DkNoMacs::autoAdjustImage() {
@@ -898,7 +898,7 @@ void DkNoMacs::autoAdjustImage() {
 	if (!normalized || img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot Auto Adjust"));
 	else
-		vp->setEditedImage(img);
+		vp->setEditedImage(img, tr("Auto Adjust"));
 }
 
 void DkNoMacs::unsharpMask() {
@@ -910,7 +910,7 @@ void DkNoMacs::unsharpMask() {
 	int answer = unsharpDialog->exec();
 	if (answer == QDialog::Accepted) {
 		QImage editedImage = unsharpDialog->getImage();
-		viewport()->setEditedImage(editedImage);
+		viewport()->setEditedImage(editedImage, tr("Unsharp Mask"));
 	}
 
 	unsharpDialog->deleteLater();
@@ -930,7 +930,7 @@ void DkNoMacs::tinyPlanet() {
 
 	if (answer == QDialog::Accepted) {
 		QImage editedImage = tinyPlanetDialog->getImage();
-		viewport()->setEditedImage(editedImage);
+		viewport()->setEditedImage(editedImage, tr("Tiny Planet"));
 	}
 
 	tinyPlanetDialog->deleteLater();
@@ -1707,7 +1707,7 @@ void DkNoMacs::resizeImage() {
 			if (metaData)
 				metaData->setResolution(QVector2D(mResizeDialog->getExifDpi(), mResizeDialog->getExifDpi()));
 
-			imgC->setImage(rImg);
+			imgC->setImage(rImg, tr("Resize"));
 			viewport()->setEditedImage(imgC);
 		}
 	}
@@ -1778,7 +1778,7 @@ void DkNoMacs::computeMosaic() {
 
 	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
 		QImage editedImage = mosaicDialog->getImage();
-		viewport()->setEditedImage(editedImage);
+		viewport()->setEditedImage(editedImage, tr("Mosaic"));
 		saveFileAs();
 	}
 
@@ -1808,7 +1808,7 @@ void DkNoMacs::openImgManipulationDialog() {
 		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImage())));
 
 		if (!mImg.isNull())
-			viewport()->setEditedImage(mImg);
+			viewport()->setEditedImage(mImg, tr("Adjusted"));
 
 #endif
 	}

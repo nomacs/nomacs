@@ -95,6 +95,21 @@ protected:
 };
 #endif
 
+class DllLoaderExport DkEditImage {
+
+public:
+	DkEditImage(const QImage& img = QImage(), const QString& editName = "");
+
+	QImage image() const;
+	QString editName() const;
+	int size() const;
+
+protected:
+	QImage mImg;
+	QString mEditName;
+
+};
+
 /**
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.
@@ -172,11 +187,9 @@ public:
 	 * @param img the new image
 	 * @param file assigns the current file name
 	 **/
-	void setImage(const QImage& img, const QString& file) {
+	void setImage(const QImage& img, const QString& editName, const QString& file);
+	void setEditImage(const QImage& img, const QString& editName = "");
 
-		mFile = file;
-		mImg = img;
-	};
 
 	void setTraining(bool training) {
 		training = true;
@@ -198,9 +211,7 @@ public:
 	 * Returns the 8-bit image, which is rendered.
 	 * @return QImage an 8bit image
 	 **/
-	QImage image() const {
-		return mImg;
-	};
+	QImage image() const;
 
 	QString getFile() {
 		return mFile;
@@ -215,7 +226,7 @@ public:
 	 * @return QSize the image size.
 	 **/
 	QSize size() {
-		return mImg.size();
+		return image().size();
 	};
 
 	/**
@@ -223,9 +234,12 @@ public:
 	 * @return bool true if an image is loaded.
 	 **/
 	bool hasImage() {
-		return !mImg.isNull();
+		return !image().isNull();
 	};
 
+	void undo();
+	void redo();
+	void setImageIndex(int idx);
 	void loadFileToBuffer(const QString& filePath, QByteArray& ba) const;
 	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath) const;
 	bool writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const;
@@ -281,16 +295,14 @@ protected:
 	int mLoader;
 	bool mTraining;
 	int mMode;
-	QImage mImg;
+	
 	QString mFile;
 	int mNumPages;
 	int mPageIdx;
 	bool mPageIdxDirty;
 	QSharedPointer<DkMetaDataT> mMetaData;
-
-#ifdef WITH_OPENCV
-	cv::Mat mCvImg;
-#endif
+	QVector<DkEditImage> mImages;
+	int mImageIndex = 0;
 };
 
 // file downloader from: http://qt-project.org/wiki/Download_Data_from_URL

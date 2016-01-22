@@ -484,6 +484,9 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_rotate_cw]);
 	mEditMenu->addAction(mEditActions[menu_edit_rotate_180]);
 	mEditMenu->addSeparator();
+	mEditMenu->addAction(mEditActions[menu_edit_undo]);
+	mEditMenu->addAction(mEditActions[menu_edit_redo]);
+	mEditMenu->addSeparator();
 
 	mEditMenu->addAction(mEditActions[menu_edit_transform]);
 	mEditMenu->addAction(mEditActions[menu_edit_crop]);
@@ -640,6 +643,9 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	viewContextMenu->addAction(mViewActions[menu_view_fit_frame]);
 
 	QMenu* editContextMenu = mContextMenu->addMenu(QObject::tr("&Edit"));
+	editContextMenu->addAction(mEditActions[menu_edit_undo]);
+	editContextMenu->addAction(mEditActions[menu_edit_redo]);
+	editContextMenu->addSeparator();
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_cw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_ccw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_180]);
@@ -1082,6 +1088,16 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mEditActions[menu_edit_rotate_180] = new QAction(QObject::tr("1&80%1").arg(dk_degree_str), parent);
 	mEditActions[menu_edit_rotate_180]->setStatusTip(QObject::tr("rotate the image by 180%1").arg(dk_degree_str));
+
+	mEditActions[menu_edit_undo] = new QAction(QObject::tr("&Undo"), parent);
+	mEditActions[menu_edit_undo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_undo]->setShortcut(QKeySequence::Undo);
+	mEditActions[menu_edit_undo]->setStatusTip(QObject::tr("Undo Last Action"));
+
+	mEditActions[menu_edit_redo] = new QAction(QObject::tr("&Redo"), parent);
+	mEditActions[menu_edit_redo]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_redo]->setShortcut(QKeySequence::Redo);
+	mEditActions[menu_edit_redo]->setStatusTip(QObject::tr("Redo Last Action"));
 
 	mEditActions[menu_edit_copy] = new QAction(mEditIcons[icon_edit_copy], QObject::tr("&Copy"), parent);
 	mEditActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);

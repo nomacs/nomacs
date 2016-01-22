@@ -45,6 +45,7 @@
 #include <QNetworkProxyFactory>
 #include <QPixmap>
 #include <QIcon>
+#include <QDebug>
 
 #include <qmath.h>
 
@@ -107,6 +108,25 @@
 
 namespace nmc {
 
+// DkEditImage --------------------------------------------------------------------
+DkEditImage::DkEditImage(const QImage& img, const QString& editName) {
+	mImg = img;
+	mEditName = editName;
+}
+
+QImage DkEditImage::image() const {
+	return mImg;
+}
+
+QString DkEditImage::editName() const {
+	return mEditName;
+}
+
+int DkEditImage::size() const {
+	
+	return qRound(DkImage::getBufferSizeFloat(mImg.size(), mImg.depth()));
+}
+
 // Basic loader and image edit class --------------------------------------------------------------------
 DkBasicLoader::DkBasicLoader(int mode) {
 	
@@ -145,10 +165,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	fInfo = QFileInfo(mFile);	// resolved lnk
 	QString newSuffix = fInfo.suffix();
 
-	QImage oldImg = mImg;
-#ifdef WITH_OPENCV
-	cv::Mat oldMat = mCvImg;	// deprecated?! (30.08.2015)
-#endif
 	release();
 
 	if (mPageIdxDirty)
@@ -189,8 +205,10 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = fInfo.suffix().toLower();
 
+	QImage img;
+
 	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
-		imgLoaded = mImg.loadFromData(*ba.data());
+		imgLoaded = img.loadFromData(*ba.data());
 
 		if (imgLoaded)
 			mLoader = qt_loader;
@@ -202,7 +220,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		QIcon icon(mFile);
 
 		if (!icon.isNull()) {
-			mImg = icon.pixmap(QSize(256, 256)).toImage();
+			img = icon.pixmap(QSize(256, 256)).toImage();
 			imgLoaded = true;
 		}
 	}
@@ -213,9 +231,9 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		if (!ba || ba->isEmpty())
-			imgLoaded = mImg.load(mFile, suf.toStdString().c_str());
+			imgLoaded = img.load(mFile, suf.toStdString().c_str());
 		else
-			imgLoaded = mImg.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
+			imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
 		if (imgLoaded) mLoader = qt_loader;
 	}
@@ -252,7 +270,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		// TODO: add warning here
 		QByteArray lba;
 		loadFileToBuffer(mFile, lba);
-		imgLoaded = mImg.loadFromData(lba);
+		imgLoaded = img.loadFromData(lba);
 		
 		qDebug() << "lba size: " << lba.size();
 
@@ -281,14 +299,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	//	if (imgLoaded) loader = hdr_loader;
 	//} 
 
-	// ok, play back the old images
-	if (!imgLoaded) {
-		mImg = oldImg;
-#ifdef WITH_OPENCV
-		mCvImg = oldMat;
-#endif
-	}
-
 	// tiff things
 	if (imgLoaded && !mPageIdxDirty)
 		indexPages(mFile);
@@ -297,7 +307,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	if (imgLoaded && loadMetaData && mMetaData) {
 		
 		try {
-			mMetaData->setQtValues(mImg);
+			mMetaData->setQtValues(img);
 		
 			if (orientation != -1 && !mMetaData->isTiff() && !Settings::param().metaData().ignoreExifOrientation)
 				rotate(orientation);
@@ -307,6 +317,9 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	else if (!mMetaData) {
 		qDebug() << "metaData is NULL!";
 	}
+
+	if (imgLoaded)
+		setEditImage(img, tr("Original Image"));
 
 	//qDebug() << qImg.text();
 
@@ -331,6 +344,7 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
 	int rohH = 2672;
 	unsigned char fByte;	// first byte
 	unsigned char sByte;	// second byte
+	QImage img;
 
 	try {
 		
@@ -353,9 +367,9 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
 		
 		}
 
-		mImg = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
+		img = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
 
-		if (mImg.isNull())
+		if (img.isNull())
 			return imgLoaded;
 		else
 			imgLoaded = true;
@@ -367,10 +381,14 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
 		for (int i = 0; i < 256; i++)
 			colorTable.push_back(QColor(i, i, i).rgb());
 		
-		mImg.setColorTable(colorTable);
+		img.setColorTable(colorTable);
 
 	} catch(...) {
 		imgLoaded = false;
+	}
+
+	if (imgLoaded) {
+		setEditImage(img, tr("Original Image"));
 	}
 
 	return imgLoaded;
@@ -388,6 +406,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 	bool imgLoaded = false;
 
 	DkTimer dt;
+	QImage img;
 
 	try {
 
@@ -404,9 +423,11 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 				if (Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
 					minWidth = 1920;
 #endif
-				mImg = mMetaData->getPreviewImage(minWidth);
+				img = mMetaData->getPreviewImage(minWidth);
 
-				if (!mImg.isNull()) {
+				if (!img.isNull()) {
+					
+					setEditImage(img, tr("Original Image"));
 					qDebug() << "[RAW] loaded with exiv2";
 					return true;
 				}
@@ -461,12 +482,11 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 
 			if (!err && tPtr) {
 
-				QImage tmp;
-				tmp.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
+				img.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
 
-				if (!tmp.isNull()) {
+				if (!img.isNull()) {
 					imgLoaded = true;
-					mImg = tmp;
+					setEditImage(img, tr("Original Image"));
 					qDebug() << "[RAW] I loaded the RAW's thumbnail";
 
 					return imgLoaded;
@@ -745,7 +765,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 
 		//create the final image
 		image = QImage(rgbImg.data, (int)rgbImg.cols, (int)rgbImg.rows, (int)rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
-		mImg = image.copy();
+		img = image.copy();
 		imgLoaded = true;
 
 		iProcessor.recycle();
@@ -758,8 +778,10 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 		qWarning() << "Exception caught during RAW loading...";
 	}
 
-	if (imgLoaded) 
+	if (imgLoaded) {
 		qDebug() << "[RAW] image loaded from RAW in: " << dt.getTotal();
+		setEditImage(img, tr("Original Image"));
+	}
 
 	return imgLoaded;
 }
@@ -877,8 +899,10 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QB
 			cPatch.copyTo(cPatchAll);
 	}
 
-	mImg = DkImage::mat2QImage(allPatches);
-	mImg = mImg.convertToFormat(QImage::Format_ARGB32);
+	QImage img = DkImage::mat2QImage(allPatches);
+	img = img.convertToFormat(QImage::Format_ARGB32);
+
+	setEditImage(img, tr("Original Image"));
 
 	return true;
 }
@@ -899,6 +923,47 @@ void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width
 			height = tmpSec.remove("h").toInt();
 	}
 
+}
+
+void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {
+
+	mFile = file;
+	setEditImage(img, editName);
+};
+
+void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
+
+	// delete all hidden edit states
+	for (int idx = mImages.size() - 1; idx > mImageIndex; idx--)
+		mImages.pop_back();
+
+	// compute new history size
+	int historySize = 0;
+	for (const DkEditImage& e : mImages) {
+		historySize += e.size();
+	}
+
+	DkEditImage newImg(img, editName);
+
+	if (historySize + newImg.size() > Settings::param().resources().historyMemory) {
+		mImages.pop_front();
+		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
+	}
+
+	mImages.append(newImg);
+	mImageIndex = mImages.size() - 1;	// set the index again to the last
+}
+
+QImage DkBasicLoader::image() const {
+	if (mImages.empty())
+		return QImage();
+
+	if (mImageIndex > mImages.size() || mImageIndex == -1) {
+		qWarning() << "Illegal image index: " << mImageIndex;
+		return mImages.last().image();
+	}
+
+	return mImages[mImageIndex].image();
 }
 
 bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {
@@ -1000,6 +1065,22 @@ int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveF
 }
 
 #endif
+
+void DkBasicLoader::undo() {
+	
+	if (mImageIndex > 0)
+		mImageIndex--;
+}
+
+void DkBasicLoader::redo() {
+
+	if (mImageIndex < mImages.size()-1)
+		mImageIndex++;
+}
+
+void DkBasicLoader::setImageIndex(int idx) {
+	mImageIndex = idx;
+}
 
 void DkBasicLoader::loadFileToBuffer(const QString& fileInfo, QByteArray& ba) const {
 
@@ -1143,14 +1224,14 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
 	// init the qImage
-	mImg = QImage(width, height, QImage::Format_ARGB32);
+	QImage img = QImage(width, height, QImage::Format_ARGB32);
 
 	const int stopOnError = 1;
-	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(mImg.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
 	if (imgLoaded) {
 		for (uint32 y=0; y<height; ++y)
-			convert32BitOrder(mImg.scanLine(y), width);
+			convert32BitOrder(img.scanLine(y), width);
 	}
 
 	TIFFClose(tiff);
@@ -1158,6 +1239,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	TIFFSetWarningHandler(oldWarningHandler);
 	TIFFSetWarningHandler(oldErrorHandler);
 #endif
+
+	setEditImage(img, tr("Original Image"));
 
 	return imgLoaded;
 }
@@ -1301,10 +1384,10 @@ void DkBasicLoader::saveMetaData(const QString& filePath) {
 
 void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 	
-	if (mImg.isNull())
+	if (!hasImage())
 		return;
 
-	mMetaData->setThumbnail(DkImage::createThumb(mImg));
+	mMetaData->setThumbnail(DkImage::createThumb(image()));
 	saveMetaData(filePath, ba);
 }
 
@@ -1355,53 +1438,12 @@ void DkBasicLoader::rotate(int orientation) {
 	if (orientation == 0 || orientation == -1)
 		return;
 
+	QImage img = image().copy();
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((double)orientation);
-	mImg = mImg.transformed(rotationMatrix);
-
-// TODO: test without OpenCV
-#ifdef WITH_OPENCV
-
-	if (!mCvImg.empty()) {
-
-		DkVector nSz = DkVector(mCvImg.size());	// *0.5f?
-		DkVector nSl = nSz;
-		DkVector nSr = nSz;
-
-		double angleRad = orientation*DK_RAD2DEG;
-		int interpolation = (orientation % 90 == 0) ? cv::INTER_NEAREST : cv::INTER_CUBIC;
-
-		// compute
-		nSl.rotate(angleRad);
-		nSl.abs();
-
-		nSr.swap();
-		nSr.rotate(angleRad);
-		nSr.abs();
-		nSr.swap();
-
-		nSl = nSl.maxVec(nSr);
-
-		DkVector center = nSl * 0.5f;
-
-		cv::Mat rotMat = getRotationMatrix2D(center.getCvPoint32f(), DK_RAD2DEG*angleRad, 1.0);
-
-		// add a shift towards new center
-		DkVector cDiff = center - (nSz * 0.5f);
-		cDiff.rotate(angleRad);
-
-		double *transl = rotMat.ptr<double>();
-		transl[2] += (double)cDiff.x;
-		transl[5] += (double)cDiff.y;
-
-		// img in wrapAffine must not be overwritten
-		cv::Mat rImg(nSl.getCvSize(), mCvImg.type());
-		warpAffine(mCvImg, rImg, rotMat, rImg.size(), interpolation, cv::BORDER_CONSTANT/*, borderValue*/);
-		mCvImg = rImg;
-	} 
-
-#endif
-
+	img = img.transformed(rotationMatrix);
+	
+	setEditImage(img, tr("Rotate"));
 }
 
 /**
@@ -1413,16 +1455,12 @@ void DkBasicLoader::release(bool clear) {
 	//qDebug() << file.fileName() << " released...";
 	saveMetaData(mFile);
 
-	mImg = QImage();
+	mImages.clear();
 	//metaData.clear();
 	
 	// TODO: where should we clear the metadata?
 	if (clear || !mMetaData->isDirty())
 		mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
-	
-#ifdef WITH_OPENCV
-	mCvImg.release();
-#endif
 
 }
 
@@ -1442,22 +1480,26 @@ bool DkBasicLoader::loadWebPFile(const QString& filePath, QSharedPointer<QByteAr
 		return false;
 
 	uint8_t* webData = 0;
+	QImage img;
 
 	if (features.has_alpha) {
 		webData = WebPDecodeBGRA((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		mImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
+		img = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
 	}
 	else {
 		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		mImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
+		img = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
 	}
 
 	// clone the image so we own the buffer
-	mImg = mImg.copy();
+	img = img.copy();
 	if (webData) 
 		free(webData);
+
+	if (!img.isNull())
+		setEditImage(img, tr("Original Image"));
 
 	return true;
 }

@@ -59,7 +59,7 @@ bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStrin
 	bool isOk = compute(img, logStrings);
 
 	if (isOk)
-		container->setImage(img);
+		container->setImage(img, QObject::tr("Batch Action"));
 
 	return isOk;
 }

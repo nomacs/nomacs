@@ -82,7 +82,7 @@ public:
 
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
 	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
-	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editFilePath = QString());
+	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editName, const QString& editFilePath = QString());
 	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
 	void sort();
@@ -143,6 +143,8 @@ signals:
 	void imageHasGPSSignal(bool hasGPS);
 
 public slots:
+	void undo();
+	void redo();
 	void changeFile(int skipIdx);
 	void directoryChanged(const QString& path = QString());
 	void saveFileWeb(const QImage& saveImg);

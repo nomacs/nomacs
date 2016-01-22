@@ -223,7 +223,7 @@ void DkViewPort::loadImage(QImage newImg) {
 		if (!unloadImage(true))
 			return;	// user canceled
 
-		mLoader->setImage(newImg);
+		mLoader->setImage(newImg, tr("Original Image"));
 		setImage(newImg);
 
 		// save to temp folder
@@ -1324,7 +1324,7 @@ void DkViewPort::settingsChanged() {
 	mController->settingsChanged();
 }
 
-void DkViewPort::setEditedImage(QImage newImg) {
+void DkViewPort::setEditedImage(const QImage& newImg, const QString& editName) {
 
 	if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
 		return;
@@ -1341,7 +1341,7 @@ void DkViewPort::setEditedImage(QImage newImg) {
 
 	if (!imgC)
 		imgC = QSharedPointer<DkImageContainerT>();
-	imgC->setImage(newImg);
+	imgC->setImage(newImg, editName);
 	unloadImage(false);
 	mLoader->setImage(imgC);
 	qDebug() << "mLoader gets this size: " << newImg.size();
@@ -1686,7 +1686,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
-	imgC->setImage(img);
+	imgC->setImage(img, tr("Cropped"));
 	setEditedImage(imgC);
 
 	qDebug() << "cropping...";

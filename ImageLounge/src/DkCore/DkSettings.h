@@ -247,6 +247,7 @@ public:
 		
 	struct Resources {
 		float cacheMemory;
+		float historyMemory;
 		int maxImagesCached;
 		bool waitForLastImg;
 		bool filterRawImages;

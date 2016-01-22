@@ -105,12 +105,14 @@ public:
 
 	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath);
 	bool loadImage();
-	void setImage(const QImage& img);
-	void setImage(const QImage& img, const QString& filePath);
+	void setImage(const QImage& img, const QString& editName);
+	void setImage(const QImage& img, const QString& editName, const QString& filePath);
 	bool saveImage(const QString& filePath, const QImage saveImg, int compression = -1);
 	bool saveImage(const QString& filePath, int compression = -1);
 	void saveMetaData();
 	virtual void clear();
+	void undo();
+	void redo();
 
 protected:
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
