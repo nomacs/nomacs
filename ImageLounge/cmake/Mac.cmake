@@ -103,6 +103,7 @@ unset(QUAZIP_LIBS CACHE)
 unset(QUAZIP_BUILD_DIRECTORY CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
+unset(QUAZIP_LIBRARIES CACHE)
 
 unset(QUAZIP_HEADERS CACHE)
 unset(QUAZIP_SOURCES CACHE)
@@ -110,15 +111,26 @@ unset(QUAZIP_MOCS CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
-  find_package(ZLIB REQUIRED)
-  set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
-  
-  file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
-  file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
-  file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
-  
-  QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
-  add_definitions(-DWITH_QUAZIP)
+  if(USE_SYSTEM_QUAZIP)
+    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    
+    find_package(QuaZIP REQUIRED)
+    if(NOT QUAZIP_FOUND)
+	    message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
+    else()
+	    add_definitions(-DWITH_QUAZIP)
+    endif()
+  else()
+    find_package(ZLIB REQUIRED)
+    set(QUAZIP_INCLUDE_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip ${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/)
+    
+    file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c" "3rdparty/quazip-0.7/quazip/*.cpp")
+    file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
+    file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
+    
+    QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+    add_definitions(-DWITH_QUAZIP)
+  endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
 
 
