@@ -404,11 +404,11 @@ void DkPluginTableWidget::getListOfUpdates() {
 				}
 
 				if (nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
-					nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
-					nVersion[1].toInt() > cVersion[1].toInt()  ||	// minor release
-					nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+					(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+					nVersion[1].toInt() > cVersion[1].toInt())  ||	// minor release
+					(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
 					nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
-					nVersion[2].toInt() >  cVersion[2].toInt()) {	// minor-minor release
+					nVersion[2].toInt() >  cVersion[2].toInt())) {	// minor-minor release
 						mPluginsToUpdate.append(updateList.at(i));
 				}
 				break;

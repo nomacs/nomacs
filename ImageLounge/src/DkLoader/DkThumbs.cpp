@@ -164,7 +164,11 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 
 	bool rescale = forceLoad == force_save_thumb;
 
-	if (forceLoad != force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) { // braces
+	if (forceLoad != force_exif_thumb && 
+			(thumb.isNull() || 
+			thumb.width() < tS && thumb.height() < tS || 
+			forceLoad == force_full_thumb || 
+			forceLoad == force_save_thumb)) { // braces
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
