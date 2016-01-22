@@ -47,7 +47,6 @@
 #include <QMouseEvent>
 
 #include "DkPluginInterface.h"
-#include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
 #include "DkBaseViewPort.h"

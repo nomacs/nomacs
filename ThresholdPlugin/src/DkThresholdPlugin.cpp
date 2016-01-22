@@ -33,9 +33,6 @@ namespace nmp {
 
 /*-----------------------------------DkThresholdPlugin ---------------------------------------------*/
 
-nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
-nmc::DkSettings::Global& settingsGlobal = nmc::DkSettings::getGlobalSettings();
-
 /**
 *	Constructor
 **/
@@ -235,7 +232,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == settingsGlobal.altMod || panning)) {
+		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -248,7 +245,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == settingsGlobal.altMod ||
+	if (event->modifiers() == nmc::Settings::param().global().altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -261,7 +258,7 @@ void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == settingsGlobal.altMod || panning) {
+	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -504,11 +501,11 @@ DkThresholdToolBar::DkThresholdToolBar(const QString & title, QWidget * parent /
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(settingsDisplay.iconSize, settingsDisplay.iconSize));
+	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
 
-	if (settingsDisplay.toolbarGradient) {
+	if (nmc::Settings::param().display().toolbarGradient) {
 
-		QColor hCol = settingsDisplay.highlightColor;
+		QColor hCol = nmc::Settings::param().display().highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -537,12 +534,12 @@ void DkThresholdToolBar::createIcons() {
 	icons[pan_icon] = 	QIcon(":/nomacsPluginThr/img/pan.png");
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginThr/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 
-	if (!settingsDisplay.defaultIconColor) {
+	if (!nmc::Settings::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

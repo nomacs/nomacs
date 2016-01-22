@@ -21,7 +21,7 @@ OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
 OPTION (ENABLE_THRESHOLD "Compile Threshold plugin" ON)
 OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
 OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
-OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
+OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 
 NMC_PREPARE_PLUGIN()

@@ -27,7 +27,6 @@
 
 #pragma once
 
-
 #include <QImage>
 #include <QtCore/qmath.h>
 #include <QtGlobal>
@@ -38,8 +37,6 @@
 #include <QWidget>
 #include <QDebug>
 
-#include "DkImageStorage.h"
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -47,14 +44,9 @@
 #pragma warning(disable: 4996)
 #endif
 
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-	#include "opencv/cv.h"
-#else
-	#include "opencv2/core/core.hpp"
-	#include "opencv2/imgproc/imgproc.hpp"
-#endif
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 
-using namespace cv;
 #endif
 
 

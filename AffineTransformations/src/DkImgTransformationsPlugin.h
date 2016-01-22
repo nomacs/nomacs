@@ -50,12 +50,6 @@
 #include <QMouseEvent>
 
 #include "DkPluginInterface.h"
-#include "DkNoMacs.h"
-#include "DkSettings.h"
-#include "DkUtils.h"
-#include "DkBaseViewPort.h"
-#include "DkImageStorage.h"
-#include "DkMath.h"
 #include "DkSkewEstimator.h"
 
 namespace nmp {

@@ -40,9 +40,6 @@ namespace nmp {
 
 /*-----------------------------------DkDocAnalysisPlugin ---------------------------------------------*/
 
-nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
-nmc::DkSettings::App& settingsApp = nmc::DkSettings::getAppSettings();
-
 /**
 *	Constructor
 **/
@@ -250,7 +247,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 		int filterIdx = -1;
 
-		QStringList sF = settingsApp.saveFilters;
+		QStringList sF = nmc::Settings::param().app().saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -279,7 +276,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	savePath.insert(savePath.length()-saveFile.completeSuffix().length()-1, saveNameAppendix);
 
 	QString fileName = QFileDialog::getSaveFileName(viewport, tr("Save Magic Cut"),
-		savePath, settingsApp.saveFilters.join(";;"), &selectedFilter);
+		savePath, nmc::Settings::param().app().saveFilters.join(";;"), &selectedFilter);
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -290,7 +287,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = settingsApp.saveFilters;
+		QStringList sF = nmc::Settings::param().app().saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
@@ -1283,11 +1280,11 @@ DkDocAnalysisToolBar::DkDocAnalysisToolBar(const QString & title, QWidget * pare
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(DkSettings::display.iconSize, DkSettings::display.iconSize));
+	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
 
-	if (settingsDisplay.toolbarGradient) {
+	if (nmc::Settings::param().display().toolbarGradient) {
 
-		QColor hCol = settingsDisplay.highlightColor;
+		QColor hCol = nmc::Settings::param().display().highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -1336,12 +1333,12 @@ void DkDocAnalysisToolBar::createIcons() {
 	icons[undoselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/selection_undo.png");
 
 
-	if (!settingsDisplay.defaultIconColor) {
+	if (!nmc::Settings::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

@@ -27,6 +27,11 @@
 
 #include "DkImgTransformationsPlugin.h"
 
+#include "DkSettings.h"
+#include "DkMath.h"
+#include "DkBaseViewPort.h"
+#include "DkUtils.h"
+
 #include <QMouseEvent>
 
 #define PI 3.14159265
@@ -34,9 +39,6 @@
 namespace nmp {
 
 /*-----------------------------------DkImgTransformationsPlugin ---------------------------------------------*/
-
-nmc::DkSettings::Display& settingsDisplay = nmc::DkSettings::getDisplaySettings();
-nmc::DkSettings::Global& settingsGlobal = nmc::DkSettings::getGlobalSettings();
 
 /**
 *	Constructor
@@ -267,7 +269,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton &&
-		(event->modifiers() == settingsGlobal.altMod || panning)) {
+		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -322,7 +324,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 	
 	// panning -> redirect to viewport
-	if (event->modifiers() == settingsGlobal.altMod ||
+	if (event->modifiers() == nmc::Settings::param().global().altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -425,7 +427,7 @@ void DkImgTransformationsViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	intrIdx = 100;
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == settingsGlobal.altMod || panning) {
+	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -453,7 +455,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
 
-	painter.fillRect(this->rect(), settingsDisplay.bgColor);
+	painter.fillRect(this->rect(), nmc::Settings::param().display().bgColor);
 
 
 	if (mWorldMatrix)
@@ -511,7 +513,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	else if (selectedMode == mode_rotate) {
 
 		if (angleLinesEnabled) {
-			QPen linePen(settingsDisplay.highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QPen linePen(nmc::Settings::param().display().highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
 			QColor hCAlpha(50,50,50);
 			hCAlpha.setAlpha(200);
 
@@ -519,7 +521,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 			QVector<QVector4D> lines = skewEstimator.getLines();
 			QVector<int> lineTypes = skewEstimator.getLineTypes();
 			for (int i = 0; i < lines.size(); i++) {
-				(lineTypes.at(i)) ? linePen.setColor(settingsDisplay.highlightColor) : linePen.setColor(hCAlpha);
+				(lineTypes.at(i)) ? linePen.setColor(nmc::Settings::param().display().highlightColor) : linePen.setColor(hCAlpha);
 				painter.setPen(linePen);
 				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
 			}
@@ -830,11 +832,11 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, 
 	createLayout(defaultMode);
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(settingsDisplay.iconSize, settingsDisplay.iconSize));
+	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
 
-	if (settingsDisplay.toolbarGradient) {
+	if (nmc::Settings::param().display().toolbarGradient) {
 
-		QColor hCol = settingsDisplay.highlightColor;
+		QColor hCol = nmc::Settings::param().display().highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -866,12 +868,12 @@ void DkImgTransformationsToolBar::createIcons() {
 	icons[rotate_icon] = QIcon(":/nomacsPluginImgTrans/img/rotate.png");
 	icons[shear_icon] = QIcon(":/nomacsPluginImgTrans/img/shear.png");
 
-	if (!settingsDisplay.defaultIconColor) {
+	if (!nmc::Settings::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), settingsDisplay.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), settingsDisplay.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

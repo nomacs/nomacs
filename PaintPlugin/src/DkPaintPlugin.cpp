@@ -34,10 +34,6 @@ namespace nmp {
 
 /*-----------------------------------DkPaintPlugin ---------------------------------------------*/
 
-nmc::DkSettings::Display& displaySettings = nmc::DkSettings::getDisplaySettings();
-nmc::DkSettings::Global& globalSettings = nmc::DkSettings::getGlobalSettings();
-nmc::DkSettings::App& appSettings = nmc::DkSettings::getAppSettings();
-
 /**
 *	Constructor
 **/
@@ -271,7 +267,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == globalSettings.altMod || panning)) {
+		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -304,7 +300,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == globalSettings.altMod ||
+	if (event->modifiers() == nmc::Settings::param().global().altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -343,7 +339,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == globalSettings.altMod || panning) {
+	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -467,11 +463,11 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(displaySettings.iconSize, displaySettings.iconSize));
+	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
 
-	if (displaySettings.toolbarGradient) {
+	if (nmc::Settings::param().display().toolbarGradient) {
 
-		QColor hCol = displaySettings.highlightColor;
+		QColor hCol = nmc::Settings::param().display().highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -504,12 +500,12 @@ void DkPaintToolBar::createIcons() {
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 	icons[undo_icon] = 	QIcon(":/nomacsPluginPaint/img/undo.png");
 
-	if (!displaySettings.defaultIconColor || appSettings.privateMode) {
+	if (!nmc::Settings::param().display().defaultIconColor || nmc::Settings::param().app().privateMode) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), displaySettings.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), displaySettings.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

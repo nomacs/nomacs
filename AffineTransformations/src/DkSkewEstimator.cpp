@@ -156,7 +156,7 @@ double DkSkewEstimator::getSkewAngle() {
 
 cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralSq, int direction) {
 
-	cv::Mat separability = Mat::zeros(integral.rows, integral.cols, CV_32FC1);
+	cv::Mat separability = cv::Mat::zeros(integral.rows, integral.cols, CV_32FC1);
 
 	int W2 = qCeil(sepDims.width()/2);
 	int H2 = qCeil(sepDims.height()/2);
@@ -229,7 +229,7 @@ cv::Mat DkSkewEstimator::computeEdgeMap(cv::Mat separability, double thr, int di
 	int W2 = qCeil(sepDims.width()/2);
 	int H2 = qCeil(sepDims.height()/2);
 
-	cv::Mat edgeMap = Mat::zeros(separability.rows, separability.cols, CV_8UC1);
+	cv::Mat edgeMap = cv::Mat::zeros(separability.rows, separability.cols, CV_8UC1);
 
 	if (direction == dir_horizontal) {
 		int progressStep = separability.rows - 2 * H2 - 2 * kMax;
@@ -306,7 +306,7 @@ int DkSkewEstimator::randInt(int low, int high) {
 
 QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int direction) {
 
-	std::vector<Vec4i> lines;
+	std::vector<cv::Vec4i> lines;
 	QVector4D maxLine = QVector4D();
 	HoughLinesP(edgeMap, lines, 1, CV_PI/180, 50, minLineLength, 20 ); //params: rho resolution, theta resolution, threshold, min Line length, max line gap
 
@@ -317,14 +317,14 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 		progress->setValue(lastValue + qRound(15.0 * (float)i / lines.size()));
 		if (progress->wasCanceled()) break;
 
-		Vec4i l = lines[i];		
+		cv::Vec4i l = lines[i];		
 		QVector3D currMax = QVector3D(0.0, 0.0, 0.0);
 
 		if (direction == dir_horizontal) {
 
 			int K = 0;
 
-			if (l[2] < l[0]) l = Vec4i(l[2],l[3],l[0],l[1]);
+			if (l[2] < l[0]) l = cv::Vec4i(l[2],l[3],l[0],l[1]);
 
 			int x1 = l[0];
 			int x2 = l[2];
@@ -385,7 +385,7 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 		else {
 
 			int K = 0;
-			if (l[3] < l[1]) l = Vec4i(l[2],l[3],l[0],l[1]);
+			if (l[3] < l[1]) l = cv::Vec4i(l[2],l[3],l[0],l[1]);
 
 			int x1 = l[1];
 			int x2 = l[3];

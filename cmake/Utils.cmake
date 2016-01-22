@@ -267,11 +267,7 @@ macro(NMC_FIND_OPENCV)
     SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
   endif(PKG_CONFIG_FOUND)
   IF (OpenCV_LIBS STREQUAL "") 
-    find_package(OpenCV 2.1.0 REQUIRED core imgproc)
-  ENDIF()
-  IF (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND AND MSVC) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
-    string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
-    SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
+    find_package(OpenCV REQUIRED core imgproc)
   ENDIF()
   IF (NOT OpenCV_FOUND)
     message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
@@ -281,28 +277,31 @@ macro(NMC_FIND_OPENCV)
 endmacro(NMC_FIND_OPENCV)
 
 macro(NMC_PREPARE_PLUGIN)
-  option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
   
   CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
   if(COMMAND cmake_policy)
-        cmake_policy(SET CMP0003 NEW)
-      cmake_policy(SET CMP0005 NEW)
+    cmake_policy(SET CMP0003 NEW)
+    cmake_policy(SET CMP0005 NEW)
   endif(COMMAND cmake_policy)
-
 
   MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 
+  set(nomacs_DIR ${NOMACS_BUILD_DIRECTORY})
+    
   if(NOT NOMACS_VARS_ALREADY_SET) # is set when building nomacs and plugins at the sime time with linux
-    find_package(nomacs)
+		
+	find_package(nomacs)
+		
     if(NOT NOMACS_FOUND)
       SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
       IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
         MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
       ENDIF()
     endif()
-    SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
+    SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${NOMACS_BUILD_DIRECTORY} CACHE PATH "Path to the plugin install directory for deploying")
+	
   endif(NOT NOMACS_VARS_ALREADY_SET)
-  
+    
   if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
       message(STATUS "A debug build. -DDEBUG is defined")
       add_definitions(-DDEBUG)
@@ -311,6 +310,7 @@ macro(NMC_PREPARE_PLUGIN)
       message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
       add_definitions(-DQT_NO_DEBUG_OUTPUT)
   endif ()
+  
 endmacro(NMC_PREPARE_PLUGIN)
 
 # you can use this NMC_CREATE_TARGETS("myAdditionalDll1.dll" "myAdditionalDll2.dll")
