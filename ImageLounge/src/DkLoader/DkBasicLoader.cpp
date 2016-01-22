@@ -800,8 +800,13 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 		psdHandler.setDevice(&file);	// QFile is an IODevice
 		//psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
 
-		if (psdHandler.canRead(&file))
-			return psdHandler.read(&mImg);
+		if (psdHandler.canRead(&file)) {
+			QImage img;
+			bool success = psdHandler.read(&img);
+			setEditImage(img, tr("Original Image"));
+			
+			return success;
+		}
 	}
 	else {
 	
@@ -813,8 +818,13 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 		psdHandler.setDevice(&buffer);	// QFile is an IODevice
 		//psdHandler.setFormat(file.suffix().toLocal8Bit());
 
-		if (psdHandler.canRead(&buffer))
-			return psdHandler.read(&mImg);
+		if (psdHandler.canRead(&buffer)) {
+			QImage img;
+			bool success = psdHandler.read(&img);
+			setEditImage(img, tr("Original Image"));
+
+			return success;
+		}
 	}
 
 #endif // !WIN32
@@ -932,6 +942,9 @@ void DkBasicLoader::setImage(const QImage & img, const QString & editName, const
 };
 
 void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
+
+	if (img.isNull())
+		return;
 
 	// delete all hidden edit states
 	for (int idx = mImages.size() - 1; idx > mImageIndex; idx--)
@@ -1317,7 +1330,7 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
 
 	else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
-		saved = saveWebPFile(mImg, ba, compression);
+		saved = saveWebPFile(img, ba, compression);
 	}
 #endif
 	else {
