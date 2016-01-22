@@ -40,6 +40,16 @@
 #include <QMainWindow>
 #pragma warning(pop)		// no warnings from includes - end
 
+#ifndef DllLoaderExport
+#ifdef DK_LOADER_DLL_EXPORT
+#define DllLoaderExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllLoaderExport Q_DECL_IMPORT
+#else
+#define DllLoaderExport Q_DECL_IMPORT
+#endif
+#endif
+
 namespace nmc {
 
 class DkPluginViewPort;
@@ -99,7 +109,7 @@ public:
 	virtual void deleteViewPort() = 0;
 };
 
-class DkPluginViewPort : public QWidget {
+class DllLoaderExport DkPluginViewPort : public QWidget {
 	Q_OBJECT
 
 public:
