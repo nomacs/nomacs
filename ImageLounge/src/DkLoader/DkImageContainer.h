@@ -111,8 +111,9 @@ public:
 	bool saveImage(const QString& filePath, int compression = -1);
 	void saveMetaData();
 	virtual void clear();
-	void undo();
-	void redo();
+	virtual void undo();
+	virtual void redo();
+	virtual void setHistoryIndex(int idx);
 
 protected:
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
@@ -169,12 +170,17 @@ public:
 	virtual QSharedPointer<DkThumbNailT> getThumb();
 	static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
+	virtual void undo() override;
+	virtual void redo() override;
+	virtual void setHistoryIndex(int idx) override;
+
 signals:
 	void fileLoadedSignal(bool loaded = true) const;
 	void fileSavedSignal(const QString& fileInfo, bool saved = true) const;
 	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
 	void errorDialogSignal(const QString& msg) const;
 	void thumbLoadedSignal(bool loaded = true) const;
+	void imageUpdatedSignal() const;
 
 public slots:
 	void checkForFileUpdates(); 

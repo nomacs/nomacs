@@ -198,6 +198,7 @@ public:
 		menu_panel_explorer,
 		menu_panel_metadata_dock,
 		menu_panel_comment,
+		menu_panel_history,
 
 		menu_panel_end,
 	};

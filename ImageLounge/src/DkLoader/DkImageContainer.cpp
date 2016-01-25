@@ -131,6 +131,10 @@ void DkImageContainer::redo() {
 	getLoader()->redo();
 }
 
+void DkImageContainer::setHistoryIndex(int idx) {
+	getLoader()->setHistoryIndex(idx);
+}
+
 QFileInfo DkImageContainer::fileInfo() const {
 	return mFileInfo;
 }
@@ -781,6 +785,7 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)), Qt::UniqueConnection);
 		connect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)), Qt::UniqueConnection);
 		connect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)), Qt::UniqueConnection);
+		connect(this, SIGNAL(imageUpdatedSignal()), obj, SLOT(currentImageUpdated()), Qt::UniqueConnection);
 		mFileUpdateTimer.start();
 	}
 	else if (!connectSignals) {
@@ -788,6 +793,7 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		disconnect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)));
 		disconnect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)));
+		disconnect(this, SIGNAL(imageUpdatedSignal()), obj, SLOT(currentImageUpdated()));
 		mFileUpdateTimer.stop();
 	}
 
@@ -918,5 +924,21 @@ bool DkImageContainerT::isFileDownloaded() const {
 
 	return mDownloaded;
 }
+
+void DkImageContainerT::undo() {
+	DkImageContainer::undo();
+	emit imageUpdatedSignal();
+}
+
+void DkImageContainerT::redo() {
+	DkImageContainer::redo();
+	emit imageUpdatedSignal();
+}
+
+void DkImageContainerT::setHistoryIndex(int idx) {
+	DkImageContainer::setHistoryIndex(idx);
+	emit imageUpdatedSignal();
+}
+
 
 };

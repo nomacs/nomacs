@@ -215,7 +215,7 @@ protected:
 
 };
 
-class DkDockWidget : public QDockWidget {
+class DllGuiExport DkDockWidget : public QDockWidget {
 	Q_OBJECT
 
 public:

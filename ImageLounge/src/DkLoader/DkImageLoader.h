@@ -135,12 +135,12 @@ signals:
 	void setPlayer(bool play) const;
 
 	// new signals
-	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
-	void imageUpdatedSignal(int idx);	// folder scrollbar needs that
-	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
+	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image) const;
+	void imageUpdatedSignal(int idx) const;	// folder scrollbar needs that
+	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true) const;
 	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
-	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
-	void imageHasGPSSignal(bool hasGPS);
+	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images) const;
+	void imageHasGPSSignal(bool hasGPS) const;
 
 public slots:
 	void undo();
@@ -163,6 +163,7 @@ public slots:
 	void loadFileAt(int idx);
 
 	// new slots
+	void currentImageUpdated() const;
 	void imageLoaded(bool loaded = false);
 	void imageSaved(const QString& file, bool saved = true);
 	void imagesSorted();

@@ -239,12 +239,16 @@ public:
 
 	void undo();
 	void redo();
-	void setImageIndex(int idx);
+	QVector<DkEditImage> history() const;
+	void setHistoryIndex(int idx);
+	int historyIndex() const;
+
 	void loadFileToBuffer(const QString& filePath, QByteArray& ba) const;
 	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath) const;
 	bool writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
 	void release(bool clear = false);
+
 
 #ifdef WITH_OPENCV
 	cv::Mat getImageCv();

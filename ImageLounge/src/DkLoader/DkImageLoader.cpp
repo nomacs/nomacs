@@ -1892,6 +1892,14 @@ void DkImageLoader::sort() {
 	emit updateDirSignal(mImages);
 }
 
+void DkImageLoader::currentImageUpdated() const {
+
+	if (mCurrentImage.isNull())
+		return;
+
+	emit imageUpdatedSignal(mCurrentImage);
+}
+
 /**
  * Returns the directory where files are saved to.
  * @return QDir the directory where the user saved the last file to.
@@ -1927,7 +1935,6 @@ void DkImageLoader::undo() {
 		return;
 
 	mCurrentImage->undo();
-	emit imageUpdatedSignal(mCurrentImage);
 }
 
 void DkImageLoader::redo() {
@@ -1936,7 +1943,6 @@ void DkImageLoader::redo() {
 		return;
 
 	mCurrentImage->redo();
-	emit imageUpdatedSignal(mCurrentImage);
 }
 
 /**

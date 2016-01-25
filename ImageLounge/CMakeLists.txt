@@ -39,7 +39,7 @@ elseif(APPLE)
   option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
   option(ENABLE_UPNP "Compile with UPNP" OFF)
   option(ENABLE_PLUGINS "Compile with plugin system" OFF)
-  message(STATUS "QuaZip disabled caused ur using a mac")
+  message(STATUS "QuaZip disabled cause^ ur using a mac")
 
 elseif(UNIX)
   option(ENABLE_UPNP "Compile with UPNP" OFF)

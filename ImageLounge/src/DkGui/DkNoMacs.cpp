@@ -50,6 +50,7 @@
 #include "DkTimer.h"
 #include "DkActionManager.h"
 #include "DkStatusBar.h"
+#include "DkDockWidgets.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -417,6 +418,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_panel_transfertoolbar), SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 	connect(am.action(DkActionManager::menu_panel_explorer), SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
 	connect(am.action(DkActionManager::menu_panel_metadata_dock), SIGNAL(toggled(bool)), this, SLOT(showMetaDataDock(bool)));
+	connect(am.action(DkActionManager::menu_panel_history), SIGNAL(toggled(bool)), this, SLOT(showHistoryDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
 
 	connect(am.action(DkActionManager::menu_view_fit_frame), SIGNAL(triggered()), this, SLOT(fitFrame()));
@@ -978,6 +980,7 @@ void DkNoMacs::enterFullScreen() {
 
 	showExplorer(DkDockWidget::testDisplaySettings(Settings::param().app().showExplorer), false);
 	showMetaDataDock(DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock), false);
+	showHistoryDock(DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock), false);
 
 	Settings::param().app().maximizedMode = isMaximized();
 	setWindowState(Qt::WindowFullScreen);
@@ -1003,6 +1006,7 @@ void DkNoMacs::exitFullScreen() {
 		if (Settings::param().app().showMovieToolBar) mMovieToolbar->show();
 		showExplorer(DkDockWidget::testDisplaySettings(Settings::param().app().showExplorer), false);
 		showMetaDataDock(DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock), false);
+		showHistoryDock(DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock), false);
 
 		if(Settings::param().app().maximizedMode) 
 			setWindowState(Qt::WindowMaximized);
@@ -1316,6 +1320,24 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (getTabWidget()->getCurrentImage())
 		mMetaDataDock->setImage(getTabWidget()->getCurrentImage());
+}
+
+void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
+
+	if (!mHistoryDock) {
+
+		mHistoryDock = new DkHistoryDock(tr("History"), this);
+		mHistoryDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_history));
+		mHistoryDock->setDisplaySettings(&Settings::param().app().showHistoryDock);
+		addDockWidget(mHistoryDock->getDockLocationSettings(Qt::RightDockWidgetArea), mHistoryDock);
+
+		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mHistoryDock, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
+	}
+
+	mHistoryDock->setVisible(show, saveSettings);
+
+	if (getTabWidget()->getCurrentImage())
+		mHistoryDock->updateImage(getTabWidget()->getCurrentImage());
 }
 
 void DkNoMacs::showThumbsDock(bool show) {

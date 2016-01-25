@@ -74,6 +74,7 @@ class DkArchiveExtractionDialog;
 #endif
 class DkExplorer;
 class DkMetaDataDock;
+class DkHistoryDock;
 class DkExportTiffDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
@@ -170,6 +171,7 @@ public slots:
 	void exitFullScreen();
 	void showExplorer(bool show, bool saveSettings = true);
 	void showMetaDataDock(bool show, bool saveSettings = true);
+	void showHistoryDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
 	void thumbsDockAreaChanged();
 	void showRecentFiles(bool show = true);
@@ -311,6 +313,7 @@ protected:
 #endif
 	DkExplorer* mExplorer = 0;
 	DkMetaDataDock* mMetaDataDock = 0;
+	DkHistoryDock* mHistoryDock = 0;
 	DkDockWidget* mThumbsDock = 0;
 	DkExportTiffDialog* mExportTiffDialog = 0;
 	DkThumbsSaver* mThumbSaver = 0;

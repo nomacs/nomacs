@@ -166,6 +166,15 @@ QListView#resultListView[empty="true"] {
 	font-style: italic;
 }
 
+QListWidget#historyList {
+	font-size: 12pt;
+}
+
+QListWidget#historyList::item:disabled {
+	color: #666;
+	font-style: italic;
+}
+
 /* DkRecentFiles */
 nmc--DkRecentFilesWidget QLabel {
 	padding: 2 0 2 0; 

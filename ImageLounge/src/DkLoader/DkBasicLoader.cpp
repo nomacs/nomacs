@@ -958,8 +958,8 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 
 	DkEditImage newImg(img, editName);
 
-	if (historySize + newImg.size() > Settings::param().resources().historyMemory) {
-		mImages.pop_front();
+	if (historySize + newImg.size() > Settings::param().resources().historyMemory && mImages.size() >= 2) {
+		mImages.removeAt(1);
 		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
 	}
 
@@ -1091,7 +1091,15 @@ void DkBasicLoader::redo() {
 		mImageIndex++;
 }
 
-void DkBasicLoader::setImageIndex(int idx) {
+QVector<DkEditImage> DkBasicLoader::history() const {
+	return mImages;
+}
+
+int DkBasicLoader::historyIndex() const {
+	return mImageIndex;
+}
+
+void DkBasicLoader::setHistoryIndex(int idx) {
 	mImageIndex = idx;
 }
 

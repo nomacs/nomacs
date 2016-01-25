@@ -524,6 +524,7 @@ QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
 	
 	mPanelMenu->addAction(mPanelActions[menu_panel_explorer]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_metadata_dock]);
+	mPanelMenu->addAction(mPanelActions[menu_panel_history]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_preview]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_thumbview]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_scroller]);
@@ -1255,6 +1256,10 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_comment]->setShortcut(QKeySequence(shortcut_show_comment));
 	mPanelActions[menu_panel_comment]->setStatusTip(QObject::tr("Shows Image Notes"));
 	mPanelActions[menu_panel_comment]->setCheckable(true);
+
+	mPanelActions[menu_panel_history] = new QAction(QObject::tr("Edit &History"), parent);
+	mPanelActions[menu_panel_history]->setStatusTip(QObject::tr("Shows the edit history"));
+	mPanelActions[menu_panel_history]->setCheckable(true);
 
 	// view actions
 	mViewActions.resize(menu_view_end);

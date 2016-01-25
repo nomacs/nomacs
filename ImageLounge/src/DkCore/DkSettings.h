@@ -143,6 +143,7 @@ public:
 		QBitArray showComment;
 		QBitArray showExplorer;
 		QBitArray showMetaDataDock;
+		QBitArray showHistoryDock;
 		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;
