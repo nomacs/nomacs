@@ -1259,6 +1259,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mPanelActions[menu_panel_history] = new QAction(QObject::tr("Edit &History"), parent);
 	mPanelActions[menu_panel_history]->setStatusTip(QObject::tr("Shows the edit history"));
+	mPanelActions[menu_panel_history]->setShortcut(QKeySequence(shortcut_show_history));
 	mPanelActions[menu_panel_history]->setCheckable(true);
 
 	// view actions

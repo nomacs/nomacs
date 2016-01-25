@@ -399,6 +399,7 @@ public:
 		shortcut_show_overview	= Qt::Key_O,
 		shortcut_show_explorer	= Qt::Key_E,
 		shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
+		shortcut_show_history	= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
 		shortcut_show_player	= Qt::Key_P,
 		shortcut_show_exif		= Qt::Key_M,
 		shortcut_show_info		= Qt::Key_I,

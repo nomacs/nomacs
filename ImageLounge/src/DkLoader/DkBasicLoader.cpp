@@ -114,6 +114,10 @@ DkEditImage::DkEditImage(const QImage& img, const QString& editName) {
 	mEditName = editName;
 }
 
+void DkEditImage::setImage(const QImage& img) {
+	mImg = img;
+}
+
 QImage DkEditImage::image() const {
 	return mImg;
 }
@@ -310,7 +314,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			mMetaData->setQtValues(img);
 		
 			if (orientation != -1 && !mMetaData->isTiff() && !Settings::param().metaData().ignoreExifOrientation)
-				rotate(orientation);
+				img = rotate(img, orientation);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}
@@ -1091,8 +1095,8 @@ void DkBasicLoader::redo() {
 		mImageIndex++;
 }
 
-QVector<DkEditImage> DkBasicLoader::history() const {
-	return mImages;
+QVector<DkEditImage>* DkBasicLoader::history() {
+	return &mImages;
 }
 
 int DkBasicLoader::historyIndex() const {
@@ -1454,17 +1458,16 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
  * This method rotates an image.
  * @param orientation the orientation in degree.
  **/ 
-void DkBasicLoader::rotate(int orientation) {
+QImage DkBasicLoader::rotate(const QImage& img, int orientation) {
 
 	if (orientation == 0 || orientation == -1)
-		return;
+		return img;
 
-	QImage img = image().copy();
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((double)orientation);
-	img = img.transformed(rotationMatrix);
-	
-	setEditImage(img, tr("Rotate"));
+	QImage rImg = img.transformed(rotationMatrix);
+
+	return rImg;
 }
 
 /**

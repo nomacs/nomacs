@@ -100,6 +100,7 @@ class DllLoaderExport DkEditImage {
 public:
 	DkEditImage(const QImage& img = QImage(), const QString& editName = "");
 
+	void setImage(const QImage& img);
 	QImage image() const;
 	QString editName() const;
 	int size() const;
@@ -190,7 +191,6 @@ public:
 	void setImage(const QImage& img, const QString& editName, const QString& file);
 	void setEditImage(const QImage& img, const QString& editName = "");
 
-
 	void setTraining(bool training) {
 		training = true;
 	};
@@ -239,7 +239,7 @@ public:
 
 	void undo();
 	void redo();
-	QVector<DkEditImage> history() const;
+	QVector<DkEditImage>* history();
 	void setHistoryIndex(int idx);
 	int historyIndex() const;
 
@@ -288,7 +288,7 @@ signals:
 	void errorDialogSignal(const QString& msg);
 
 public slots:
-	void rotate(int orientation);
+	QImage rotate(const QImage& img, int orientation);
 
 protected:
 	bool loadRohFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());

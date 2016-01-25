@@ -1389,7 +1389,7 @@ void DkImageLoader::rotateImage(double angle) {
 		return;
 	}
 
-	mCurrentImage->getLoader()->rotate(qRound(angle));
+	QImage img = mCurrentImage->getLoader()->rotate(mCurrentImage->image(), qRound(angle));
 
 	QImage thumb = DkImage::createThumb(mCurrentImage->image());
 	mCurrentImage->getThumb()->setImage(thumb);
@@ -1403,13 +1403,22 @@ void DkImageLoader::rotateImage(double angle) {
 				metaData->setThumbnail(thumb);
 			metaData->setOrientation(qRound(angle));
 			metaDataSet = true;
+
+			// if that is working out, we need to set the image without changing the history
+			QVector<DkEditImage>* imgs = mCurrentImage->getLoader()->history();
+
+			if (!imgs->isEmpty()) {
+				imgs->last().setImage(img);
+			}
+
 		}
 		catch (...) {
 		}
 	}
 
-	if (!metaDataSet)
-		setImage(mCurrentImage->image(), mCurrentImage->filePath());
+	if (!metaDataSet) {
+		setImage(img, tr("Rotated"), mCurrentImage->filePath());
+	}
 
 	emit imageUpdatedSignal(mCurrentImage);
 }
