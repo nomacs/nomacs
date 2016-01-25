@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>nomacs - Image Lounge [x86]</DisplayName>
     <Description>nomacs for 32-bit systems.</Description>
-    <Version>3.1.0-0</Version>
-    <ReleaseDate>2016-01-05</ReleaseDate>
+    <Version>3.1.0-1</Version>
+    <ReleaseDate>2016-01-25</ReleaseDate>
     <Default>true</Default>
 </Package>
