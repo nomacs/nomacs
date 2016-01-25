@@ -752,6 +752,23 @@ void DkFilePreference::createLayout() {
 	cacheGroup->addWidget(cacheBox);
 	cacheGroup->addWidget(cLabel);
 
+	// history size
+	// cache size
+	QSpinBox* historyBox = new QSpinBox(this);
+	historyBox->setObjectName("historyBox");
+	historyBox->setMinimum(0);
+	historyBox->setMaximum(1024);
+	historyBox->setSuffix(" MB");
+	historyBox->setMaximumWidth(200);
+	historyBox->setValue(qRound(Settings::param().resources().historyMemory));
+
+	QLabel* hLabel = new QLabel(tr("We recommend to set a moderate edit history value arround 100 MB"), this);
+
+	DkGroupWidget* historyGroup = new DkGroupWidget(tr("History Size"), this);
+	historyGroup->addWidget(historyBox);
+	historyGroup->addWidget(hLabel);
+
+
 	// loading policy
 	QVector<QRadioButton*> loadButtons;
 	loadButtons.append(new QRadioButton(tr("Skip Images"), this));
@@ -788,6 +805,7 @@ void DkFilePreference::createLayout() {
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
 	leftLayout->addWidget(tempFolderGroup);
 	leftLayout->addWidget(cacheGroup);
+	leftLayout->addWidget(historyGroup);
 	leftLayout->addWidget(loadGroup);
 	leftLayout->addWidget(skipGroup);
 
@@ -828,6 +846,13 @@ void DkFilePreference::on_cacheBox_valueChanged(int value) const {
 		Settings::param().resources().cacheMemory = (float)value;
 	}
 
+}
+
+void DkFilePreference::on_historyBox_valueChanged(int value) const {
+
+	if (Settings::param().resources().historyMemory != value) {
+		Settings::param().resources().historyMemory = (float)value;
+	}
 }
 
 void DkFilePreference::paintEvent(QPaintEvent *event) {
