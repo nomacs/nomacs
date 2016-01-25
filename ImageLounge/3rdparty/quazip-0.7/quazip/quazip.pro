@@ -38,6 +38,8 @@ unix:!symbian {
     headers.files=$$HEADERS
     target.path=$$PREFIX/lib/$${LIB_ARCH}
     INSTALLS += headers target
+	// fixes quazip error on OSX
+	LIBS += -lz
 
 	OBJECTS_DIR=.obj
 	MOC_DIR=.moc
