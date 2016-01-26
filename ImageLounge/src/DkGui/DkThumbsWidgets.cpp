@@ -288,15 +288,22 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	for (int idx = 0; idx < mThumbs.size(); idx++) {
 
 		QSharedPointer<DkThumbNailT> thumb = mThumbs.at(idx)->getThumb();
-
-		if (thumb->hasImage() == DkThumbNail::exists_not) {
-			thumbRects.push_back(QRectF());
-			continue;
-		}
-
 		QImage img;
-		if (thumb->hasImage() == DkThumbNail::loaded)
-			img = thumb->getImage();
+		
+		// if the image is loaded draw that (it might be edited)
+		if (mThumbs.at(idx)->hasImage()) {
+			img = mThumbs.at(idx)->image();
+		}
+		else {
+
+			if (thumb->hasImage() == DkThumbNail::exists_not) {
+				thumbRects.push_back(QRectF());
+				continue;
+			}
+
+			if (thumb->hasImage() == DkThumbNail::loaded)
+				img = thumb->getImage();
+		}
 
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
 		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(Settings::param().display().thumbSize, Settings::param().display().thumbSize));
