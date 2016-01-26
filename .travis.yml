@@ -18,7 +18,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install exiv2; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install quazip; fi
+  #- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install quazip; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
 
