@@ -107,7 +107,7 @@ set(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
 set_source_files_properties(${CMAKE_SOURCE_DIR}/macosx/nomacs.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
-install(TARGETS ${BINARY_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(TARGETS ${BINARY_NAME} ${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # create a "transportable" bundle - all libs into the bundle: "make bundle" after make install
 configure_file(${CMAKE_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
