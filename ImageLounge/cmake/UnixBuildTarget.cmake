@@ -78,7 +78,7 @@ set_target_properties(${DLL_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_NAME})
 
 # installation
 #  binary
-install(TARGETS ${BINARY_NAME} ${DLL_NAME} DESTINATION bin LIBRARY DESTINATION lib${LIB_SUFFIX})
+install(TARGETS ${BINARY_NAME} ${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} DESTINATION bin LIBRARY DESTINATION lib${LIB_SUFFIX})
 #  desktop file
 install(FILES nomacs.desktop DESTINATION share/applications)
 #  icon
