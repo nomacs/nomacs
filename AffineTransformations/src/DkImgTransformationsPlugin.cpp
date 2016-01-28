@@ -151,7 +151,7 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(cons
 			retImg = imgTransformationsViewport->getTransformedImage();
 
 		viewport->setVisible(false);
-		imgC->setImage(retImg);
+		imgC->setImage(retImg, tr("Transformed"));	// TODO: specify which transform?!
 
 		return imgC;
 	}

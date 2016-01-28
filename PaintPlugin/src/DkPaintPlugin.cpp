@@ -143,7 +143,7 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
 		DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
 
 		if (!paintViewport->isCanceled()) 
-			image->setImage(paintViewport->getPaintedImage());
+			image->setImage(paintViewport->getPaintedImage(), tr("Drawings Added"));
 
 		viewport->setVisible(false);
 		

@@ -196,7 +196,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QS
 
 	// crop image
 	if(runID == mRunIDs[id_crop_to_page]) {
-		imgC->setImage(segM.getCropped(imgC->image()));
+		imgC->setImage(segM.getCropped(imgC->image()), tr("Page Cropped"));
 	}
 	// save to metadata
 	if(runID == mRunIDs[id_crop_to_metadata]) {
@@ -215,7 +215,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QS
 		
 		QImage dImg = imgC->image();
 		segM.draw(dImg);
-		imgC->setImage(dImg);
+		imgC->setImage(dImg, tr("Page Annotated"));
 	}
 
 	// wrong runID? - do nothing
