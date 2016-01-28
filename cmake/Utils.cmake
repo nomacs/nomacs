@@ -298,7 +298,7 @@ macro(NMC_PREPARE_PLUGIN)
         MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
       ENDIF()
     endif()
-    SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${NOMACS_BUILD_DIRECTORY} CACHE PATH "Path to the plugin install directory for deploying")
+    SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/install CACHE PATH "Path to the plugin install directory for deploying")
 	
   endif(NOT NOMACS_VARS_ALREADY_SET)
     
