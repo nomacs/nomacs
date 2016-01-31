@@ -43,7 +43,7 @@ endif(NOT EXIV2_FOUND)
 # search for opencv
 unset(OpenCV_FOUND CACHE)
 if(ENABLE_OPENCV)
-	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+	find_package(OpenCV REQUIRED core imgproc)
 	if (NOT OpenCV_LIBRARIES) # OpenCV_FOUND can not be used since it is set in Ubuntu 12.04 (without finding opencv)
 		# Older OpenCV versions only supplied pkg-config files
 		if(PKG_CONFIG_FOUND)
