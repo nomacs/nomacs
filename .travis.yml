@@ -28,7 +28,7 @@ before_script:
 
   - git clone --depth 1 http://github.com/nomacs/nomacs nomacs
   - mkdir nomacs/ImageLounge/plugins
-  - mv * nomacs/ImageLounge/plugins
+  - find -maxdepth 1 -not -name "nomacs" -not -name ".*" -exec mv {} nomacs/ImageLounge/plugins/ \;
   - mkdir build
   - cd build
 
