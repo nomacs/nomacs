@@ -132,7 +132,7 @@ QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QS
 
 		fakeMiniaturesDialog->deleteLater();
 
-		imgC->setImage(returnImg);
+		imgC->setImage(returnImg, tr("Fake Miniature"));
 	}
 	else if (imgC) {
 		QMessageBox msgBox;

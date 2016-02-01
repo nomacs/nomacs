@@ -19,8 +19,6 @@ using nmp::MaidFacade;
 using Maid::MaidUtil;
 using Maid::MaidObject;
 
-nmc::DkSettings::Global& globalSettings = nmc::DkSettings::getGlobalSettings();
-
 MaidFacade::MaidFacade(QWidget* const dialogParent) 
 	: lensAttached(false), prevFileNumber(0), captureCount(0), allItemsAcquired(false), 
 	currentlyAcquiringObjects(false), initialized(false), dialogParent(dialogParent) {
@@ -509,7 +507,7 @@ void MaidFacade::acquireItemObjectsFinished() {
 
 	[&] () {
 
-		QFileInfo fileInfo(QDir(globalSettings.lastDir), makePictureFilename());
+		QFileInfo fileInfo(QDir(nmc::Settings::param().global().lastDir), makePictureFilename());
 		QString filename = getCapturedFileName(fileInfo);
 
 		QFileInfo firstFilenameInfo = QFileInfo(firstFilename);

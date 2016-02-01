@@ -140,7 +140,7 @@ QSharedPointer<nmc::DkImageContainer> DkThresholdPlugin::runPlugin(const QString
 
 		QImage retImg = QImage();
 		if (!thresholdViewport->isCanceled()) 
-			imgC->setImage(thresholdViewport->getThresholdedImage(true));
+			imgC->setImage(thresholdViewport->getThresholdedImage(true), tr("Thresholded"));
 		else {
 			if (parent()) {
 				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());

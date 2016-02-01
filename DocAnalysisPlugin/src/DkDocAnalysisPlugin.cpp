@@ -150,7 +150,7 @@ QSharedPointer<nmc::DkImageContainer> DkDocAnalysisPlugin::runPlugin(const QStri
 		DkDocAnalysisViewPort* docAnalysisViewport = dynamic_cast<DkDocAnalysisViewPort*>(viewport);
 
 		if (!docAnalysisViewport->isCanceled()) 
-			image->setImage(docAnalysisViewport->getPaintedImage());
+			image->setImage(docAnalysisViewport->getPaintedImage(), tr("Pages Annotated"));
 
 		viewport->setVisible(false);
 
