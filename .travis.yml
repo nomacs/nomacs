@@ -33,6 +33,6 @@ before_script:
   - cd build
 
 script:
-  - cmake $CMAKE_ARGS ../nomcas/ImageLounge/.
+  - cmake $CMAKE_ARGS ../nomacs/ImageLounge/.
   - make -j8
   
