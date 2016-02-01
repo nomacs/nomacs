@@ -30,6 +30,7 @@ before_script:
   - cd build
 
 script:
+  - git clone http://github.com/nomacs/nomacs-plugins ../ImageLounge/plugins
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
   
