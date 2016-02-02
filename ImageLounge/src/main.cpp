@@ -165,8 +165,6 @@ int main(int argc, char *argv[]) {
 		nmc::Settings::param().app().privateMode = true;
 	}
 
-	qInfo() << "breaking nomacs";
-
 	if (parser.isSet(modeOpt)) {
 		QString pm = parser.value(modeOpt);// .trimmed();
 
