@@ -35,4 +35,4 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../nomacs/ImageLounge/.
   - make -j8
-  
+ 
