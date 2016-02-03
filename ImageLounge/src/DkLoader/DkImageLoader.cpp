@@ -940,7 +940,6 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	if (mCurrentImage)
 		emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(mCurrentImage->getMetaData()));
 
-
 	// update status bar info
 	if (mCurrentImage && !mImages.empty() && mImages.indexOf(mCurrentImage) >= 0)
 		DkStatusBarManager::instance().setMessage(tr("%1 of %2").arg(mImages.indexOf(mCurrentImage)+1).arg(mImages.size()), DkStatusBar::status_filenumber_info);

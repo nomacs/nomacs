@@ -39,6 +39,7 @@
 #include "DkPluginManager.h"
 #include "DkActionManager.h"
 #include "DkStatusBar.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -311,6 +312,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	// status info
 	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
+	DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()), DkStatusBar::status_format_info);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {

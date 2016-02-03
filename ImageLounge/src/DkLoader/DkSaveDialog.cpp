@@ -322,14 +322,23 @@ void DkCompressDialog::drawPreview() {
 		qDebug() << "using j2k...";
 	}
 	else if (mDialogMode == webp_dialog && getCompression() != -1) {
-		// pre-compute the webp compression
-		DkBasicLoader loader;
-		QSharedPointer<QByteArray> buffer(new QByteArray());
-		loader.saveWebPFile(mNewImg, buffer, getCompression(), 0);
-		qDebug() << "webP buffer size: " << buffer->size();
-		loader.loadWebPFile(QString(), buffer);
-		mNewImg = loader.image();
-		updateFileSizeLabel((float)buffer->size(), origImg.size());
+		// pre-compute the jpg compression
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::ReadWrite);
+		mNewImg.save(&buffer, "WEBP", mSlider->value());
+		mNewImg.loadFromData(ba, "WEBP");
+		updateFileSizeLabel((float)ba.size(), origImg.size());
+		qDebug() << "using webp...";
+
+		//// pre-compute the webp compression
+		//DkBasicLoader loader;
+		//QSharedPointer<QByteArray> buffer(new QByteArray());
+		//loader.saveWebPFile(mNewImg, buffer, getCompression(), 0);
+		//qDebug() << "webP buffer size: " << buffer->size();
+		//loader.loadWebPFile(QString(), buffer);
+		//mNewImg = loader.image();
+		//updateFileSizeLabel((float)buffer->size(), origImg.size());
 	}
 	else if (mDialogMode == web_dialog) {
 

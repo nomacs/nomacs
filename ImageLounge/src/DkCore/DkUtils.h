@@ -367,6 +367,7 @@ public:
 	static QDateTime getConvertableDate(const QString& date);
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());
+	static QString formatToString(int format);
 	static QString cleanFraction(const QString& frac);
 	static QString resolveFraction(const QString& frac);
 	static std::wstring qStringToStdWString(const QString &str);

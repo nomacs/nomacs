@@ -1351,7 +1351,7 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		QImage sImg = img;
 
 		// JPEG 2000 can only handle 32 or 8bit images
-		if (!hasAlpha && !fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")))
+		if (!hasAlpha && img.colorTable().empty() && !fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx|png)")))
 			sImg = sImg.convertToFormat(QImage::Format_RGB888);
 		else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8)
 			sImg = sImg.convertToFormat(QImage::Format_RGB32);

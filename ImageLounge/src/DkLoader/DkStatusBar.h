@@ -59,6 +59,7 @@ public:
 	enum StatusLabel {
 		status_pixel_info,	// the first is special (left)
 
+		status_format_info,
 		status_zoom_info,
 		status_filenumber_info,
 		status_filesize_info,
