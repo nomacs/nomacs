@@ -548,9 +548,9 @@ QString DkUtils::formatToString(int format) {
 	case QImage::Format_RGB888:
 	case QImage::Format_RGB666:						msg = QObject::tr("RGB 24-bit"); break;
 	case QImage::Format_ARGB4444_Premultiplied:		msg = QObject::tr("ARGB 16-bit"); break;
-	case QImage::Format_BGR30:						msg = QObject::tr("BGR 32-bit"); break;
 
 #if QT_VERSION >= 0x050500
+	case QImage::Format_BGR30:						msg = QObject::tr("BGR 32-bit"); break;
 	case QImage::Format_A2BGR30_Premultiplied:		msg = QObject::tr("ABGR 32-bit"); break;
 	case QImage::Format_Grayscale8:					msg = QObject::tr("Grayscale 8-bit"); break;
 	case QImage::Format_Alpha8:						msg = QObject::tr("Alpha 8-bit"); break;
