@@ -16,3 +16,4 @@ msvc*
 buildfiles/Win32
 buildfiles/x64
 /.project
+CMakeUser.cmake

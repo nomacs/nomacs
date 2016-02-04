@@ -962,7 +962,7 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 
 	DkEditImage newImg(img, editName);
 
-	if (historySize + newImg.size() > Settings::param().resources().historyMemory && mImages.size() >= 2) {
+	if (historySize + newImg.size() > Settings::param().resources().historyMemory && mImages.size() > 2) {
 		mImages.removeAt(1);
 		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
 	}
