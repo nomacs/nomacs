@@ -527,15 +527,17 @@ QString DkUtils::formatToString(int format) {
 	case QImage::Format_Mono:
 	case QImage::Format_MonoLSB:					msg = QObject::tr("Binary"); break;
 	case QImage::Format_Indexed8:					msg = QObject::tr("Indexed 8-bit"); break;
-	case QImage::Format_Grayscale8:					msg = QObject::tr("Grayscale 8-bit"); break;
-	case QImage::Format_Alpha8:						msg = QObject::tr("Alpha 8-bit"); break;
 	case QImage::Format_RGBX8888:
-	case QImage::Format_RGB30:
 	case QImage::Format_RGBA8888_Premultiplied:
+#if QT_VERSION >= 0x050500
+	case QImage::Format_RGB30:
+#endif
 	case QImage::Format_RGB32:						msg = QObject::tr("RGB 32-bit"); break;
 	case QImage::Format_ARGB32_Premultiplied:
 	case QImage::Format_RGBA8888:
+#if QT_VERSION >= 0x050500
 	case QImage::Format_A2RGB30_Premultiplied:
+#endif
 	case QImage::Format_ARGB32:						msg = QObject::tr("ARGB 32-bit"); break;
 	case QImage::Format_RGB555:
 	case QImage::Format_RGB444:
@@ -547,7 +549,12 @@ QString DkUtils::formatToString(int format) {
 	case QImage::Format_RGB666:						msg = QObject::tr("RGB 24-bit"); break;
 	case QImage::Format_ARGB4444_Premultiplied:		msg = QObject::tr("ARGB 16-bit"); break;
 	case QImage::Format_BGR30:						msg = QObject::tr("BGR 32-bit"); break;
+
+#if QT_VERSION >= 0x050500
 	case QImage::Format_A2BGR30_Premultiplied:		msg = QObject::tr("ABGR 32-bit"); break;
+	case QImage::Format_Grayscale8:					msg = QObject::tr("Grayscale 8-bit"); break;
+	case QImage::Format_Alpha8:						msg = QObject::tr("Alpha 8-bit"); break;
+#endif
 	}
 
 	return msg;
