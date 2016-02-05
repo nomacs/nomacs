@@ -57,6 +57,7 @@
 #include <QNetworkProxyFactory>
 #include <QAction>
 #include <QMenu>
+#include <QJsonValue>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -67,7 +68,10 @@ namespace nmc {
 
 // DkPlugin --------------------------------------------------------------------
 DkPlugin::DkPlugin(const QString& pluginPath) {
+	
 	mPluginPath = pluginPath;
+	mLoader = QSharedPointer<QPluginLoader>(new QPluginLoader(mPluginPath));
+	loadJson();
 }
 
 bool DkPlugin::operator<(const QSharedPointer<DkPlugin>& plugin) {
@@ -84,19 +88,21 @@ void DkPlugin::setActive(bool active) {
 	mActive = active;
 }
 
-bool DkPlugin::isActive() {
+bool DkPlugin::isActive() const {
 	return mActive;
 }
 
-bool DkPlugin::isLoaded() {
+bool DkPlugin::isLoaded() const {
 	return mPlugin;
 }
 
 bool DkPlugin::load() {
 
-	mLoader = QSharedPointer<QPluginLoader>(new QPluginLoader(mPluginPath));
-
-	if (!mLoader->load()) {
+	if (!isValid()) {
+		qDebug() << "Invalid: " << mPluginPath;
+		return false;
+	}
+	else if (!mLoader->load()) {
 		qDebug() << "Could not load: " << mPluginPath;
 		return false;
 	}
@@ -136,10 +142,79 @@ bool DkPlugin::load() {
 
 void DkPlugin::createMenu() {
 
+	qDebug() << "creating plugin menu for " << pluginName();
 	mPluginMenu = new QMenu(pluginName(), QApplication::activeWindow());
 
 	for (auto action : mPlugin->pluginActions()) {
+		mPluginMenu->addAction(action);
 		connect(action, SIGNAL(triggered()), this, SLOT(run()), Qt::UniqueConnection);
+	}
+
+}
+
+void DkPlugin::loadJson() {
+
+	QJsonObject metaData = mLoader->metaData();
+	QStringList keys = metaData.keys();
+
+	for (const QString& key : keys) {
+	
+		if (key == "MetaData")
+			loadMetaData(metaData.value(key));
+		else if (key == "IID" && metaData.value(key).toString().contains("com.nomacs.ImageLounge"))
+			mIsValid = true;
+#ifndef _DEBUG	// warn if we have a debug & are not in debug ourselves
+		else if (key == "debug") {
+			bool isDebug = metaData.value(key).toBool();
+			if (isDebug)
+				qWarning() << "I cannot load a debug dll since I am compiled in release!";
+		}
+#endif
+
+		qDebug() << key << "|" << metaData.value(key);
+	}
+}
+
+void DkPlugin::loadMetaData(const QJsonValue& val) {
+
+	// we expect something like this...
+	//{
+	//		"PluginName" 	: [ "BinarizationPlugin" ],
+	//		"AuthorName" 	: [ "Markus Diem" ],
+	//		"Company"		: [ "Computer Vision Lab" ],
+	//		"DateCreated" 	: [ "04.02.2016" ],
+	//		"DateModified" 	: [ "04.02.2016" ],
+	//		"Description"	: [ "Document Binarization Plugin" ],
+	//		"StatusTip" 	: [ "Applies e.g. the Su et al. binarzation to an image." ]
+	//}
+	
+	QJsonObject metaData = val.toObject();
+	QStringList keys = metaData.keys();
+
+	for (const QString& key : keys) {
+
+		if (key == "PluginName")
+			mPluginName = metaData.value(key).toString();
+		else if (key == "AuthorName")
+			mAuthorName = metaData.value(key).toString();
+		else if (key == "Company")
+			mCompany = metaData.value(key).toString();
+		else if (key == "DateCreated")
+			mDateCreated = QDate::fromString(metaData.value(key).toString(), "DD.MM.YYYY");
+		else if (key == "DateModified")
+			mDateCreated = QDate::fromString(metaData.value(key).toString(), "DD.MM.YYYY");
+		else if (key == "Description")
+			mDescription = metaData.value(key).toString();
+		else if (key == "StatusTip")
+			mStatusTip = metaData.value(key).toString();
+		else 
+			qDebug() << "unknown key" << key << "|" << metaData.value(key);
+
+		qDebug() << "parsing:" << key << "|" << metaData.value(key);
+	}
+
+	if (!isValid() && !keys.empty()) {
+		qWarning() << "invalid plugin - missing the PluginName in the jason metadata...";
 	}
 
 }
@@ -164,6 +239,10 @@ void DkPlugin::run() {
 			emit runPlugin(this, a->data().toString());
 	}
 
+}
+
+bool DkPlugin::isValid() const {
+	return mIsValid;
 }
 
 QString DkPlugin::pluginPath() const{
@@ -208,11 +287,11 @@ QString DkPlugin::statusTip() const {
 	return mStatusTip;
 }
 
-QDateTime DkPlugin::dateCreated() const {
+QDate DkPlugin::dateCreated() const {
 	return mDateCreated;
 }
 
-QDateTime DkPlugin::dateModified() const {
+QDate DkPlugin::dateModified() const {
 	return mDateModified;
 }
 
@@ -1820,7 +1899,6 @@ void DkPluginManager::loadPlugins() {
 			}
 		}
 	}
-
 }
 
 /**
@@ -1881,7 +1959,7 @@ QVector<QSharedPointer<DkPlugin> > DkPluginManager::getBasicPlugins() const {
 QSharedPointer<DkPlugin> DkPluginManager::getRunningPlugin() const {
 
 	for (auto plugin : mPlugins) {
-		if (plugin->isLoaded())
+		if (plugin->isActive())
 			return plugin;
 	}
 
@@ -2028,6 +2106,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 		if (plugin->isLoaded()) {
 			QList<QAction*> actions = pi->createActions(QApplication::activeWindow());
 			mPluginSubMenus.append(plugin->pluginMenu());
+			mMenu->addMenu(plugin->pluginMenu());
 		}
 
 	}

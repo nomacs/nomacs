@@ -34,7 +34,7 @@
 #include <QStyledItemDelegate>
 #include <QTextEdit>
 #include <QLabel>
-#include <QDateTime>
+#include <QDate>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkPluginInterface.h"
@@ -49,6 +49,7 @@ class QItemSelectionModel;
 class QItemSelection;
 class QProgressDialog;
 class QSortFilterProxyModel;
+class QJsonValue;
 
 namespace nmc {
 
@@ -131,9 +132,10 @@ public:
 	bool operator<(const QSharedPointer<DkPlugin> & plugin);
 
 	void setActive(bool active = true);
-	bool isActive();
+	bool isActive() const;
 
-	bool isLoaded();
+	bool isValid() const;
+	bool isLoaded() const;
 	bool load();
 
 	// attributes
@@ -146,8 +148,8 @@ public:
 	QString fullDescription() const;
 	QString statusTip() const;
 
-	QDateTime dateCreated() const;
-	QDateTime dateModified() const;
+	QDate dateCreated() const;
+	QDate dateModified() const;
 
 	QMenu* pluginMenu() const;
 	QSharedPointer<DkPluginInterface> plugin() const;
@@ -169,10 +171,11 @@ protected:
 	QString mDescription;
 	QString mStatusTip;
 
-	QDateTime mDateCreated;
-	QDateTime mDateModified;
+	QDate mDateCreated;
+	QDate mDateModified;
 
 	bool mActive = false;
+	bool mIsValid = false;
 
 	PluginType mType = type_unknown;
 
@@ -182,6 +185,8 @@ protected:
 	QSharedPointer<DkPluginInterface> mPlugin;
 
 	void createMenu();
+	void loadJson();
+	void loadMetaData(const QJsonValue& val);
 };
 
 class DllLoaderExport DkPluginActionManager : public QObject {
