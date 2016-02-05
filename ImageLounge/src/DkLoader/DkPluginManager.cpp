@@ -2005,7 +2005,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 			if (!actions.empty()) {
 
 				for (int iAction = 0; iAction < actions.size(); iAction++) {
-					connect(actions.at(iAction), SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+					connect(actions.at(iAction), SIGNAL(triggered()), this, SLOT(runLoadedPlugin()), Qt::UniqueConnection);
 					runId2PluginId.insert(actions.at(iAction)->data().toString(), pluginIdList.at(i));
 				}
 
@@ -2051,7 +2051,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 			QAction* pluginAction = new QAction(sortedNames.at(i).second, this);
 			pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));
 			pluginAction->setData(sortedNames.at(i).first);
-			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()), Qt::UniqueConnection);
 
 			mMenu->addAction(pluginAction);
 			pluginAction->setToolTip(pluginAction->statusTip());
