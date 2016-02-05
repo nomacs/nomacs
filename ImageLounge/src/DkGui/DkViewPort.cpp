@@ -123,7 +123,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginInterface*, const QString&)), this, SLOT(applyPlugin(DkPluginInterface*, const QString&)));
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPlugin*, const QString&)), this, SLOT(applyPlugin(DkPlugin*, const QString&)));
 
 	// connect
 	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
@@ -634,14 +634,17 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 	update();
 }
 
-void DkViewPort::applyPlugin(DkPluginInterface* plugin, const QString& key) {
+void DkViewPort::applyPlugin(DkPlugin* plugin, const QString& key) {
 	
 #ifdef WITH_PLUGINS
-	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->runPlugin(key, imageContainer()));
+	if (!plugin)
+		return;
+
+	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->plugin()->runPlugin(key, imageContainer()));
 	if (result) 
 		setEditedImage(result);
 
-	DkPluginManager::instance().clearRunningPluginKey();
+	plugin->setActive(false);
 #endif
 }
 

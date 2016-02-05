@@ -345,7 +345,7 @@ void DkControlWidget::connectWidgets() {
 	DkActionManager& am = DkActionManager::instance();
 
 	// plugins
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), this, SLOT(setPluginWidget(QSharedPointer<DkViewPortInterface>, bool)));
 	connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
 
 	// actions
@@ -540,12 +540,12 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 bool DkControlWidget::closePlugin(bool askForSaving) {
 #ifdef WITH_PLUGINS
 
-	DkPluginInterface* cPlugin = DkPluginManager::instance().getRunningPlugin();
+	QSharedPointer<DkPlugin> plugin = DkPluginManager::instance().getRunningPlugin();
 
-	if (!cPlugin)
+	if (!plugin)
 		return true;
 	
-	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+	QSharedPointer<DkViewPortInterface> vPlugin = plugin->pluginViewPort();
 
 	if (!vPlugin) 
 		return true;
@@ -581,7 +581,7 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 
 	setPluginWidget(vPlugin, true);	// handles deletion
-	DkPluginManager::instance().clearRunningPluginKey();	// handles states
+	plugin->setActive(false);		// handles states
 
 	if (pluginImage) {
 		mViewport->setEditedImage(pluginImage);
@@ -597,13 +597,13 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 
 #ifdef WITH_PLUGINS
-	DkPluginInterface* cPlugin = DkPluginManager::instance().getRunningPlugin();
+	QSharedPointer<DkPlugin> plugin = DkPluginManager::instance().getRunningPlugin();
 
-	if (!cPlugin)
+	if (!plugin)
 		return true;
 
 	// does the plugin want to be closed on image changes?
-	if (!cPlugin->closesOnImageChange())
+	if (!plugin->plugin()->closesOnImageChange())
 		return true;
 
 	return closePlugin(askForSaving);
@@ -612,7 +612,7 @@ bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 #endif // WITH_PLUGINS
 }
 
-void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {
+void DkControlWidget::setPluginWidget(QSharedPointer<DkViewPortInterface> pluginWidget, bool removeWidget) {
 
 	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
 

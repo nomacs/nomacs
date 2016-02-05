@@ -55,6 +55,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageContainer;
+class DkPlugin;
 
 class DllLoaderExport DkAbstractBatch {
 
@@ -124,14 +125,13 @@ class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
 public:
 	DkPluginBatch();
 
-	// TODO: where shall we put the defines now? e.g. DkImage::ipl_area
 	virtual void setProperties(const QStringList& pluginList);
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual QString name() const;
 	virtual bool isActive() const;
 
 protected:
-	void resolvePluginString(const QString& pluginString, QString& pluginId, QString& runId) const;
+	void resolvePluginString(const QString& pluginString, QSharedPointer<DkPlugin> plugin, QString& runId) const;
 
 	QStringList mPluginList;
 };

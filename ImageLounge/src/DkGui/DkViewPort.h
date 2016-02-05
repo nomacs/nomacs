@@ -65,6 +65,7 @@ class DkControlWidget;
 class DkPeer;
 class DkRotatingRect;
 class DkPluginInterface;
+class DkPlugin;
 
 class DllGuiExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
@@ -160,7 +161,7 @@ public slots:
 	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
 	void repeatZoom();
 
-	void applyPlugin(DkPluginInterface* plugin, const QString& key);
+	void applyPlugin(DkPlugin* plugin, const QString& key);
 
 	// copy & paste
 	void copyPixelColorValue();

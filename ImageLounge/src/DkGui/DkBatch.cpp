@@ -1066,11 +1066,11 @@ void DkBatchPluginWidget::createLayout() {
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
 
 	QStringList pluginActions;
-	QVector<DkPluginInterface*> plugins = DkPluginManager::instance().getBasicPlugins();
+	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getBasicPlugins();
 
-	for (const DkPluginInterface* p : plugins) {
+	for (auto p : plugins) {
 
-		QList<QAction*> actions = p->pluginActions();
+		QList<QAction*> actions = p->plugin()->pluginActions();
 
 		for (const QAction* a : actions) {
 			pluginActions.append(p->pluginName() + " | " + a->text());

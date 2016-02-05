@@ -67,15 +67,10 @@ public:
 
 	virtual ~DkPluginInterface() {}
 
-    virtual QString pluginID() const = 0;
-    virtual QString pluginName() const = 0;
-    virtual QString pluginDescription() const = 0;
-    virtual QImage pluginDescriptionImage() const = 0;
-    virtual QString pluginVersion() const = 0;
+    virtual QString id() const = 0;
+	virtual QString version() const = 0;
+    virtual QImage image() const = 0;
 
-    virtual QStringList runID() const = 0;
-    virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
-    virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
 	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
 	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
     virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
@@ -172,5 +167,5 @@ protected:
 };
 
 // Change this version number if DkPluginInterface is changed!
-Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/2.0")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/2.0")
+Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.0")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.0")

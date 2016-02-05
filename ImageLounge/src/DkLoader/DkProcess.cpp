@@ -242,32 +242,33 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 		return true;
 	}
 
-	QString pluginId, runId;
+	QSharedPointer<DkPlugin> pluginContainer;
+	QString runId;
 
 	for (const QString& cPluginString : mPluginList) {
 
-		resolvePluginString(cPluginString, pluginId, runId);
+		resolvePluginString(cPluginString, pluginContainer, runId);
 
-		// get plugin
-		DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(pluginId);
+		if (pluginContainer) {
+			// get plugin
+			QSharedPointer<DkPluginInterface> plugin = pluginContainer->plugin();
 
-		qDebug() << "pluginId:" << pluginId;
+			// check if it is ok
+			if (plugin && plugin->interfaceType() == DkPluginInterface::interface_basic) {
 
-		// check if it is ok
-		if (cPlugin && cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
+				// apply the plugin
+				QSharedPointer<DkImageContainer> result = plugin->runPlugin(runId, container);
 
-			// apply the plugin
-			QSharedPointer<DkImageContainer> result = cPlugin->runPlugin(runId, container);
-			
-			if (result && result->hasImage())
-				container = result;
+				if (result && result->hasImage())
+					container = result;
+				else
+					logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(pluginContainer->pluginName()));
+			}
 			else
-				logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(cPlugin->pluginName()));
+				logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
 		}
-		else if (!cPlugin)
-			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(pluginId));
-		else
-			logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(cPlugin->pluginName()));
+		else 
+			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(cPluginString));
 	}
 
 	if (!container || !container->hasImage()) {
@@ -289,7 +290,7 @@ bool DkPluginBatch::isActive() const {
 	return !mPluginList.empty();
 }
 
-void DkPluginBatch::resolvePluginString(const QString & pluginString, QString & pluginId, QString & runId) const {
+void DkPluginBatch::resolvePluginString(const QString & pluginString, QSharedPointer<DkPlugin> plugin, QString & runId) const {
 
 	QString uiSeparator = " | ";	// TODO: make a nice define
 
@@ -299,12 +300,10 @@ void DkPluginBatch::resolvePluginString(const QString & pluginString, QString & 
 		qWarning() << "plugin string does not match:" << pluginString;
 	}
 	else {
-		DkPluginInterface* p = DkPluginManager::instance().getPluginByName(ids[0]);
+		plugin = DkPluginManager::instance().getPluginByName(ids[0]);
 
-		if (p) {
-			pluginId = p->pluginID();
-			runId = DkPluginManager::instance().actionNameToRunId(pluginId, ids[1]);
-		}
+		if (plugin)
+			runId = plugin->actionNameToRunId(ids[1]);
 	}
 }
 #endif
