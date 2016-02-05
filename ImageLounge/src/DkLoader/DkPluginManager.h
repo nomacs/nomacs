@@ -152,6 +152,7 @@ public:
 	QDate dateModified() const;
 
 	QMenu* pluginMenu() const;
+	QSharedPointer<QPluginLoader> loader() const;
 	QSharedPointer<DkPluginInterface> plugin() const;
 	QSharedPointer<DkViewPortInterface> pluginViewPort() const;
 	QString actionNameToRunId(const QString& actionName) const;
@@ -181,8 +182,8 @@ protected:
 
 	QMenu* mPluginMenu = 0;
 
-	QSharedPointer<QPluginLoader> mLoader;
-	QSharedPointer<DkPluginInterface> mPlugin;
+	QSharedPointer<QPluginLoader> mLoader = QSharedPointer<QPluginLoader>();
+	QSharedPointer<DkPluginInterface> mPlugin = QSharedPointer<DkPluginInterface>();
 
 	void createMenu();
 	void loadJson();
@@ -217,7 +218,6 @@ protected:
 	void assignCustomPluginShortcuts();
 	void savePluginActions(QVector<QAction *> actions) const;
 
-	QVector<QSharedPointer<DkPlugin> > mPlugins;
 	QVector<QAction *> mPluginActions;
 	QVector<QAction *> mPluginDummyActions;
 	QMenu* mMenu = 0;
@@ -356,7 +356,7 @@ class DkInstalledPluginsModel : public QAbstractTableModel {
 	Q_OBJECT
 
 public:
-    DkInstalledPluginsModel(QVector<QSharedPointer<DkPlugin> > plugins = QVector<QSharedPointer<DkPlugin> >(), QObject *parent=0);
+    DkInstalledPluginsModel(QObject *parent=0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -364,14 +364,12 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
-    bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
-    bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
+    //bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
+    //bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
 	
-	QVector<QSharedPointer<DkPlugin> > plugins();
 	void setDataToInsert(QSharedPointer<DkPlugin> newData);
 	
 private:
-	QVector<QSharedPointer<DkPlugin> > mPlugins;
 	QSharedPointer<DkPlugin> mPluginToInsert;
 	DkPluginTableWidget* mParentTable = 0;
 

@@ -200,9 +200,9 @@ void DkPlugin::loadMetaData(const QJsonValue& val) {
 		else if (key == "Company")
 			mCompany = metaData.value(key).toString();
 		else if (key == "DateCreated")
-			mDateCreated = QDate::fromString(metaData.value(key).toString(), "DD.MM.YYYY");
+			mDateCreated = QDate::fromString(metaData.value(key).toString(), "dd.MM.yyyy");
 		else if (key == "DateModified")
-			mDateCreated = QDate::fromString(metaData.value(key).toString(), "DD.MM.YYYY");
+			mDateModified = QDate::fromString(metaData.value(key).toString(), "dd.MM.yyyy");
 		else if (key == "Description")
 			mDescription = metaData.value(key).toString();
 		else if (key == "StatusTip")
@@ -299,6 +299,10 @@ QMenu * DkPlugin::pluginMenu() const {
 	return mPluginMenu;
 }
 
+QSharedPointer<QPluginLoader> DkPlugin::loader() const {
+	return mLoader;
+}
+
 QSharedPointer<DkPluginInterface> DkPlugin::plugin() const {
 	return mPlugin;
 }
@@ -335,7 +339,7 @@ void DkPluginManagerDialog::init() {
 	dialogWidth = 700;
 	dialogHeight = 500;
 
-	setWindowTitle(tr("Plugin manager"));
+	setWindowTitle(tr("Plugin Manager"));
 	setMinimumSize(dialogWidth, dialogHeight);
 	createLayout();
 }
@@ -368,13 +372,13 @@ void DkPluginManagerDialog::createLayout() {
 
     verticalLayout->addLayout(horizontalLayout);
 
-	this->setSizeGripEnabled(false);
+	setSizeGripEnabled(false);
 }
 
 
 void DkPluginManagerDialog::closePressed() {
 
-	this->close();
+	close();
 }
 
 void DkPluginManagerDialog::showEvent(QShowEvent* ev) {
@@ -483,7 +487,7 @@ void DkPluginTableWidget::createLayout() {
     mProxyModel->setDynamicSortFilter(true);
 	//tableView->setMaximumHeight(100);
 	if(mOpenedTab == tab_installed_plugins) 
-		mModel = new DkInstalledPluginsModel(DkPluginManager::instance().getPlugins(), this);
+		mModel = new DkInstalledPluginsModel(this);
 	else if (mOpenedTab == tab_download_plugins) 
 		mModel = new DkDownloadPluginsModel(this);
 	mProxyModel->setSourceModel(mModel);
@@ -587,89 +591,71 @@ void DkPluginTableWidget::manageParsedXmlData(int usage) {
 
 void DkPluginTableWidget::getListOfUpdates() {
 
-	//DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mModel);
-	//QList<QString> installedIdList = installedPluginsModel->getPluginData();
-	//QList<XmlPluginData> updateList = mPluginDownloader->getXmlPluginData();
-	//QMap<QString, QString> previouslyInstalledPlugins = mPluginManager->getPreviouslyInstalledPlugins();
-	//QMap<QString, QString> installedPluginsList = previouslyInstalledPlugins;
-	//mPluginsToUpdate = QList<XmlPluginData>();
+	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getPlugins();
+	QList<XmlPluginData> updateList = mPluginDownloader->getXmlPluginData();
+	mPluginsToUpdate = QList<XmlPluginData>();
 
-	//for (int i = 0; i < installedIdList.size(); i++)
-	//	if (!installedPluginsList.contains(installedIdList.at(i)))
-	//		installedPluginsList.insert(installedIdList.at(i), DkPluginManager::instance().getPlugins().value(installedIdList.at(i))->version());
-	//
-	//mUpdateButton->setEnabled(false);
-	//mUpdateButton->setText(tr("Plugins up to date"));
-	//mUpdateButton->setToolTip(tr("No available updates."));
+	mUpdateButton->setEnabled(false);
+	mUpdateButton->setText(tr("Plugins up to date"));
+	mUpdateButton->setToolTip(tr("No available updates."));
 
-	//for (int i = 0; i < updateList.size(); i++) {
-	//	QMapIterator<QString, QString> iter(installedPluginsList);
-	//	while (iter.hasNext()) {
-	//		iter.next();
-	//		if(updateList.at(i).id == iter.id()) {
-	//			QStringList cVersion = iter.value().split('.');
-	//			QStringList nVersion = updateList.at(i).version.split('.');
+	for (int i = 0; i < updateList.size(); i++) {
+		
+		
+		for (auto plugin : plugins) {
+			
+			if(updateList.at(i).id == plugin->plugin()->id()) {
+				QStringList cVersion = plugin->version().split('.');
+				QStringList nVersion = updateList.at(i).version.split('.');
 
-	//			if (cVersion.size() < 3 || nVersion.size() < 3) {
-	//				qDebug() << "sorry, I could not parse the plugin version number...";
-	//				break;
-	//			}
+				if (cVersion.size() < 3 || nVersion.size() < 3) {
+					qDebug() << "sorry, I could not parse the plugin version number...";
+					break;
+				}
 
-	//			if (nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
-	//				(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
-	//				nVersion[1].toInt() > cVersion[1].toInt())  ||	// minor release
-	//				(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
-	//				nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
-	//				nVersion[2].toInt() >  cVersion[2].toInt())) {	// minor-minor release
-	//					mPluginsToUpdate.append(updateList.at(i));
-	//			}
-	//			break;
-	//		}
-	//	}
-	//}
+				if (nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
+					(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+					nVersion[1].toInt() > cVersion[1].toInt())  ||	// minor release
+					(nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
+					nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
+					nVersion[2].toInt() >  cVersion[2].toInt())) {	// minor-minor release
+						mPluginsToUpdate.append(updateList.at(i));
+				}
+				break;
+			}
+		}
+	}
 
-	//if (mPluginsToUpdate.size() > 0) {
-	//	QStringList pluginsNames = QStringList();
-	//	mUpdateButton->setText(tr("Available updates: %1").arg(mPluginsToUpdate.size()));
-	//	mUpdateButton->setEnabled(true);
-	//	for (int i = 0; i < mPluginsToUpdate.size(); i++) pluginsNames.append(mPluginsToUpdate.at(i).name + "    v:" + mPluginsToUpdate.at(i).version);
-	//	mUpdateButton->setToolTip(tr("Updates:<br><i>%1</i>").arg(pluginsNames.join("<br>")));
-	//}
+	if (mPluginsToUpdate.size() > 0) {
+		QStringList pluginsNames = QStringList();
+		mUpdateButton->setText(tr("Available updates: %1").arg(mPluginsToUpdate.size()));
+		mUpdateButton->setEnabled(true);
+		for (int i = 0; i < mPluginsToUpdate.size(); i++) pluginsNames.append(mPluginsToUpdate.at(i).name + "    v:" + mPluginsToUpdate.at(i).version);
+		mUpdateButton->setToolTip(tr("Updates:<br><i>%1</i>").arg(pluginsNames.join("<br>")));
+	}
 }
 
 void DkPluginTableWidget::updateSelectedPlugins() {
-	// TODO fix for updating plugins
-	//mUpdateButton->setText(tr("Plugins up to date"));
-	//mUpdateButton->setToolTip(tr("No available updates."));
-	//mUpdateButton->setEnabled(false);
+	
+	mUpdateButton->setText(tr("Plugins up-to-date"));
+	mUpdateButton->setToolTip(tr("No updates available."));
+	mUpdateButton->setEnabled(false);
 
-	//if (mPluginsToUpdate.size() > 0) {
-	//	QList<QString> updatedList = DkPluginManager::instance().getPluginIdList();
-	//	for (int i = 0; i < mPluginsToUpdate.size(); i++) {
-	//		for (int j = updatedList.size() - 1; j >= 0; j--) 
-	//			if (updatedList.at(j) == mPluginsToUpdate.at(i).id) {
-	//				updatedList.removeAt(j);
-	//				break;
-	//		}
-	//	}
-	//	DkPluginManager::instance().setPluginIdList(updatedList);
-	//	updateInstalledModel(); // before deleting instance remove entries from table
+	if (mPluginsToUpdate.size() > 0) {
+		
+		DkPluginManager::instance().clear();
 
-	//	for (int i = 0; i < mPluginsToUpdate.size(); i++) 
-	//		mPluginManager->deleteInstance(mPluginsToUpdate.at(i).id);
+		// after deleting instances the file are not in use anymore -> update
+		QList<QString> urls = QList<QString>();
+		while (mPluginsToUpdate.size() > 0) {
+			XmlPluginData pluginData = mPluginsToUpdate.takeLast();
+			QString downloadFileListUrl = "http://www.nomacs.org/plugins-download/" + pluginData.id + "/" + pluginData.version + "/d.txt";
+			urls.append(downloadFileListUrl);
+		}
 
-	//	// after deleting instances the file are not in use anymore -> update
-	//	QList<QString> urls = QList<QString>();
-	//	while (mPluginsToUpdate.size() > 0) {
-	//		XmlPluginData pluginData = mPluginsToUpdate.takeLast();
-	//		QString downloadFileListUrl = "http://www.nomacs.org/plugins-download/" + pluginData.id + "/" + pluginData.version + "/d.txt";
-	//		urls.append(downloadFileListUrl);
-	//	}
-
-	//	mPluginDownloader->updatePlugins(urls);
-
-	//	mPluginManager->loadPlugins();
-	//}
+		mPluginDownloader->updatePlugins(urls);
+		mPluginManager->loadPlugins();
+	}
 }
 
 void DkPluginTableWidget::pluginUpdateFinished(bool finishedSuccessfully) {
@@ -688,9 +674,8 @@ void DkPluginTableWidget::filterTextChanged() {
 
 void DkPluginTableWidget::uninstallPlugin(const QModelIndex &index) {
 
-	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mModel);
 	int selectedRow = mProxyModel->mapToSource(index).row();
-	QSharedPointer<DkPlugin> plugin = installedPluginsModel->plugins().at(selectedRow);
+	QSharedPointer<DkPlugin> plugin = DkPluginManager::instance().getPlugins().at(selectedRow);
 
 	if (!plugin) {
 		qWarning() << "plugin is NULL... aborting uninstall";
@@ -707,7 +692,7 @@ void DkPluginTableWidget::uninstallPlugin(const QModelIndex &index) {
 
 	if(msgBox.exec() == QMessageBox::Yes) {
 
-		updateInstalledModel();	// !!! update model before deleting the interface
+		//updateInstalledModel();	// !!! update model before deleting the interface
 		DkPluginManager::instance().deletePlugin(plugin);
 	}
 	msgBox.deleteLater();
@@ -753,28 +738,28 @@ void DkPluginTableWidget::clearTableFilters(){
 //update models if new plugins are installed or copied into the folder
 void DkPluginTableWidget::updateInstalledModel() {
 
-	DkPluginManager::instance().reload();
+	//DkPluginManager::instance().reload();
 
-	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mModel);
+	//DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mModel);
 
-	QVector<QSharedPointer<DkPlugin> > newPluginList = DkPluginManager::instance().getPlugins();
-	QVector<QSharedPointer<DkPlugin> > tableList = installedPluginsModel->plugins();
+	//QVector<QSharedPointer<DkPlugin> > newPluginList = DkPluginManager::instance().getPlugins();
+	//QVector<QSharedPointer<DkPlugin> > tableList = installedPluginsModel->plugins();
 
-	for (int i = tableList.size() - 1; i >= 0; i--) {
-		if (!newPluginList.contains(tableList.at(i))) 
-			installedPluginsModel->removeRows(i, 1);
-	}
+	//for (int i = tableList.size() - 1; i >= 0; i--) {
+	//	if (!newPluginList.contains(tableList.at(i))) 
+	//		installedPluginsModel->removeRows(i, 1);
+	//}
 
-	tableList = installedPluginsModel->plugins();
+	//tableList = installedPluginsModel->plugins();
 
-	for (int i = newPluginList.size() - 1; i >= 0; i--) {
-		if (!tableList.contains(newPluginList.at(i))) {
-			installedPluginsModel->setDataToInsert(newPluginList.at(i));
-			installedPluginsModel->insertRows(installedPluginsModel->plugins().size(), 1);
-		}
-	}
+	//for (int i = newPluginList.size() - 1; i >= 0; i--) {
+	//	if (!tableList.contains(newPluginList.at(i))) {
+	//		installedPluginsModel->setDataToInsert(newPluginList.at(i));
+	//		installedPluginsModel->insertRows(installedPluginsModel->plugins().size(), 1);
+	//	}
+	//}
 
-	mTableView->resizeRowsToContents();
+	//mTableView->resizeRowsToContents();
 }
 
 void DkPluginTableWidget::downloadPluginInformation(int usage) {
@@ -823,7 +808,6 @@ void DkPluginTableWidget::fillDownloadTable() {
 	// check if installed
 	modelData.clear();
 	modelData = downloadPluginsModel->getPluginData();	
-	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getPlugins();
 
 	for (int i = 0; i < modelData.size(); i++) {
 
@@ -862,15 +846,14 @@ DkPluginDownloader* DkPluginTableWidget::getDownloader() {
 //**********************************************************************************
 //DkInstalledPluginsModel : Model managing installed plugins data in the table
 //**********************************************************************************
-DkInstalledPluginsModel::DkInstalledPluginsModel(QVector<QSharedPointer<DkPlugin> > plugins, QObject *parent) : QAbstractTableModel(parent) {
+DkInstalledPluginsModel::DkInstalledPluginsModel(QObject *parent) : QAbstractTableModel(parent) {
 
 	mParentTable = static_cast<DkPluginTableWidget*>(parent);
-	mPlugins = plugins;
 }
 
 int DkInstalledPluginsModel::rowCount(const QModelIndex&) const {
 
-	return mPlugins.size();
+	return DkPluginManager::instance().getPlugins().size();
 }
 
 int DkInstalledPluginsModel::columnCount(const QModelIndex&) const {
@@ -883,12 +866,14 @@ QVariant DkInstalledPluginsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid()) 
 		return QVariant();
 
-    if (index.row() >= mPlugins.size() || index.row() < 0) 
+	const QVector<QSharedPointer<DkPlugin> >& plugins = DkPluginManager::instance().getPlugins();
+
+    if (index.row() >= plugins.size() || index.row() < 0) 
 		return QVariant();
 
     if (role == Qt::DisplayRole) {
 		
-		QSharedPointer<DkPlugin> plugin = mPlugins.at(index.row());
+		QSharedPointer<DkPlugin> plugin = plugins.at(index.row());
         if (index.column() == ip_column_name) {
 			return plugin->pluginName();
 		}
@@ -934,33 +919,30 @@ bool DkInstalledPluginsModel::setData(const QModelIndex &, const QVariant &, int
     return false;
 }
 
-bool DkInstalledPluginsModel::insertRows(int position, int rows, const QModelIndex&) {
+//bool DkInstalledPluginsModel::insertRows(int position, int rows, const QModelIndex&) {
+//
+//    beginInsertRows(QModelIndex(), position, position+rows-1);
+//
+//    for (int row=0; row < rows; row++) {
+//		mPlugins.insert(position, mPluginToInsert);
+//    }
+//
+//    endInsertRows();
+//    return true;
+//}
 
-    beginInsertRows(QModelIndex(), position, position+rows-1);
-
-    for (int row=0; row < rows; row++) {
-		mPlugins.insert(position, mPluginToInsert);
-    }
-
-    endInsertRows();
-    return true;
-}
-
-bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelIndex&) {
-
-    beginRemoveRows(QModelIndex(), position, position+rows-1);
-
-	for (int row=0; row < rows; row++) {
-        mPlugins.removeAt(position+row);
-    }
-
-    endRemoveRows();
-    return true;
-}
-
-QVector<QSharedPointer<DkPlugin> > DkInstalledPluginsModel::plugins() {
-	return mPlugins;
-}
+//bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelIndex&) {
+//
+//	QVector<QSharedPointer<> > plugins = DkPluginManager::instance().getPlugins();
+//    beginRemoveRows(QModelIndex(), position, position+rows-1);
+//
+//	for (int row=0; row < rows; row++) {
+//        plugins.removeAt(position+row);
+//    }
+//
+//    endRemoveRows();
+//    return true;
+//}
 
 void DkInstalledPluginsModel::setDataToInsert(QSharedPointer<DkPlugin> newData) {
 
@@ -1373,8 +1355,8 @@ void DkDescriptionEdit::updateText() {
 			QModelIndex sourceIndex = mProxyModel->mapToSource(mSelectionModel->selection().indexes().first());
 			
 			if (mParentTable->getOpenedTab()==tab_installed_plugins) {
-				DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mDataModel);
-				QSharedPointer<DkPlugin> plugin = installedPluginsModel->plugins().at(sourceIndex.row());
+				const QVector<QSharedPointer<DkPlugin> >& plugins = DkPluginManager::instance().getPlugins();
+				QSharedPointer<DkPlugin> plugin = plugins.at(sourceIndex.row());
 				if (plugin) 
 					text = plugin->fullDescription();
 			}
@@ -1426,8 +1408,8 @@ void DkDescriptionImage::updateImage() {
 			QImage img;
 			if (mParentTable->getOpenedTab()==tab_installed_plugins) {
 
-				DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(mDataModel);
-				QSharedPointer<DkPlugin> plugin = installedPluginsModel->plugins().at(sourceIndex.row());
+				const QVector<QSharedPointer<DkPlugin> >& plugins = DkPluginManager::instance().getPlugins();
+				QSharedPointer<DkPlugin> plugin = plugins.at(sourceIndex.row());
 				
 				if (plugin && plugin->plugin())
 					img = plugin->plugin()->image();
@@ -1862,6 +1844,9 @@ void DkPluginManager::deletePlugin(QSharedPointer<DkPlugin> plugin) {
 	if (!plugin)
 		return;
 
+	// first unload the plugin
+	plugin->loader()->unload();
+
 	QFile file(plugin->pluginPath());
 
 	if (!file.remove()) {
@@ -2055,13 +2040,13 @@ void DkPluginActionManager::updateMenu() {
 		qWarning() << "plugin menu is NULL where it should not be!";
 	}
 
-	if (mPlugins.empty()) {
+	const QVector<QSharedPointer<DkPlugin> >& plugins = DkPluginManager::instance().getPlugins();
+
+	if (plugins.empty()) {
 		//mPluginActions.resize(DkActionManager::menu_plugins_end);
 		mPluginActions = DkActionManager::instance().pluginActions();
 	}
 	mMenu->clear();
-
-	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getPlugins();
 
 	for (auto p : plugins) {
 		connect(p.data(), SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), this, SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), Qt::UniqueConnection);
@@ -2075,8 +2060,8 @@ void DkPluginActionManager::updateMenu() {
 	else {
 		// delete old plugin actions	
 		for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
-			mPluginActions.last()->deleteLater();
-			mPluginActions.last() = 0;
+			//mPluginActions.last()->deleteLater();
+			//mPluginActions.last() = 0;
 			mPluginActions.pop_back();
 		}
 		addPluginsToMenu();
