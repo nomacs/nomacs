@@ -32,35 +32,15 @@ namespace nmp {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkFakeMiniaturesPlugin::pluginID() const {
+QString DkFakeMiniaturesPlugin::id() const {
 	return PLUGIN_ID;
-};
-
-/**
-* Returns plug-in name
-* @param plug-in ID
-**/
-QString DkFakeMiniaturesPlugin::pluginName() const {
-
-   return tr("Fake Miniatures");
-};
-
-/**
-* Returns long description for every ID
-* @param plug-in ID
-**/
-QString DkFakeMiniaturesPlugin::pluginDescription() const {
-
-   return QString("<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Apply a fake miniature filter (tilt shift effect) to the imgC.<br><b>Usage:</b> On the ") +
-	    QString("preview imgC select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. ") +
-		QString("The amount of blur and saturation can be changed with the sliders on the right of the dialog.");
 };
 
 /**
 * Returns descriptive iamge for every ID
 * @param plug-in ID
 **/
-QImage DkFakeMiniaturesPlugin::pluginDescriptionImage() const {
+QImage DkFakeMiniaturesPlugin::image() const {
 
    return QImage(":/nomacsPluginFakeMin/img/fakeMinDesc.png");
 };
@@ -69,42 +49,10 @@ QImage DkFakeMiniaturesPlugin::pluginDescriptionImage() const {
 * Returns plug-in version for every ID
 * @param plug-in ID
 **/
-QString DkFakeMiniaturesPlugin::pluginVersion() const {
+QString DkFakeMiniaturesPlugin::version() const {
 
    return PLUGIN_VERSION;
 };
-
-/**
-* Returns unique IDs for every plug-in in this dll
-* plug-in can have more the one functionality that are triggered in the menu
-**/
-QStringList DkFakeMiniaturesPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "4d29da2b322f44979c55ea0ed4ff158b";
-};
-
-
-/**
-* Returns plug-in name for the menu
-* @param plug-in ID
-**/
-QString DkFakeMiniaturesPlugin::pluginMenuName(const QString &runID) const {
-
-   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return tr("Fake Miniatures");
-   return "Wrong GUID!";
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plug-in ID
-**/
-QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
-
-   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return tr("Apply fake miniatures filter");
-   return "Wrong GUID!";
-};
-
 
 /**
 * Main function: runs plug-in based on its ID
@@ -113,7 +61,8 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 **/
 QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
-	if (runID == "4d29da2b322f44979c55ea0ed4ff158b" && imgC) {
+	qDebug() << "run id" << runID << "plugin id" << PLUGIN_ID;
+	if (runID == PLUGIN_ID && imgC) {
 		QMainWindow* mainWindow = getMainWindow();
 		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
 		if(mainWindow) 

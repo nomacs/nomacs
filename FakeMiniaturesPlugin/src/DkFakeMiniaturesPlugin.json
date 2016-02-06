@@ -1,3 +1,9 @@
 {
-    "name" : [ "DkFakeMiniaturesPlugin" ]
+    "PluginName" 	: "Fake Miniatures",
+	"AuthorName" 	: "Tim Jerman",
+	"Company"		: "",
+	"DateCreated" 	: "01.06.2014",
+	"DateModified" 	: "04.02.2016",
+	"Description"	: " Apply a fake miniature filter (tilt shift effect) to the image.<br><b>Usage:</b> On the preview image select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. The amount of blur and saturation can be changed with the sliders on the right of the dialog.",
+	"StatusTip" 	: "Transform and rotate images"
 }
