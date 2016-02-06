@@ -152,6 +152,7 @@ public:
 	QDate dateModified() const;
 
 	QMenu* pluginMenu() const;
+
 	QSharedPointer<QPluginLoader> loader() const;
 	QSharedPointer<DkPluginInterface> plugin() const;
 	QSharedPointer<DkViewPortInterface> pluginViewPort() const;

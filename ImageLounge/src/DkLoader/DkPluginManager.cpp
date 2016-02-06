@@ -142,6 +142,10 @@ bool DkPlugin::load() {
 
 void DkPlugin::createMenu() {
 
+	// empty menu if we do not have any actions
+	if (!mPlugin || mPlugin->pluginActions().empty())
+		return;
+
 	qDebug() << "creating plugin menu for " << pluginName();
 	mPluginMenu = new QMenu(pluginName(), QApplication::activeWindow());
 
@@ -224,6 +228,7 @@ void DkPlugin::run() {
 	if (mPlugin && mPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
 
 		QSharedPointer<DkViewPortInterface> vPlugin = pluginViewPort();
+		mActive = true;
 
 		if(!vPlugin || !vPlugin->getViewPort()) 
 			return;
@@ -1784,7 +1789,7 @@ DkPluginManager & DkPluginManager::instance() {
 
 DkPluginManager::DkPluginManager() {
 	
-	loadPlugins();
+	//loadPlugins();
 }
 
 DkPluginManager::~DkPluginManager() {
@@ -2040,7 +2045,13 @@ void DkPluginActionManager::updateMenu() {
 		qWarning() << "plugin menu is NULL where it should not be!";
 	}
 
-	const QVector<QSharedPointer<DkPlugin> >& plugins = DkPluginManager::instance().getPlugins();
+	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getPlugins();
+
+	// load plugins if menu is shown for the first time
+	if (plugins.empty()) {
+		DkPluginManager::instance().loadPlugins();
+		plugins = DkPluginManager::instance().getPlugins();
+	}
 
 	if (plugins.empty()) {
 		//mPluginActions.resize(DkActionManager::menu_plugins_end);
@@ -2075,7 +2086,8 @@ void DkPluginActionManager::updateMenu() {
 **/
 void DkPluginActionManager::addPluginsToMenu() {
 
-	QVector<QSharedPointer<DkPlugin> > loadedPlugins = DkPluginManager::instance().getPlugins();
+ 	QVector<QSharedPointer<DkPlugin> > loadedPlugins = DkPluginManager::instance().getPlugins();
+	
 	qSort(loadedPlugins);
 
 	//QMap<QString, QString> runId2PluginId = QMap<QString, QString>();
@@ -2088,10 +2100,15 @@ void DkPluginActionManager::addPluginsToMenu() {
 
 		QSharedPointer<DkPluginInterface> pi = plugin->plugin();
 
-		if (plugin->isLoaded()) {
+		if (plugin->isLoaded() && plugin->pluginMenu()) {
 			QList<QAction*> actions = pi->createActions(QApplication::activeWindow());
 			mPluginSubMenus.append(plugin->pluginMenu());
 			mMenu->addMenu(plugin->pluginMenu());
+		}
+		else {
+			QAction* a = new QAction(plugin->pluginName(), this);
+			mMenu->addAction(a);
+			connect(a, SIGNAL(triggered()), plugin.data(), SLOT(run()));
 		}
 
 	}

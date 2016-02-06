@@ -616,15 +616,16 @@ void DkControlWidget::setPluginWidget(QSharedPointer<DkViewPortInterface> plugin
 
 	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
 
-	if (!pluginViewport) return;
+	if (!pluginViewport) 
+		return;
 
 	if (!removeWidget) {
 		pluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
 		pluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
 
-		connect(pluginWidget->getViewPort(), SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)));
-		connect(pluginWidget->getViewPort(), SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)));
-		connect(pluginWidget->getViewPort(), SIGNAL(loadImage(QImage)), mViewport, SLOT(setImage(QImage)));
+		connect(pluginViewport, SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)));
+		connect(pluginViewport, SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)));
+		connect(pluginViewport, SIGNAL(loadImage(QImage)), mViewport, SLOT(setImage(QImage)));
 	}
 
 	mViewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
