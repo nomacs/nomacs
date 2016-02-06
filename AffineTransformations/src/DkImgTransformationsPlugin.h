@@ -77,31 +77,23 @@ enum {
 class DkImgTransformationsPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/2.0" FILE "DkAffineTransformationsPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/3.0" FILE "DkAffineTransformationsPlugin.json")
 
 public:
 
 	DkImgTransformationsPlugin();
 	~DkImgTransformationsPlugin();
 
-	QString pluginID() const;
-    QString pluginName() const;
-    QString pluginDescription() const;
-    QImage pluginDescriptionImage() const;
-    QString pluginVersion() const;
+	QString id() const override;
+    QImage image() const override;
+    QString version() const override;
 
-    QStringList runID() const;
-    QString pluginMenuName(const QString &runID = QString()) const;
-    QString pluginStatusTip(const QString &runID = QString()) const;
     QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
-	nmc::DkPluginViewPort* getViewPort();
+	nmc::DkPluginViewPort* getViewPort() override;
 	void deleteViewPort();
 
 protected:
-	nmc::DkPluginViewPort* viewport;
-
-protected slots:
-	void viewportDestroyed();
+	nmc::DkPluginViewPort* mViewport = 0;
 };
 
 class DkImgTransformationsViewPort : public nmc::DkPluginViewPort {

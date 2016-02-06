@@ -38,17 +38,18 @@ public:
 	PLUGIN_CLASS_NAME(QObject* parent = 0);
 	~PLUGIN_CLASS_NAME();
 
-	QString pluginID() const;
-	QString pluginName() const;
-	QString pluginDescription() const;
-	QImage pluginDescriptionImage() const;
-	QString pluginVersion() const;
+	QString pluginID() const override;
+	QString pluginName() const override;
+	QString pluginDescription() const override;
+	QImage pluginDescriptionImage() const override;
+	QString pluginVersion() const override;
 
-	QStringList runID() const;
-	QString pluginMenuName(const QString &runID = QString()) const;
-	QString pluginStatusTip(const QString &runID = QString()) const;
-	QList<QAction*> pluginActions(QWidget* parent);
-	QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
+	QStringList runID() const override;
+	QString pluginMenuName(const QString &runID = QString()) const override;
+	QString pluginStatusTip(const QString &runID = QString()) const override;
+	QList<QAction*> createActions(QWidget* parent) override;
+	QList<QAction*> pluginActions() const override;
+	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
 
 	enum {
 		ID_ACTION1,

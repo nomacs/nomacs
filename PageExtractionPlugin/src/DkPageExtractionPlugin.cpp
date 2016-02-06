@@ -78,35 +78,17 @@ DkPageExtractionPlugin::~DkPageExtractionPlugin() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkPageExtractionPlugin::pluginID() const {
+QString DkPageExtractionPlugin::id() const {
 
 	return PLUGIN_ID;
 };
 
 
 /**
-* Returns plugin name
-* @param plugin ID
-**/
-QString DkPageExtractionPlugin::pluginName() const {
-
-	return tr("Document Page Extraction");
-};
-
-/**
-* Returns long description for every ID
-* @param plugin ID
-**/
-QString DkPageExtractionPlugin::pluginDescription() const {
-
-	return "<b>Created by:</b> Markus Diem and Fabian Hollaus<br><b>Modified:</b>27.08.2015<br><b>Description:</b> Detects document pages in images.";
-};
-
-/**
 * Returns descriptive iamge for every ID
 * @param plugin ID
 **/
-QImage DkPageExtractionPlugin::pluginDescriptionImage() const {
+QImage DkPageExtractionPlugin::image() const {
 
 	return QImage(":/PageExtractionPlugin/img/your-image.png");
 };
@@ -115,36 +97,9 @@ QImage DkPageExtractionPlugin::pluginDescriptionImage() const {
 * Returns plugin version for every ID
 * @param plugin ID
 **/
-QString DkPageExtractionPlugin::pluginVersion() const {
+QString DkPageExtractionPlugin::version() const {
 
 	return PLUGIN_VERSION;
-};
-
-/**
-* Returns unique IDs for every plugin in this dll
-**/
-QStringList DkPageExtractionPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << mRunIDs;
-};
-
-/**
-* Returns plugin name for every ID
-* @param plugin ID
-**/
-QString DkPageExtractionPlugin::pluginMenuName(const QString &runID) const {
-
-	return tr("Document Page Extraction");
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkPageExtractionPlugin::pluginStatusTip(const QString &runID) const {
-
-	return tr("This plugin detects rectangles in images.");
 };
 
 QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {

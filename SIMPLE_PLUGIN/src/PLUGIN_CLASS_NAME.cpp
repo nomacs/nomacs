@@ -151,18 +151,20 @@ QString PLUGIN_CLASS_NAME::pluginStatusTip(const QString &runID) const {
 QList<QAction*> PLUGIN_CLASS_NAME::pluginActions(QWidget* parent) {
 
 	if (mActions.empty()) {
-		QAction* ca = new QAction(mMenuNames[ID_ACTION1], this);
-		ca->setObjectName(mMenuNames[ID_ACTION1]);
-		ca->setStatusTip(mMenuStatusTips[ID_ACTION1]);
-		ca->setData(mRunIDs[ID_ACTION1]);	// runID needed for calling function runPlugin()
-		mActions.append(ca);
 
-		//QAction* ca = new QAction(mMenuNames[ID_ACTION2], this);
-		//ca->setObjectName(mMenuNames[ID_ACTION2]);
-		//ca->setStatusTip(mMenuStatusTips[ID_ACTION2]);
-		//ca->setData(mRunIDs[ID_ACTION2]);	// runID needed for calling function runPlugin()
-		//mActions.append(ca);
+		for (int idx = 0; idx < id_end; idx++) {
+			QAction* ca = new QAction(mMenuNames[idx], parent);
+			ca->setObjectName(mMenuNames[idx]);
+			ca->setStatusTip(mMenuStatusTips[idx]);
+			ca->setData(mRunIDs[idx]);	// runID needed for calling function runPlugin()
+			mActions.append(ca);
+		}
 	}
+
+	return mActions;
+}
+
+QList<QAction*> PLUGIN_CLASS_NAME::pluginActions() const {
 
 	return mActions;
 }
@@ -172,15 +174,17 @@ QList<QAction*> PLUGIN_CLASS_NAME::pluginActions(QWidget* parent) {
 * @param plugin ID
 * @param image to be processed
 **/
-QImage PLUGIN_CLASS_NAME::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<nmc::DkImageContainer> PLUGIN_CLASS_NAME::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
+
+	if (!imgC)
+		return imgC;
 
 	if(runID == mRunIDs[ID_ACTION1]) {
-		// do what every you want e.g.:
-		return image.mirrored(true, false);
+		imgC->setImage(imgC->image(), tr("Mirrored"));
 	}
 
 	// wrong runID? - do nothing
-	return image;
+	return imgC;
 };
 
 };

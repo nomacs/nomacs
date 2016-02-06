@@ -2,7 +2,7 @@
  DkImgTransformationsPlugin.cpp
  Created on:	01.06.2014
 
- nomacs is a fast and small imgC viewer with the capability of synchronizing multiple instances
+ nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
 
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
@@ -45,7 +45,6 @@ namespace nmp {
 **/
 DkImgTransformationsPlugin::DkImgTransformationsPlugin() {
 
-	viewport = 0;
 }
 
 /**
@@ -53,41 +52,24 @@ DkImgTransformationsPlugin::DkImgTransformationsPlugin() {
 **/
 DkImgTransformationsPlugin::~DkImgTransformationsPlugin() {
 
-	if (viewport) {
-		viewport->deleteLater();
-		viewport = 0;
-	}
+	//if (mViewport) {
+	//	mViewport->deleteLater();
+	//	mViewport = 0;
+	//}
 }
 
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkImgTransformationsPlugin::pluginID() const {
+QString DkImgTransformationsPlugin::id() const {
 
 	return PLUGIN_ID;
 };
 
-
 /**
-* Returns plugin name
+* Returns descriptive image
 **/
-QString DkImgTransformationsPlugin::pluginName() const {
-
-   return "Affine Transformations";
-};
-
-/**
-* Returns long description
-**/
-QString DkImgTransformationsPlugin::pluginDescription() const {
-
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> July 2014<br><b>Description:</b> Apply affine transformations to the selected imgC. The available transformations are: scale, rotation (with automatic skewness detection), and shear.";
-};
-
-/**
-* Returns descriptive imgC
-**/
-QImage DkImgTransformationsPlugin::pluginDescriptionImage() const {
+QImage DkImgTransformationsPlugin::image() const {
 
    return QImage(":/nomacsPluginImgTrans/img/description.png");
 };
@@ -95,62 +77,28 @@ QImage DkImgTransformationsPlugin::pluginDescriptionImage() const {
 /**
 * Returns plugin version
 **/
-QString DkImgTransformationsPlugin::pluginVersion() const {
+QString DkImgTransformationsPlugin::version() const {
 
    return PLUGIN_VERSION;
 };
 
 /**
-* Returns unique IDs for every plugin in this dll
-* plugin can have more the one functionality that are triggered in the menu
-* runID differes from pluginID
-* viewport plugins can have only one runID and one functionality bound to it
-**/
-QStringList DkImgTransformationsPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "e3b02e3999d344d2be3a5f1960c7d616";
-};
-
-/**
-* Returns plugin name for every run ID
-* @param run ID
-**/
-QString DkImgTransformationsPlugin::pluginMenuName(const QString &runID) const {
-
-	if (runID=="e3b02e3999d344d2be3a5f1960c7d616") 
-		return tr("Affine Transformations");
-	return tr("Wrong GUID!");
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkImgTransformationsPlugin::pluginStatusTip(const QString &runID) const {
-
-	if (runID=="e3b02e3999d344d2be3a5f1960c7d616")
-		return tr("Image Transformations of images");
-	return tr("Wrong GUID!");
-};
-
-/**
 * Main function: runs plugin based on its ID
 * @param run ID
-* @param current imgC in the Nomacs viewport
+* @param current image in the Nomacs mViewport
 **/
 QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
-	//for a viewport plugin runID and imgC are null
-	if (viewport && imgC) {
+	//for a mViewport plugin runID and image are null
+	if (mViewport && imgC) {
 
-		DkImgTransformationsViewPort* imgTransformationsViewport = dynamic_cast<DkImgTransformationsViewPort*>(viewport);
+		DkImgTransformationsViewPort* transformVp = qobject_cast<DkImgTransformationsViewPort*>(mViewport);
 
 		QImage retImg = QImage();
-		if (!imgTransformationsViewport->isCanceled()) 
-			retImg = imgTransformationsViewport->getTransformedImage();
+		if (!transformVp->isCanceled()) 
+			retImg = transformVp->getTransformedImage();
 
-		viewport->setVisible(false);
+		mViewport->setVisible(false);
 		imgC->setImage(retImg, tr("Transformed"));	// TODO: specify which transform?!
 
 		return imgC;
@@ -164,26 +112,17 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(cons
 **/
 nmc::DkPluginViewPort* DkImgTransformationsPlugin::getViewPort() {
 
-	if (!viewport) {
-		viewport = new DkImgTransformationsViewPort();
-		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
-	}
-	return viewport;
-}
-
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkImgTransformationsPlugin::viewportDestroyed() {
-
-	viewport = 0;
+	if (!mViewport)
+		mViewport = new DkImgTransformationsViewPort();
+	
+	return mViewport;
 }
 
 void DkImgTransformationsPlugin::deleteViewPort() {
 
-	if (viewport) {
-		viewport->deleteLater();
-		viewport = 0;
+	if (mViewport) {
+		mViewport->deleteLater();
+		mViewport = 0;
 	}
 }
 
@@ -196,8 +135,8 @@ DkImgTransformationsViewPort::DkImgTransformationsViewPort(QWidget* parent, Qt::
 
 DkImgTransformationsViewPort::~DkImgTransformationsViewPort() {
 
-	// acitive deletion since the MainWindow takes ownership...
-	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
+	// active deletion since the MainWindow takes ownership...
+	// if we have issues with this, we could disconnect all signals between mViewport and toolbar too
 	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
 	if (imgTransformationsToolbar) {
 		delete imgTransformationsToolbar;
@@ -267,11 +206,11 @@ QPoint DkImgTransformationsViewPort::map(const QPointF &pos) {
 
 void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton &&
 		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
-		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
+		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the mViewport
 		event->ignore();
 		return;
 	}
@@ -323,7 +262,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 	
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->modifiers() == nmc::Settings::param().global().altMod ||
 		panning) {
 
@@ -426,7 +365,7 @@ void DkImgTransformationsViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	insideIntrRect = false;
 	intrIdx = 100;
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
@@ -441,11 +380,11 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	QRect imgRect = QRect();
 
 	if(parent()) {
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if (viewport) {
+		nmc::DkBaseViewPort* mViewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+		if (mViewport) {
 
-			imgRect = viewport->getImage().rect();
-			inImage = QImage(viewport->getImage());
+			imgRect = mViewport->getImage().rect();
+			inImage = QImage(mViewport->getImage());
 
 		}
 	}
@@ -612,10 +551,10 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 QImage DkImgTransformationsViewPort::getTransformedImage() {
 
 	if(parent()) {
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if (viewport) {
+		nmc::DkBaseViewPort* mViewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+		if (mViewport) {
 
-			QImage inImage = viewport->getImage();
+			QImage inImage = mViewport->getImage();
 			QTransform affineTransform = QTransform();
 			
 			if (selectedMode == mode_scale) {
@@ -754,10 +693,10 @@ void DkImgTransformationsViewPort::setAngleLinesEnabled(bool enabled) {
 void DkImgTransformationsViewPort::calculateAutoRotation() {
 	
 	if(parent()) {
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if (viewport) {
+		nmc::DkBaseViewPort* mViewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+		if (mViewport) {
 
-			QImage img = viewport->getImage();
+			QImage img = mViewport->getImage();
 
 			if (img.width() > 10 && img.height() > 10) {
 				
@@ -809,12 +748,12 @@ void DkImgTransformationsViewPort::setGuideStyle(int guideMode) {
 void DkImgTransformationsViewPort::setVisible(bool visible) {
 
 	if(parent()) {
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if (viewport) {
-			intrRect->setInitialValues(viewport->getImage().rect());
-			rotationCenter = QPoint(viewport->getImage().width()/2,viewport->getImage().height()/2);
+		nmc::DkBaseViewPort* mViewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+		if (mViewport) {
+			intrRect->setInitialValues(mViewport->getImage().rect());
+			rotationCenter = QPoint(mViewport->getImage().width()/2,mViewport->getImage().height()/2);
 
-			imgRatioAngle = atan2(viewport->getImage().height(),viewport->getImage().width());
+			imgRatioAngle = atan2(mViewport->getImage().height(),mViewport->getImage().width());
 		}
 	}
 
@@ -949,21 +888,21 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	//auto rotation selection
 	autoRotateButton = new QPushButton(tr("Auto &Rotate"), this);
 	autoRotateButton->setObjectName("autoRotateButton");
-	autoRotateButton->setToolTip(tr("Automatically rotate imgC for small skewness"));
+	autoRotateButton->setToolTip(tr("Automatically rotate image"));
 	autoRotateButton->setStatusTip(autoRotateButton->toolTip());
 
 	//show lines for automatic angle detection
-	showLinesBox = new QCheckBox(tr("Show angle lines"), this);
+	showLinesBox = new QCheckBox(tr("Show Angle Lines"), this);
 	showLinesBox->setObjectName("showLinesBox");
 	showLinesBox->setCheckState(Qt::Checked);
 	showLinesBox->setToolTip(tr("Show lines for angle detection."));
 	showLinesBox->setStatusTip(tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
 
-	//crop rotated imgC
-	cropEnabledBox = new QCheckBox(tr("Crop imgC"), this);
+	//crop rotated image
+	cropEnabledBox = new QCheckBox(tr("Crop Image"), this);
 	cropEnabledBox->setObjectName("cropEnabledBox");
 	cropEnabledBox->setCheckState(Qt::Unchecked);
-	cropEnabledBox->setToolTip(tr("Crop rotated imgC if possible"));
+	cropEnabledBox->setToolTip(tr("Crop rotated image if possible"));
 	cropEnabledBox->setStatusTip(cropEnabledBox->toolTip());
 
 

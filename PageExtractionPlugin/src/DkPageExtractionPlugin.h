@@ -31,24 +31,19 @@ namespace nmp {
 class DkPageExtractionPlugin : public QObject, nmc::DkPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/2.0" FILE "DkPageExtractionPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.0" FILE "DkPageExtractionPlugin.json")
 
 public:
 
 	DkPageExtractionPlugin(QObject* parent = 0);
 	~DkPageExtractionPlugin();
 
-	QString pluginID() const;
-	QString pluginName() const;
-	QString pluginDescription() const;
-	QImage pluginDescriptionImage() const;
-	QString pluginVersion() const;
+	QString id() const override;
+	QImage image() const;
+	QString version() const;
 
-	QStringList runID() const;
-	QString pluginMenuName(const QString &runID = QString()) const;
-	QString pluginStatusTip(const QString &runID = QString()) const;
-	QList<QAction*> createActions(QWidget* parent);
-	QList<QAction*> pluginActions() const;
+	QList<QAction*> createActions(QWidget* parent) override;
+	QList<QAction*> pluginActions() const override;
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 
 	enum {

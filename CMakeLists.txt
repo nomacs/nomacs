@@ -1,6 +1,6 @@
-PROJECT(nomacs-plugins)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+PROJECT(nomacs-plugins)
 
 # include macros needed
 include("cmake/Utils.cmake")

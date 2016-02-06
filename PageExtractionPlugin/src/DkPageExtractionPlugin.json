@@ -1,3 +1,9 @@
 {
-    "name" : [ "DkPageExtractionPlugin" ]
+    "PluginName" 	: "Page Extraction",
+	"AuthorName" 	: "Markus Diem",
+	"Company"		: "Computer Vision Lab",
+	"DateCreated" 	: "27.08.2015",
+	"DateModified" 	: "04.02.2016",
+	"Description"	: "This plugin detects document pages and either crops the image accordingly or annotates the region.",
+	"StatusTip" 	: "Detect document pages in images"
 }
