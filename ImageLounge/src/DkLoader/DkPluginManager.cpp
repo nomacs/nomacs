@@ -2071,8 +2071,6 @@ void DkPluginActionManager::updateMenu() {
 	else {
 		// delete old plugin actions	
 		for (int idx = mPluginActions.size(); idx > DkActionManager::menu_plugins_end; idx--) {
-			//mPluginActions.last()->deleteLater();
-			//mPluginActions.last() = 0;
 			mPluginActions.pop_back();
 		}
 		addPluginsToMenu();
@@ -2087,11 +2085,8 @@ void DkPluginActionManager::updateMenu() {
 void DkPluginActionManager::addPluginsToMenu() {
 
  	QVector<QSharedPointer<DkPlugin> > loadedPlugins = DkPluginManager::instance().getPlugins();
-	
 	qSort(loadedPlugins);
 
-	//QMap<QString, QString> runId2PluginId = QMap<QString, QString>();
-	//QList<QPair<QString, QString> > sortedNames = QList<QPair<QString, QString> >();
 	mPluginSubMenus.clear();
 
 	QStringList pluginMenu = QStringList();
@@ -2105,8 +2100,10 @@ void DkPluginActionManager::addPluginsToMenu() {
 			mPluginSubMenus.append(plugin->pluginMenu());
 			mMenu->addMenu(plugin->pluginMenu());
 		}
-		else {
+		else if (plugin->isLoaded()) {
 			QAction* a = new QAction(plugin->pluginName(), this);
+			a->setData(plugin->plugin()->id());
+			mPluginActions.append(a);
 			mMenu->addAction(a);
 			connect(a, SIGNAL(triggered()), plugin.data(), SLOT(run()));
 		}
