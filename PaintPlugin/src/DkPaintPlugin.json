@@ -1,3 +1,9 @@
 {
-    "name" : [ "DkPaintPlugin" ]
+    "PluginName" 	: "Paint on Image",
+	"AuthorName" 	: "Tim Jerman",
+	"Company"		: "",
+	"DateCreated" 	: "01.05.2014",
+	"DateModified" 	: "04.02.2016",
+	"Description"	: "Paint on an image. The color, size and opacity of the brush can be changed.",
+	"StatusTip" 	: "Draw with adjustable brushes to an image."
 }

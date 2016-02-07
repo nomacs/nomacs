@@ -1,3 +1,9 @@
 {
-    "name" : [ "DkThresholdPlugin" ]
+    "PluginName" 	: "Threshold Image",
+	"AuthorName" 	: "Tim Jerman",
+	"Company"		: "",
+	"DateCreated" 	: "01.06.2014",
+	"DateModified" 	: "04.02.2016",
+	"Description"	: "Fast threshold selection for color and grayscale images. If wanted a ranged threshold can be created by changing the upper threshold value. Threshold can be applied to each of the color channels or to the luminance channel.",
+	"StatusTip" 	: "Manually threshold an image."
 }

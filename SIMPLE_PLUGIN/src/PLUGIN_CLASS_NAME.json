@@ -1,3 +1,9 @@
 {
-    "name" : [ "PLUGIN_CLASS_NAME" ]
+    "PluginName" 	: "User Friendly Plugin Name",
+	"AuthorName" 	: "Your Name",
+	"Company"		: "Your Company",
+	"DateCreated" 	: "Today",
+	"DateModified" 	: "Modify if edited",
+	"Description"	: "Tagline - what does your plugin do?",
+	"StatusTip" 	: "Status tip, displayed when hovered over your plugin action."
 }

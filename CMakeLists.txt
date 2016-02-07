@@ -23,6 +23,7 @@ OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
 OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
+OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
 
 NMC_PREPARE_PLUGIN()
 
@@ -78,3 +79,7 @@ ENDIF(ENABLE_PAGE)
 IF (ENABLE_OCR)
 	add_subdirectory(OcrPlugin)
 ENDIF(ENABLE_OCR)
+
+IF (ENABLE_SIMPLE)
+	add_subdirectory(SIMPLE_PLUGIN)
+ENDIF(ENABLE_SIMPLE)

@@ -31,22 +31,17 @@ namespace nmc {
 class PLUGIN_CLASS_NAME : public QObject, DkPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.PLUGIN_CLASS_NAME/2.0" FILE "PLUGIN_CLASS_NAME.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.PLUGIN_CLASS_NAME/3.0" FILE "PLUGIN_CLASS_NAME.json")
 
 public:
 
 	PLUGIN_CLASS_NAME(QObject* parent = 0);
 	~PLUGIN_CLASS_NAME();
 
-	QString pluginID() const override;
-	QString pluginName() const override;
-	QString pluginDescription() const override;
-	QImage pluginDescriptionImage() const override;
-	QString pluginVersion() const override;
+	QString id() const override;
+	QImage image() const override;
+	QString version() const override;
 
-	QStringList runID() const override;
-	QString pluginMenuName(const QString &runID = QString()) const override;
-	QString pluginStatusTip(const QString &runID = QString()) const override;
 	QList<QAction*> createActions(QWidget* parent) override;
 	QList<QAction*> pluginActions() const override;
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;

@@ -55,31 +55,14 @@ DkThresholdPlugin::~DkThresholdPlugin() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkThresholdPlugin::pluginID() const {
+QString DkThresholdPlugin::id() const {
 	return PLUGIN_ID;
-};
-
-
-/**
-* Returns plugin name
-**/
-QString DkThresholdPlugin::pluginName() const {
-
-   return "Simple Threshold";
-};
-
-/**
-* Returns long description
-**/
-QString DkThresholdPlugin::pluginDescription() const {
-
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> June 2014<br><b>Description:</b> Fast threshold selection for color and grayscale images. If wanted a ranged threshold can be created by changing the upper threshold value. Threshold can be applied to each of the color channels or to the luminance channel.";
 };
 
 /**
 * Returns descriptive image
 **/
-QImage DkThresholdPlugin::pluginDescriptionImage() const {
+QImage DkThresholdPlugin::image() const {
 
    return QImage(":/nomacsPluginThr/img/description.png");
 };
@@ -87,43 +70,9 @@ QImage DkThresholdPlugin::pluginDescriptionImage() const {
 /**
 * Returns plugin version
 **/
-QString DkThresholdPlugin::pluginVersion() const {
+QString DkThresholdPlugin::version() const {
 
    return PLUGIN_VERSION;
-};
-
-/**
-* Returns unique IDs for every plugin in this dll
-* plugin can have more the one functionality that are triggered in the menu
-* runID differes from pluginID
-* viewport plugins can have only one runID and one functionality bound to it
-**/
-QStringList DkThresholdPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "e46b000ca4804d26b440a7a07c6d9664";
-};
-
-/**
-* Returns plugin name for every run ID
-* @param run ID
-**/
-QString DkThresholdPlugin::pluginMenuName(const QString &runID) const {
-
-	if (runID=="e46b000ca4804d26b440a7a07c6d9664") 
-		return tr("Threshold Image");
-	return tr("Wrong GUID!");
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkThresholdPlugin::pluginStatusTip(const QString &runID) const {
-
-	if (runID=="e46b000ca4804d26b440a7a07c6d9664") 
-		return tr("Creates a binary image.");
-	return tr("Wrong GUID!");
 };
 
 /**
@@ -160,19 +109,9 @@ QSharedPointer<nmc::DkImageContainer> DkThresholdPlugin::runPlugin(const QString
 **/
 nmc::DkPluginViewPort* DkThresholdPlugin::getViewPort() {
 
-	if (!viewport) {
+	if (!viewport)
 		viewport = new DkThresholdViewPort();
-		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
-	}
 	return viewport;
-}
-
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkThresholdPlugin::viewportDestroyed() {
-
-	viewport = 0;
 }
 
 void DkThresholdPlugin::deleteViewPort() {
@@ -502,6 +441,7 @@ DkThresholdToolBar::DkThresholdToolBar(const QString & title, QWidget * parent /
 	QMetaObject::connectSlotsByName(this);
 
 	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
+	setObjectName("ThresholdToolBar");
 
 	if (nmc::Settings::param().display().toolbarGradient) {
 

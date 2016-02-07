@@ -79,35 +79,16 @@ PLUGIN_CLASS_NAME::~PLUGIN_CLASS_NAME() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString PLUGIN_CLASS_NAME::pluginID() const {
+QString PLUGIN_CLASS_NAME::id() const {
 
 	return PLUGIN_ID;
-};
-
-
-/**
-* Returns plugin name
-* @param plugin ID
-**/
-QString PLUGIN_CLASS_NAME::pluginName() const {
-
-	return tr("#MENU_NAME");
-};
-
-/**
-* Returns long description for every ID
-* @param plugin ID
-**/
-QString PLUGIN_CLASS_NAME::pluginDescription() const {
-
-	return "<b>Created by:</b> #YOUR_NAME <br><b>Modified:</b>#DATE<br><b>Description:</b> #DESCRIPTION.";
 };
 
 /**
 * Returns descriptive iamge for every ID
 * @param plugin ID
 **/
-QImage PLUGIN_CLASS_NAME::pluginDescriptionImage() const {
+QImage PLUGIN_CLASS_NAME::image() const {
 
 	return QImage(":/#PLUGIN_NAME/img/your-image.png");
 };
@@ -116,39 +97,12 @@ QImage PLUGIN_CLASS_NAME::pluginDescriptionImage() const {
 * Returns plugin version for every ID
 * @param plugin ID
 **/
-QString PLUGIN_CLASS_NAME::pluginVersion() const {
+QString PLUGIN_CLASS_NAME::version() const {
 
 	return PLUGIN_VERSION;
 };
 
-/**
-* Returns unique IDs for every plugin in this dll
-**/
-QStringList PLUGIN_CLASS_NAME::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "#RUN_GUID";
-};
-
-/**
-* Returns plugin name for every ID
-* @param plugin ID
-**/
-QString PLUGIN_CLASS_NAME::pluginMenuName(const QString &runID) const {
-
-	return tr("#MENU_NAME");
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString PLUGIN_CLASS_NAME::pluginStatusTip(const QString &runID) const {
-
-	return tr("#MENU_STATUS_TIP");
-};
-
-QList<QAction*> PLUGIN_CLASS_NAME::pluginActions(QWidget* parent) {
+QList<QAction*> PLUGIN_CLASS_NAME::createActions(QWidget* parent) {
 
 	if (mActions.empty()) {
 
@@ -182,6 +136,8 @@ QSharedPointer<nmc::DkImageContainer> PLUGIN_CLASS_NAME::runPlugin(const QString
 	if(runID == mRunIDs[ID_ACTION1]) {
 		imgC->setImage(imgC->image(), tr("Mirrored"));
 	}
+	else
+		qWarning() << "Illegal run ID...";
 
 	// wrong runID? - do nothing
 	return imgC;

@@ -60,22 +60,17 @@ class DkThresholdToolBar;
 class DkThresholdPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-		Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkThresholdPlugin/2.0" FILE "DkThresholdPlugin.json")
+		Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkThresholdPlugin/3.0" FILE "DkThresholdPlugin.json")
 
 public:
 
 	DkThresholdPlugin();
 	~DkThresholdPlugin();
 
-	QString pluginID() const;
-    QString pluginName() const;
-    QString pluginDescription() const;
-    QImage pluginDescriptionImage() const;
-    QString pluginVersion() const;
+	QString id() const override;
+    QImage image() const override;
+    QString version() const override;
 
-    QStringList runID() const;
-    QString pluginMenuName(const QString &runID = QString()) const;
-    QString pluginStatusTip(const QString &runID = QString()) const;
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const;
 	nmc::DkPluginViewPort* getViewPort();
 	void deleteViewPort();
@@ -83,8 +78,6 @@ public:
 protected:
 	nmc::DkPluginViewPort* viewport;
 
-protected slots:
-	void viewportDestroyed();
 };
 
 class DkThresholdViewPort : public nmc::DkPluginViewPort {

@@ -58,31 +58,15 @@ DkPaintPlugin::~DkPaintPlugin() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkPaintPlugin::pluginID() const {
+QString DkPaintPlugin::id() const {
 	return PLUGIN_ID;
 };
 
 
 /**
-* Returns plugin name
-**/
-QString DkPaintPlugin::pluginName() const {
-
-   return "Paint";
-};
-
-/**
-* Returns long description
-**/
-QString DkPaintPlugin::pluginDescription() const {
-
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> May 2014<br><b>Description:</b> Paint on an opened image. The color, size and opacity of the brush can be changed.";
-};
-
-/**
 * Returns descriptive image
 **/
-QImage DkPaintPlugin::pluginDescriptionImage() const {
+QImage DkPaintPlugin::image() const {
 
    return QImage(":/nomacsPluginPaint/img/description.png");
 };
@@ -90,41 +74,9 @@ QImage DkPaintPlugin::pluginDescriptionImage() const {
 /**
 * Returns plugin version
 **/
-QString DkPaintPlugin::pluginVersion() const {
+QString DkPaintPlugin::version() const {
 
    return PLUGIN_VERSION;
-};
-
-/**
-* Returns unique IDs for every plugin in this dll
-* plugin can have more the one functionality that are triggered in the menu
-* runID differes from pluginID
-* viewport plugins can have only one runID and one functionality bound to it 
-**/
-QStringList DkPaintPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << PLUGIN_ID;
-};
-
-/**
-* Returns plugin name for every run ID
-* @param run ID
-**/
-QString DkPaintPlugin::pluginMenuName(const QString &runID) const {
-
-	if (runID==PLUGIN_ID) return "Paint on image";
-	return "Wrong GUID!";
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
-
-	if (runID==PLUGIN_ID) return "Paint on image with colored brush";
-	return "Wrong GUID!";
 };
 
 /**

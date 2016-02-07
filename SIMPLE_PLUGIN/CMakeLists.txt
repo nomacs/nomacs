@@ -1,5 +1,5 @@
 
-PROJECT(pageExtractionPlugin)
+PROJECT(SimplePlugin)
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
@@ -12,7 +12,7 @@ NMC_POLICY()
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 0.1.0)
-set(PLUGIN_ID 4acb88c461024cb080ae5cd15d0ef0ec) #GUID without hyphens generated at http://www.guidgenerator.com/
+set(PLUGIN_ID 5519ba1da7394c1b8d6f1b030b7d1d43) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
@@ -44,6 +44,7 @@ file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterfac
 set (PLUGIN_RESOURCES
         src/nomacsPlugin.qrc
 )
+
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
