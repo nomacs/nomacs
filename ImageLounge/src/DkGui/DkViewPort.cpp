@@ -634,7 +634,7 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 	update();
 }
 
-void DkViewPort::applyPlugin(DkPlugin* plugin, const QString& key) {
+void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 	
 #ifdef WITH_PLUGINS
 	if (!plugin)

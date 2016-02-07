@@ -55,7 +55,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageContainer;
-class DkPlugin;
+class DkPluginContainer;
 
 class DllLoaderExport DkAbstractBatch {
 
@@ -131,7 +131,7 @@ public:
 	virtual bool isActive() const;
 
 protected:
-	void resolvePluginString(const QString& pluginString, QSharedPointer<DkPlugin> plugin, QString& runId) const;
+	void resolvePluginString(const QString& pluginString, QSharedPointer<DkPluginContainer> plugin, QString& runId) const;
 
 	QStringList mPluginList;
 };

@@ -242,7 +242,7 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 		return true;
 	}
 
-	QSharedPointer<DkPlugin> pluginContainer;
+	QSharedPointer<DkPluginContainer> pluginContainer;
 	QString runId;
 
 	for (const QString& cPluginString : mPluginList) {
@@ -290,7 +290,7 @@ bool DkPluginBatch::isActive() const {
 	return !mPluginList.empty();
 }
 
-void DkPluginBatch::resolvePluginString(const QString & pluginString, QSharedPointer<DkPlugin> plugin, QString & runId) const {
+void DkPluginBatch::resolvePluginString(const QString & pluginString, QSharedPointer<DkPluginContainer> plugin, QString & runId) const {
 
 	QString uiSeparator = " | ";	// TODO: make a nice define
 

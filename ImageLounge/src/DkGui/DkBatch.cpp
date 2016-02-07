@@ -1066,7 +1066,7 @@ void DkBatchPluginWidget::createLayout() {
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
 
 	QStringList pluginActions;
-	QVector<QSharedPointer<DkPlugin> > plugins = DkPluginManager::instance().getBasicPlugins();
+	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBasicPlugins();
 
 	for (auto p : plugins) {
 

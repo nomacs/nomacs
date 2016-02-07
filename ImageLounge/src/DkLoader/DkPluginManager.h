@@ -115,11 +115,11 @@ struct QPairSecondComparer {
 	}
 };
 
-class DllLoaderExport DkPlugin : public QObject {
+class DllLoaderExport DkPluginContainer : public QObject {
 	Q_OBJECT
 
 public:
-	DkPlugin(const QString& pluginPath);
+	DkPluginContainer(const QString& pluginPath);
 
 	enum PluginType {
 		type_unknown = 0,
@@ -129,7 +129,7 @@ public:
 		type_end
 	};
 
-	bool operator<(const QSharedPointer<DkPlugin> & plugin);
+	friend bool operator<(const QSharedPointer<DkPluginContainer> & l, const QSharedPointer<DkPluginContainer> & r);
 
 	void setActive(bool active = true);
 	bool isActive() const;
@@ -160,7 +160,7 @@ public:
 	
 signals:
 	void runPlugin(QSharedPointer<DkViewPortInterface> viewport, bool close) const;
-	void runPlugin(DkPlugin* plugin, const QString& key) const;
+	void runPlugin(DkPluginContainer* plugin, const QString& key) const;
 
 public slots:
 	void run();
@@ -212,7 +212,7 @@ public slots:
 
 signals:
 	void runPlugin(QSharedPointer<DkViewPortInterface> plugin, bool close) const;
-	void runPlugin(DkPlugin* plugin, const QString& key) const;
+	void runPlugin(DkPluginContainer* plugin, const QString& key) const;
 	void applyPluginChanges(bool askForSaving) const;
 
 protected:
@@ -231,9 +231,9 @@ public:
 	static DkPluginManager& instance();
 	~DkPluginManager();
 
-	QVector<QSharedPointer<DkPlugin> > getPlugins() const;
-	QSharedPointer<DkPlugin> getPlugin(const QString& key) const;
-	QSharedPointer<DkPlugin> getPluginByName(const QString& pluginName) const;
+	QVector<QSharedPointer<DkPluginContainer> > getPlugins() const;
+	QSharedPointer<DkPluginContainer> getPlugin(const QString& key) const;
+	QSharedPointer<DkPluginContainer> getPluginByName(const QString& pluginName) const;
 	//QString actionNameToRunId(const QString& pluginId, const QString& actionName) const;
 	
 	QString getPluginFilePath(const QString& key) const;
@@ -246,20 +246,20 @@ public:
 	//void setPluginIdList(QList<QString> newPlugins);
 
 	void reload();
-	void removePlugin(QSharedPointer<DkPlugin> plugin);
-	void deletePlugin(QSharedPointer<DkPlugin> plugin);
+	void removePlugin(QSharedPointer<DkPluginContainer> plugin);
+	void deletePlugin(QSharedPointer<DkPluginContainer> plugin);
 	void clear();
 
 	void loadPlugins();
 
 	bool singlePluginLoad(const QString& filePath);
 
-	QVector<QSharedPointer<DkPlugin> > getBasicPlugins() const;
+	QVector<QSharedPointer<DkPluginContainer> > getBasicPlugins() const;
 
 	// functions for active plugin
 	void clearRunningPlugin();
-	QSharedPointer<DkPlugin> getRunningPlugin() const;
-	void runPlugin(QSharedPointer<DkPlugin> plugin);
+	QSharedPointer<DkPluginContainer> getRunningPlugin() const;
+	void runPlugin(QSharedPointer<DkPluginContainer> plugin);
 
 private:
 	DkPluginManager();
@@ -271,7 +271,7 @@ private:
 	//QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
 
 	//QString mRunningPlugin;
-	QVector<QSharedPointer<DkPlugin> > mPlugins;
+	QVector<QSharedPointer<DkPluginContainer> > mPlugins;
 
 };
 
@@ -283,8 +283,7 @@ public:
 	DkPluginManagerDialog(QWidget* parent = 0);
 	~DkPluginManagerDialog();
 		
-	void loadPlugins();
-	void deleteInstance(QSharedPointer<DkPlugin> plugin);
+	void deleteInstance(QSharedPointer<DkPluginContainer> plugin);
 	QMap<QString, QString> getPreviouslyInstalledPlugins();
 
 protected slots:
@@ -368,10 +367,10 @@ public:
     //bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     //bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
 	
-	void setDataToInsert(QSharedPointer<DkPlugin> newData);
+	void setDataToInsert(QSharedPointer<DkPluginContainer> newData);
 	
 private:
-	QSharedPointer<DkPlugin> mPluginToInsert;
+	QSharedPointer<DkPluginContainer> mPluginToInsert;
 	DkPluginTableWidget* mParentTable = 0;
 
 };

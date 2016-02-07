@@ -540,7 +540,7 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 bool DkControlWidget::closePlugin(bool askForSaving) {
 #ifdef WITH_PLUGINS
 
-	QSharedPointer<DkPlugin> plugin = DkPluginManager::instance().getRunningPlugin();
+	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getRunningPlugin();
 
 	if (!plugin)
 		return true;
@@ -597,7 +597,7 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 
 #ifdef WITH_PLUGINS
-	QSharedPointer<DkPlugin> plugin = DkPluginManager::instance().getRunningPlugin();
+	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getRunningPlugin();
 
 	if (!plugin)
 		return true;

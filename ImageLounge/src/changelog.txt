@@ -1,5 +1,6 @@
 nomacs 3.1.0
 ============
+- Plugin framework redesigned
 - New preferences
 - Undo & History dock added
 - Statusbar improved (e.g. zoom level)
