@@ -67,22 +67,17 @@ class DkDocAnalysisToolBar;
 class DkDocAnalysisPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkDocAnalysisPlugin/2.0" FILE "DkDocAnalysisPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkDocAnalysisPlugin/3.0" FILE "DkDocAnalysisPlugin.json")
 
 public:
     
 	DkDocAnalysisPlugin();
 	~DkDocAnalysisPlugin();
 
-	QString pluginID() const;
-    QString pluginName() const;
-    QString pluginDescription() const;
-    QImage pluginDescriptionImage() const;
-    QString pluginVersion() const;
+	QString id() const override;
+    QImage image() const override;
+    QString version() const override;
 
-    QStringList runID() const;
-    QString pluginMenuName(const QString &runID = QString()) const;
-    QString pluginStatusTip(const QString &runID = QString()) const;
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort();
 	void deleteViewPort();
@@ -96,9 +91,6 @@ protected:
 signals:
 	void magicCutSavedSignal(bool); /**< Signal for confirming if the magic cut could be saved or not **/
 	
-protected slots:
-	void viewportDestroyed();
-
 public slots:
 	void saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width);
 };

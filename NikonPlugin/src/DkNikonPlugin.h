@@ -71,7 +71,7 @@ class DkNikonViewPort;
 class DkNikonPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/2.0" FILE "DkNikonPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/3.0" FILE "DkNikonPlugin.json")
 
 
 public:
@@ -79,15 +79,10 @@ public:
 	DkNikonPlugin();
 	~DkNikonPlugin();
 
-	QString pluginID() const;
-    QString pluginName() const;
-    QString pluginDescription() const;
-    QImage pluginDescriptionImage() const;
-    QString pluginVersion() const;
+	QString id() const override;
+    QImage image() const override;
+    QString version() const override;
 
-    QStringList runID() const;
-    QString pluginMenuName(const QString &runID = QString()) const;
-    QString pluginStatusTip(const QString &runID = QString()) const;
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort();
 	void deleteViewPort();
@@ -97,9 +92,6 @@ protected:
 	nmc::DkPluginViewPort* viewport;
 	DkCamControls* camControls;
 	MaidFacade* maidFacade;
-
-protected slots:
-	void viewportDestroyed();
 };
 
 class DkNikonViewPort : public nmc::DkPluginViewPort {

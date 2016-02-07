@@ -68,31 +68,14 @@ DkNikonPlugin::~DkNikonPlugin() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkNikonPlugin::pluginID() const {
+QString DkNikonPlugin::id() const {
 	return PLUGIN_ID;
-};
-
-
-/**
-* Returns plugin name
-**/
-QString DkNikonPlugin::pluginName() const {
-
-   return "Nikon";
-};
-
-/**
-* Returns long description
-**/
-QString DkNikonPlugin::pluginDescription() const {
-
-   return "<b>Created by:</b> Thomas Lang<br><b>Modified:</b> June 2014<br><b>Description:</b> Control Nikon D4 using nomacs.";
 };
 
 /**
 * Returns descriptive image
 **/
-QImage DkNikonPlugin::pluginDescriptionImage() const {
+QImage DkNikonPlugin::image() const {
 
    return QImage(":/nomacsPluginNikon/img/description.png");
 };
@@ -100,41 +83,9 @@ QImage DkNikonPlugin::pluginDescriptionImage() const {
 /**
 * Returns plugin version
 **/
-QString DkNikonPlugin::pluginVersion() const {
+QString DkNikonPlugin::version() const {
 
    return PLUGIN_VERSION;
-};
-
-/**
-* Returns unique IDs for every plugin in this dll
-* plugin can have more the one functionality that are triggered in the menu
-* runID differes from pluginID
-* viewport plugins can have only one runID and one functionality bound to it 
-**/
-QStringList DkNikonPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "87c51045b38744caa9f389e000d64f3f";
-};
-
-/**
-* Returns plugin name for every run ID
-* @param run ID
-**/
-QString DkNikonPlugin::pluginMenuName(const QString &runID) const {
-
-	if (runID=="87c51045b38744caa9f389e000d64f3f") return "Nikon";
-	return "Wrong GUID!";
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param plugin ID
-**/
-QString DkNikonPlugin::pluginStatusTip(const QString &runID) const {
-
-	if (runID=="87c51045b38744caa9f389e000d64f3f") return "Control your Nikon D4";
-	return "Wrong GUID!";
 };
 
 /**
@@ -209,15 +160,6 @@ nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 	}
 
 	return viewport;
-}
-
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkNikonPlugin::viewportDestroyed() {
-
-	viewport = 0;
-	camControls = 0;
 }
 
 void DkNikonPlugin::deleteViewPort() {

@@ -68,31 +68,14 @@ DkDocAnalysisPlugin::~DkDocAnalysisPlugin() {
 /**
 * Returns unique ID for the generated dll
 **/
-QString DkDocAnalysisPlugin::pluginID() const {
+QString DkDocAnalysisPlugin::id() const {
 	return PLUGIN_ID;
-};
-
-
-/**
-* Returns plugin name
-**/
-QString DkDocAnalysisPlugin::pluginName() const {
-
-   return "Document Analysis";
-};
-
-/**
-* Returns long description
-**/
-QString DkDocAnalysisPlugin::pluginDescription() const {
-
-   return "<b>Created by:</b> Daniel Fischl<br><b>Modified:</b> Oct 2014<br><b>Description:</b> Tools to analyze images of documents, like text line detection, region cutting, distance measurement.";
 };
 
 /**
 * Returns descriptive image
 **/
-QImage DkDocAnalysisPlugin::pluginDescriptionImage() const {
+QImage DkDocAnalysisPlugin::image() const {
 
    return QImage(":/nomacsPluginDocAnalysis/img/description.png");
 };
@@ -100,41 +83,9 @@ QImage DkDocAnalysisPlugin::pluginDescriptionImage() const {
 /**
 * Returns plugin version
 **/
-QString DkDocAnalysisPlugin::pluginVersion() const {
+QString DkDocAnalysisPlugin::version() const {
 
    return PLUGIN_VERSION;
-};
-
-/**
-* Returns unique IDs for every plugin in this dll
-* plugin can have more the one functionality that are triggered in the menu
-* runID differes from pluginID
-* viewport plugins can have only one runID and one functionality bound to it 
-**/
-QStringList DkDocAnalysisPlugin::runID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << PLUGIN_ID;
-};
-
-/**
-* Returns plugin name for every run ID
-* @param runID plugin ID
-**/
-QString DkDocAnalysisPlugin::pluginMenuName(const QString &runID) const {
-
-	if (runID==PLUGIN_ID) return "Document Analysis";
-	return "Wrong GUID!";
-};
-
-/**
-* Returns short description for status tip for every ID
-* @param runID plugin ID
-**/
-QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
-
-	if (runID==PLUGIN_ID) return "Tools for Document Analysis";
-	return "Wrong GUID!";
 };
 
 /**
@@ -178,14 +129,6 @@ nmc::DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 		connect(this, SIGNAL(magicCutSavedSignal(bool)), viewport, SLOT(magicCutSaved(bool)));
 	}
 	return viewport;
-}
-
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkDocAnalysisPlugin::viewportDestroyed() {
-
-	viewport = 0;
 }
 
 void DkDocAnalysisPlugin::deleteViewPort() {

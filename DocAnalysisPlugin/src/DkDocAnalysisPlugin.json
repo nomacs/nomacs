@@ -1,3 +1,9 @@
 {
-    "name" : [ "DkPageExtractionPlugin" ]
+    "PluginName" 	: "Ruling Analysis",
+	"AuthorName" 	: "Daniel Fischl",
+	"Company"		: "Computer Vision Lab",
+	"DateCreated" 	: "01.10.2014",
+	"DateModified" 	: "04.02.2016",
+	"Description"	: "Tools to analyze images of documents, like text line detection, region cutting, distance measurement.",
+	"StatusTip" 	: "Tools for analyzing ancient manuscripts."
 }
