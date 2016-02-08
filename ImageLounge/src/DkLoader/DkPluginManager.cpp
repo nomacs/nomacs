@@ -74,6 +74,13 @@ DkPluginContainer::DkPluginContainer(const QString& pluginPath) {
 	loadJson();
 }
 
+DkPluginContainer::~DkPluginContainer() {
+
+	//if (mLoader) {
+	//	qDebug() << "unloaded: " << mLoader->unload();
+	//}
+}
+
 bool operator<(const QSharedPointer<DkPluginContainer>& l, const QSharedPointer<DkPluginContainer>& r) {
 
 	if (!l || !r)
@@ -91,7 +98,7 @@ bool DkPluginContainer::isActive() const {
 }
 
 bool DkPluginContainer::isLoaded() const {
-	return mPlugin;
+	return mLoader->isLoaded();
 }
 
 bool DkPluginContainer::load() {
@@ -105,49 +112,45 @@ bool DkPluginContainer::load() {
 		return false;
 	}
 
-	QObject* plugin = mLoader->instance();
-
-	if (plugin) {
-
-		mPlugin = QSharedPointer<DkPluginInterface>(qobject_cast<DkPluginInterface*>(plugin));
-
-		if (!mPlugin) {
-			mPlugin = QSharedPointer<DkViewPortInterface>(qobject_cast<DkViewPortInterface*>(plugin));
-			mType = type_viewport;
-		}
-		else
-			mType = type_simple;
-
-		if(mPlugin) {
-			// init actions
-			mPlugin->createActions(QApplication::activeWindow());
-			createMenu();
-		}
-		else {
-			qDebug() << "could not initialize: " << mPluginPath;
-			return false;
-		}
+	if (pluginViewPort()) {
+		mType = type_viewport;
 	}
+	else if (plugin())
+		mType = type_simple;
 	else {
-		qDebug() << "could not load: " << mPluginPath << "NULL Object";
+		qDebug() << "could not initialize: " << mPluginPath;
 		return false;
 	}
 
+	if (mType != type_unknown) {
+		// init actions
+		plugin()->createActions(QApplication::activeWindow());
+		createMenu();
+	}
+	
 	qDebug() << mPluginPath << " loaded...";
 	return true;
 
 }
 
+bool DkPluginContainer::uninstall() {
+
+	mLoader->unload();
+	return QFile::remove(mPluginPath);
+}
+
 void DkPluginContainer::createMenu() {
 
+	DkPluginInterface* p = plugin();
+
 	// empty menu if we do not have any actions
-	if (!mPlugin || mPlugin->pluginActions().empty())
+	if (!p || p->pluginActions().empty())
 		return;
 
 	qDebug() << "creating plugin menu for " << pluginName();
 	mPluginMenu = new QMenu(pluginName(), QApplication::activeWindow());
 
-	for (auto action : mPlugin->pluginActions()) {
+	for (auto action : p->pluginActions()) {
 		mPluginMenu->addAction(action);
 		connect(action, SIGNAL(triggered()), this, SLOT(run()), Qt::UniqueConnection);
 	}
@@ -223,9 +226,11 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 
 void DkPluginContainer::run() {
 
-	if (mPlugin && mPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
+	DkPluginInterface* p = plugin();
 
-		QSharedPointer<DkViewPortInterface> vPlugin = pluginViewPort();
+	if (p && p->interfaceType() == DkPluginInterface::interface_viewport) {
+
+		DkViewPortInterface* vPlugin = pluginViewPort();
 		mActive = true;
 
 		if(!vPlugin || !vPlugin->getViewPort()) 
@@ -234,13 +239,15 @@ void DkPluginContainer::run() {
 		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 		emit runPlugin(vPlugin, false);
 	}
-	else if (mPlugin && mPlugin->interfaceType() == DkPluginInterface::interface_basic) {
-		
+	else if (p && p->interfaceType() == DkPluginInterface::interface_basic) {
+
 		QAction* a = qobject_cast<QAction*>(QObject::sender());
 
 		if (a)
 			emit runPlugin(this, a->data().toString());
 	}
+	else
+		qWarning() << "plugin with illegal interface detected in DkPluginContainer::run()";
 
 }
 
@@ -266,8 +273,8 @@ QString DkPluginContainer::company() const {
 
 QString DkPluginContainer::version() const {
 	
-	if (mPlugin)
-		return mPlugin->version();
+	if (plugin())
+		return plugin()->version();
 	else
 		return "";
 }
@@ -306,17 +313,35 @@ QSharedPointer<QPluginLoader> DkPluginContainer::loader() const {
 	return mLoader;
 }
 
-QSharedPointer<DkPluginInterface> DkPluginContainer::plugin() const {
-	return mPlugin;
+DkPluginInterface* DkPluginContainer::plugin() const {
+	
+	// is everything fine here??
+	if (!mLoader)
+		return 0;
+
+	DkPluginInterface* pi = qobject_cast<DkPluginInterface*>(mLoader->instance());
+
+	if (!pi)
+		return pluginViewPort();
+
+	return pi;
 }
 
-QSharedPointer<DkViewPortInterface> DkPluginContainer::pluginViewPort() const {
-	return qSharedPointerCast<DkViewPortInterface>(mPlugin);
+DkViewPortInterface* DkPluginContainer::pluginViewPort() const {
+
+	// is everything fine here??
+	if (!mLoader)
+		return 0;
+
+	return qobject_cast<DkViewPortInterface*>(mLoader->instance());
 }
 
 QString DkPluginContainer::actionNameToRunId(const QString & actionName) const {
 	
-	QList<QAction*> actions = mPlugin->pluginActions();
+	if (!plugin())
+		return QString();
+
+	QList<QAction*> actions = plugin()->pluginActions();
 	for (const QAction* a : actions) {
 		if (a->text() == actionName)
 			return a->data().toString();
@@ -387,7 +412,6 @@ void DkPluginManagerDialog::closePressed() {
 void DkPluginManagerDialog::showEvent(QShowEvent* ev) {
 
 	qDebug() << "show event called...";
-	loadPreviouslyInstalledPluginsList();
 	DkPluginManager::instance().loadPlugins();
 	tableWidgetInstalled->getPluginUpdateData();
 
@@ -402,19 +426,6 @@ void DkPluginManagerDialog::showEvent(QShowEvent* ev) {
 void DkPluginManagerDialog::deleteInstance(QSharedPointer<DkPluginContainer> plugin) {
 
 	DkPluginManager::instance().removePlugin(plugin);
-}
-
-void DkPluginManagerDialog::loadPreviouslyInstalledPluginsList() {
-
-	previouslyInstalledPlugins = QMap<QString, QString>();
-
-	QSettings& settings = Settings::instance().getSettings();
-	int size = settings.beginReadArray("PluginSettings/filePaths");
-	for (int i = 0; i < size; i++) {
-		settings.setArrayIndex(i);
-		previouslyInstalledPlugins.insert(settings.value("pluginId").toString(), settings.value("version").toString());
-	}
-	settings.endArray();
 }
 
 QMap<QString, QString> DkPluginManagerDialog::getPreviouslyInstalledPlugins() {
@@ -539,20 +550,12 @@ void DkPluginTableWidget::createLayout() {
 
 	QHBoxLayout* bottHorLayout = new QHBoxLayout();
 
-	//QTextEdit* decriptionEdit = new QTextEdit();
-	//decriptionEdit->setReadOnly(true);
-	//bottHorLayout->addWidget(decriptionEdit);
 	DkDescriptionEdit* decriptionEdit = new DkDescriptionEdit(mModel, mProxyModel, mTableView->selectionModel(), this);
 	connect(mTableView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), decriptionEdit, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
 	connect(mProxyModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), decriptionEdit, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
 	bottHorLayout->addWidget(decriptionEdit);
 
-	//QLabel* imgLabel = new QLabel();
-	//imgLabel->setMinimumWidth(layoutHWidth/2 + 4);
-	//imgLabel->setPixmap(QPixmap::fromImage(QImage(":/nomacs/img/imgDescriptionMissing.png")));	
 	DkDescriptionImage* decriptionImg = new DkDescriptionImage(mModel, mProxyModel, mTableView->selectionModel(), this);
-	//decriptionImg->setMinimumWidth(324);//layoutHWidth/2 + 4);
-	//decriptionImg->setMaximumWidth(324);//layoutHWidth/2 + 4);
 	decriptionImg->setMaximumSize(324,168);
 	decriptionImg->setMinimumSize(324,168);
 	connect(mTableView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), decriptionImg, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
@@ -655,7 +658,7 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 
 void DkPluginTableWidget::pluginUpdateFinished(bool finishedSuccessfully) {
 
-	DkPluginManager::instance().loadPlugins();
+	DkPluginManager::instance().reload();
 	updateInstalledModel();
 	if (finishedSuccessfully) 
 		showDownloaderMessage(tr("The plugins have been updated."), tr("Plugin manager"));
@@ -671,6 +674,12 @@ void DkPluginTableWidget::filterTextChanged() {
 void DkPluginTableWidget::uninstallPlugin(const QModelIndex &index) {
 
 	int selectedRow = mProxyModel->mapToSource(index).row();
+
+	if (selectedRow < 0 || selectedRow > DkPluginManager::instance().getPlugins().size()) {
+		qWarning() << "illegal row in uninstall plugin: " << selectedRow;
+		return;
+	}
+
 	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPlugins().at(selectedRow);
 
 	if (!plugin) {
@@ -678,20 +687,12 @@ void DkPluginTableWidget::uninstallPlugin(const QModelIndex &index) {
 		return;
 	}
 
-	QMessageBox msgBox;
-	msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	msgBox.setDefaultButton(QMessageBox::No);
-	msgBox.setEscapeButton(QMessageBox::No);
-	msgBox.setIcon(QMessageBox::Question);
-	msgBox.setWindowTitle(tr("Uninstall plugins"));
-	msgBox.setText(tr("Do you really want to uninstall the plugin <i>%1</i>?").arg(plugin->pluginName()));
+	DkPluginManager::instance().deletePlugin(plugin);
+	//updateInstalledModel();	// !!! update model before deleting the interface
+	mTableView->model()->removeRow(index.row());
+	//emit dataChanged(index, index);
 
-	if(msgBox.exec() == QMessageBox::Yes) {
-
-		//updateInstalledModel();	// !!! update model before deleting the interface
-		DkPluginManager::instance().deletePlugin(plugin);
-	}
-	msgBox.deleteLater();
+	mTableView->resizeRowsToContents();
 }
 
 void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
@@ -733,6 +734,9 @@ void DkPluginTableWidget::clearTableFilters(){
 
 //update models if new plugins are installed or copied into the folder
 void DkPluginTableWidget::updateInstalledModel() {
+
+	clearTableFilters();
+	//mTableView->relo;
 }
 
 void DkPluginTableWidget::downloadPluginInformation(int usage) {
@@ -836,13 +840,15 @@ int DkInstalledPluginsModel::columnCount(const QModelIndex&) const {
 
 QVariant DkInstalledPluginsModel::data(const QModelIndex &index, int role) const {
 
-    if (!index.isValid()) 
+	if (!index.isValid()) {
 		return QVariant();
+	}
 
 	const QVector<QSharedPointer<DkPluginContainer> >& plugins = DkPluginManager::instance().getPlugins();
 
-    if (index.row() >= plugins.size() || index.row() < 0) 
+	if (index.row() >= plugins.size() || index.row() < 0) {
 		return QVariant();
+	}
 
     if (role == Qt::DisplayRole) {
 		
@@ -887,10 +893,16 @@ Qt::ItemFlags DkInstalledPluginsModel::flags(const QModelIndex &index) const {
 	return QAbstractTableModel::flags(index);
 }
 
-bool DkInstalledPluginsModel::setData(const QModelIndex &, const QVariant &, int) {
+bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelIndex & index) {
+	
+	beginRemoveRows(QModelIndex(), position, position+rows-1);
+	endRemoveRows();
 
-    return false;
+	emit dataChanged(index, index);
+
+	return true;
 }
+
 
 void DkInstalledPluginsModel::setDataToInsert(QSharedPointer<DkPluginContainer> newData) {
 
@@ -985,7 +997,8 @@ bool DkDownloadPluginsModel::insertRows(int position, int rows, const QModelInde
     }
 
     endInsertRows();
-    return true;
+    
+	return true;
 }
 
 bool DkDownloadPluginsModel::removeRows(int position, int rows, const QModelIndex&) {
@@ -995,15 +1008,17 @@ bool DkDownloadPluginsModel::removeRows(int position, int rows, const QModelInde
     for (int row=0; row < rows; row++) {
         mPluginData.removeAt(position+row);
     }
-
     endRemoveRows();
-    return true;
+    
+	return true;
 }
 
 void DkDownloadPluginsModel::updateInstalledData(const QModelIndex &index, bool installed) {
 
-	if(installed) mPluginsInstalled.insert(mPluginData.at(index.row()).id, true);
-	else mPluginsInstalled.remove(mPluginData.at(index.row()).id);
+	if(installed) 
+		mPluginsInstalled.insert(mPluginData.at(index.row()).id, true);
+	else 
+		mPluginsInstalled.remove(mPluginData.at(index.row()).id);
 	emit dataChanged(index, index);
 }
 
@@ -1751,30 +1766,16 @@ void DkPluginManager::removePlugin(QSharedPointer<DkPluginContainer> plugin) {
 }
 
 void DkPluginManager::deletePlugin(QSharedPointer<DkPluginContainer> plugin) {
-
-	if (!plugin)
-		return;
-
-
-	QFile file(plugin->pluginPath());
 	
-	// release all handles
-	int idx = mPlugins.indexOf(plugin);
-
-	if (idx >= 0) {
-		mPlugins.remove(idx);
-		// first unload the plugin
-		plugin->loader()->unload();
-		plugin = QSharedPointer<DkPluginContainer>();
+	if (plugin) {
+		
+		mPlugins.remove(mPlugins.indexOf(plugin));
+		
+		if (!plugin->uninstall()) {
+			qDebug() << "Failed to delete plugin file!";
+			QMessageBox::critical(QApplication::activeWindow(), QObject::tr("Plugin manager"), QObject::tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
+		}
 	}
-
-	if (!file.remove()) {
-		qDebug() << "Failed to delete plugin file!";
-		QMessageBox::critical(QApplication::activeWindow(), QObject::tr("Plugin manager"), QObject::tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
-	}
-	else
-		removePlugin(plugin);
-
 }
 
 void DkPluginManager::clear() {
@@ -1784,7 +1785,9 @@ void DkPluginManager::clear() {
 //Loads enabled plugins when the menu is first hit
 void DkPluginManager::loadPlugins() {
 
-	mPlugins.clear();
+	// do not load twice
+	if (!mPlugins.empty())
+		return;
 
 	QStringList loadedPluginFileNames = QStringList();
 	QStringList libPaths = QCoreApplication::libraryPaths();
@@ -1856,7 +1859,7 @@ QVector<QSharedPointer<DkPluginContainer> > DkPluginManager::getBasicPlugins() c
 
 	for (auto plugin : mPlugins) {
 		
-		QSharedPointer<DkPluginInterface> p = plugin->plugin();
+		DkPluginInterface* p = plugin->plugin();
 
 		if (p && p->interfaceType() == DkPluginInterface::interface_basic) {
 			plugins.append(plugin);
@@ -1965,13 +1968,8 @@ void DkPluginActionManager::updateMenu() {
 		qWarning() << "plugin menu is NULL where it should not be!";
 	}
 
+	DkPluginManager::instance().loadPlugins();
 	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getPlugins();
-
-	// load plugins if menu is shown for the first time
-	if (plugins.empty()) {
-		DkPluginManager::instance().loadPlugins();
-		plugins = DkPluginManager::instance().getPlugins();
-	}
 
 	if (plugins.empty()) {
 		//mPluginActions.resize(DkActionManager::menu_plugins_end);
@@ -1980,7 +1978,7 @@ void DkPluginActionManager::updateMenu() {
 	mMenu->clear();
 
 	for (auto p : plugins) {
-		connect(p.data(), SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), this, SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), Qt::UniqueConnection);
+		connect(p.data(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SIGNAL(runPlugin(DkViewPortInterface*, bool)), Qt::UniqueConnection);
 		connect(p.data(), SIGNAL(runPlugin(DkPluginContainer*, const QString&)), this, SIGNAL(runPlugin(DkPluginContainer*, const QString&)), Qt::UniqueConnection);
 	}
 
@@ -2013,21 +2011,20 @@ void DkPluginActionManager::addPluginsToMenu() {
 
 	for (auto plugin : loadedPlugins) {
 
-		QSharedPointer<DkPluginInterface> pi = plugin->plugin();
+		DkPluginInterface* pi = plugin->plugin();
 
-		if (plugin->isLoaded() && plugin->pluginMenu()) {
+		if (pi && plugin->pluginMenu()) {
 			QList<QAction*> actions = pi->createActions(QApplication::activeWindow());
 			mPluginSubMenus.append(plugin->pluginMenu());
 			mMenu->addMenu(plugin->pluginMenu());
 		}
-		else if (plugin->isLoaded()) {
+		else if (pi) {
 			QAction* a = new QAction(plugin->pluginName(), this);
-			a->setData(plugin->plugin()->id());
+			a->setData(pi->id());
 			mPluginActions.append(a);
 			mMenu->addAction(a);
 			connect(a, SIGNAL(triggered()), plugin.data(), SLOT(run()));
 		}
-
 	}
 
 	mMenu->addAction(DkActionManager::instance().action(DkActionManager::menu_plugin_manager));

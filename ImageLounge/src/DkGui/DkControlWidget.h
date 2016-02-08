@@ -135,7 +135,7 @@ public slots:
 	void changeMetaDataPosition(int pos);
 	void changeThumbNailPosition(int pos);
 	void showScroller(bool visible);
-	void setPluginWidget(QSharedPointer<DkViewPortInterface> pluginWidget, bool removeWidget);
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
 	bool closePlugin(bool askForSaving);
 	bool applyPluginChanges(bool askForSaving);

@@ -345,7 +345,7 @@ void DkControlWidget::connectWidgets() {
 	DkActionManager& am = DkActionManager::instance();
 
 	// plugins
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(QSharedPointer<DkViewPortInterface>, bool)), this, SLOT(setPluginWidget(QSharedPointer<DkViewPortInterface>, bool)));
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
 	connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
 
 	// actions
@@ -545,7 +545,7 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 	if (!plugin)
 		return true;
 	
-	QSharedPointer<DkViewPortInterface> vPlugin = plugin->pluginViewPort();
+	DkViewPortInterface* vPlugin = plugin->pluginViewPort();
 
 	if (!vPlugin) 
 		return true;
@@ -612,7 +612,7 @@ bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 #endif // WITH_PLUGINS
 }
 
-void DkControlWidget::setPluginWidget(QSharedPointer<DkViewPortInterface> pluginWidget, bool removeWidget) {
+void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {
 
 	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
 

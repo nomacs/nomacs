@@ -120,6 +120,7 @@ class DllLoaderExport DkPluginContainer : public QObject {
 
 public:
 	DkPluginContainer(const QString& pluginPath);
+	~DkPluginContainer();
 
 	enum PluginType {
 		type_unknown = 0,
@@ -137,6 +138,7 @@ public:
 	bool isValid() const;
 	bool isLoaded() const;
 	bool load();
+	bool uninstall();
 
 	// attributes
 	QString pluginPath() const;
@@ -154,12 +156,12 @@ public:
 	QMenu* pluginMenu() const;
 
 	QSharedPointer<QPluginLoader> loader() const;
-	QSharedPointer<DkPluginInterface> plugin() const;
-	QSharedPointer<DkViewPortInterface> pluginViewPort() const;
+	DkPluginInterface* plugin() const;
+	DkViewPortInterface* pluginViewPort() const;
 	QString actionNameToRunId(const QString& actionName) const;
 	
 signals:
-	void runPlugin(QSharedPointer<DkViewPortInterface> viewport, bool close) const;
+	void runPlugin(DkViewPortInterface* viewport, bool close) const;
 	void runPlugin(DkPluginContainer* plugin, const QString& key) const;
 
 public slots:
@@ -184,7 +186,6 @@ protected:
 	QMenu* mPluginMenu = 0;
 
 	QSharedPointer<QPluginLoader> mLoader = QSharedPointer<QPluginLoader>();
-	QSharedPointer<DkPluginInterface> mPlugin = QSharedPointer<DkPluginInterface>();
 
 	void createMenu();
 	void loadJson();
@@ -211,7 +212,7 @@ public slots:
 	void updateMenu();
 
 signals:
-	void runPlugin(QSharedPointer<DkViewPortInterface> plugin, bool close) const;
+	void runPlugin(DkViewPortInterface* plugin, bool close) const;
 	void runPlugin(DkPluginContainer* plugin, const QString& key) const;
 	void applyPluginChanges(bool askForSaving) const;
 
@@ -302,7 +303,6 @@ protected:
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);
-	void loadPreviouslyInstalledPluginsList();
 };
 
 // widget with all plug-in information
@@ -363,9 +363,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
-    //bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
-    //bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
+	bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
+
 	
 	void setDataToInsert(QSharedPointer<DkPluginContainer> newData);
 	
