@@ -142,19 +142,19 @@ if(ENABLE_RAW)
 
 	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.17.0/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
-if (MSVC14)
-	if(CMAKE_CL_64)
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/x64")
+	if (MSVC14)
+		if(CMAKE_CL_64)
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/x64")
+		else()
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/Win32")
+		endif()
 	else()
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/Win32")
+		if(CMAKE_CL_64)
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/x64")
+		else()
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/Win32")
+		endif()
 	endif()
-else()
-	if(CMAKE_CL_64)
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/x64")
-	else()
-		set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/Win32")
-	endif()
-endif()
 
 	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
 								PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
@@ -263,7 +263,7 @@ unset(QUAZIP_FOUND CACHE)
 
 if(ENABLE_QUAZIP)
 	# QT_ROOT needed by QuaZip cmake 
-	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7)
 	# add build directory to cmake path - otherwise the QuaZipConfig.cmake is no longer found
 	SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_BINARY_DIR}) 
   
@@ -281,14 +281,14 @@ if(ENABLE_QUAZIP)
 endif(ENABLE_QUAZIP)
 
 #add libqpsd
-add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libqpsd)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")
 
 #add webp
 unset(WEBP_LIBRARY CACHE)
 unset(WEBP_INCLUDE_DIR CACHE)
 if(ENABLE_WEBP)
-	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libwebp)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp)
 	set(WEBP_LIBRARY "webp")
 	set(WEBP_INCLUDEDIR "${CMAKE_SOURCE_DIR}/3rdparty/libwebp/src")
 	add_definitions(-DWITH_WEBP)

@@ -80,14 +80,14 @@ if (DISABLE_QT_DEBUG)
 endif()
 
 if(MSVC)
-	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Win.cmake)
 elseif(APPLE)
-	include(${CMAKE_SOURCE_DIR}/cmake/Mac.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mac.cmake)
 else(UNIX)
-	include(${CMAKE_SOURCE_DIR}/cmake/Unix.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
 else()
 	message(STATUS "build system unkown ... fallback to unix")
-	include(${CMAKE_SOURCE_DIR}/cmake/Unix.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Unix.cmake)
 endif()
 
 file(GLOB NOMACS_EXE_SOURCES "src/*.cpp")
@@ -110,10 +110,10 @@ include_directories (
 	${EXIV2_INCLUDE_DIRS} 
 	${LIBRAW_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_SOURCE_DIR}/src
-	${CMAKE_SOURCE_DIR}/src/DkCore
-	${CMAKE_SOURCE_DIR}/src/DkLoader
-	${CMAKE_SOURCE_DIR}/src/DkGui
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
+	${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader
+	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
 	${WEBP_INCLUDEDIR}
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
@@ -128,13 +128,13 @@ if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 endif (APPLE)
 
  IF(NOT ENABLE_UPNP)
-	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
-	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
+	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkUpnp.cpp)
+	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkUpnp.h)
  ENDIF(NOT ENABLE_UPNP)
 
  IF(NOT ENABLE_PLUGINS)
-	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_SOURCE_DIR}/src/DkPluginManager.cpp)
-	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
+	 LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.cpp)
+	 LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.h)
  ENDIF(NOT ENABLE_PLUGINS)
 
 
@@ -152,14 +152,14 @@ QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
 
 if(MSVC)
-	include(${CMAKE_SOURCE_DIR}/cmake/WinBuildTarget.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/WinBuildTarget.cmake)
 elseif(APPLE)
-	include(${CMAKE_SOURCE_DIR}/cmake/MacBuildTarget.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MacBuildTarget.cmake)
 else(UNIX)
-	include(${CMAKE_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 else()
 	message(STATUS "build system unkown ... fallback to unix")
-	include(${CMAKE_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
 
@@ -170,7 +170,7 @@ endif()
 # endforeach()
 
 if(UNIX AND ENABLE_PLUGINS)
-  if(EXISTS "${CMAKE_SOURCE_DIR}/plugins")
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
     SET(NOMACS_FOUND true)
     SET(NOMACS_VARS_ALREADY_SET true)
     add_subdirectory(plugins)
