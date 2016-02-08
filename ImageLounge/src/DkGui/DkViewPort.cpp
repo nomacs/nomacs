@@ -123,7 +123,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPlugin*, const QString&)), this, SLOT(applyPlugin(DkPlugin*, const QString&)));
+	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginContainer*, const QString&)), this, SLOT(applyPlugin(DkPluginContainer*, const QString&)));
 
 	// connect
 	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
