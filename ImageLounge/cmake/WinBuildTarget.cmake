@@ -1,12 +1,12 @@
 set(NOMACS_RC src/nomacs.rc) #add resource file when compiling with MSVC 
 set(VERSION_LIB Version.lib)
-set(EXIV2_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/libs) #add libs directory to library dirs 
+set(EXIV2_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/libs) #add libs directory to library dirs 
 
 # create the targets
-set(BINARY_NAME ${CMAKE_PROJECT_NAME})
-set(DLL_CORE_NAME ${CMAKE_PROJECT_NAME}Core)
-set(DLL_LOADER_NAME ${CMAKE_PROJECT_NAME}Loader)
-set(DLL_GUI_NAME ${CMAKE_PROJECT_NAME}Gui)
+set(BINARY_NAME ${PROJECT_NAME})
+set(DLL_CORE_NAME ${PROJECT_NAME}Core)
+set(DLL_LOADER_NAME ${PROJECT_NAME}Loader)
+set(DLL_GUI_NAME ${PROJECT_NAME}Gui)
 
 set(LIB_CORE_NAME optimized ${DLL_CORE_NAME}.lib debug ${DLL_CORE_NAME}d.lib)
 set(LIB_LOADER_NAME optimized ${DLL_LOADER_NAME}.lib debug ${DLL_LOADER_NAME}d.lib)
@@ -55,9 +55,9 @@ qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport
 # qt_wrap_cpp(${DLL_GUI_NAME} ${GUI_SOURCES} ${LOADER_HEADERS});
 
 # core flags
-set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_BINARY_DIR}/libs)
 
 set_target_properties(${DLL_CORE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_CORE_DLL_EXPORT -DNOMINMAX")
 set_target_properties(${DLL_CORE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
@@ -67,9 +67,9 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_N
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
 
 # loader flags
-set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_LOADER_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_BINARY_DIR}/libs)
 
 set_target_properties(${DLL_LOADER_NAME} PROPERTIES COMPILE_FLAGS "-DDK_LOADER_DLL_EXPORT -DNOMINMAX")
 set_target_properties(${DLL_LOADER_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
@@ -79,9 +79,9 @@ set_target_properties(${DLL_LOADER_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_LOAD
 set_target_properties(${DLL_LOADER_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_LOADER_NAME})
 
 # gui flags
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_BINARY_DIR}/libs)
 
 set_target_properties(${DLL_GUI_NAME} PROPERTIES COMPILE_FLAGS "-DDK_GUI_DLL_EXPORT -DNOMINMAX")
 set_target_properties(${DLL_GUI_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
@@ -94,9 +94,9 @@ target_link_libraries(${DLL_GUI_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} $
 
 SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
 
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
-set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
+set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_BINARY_DIR}/libs)
 				
 set_target_properties(${DLL_GUI_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 set_target_properties(${DLL_GUI_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
@@ -108,27 +108,27 @@ set_target_properties(${DLL_GUI_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_GUI_N
 set(OpenCV_REQUIRED_MODULES core imgproc FORCE)
 foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Release)
+	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
 	
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 endforeach(opencvlib)
 
 set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent Qt5Svg)
 foreach(qtlib ${QTLIBLIST})
 	get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 endforeach(qtlib)
 
 # create settings file for portable version while working
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo)
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo "")
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/Release/settings.nfo)
+	file(WRITE ${CMAKE_BINARY_DIR}/Release/settings.nfo "")
 endif()
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo)
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo "")
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
+	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.nfo "")
 endif()
 
 
@@ -164,8 +164,8 @@ endif()
 	# find_file(MSVCP NAMES msvcp140.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
 	# find_file(MSVCR NAMES msvcr140.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
 	# if(MSVCP)
-		# file(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-		# file(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		# file(COPY ${MSVCP} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+		# file(COPY ${MSVCR} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
 	# else()
 		# message(STATUS "Could not copy msvcp140.dll from ${VC_RUNTIME_DIR}")
 		# message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
@@ -176,8 +176,8 @@ if (MSVC11)
 	find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
 	find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
 	if(MSVCP)
-		file(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-		file(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		file(COPY ${MSVCP} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+		file(COPY ${MSVCR} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
 	else()
 		message(STATUS "Could not copy msvcp11${VS_VERSION}0.dll")
 		message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
@@ -185,9 +185,9 @@ if (MSVC11)
 endif() # if (MSVC14)
 
 # copy translation files after each build
-add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 foreach(QM ${NOMACS_QM})
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 endforeach(QM)
 
 
@@ -227,7 +227,7 @@ if(DLL_GUI_NAME)
 endif()
 
 set(NOMACS_LIBS ${NOMACS_CORE_LIB} ${NOMACS_LOADER_LIB} ${NOMACS_GUI_LIB})
-set(NOMACS_SOURCE_DIR ${CMAKE_SOURCE_DIR})
-set(NOMACS_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/DkGui ${CMAKE_SOURCE_DIR}/src/DkCore ${CMAKE_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
+set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)

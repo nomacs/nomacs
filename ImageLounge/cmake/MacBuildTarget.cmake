@@ -114,6 +114,9 @@ configure_file(${CMAKE_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY
 add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
 
 # generate configuration file
+# generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
+set(NOMACS_LIBS ${DLL_CORE_NAME})
+set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/DkGui ${CMAKE_SOURCE_DIR}/src/DkCore ${CMAKE_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
