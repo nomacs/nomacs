@@ -29,7 +29,6 @@ ELSE(UNIX)
 ENDIF(UNIX)
 
 
-message(STATUS "NOMACS_BUILD_DIRECTORY: ${NOMACS_BUILD_DIRECTORY}")
 # All build libraries are moved to this directory
 SET(LIBRARY_OUTPUT_PATH ${NOMACS_BUILD_DIRECTORY})
 
