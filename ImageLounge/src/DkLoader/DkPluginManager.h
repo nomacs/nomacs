@@ -235,6 +235,7 @@ public:
 	QVector<QSharedPointer<DkPluginContainer> > getPlugins() const;
 	QSharedPointer<DkPluginContainer> getPlugin(const QString& key) const;
 	QSharedPointer<DkPluginContainer> getPluginByName(const QString& pluginName) const;
+	QSharedPointer<DkPluginContainer> getPluginByPath(const QString& path) const;
 	//QString actionNameToRunId(const QString& pluginId, const QString& actionName) const;
 	
 	QString getPluginFilePath(const QString& key) const;

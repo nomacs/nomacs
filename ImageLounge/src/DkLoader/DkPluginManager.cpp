@@ -641,7 +641,7 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 
 	if (mPluginsToUpdate.size() > 0) {
 		
-		DkPluginManager::instance().clear();
+		//DkPluginManager::instance().clear();
 
 		// after deleting instances the file are not in use anymore -> update
 		QList<QString> urls = QList<QString>();
@@ -652,7 +652,7 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 		}
 
 		mPluginDownloader->updatePlugins(urls);
-		DkPluginManager::instance().loadPlugins();
+		DkPluginManager::instance().reload();
 	}
 }
 
@@ -1606,13 +1606,19 @@ void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 	if (!reply)
 		return;
 
-	QDir pluginsDir = Settings::param().global().pluginsDir;
+	QFileInfo pluginPath(Settings::param().global().pluginsDir, mFileName);
 
-	QFile file(pluginsDir.absolutePath().append("/").append(mFileName));
+	// remove old plugin if available
+	QSharedPointer<DkPluginContainer> pc = DkPluginManager::instance().getPluginByPath(pluginPath.absoluteFilePath());
+	if (pc && !pc->uninstall()) 
+		emit showDownloaderMessage(tr("Sorry, %1 could not be removed...").arg(mFileName), tr("Plugin manager"));
+	
 
-	if (file.exists() && !file.remove()) {
-		qDebug() << "Failed to delete plugin file!";
-	}
+	QFile file(pluginPath.absoluteFilePath());
+
+	//if (file.exists() && !file.remove()) {
+	//	qDebug() << "Failed to delete plugin file!";
+	//}
 
 	if (!file.open(QIODevice::WriteOnly)) {
 		emit showDownloaderMessage(tr("Sorry, the plugin could not be saved."), tr("Plugin manager"));
@@ -1623,7 +1629,7 @@ void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 	file.close();
 
 	if (!writeSuccess) {
-		emit showDownloaderMessage(tr("Sorry, the plugin could not be saved."), tr("Plugin manager"));
+ 		emit showDownloaderMessage(tr("Sorry, the plugin could not be saved."), tr("Plugin manager"));
 		cancelUpdate();
 		return;
 	}
@@ -1838,20 +1844,16 @@ QSharedPointer<DkPluginContainer> DkPluginManager::getPluginByName(const QString
 	return QSharedPointer<DkPluginContainer>();
 }
 
-//QString DkPluginManager::actionNameToRunId(const QString & pluginId, const QString & actionName) const {
-//
-//	DkPluginInterface* p = getPlugin(pluginId);
-//
-//	if (p) {
-//		QList<QAction*> actions = p->pluginActions();
-//		for (const QAction* a : actions) {
-//			if (a->text() == actionName)
-//				return a->data().toString();
-//		}
-//	}
-//
-//	return QString();
-//}
+QSharedPointer<DkPluginContainer> DkPluginManager::getPluginByPath(const QString & path) const {
+
+	for (auto p : mPlugins) {
+
+		if (p && path == p->pluginPath())
+			return p;
+	}
+
+	return QSharedPointer<DkPluginContainer>();
+}
 
 QVector<QSharedPointer<DkPluginContainer> > DkPluginManager::getBasicPlugins() const {
 	
@@ -2027,27 +2029,8 @@ void DkPluginActionManager::addPluginsToMenu() {
 		}
 	}
 
-	mMenu->addAction(DkActionManager::instance().action(DkActionManager::menu_plugin_manager));
 	mMenu->addSeparator();
-
-	//for(int i = 0; i < sortedNames.size(); i++) {
-
-
-	//	if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
-
-	//		QAction* pluginAction = new QAction(sortedNames.at(i).second, this);
-	//		pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));
-	//		pluginAction->setData(sortedNames.at(i).first);
-	//		connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()), Qt::UniqueConnection);
-
-	//		mMenu->addAction(pluginAction);
-	//		pluginAction->setToolTip(pluginAction->statusTip());
-
-	//		mPluginActions.append(pluginAction);
-	//	}		
-	//}
-
-	//DkPluginManager::instance().setRunId2PluginId(runId2PluginId);
+	mMenu->addAction(DkActionManager::instance().action(DkActionManager::menu_plugin_manager));
 
 	QVector<QAction*> allPluginActions = mPluginActions;
 
