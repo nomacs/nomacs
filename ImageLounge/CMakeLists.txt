@@ -18,7 +18,6 @@ project(nomacs)
 set(NOMACS_VERSION 3.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
-set(NOMACS_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}) # NOMACS_BUILD_DIRECTORY has to be defined before executing Quazip CMake
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 
 # include macros needed
@@ -178,11 +177,4 @@ if(UNIX AND ENABLE_PLUGINS)
   else()
     message(WARNING "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them")
   endif()
-endif()
-
-if(READ_GLOBAL_BUILD)
-	set(NOMACS_LIBS ${NOMACS_LIBS} PARENT_SCOPE)
-	set(NOMACS_SOURCE_DIR ${NOMACS_SOURCE_DIR} PARENT_SCOPE)
-	set(NOMACS_INCLUDE_DIRECTORY ${NOMACS_INCLUDE_DIRECTORY} PARENT_SCOPE)
-	set(NOMACS_BUILD_DIRECTORY ${NOMACS_BUILD_DIRECTORY} PARENT_SCOPE)
 endif()
