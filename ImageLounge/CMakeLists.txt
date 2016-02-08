@@ -56,8 +56,8 @@ if (ENABLE_QUAZIP)
 endif()
 
 # load paths from the user file if exists 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
+if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
 endif()
 
 include(CheckCXXCompilerFlag)
