@@ -123,6 +123,17 @@ foreach(qtlib ${QTLIBLIST})
 	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 endforeach(qtlib)
 
+# copy additional Qt files
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/ReallyRelease/imageformats)
+file(GLOB QT_IMAGE_FORMATS "${QT_DLL_PATH_tmp}/../plugins/imageformats/*.dll")
+file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease/imageformats PATTERN *d.dll EXCLUDE)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/ReallyRelease/platforms)
+file(COPY ${QT_DLL_PATH_tmp}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease/platforms/)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/ReallyRelease/printsupport)
+file(COPY ${QT_DLL_PATH_tmp}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease/printsupport)
+
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Release/settings.nfo)
 	file(WRITE ${CMAKE_BINARY_DIR}/Release/settings.nfo "")
