@@ -614,28 +614,30 @@ bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 
 void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {
 
-	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
+	mPluginViewport = pluginWidget->getViewPort();
 
-	if (!pluginViewport) 
+	if (!mPluginViewport) 
 		return;
 
 	if (!removeWidget) {
-		pluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
-		pluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
+		mPluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
+		mPluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
+		mPluginViewport->updateImageContainer(mViewport->imageContainer());
 
-		connect(pluginViewport, SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)));
-		connect(pluginViewport, SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)));
-		connect(pluginViewport, SIGNAL(loadImage(QImage)), mViewport, SLOT(setImage(QImage)));
+		connect(mPluginViewport, SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)), Qt::UniqueConnection);
+		connect(mPluginViewport, SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)), Qt::UniqueConnection);
+		connect(mPluginViewport, SIGNAL(loadImage(const QImage&)), mViewport, SLOT(setImage(const QImage&)), Qt::UniqueConnection);
 	}
 
-	mViewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
+	mViewport->setPaintWidget(dynamic_cast<QWidget*>(mPluginViewport), removeWidget);
 	
 	if (removeWidget) {
 		pluginWidget->deleteViewPort();
+		mPluginViewport = 0;
 	}
 }
 
-void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
+void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 
 	if (!imgC)
 		return;
@@ -649,6 +651,9 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	mFileInfoLabel->setEdited(imgC->isEdited());
 	mCommentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
+
+	if (mPluginViewport)
+		mPluginViewport->updateImageContainer(imgC);
 }
 
 void DkControlWidget::setInfo(const QString& msg, int time, int location) {

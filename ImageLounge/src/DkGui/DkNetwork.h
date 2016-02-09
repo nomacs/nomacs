@@ -131,7 +131,7 @@ class DkClientManager : public QThread {
 		void receivedTransformation(QTransform transform, QTransform imgTransform, QPointF canvasSize);
 		void receivedPosition(QRect position, bool opacity, bool overlaid);
 		void receivedNewFile(qint16 op, const QString& filename);
-		void receivedImage(QImage image);
+		void receivedImage(const QImage& image);
 		void receivedImageTitle(const QString& title);
 		void sendInfoSignal(const QString& msg, int time = 3000);
 		void sendGreetingMessage(const QString& title);

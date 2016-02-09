@@ -2094,14 +2094,13 @@ DkLanManagerThread::DkLanManagerThread(DkNoMacs* parent) : DkManagerThread(paren
 void DkLanManagerThread::connectClient() {
 
 	connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, const QString&)), clientManager, SLOT(sendNewImage(QImage, const QString&)));
-	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
+	connect(clientManager, SIGNAL(receivedImage(const QImage &)), parent->viewport(), SLOT(loadImage(const QImage&)));
 	connect(clientManager, SIGNAL(receivedImageTitle(const QString&)), parent, SLOT(setWindowTitle(const QString&)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(goodByeToAllSignal()), clientManager, SLOT(sendGoodByeToAll()));
 
 	// TODO: uncomment OR do a better signaling here...
 	//connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->viewport()->getController(), SLOT(setInfo(const QString&, int)));
-
 
 #ifdef WITH_UPNP
 	qRegisterMetaType<QHostAddress>("QHostAddress");
@@ -2139,7 +2138,7 @@ void DkRCManagerThread::connectClient() {
 	// not sure if we need something here
 
 	//connect(parent->mViewport(), SIGNAL(sendImageSignal(QImage, const QString&)), clientManager, SLOT(sendNewImage(QImage, const QString&)));
-	//connect(clientManager, SIGNAL(receivedImage(QImage)), parent->mViewport(), SLOT(loadImage(QImage)));
+	//connect(clientManager, SIGNAL(receivedImage(const QImage&)), parent->mViewport(), SLOT(loadImage(const QImage&)));
 	//connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->mViewport()->getController(), SLOT(setInfo(const QString&, int)));
 	//connect(clientManager, SIGNAL(receivedImageTitle(const QString&)), parent, SLOT(setWindowTitle(const QString&)));
 	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));

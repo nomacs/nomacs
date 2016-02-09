@@ -140,7 +140,7 @@ public slots:
 	bool closePlugin(bool askForSaving);
 	bool applyPluginChanges(bool askForSaving);
 
-	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
+	void updateImage(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(const QString& msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(const QString& msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -191,6 +191,8 @@ protected:
 	DkLabelBg* mCenterLabel;
 	DkLabelBg* mBottomLabel;
 	DkLabelBg* mBottomLeftLabel;
+
+	DkPluginViewPort* mPluginViewport = 0;
 
 	QSharedPointer<DkImageContainerT> mImgC;
 

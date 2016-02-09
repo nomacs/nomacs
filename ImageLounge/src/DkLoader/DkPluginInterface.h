@@ -75,7 +75,7 @@ public:
 	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
     virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
-	virtual bool closesOnImageChange() {return true;};
+	virtual bool closesOnImageChange() const {return true;};
 	QMainWindow* getMainWindow() const {
 
 		QWidgetList widgets = QApplication::topLevelWidgets();
@@ -122,11 +122,13 @@ public:
 		mImgMatrix = imgMatrix;
 	};
 
+	virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {	};	// dummy
+
 signals:
 	void closePlugin(bool askForSaving = false);
 	void showToolbar(QToolBar* toolbar, bool show);
 	void loadFile(const QString& filePath);
-	void loadImage(QImage image);
+	void loadImage(const QImage& image);
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) {
