@@ -848,7 +848,7 @@ QImage DkImage::mat2QImage(cv::Mat img) {
 cv::Mat DkImage::get1DGauss(double sigma) {
 
 	// correct -> checked with matlab reference
-	int kernelsize = qRound(std::ceil(sigma*3)*2)+1;
+	int kernelsize = qCeil(sigma*3*2)+1;
 	if (kernelsize < 3) kernelsize = 3;
 	if ((kernelsize % 2) != 1) kernelsize+=1;
 

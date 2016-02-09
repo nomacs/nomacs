@@ -51,6 +51,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QInputDialog>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -943,7 +944,7 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 
 	int cIdx = 0;
 	int rIdx = 0;
-	int nRows = std::ceil((float)(mEntryKeyLabels.size())/numColumns);
+	int nRows = qCeil((float)(mEntryKeyLabels.size())/numColumns);
 
 	// stretch between labels
 	// we need this for correct context menu handling

@@ -1587,16 +1587,16 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QB
 	// guess size
 	if (s.isEmpty()) {
 		double nEl = (fSize-64)/(vecSize*2);
-		nEl = (fSize-64-std::ceil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
+		nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
 
-		if (qFloor(nEl) != std::ceil(nEl))
+		if (qFloor(nEl) != qCeil(nEl))
 			return false;
 		numElements = qRound(nEl);
 	}
 
 	double nRowsCols = sqrt(numElements);
-	int numCols = std::ceil(nRowsCols);
-	int minusOneRow = (qFloor(nRowsCols) != std::ceil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
+	int numCols = qCeil(nRowsCols);
+	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
 
 	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
 

@@ -64,6 +64,7 @@
 
 #include <QGridLayout>
 #include <QGraphicsOpacityEffect>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -116,7 +117,7 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 	this->mSliderWidth = sliderWidth;
 	mIsActive = false;
 
-	mSliderHalfWidth = std::ceil((float)sliderWidth / 2);
+	mSliderHalfWidth = qCeil((float)sliderWidth / 2);
 	//return (qreal)(pos) / (qreal)(width() - sliderWidth);
 	
 	int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));

@@ -382,7 +382,7 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 		return;
 	int instancesPerRow = (connectedInstances == 2 || connectedInstances == 4) ? 2 : 3;
 
-	int rows = (int)std::ceil((float)connectedInstances / (float)instancesPerRow);
+	int rows = (int)qCeil((float)connectedInstances / (float)instancesPerRow);
 	int width = screenGeometry.width() / instancesPerRow;
 	int height = screenGeometry.height() / rows;
 

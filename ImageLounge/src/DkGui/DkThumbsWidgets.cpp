@@ -223,8 +223,8 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 
 	if (minHeight != Settings::param().display().thumbSize + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
-		xOffset = std::ceil(Settings::param().display().thumbSize*0.1f);
-		yOffset = std::ceil(Settings::param().display().thumbSize*0.1f);
+		xOffset = qCeil(Settings::param().display().thumbSize*0.1f);
+		yOffset = qCeil(Settings::param().display().thumbSize*0.1f);
 
 		minHeight = Settings::param().display().thumbSize + yOffset;
 		
@@ -324,9 +324,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		// update the buffer dim
 		if (orientation == Qt::Horizontal)
-			bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + std::ceil(xOffset/2.0f));
+			bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + qCeil(xOffset/2.0f));
 		else
-			bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + std::ceil(xOffset/2.0f));
+			bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + qCeil(xOffset/2.0f));
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
@@ -1151,10 +1151,10 @@ void DkThumbScene::updateLayout() {
 	if (!views().empty())
 		pSize = QSize(views().first()->viewport()->size());
 
-	mXOffset = std::ceil(Settings::param().display().thumbPreviewSize*0.1f);
+	mXOffset = qCeil(Settings::param().display().thumbPreviewSize*0.1f);
 	mNumCols = qMax(qFloor(((float)pSize.width()-mXOffset)/(Settings::param().display().thumbPreviewSize + mXOffset)), 1);
 	mNumCols = qMin(mThumbLabels.size(), mNumCols);
-	mNumRows = std::ceil((float)mThumbLabels.size()/mNumCols);
+	mNumRows = qCeil((float)mThumbLabels.size()/mNumCols);
 
 	qDebug() << "num rows x num cols: " << mNumCols*mNumRows;
 	qDebug() << " thumb labels size: " << mThumbLabels.size();
