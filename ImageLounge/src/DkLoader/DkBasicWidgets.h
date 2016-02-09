@@ -96,7 +96,7 @@ public:
 	bool isAccept() const;
 	void enableAlpha(bool enable = true);
 
-	public slots:
+public slots:
 	void on_resetButton_clicked();
 	void on_colorButton_clicked();
 	void on_colorDialog_accepted();
