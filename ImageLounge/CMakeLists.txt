@@ -126,7 +126,7 @@ include_directories (
 	${HUPNP_INCLUDE_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	# ${ZLIB_INCLUDE_DIRS}
-	${CMAKE_SOURCE_DIR}/3rdparty/libqpsd
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 )
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
