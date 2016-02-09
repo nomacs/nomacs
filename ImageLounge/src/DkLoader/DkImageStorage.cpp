@@ -36,6 +36,7 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QBitmap>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -847,14 +848,14 @@ QImage DkImage::mat2QImage(cv::Mat img) {
 cv::Mat DkImage::get1DGauss(double sigma) {
 
 	// correct -> checked with matlab reference
-	int kernelsize = cvRound(cvCeil(sigma*3)*2)+1;
+	int kernelsize = qCeil(sigma*3*2)+1;
 	if (kernelsize < 3) kernelsize = 3;
 	if ((kernelsize % 2) != 1) kernelsize+=1;
 
 	cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
 	float* kernelPtr = gKernel.ptr<float>();
 
-	for (int idx = 0, x = -cvFloor(kernelsize/2); idx < kernelsize; idx++,x++) {
+	for (int idx = 0, x = -qFloor(kernelsize/2); idx < kernelsize; idx++,x++) {
 
 		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
 	}

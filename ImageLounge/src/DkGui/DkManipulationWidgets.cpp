@@ -41,6 +41,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QApplication>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -529,7 +530,7 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 				float *ptrR = imgCh[0].ptr<float>(row);
 
 				for (int col = 0; col < tempImg.cols; col++) 
-					ptrR[col] = (float)ptrLutR[cvRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
+					ptrR[col] = (float)ptrLutR[qRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
 
 			}
 		}
@@ -545,15 +546,15 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 				{
 					if(isMatHsv) {
 
-						ptrR[col] = (float)ptrLutR[cvRound(ptrR[col] / 360.0f * (inLUT.cols-1))] / 65535.0f * 360.0f;
-						ptrG[col] = (float)ptrLutG[cvRound(ptrG[col] * (inLUT.cols-1))] / 65535.0f;
-						ptrB[col] = (float)ptrLutB[cvRound(ptrB[col] * (inLUT.cols-1))] / 65535.0f;
+						ptrR[col] = (float)ptrLutR[qRound(ptrR[col] / 360.0f * (inLUT.cols-1))] / 65535.0f * 360.0f;
+						ptrG[col] = (float)ptrLutG[qRound(ptrG[col] * (inLUT.cols-1))] / 65535.0f;
+						ptrB[col] = (float)ptrLutB[qRound(ptrB[col] * (inLUT.cols-1))] / 65535.0f;
 					}
 					else {
 
-						ptrR[col] = (float)ptrLutR[cvRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
-						ptrG[col] = (float)ptrLutG[cvRound(ptrG[col] * (inLUT.cols-1))] / 65535.0f;
-						ptrB[col] = (float)ptrLutB[cvRound(ptrB[col] * (inLUT.cols-1))] / 65535.0f;
+						ptrR[col] = (float)ptrLutR[qRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
+						ptrG[col] = (float)ptrLutG[qRound(ptrG[col] * (inLUT.cols-1))] / 65535.0f;
+						ptrB[col] = (float)ptrLutB[qRound(ptrB[col] * (inLUT.cols-1))] / 65535.0f;
 					}
 				}
 			}
@@ -569,7 +570,7 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 				unsigned char *ptrR = imgCh[0].ptr<unsigned char>(row);
 
 				for (int col = 0; col < tempImg.cols; col++) 
-					ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+					ptrR[col] = (unsigned char) qRound(ptrLutR[qRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 
 			}
 		}
@@ -585,15 +586,15 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 				{
 					if(isMatHsv) {
 
-						ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 180.0f) * (inLUT.cols-1))] / 65535.0f * 180.0f);
-						ptrG[col] = (unsigned char) cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrB[col] = (unsigned char) cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrR[col] = (unsigned char) qRound(ptrLutR[qRound((ptrR[col] / 180.0f) * (inLUT.cols-1))] / 65535.0f * 180.0f);
+						ptrG[col] = (unsigned char) qRound(ptrLutG[qRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrB[col] = (unsigned char) qRound(ptrLutB[qRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 					}
 					else {
 
-						ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrG[col] = (unsigned char) cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrB[col] = (unsigned char) cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrR[col] = (unsigned char) qRound(ptrLutR[qRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrG[col] = (unsigned char) qRound(ptrLutG[qRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrB[col] = (unsigned char) qRound(ptrLutB[qRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 					}
 				}
 			}
@@ -696,7 +697,7 @@ cv::Mat DkImageManipulationWidget::changeBrightnessAndContrast(cv::Mat inLUT, fl
 
 		for (int col = 0; col < outLUT.cols; col++) {
 
-			int v = cvRound((a * ptrU[col] / 257.0f + b) * 257);
+			int v = qRound((a * ptrU[col] / 257.0f + b) * 257);
 			if (v < 0) 
 				v = 0;
 			else if (v > 65535) 
@@ -728,11 +729,11 @@ cv::Mat DkImageManipulationWidget::changeSaturationAndHue(cv::Mat inLUT, float s
 	cv::Mat gKernel = cv::Mat(1, ks, CV_32FC1);
 	float* kernelPtr = gKernel.ptr<float>();
 
-	for (int idx = 0, x = -cvFloor(ks/2); idx < ks; idx++,x++) 
+	for (int idx = 0, x = -qFloor(ks/2); idx < ks; idx++,x++) 
 		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
 	normalize(gKernel, gKernel, 1.0f, 0.0f, cv::NORM_MINMAX);
 
-	//for (int idx = 0, x = -cvFloor(ks/2); idx < ks; idx++,x++) 
+	//for (int idx = 0, x = -qFloor(ks/2); idx < ks; idx++,x++) 
 	//	kernelPtr[idx] = ((idx < ks*0.5f) ? idx/(ks*0.5f) : 2.0f - (float)idx/(ks*0.5f));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
 	////normalize(gKernel, gKernel, 1.0f, 0.0f, NORM_MINMAX);
 
@@ -749,7 +750,7 @@ cv::Mat DkImageManipulationWidget::changeSaturationAndHue(cv::Mat inLUT, float s
 	for (int col = 0; col < outLUT.cols; col++) {
 
 		if (sat > 0) {
-			sPtrU[col] += (unsigned short)cvRound(sat * kernelPtr[cvRound(vPtrU[col]/65535.0f*(ks-1))]* (1.0f-sPtrU[col]/65535.0f));
+			sPtrU[col] += (unsigned short)qRound(sat * kernelPtr[qRound(vPtrU[col]/65535.0f*(ks-1))]* (1.0f-sPtrU[col]/65535.0f));
 		}
 		else {
 			// linear for negative saturation values
@@ -759,7 +760,7 @@ cv::Mat DkImageManipulationWidget::changeSaturationAndHue(cv::Mat inLUT, float s
 				sPtrU[col] = 0;
 		}
 
-		int newHue = hPtrU[col] + cvRound(hueVal * 65535.0f / 360.0f);
+		int newHue = hPtrU[col] + qRound(hueVal * 65535.0f / 360.0f);
 		if(newHue >= 65535) newHue -= 65535;
 		else if(newHue < 0) newHue += 65535;
 
@@ -786,7 +787,7 @@ cv::Mat DkImageManipulationWidget::changeGamma(cv::Mat inLUT, float g) {
 
 		for (int col = 0; col < outLUT.cols; col++) {
 
-			ptrU[col] = (unsigned short)cvRound(pow(ptrU[col] / (float)(outLUT.cols - 1), 1.0f/g) * (outLUT.cols - 1));
+			ptrU[col] = (unsigned short)qRound(pow(ptrU[col] / (float)(outLUT.cols - 1), 1.0f/g) * (outLUT.cols - 1));
 		}
 	}
 
@@ -826,7 +827,7 @@ it under the terms of the one of three licenses as you choose:
 
 			ptrU = outLUT.ptr<unsigned short>(i);
 			for (int col = 0; col < outLUT.cols; col++) {
-				ptrU[col] = (unsigned short)cvRound(ptrU[col] * exposure);
+				ptrU[col] = (unsigned short)qRound(ptrU[col] * exposure);
 			}
 		}
 	else {
@@ -853,8 +854,8 @@ it under the terms of the one of three licenses as you choose:
 
 				float X = (float) ptrU[col];
 				float Y = A*powf(X, 1.0f/3.0f) + B*X + CC;
-				if (ptrU[col] < x1) ptrU[col] = (unsigned short)cvRound((float) ptrU[col] * exposure);
-				else ptrU[col] = (Y < 0) ? 0 : ((Y > 65535) ? 65535 : (unsigned short)cvRound(Y));
+				if (ptrU[col] < x1) ptrU[col] = (unsigned short)qRound((float) ptrU[col] * exposure);
+				else ptrU[col] = (Y < 0) ? 0 : ((Y > 65535) ? 65535 : (unsigned short)qRound(Y));
 			}
 		}
 	}

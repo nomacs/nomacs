@@ -51,6 +51,7 @@
 #include <QUrl>
 #include <QStandardPaths>
 #include <QApplication>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -838,7 +839,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	if (numZeros > 0) {
 
 		// if fIdx <= 0, log10 must not be evaluated
-		int cNumZeros = fIdx > 0 ? qRound(numZeros - std::floor(std::log10(fIdx))) : numZeros;
+		int cNumZeros = fIdx > 0 ? numZeros - qFloor(std::log10(fIdx)) : numZeros;
 
 		// zero padding
 		for (int idx = 0; idx < cNumZeros; idx++) {

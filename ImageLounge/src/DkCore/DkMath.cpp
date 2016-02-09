@@ -33,24 +33,6 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 
-#ifndef WITH_OPENCV
-int cvRound(float num) {
-
-	return (int) (num+0.5f);
-}
-
-int cvCeil(float num) {
-
-	return (int) (num+1.0f);
-}
-
-int cvFloor(float num) {
-
-	return (int) num;
-}
-
-#endif
-
 namespace nmc {
 
 // DkRotatingRect --------------------------------------------------------------------

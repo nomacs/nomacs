@@ -835,110 +835,6 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 	return false;
 }
 
-#ifdef WITH_OPENCV
-
-cv::Mat DkBasicLoader::getImageCv() {
-	return cv::Mat();
-}
-
-bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba, QSize s) {
-
-	if (!ba)
-		ba = QSharedPointer<QByteArray>(new QByteArray());
-
-	// load from file?
-	if (ba->isEmpty())
-		ba = loadFileToBuffer(filePath);
-
-	if (ba->isEmpty())
-		return false;
-	
-	// read header & get a pointer to the first image
-	int fileCount, vecSize;
-	const unsigned char* imgPtr = (const unsigned char*)ba->constData();
-	if (!readHeader(&imgPtr, fileCount, vecSize))
-		return false;
-
-	int guessedW = 0;
-	int guessedH = 0;
-
-	getPatchSizeFromFileName(QFileInfo(filePath).fileName(), guessedW, guessedH);
-
-	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
-
-	if(vecSize > 0 && !guessedH && !guessedW) {
-		guessedW = cvFloor(sqrt((float) vecSize));
-		if(guessedW > 0)
-			guessedH = vecSize/guessedW;
-	}
-
-	if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
-		
-		// TODO: ask user
-		qDebug() << "dimensions do not match, patch size: " << guessedW << " x " << guessedH << " vecSize: " << vecSize;
-		return false;
-	}
-	
-	int fSize = ba->size();
-	int numElements = 0;
-
-	// guess size
-	if (s.isEmpty()) {
-		double nEl = (fSize-64)/(vecSize*2);
-		nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
-
-		if (qFloor(nEl) != qCeil(nEl))
-			return false;
-		numElements = qRound(nEl);
-	}
-
-	double nRowsCols = sqrt(numElements);
-	int numCols = qCeil(nRowsCols);
-	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
-
-	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
-
-	for (int idx = 0; idx < numElements; idx++) {
-
-		if (*imgPtr != 0) {
-			qDebug() << "skipping non-empty byte - there is something seriously wrong here!";
-			//return false;	// stop if the byte is non-empty -> otherwise we might read wrong memory
-		}
-
-		imgPtr++;	// there is an empty byte between images
-		cv::Mat cPatch = getPatch(&imgPtr, QSize(guessedW, guessedH));
-		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
-
-		if (!cPatchAll.empty())
-			cPatch.copyTo(cPatchAll);
-	}
-
-	QImage img = DkImage::mat2QImage(allPatches);
-	img = img.convertToFormat(QImage::Format_ARGB32);
-
-	setEditImage(img, tr("Original Image"));
-
-	return true;
-}
-
-void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {
-
-	// parse patch size from file
-	QStringList sections = fileName.split(QRegExp("[-\\.]"));	
-
-	for (int idx = 0; idx < sections.size(); idx++) {
-
-		QString tmpSec = sections[idx];
-		qDebug() << "section: " << tmpSec;
-
-		if (tmpSec.contains("w"))
-			width = tmpSec.remove("w").toInt();
-		else if (tmpSec.contains("h"))
-			height = tmpSec.remove("h").toInt();
-	}
-
-}
-
 void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {
 
 	mFile = file;
@@ -982,106 +878,6 @@ QImage DkBasicLoader::image() const {
 
 	return mImages[mImageIndex].image();
 }
-
-bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {
-
-	const int* pData = (const int*)*dataPtr;
-	fileCount = *pData; pData++;	// read file count
-	vecSize = *pData;				// read vec size
-
-	qDebug() << "vec size: " << vecSize << " fileCount " << fileCount;
-
-	*dataPtr += 12;	// skip the first 12 (header) bytes
-
-	return true;
-}
-
-// the double pointer is here needed to additionally increase the pointer value
-cv::Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
-	
-	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, cv::Scalar(0));
-
-	// ok, take just the second byte
-	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
-
-		unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
-
-		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
-			ptr8U[cIdx] = **dataPtr;
-			*dataPtr += 2;	// it is strange: opencv stores vec files as 16 bit but just use the 2nd byte
-		}
-	}
-
-	return img8U;
-}
-
-int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveFilePath) const {
-
-	int lastVecSize = 0;
-	int totalFileCount = 0;
-	int vecCount = 0;
-	int pWidth = 0, pHeight = 0;
-	QByteArray vecBuffer;
-
-	for (const QString& filePath : vecFilePaths) {
-
-		QFileInfo fInfo(filePath);
-		QSharedPointer<QByteArray> ba = loadFileToBuffer(filePath);
-		if (ba->isEmpty()){
-			qDebug() << "could not load: " << fInfo.fileName();
-			continue;
-		}
-
-		int fileCount, vecSize;
-		const unsigned char* dataPtr = (const unsigned char*)ba->constData();
-		if (!readHeader(&dataPtr, fileCount, vecSize)) {
-			qDebug() << "could not read header, skipping: " << fInfo.fileName();
-			continue;
-		}
-
-		if (lastVecSize && vecSize != lastVecSize) {
-			qDebug() << "wrong vec size, skipping: " << fInfo.fileName();
-			continue;
-		}
-
-		vecBuffer.append((const char*)dataPtr, vecSize*fileCount*2+fileCount);	// +fileCount accounts for the '\0' bytes between the patches
-		
-		getPatchSizeFromFileName(fInfo.fileName(), pWidth, pHeight);
-
-		totalFileCount += fileCount;
-		lastVecSize = vecSize;
-
-		vecCount++;
-	}
-
-	// don't save if we could not merge the files
-	if (!vecCount)
-		return vecCount;
-
-	unsigned int* header = new unsigned int[3];
-	header[0] = totalFileCount;
-	header[1] = lastVecSize;
-	header[2] = 0;
-
-	vecBuffer.prepend((const char*) header, 3*sizeof(int));
-
-	QFileInfo saveFileInfo(saveFilePath);
-
-	// append width, height if we don't know
-	if (pWidth && pHeight) {
-		QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
-		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + whString + "." + saveFileInfo.suffix());
-	}
-
-	QFile file(saveFileInfo.absoluteFilePath());
-	file.open(QIODevice::WriteOnly);
-	file.write(vecBuffer);
-	file.close();
-
-	return vecCount;
-}
-
-#endif
 
 void DkBasicLoader::undo() {
 	
@@ -1263,9 +1059,11 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 
 	TIFFSetWarningHandler(oldWarningHandler);
 	TIFFSetWarningHandler(oldErrorHandler);
-#endif
 
 	setEditImage(img, tr("Original Image"));
+
+#endif
+
 
 	return imgLoaded;
 }
@@ -1737,7 +1535,211 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	return true;
 }
 
-#endif
+#endif // #ifdef WIN32
+
+#ifdef WITH_OPENCV
+
+cv::Mat DkBasicLoader::getImageCv() {
+	return cv::Mat();
+}
+
+bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba, QSize s) {
+
+	if (!ba)
+		ba = QSharedPointer<QByteArray>(new QByteArray());
+
+	// load from file?
+	if (ba->isEmpty())
+		ba = loadFileToBuffer(filePath);
+
+	if (ba->isEmpty())
+		return false;
+
+	// read header & get a pointer to the first image
+	int fileCount, vecSize;
+	const unsigned char* imgPtr = (const unsigned char*)ba->constData();
+	if (!readHeader(&imgPtr, fileCount, vecSize))
+		return false;
+
+	int guessedW = 0;
+	int guessedH = 0;
+
+	getPatchSizeFromFileName(QFileInfo(filePath).fileName(), guessedW, guessedH);
+
+	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
+
+	if(vecSize > 0 && !guessedH && !guessedW) {
+		guessedW = qFloor(sqrt((float) vecSize));
+		if(guessedW > 0)
+			guessedH = vecSize/guessedW;
+	}
+
+	if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
+
+		// TODO: ask user
+		qDebug() << "dimensions do not match, patch size: " << guessedW << " x " << guessedH << " vecSize: " << vecSize;
+		return false;
+	}
+
+	int fSize = ba->size();
+	int numElements = 0;
+
+	// guess size
+	if (s.isEmpty()) {
+		double nEl = (fSize-64)/(vecSize*2);
+		nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
+
+		if (qFloor(nEl) != qCeil(nEl))
+			return false;
+		numElements = qRound(nEl);
+	}
+
+	double nRowsCols = sqrt(numElements);
+	int numCols = qCeil(nRowsCols);
+	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
+
+	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
+
+	for (int idx = 0; idx < numElements; idx++) {
+
+		if (*imgPtr != 0) {
+			qDebug() << "skipping non-empty byte - there is something seriously wrong here!";
+			//return false;	// stop if the byte is non-empty -> otherwise we might read wrong memory
+		}
+
+		imgPtr++;	// there is an empty byte between images
+		cv::Mat cPatch = getPatch(&imgPtr, QSize(guessedW, guessedH));
+		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
+
+		if (!cPatchAll.empty())
+			cPatch.copyTo(cPatchAll);
+	}
+
+	QImage img = DkImage::mat2QImage(allPatches);
+	img = img.convertToFormat(QImage::Format_ARGB32);
+
+	setEditImage(img, tr("Original Image"));
+
+	return true;
+}
+
+void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {
+
+	// parse patch size from file
+	QStringList sections = fileName.split(QRegExp("[-\\.]"));	
+
+	for (int idx = 0; idx < sections.size(); idx++) {
+
+		QString tmpSec = sections[idx];
+		qDebug() << "section: " << tmpSec;
+
+		if (tmpSec.contains("w"))
+			width = tmpSec.remove("w").toInt();
+		else if (tmpSec.contains("h"))
+			height = tmpSec.remove("h").toInt();
+	}
+
+}
+
+bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {
+
+	const int* pData = (const int*)*dataPtr;
+	fileCount = *pData; pData++;	// read file count
+	vecSize = *pData;				// read vec size
+
+	qDebug() << "vec size: " << vecSize << " fileCount " << fileCount;
+
+	*dataPtr += 12;	// skip the first 12 (header) bytes
+
+	return true;
+}
+
+// the double pointer is here needed to additionally increase the pointer value
+cv::Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
+
+	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, cv::Scalar(0));
+
+	// ok, take just the second byte
+	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
+
+		unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
+
+		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
+			ptr8U[cIdx] = **dataPtr;
+			*dataPtr += 2;	// it is strange: opencv stores vec files as 16 bit but just use the 2nd byte
+		}
+	}
+
+	return img8U;
+}
+
+int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveFilePath) const {
+
+	int lastVecSize = 0;
+	int totalFileCount = 0;
+	int vecCount = 0;
+	int pWidth = 0, pHeight = 0;
+	QByteArray vecBuffer;
+
+	for (const QString& filePath : vecFilePaths) {
+
+		QFileInfo fInfo(filePath);
+		QSharedPointer<QByteArray> ba = loadFileToBuffer(filePath);
+		if (ba->isEmpty()){
+			qDebug() << "could not load: " << fInfo.fileName();
+			continue;
+		}
+
+		int fileCount, vecSize;
+		const unsigned char* dataPtr = (const unsigned char*)ba->constData();
+		if (!readHeader(&dataPtr, fileCount, vecSize)) {
+			qDebug() << "could not read header, skipping: " << fInfo.fileName();
+			continue;
+		}
+
+		if (lastVecSize && vecSize != lastVecSize) {
+			qDebug() << "wrong vec size, skipping: " << fInfo.fileName();
+			continue;
+		}
+
+		vecBuffer.append((const char*)dataPtr, vecSize*fileCount*2+fileCount);	// +fileCount accounts for the '\0' bytes between the patches
+
+		getPatchSizeFromFileName(fInfo.fileName(), pWidth, pHeight);
+
+		totalFileCount += fileCount;
+		lastVecSize = vecSize;
+
+		vecCount++;
+	}
+
+	// don't save if we could not merge the files
+	if (!vecCount)
+		return vecCount;
+
+	unsigned int* header = new unsigned int[3];
+	header[0] = totalFileCount;
+	header[1] = lastVecSize;
+	header[2] = 0;
+
+	vecBuffer.prepend((const char*) header, 3*sizeof(int));
+
+	QFileInfo saveFileInfo(saveFilePath);
+
+	// append width, height if we don't know
+	if (pWidth && pHeight) {
+		QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
+		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + whString + "." + saveFileInfo.suffix());
+	}
+
+	QFile file(saveFileInfo.absoluteFilePath());
+	file.open(QIODevice::WriteOnly);
+	file.write(vecBuffer);
+	file.close();
+
+	return vecCount;
+}
+
+#endif // #ifdef WITH_OPENCV
 
 // FileDownloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
