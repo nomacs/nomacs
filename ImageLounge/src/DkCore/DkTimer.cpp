@@ -29,12 +29,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DkUtils.h"
 #include "DkMath.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QString>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
-
-#include "DkTimer.h"
 
 namespace nmc {
 
@@ -74,11 +74,11 @@ QString DkTimer::stringifyTime(double ct) {
 	else if (ct < 60)
 		msg += DkUtils::stringify(ct) + " sec";
 	else if (ct < 3600) {
-		double m = cvFloor((float)(ct / 60.0));
+		double m = qFloor((float)(ct / 60.0));
 		msg += DkUtils::stringify(m) + " min " + DkUtils::stringify(ct - m * 60, 0) + " sec";
 	}
 	else {
-		double h = cvFloor((float)(ct / 3600.0));
+		double h = qFloor((float)(ct / 3600.0));
 		msg += DkUtils::stringify(h) + " hours " + DkUtils::stringify(ct - h*3600.0f, 0) + " min";
 	}
 

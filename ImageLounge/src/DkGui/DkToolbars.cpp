@@ -116,7 +116,7 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 	this->mSliderWidth = sliderWidth;
 	mIsActive = false;
 
-	mSliderHalfWidth = cvCeil((float)sliderWidth / 2);
+	mSliderHalfWidth = std::ceil((float)sliderWidth / 2);
 	//return (qreal)(pos) / (qreal)(width() - sliderWidth);
 	
 	int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));

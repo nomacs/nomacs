@@ -3657,7 +3657,7 @@ int DkMosaicDialog::computeMosaic(const QString& filter, const QString& suffix, 
 	float shR = (mImg.rows-patchResO*numPatches.height())/2.0f;
 	float shC = (mImg.cols-patchResO*numPatches.width())/2.0f;
 
-	mImg = mImg.rowRange(qFloor(shR), mImg.rows-qCeil(shR)).colRange(qFloor(shC), mImg.cols-qCeil(shC));
+	mImg = mImg.rowRange(qFloor(shR), mImg.rows-std::ceil(shR)).colRange(qFloor(shC), mImg.cols-std::ceil(shC));
 	cv::Mat mImgLab;
 	cv::cvtColor(mImg, mImgLab, CV_RGB2Lab);
 	std::vector<cv::Mat> channels;
@@ -3910,11 +3910,11 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 
 		if (cvThumb.rows > cvThumb.cols) {
 			float sh = (cvThumb.rows - cvThumb.cols)/2.0f;
-			cvThumb = cvThumb.rowRange(qFloor(sh), cvThumb.rows-qCeil(sh));
+			cvThumb = cvThumb.rowRange(qFloor(sh), cvThumb.rows-std::ceil(sh));
 		}
 		else {
 			float sh = (cvThumb.cols - cvThumb.rows)/2.0f;
-			cvThumb = cvThumb.colRange(qFloor(sh), cvThumb.cols-qCeil(sh));
+			cvThumb = cvThumb.colRange(qFloor(sh), cvThumb.cols-std::ceil(sh));
 		}
 	}
 

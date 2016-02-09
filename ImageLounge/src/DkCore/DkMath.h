@@ -55,10 +55,6 @@
 //#define int64 long long;
 #define CV_PI 3.141592653589793238462643383279
 
-int cvRound(float num);
-int cvCeil(float num);
-int cvFloor(float num);
-
 #endif
 
 #define DK_DEG2RAD	0.017453292519943

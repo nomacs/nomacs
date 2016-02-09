@@ -943,7 +943,7 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 
 	int cIdx = 0;
 	int rIdx = 0;
-	int nRows = cvCeil((float)(mEntryKeyLabels.size())/numColumns);
+	int nRows = std::ceil((float)(mEntryKeyLabels.size())/numColumns);
 
 	// stretch between labels
 	// we need this for correct context menu handling
