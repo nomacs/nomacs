@@ -96,7 +96,7 @@ target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
 # mac's bundle install
-set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/macosx/Info.plist.in")
+set_target_properties(${BINARY_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/macosx/Info.plist.in")
 set(MACOSX_BUNDLE_ICON_FILE nomacs.icns)
 set(MACOSX_BUNDLE_INFO_STRING "${BINARY_NAME} ${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.nomacs")
@@ -105,12 +105,12 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "${BINARY_NAME}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
-set_source_files_properties(${CMAKE_SOURCE_DIR}/macosx/nomacs.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/macosx/nomacs.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 install(TARGETS ${BINARY_NAME} ${DLL_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # create a "transportable" bundle - all libs into the bundle: "make bundle" after make install
-configure_file(${CMAKE_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
 add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
 
 # generate configuration file
@@ -118,5 +118,5 @@ add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 set(NOMACS_LIBS ${DLL_CORE_NAME})
-set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/DkGui ${CMAKE_SOURCE_DIR}/src/DkCore ${CMAKE_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
+set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
