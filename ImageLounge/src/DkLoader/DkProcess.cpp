@@ -251,7 +251,7 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 
 		if (pluginContainer) {
 			// get plugin
-			QSharedPointer<DkPluginInterface> plugin = pluginContainer->plugin();
+			DkPluginInterface* plugin = pluginContainer->plugin();
 
 			// check if it is ok
 			if (plugin && plugin->interfaceType() == DkPluginInterface::interface_basic) {
