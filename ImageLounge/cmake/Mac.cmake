@@ -135,9 +135,9 @@ endif(ENABLE_QUAZIP)
 
 
 # add libqpsd
-file(GLOB LIBQPSD_SOURCES "3rdparty/libqpsd/*.cpp")
-file(GLOB LIBQPSD_HEADERS "3rdparty/libqpsd/*.h")
-file(GLOB LIBQPSD_MOCS "3rdparty/libqpsd/*.h")
+file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
+file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
+file(GLOB LIBQPSD_MOCS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
 QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 
 # add webp
