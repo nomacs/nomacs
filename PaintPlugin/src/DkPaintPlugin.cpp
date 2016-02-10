@@ -191,12 +191,12 @@ void DkPaintViewPort::init() {
 	
 	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
 
-	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
-	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
-	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
-	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()));
-	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
+	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
 	DkPluginViewPort::init();
 
