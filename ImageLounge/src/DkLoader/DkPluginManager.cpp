@@ -1797,6 +1797,7 @@ void DkPluginManager::loadPlugins() {
 
 	QStringList loadedPluginFileNames = QStringList();
 	QStringList libPaths = QCoreApplication::libraryPaths();
+	libPaths.append(QCoreApplication::applicationDirPath() + QDir::separator() + "plugins");
 
 	for (const QString& cPath : libPaths) {
 
