@@ -127,10 +127,10 @@ if(ENABLE_OPENCV)
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
   
-  # unset include directories since OpenCV sets them global
-  get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
-  list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
-  set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
+	# unset include directories since OpenCV sets them global
+	get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
+	list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
+	set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
   
 endif(ENABLE_OPENCV)
 

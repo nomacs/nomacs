@@ -5,11 +5,11 @@ if(ENABLE_PLUGINS)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-    message(STATUS "A debug build. -DDEBUG is defined")
-    add_definitions(-DDEBUG)
+	message(STATUS "A debug build. -DDEBUG is defined")
+	add_definitions(-DDEBUG)
 else()
-    message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
-    add_definitions(-DQT_NO_DEBUG_OUTPUT)
+	message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
+	add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
 # search for pkgConfig, needed for exvi2, libraw, and older OpenCV versions
@@ -41,30 +41,30 @@ if(ENABLE_OPENCV)
 		pkg_check_modules(OpenCV  opencv>=2.1.0)
 		set(OpenCV_LIBS ${OpenCV_LIBRARIES})
 	endif(PKG_CONFIG_FOUND)
-
+ 
 	if(OpenCV_LIBS STREQUAL "")
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	endif(OpenCV_LIBS STREQUAL "")
-
+ 
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found.") 
 	else()
 		add_definitions(-DWITH_OPENCV)
 	endif()
-
+ 
 	# OpenCV has really draconian dependencies on mac (generating bundle greater tha 105MB)
 	# so I play bad games here - expecting all will work with manually updated library names
 	message(STATUS "")
 	message(STATUS "APPLE: some hacks with OpenCV libraries linking will be performed (only limited set of libs will be used)")
 	message(STATUS "APPLE:    originals: ${OpenCV_LIBS}")
 	set(OpenCV_LIBS "opencv_core;opencv_imgproc")
-		message(STATUS "APPLE:          new: ${OpenCV_LIBS}")
+	message(STATUS "APPLE:          new: ${OpenCV_LIBS}")
 	message(STATUS "")
-
+ 
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
-	
+ 
 endif(ENABLE_OPENCV)
 
 
@@ -73,7 +73,7 @@ if(ENABLE_RAW)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling RAW. You have to enable ENABLE_OPENCV")
 	endif()
-
+ 
 	pkg_check_modules(LIBRAW  libraw>=0.12.0)
 	if(NOT LIBRAW_FOUND)
 		message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
@@ -85,15 +85,15 @@ endif(ENABLE_RAW)
 #search for multi-layer tiff
 if(ENABLE_TIFF)
 	if(NOT OpenCV_FOUND)
-		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
-	endif()
-	find_package(TIFF)
-	if(TIFF_FOUND)
-		SET(TIFF_CONFIG_DIR "")
-		add_definitions(-DWITH_LIBTIFF)
-	else()
-		message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
-	endif()
+	 message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
+ endif()
+ find_package(TIFF)
+ if(TIFF_FOUND)
+	 SET(TIFF_CONFIG_DIR "")
+	 add_definitions(-DWITH_LIBTIFF)
+ else()
+	 message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
+ endif()
 endif(ENABLE_TIFF)
 
 #search for quazip
@@ -111,26 +111,26 @@ unset(QUAZIP_MOCS CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
-  if(USE_SYSTEM_QUAZIP)
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-    
-    find_package(QuaZIP REQUIRED)
-    if(NOT QUAZIP_FOUND)
-	    message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
-    else()
-	    add_definitions(-DWITH_QUAZIP)
-    endif()
-  else()
-    find_package(ZLIB REQUIRED)
-    set(QUAZIP_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/quazip ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/)
-    
-    file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c" "3rdparty/quazip-0.7/quazip/*.cpp")
-    file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
-    file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
-    
-    QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
-    add_definitions(-DWITH_QUAZIP)
-  endif(USE_SYSTEM_QUAZIP)
+	if(USE_SYSTEM_QUAZIP)
+		SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+		
+		find_package(QuaZIP REQUIRED)
+		if(NOT QUAZIP_FOUND)
+		message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
+	else()
+		add_definitions(-DWITH_QUAZIP)
+	endif()
+ else()
+		find_package(ZLIB REQUIRED)
+		set(QUAZIP_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/quazip ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7/)
+	 
+		file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c" "3rdparty/quazip-0.7/quazip/*.cpp")
+		file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
+		file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
+	 
+		QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+		add_definitions(-DWITH_QUAZIP)
+	endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
 
 
@@ -145,35 +145,35 @@ SET(WEBP_INCLUDEDIR "")
 SET(WEBP_SOURCE "")
 if(ENABLE_WEBP)
 	add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
-
+	
 	file(GLOB WEBP_DEC_SRCS
 		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dec/*c
 	)
-	
+
 	file(GLOB WEBP_DEMUX_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/demux/*c
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/demux/*c
 	)
 
 	file(GLOB WEBP_DSP_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dsp/*c
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dsp/*c
 	)
 
 	file(GLOB WEBP_ENC_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/enc/*c
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/enc/*c
 	)
 
 	file(GLOB WEBP_UTILS_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/utils/*c
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/utils/*c
 	)
 
 	file(GLOB WEBP_MUX_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
 	)
 	set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
 	set(WEBP_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)

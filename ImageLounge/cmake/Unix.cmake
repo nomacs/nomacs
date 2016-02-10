@@ -6,11 +6,11 @@
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-    message(STATUS "A debug build. -DDEBUG is defined")
-    add_definitions(-DDEBUG)
+	message(STATUS "A debug build. -DDEBUG is defined")
+	add_definitions(-DDEBUG)
 else()
-    message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
-    add_definitions(-DQT_NO_DEBUG_OUTPUT)
+	message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
+	add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
 # try to use system libraries or not
@@ -130,15 +130,15 @@ endif(ENABLE_QUAZIP)
 
 # add libqpsd
 IF(USE_SYSTEM_LIBQPSD)
-    find_package(qpsd REQUIRED)
-    if(NOT QPSD_FOUND)
-	    message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
-    endif()
+	find_package(qpsd REQUIRED)
+	if(NOT QPSD_FOUND)
+		message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
+	endif()
 ELSE()
-  file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
-  file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
-  file(GLOB LIBQPSD_MOCS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
-  QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+	file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
+	file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
+	file(GLOB LIBQPSD_MOCS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
+	QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 ENDIF(USE_SYSTEM_LIBQPSD)
 
 # add webp
@@ -146,47 +146,47 @@ SET(WEBP_INCLUDEDIR "")
 SET(WEBP_SOURCE "")
 SET(WEBP_LIBRARIES "")
 if(ENABLE_WEBP)
-  if(USE_SYSTEM_WEBP)
-    pkg_check_modules(WEBP  libwebp>=0.3.1)
-    if(NOT WEBP_FOUND)
-	    message(FATAL_ERROR "libwebp not found. It's mandatory when used with ENABLE_WEBP enabled, you can also disable USE_SYSTEM_WEBP") 
-    else()
-	    add_definitions(-DWITH_WEBP)
-    endif()
-  else()
-	add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
+	if(USE_SYSTEM_WEBP)
+		pkg_check_modules(WEBP  libwebp>=0.3.1)
+		if(NOT WEBP_FOUND)
+			message(FATAL_ERROR "libwebp not found. It's mandatory when used with ENABLE_WEBP enabled, you can also disable USE_SYSTEM_WEBP") 
+		else()
+			add_definitions(-DWITH_WEBP)
+		endif()
+	else()
+		add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
+	 
+		file(GLOB WEBP_DEC_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dec/*c
+		)
+ 
+		file(GLOB WEBP_DEMUX_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/demux/*c
+		)
 
-	file(GLOB WEBP_DEC_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dec/*c
-	)
-	
-	file(GLOB WEBP_DEMUX_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/demux/*c
-	)
+		file(GLOB WEBP_DSP_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dsp/*c
+		)
 
-	file(GLOB WEBP_DSP_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dsp/*c
-	)
+		file(GLOB WEBP_ENC_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/enc/*c
+		)
 
-	file(GLOB WEBP_ENC_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/enc/*c
-	)
+		file(GLOB WEBP_UTILS_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/utils/*c
+		)
 
-	file(GLOB WEBP_UTILS_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/utils/*c
-	)
-
-	file(GLOB WEBP_MUX_SRCS
-		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
-	)
-	set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
-	set(WEBP_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)
-	add_definitions(-DWITH_WEBP)
-  endif(USE_SYSTEM_WEBP)
+		file(GLOB WEBP_MUX_SRCS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
+		)
+		set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
+		set(WEBP_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)
+		add_definitions(-DWITH_WEBP)
+	endif(USE_SYSTEM_WEBP)
 endif(ENABLE_WEBP)
