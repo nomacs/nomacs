@@ -189,7 +189,7 @@ void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 		//widget->deleteLater();
 	}
 	
-	//mController->raise();
+	mController->raise();
 	
 }
 

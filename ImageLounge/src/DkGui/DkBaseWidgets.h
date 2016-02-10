@@ -241,7 +241,7 @@ protected:
 
 };
 
-class DkResizableScrollArea : public QScrollArea {
+class DllGuiExport DkResizableScrollArea : public QScrollArea {
 	Q_OBJECT
 
 public:
