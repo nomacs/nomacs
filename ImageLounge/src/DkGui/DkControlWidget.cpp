@@ -869,7 +869,6 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 		mFilePreview->setCurrentDx(dx);	// update dx
 	}
 
-	qDebug() << "controller has event..." << event->pos();
 	if (mPluginViewport)
 		QCoreApplication::sendEvent(mPluginViewport, event);
 	else
