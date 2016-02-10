@@ -27,13 +27,15 @@
 
 
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	#include "shlwapi.h"
 	#pragma comment (lib, "shlwapi.lib")
 #endif
 
 #if defined(_MSC_BUILD) && !defined(QT_NO_DEBUG_OUTPUT) // fixes cmake bug - really release uses subsystem windows, debug and release subsystem console
 	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
+#else
+	#pragma comment (linker, "/SUBSYSTEM:WINDOWS")
 #endif
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -61,16 +63,16 @@
 #include "DkPong.h"
 #include "DkUtils.h"
 
-#include <iostream>
+//#include <iostream>
 #include <cassert>
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <shlobj.h>
 #endif
 
 void createPluginsPath();
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
 int main(int argc, char *argv[]) {
@@ -252,7 +254,7 @@ void createPluginsPath() {
 
 #ifdef WITH_PLUGINS
 	// initialize plugin paths -----------------------------------------
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	QDir pluginsDir;
 	if (!nmc::Settings::param().isPortable())
 		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
@@ -260,7 +262,7 @@ void createPluginsPath() {
 		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
 #else
 	QDir pluginsDir = QDir("/usr/lib/nomacs-plugins/");
-#endif // WIN32
+#endif // Q_OS_WIN
 
 
 	if (!pluginsDir.exists())

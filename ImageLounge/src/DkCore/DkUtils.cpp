@@ -54,11 +54,11 @@
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
-#if defined(WIN32) && !defined(SOCK_STREAM)
+#if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include "shlwapi.h"
 #pragma comment (lib, "shlwapi.lib")
 #endif
@@ -70,7 +70,7 @@ double DkMemory::getTotalMemory() {
 
 	double mem = -1;
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	MEMORYSTATUSEX MemoryStatus;
 	ZeroMemory(&MemoryStatus, sizeof(MEMORYSTATUSEX));
@@ -104,7 +104,7 @@ double DkMemory::getFreeMemory() {
 	double mem = -1;
 	
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	MEMORYSTATUSEX MemoryStatus;
 
@@ -136,7 +136,7 @@ double DkMemory::getFreeMemory() {
 }
 
 // DkUtils --------------------------------------------------------------------
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
@@ -151,14 +151,14 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 }
 
-#else // !WIN32
+#else // !Q_OS_WIN
 
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 	
 	return naturalCompare(lhs, rhs, Qt::CaseInsensitive);
 }
 
-#endif //!WIN32
+#endif //!Q_OS_WIN
 
 bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensitivity cs) {
 
@@ -302,7 +302,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 
 void DkUtils::registerFileVersion() {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	// this function is based on code from:
 	// http://stackoverflow.com/questions/316626/how-do-i-read-from-a-version-resource-in-visual-c
 
@@ -601,7 +601,7 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	}
 
 // code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	
 	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
 	winPath.append(1, L'\0');	// path string must be double nul-terminated

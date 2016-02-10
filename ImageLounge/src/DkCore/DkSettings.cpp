@@ -42,7 +42,7 @@
 #include <QDir>
 #include <QApplication>
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include "Shobjidl.h"
 #endif
 #pragma warning(pop)		// no warnings from includes - end
@@ -232,7 +232,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 QStringList DkSettings::getTranslationDirs() {
 	QStringList translationDirs;
 	
-  #ifdef  WIN32
+  #ifdef  Q_OS_WIN
 	if (!isPortable())
 		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
   #endif	
@@ -881,7 +881,7 @@ DkSettings& Settings::settings() {
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	
 	// do not register if nomacs is portable
 	if (Settings::param().isPortable() && !showDefaultApps)
@@ -932,7 +932,7 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 
 void DkFileFilterHandling::showDefaultSoftware() const {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	IApplicationActivationManager* manager = 0;
 	CoCreateInstance(CLSID_ApplicationActivationManager,
 		0,
@@ -953,7 +953,7 @@ void DkFileFilterHandling::showDefaultSoftware() const {
 
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	QString nomacsPath = "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\";
 	QString nomacsKey = "nomacs" + ext + ".3";
@@ -1015,7 +1015,7 @@ QString DkFileFilterHandling::getIconID(const QString& ext) const {
 
 void DkFileFilterHandling::registerExtension(const QString& ext, const QString& progKey, bool add) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
 	settings2.beginGroup(ext);
@@ -1033,7 +1033,7 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 
 void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	if (Settings::param().app().privateMode)
 		return;
@@ -1090,7 +1090,7 @@ QStringList DkFileFilterHandling::getExtensions(const QString& filter, QString& 
 
 void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString&, bool add) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	QSettings settings("HKEY_CURRENT_USER\\Software\\Classes\\Applications\\nomacs.exe", QSettings::NativeFormat);
 	
@@ -1107,7 +1107,7 @@ void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString&
 
 void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	
 	QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts", QSettings::NativeFormat);
 	settings.beginGroup(ext);

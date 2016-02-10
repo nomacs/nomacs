@@ -37,7 +37,7 @@
 
 #include "DkImageContainer.h"
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	#pragma warning(disable: 4996)
 	#pragma warning(disable: 4251)	// TODO: remove
 #endif

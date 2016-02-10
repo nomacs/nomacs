@@ -91,7 +91,7 @@
 #include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
-#if defined(WIN32) && !defined(SOCK_STREAM)
+#if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
@@ -222,7 +222,7 @@ void DkNoMacs::init() {
 	enableMovieActions(false);
 
 // clean up nomacs
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	if (!nmc::Settings::param().global().setupPath.isEmpty() && QApplication::applicationVersion() == nmc::Settings::param().global().setupVersion) {
 
 		// ask for exists - otherwise we always try to delete it if the user deleted it
@@ -1176,7 +1176,7 @@ void DkNoMacs::animateChangeOpacity() {
 void DkNoMacs::lockWindow(bool lock) {
 
 	
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	
 	qDebug() << "locking: " << lock;
 
@@ -1234,7 +1234,7 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 	}
 	else {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 		showMinimized();
 		setWindowState(Qt::WindowActive);
 #else
@@ -1752,7 +1752,7 @@ void DkNoMacs::deleteFile() {
 
 	QString question;
 
-#if defined(WIN32) || defined(W_OS_LINUX)
+#if defined(Q_OS_WIN) || defined(W_OS_LINUX)
 	question = tr("Shall I move %1 to trash?").arg(fileInfo.fileName());
 #else
 	question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());
@@ -1854,7 +1854,7 @@ void DkNoMacs::setWallpaper() {
 		return;
 	}
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	//Read current windows background image path
 	QSettings appSettings( "HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);
@@ -1928,11 +1928,11 @@ void DkNoMacs::bugReport() {
 		% QApplication::applicationVersion();
 
 	url += "&issue[custom_field_values][4]=";
-#if defined WIN32 &&	_MSC_VER == 1600
+#if defined Q_OS_WIN &&	_MSC_VER == 1600
 	url += "Windows XP";
-#elif defined WIN32 && _WIN64
+#elif defined Q_OS_WIN && _WIN64
 	url += "Windows Vista/7/8 64bit";
-#elif defined WIN32 && _WIN32
+#elif defined Q_OS_WIN && _WIN32
 	url += "Windows Vista/7/8 32bit";
 #elif defined Q_OS_LINUX && __x86_64__
 	url += "Linux 64bit";
@@ -1955,11 +1955,11 @@ void DkNoMacs::featureRequest() {
 		% QApplication::applicationVersion();
 
 	url += "&issue[custom_field_values][4]=";
-#if defined WIN32 && _MSC_VER == 1600
+#if defined Q_OS_WIN && _MSC_VER == 1600
 	url += "Windows Vista/XP";
-#elif defined WIN32 && _WIN64
+#elif defined Q_OS_WIN && _WIN64
 	url += "Windows 7/8/10 64bit";
-#elif defined WIN32 && _WIN32
+#elif defined Q_OS_WIN && _WIN32
 	url += "Windows 7/8/10 32bit";
 #elif defined Q_OS_LINUX && __x86_64__
 	url += "Linux 64bit";

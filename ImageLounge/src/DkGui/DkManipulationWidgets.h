@@ -34,16 +34,12 @@
 
 #ifdef WITH_OPENCV
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-#include "opencv/cv.h"
-#else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#endif
 #endif
 
 // Qt defines

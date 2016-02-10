@@ -77,11 +77,11 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	f.close();
 	QString fileText(fileData);
 	fileText.replace("insert-new-uuid-here", uuidString);
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	fileText.replace("nomacs-service.xml", QDir::temp().dirName()+"/nomacs-service.xml");
 #else
 	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
-#endif // WIN32
+#endif // Q_OS_WIN
 	
 	QFile newDescriptorFile(newXMLpath);
 	newDescriptorFile.open(QIODevice::WriteOnly);
@@ -455,7 +455,7 @@ bool DkUpnpRendererDeviceHost::startDevicehost(QString pathToConfig) {
 	fileData = f.readAll();
 	QString fileText(fileData);
 	fileText.replace("insert-new-uuid-here", uuidString);
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	fileText.replace("nomacs_avtransport_scpd.xml", QDir::temp().dirName()+"/nomacs_avtransport_scpd.xml");
 	fileText.replace("nomacs_connectionmanager_sink_scpd.xml", QDir::temp().dirName()+"/nomacs_connectionmanager_sink_scpd.xml");
 	fileText.replace("nomacs_renderingcontrol_scpd.xml", QDir::temp().dirName()+"/nomacs_renderingcontrol_scpd.xml");
@@ -463,7 +463,7 @@ bool DkUpnpRendererDeviceHost::startDevicehost(QString pathToConfig) {
 	fileText.replace("nomacs_avtransport_scpd.xml", QDir::temp().dirName()+"/nomacs_avtransport_scpd.xml");
 	fileText.replace("nomacs_connectionmanager_sink_scpd.xml", QDir::temp().dirName()+"/nomacs_connectionmanager_sink_scpd.xml");
 	fileText.replace("nomacs_renderingcontrol_scpd.xml", QDir::temp().dirName()+"/nomacs_renderingcontrol_scpd.xml");
-#endif // WIN32
+#endif // Q_OS_WIN
 
 	f.seek(0);
 	QFile newXMLfile(newXMLpath);

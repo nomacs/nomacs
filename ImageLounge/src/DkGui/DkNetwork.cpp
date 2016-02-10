@@ -67,7 +67,7 @@
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
 #endif
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
@@ -1560,7 +1560,7 @@ bool DkInstallUpdater::updateNomacs() const {
 		return false;
 	}
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	// diem: 14.12.2015 - NOTE we need this win API command only to fix a qt installer bug: https://bugreports.qt.io/browse/QTIFW-746
 	// hence after updating the installer (> 2.0.1) we can safely fall back to the Qt cmd....
@@ -1600,7 +1600,7 @@ void DkUpdater::checkForUpdates() {
 	Settings::param().sync().lastUpdateCheck = QDate::currentDate();
 	Settings::param().save();
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	QUrl url ("http://www.nomacs.org/version_win_stable");
 #elif defined Q_OS_LINUX
 	QUrl url ("http://www.nomacs.org/version_linux");
@@ -1850,7 +1850,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN
 	QDir storageLocation;
 	if (Settings::param().isPortable()) {
 		storageLocation = QDir(QCoreApplication::applicationDirPath());
@@ -1865,7 +1865,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
 #endif
 
-#endif //  WIN32
+#endif //  Q_OS_WIN
 
 	QString translationName = qtTranslation ? "qt_"+ Settings::param().global().language + ".qm" : "nomacs_"+ Settings::param().global().language + ".qm";
 
@@ -1959,7 +1959,7 @@ bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const
 	if (!lastModifiedRemote.isValid())
 		return false;
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN
 	QDir storageLocation;
 	if (Settings::param().isPortable()) {
 		storageLocation = QDir(QCoreApplication::applicationDirPath());
@@ -1974,7 +1974,7 @@ bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const
 	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
 #endif
 
-#endif //  WIN32
+#endif //  Q_OS_WIN
 	QFile userTranslation(storageLocation.absoluteFilePath(localTranslationName));
 	//qDebug() << "local: " << QFileInfo(userTranslation).lastModified()  << "  remote: " << lastModifiedRemote << " bool: " << (QFileInfo(userTranslation).lastModified() < lastModifiedRemote);
 	//qDebug() << "userTranslation exists:" << userTranslation.exists();

@@ -13,7 +13,6 @@ endif()
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/ReallyRelease)
 
 if (MSVC11)
 	# use precompiled code if msvc 11 is found
@@ -64,17 +63,17 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
 			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll )
 	
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs)
 			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs)
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 			
 			set(EXIV2_LIBRARIES optimized libexiv2.lib debug libexiv2.lib)
@@ -105,17 +104,6 @@ unset(OpenCV_DIR)
 if(ENABLE_OPENCV)
 	find_package(OpenCV REQUIRED core imgproc)
 	
-	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
-		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
-		set(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
-	endif()
-	if(OpenCV_VERSION VERSION_GREATER 2.4.7 AND OpenCV_FOUND) # OpenCV cmake does not define optimized and debug libs any longer (reallyrelease not working), thus define them ourselves
-		unset(OpenCV_LIBS)
-		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
-		foreach(lib ${OpenCV_FIND_COMPONENTS_})
-			set(OpenCV_LIBS "${OpenCV_LIBS}debug;${lib}${OpenCV_SHORT_VERSION}d.lib;optimized;${lib}${OpenCV_SHORT_VERSION}.lib;" )
-		endforeach()
-	endif()
 	SET(OpenCV_LIBRARY_DIRS ${OpenCV_LIBRARY_DIRS} ${OpenCV_LIB_DIR_DBG} ${OpenCV_LIB_DIR_OPT} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_DBG} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_OPT})
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found.") 
@@ -165,7 +153,7 @@ if(ENABLE_RAW)
 		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
 
 			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs)
 			file(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 			file(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs)
@@ -231,11 +219,11 @@ if(ENABLE_UPNP)
 	find_package(HUpnp)
 	if(HUpnp_FOUND)
 		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)			
+		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)			
 		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/ReallyRelease)
+		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 
 		file(COPY ${HUPNP_LIB_DIR}/Debug/HUpnpd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 		file(COPY ${HUPNP_LIB_DIR}/Debug/HUpnpAVd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
@@ -248,9 +236,6 @@ endif(ENABLE_UPNP)
 
 
 # these variables need to be set before adding subdirectory with projects
-SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
-set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
-set(CMAKE_C_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
 #search for quazip
@@ -269,7 +254,7 @@ if(ENABLE_QUAZIP)
   
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
-	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_BINARY_DIR}/libs)
+	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/libs)
 
 	find_package(QuaZip)
 	if(QUAZIP_FOUND)		

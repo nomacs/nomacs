@@ -49,7 +49,7 @@
 
 // OpenCV
 #ifdef WITH_OPENCV
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 #endif

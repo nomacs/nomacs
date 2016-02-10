@@ -912,7 +912,7 @@ void DkFileAssociationsPreference::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(filterTableView);
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	layout->addWidget(openDefault);
 #else
 	openDefault->hide();
@@ -962,7 +962,7 @@ QList<QStandardItem*> DkFileAssociationsPreference::getItems(const QString& filt
 	//item->setFlags(Qt::Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
 	item->setCheckable(true);
 	item->setCheckState(reg ? Qt::Checked : Qt::Unchecked);
-#ifndef WIN32	// registering is windows only
+#ifndef Q_OS_WIN	// registering is windows only
 	item->setEnabled(false);
 #endif
 	items.append(item);

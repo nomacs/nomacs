@@ -1797,7 +1797,9 @@ void DkPluginManager::loadPlugins() {
 
 	QStringList loadedPluginFileNames = QStringList();
 	QStringList libPaths = QCoreApplication::libraryPaths();
-	libPaths.append(QCoreApplication::applicationDirPath() + QDir::separator() + "plugins");
+	libPaths.append(QCoreApplication::applicationDirPath() + "/plugins");
+
+	qDebug() << "lib paths" << libPaths;
 
 	for (const QString& cPath : libPaths) {
 
@@ -1815,6 +1817,8 @@ void DkPluginManager::loadPlugins() {
 				if (singlePluginLoad(pluginsDir.absoluteFilePath(fileName)))
 					loadedPluginFileNames.append(shortFileName);
 			}
+			else
+				qDebug() << "rejected since it is twice: " << shortFileName;
 		}
 	}
 

@@ -39,13 +39,13 @@
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
-#if defined(WIN32) && !defined(SOCK_STREAM)
+#if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 namespace nmc {
 
 // DkImage --------------------------------------------------------------------
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 // this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
 // the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
@@ -342,11 +342,7 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float facto
 	case ipl_area:		ipl = CV_INTER_AREA; break;
 	case ipl_linear:	ipl = CV_INTER_LINEAR; break;
 	case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
-#ifdef DISABLE_LANCZOS
-	case ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
-#else
 	case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
-#endif
 	}
 
 

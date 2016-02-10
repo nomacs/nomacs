@@ -291,7 +291,7 @@ void DkImageContainer::setFilePath(const QString& filePath) {
 	mFilePath = filePath;
 	mFileInfo = filePath;
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #if QT_VERSION < 0x050000
 	mFileNameStr = fileName().toStdWString();
 #else
@@ -429,7 +429,7 @@ QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 	return mZipData;
 }
 #endif
-#ifdef WIN32
+#ifdef Q_OS_WIN
 std::wstring DkImageContainer::getFileNameWStr() const {
 	
 	return mFileNameStr;
@@ -449,7 +449,7 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 	switch(Settings::param().global().sortMode) {
 
 	case DkSettings::sort_filename:
-#ifdef WIN32
+#ifdef Q_OS_WIN
 		// not beautiful if you take a look at the code, but:
 		// time on Win8 with compFilename:
 		//		WinAPI, indexed ( 73872 ) files in:  " 92 ms"

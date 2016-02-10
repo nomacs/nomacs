@@ -37,14 +37,14 @@
 #pragma warning(disable: 4251)	// TODO: remove
 //#include "DkImageStorage.h"
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 #include "qpsdhandler.h"
 #endif
 
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 
@@ -276,7 +276,7 @@ public:
 	bool saveWebPFile(const QImage&, QSharedPointer<QByteArray>&, int, int = 4) { return false; };
 #endif
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;
 	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const;
 #else

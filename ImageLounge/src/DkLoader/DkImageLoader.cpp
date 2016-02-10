@@ -82,14 +82,14 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 #endif 
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
-#elif defined(WIN32) && !defined(SOCK_STREAM)
+#elif defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
@@ -975,7 +975,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 	}
 	else if ((!Settings::param().global().useTmpPath || !tmpPath.exists())) {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 		
 		// TODO: this path seems to be perfectly ok (you can copy it to windows explorer) - however Qt thinks it does not exist??
 		QString defaultPath = getenv("HOMEPATH");
@@ -1761,7 +1761,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 
 	DkTimer dt;
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	QString winPath = QDir::toNativeSeparators(dirPath) + "\\*.*";
 

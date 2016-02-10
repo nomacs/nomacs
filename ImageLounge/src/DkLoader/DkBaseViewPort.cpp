@@ -426,7 +426,7 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 
 #if QT_VERSION < 0x050000
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	float cZoom = (float)event->argument;
 #else
 	float cZoom = 0;	// ignore on other os

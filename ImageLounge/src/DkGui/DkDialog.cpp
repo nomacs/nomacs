@@ -38,7 +38,7 @@
 #include "DkActionManager.h"
 #include "DkPluginManager.h"
 
-#if defined(WIN32) && !defined(SOCK_STREAM)
+#if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
@@ -498,7 +498,7 @@ void DkAppManagerDialog::on_addButton_clicked() {
 	// load system default open dialog
 	QString appFilter;
 	QString defaultPath;
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	appFilter += tr("Executable Files (*.exe);;");
 	defaultPath = getenv("PROGRAMFILES");
 #elif QT_VERSION < 0x050000
@@ -2131,7 +2131,7 @@ void DkPrintPreviewDialog::scaleImage() {
 void DkPrintPreviewDialog::init() {
 	
 	if (!mPrinter) {
-#ifdef WIN32
+#ifdef Q_OS_WIN
 		mPrinter = new QPrinter(QPrinter::HighResolution);
 #else
 		mPrinter = new QPrinter;
@@ -4224,7 +4224,7 @@ void DkWelcomeDialog::createLayout() {
 	layout->addItem(new QSpacerItem(10, 10), 2, 0, -1, -1);
 	layout->addWidget(mLanguageCombo, 3, 1);
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	layout->addWidget(mRegisterFilesCheckBox, 4, 1);
 	layout->addWidget(mSetAsDefaultCheckBox, 5, 1);
 #else

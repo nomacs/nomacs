@@ -45,7 +45,7 @@
 #endif
 
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4251)	// TODO: remove
 #endif
 

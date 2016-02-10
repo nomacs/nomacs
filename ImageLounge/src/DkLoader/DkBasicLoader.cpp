@@ -62,23 +62,19 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-#include "opencv/cv.h"
-#else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#endif
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
 #endif
 
 #ifdef WITH_LIBTIFF
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include "tif_config.h"	
 #endif
 
@@ -98,7 +94,7 @@
 #endif
 
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
 #endif
@@ -790,7 +786,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 	return imgLoaded;
 }
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 bool DkBasicLoader::loadPSDFile(const QString&, QSharedPointer<QByteArray>) {
 #else
 bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
@@ -831,7 +827,7 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 		}
 	}
 
-#endif // !WIN32
+#endif // !Q_OS_WIN
 	return false;
 }
 
@@ -1404,7 +1400,7 @@ bool DkBasicLoader::saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& 
 }
 #endif
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 bool DkBasicLoader::saveWindowsIcon(const QString& filePath, const QImage& img) const {
 
 	QSharedPointer<QByteArray> ba;
@@ -1535,7 +1531,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	return true;
 }
 
-#endif // #ifdef WIN32
+#endif // #ifdef Q_OS_WIN
 
 #ifdef WITH_OPENCV
 

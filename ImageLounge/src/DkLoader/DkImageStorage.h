@@ -35,17 +35,13 @@
 
 // opencv
 #ifdef WITH_OPENCV
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-#include "opencv/cv.h"
-#else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgproc/imgproc_c.h"
 #endif
-#endif
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4251)	// TODO: remove
 #endif
 
@@ -78,7 +74,7 @@ public:
 	/**< interpolation mapping OpenCV -> Qt */
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	static QImage fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h);
 	static QPixmap fromWinHICON(HICON icon);
 

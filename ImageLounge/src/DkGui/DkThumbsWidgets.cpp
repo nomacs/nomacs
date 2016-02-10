@@ -1447,7 +1447,7 @@ void DkThumbScene::deleteSelected() const {
 
 	QString question;
 
-#if defined(WIN32) || defined(W_OS_LINUX)
+#if defined(Q_OS_WIN) || defined(W_OS_LINUX)
 	question = tr("Shall I move %1 file(s) to trash?").arg(fileList.size());
 #else
 	question = tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size());

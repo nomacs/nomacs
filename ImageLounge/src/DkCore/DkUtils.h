@@ -48,11 +48,7 @@
 #pragma warning(disable: 4996)
 #endif
 
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-	#include "opencv/cv.h"
-#else
-	#include "opencv2/core/core.hpp"
-#endif
+#include "opencv2/core/core.hpp"
 #else
 
 //#define int64 long long;
@@ -70,7 +66,7 @@
 #endif
 #endif
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy
 #define dk_degree_str QString::fromLatin1("°")
 #else
@@ -96,7 +92,7 @@ private:
 
 public:
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	
 	/**
 	 * Logical string compare function.

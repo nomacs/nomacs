@@ -96,7 +96,7 @@ public:
 #ifdef WITH_QUAZIP
 	QSharedPointer<DkZipContainer> getZipData();
 #endif
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	std::wstring getFileNameWStr() const;
 #endif
 
@@ -135,7 +135,7 @@ protected:
 #ifdef WITH_QUAZIP	
 	QSharedPointer<DkZipContainer> mZipData;
 #endif
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	std::wstring mFileNameStr;	// speeds up sorting of filenames on windows
 #endif
 

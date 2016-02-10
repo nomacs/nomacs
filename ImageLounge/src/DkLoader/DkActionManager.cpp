@@ -37,7 +37,7 @@
 #include "DkPluginManager.h"
 #endif
 
-#if defined(WIN32) && !defined(SOCK_STREAM)
+#if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
@@ -228,7 +228,7 @@ bool DkAppManager::containsApp(QVector<QAction* > apps, const QString& appName) 
 
 void DkAppManager::assignIcon(QAction* app) const {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
 	//#include <windows.h>
 
@@ -456,7 +456,7 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 	mViewMenu->addAction(mViewActions[menu_view_opacity_up]);
 	mViewMenu->addAction(mViewActions[menu_view_opacity_down]);
 	mViewMenu->addAction(mViewActions[menu_view_opacity_an]);
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	mViewMenu->addAction(mViewActions[menu_view_lock_window]);
 #endif
 	mViewMenu->addSeparator();
@@ -502,7 +502,7 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_tiny_planet]);
 #endif
 	mEditMenu->addSeparator();
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	mEditMenu->addAction(mEditActions[menu_edit_wallpaper]);
 	mEditMenu->addSeparator();
 #endif
@@ -958,7 +958,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
 	mFileActions[menu_file_quick_launch]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 #else
 	mFileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
