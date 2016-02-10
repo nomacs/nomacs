@@ -87,15 +87,6 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setApplicationName("Image Lounge");
 	nmc::DkUtils::registerFileVersion();
 
-	// NOTE: raster option destroys the frameless view on mac
-	// but raster is so much faster when zooming
-#if !defined(Q_WS_MAC) && !defined(QT5)
-	QApplication::setGraphicsSystem("raster");
-//#elif !defined(QT5)
-//	if (mode != nmc::Settings::param().mode_frameless)
-//		QApplication::setGraphicsSystem("raster");
-#endif
-	
 	QApplication a(argc, (char**)argv);
 	qDebug() << "argument count: " << argc;
 

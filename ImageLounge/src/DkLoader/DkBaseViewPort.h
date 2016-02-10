@@ -209,16 +209,16 @@ protected:
 
 	QPointF mPanControl;	// controls how far we can pan outside an image
 	QPointF mPosGrab;
-	float mMinZoom;
-	float mMaxZoom;
+	float mMinZoom = 0.01f;
+	float mMaxZoom = 50;
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;
 	float mStartZoom;
 	int mSwipeGesture;
 
-	bool mForceFastRendering;
-	bool mBlockZooming;
+	bool mForceFastRendering = false;
+	bool mBlockZooming = false;
 	QTimer* mZoomTimer;
 
 	// functions

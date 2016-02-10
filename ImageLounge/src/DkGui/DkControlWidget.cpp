@@ -834,7 +834,11 @@ void DkControlWidget::mousePressEvent(QMouseEvent *event) {
 		mWheelButton->show();
 	}
 
-	QWidget::mousePressEvent(event);
+	if (mPluginViewport)
+		QCoreApplication::sendEvent(mPluginViewport, event);
+	else
+		QWidget::mousePressEvent(event);
+
 }
 
 void DkControlWidget::mouseReleaseEvent(QMouseEvent *event) {
@@ -846,7 +850,10 @@ void DkControlWidget::mouseReleaseEvent(QMouseEvent *event) {
 		mWheelButton->hide();
 	}
 
-	QWidget::mouseReleaseEvent(event);
+	if (mPluginViewport)
+		QCoreApplication::sendEvent(mPluginViewport, event);
+	else
+		QWidget::mouseReleaseEvent(event);
 }
 
 void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -862,7 +869,11 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 		mFilePreview->setCurrentDx(dx);	// update dx
 	}
 
-	QWidget::mouseMoveEvent(event);
+	qDebug() << "controller has event..." << event->pos();
+	if (mPluginViewport)
+		QCoreApplication::sendEvent(mPluginViewport, event);
+	else
+		QWidget::mouseMoveEvent(event);
 }
 
 

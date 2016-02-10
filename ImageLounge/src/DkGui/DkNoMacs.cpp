@@ -1934,7 +1934,7 @@ void DkNoMacs::bugReport() {
 	url += "Windows Vista/7/8 64bit";
 #elif defined WIN32 && _WIN32
 	url += "Windows Vista/7/8 32bit";
-#elif defined Q_OS_LINUX && __x86_64__	// >DIR: check if qt5 still supports these flags [19.2.2014 markus]
+#elif defined Q_OS_LINUX && __x86_64__
 	url += "Linux 64bit";
 #elif defined Q_OS_LINUX && __i386__
 	url += "Linux 32bit";

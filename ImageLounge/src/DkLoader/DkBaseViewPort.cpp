@@ -63,16 +63,10 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	grabGesture(Qt::SwipeGesture);
 	setAttribute(Qt::WA_AcceptTouchEvents);
 
-	mForceFastRendering = false;
 	mViewportRect = QRect(0, 0, width(), height());
-	mWorldMatrix.reset();
-	mImgMatrix.reset();
 
 	mPanControl = QPointF(-1.0f, -1.0f);
-	mMinZoom = 0.01f;
-	mMaxZoom = 50;
 
-	mBlockZooming = false;
 	mAltMod = Settings::param().global().altMod;
 	mCtrlMod = Settings::param().global().ctrlMod;
 
