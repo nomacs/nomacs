@@ -78,13 +78,16 @@ int main(int argc, char *argv[]) {
 
 	qDebug() << "nomacs - Image Lounge\n";
 
-	//! \warning those QSettings setup *must* go before QApplication object
-    //           to prevent random crashes (well, crashes are regular on mac
-    //           opening from Finder)
-	// register our organization
+#ifdef READ_TUWIEN
+	QCoreApplication::setOrganizationName("TU Wien");
+	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
+	QCoreApplication::setApplicationName("nomacs - Image Lounge [READ]");
+#else
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
+#endif
+	
 	nmc::DkUtils::registerFileVersion();
 
 	QApplication a(argc, (char**)argv);
