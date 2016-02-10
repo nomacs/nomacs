@@ -138,6 +138,7 @@ DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPlu
 
 	setObjectName("DkPaintViewPort");
 	init();
+	setMouseTracking(true);
 }
 
 DkPaintViewPort::~DkPaintViewPort() {
@@ -226,23 +227,22 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-	if (event->buttons() == Qt::LeftButton) {
-		if(parent()) {
+	if (event->buttons() == Qt::LeftButton && parent()) {
 
-			nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-			if(viewport) {
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+		if(viewport) {
 		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
+			if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
 					
-					isOutside = false;
-					paths.append(QPainterPath());
-					paths.last().moveTo(mapToImage(event->pos()));
-					paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
-					pathsPen.append(pen);
-					update();
-				}
-				else isOutside = true;
+				isOutside = false;
+				paths.append(QPainterPath());
+				paths.last().moveTo(mapToImage(event->pos()));
+				paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
+				pathsPen.append(pen);
+				update();
 			}
+			else 
+				isOutside = true;
 		}
 	}
 
@@ -250,6 +250,8 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 }
 
 void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
+
+	//qDebug() << "paint viewport...";
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == nmc::Settings::param().global().altMod ||
@@ -261,13 +263,15 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	if (event->buttons() == Qt::LeftButton) {
-		if(parent()) {
-			nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+	if (parent()) {
+		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 
-			if(viewport) {
-		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
+		if (viewport) {
+			viewport->unsetCursor();
+
+			if (event->buttons() == Qt::LeftButton && parent()) {
+
+				if (QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
 					if (isOutside) {
 						paths.append(QPainterPath());
 						paths.last().moveTo(mapToImage(event->pos()));
@@ -280,11 +284,11 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 					}
 					isOutside = false;
 				}
-				else isOutside = true;
+				else 
+					isOutside = true;
 			}
 		}
 	}
-
 	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
 }
 
@@ -411,6 +415,7 @@ void DkPaintViewPort::setVisible(bool visible) {
 /*-----------------------------------DkPaintToolBar ---------------------------------------------*/
 DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
+	setObjectName("paintToolBar");
 	createIcons();
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
