@@ -38,7 +38,9 @@ include_directories (
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
-# file(GLOB PLUGIN_MOCS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
+file(GLOB PLUGIN_JSON "src/*.json")
+
+NMC_READ_PLUGIN_ID_AND_VERSION()
 
 set (PLUGIN_RESOURCES
         src/nomacsPlugin.qrc

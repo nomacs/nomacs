@@ -10,11 +10,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
 
 NMC_POLICY()
 
-######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 2.2.0)
-set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated at http://www.guidgenerator.com/
-######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
 
@@ -38,6 +33,9 @@ include_directories (
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
+file(GLOB PLUGIN_JSON "src/*.json")
+
+NMC_READ_PLUGIN_ID_AND_VERSION()
 
 set (PLUGIN_RESOURCES
     src/nomacsPlugin.qrc

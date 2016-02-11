@@ -1,3 +1,5 @@
 {
-    "name" : [ "DkOcrPlugin" ]
+    "name" : [ "DkOcrPlugin" ],
+	"PluginId"		: "9791acc7e9654ff7888a9e857290956d",
+	"Version"		: "0.0.1"
 }
