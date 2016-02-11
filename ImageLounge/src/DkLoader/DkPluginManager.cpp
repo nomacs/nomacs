@@ -210,7 +210,7 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			mDateModified = QDate::fromString(metaData.value(key).toString(), "dd.MM.yyyy");
 		else if (key == "Description")
 			mDescription = metaData.value(key).toString();
-		else if (key == "StatusTip")
+		else if (key == "Tagline")
 			mStatusTip = metaData.value(key).toString();
 		else 
 			qDebug() << "unknown key" << key << "|" << metaData.value(key);
