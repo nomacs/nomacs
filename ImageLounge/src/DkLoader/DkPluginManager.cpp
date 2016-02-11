@@ -205,9 +205,9 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 		else if (key == "Company")
 			mCompany = metaData.value(key).toString();
 		else if (key == "DateCreated")
-			mDateCreated = QDate::fromString(metaData.value(key).toString(), "dd.MM.yyyy");
+			mDateCreated = QDate::fromString(metaData.value(key).toString(), "yyyy-MM-dd");
 		else if (key == "DateModified")
-			mDateModified = QDate::fromString(metaData.value(key).toString(), "dd.MM.yyyy");
+			mDateModified = QDate::fromString(metaData.value(key).toString(), "yyyy-MM-dd");
 		else if (key == "Description")
 			mDescription = metaData.value(key).toString();
 		else if (key == "Tagline")
