@@ -16,10 +16,10 @@
 function Controller()
 {
     installer.setDefaultPageVisible(QInstaller.Introduction, true);
-    installer.setDefaultPageVisible(QInstaller.ComponentSelection, true);
     installer.setDefaultPageVisible(QInstaller.PerformInstallation, true);
     installer.setDefaultPageVisible(QInstaller.InstallationFinished, true);
-	installer.setDefaultPageVisible(QInstaller.StartMenuSelection, true);
+	installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
+    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
 	
 	// pages we don't need
     installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
@@ -31,7 +31,7 @@ function Controller()
     installer.setMessageBoxAutomaticAnswer("stopProcessesForUpdates", QMessageBox.Ignore);
 	
 	// Choose a target dir -----------------------------------------------------
-	// installer.setValue("TargetDir", "C:/nomacs");
+	installer.setValue("TargetDir", "C:/temp/nomacs");
 }
 
 // start installation - here the repo is checked

@@ -212,6 +212,12 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			mDescription = metaData.value(key).toString();
 		else if (key == "Tagline")
 			mStatusTip = metaData.value(key).toString();
+		else if (key == "Version") {
+			// currently nothing to do here...
+		}
+		else if (key == "PluginId") {
+			// currently nothing to do here...
+		}
 		else 
 			qDebug() << "unknown key" << key << "|" << metaData.value(key);
 
