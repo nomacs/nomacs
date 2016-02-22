@@ -41,7 +41,7 @@ Compile Instructions:
 				- libraw > 0.12.0
 		on ubuntu you can compile nomacs with:
 			Get the required packages:
-				sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qt5tools-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev git build-essentials
+				sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qt5tools-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev git build-essential
 			Checkout the code from github:
 				git clone https://github.com/nomacs/nomacs.git
 			This will by default place the source into ~/nomacs
