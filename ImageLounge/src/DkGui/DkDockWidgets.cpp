@@ -81,7 +81,7 @@ void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img) {
 		mHistoryList->addItem(item);
 	}
 
-	if (mHistoryList->count() >= hIdx)
+	if (mHistoryList->item(hIdx))
 		mHistoryList->item(hIdx)->setSelected(true);
 }
 
