@@ -1336,7 +1336,7 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 
 	mHistoryDock->setVisible(show, saveSettings);
 
-	if (getTabWidget()->getCurrentImage())
+	if (show && getTabWidget()->getCurrentImage())
 		mHistoryDock->updateImage(getTabWidget()->getCurrentImage());
 }
 
