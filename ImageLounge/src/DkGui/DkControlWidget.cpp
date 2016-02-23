@@ -201,22 +201,23 @@ void DkControlWidget::init() {
 	cwLayout->addWidget(mSpinnerLabel);
 	cwLayout->addStretch();
 
-	// center player horizontally
-	QWidget* cP = new QWidget(this);
-	cP->setMouseTracking(true);
-	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
-	cpLayout->setContentsMargins(0,0,0,0);
-	cpLayout->addWidget(mPlayer);
+	//// center player horizontally
+	//QWidget* cP = new QWidget(this);
+	//cP->setMouseTracking(true);
+	//QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
+	//cpLayout->setContentsMargins(0,0,0,0);
+	//cpLayout->addWidget(mPlayer);
 
 	// center column
 	QWidget* center = new QWidget(this);
 	center->setMouseTracking(true);
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
 	cLayout->setContentsMargins(0,0,0,0);
+	cLayout->setAlignment(Qt::AlignBottom);
 	cLayout->addStretch();
 	cLayout->addWidget(cW);
 	cLayout->addStretch();
-	cLayout->addWidget(cP);
+	cLayout->addWidget(mPlayer);
 	
 	// rating widget
 	QWidget* rw = new QWidget(this);

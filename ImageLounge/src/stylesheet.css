@@ -112,11 +112,10 @@ QGraphicsView#DkBaseViewPort {
 } 
 
 /* DEBUG */
-/*
-nmc--DkControlWidget > QWidget  {
+/* QWidget {
 	background-color: QColor(0,0,0,20); border: 1px solid #000000;
 }
-*/ 
+*/
 
  /* Batch Widgets */
  QLabel#DkBatchTitle {
