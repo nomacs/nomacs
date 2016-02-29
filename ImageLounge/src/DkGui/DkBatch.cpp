@@ -1023,6 +1023,7 @@ bool DkBatchResizeWidget::requiresUserInput() const {
 // DkBatchPlugin --------------------------------------------------------------------
 DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
+	DkPluginManager::instance().loadPlugins();
 	createLayout();
 }
 

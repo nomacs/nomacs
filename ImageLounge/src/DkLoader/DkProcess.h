@@ -131,7 +131,7 @@ public:
 	virtual bool isActive() const;
 
 protected:
-	void resolvePluginString(const QString& pluginString, QSharedPointer<DkPluginContainer> plugin, QString& runId) const;
+	void loadPlugin(const QString& pluginString, QSharedPointer<DkPluginContainer>& plugin, QString& runId) const;
 
 	QStringList mPluginList;
 };
