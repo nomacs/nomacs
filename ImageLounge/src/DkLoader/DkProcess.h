@@ -125,6 +125,8 @@ class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
 public:
 	DkPluginBatch();
 
+	virtual void preLoad() const;
+	virtual void postLoad() const;
 	virtual void setProperties(const QStringList& pluginList);
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual QString name() const;

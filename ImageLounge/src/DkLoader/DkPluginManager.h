@@ -125,8 +125,9 @@ public:
 	enum PluginType {
 		type_unknown = 0,
 		type_simple,
+		type_batch,
 		type_viewport,
-
+		
 		type_end
 	};
 
@@ -157,6 +158,7 @@ public:
 
 	QSharedPointer<QPluginLoader> loader() const;
 	DkPluginInterface* plugin() const;
+	DkBatchPluginInterface* batchPlugin() const;
 	DkViewPortInterface* pluginViewPort() const;
 	QString actionNameToRunId(const QString& actionName) const;
 	
@@ -257,6 +259,7 @@ public:
 	bool singlePluginLoad(const QString& filePath);
 
 	QVector<QSharedPointer<DkPluginContainer> > getBasicPlugins() const;
+	QVector<QSharedPointer<DkPluginContainer> > getBatchPlugins() const;
 
 	// functions for active plugin
 	void clearRunningPlugin();

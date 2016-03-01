@@ -109,12 +109,15 @@ bool DkPluginContainer::load() {
 	}
 	else if (!mLoader->load()) {
 		qDebug() << "Could not load: " << mPluginPath;
+		qDebug() << "name: " << mPluginName;
+		qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
 		return false;
 	}
 
-	if (pluginViewPort()) {
+	if (pluginViewPort()) 
 		mType = type_viewport;
-	}
+	else if (batchPlugin())
+		mType = type_batch;
 	else if (plugin())
 		mType = type_simple;
 	else {
@@ -245,7 +248,7 @@ void DkPluginContainer::run() {
 		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 		emit runPlugin(vPlugin, false);
 	}
-	else if (p && p->interfaceType() == DkPluginInterface::interface_basic) {
+	else if (p && p->interfaceType() == DkPluginInterface::interface_basic || p->interfaceType() == DkPluginInterface::interface_batch) {
 
 		QAction* a = qobject_cast<QAction*>(QObject::sender());
 
@@ -327,10 +330,21 @@ DkPluginInterface* DkPluginContainer::plugin() const {
 
 	DkPluginInterface* pi = qobject_cast<DkPluginInterface*>(mLoader->instance());
 
-	if (!pi)
+	if (!pi && pluginViewPort())
 		return pluginViewPort();
+	else if (!pi && batchPlugin())
+		return batchPlugin();
 
 	return pi;
+}
+
+DkBatchPluginInterface* DkPluginContainer::batchPlugin() const {
+
+	// is everything fine here??
+	if (!mLoader)
+		return 0;
+
+	return qobject_cast<DkBatchPluginInterface*>(mLoader->instance());
 }
 
 DkViewPortInterface* DkPluginContainer::pluginViewPort() const {
@@ -1875,6 +1889,24 @@ QVector<QSharedPointer<DkPluginContainer> > DkPluginManager::getBasicPlugins() c
 		DkPluginInterface* p = plugin->plugin();
 
 		if (p && p->interfaceType() == DkPluginInterface::interface_basic) {
+			plugins.append(plugin);
+		}
+	}
+
+	return plugins;
+}
+
+QVector<QSharedPointer<DkPluginContainer> > DkPluginManager::getBatchPlugins() const {
+
+	QVector<QSharedPointer<DkPluginContainer> > plugins;
+
+	for (auto plugin : mPlugins) {
+
+		DkPluginInterface* p = plugin->plugin();
+
+		if (p && 
+			(p->interfaceType() == DkPluginInterface::interface_basic ||
+			 p->interfaceType() == DkPluginInterface::interface_batch)) {
 			plugins.append(plugin);
 		}
 	}

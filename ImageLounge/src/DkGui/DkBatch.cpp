@@ -1067,7 +1067,7 @@ void DkBatchPluginWidget::createLayout() {
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
 
 	QStringList pluginActions;
-	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBasicPlugins();
+	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBatchPlugins();
 
 	for (auto p : plugins) {
 
@@ -1393,8 +1393,10 @@ void DkBatchDialog::accept() {
 		processFunctions.append(transformBatch);
 
 #ifdef WITH_PLUGINS
-	if (pluginBatch->isActive())
+	if (pluginBatch->isActive()) {
 		processFunctions.append(pluginBatch);
+		pluginBatch->preLoad();
+	}
 #endif
 
 	config.setProcessFunctions(processFunctions);
@@ -1437,6 +1439,15 @@ void DkBatchDialog::startProcessing() {
 void DkBatchDialog::stopProcessing() {
 
 	mFileSelection->stopProcessing();
+
+#ifdef WITH_PLUGINS
+	// create processing functions
+	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
+	mPluginWidget->transferProperties(pluginBatch);
+	
+	if (pluginBatch->isActive())
+		pluginBatch->postLoad();
+#endif
 
 	mProgressBar->hide();
 	mProgressBar->reset();

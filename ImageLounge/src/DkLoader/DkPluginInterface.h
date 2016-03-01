@@ -60,6 +60,7 @@ public:
 
 	enum ifTypes {
 		interface_basic = 0,
+		interface_batch,
 		interface_viewport,
 
 		inteface_end,
@@ -73,9 +74,22 @@ public:
 
 	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
 	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
-    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() const {return true;};
+	
+	
+	/// <summary>
+	/// The plugin's compute function.
+	/// NOTE: it needs to be const for we run it with multiple threads.
+	/// </summary>
+	/// <param name="runID">The run identifier.</param>
+	/// <param name="imgC">The image container to be processed.</param>
+	/// <returns>A processed image container</returns>
+	virtual QSharedPointer<DkImageContainer> runPlugin(
+		const QString &runID = QString(), 
+		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
+
+	
 	QMainWindow* getMainWindow() const {
 
 		QWidgetList widgets = QApplication::topLevelWidgets();
@@ -92,6 +106,20 @@ public:
 
 		return win;
 	}
+};
+
+class DkBatchPluginInterface : public DkPluginInterface {
+
+public:
+	virtual int interfaceType() const { return interface_batch; };
+
+	//// the next two lines removes the const of runPlugin - thus, batch plugins might edit members
+	//virtual QSharedPointer<DkImageContainer> runPlugin(const QString & = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override { return imgC; };
+	//virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) = 0;
+
+	virtual void preLoadPlugin() = 0;	// is called before batch processing
+	virtual void postLoadPlugin() = 0;	// is called after batch processing
+
 };
 
 class DkViewPortInterface : public DkPluginInterface {
@@ -170,4 +198,5 @@ protected:
 
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.0")
+Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.0")
 Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.0")

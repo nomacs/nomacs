@@ -235,6 +235,49 @@ void DkPluginBatch::setProperties(const QStringList & pluginList) {
 	mPluginList = pluginList;
 }
 
+void DkPluginBatch::preLoad() const {
+
+	QSharedPointer<DkPluginContainer> pluginContainer;
+	QString runId;
+
+	for (const QString& cPluginString : mPluginList) {
+
+		loadPlugin(cPluginString, pluginContainer, runId);
+
+		if (pluginContainer) {
+			// get plugin
+			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
+
+			// check if it is ok
+			if (plugin) {
+				plugin->preLoadPlugin();
+			}
+		}
+	}
+}
+
+void DkPluginBatch::postLoad() const {
+
+	QSharedPointer<DkPluginContainer> pluginContainer;
+	QString runId;
+
+	for (const QString& cPluginString : mPluginList) {
+
+		loadPlugin(cPluginString, pluginContainer, runId);
+
+		if (pluginContainer) {
+	
+			// get plugin
+			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
+
+			// check if it is ok
+			if (plugin) {
+				plugin->postLoadPlugin();
+			}
+		}
+	}
+}
+
 bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
 
 	if (!isActive()) {
@@ -254,7 +297,9 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 			DkPluginInterface* plugin = pluginContainer->plugin();
 
 			// check if it is ok
-			if (plugin && plugin->interfaceType() == DkPluginInterface::interface_basic) {
+			if (plugin && 
+				(plugin->interfaceType() == DkPluginInterface::interface_basic || 
+					plugin->interfaceType() == DkPluginInterface::interface_batch)) {
 
 				// apply the plugin
 				QSharedPointer<DkImageContainer> result = plugin->runPlugin(runId, container);
@@ -650,6 +695,7 @@ void DkBatchProcessing::compute() {
 	init();
 
 	qDebug() << "computing...";
+	
 
 	if (batchWatcher.isRunning())
 		batchWatcher.waitForFinished();
