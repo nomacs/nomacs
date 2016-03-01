@@ -39,7 +39,7 @@ add_dependencies(${DLL_GUI_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME})
 add_dependencies(${BINARY_NAME} ${DLL_GUI_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} ${QUAZIP_DEPENDENCY} ${LIBQPSD_LIBRARY} ${WEBP_LIBRARY}) 
 
 target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
-target_include_directories(${DLL_GUI_NAME} 			PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+target_include_directories(${DLL_GUI_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 target_include_directories(${DLL_LOADER_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
@@ -85,6 +85,9 @@ set_target_properties(${DLL_GUI_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWIT
 				
 set_target_properties(${DLL_GUI_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_GUI_NAME}d)
 set_target_properties(${DLL_GUI_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_GUI_NAME})
+
+# make RelWithDebInfo link against release instead of debug opencv dlls
+set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
 # copy required dlls to the directories
 set(OpenCV_REQUIRED_MODULES core imgproc FORCE)

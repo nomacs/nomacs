@@ -650,6 +650,8 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_cw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_ccw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_180]);
+	editContextMenu->addAction(mEditActions[menu_edit_flip_h]);
+	editContextMenu->addAction(mEditActions[menu_edit_flip_v]);
 	editContextMenu->addSeparator();
 	editContextMenu->addAction(mEditActions[menu_edit_transform]);
 	editContextMenu->addAction(mEditActions[menu_edit_crop]);
