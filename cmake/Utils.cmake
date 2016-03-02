@@ -142,6 +142,7 @@ IF (MSVC)
   endif()      
     
 elseif(UNIX)
+	set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/plugins)
 	install(TARGETS ${PROJECT_NAME} RUNTIME LIBRARY DESTINATION lib/nomacs-plugins)
 endif(MSVC)
 endmacro(NMC_CREATE_TARGETS)
