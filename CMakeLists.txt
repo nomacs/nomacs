@@ -28,6 +28,7 @@ OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
+OPTION (ENABLE_INSTAGRAM "Compile INSTAGRAM PLUGIN" ON)
 
 NMC_PREPARE_PLUGIN()
 
@@ -87,3 +88,8 @@ ENDIF(ENABLE_OCR)
 IF (ENABLE_SIMPLE)
 	add_subdirectory(SIMPLE_PLUGIN)
 ENDIF(ENABLE_SIMPLE)
+
+IF (ENABLE_INSTAGRAM)
+	add_subdirectory(InstagramFilterPlugin)
+ENDIF(ENABLE_INSTAGRAM)
+
