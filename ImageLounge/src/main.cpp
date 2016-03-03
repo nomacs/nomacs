@@ -260,7 +260,7 @@ void createPluginsPath() {
 	else
 		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
 #else
-	QDir pluginsDir = QDir("/usr/lib/nomacs-plugins/");
+	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
 #endif // Q_OS_WIN
 
 
