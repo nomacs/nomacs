@@ -271,7 +271,7 @@ void DkPluginBatch::postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchI
 
 			// check if it is ok
 			if (plugin) {
-				plugin->postLoadPlugin(runID, fInfos);
+				plugin->postLoadPlugin(fInfos);
 			}
 		}
 	}
@@ -369,7 +369,7 @@ void DkPluginBatch::loadAllPlugins() {
 
 			// check if it is ok
 			if (plugin) {
-				plugin->preLoadPlugin(runID);
+				plugin->preLoadPlugin();
 			}
 		}
 		else
@@ -766,9 +766,6 @@ void DkBatchProcessing::postLoad() {
 
 	for (DkBatchProcess batch : batchItems) {
 		batchInfo << batch.batchInfo();
-
-		for (auto b : batch.batchInfo())
-			qDebug() << "info: " << *b.data();
 	}
 
 	for (QSharedPointer<DkAbstractBatch> fun : mBatchConfig.getProcessFunctions()) {

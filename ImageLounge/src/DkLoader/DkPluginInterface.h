@@ -128,8 +128,8 @@ public:
 		QSharedPointer<DkImageContainer> imgC,
 		QSharedPointer<DkBatchInfo>& batchInfo) const = 0;
 
-	virtual void preLoadPlugin(const QString& runID) const = 0;	// is called before batch processing
-	virtual void postLoadPlugin(const QString& runID, const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
+	virtual void preLoadPlugin() const = 0;	// is called before batch processing
+	virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
 
 };
 

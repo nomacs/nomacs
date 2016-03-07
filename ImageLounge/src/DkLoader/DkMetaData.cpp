@@ -173,13 +173,14 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 		return false;
 	}
 
+
 	exifImgN->readMetadata();
 
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
 	
-	exifImgN->writeMetadata();
+	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
 
 	// now get the data again
 	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
@@ -190,7 +191,8 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 			ba = tmp;
 		else
 			return false;	// catch exif bug - observed e.g. for hasselblad RAW (3fr) files - see: Bug #995 (http://dev.exiv2.org/issues/995)
-	} else
+	}
+	else
 		return false;
 
 	mExifImg = exifImgN;

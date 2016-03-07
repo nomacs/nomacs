@@ -1173,8 +1173,8 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		if (mMetaData->isLoaded()) {
 			try {
 				mMetaData->updateImageMetaData(img);
+				//mMetaData->printMetaData();	// debug
 				mMetaData->saveMetaData(ba, true);
-				//metaData->printMetaData();	// debug
 			} 
 			catch (...) {
 				// is it still throwing anything?

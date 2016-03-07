@@ -239,16 +239,8 @@ public:
 	QSharedPointer<DkPluginContainer> getPlugin(const QString& key) const;
 	QSharedPointer<DkPluginContainer> getPluginByName(const QString& pluginName) const;
 	QSharedPointer<DkPluginContainer> getPluginByPath(const QString& path) const;
-	//QString actionNameToRunId(const QString& pluginId, const QString& actionName) const;
 	
 	QString getPluginFilePath(const QString& key) const;
-	//QMap<QString, QString> getPluginFilePaths() const;
-	
-	//QMap<QString, QString> getRunId2PluginId() const;
-	//void setRunId2PluginId(QMap<QString, QString> newMap);
-	//
-	//QList<QString> getPluginIdList() const;
-	//void setPluginIdList(QList<QString> newPlugins);
 
 	void reload();
 	void removePlugin(QSharedPointer<DkPluginContainer> plugin);
@@ -269,16 +261,8 @@ public:
 
 private:
 	DkPluginManager();
-
-	//QMap<QString, DkPluginInterface *> loadedPlugins;
-	//QMap<QString, QString> pluginFiles;
-	//QList<QString> pluginIdList;
-	//QMap<QString, QString> runId2PluginId;
-	//QMap<QString, QPluginLoader *> pluginLoaders;	// needed for unloading plug-ins when uninstalling them
-
-	//QString mRunningPlugin;
+	
 	QVector<QSharedPointer<DkPluginContainer> > mPlugins;
-
 };
 
 // Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
