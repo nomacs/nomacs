@@ -150,7 +150,7 @@ public:
 	QString description() const;
 	QString fullDescription() const;
 	QString statusTip() const;
-
+	
 	QDate dateCreated() const;
 	QDate dateModified() const;
 
@@ -162,6 +162,7 @@ public:
 	DkViewPortInterface* pluginViewPort() const;
 	QString actionNameToRunId(const QString& actionName) const;
 	
+
 signals:
 	void runPlugin(DkViewPortInterface* viewport, bool close) const;
 	void runPlugin(DkPluginContainer* plugin, const QString& key) const;

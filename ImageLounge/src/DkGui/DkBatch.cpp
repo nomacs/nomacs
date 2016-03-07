@@ -1441,13 +1441,16 @@ void DkBatchDialog::stopProcessing() {
 	mFileSelection->stopProcessing();
 
 #ifdef WITH_PLUGINS
-	// create processing functions
-	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
-	mPluginWidget->transferProperties(pluginBatch);
-	
-	if (pluginBatch->isActive())
-		pluginBatch->postLoad();
+	//// create processing functions
+	//QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
+	//mPluginWidget->transferProperties(pluginBatch);
+	//
+	//if (pluginBatch->isActive())
+	//	pluginBatch->postLoad();
 #endif
+
+	if (mBatchProcessing)
+		mBatchProcessing->postLoad();
 
 	mProgressBar->hide();
 	mProgressBar->reset();

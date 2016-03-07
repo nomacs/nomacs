@@ -121,8 +121,8 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
 file(COPY ${QT_DLL_PATH_tmp}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
 
 # create settings file for portable version while working
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/Release/settings.nfo)
-	file(WRITE ${CMAKE_BINARY_DIR}/Release/settings.nfo "")
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo)
+	file(WRITE ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo "")
 endif()
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
 	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.nfo "")

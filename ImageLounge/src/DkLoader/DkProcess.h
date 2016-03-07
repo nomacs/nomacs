@@ -36,6 +36,8 @@
 #include <QUrl>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include "DkBatchInfo.h"
+
 #pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllLoaderExport
@@ -63,10 +65,12 @@ public:
 	DkAbstractBatch() {};
 
 	virtual void setProperties(...) {};
+	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const;
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual bool compute(QImage&, QStringList&) const { return true; };
 	virtual QString name() const {return "Abstract Batch";};
 	virtual bool isActive() const { return false; };
+	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >&) const {};
 
 private:
 	// ok, this is important:
@@ -125,16 +129,19 @@ class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
 public:
 	DkPluginBatch();
 
-	virtual void preLoad() const;
-	virtual void postLoad() const;
+	virtual void preLoad();
+	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const override;
 	virtual void setProperties(const QStringList& pluginList);
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
-	virtual QString name() const;
+	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
+	virtual QString name() const override;
 	virtual bool isActive() const;
 
 protected:
-	void loadPlugin(const QString& pluginString, QSharedPointer<DkPluginContainer>& plugin, QString& runId) const;
+	void loadAllPlugins();
+	void loadPlugin(const QString& pluginString, QSharedPointer<DkPluginContainer>& plugin, QString& runID) const;
 
+	QVector<QSharedPointer<DkPluginContainer> > mPlugins;
+	QStringList mRunIDs;
 	QStringList mPluginList;
 };
 #endif
@@ -172,6 +179,8 @@ public:
 	QString inputFile() const;
 	QString outputFile() const;
 
+	QVector<QSharedPointer<DkBatchInfo> > batchInfo() const;
+
 protected:
 	bool process();
 	bool prepareDeleteExisting();
@@ -189,6 +198,7 @@ protected:
 	int mFailure = 0;
 	bool mIsProcessed = false;
 
+	QVector<QSharedPointer<DkBatchInfo> > mInfos;
 	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
 	QStringList mLogStrings;
 };
@@ -269,8 +279,10 @@ public:
 	QString getBatchSummary(const DkBatchProcess& batch) const;
 
 	// getter, setter
-	void setBatchConfig(const DkBatchConfig& config) { batchConfig = config; };
-	DkBatchConfig getBatchConfig() const { return batchConfig; };
+	void setBatchConfig(const DkBatchConfig& config) { mBatchConfig = config; };
+	DkBatchConfig getBatchConfig() const { return mBatchConfig; };
+
+	void postLoad();
 
 public slots:
 	// user interaction
@@ -281,7 +293,7 @@ signals:
 	void finished();
 
 protected:
-	DkBatchConfig batchConfig;
+	DkBatchConfig mBatchConfig;
 	QVector<DkBatchProcess> batchItems;
 	QList<int> resList;
 	

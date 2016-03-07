@@ -28,6 +28,7 @@
 #pragma once
 
 #include "DkImageContainer.h"
+#include "DkBatchInfo.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStringList>
@@ -113,12 +114,22 @@ class DkBatchPluginInterface : public DkPluginInterface {
 public:
 	virtual int interfaceType() const { return interface_batch; };
 
-	//// the next two lines removes the const of runPlugin - thus, batch plugins might edit members
-	//virtual QSharedPointer<DkImageContainer> runPlugin(const QString & = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override { return imgC; };
-	//virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) = 0;
+	virtual QSharedPointer<DkImageContainer> runPlugin(
+		const QString & runID = QString(),
+		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const {
+		
+		QSharedPointer<DkBatchInfo> dummy;
+		return runPlugin(runID, imgC, dummy);
+	};
 
-	virtual void preLoadPlugin() = 0;	// is called before batch processing
-	virtual void postLoadPlugin() = 0;	// is called after batch processing
+
+	virtual QSharedPointer<DkImageContainer> runPlugin(
+		const QString & runID,
+		QSharedPointer<DkImageContainer> imgC,
+		QSharedPointer<DkBatchInfo>& batchInfo) const = 0;
+
+	virtual void preLoadPlugin(const QString& runID) const = 0;	// is called before batch processing
+	virtual void postLoadPlugin(const QString& runID, const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
 
 };
 
@@ -198,5 +209,5 @@ protected:
 
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.0")
-Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.0")
+Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.1")
 Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.0")

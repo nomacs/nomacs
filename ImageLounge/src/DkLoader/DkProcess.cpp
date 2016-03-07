@@ -42,16 +42,30 @@
 
 namespace nmc {
 
-// DkAbstractBatch --------------------------------------------------------------------
+/// <summary>
+/// Generic compute method for DkBatch Info <see cref="DkBatchInfo"/>.
+/// This method allows for a simplified interface if a derived class
+/// just needs to process the image itself (not meta data).
+/// </summary>
+/// <param name="container">Container the image container to be processed.</param>
+/// <param name="logStrings">log strings.</param>
+/// <param name="batchInfo">The batch information. You can save any information into this class.</param>
+/// <returns>
+/// true on success
+/// </returns>
+bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >&) const {
 
-/**
- * Generic compute method.
- * This method allows for a simplified interface if a derived class
- * just needs to process the image itself (not meta data).
- * @param container the image container to be processed
- * @param logStrings log strings
- * @return bool true on success
- **/ 
+	return compute(container, logStrings);
+}
+
+/// <summary>
+/// Generic compute method.
+/// This method allows for a simplified interface if a derived class
+/// just needs to process the image itself (not meta data).
+/// </summary>
+/// <param name="container">Container the image container to be processed.</param>
+/// <param name="logStrings">log strings.</param>
+/// <returns>true on success</returns>
 bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
 	
 	QImage img = container->image();
@@ -235,74 +249,72 @@ void DkPluginBatch::setProperties(const QStringList & pluginList) {
 	mPluginList = pluginList;
 }
 
-void DkPluginBatch::preLoad() const {
+void DkPluginBatch::preLoad() {
 
-	QSharedPointer<DkPluginContainer> pluginContainer;
-	QString runId;
-
-	for (const QString& cPluginString : mPluginList) {
-
-		loadPlugin(cPluginString, pluginContainer, runId);
-
-		if (pluginContainer) {
-			// get plugin
-			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
-
-			// check if it is ok
-			if (plugin) {
-				plugin->preLoadPlugin();
-			}
-		}
-	}
+	loadAllPlugins();
 }
 
-void DkPluginBatch::postLoad() const {
+void DkPluginBatch::postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const {
 
-	QSharedPointer<DkPluginContainer> pluginContainer;
-	QString runId;
+	for (int idx = 0; idx < mPlugins.size(); idx++) {
 
-	for (const QString& cPluginString : mPluginList) {
-
-		loadPlugin(cPluginString, pluginContainer, runId);
+		QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
+		QString runID = mRunIDs[idx];
 
 		if (pluginContainer) {
 	
 			// get plugin
 			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
 
+			qDebug() << "[POST LOAD]" << pluginContainer->pluginName() << "id:" << runID;
+			QVector<QSharedPointer<DkBatchInfo> > fInfos = DkBatchInfo::filter(batchInfo, runID);
+
 			// check if it is ok
 			if (plugin) {
-				plugin->postLoadPlugin();
+				plugin->postLoadPlugin(runID, fInfos);
 			}
 		}
 	}
 }
 
-bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
+bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const {
 
 	if (!isActive()) {
 		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
 		return true;
 	}
 
-	QSharedPointer<DkPluginContainer> pluginContainer;
-	QString runId;
+	for (int idx = 0; idx < mPlugins.size(); idx++) {
 
-	for (const QString& cPluginString : mPluginList) {
-
-		loadPlugin(cPluginString, pluginContainer, runId);
+		QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
+		QString runID = mRunIDs[idx];
 
 		if (pluginContainer) {
 			// get plugin
 			DkPluginInterface* plugin = pluginContainer->plugin();
 
 			// check if it is ok
-			if (plugin && 
+			if ( plugin && 
 				(plugin->interfaceType() == DkPluginInterface::interface_basic || 
-					plugin->interfaceType() == DkPluginInterface::interface_batch)) {
+				 plugin->interfaceType() == DkPluginInterface::interface_batch)) {
 
 				// apply the plugin
-				QSharedPointer<DkImageContainer> result = plugin->runPlugin(runId, container);
+				QSharedPointer<DkImageContainer> result;
+				
+				if (plugin->interfaceType() == DkPluginInterface::interface_basic)
+					result = plugin->runPlugin(runID, container);
+				else if (plugin->interfaceType() == DkPluginInterface::interface_batch) {
+
+					DkBatchPluginInterface* bPlugin = pluginContainer->batchPlugin();
+					QSharedPointer<DkBatchInfo> info;
+
+					if (bPlugin)
+						result = bPlugin->runPlugin(runID, container, info);
+					else 
+						logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.").arg(name()).arg(pluginContainer->pluginName()));
+
+					batchInfos << info;
+				}
 
 				if (result && result->hasImage())
 					container = result;
@@ -313,7 +325,7 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 				logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
 		}
 		else 
-			logStrings.append(QObject::tr("%1 Cannot apply %2 because it is NULL.").arg(name()).arg(cPluginString));
+			logStrings.append(QObject::tr("%1 Cannot apply plugin because it is NULL.").arg(name()));
 	}
 
 	if (!container || !container->hasImage()) {
@@ -335,7 +347,37 @@ bool DkPluginBatch::isActive() const {
 	return !mPluginList.empty();
 }
 
-void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPluginContainer> & plugin, QString & runId) const {
+void DkPluginBatch::loadAllPlugins() {
+
+	QString runId;
+
+	for (const QString& cPluginString : mPluginList) {
+
+		// load plugin
+		QSharedPointer<DkPluginContainer> pluginContainer;
+		QString runID;
+		loadPlugin(cPluginString, pluginContainer, runID);
+		mPlugins << pluginContainer;	// also add the empty ones...
+		mRunIDs << runID;
+
+		if (pluginContainer) {
+
+			qDebug() << "loading" << pluginContainer->pluginName() << "id:" << runID;
+
+			// get plugin
+			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
+
+			// check if it is ok
+			if (plugin) {
+				plugin->preLoadPlugin(runID);
+			}
+		}
+		else
+			qWarning() << "could not load: " << cPluginString;
+	}
+}
+
+void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPluginContainer> & plugin, QString& runID) const {
 
 	QString uiSeparator = " | ";	// TODO: make a nice define
 
@@ -348,7 +390,7 @@ void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPl
 		plugin = DkPluginManager::instance().getPluginByName(ids[0]);
 
 		if (plugin)
-			runId = plugin->actionNameToRunId(ids[1]);
+			runID = plugin->actionNameToRunId(ids[1]);
 	}
 }
 #endif
@@ -363,17 +405,17 @@ DkBatchProcess::DkBatchProcess(const QString& filePathIn, const QString& filePat
 
 void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes) {
 
-	this->mProcessFunctions = processes;
+	mProcessFunctions = processes;
 }
 
 void DkBatchProcess::setMode(int mode) {
 
-	this->mMode = mode;
+	mMode = mode;
 }
 
 void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
 
-	this->mDeleteOriginal = deleteOriginal;
+	mDeleteOriginal = deleteOriginal;
 }
 
 void DkBatchProcess::setCompression(int compression) {
@@ -388,6 +430,11 @@ QString DkBatchProcess::inputFile() const {
 QString DkBatchProcess::outputFile() const {
 
 	return mFilePathOut;
+}
+
+QVector<QSharedPointer<DkBatchInfo> > DkBatchProcess::batchInfo() const {
+
+	return mInfos;
 }
 
 bool DkBatchProcess::hasFailed() const {
@@ -469,10 +516,13 @@ bool DkBatchProcess::process() {
 			continue;
 		}
 
-		if (!batch->compute(imgC, mLogStrings)) {
+		QVector<QSharedPointer<DkBatchInfo> > cInfos;
+		if (!batch->compute(imgC, mLogStrings, cInfos)) {
 			mLogStrings.append(QObject::tr("%1 failed").arg(batch->name()));
 			mFailure++;
 		}
+
+		mInfos << cInfos;
 	}
 
 	// report we could not back-up & break here
@@ -660,7 +710,7 @@ bool DkBatchConfig::isOk() const {
 // DkBatchProcessing --------------------------------------------------------------------
 DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* parent /*= 0*/) : QObject(parent) {
 
-	this->batchConfig = config;
+	mBatchConfig = config;
 
 	connect(&batchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
 	connect(&batchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
@@ -670,21 +720,21 @@ void DkBatchProcessing::init() {
 
 	batchItems.clear();
 	
-	QStringList fileList = batchConfig.getFileList();
+	QStringList fileList = mBatchConfig.getFileList();
 
 	for (int idx = 0; idx < fileList.size(); idx++) {
 
 		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
-		QString outDir = batchConfig.inputDirIsOutputDir() ? cFileInfo.absolutePath() : batchConfig.getOutputDirPath();
+		QString outDir = mBatchConfig.inputDirIsOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
 
-		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
+		DkFileNameConverter converter(cFileInfo.fileName(), mBatchConfig.getFileNamePattern(), idx);
 		QFileInfo newFileInfo(outDir, converter.getConvertedFileName());
 
 		DkBatchProcess cProcess(fileList.at(idx), newFileInfo.absoluteFilePath());
-		cProcess.setMode(batchConfig.getMode());
-		cProcess.setDeleteOriginal(batchConfig.getDeleteOriginal());
-		cProcess.setProcessChain(batchConfig.getProcessFunctions());
-		cProcess.setCompression(batchConfig.getCompression());
+		cProcess.setMode(mBatchConfig.getMode());
+		cProcess.setDeleteOriginal(mBatchConfig.getDeleteOriginal());
+		cProcess.setProcessChain(mBatchConfig.getProcessFunctions());
+		cProcess.setCompression(mBatchConfig.getCompression());
 
 		batchItems.push_back(cProcess);
 	}
@@ -707,6 +757,23 @@ void DkBatchProcessing::compute() {
 bool DkBatchProcessing::computeItem(DkBatchProcess& item) {
 
 	return item.compute();
+}
+
+void DkBatchProcessing::postLoad() {
+
+	// collect batch infos
+	QVector<QSharedPointer<DkBatchInfo> > batchInfo;
+
+	for (DkBatchProcess batch : batchItems) {
+		batchInfo << batch.batchInfo();
+
+		for (auto b : batch.batchInfo())
+			qDebug() << "info: " << *b.data();
+	}
+
+	for (QSharedPointer<DkAbstractBatch> fun : mBatchConfig.getProcessFunctions()) {
+		fun->postLoad(batchInfo);
+	}
 }
 
 QStringList DkBatchProcessing::getLog() const {
