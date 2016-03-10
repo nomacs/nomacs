@@ -373,6 +373,16 @@ void DkGeneralPreference::createLayout() {
 	cbZoomOnWheel->setToolTip(tr("If checked, the mouse wheel zooms - otherwise it is used to switch between images."));
 	cbZoomOnWheel->setChecked(Settings::param().global().zoomOnWheel);
 
+	QCheckBox* cbDoubleClickForFullscreen = new QCheckBox(tr("Double Click Opens Fullscreen"), this);
+	cbDoubleClickForFullscreen->setObjectName("doubleClickForFullscreen");
+	cbDoubleClickForFullscreen->setToolTip(tr("If checked, a double click on the canvas opens the fullscreen mode."));
+	cbDoubleClickForFullscreen->setChecked(Settings::param().global().doubleClickForFullscreen);
+
+	QCheckBox* cbShowBgImage = new QCheckBox(tr("Show Background Image"), this);
+	cbShowBgImage->setObjectName("showBgImage");
+	cbShowBgImage->setToolTip(tr("If checked, the nomacs logo is shown in the bottom right corner."));
+	cbShowBgImage->setChecked(Settings::param().global().showBgImage);
+
 	QCheckBox* cbSwitchModifier = new QCheckBox(tr("Switch CTRL with ALT"), this);
 	cbSwitchModifier->setObjectName("switchModifier");
 	cbSwitchModifier->setToolTip(tr("If checked, CTRL + Mouse is switched with ALT + Mouse."));
@@ -398,10 +408,12 @@ void DkGeneralPreference::createLayout() {
 	generalGroup->addWidget(cbLogRecentFiles);
 	generalGroup->addWidget(cbLoopImages);
 	generalGroup->addWidget(cbZoomOnWheel);
+	generalGroup->addWidget(cbDoubleClickForFullscreen);
 	generalGroup->addWidget(cbSwitchModifier);
 	generalGroup->addWidget(cbEnableNetworkSync);
 	generalGroup->addWidget(cbCloseOnEsc);
 	generalGroup->addWidget(cbCheckForUpdates);
+	generalGroup->addWidget(cbShowBgImage);
 
 	// language
 	QComboBox* languageCombo = new QComboBox(this);
@@ -477,6 +489,22 @@ void DkGeneralPreference::on_zoomOnWheel_toggled(bool checked) const {
 	if (Settings::param().global().zoomOnWheel != checked) {
 		Settings::param().global().zoomOnWheel = checked;
 	}
+}
+
+void DkGeneralPreference::on_doubleClickForFullscreen_toggled(bool checked) const {
+
+	if (Settings::param().global().doubleClickForFullscreen != checked)
+		Settings::param().global().doubleClickForFullscreen = checked;
+
+}
+
+void DkGeneralPreference::on_showBgImage_toggled(bool checked) const {
+
+	if (Settings::param().global().showBgImage != checked) {
+		Settings::param().global().showBgImage = checked;
+		showRestartLabel();
+	}
+
 }
 
 void DkGeneralPreference::on_checkForUpdates_toggled(bool checked) const {

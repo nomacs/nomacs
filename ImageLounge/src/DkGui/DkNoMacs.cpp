@@ -693,7 +693,7 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 
 	if (isFullScreen())
 		exitFullScreen();
-	else
+	else if (Settings::instance().param().global().doubleClickForFullscreen)
 		enterFullScreen();
 
 	//QMainWindow::mouseDoubleClickEvent(event);

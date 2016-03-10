@@ -341,6 +341,8 @@ void DkSettings::load() {
 	global_p.setupPath = settings.value("setupPath", global_p.setupPath).toString();
 	global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
 	global_p.zoomOnWheel = settings.value("zoomOnWheel", global_p.zoomOnWheel).toBool();
+	global_p.doubleClickForFullscreen = settings.value("doubleClickForFullscreen", global_p.doubleClickForFullscreen).toBool();
+	global_p.showBgImage = settings.value("showBgImage", global_p.showBgImage).toBool();
 
 	settings.endGroup();
 	// Display Settings --------------------------------------------------------------------
@@ -544,6 +546,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("setupVersion", global_p.setupVersion);
 	if (!force && global_p.zoomOnWheel != global_d.zoomOnWheel)
 		settings.setValue("zoomOnWheel", global_p.zoomOnWheel);
+	if (!force && global_p.doubleClickForFullscreen != global_d.doubleClickForFullscreen)
+		settings.setValue("doubleClickForFullscreen", global_p.doubleClickForFullscreen);
+	if (!force && global_p.showBgImage != global_d.showBgImage)
+		settings.setValue("showBgImage", global_p.showBgImage);
 
 	settings.endGroup();
 	// Display Settings --------------------------------------------------------------------
@@ -739,6 +745,8 @@ void DkSettings::setToDefaultSettings() {
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
 	global_p.zoomOnWheel = true;
+	global_p.doubleClickForFullscreen = true;
+	global_p.showBgImage = true;
 
 #ifdef Q_OS_LINUX
 	sync_p.switchModifier = true;

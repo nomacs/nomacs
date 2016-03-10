@@ -150,6 +150,8 @@ public slots:
 	void on_logRecentFiles_toggled(bool checked) const;
 	void on_closeOnEsc_toggled(bool checked) const;
 	void on_zoomOnWheel_toggled(bool checked) const;
+	void on_doubleClickForFullscreen_toggled(bool checked) const;
+	void on_showBgImage_toggled(bool checked) const;
 	void on_checkForUpdates_toggled(bool checked) const;
 	void on_switchModifier_toggled(bool checked) const;
 	void on_loopImages_toggled(bool checked) const;

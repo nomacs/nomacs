@@ -207,6 +207,8 @@ public:
 		Qt::KeyboardModifier altMod;
 		Qt::KeyboardModifier ctrlMod;
 		bool zoomOnWheel;
+		bool doubleClickForFullscreen;
+		bool showBgImage;
 
 		QString setupPath;
 		QString setupVersion;
