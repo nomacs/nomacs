@@ -152,10 +152,10 @@ QSharedPointer<nmc::DkImageContainer> DkInstagramPlugin::runPlugin(const QString
 QImage DkInstagramPlugin::applyImageFilter(const QImage inImg){
 #ifdef WITH_OPENCV
 	int MAX_KERNEL_LENGTH = 31;
-	cv::Mat src = DkInstagramPlugin::qImage2Mat(inImg);
+	cv::Mat src =  DkImage::qImage2Mat(inImg);
 	cv::Mat dst;
 	DkInstagramPlugin::nashville(src,dst);
-	return (DkInstagramPlugin::mat2QImage(dst));
+	return (DkImage::mat2QImage(dst));
 #else
 	return inImg;
 #endif
@@ -171,13 +171,13 @@ void DkInstagramPlugin::nashville(const Mat& src, Mat& dst)
 {
 
     dst.create(src.size(), src.type());
-    vector<Mat> channel(3);
+    std::vector<Mat> channel(3);
     split(src, channel);
 
     //Approximated values for Nashville instagram filter
     int mappoint_bgr[3][16]=
-    {{23,41,63,87,115,139,163,185,204,219,230,238,244,247,250,252},
-    {4,10,20,34,52,73,94,117,139,157,177,192,204,214,223,229},
+    {{4,10,20,34,52,73,94,117,139,157,177,192,204,214,223,229},
+    {23,41,63,87,115,139,163,185,204,219,230,238,244,247,250,252},
     {41,48,57,65,72,79,86,91,96,104,109,115,122,132,143,154}};
 
     for( int c = 0; c < 3; c++ ){
@@ -189,7 +189,10 @@ void DkInstagramPlugin::nashville(const Mat& src, Mat& dst)
                 float t = (i%16)/16.0;
                 uchar a=mappoint_bgr[c][i/16];
                 uchar b=mappoint_bgr[c][i/16+1];
-                channel[c].at<uchar>(y,x)= a+t*(b-a);
+          		uchar newColor=a+t*(b-a);
+          		if(newColor<0)newColor=0;
+          		else if(newColor>255)newColor=255;
+                channel[c].at<uchar>(y,x)= newColor;
             }
         }
     }
