@@ -1,0 +1,2 @@
+x86 x86/pageExtractionPlugin.dll
+x64 x64/pageExtractionPlugin.dll
