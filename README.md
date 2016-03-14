@@ -37,7 +37,7 @@ _only needed if ENABLE_RAW is checked_
 Get the required packages:
 
 ``` console
-sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qt5tools-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git build-essential
+sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git build-essential
 ```
 Get the nomacs sources from github:
 ``` console
