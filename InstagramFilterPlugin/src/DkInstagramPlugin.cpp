@@ -52,21 +52,21 @@ DkInstagramPlugin::DkInstagramPlugin(QObject* parent) : QObject(parent) {
 	QVector<QString> runIds;
 	runIds.resize(id_end);
 
-	runIds[ID_ACTION1] = "9efc5613c60649f39c63df684cced2fe";
+	runIds[ID_NASHVILLE] = "9efc5613c60649f39c63df684cced2fe";
 	mRunIDs = runIds.toList();
 
 	// create menu actions
 	QVector<QString> menuNames;
 	menuNames.resize(id_end);
 
-	menuNames[ID_ACTION1] = tr("Nashville");
+	menuNames[ID_NASHVILLE] = tr("Nashville");
 	mMenuNames = menuNames.toList();
 
 	// create menu status tips
 	QVector<QString> statusTips;
 	statusTips.resize(id_end);
 
-	statusTips[ID_ACTION1] = tr("Filter Image like Instagram Nashville");
+	statusTips[ID_NASHVILLE] = tr("Filter Image like Instagram Nashville");
 	mMenuStatusTips = statusTips.toList();
 }
 /**
@@ -132,7 +132,7 @@ QSharedPointer<nmc::DkImageContainer> DkInstagramPlugin::runPlugin(const QString
 	if (!imgC)
 		return imgC;
 	
-	if(runID == mRunIDs[ID_ACTION1]) {
+	if(runID == mRunIDs[ID_NASHVILLE]) {
 		//if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Debug", "Run Code", QMessageBox::Yes|QMessageBox::No).exec());
 		 QImage returnImg(imgC->image());
 		 returnImg = DkInstagramPlugin::applyImageFilter(imgC->image());
@@ -174,7 +174,8 @@ void DkInstagramPlugin::nashville(const Mat& src, Mat& dst)
     std::vector<Mat> channel(3);
     split(src, channel);
 
-    //Approximated values for Nashville instagram filter
+    // Approximated values for Nashville instagram filter 
+    // Computed from tested 16 images in InstagramApplication
     uchar mappoint_bgr[3][16]=
     {{4,10,20,34,52,73,94,117,139,157,177,192,204,214,223,229},
     {23,41,63,87,115,139,163,185,204,219,230,238,244,247,250,252},
@@ -184,12 +185,23 @@ void DkInstagramPlugin::nashville(const Mat& src, Mat& dst)
         for( int y = 0; y < src.rows; y++ ){ 
             for( int x = 0; x < src.cols; x++ ){
 
-                // Compute new color Value from mappoint_bgr 
+                // Compute the new color Value from mappoint_bgr Colors 
+
 				uchar i =channel[c].at<uchar>(y,x);
-                float t = (i%16)/16.0;
-                uchar a=mappoint_bgr[c][i/16];
-                uchar b=mappoint_bgr[c][i/16+1];
+				int mapIndex=i/16;
+                float t = (i%16)/16.0; // Mapping Ratio of the new color
+
+                uchar a,b;
+                a=mappoint_bgr[c][mapIndex];
+                // Check the index is greater or equal 15 
+                // Because Number of elements in mappoints_bgr is 16 in each color channel
+                if(mapIndex>=15) 
+					b=mappoint_bgr[c][mapIndex];
+				else
+					b=mappoint_bgr[c][mapIndex+1];
+          		
           		float newColor=a+t*(b-a);
+          		
           		if(newColor<0)newColor=0.0f;
           		else if(newColor>255.0f)newColor=255.0f;
                 channel[c].at<uchar>(y,x)= (uchar)qRound(newColor);
