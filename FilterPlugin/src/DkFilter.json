@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Instagram like Filters",
+	"Tagline" 		: "Tagline - Gotham Filter",
+	"Description"	: "Instagram Gotham Filter",
+	"AuthorName" 	: "Sai Vignan",
+	"Company"		: "IIT Delhi",
+	"DateCreated" 	: "Today",
+	"DateModified" 	: "Modify if edited",
+	"PluginId"		: "b35412d307a847218a1ddc1ff6ccb84b",
+	"Version"		: "0.1.0"
+}
