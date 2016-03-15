@@ -72,7 +72,7 @@ public:
 	static QImage applyImageFilter(QImage inImg);
 
 	enum {
-		ID_ACTION1,
+		ID_NASHVILLE,
 		id_end
 	};
 
