@@ -65,7 +65,7 @@ macro(NMC_PREPARE_PLUGIN)
 		ADD_DEFINITIONS(-DQT_NO_DEBUG)
 	elseif (NOT MSVC) # debug and release need qt debug outputs on windows
 		message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
-		add_definitions(-DQT_NO_DEBUG_OUTPUT)
+#		add_definitions(-DQT_NO_DEBUG_OUTPUT)
 	endif ()
  
 endmacro(NMC_PREPARE_PLUGIN)
@@ -141,6 +141,8 @@ macro(NMC_CREATE_TARGETS)
 	elseif(UNIX)
 		set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/plugins)
 		install(TARGETS ${PROJECT_NAME} RUNTIME LIBRARY DESTINATION lib/nomacs-plugins)
+		set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR}.${NOMACS_VERSION_PATCH})
+		set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${NOMACS_VERSION_MAJOR})
 	endif(MSVC)
 endmacro(NMC_CREATE_TARGETS)
 
