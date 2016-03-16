@@ -15,7 +15,12 @@ endif(COMMAND cmake_policy)
 ######################## begin of project
 project(nomacs)
 
-set(NOMACS_VERSION 3.0)
+# needed for soname
+set(NOMACS_VERSION_MAJOR 3)
+set(NOMACS_VERSION_MINOR 0)
+set(NOMACS_VERSION_PATCH 0)
+set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
+
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
