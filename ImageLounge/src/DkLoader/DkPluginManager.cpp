@@ -1830,10 +1830,15 @@ void DkPluginManager::loadPlugins() {
 		QDir pluginsDir(cPath);
 
 		for (const QString& fileName : pluginsDir.entryList(QDir::Files)) {
+#ifdef Q_OS_LINUX
+			// needed because of symbolic links of sonames
+			QFileInfo file(pluginsDir.absoluteFilePath(fileName));
+			if(file.isSymLink()) 
+				continue;
+#endif 
 
 			QString shortFileName = fileName.split("/").last();
 			if (!loadedPluginFileNames.contains(shortFileName)) { // prevent double loading of the same plugin
-				
 				if (singlePluginLoad(pluginsDir.absoluteFilePath(fileName)))
 					loadedPluginFileNames.append(shortFileName);
 			}
