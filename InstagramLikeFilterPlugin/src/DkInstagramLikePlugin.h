@@ -32,8 +32,8 @@
 #include <QString>
 
 
-#include "/home/yjwudi/others/nomacs-plugins-master/header/DkPluginInterface.h"
-#include "/home/yjwudi/others/nomacs-plugins-master/header/DkImageStorage.h"
+#include "DkPluginInterface.h"
+#include "DkImageStorage.h"
 
 // OpenCV
 #ifdef WITH_OPENCV
