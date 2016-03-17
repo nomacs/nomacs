@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Instagram Like Filter",
+	"Tagline" 		: "Tagline - Lily Filter",
+	"Description"	: "Lily Filter For GSoC",
+	"AuthorName" 	: "Liu Yingjie",
+	"Company"		: "",
+	"DateCreated" 	: "Today",
+	"DateModified" 	: "Modify if edited",
+	"PluginId"		: "7da191b417794ebc8b88947fbe75910c",
+	"Version"		: "0.1.0"
+}
