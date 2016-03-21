@@ -1817,7 +1817,6 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 	QDir tmpDir = dirPath;
 	tmpDir.setSorting(QDir::LocaleAware);
 	QStringList fileList = tmpDir.entryList(Settings::param().app().browseFilters);
-	qDebug() << "Qt, sorted file list computed in: " << dt.getIvl();
 	qDebug() << fileList;
 
 #endif

@@ -91,39 +91,6 @@ public:
 	}
 
 	/**
-	 * Computes a fast square root.
-	 * @param val the value for which the root will be computed.
-	 * @return the approximated square root of the value val.
-	 **/
-	static float fastSqrt(const float val) {
-
-		long sqrtVal = *(long *) &val;
-
-		//sqrtVal -= 1L<<23;	// Remove IEEE bias from exponent (-2^23)
-		sqrtVal -= 127L<<23;
-		// sqrtVal is now an approximation to logbase2(val)
-		sqrtVal = sqrtVal>>1; // divide by 2
-		//sqrtVal += 1L<<23;	// restore the IEEE bias from the exponent (+2^23)
-		sqrtVal += 127L<<23;
-
-		return *(float *) &sqrtVal;
-	}
-
-	/**
-	 * Computes a fast inverse square root.
-	 * @param x the value to be computed.
-	 * @return the inverse square root of x.
-	 **/
-	static float invSqrt (float x) {
-		float xhalf = 0.5f*x;
-		int i = *(int*)&x;
-		i = 0x5f3759df - (i>>1);
-		x = *(float*)&i;
-		x = x*(1.5f - xhalf*x*x);
-		return x;
-	}
-
-	/**
 	 * Returns the greatest common divisor (GGT).
 	 * Where a must be greater than b.
 	 * @param a the greater number.
