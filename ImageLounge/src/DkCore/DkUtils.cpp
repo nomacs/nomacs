@@ -411,7 +411,7 @@ void DkUtils::initializeDebug() {
 QString DkUtils::getLogFilePath() {
 	
 	QString logPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-	QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss-");
+	QString now = QDateTime::currentDateTime().toString("nomacs-yyyy-MM-dd HH-mm-ss-");
 
 	QFileInfo fileInfo(logPath);
 	fileInfo.setFile(fileInfo.dir(), now + "log.txt");
