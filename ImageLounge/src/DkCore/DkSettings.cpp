@@ -100,8 +100,6 @@ void DkSettings::initFileFilters() {
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
-	qDebug() << "qt formats: " << qtFormats;
-
 	// formats we can save
 	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
 	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg)");
@@ -208,8 +206,6 @@ void DkSettings::initFileFilters() {
 
 	app_p.openFilters.prepend("Image Files (" + app_p.fileFilters.join(" ") + ")");
 
-	qDebug() << "supported: " << qtFormats;
-
 //#ifdef Q_OS_WIN
 //	app_p.fileFilters.append("*.lnk");
 //#endif
@@ -223,7 +219,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			qDebug() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			qDebug().noquote().nospace() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}
@@ -258,7 +254,7 @@ void DkSettings::load() {
 	setToDefaultSettings();
 
 	QSettings& settings = Settings::instance().getSettings();
-	qDebug() << "loading settings from: " << settings.fileName();
+	qInfo().noquote() << "loading settings from: " << settings.fileName();
 
 	settings.beginGroup("AppSettings");
 	
@@ -302,6 +298,7 @@ void DkSettings::load() {
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
+	app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
 	
 	QStringList tmpFileFilters = app_p.fileFilters;
 	QStringList tmpContainerFilters = app_p.containerRawFilters.split(" ");
@@ -501,6 +498,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
 	if (!force && app_p.showRecentFiles != app_d.showRecentFiles)
 		settings.setValue("showRecentFiles", app_p.showRecentFiles);
+	if (!force && app_p.useLogFile != app_d.useLogFile)
+		settings.setValue("useLogFile", app_p.useLogFile);
 	if (!force && app_p.browseFilters != app_d.browseFilters)
 		settings.setValue("browseFilters", app_p.browseFilters);
 	if (!force && app_p.registerFilters != app_d.registerFilters)
@@ -718,6 +717,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showRecentFiles = true;
 	app_p.browseFilters = QStringList();
 	app_p.showMenuBar = true;
+	app_p.useLogFile = false;
 
 	// now set default show options
 	app_p.showFileInfoLabel.setBit(mode_default, false);
@@ -863,7 +863,6 @@ Settings::Settings() {
 	m_params = QSharedPointer<DkSettings>(new DkSettings());
 	m_settings = m_params->isPortable() ? QSharedPointer<QSettings>(new QSettings(m_params->settingsPath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
 
-	qDebug() << "portable nomacs: " << m_params->isPortable();
 }
 
 Settings& Settings::instance() { 

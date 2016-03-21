@@ -135,6 +135,10 @@ public:
 
 	static void registerFileVersion();
 
+	static void initializeDebug();
+	
+	static QString getLogFilePath();
+
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)

@@ -679,7 +679,7 @@ void DkImageContainerT::fetchImage() {
 		return;
 	}
 	
-	qDebug() << "fetching: " << filePath();
+	qInfo().noquote() << "loading" << filePath();
 	mFetchingImage = true;
 
 	connect(&mImageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
@@ -733,6 +733,7 @@ void DkImageContainerT::loadingFinished() {
 	
 	mLoadState = loaded;
 	emit fileLoadedSignal(true);
+	qInfo().noquote() << filePath() << "loaded";
 }
 
 void DkImageContainerT::downloadFile(const QUrl& url) {

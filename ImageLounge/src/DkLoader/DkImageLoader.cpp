@@ -218,6 +218,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 	//	//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop mShowing
 	//	return false;
 	//}
+	DkTimer dt;
 
 	// folder changed signal was emitted
 	if (mFolderUpdated && newDirPath == mCurrentDir) {
@@ -282,7 +283,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 		//else
 			createImages(files, true);
 
-		qDebug() << "new folder path: " << newDirPath << " contains: " << mImages.size() << " images";
+		qInfo().noquote().nospace() << newDirPath << " [" << mImages.size() << "] loaded in " << dt;
 	}
 	//else
 	//	qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
@@ -1810,7 +1811,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 		}
 	}
 
-	qDebug() << "WinAPI, indexed (" << fileList.size() <<") files in: " << dt.getTotal();
+	qInfo().nospace().noquote() << "WinAPI, indexed (" << fileList.size() <<") files in: " << dt.getTotal();
 #else
 
 	// true file list

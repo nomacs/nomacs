@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
+#include <QTime>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifndef DllCoreExport
@@ -49,125 +50,29 @@ namespace nmc {
  * This class is designed to measure the time of a method, especially
  * intervals and the total time can be measured.
  **/
-class DllCoreExport DkTimer {
-
-protected:
-	clock_t firstTick;	/**< the first tick**/
-	clock_t	lastTick;	/**< the last tick**/
+class DllCoreExport DkTimer : public QObject {
+	Q_OBJECT
 
 public:
 
 	/**
-	 * Initializes the class and stops the clock.
-	 **/
+	* Initializes the class and stops the clock.
+	**/
 	DkTimer();
+	virtual ~DkTimer() {}
 
-	/**
-	 * Default destructor.
-	 **/
-	~DkTimer() {};
+	friend DllCoreExport QDataStream& operator<<(QDataStream& s, const DkTimer& t);
+	friend DllCoreExport QDebug operator<< (QDebug d, const DkTimer &timer);
 
-	/**
-	 * Returns a string with the total time interval.
-	 * The time interval is measured from the time,
-	 * the object was initialized.
-	 * @return the time in seconds or milliseconds.
-	 **/
-	QString getTotal();
-
-	double getTotalTime();
-
-	/**
-	 * Returns a string with the time interval.
-	 * The time interval since the last call of stop(), getIvl()
-	 * or getTotal().
-	 * @return the time in seconds or milliseconds.
-	 **/
-	QString getIvl();
-
-	/**
-	 * Converts time to QString.
-	 * @param ct current time interval
-	 * @return QString the time interval as string
-	 **/ 
-	QString stringifyTime(double ct);
-
-	/**
-	 * Stops the clock.
-	 **/
-	void stop();
-
+	QString getTotal() const;
+	virtual QDataStream& put(QDataStream& s) const;
+	QString stringifyTime(int ct) const;
+	int elapsed() const;
 	void start();
 
-	/**
-	 * Returns the current time.
-	 * @return double current time in seconds.
-	 **/ 
-	double static getTime();
+protected:
+
+	QTime mTimer;
 };
 
-
-/**
- * A small class which measures the time.
- * This class is designed to measure the time of a method, especially
- * intervals and the total time can be measured.
- **/
-class DkIvlTimer : public DkTimer {
-
-private:
-	clock_t timeIvl;
-
-public:
-
-	/**
-	 * Initializes the class and stops the clock.
-	 **/
-	DkIvlTimer() : DkTimer() {
-		timeIvl = 0;
-	};
-
-	/**
-	 * Default destructor.
-	 **/
-	~DkIvlTimer() {};
-
-	/**
-	 * Divides the time interval by the specified value.
-	 * @param val the number of calls
-	 **/ 
-	void operator/= (const int &val) {
-
-		timeIvl /= (clock_t)val;
-	};
-
-
-	/**
-	 * Returns a string with the time interval.
-	 * The time interval of all start() stop() calls.
-	 * @return the time in seconds or milliseconds.
-	 **/
-	QString getIvl() {
-		
-		double ct = (double) (timeIvl) / CLOCKS_PER_SEC;
-		
-		// return the interval in ms or sec depending on the interval's length
-		return stringifyTime(ct);
-	};
-
-	/**
-	 * Starts the clock.
-	 **/ 
-	void start() {
-		lastTick = clock();
-	};
-
-	/**
-	 * Stops the clock.
-	 **/
-	void stop() {
-		clock_t cTime = clock();
-		timeIvl += cTime-lastTick;
-		lastTick = cTime;
-	};
-};
 };

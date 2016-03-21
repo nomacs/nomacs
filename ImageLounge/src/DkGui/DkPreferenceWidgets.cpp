@@ -1102,14 +1102,24 @@ void DkAdvancedPreference::createLayout() {
 		tr("NOTE: this allows for rotating JPGs without loosing information."));
 	cbSaveExif->setChecked(Settings::param().metaData().saveExifOrientation);
 
+	QCheckBox* cbUseLog = new QCheckBox(tr("Use Log File"), this);
+	cbUseLog->setObjectName("useLog");
+	cbUseLog->setToolTip(tr("If checked, a log file will be created."));
+	cbUseLog->setChecked(Settings::param().app().useLogFile);
+
 	DkGroupWidget* loadFileGroup = new DkGroupWidget(tr("File Loading/Saving"), this);
 	loadFileGroup->addWidget(cbSaveDeleted);
 	loadFileGroup->addWidget(cbIgnoreExif);
 	loadFileGroup->addWidget(cbSaveExif);
 
+	DkGroupWidget* useLogGroup = new DkGroupWidget(tr("Logging"), this);
+	useLogGroup->addWidget(cbUseLog);
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(loadRawGroup);
 	layout->addWidget(loadFileGroup);
+	layout->addWidget(useLogGroup);
+
 }
 
 void DkAdvancedPreference::on_loadRaw_buttonClicked(int buttonId) const {
@@ -1140,6 +1150,12 @@ void DkAdvancedPreference::on_saveExif_toggled(bool checked) const {
 
 	if (Settings::param().metaData().saveExifOrientation != checked)
 		Settings::param().metaData().saveExifOrientation = checked;
+}
+
+void DkAdvancedPreference::on_useLog_toggled(bool checked) const {
+
+	if (Settings::param().app().useLogFile != checked)
+		Settings::param().app().useLogFile = checked;
 }
 
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {

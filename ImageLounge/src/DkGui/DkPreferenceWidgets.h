@@ -102,7 +102,7 @@ public:
 
 	void addTabWidget(DkPreferenceTabWidget* tabWidget);
 
-	public slots:
+public slots:
 	void changeTab();
 	void setCurrentIndex(int index);
 	void previousTab();
@@ -257,6 +257,7 @@ public slots:
 	void on_saveDeleted_toggled(bool checked) const;
 	void on_ignoreExif_toggled(bool checked) const;
 	void on_saveExif_toggled(bool checked) const;
+	void on_useLog_toggled(bool checked) const;
 
 signals:
 	void infoSignal(const QString& msg) const;
