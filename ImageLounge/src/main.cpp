@@ -31,7 +31,7 @@
 	#pragma comment (lib, "shlwapi.lib")
 #endif
 
-#if defined(_MSC_BUILD) && !defined(QT_NO_DEBUG_OUTPUT) // fixes cmake bug - really release uses subsystem windows, debug and release subsystem console
+#if defined(_MSC_BUILD) && !defined(DK_INSTALL) // only final release will be compiled without a CMD
 	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
 #else
 	#pragma comment (linker, "/SUBSYSTEM:WINDOWS")
@@ -62,7 +62,7 @@
 #include "DkPong.h"
 #include "DkUtils.h"
 
-//#include <iostream>
+#include <iostream>
 #include <cassert>
 
 #ifdef Q_OS_WIN
@@ -77,8 +77,6 @@ int main(int argc, wchar_t *argv[]) {
 int main(int argc, char *argv[]) {
 #endif
 
-	qDebug() << "nomacs - Image Lounge\n";
-
 #ifdef READ_TUWIEN
 	QCoreApplication::setOrganizationName("TU Wien");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
@@ -92,6 +90,29 @@ int main(int argc, char *argv[]) {
 	nmc::DkUtils::registerFileVersion();
 
 	QApplication a(argc, (char**)argv);
+
+	// init settings
+	nmc::Settings::param().initFileFilters();
+	QSettings& settings = nmc::Settings::instance().getSettings();
+
+	nmc::Settings::param().load();	// load in constructor??
+
+	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
+	nmc::Settings::param().app().currentAppMode = mode;
+
+	// init debug
+	nmc::DkUtils::initializeDebug();
+
+	if (nmc::Settings::param().app().useLogFile)
+		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
+
+	qInfo() << "Hi there";
+	qInfo().noquote() << "my name is" << QApplication::organizationName() << "|" << QApplication::applicationName() 
+		<< " v" << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? "portable" : "installed");
+	
+	if (!nmc::Settings::param().app().openFilters.empty())
+		qInfo().noquote() << "supported image extensions:" << nmc::Settings::param().app().openFilters[0];
+
 	qDebug() << "argument count: " << argc;
 
 	// CMD parser --------------------------------------------------------------------
@@ -129,14 +150,6 @@ int main(int argc, char *argv[]) {
 
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
-
-	nmc::Settings::param().initFileFilters();
-	QSettings& settings = nmc::Settings::instance().getSettings();
-	
-	nmc::Settings::param().load();	// load in constructor??
-
-	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
-	nmc::Settings::param().app().currentAppMode = mode;
 
 	createPluginsPath();
 
@@ -197,7 +210,7 @@ int main(int argc, char *argv[]) {
 	if (w)
 		w->onWindowLoaded();
 
-	qDebug() << "Initialization takes: " << dt.getTotal();
+	qInfo() << "Initialization takes: " << dt;
 
 	if (!parser.positionalArguments().empty()) {
 		w->loadFile(QFileInfo(parser.positionalArguments()[0]).absoluteFilePath());	// update folder + be silent

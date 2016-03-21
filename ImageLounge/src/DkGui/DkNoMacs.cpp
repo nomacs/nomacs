@@ -338,7 +338,7 @@ void DkNoMacs::loadStyleSheet() {
 		qApp->setStyleSheet(cssString);
 		file.close();
 
-		qDebug() << "CSS loaded from: " << cssInfo.absoluteFilePath();
+		qInfo() << "CSS loaded from: " << cssInfo.absoluteFilePath();
 		//qDebug() << "style: \n" << cssString;
 	}
 }
@@ -2979,12 +2979,12 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	Settings::param().app().appMode = 0;
 	initLanClient();
 	//emit sendTitleSignal(windowTitle());
-	qDebug() << "LAN client created in: " << dt.getTotal();
+	qDebug() << "LAN client created in: " << dt;
 	// show it...
 	show();
 	Settings::param().app().appMode = DkSettings::mode_default;
 
-	qDebug() << "mViewport (normal) created in " << dt.getTotal();
+	qInfo() << "Viewport created in " << dt;
 }
 
 // FramelessNoMacs --------------------------------------------------------------------

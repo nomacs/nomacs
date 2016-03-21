@@ -200,8 +200,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		qDebug() << "metaData is NULL!";
 	}
 
-	qDebug() << "ba size: " << ba;
-
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = fInfo.suffix().toLower();
 
@@ -272,8 +270,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		loadFileToBuffer(mFile, lba);
 		imgLoaded = img.loadFromData(lba);
 		
-		qDebug() << "lba size: " << lba.size();
-
 		if (imgLoaded) mLoader = qt_loader;
 	}  
 

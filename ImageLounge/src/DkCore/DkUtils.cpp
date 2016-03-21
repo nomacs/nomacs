@@ -65,6 +65,48 @@
 
 namespace nmc {
 
+
+void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
+
+	if (!Settings::param().app().useLogFile)
+		return;	// should not be called anyhow
+
+	static QString filePath;
+
+	if (filePath.isEmpty())
+		filePath = DkUtils::getLogFilePath();
+
+	QString txt;
+
+	switch (type) {
+	case QtDebugMsg:
+		return;	// ignore debug messages
+		break;
+	case QtInfoMsg:
+		txt = msg;
+		break;
+	case QtWarningMsg:
+		txt = "[Warning] " + msg;
+		break;
+	case QtCriticalMsg:
+		txt = "[Critical] " + msg;
+		break;
+	case QtFatalMsg:
+		txt = "[FATAL] " + msg;
+		break;
+	default:
+		return;
+	}
+
+	QFile outFile(filePath);
+	outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+	QTextStream ts(&outFile);
+	ts << txt << endl;
+}
+
+
+
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
 double DkMemory::getTotalMemory() {
 
@@ -356,6 +398,26 @@ void DkUtils::registerFileVersion() {
 	QApplication::setApplicationVersion(version);
 }
 
+void DkUtils::initializeDebug() {
+
+	if (Settings::param().app().useLogFile)
+		qInstallMessageHandler(qtMessageOutput);
+
+	// format console
+	QString p = "%{if-info}[INFO] %{endif}%{if-warning}[WARNING] %{endif}%{if-critical}[CRITICAL] %{endif}%{if-fatal}[ERROR] %{endif}%{message}";
+	qSetMessagePattern(p);
+}
+
+QString DkUtils::getLogFilePath() {
+	
+	QString logPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+	QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss-");
+
+	QFileInfo fileInfo(logPath);
+	fileInfo.setFile(fileInfo.dir(), now + "log.txt");
+
+	return fileInfo.absoluteFilePath();
+}
 
 void DkUtils::mSleep(int ms) {
 

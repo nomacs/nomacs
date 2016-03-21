@@ -1219,7 +1219,7 @@ void DkViewPort::copyImageBuffer() {
 
 void DkViewPort::animateFade() {
 
-	mFadeOpacity = 1.0f-(float)mFadeTime.getTotalTime()/Settings::param().display().fadeSec;
+	mFadeOpacity = 1.0f-(float)(mFadeTime.elapsed()/1000.0)/Settings::param().display().fadeSec;
 	
 	if (mFadeOpacity <= 0) {
 		mFadeBuffer = QImage();

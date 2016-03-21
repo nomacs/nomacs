@@ -259,13 +259,13 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 			qDebug() << "[thumb] saved to exif data";
 		}
 		catch(...) {
-			qDebug() << "Sorry, I could not save the metadata";
+			qWarning() << "Sorry, I could not save the metadata";
 		}
 	}
 
 
 	if (!thumb.isNull())
-		qDebug() << "[thumb] " << fInfo.fileName() << "(" << thumb.width() << " x " << thumb.height() << ") loaded in: " << dt.getTotal() << ((exifThumb) ? " from EXIV" : " from File");
+		qInfo().noquote().nospace() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
 
 	return thumb;
 }

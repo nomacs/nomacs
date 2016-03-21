@@ -145,6 +145,7 @@ public:
 		QBitArray showMetaDataDock;
 		QBitArray showHistoryDock;
 		bool showRecentFiles;
+		bool useLogFile;
 		int appMode;
 		int currentAppMode;
 		bool privateMode;

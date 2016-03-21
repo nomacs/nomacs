@@ -33,66 +33,94 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QString>
+#include <QDebug>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
+// DkTimer --------------------------------------------------------------------
+/**
+* Initializes the class and stops the clock.
+**/
 DkTimer::DkTimer() {
-	firstTick = clock();
-	lastTick = firstTick;
+	mTimer.start();
 }
 
-QString DkTimer::getTotal() {
-	lastTick = clock();
-	double ct = (double) (lastTick-firstTick) / CLOCKS_PER_SEC;
+QDataStream& operator<<(QDataStream& s, const DkTimer& t) {
 
-	return stringifyTime(ct);
+	// this makes the operator<< virtual (stroustrup)
+	return t.put(s);
 }
 
-double DkTimer::getTotalTime() {
+QDebug operator<<(QDebug d, const DkTimer& timer) {
 
-	lastTick = clock();
-	return (double) (lastTick-firstTick) / CLOCKS_PER_SEC;
+	d << qPrintable(timer.stringifyTime(timer.elapsed()));
+	return d;
 }
 
-QString DkTimer::getIvl() {
-	
-	clock_t tmp = clock();
-	double ct = (double) (tmp-lastTick) / CLOCKS_PER_SEC;
-	lastTick = tmp;
+/**
+* Returns a string with the total time interval.
+* The time interval is measured from the time,
+* the object was initialized.
+* @return the time in seconds or milliseconds.
+**/
+QString DkTimer::getTotal() const {
 
-	return stringifyTime(ct);
+	return qPrintable(stringifyTime(mTimer.elapsed()));
 }
 
-QString DkTimer::stringifyTime(double ct) {
+QDataStream& DkTimer::put(QDataStream& s) const {
 
-	std::string msg = " ";
+	s << stringifyTime(mTimer.elapsed());
 
-	if (ct < 1)
-		msg += DkUtils::stringify(ct * 1000) + " ms";
-	else if (ct < 60)
-		msg += DkUtils::stringify(ct) + " sec";
-	else if (ct < 3600) {
-		double m = qFloor((float)(ct / 60.0));
-		msg += DkUtils::stringify(m) + " min " + DkUtils::stringify(ct - m * 60, 0) + " sec";
-	}
-	else {
-		double h = qFloor((float)(ct / 3600.0));
-		msg += DkUtils::stringify(h) + " hours " + DkUtils::stringify(ct - h*3600.0f, 0) + " min";
-	}
-
-	return QString::fromStdString(msg);
-
+	return s;
 }
-void DkTimer::stop() {
-	lastTick = clock();
+
+/**
+* Converts time to QString.
+* @param ct current time interval
+* @return QString the time interval as string
+**/ 
+QString DkTimer::stringifyTime(int ct) const {
+
+	if (ct < 1000)
+		return QString::number(ct) + " ms";
+
+	int v = qRound(ct / 1000.0);
+	int sec = v % 60;	v = qRound(v / 60.0);
+	int min = v % 60;	v = qRound(v / 60.0);
+	int h = v % 24;		v = qRound(v / 24.0);
+	int d = v;
+
+	QString ds = QString::number(d);
+	QString hs = QString::number(h);
+	QString mins = QString::number(min);
+	QString secs = QString::number(sec);
+
+	if (ct < 60000)
+		return secs + " sec";
+
+	if (min < 10)
+		mins = "0" + mins;
+	if (sec < 10)
+		secs = "0" + secs;
+	if (h < 10)
+		hs = "0" + hs;
+
+	if (ct < 3600000)
+		return mins + ":" + secs;
+	if (d == 0)
+		return hs + ":" + mins + ":" + secs;
+
+	return ds + "days" + hs + ":" + mins + ":" + secs;
 }
+
 void DkTimer::start() {
-	firstTick = clock();
-	lastTick = firstTick;
+	mTimer.restart();
 }
-double DkTimer::getTime() {
-	return (double) clock();
+
+int DkTimer::elapsed() const {
+	return mTimer.elapsed();
 }
 }
