@@ -26,7 +26,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt55tools qt55svg qt55base libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/";
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/"; fi
 
   - mkdir build
   - cd build
