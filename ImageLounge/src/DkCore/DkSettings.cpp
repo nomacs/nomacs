@@ -365,7 +365,9 @@ void DkSettings::load() {
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
 	display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
-	display_p.fadeSec = settings.value("fadeSec", display_p.fadeSec).toFloat();
+	display_p.animationDuration = settings.value("fadeSec", display_p.animationDuration).toFloat();
+	display_p.alwaysAnimate = settings.value("alwaysAnimate", display_p.alwaysAnimate).toBool();
+	display_p.transition = (TransitionMode)settings.value("transition", display_p.transition).toInt();
 	display_p.defaultBackgroundColor = settings.value("useDefaultColor", display_p.defaultBackgroundColor).toBool();
 	display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
@@ -593,8 +595,12 @@ void DkSettings::save(bool force) {
 		settings.setValue("displaySquaredThumbs", display_p.displaySquaredThumbs);
 	if (!force && display_p.showThumbLabel != display_d.showThumbLabel)
 		settings.setValue("showThumbLabel", display_p.showThumbLabel);
-	if (!force && display_p.fadeSec != display_d.fadeSec)
-		settings.setValue("fadeSec", display_p.fadeSec);
+	if (!force && display_p.alwaysAnimate != display_d.alwaysAnimate)
+		settings.setValue("alwaysAnimate", display_p.alwaysAnimate);
+	if (!force && display_p.animationDuration != display_d.animationDuration)
+		settings.setValue("fadeSec", display_p.animationDuration);
+	if (!force && display_p.transition != display_d.transition)
+		settings.setValue("transition", display_p.transition);
 	if (!force && display_p.defaultBackgroundColor != display_d.defaultBackgroundColor)
 		settings.setValue("useDefaultColor", display_p.defaultBackgroundColor);
 	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
@@ -781,7 +787,9 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
 	display_p.showThumbLabel = true;
-	display_p.fadeSec = 0.5f;
+	display_p.animationDuration = 0.5f;
+	display_p.alwaysAnimate = false;
+	display_p.transition = trans_swipe;
 	display_p.defaultBackgroundColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;

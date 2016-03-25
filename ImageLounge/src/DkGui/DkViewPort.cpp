@@ -69,7 +69,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	//qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
 
 	mRepeatZoomTimer = new QTimer(this);
-	mFadeTimer = new QTimer(this);
+	mAnimationTimer = new QTimer(this);
 
 	// try loading a custom file
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
@@ -79,8 +79,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	mRepeatZoomTimer->setInterval(20);
 	connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
 
-	mFadeTimer->setInterval(5);
-	connect(mFadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
+	mAnimationTimer->setInterval(5);
+	connect(mAnimationTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
 
 	//no border
 	setMouseTracking (true);//receive mouse event everytime
@@ -296,12 +296,15 @@ void DkViewPort::setImage(QImage newImg) {
 	mOldImgRect = mImgRect;
 	
 	// init fading
-	if (Settings::param().display().fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
-		mFadeTimer->start();
-		mFadeTime.start();
+	if (Settings::param().display().animationDuration && 
+		(mController->getPlayer()->isPlaying() ||
+			DkActionManager::instance().getMainWindow()->isFullScreen() ||
+			Settings::param().display().alwaysAnimate)) {
+		mAnimationTimer->start();
+		mAnimationTime.start();
 	}
 	else
-		mFadeOpacity = 0.0f;
+		mAnimationValue = 0.0f;
 
 	update();
 
@@ -675,13 +678,39 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			qDebug() << "added to image...";
 		}
 
-		// TODO: if fading is active we interpolate with background instead of the other image
-		draw(&painter, 1.0f-mFadeOpacity);
+		if (Settings::param().display().transition == DkSettings::trans_swipe &&
+			!mAnimationBuffer.isNull()) {
+		
+			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, false);
 
-		if (/*mFadeTimer->isActive() && */!mFadeBuffer.isNull()) {
+			double dx = mNextSwipe ? width()*(mAnimationValue) : -width()*(mAnimationValue);
+
+			QTransform swipeTransform;
+			swipeTransform.translate(dx, 0);
+			painter.setTransform(swipeTransform);
+		}
+
+		// TODO: if fading is active we interpolate with background instead of the other image
+		double opacity = (Settings::param().display().transition == DkSettings::trans_fade) ? 1.0 - mAnimationValue : 1.0;
+		draw(&painter, opacity);
+
+		if (!mAnimationBuffer.isNull() && mAnimationValue > 0) {
+
 			float oldOp = (float)painter.opacity();
-			painter.setOpacity(mFadeOpacity);
-			painter.drawImage(mFadeImgViewRect, mFadeBuffer, mFadeBuffer.rect());
+			
+			// fade transition
+			if (Settings::param().display().transition == DkSettings::trans_fade) {
+				painter.setOpacity(mAnimationValue);
+			}
+			else if (Settings::param().display().transition == DkSettings::trans_swipe) {
+			
+				double dx = mNextSwipe ? -width()*(1.0-mAnimationValue) : width()*(1.0-mAnimationValue);
+				QTransform swipeTransform;
+				swipeTransform.translate(dx, 0);
+				painter.setTransform(swipeTransform);
+			}
+
+			painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
 			painter.setOpacity(oldOp);
 		}
 
@@ -1224,15 +1253,23 @@ void DkViewPort::copyImageBuffer() {
 
 void DkViewPort::animateFade() {
 
-	mFadeOpacity = 1.0f-(float)(mFadeTime.elapsed()/1000.0)/Settings::param().display().fadeSec;
+	mAnimationValue = 1.0f-(float)(mAnimationTime.elapsed()/1000.0)/Settings::param().display().animationDuration;
 	
-	if (mFadeOpacity <= 0) {
-		mFadeBuffer = QImage();
-		mFadeTimer->stop();
-		mFadeOpacity = 0;
+	// slow in - slow out
+	double speed = mAnimationValue > 0.5 ? abs(1.0 - mAnimationValue) : abs(mAnimationValue);
+	speed *= .05;
+
+	mAnimationValue += (float)speed;
+
+	qDebug() << "fade opacity: " << mAnimationValue << "speed" << speed << "elapsed: " << mAnimationTime.elapsed();
+
+	if (mAnimationValue <= 0) {
+		mAnimationBuffer = QImage();
+		mAnimationTimer->stop();
+		mAnimationValue = 0;
 	}
 
-	qDebug() << "new opacity: " << mFadeOpacity;
+	qDebug() << "new opacity: " << mAnimationValue;
 
 	update();
 }
@@ -1376,11 +1413,14 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-	if (Settings::param().display().fadeSec && (mController->getPlayer()->isPlaying() || (DkActionManager::instance().getMainWindow()->isFullScreen()))) {
-		mFadeBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+	if (Settings::param().display().animationDuration && 
+			(mController->getPlayer()->isPlaying() || 
+			DkActionManager::instance().getMainWindow()->isFullScreen() || 
+			Settings::param().display().alwaysAnimate)) {
+		mAnimationBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;
-		mFadeOpacity = 1.0f;
+		mAnimationValue = 1.0f;
 	}
 
 	int success = true;
@@ -1464,6 +1504,8 @@ void DkViewPort::loadFileFast(int skipIdx) {
 
 	if (!unloadImage())
 		return;
+
+	mNextSwipe = skipIdx > 0;
 
 	if (!((qApp->keyboardModifiers() == mAltMod || Settings::param().sync().syncActions) &&
 		Settings::param().sync().syncMode == DkSettings::sync_mode_remote_control)) {
@@ -1826,7 +1868,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 	DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter *painter, float) {
+void DkViewPortFrameless::draw(QPainter *painter, double) {
 	
 	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		QColor col = QColor(0,0,0);
@@ -2239,7 +2281,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	
 }
 
-void DkViewPortContrast::draw(QPainter *painter, float opacity) {
+void DkViewPortContrast::draw(QPainter *painter, double opacity) {
 
 	if (!mDrawFalseColorImg || mSvg || mMovie) {
 		DkBaseViewPort::draw(painter, opacity);

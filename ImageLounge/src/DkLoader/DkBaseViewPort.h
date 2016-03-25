@@ -222,7 +222,7 @@ protected:
 	QTimer* mZoomTimer;
 
 	// functions
-	virtual void draw(QPainter *painter, float opacity = 1.0f);
+	virtual void draw(QPainter *painter, double opacity = 1.0);
 	virtual void updateImageMatrix();
 	virtual QTransform getScaledImageMatrix() const;
 	virtual QTransform getScaledImageMatrix(const QSize& size) const;

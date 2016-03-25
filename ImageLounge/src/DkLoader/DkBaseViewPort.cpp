@@ -640,7 +640,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter *painter, float opacity) {
+void DkBaseViewPort::draw(QPainter *painter, double opacity) {
 
 	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);

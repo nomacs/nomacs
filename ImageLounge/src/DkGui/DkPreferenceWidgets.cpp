@@ -649,6 +649,24 @@ void DkDisplayPreference::createLayout() {
 	// slideshow
 	QLabel* fadeImageLabel = new QLabel(tr("Image Transition"), this);
 
+	QComboBox* cbTransition = new QComboBox(this);
+	cbTransition->setObjectName("transition");
+	cbTransition->setToolTip(tr("Choose a transition when loading a new image"));
+
+	for (int idx = 0; idx < DkSettings::trans_end; idx++) {
+
+		QString str = tr("Unknown Transition");
+
+		switch (idx) {
+		case DkSettings::trans_appear:	str = tr("Appear"); break;
+		case DkSettings::trans_swipe:	str = tr("Swipe");	break;
+		case DkSettings::trans_fade:	str = tr("Fade");	break;
+		}
+
+		cbTransition->addItem(str);
+	}
+	cbTransition->setCurrentIndex(Settings::param().display().transition);
+
 	QDoubleSpinBox* fadeImageBox = new QDoubleSpinBox(this);
 	fadeImageBox->setObjectName("fadeImageBox");
 	fadeImageBox->setToolTip(tr("Define the image transition speed."));
@@ -656,10 +674,15 @@ void DkDisplayPreference::createLayout() {
 	fadeImageBox->setMinimum(0.0);
 	fadeImageBox->setMaximum(3);
 	fadeImageBox->setSingleStep(.2);
-	fadeImageBox->setValue(Settings::param().display().fadeSec);
+	fadeImageBox->setValue(Settings::param().display().animationDuration);
+
+	QCheckBox* cbAlwaysAnimate = new QCheckBox(tr("Always Animate Image Loading"), this);
+	cbAlwaysAnimate->setObjectName("alwaysAnimate");
+	cbAlwaysAnimate->setToolTip(tr("If unchecked, loading is only animated if nomacs is fullscreen"));
+	cbAlwaysAnimate->setChecked(Settings::param().display().alwaysAnimate);
 
 	QLabel* displayTimeLabel = new QLabel(tr("Display Time"), this);
-
+	
 	QDoubleSpinBox* displayTimeBox = new QDoubleSpinBox(this);
 	displayTimeBox->setObjectName("displayTimeBox");
 	displayTimeBox->setToolTip(tr("Define the time an image is displayed."));
@@ -671,7 +694,9 @@ void DkDisplayPreference::createLayout() {
 
 	DkGroupWidget* slideshowGroup = new DkGroupWidget(tr("Slideshow"), this);
 	slideshowGroup->addWidget(fadeImageLabel);
+	slideshowGroup->addWidget(cbTransition);
 	slideshowGroup->addWidget(fadeImageBox);
+	slideshowGroup->addWidget(cbAlwaysAnimate);
 	slideshowGroup->addWidget(displayTimeLabel);
 	slideshowGroup->addWidget(displayTimeBox);
 
@@ -705,8 +730,8 @@ void DkDisplayPreference::on_interpolationBox_valueChanged(int value) const {
 
 void DkDisplayPreference::on_fadeImageBox_valueChanged(double value) const {
 
-	if (Settings::param().display().fadeSec != value)
-		Settings::param().display().fadeSec = (float)value;
+	if (Settings::param().display().animationDuration != value)
+		Settings::param().display().animationDuration = (float)value;
 
 }
 
@@ -742,6 +767,20 @@ void DkDisplayPreference::on_zoomToFit_toggled(bool checked) const {
 
 	if (Settings::param().display().zoomToFit != checked)
 		Settings::param().display().zoomToFit = checked;
+
+}
+
+void DkDisplayPreference::on_transition_currentIndexChanged(int index) const {
+
+	if (Settings::param().display().transition != index)
+		Settings::param().display().transition = (DkSettings::TransitionMode)index;
+
+}
+
+void DkDisplayPreference::on_alwaysAnimate_toggled(bool checked) const {
+
+	if (Settings::param().display().alwaysAnimate != checked)
+		Settings::param().display().alwaysAnimate = checked;
 
 }
 

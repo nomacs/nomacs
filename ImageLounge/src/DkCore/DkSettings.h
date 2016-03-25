@@ -128,6 +128,14 @@ public:
 		sync_mode_end,
 	};
 
+	enum TransitionMode {
+		trans_appear,
+		trans_fade,
+		trans_swipe,
+
+		trans_end
+	};
+
 	struct App {
 		bool showToolBar;
 		bool showMenuBar;
@@ -186,7 +194,10 @@ public:
 		bool showBorder;
 		bool displaySquaredThumbs;
 		bool showThumbLabel;
-		float fadeSec;
+		
+		TransitionMode transition;
+		bool alwaysAnimate;
+		float animationDuration;
 	};
 
 	struct Global {

@@ -196,6 +196,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual bool event(QEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
+	//QTransform getSwipeTransform() const;
 
 	bool mTestLoaded = false;
 	bool mGestureStarted = false;
@@ -205,13 +206,14 @@ protected:
 	QTimer* mRepeatZoomTimer;// = new QTimer(this);
 	
 	// fading stuff
-	QTimer* mFadeTimer;// = new QTimer(this);
-	DkTimer mFadeTime;
-	QImage mFadeBuffer;
-	float mFadeOpacity;
+	QTimer* mAnimationTimer;
+	DkTimer mAnimationTime;
+	QImage mAnimationBuffer;
+	double mAnimationValue;
 	QRectF mFadeImgViewRect;
 	QRectF mFadeImgRect;
-	
+	bool mNextSwipe = true;
+
 	// fun
 	bool mDissolveImage = false;
 	
@@ -274,7 +276,7 @@ protected:
 	// functions
 	//QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
-	virtual void draw(QPainter *painter, float opacity = 1.0f);
+	virtual void draw(QPainter *painter, double opacity = 1.0);
 	void drawFrame(QPainter* painter);
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
@@ -311,7 +313,7 @@ public slots:
 	virtual void setImage(QImage newImg);
 
 protected:
-	virtual void draw(QPainter *painter, float opacity = 1.0f);
+	virtual void draw(QPainter *painter, double opacity = 1.0);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
