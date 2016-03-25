@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "XproII InstaLikeFilter",
+	"Tagline" 		: "Applies the XproII Filter",
+	"Description"	: "Applies the XproII Filter",
+	"AuthorName" 	: "Praveen Agrawal",
+	"Company"		: "",
+	"DateCreated" 	: "Today",
+	"DateModified" 	: "Modify if edited",
+	"PluginId"		: "https://guidgenerator.com/ without hyphens, e.g.: 2c1f60f24438431a8dc0ab43b2caad6a",
+	"Version"		: "0.1.0"
+}
