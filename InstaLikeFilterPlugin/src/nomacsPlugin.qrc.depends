@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/InstagramFilterPlugin">
+        <file>img/praveen.png</file>
+    </qresource>
+</RCC>
