@@ -1511,7 +1511,8 @@ void DkNoMacs::renameFile() {
 		QFileInfo renamedFile = QFileInfo(file.absoluteDir(), newFileName);
 
 		// overwrite file?
-		if (renamedFile.exists()) {
+		// the second comparison is important for windows (case insensitive filenames)
+		if (renamedFile.exists() && renamedFile.absoluteFilePath().compare(file.absoluteFilePath(), Qt::CaseInsensitive) != 0) {
 
 			QMessageBox infoDialog(this);
 			infoDialog.setWindowTitle(tr("Question"));
