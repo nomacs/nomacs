@@ -94,10 +94,10 @@ set(OpenCV_REQUIRED_MODULES core imgproc FORCE)
 foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
 	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Release)
+	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 	
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
 	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 
 endforeach(opencvlib)
 
