@@ -165,6 +165,7 @@ public:
 
 	struct Display {
 		int keepZoom;
+		bool zoomToFit;
 		bool invertZoom;
 		bool tpPattern;
 		QColor highlightColor;

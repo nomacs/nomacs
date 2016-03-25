@@ -274,10 +274,12 @@ void DkViewPort::setImage(QImage newImg) {
 	//qDebug() << "new image (mViewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 	//qDebug() << "keep zoom is always: " << (Settings::param().display().keepZoom == DkSettings::zoom_always_keep);
 
-	if (!Settings::param().slideShow().moveSpeed && (Settings::param().display().keepZoom == DkSettings::zoom_never_keep || 
+	if (!Settings::param().slideShow().moveSpeed && (Settings::param().display().keepZoom == DkSettings::zoom_never_keep ||
 		(Settings::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
-		 mOldImgRect.isEmpty())
+		mOldImgRect.isEmpty()) {
+		
 		mWorldMatrix.reset();
+	}
 
 	updateImageMatrix();		
 
@@ -540,6 +542,9 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
+	else if (Settings::param().display().zoomToFit)
+		zoomToFit();
+
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {

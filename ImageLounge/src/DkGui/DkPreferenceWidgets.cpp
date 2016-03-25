@@ -587,8 +587,9 @@ DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
 void DkDisplayPreference::createLayout() {
 
 	// zoom settings
-	QCheckBox* invertZoom = new QCheckBox(tr("Invert zoom wheel behaviour"), this);
+	QCheckBox* invertZoom = new QCheckBox(tr("Invert mouse wheel behaviour for zooming"), this);
 	invertZoom->setObjectName("invertZoom");
+	invertZoom->setToolTip(tr("If checked, the mouse wheel behaviour is inverted while zooming."));
 	invertZoom->setChecked(Settings::param().display().invertZoom);
 
 	QLabel* interpolationLabel = new QLabel(tr("Show pixels if zoom level is above"), this);
@@ -614,6 +615,10 @@ void DkDisplayPreference::createLayout() {
 	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
 	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
 
+	QCheckBox* cbZoomToFit = new QCheckBox(tr("Always zoom to fit"), this);
+	cbZoomToFit->setObjectName("zoomToFit");
+	cbZoomToFit->setChecked(Settings::param().display().zoomToFit);
+
 	// check wrt the current settings
 	keepZoomButtons[Settings::param().display().keepZoom]->setChecked(true);
 
@@ -627,6 +632,7 @@ void DkDisplayPreference::createLayout() {
 	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_always_keep]);
 	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_keep_same_size]);
 	keepZoomGroup->addWidget(keepZoomButtons[DkSettings::zoom_never_keep]);
+	keepZoomGroup->addWidget(cbZoomToFit);
 	
 	// icon size
 	QSpinBox* sbIconSize = new QSpinBox(this);
@@ -730,6 +736,13 @@ void DkDisplayPreference::on_invertZoom_toggled(bool checked) const {
 
 	if (Settings::param().display().invertZoom != checked)
 		Settings::param().display().invertZoom = checked;
+}
+
+void DkDisplayPreference::on_zoomToFit_toggled(bool checked) const {
+
+	if (Settings::param().display().zoomToFit != checked)
+		Settings::param().display().zoomToFit = checked;
+
 }
 
 
