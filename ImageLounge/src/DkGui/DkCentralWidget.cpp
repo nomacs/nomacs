@@ -456,10 +456,10 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	mTabInfos.at(idx)->activate();
 	QSharedPointer<DkImageContainerT> imgC = mTabInfos.at(idx)->getImage();
 
-	// TODO: this is a fast fix because we release today
-	// better solution: check why this state might happen
-	if (!imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image)
-		mTabInfos.at(idx)->setMode(DkTabInfo::tab_recent_files);
+	//// TODO: this is a fast fix because we release today
+	//// better solution: check why this state might happen
+	//if (!imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image)
+	//	mTabInfos.at(idx)->setMode(DkTabInfo::tab_recent_files);
 
 	if (imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
 		mTabInfos.at(idx)->getImageLoader()->load(imgC);
@@ -469,9 +469,10 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		showThumbView();
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
+		showRecentFiles(false);
 		showPreferences();
 	}
-	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
+	else {
 		showViewPort();
 		mViewport->unloadImage();
 		mViewport->deactivate();
@@ -736,8 +737,7 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 void DkCentralWidget::showRecentFiles(bool show) {
 
 	// TODO: fix the missing recent files (e.g. after the thumbnails are loaded once)
-
-	if (show) {
+	if (show && currentViewMode() != DkTabInfo::tab_preferences) {
 		mRecentFilesWidget->setCustomStyle(!mViewport->getImage().isNull() || mThumbScrollWidget->isVisible());
 		mRecentFilesWidget->raise();
 		mRecentFilesWidget->show();
