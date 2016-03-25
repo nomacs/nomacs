@@ -2059,7 +2059,7 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::showRecentFiles(bool show) {
 
-	if (Settings::param().app().appMode != DkSettings::mode_frameless && !Settings::param().global().recentFiles.empty())
+	if (!Settings::param().global().recentFiles.empty())
 		getTabWidget()->showRecentFiles(show);
 
 }

@@ -184,6 +184,8 @@ int main(int argc, char *argv[]) {
 			mode = nmc::Settings::param().mode_contrast;
 		else
 			qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
+
+		nmc::Settings::param().app().currentAppMode = mode;
 	}
 
 	qDebug() << "mode: " << mode;
@@ -216,11 +218,15 @@ int main(int argc, char *argv[]) {
 		w->loadFile(QFileInfo(parser.positionalArguments()[0]).absoluteFilePath());	// update folder + be silent
 		qDebug() << "loading: " << parser.positionalArguments()[0];
 	}
-	else if (nmc::Settings::param().app().showRecentFiles)
-		w->showRecentFiles();
+	else {
+		bool showRecent = nmc::Settings::param().app().showRecentFiles;
+		showRecent &= nmc::Settings::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
+		w->showRecentFiles(showRecent);
+
+	}
 
 	// load directory preview
-	if (!parser.value(sourceDirOpt).isEmpty()) {
+	if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
 		nmc::DkCentralWidget* cw = w->getTabWidget();
 		cw->loadDirToTab(parser.value(sourceDirOpt));
 	}
@@ -238,7 +244,7 @@ int main(int argc, char *argv[]) {
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::Settings::param().app().currentAppMode).toInt();
 
 	if (fullScreenMode == nmc::Settings::param().mode_default_fullscreen		||
-		fullScreenMode == nmc::Settings::param().mode_frameless_fullscreen	||
+		fullScreenMode == nmc::Settings::param().mode_frameless_fullscreen		||
 		fullScreenMode == nmc::Settings::param().mode_contrast_fullscreen		||
 		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
