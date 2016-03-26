@@ -93,7 +93,7 @@ QString DkMarsPlugin::id() const {
 
 QImage DkMarsPlugin::image() const {
 
-    return QImage(":/MarsPlugin/img/preview.png");
+    return QImage(":/MarsPlugin/img/preview.jpg");
 }
 
 /**
