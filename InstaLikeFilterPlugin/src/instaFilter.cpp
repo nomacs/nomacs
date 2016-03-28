@@ -24,6 +24,8 @@
 
 #include "instaFilter.h"
 
+#include "DkTimer.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
@@ -191,6 +193,10 @@ QImage instaFilter::xProFilter(QImage imgInput)
     std::vector<cv::Mat> channels(3);
 	//cv::split(imgLAB, channels);
 	cv::split(img, channels);
+
+	nmc::DkTimer dt;
+
+
     for (int i = 0; i < img.size().height; i++)
     {
         for (int j = 0; j < img.size().width; j++)
@@ -204,6 +210,8 @@ QImage instaFilter::xProFilter(QImage imgInput)
             channels[2].at<uchar>(i,j) *= mask.at<double>(i, j);
         }
     }
+
+	qDebug() << "apply vignetting takes: " << dt;
     //cv::merge(channels,imgLAB);
     cv::merge(channels,img);
 
