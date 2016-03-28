@@ -24,8 +24,6 @@
 
 #include "instaFilter.h"
 
-#include "DkTimer.h"
-
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
@@ -149,16 +147,16 @@ QSharedPointer<nmc::DkImageContainer> instaFilter::runPlugin(const QString &runI
 
 QImage instaFilter::xProFilter(QImage imgInput)
 {
-	cv::Mat img = nmc::DkImage::qImage2Mat(imgInput);
-	
-	//Mask to create the vignette effect
-	cv::Mat mask(img.size(), CV_64F);
+    cv::Mat img = nmc::DkImage::qImage2Mat(imgInput);
+    
+    //Mask to create the vignette effect
+    cv::Mat mask(img.size(), CV_64F);
     mask.setTo(cv::Scalar(1));
-	
+    
     //The vignette effect is focused on the center of the image. We can change this if we want to focus at any other point
-	cv::Point center = cv::Point(mask.size().width/2, mask.size().height/2);
+    cv::Point center = cv::Point(mask.size().width/2, mask.size().height/2);
 
-	//The four corners of the image
+    //The four corners of the image
     std::vector<cv::Point> corners(4);
     corners[0] = cv::Point(0, 0);
     corners[1] = cv::Point(mask.size().width, 0);
@@ -180,7 +178,7 @@ QImage instaFilter::xProFilter(QImage imgInput)
         for (int j = 0; j < mask.cols; j++)
         {
             double temp = (sqrt(pow((double) (center.x - j), 2) + pow((double) (center.y - i), 2))) / maxImageRadius;
-            temp = temp * 0.8;
+            temp = temp * 0.5;
             mask.at<double>(i, j) = pow(cos(temp), 4);
         }
     }
@@ -191,34 +189,69 @@ QImage instaFilter::xProFilter(QImage imgInput)
 
     //Apply the mask to the L channel (Luminance channel)
     std::vector<cv::Mat> channels(3);
-	//cv::split(imgLAB, channels);
-	cv::split(img, channels);
-
-	nmc::DkTimer dt;
-
-
+    //cv::split(imgLAB, channels);
+    cv::split(img, channels);
     for (int i = 0; i < img.size().height; i++)
     {
         for (int j = 0; j < img.size().width; j++)
         {
             /*cv::Vec3b value = imgLAB.at<cv::Vec3b>(i, j);
-            value.val[0] *= mask.at<double>(i, j);	//Changing only the Luminance value so as to change only brightness
+            value.val[0] *= mask.at<double>(i, j);  //Changing only the Luminance value so as to change only brightness
             imgLAB.at<cv::Vec3b>(i, j) =  value;*/
 
+            // Vignetting
             channels[0].at<uchar>(i,j) *= mask.at<double>(i, j);
             channels[1].at<uchar>(i,j) *= mask.at<double>(i, j);
             channels[2].at<uchar>(i,j) *= mask.at<double>(i, j);
+
+            //Colour Filter
+            if(channels[2].at<uchar>(i,j)>127)  //Red
+                channels[2].at<uchar>(i,j) = (int)(-0.00555*pow(channels[2].at<uchar>(i,j),2) + 3.123*channels[2].at<uchar>(i,j) - 180.4579);
+            else
+                channels[2].at<uchar>(i,j) = (int)(0.00608*pow(channels[2].at<uchar>(i,j),2) + 0.22425*channels[2].at<uchar>(i,j));
+            
+            if(channels[1].at<uchar>(i,j)>127)  //Green
+                channels[1].at<uchar>(i,j) = (int)(-0.00555*pow(channels[1].at<uchar>(i,j),2) + 3.123*channels[1].at<uchar>(i,j) - 180.4579);
+            else if(channels[1].at<uchar>(i,j)<=127)
+                channels[1].at<uchar>(i,j) = (int)(0.00608*pow(channels[1].at<uchar>(i,j),2) + 0.22425*channels[1].at<uchar>(i,j));
+
+            //Blue
+            channels[0].at<uchar>(i,j) = (int)(0.804*channels[0].at<uchar>(i,j) + 20.0);
+
+            /*if(channels[0].at<uchar>(i,j)>127)    //Green
+                channels[0].at<uchar>(i,j) = (int)(-0.00555*pow(channels[0].at<uchar>(i,j),2) + 3.123*channels[0].at<uchar>(i,j) - 180.4579);
+            else if(channels[0].at<uchar>(i,j)<=127)
+                channels[0].at<uchar>(i,j) = (int)(0.00608*pow(channels[0].at<uchar>(i,j),2) + 0.22425*channels[0].at<uchar>(i,j));
+*/
+
+            if(channels[0].at<uchar>(i,j)>255)
+                channels[0].at<uchar>(i,j) = 255;
+            if(channels[0].at<uchar>(i,j)<0)
+                channels[0].at<uchar>(i,j) = 0;
+            
+            if(channels[1].at<uchar>(i,j)>255)
+                channels[1].at<uchar>(i,j) = 255;
+            if(channels[1].at<uchar>(i,j)<0)
+                channels[1].at<uchar>(i,j) = 0;
+            
+            if(channels[2].at<uchar>(i,j)>255)
+                channels[2].at<uchar>(i,j) = 255;
+            if(channels[2].at<uchar>(i,j)<0)
+                channels[2].at<uchar>(i,j) = 0;
+
         }
     }
 
-	qDebug() << "apply vignetting takes: " << dt;
+
+
     //cv::merge(channels,imgLAB);
     cv::merge(channels,img);
 
     //Convert back to the RGB colour scale
-    cv::Mat output(img.size(), CV_8UC3);
-    //cv::cvtColor(imgLAB, output, CV_Lab2RGB);	//Convert back to RGB
- 	
+    //cv::Mat output(img.size(), CV_8UC3);
+    //cv::cvtColor(imgLAB, output, CV_Lab2RGB); //Convert back to RGB
+
+    
     QImage imgOut = nmc::DkImage::mat2QImage(img);
     return imgOut;
 
@@ -228,4 +261,3 @@ QImage instaFilter::xProFilter(QImage imgInput)
 }
 
 };
-
