@@ -107,11 +107,19 @@ bool DkPluginContainer::load() {
 		qDebug() << "Invalid: " << mPluginPath;
 		return false;
 	}
-	else if (!mLoader->load()) {
-		qDebug() << "Could not load: " << mPluginPath;
-		qDebug() << "name: " << mPluginName;
-		qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
-		return false;
+	else {
+		
+		if (!loadDependencies()) {
+
+			return false;
+		}
+
+		if (!mLoader->load()) {
+			qDebug() << "Could not load: " << mPluginPath;
+			qDebug() << "name: " << mPluginName;
+			qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
+			return false;
+		}
 	}
 
 	if (pluginViewPort()) 
@@ -215,6 +223,8 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			mDescription = metaData.value(key).toString();
 		else if (key == "Tagline")
 			mStatusTip = metaData.value(key).toString();
+		else if (key == "Dependencies")
+			mDependencies = metaData.value(key).toString().split(",");
 		else if (key == "Version") {
 			// currently nothing to do here...
 		}
@@ -224,13 +234,46 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 		else 
 			qDebug() << "unknown key" << key << "|" << metaData.value(key);
 
-		//qDebug() << "parsing:" << key << "|" << metaData.value(key);
+		qDebug() << "parsing:" << key << "|" << metaData.value(key);
 	}
 
 	if (!isValid() && !keys.empty()) {
 		qWarning() << "invalid plugin - missing the PluginName in the jason metadata...";
 	}
 
+}
+
+bool DkPluginContainer::loadDependencies() {
+
+#if defined(_DEBUG) && defined(Q_OS_WIN)
+	QString suffix = "d";
+#else
+	QString suffix = "";
+#endif
+
+		for (const QString& depName : mDependencies) {
+
+			QLibrary lib;
+
+			for (const QString& libPath : QCoreApplication::libraryPaths()) {
+
+				lib.setFileName(libPath + QDir::separator() + depName + suffix);
+				lib.load();
+
+				if (lib.isLoaded())
+					break;
+			}
+
+			if (!lib.isLoaded()) {
+				qWarning() << "could not load" << depName << "which is needed for" << pluginName();
+				return false;
+			}
+			else
+				qInfo() << depName << "loaded for" << pluginName();
+
+		}
+
+	return true;
 }
 
 void DkPluginContainer::run() {

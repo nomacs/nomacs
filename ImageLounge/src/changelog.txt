@@ -6,6 +6,7 @@ nomacs 3.1.0
 - Statusbar improved (e.g. zoom level)
 - All Icons are SVG (UHD monitors)
 - Compression added to Batch
+- Image transitions extended (swipe)
 
 nomacs 3.0.0
 ============

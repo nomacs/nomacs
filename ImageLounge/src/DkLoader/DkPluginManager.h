@@ -177,6 +177,7 @@ protected:
 	QString mCompany;
 	QString mDescription;
 	QString mStatusTip;
+	QStringList mDependencies;
 
 	QDate mDateCreated;
 	QDate mDateModified;
@@ -193,6 +194,7 @@ protected:
 	void createMenu();
 	void loadJson();
 	void loadMetaData(const QJsonValue& val);
+	bool loadDependencies();
 };
 
 class DllLoaderExport DkPluginActionManager : public QObject {
