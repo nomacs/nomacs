@@ -16,3 +16,4 @@ data
 installer/repository
 /.project
 CMakeUser.cmake
+package.xml
