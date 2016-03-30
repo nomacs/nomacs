@@ -104,18 +104,17 @@ bool DkPluginContainer::isLoaded() const {
 bool DkPluginContainer::load() {
 
 	if (!isValid()) {
-		qDebug() << "Invalid: " << mPluginPath;
+		qInfo() << "Invalid: " << mPluginPath;
 		return false;
 	}
 	else {
 		
 		if (!loadDependencies()) {
-
 			return false;
 		}
 
 		if (!mLoader->load()) {
-			qDebug() << "Could not load: " << mPluginPath;
+			qWarning() << "Could not load: " << mPluginPath;
 			qDebug() << "name: " << mPluginName;
 			qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
 			return false;
@@ -129,7 +128,7 @@ bool DkPluginContainer::load() {
 	else if (plugin())
 		mType = type_simple;
 	else {
-		qDebug() << "could not initialize: " << mPluginPath;
+		qWarning() << "could not initialize: " << mPluginPath << "unknown interface";
 		return false;
 	}
 
@@ -139,7 +138,7 @@ bool DkPluginContainer::load() {
 		createMenu();
 	}
 	
-	qDebug() << mPluginPath << " loaded...";
+	qInfo() << mPluginPath << " loaded...";
 	return true;
 
 }
@@ -165,7 +164,6 @@ void DkPluginContainer::createMenu() {
 		mPluginMenu->addAction(action);
 		connect(action, SIGNAL(triggered()), this, SLOT(run()), Qt::UniqueConnection);
 	}
-
 }
 
 void DkPluginContainer::loadJson() {
@@ -232,13 +230,13 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			// currently nothing to do here...
 		}
 		else 
-			qDebug() << "unknown key" << key << "|" << metaData.value(key);
+			qWarning() << "unknown key" << key << "|" << metaData.value(key);
 
-		qDebug() << "parsing:" << key << "|" << metaData.value(key);
+		//qDebug() << "parsing:" << key << "|" << metaData.value(key);
 	}
 
 	if (!isValid() && !keys.empty()) {
-		qWarning() << "invalid plugin - missing the PluginName in the jason metadata...";
+		qWarning() << "invalid plugin - missing the PluginName in the json metadata...";
 	}
 
 }
@@ -266,6 +264,7 @@ bool DkPluginContainer::loadDependencies() {
 
 			if (!lib.isLoaded()) {
 				qWarning() << "could not load" << depName << "which is needed for" << pluginName();
+				qInfo() << "search paths: " << QCoreApplication::libraryPaths();
 				return false;
 			}
 			else

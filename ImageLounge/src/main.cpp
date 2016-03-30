@@ -273,11 +273,7 @@ void createPluginsPath() {
 #ifdef WITH_PLUGINS
 	// initialize plugin paths -----------------------------------------
 #ifdef Q_OS_WIN
-	QDir pluginsDir;
-	if (!nmc::Settings::param().isPortable())
-		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
-	else
-		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+	QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
 #else
 	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
 #endif // Q_OS_WIN
