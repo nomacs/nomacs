@@ -2,7 +2,7 @@
 <Installer>
     <Name>nomacs | Image Lounge</Name>
     <Version>3.1.0</Version>
-    <Title>nomacs</Title>
+    <Title>nomacs [beta]</Title>
     <Publisher>nomacs</Publisher>
     <StartMenuDir>nomacs - Image Lounge Beta</StartMenuDir>
     <TargetDir>@ApplicationsDir@/nomacs</TargetDir>

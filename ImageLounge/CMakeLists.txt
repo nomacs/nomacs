@@ -17,9 +17,15 @@ project(nomacs)
 
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
-set(NOMACS_VERSION_MINOR 0)
+set(NOMACS_VERSION_MINOR 1)
 set(NOMACS_VERSION_PATCH 0)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
+set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
+if(CMAKE_CL_64)
+	SET(NMC_ARCHITECTURE "x64")
+else()
+	SET(NMC_ARCHITECTURE "x86")
+endif()
 
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
@@ -185,6 +191,8 @@ else()
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
+NMC_GENERATE_PACKAGE_XML()
+NMC_INSTALL()
 
 #debug for printing out all variables 
 # get_cmake_property(_variableNames VARIABLES)

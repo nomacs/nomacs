@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
-    <DisplayName>nomacs - Image Lounge [x86]</DisplayName>
-    <Description>nomacs for 32-bit systems.</Description>
-    <Version>3.1.0-2</Version>
-    <ReleaseDate>2016-02-09</ReleaseDate>
-    <Default>true</Default>
+	<DisplayName>nomacs [x86]</DisplayName>
+	<Description>nomacs for x86 systems.</Description>
+	<Version>3.1.0</Version>
+	<ReleaseDate>2016-03-30</ReleaseDate>
+	<Default>true</Default>
 </Package>

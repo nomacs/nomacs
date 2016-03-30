@@ -248,46 +248,33 @@ macro(NMC_FINDQT)
  
 endmacro(NMC_FINDQT)
 
-# enables webp
-# macro(NMC_ENABLE_WEBP)
-# SET(WEBP_INCLUDE_DIR "")
-# SET(WEBP_SOURCE "")
-# if(ENABLE_WEBP)
-# add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
+macro(NMC_INSTALL)
+	SET(NOMACS_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/../installer CACHE PATH "Path to the installer directory")
 
-# file(GLOB WEBP_DEC_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/dec/*c
-# )
+	if (MSVC)
+		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/packages/${PROJECT_NAME}.${NMC_ARCHITECTURE})
+		set(DATA_PACKAGE_DIR ${PACKAGE_DIR}/data/nomacs-${NMC_ARCHITECTURE})
+		install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${DATA_PACKAGE_DIR} CONFIGURATIONS Release)
+		install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Release/ DESTINATION ${DATA_PACKAGE_DIR})
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml DESTINATION ${PACKAGE_DIR}/meta CONFIGURATIONS Release)
 
-# file(GLOB WEBP_DEMUX_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/demux/*c
-# )
+	endif (MSVC)
 
-# file(GLOB WEBP_DSP_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/dsp/*c
-# )
+endmacro(NMC_INSTALL)
 
-# file(GLOB WEBP_ENC_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/enc/*c
-# )
+macro(NMC_GENERATE_PACKAGE_XML)
 
-# file(GLOB WEBP_UTILS_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/utils/*c
-# )
-
-# file(GLOB WEBP_MUX_SRCS
-# RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-# ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/mux/*c
-# )
-# set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
-# set(WEBP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src)
-# add_definitions(-DWITH_WEBP)
-# endif(ENABLE_WEBP)
-# endmacro(NMC_ENABLE_WEBP)
-
-
+	string(TIMESTAMP CURRENT_DATE "%Y-%m-%d")	
+	
+	set(XML_CONTENT "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+	set(XML_CONTENT "${XML_CONTENT}<Package>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<DisplayName>${PROJECT_NAME} [${NMC_ARCHITECTURE}]</DisplayName>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Description>nomacs for ${NMC_ARCHITECTURE} systems.</Description>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Version>${NOMACS_FULL_VERSION}</Version>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<ReleaseDate>${CURRENT_DATE}</ReleaseDate>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Default>true</Default>\n")
+	set(XML_CONTENT "${XML_CONTENT}</Package>\n")
+	
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${XML_CONTENT})
+	
+endmacro(NMC_GENERATE_PACKAGE_XML)
