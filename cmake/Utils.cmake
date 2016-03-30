@@ -55,9 +55,16 @@ macro(NMC_PREPARE_PLUGIN)
 				MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 			ENDIF()
 		endif()
-	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/install CACHE PATH "Path to the plugin install directory for deploying")
+	# SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/install CACHE PATH "Path to the plugin install directory for deploying")
   
 	endif(NOT NOMACS_VARS_ALREADY_SET)
+	
+	if(CMAKE_CL_64)
+		SET(PLUGIN_ARCHITECTURE "x64")
+	else()
+		SET(PLUGIN_ARCHITECTURE "x86")
+	endif()
+
  
 	if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 		message(STATUS "A debug build. -DDEBUG is defined")
@@ -76,7 +83,7 @@ macro(NMC_CREATE_TARGETS)
 	list(LENGTH ADDITIONAL_DLLS NUM_ADDITONAL_DLLS) 
 	if( ${NUM_ADDITONAL_DLLS} GREATER 0) 
 		foreach(DLL ${ADDITIONAL_DLLS})
-		message(STATUS "extra_macro_args: ${DLL}")
+		message(STATUS "additional dependencies: ${DLL}")
 	endforeach()
 	endif()
  
@@ -131,13 +138,15 @@ macro(NMC_CREATE_TARGETS)
 				endif()      
 			endif()	
 		endif()
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.dll DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)
-		install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/d.txt DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/ CONFIGURATIONS Release)
-		if(${NUM_ADDITONAL_DLLS} GREATER 0) 
-			foreach(DLL ${ADDITIONAL_DLLS})
-				install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/${DLL} DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)
-			endforeach()
-		endif()      
+		
+		message(STATUS "${PROJECT_NAME} \t will be installed to: ${NOMACS_INSTALL_DIRECTORY}")
+		
+		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/packages/plugins.${PLUGIN_ARCHITECTURE}.${PROJECT_NAME})
+		set(PACKAGE_DATA_DIR ${PACKAGE_DIR}/data/nomacs-${PLUGIN_ARCHITECTURE}/plugins/)
+		install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${PACKAGE_DATA_DIR} CONFIGURATIONS Release)
+		install(FILES ${ADDITIONAL_DLLS} DESTINATION ${PACKAGE_DATA_DIR} CONFIGURATIONS Release)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml DESTINATION ${PACKAGE_DIR}/meta CONFIGURATIONS Release)
+	
 	elseif(UNIX)
 		set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/plugins)
 		install(TARGETS ${PROJECT_NAME} RUNTIME LIBRARY DESTINATION lib/nomacs-plugins)
@@ -146,7 +155,7 @@ macro(NMC_CREATE_TARGETS)
 	endif(MSVC)
 endmacro(NMC_CREATE_TARGETS)
 
-macro(NMC_READ_PLUGIN_ID_AND_VERSION)
+macro(NMC_PLUGIN_ID_AND_VERSION)
 	list(LENGTH PLUGIN_JSON NUM_OF_FILES)
 	if(NOT ${NUM_OF_FILES} EQUAL 1)
 		message(FATAL_ERROR "${PROJECT_NAME} plugin has zero or more than one .json file")
@@ -165,14 +174,56 @@ macro(NMC_READ_PLUGIN_ID_AND_VERSION)
 	else()
 		message(FATAL_ERROR "${PROJECT_NAME}: Version missing in json file")
 	endif()
-endmacro(NMC_READ_PLUGIN_ID_AND_VERSION)
+endmacro(NMC_PLUGIN_ID_AND_VERSION)
 
-macro (NMC_EXIV_INCLUDES)
-	
-	# find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-	# PATHS "../exiv2-0.25/include" 
-	# DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
-	# MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
-	
-endmacro (NMC_EXIV_INCLUDES)
+macro(NMC_GENERATE_PACKAGE_XML)
+	set(JSON_FILE ${ARGN})
 
+	# replace DATE_MODIFIED in json file to last cmake run
+	file(STRINGS ${JSON_FILE} date_modified_line REGEX ".*\"DateModified\".*:")
+	file(READ ${JSON_FILE} JSON_CONTENT)
+	string(TIMESTAMP CURRENT_DATE "%Y-%m-%d")
+	string(REPLACE "${date_modified_line}" "\t\"DateModified\"\t: \"${CURRENT_DATE}\"," JSON_CONTENT ${JSON_CONTENT})
+	file(WRITE ${JSON_FILE} ${JSON_CONTENT})
+	
+	file(STRINGS ${JSON_FILE} line REGEX ".*\"PluginName\".*:")
+	string(REGEX REPLACE ".*:\ +\"" "" PLUGIN_NAME ${line})
+	string(REGEX REPLACE "\".*" "" PLUGIN_NAME ${PLUGIN_NAME})
+	# message(STATUS "PLUGIN_NAME: ${PLUGIN_NAME}")
+
+	file(STRINGS ${JSON_FILE} line REGEX ".*\"AuthorName\".*:")
+	string(REGEX REPLACE ".*:\ +\"" "" AUTHOR_NAME ${line})
+	string(REGEX REPLACE "\".*" "" AUTHOR_NAME ${AUTHOR_NAME})
+	# message(STATUS "AUTHOR_NAME: ${AUTHOR_NAME}")
+	
+	file(STRINGS ${JSON_FILE} line REGEX ".*\"Company\".*:")
+	string(REGEX REPLACE ".*:\ +\"" "" COMPANY_NAME ${line})
+	string(REGEX REPLACE "\".*" "" COMPANY_NAME ${COMPANY_NAME})
+	# message(STATUS "COMPANY_NAME: ${COMPANY_NAME}")
+	
+	file(STRINGS ${JSON_FILE} line REGEX ".*\"Tagline\".*:")
+	string(REGEX REPLACE ".*:\ +\"" "" TAGLINE ${line})
+	string(REGEX REPLACE "\".*" "" TAGLINE ${TAGLINE})
+	# message(STATUS "TAGLINE: ${TAGLINE}")
+	
+	
+	set(XML_CONTENT "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+	set(XML_CONTENT "${XML_CONTENT}<Package>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<DisplayName>${PLUGIN_NAME} [${PLUGIN_ARCHITECTURE}]</DisplayName>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Description>${TAGLINE}</Description>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Version>${PLUGIN_VERSION}</Version>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<ReleaseDate>${CURRENT_DATE}</ReleaseDate>\n")
+	set(XML_CONTENT "${XML_CONTENT}\t<Default>false</Default>\n")
+	set(XML_CONTENT "${XML_CONTENT}</Package>\n")
+	
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${XML_CONTENT})
+	
+endmacro(NMC_GENERATE_PACKAGE_XML)
+
+macro(NMC_GENERATE_USER_FILE)
+	if(MSVC) # create user file only when using Visual Studio
+		if(NOT EXISTS "${PROJECT_NAME}.vcxproj.user")
+			configure_file(../cmake/project.vcxproj.user.in ${PROJECT_NAME}.vcxproj.user)
+		endif()
+	endif(MSVC)
+endmacro(NMC_GENERATE_USER_FILE)

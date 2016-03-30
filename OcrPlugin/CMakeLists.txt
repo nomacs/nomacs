@@ -36,10 +36,10 @@ file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 file(GLOB PLUGIN_JSON "src/*.json")
 
-NMC_READ_PLUGIN_ID_AND_VERSION()
+NMC_PLUGIN_ID_AND_VERSION()
 
 set (PLUGIN_RESOURCES
-        src/nomacsPlugin.qrc
+	src/nomacsPlugin.qrc
 )
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
@@ -63,8 +63,7 @@ target_link_libraries(${PROJECT_NAME} ${Tesseract_LIBRARIES})
 #######################################################################
 
 NMC_CREATE_TARGETS()
-
-
-
+NMC_GENERATE_USER_FILE()
+NMC_GENERATE_PACKAGE_XML(${PLUGIN_JSON})
 
 qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)

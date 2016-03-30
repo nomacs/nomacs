@@ -10,7 +10,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
 
 NMC_POLICY()
 
-
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
 
@@ -23,9 +22,7 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
 
   # OpenCV
   NMC_FIND_OPENCV()
-  
-  
-  NMC_EXIV_INCLUDES()
+    
 endif()
 	
 include_directories (
@@ -40,7 +37,7 @@ file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 file(GLOB PLUGIN_JSON "src/*.json")
 
-NMC_READ_PLUGIN_ID_AND_VERSION()
+NMC_PLUGIN_ID_AND_VERSION()
 
 set (PLUGIN_RESOURCES
     src/nomacsPlugin.qrc
@@ -58,5 +55,7 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_
 target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OpenCV_LIBS} ${NOMACS_LIBS})
 
 NMC_CREATE_TARGETS()
+NMC_GENERATE_USER_FILE()
+NMC_GENERATE_PACKAGE_XML(${PLUGIN_JSON})
 
 qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)

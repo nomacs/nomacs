@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Tim Jerman",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified" 	: "2016-02-04",
+	"DateModified"	: "2016-03-30",
 	"Description"	: " Apply a fake miniature filter (tilt shift effect) to the image.<br><b>Usage:</b> On the preview image select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. The amount of blur and saturation can be changed with the sliders on the right of the dialog.",
 	"Tagline" 	: "Transform and rotate images",
 	"PluginId"		: "2.2.2",

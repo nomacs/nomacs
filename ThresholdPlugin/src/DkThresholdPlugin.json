@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Tim Jerman",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified" 	: "2016-02-04",
+	"DateModified"	: "2016-03-30",
 	"Description"	: "Fast threshold selection for color and grayscale images. If wanted a ranged threshold can be created by changing the upper threshold value. Threshold can be applied to each of the color channels or to the luminance channel.",
 	"Tagline" 	: "Manually threshold an image.",
 	"PluginId"		: "70e2fbe0c913462e846bb91da201ceca",

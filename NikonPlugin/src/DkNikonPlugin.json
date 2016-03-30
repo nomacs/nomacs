@@ -3,9 +3,10 @@
 	"AuthorName" 	: "Thomas Lang",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified" 	: "2016-02-04",
+	"DateModified"	: "2016-03-30",
 	"Description"	: "Control Nikon D4 using nomacs.",
 	"Tagline" 		: "Live preview and controls for Nikon D4.",
 	"PluginId"		: "87c51045b38744caa9f389e000d64f3f",
-	"Version"		: "2.2.0"	
+	"Version"		: "2.2.1",
+	"Dependencies"	: "NkdPTP.dll,Type0003.md3,Type0007.md3"
 }

@@ -9,8 +9,8 @@ PROJECT(nomacs-plugins)
 # include macros needed
 include("cmake/Utils.cmake")
 
-IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
-    include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
+    include(${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
 ENDIF()
 
 NMC_POLICY()
@@ -28,11 +28,6 @@ OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
-OPTION (ENABLE_INSTAGRAM "Compile INSTAGRAM PLUGIN" ON)
-OPTION (ENABLE_FILTER "Compile Instagram like filters" ON)
-OPTION (ENABLE_INSTAGRAM_FILTER "Compile INSTAGRAM LIKE PLUGIN" ON)
-OPTION (ENABLE_INSTA_LIKE_FILTER "Compile INSTAGRAM LIKE FILTER PLUGIN" ON)
-OPTION (ENABLE_MARS "Compile Mars filter plugin" ON)
 
 NMC_PREPARE_PLUGIN()
 
@@ -41,15 +36,6 @@ NMC_FINDQT()
 # OpenCV
 # TODO ein if wenn zumindest 1 projekt ausgewählt ist das opencv braucht
 NMC_FIND_OPENCV()
-
-NMC_EXIV_INCLUDES()
-
-if(CMAKE_CL_64)
-    SET(PLUGIN_ARCHITECTURE "x64")
-else()
-    SET(PLUGIN_ARCHITECTURE "x86")
-endif()
-
 
 set(BUILDING_MULTIPLE_PLUGINS true)
 
