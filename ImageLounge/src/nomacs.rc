@@ -73,7 +73,7 @@ IDI_ICON7               ICON                    ".\\img\\icons\\file-icon-raw.ic
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,0,95
+ FILEVERSION 3,1,0,108
  PRODUCTVERSION 3,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -91,7 +91,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Technische Universität Wien"
             VALUE "FileDescription", "nomacs - Image Lounge"
-            VALUE "FileVersion", "3.1.0.95"
+            VALUE "FileVersion", "3.1.0.108"
             VALUE "InternalName", "nomacs.exe"
             VALUE "LegalCopyright", "(C) 2011-2015, Markus Diem, Stefan Fiel, Florian Kleber"
             VALUE "OriginalFilename", "nomacs.exe"
