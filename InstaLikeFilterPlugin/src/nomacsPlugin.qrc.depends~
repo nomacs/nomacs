@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/InstagramFilterPlugin">
-        <file>img/instagramFilter.png</file>
-    </qresource>
-</RCC>
