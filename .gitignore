@@ -17,4 +17,4 @@ installer/repository
 install
 d.txt
 /.project
-CMakeUser.txt
+CMakeUser.cmake
