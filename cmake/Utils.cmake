@@ -64,7 +64,6 @@ macro(NMC_PREPARE_PLUGIN)
 	else()
 		SET(PLUGIN_ARCHITECTURE "x86")
 	endif()
-
  
 	if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 		message(STATUS "A debug build. -DDEBUG is defined")
