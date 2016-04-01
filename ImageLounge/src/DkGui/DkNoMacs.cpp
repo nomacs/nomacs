@@ -1341,7 +1341,6 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 }
 
 void DkNoMacs::showThumbsDock(bool show) {
-
 	
 	// nothing todo here
 	if (mThumbsDock && mThumbsDock->isVisible() && show)

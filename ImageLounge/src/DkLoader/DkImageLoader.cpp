@@ -219,7 +219,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 	//	return false;
 	//}
 	DkTimer dt;
-
+	
 	// folder changed signal was emitted
 	if (mFolderUpdated && newDirPath == mCurrentDir) {
 		

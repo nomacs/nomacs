@@ -1003,14 +1003,21 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 			// who deletes me?
 			QMimeData* mimeData = new QMimeData();
-
+			QPixmap pm;
+				
 			if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited())
 				mimeData->setUrls(urls);
-			else if (!getImage().isNull())
+			else if (!getImage().isNull()) {
 				mimeData->setImageData(getImage());
+			}
+
+			if (!getImage().isNull())
+				pm = QPixmap::fromImage(getImage()).scaledToHeight(73, Qt::SmoothTransformation);
+
 
 			QDrag* drag = new QDrag(this);
 			drag->setMimeData(mimeData);
+			drag->setPixmap(pm);
 			drag->exec(Qt::CopyAction);
 			qDebug() << "creating drag: " << fileUrl;
 	}
