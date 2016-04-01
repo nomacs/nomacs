@@ -742,6 +742,52 @@ uchar DkImage::findHistPeak(const int* hist, float quantile) {
 	return 255;
 }
 
+QPixmap DkImage::makeSquare(const QPixmap & pm) {
+
+	QRect r(QPoint(), pm.size());
+
+	if (r.width() > r.height()) {
+		r.setX(qFloor((r.width()-r.height())*0.5f));
+		r.setWidth(r.height());
+	}
+	else {
+		r.setY(qFloor((r.height()-r.width())*0.5f));
+		r.setHeight(r.width());
+	}
+
+	return pm.copy(r);
+}
+
+QPixmap DkImage::merge(const QVector<QImage>& imgs) {
+
+	if (imgs.size() > 10) {
+		qWarning() << "DkImage::merge is built for a small amount of images, you gave me: " << imgs.size();
+	}
+
+	QPixmap pm;
+	int margin = 10;
+	int x = 0;
+	QPainter p;
+
+	for (const QImage& img : imgs) {
+
+		// init on first
+		if (pm.isNull()) {
+			pm = QPixmap(img.height()*imgs.size() + margin*(imgs.size()-1), img.height());
+			pm.fill(QColor(0,0,0,0));
+			
+			p.begin(&pm);
+		}
+
+		QPixmap cpm = DkImage::makeSquare(QPixmap::fromImage(img));
+		QRect r(QPoint(x, 0), QSize(pm.height(), pm.height()));
+		p.drawPixmap(r, cpm);
+		x += r.width() + margin;
+	}
+
+	return pm;
+}
+
 QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {
 
 	if (icon.isNull())

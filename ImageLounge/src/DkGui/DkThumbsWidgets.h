@@ -221,6 +221,7 @@ public:
 
 	void updateLayout();
 	QStringList getSelectedFiles() const;
+	QVector<DkThumbLabel*> getSelectedThumbs() const;
 	void setImageLoader(QSharedPointer<DkImageLoader> loader);
 	void copyImages(const QMimeData* mimeData) const;
 	int findThumb(DkThumbLabel* thumb) const;

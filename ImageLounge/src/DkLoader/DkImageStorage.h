@@ -117,6 +117,8 @@ public:
 	static bool addToImage(QImage& img, unsigned char val = 1);
 	static QColor getMeanColor(const QImage& img);
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
+	static QPixmap makeSquare(const QPixmap& pm);
+	static QPixmap merge(const QVector<QImage>& imgs);
 };
 
 class DllLoaderExport DkImageStorage : public QObject {

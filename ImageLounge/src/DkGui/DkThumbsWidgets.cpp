@@ -945,18 +945,8 @@ void DkThumbLabel::updateLabel() {
 		pm = QPixmap::fromImage(mThumb->getImage());
 
 		if (Settings::param().display().displaySquaredThumbs) {
-			QRect r(QPoint(), pm.size());
 
-			if (r.width() > r.height()) {
-				r.setX(qFloor((r.width()-r.height())*0.5f));
-				r.setWidth(r.height());
-			}
-			else {
-				r.setY(qFloor((r.height()-r.width())*0.5f));
-				r.setHeight(r.width());
-			}
-
-			pm = pm.copy(r);
+			pm = DkImage::makeSquare(pm);
 		}
 	}
 	else
@@ -1540,6 +1530,18 @@ QStringList DkThumbScene::getSelectedFiles() const {
 	return fileList;
 }
 
+QVector<DkThumbLabel*> DkThumbScene::getSelectedThumbs() const {
+
+	QVector<DkThumbLabel*> selected;
+
+	for (DkThumbLabel* label : mThumbLabels) {
+		if (label->isSelected())
+			selected << label;
+	}
+
+	return selected;
+}
+
 int DkThumbScene::findThumb(DkThumbLabel* thumb) const {
 
 	int thumbIdx = -1;
@@ -1637,8 +1639,20 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 					urls.append(QUrl::fromLocalFile(fStr));
 
 				mimeData->setUrls(urls);
+
+				// create thumb image
+				QVector<DkThumbLabel*> tl = scene->getSelectedThumbs();
+				QVector<QImage> imgs;
+
+				for (int idx = 0; idx < tl.size() && idx < 3; idx++) {
+					imgs << tl[idx]->getThumb()->getImage();
+				}
+
+				QPixmap pm = DkImage::merge(imgs).scaledToHeight(73);
+
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
+				drag->setPixmap(pm);
 				drag->exec(Qt::CopyAction);
 			}
 		}
