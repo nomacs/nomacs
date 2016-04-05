@@ -56,7 +56,6 @@
         <file>img/portrait.svg</file>
         <file>img/printer.svg</file>
         <file>img/print-setup.svg</file>
-        <file>img/plugin-banner.svg</file>
         <file>img/downloaded.svg</file>
         <file>img/cancel.svg</file>
         <file>img/cancel2.svg</file>
@@ -82,5 +81,6 @@
         <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
         <file>stylesheet.css</file>
         <file>img/power.svg</file>
+        <file>img/plugin-banner.svg</file>
     </qresource>
 </RCC>

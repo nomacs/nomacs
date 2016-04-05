@@ -70,13 +70,12 @@ public:
 	virtual ~DkPluginInterface() {}
 
     virtual QString id() const = 0;
-	virtual QString version() const = 0;
     virtual QImage image() const = 0;
 
-	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
-	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
+	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>(); };
+	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>(); };
 	virtual int interfaceType() const {return interface_basic; };
-	virtual bool closesOnImageChange() const {return true;};
+	virtual bool closesOnImageChange() const {return true; };
 	
 	
 	/// <summary>
@@ -94,7 +93,6 @@ public:
 	QMainWindow* getMainWindow() const {
 
 		QWidgetList widgets = QApplication::topLevelWidgets();
-
 		QMainWindow* win = 0;
 
 		for (int idx = 0; idx < widgets.size(); idx++) {
@@ -121,7 +119,6 @@ public:
 		QSharedPointer<DkBatchInfo> dummy;
 		return runPlugin(runID, imgC, dummy);
 	};
-
 
 	virtual QSharedPointer<DkImageContainer> runPlugin(
 		const QString & runID,

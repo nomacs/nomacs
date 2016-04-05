@@ -35,6 +35,7 @@
 #include <QTextEdit>
 #include <QLabel>
 #include <QDate>
+#include <QLibrary>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkPluginInterface.h"
@@ -57,11 +58,6 @@ namespace nmc {
 class DkPluginTableWidget;
 class DkInstalledPluginsModel;
 class DkPluginDownloader;
-
-enum pluginManagerTabs {
-	tab_installed_plugins,
-	tab_download_plugins,
-};
 
 enum installedPluginsColumns {
 	ip_column_name,
@@ -115,6 +111,27 @@ struct QPairSecondComparer {
 	}
 };
 
+
+class DkLibrary {
+
+public:
+	DkLibrary(const QString& name = QString());
+
+	QString fullPath() const;
+	QString name() const;
+
+	bool isLoaded() const;
+
+	bool load();
+	bool uninstall();
+
+protected:
+	QString mFullPath;
+	QString mName;
+
+	QSharedPointer<QLibrary> mLib;
+};
+
 class DllLoaderExport DkPluginContainer : public QObject {
 	Q_OBJECT
 
@@ -149,7 +166,7 @@ public:
 	QString version() const;
 	QString description() const;
 	QString fullDescription() const;
-	QString statusTip() const;
+	QString tagline() const;
 	
 	QDate dateCreated() const;
 	QDate dateModified() const;
@@ -176,7 +193,8 @@ protected:
 	QString mAuthorName;
 	QString mCompany;
 	QString mDescription;
-	QString mStatusTip;
+	QString mVersion;
+	QString mTagline;
 	QStringList mDependencies;
 
 	QDate mDateCreated;
@@ -189,6 +207,7 @@ protected:
 
 	QMenu* mPluginMenu = 0;
 
+	QVector<DkLibrary> mLibs;
 	QSharedPointer<QPluginLoader> mLoader = QSharedPointer<QPluginLoader>();
 
 	void createMenu();
@@ -246,7 +265,7 @@ public:
 
 	void reload();
 	void removePlugin(QSharedPointer<DkPluginContainer> plugin);
-	void deletePlugin(QSharedPointer<DkPluginContainer> plugin);
+	bool deletePlugin(QSharedPointer<DkPluginContainer> plugin);
 	void clear();
 
 	void loadPlugins();
@@ -280,15 +299,12 @@ public:
 
 protected slots:
 	void closePressed();
-	void tabChanged(int tab);
 
 protected:
 	int dialogWidth;
 	int dialogHeight;
 	
-	QTabWidget* tabs;
 	DkPluginTableWidget* tableWidgetInstalled;
-	DkPluginTableWidget* tableWidgetDownload;
 	QMap<QString, QString> previouslyInstalledPlugins;
 
 	void init();
@@ -302,44 +318,28 @@ class DkPluginTableWidget: public QWidget {
 Q_OBJECT
 
 public:    
-	DkPluginTableWidget(int tab, DkPluginManagerDialog* manager, QWidget* parent);
-	~ DkPluginTableWidget();
+	DkPluginTableWidget(QWidget* parent);
+	~DkPluginTableWidget();
 
 	void clearTableFilters();
 	void updateInstalledModel();
-	void downloadPluginInformation(int usage);
-	DkPluginManagerDialog* getPluginManager();
-	int getOpenedTab();
-	DkPluginDownloader* getDownloader();
-	void getPluginUpdateData();
 	
 public slots:
 	void uninstallPlugin(const QModelIndex &index);
-	void installPlugin(const QModelIndex &index);
-	void pluginInstalled(const QModelIndex &index);
-	void pluginUpdateFinished(bool finishedSuccessfully);
 	void reloadPlugins();
 
 private:
 	void createLayout();
-	void fillDownloadTable();	
-	void getListOfUpdates();
 
-	int mOpenedTab = 0;
 	DkPluginManagerDialog* mPluginManager = 0;
-	QSortFilterProxyModel *mProxyModel = 0;
+	QSortFilterProxyModel* mProxyModel = 0;
 	QAbstractTableModel* mModel = 0;
-	DkPluginDownloader* mPluginDownloader = 0;
 	QTableView* mTableView = 0;
 	QLineEdit* mFilterEdit = 0;
-	QList<XmlPluginData> mPluginsToUpdate;
-	QPushButton* mUpdateButton = 0;
 
 protected slots:
-	void showDownloaderMessage(QString msg, QString title);
-	void manageParsedXmlData(int usage);
 	void filterTextChanged();
-	void updateSelectedPlugins();	
+	void on_updateButton_clicked();
 };
 
 // model for the table in the installed plug-ins tab 
@@ -355,8 +355,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 	bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
-
-	
+		
 	void setDataToInsert(QSharedPointer<DkPluginContainer> newData);
 	
 private:
@@ -364,36 +363,6 @@ private:
 	DkPluginTableWidget* mParentTable = 0;
 
 };
-
-class DkDownloadPluginsModel : public QAbstractTableModel {
-
-Q_OBJECT
-
-public:
-    DkDownloadPluginsModel(QObject *parent=0);
-
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
-    bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
-    bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
-
-	void updateInstalledData(const QModelIndex &index, bool installed);	
-	QList<XmlPluginData> getPluginData();
-	void setDataToInsert(XmlPluginData newData);
-	void setInstalledData(QMap<QString, bool> installedData);
-	QMap<QString, bool> getInstalledData();
-	
-private:
-	QList<XmlPluginData> mPluginData;
-	QMap<QString, bool> mPluginsInstalled;
-	XmlPluginData mDataToInsert;
-	DkPluginTableWidget* mParentTable = 0;
-};
-
 
 // checkbox delegate based on code from http://stackoverflow.com/questions/3363190/qt-qtableview-how-to-have-a-checkbox-only-column
 class DkPluginCheckBoxDelegate : public QStyledItemDelegate {
@@ -426,25 +395,6 @@ private:
 	QStyle::State mPushButonState = QStyle::State_Enabled;
 };
 
-// delegate for download table: icon if already downloaded or button if not
-class DkDownloadDelegate : public QStyledItemDelegate {
-
-Q_OBJECT
-
-public:
-	DkDownloadDelegate(QObject *parent = 0);
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
-
-signals:
-    void buttonClicked(const QModelIndex &index) const;
-
-private:
-	QTableView* mParentTable = 0;
-	int mCRow = -1;
-	QStyle::State mPushButtonState = QStyle::State_Enabled;
-};
-
 // text edit connected to tables selection
 class DkDescriptionEdit : public QTextEdit {
 
@@ -462,7 +412,6 @@ private:
 	QSortFilterProxyModel* mProxyModel = 0;
 	QItemSelectionModel* mSelectionModel = 0;
 	DkPluginTableWidget* mParentTable = 0;
-	QString mDefaultString;
 	void updateText();
 };
 
@@ -477,64 +426,15 @@ public:
 protected slots:
 	void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-	void updateImageFromReply(QImage img);
 
 private:
 	QAbstractTableModel* mDataModel = 0;
 	QSortFilterProxyModel* mProxyModel = 0;
 	QItemSelectionModel* mSelectionModel = 0;
 	DkPluginTableWidget* mParentTable = 0;
-	QImage mDefaultImage;
+	QPixmap mDefaultImage;
 	void updateImage();
 };
-
-// plugin xml data parser and downloadr
-class DkPluginDownloader : public QObject {
-	Q_OBJECT;
-
-public:	
-	DkPluginDownloader(QWidget* parent);
-
-	void downloadXml(int usage);
-	void downloadPreviewImg(QString url);
-	void downloadPlugin(const QModelIndex &index, QString url, QString pluginName);
-	void updatePlugins(QList<QString> urls);
-	QList<XmlPluginData> getXmlPluginData();
-
-signals:
-	void showDownloaderMessage(QString msg, QString title) const;
-	void parsingFinished(int usage) const;
-	void imageDownloaded(QImage img) const;
-	void pluginDownloaded(const QModelIndex &index) const;
-	void allPluginsUpdated(bool finishedSuccessfully) const;
-	void pluginFilesDownloadingFinished() const;
-	void reloadPlugins() const;
-
-protected slots:
-	void replyFinished(QNetworkReply*);
-	void updateDownloadProgress(qint64 received, qint64 total);
-	void cancelUpdate();
-
-private:
-	QNetworkAccessManager* mAccessManagerPlugin;
-	QNetworkReply* mReply;
-	QProgressDialog* mProgressDialog;
-	bool mDownloadAborted = false;
-	QList<XmlPluginData> mXmlPluginData;
-	int mRequestType;
-	QString mFileName;
-	int mCurrUsage;
-	QStringList mFilesToDownload;
-
-	void parseXml(QNetworkReply* reply);
-	void replyToImg(QNetworkReply* reply);
-	void startPluginDownload(QNetworkReply* reply);
-	void parseFileList(QNetworkReply* reply);
-	void downloadSingleFile(QString url);
-	void downloadPluginFileList(QString url);
-	void createProgressDialog();
-};
-
 
 };
 

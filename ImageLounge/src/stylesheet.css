@@ -459,3 +459,9 @@ nmc--DkGroupWidget QLineEdit,
 nmc--DkGroupWidget QLabel {
 	color: #666;
 }
+
+/* plugins */
+nmc--DkDescriptionEdit {
+	border: none;
+	background-color: rgba(0,0,0,0);
+}

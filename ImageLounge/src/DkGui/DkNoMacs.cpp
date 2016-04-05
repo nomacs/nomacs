@@ -51,6 +51,7 @@
 #include "DkActionManager.h"
 #include "DkStatusBar.h"
 #include "DkDockWidgets.h"
+#include "DkUpdater.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
