@@ -47,6 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QHeaderView>
+#include <QStandardPaths>
+#include <QProcess>
 
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -1159,18 +1161,28 @@ void DkAdvancedPreference::createLayout() {
 		tr("NOTE: this allows for rotating JPGs without loosing information."));
 	cbSaveExif->setChecked(Settings::param().metaData().saveExifOrientation);
 
-	QCheckBox* cbUseLog = new QCheckBox(tr("Use Log File"), this);
-	cbUseLog->setObjectName("useLog");
-	cbUseLog->setToolTip(tr("If checked, a log file will be created."));
-	cbUseLog->setChecked(Settings::param().app().useLogFile);
-
 	DkGroupWidget* loadFileGroup = new DkGroupWidget(tr("File Loading/Saving"), this);
 	loadFileGroup->addWidget(cbSaveDeleted);
 	loadFileGroup->addWidget(cbIgnoreExif);
 	loadFileGroup->addWidget(cbSaveExif);
 
+	// log
+	QCheckBox* cbUseLog = new QCheckBox(tr("Use Log File"), this);
+	cbUseLog->setObjectName("useLog");
+	cbUseLog->setToolTip(tr("If checked, a log file will be created."));
+	cbUseLog->setChecked(Settings::param().app().useLogFile);
+
+	QPushButton* pbLog = new QPushButton(tr("Open Log"), this);
+	pbLog->setObjectName("logFolder");
+	pbLog->setMaximumWidth(400);
+#ifdef Q_OS_WIN
+	pbLog->setVisible(Settings::param().app().useLogFile);
+#else
+	pbLog->setVisible(false);
+#endif
 	DkGroupWidget* useLogGroup = new DkGroupWidget(tr("Logging"), this);
 	useLogGroup->addWidget(cbUseLog);
+	useLogGroup->addWidget(pbLog);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(loadRawGroup);
@@ -1216,6 +1228,13 @@ void DkAdvancedPreference::on_useLog_toggled(bool checked) const {
 		emit infoSignal(tr("Please Restart nomacs to apply changes"));
 	}
 }
+
+void DkAdvancedPreference::on_logFolder_clicked() const {
+
+	// TODO: add linux/mac os
+	QString logPath = QDir::toNativeSeparators(DkUtils::getLogFilePath());
+	QProcess::startDetached(QString("explorer /select, \"%1\"").arg(logPath));
+} 
 
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 

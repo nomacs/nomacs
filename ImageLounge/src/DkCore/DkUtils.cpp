@@ -413,8 +413,7 @@ QString DkUtils::getLogFilePath() {
 	QString logPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 	QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss");
 
-	QFileInfo fileInfo(logPath);
-	fileInfo.setFile(fileInfo.dir(), "nomacs-" + now + "-log.txt");
+	static QFileInfo fileInfo(logPath, "nomacs-" + now + "-log.txt");
 
 	return fileInfo.absoluteFilePath();
 }
