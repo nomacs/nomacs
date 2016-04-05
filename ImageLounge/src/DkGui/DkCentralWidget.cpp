@@ -725,9 +725,9 @@ void DkCentralWidget::showThumbView(bool show) {
 void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 	if (show) {
+    switchWidget(mWidgets[viewport_widget]);
 		if (getCurrentImage())
 			mViewport->setImage(getCurrentImage()->image());
-		switchWidget(mWidgets[viewport_widget]);
 	}
 	else 
 		mViewport->deactivate();
