@@ -127,6 +127,7 @@ void DkPreferenceWidget::addTabWidget(DkPreferenceTabWidget* tabWidget) {
 	DkTabEntryWidget* tabEntry = new DkTabEntryWidget(tabWidget->icon(), tabWidget->name(), this);
 	mTabLayout->insertWidget(mTabLayout->count()-2, tabEntry);	// -2 -> insert before stretch
 	connect(tabEntry, SIGNAL(clicked()), this, SLOT(changeTab()));
+	connect(tabWidget, SIGNAL(restartSignal()), this, SIGNAL(restartSignal()));
 	mTabEntries.append(tabEntry);
 
 	// tick the first
@@ -179,6 +180,7 @@ DkPreferenceTabWidget::DkPreferenceTabWidget(const QIcon& icon, const QString& n
 	mIcon = icon;
 
 	createLayout();
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkPreferenceTabWidget::createLayout() {
@@ -186,14 +188,17 @@ void DkPreferenceTabWidget::createLayout() {
 	QLabel* titleLabel = new QLabel(name(), this);
 	titleLabel->setObjectName("DkPreferenceTitle");
 
-	mInfoLabel = new QLabel(tr(""), this);
-	mInfoLabel->setObjectName("DkInfoLabel");
+	mInfoButton = new QPushButton(tr(""), this);
+	mInfoButton->setObjectName("infoButton");
+	mInfoButton->setFlat(true);
+	connect(mInfoButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
 
 	mLayout = new QGridLayout(this);
 	mLayout->setContentsMargins(0, 0, 0, 0);
 	mLayout->setAlignment(Qt::AlignTop);
 	mLayout->addWidget(titleLabel, 0, 0);
-	mLayout->addWidget(mInfoLabel, 2, 0, Qt::AlignBottom);
+	
+	mLayout->addWidget(mInfoButton, 2, 0, Qt::AlignBottom);
 }
 
 void DkPreferenceTabWidget::setWidget(QWidget* w) {
@@ -206,7 +211,7 @@ void DkPreferenceTabWidget::setWidget(QWidget* w) {
 }
 
 void DkPreferenceTabWidget::setInfoMessage(const QString& msg) {
-	mInfoLabel->setText(msg);
+	mInfoButton->setText(msg);
 }
 
 QWidget* DkPreferenceTabWidget::widget() const {

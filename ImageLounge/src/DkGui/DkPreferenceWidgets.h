@@ -73,12 +73,15 @@ public:
 public slots:
 	void setInfoMessage(const QString& msg);
 
+signals:
+	void restartSignal() const;
+
 protected:
 	void createLayout();
 
 	QGridLayout* mLayout = 0;
 	QWidget* mCentralWidget = 0;
-	QLabel* mInfoLabel;
+	QPushButton* mInfoButton;
 
 	QIcon mIcon;
 };

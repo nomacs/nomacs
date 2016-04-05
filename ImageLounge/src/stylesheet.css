@@ -403,12 +403,22 @@ QLabel#DkPreferenceTitle {
 	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
 }
 
-QLabel#DkInfoLabel {
-	padding: 100px 20px 10px 20px;
+QPushButton#infoButton {
 	font: light "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
-	color: #cc0000;
+	color: #666;
+	text-align: left;
+	padding-left: 20px;
+	border: none;
+}
+
+QPushButton#infoButton:hover {
+	color: HIGHLIGHT_COLOR;
+}
+
+QPushButton#infoButton:pressed {
+	color: HIGHLIGHT_LIGHT;
 }
 
 QWidget#DkPreferenceWidget {
