@@ -1206,8 +1206,10 @@ void DkAdvancedPreference::on_saveExif_toggled(bool checked) const {
 
 void DkAdvancedPreference::on_useLog_toggled(bool checked) const {
 
-	if (Settings::param().app().useLogFile != checked)
+	if (Settings::param().app().useLogFile != checked) {
 		Settings::param().app().useLogFile = checked;
+		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	}
 }
 
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {

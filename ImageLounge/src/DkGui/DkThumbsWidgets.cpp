@@ -1648,7 +1648,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 					imgs << tl[idx]->getThumb()->getImage();
 				}
 
-				QPixmap pm = DkImage::merge(imgs).scaledToHeight(73);
+				QPixmap pm = DkImage::merge(imgs).scaledToHeight(73);	// 73: see https://www.youtube.com/watch?v=TIYMmbHik08
 
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
