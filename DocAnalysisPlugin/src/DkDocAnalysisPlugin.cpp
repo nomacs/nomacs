@@ -81,14 +81,6 @@ QImage DkDocAnalysisPlugin::image() const {
 };
 
 /**
-* Returns plugin version
-**/
-QString DkDocAnalysisPlugin::version() const {
-
-   return PLUGIN_VERSION;
-};
-
-/**
 * Main function: runs plugin based on its ID
 * @param runID runID of the plugin 
 * @param image current image in the Nomacs viewport

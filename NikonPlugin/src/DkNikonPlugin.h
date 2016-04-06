@@ -71,7 +71,7 @@ class DkNikonViewPort;
 class DkNikonPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/3.0" FILE "DkNikonPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/3.2" FILE "DkNikonPlugin.json")
 
 
 public:
@@ -81,7 +81,6 @@ public:
 
 	QString id() const override;
     QImage image() const override;
-    QString version() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort();

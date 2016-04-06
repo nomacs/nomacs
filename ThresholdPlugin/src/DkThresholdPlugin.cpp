@@ -68,14 +68,6 @@ QImage DkThresholdPlugin::image() const {
 };
 
 /**
-* Returns plugin version
-**/
-QString DkThresholdPlugin::version() const {
-
-   return PLUGIN_VERSION;
-};
-
-/**
 * Main function: runs plugin based on its ID
 * @param run ID
 * @param current image in the Nomacs viewport
@@ -87,7 +79,7 @@ QSharedPointer<nmc::DkImageContainer> DkThresholdPlugin::runPlugin(const QString
 
 		DkThresholdViewPort* thresholdViewport = dynamic_cast<DkThresholdViewPort*>(viewport);
 
-		QImage retImg = QImage();
+		QImage retImg;
 		if (!thresholdViewport->isCanceled()) 
 			imgC->setImage(thresholdViewport->getThresholdedImage(true), tr("Thresholded"));
 		else {

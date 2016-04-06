@@ -43,12 +43,11 @@ namespace nmp {
 class DkFakeMiniaturesPlugin : public QObject, nmc::DkPluginInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/3.0" FILE "DkFakeMiniaturesPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/3.2" FILE "DkFakeMiniaturesPlugin.json")
 
 public:
     QString id() const override;
     QImage image() const override;
-    QString version() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 };

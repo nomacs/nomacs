@@ -75,14 +75,6 @@ QImage DkImgTransformationsPlugin::image() const {
 };
 
 /**
-* Returns plugin version
-**/
-QString DkImgTransformationsPlugin::version() const {
-
-   return PLUGIN_VERSION;
-};
-
-/**
 * Main function: runs plugin based on its ID
 * @param run ID
 * @param current image in the Nomacs mViewport

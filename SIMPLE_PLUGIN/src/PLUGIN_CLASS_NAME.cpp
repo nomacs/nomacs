@@ -85,21 +85,12 @@ QString PLUGIN_CLASS_NAME::id() const {
 };
 
 /**
-* Returns descriptive iamge for every ID
+* Returns descriptive image for every ID
 * @param plugin ID
 **/
 QImage PLUGIN_CLASS_NAME::image() const {
 
 	return QImage(":/#PLUGIN_NAME/img/your-image.png");
-};
-
-/**
-* Returns plugin version for every ID
-* @param plugin ID
-**/
-QString PLUGIN_CLASS_NAME::version() const {
-
-	return PLUGIN_VERSION;
 };
 
 QList<QAction*> PLUGIN_CLASS_NAME::createActions(QWidget* parent) {

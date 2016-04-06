@@ -58,7 +58,7 @@ class DkPaintToolBar;
 class DkPaintPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPaintPlugin/3.0" FILE "DkPaintPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPaintPlugin/3.2" FILE "DkPaintPlugin.json")
 
 public:
     
@@ -67,7 +67,6 @@ public:
 
 	QString id() const override;
     QImage image() const override;
-    QString version() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort();

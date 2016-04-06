@@ -81,14 +81,6 @@ QImage DkNikonPlugin::image() const {
 };
 
 /**
-* Returns plugin version
-**/
-QString DkNikonPlugin::version() const {
-
-   return PLUGIN_VERSION;
-};
-
-/**
 * Main function: runs plugin based on its ID
 * @param run ID
 * @param current image in the Nomacs viewport

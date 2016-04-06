@@ -2,7 +2,7 @@
  DkFakeMiniaturesPlugin.cpp
  Created on:	14.04.2013
 
- nomacs is a fast and small imgC viewer with the capability of synchronizing multiple instances
+ nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
 
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
@@ -43,15 +43,6 @@ QString DkFakeMiniaturesPlugin::id() const {
 QImage DkFakeMiniaturesPlugin::image() const {
 
    return QImage(":/nomacsPluginFakeMin/img/fakeMinDesc.png");
-};
-
-/**
-* Returns plug-in version for every ID
-* @param plug-in ID
-**/
-QString DkFakeMiniaturesPlugin::version() const {
-
-   return PLUGIN_VERSION;
 };
 
 /**

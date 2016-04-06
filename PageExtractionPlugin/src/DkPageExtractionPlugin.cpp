@@ -90,7 +90,7 @@ QString DkPageExtractionPlugin::id() const {
 **/
 QImage DkPageExtractionPlugin::image() const {
 
-	return QImage(":/PageExtractionPlugin/img/your-image.png");
+	return QImage(":/PageExtractionPlugin/img/page-extraction.png");
 };
 
 /**

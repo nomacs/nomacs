@@ -31,7 +31,7 @@ namespace nmp {
 class DkPageExtractionPlugin : public QObject, nmc::DkPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.0" FILE "DkPageExtractionPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.2" FILE "DkPageExtractionPlugin.json")
 
 public:
 
