@@ -168,9 +168,11 @@ bool DkPluginContainer::load() {
 	}
 	else {
 		
+#ifdef Q_OS_WIN
 		if (!loadDependencies()) {
 			return false;
 		}
+#endif
 
 		if (!mLoader->load()) {
 			qWarning() << "Could not load: " << mPluginPath;
@@ -292,14 +294,8 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			mTagline = metaData.value(key).toString();
 		else if (key == "Dependencies")
 			mDependencies = metaData.value(key).toString().split(",");
-		else if (key == "LinuxDependencies") {
-#ifdef Q_OS_LINUX
-			mDependencies = mDependencies + metaData.value(key).toString().split(",");
-#endif
-		}
-		else if (key == "Version") {
+		else if (key == "Version")
 			mVersion = metaData.value(key).toString();
-		}
 		else if (key == "PluginId") {
 			// currently nothing to do here...
 		}
