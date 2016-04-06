@@ -45,6 +45,8 @@
 #include <QFileInfo>
 #include <QNetworkCookieJar>
 #include <QDir>
+#include <QProcess>
+#include <QStandardPaths>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
