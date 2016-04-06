@@ -90,17 +90,20 @@ bool DkLibrary::isLoaded() const {
 
 bool DkLibrary::load() {
 
+	QString suffix;
+	QString prefix;
+
 #if defined(_DEBUG) && defined(Q_OS_WIN)
-	QString suffix = "d";
-#else
-	QString suffix = "";
+	suffix = "d";
+#elif defined(Q_OS_LINUX) // TODO: add your operating system if libs are prefixed
+	prefix = "lib";
 #endif
 
 	mLib = QSharedPointer<QLibrary>(new QLibrary());
 
 	for (const QString& libPath : QCoreApplication::libraryPaths()) {
 
-		mFullPath = libPath + QDir::separator() + mName + suffix;
+		mFullPath = libPath + QDir::separator() + prefix + mName + suffix;
 		mLib->setFileName(mFullPath);
 		mLib->load();
 
@@ -638,8 +641,7 @@ void DkPluginTableWidget::createLayout() {
 
 void DkPluginTableWidget::on_updateButton_clicked() {
 
-	DkInstallUpdater::updateNomacs();
-
+	DkInstallUpdater::updateNomacs("--manage-packages");
 }
 
 void DkPluginTableWidget::reloadPlugins() {
