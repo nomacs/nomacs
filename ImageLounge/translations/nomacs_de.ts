@@ -67,7 +67,7 @@
       <location filename="../src/DkActionManager.cpp" line="569"/>
       <location filename="../src/DkActionManager.cpp" line="684"/>
       <source>&amp;Panels</source>
-      <translation type="unfinished">&amp;Panels</translation>
+      <translation>&amp;Fenster</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="571"/>
@@ -97,12 +97,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1006"/>
       <source>&amp;Open</source>
-      <translation>Öffnen</translation>
+      <translation>&amp;Öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1008"/>
       <source>Open an image</source>
-      <translation>Ein Bild öffnen</translation>
+      <translation>Bild öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1010"/>
@@ -192,251 +192,251 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1046"/>
       <source>&amp;Recent Files and Folders</source>
-      <translation type="unfinished">&amp;Recent Files and Folders</translation>
+      <translation>&amp;Zuletzt geöffnete Dateien und Ordner</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1050"/>
       <source>Show Recent Files and Folders</source>
-      <translation type="unfinished">Show Recent Files and Folders</translation>
+      <translation>Zuletzt geöffnete Dateien anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1052"/>
       <source>&amp;Reload File</source>
-      <translation type="unfinished">&amp;Reload File</translation>
+      <translation>Neu &amp;laden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1055"/>
       <source>Reload File</source>
-      <translation type="unfinished">Reload File</translation>
+      <translation>Neu laden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1057"/>
       <source>Ne&amp;xt File</source>
-      <translation type="unfinished">Ne&amp;xt File</translation>
+      <translation>&amp;Nächstes Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1060"/>
       <source>Load next image</source>
-      <translation type="unfinished">Load next image</translation>
+      <translation>Nächstes Bild anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1062"/>
       <source>Pre&amp;vious File</source>
-      <translation type="unfinished">Pre&amp;vious File</translation>
+      <translation>&amp;Vorheriges Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1067"/>
       <source>Add Image Format</source>
-      <translation type="unfinished">Add Image Format</translation>
+      <translation>Bildformat hinzufügen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1068"/>
       <source>Add a new image format to nomacs</source>
-      <translation type="unfinished">Add a new image format to nomacs</translation>
+      <translation>Ein neues Bildformat zu nomacs hinzufügen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1070"/>
       <source>St&amp;art New Instance</source>
-      <translation type="unfinished">St&amp;art New Instance</translation>
+      <translation>&amp;Neue Instanz öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1065"/>
       <source>Load previous file</source>
-      <translation type="unfinished">Load previous file</translation>
+      <translation>Vorheriges Bild anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1072"/>
       <source>Open file in new instance</source>
-      <translation type="unfinished">Open file in new instance</translation>
+      <translation>Aktuelles Bild in einer neuen Instanz öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1074"/>
       <source>St&amp;art Private Instance</source>
-      <translation type="unfinished">St&amp;art Private Instance</translation>
+      <translation>Im &amp;Privaten Modus starten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1076"/>
       <source>Open private instance</source>
-      <translation type="unfinished">Open private instance</translation>
+      <translation>Private Instanz öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1078"/>
       <source>&amp;Find &amp;&amp; Filter</source>
-      <translation type="unfinished">&amp;Find &amp;&amp; Filter</translation>
+      <translation>&amp;Finden &amp; Filtern</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1080"/>
       <location filename="../src/DkActionManager.cpp" line="1410"/>
       <source>Find an image</source>
-      <translation type="unfinished">Find an image</translation>
+      <translation>Bild suchen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1082"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation type="unfinished">Scan Folder Re&amp;cursive</translation>
+      <translation>Ordner re&amp;kursiv öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1083"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation type="unfinished">Step through Folder and Sub Folders</translation>
+      <translation>Ordner und Unterordner öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1087"/>
       <source>&amp;Exit</source>
-      <translation type="unfinished">&amp;Exit</translation>
+      <translation>&amp;Schließen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1088"/>
       <source>Exit</source>
-      <translation type="unfinished">Exit</translation>
+      <translation>Schließen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1093"/>
       <source>by &amp;Filename</source>
-      <translation type="unfinished">by &amp;Filename</translation>
+      <translation>Nach &amp;Dateiname</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1095"/>
       <source>Sort by Filename</source>
-      <translation type="unfinished">Sort by Filename</translation>
+      <translation>Sortiert nach Dateinamen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1099"/>
       <source>by Date &amp;Created</source>
-      <translation type="unfinished">by Date &amp;Created</translation>
+      <translation>Nach &amp;Erstellungsdatum</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1101"/>
       <source>Sort by Date Created</source>
-      <translation type="unfinished">Sort by Date Created</translation>
+      <translation>Sortiert nach Erstellungsdatum</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1105"/>
       <source>by Date Modified</source>
-      <translation type="unfinished">by Date Modified</translation>
+      <translation>Nach Modifikationsdatum</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1107"/>
       <source>Sort by Date Last Modified</source>
-      <translation type="unfinished">Sort by Date Last Modified</translation>
+      <translation>Sortiert nach Modifikationsdatum</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1111"/>
       <source>Random</source>
-      <translation type="unfinished">Random</translation>
+      <translation>Zufällig</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1113"/>
       <source>Sort in Random Order</source>
-      <translation type="unfinished">Sort in Random Order</translation>
+      <translation>Bilder werden zufällig wiedergegeben</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1117"/>
       <source>&amp;Ascending</source>
-      <translation type="unfinished">&amp;Ascending</translation>
+      <translation>&amp;Aufsteigend</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1119"/>
       <source>Sort in Ascending Order</source>
-      <translation type="unfinished">Sort in Ascending Order</translation>
+      <translation>Bilder werden aufsteigend sortiert</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1123"/>
       <source>&amp;Descending</source>
-      <translation type="unfinished">&amp;Descending</translation>
+      <translation>A&amp;bsteigend</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1125"/>
       <source>Sort in Descending Order</source>
-      <translation type="unfinished">Sort in Descending Order</translation>
+      <translation>Bilder werden absteigend sortiert</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1132"/>
       <source>9&amp;0%1 Clockwise</source>
-      <translation type="unfinished">9&amp;0%1 Clockwise</translation>
+      <translation>9&amp;0%1 im Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1135"/>
       <source>rotate the image 90%1 clockwise</source>
-      <translation type="unfinished">rotate the image 90%1 clockwise</translation>
+      <translation>Bild 90° im Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1137"/>
       <source>&amp;90%1 Counter Clockwise</source>
-      <translation type="unfinished">&amp;90%1 Counter Clockwise</translation>
+      <translation>&amp;90%1 gegen den Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1140"/>
       <source>rotate the image 90%1 counter clockwise</source>
-      <translation type="unfinished">rotate the image 90%1 counter clockwise</translation>
+      <translation>Bild 90° gegen Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1142"/>
       <source>1&amp;80%1</source>
-      <translation type="unfinished">1&amp;80%1</translation>
+      <translation>1&amp;80%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1143"/>
       <source>rotate the image by 180%1</source>
-      <translation type="unfinished">rotate the image by 180%1</translation>
+      <translation>Bild um 180° drehen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1145"/>
       <location filename="../src/DkActionManager.cpp" line="1538"/>
       <source>&amp;Copy</source>
-      <translation type="unfinished">&amp;Copy</translation>
+      <translation>&amp;Kopieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1148"/>
       <location filename="../src/DkActionManager.cpp" line="1153"/>
       <source>copy image</source>
-      <translation type="unfinished">copy image</translation>
+      <translation>Bild in die Zwischenablage kopieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1150"/>
       <source>Copy &amp;Buffer</source>
-      <translation type="unfinished">Copy &amp;Buffer</translation>
+      <translation>Bild k&amp;opieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1155"/>
       <source>Copy Co&amp;lor</source>
-      <translation type="unfinished">Copy Co&amp;lor</translation>
+      <translation>&amp;Farbe kopieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1158"/>
       <source>copy pixel color value as HEX</source>
-      <translation type="unfinished">copy pixel color value as HEX</translation>
+      <translation>Farbe des Pixels wird als HEX Wert kopiert</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1163"/>
       <location filename="../src/DkActionManager.cpp" line="1541"/>
       <source>&amp;Paste</source>
-      <translation type="unfinished">&amp;Paste</translation>
+      <translation>&amp;Einfügen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1166"/>
       <source>paste image</source>
-      <translation type="unfinished">paste image</translation>
+      <translation>Bild aus Zwischenablage einfügen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1168"/>
       <source>R&amp;esize Image</source>
-      <translation type="unfinished">R&amp;esize Image</translation>
+      <translation>Bildgröße anpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1171"/>
       <source>resize the current image</source>
-      <translation type="unfinished">resize the current image</translation>
+      <translation>Größe des aktuellen Bildes ändern</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1173"/>
       <source>Cr&amp;op Image</source>
-      <translation type="unfinished">Cr&amp;op Image</translation>
+      <translation>&amp;Zuschneiden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1176"/>
       <source>cut the current image</source>
-      <translation type="unfinished">cut the current image</translation>
+      <translation>Aktuelles Bild zuschneiden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1180"/>
@@ -446,7 +446,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1181"/>
       <source>Flip Image Horizontally</source>
-      <translation type="unfinished">Flip Image Horizontally</translation>
+      <translation>Horizontal spiegeln</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1183"/>
@@ -456,67 +456,67 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1184"/>
       <source>Flip Image Vertically</source>
-      <translation type="unfinished">Flip Image Vertically</translation>
+      <translation>Vertikal spiegeln</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1186"/>
       <source>Nor&amp;malize Image</source>
-      <translation type="unfinished">Nor&amp;malize Image</translation>
+      <translation>No&amp;rmalisieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1189"/>
       <source>Normalize the Image</source>
-      <translation type="unfinished">Normalize the Image</translation>
+      <translation>Bei dieser Funktion werden die Helligkeitswerte des Bildes normalisiert</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1191"/>
       <source>&amp;Auto Adjust</source>
-      <translation type="unfinished">&amp;Auto Adjust</translation>
+      <translation>&amp;Automatisch anpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1194"/>
       <source>Auto Adjust Image Contrast and Color Balance</source>
-      <translation type="unfinished">Auto Adjust Image Contrast and Color Balance</translation>
+      <translation>Die Helligkeit und Farbbalance werden automatisch angepasst</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1196"/>
       <source>&amp;Invert Image</source>
-      <translation type="unfinished">&amp;Invert Image</translation>
+      <translation>&amp;Invertieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1197"/>
       <source>Invert the Image</source>
-      <translation type="unfinished">Invert the Image</translation>
+      <translation>Das Bild invertieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1199"/>
       <source>&amp;Convert to Grayscale</source>
-      <translation type="unfinished">&amp;Convert to Grayscale</translation>
+      <translation>In &amp;Graustufen konvertieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1200"/>
       <source>Convert to Grayscale</source>
-      <translation type="unfinished">Convert to Grayscale</translation>
+      <translation>In Graustufen konvertieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1202"/>
       <source>&amp;Unsharp Mask</source>
-      <translation type="unfinished">&amp;Unsharp Mask</translation>
+      <translation>&amp;Unscharf maskieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1203"/>
       <source>Stretches the Local Contrast of an Image</source>
-      <translation type="unfinished">Stretches the Local Contrast of an Image</translation>
+      <translation>Erhöht den lokalen Kontrast im Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1205"/>
       <source>&amp;Tiny Planet</source>
-      <translation type="unfinished">&amp;Tiny Planet</translation>
+      <translation>&amp;Tiny Planet</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1206"/>
       <source>Computes a tiny planet image</source>
-      <translation type="unfinished">Computes a tiny planet image</translation>
+      <translation>Berechnet einen Tiny Planet</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1208"/>
@@ -527,52 +527,52 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1211"/>
       <source>delete current fileInfo</source>
-      <translation type="unfinished">delete current fileInfo</translation>
+      <translation>Aktuelle Dateiinformation löschen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1213"/>
       <source>&amp;Wallpaper</source>
-      <translation type="unfinished">&amp;Wallpaper</translation>
+      <translation>Als &amp;Desktophintergrund setzen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1214"/>
       <source>set the current image as wallpaper</source>
-      <translation type="unfinished">set the current image as wallpaper</translation>
+      <translation>Setzt das Bild als Desktophintergrund</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1216"/>
       <source>&amp;Keyboard Shortcuts</source>
-      <translation type="unfinished">&amp;Keyboard Shortcuts</translation>
+      <translation>&amp;Shortcuts</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1218"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation type="unfinished">lets you customize your keyboard shortcuts</translation>
+      <translation>Anpassen von Shortcuts</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1220"/>
       <source>&amp;Settings</source>
-      <translation type="unfinished">&amp;Settings</translation>
+      <translation>&amp;Einstellungen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1222"/>
       <source>settings</source>
-      <translation type="unfinished">settings</translation>
+      <translation>Einstellungen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1226"/>
       <source>&amp;Menu</source>
-      <translation type="unfinished">&amp;Menu</translation>
+      <translation>&amp;Menü</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1227"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation type="unfinished">Hides the Menu and Shows it Again on ALT</translation>
+      <translation>Versteckt das Menü und zeigt es mit der ALT Taste wieder an</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1230"/>
       <source>Tool&amp;bar</source>
-      <translation type="unfinished">Tool&amp;bar</translation>
+      <translation>&amp;Werkzeugleiste</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1232"/>
@@ -582,7 +582,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1235"/>
       <source>&amp;Statusbar</source>
-      <translation type="unfinished">&amp;Statusbar</translation>
+      <translation>&amp;Statusleiste</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1237"/>
@@ -592,350 +592,350 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1240"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation type="unfinished">&amp;Pseudocolor Function</translation>
+      <translation>&amp;Falschfarbenfunktion</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1242"/>
       <source>Show Pseudocolor Function</source>
-      <translation type="unfinished">Show Pseudocolor Function</translation>
+      <translation>Falschfarbenfunktion anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1246"/>
       <source>O&amp;verview</source>
-      <translation type="unfinished">O&amp;verview</translation>
+      <translation>&amp;Übersicht</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1248"/>
       <source>Shows the Zoom Overview</source>
-      <translation type="unfinished">Shows the Zoom Overview</translation>
+      <translation>Zeigt die Übersicht an</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1252"/>
       <source>Pla&amp;yer</source>
-      <translation type="unfinished">Pla&amp;yer</translation>
+      <translation>Pla&amp;yer</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1254"/>
       <source>Shows the Slide Show Player</source>
-      <translation type="unfinished">Shows the Slide Show Player</translation>
+      <translation>Player anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1257"/>
       <source>File &amp;Explorer</source>
-      <translation type="unfinished">File &amp;Explorer</translation>
+      <translation>&amp;Dateimanager</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1259"/>
       <source>Show File Explorer</source>
-      <translation type="unfinished">Show File Explorer</translation>
+      <translation>Dateimanager anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1262"/>
       <source>Metadata &amp;Info</source>
-      <translation type="unfinished">Metadata &amp;Info</translation>
+      <translation>&amp;Metadaten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1264"/>
       <source>Show Metadata Info</source>
-      <translation type="unfinished">Show Metadata Info</translation>
+      <translation>Metadaten anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1267"/>
       <source>&amp;Thumbnails</source>
-      <translation type="unfinished">&amp;Thumbnails</translation>
+      <translation>&amp;Thumbnails</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1269"/>
       <source>Show Thumbnails</source>
-      <translation type="unfinished">Show Thumbnails</translation>
+      <translation>Thumbnails anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1272"/>
       <source>&amp;Thumbnail Preview</source>
-      <translation type="unfinished">&amp;Thumbnail Preview</translation>
+      <translation>&amp;Thumbnail Vorschau</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1274"/>
       <source>Show Thumbnails Preview</source>
-      <translation type="unfinished">Show Thumbnails Preview</translation>
+      <translation>Thumbnail Vorschau anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1277"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation type="unfinished">&amp;Folder Scrollbar</translation>
+      <translation>&amp;Ordnerscrollbar</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1279"/>
       <source>Show Folder Scrollbar</source>
-      <translation type="unfinished">Show Folder Scrollbar</translation>
+      <translation>Zeigt eine Übersicht aller Bilder im Ordner an</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1282"/>
       <source>&amp;Metadata</source>
-      <translation type="unfinished">&amp;Metadata</translation>
+      <translation>&amp;Metadaten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1284"/>
       <source>Shows the Metadata Panel</source>
-      <translation type="unfinished">Shows the Metadata Panel</translation>
+      <translation>Metadaten anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1287"/>
       <source>File &amp;Info</source>
-      <translation type="unfinished">File &amp;Info</translation>
+      <translation>&amp;Dateiinformation</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1289"/>
       <source>Shows the Info Panel</source>
-      <translation type="unfinished">Shows the Info Panel</translation>
+      <translation>Datei information anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1292"/>
       <source>&amp;Histogram</source>
-      <translation type="unfinished">&amp;Histogram</translation>
+      <translation>&amp;Histogramm</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1294"/>
       <source>Shows the Histogram Panel</source>
-      <translation type="unfinished">Shows the Histogram Panel</translation>
+      <translation>Histogramm anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1297"/>
       <source>Image &amp;Notes</source>
-      <translation type="unfinished">Image &amp;Notes</translation>
+      <translation>&amp;Notizen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1299"/>
       <source>Shows Image Notes</source>
-      <translation type="unfinished">Shows Image Notes</translation>
+      <translation>Notizen anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1304"/>
       <source>&amp;Fit Window</source>
-      <translation type="unfinished">&amp;Fit Window</translation>
+      <translation>&amp;Fenster anpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1306"/>
       <source>Fit window to the image</source>
-      <translation type="unfinished">Fit window to the image</translation>
+      <translation>Fenster anpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1311"/>
       <source>Fu&amp;ll Screen</source>
-      <translation type="unfinished">Fu&amp;ll Screen</translation>
+      <translation>&amp;Vollbild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1313"/>
       <source>Full Screen</source>
-      <translation type="unfinished">Full Screen</translation>
+      <translation>Vollbild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1315"/>
       <source>&amp;Zoom to Fit</source>
-      <translation type="unfinished">&amp;Zoom to Fit</translation>
+      <translation>Bild &amp;einpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1317"/>
       <source>Shows the initial view (no zooming)</source>
-      <translation type="unfinished">Shows the initial view (no zooming)</translation>
+      <translation>Bild in voller Auflösung anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1319"/>
       <source>Show &amp;100%</source>
-      <translation type="unfinished">Show &amp;100%</translation>
+      <translation>&amp;100%</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1321"/>
       <source>Shows the image at 100%</source>
-      <translation type="unfinished">Shows the image at 100%</translation>
+      <translation>Bild an Monitorgröße anpassen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1323"/>
       <location filename="../src/DkActionManager.cpp" line="1518"/>
       <source>Zoom &amp;In</source>
-      <translation type="unfinished">Zoom &amp;In</translation>
+      <translation>Zoom (ver&amp;größern)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1325"/>
       <source>zoom in</source>
-      <translation type="unfinished">zoom in</translation>
+      <translation>Zoom (vergrößern)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1327"/>
       <source>&amp;Zoom Out</source>
-      <translation type="unfinished">&amp;Zoom Out</translation>
+      <translation>&amp;Zoom (verkleinern)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1329"/>
       <source>zoom out</source>
-      <translation type="unfinished">zoom out</translation>
+      <translation>Zoom (verkleinern)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1331"/>
       <source>&amp;Anti Aliasing</source>
-      <translation type="unfinished">&amp;Anti Aliasing</translation>
+      <translation>&amp;Anti Aliasing</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1333"/>
       <source>if checked images are smoother</source>
-      <translation type="unfinished">if checked images are smoother</translation>
+      <translation>Bilder werden bei der Anzeige geglättet</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1337"/>
       <source>&amp;Transparency Pattern</source>
-      <translation type="unfinished">&amp;Transparency Pattern</translation>
+      <translation>&amp;Transparenzmuster</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1339"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation type="unfinished">if checked, a pattern will be displayed for transparent objects</translation>
+      <translation>Wenn diese Option aktiviert ist, wird ein Transparenzmuster angezeigt</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1343"/>
       <source>&amp;Frameless</source>
-      <translation type="unfinished">&amp;Frameless</translation>
+      <translation>&amp;Rahmenlos</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1345"/>
       <source>shows a frameless window</source>
-      <translation type="unfinished">shows a frameless window</translation>
+      <translation>Zeigt Bilder ohne Fenster an</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1349"/>
       <source>New &amp;Tab</source>
-      <translation type="unfinished">New &amp;Tab</translation>
+      <translation>Neuer &amp;Tab</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1351"/>
       <source>Open a new tab</source>
-      <translation type="unfinished">Open a new tab</translation>
+      <translation>Öffnet einen neuen Tab</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1353"/>
       <source>&amp;Close Tab</source>
-      <translation type="unfinished">&amp;Close Tab</translation>
+      <translation>Tab &amp;schließen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1355"/>
       <source>Close current tab</source>
-      <translation type="unfinished">Close current tab</translation>
+      <translation>Aktuellen Tab schließen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1357"/>
       <source>&amp;Previous Tab</source>
-      <translation type="unfinished">&amp;Previous Tab</translation>
+      <translation>&amp;Vorheriger Tab</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1359"/>
       <source>Switch to previous tab</source>
-      <translation type="unfinished">Switch to previous tab</translation>
+      <translation>Zum vorherigen Tab wechseln</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1361"/>
       <source>&amp;Next Tab</source>
-      <translation type="unfinished">&amp;Next Tab</translation>
+      <translation>&amp;Nächster Tab</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1363"/>
       <source>Switch to next tab</source>
-      <translation type="unfinished">Switch to next tab</translation>
+      <translation>Zum nächsten Tab wechseln</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1365"/>
       <source>&amp;Change Opacity</source>
-      <translation type="unfinished">&amp;Change Opacity</translation>
+      <translation>&amp;Transparenz einstellen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1367"/>
       <source>change the window opacity</source>
-      <translation type="unfinished">change the window opacity</translation>
+      <translation>Ändert die Transparenz des Fensters</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1369"/>
       <source>Opacity &amp;Up</source>
-      <translation type="unfinished">Opacity &amp;Up</translation>
+      <translation>Transparenz ve&amp;rringern</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1371"/>
       <location filename="../src/DkActionManager.cpp" line="1375"/>
       <source>changes the window opacity</source>
-      <translation type="unfinished">changes the window opacity</translation>
+      <translation>Ändert die Transparenz des Fensters</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1373"/>
       <source>Opacity &amp;Down</source>
-      <translation type="unfinished">Opacity &amp;Down</translation>
+      <translation>Tra&amp;nsparenz erhöhen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1377"/>
       <source>To&amp;ggle Opacity</source>
-      <translation type="unfinished">To&amp;ggle Opacity</translation>
+      <translation>Transparenz ändern</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1379"/>
       <location filename="../src/DkActionManager.cpp" line="1462"/>
       <source>toggle the window opacity</source>
-      <translation type="unfinished">toggle the window opacity</translation>
+      <translation>Fenstertransparenz umschalten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1381"/>
       <source>Lock &amp;Window</source>
-      <translation type="unfinished">Lock &amp;Window</translation>
+      <translation>Fenster &amp;sperren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1383"/>
       <source>lock the window</source>
-      <translation type="unfinished">lock the window</translation>
+      <translation>Sperrt dieses Fenster</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1387"/>
       <source>&amp;Pause Movie</source>
-      <translation type="unfinished">&amp;Pause Movie</translation>
+      <translation>Video &amp;pausieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1388"/>
       <source>pause the current movie</source>
-      <translation type="unfinished">pause the current movie</translation>
+      <translation>Pausiert das aktuelle Video</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1392"/>
       <source>P&amp;revious Frame</source>
-      <translation type="unfinished">P&amp;revious Frame</translation>
+      <translation>&amp;Vorheriges Frame</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1393"/>
       <source>show previous frame</source>
-      <translation type="unfinished">show previous frame</translation>
+      <translation>Vorheriges Frame anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1395"/>
       <source>&amp;Next Frame</source>
-      <translation type="unfinished">&amp;Next Frame</translation>
+      <translation>&amp;Nächstes Frame</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1396"/>
       <source>show next frame</source>
-      <translation type="unfinished">show next frame</translation>
+      <translation>Nächstes Frame anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1398"/>
       <source>Show G&amp;PS Coordinates</source>
-      <translation type="unfinished">Show G&amp;PS Coordinates</translation>
+      <translation>G&amp;PS Koordinaten anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1399"/>
       <source>shows the GPS coordinates</source>
-      <translation type="unfinished">shows the GPS coordinates</translation>
+      <translation>Browser öffnen und Aufnahmeort anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1405"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation type="unfinished">Compute &amp;Thumbnails</translation>
+      <translation>Thumbnails &amp;erstellen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1406"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation type="unfinished">compute all thumbnails of the current folder</translation>
+      <translation>Berechnet die Thumbnails aller Bilder im aktuellen Ordner</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1409"/>
@@ -946,338 +946,338 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1414"/>
       <source>Image &amp;Manipulation</source>
-      <translation type="unfinished">Image &amp;Manipulation</translation>
+      <translation>Bild &amp;bearbeiten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1416"/>
       <source>modify the current image</source>
-      <translation type="unfinished">modify the current image</translation>
+      <translation>Ändert das aktuelle Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1418"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation type="unfinished">Export Multipage &amp;TIFF</translation>
+      <translation>Multi-Page &amp;TIFF exportieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1419"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation type="unfinished">Export TIFF pages to multiple tiff files</translation>
+      <translation>Alle Einzelbilder eines TIFFs werden exportiert</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1421"/>
       <source>Extract From Archive</source>
-      <translation type="unfinished">Extract From Archive</translation>
+      <translation>Archiv entpacken</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1422"/>
       <source>Extract images from an archive (%1)</source>
-      <translation type="unfinished">Extract images from an archive (%1)</translation>
+      <translation>Bilder aus Archiv entpacken (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1425"/>
       <source>&amp;Mosaic Image</source>
-      <translation type="unfinished">&amp;Mosaic Image</translation>
+      <translation>&amp;Mosaikbild erstellen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1426"/>
       <source>Create a Mosaic Image</source>
-      <translation type="unfinished">Create a Mosaic Image</translation>
+      <translation>Erzeugt ein Bild aus vielen kleinen Bildern</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1428"/>
       <source>Batch Processing</source>
-      <translation type="unfinished">Batch Processing</translation>
+      <translation>Datei(en) konvertieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1429"/>
       <source>Apply actions to multiple images</source>
-      <translation type="unfinished">Apply actions to multiple images</translation>
+      <translation>Bearbeitung mehrerer Bilder gleichzeitig</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1434"/>
       <source>&amp;About Nomacs</source>
-      <translation type="unfinished">&amp;About Nomacs</translation>
+      <translation>&amp;Über Nomacs</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1436"/>
       <source>about</source>
-      <translation type="unfinished">about</translation>
+      <translation>Über</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1438"/>
       <source>&amp;Documentation</source>
-      <translation type="unfinished">&amp;Documentation</translation>
+      <translation>&amp;Dokumentation</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1439"/>
       <source>Online Documentation</source>
-      <translation type="unfinished">Online Documentation</translation>
+      <translation>Online Dokumentation öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1441"/>
       <source>&amp;Report a Bug</source>
-      <translation type="unfinished">&amp;Report a Bug</translation>
+      <translation>&amp;Fehler melden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1442"/>
       <source>Report a Bug</source>
-      <translation type="unfinished">Report a Bug</translation>
+      <translation>Fehler melden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1444"/>
       <source>&amp;Feature Request</source>
-      <translation type="unfinished">&amp;Feature Request</translation>
+      <translation>&amp;Feature-Request</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1445"/>
       <source>Feature Request</source>
-      <translation type="unfinished">Feature Request</translation>
+      <translation>Feature-Request</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1447"/>
       <source>&amp;Check for Updates</source>
-      <translation type="unfinished">&amp;Check for Updates</translation>
+      <translation>Programm &amp;Updates überprüfen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1448"/>
       <source>check for updates</source>
-      <translation type="unfinished">check for updates</translation>
+      <translation>Nach Updates suchen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1450"/>
       <source>&amp;Update Translation</source>
-      <translation type="unfinished">&amp;Update Translation</translation>
+      <translation>&amp;Übersetzung Updates überprüfen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1451"/>
       <source>Checks for a new version of the translations of the current language</source>
-      <translation type="unfinished">Checks for a new version of the translations of the current language</translation>
+      <translation>Lädt die aktuellste Übersetzung herunter</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1455"/>
       <source>Synchronize &amp;View</source>
-      <translation type="unfinished">Synchronize &amp;View</translation>
+      <translation>&amp;Ansicht Synchronisation</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1457"/>
       <source>synchronize the current view</source>
-      <translation type="unfinished">synchronize the current view</translation>
+      <translation>Ansicht synchronisieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1460"/>
       <source>&amp;Window Overlay</source>
-      <translation type="unfinished">&amp;Window Overlay</translation>
+      <translation>&amp;Fenster Overlay</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1465"/>
       <source>Arrange Instances</source>
-      <translation type="unfinished">Arrange Instances</translation>
+      <translation>Instanzen anordnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1467"/>
       <source>arrange connected instances</source>
-      <translation type="unfinished">arrange connected instances</translation>
+      <translation>Verbundene Instanzen anordnen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1470"/>
       <source>Connect &amp;All</source>
-      <translation type="unfinished">Connect &amp;All</translation>
+      <translation>Alle Instanzen &amp;Synchronisieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1473"/>
       <source>connect all instances</source>
-      <translation type="unfinished">connect all instances</translation>
+      <translation>Alle Instanzen verbinden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1475"/>
       <source>&amp;Sync All Actions</source>
-      <translation type="unfinished">&amp;Sync All Actions</translation>
+      <translation>&amp;Alle Aktionen synchronisieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1476"/>
       <source>Transmit All Signals Automatically.</source>
-      <translation type="unfinished">Transmit All Signals Automatically.</translation>
+      <translation>Alle Aktionen automatisch synchronisieren.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1480"/>
       <source>&amp;Start Upnp</source>
-      <translation type="unfinished">&amp;Start Upnp</translation>
+      <translation>&amp;UPnP starten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1481"/>
       <source>Starts a Upnp Media Renderer.</source>
-      <translation type="unfinished">Starts a Upnp Media Renderer.</translation>
+      <translation>UPnP Server starten.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1484"/>
       <source>&amp;Remote Control</source>
-      <translation type="unfinished">&amp;Remote Control</translation>
+      <translation>&amp;Fernbedienen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1486"/>
       <source>Automatically Receive Images From Your Remote Instance.</source>
-      <translation type="unfinished">Automatically Receive Images From Your Remote Instance.</translation>
+      <translation>Die Bilder werden vom Remote-Computer übermittelt.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1489"/>
       <source>Remote &amp;Display</source>
-      <translation type="unfinished">Remote &amp;Display</translation>
+      <translation>Remote &amp;Diashow</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1490"/>
       <source>Automatically Send Images to a Remote Instance.</source>
-      <translation type="unfinished">Automatically Send Images to a Remote Instance.</translation>
+      <translation>Ihre Bilder werden an den Remote-Computer übermittelt.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1496"/>
       <source>Start &amp;Server</source>
-      <translation type="unfinished">Start &amp;Server</translation>
+      <translation>&amp;Server starten</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1501"/>
       <source>Send &amp;Image</source>
-      <translation type="unfinished">Send &amp;Image</translation>
+      <translation>&amp;Bild senden</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1504"/>
       <source>Sends the current image to all clients.</source>
-      <translation type="unfinished">Sends the current image to all clients.</translation>
+      <translation>Aktuelles Bild an alle Clients senden.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1508"/>
       <source>&amp;Plugin Manager</source>
-      <translation type="unfinished">&amp;Plugin Manager</translation>
+      <translation>&amp;Plugin Manager</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1509"/>
       <source>manage installed plugins and download new ones</source>
-      <translation type="unfinished">manage installed plugins and download new ones</translation>
+      <translation>Plugins verwalten bzw. neue herunterladen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1514"/>
       <source>Select &amp;All</source>
-      <translation type="unfinished">Select &amp;All</translation>
+      <translation>&amp;Alles auswählen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1521"/>
       <source>Zoom &amp;Out</source>
-      <translation type="unfinished">Zoom &amp;Out</translation>
+      <translation>Zoom (ver&amp;kleinern)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1524"/>
       <source>Display &amp;Squares</source>
-      <translation type="unfinished">Display &amp;Squares</translation>
+      <translation>&amp;Kacheln</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1528"/>
       <source>Show &amp;Filename</source>
-      <translation type="unfinished">Show &amp;Filename</translation>
+      <translation>&amp;Dateiname anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1544"/>
       <source>&amp;Rename</source>
-      <translation type="unfinished">&amp;Rename</translation>
+      <translation>&amp;Umbenennen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1547"/>
       <source>&amp;Batch Process</source>
-      <translation type="unfinished">&amp;Batch Process</translation>
+      <translation>&amp;Batchverarbeitung</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1548"/>
       <source>Adds selected files to batch processing.</source>
-      <translation type="unfinished">Adds selected files to batch processing.</translation>
+      <translation>Ausgewählte Dateien zur Batchverarbeitung hinzufügen.</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1563"/>
       <source>Start pong</source>
-      <translation type="unfinished">Start pong</translation>
+      <translation>Pong</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1566"/>
       <source>First File</source>
-      <translation type="unfinished">First File</translation>
+      <translation>Erstes Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1567"/>
       <location filename="../src/DkActionManager.cpp" line="1583"/>
       <source>Jump to first file</source>
-      <translation type="unfinished">Jump to first file</translation>
+      <translation>Zum ersten Bild springen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1570"/>
       <source>Last File</source>
-      <translation type="unfinished">Last File</translation>
+      <translation>Letztes Bild</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1571"/>
       <location filename="../src/DkActionManager.cpp" line="1587"/>
       <source>Jump to the end of the current folder</source>
-      <translation type="unfinished">Jump to the end of the current folder</translation>
+      <translation>Im aktuellen Verzeichnis zum letzten Bild springen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1574"/>
       <source>Skip Previous Images</source>
-      <translation type="unfinished">Skip Previous Images</translation>
+      <translation>Vorherige Bilder überspringen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1575"/>
       <location filename="../src/DkActionManager.cpp" line="1591"/>
       <source>Jumps 10 images before the current image</source>
-      <translation type="unfinished">Jumps 10 images before the current image</translation>
+      <translation>Springt 10 Bilder zurück</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1578"/>
       <source>Skip Next Images</source>
-      <translation type="unfinished">Skip Next Images</translation>
+      <translation>Nächsten Bilder überspringen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1579"/>
       <location filename="../src/DkActionManager.cpp" line="1595"/>
       <source>Jumps 10 images after the current image</source>
-      <translation type="unfinished">Jumps 10 images after the current image</translation>
+      <translation>Bilder überspringen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1582"/>
       <source>First File Sync</source>
-      <translation type="unfinished">First File Sync</translation>
+      <translation>Erste Dateisynchronisation</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1586"/>
       <source>Last File Sync</source>
-      <translation type="unfinished">Last File Sync</translation>
+      <translation>Letzte Dateisynchronisation</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1590"/>
       <source>Skip Previous Images Sync</source>
-      <translation type="unfinished">Skip Previous Images Sync</translation>
+      <translation>Vorherige Bilder überspringen Sync</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1594"/>
       <source>Skip Next Images Sync</source>
-      <translation type="unfinished">Skip Next Images Sync</translation>
+      <translation>Nächsten Bilder überspringen Sync</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1598"/>
       <source>Delete File Silent</source>
-      <translation type="unfinished">Delete File Silent</translation>
+      <translation>Datei(en) OHNE Rückfrage löschen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1599"/>
       <source>Deletes a file without warning</source>
-      <translation type="unfinished">Deletes a file without warning</translation>
+      <translation>Löscht eine Datei ohne Warnung</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="365"/>
       <location filename="../src/DkMetaData.cpp" line="836"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation>&lt; daten zu groß zum anzeigen &gt;</translation>
+      <translation>&lt;Daten zu groß zum Anzeigen&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="480"/>
       <location filename="../src/DkMetaDataWidgets.cpp" line="796"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Dateiname</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="483"/>
@@ -1288,52 +1288,52 @@
     <message>
       <location filename="../src/DkMetaData.cpp" line="487"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Ziel</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="491"/>
       <location filename="../src/DkMetaDataWidgets.cpp" line="798"/>
       <source>Size</source>
-      <translation type="unfinished">Size</translation>
+      <translation>Größe</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="495"/>
       <location filename="../src/DkMetaData.cpp" line="498"/>
       <location filename="../src/DkMetaData.cpp" line="501"/>
       <source>Date</source>
-      <translation type="unfinished">Date</translation>
+      <translation>Datum</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="495"/>
       <source>Created</source>
-      <translation type="unfinished">Created</translation>
+      <translation>Erstellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="498"/>
       <source>Last Modified</source>
-      <translation type="unfinished">Last Modified</translation>
+      <translation>Zuletzt geändert</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="501"/>
       <source>Last Read</source>
-      <translation type="unfinished">Last Read</translation>
+      <translation>Zuletzt gelesen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="505"/>
       <location filename="../src/DkMetaData.cpp" line="518"/>
       <source>Owner</source>
-      <translation type="unfinished">Owner</translation>
+      <translation>Besitzer</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="509"/>
       <source>OwnerID</source>
-      <translation type="unfinished">OwnerID</translation>
+      <translation>BesitzerID</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="513"/>
       <location filename="../src/DkMetaData.cpp" line="532"/>
       <source>Group</source>
-      <translation type="unfinished">Group</translation>
+      <translation>Gruppe</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="518"/>
@@ -1341,499 +1341,499 @@
       <location filename="../src/DkMetaData.cpp" line="532"/>
       <location filename="../src/DkMetaData.cpp" line="539"/>
       <source>Permissions</source>
-      <translation type="unfinished">Permissions</translation>
+      <translation>Rechte</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="525"/>
       <source>User</source>
-      <translation type="unfinished">User</translation>
+      <translation>Benutzer</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="539"/>
       <source>Other</source>
-      <translation type="unfinished">Other</translation>
+      <translation>Andere</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="549"/>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>Datei</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1440"/>
       <source>not defined</source>
-      <translation type="unfinished">not defined</translation>
+      <translation>nicht definiert</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1441"/>
       <source>manual</source>
-      <translation type="unfinished">manual</translation>
+      <translation>Manuell</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1442"/>
       <source>normal</source>
-      <translation type="unfinished">normal</translation>
+      <translation>normal</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1443"/>
       <source>aperture priority</source>
-      <translation type="unfinished">aperture priority</translation>
+      <translation>Zeitautomatik</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1444"/>
       <source>shutter priority</source>
-      <translation type="unfinished">shutter priority</translation>
+      <translation>Blendenautomatik</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1445"/>
       <source>program creative</source>
-      <translation type="unfinished">program creative</translation>
+      <translation>Kreativer Belichtungsmodus</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1446"/>
       <source>high-speed program</source>
-      <translation type="unfinished">high-speed program</translation>
+      <translation>Hochgeschwindigkeits-Programm</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1447"/>
       <source>portrait mode</source>
-      <translation type="unfinished">portrait mode</translation>
+      <translation>Portrait-Modus</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1448"/>
       <source>landscape mode</source>
-      <translation type="unfinished">landscape mode</translation>
+      <translation>Landschafts-Modus</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1451"/>
       <source>No Flash</source>
-      <translation type="unfinished">No Flash</translation>
+      <translation>Kein Blitz</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1452"/>
       <source>Fired</source>
-      <translation type="unfinished">Fired</translation>
+      <translation>Ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1453"/>
       <source>Fired, Return not detected</source>
-      <translation type="unfinished">Fired, Return not detected</translation>
+      <translation>Ausgelöst, Antwort nicht festgestellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1454"/>
       <source>Fired, Return detected</source>
-      <translation type="unfinished">Fired, Return detected</translation>
+      <translation>Ausgelöst, Antwort festgestellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1455"/>
       <source>On, Did not fire</source>
-      <translation type="unfinished">On, Did not fire</translation>
+      <translation>Ein, nicht ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1456"/>
       <source>On, Fired</source>
-      <translation type="unfinished">On, Fired</translation>
+      <translation>Ein, Ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1457"/>
       <source>On, Return not detected</source>
-      <translation type="unfinished">On, Return not detected</translation>
+      <translation>Ein, Antwort nicht festgestellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1458"/>
       <source>On, Return detected</source>
-      <translation type="unfinished">On, Return detected</translation>
+      <translation>Ein, Antwort festgestellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1459"/>
       <source>Off, Did not fire</source>
-      <translation type="unfinished">Off, Did not fire</translation>
+      <translation>Aus, nicht ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1460"/>
       <source>Off, Did not fire, Return not detected</source>
-      <translation type="unfinished">Off, Did not fire, Return not detected</translation>
+      <translation>Aus, nicht ausgelöst, Antwort nicht festgestellt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1461"/>
       <source>Auto, Did not fire</source>
-      <translation type="unfinished">Auto, Did not fire</translation>
+      <translation>Automatisch, nicht ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1462"/>
       <source>Auto, Fired</source>
-      <translation type="unfinished">Auto, Fired</translation>
+      <translation>Automatisch, ausgelöst</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1463"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation type="unfinished">Auto, Fired, Return not detected</translation>
+      <translation>Automatisch, ausgelöst, Antwort nicht erkannt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1464"/>
       <source>Auto, Fired, Return detected</source>
-      <translation type="unfinished">Auto, Fired, Return detected</translation>
+      <translation>Automatisch, ausgelöst, Antwort erkannt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1465"/>
       <source>No flash function</source>
-      <translation type="unfinished">No flash function</translation>
+      <translation>Keine Blitz Funktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1466"/>
       <source>Off, No flash function</source>
-      <translation type="unfinished">Off, No flash function</translation>
+      <translation>Aus, keine Blitz Funktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1467"/>
       <source>Fired, Red-eye reduction</source>
-      <translation type="unfinished">Fired, Red-eye reduction</translation>
+      <translation>Ausgelöst, Rote-Augen-Reduktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1468"/>
       <source>Fired, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Ausgelöst, Rote-Augen-Reduktion, Antwort nicht erkannt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1469"/>
       <source>Fired, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return detected</translation>
+      <translation>Ausgelöst, Rote-Augen-Reduktion, Antwort erkannt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1470"/>
       <source>On, Red-eye reduction</source>
-      <translation type="unfinished">On, Red-eye reduction</translation>
+      <translation>Ein, Rote-Augen-Reduktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1471"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">On, Red-eye reduction, Return not detected</translation>
+      <translation>Ein, Rote-Augen-Reduktion, Antwort nicht erkannt</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1472"/>
       <source>On, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">On, Red-eye reduction, Return detected</translation>
+      <translation>Ein, Rote-Augen-Reduktion, vorhanden</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1473"/>
       <source>Off, Red-eye reduction</source>
-      <translation type="unfinished">Off, Red-eye reduction</translation>
+      <translation>Aus, Rote-Augen-Reduktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1474"/>
       <source>Auto, Did not fire, Red-eye reduction</source>
-      <translation type="unfinished">Auto, Did not fire, Red-eye reduction</translation>
+      <translation>Auto, nicht ausgelöst, Rote-Augen-Reduktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1475"/>
       <source>Auto, Fired, Red-eye reduction</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction</translation>
+      <translation>Auto, ausgelöst, Rote-Augen-Reduktion</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1476"/>
       <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Auto, ausgelöst, Rote-Augen-Reduktion, nicht vorhanden</translation>
     </message>
     <message>
       <location filename="../src/DkMetaData.cpp" line="1477"/>
       <source>Auto, Fired, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction, Return detected</translation>
+      <translation>Auto, ausgelöst, Rote-Augen-Reduktion, vorhanden</translation>
     </message>
     <message>
       <location filename="../src/DkCentralWidget.cpp" line="185"/>
       <source>New Tab</source>
-      <translation type="unfinished">New Tab</translation>
+      <translation>Neuer Tab</translation>
     </message>
     <message>
       <location filename="../src/DkCentralWidget.cpp" line="188"/>
       <source>Thumbnail Preview</source>
-      <translation type="unfinished">Thumbnail Preview</translation>
+      <translation>&amp;Thumbnail Vorschau</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="75"/>
       <source>[Resize Batch]</source>
-      <translation type="unfinished">[Resize Batch]</translation>
+      <translation>[Größe anpassen Batch]</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="101"/>
       <source>%1 scale factor is 1 -&gt; ignoring</source>
-      <translation type="unfinished">%1 scale factor is 1 -&gt; ignoring</translation>
+      <translation>%1-Skalierungsfaktor ist 1-&gt; ignoriert</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="112"/>
       <source>%1 no need for resizing.</source>
-      <translation type="unfinished">%1 no need for resizing.</translation>
+      <translation>%1 keine Notwendigkeit für die Größenänderung.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="117"/>
       <source>%1 could not resize image.</source>
-      <translation type="unfinished">%1 could not resize image.</translation>
+      <translation>%1 konnte Größe nicht anpassen.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="122"/>
       <source>%1 image resized, scale factor: %2%</source>
-      <translation type="unfinished">%1 image resized, scale factor: %2%</translation>
+      <translation>%1 Bildgröße angepasst, Skalierungsfaktor %2</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="124"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation type="unfinished">%1 image resized, new side: %2 px</translation>
+      <translation>%1 Bildgröße angepasst, neue Seitengröße: %2 px</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="157"/>
       <source>%1 I need to increase the image, but the option is set to decrease only -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to increase the image, but the option is set to decrease only -&gt; skipping.</translation>
+      <translation>%1 Bild müsste vergrößert werden, aber es wurde nur verkleinern angewählt -&gt; übersprungen.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="161"/>
       <source>%1 I need to decrease the image, but the option is set to increase only -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to decrease the image, but the option is set to increase only -&gt; skipping.</translation>
+      <translation>%1 Bild müsste verkleinert werden, aber es wurde nur vergrößern angewählt -&gt; übersprungen.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="165"/>
       <source>%1 image size matches scale factor -&gt; skipping.</source>
-      <translation type="unfinished">%1 image size matches scale factor -&gt; skipping.</translation>
+      <translation>%1-Bildgröße entspricht Skalierungsfaktor-&gt; übersprungen.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="183"/>
       <source>[Transform Batch]</source>
-      <translation type="unfinished">[Transform Batch]</translation>
+      <translation>[Transformieren Batch]</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="201"/>
       <location filename="../src/DkProcess.cpp" line="241"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation type="unfinished">%1 inactive -&gt; skipping</translation>
+      <translation>%1 nicht aktiv -&gt; übersprungen</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="219"/>
       <source>%1 image transformed.</source>
-      <translation type="unfinished">%1 image transformed.</translation>
+      <translation>%1 Bild umgewandelt.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="222"/>
       <source>%1 error, could not transform image.</source>
-      <translation type="unfinished">%1 error, could not transform image.</translation>
+      <translation>%1 Fehler, konnte nicht Bild umwandeln.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="265"/>
       <source>%1 Cannot apply %2.</source>
-      <translation type="unfinished">%1 Cannot apply %2.</translation>
+      <translation>%1 kann %2 nicht anwenden.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="268"/>
       <source>%1 Cannot apply %2 because it is NULL.</source>
-      <translation type="unfinished">%1 Cannot apply %2 because it is NULL.</translation>
+      <translation>%1 Kann %2 nicht anwenden, da er NULL ist.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="270"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation type="unfinished">%1 illegal plugin interface: %2</translation>
+      <translation>%1 illegale Plugin-Schnittstelle: %2</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="274"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation type="unfinished">%1 error, could not apply plugins.</translation>
+      <translation>%1 Fehler, konnte Plugin nicht anwenden.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="278"/>
       <source>%1 plugins applied.</source>
-      <translation type="unfinished">%1 plugins applied.</translation>
+      <translation>%1 Plugin angewendet.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="284"/>
       <source>[Plugin Batch]</source>
-      <translation type="unfinished">[Plugin Batch]</translation>
+      <translation>[Plugin Batch]</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="364"/>
       <source>%1 already exists -&gt; skipping (check 'overwrite' if you want to overwrite the file)</source>
-      <translation type="unfinished">%1 already exists -&gt; skipping (check 'overwrite' if you want to overwrite the file)</translation>
+      <translation>%1 ist bereits vorhanden,-&gt; überspringen (aktiviere ' Überschreiben' Wenn die Datei überschrieben werden sollte)</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="369"/>
       <source>Error: input file does not exist</source>
-      <translation type="unfinished">Error: input file does not exist</translation>
+      <translation>Fehler: Eingabedatei nicht vorhanden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="370"/>
       <location filename="../src/DkProcess.cpp" line="484"/>
       <source>Input: %1</source>
-      <translation type="unfinished">Input: %1</translation>
+      <translation>Eingabe: %1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="375"/>
       <source>Skipping: nothing to do here.</source>
-      <translation type="unfinished">Skipping: nothing to do here.</translation>
+      <translation>Übersprungen: hier gibts nichts zu tun.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="407"/>
       <source>processing %1</source>
-      <translation type="unfinished">processing %1</translation>
+      <translation>Verarbeitung %1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="412"/>
       <source>Error while loading...</source>
-      <translation type="unfinished">Error while loading...</translation>
+      <translation>Fehler beim Laden...</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="420"/>
       <source>Error: cannot process a NULL function.</source>
-      <translation type="unfinished">Error: cannot process a NULL function.</translation>
+      <translation>Fehler: kann eine NULL-Funktion nicht verarbeiten.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="425"/>
       <source>%1 failed</source>
-      <translation type="unfinished">%1 failed</translation>
+      <translation>%1 fehlgeschlagen</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="437"/>
       <source>%1 saved...</source>
-      <translation type="unfinished">%1 saved...</translation>
+      <translation>%1 gespeichert...</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="440"/>
       <source>Could not save: %1</source>
-      <translation type="unfinished">Could not save: %1</translation>
+      <translation>%1 konnte nicht gespeichert werden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="455"/>
       <source>Error: could not rename file, the target file exists already.</source>
-      <translation type="unfinished">Error: could not rename file, the target file exists already.</translation>
+      <translation>Fehler: Datei konnte nicht umbenannt werden, da Zieldatei bereits vorhanden ist.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="463"/>
       <source>Error: could not rename file</source>
-      <translation type="unfinished">Error: could not rename file</translation>
+      <translation>Fehler: Datei konnte nicht umbenannt werden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="468"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>Umbenennen: %1-&gt; %2</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="483"/>
       <source>Error: could not copy file</source>
-      <translation type="unfinished">Error: could not copy file</translation>
+      <translation>Fehler: Datei konnte nicht kopiert werden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="485"/>
       <source>Output: %1</source>
-      <translation type="unfinished">Output: %1</translation>
+      <translation>Ausgabe: %1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="490"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>Kopiere: %1-&gt; %2</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="505"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation type="unfinished">Error: back-up (%1) file already exists</translation>
+      <translation>Fehler: Sicherung (%1) existiert bereits</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="512"/>
       <source>Error: could not rename existing file to %1</source>
-      <translation type="unfinished">Error: could not rename existing file to %1</translation>
+      <translation>Fehler: Konnte vorhandene Datei nicht in %1 umbenennen</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="530"/>
       <source>Error: could not delete existing file</source>
-      <translation type="unfinished">Error: could not delete existing file</translation>
+      <translation>Fehler: Vorhandene Datei konnte nicht gelöscht werden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="541"/>
       <source>Ui - a lot of things went wrong sorry, your original file can be found here: %1</source>
-      <translation type="unfinished">Ui - a lot of things went wrong sorry, your original file can be found here: %1</translation>
+      <translation>UI - viele Dinge sind schief gelaufen, entschuldigung Ihre ursprüngliche Datei finden Sie hier: %1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="546"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation type="unfinished">I could not save to %1 so I restored the original file.</translation>
+      <translation>Speichern in %1 nicht möglich, Originaldatei wurde wiederhergestellt.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="562"/>
       <source>%1 deleted.</source>
-      <translation type="unfinished">%1 deleted.</translation>
+      <translation>%1 gelöscht.</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="565"/>
       <source>I could not delete %1</source>
-      <translation type="unfinished">I could not delete %1</translation>
+      <translation>%1 konnte nicht gelöscht werden</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="570"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation type="unfinished">I did not delete the original because I detected %1 failure(s).</translation>
+      <translation>Das Original wurde nicht gelöscht, da %1 Fehler entdeckt wurden.</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="881"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-      <translation type="unfinished">nomacs - Image Lounge is a lightweight image viewer.</translation>
+      <translation>nomacs - Bild Lounge ist ein ressourcenschonender Bildbetrachter.</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="88"/>
       <source>Player 1</source>
-      <translation type="unfinished">Player 1</translation>
+      <translation>Spieler 1</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="89"/>
       <source>Player 2</source>
-      <translation type="unfinished">Player 2</translation>
+      <translation>Spieler 2</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="99"/>
       <source>Anonymous</source>
-      <translation type="unfinished">Anonymous</translation>
+      <translation>Anonym</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="107"/>
       <source>An input image.</source>
-      <translation type="unfinished">An input image.</translation>
+      <translation>Ein Eingabebild.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="110"/>
       <source>Start in fullscreen.</source>
-      <translation type="unfinished">Start in fullscreen.</translation>
+      <translation>Als Vollbild starten.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="113"/>
       <source>Start Pong.</source>
-      <translation type="unfinished">Start Pong.</translation>
+      <translation>Pong starten.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="116"/>
       <source>Start in private mode.</source>
-      <translation type="unfinished">Start in private mode.</translation>
+      <translation>Im privaten Modus starten.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="120"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Anzeige Modus &lt;mode&gt; festlegen.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="121"/>
       <source>default | frameless | pseudocolor</source>
-      <translation type="unfinished">default | frameless | pseudocolor</translation>
+      <translation>Standardeinstellung | Rahmenlos | PseudoColor</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="125"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Alle Dateien aus &lt;directory&gt; laden.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="126"/>
       <source>directory</source>
-      <translation type="unfinished">directory</translation>
+      <translation>Verzeichnis</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="130"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>&lt;Bilder&gt; in einem Tab laden.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="131"/>
       <source>images</source>
-      <translation type="unfinished">images</translation>
+      <translation>Bilder</translation>
     </message>
   </context>
   <context>
@@ -1846,22 +1846,22 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1555"/>
       <source>Show test image</source>
-      <translation type="unfinished">Show test image</translation>
+      <translation>Testbild anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1558"/>
       <source>All Images</source>
-      <translation type="unfinished">All Images</translation>
+      <translation>Alle Bilder</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1559"/>
       <source>Generates all images in the world</source>
-      <translation type="unfinished">Generates all images in the world</translation>
+      <translation>Alle Bilder der Welt generieren</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1562"/>
       <source>Pong</source>
-      <translation type="unfinished">Pong</translation>
+      <translation>Pong</translation>
     </message>
   </context>
   <context>
@@ -1869,7 +1869,7 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="434"/>
       <source>Manage Applications</source>
-      <translation>Anwendungen Verwalten</translation>
+      <translation>Anwendungen verwalten</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="457"/>
@@ -1912,12 +1912,12 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="4283"/>
       <source>Extract images from an archive</source>
-      <translation type="unfinished">Extract images from an archive</translation>
+      <translation>Extrahiere Bilder aus einem Archiv</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4292"/>
       <source>Archive (%1)</source>
-      <translation type="unfinished">Archive (%1)</translation>
+      <translation>Archiv (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4299"/>
@@ -1928,17 +1928,17 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="4303"/>
       <source>Extract to</source>
-      <translation type="unfinished">Extract to</translation>
+      <translation>Extrahiere nach</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4316"/>
       <source>Remove Subfolders</source>
-      <translation type="unfinished">Remove Subfolders</translation>
+      <translation>Unterverzeichnisse entfernen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4322"/>
       <source>&amp;Extract</source>
-      <translation type="unfinished">&amp;Extract</translation>
+      <translation>&amp;Extrahieren</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4324"/>
@@ -1949,47 +1949,47 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="4403"/>
       <source>Open Archive</source>
-      <translation type="unfinished">Open Archive</translation>
+      <translation>Archiv öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4404"/>
       <source>Archives (%1)</source>
-      <translation type="unfinished">Archives (%1)</translation>
+      <translation>Archive (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4415"/>
       <source>Open Directory</source>
-      <translation type="unfinished">Open Directory</translation>
+      <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4449"/>
       <source>Not a valid archive.</source>
-      <translation type="unfinished">Not a valid archive.</translation>
+      <translation>Kein gültiges Archiv.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4478"/>
       <source>Number of images: </source>
-      <translation type="unfinished">Number of images: </translation>
+      <translation>Anzahl der Bilder: </translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4480"/>
       <source>The archive does not contain any images.</source>
-      <translation type="unfinished">The archive does not contain any images.</translation>
+      <translation>Das Archiv enthält keine Bilder.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4505"/>
       <source>The images could not be extracted!</source>
-      <translation type="unfinished">The images could not be extracted!</translation>
+      <translation>Bilder konnten nicht extrahiert werden!</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4547"/>
       <source>Extracting files...</source>
-      <translation type="unfinished">Extracting files...</translation>
+      <translation>Extrahiere Dateien...</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4556"/>
       <source>Extracting file %1 of %2</source>
-      <translation type="unfinished">Extracting file %1 of %2</translation>
+      <translation>Extrahiere Datei %1 von %2</translation>
     </message>
   </context>
   <context>
@@ -2005,12 +2005,12 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1183"/>
       <source>Batch Conversion</source>
-      <translation type="unfinished">Batch Conversion</translation>
+      <translation>Batch-Konvertierung</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1201"/>
       <source>Input Directory</source>
-      <translation type="unfinished">Input Directory</translation>
+      <translation>Eingabeverzeichnis</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1201"/>
@@ -2020,7 +2020,7 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1207"/>
       <source>Resize</source>
-      <translation type="unfinished">Resize</translation>
+      <translation>Größe ändern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1207"/>
@@ -2037,27 +2037,27 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1218"/>
       <source>Plugins</source>
-      <translation type="unfinished">Plugins</translation>
+      <translation>Plugins</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1224"/>
       <source>Output</source>
-      <translation type="unfinished">Output</translation>
+      <translation>Ausgabe</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1224"/>
       <source>not set</source>
-      <translation type="unfinished">not set</translation>
+      <translation>Nicht festgelegt</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1237"/>
       <source>Show &amp;Log</source>
-      <translation type="unfinished">Show &amp;Log</translation>
+      <translation>Zeige &amp;Log</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1238"/>
       <source>Shows detailed status messages.</source>
-      <translation type="unfinished">Shows detailed status messages.</translation>
+      <translation>Zeigt detaillierte Statusmeldungen.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1244"/>
@@ -2074,12 +2074,12 @@
       <location filename="../src/DkBatch.cpp" line="1283"/>
       <location filename="../src/DkBatch.cpp" line="1301"/>
       <source>Wrong Configuration</source>
-      <translation type="unfinished">Wrong Configuration</translation>
+      <translation>Falsche Konfiguration</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1283"/>
       <source>Please select files for processing.</source>
-      <translation type="unfinished">Please select files for processing.</translation>
+      <translation>Bitte wählen Sie die Dateien für die Verarbeitung.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1291"/>
@@ -2089,50 +2089,49 @@
       <location filename="../src/DkBatch.cpp" line="1342"/>
       <location filename="../src/DkBatch.cpp" line="1351"/>
       <source>Fatal Error</source>
-      <translation type="unfinished">Fatal Error</translation>
+      <translation>Schwerwiegender Fehler</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1291"/>
       <source>I am missing a widget.</source>
-      <translation type="unfinished">I am missing a widget.</translation>
+      <translation>Mir fehlt eine Widget.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1301"/>
       <source>Please check 'Overwrite Existing Files' or choose a different output directory.</source>
-      <translation type="unfinished">Please check 'Overwrite Existing Files' or choose a different output directory.</translation>
+      <translation>Bitte überprüfen Sie "Vorhandene Dateien überschreiben" oder wählen Sie ein anderes Ausgabeverzeichnis.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1313"/>
       <source>Create Output Directory</source>
-      <translation type="unfinished">Create Output Directory</translation>
+      <translation>Ausgabeverzeichnis erstellen</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1314"/>
       <source>Should I create:
 %1</source>
-      <translation type="unfinished">Should I create:
-%1</translation>
+      <translation>Sollte ich erstellen:%1</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1330"/>
       <source>Please select an output directory.</source>
-      <translation type="unfinished">Please select an output directory.</translation>
+      <translation>Bitte wählen Sie ein Ausgabeverzeichnis.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1334"/>
       <source>Sorry, I cannot create %1.</source>
-      <translation type="unfinished">Sorry, I cannot create %1.</translation>
+      <translation>Kann %1 nicht erstellen.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1338"/>
       <source>Sorry, I cannot find files to process.</source>
-      <translation type="unfinished">Sorry, I cannot find files to process.</translation>
+      <translation>Dateien zur Verarbeitung konnten nicht gefunden werden.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1342"/>
       <location filename="../src/DkBatch.cpp" line="1351"/>
       <source>Sorry, the file pattern is empty.</source>
-      <translation type="unfinished">Sorry, the file pattern is empty.</translation>
+      <translation>Das Dateimuster ist leer.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1414"/>
@@ -2142,7 +2141,7 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1434"/>
       <source>%1/%2 files processed... %3 failed.</source>
-      <translation type="unfinished">%1/%2 files processed... %3 failed.</translation>
+      <translation>%1/%2 Dateien verarbeitet... %3 ist fehlgeschlagen.</translation>
     </message>
   </context>
   <context>
@@ -2150,81 +2149,79 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="659"/>
       <source>Output Directory</source>
-      <translation type="unfinished">Output Directory</translation>
+      <translation>Ausgabeverzeichnis</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="661"/>
       <source>Browse</source>
-      <translation>Browse</translation>
+      <translation>Durchsuchen</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="663"/>
       <source>Select a Directory</source>
-      <translation type="unfinished">Select a Directory</translation>
+      <translation>Wählen Sie ein Verzeichnis</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="668"/>
       <source>Overwrite Existing Files</source>
-      <translation type="unfinished">Overwrite Existing Files</translation>
+      <translation>Vorhandene Dateien überschreiben</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="669"/>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-      <translation type="unfinished">If checked, existing files are overwritten.
-This option might destroy your images - so be careful!</translation>
+      <translation>Wenn Sie diese Option aktivieren werden vorhandene Dateien überschrieben. Die Option zerstört möglicherweise Ihre Bilder - Seien Sie vorsichtig!</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="673"/>
       <source>Use Input Folder</source>
-      <translation type="unfinished">Use Input Folder</translation>
+      <translation>Eingabe-Ordner verwenden</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="674"/>
       <source>If checked, the batch is applied to the input folder - so be careful!</source>
-      <translation type="unfinished">If checked, the batch is applied to the input folder - so be careful!</translation>
+      <translation>Hinweis: Bei Aktivierung wird die gewählte Stapelverarbeitung auf den gesamten Eingabe-Ordner angewendet!</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="678"/>
       <source>Delete Input Files</source>
-      <translation type="unfinished">Delete Input Files</translation>
+      <translation>Lösche die Eingabedateien</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="679"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation type="unfinished">If checked, the original file will be deleted if the conversion was successful.
- So be careful!</translation>
+      <translation>Hinweis: Bei Aktivierung wird nach erfolgreicher Konvertierung die Originaldatei gelöscht!</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="697"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Dateiname</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="714"/>
       <source>Keep Extension</source>
-      <translation type="unfinished">Keep Extension</translation>
+      <translation>Dateisuffix beibehalten</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="715"/>
       <source>Convert To</source>
-      <translation type="unfinished">Convert To</translation>
+      <translation>Konvertieren in</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="727"/>
       <source>Old: </source>
-      <translation type="unfinished">Old: </translation>
+      <translation>Alt: </translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="730"/>
       <source>New: </source>
-      <translation type="unfinished">New: </translation>
+      <translation>Neu: </translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="735"/>
       <source>Filename Preview</source>
-      <translation type="unfinished">Filename Preview</translation>
+      <translation>Dateinamen Vorschau</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="757"/>
@@ -2237,12 +2234,12 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="1034"/>
       <source>Sorry, no Plugins found.</source>
-      <translation type="unfinished">Sorry, no Plugins found.</translation>
+      <translation>Keine Plugins gefunden.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1038"/>
       <source>Drag Plugin Actions here.</source>
-      <translation type="unfinished">Drag Plugin Actions here.</translation>
+      <translation>Ziehen Sie Plugin-Aktionen hier.</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1071"/>
@@ -2252,7 +2249,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="1073"/>
       <source>%1 plugins selected</source>
-      <translation type="unfinished">%1 plugins selected</translation>
+      <translation>%1 Plugins ausgewählt</translation>
     </message>
   </context>
   <context>
@@ -2260,12 +2257,12 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkProcess.cpp" line="738"/>
       <source>[OK]</source>
-      <translation type="unfinished">[OK]</translation>
+      <translation>[OK]</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="740"/>
       <source>[FAIL]</source>
-      <translation type="unfinished">[FAIL]</translation>
+      <translation>[FEHLGESCHLAGEN]</translation>
     </message>
   </context>
   <context>
@@ -2273,52 +2270,52 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="925"/>
       <source>Percent</source>
-      <translation type="unfinished">Percent</translation>
+      <translation>Prozent</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="925"/>
       <source>Long Side</source>
-      <translation type="unfinished">Long Side</translation>
+      <translation>Lange Seite</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="925"/>
       <source>Short Side</source>
-      <translation type="unfinished">Short Side</translation>
+      <translation>Kurze Seite</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="925"/>
       <source>Width</source>
-      <translation type="unfinished">Width</translation>
+      <translation>Breite</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="925"/>
       <source>Height</source>
-      <translation type="unfinished">Height</translation>
+      <translation>Höhe</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="930"/>
       <source>Transform All</source>
-      <translation type="unfinished">Transform All</translation>
+      <translation>Alle transformieren</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="930"/>
       <source>Shrink Only</source>
-      <translation type="unfinished">Shrink Only</translation>
+      <translation>Nur verkleinern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="930"/>
       <source>Enlarge Only</source>
-      <translation type="unfinished">Enlarge Only</translation>
+      <translation>Nur vergrößern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="934"/>
       <source>%</source>
-      <translation type="unfinished">%</translation>
+      <translation>%</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="940"/>
       <source> px</source>
-      <translation type="unfinished"> px</translation>
+      <translation> px</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="976"/>
@@ -2331,22 +2328,22 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="1087"/>
       <source>Do &amp;Not Rotate</source>
-      <translation type="unfinished">Do &amp;Not Rotate</translation>
+      <translation>&amp;Nicht Rotieren</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1089"/>
       <source>9&amp;0%1 Counter Clockwise</source>
-      <translation type="unfinished">9&amp;0%1 Counter Clockwise</translation>
+      <translation>&amp;90%1 gegen den Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1090"/>
       <source>&amp;90%1 Clockwise</source>
-      <translation type="unfinished">&amp;90%1 Clockwise</translation>
+      <translation>&amp;90%1 im Uhrzeigersinn drehen</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1091"/>
       <source>&amp;180%1</source>
-      <translation type="unfinished">&amp;180%1</translation>
+      <translation>&amp;180%1</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1100"/>
@@ -2366,12 +2363,12 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="1146"/>
       <source>Rotating by: %1</source>
-      <translation type="unfinished">Rotating by: %1</translation>
+      <translation>Drehen mit: %1</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1148"/>
       <source> Flipping</source>
-      <translation type="unfinished"> Flipping</translation>
+      <translation>Umblättern</translation>
     </message>
   </context>
   <context>
@@ -2379,7 +2376,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkBatch.cpp" line="75"/>
       <source>Plus</source>
-      <translation type="unfinished">Plus</translation>
+      <translation>Plus</translation>
     </message>
   </context>
   <context>
@@ -2395,17 +2392,17 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkCentralWidget.cpp" line="833"/>
       <source>Sorry, I could not drop the content.</source>
-      <translation type="unfinished">Sorry, I could not drop the content.</translation>
+      <translation>Leider konnte der Inhalt nicht übernommen werden.</translation>
     </message>
     <message>
       <location filename="../src/DkCentralWidget.cpp" line="865"/>
       <source>Save File</source>
-      <translation type="unfinished">Save File</translation>
+      <translation>Datei speichern</translation>
     </message>
     <message>
       <location filename="../src/DkCentralWidget.cpp" line="873"/>
       <source>%1 vec files merged</source>
-      <translation type="unfinished">%1 vec files merged</translation>
+      <translation>%1 .vec Dateien zusammengeführt</translation>
     </message>
   </context>
   <context>
@@ -2429,7 +2426,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1142"/>
       <source>Click here to add notes</source>
-      <translation type="unfinished">Click here to add notes</translation>
+      <translation>Klicken für Notizen</translation>
     </message>
   </context>
   <context>
@@ -2437,27 +2434,27 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1161"/>
       <source>NOTES</source>
-      <translation type="unfinished">NOTES</translation>
+      <translation>HINWEISE</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1175"/>
       <source>Enter your notes here. They will be saved to the image metadata.</source>
-      <translation type="unfinished">Enter your notes here. They will be saved to the image metadata.</translation>
+      <translation>Geben Sie hier Ihre Notizen ein, selbige werden in den Metadaten des Bildes gespeichert.</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1181"/>
       <source>Save Note (CTRL + ENTER)</source>
-      <translation type="unfinished">Save Note (CTRL + ENTER)</translation>
+      <translation>Notiz speichern (Strg + ENTER)</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1188"/>
       <source>Discard Changes (ESC)</source>
-      <translation type="unfinished">Discard Changes (ESC)</translation>
+      <translation>Änderungen verwerfen (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1229"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation type="unfinished">Sorry, I cannot save comments for this image format.</translation>
+      <translation>Kommentare für dieses Bildformat können nicht gespeichert werden.</translation>
     </message>
   </context>
   <context>
@@ -2561,12 +2558,12 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkControlWidget.cpp" line="560"/>
       <source>Closing Plugin</source>
-      <translation type="unfinished">Closing Plugin</translation>
+      <translation>Plugin schließen</translation>
     </message>
     <message>
       <location filename="../src/DkControlWidget.cpp" line="561"/>
       <source>Apply plugin changes?</source>
-      <translation type="unfinished">Apply plugin changes?</translation>
+      <translation>Plugin Änderungen anwenden?</translation>
     </message>
   </context>
   <context>
@@ -2678,12 +2675,12 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkActionManager.cpp" line="350"/>
       <source>Preview</source>
-      <translation type="unfinished">Preview</translation>
+      <translation>Vorschau</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="365"/>
       <source>Shortcuts</source>
-      <translation type="unfinished">Shortcuts</translation>
+      <translation>Shortcuts</translation>
     </message>
   </context>
   <context>
@@ -2835,7 +2832,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2531"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Mulit Page TIFF exportieren</translation>
+      <translation>Multi-Page TIFF exportieren</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2577"/>
@@ -2901,7 +2898,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2761"/>
       <source>%1 exists, skipping...</source>
-      <translation type="unfinished">%1 exists, skipping...</translation>
+      <translation>%1 ist bereits vorhanden, überspringe...</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2774"/>
@@ -2932,7 +2929,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1258"/>
       <source>Browse</source>
-      <translation>Browse</translation>
+      <translation>Durchsuchen</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1259"/>
@@ -2942,7 +2939,7 @@ This option might destroy your images - so be careful!</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1273"/>
       <source>Set as Default Viewer</source>
-      <translation type="unfinished">Set as Default Viewer</translation>
+      <translation>Als Standardbetrachter festlegen</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1363"/>
@@ -2969,72 +2966,72 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="192"/>
       <source>Show Left</source>
-      <translation type="unfinished">Show Left</translation>
+      <translation>Leiste links anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="193"/>
       <source>Shows the Thumbnail Bar on the Left</source>
-      <translation type="unfinished">Shows the Thumbnail Bar on the Left</translation>
+      <translation>Zeigt die Thumbnail-Leiste auf der linken Seite</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="196"/>
       <source>Show Top</source>
-      <translation type="unfinished">Show Top</translation>
+      <translation>Leiste oben anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="197"/>
       <source>Shows the Thumbnail Bar at the Top</source>
-      <translation type="unfinished">Shows the Thumbnail Bar at the Top</translation>
+      <translation>Zeigt die Thumbnail-Leiste oben</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="200"/>
       <source>Show Right</source>
-      <translation type="unfinished">Show Right</translation>
+      <translation>Leiste rechts anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="201"/>
       <source>Shows the Thumbnail Bar on the Right</source>
-      <translation type="unfinished">Shows the Thumbnail Bar on the Right</translation>
+      <translation>Zeigt die Thumbnail-Leiste auf der rechten Seite</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="204"/>
       <source>Show Bottom</source>
-      <translation type="unfinished">Show Bottom</translation>
+      <translation>Leiste unten anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="205"/>
       <source>Shows the Thumbnail Bar at the Bottom</source>
-      <translation type="unfinished">Shows the Thumbnail Bar at the Bottom</translation>
+      <translation>Zeigt die Thumbnail-Leiste unten</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="208"/>
       <source>Undock</source>
-      <translation type="unfinished">Undock</translation>
+      <translation>Leiste abdocken</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="209"/>
       <source>Undock the thumbnails</source>
-      <translation type="unfinished">Undock the thumbnails</translation>
+      <translation>Thumbnails abdocken</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="212"/>
       <source>File Preview Menu</source>
-      <translation type="unfinished">File Preview Menu</translation>
+      <translation>Datei Vorschau Menü</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="570"/>
       <source>Name: </source>
-      <translation type="unfinished">Name: </translation>
+      <translation>Name: </translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="571"/>
       <source>Size: </source>
-      <translation type="unfinished">Size: </translation>
+      <translation>Größe: </translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="572"/>
       <source>Created: </source>
-      <translation type="unfinished">Created: </translation>
+      <translation>Erstellt: </translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="589"/>
@@ -3048,7 +3045,7 @@ Do you want to show them again?</source>
       <location filename="../src/DkBatch.cpp" line="297"/>
       <location filename="../src/DkBatch.cpp" line="421"/>
       <source>No Files Selected</source>
-      <translation type="unfinished">No Files Selected</translation>
+      <translation>Keine Dateien ausgewählt</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="300"/>
@@ -3063,7 +3060,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkBatch.cpp" line="313"/>
       <source>File List</source>
-      <translation type="unfinished">File List</translation>
+      <translation>Dateiliste</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="358"/>
@@ -3073,18 +3070,18 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkBatch.cpp" line="423"/>
       <source>%1 File Selected</source>
-      <translation type="unfinished">%1 File Selected</translation>
+      <translation>%1 Datei ausgewählt</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="425"/>
       <source>%1 Files Selected</source>
-      <translation type="unfinished">%1 Files Selected</translation>
+      <translation>%1 Dateien ausgewählt</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="445"/>
       <location filename="../src/DkBatch.cpp" line="459"/>
       <source>Results</source>
-      <translation type="unfinished">Results</translation>
+      <translation>Ergebnisse</translation>
     </message>
   </context>
   <context>
@@ -3122,34 +3119,33 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="683"/>
       <source>A new image is loaded after displaying the last image</source>
-      <translation>Neue Bilder werden erst geladen, nachdem das letzte angezeigt wurde</translation>
+      <translation>Neue Bilder werden erst geladen, nachdem das Letzte angezeigt wurde</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="686"/>
       <source>Exif Orientation</source>
-      <translation type="unfinished">Exif Orientation</translation>
+      <translation>Exif-Ausrichtung</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="688"/>
       <source>Ignore Exif Orientation</source>
-      <translation type="unfinished">Ignore Exif Orientation</translation>
+      <translation>Exif-Ausrichtung ignorieren</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="690"/>
       <source>Note: instead of checking this option
  you should fix your images.</source>
-      <translation type="unfinished">Note: instead of checking this option
- you should fix your images.</translation>
+      <translation>Hinweis: bevor dies aktiviert wird, sollten besser die Bilder geändert werden.</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="692"/>
       <source>Save Exif Orientation</source>
-      <translation type="unfinished">Save Exif Orientation</translation>
+      <translation>Exif-Ausrichtung speichern</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="694"/>
       <source>Note: unchecking this option decreases the speed of rotating images.</source>
-      <translation type="unfinished">Note: unchecking this option decreases the speed of rotating images.</translation>
+      <translation>Hinweis: Bei Aktivierung dieser Option erfolgt langsamere Rotation/Drehung der Bilder.</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="704"/>
@@ -3174,17 +3170,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="712"/>
       <source>Ask to Save Deleted Files</source>
-      <translation type="unfinished">Ask to Save Deleted Files</translation>
+      <translation>nach Bestätigung beim Löschen fragen</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="713"/>
       <source>If checked, nomacs asks if you want to save files that are deleted while displaying.</source>
-      <translation type="unfinished">If checked, nomacs asks if you want to save files that are deleted while displaying.</translation>
+      <translation>Wenn diese Option aktiviert ist, fragt Nomacs möchten Sie angezeigte Dateien speichern, die sie löschen wollen</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="714"/>
       <source>Log Recent Files</source>
-      <translation type="unfinished">Log Recent Files</translation>
+      <translation>letzten Dateien speichern</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="755"/>
@@ -3197,57 +3193,57 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkBatch.cpp" line="488"/>
       <source>Current Filename</source>
-      <translation type="unfinished">Current Filename</translation>
+      <translation>Aktueller Dateiname</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="489"/>
       <source>Text</source>
-      <translation type="unfinished">Text</translation>
+      <translation>Text</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="490"/>
       <source>Number</source>
-      <translation type="unfinished">Number</translation>
+      <translation>Anzahl</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="496"/>
       <source>Keep Case</source>
-      <translation type="unfinished">Keep Case</translation>
+      <translation>Groß-/Kleinschreibung beibehalten</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="497"/>
       <source>To lowercase</source>
-      <translation type="unfinished">To lowercase</translation>
+      <translation>In Kleinbuchstaben</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="498"/>
       <source>To UPPERCASE</source>
-      <translation type="unfinished">To UPPERCASE</translation>
+      <translation>In Großbuchstaben</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="509"/>
       <source>1 digit</source>
-      <translation type="unfinished">1 digit</translation>
+      <translation>1 Ziffer</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="510"/>
       <source>2 digits</source>
-      <translation type="unfinished">2 digits</translation>
+      <translation>2 Ziffern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="511"/>
       <source>3 digits</source>
-      <translation type="unfinished">3 digits</translation>
+      <translation>3 Ziffern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="512"/>
       <source>4 digits</source>
-      <translation type="unfinished">4 digits</translation>
+      <translation>4 Ziffern</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="513"/>
       <source>5 digits</source>
-      <translation type="unfinished">5 digits</translation>
+      <translation>5 Ziffern</translation>
     </message>
   </context>
   <context>
@@ -3367,12 +3363,12 @@ berechnen?
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="377"/>
       <source>Check for Updates</source>
-      <translation type="unfinished">Check for Updates</translation>
+      <translation>Nach Updates suchen</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="394"/>
       <source>Apply default settings</source>
-      <translation>Zurücksetzten</translation>
+      <translation>Zurücksetzen</translation>
     </message>
   </context>
   <context>
@@ -3404,8 +3400,7 @@ berechnen?
       <location filename="../src/DkImageContainer.cpp" line="748"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation type="unfinished">Sorry, I could not download:
-%1</translation>
+      <translation>Download von %1 nicht möglich</translation>
     </message>
     <message>
       <location filename="../src/DkImageContainer.cpp" line="812"/>
@@ -3460,19 +3455,18 @@ berechnen?
       <location filename="../src/DkImageLoader.cpp" line="1016"/>
       <location filename="../src/DkImageLoader.cpp" line="1094"/>
       <source>Save File %1</source>
-      <translation type="unfinished">Save File %1</translation>
+      <translation>Speichern der Datei %1</translation>
     </message>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="1081"/>
       <source>Overwrite File</source>
-      <translation type="unfinished">Overwrite File</translation>
+      <translation>Datei überschreiben</translation>
     </message>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="1082"/>
       <source>Do you want to overwrite:
 %1?</source>
-      <translation type="unfinished">Do you want to overwrite:
-%1?</translation>
+      <translation>Wollen sie die Datei %1 wirklich überschreiben?</translation>
     </message>
     <message>
       <location filename="../src/DkImageLoader.cpp" line="1210"/>
@@ -3532,12 +3526,12 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkImageStorage.cpp" line="1171"/>
       <source>Anti Aliasing Enabled</source>
-      <translation type="unfinished">Anti Aliasing Enabled</translation>
+      <translation>Anti-Aliasing aktiviert</translation>
     </message>
     <message>
       <location filename="../src/DkImageStorage.cpp" line="1171"/>
       <source>Anti Aliasing Disabled</source>
-      <translation type="unfinished">Anti Aliasing Disabled</translation>
+      <translation>Anti-Aliasing deaktiviert</translation>
     </message>
   </context>
   <context>
@@ -3545,37 +3539,37 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1513"/>
       <source>There are new packages available: </source>
-      <translation type="unfinished">There are new packages available: </translation>
+      <translation>Neue Pakete sind verfügbar: </translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1520"/>
       <source>Updates Available</source>
-      <translation type="unfinished">Updates Available</translation>
+      <translation>Updates verfügbar</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1525"/>
       <source>&amp;Upgrade</source>
-      <translation type="unfinished">&amp;Upgrade</translation>
+      <translation>&amp;Upgrade</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1526"/>
       <source>Remind Me &amp;Later</source>
-      <translation type="unfinished">Remind Me &amp;Later</translation>
+      <translation>&amp;Später erinnern</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1527"/>
       <source>&amp;Skip this Version</source>
-      <translation type="unfinished">&amp;Skip this Version</translation>
+      <translation>&amp;Diese Version überspringen</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
       <source>nomacs Updates</source>
-      <translation type="unfinished">nomacs Updates</translation>
+      <translation>nomacs Updates</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
       <source>nomacs is up-to-date</source>
-      <translation>nomacs ist up-to-date</translation>
+      <translation>nomacs ist Aktuell</translation>
     </message>
   </context>
   <context>
@@ -3611,7 +3605,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkWidgets.h" line="986"/>
       <source>Drag Items Here</source>
-      <translation type="unfinished">Drag Items Here</translation>
+      <translation>Elemente hierher ziehen</translation>
     </message>
   </context>
   <context>
@@ -3760,7 +3754,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="386"/>
       <source>Thumbnail</source>
-      <translation type="unfinished">Thumbnail</translation>
+      <translation>Thumbnail</translation>
     </message>
   </context>
   <context>
@@ -3768,83 +3762,83 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="681"/>
       <source>Image Information</source>
-      <translation type="unfinished">Image Information</translation>
+      <translation>Bildinformation</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="728"/>
       <source>Change Entries</source>
-      <translation type="unfinished">Change Entries</translation>
+      <translation>Einträge ändern</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="729"/>
       <source>You can customize the entries displayed here.</source>
-      <translation type="unfinished">You can customize the entries displayed here.</translation>
+      <translation>Sie können die hier angezeigten Einträge anpassen.</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="732"/>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1112"/>
       <source>Number of Columns</source>
-      <translation type="unfinished">Number of Columns</translation>
+      <translation>Anzahl der Spalten</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="733"/>
       <source>Select the desired number of columns.</source>
-      <translation type="unfinished">Select the desired number of columns.</translation>
+      <translation>Wählen Sie die gewünschte Spaltenanzahl.</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="736"/>
       <source>Set to Default</source>
-      <translation type="unfinished">Set to Default</translation>
+      <translation>Auf &amp;Standardwerte setzen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="737"/>
       <source>Reset the metadata panel.</source>
-      <translation type="unfinished">Reset the metadata panel.</translation>
+      <translation>Metadaten Anzeige zurücksetzen.</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="741"/>
       <source>Show Left</source>
-      <translation type="unfinished">Show Left</translation>
+      <translation>Leiste links anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="742"/>
       <source>Shows the Metadata on the Left</source>
-      <translation type="unfinished">Shows the Metadata on the Left</translation>
+      <translation>Zeigt die Metadaten auf der linken Seite</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="745"/>
       <source>Show Top</source>
-      <translation type="unfinished">Show Top</translation>
+      <translation>Leiste oben anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="746"/>
       <source>Shows the Metadata at the Top</source>
-      <translation type="unfinished">Shows the Metadata at the Top</translation>
+      <translation>Zeigt die Metadaten oben</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="749"/>
       <source>Show Right</source>
-      <translation type="unfinished">Show Right</translation>
+      <translation>Leiste rechts anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="750"/>
       <source>Shows the Metadata on the Right</source>
-      <translation type="unfinished">Shows the Metadata on the Right</translation>
+      <translation>Zeigt die Metadaten auf der rechten Seite</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="753"/>
       <source>Show Bottom</source>
-      <translation type="unfinished">Show Bottom</translation>
+      <translation>Leiste unten anzeigen</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="754"/>
       <source>Shows the Metadata at the Bottom</source>
-      <translation type="unfinished">Shows the Metadata at the Bottom</translation>
+      <translation>Zeigt die Metadaten unten</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1029"/>
       <source>Metadata Menu</source>
-      <translation type="unfinished">Metadata Menu</translation>
+      <translation>Metadaten-Menü</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1091"/>
@@ -3859,7 +3853,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="1112"/>
       <source>Number of columns (-1 is default)</source>
-      <translation type="unfinished">Number of columns (-1 is default)</translation>
+      <translation>Anzahl der Spalten (Standard -1)</translation>
     </message>
   </context>
   <context>
@@ -3867,17 +3861,17 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="63"/>
       <source>Key</source>
-      <translation type="unfinished">Key</translation>
+      <translation>Schlüssel</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="63"/>
       <source>Value</source>
-      <translation type="unfinished">Value</translation>
+      <translation>Wert</translation>
     </message>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="142"/>
       <source>Data.</source>
-      <translation type="unfinished">Data.</translation>
+      <translation>Daten.</translation>
     </message>
   </context>
   <context>
@@ -3885,7 +3879,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="550"/>
       <source>Check All</source>
-      <translation type="unfinished">Check All</translation>
+      <translation>Alles überprüfen</translation>
     </message>
   </context>
   <context>
@@ -3989,7 +3983,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="3349"/>
       <source>All Images</source>
-      <translation type="unfinished">All Images</translation>
+      <translation>Alle Bilder</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3398"/>
@@ -4055,7 +4049,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="4087"/>
       <source>Sorry, I could not mix the image...</source>
-      <translation type="unfinished">Sorry, I could not mix the image...</translation>
+      <translation>Leider konnte das Bild nicht darüber gelegt werden...</translation>
     </message>
   </context>
   <context>
@@ -4088,22 +4082,22 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="649"/>
       <source>Quit nomacs</source>
-      <translation type="unfinished">Quit nomacs</translation>
+      <translation>nomacs beenden</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="650"/>
       <source>Do you want nomacs to save your tabs?</source>
-      <translation type="unfinished">Do you want nomacs to save your tabs?</translation>
+      <translation>Soll nomacs Ihre Tabs speichern?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="652"/>
       <source>&amp;Save and Quit</source>
-      <translation type="unfinished">&amp;Save and Quit</translation>
+      <translation>&amp;Speichern und beenden</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="653"/>
       <source>&amp;Quit</source>
-      <translation type="unfinished">&amp;Quit</translation>
+      <translation>B&amp;eenden</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="838"/>
@@ -4119,7 +4113,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="899"/>
       <source>Sorry, I cannot convert the Image...</source>
-      <translation type="unfinished">Sorry, I cannot convert the Image...</translation>
+      <translation>Bild kann nicht konvertiert werden...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="918"/>
@@ -4170,7 +4164,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1363"/>
       <source>Meta Data Info</source>
-      <translation type="unfinished">Meta Data Info</translation>
+      <translation>Meta-Daten-Info</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1402"/>
@@ -4190,7 +4184,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1460"/>
       <source>Open Image</source>
-      <translation>Öffne Bild</translation>
+      <translation>Bild öffnen</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1523"/>
@@ -4231,17 +4225,17 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1784"/>
       <source>Shall I move %1 to trash?</source>
-      <translation type="unfinished">Shall I move %1 to trash?</translation>
+      <translation>Soll %1 in Papierkorb verschoben werden?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1786"/>
       <source>Do you want to permanently delete %1?</source>
-      <translation type="unfinished">Do you want to permanently delete %1?</translation>
+      <translation>Wollen Sie %1 endgültig löschen?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1791"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Datei löschen</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1881"/>
@@ -4257,7 +4251,7 @@ bevor die Klicks weitergegeben werden</translation>
       <location filename="../src/DkNoMacs.cpp" line="2312"/>
       <location filename="../src/DkNoMacs.cpp" line="2328"/>
       <source> [Private Mode]</source>
-      <translation type="unfinished"> [Private Mode]</translation>
+      <translation> [Privater Modus]</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2424"/>
@@ -4292,19 +4286,18 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1527"/>
       <source>Sorry, I can't write to the fileInfo: %1</source>
-      <translation type="unfinished">Sorry, I can't write to the fileInfo: %1</translation>
+      <translation>FileInfo %1 konnte nicht geschrieben werden</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1547"/>
       <source>The fileInfo: %1  already exists.
  Do you want to replace it?</source>
-      <translation type="unfinished">The fileInfo: %1  already exists.
- Do you want to replace it?</translation>
+      <translation>FileInfo %1 ist bereits vorhanden. Möchten Sie Selbige ersetzen?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2501"/>
       <source>Downloading new translations...</source>
-      <translation type="unfinished">Downloading new translations...</translation>
+      <translation>Neue Übersetzungen werden heruntergeladen...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2501"/>
@@ -4433,12 +4426,12 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="99"/>
       <source>Manage installed plugins</source>
-      <translation type="unfinished">Manage installed plugins</translation>
+      <translation>Installierte Plugins verwalten</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="101"/>
       <source>Download new plugins</source>
-      <translation type="unfinished">Download new plugins</translation>
+      <translation>Neue Plugins herunterladen</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="110"/>
@@ -4449,8 +4442,8 @@ bevor die Klicks weitergegeben werden</translation>
       <location filename="../src/DkPluginManager.cpp" line="212"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation type="unfinished">The dll could not be deleted!
-Please restart nomacs and try again.</translation>
+      <translation>Die dll konnte nicht gelöscht werden!
+Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     </message>
   </context>
   <context>
@@ -4479,7 +4472,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="372"/>
       <source>Sorry, too many connections at once.</source>
-      <translation type="unfinished">Sorry, too many connections at once.</translation>
+      <translation>Gleichzeitig zu viele Verbindungen aktiv.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="389"/>
@@ -4524,22 +4517,22 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkPong.cpp" line="336"/>
       <source>PAUSED</source>
-      <translation type="unfinished">PAUSED</translation>
+      <translation>ANGEHALTEN</translation>
     </message>
     <message>
       <location filename="../src/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Drücke &lt;SPACE&gt; um zu starten.</translation>
     </message>
     <message>
       <location filename="../src/DkPong.cpp" line="485"/>
       <source>%1 won!</source>
-      <translation type="unfinished">%1 won!</translation>
+      <translation>%1 Gewonnen!</translation>
     </message>
     <message>
       <location filename="../src/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Drücken Sie &lt;SPACE&gt; um ein neues Spiel zu starten</translation>
     </message>
   </context>
   <context>
@@ -4557,12 +4550,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2192"/>
       <source>Zoom in</source>
-      <translation>Hinein zoomen</translation>
+      <translation>Zoom (vergrößern)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2198"/>
       <source>Zoom out</source>
-      <translation>Hinaus zoomen</translation>
+      <translation>Zoom (verkleinern)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2207"/>
@@ -4592,7 +4585,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2250"/>
       <source>keep ALT key pressed to zoom with the mouse wheel</source>
-      <translation>ALT Taste gedrückt halten um mit dem Mausrad scrollen zu können</translation>
+      <translation>ALT Taste gedrückt halten um mit dem Mausrad zu zoomen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2084"/>
@@ -4606,7 +4599,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkQuickAccess.cpp" line="137"/>
       <source>Quick Launch (Ctrl + Q)</source>
-      <translation type="unfinished">Quick Launch (Ctrl + Q)</translation>
+      <translation>Schnellstart (STRG + Q)</translation>
     </message>
   </context>
   <context>
@@ -4720,12 +4713,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="987"/>
       <source>pixel/inch</source>
-      <translation type="unfinished">pixel/inch</translation>
+      <translation>Pixel/Zoll</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="988"/>
       <source>pixel/cm</source>
-      <translation type="unfinished">pixel/cm</translation>
+      <translation>Pixel/cm</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="999"/>
@@ -4740,7 +4733,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1007"/>
       <source>Area (best for downscaling)</source>
-      <translation>Area (das Beste zum kleiner machen)</translation>
+      <translation>Area (Optimal zum verkleinern)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1008"/>
@@ -4932,7 +4925,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="230"/>
       <source>Private Mode</source>
-      <translation type="unfinished">Private Mode</translation>
+      <translation>Privater Modus</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="230"/>
@@ -4950,12 +4943,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1910"/>
       <source>Set to &amp;Default</source>
-      <translation type="unfinished">Set to &amp;Default</translation>
+      <translation>Auf &amp;Standardwerte setzen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1911"/>
       <source>Removes All Custom Shortcuts</source>
-      <translation type="unfinished">Removes All Custom Shortcuts</translation>
+      <translation>Entfernt alle benutzerdefinierten Shortcuts</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1924"/>
@@ -5000,17 +4993,17 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="126"/>
       <source>CLOSE</source>
-      <translation type="unfinished">CLOSE</translation>
+      <translation>SCHLIEßEN</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="130"/>
       <source>Close (ESC)</source>
-      <translation type="unfinished">Close (ESC)</translation>
+      <translation>Schließen (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="184"/>
       <source>Portable</source>
-      <translation type="unfinished">Portable</translation>
+      <translation>Transportabel</translation>
     </message>
   </context>
   <context>
@@ -5076,7 +5069,7 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkMenu.cpp" line="227"/>
       <source>no clients found</source>
-      <translation>keine Clients gefunden</translation>
+      <translation>Keine Clients gefunden</translation>
     </message>
   </context>
   <context>
@@ -5084,7 +5077,7 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1971"/>
       <source>Text Editor</source>
-      <translation type="unfinished">Text Editor</translation>
+      <translation>Text-Editor</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1981"/>
@@ -5099,7 +5092,7 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2006"/>
       <source>Text File (*.txt)</source>
-      <translation type="unfinished">Text File (*.txt)</translation>
+      <translation>Textdatei (*.txt)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2006"/>
@@ -5109,7 +5102,7 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2009"/>
       <source>Save Text File</source>
-      <translation type="unfinished">Save Text File</translation>
+      <translation>Textdatei speichern</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2022"/>
@@ -5120,8 +5113,7 @@ ESC zum Abbrechen drücken</translation>
       <location filename="../src/DkDialog.cpp" line="2022"/>
       <source>Could not save: %1
 %2</source>
-      <translation type="unfinished">Could not save: %1
-%2</translation>
+      <translation>%1%2 konnte nicht gespeichert werden</translation>
     </message>
   </context>
   <context>
@@ -5129,17 +5121,17 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="892"/>
       <source>Name: </source>
-      <translation type="unfinished">Name: </translation>
+      <translation>Name: </translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="893"/>
       <source>Size: </source>
-      <translation type="unfinished">Size: </translation>
+      <translation>Größe: </translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="894"/>
       <source>Created: </source>
-      <translation type="unfinished">Created: </translation>
+      <translation>Erstellt: </translation>
     </message>
   </context>
   <context>
@@ -5159,44 +5151,43 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1419"/>
       <source>Sorry, I cannot copy %1 to %2</source>
-      <translation type="unfinished">Sorry, I cannot copy %1 to %2</translation>
+      <translation>%1 nach %2 konnte nicht kopiert werden</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1440"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation type="unfinished">Shall I move %1 file(s) to trash?</translation>
+      <translation>%1 Datei(en) in Papierkorb verschieben?</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1442"/>
       <source>Are you sure you want to permanently delete %1 file(s)?</source>
-      <translation type="unfinished">Are you sure you want to permanently delete %1 file(s)?</translation>
+      <translation>Sind Sie sicher, dass Sie %1 Datei(en) endgültig löschen möchten?</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1447"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Datei löschen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1468"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation type="unfinished">Sorry, I cannot delete:
-%1</translation>
+      <translation>%1 konnte nicht gelöscht werden</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1492"/>
       <source>Rename File(s)</source>
-      <translation type="unfinished">Rename File(s)</translation>
+      <translation>Datei(en) umbenennen</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1493"/>
       <source>New Filename:</source>
-      <translation type="unfinished">New Filename:</translation>
+      <translation>Neuer Dateiname:</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1507"/>
       <source>Sorry, I cannot rename: %1 to %2</source>
-      <translation type="unfinished">Sorry, I cannot rename: %1 to %2</translation>
+      <translation>%1 nach %2 konnte nicht umbenannt werden</translation>
     </message>
   </context>
   <context>
@@ -5204,17 +5195,17 @@ ESC zum Abbrechen drücken</translation>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1882"/>
       <source>&amp;Sort</source>
-      <translation type="unfinished">&amp;Sort</translation>
+      <translation>&amp;Sortieren</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1855"/>
       <source>Thumb Preview Toolbar</source>
-      <translation type="unfinished">Thumb Preview Toolbar</translation>
+      <translation>Thumbnail-Vorschau Symbolleiste</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1902"/>
       <source>Filter Files (Ctrl + F)</source>
-      <translation type="unfinished">Filter Files (Ctrl + F)</translation>
+      <translation>Dateien filtern (STRG + F)</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1915"/>
@@ -5235,7 +5226,7 @@ ESC zum Abbrechen drücken</translation>
 Creating thumbnails...
 </source>
       <translation>
-Erstelle Vorschaubilder...
+Erstelle Thumbnails...
 </translation>
     </message>
     <message>
@@ -5254,7 +5245,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="66"/>
       <source>&amp;no compression</source>
-      <translation>&amp;keine Kompression</translation>
+      <translation>&amp;Keine Kompression</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="67"/>
@@ -5277,22 +5268,22 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="3014"/>
       <source>Tiny Planet</source>
-      <translation type="unfinished">Tiny Planet</translation>
+      <translation>Tiny Planet (Stereographische Projektion)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3048"/>
       <source>Planet Size</source>
-      <translation type="unfinished">Planet Size</translation>
+      <translation>Projektionsgröße</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3056"/>
       <source>Angle</source>
-      <translation type="unfinished">Angle</translation>
+      <translation>Winkel verändern</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3062"/>
       <source>Invert Planet</source>
-      <translation type="unfinished">Invert Planet</translation>
+      <translation>Projektion invertieren</translation>
     </message>
   </context>
   <context>
@@ -5305,7 +5296,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="263"/>
       <source>Load New Image Format</source>
-      <translation>Lade neues Bildformat</translation>
+      <translation>Neues Bildformat laden</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="270"/>
@@ -5340,7 +5331,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="369"/>
       <source>*.%1 is already supported.</source>
-      <translation>*.%1wird bereits unterstützt.</translation>
+      <translation>*.%1 wird bereits unterstützt.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="373"/>
@@ -5363,7 +5354,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkToolbars.cpp" line="621"/>
       <source>Resets the Pseudo Color function</source>
-      <translation type="unfinished">Resets the Pseudo Color function</translation>
+      <translation>Pseudo-Color Funktion zurücksetzen</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="795"/>
@@ -5378,12 +5369,12 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkToolbars.cpp" line="532"/>
       <source>Pseudo Color Toolbar</source>
-      <translation type="unfinished">Pseudo Color Toolbar</translation>
+      <translation>Pseudo-Color Symbolleiste</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="552"/>
       <source>Delete</source>
-      <translation type="unfinished">Delete</translation>
+      <translation>Löschen</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="567"/>
@@ -5452,7 +5443,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1843"/>
       <source>Unable to download translation</source>
-      <translation>Die Übersetzung konnte nicht geladen werden</translation>
+      <translation>Die Übersetzung konnte nicht heruntergeladen werden</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1843"/>
@@ -5496,7 +5487,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="2834"/>
       <source>Sharpen Image</source>
-      <translation>Bild Scharfzeichnen</translation>
+      <translation>Bild scharfzeichnen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2868"/>
@@ -5514,7 +5505,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="2045"/>
       <source>nomacs updater</source>
-      <translation>nomacs updater</translation>
+      <translation>nomacs Updater</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2053"/>
@@ -5576,7 +5567,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1704"/>
       <source>nomacs is up-to-date</source>
-      <translation>nomacs ist up-to-date</translation>
+      <translation>nomacs ist Aktuell</translation>
     </message>
   </context>
   <context>
@@ -5584,22 +5575,22 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkViewPort.cpp" line="606"/>
       <source>connected with: </source>
-      <translation>verbunden mit: </translation>
+      <translation>Verbunden mit: </translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="610"/>
       <source>disconnected with: </source>
-      <translation>getrennte Verbindungen: </translation>
+      <translation>Getrennte Verbindungen: </translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="1227"/>
       <source>Transparency Pattern Enabled</source>
-      <translation type="unfinished">Transparency Pattern Enabled</translation>
+      <translation>Transparenz-Muster aktiviert</translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="1227"/>
       <source>Transparency Pattern Disabled</source>
-      <translation type="unfinished">Transparency Pattern Disabled</translation>
+      <translation>Transparenz Muster deaktiviert</translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="1268"/>
@@ -5651,7 +5642,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="4196"/>
       <source>Welcome</source>
-      <translation>Servus</translation>
+      <translation>Willkommen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4205"/>
@@ -5661,12 +5652,12 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkDialog.cpp" line="4210"/>
       <source>&amp;Register File Associations</source>
-      <translation type="unfinished">&amp;Register File Associations</translation>
+      <translation>Bildformate mit nomacs &amp;registrieren</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4213"/>
       <source>Set As &amp;Default Viewer</source>
-      <translation type="unfinished">Set As &amp;Default Viewer</translation>
+      <translation>Als Standardbetrachter festlegen</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4218"/>
@@ -5694,7 +5685,7 @@ Erstelle Vorschaubilder...
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1392"/>
       <source>Last Connected</source>
-      <translation>Zuletzt Verbunden</translation>
+      <translation>Zuletzt verbunden</translation>
     </message>
   </context>
 </TS>

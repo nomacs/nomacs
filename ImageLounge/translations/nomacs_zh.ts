@@ -49,7 +49,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="473"/>
       <source>S&amp;ort</source>
-      <translation type="unfinished">S&amp;ort</translation>
+      <translation>排序(&amp;o)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="487"/>
@@ -87,7 +87,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="632"/>
       <source>&amp;LAN Synchronize</source>
-      <translation type="unfinished">&amp;LAN Synchronize</translation>
+      <translation>局域网同步(&amp;L)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="654"/>
@@ -97,17 +97,17 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1006"/>
       <source>&amp;Open</source>
-      <translation type="unfinished">&amp;Open</translation>
+      <translation>打开(&amp;O)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1008"/>
       <source>Open an image</source>
-      <translation type="unfinished">Open an image</translation>
+      <translation>打开一幅图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1010"/>
       <source>Open &amp;Directory</source>
-      <translation type="unfinished">Open &amp;Directory</translation>
+      <translation>打开目录(&amp;D)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1012"/>
@@ -132,12 +132,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1022"/>
       <source>Re&amp;name</source>
-      <translation type="unfinished">Re&amp;name</translation>
+      <translation>重命名(&amp;N)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1025"/>
       <source>Rename an image</source>
-      <translation type="unfinished">Rename an image</translation>
+      <translation>重命名图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1027"/>
@@ -283,72 +283,72 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1087"/>
       <source>&amp;Exit</source>
-      <translation type="unfinished">&amp;Exit</translation>
+      <translation>退出(&amp;E)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1088"/>
       <source>Exit</source>
-      <translation type="unfinished">Exit</translation>
+      <translation>退出</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1093"/>
       <source>by &amp;Filename</source>
-      <translation type="unfinished">by &amp;Filename</translation>
+      <translation>按文件名排序(&amp;F)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1095"/>
       <source>Sort by Filename</source>
-      <translation type="unfinished">Sort by Filename</translation>
+      <translation>按文件名排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1099"/>
       <source>by Date &amp;Created</source>
-      <translation type="unfinished">by Date &amp;Created</translation>
+      <translation>按创建日期排序(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1101"/>
       <source>Sort by Date Created</source>
-      <translation type="unfinished">Sort by Date Created</translation>
+      <translation>按创建日期排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1105"/>
       <source>by Date Modified</source>
-      <translation type="unfinished">by Date Modified</translation>
+      <translation>按修改日期排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1107"/>
       <source>Sort by Date Last Modified</source>
-      <translation type="unfinished">Sort by Date Last Modified</translation>
+      <translation>按上次修改日期排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1111"/>
       <source>Random</source>
-      <translation type="unfinished">Random</translation>
+      <translation>随机</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1113"/>
       <source>Sort in Random Order</source>
-      <translation type="unfinished">Sort in Random Order</translation>
+      <translation>随机排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1117"/>
       <source>&amp;Ascending</source>
-      <translation type="unfinished">&amp;Ascending</translation>
+      <translation>升序(&amp;A)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1119"/>
       <source>Sort in Ascending Order</source>
-      <translation type="unfinished">Sort in Ascending Order</translation>
+      <translation>升序排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1123"/>
       <source>&amp;Descending</source>
-      <translation type="unfinished">&amp;Descending</translation>
+      <translation>降序(&amp;D)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1125"/>
       <source>Sort in Descending Order</source>
-      <translation type="unfinished">Sort in Descending Order</translation>
+      <translation>降序排序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1132"/>
@@ -384,23 +384,23 @@
       <location filename="../src/DkActionManager.cpp" line="1145"/>
       <location filename="../src/DkActionManager.cpp" line="1538"/>
       <source>&amp;Copy</source>
-      <translation type="unfinished">&amp;Copy</translation>
+      <translation>复制(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1148"/>
       <location filename="../src/DkActionManager.cpp" line="1153"/>
       <source>copy image</source>
-      <translation type="unfinished">copy image</translation>
+      <translation>复制图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1150"/>
       <source>Copy &amp;Buffer</source>
-      <translation type="unfinished">Copy &amp;Buffer</translation>
+      <translation>复制缓冲区(&amp;B)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1155"/>
       <source>Copy Co&amp;lor</source>
-      <translation type="unfinished">Copy Co&amp;lor</translation>
+      <translation>复制颜色(&amp;L)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1158"/>
@@ -411,12 +411,12 @@
       <location filename="../src/DkActionManager.cpp" line="1163"/>
       <location filename="../src/DkActionManager.cpp" line="1541"/>
       <source>&amp;Paste</source>
-      <translation type="unfinished">&amp;Paste</translation>
+      <translation>粘贴(&amp;P)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1166"/>
       <source>paste image</source>
-      <translation type="unfinished">paste image</translation>
+      <translation>粘贴图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1168"/>
@@ -446,7 +446,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1181"/>
       <source>Flip Image Horizontally</source>
-      <translation type="unfinished">Flip Image Horizontally</translation>
+      <translation>水平翻转图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1183"/>
@@ -456,7 +456,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1184"/>
       <source>Flip Image Vertically</source>
-      <translation type="unfinished">Flip Image Vertically</translation>
+      <translation>垂直翻转图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1186"/>
@@ -486,7 +486,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1197"/>
       <source>Invert the Image</source>
-      <translation type="unfinished">Invert the Image</translation>
+      <translation>反转图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1199"/>
@@ -562,7 +562,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1226"/>
       <source>&amp;Menu</source>
-      <translation type="unfinished">&amp;Menu</translation>
+      <translation>菜单(&amp;M)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1227"/>
@@ -572,7 +572,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1230"/>
       <source>Tool&amp;bar</source>
-      <translation type="unfinished">Tool&amp;bar</translation>
+      <translation>工具栏(&amp;B)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1232"/>
@@ -672,32 +672,32 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1282"/>
       <source>&amp;Metadata</source>
-      <translation type="unfinished">&amp;Metadata</translation>
+      <translation>元数据(&amp;M)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1284"/>
       <source>Shows the Metadata Panel</source>
-      <translation type="unfinished">Shows the Metadata Panel</translation>
+      <translation>显示元数据面板</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1287"/>
       <source>File &amp;Info</source>
-      <translation type="unfinished">File &amp;Info</translation>
+      <translation>文件信息(&amp;L)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1289"/>
       <source>Shows the Info Panel</source>
-      <translation type="unfinished">Shows the Info Panel</translation>
+      <translation>显示信息面板</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1292"/>
       <source>&amp;Histogram</source>
-      <translation type="unfinished">&amp;Histogram</translation>
+      <translation>直方图(&amp;H)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1294"/>
       <source>Shows the Histogram Panel</source>
-      <translation type="unfinished">Shows the Histogram Panel</translation>
+      <translation>显示直方图面板</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1297"/>
@@ -712,7 +712,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1304"/>
       <source>&amp;Fit Window</source>
-      <translation type="unfinished">&amp;Fit Window</translation>
+      <translation>适合窗口(&amp;F)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1306"/>
@@ -722,12 +722,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1311"/>
       <source>Fu&amp;ll Screen</source>
-      <translation type="unfinished">Fu&amp;ll Screen</translation>
+      <translation>全屏(&amp;L)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1313"/>
       <source>Full Screen</source>
-      <translation type="unfinished">Full Screen</translation>
+      <translation>全屏</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1315"/>
@@ -753,22 +753,22 @@
       <location filename="../src/DkActionManager.cpp" line="1323"/>
       <location filename="../src/DkActionManager.cpp" line="1518"/>
       <source>Zoom &amp;In</source>
-      <translation type="unfinished">Zoom &amp;In</translation>
+      <translation>放大(&amp;L)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1325"/>
       <source>zoom in</source>
-      <translation type="unfinished">zoom in</translation>
+      <translation>放大</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1327"/>
       <source>&amp;Zoom Out</source>
-      <translation type="unfinished">&amp;Zoom Out</translation>
+      <translation>缩小(&amp;Z)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1329"/>
       <source>zoom out</source>
-      <translation type="unfinished">zoom out</translation>
+      <translation>缩小</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1331"/>
@@ -1688,7 +1688,7 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="437"/>
       <source>%1 saved...</source>
-      <translation>%1 保存......</translation>
+      <translation>%1 已保存...</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="440"/>
@@ -1851,7 +1851,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1558"/>
       <source>All Images</source>
-      <translation type="unfinished">All Images</translation>
+      <translation>所有图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1559"/>
@@ -3084,7 +3084,7 @@ Do you want to show them again?</source>
       <location filename="../src/DkBatch.cpp" line="445"/>
       <location filename="../src/DkBatch.cpp" line="459"/>
       <source>Results</source>
-      <translation type="unfinished">Results</translation>
+      <translation>结果</translation>
     </message>
   </context>
   <context>
@@ -3127,12 +3127,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="686"/>
       <source>Exif Orientation</source>
-      <translation type="unfinished">Exif Orientation</translation>
+      <translation>Exif 方向信息</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="688"/>
       <source>Ignore Exif Orientation</source>
-      <translation type="unfinished">Ignore Exif Orientation</translation>
+      <translation>忽略 Exif 方向信息</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="690"/>
@@ -3544,7 +3544,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1520"/>
       <source>Updates Available</source>
-      <translation type="unfinished">Updates Available</translation>
+      <translation>更新可用</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1525"/>
@@ -3871,7 +3871,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="142"/>
       <source>Data.</source>
-      <translation type="unfinished">Data.</translation>
+      <translation>数据。</translation>
     </message>
   </context>
   <context>
@@ -3879,7 +3879,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkMetaDataWidgets.cpp" line="550"/>
       <source>Check All</source>
-      <translation type="unfinished">Check All</translation>
+      <translation>选择所有</translation>
     </message>
   </context>
   <context>
@@ -3983,7 +3983,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3349"/>
       <source>All Images</source>
-      <translation type="unfinished">All Images</translation>
+      <translation>所有图像</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3398"/>
@@ -4049,7 +4049,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="4087"/>
       <source>Sorry, I could not mix the image...</source>
-      <translation type="unfinished">Sorry, I could not mix the image...</translation>
+      <translation>对不起，无法混合图像...</translation>
     </message>
   </context>
   <context>
@@ -5092,7 +5092,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="2006"/>
       <source>Text File (*.txt)</source>
-      <translation type="unfinished">Text File (*.txt)</translation>
+      <translation>文本文件 (*.txt)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2006"/>

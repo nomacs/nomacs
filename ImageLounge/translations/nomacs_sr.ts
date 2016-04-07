@@ -1788,52 +1788,52 @@
     <message>
       <location filename="../src/main.cpp" line="107"/>
       <source>An input image.</source>
-      <translation type="unfinished">An input image.</translation>
+      <translation>Улазна слика.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="110"/>
       <source>Start in fullscreen.</source>
-      <translation type="unfinished">Start in fullscreen.</translation>
+      <translation>Поккретање на целом екрану.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="113"/>
       <source>Start Pong.</source>
-      <translation type="unfinished">Start Pong.</translation>
+      <translation>Покрени Понг.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="116"/>
       <source>Start in private mode.</source>
-      <translation type="unfinished">Start in private mode.</translation>
+      <translation>Покрени у приватном режиму.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="120"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Подеси режим прегледа &lt;mode&gt;.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="121"/>
       <source>default | frameless | pseudocolor</source>
-      <translation type="unfinished">default | frameless | pseudocolor</translation>
+      <translation>подразумевано | frameless | pseudocolor</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="125"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Учитај све фајлове из &lt;directory&gt;.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="126"/>
       <source>directory</source>
-      <translation type="unfinished">directory</translation>
+      <translation>фасцикла</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="130"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Учитај &lt;images&gt; на картице.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="131"/>
       <source>images</source>
-      <translation type="unfinished">images</translation>
+      <translation>слике</translation>
     </message>
   </context>
   <context>
@@ -2942,7 +2942,7 @@ This option might destroy your images - so be careful!</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1273"/>
       <source>Set as Default Viewer</source>
-      <translation type="unfinished">Set as Default Viewer</translation>
+      <translation>Подеси подразумевани прегледач</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1363"/>
@@ -3547,32 +3547,32 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1513"/>
       <source>There are new packages available: </source>
-      <translation type="unfinished">There are new packages available: </translation>
+      <translation>Доступни су нови пакети: </translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1520"/>
       <source>Updates Available</source>
-      <translation type="unfinished">Updates Available</translation>
+      <translation>Доступне исправке</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1525"/>
       <source>&amp;Upgrade</source>
-      <translation type="unfinished">&amp;Upgrade</translation>
+      <translation>&amp;Надоградња</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1526"/>
       <source>Remind Me &amp;Later</source>
-      <translation type="unfinished">Remind Me &amp;Later</translation>
+      <translation>Подсети ме &amp;касније</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1527"/>
       <source>&amp;Skip this Version</source>
-      <translation type="unfinished">&amp;Skip this Version</translation>
+      <translation>&amp;Прескочи ову верзију</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
       <source>nomacs Updates</source>
-      <translation type="unfinished">nomacs Updates</translation>
+      <translation>nomacs ажурирања</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1543"/>
@@ -4234,17 +4234,17 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1784"/>
       <source>Shall I move %1 to trash?</source>
-      <translation type="unfinished">Shall I move %1 to trash?</translation>
+      <translation>Преместити %1 у смеће?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1786"/>
       <source>Do you want to permanently delete %1?</source>
-      <translation type="unfinished">Do you want to permanently delete %1?</translation>
+      <translation>Да ли желите бесповратно уклонити %1?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1791"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Уклони фајл</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1881"/>
@@ -5167,7 +5167,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1440"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation type="unfinished">Shall I move %1 file(s) to trash?</translation>
+      <translation>Преместити %1 фајл(ове) у смеће?</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1442"/>
@@ -5177,7 +5177,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1447"/>
       <source>Delete File</source>
-      <translation type="unfinished">Delete File</translation>
+      <translation>Уклони фајл</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1468"/>
@@ -5664,12 +5664,12 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkDialog.cpp" line="4210"/>
       <source>&amp;Register File Associations</source>
-      <translation type="unfinished">&amp;Register File Associations</translation>
+      <translation>&amp;Региструј придруживање фајлова</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4213"/>
       <source>Set As &amp;Default Viewer</source>
-      <translation type="unfinished">Set As &amp;Default Viewer</translation>
+      <translation>Подеси као &amp;подразумевани прегледач</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4218"/>
