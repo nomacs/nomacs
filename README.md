@@ -3,20 +3,19 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs.svg?branch=master)](https://travis-ci.org/nomacs/nomacs)
 
-
 ## Build nomacs (Windows)
 ### Compile dependencies
 - `Qt` SDK or the compiled sources (>= 5.4.0)
-- `Exiv2` (>= 0.25) 
+- `Exiv2` (>= 0.25)
 - `OpenCV` (>= 2.4.6) _optional_
 - `LibRaw` (>= 0.17) _optional_
 
 ### Compile LibRaw
-_only needed if ENABLE_RAW is checked_
+- only needed if ENABLE_RAW is checked_
 - open LibRaw-0.xx.0/LibRaw-nomacs-2015.sln
 - build LibRaw (Debug & Release)
 
-### Compile nomacs 
+### Compile nomacs
 1. Open CMake GUI
 2. set your ImageLounge folder to `where is the source code`
 3. choose a build folder
@@ -47,21 +46,20 @@ This will by default place the source into ~/nomacs
 
 Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
 ``` console
-cmake . 
+cmake .
 ```
 
-Compile nomacs: 
+Compile nomacs:
 ``` console
 make
 ```
 
-You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use: 
+You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
 ``` console
 sudo make install
 ```
 
 ## Links
 - [nomacs.org](http://nomacs.org)
-- [Bugtracker](http://www.nomacs.org/redmine/projects/nomacs) 
+- [Bugtracker](http://www.nomacs.org/redmine/projects/nomacs)
 - [GitHub](https://github.com/nomacs)
-
