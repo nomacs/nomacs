@@ -2132,7 +2132,11 @@ void DkPrintPreviewDialog::init() {
 	
 	if (!mPrinter) {
 #ifdef Q_OS_WIN
-		mPrinter = new QPrinter(QPrinterInfo::defaultPrinter(), QPrinter::HighResolution);
+		if(QPrinterInfo::defaultPrinter().isNull())
+			mPrinter = new QPrinter(QPrinter::HighResolution);
+		else
+			mPrinter = new QPrinter(QPrinterInfo::defaultPrinter(), QPrinter::HighResolution);
+			
 #else
 		mPrinter = new QPrinter;
 #endif
