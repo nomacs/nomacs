@@ -2086,6 +2086,8 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, float dpi, QPrinte
 		mPreview->setLandscapeOrientation();
 
 	scaleImage();
+	qInfo() << "DkPrintPreviewDialog constructor: pageSize: " << mPrinter->pageSize();
+	qInfo() << "DkPrintPreviewDialog constructor: pageRect: " << mPrinter->pageRect(QPrinter::Millimeter);
 }
 
 void DkPrintPreviewDialog::setImage(const QImage& img, float dpi) {
