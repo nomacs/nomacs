@@ -89,7 +89,7 @@
 #include <QSplashScreen>
 #include <QMenu>
 #include <QKeySequenceEdit>
-
+#include <QPrinterInfo>
 // quazip
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
@@ -2132,7 +2132,7 @@ void DkPrintPreviewDialog::init() {
 	
 	if (!mPrinter) {
 #ifdef Q_OS_WIN
-		mPrinter = new QPrinter(QPrinter::HighResolution);
+		mPrinter = new QPrinter(QPrinterInfo::defaultPrinter(), QPrinter::HighResolution);
 #else
 		mPrinter = new QPrinter;
 #endif
