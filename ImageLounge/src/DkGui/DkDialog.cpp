@@ -2086,6 +2086,8 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, float dpi, QPrinte
 		mPreview->setLandscapeOrientation();
 
 	scaleImage();
+	qInfo() << "DkPrintPreviewDialog constructor: pageSize: " << mPrinter->pageSize();
+	qInfo() << "DkPrintPreviewDialog constructor: pageRect: " << mPrinter->pageRect(QPrinter::Millimeter);
 }
 
 void DkPrintPreviewDialog::setImage(const QImage& img, float dpi) {
@@ -2187,8 +2189,6 @@ void DkPrintPreviewDialog::setupActions() {
 	mFitPageAction->setObjectName(QLatin1String("fitPageAction"));
 	mFitWidthAction->setCheckable(true);
 	mFitPageAction->setCheckable(true);
-	//setIcon(fitWidthAction, QLatin1String("fit-width"));
-	//setIcon(fitPageAction, QLatin1String("fit-page"));
 	QObject::connect(mFitGroup, SIGNAL(triggered(QAction*)), this, SLOT(fitImage(QAction*)));
 
 	// Zoom
@@ -2196,16 +2196,8 @@ void DkPrintPreviewDialog::setupActions() {
 
 	mZoomInAction = mZoomGroup->addAction(mIcons[print_zoom_in], tr("Zoom in"));
 	mZoomInAction->setShortcut(Qt::Key_Plus);
-	//preview->addAction(zoomInAction);
-	//addAction(zoomInAction);
-	//zoomInAction->setShortcut(QKeySequence::AddTab);
-	//addAction(zoomInAction);
 	mZoomOutAction = mZoomGroup->addAction(mIcons[print_zoom_out], tr("Zoom out"));
 	mZoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
-	//addAction(zoomOutAction);
-	//preview->addAction(zoomOutAction);
-	//setIcon(zoomInAction, QLatin1String("zoom-in"));
-	//setIcon(zoomOutAction, QLatin1String("zoom-out"));
 
 	// Portrait/Landscape
 	mOrientationGroup = new QActionGroup(this);
@@ -2213,8 +2205,6 @@ void DkPrintPreviewDialog::setupActions() {
 	mLandscapeAction = mOrientationGroup->addAction(mIcons[print_landscape], tr("Landscape"));
 	mPortraitAction->setCheckable(true);
 	mLandscapeAction->setCheckable(true);
-	//setIcon(portraitAction, QLatin1String("layout-portrait"));
-	//setIcon(landscapeAction, QLatin1String("layout-landscape"));
 	QObject::connect(mPortraitAction, SIGNAL(triggered(bool)), mPreview, SLOT(setPortraitOrientation()));
 	QObject::connect(mPortraitAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
 	QObject::connect(mLandscapeAction, SIGNAL(triggered(bool)), mPreview, SLOT(setLandscapeOrientation()));
@@ -2225,8 +2215,6 @@ void DkPrintPreviewDialog::setupActions() {
 	mPrinterGroup = new QActionGroup(this);
 	mPrintAction = mPrinterGroup->addAction(mIcons[print_printer], tr("Print"));
 	mPageSetupAction = mPrinterGroup->addAction(mIcons[print_setup], tr("Page setup"));
-	//setIcon(printAction, QLatin1String("print"));
-	//setIcon(pageSetupAction, QLatin1String("page-setup"));
 	QObject::connect(mPrintAction, SIGNAL(triggered(bool)), this, SLOT(print()));
 	QObject::connect(mPageSetupAction, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
 
@@ -2297,7 +2285,7 @@ void DkPrintPreviewDialog::createLayout() {
 	if (Settings::param().display().toolbarGradient)
 		toolbar->setObjectName("toolbarWithGradient");
 
-	toolbar->setIconSize(QSize(32, 32));
+	toolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
 
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
 	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(mZoomInAction));
