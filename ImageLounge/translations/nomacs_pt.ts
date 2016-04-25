@@ -1151,7 +1151,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1509"/>
       <source>manage installed plugins and download new ones</source>
-      <translation>Gerir extras instalados e transferir novos</translation>
+      <translation>Gerir extras instalados e descarregar novos</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1514"/>
@@ -2803,7 +2803,7 @@ Tenha cuidado!</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="868"/>
       <source>Download and Install</source>
-      <translation>Transferir e instalar</translation>
+      <translation>Descarregar e instalar</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="885"/>
@@ -2818,7 +2818,7 @@ Tenha cuidado!</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="889"/>
       <source>Download and install plugin</source>
-      <translation>Transferir e instalar extra</translation>
+      <translation>Descarregar e instalar extra</translation>
     </message>
   </context>
   <context>
@@ -3122,7 +3122,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="683"/>
       <source>A new image is loaded after displaying the last image</source>
-      <translation>A nova imagem será carregada após mostrar a última imagem</translation>
+      <translation>A nova imagem será carregada após mostrar a última</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="686"/>
@@ -3402,7 +3402,7 @@ tente corrigir as imagens.</translation>
       <location filename="../src/DkImageContainer.cpp" line="748"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation>Não foi possível transferir:
+      <translation>Não foi possível descarregar:
 %1</translation>
     </message>
     <message>
@@ -4263,12 +4263,12 @@ trabalhar na janela.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2424"/>
       <source>Already downloading update</source>
-      <translation>Transferência em curso</translation>
+      <translation>Descarga em curso</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2452"/>
       <source>Downloading update...</source>
-      <translation>A receber atualização...</translation>
+      <translation>A descarregar atualização...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2452"/>
@@ -4283,7 +4283,7 @@ trabalhar na janela.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2487"/>
       <source>You can download the new version from our web page</source>
-      <translation>Pode transferir a nova versão na nossa página web</translation>
+      <translation>Pode descarregar a nova versão na nossa página web</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1881"/>
@@ -4305,7 +4305,7 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2501"/>
       <source>Downloading new translations...</source>
-      <translation>A transferir novas traduções...</translation>
+      <translation>A descarregar novas traduções...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2501"/>
@@ -4368,12 +4368,12 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1341"/>
       <source>Downloading file information...</source>
-      <translation>Transferindo informações do ficheiro...</translation>
+      <translation>A descarregar informações do ficheiro...</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1365"/>
       <source>Downloading plugin files: %1 of %2</source>
-      <translation>Transferindo ficheiros: %1 de %2</translation>
+      <translation>A descarregar ficheiros: %1 de %2</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1409"/>
@@ -4383,7 +4383,7 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1433"/>
       <source>Sorry, I could not download plugin information.</source>
-      <translation>Não foi possível transferir as informações do extra.</translation>
+      <translation>Não foi possível descarregar as informações do extra.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1433"/>
@@ -4399,17 +4399,17 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1434"/>
       <source>Sorry, I could not download plugin preview.</source>
-      <translation>Não foi possível transferir a pré-visualização do extra.</translation>
+      <translation>Não foi possível descarregar a pré-visualização do extra.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1435"/>
       <source>Sorry, I could not download plugin.</source>
-      <translation>Não foi possível transferir o extra.</translation>
+      <translation>Não foi possível descarregar o extra.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1493"/>
       <source>Sorry, I could not parse the downloaded plugin data xml</source>
-      <translation>Não foi possível processar os dados do extra transferido</translation>
+      <translation>Não foi possível processar os dados do extra descarregado</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1527"/>
@@ -4420,7 +4420,7 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1570"/>
       <source>Could not find plugins to download.</source>
-      <translation>Não foram encontrados extras para transferência.</translation>
+      <translation>Não foram encontrados extras</translation>
     </message>
   </context>
   <context>
@@ -4439,7 +4439,7 @@ Gostaria de as substituir?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="101"/>
       <source>Download new plugins</source>
-      <translation>Transferir mais extras</translation>
+      <translation>Descarregar mais extras</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="110"/>
@@ -4517,7 +4517,7 @@ Reinicie o nomacs e tente novamente.</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="489"/>
       <source>Do you really want to uninstall the plugin &lt;i&gt;%1&lt;/i&gt;?</source>
-      <translation>Tem a certeza que quer desinstalar o extra &lt;i&gt;%1&lt;/i&gt;?</translation>
+      <translation>Tem a certeza de que deseja desinstalar o extra &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
   </context>
   <context>
@@ -5453,7 +5453,7 @@ Criação de miniaturas...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1843"/>
       <source>Unable to download translation</source>
-      <translation>Incapaz de transferir a tradução</translation>
+      <translation>Incapaz de descarregar a tradução</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1843"/>
@@ -5557,7 +5557,7 @@ Criação de miniaturas...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1694"/>
       <source>Do you want to download and install it now?</source>
-      <translation>Transferir e instalar?</translation>
+      <translation>Deseja descarregar e instalar a nova versão?</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1695"/>
@@ -5567,7 +5567,7 @@ Criação de miniaturas...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1712"/>
       <source>sorry, unable to download the new version</source>
-      <translation>Não foi possível transferir a nova versão</translation>
+      <translation>Não foi possível descarregar a nova versão</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1783"/>

@@ -373,7 +373,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1142"/>
       <source>1&amp;80%1</source>
-      <translation>1&amp;80%1</translation>
+      <translation type="unfinished">1&amp;80%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1143"/>
@@ -1576,7 +1576,7 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="124"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation >%1 صورة تم تغيير حجمها, الجانب الجديد : %2 بيكسل</translation>
+      <translation>%1 صورة تم تغيير حجمها, الجانب الجديد : %2 بيكسل</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="157"/>
@@ -1793,7 +1793,7 @@
     <message>
       <location filename="../src/main.cpp" line="110"/>
       <source>Start in fullscreen.</source>
-      <translation>Start in fullscreen.</translation>
+      <translation type="unfinished">Start in fullscreen.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="113"/>
@@ -2345,7 +2345,7 @@ This option might destroy your images - so be careful!</source>
     <message>
       <location filename="../src/DkBatch.cpp" line="1091"/>
       <source>&amp;180%1</source>
-      <translation>&amp;180%1</translation>
+      <translation type="unfinished">&amp;180%1</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1100"/>
@@ -3415,7 +3415,7 @@ Do you want to show them again?</source>
       <location filename="../src/DkImageContainer.cpp" line="817"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>عذرا , لا يوجد المسار :%1
+      <translation>عذرا, لا يوجد المسار: %1
 </translation>
     </message>
     <message>
@@ -4016,7 +4016,7 @@ Do you want to show them again?</source>
       <location filename="../src/DkDialog.cpp" line="3451"/>
       <location filename="../src/DkDialog.cpp" line="3463"/>
       <source>%1 x %2 cm @150 dpi</source>
-      <translation>%1 x %2 cm @150 dpi</translation>
+      <translation type="unfinished">%1 x %2 cm @150 dpi</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3508"/>
@@ -5168,7 +5168,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1447"/>
       <source>Delete File</source>
-      <translation>مسح الملفات</translation>
+      <translation>مسح الملف</translation>
     </message>
     <message>
       <location filename="../src/DkThumbsWidgets.cpp" line="1468"/>

@@ -39,12 +39,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="401"/>
       <source>&amp;File</source>
-      <translation type="unfinished">&amp;File</translation>
+      <translation>&amp;文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="442"/>
       <source>&amp;Open With</source>
-      <translation type="unfinished">&amp;Open With</translation>
+      <translation>&amp;打开方式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="473"/>
@@ -55,34 +55,34 @@
       <location filename="../src/DkActionManager.cpp" line="487"/>
       <location filename="../src/DkActionManager.cpp" line="699"/>
       <source>&amp;View</source>
-      <translation type="unfinished">&amp;View</translation>
+      <translation>&amp;视图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="531"/>
       <location filename="../src/DkActionManager.cpp" line="705"/>
       <source>&amp;Edit</source>
-      <translation type="unfinished">&amp;Edit</translation>
+      <translation>&amp;编辑</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="569"/>
       <location filename="../src/DkActionManager.cpp" line="684"/>
       <source>&amp;Panels</source>
-      <translation type="unfinished">&amp;Panels</translation>
+      <translation>&amp;面板</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="571"/>
       <source>Tool&amp;bars</source>
-      <translation type="unfinished">Tool&amp;bars</translation>
+      <translation>工具栏</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="597"/>
       <source>&amp;Tools</source>
-      <translation type="unfinished">&amp;Tools</translation>
+      <translation>&amp;工具</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="623"/>
       <source>&amp;Synchronize</source>
-      <translation type="unfinished">&amp;Synchronize</translation>
+      <translation>&amp;同步</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="632"/>
@@ -92,7 +92,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="654"/>
       <source>&amp;?</source>
-      <translation type="unfinished">&amp;?</translation>
+      <translation>&amp;帮助</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1006"/>
@@ -112,22 +112,22 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1012"/>
       <source>Open a directory and load its first image</source>
-      <translation type="unfinished">Open a directory and load its first image</translation>
+      <translation>打开目录并加载其第一个映像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1014"/>
       <source>&amp;Quick Launch</source>
-      <translation type="unfinished">&amp;Quick Launch</translation>
+      <translation>快速启动(&amp;M)</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1018"/>
       <source>&amp;Manage Applications</source>
-      <translation type="unfinished">&amp;Manage Applications</translation>
+      <translation>&amp;管理应用程序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1019"/>
       <source>Manage Applications which are Automatically Opened</source>
-      <translation type="unfinished">Manage Applications which are Automatically Opened</translation>
+      <translation>管理自动打开的应用程序</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1022"/>
@@ -142,12 +142,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1027"/>
       <source>&amp;Go To</source>
-      <translation type="unfinished">&amp;Go To</translation>
+      <translation>&amp;转到</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1029"/>
       <source>Go To an image</source>
-      <translation type="unfinished">Go To an image</translation>
+      <translation>转到图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1031"/>
@@ -157,128 +157,128 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1033"/>
       <source>Save an image</source>
-      <translation type="unfinished">Save an image</translation>
+      <translation>保存图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1035"/>
       <source>&amp;Save As</source>
-      <translation type="unfinished">&amp;Save As</translation>
+      <translation>&amp;另存为</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1037"/>
       <source>Save an image as</source>
-      <translation type="unfinished">Save an image as</translation>
+      <translation>另存为</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1039"/>
       <source>&amp;Save for Web</source>
-      <translation type="unfinished">&amp;Save for Web</translation>
+      <translation>&amp;另存为Web可用模式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1040"/>
       <source>Save an Image for Web Applications</source>
-      <translation type="unfinished">Save an Image for Web Applications</translation>
+      <translation>保存为Web所用格式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1042"/>
       <source>&amp;Print</source>
-      <translation type="unfinished">&amp;Print</translation>
+      <translation>打印</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1044"/>
       <source>Print an image</source>
-      <translation type="unfinished">Print an image</translation>
+      <translation>打印图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1046"/>
       <source>&amp;Recent Files and Folders</source>
-      <translation type="unfinished">&amp;Recent Files and Folders</translation>
+      <translation>&amp;最近使用的文件和目录</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1050"/>
       <source>Show Recent Files and Folders</source>
-      <translation type="unfinished">Show Recent Files and Folders</translation>
+      <translation>显示最近浏览的文件和目录</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1052"/>
       <source>&amp;Reload File</source>
-      <translation type="unfinished">&amp;Reload File</translation>
+      <translation>重新加载文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1055"/>
       <source>Reload File</source>
-      <translation type="unfinished">Reload File</translation>
+      <translation>重新加载文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1057"/>
       <source>Ne&amp;xt File</source>
-      <translation type="unfinished">Ne&amp;xt File</translation>
+      <translation>下个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1060"/>
       <source>Load next image</source>
-      <translation type="unfinished">Load next image</translation>
+      <translation>加载下一个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1062"/>
       <source>Pre&amp;vious File</source>
-      <translation type="unfinished">Pre&amp;vious File</translation>
+      <translation>上个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1067"/>
       <source>Add Image Format</source>
-      <translation type="unfinished">Add Image Format</translation>
+      <translation>增加图像格式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1068"/>
       <source>Add a new image format to nomacs</source>
-      <translation type="unfinished">Add a new image format to nomacs</translation>
+      <translation>向 nomacs 添加新图像格式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1070"/>
       <source>St&amp;art New Instance</source>
-      <translation type="unfinished">St&amp;art New Instance</translation>
+      <translation>打开新实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1065"/>
       <source>Load previous file</source>
-      <translation type="unfinished">Load previous file</translation>
+      <translation>加载上一个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1072"/>
       <source>Open file in new instance</source>
-      <translation type="unfinished">Open file in new instance</translation>
+      <translation>在新窗口中打开文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1074"/>
       <source>St&amp;art Private Instance</source>
-      <translation type="unfinished">St&amp;art Private Instance</translation>
+      <translation>打开隐私实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1076"/>
       <source>Open private instance</source>
-      <translation type="unfinished">Open private instance</translation>
+      <translation>打开私有实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1078"/>
       <source>&amp;Find &amp;&amp; Filter</source>
-      <translation type="unfinished">&amp;Find &amp;&amp; Filter</translation>
+      <translation>＆查找＆＆过滤器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1080"/>
       <location filename="../src/DkActionManager.cpp" line="1410"/>
       <source>Find an image</source>
-      <translation type="unfinished">Find an image</translation>
+      <translation>查找图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1082"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation type="unfinished">Scan Folder Re&amp;cursive</translation>
+      <translation>递归扫描文件夹</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1083"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation type="unfinished">Step through Folder and Sub Folders</translation>
+      <translation>通过文件夹和子文件夹</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1087"/>
@@ -353,32 +353,32 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1132"/>
       <source>9&amp;0%1 Clockwise</source>
-      <translation type="unfinished">9&amp;0%1 Clockwise</translation>
+      <translation>顺时针90%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1135"/>
       <source>rotate the image 90%1 clockwise</source>
-      <translation type="unfinished">rotate the image 90%1 clockwise</translation>
+      <translation>顺时针旋转90%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1137"/>
       <source>&amp;90%1 Counter Clockwise</source>
-      <translation type="unfinished">&amp;90%1 Counter Clockwise</translation>
+      <translation>逆时针90%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1140"/>
       <source>rotate the image 90%1 counter clockwise</source>
-      <translation type="unfinished">rotate the image 90%1 counter clockwise</translation>
+      <translation>逆时针旋转90%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1142"/>
       <source>1&amp;80%1</source>
-      <translation type="unfinished">1&amp;80%1</translation>
+      <translation>180%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1143"/>
       <source>rotate the image by 180%1</source>
-      <translation type="unfinished">rotate the image by 180%1</translation>
+      <translation>将图像选择180%1</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1145"/>
@@ -405,7 +405,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1158"/>
       <source>copy pixel color value as HEX</source>
-      <translation type="unfinished">copy pixel color value as HEX</translation>
+      <translation>复制像素颜色为HEX</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1163"/>
@@ -421,22 +421,22 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1168"/>
       <source>R&amp;esize Image</source>
-      <translation type="unfinished">R&amp;esize Image</translation>
+      <translation>调整图像大小</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1171"/>
       <source>resize the current image</source>
-      <translation type="unfinished">resize the current image</translation>
+      <translation>调整当前图像的大小</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1173"/>
       <source>Cr&amp;op Image</source>
-      <translation type="unfinished">Cr&amp;op Image</translation>
+      <translation>裁剪</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1176"/>
       <source>cut the current image</source>
-      <translation type="unfinished">cut the current image</translation>
+      <translation>裁剪当前图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1180"/>
@@ -461,27 +461,27 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1186"/>
       <source>Nor&amp;malize Image</source>
-      <translation type="unfinished">Nor&amp;malize Image</translation>
+      <translation>标准化图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1189"/>
       <source>Normalize the Image</source>
-      <translation type="unfinished">Normalize the Image</translation>
+      <translation>标准化图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1191"/>
       <source>&amp;Auto Adjust</source>
-      <translation type="unfinished">&amp;Auto Adjust</translation>
+      <translation>自动调整</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1194"/>
       <source>Auto Adjust Image Contrast and Color Balance</source>
-      <translation type="unfinished">Auto Adjust Image Contrast and Color Balance</translation>
+      <translation>自动调整对比度和色彩平衡</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1196"/>
       <source>&amp;Invert Image</source>
-      <translation type="unfinished">&amp;Invert Image</translation>
+      <translation>反转图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1197"/>
@@ -491,32 +491,32 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1199"/>
       <source>&amp;Convert to Grayscale</source>
-      <translation type="unfinished">&amp;Convert to Grayscale</translation>
+      <translation>转换为灰度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1200"/>
       <source>Convert to Grayscale</source>
-      <translation type="unfinished">Convert to Grayscale</translation>
+      <translation>转换为灰度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1202"/>
       <source>&amp;Unsharp Mask</source>
-      <translation type="unfinished">&amp;Unsharp Mask</translation>
+      <translation>模糊滤镜</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1203"/>
       <source>Stretches the Local Contrast of an Image</source>
-      <translation type="unfinished">Stretches the Local Contrast of an Image</translation>
+      <translation>调整图片对比度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1205"/>
       <source>&amp;Tiny Planet</source>
-      <translation type="unfinished">&amp;Tiny Planet</translation>
+      <translation>小小星球</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1206"/>
       <source>Computes a tiny planet image</source>
-      <translation type="unfinished">Computes a tiny planet image</translation>
+      <translation>生成一张“小小星球”图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1208"/>
@@ -527,37 +527,37 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1211"/>
       <source>delete current fileInfo</source>
-      <translation type="unfinished">delete current fileInfo</translation>
+      <translation>删除当前文件信息</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1213"/>
       <source>&amp;Wallpaper</source>
-      <translation type="unfinished">&amp;Wallpaper</translation>
+      <translation>壁纸</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1214"/>
       <source>set the current image as wallpaper</source>
-      <translation type="unfinished">set the current image as wallpaper</translation>
+      <translation>将当前图像设置为壁纸</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1216"/>
       <source>&amp;Keyboard Shortcuts</source>
-      <translation type="unfinished">&amp;Keyboard Shortcuts</translation>
+      <translation>快捷键</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1218"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation type="unfinished">lets you customize your keyboard shortcuts</translation>
+      <translation>您可以自定义自己的快捷键</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1220"/>
       <source>&amp;Settings</source>
-      <translation type="unfinished">&amp;Settings</translation>
+      <translation>设置</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1222"/>
       <source>settings</source>
-      <translation type="unfinished">settings</translation>
+      <translation>设置</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1226"/>
@@ -567,7 +567,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1227"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation type="unfinished">Hides the Menu and Shows it Again on ALT</translation>
+      <translation>按ALT显示或隐藏菜单</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1230"/>
@@ -582,7 +582,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1235"/>
       <source>&amp;Statusbar</source>
-      <translation type="unfinished">&amp;Statusbar</translation>
+      <translation>状态栏</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1237"/>
@@ -592,82 +592,82 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1240"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation type="unfinished">&amp;Pseudocolor Function</translation>
+      <translation>假色函数</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1242"/>
       <source>Show Pseudocolor Function</source>
-      <translation type="unfinished">Show Pseudocolor Function</translation>
+      <translation>显示假色函数</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1246"/>
       <source>O&amp;verview</source>
-      <translation type="unfinished">O&amp;verview</translation>
+      <translation>预览</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1248"/>
       <source>Shows the Zoom Overview</source>
-      <translation type="unfinished">Shows the Zoom Overview</translation>
+      <translation>显示预览缩放</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1252"/>
       <source>Pla&amp;yer</source>
-      <translation type="unfinished">Pla&amp;yer</translation>
+      <translation>幻灯片播放器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1254"/>
       <source>Shows the Slide Show Player</source>
-      <translation type="unfinished">Shows the Slide Show Player</translation>
+      <translation>显示幻灯片播放器滑动条</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1257"/>
       <source>File &amp;Explorer</source>
-      <translation type="unfinished">File &amp;Explorer</translation>
+      <translation>文件资源管理器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1259"/>
       <source>Show File Explorer</source>
-      <translation type="unfinished">Show File Explorer</translation>
+      <translation>显示文件资源管理器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1262"/>
       <source>Metadata &amp;Info</source>
-      <translation type="unfinished">Metadata &amp;Info</translation>
+      <translation>元数据</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1264"/>
       <source>Show Metadata Info</source>
-      <translation type="unfinished">Show Metadata Info</translation>
+      <translation>显示元数据信息</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1267"/>
       <source>&amp;Thumbnails</source>
-      <translation type="unfinished">&amp;Thumbnails</translation>
+      <translation>缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1269"/>
       <source>Show Thumbnails</source>
-      <translation type="unfinished">Show Thumbnails</translation>
+      <translation>显示缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1272"/>
       <source>&amp;Thumbnail Preview</source>
-      <translation type="unfinished">&amp;Thumbnail Preview</translation>
+      <translation>缩略图预览</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1274"/>
       <source>Show Thumbnails Preview</source>
-      <translation type="unfinished">Show Thumbnails Preview</translation>
+      <translation>显示缩略图预览</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1277"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation type="unfinished">&amp;Folder Scrollbar</translation>
+      <translation>文件夹滚动条</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1279"/>
       <source>Show Folder Scrollbar</source>
-      <translation type="unfinished">Show Folder Scrollbar</translation>
+      <translation>显示文件夹滚动条</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1282"/>
@@ -702,12 +702,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1297"/>
       <source>Image &amp;Notes</source>
-      <translation type="unfinished">Image &amp;Notes</translation>
+      <translation>图像备注</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1299"/>
       <source>Shows Image Notes</source>
-      <translation type="unfinished">Shows Image Notes</translation>
+      <translation>显示的图像备注</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1304"/>
@@ -717,7 +717,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1306"/>
       <source>Fit window to the image</source>
-      <translation type="unfinished">Fit window to the image</translation>
+      <translation>调整窗口大小以适应图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1311"/>
@@ -732,12 +732,12 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1315"/>
       <source>&amp;Zoom to Fit</source>
-      <translation type="unfinished">&amp;Zoom to Fit</translation>
+      <translation>缩放到合适大小</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1317"/>
       <source>Shows the initial view (no zooming)</source>
-      <translation type="unfinished">Shows the initial view (no zooming)</translation>
+      <translation>显示 （不缩放） 的初始视图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1319"/>
@@ -773,17 +773,17 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1331"/>
       <source>&amp;Anti Aliasing</source>
-      <translation type="unfinished">&amp;Anti Aliasing</translation>
+      <translation>抗锯齿</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1333"/>
       <source>if checked images are smoother</source>
-      <translation type="unfinished">if checked images are smoother</translation>
+      <translation>选中以平滑图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1337"/>
       <source>&amp;Transparency Pattern</source>
-      <translation type="unfinished">&amp;Transparency Pattern</translation>
+      <translation>透明模式</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1339"/>
@@ -833,22 +833,22 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1361"/>
       <source>&amp;Next Tab</source>
-      <translation type="unfinished">&amp;Next Tab</translation>
+      <translation>下一个选项卡</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1363"/>
       <source>Switch to next tab</source>
-      <translation type="unfinished">Switch to next tab</translation>
+      <translation>切换至下一个选项卡</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1365"/>
       <source>&amp;Change Opacity</source>
-      <translation type="unfinished">&amp;Change Opacity</translation>
+      <translation>更改透明度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1367"/>
       <source>change the window opacity</source>
-      <translation type="unfinished">change the window opacity</translation>
+      <translation>更改窗口透明度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1369"/>
@@ -859,7 +859,7 @@
       <location filename="../src/DkActionManager.cpp" line="1371"/>
       <location filename="../src/DkActionManager.cpp" line="1375"/>
       <source>changes the window opacity</source>
-      <translation type="unfinished">changes the window opacity</translation>
+      <translation>更改窗口透明度</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1373"/>
@@ -880,62 +880,62 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1381"/>
       <source>Lock &amp;Window</source>
-      <translation type="unfinished">Lock &amp;Window</translation>
+      <translation>锁定窗口</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1383"/>
       <source>lock the window</source>
-      <translation type="unfinished">lock the window</translation>
+      <translation>锁定窗口</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1387"/>
       <source>&amp;Pause Movie</source>
-      <translation type="unfinished">&amp;Pause Movie</translation>
+      <translation>暂停播放</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1388"/>
       <source>pause the current movie</source>
-      <translation type="unfinished">pause the current movie</translation>
+      <translation>暂停当前影片</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1392"/>
       <source>P&amp;revious Frame</source>
-      <translation type="unfinished">P&amp;revious Frame</translation>
+      <translation>上一帧</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1393"/>
       <source>show previous frame</source>
-      <translation type="unfinished">show previous frame</translation>
+      <translation>显示上一帧</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1395"/>
       <source>&amp;Next Frame</source>
-      <translation type="unfinished">&amp;Next Frame</translation>
+      <translation>下一帧</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1396"/>
       <source>show next frame</source>
-      <translation type="unfinished">show next frame</translation>
+      <translation>显示下一帧</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1398"/>
       <source>Show G&amp;PS Coordinates</source>
-      <translation type="unfinished">Show G&amp;PS Coordinates</translation>
+      <translation>显示GPS坐标</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1399"/>
       <source>shows the GPS coordinates</source>
-      <translation type="unfinished">shows the GPS coordinates</translation>
+      <translation>显示GPS坐标</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1405"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation type="unfinished">Compute &amp;Thumbnails</translation>
+      <translation>生成缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1406"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation type="unfinished">compute all thumbnails of the current folder</translation>
+      <translation>生成当前文件夹所有文件的缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1409"/>
@@ -956,7 +956,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1418"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation type="unfinished">Export Multipage &amp;TIFF</translation>
+      <translation>导出多页 TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1419"/>
@@ -966,227 +966,227 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1421"/>
       <source>Extract From Archive</source>
-      <translation type="unfinished">Extract From Archive</translation>
+      <translation>从压缩包中提取</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1422"/>
       <source>Extract images from an archive (%1)</source>
-      <translation type="unfinished">Extract images from an archive (%1)</translation>
+      <translation>从压缩包中提取图像 （%1）</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1425"/>
       <source>&amp;Mosaic Image</source>
-      <translation type="unfinished">&amp;Mosaic Image</translation>
+      <translation>马赛克图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1426"/>
       <source>Create a Mosaic Image</source>
-      <translation type="unfinished">Create a Mosaic Image</translation>
+      <translation>创建马赛克图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1428"/>
       <source>Batch Processing</source>
-      <translation type="unfinished">Batch Processing</translation>
+      <translation>批处理</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1429"/>
       <source>Apply actions to multiple images</source>
-      <translation type="unfinished">Apply actions to multiple images</translation>
+      <translation>将操作应用于多个图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1434"/>
       <source>&amp;About Nomacs</source>
-      <translation type="unfinished">&amp;About Nomacs</translation>
+      <translation>关于Nomacs</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1436"/>
       <source>about</source>
-      <translation type="unfinished">about</translation>
+      <translation>关于</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1438"/>
       <source>&amp;Documentation</source>
-      <translation type="unfinished">&amp;Documentation</translation>
+      <translation>文档</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1439"/>
       <source>Online Documentation</source>
-      <translation type="unfinished">Online Documentation</translation>
+      <translation>在线文档</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1441"/>
       <source>&amp;Report a Bug</source>
-      <translation type="unfinished">&amp;Report a Bug</translation>
+      <translation>报告Bug</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1442"/>
       <source>Report a Bug</source>
-      <translation type="unfinished">Report a Bug</translation>
+      <translation>报告Bug</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1444"/>
       <source>&amp;Feature Request</source>
-      <translation type="unfinished">&amp;Feature Request</translation>
+      <translation>请求功能</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1445"/>
       <source>Feature Request</source>
-      <translation type="unfinished">Feature Request</translation>
+      <translation>请求功能</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1447"/>
       <source>&amp;Check for Updates</source>
-      <translation type="unfinished">&amp;Check for Updates</translation>
+      <translation>检查更新</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1448"/>
       <source>check for updates</source>
-      <translation type="unfinished">check for updates</translation>
+      <translation>检查更新</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1450"/>
       <source>&amp;Update Translation</source>
-      <translation type="unfinished">&amp;Update Translation</translation>
+      <translation>更新翻译</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1451"/>
       <source>Checks for a new version of the translations of the current language</source>
-      <translation type="unfinished">Checks for a new version of the translations of the current language</translation>
+      <translation>检查当前语言翻译的新版本</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1455"/>
       <source>Synchronize &amp;View</source>
-      <translation type="unfinished">Synchronize &amp;View</translation>
+      <translation>同步视图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1457"/>
       <source>synchronize the current view</source>
-      <translation type="unfinished">synchronize the current view</translation>
+      <translation>同步当前视图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1460"/>
       <source>&amp;Window Overlay</source>
-      <translation type="unfinished">&amp;Window Overlay</translation>
+      <translation>叠加窗口</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1465"/>
       <source>Arrange Instances</source>
-      <translation type="unfinished">Arrange Instances</translation>
+      <translation>铺排实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1467"/>
       <source>arrange connected instances</source>
-      <translation type="unfinished">arrange connected instances</translation>
+      <translation>铺排相关实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1470"/>
       <source>Connect &amp;All</source>
-      <translation type="unfinished">Connect &amp;All</translation>
+      <translation>连接所有</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1473"/>
       <source>connect all instances</source>
-      <translation type="unfinished">connect all instances</translation>
+      <translation>连接所有实例</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1475"/>
       <source>&amp;Sync All Actions</source>
-      <translation type="unfinished">&amp;Sync All Actions</translation>
+      <translation>同步所有操作</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1476"/>
       <source>Transmit All Signals Automatically.</source>
-      <translation type="unfinished">Transmit All Signals Automatically.</translation>
+      <translation>自动传送所有信号。</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1480"/>
       <source>&amp;Start Upnp</source>
-      <translation type="unfinished">&amp;Start Upnp</translation>
+      <translation>开启Upnp</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1481"/>
       <source>Starts a Upnp Media Renderer.</source>
-      <translation type="unfinished">Starts a Upnp Media Renderer.</translation>
+      <translation>启动一个Upnp媒体渲染器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1484"/>
       <source>&amp;Remote Control</source>
-      <translation type="unfinished">&amp;Remote Control</translation>
+      <translation>远程控制</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1486"/>
       <source>Automatically Receive Images From Your Remote Instance.</source>
-      <translation type="unfinished">Automatically Receive Images From Your Remote Instance.</translation>
+      <translation>从远程实例自动获取图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1489"/>
       <source>Remote &amp;Display</source>
-      <translation type="unfinished">Remote &amp;Display</translation>
+      <translation>远程显示</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1490"/>
       <source>Automatically Send Images to a Remote Instance.</source>
-      <translation type="unfinished">Automatically Send Images to a Remote Instance.</translation>
+      <translation>向远程实例自动发送图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1496"/>
       <source>Start &amp;Server</source>
-      <translation type="unfinished">Start &amp;Server</translation>
+      <translation>启动服务端</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1501"/>
       <source>Send &amp;Image</source>
-      <translation type="unfinished">Send &amp;Image</translation>
+      <translation>发送图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1504"/>
       <source>Sends the current image to all clients.</source>
-      <translation type="unfinished">Sends the current image to all clients.</translation>
+      <translation>发送当前图像至所有客户端。</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1508"/>
       <source>&amp;Plugin Manager</source>
-      <translation type="unfinished">&amp;Plugin Manager</translation>
+      <translation>插件管理器</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1509"/>
       <source>manage installed plugins and download new ones</source>
-      <translation type="unfinished">manage installed plugins and download new ones</translation>
+      <translation>管理已安装插件或下载新插件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1514"/>
       <source>Select &amp;All</source>
-      <translation type="unfinished">Select &amp;All</translation>
+      <translation>全选</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1521"/>
       <source>Zoom &amp;Out</source>
-      <translation type="unfinished">Zoom &amp;Out</translation>
+      <translation>缩小</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1524"/>
       <source>Display &amp;Squares</source>
-      <translation type="unfinished">Display &amp;Squares</translation>
+      <translation>显示直方图</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1528"/>
       <source>Show &amp;Filename</source>
-      <translation type="unfinished">Show &amp;Filename</translation>
+      <translation>显示文件名</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1544"/>
       <source>&amp;Rename</source>
-      <translation type="unfinished">&amp;Rename</translation>
+      <translation>重命名</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1547"/>
       <source>&amp;Batch Process</source>
-      <translation type="unfinished">&amp;Batch Process</translation>
+      <translation>批处理</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1548"/>
       <source>Adds selected files to batch processing.</source>
-      <translation type="unfinished">Adds selected files to batch processing.</translation>
+      <translation>将选中的文件添加到批处理。</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1563"/>
@@ -1196,13 +1196,13 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1566"/>
       <source>First File</source>
-      <translation type="unfinished">First File</translation>
+      <translation>第一个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1567"/>
       <location filename="../src/DkActionManager.cpp" line="1583"/>
       <source>Jump to first file</source>
-      <translation type="unfinished">Jump to first file</translation>
+      <translation>跳转到第一个文件</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1570"/>
@@ -1632,12 +1632,12 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="274"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation type="unfinished">%1 error, could not apply plugins.</translation>
+      <translation>错误%1，无法添加插件。</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="278"/>
       <source>%1 plugins applied.</source>
-      <translation type="unfinished">%1 plugins applied.</translation>
+      <translation>%1插件已添加。</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="284"/>
@@ -1663,7 +1663,7 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="375"/>
       <source>Skipping: nothing to do here.</source>
-      <translation type="unfinished">Skipping: nothing to do here.</translation>
+      <translation>跳过：此处无操作。</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="407"/>
@@ -1693,7 +1693,7 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="440"/>
       <source>Could not save: %1</source>
-      <translation type="unfinished">Could not save: %1</translation>
+      <translation>无法保存：%1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="455"/>
@@ -1728,12 +1728,12 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="505"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation type="unfinished">Error: back-up (%1) file already exists</translation>
+      <translation>错误：备份文件（%1）已存在</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="512"/>
       <source>Error: could not rename existing file to %1</source>
-      <translation type="unfinished">Error: could not rename existing file to %1</translation>
+      <translation>错误：无法将当前文件重命名为%1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="530"/>
@@ -1743,57 +1743,57 @@
     <message>
       <location filename="../src/DkProcess.cpp" line="541"/>
       <source>Ui - a lot of things went wrong sorry, your original file can be found here: %1</source>
-      <translation type="unfinished">Ui - a lot of things went wrong sorry, your original file can be found here: %1</translation>
+      <translation>Ui - 抱歉，发生错误，您的原始文件可以在这里找到：%1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="546"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation type="unfinished">I could not save to %1 so I restored the original file.</translation>
+      <translation>因为无法保存为%1所以我恢复了原始文件</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="562"/>
       <source>%1 deleted.</source>
-      <translation type="unfinished">%1 deleted.</translation>
+      <translation>%1已删除。</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="565"/>
       <source>I could not delete %1</source>
-      <translation type="unfinished">I could not delete %1</translation>
+      <translation>我无法删除%1</translation>
     </message>
     <message>
       <location filename="../src/DkProcess.cpp" line="570"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation type="unfinished">I did not delete the original because I detected %1 failure(s).</translation>
+      <translation>我无法删除源文件因为发现%1错误。</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="881"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-      <translation type="unfinished">nomacs - Image Lounge is a lightweight image viewer.</translation>
+      <translation>nomacs - Image Lounge是一个轻量级图片查看器。</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="88"/>
       <source>Player 1</source>
-      <translation type="unfinished">Player 1</translation>
+      <translation>播放器1</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="89"/>
       <source>Player 2</source>
-      <translation type="unfinished">Player 2</translation>
+      <translation>播放器2</translation>
     </message>
     <message>
       <location filename="../src/DkPong.h" line="99"/>
       <source>Anonymous</source>
-      <translation type="unfinished">Anonymous</translation>
+      <translation>匿名</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="107"/>
       <source>An input image.</source>
-      <translation type="unfinished">An input image.</translation>
+      <translation>导入的文件</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="110"/>
       <source>Start in fullscreen.</source>
-      <translation type="unfinished">Start in fullscreen.</translation>
+      <translation>以全屏模式启动。</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="113"/>
@@ -1803,7 +1803,7 @@
     <message>
       <location filename="../src/main.cpp" line="116"/>
       <source>Start in private mode.</source>
-      <translation type="unfinished">Start in private mode.</translation>
+      <translation>以隐私模式启动。</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="120"/>
@@ -1813,27 +1813,27 @@
     <message>
       <location filename="../src/main.cpp" line="121"/>
       <source>default | frameless | pseudocolor</source>
-      <translation type="unfinished">default | frameless | pseudocolor</translation>
+      <translation>默认|无框|假色</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="125"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>加载&lt;directory&gt;的所有文件</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="126"/>
       <source>directory</source>
-      <translation type="unfinished">directory</translation>
+      <translation>目录</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="130"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>加载&lt;images&gt;到选项卡。</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="131"/>
       <source>images</source>
-      <translation type="unfinished">images</translation>
+      <translation>图像</translation>
     </message>
   </context>
   <context>
@@ -1846,7 +1846,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1555"/>
       <source>Show test image</source>
-      <translation type="unfinished">Show test image</translation>
+      <translation>显示测试图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1558"/>
@@ -1856,7 +1856,7 @@
     <message>
       <location filename="../src/DkActionManager.cpp" line="1559"/>
       <source>Generates all images in the world</source>
-      <translation type="unfinished">Generates all images in the world</translation>
+      <translation>在世界中生成全部图像</translation>
     </message>
     <message>
       <location filename="../src/DkActionManager.cpp" line="1562"/>
@@ -1933,7 +1933,7 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="4316"/>
       <source>Remove Subfolders</source>
-      <translation type="unfinished">Remove Subfolders</translation>
+      <translation>移除子文件夹</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4322"/>
@@ -2037,7 +2037,7 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1218"/>
       <source>Plugins</source>
-      <translation type="unfinished">Plugins</translation>
+      <translation>插件</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1224"/>
@@ -2057,7 +2057,7 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1238"/>
       <source>Shows detailed status messages.</source>
-      <translation type="unfinished">Shows detailed status messages.</translation>
+      <translation>显示详细的状态消息。</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1244"/>
@@ -2104,19 +2104,18 @@
     <message>
       <location filename="../src/DkBatch.cpp" line="1313"/>
       <source>Create Output Directory</source>
-      <translation type="unfinished">Create Output Directory</translation>
+      <translation>新建输出目录</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1314"/>
       <source>Should I create:
 %1</source>
-      <translation type="unfinished">Should I create:
-%1</translation>
+      <translation>我应该创建：%1</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1330"/>
       <source>Please select an output directory.</source>
-      <translation type="unfinished">Please select an output directory.</translation>
+      <translation>请选择一个输出目录。</translation>
     </message>
     <message>
       <location filename="../src/DkBatch.cpp" line="1334"/>
