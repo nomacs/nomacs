@@ -2453,6 +2453,7 @@ void DkPrintPreviewDialog::print() {
 	if (!mPrintDialog)
 		mPrintDialog = new QPrintDialog(mPrinter, this);
 	if (mPrintDialog->exec() == QDialog::Accepted) {
+		centerImage();
 		mPreview->print();
 		close();
 	}
