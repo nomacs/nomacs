@@ -254,7 +254,7 @@ void DkSettings::load() {
 	setToDefaultSettings();
 
 	QSettings& settings = Settings::instance().getSettings();
-	qInfo().noquote() << "loading settings from: " << settings.fileName();
+	qInfoClean() << "loading settings from: " << settings.fileName();
 
 	settings.beginGroup("AppSettings");
 	
