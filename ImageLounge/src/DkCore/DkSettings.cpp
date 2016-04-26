@@ -219,7 +219,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			qDebug().noquote().nospace() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}

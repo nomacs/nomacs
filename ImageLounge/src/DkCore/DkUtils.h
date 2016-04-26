@@ -30,6 +30,7 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>
 #include <QVector>
+#include <QDebug>
 #pragma warning(pop)		// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -66,11 +67,17 @@
 #endif
 #endif
 
+DllCoreExport QDebug qDebugClean();
+DllCoreExport QDebug qInfoClean();
+
 #ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy
 #define dk_degree_str QString::fromLatin1("°")
+
 #else
+
 #define dk_degree_str "\u00B0"
+
 #endif
 
 // Qt defines

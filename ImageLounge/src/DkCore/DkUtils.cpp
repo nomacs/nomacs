@@ -63,6 +63,14 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
+QDebug qDebugClean() {
+	 return qDebug().noquote().nospace();
+}
+
+QDebug qInfoClean() {
+	return qInfo().noquote().nospace();
+}
+
 namespace nmc {
 
 

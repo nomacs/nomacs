@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 2.8)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
-	
+
 	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
 		cmake_policy(SET CMP0020 NEW)	# qt warnings
 	ENDIF()
@@ -43,7 +43,7 @@ if(DEFINED GLOBAL_READ_BUILD)
 			set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
 			SET(CMAKE_LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/READ)
 			SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
-			SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)	
+			SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
 		endif()
 	endif()
 endif()
@@ -69,7 +69,7 @@ elseif(APPLE)
 	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" OFF)
 	message(STATUS "QuaZip disabled cause^ ur using a mac")
-	
+
 elseif(UNIX)
 	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" ON)
@@ -81,10 +81,10 @@ else()
 endif()
 
 if (ENABLE_QUAZIP)
-	message(STATUS "QuaZip enabled")	
+	message(STATUS "QuaZip enabled")
 endif()
 
-# load paths from the user file if exists 
+# load paths from the user file if exists
 if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
 endif()
@@ -136,7 +136,7 @@ file(GLOB CORE_HEADERS "src/DkCore/*.h")
 
 # gather information for building
 include_directories (
-	${EXIV2_INCLUDE_DIRS} 
+	${EXIV2_INCLUDE_DIRS}
 	${LIBRAW_INCLUDE_DIRS}
 	${CMAKE_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -194,11 +194,13 @@ endif()
 NMC_GENERATE_PACKAGE_XML()
 NMC_INSTALL()
 
-#debug for printing out all variables 
+#debug for printing out all variables
 # get_cmake_property(_variableNames VARIABLES)
 # foreach (_variableName ${_variableNames})
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
+
+message(STATUS "opencv libs: ${OpenCV_LIBS}")
 
 if(UNIX AND ENABLE_PLUGINS)
 	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
