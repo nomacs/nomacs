@@ -805,7 +805,7 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.allowPosition = true;
 	sync_p.allowFile = true;
 	sync_p.allowImage = true;
-	sync_p.checkForUpdates = true;
+	sync_p.checkForUpdates = !isPortable();	// installed version should only check for updates by default
 	sync_p.updateDialogShown = false;
 	sync_p.lastUpdateCheck = QDate(1970 , 1, 1);
 	sync_p.syncAbsoluteTransform = true;

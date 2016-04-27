@@ -81,7 +81,7 @@ DllCoreExport QDebug qInfoClean();
 
 #ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy
-#define dk_degree_str QString::fromLatin1("�")
+#define dk_degree_str QString::fromLatin1("°")
 
 #else
 
