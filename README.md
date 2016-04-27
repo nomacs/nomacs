@@ -5,7 +5,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 ## Build nomacs (Windows)
 ### Compile dependencies
-- `Qt` SDK or the compiled sources (>= 5.4.0)
+- `Qt` SDK or the compiled sources (>= 5.2.1)
 - `Exiv2` (>= 0.25)
 - `OpenCV` (>= 2.4.6) _optional_
 - `LibRaw` (>= 0.17) _optional_
@@ -57,6 +57,36 @@ make
 You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
 ``` console
 sudo make install
+```
+
+## Build nomacs (OSX)
+Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
+
+Install required dependencies:
+
+```
+$ brew install qt4 exiv2 homebrew/science/opencv libraw quazip
+
+```
+
+Go to the `nomacs` directory and run cmake to get the Makefiles
+
+```
+$ mkdir build
+$ cd build
+$ cmake ../ImageLounge/.
+```
+
+Run make:
+
+```
+$ make
+```
+
+You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
+
+```
+$ sudo make install
 ```
 
 ## Links
