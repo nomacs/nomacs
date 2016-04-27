@@ -723,7 +723,7 @@ class DkImageLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkImageLabel(const QString& filePath, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkImageLabel(const QString& filePath, int thumbSize = 100, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	bool hasFile() const;
 	QSharedPointer<DkThumbNailT> getThumb() const;
@@ -762,7 +762,7 @@ signals:
 
 public slots:
 	void updateFiles();
-	void updateFolders();
+	//void updateFolders();
 	virtual void setVisible(bool visible, bool saveSettings = true);
 	virtual void hide(bool saveSettings = true);
 	//void clearFileHistory();
@@ -773,26 +773,27 @@ protected:
 	void updateFileList();
 
 	QVector<QFileInfo> recentFiles;
-	QVector<DkFileInfo> recentFolders;
+	//QVector<DkFileInfo> recentFolders;
 	//QFutureWatcher<void> fileWatcher;
 	QVector<DkImageLabel*> fileLabels;
-	QVector<DkFolderLabel*> folderLabels;
+	//QVector<DkFolderLabel*> folderLabels;
 
 	QGridLayout* filesLayout;
-	QVBoxLayout* folderLayout;
+	//QVBoxLayout* folderLayout;
 
 	QWidget* filesWidget;
-	QWidget* folderWidget;
+	//QWidget* folderWidget;
 
-	QLabel* folderTitle;
-	QLabel* filesTitle;
+	//QLabel* folderTitle;
+	//QLabel* filesTitle;
 	QLabel* bgLabel;
 
 	QLabel* clearFiles;
-	QLabel* clearFolders;
+	//QLabel* clearFolders;
 
 	int rFileIdx;
 	int numActiveLabels;
+	int mThumbSize = 100;
 };
 
 class DkDirectoryEdit : public QLineEdit {

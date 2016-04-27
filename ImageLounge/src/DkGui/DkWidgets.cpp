@@ -2389,9 +2389,9 @@ void DkFolderLabel::mousePressEvent(QMouseEvent *ev) {
 }
 
 // DkImageLabel --------------------------------------------------------------------
-DkImageLabel::DkImageLabel(const QString& filePath, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+DkImageLabel::DkImageLabel(const QString& filePath, int thumbSize, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	mThumbSize = Settings::param().display().thumbSize;
+	mThumbSize = thumbSize;
 
 	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
@@ -2531,28 +2531,29 @@ void DkRecentFilesWidget::createLayout() {
 	filesLayout->setAlignment(Qt::AlignTop);
 	//filesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-	folderWidget = new QWidget(this);
-	folderLayout = new QVBoxLayout(folderWidget);
+	//folderWidget = new QWidget(this);
+	//folderLayout = new QVBoxLayout(folderWidget);
 	
-	filesTitle = new QLabel(tr("Recent Files"), this);
-	filesTitle->setObjectName("DkRecentFilesTitle");
-	filesTitle->setStyleSheet("QLabel{font-size: 15pt;}" + filesTitle->styleSheet());
+	//filesTitle = new QLabel(tr("Recent Files"), this);
+	//filesTitle->setObjectName("DkRecentFilesTitle");
+	//filesTitle->setStyleSheet("QLabel{font-size: 15pt;}" + filesTitle->styleSheet());
 
-	folderTitle = new QLabel(tr("Recent Folders"), this);
-	folderTitle->setObjectName("DkRecentFilesTitle");
-	folderTitle->setStyleSheet("QLabel{font-size: 15pt;}" + folderTitle->styleSheet());
+	//folderTitle = new QLabel(tr("Recent Folders"), this);
+	//folderTitle->setObjectName("DkRecentFilesTitle");
+	//folderTitle->setStyleSheet("QLabel{font-size: 15pt;}" + folderTitle->styleSheet());
 
 	bgLabel = new QLabel(this);
 	bgLabel->setObjectName("bgLabel");
+	
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(bgLabel);
+	
 	QHBoxLayout* hLayout = new QHBoxLayout(bgLabel);
-
-	hLayout->setAlignment(Qt::AlignTop);
+	hLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	hLayout->addWidget(filesWidget);
-	hLayout->addWidget(folderWidget);
-	hLayout->addStretch();
+	//hLayout->addWidget(folderWidget);
+	//hLayout->addStretch();
 
 	setCustomStyle();
 }
@@ -2561,8 +2562,8 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 
 	setProperty("imageLoaded", imgLoadedStyle);
 	style()->unpolish(bgLabel);
-	style()->unpolish(filesTitle);	// don't know why I need to unpolish every widget on it's own
-	style()->unpolish(folderTitle);
+	//style()->unpolish(filesTitle);	// don't know why I need to unpolish every widget on it's own
+	//style()->unpolish(folderTitle);
 	style()->unpolish(this);
 	ensurePolished();
 }
@@ -2585,53 +2586,55 @@ void DkRecentFilesWidget::hide(bool saveSettings) {
 
 void DkRecentFilesWidget::updateFileList() {
 
-	delete folderLayout;
+	//delete folderLayout;
 	delete filesLayout;
 	rFileIdx = 0;
 	numActiveLabels = 0;
 
 	filesLayout = new QGridLayout(filesWidget);
-	folderLayout = new QVBoxLayout(folderWidget);
+	filesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+	//folderLayout = new QVBoxLayout(folderWidget);
 
 	filesWidget->setFixedHeight(1080);
-	folderWidget->setFixedHeight(1080);
+	//folderWidget->setFixedHeight(1080);
 
 	//filesLayout->setSpacing(10);
-	folderLayout->setSpacing(0);
+	//folderLayout->setSpacing(0);
 
 	for (int idx = 0; idx < fileLabels.size(); idx++) {
 		delete fileLabels.at(idx);
 	}
 
-	for (int idx = 0; idx < folderLabels.size(); idx++) {
-		delete folderLabels.at(idx);
-	}
+	//for (int idx = 0; idx < folderLabels.size(); idx++) {
+	//	delete folderLabels.at(idx);
+	//}
 
-	filesTitle->hide();
-	folderTitle->hide();
+	//filesTitle->hide();
+	//folderTitle->hide();
 
 	fileLabels.clear();
-	folderLabels.clear();
+	//folderLabels.clear();
 	recentFiles.clear();
-	recentFolders.clear();
+	//recentFolders.clear();
 
-	for (int idx = 0; idx < Settings::param().global().recentFiles.size(); idx++)
-		recentFiles.append(QFileInfo(Settings::param().global().recentFiles.at(idx)));
-	for (int idx = 0; idx < Settings::param().global().recentFolders.size(); idx++)
-		recentFolders.append(QFileInfo(Settings::param().global().recentFolders.at(idx)));
+	for (const QString& filePath : Settings::param().global().recentFiles)
+		recentFiles.append(QFileInfo(filePath));
+	//for (int idx = 0; idx < Settings::param().global().recentFolders.size(); idx++)
+	//	recentFolders.append(QFileInfo(Settings::param().global().recentFolders.at(idx)));
 
 	updateFiles();
-	updateFolders();
+	//updateFolders();
 }
 
 void DkRecentFilesWidget::updateFiles() {
 
-	int columns = 3;
+	int columns = 5;//qFloor(width()/(mThumbSize*2.0));
 
 	if (fileLabels.empty()) {
-		filesTitle->show();
-		filesLayout->setRowStretch(recentFiles.size()+2, 100);
-		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
+		//filesTitle->show();
+		//filesLayout->setRowStretch(recentFiles.size()+2, 100);
+		//filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
 	}
 
 	// show current
@@ -2651,8 +2654,8 @@ void DkRecentFilesWidget::updateFiles() {
 		rFileIdx++;
 
 	// load next
-	if ((rFileIdx/(float)columns*Settings::param().display().thumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
-		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx).absoluteFilePath(), this);
+	if ((rFileIdx/(float)columns*mThumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
+		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx).absoluteFilePath(), mThumbSize, this);
 		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
 		
@@ -2668,28 +2671,28 @@ void DkRecentFilesWidget::updateFiles() {
 	update();
 }
 
-void DkRecentFilesWidget::updateFolders() {
-
-	folderTitle->show();
-	folderLayout->addWidget(folderTitle);
-	folderLayout->addSpacerItem(new QSpacerItem(10, 10));
-
-	int cHeight = 0;
-
-	for (DkFileInfo& fi : recentFolders) {
-
-		DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
-		connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
-		folderLayout->addWidget(fLabel);
-		folderLabels.append(fLabel);
-
-		cHeight += fLabel->height();
-		if (cHeight > folderWidget->height())
-			break;
-	}
-
-	folderLayout->addStretch();
-}
+//void DkRecentFilesWidget::updateFolders() {
+//
+//	//folderTitle->show();
+//	//folderLayout->addWidget(folderTitle);
+//	//folderLayout->addSpacerItem(new QSpacerItem(10, 10));
+//
+//	int cHeight = 0;
+//
+//	for (DkFileInfo& fi : recentFolders) {
+//
+//		DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
+//		connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+//		folderLayout->addWidget(fLabel);
+//		folderLabels.append(fLabel);
+//
+//		cHeight += fLabel->height();
+//		if (cHeight > folderWidget->height())
+//			break;
+//	}
+//
+//	folderLayout->addStretch();
+//}
 
 // DkDirectoryEdit --------------------------------------------------------------------
 DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) {
