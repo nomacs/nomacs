@@ -78,7 +78,7 @@ namespace nmc {
 
 void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
 
-#if QT_VERSION > 0x050400
+#if QT_VERSION >= 0x050500
 	if (!Settings::param().app().useLogFile)
 		return;	// should not be called anyhow
 
