@@ -319,6 +319,7 @@ void DkViewPort::setImage(QImage newImg) {
 	// status info
 	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
 	DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()), DkStatusBar::status_format_info);
+	DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x " + QString::number(newImg.height()), DkStatusBar::status_dimension_info);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
