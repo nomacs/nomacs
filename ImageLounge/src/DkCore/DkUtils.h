@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkUtils.h
  Created on:	05.02.2010
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -75,9 +75,13 @@ DllCoreExport QDebug qInfoClean();
 #define qInfoClean() qDebug()
 #endif
 
+#if QT_VERSION <= 0x050500
+#define qInfo() qDebug() 
+#endif
+
 #ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy
-#define dk_degree_str QString::fromLatin1("°")
+#define dk_degree_str QString::fromLatin1("ï¿½")
 
 #else
 
@@ -105,7 +109,7 @@ private:
 public:
 
 #ifdef Q_OS_WIN
-	
+
 	/**
 	 * Logical string compare function.
 	 * This function is used to sort:
@@ -119,7 +123,7 @@ public:
 	 * @param lhs left string
 	 * @param rhs right string
 	 * @return bool true if left string < right string
-	 **/ 
+	 **/
 	static bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
 #endif
 
@@ -148,14 +152,14 @@ public:
 	static void registerFileVersion();
 
 	static void initializeDebug();
-	
+
 	static QString getLogFilePath();
 
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)
 	 * @param ms time to sleep
-	 **/ 
+	 **/
 	static void mSleep(int ms);
 
 	/**
@@ -164,12 +168,12 @@ public:
 	 * at least windows has long (> 10 sec) timeouts if a
 	 * network drive is disconnected and you want to find
 	 * a file on that network. This function calls the normal
-	 * file.exists() but returns false if a timeout > waitMs 
+	 * file.exists() but returns false if a timeout > waitMs
 	 * is reached.
 	 * @param file the file to check
 	 * @param waitMs time in milli seconds to wait for file.exists()
 	 * @return bool true if the file exists
-	 **/ 
+	 **/
 	static bool exists(const QFileInfo& file, int waitMs = 10);
 	static bool checkFile(const QFileInfo& file);
 	static QFileInfo urlToLocalFile(const QUrl& url);
@@ -215,18 +219,18 @@ public:
 		std::string msg = " [";	// matlab...
 
 		int cnt = 0;
-		
+
 		for (int rIdx = 0; rIdx < src.rows; rIdx++) {
-			
+
 			const float* srcPtr = src.ptr<float>(rIdx);
-			
+
 			for (int cIdx = 0; cIdx < src.cols; cIdx++, cnt++) {
-							
+
 
 				msg += DkUtils::stringify(srcPtr[cIdx], 3);
 
 				msg += (cIdx < src.cols-1) ? " " : "; "; // next row matlab?
-				
+
 				if (cnt % 7 == 0)
 					msg += "...\n";
 			}
@@ -416,7 +420,7 @@ public:
 		size_t pos = 0;
 
 		while ((pos = strR.find_first_of(repStr)) < strR.npos) {
-			
+
 			strR.erase(pos, repStr.length());
 		}
 
