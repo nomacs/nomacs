@@ -63,7 +63,8 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
-#ifndef QT_NO_DEBUG_OUTPUT
+#if QT_VERSION >= 0x050500 && !defined(QT_NO_DEBUG_OUTPUT)
+
 QDebug qDebugClean() {
 	 return qDebug().noquote().nospace();
 }
