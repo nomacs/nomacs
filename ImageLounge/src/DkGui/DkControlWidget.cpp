@@ -455,6 +455,11 @@ void DkControlWidget::showPlayer(bool visible) {
 		mPlayer->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
+void DkControlWidget::startSlideshow(bool start) {
+
+	mPlayer->play(start);
+}
+
 void DkControlWidget::showOverview(bool visible) {
 
 	if (!mZoomWidget)

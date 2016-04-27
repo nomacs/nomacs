@@ -545,7 +545,7 @@ void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 		zoom(event->isAutoRepeat() ? 0.9f : 0.5f);
 	}
 
-	qDebug() << "keypress event: " << event->key() << "sc" << shortcut_zoom_in;
+	//qDebug() << "keypress event: " << event->key() << "sc" << shortcut_zoom_in;
 
 	QWidget::keyPressEvent(event);
 }

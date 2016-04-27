@@ -35,6 +35,7 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkStatusBar.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -1320,6 +1321,7 @@ void DkPlayer::init() {
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
+	connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), SIGNAL(triggered()), this, SLOT(togglePlay()));
 }
 
 void DkPlayer::play(bool play) {

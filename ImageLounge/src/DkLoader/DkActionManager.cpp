@@ -461,6 +461,7 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 #endif
 	mViewMenu->addSeparator();
 
+	mViewMenu->addAction(mViewActions[menu_view_slideshow]);
 	mViewMenu->addAction(mViewActions[menu_view_movie_pause]);
 	mViewMenu->addAction(mViewActions[menu_view_movie_prev]);
 	mViewMenu->addAction(mViewActions[menu_view_movie_next]);
@@ -1348,6 +1349,10 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_lock_window]->setStatusTip(QObject::tr("lock the window"));
 	mViewActions[menu_view_lock_window]->setCheckable(true);
 	mViewActions[menu_view_lock_window]->setChecked(false);
+
+	mViewActions[menu_view_slideshow] = new QAction(QObject::tr("&Toggle Slideshow"), parent);
+	mViewActions[menu_view_slideshow]->setStatusTip(QObject::tr("Start/Pause the slideshow"));
+	mViewActions[menu_view_slideshow]->setShortcut(QKeySequence(shortcut_view_slideshow));
 
 	mViewActions[menu_view_movie_pause] = new QAction(mViewIcons[icon_view_movie_play], QObject::tr("&Pause Movie"), parent);
 	mViewActions[menu_view_movie_pause]->setStatusTip(QObject::tr("pause the current movie"));
