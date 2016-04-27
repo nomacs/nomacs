@@ -67,8 +67,13 @@
 #endif
 #endif
 
+#ifndef QT_NO_DEBUG_OUTPUT
 DllCoreExport QDebug qDebugClean();
 DllCoreExport QDebug qInfoClean();
+#else
+#define qDebugClean() qDebug()
+#define qInfoClean() qDebug()
+#endif
 
 #ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy

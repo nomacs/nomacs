@@ -63,6 +63,7 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
+#ifndef QT_NO_DEBUG_OUTPUT
 QDebug qDebugClean() {
 	 return qDebug().noquote().nospace();
 }
@@ -70,6 +71,7 @@ QDebug qDebugClean() {
 QDebug qInfoClean() {
 	return qInfo().noquote().nospace();
 }
+#endif
 
 namespace nmc {
 
