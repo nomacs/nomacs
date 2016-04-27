@@ -54,11 +54,6 @@
 #include <quazip/JlCompress.h>
 #endif
 
-#ifdef WITH_WEBP
-#include "webp/decode.h"
-#include "webp/encode.h"
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -1277,124 +1272,6 @@ void DkBasicLoader::release(bool clear) {
 		mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 
 }
-
-#ifdef WITH_WEBP
-
-bool DkBasicLoader::loadWebPFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
-
-	if (!ba || ba->isEmpty())
-		ba = loadFileToBuffer(filePath);
-	if (ba->isEmpty())
-		return false;
-
-	// retrieve the image features (size, alpha etc.)
-	WebPBitstreamFeatures features;
-	int error = WebPGetFeatures((const uint8_t*)ba->data(), ba->size(), &features);
-	if (error) 
-		return false;
-
-	uint8_t* webData = 0;
-	QImage img;
-
-	if (features.has_alpha) {
-		webData = WebPDecodeBGRA((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
-		if (!webData) return false;
-		img = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
-	}
-	else {
-		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
-		if (!webData) return false;
-		img = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
-	}
-
-	// clone the image so we own the buffer
-	img = img.copy();
-	if (webData) 
-		free(webData);
-
-	if (!img.isNull())
-		setEditImage(img, tr("Original Image"));
-
-	return true;
-}
-
-bool DkBasicLoader::saveWebPFile(const QString& filePath, const QImage& img, int compression) {
-	
-	qDebug() << "format: " << img.format();
-
-	QSharedPointer<QByteArray> ba;
-
-	if (saveWebPFile(img, ba, compression) && ba && !ba->isEmpty()) {
-
-		writeBufferToFile(filePath, ba);
-		return true;
-	}
-
-	return false;
-}
-
-bool DkBasicLoader::saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& ba, int compression, int speed) {
-
-	if (!ba)
-		ba = QSharedPointer<QByteArray>(new QByteArray());
-
-	QImage sImg;
-
-	bool hasAlpha = DkImage::alphaChannelUsed(img);
-
-	// currently, guarantee that the image is a ARGB image
-	if (!hasAlpha && img.format() != QImage::Format_RGB888)
-		sImg = img.convertToFormat(QImage::Format_RGB888);	// for now
-	else 
-		sImg = img;
-
-	WebPConfig config;
-	bool lossless = false;
-	if (compression == -1) {
-		compression = 100;
-		lossless = true;
-	}
-	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, (float)compression)) return false;
-	if (lossless) config.lossless = 1;
-	config.method = speed;
-
-	WebPPicture webImg;
-	if (!WebPPictureInit(&webImg)) 
-		return false;
-	
-	webImg.width = sImg.width();
-	webImg.height = sImg.height();
-	webImg.use_argb = true;		// we never use YUV
-	//webImg.argb_stride = img.bytesPerLine();
-	//webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
-
-	qDebug() << "speed method: " << config.method;
-
-	int errorCode = 0;
-
-	if (hasAlpha) 
-		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), sImg.bytesPerLine());
-	else
-		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), sImg.bytesPerLine());
-
-	if (!errorCode)
-		qDebug() << "import error: " << errorCode;
-
-	// Set up a byte-writing method (write-to-memory, in this case):
-	WebPMemoryWriter writer;
-	WebPMemoryWriterInit(&writer);
-	webImg.writer = WebPMemoryWrite;
-	webImg.custom_ptr = &writer;
-
-	int ok = WebPEncode(&config, &webImg);
-	if (!ok || writer.size == 0) return false;
-
-	ba = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size));	// does a deep copy
-	WebPPictureFree(&webImg);
-
-	return true;
-}
-#endif
 
 #ifdef Q_OS_WIN
 bool DkBasicLoader::saveWindowsIcon(const QString& filePath, const QImage& img) const {

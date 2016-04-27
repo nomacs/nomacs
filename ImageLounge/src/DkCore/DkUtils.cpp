@@ -503,6 +503,24 @@ bool DkUtils::isValid(const QFileInfo& fileInfo) {
 	return hasValidSuffix(fileName);
 }
 
+bool DkUtils::isSavable(const QString & fileName) {
+	
+	QStringList cleanSaveFilters = suffixOnly(Settings::param().app().saveFilters);
+
+	for (const QString& cFilter : cleanSaveFilters) {
+
+		QRegExp exp = QRegExp(cFilter, Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+
+		qDebug() << "checking extension: " << exp;
+
+		if (exp.exactMatch(fileName))
+			return true;
+	}
+
+	return false;
+}
+
 bool DkUtils::hasValidSuffix(const QString& fileName) {
 
 	for (int idx = 0; idx < Settings::param().app().fileFilters.size(); idx++) {
@@ -514,6 +532,21 @@ bool DkUtils::hasValidSuffix(const QString& fileName) {
 	}
 
 	return false;
+}
+
+QStringList DkUtils::suffixOnly(const QStringList & fileFilters) {
+
+	// converts a user readable file filter (e.g. WebP (*.webp)) to a suffix only filter
+	QStringList cleanedFilters;
+
+	for (QString cFilter : fileFilters) {
+		
+		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+		cFilter = cFilter.replace(")", "");
+		cleanedFilters += cFilter.split(" ");
+	}
+
+	return cleanedFilters;
 }
 
 QDateTime DkUtils::getConvertableDate(const QString& date) {

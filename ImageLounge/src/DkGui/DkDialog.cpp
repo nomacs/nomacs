@@ -3922,7 +3922,6 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix) {
 
 	// TODO: remove hierarchy
-
 	QStringList fileFilters = (suffix.isEmpty()) ? Settings::param().app().fileFilters : QStringList(suffix);
 
 	// get all dirs

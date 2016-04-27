@@ -266,15 +266,6 @@ public:
 #endif
 
 	bool loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-#ifdef WITH_WEBP
-	bool loadWebPFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	bool saveWebPFile(const QString& filePath, const QImage& img, int compression);
-	bool saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
-#else
-	bool loadWebPFile(const QString&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) { return false; };	// not supported if webP was not linked
-	bool saveWebPFile(const QString&, const QImage&, int) { return false; };
-	bool saveWebPFile(const QImage&, QSharedPointer<QByteArray>&, int, int = 4) { return false; };
-#endif
 
 #ifdef Q_OS_WIN
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;

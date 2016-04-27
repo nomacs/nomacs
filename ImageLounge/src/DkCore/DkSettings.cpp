@@ -102,7 +102,7 @@ void DkSettings::initFileFilters() {
 
 	// formats we can save
 	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
-	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg)");
+	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg *.jpe)");
 	if (qtFormats.contains("jp2"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
 	if (qtFormats.contains("tif"))		app_p.saveFilters.append("TIFF (*.tif *.tiff)");
 	if (qtFormats.contains("bmp"))		app_p.saveFilters.append("Windows Bitmap (*.bmp)");
@@ -114,10 +114,6 @@ void DkSettings::initFileFilters() {
 	//if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
 	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
-	// internal filters
-#ifdef WITH_WEBP
-	else								app_p.saveFilters.append("WebP (*.webp)");
-#endif
 
 #ifdef Q_OS_WIN
 	if (qtFormats.contains("ico"))		app_p.saveFilters.append("Icon Files (*.ico)");

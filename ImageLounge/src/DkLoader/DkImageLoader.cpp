@@ -745,9 +745,13 @@ bool DkImageLoader::unloadFile() {
 
 		// TODO: Save As dialog for unsupported files
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-			mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+			
+			if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName()))
+				mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+			else
+				saveUserFileAs(mCurrentImage->image(), false);	// we loose all metadata here - right?
 		}
-		else if (answer == QMessageBox::Cancel) {
+		else if (answer != QMessageBox::No) {	// only 'No' will discard the changes
 			return false;
 		}
 	}

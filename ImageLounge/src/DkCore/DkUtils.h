@@ -379,7 +379,9 @@ public:
 	};
 
 	static bool isValid(const QFileInfo& fileInfo);
+	static bool isSavable(const QString& fileName);
 	static bool hasValidSuffix(const QString& fileName);
+	static QStringList suffixOnly(const QStringList& fileFilters);
 	static QDateTime getConvertableDate(const QString& date);
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());
