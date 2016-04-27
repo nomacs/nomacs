@@ -31,6 +31,7 @@
 #include "DkImageStorage.h"
 #include "DkBasicLoader.h"
 #include "DkMetaData.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>
@@ -265,7 +266,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 
 
 	if (!thumb.isNull())
-		qInfo().noquote().nospace() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
+		qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
 
 	return thumb;
 }

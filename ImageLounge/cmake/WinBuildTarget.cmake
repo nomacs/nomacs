@@ -33,6 +33,7 @@ target_link_libraries(${DLL_LOADER_NAME} ${LIB_CORE_NAME} ${EXIV2_LIBRARIES} ${L
 add_library(${DLL_GUI_NAME} SHARED ${GUI_SOURCES} ${NOMACS_UI} ${NOMACS_RCC} ${GUI_HEADERS} ${NOMACS_RC})
 target_link_libraries(${DLL_GUI_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_NAME} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY})
 
+
 add_dependencies(${DLL_LOADER_NAME} ${DLL_CORE_NAME})
 add_dependencies(${DLL_GUI_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME})
 add_dependencies(${BINARY_NAME} ${DLL_GUI_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} ${QUAZIP_DEPENDENCY} ${LIBQPSD_LIBRARY})
@@ -43,7 +44,7 @@ target_include_directories(${DLL_LOADER_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${
 target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
 qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
-qt5_use_modules(${DLL_GUI_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
+qt5_use_modules(${DLL_GUI_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 qt5_use_modules(${DLL_LOADER_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
 
@@ -163,7 +164,7 @@ endforeach(QM)
 # set properties for Visual Studio Projects
 add_definitions(/Zc:wchar_t-)
 set(CMAKE_CXX_FLAGS_DEBUG "/W4 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2 /EHsc -DDK_INSTALL ${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}")
 
 file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp")
 source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})

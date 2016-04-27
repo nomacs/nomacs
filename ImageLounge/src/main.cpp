@@ -107,11 +107,11 @@ int main(int argc, char *argv[]) {
 		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
 
 	qInfo() << "Hi there";
-	qInfo().noquote() << "my name is" << QApplication::organizationName() << "|" << QApplication::applicationName() 
-		<< " v" << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? "portable" : "installed");
+	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
+		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
 	
 	if (!nmc::Settings::param().app().openFilters.empty())
-		qInfo().noquote() << "supported image extensions:" << nmc::Settings::param().app().openFilters[0];
+		qInfoClean() << "supported image extensions:" << nmc::Settings::param().app().openFilters[0];
 
 	qDebug() << "argument count: " << argc;
 

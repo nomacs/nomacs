@@ -198,6 +198,8 @@ NMC_INSTALL()
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
+message(STATUS "opencv libs: ${OpenCV_LIBS}")
+
 if(UNIX AND ENABLE_PLUGINS)
 	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 		SET(NOMACS_FOUND true)

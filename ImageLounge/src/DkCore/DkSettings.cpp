@@ -219,7 +219,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			qDebug().noquote().nospace() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}
@@ -254,7 +254,7 @@ void DkSettings::load() {
 	setToDefaultSettings();
 
 	QSettings& settings = Settings::instance().getSettings();
-	qInfo().noquote() << "loading settings from: " << settings.fileName();
+	qInfoClean() << "loading settings from: " << settings.fileName();
 
 	settings.beginGroup("AppSettings");
 	

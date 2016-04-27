@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkUtils.cpp
  Created on:	09.03.2010
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -63,11 +63,22 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
+#ifndef QT_NO_DEBUG_OUTPUT
+QDebug qDebugClean() {
+	 return qDebug().noquote().nospace();
+}
+
+QDebug qInfoClean() {
+	return qInfo().noquote().nospace();
+}
+#endif
+
 namespace nmc {
 
 
 void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
 
+#if QT_VERSION > 0x050400
 	if (!Settings::param().app().useLogFile)
 		return;	// should not be called anyhow
 
@@ -103,6 +114,7 @@ void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
 
 	QTextStream ts(&outFile);
 	ts << txt << endl;
+#endif
 }
 
 
@@ -144,7 +156,7 @@ double DkMemory::getTotalMemory() {
 double DkMemory::getFreeMemory() {
 
 	double mem = -1;
-	
+
 
 #ifdef Q_OS_WIN
 
@@ -160,7 +172,7 @@ double DkMemory::getFreeMemory() {
 #elif defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
 
 	struct sysinfo info;
-	
+
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
@@ -196,7 +208,7 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #else // !Q_OS_WIN
 
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
-	
+
 	return naturalCompare(lhs, rhs, Qt::CaseInsensitive);
 }
 
@@ -232,7 +244,7 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
 		if (s1[sIdx] == '0' || s2[sIdx] == '0') {
 
 			for (int idx = sIdx-1; idx >= 0; idx--) {
-				
+
 				if (s1[idx] != '0' && s1[idx].isDigit()) {	// find the last non-zero number (just check one string they are the same)
 					prefix = s1[idx];
 					break;
@@ -307,7 +319,7 @@ bool DkUtils::compRandom(const QFileInfo&, const QFileInfo&) {
 void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 
 	QDir qmDir = qApp->applicationDirPath();
-	
+
 	// find all translations
 	QStringList translationDirs = Settings::param().getTranslationDirs();
 	QStringList fileNames;
@@ -335,7 +347,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 		langCombo->addItem(language);
 		languages << locale;
 	}
-	
+
 	langCombo->setCurrentIndex(languages.indexOf(Settings::param().global().language));
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
@@ -409,7 +421,7 @@ void DkUtils::initializeDebug() {
 }
 
 QString DkUtils::getLogFilePath() {
-	
+
 	QString logPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 	QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss");
 
@@ -446,7 +458,7 @@ bool DkUtils::exists(const QFileInfo& file, int waitMs) {
 	//future.cancel();
 
 	// assume file is not existing if it took longer than waitMs
-	return (future.isFinished()) ? future : false;	
+	return (future.isFinished()) ? future : false;
 }
 
 bool DkUtils::checkFile(const QFileInfo& file) {
@@ -474,7 +486,7 @@ QFileInfo DkUtils::urlToLocalFile(const QUrl& url) {
  * Note: this function only checks for a valid extension.
  * @param fileInfo the file info of the file to be validated.
  * @return bool true if the file format is supported.
- **/ 
+ **/
 bool DkUtils::isValid(const QFileInfo& fileInfo) {
 
 	printf("accepting file...\n");
@@ -663,7 +675,7 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 
 // code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
 #ifdef Q_OS_WIN
-	
+
 	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
 	winPath.append(1, L'\0');	// path string must be double nul-terminated
 
@@ -675,7 +687,7 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	shfos.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT; // use the recycle bin
 
 	const int retVal = SHFileOperationW(&shfos);
-	
+
 	return retVal == 0;		// true if no error code
 
 //#elif Q_OS_LINUX
@@ -784,7 +796,7 @@ QString DkUtils::cleanFraction(const QString& frac) {
 			qDebug() << frac << " >> " << cleanFrac;
 		}
 	}
-	
+
 	return cleanFrac;
 }
 
@@ -794,7 +806,7 @@ QString DkUtils::resolveFraction(const QString& frac) {
 	QStringList sList = frac.split('/');
 
 	if (sList.size() == 2) {
-	
+
 		bool nok = false;
 		bool dok = false;
 		int nom = sList[0].toInt(&nok);
@@ -838,16 +850,16 @@ DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString&
  * The pattern is:
  * <d:3> is replaced with the cIdx value (:3 -> zero padding up to 3 digits)
  * <c:0> int (0 = no change, 1 = to lower, 2 = to upper)
- * 
+ *
  * if it ends with .jpg we assume a fixed extension.
  * .<old> is replaced with the fileName extension.
- * 
+ *
  * So a filename could look like this:
  * some-fixed-name-<c:1><d:3>.<old>
  * @return QString
- **/ 
+ **/
 QString DkFileNameConverter::getConvertedFileName() {
-	
+
 	QString newFileName = mPattern;
 	QRegExp rx("<.*>");
 	rx.setMinimal(true);
@@ -874,7 +886,7 @@ QString DkFileNameConverter::getConvertedFileName() {
 QString DkFileNameConverter::resolveFilename(const QString& tag) const {
 
 	QString result = mFileName;
-	
+
 	// remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
 	result = result.replace("." + QFileInfo(mFileName).suffix(), "");
 
@@ -1010,7 +1022,7 @@ TreeItem* TreeItem::find(const QVariant& value, int column) {
 	if (column < itemData.size() && itemData[column] == value)
 		return this;
 
-	for (int idx = 0; idx < childItems.size(); idx++) 
+	for (int idx = 0; idx < childItems.size(); idx++)
 		if (TreeItem* child = childItems[idx]->find(value, column))
 			return child;
 
