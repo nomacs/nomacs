@@ -1,6 +1,6 @@
 # nomacs cmake file for a windows build
 
-# load pathes from the user file if exists 
+# load pathes from the user file if exists
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.txt)
 endif()
@@ -29,7 +29,7 @@ elseif (MSVC14)
 	else()
 		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/Win32/" )
 	endif()
-	
+
 else ()
 	# search for exiv2
 	if(CMAKE_CL_64)
@@ -46,22 +46,22 @@ find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/libexiv2.lib"
 									"DebugDLL/libexiv2d.dll"
 				PATHS ${EXIV_SEARCH_PATH}
 				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
-				
-find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-				PATHS "../exiv2-0.25/include" 
+
+find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp"
+				PATHS "../exiv2-0.25/include"
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 
 # copy files to the build directory
 if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll AND 
-	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND 
+	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll AND
+	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND
 	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
-	if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll AND 
+	if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll AND
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll)
 		if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll AND
 			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll )
-	
+
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs)
@@ -75,7 +75,7 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-			
+
 			set(EXIV2_LIBRARIES optimized libexiv2.lib debug libexiv2.lib)
 			set(EXIV2_LIBRARY_DIRS "")
 			set(EXIV2_FOUND true)
@@ -88,7 +88,7 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
 	endif()
 else()
 	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexiv2.dll, ReleaseDLL/libexiv2.lib, DebugDLL/libexiv2d.dll and DebugDLL/libexiv2d.lib")
-endif()	
+endif()
 
 # search for opencv
 unset(OpenCV_LIB_DIR_DBG CACHE)
@@ -103,10 +103,10 @@ unset(OpenCV_DIR)
 
 if(ENABLE_OPENCV)
 	find_package(OpenCV REQUIRED core imgproc)
-	
+
 	SET(OpenCV_LIBRARY_DIRS ${OpenCV_LIBRARY_DIRS} ${OpenCV_LIB_DIR_DBG} ${OpenCV_LIB_DIR_OPT} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_DBG} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_OPT})
 	if(NOT OpenCV_FOUND)
-		message(FATAL_ERROR "OpenCV not found.") 
+		message(FATAL_ERROR "OpenCV not found.")
 	else()
 		add_definitions(-DWITH_OPENCV)
 	endif()
@@ -114,12 +114,12 @@ if(ENABLE_OPENCV)
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
-  
+
 	# unset include directories since OpenCV sets them global
 	get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
 	list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
 	set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
-  
+
 endif(ENABLE_OPENCV)
 
 # search for libraw
@@ -148,8 +148,8 @@ if(ENABLE_RAW)
 								PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	if(EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
-		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
-		EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND 
+		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND
+		EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND
 		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
 
 			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
@@ -202,8 +202,8 @@ if(ENABLE_TIFF)
 	else()
 		message(FATAL_ERROR, "could not locate zlib liberaries from OpenCV. Needs OpenCV_DIR which contains /3rdparty/lib/Release/zlib.lib, /3rdparty/lib/Debug/zlibd.lib ")
 	endif()
-  set(TIFF_LIBRARIES optimized "libtiff;zlib" debug "libtiffd;zlibd")		
-  
+  set(TIFF_LIBRARIES optimized "libtiff;zlib" debug "libtiffd;zlibd")
+
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
 	else(NOT EXISTS ${TIFF_CONFIG_DIR})
@@ -221,7 +221,7 @@ if(ENABLE_UPNP)
 		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
 		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)			
+		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
 		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 
@@ -231,8 +231,8 @@ if(ENABLE_UPNP)
 		add_definitions(-DWITH_UPNP)
 	else()
 		message(FATAL_ERROR "HUpnp not found. Mandatory when UPNP is enabled. You have to compile herqq")
-	endif(HUpnp_FOUND)	
-endif(ENABLE_UPNP)	
+	endif(HUpnp_FOUND)
+endif(ENABLE_UPNP)
 
 
 # these variables need to be set before adding subdirectory with projects
@@ -247,17 +247,17 @@ unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
 
 if(ENABLE_QUAZIP)
-	# QT_ROOT needed by QuaZip cmake 
+	# QT_ROOT needed by QuaZip cmake
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7)
 	# add build directory to cmake path - otherwise the QuaZipConfig.cmake is no longer found
-	SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_BINARY_DIR}) 
-  
+	SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_BINARY_DIR})
+
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs)
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs)
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/libs)
 
 	find_package(QuaZip)
-	if(QUAZIP_FOUND)		
+	if(QUAZIP_FOUND)
 		add_definitions(-DWITH_QUAZIP)
 		set(QUAZIP_DEPENDENCY "quazip")
 	else()
@@ -268,13 +268,3 @@ endif(ENABLE_QUAZIP)
 #add libqpsd
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")
-
-#add webp
-unset(WEBP_LIBRARY CACHE)
-unset(WEBP_INCLUDE_DIR CACHE)
-if(ENABLE_WEBP)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp)
-	set(WEBP_LIBRARY "webp")
-	set(WEBP_INCLUDEDIR "${CMAKE_SOURCE_DIR}/3rdparty/libwebp/src")
-	add_definitions(-DWITH_WEBP)
-endif(ENABLE_WEBP)

@@ -54,7 +54,6 @@ include("cmake/Utils.cmake")
 # different compile options
 option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
 option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
-option(ENABLE_WEBP "Compile with webP support (webP)" OFF)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
@@ -143,7 +142,6 @@ include_directories (
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
-	${WEBP_INCLUDEDIR}
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
 	${HUPNP_INCLUDE_DIR}
