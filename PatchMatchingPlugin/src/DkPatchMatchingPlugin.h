@@ -84,7 +84,7 @@ class DkControlPoint : public QWidget {
 	Q_OBJECT
 
 public:
-
+	
 	DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent = nullptr);
 	virtual ~DkControlPoint() {};
 
@@ -100,6 +100,15 @@ public:
 	{
 		return mWorldMatrix->inverted().map(pos);
 	}
+
+	enum class type
+	{
+		square,
+		circle
+	};
+
+	void setType(type t);
+	void drawPoint(QPainter* painter, int size);
 signals:
 	void moved();
 
@@ -115,6 +124,7 @@ protected:
 	QPointF initialPos; 
 	QPointF posGrab;
 	QPointF mPosition;
+	type mType;
 	//QSize size;
 };
 
@@ -163,7 +173,7 @@ protected:
 	QPen pen;
 	QPointF lastPoint;
 	bool panning;
-	DkPatchMatchingToolBar* paintToolbar;
+	DkPatchMatchingToolBar* mtoolbar;
 	QCursor defaultCursor;
 
 	bool polygonFinished;

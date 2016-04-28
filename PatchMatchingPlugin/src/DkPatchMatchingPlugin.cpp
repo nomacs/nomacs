@@ -120,16 +120,16 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
-	qDebug() << "[PAINT VIEWPORT] deleted...";
+	qDebug() << "[VIEWPORT] deleted...";
 	
 	saveSettings();
 
 	// active deletion since the MainWindow takes ownership...
 	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
 	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-	if (paintToolbar) {
-		delete paintToolbar;
-		paintToolbar = 0;
+	if (mtoolbar) {
+		delete mtoolbar;
+		mtoolbar = nullptr;
 	}
 }
 
@@ -153,7 +153,6 @@ void DkPatchMatchingViewPort::loadSettings() {
 	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
 	pen.setWidth(settings.value("penWidth", 15).toInt());
 	settings.endGroup();
-
 }
 
 void DkPatchMatchingViewPort::init() {
@@ -171,21 +170,21 @@ void DkPatchMatchingViewPort::init() {
 	pen.setBrush(Qt::NoBrush);
 	pen.setWidth(1);
 	
-	paintToolbar = new DkPatchMatchingToolBar(tr("Paint Toolbar"), this);
+	mtoolbar = new DkPatchMatchingToolBar(tr("Paint Toolbar"), this);
 
-	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
-	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
-	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
-	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
-	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
 
-	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
+	connect(mtoolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
 	DkPluginViewPort::init();
 
 	loadSettings();
-	paintToolbar->setPenColor(pen.color());
-	paintToolbar->setPenWidth(pen.width());
+	mtoolbar->setPenColor(pen.color());
+	mtoolbar->setPenWidth(pen.width());
 }
 
 void DkPatchMatchingViewPort::undoLastPaint() {
@@ -214,10 +213,13 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 		QPointF point = mapToViewport(event->pos());
 			
 		auto cp = new DkControlPoint(point, mWorldMatrix, this);
-		QRect cpr(QPoint(), QSize(100, 100));
 		cp->setVisible(true);
-		cp->setGeometry(cpr);
+		
 		connect(cp, SIGNAL(moved()), this, SLOT(update()));
+
+		if (controlPoints.empty()) {
+			cp->setType(DkControlPoint::type::circle);
+		}
 		controlPoints << cp;
 				
 		update();
@@ -338,7 +340,7 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 void DkPatchMatchingViewPort::applyChangesAndClose() {
 	polygonFinished = true;
 	//cancelTriggered = false;
-	//emit closePlugin();
+	emit closePlugin();
 }
 
 void DkPatchMatchingViewPort::discardChangesAndClose() {
@@ -361,8 +363,8 @@ bool DkPatchMatchingViewPort::isCanceled() {
 
 void DkPatchMatchingViewPort::setVisible(bool visible) {
 
-	if (paintToolbar)
-		emit showToolbar(paintToolbar, visible);
+	if (mtoolbar)
+		emit showToolbar(mtoolbar, visible);
 
 	DkPluginViewPort::setVisible(visible);
 }
@@ -377,25 +379,47 @@ void DkControlPoint::draw(QPainter* painter)
 	QPen pen;
 	pen.setWidth(1);
 	pen.setColor(QColor(255, 255, 0, 100));
-
-	QRectF visibleRect(QPointF(), QSizeF(5, 5));
-	QRectF whiteRect(QPointF(), QSize(7, 7));
-	visibleRect.moveCenter(QRectF(QPointF(), size()).center());
-	whiteRect.moveCenter(QRectF(QPointF(), size()).center());
+	painter->setRenderHint(QPainter::HighQualityAntialiasing);
+	painter->setRenderHint(QPainter::Antialiasing);
 
 	// draw the control point
 	painter->setPen(penNoStroke);
 	painter->setBrush(QColor(0, 0, 0, 0));
-	painter->drawRect(geometry());	// invisible rect for mouseevents...
-									//painter->setPen(pen);
-	painter->setBrush(QColor(255, 255, 255, 100));
-	painter->drawRect(whiteRect);
-	painter->setBrush(QColor(0, 0, 0));
-	painter->drawRect(visibleRect);
+	drawPoint(painter, size().width());	// invisible rect for mouseevents...
 	
+	painter->setBrush(QColor(255, 255, 255, 100));
+	drawPoint(painter, 20);
+
+	painter->setBrush(QColor(0, 0, 0));
+	drawPoint(painter, 18);
+	
+	//draw bar
 	painter->setBrush(QColor(0,0,255,60));
-	painter->drawRect(QRect(QPoint(), size()));
+	drawPoint(painter, size().width());
 }
+
+void DkControlPoint::drawPoint(QPainter* painter, int size)
+{
+	QRectF rect(QPointF(), QSize(size, size));
+	rect.moveCenter(QRectF(QPointF(), this->size()).center());
+
+	switch (mType) {
+		case type::square: {
+			painter->drawRect(rect);
+			break;
+		}
+
+		case type::circle: {
+			painter->drawEllipse(rect);
+			break;
+		}
+
+		default: {
+			painter->drawRect(rect);
+			break;
+		}
+	}
+}	
 
 void DkControlPoint::mousePressEvent(QMouseEvent* event)
 {
@@ -444,9 +468,18 @@ void DkControlPoint::setPosition(const QPointF& point)
 	mPosition = point;
 }
 
+void DkControlPoint::setType(type t)
+{
+	mType = t;
+}
+
+
+
 	DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent)
 	: QWidget(parent), mWorldMatrix(worldMatrix), mPosition(center)
 {
+	QRect cpr(QPoint(), QSize(100, 100));
+	setGeometry(cpr);
 	setMouseTracking(true);
 	setCursor(Qt::CrossCursor);
 }
