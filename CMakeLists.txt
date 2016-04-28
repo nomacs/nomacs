@@ -28,6 +28,7 @@ OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
+OPTION (ENABLE_PATCHMATCHING "Compile Patch Matching Plugin" OFF)
 
 NMC_PREPARE_PLUGIN()
 
@@ -98,3 +99,7 @@ ENDIF(ENABLE_INSTA_LIKE_FILTER)
 IF (ENABLE_MARS)
     add_subdirectory(MarsPlugin)
 ENDIF (ENABLE_MARS)
+
+IF (ENABLE_PATCHMATCHING)
+    add_subdirectory(PatchMatchingPlugin)
+ENDIF (ENABLE_PATCHMATCHING)
