@@ -38,7 +38,7 @@ namespace nmp {
 *	Constructor
 **/
 DkPatchMatchingPlugin::DkPatchMatchingPlugin() 
-	: viewport(nullptr) {
+	: mViewport(nullptr) {
 }
 
 /**
@@ -76,15 +76,11 @@ QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QSt
 		return image;
 
 	//for a viewport plugin runID and image are null
-	if (viewport) {
+	if (mViewport) {
+		if (!mViewport->isCanceled())
+			image->setImage(mViewport->getPaintedImage(), tr("Drawings Added"));
 
-		DkPatchMatchingViewPort* paintViewport = dynamic_cast<DkPatchMatchingViewPort*>(viewport);
-
-		if (!paintViewport->isCanceled()) 
-			image->setImage(paintViewport->getPaintedImage(), tr("Drawings Added"));
-
-		viewport->setVisible(false);
-		
+		mViewport->setVisible(false);
 	}
 	
 	return image;
@@ -95,25 +91,17 @@ QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QSt
 **/
 nmc::DkPluginViewPort* DkPatchMatchingPlugin::getViewPort() {
 
-	if (!viewport) {
-		viewport = new DkPatchMatchingViewPort();
+	if (!mViewport) {
+		mViewport = new DkPatchMatchingViewPort();			
 	}
-	return viewport;
-}
-
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkPatchMatchingPlugin::viewportDestroyed() {
-
-	viewport = 0;
+	return mViewport;
 }
 
 void DkPatchMatchingPlugin::deleteViewPort() {
 
-	if (viewport) {
-		viewport->deleteLater();
-		viewport = 0;
+	if (mViewport) {
+		mViewport->deleteLater();
+		mViewport = nullptr;
 	}
 }
 
@@ -223,25 +211,20 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
 	//QWidget::mousePressEvent(event);
 	if (event->buttons() == Qt::LeftButton && parent()) {
-
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if(viewport) {
-			QPointF point = mapToImage(event->pos());
+		QPointF point = mapToViewport(event->pos());
 			
-			auto cp = new DkControlPoint(point, this, windowFlags());
-			QRect cpr(QPoint(), QSize(100, 100));
-			cp->setVisible(true);
-			cp->setGeometry(cpr);
+		auto cp = new DkControlPoint(point, mWorldMatrix, this);
+		QRect cpr(QPoint(), QSize(100, 100));
+		cp->setVisible(true);
+		cp->setGeometry(cpr);
+		connect(cp, SIGNAL(moved()), this, SLOT(update()));
+		controlPoints << cp;
 				
-			controlPoints << cp;
-				
-			update();
-		}
+		update();
 	}
 }
 
 void DkPatchMatchingViewPort::mouseMoveEvent(QMouseEvent *event) {
-
 	// panning -> redirect to viewport
 	if (event->modifiers() == nmc::Settings::param().global().altMod ||
 		panning) {
@@ -253,7 +236,6 @@ void DkPatchMatchingViewPort::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
 	// panning -> redirect to viewport
 	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
 		setCursor(defaultCursor);
@@ -269,7 +251,7 @@ void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 	painter.setBrush(QColor(255, 0, 0, 40));
 	painter.drawRect(QRect(QPoint(), size()));
 
-	auto transform = (*mImgMatrix) * (*mWorldMatrix);
+	auto transform = (*mWorldMatrix);//(*mImgMatrix)
 	QPolygonF poly;
 	for (auto&& p: controlPoints) {
 		QRectF g = p->geometry();
@@ -420,6 +402,7 @@ void DkControlPoint::mousePressEvent(QMouseEvent* event)
 	if (event->buttons() == Qt::LeftButton) {
 		posGrab = event->globalPos();
 		initialPos = truPosition();
+		update();
 	}
 	qDebug() << "mouse pressed control point";
 	//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
@@ -428,19 +411,16 @@ void DkControlPoint::mousePressEvent(QMouseEvent* event)
 void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
 {
 	if (event->buttons() == Qt::LeftButton) {
-		mPosition = initialPos + event->globalPos() - posGrab;
+		mPosition = initialPos + mapToViewport(event->globalPos()) - mapToViewport(posGrab);
 		update();
-		//setGeometry(pt.x(),pt.y(),size().width(),size().height());
-		//emit ctrlMovedSignal(mPosition, event->modifiers());
+		emit moved();
 		qDebug() << "accepted false...";
 	}
-
-	QWidget::mouseMoveEvent(event);
 }
 
 void DkControlPoint::mouseReleaseEvent(QMouseEvent* event)
-{
-	QWidget::mouseReleaseEvent(event);
+{	
+	update();
 }
 
 void DkControlPoint::enterEvent(QEvent* event)
@@ -459,12 +439,15 @@ const QPointF& DkControlPoint::truPosition() const
 	return mPosition;
 }
 
-	DkControlPoint::DkControlPoint(const QPointF& center, QWidget* parent, Qt::WindowFlags flags)
-	: QWidget(parent), mPosition(center)
+void DkControlPoint::setPosition(const QPointF& point)
+{
+	mPosition = point;
+}
+
+	DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent)
+	: QWidget(parent), mWorldMatrix(worldMatrix), mPosition(center)
 {
 	setMouseTracking(true);
-	//resize(size);
-	//setGeometry(center.x() - size.width()/2.0, center.y() - size.height()/2.0, size.width(), size.height());
 	setCursor(Qt::CrossCursor);
 }
 
