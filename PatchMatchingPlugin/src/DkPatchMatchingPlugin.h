@@ -72,7 +72,8 @@ public:
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort();
 	void deleteViewPort();
-
+	bool closesOnImageChange() const override;
+	
 protected:
 	nmc::DkPluginViewPort* viewport;
 
@@ -94,6 +95,7 @@ public:
 		return QPointF(size().width()*0.5f, size().height()*0.5f);
 	};
 
+	const QPointF& truPosition() const;
 signals:
 	void ctrlMovedSignal(const QPointF&, Qt::KeyboardModifiers);
 
@@ -104,9 +106,11 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void enterEvent(QEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
+	
 
 	QPointF initialPos; 
 	QPointF posGrab;
+	QPointF mPosition;
 	//QSize size;
 };
 
@@ -140,7 +144,7 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
-	virtual void init();
+	void init();
 
 	void loadSettings();
 	void saveSettings() const;
