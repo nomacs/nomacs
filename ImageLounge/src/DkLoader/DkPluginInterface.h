@@ -135,6 +135,10 @@ class DkViewPortInterface : public DkPluginInterface {
 public:
 
 	virtual int interfaceType()  const {return interface_viewport;};
+	
+	// return false here if you have a simple viewport (no children)
+	// and you want the user to be able to e.g. scroll thumbs while your plugin is active
+	virtual bool hideHUD() const { return true; };
 
 	virtual DkPluginViewPort* getViewPort() = 0;
 	virtual void deleteViewPort() = 0;
@@ -161,10 +165,10 @@ public:
 	virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {	};	// dummy
 
 signals:
-	void closePlugin(bool askForSaving = false);
-	void showToolbar(QToolBar* toolbar, bool show);
-	void loadFile(const QString& filePath);
-	void loadImage(const QImage& image);
+	void closePlugin(bool askForSaving = false) const;
+	void showToolbar(QToolBar* toolbar, bool show) const;
+	void loadFile(const QString& filePath) const;
+	void loadImage(const QImage& image) const;
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) {
@@ -207,4 +211,4 @@ protected:
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.2")
 Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.2")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.2")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.3")

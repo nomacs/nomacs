@@ -118,6 +118,7 @@ public:
 
 	void stopLabels();
 	void showWidgetsSettings();
+	void setWidgetsVisible(bool visible, bool saveSettings = false);
 
 	void settingsChanged();
 

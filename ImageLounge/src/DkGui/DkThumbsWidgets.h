@@ -82,7 +82,7 @@ public:
 		return moveImageTimer;
 	};
 
-	void setVisible(bool visible);
+	void setVisible(bool visible, bool saveSettings = true);
 
 	void setWindowPosition(int position) {
 
