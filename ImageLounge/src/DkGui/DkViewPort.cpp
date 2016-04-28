@@ -994,33 +994,18 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		&& mLoader
 		&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
 
-			qDebug() << mLoader->filePath();
+			QMimeData* mimeData = createMime();
 
-			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
-
-			QList<QUrl> urls;
-			urls.append(fileUrl);
-
-			// who deletes me?
-			QMimeData* mimeData = new QMimeData();
 			QPixmap pm;
-				
-			if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited())
-				mimeData->setUrls(urls);
-			else if (!getImage().isNull()) {
-				mimeData->setImageData(getImage());
-			}
-
 			if (!getImage().isNull())
 				pm = QPixmap::fromImage(getImage()).scaledToHeight(73, Qt::SmoothTransformation);
-
+			if (pm.width() > 130)
+				pm = pm.scaledToWidth(100, Qt::SmoothTransformation);
 
 			QDrag* drag = new QDrag(this);
 			drag->setMimeData(mimeData);
 			drag->setPixmap(pm);
 			drag->exec(Qt::CopyAction);
-			qDebug() << "creating drag: " << fileUrl;
 	}
 
 	// send to parent
@@ -1218,10 +1203,16 @@ void DkViewPort::copyPixelColorValue() {
 
 void DkViewPort::copyImage() {
 
-	qDebug() << "copying...";
+	QMimeData* mimeData = createMime();
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+}
+
+QMimeData * DkViewPort::createMime() const {
 
 	if (getImage().isNull() || !mLoader)
-		return;
+		return 0;
 
 	QUrl fileUrl = QUrl("file:///" + mLoader->filePath());
 
@@ -1236,11 +1227,7 @@ void DkViewPort::copyImage() {
 		mimeData->setImageData(getImage());
 
 	mimeData->setText(mLoader->filePath());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-
-	qDebug() << "copying: " << fileUrl;
+	return mimeData;
 }
 
 void DkViewPort::copyImageBuffer() {
