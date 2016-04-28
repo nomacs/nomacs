@@ -23,9 +23,10 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
 
   # Linux dependencies
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi
+  #- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi # Qt 5.5.1 - switching back to Qt 5.2.1
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt55tools qt55svg qt55base libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
+  # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt55tools qt55svg qt55base libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi # old libs for using qt 5.5 above
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/"; fi
 
   - mkdir build
@@ -34,4 +35,3 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
-  
