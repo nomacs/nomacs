@@ -55,6 +55,7 @@
 #endif
 
 class QVBoxLayout;
+class QMimeData;
 
 namespace nmc {
 
@@ -167,6 +168,7 @@ public slots:
 	void copyPixelColorValue();
 	void copyImageBuffer();
 	void copyImage();
+	QMimeData* createMime() const;
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(const QImage& newImg);

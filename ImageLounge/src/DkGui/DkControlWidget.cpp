@@ -394,6 +394,18 @@ void DkControlWidget::showWidgetsSettings() {
 	showScroller(mFolderScroll->getCurrentDisplaySetting());
 }
 
+void DkControlWidget::setWidgetsVisible(bool visible, bool saveSettings) {
+
+	mFilePreview->setVisible(visible, saveSettings);
+	mFolderScroll->setVisible(visible, saveSettings);
+	mMetaDataInfo->setVisible(visible, saveSettings);
+	mFileInfoLabel->setVisible(visible, saveSettings);
+	mPlayer->setVisible(visible, saveSettings);
+	mZoomWidget->setVisible(visible, saveSettings);
+	mHistogram->setVisible(visible, saveSettings);
+	mCommentWidget->setVisible(visible, saveSettings);
+}
+
 void DkControlWidget::showPreview(bool visible) {
 
 	if (!mFilePreview)
@@ -634,6 +646,15 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 		connect(mPluginViewport, SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)), Qt::UniqueConnection);
 		connect(mPluginViewport, SIGNAL(loadImage(const QImage&)), mViewport, SLOT(setImage(const QImage&)), Qt::UniqueConnection);
 	}
+
+	setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());
+	
+	if (pluginWidget->hideHUD() && !removeWidget) {
+		setWidgetsVisible(false, false);
+	}
+	else if (pluginWidget->hideHUD())
+		showWidgetsSettings();
+
 
 	mViewport->setPaintWidget(dynamic_cast<QWidget*>(mPluginViewport), removeWidget);
 	

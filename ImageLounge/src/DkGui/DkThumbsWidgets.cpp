@@ -853,11 +853,11 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thu
 	update();
 }
 
-void DkFilePreview::setVisible(bool visible) {
+void DkFilePreview::setVisible(bool visible, bool saveSettings) {
 
 	emit showThumbsDockSignal(visible);
 
-	DkWidget::setVisible(visible);
+	DkWidget::setVisible(visible, saveSettings);
 }
 
 // DkThumbLabel --------------------------------------------------------------------

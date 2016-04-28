@@ -135,6 +135,10 @@ class DkViewPortInterface : public DkPluginInterface {
 public:
 
 	virtual int interfaceType()  const {return interface_viewport;};
+	
+	// return false here if you have a simple viewport (no children)
+	// and you want the user to be able to e.g. scroll thumbs while your plugin is active
+	virtual bool hideHUD() const { return true; };
 
 	virtual DkPluginViewPort* getViewPort() = 0;
 	virtual void deleteViewPort() = 0;
@@ -146,8 +150,8 @@ class DllLoaderExport DkPluginViewPort : public QWidget {
 public:
 	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0) : QWidget(parent, flags) {
 		
-		// >DIR: I have removed the init here (it was called twice before due to derived classes) [16.10.2013 markus]
-		//init();
+		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
@@ -161,10 +165,10 @@ public:
 	virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {	};	// dummy
 
 signals:
-	void closePlugin(bool askForSaving = false);
-	void showToolbar(QToolBar* toolbar, bool show);
-	void loadFile(const QString& filePath);
-	void loadImage(const QImage& image);
+	void closePlugin(bool askForSaving = false) const;
+	void showToolbar(QToolBar* toolbar, bool show) const;
+	void loadFile(const QString& filePath) const;
+	void loadImage(const QImage& image) const;
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) {
@@ -191,13 +195,6 @@ protected:
 		return mWorldMatrix->inverted().map(pos);
 	};
 
-	virtual void init() {
-
-		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
-		//setMouseTracking(true);
-	};
-
 	QTransform* mWorldMatrix = 0;
 	QTransform* mImgMatrix = 0;
 };
@@ -207,4 +204,4 @@ protected:
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.2")
 Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.2")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.2")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.3")

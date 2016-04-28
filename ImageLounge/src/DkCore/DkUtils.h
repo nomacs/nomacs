@@ -79,15 +79,8 @@ DllCoreExport QDebug qInfoClean();
 #define qInfo() qDebug() 
 #endif
 
-#ifdef Q_OS_WIN
 // fixes Qt's damn no latin1 on tr() policy
-#define dk_degree_str QString::fromLatin1("°")
-
-#else
-
-#define dk_degree_str "\u00B0"
-
-#endif
+#define dk_degree_str QChar(0x00B0)
 
 // Qt defines
 class QComboBox;
