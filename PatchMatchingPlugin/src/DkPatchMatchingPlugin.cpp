@@ -180,8 +180,6 @@ void DkPatchMatchingViewPort::init() {
 
 	connect(mtoolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
-	DkPluginViewPort::init();
-
 	loadSettings();
 	mtoolbar->setPenColor(pen.color());
 	mtoolbar->setPenWidth(pen.width());

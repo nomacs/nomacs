@@ -60,7 +60,7 @@ class DkThresholdToolBar;
 class DkThresholdPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-		Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkThresholdPlugin/3.2" FILE "DkThresholdPlugin.json")
+		Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkThresholdPlugin/3.3" FILE "DkThresholdPlugin.json")
 
 public:
 
@@ -69,6 +69,7 @@ public:
 
 	QString id() const override;
     QImage image() const override;
+	bool hideHUD() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const;
 	nmc::DkPluginViewPort* getViewPort();

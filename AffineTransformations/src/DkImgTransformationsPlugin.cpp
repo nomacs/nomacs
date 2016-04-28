@@ -72,7 +72,10 @@ QString DkImgTransformationsPlugin::id() const {
 QImage DkImgTransformationsPlugin::image() const {
 
    return QImage(":/nomacsPluginImgTrans/img/description.png");
-};
+}
+bool DkImgTransformationsPlugin::hideHUD() const {
+	return false;
+}
 
 /**
 * Main function: runs plugin based on its ID
@@ -184,7 +187,6 @@ void DkImgTransformationsViewPort::init() {
 	connect(imgTransformationsToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(imgTransformationsToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 
-	nmc::DkPluginViewPort::init();
 }
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos) {
