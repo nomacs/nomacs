@@ -80,16 +80,17 @@ protected:
 
 };
 
+
 class DkControlPoint : public QWidget {
 	Q_OBJECT
 
 public:
 	
-	DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent = nullptr);
+	DkControlPoint(const QPointF& center, QTransform* worldMatrix, std::shared_ptr<QTransform> local, QWidget* parent = nullptr);
 	virtual ~DkControlPoint() {};
 
-	void draw(QPainter *painter);
-
+	void draw(QPainter *painter, bool transform);
+		
 	QPointF getCenter() const {
 		return QPointF(size().width()*0.5f, size().height()*0.5f);
 	};
@@ -108,7 +109,7 @@ public:
 	};
 
 	void setType(type t);
-	void drawPoint(QPainter* painter, int size);
+	void drawPoint(QPainter* painter, int size, bool transform);
 signals:
 	void moved();
 	void removed(DkControlPoint* sender);
@@ -126,9 +127,9 @@ protected:
 	QPointF posGrab;
 	QPointF mPosition;
 	type mType;
+	std::shared_ptr<QTransform> mlocal;
 	//QSize size;
 };
-
 
 class DkPatchMatchingViewPort : public nmc::DkPluginViewPort {
 	Q_OBJECT
@@ -170,18 +171,16 @@ protected:
 	QVector<QPen> pathsPen;
 
 	bool cancelTriggered;
-	bool isOutside;
 	QBrush brush;
-	QPen pen;
-	QPointF lastPoint;
+	
 	bool panning;
 	DkPatchMatchingToolBar* mtoolbar;
 	QCursor defaultCursor;
 
-	bool polygonFinished;
-	QPointF mousePos;
-	QPolygonF polygon;
-	QVector<DkControlPoint*> controlPoints;
+	QPen mPen;
+	bool mPolygonFinished;
+	QVector<DkControlPoint*> mControlPoints;
+	std::shared_ptr<QTransform> mTransform;
 };
 
 

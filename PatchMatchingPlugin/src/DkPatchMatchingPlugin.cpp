@@ -112,7 +112,9 @@ bool DkPatchMatchingPlugin::closesOnImageChange() const
 
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
 
-DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
+DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags) 
+	: DkPluginViewPort(parent, flags), mTransform(std::make_shared<QTransform>())
+{
 
 	setObjectName("DkPatchMatchingViewPort");
 	init();
@@ -139,8 +141,8 @@ void DkPatchMatchingViewPort::saveSettings() const {
 	QSettings& settings = nmc::Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	settings.setValue("penColor", pen.color().rgba());
-	settings.setValue("penWidth", pen.width());
+	settings.setValue("penColor", mPen.color().rgba());
+	settings.setValue("penWidth", mPen.width());
 	settings.endGroup();
 
 }
@@ -150,25 +152,24 @@ void DkPatchMatchingViewPort::loadSettings() {
 	QSettings& settings = nmc:: Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
-	pen.setWidth(settings.value("penWidth", 15).toInt());
+	mPen.setColor(QColor::fromRgba(settings.value("penColor", mPen.color().rgba()).toInt()));
+	mPen.setWidth(settings.value("penWidth", 15).toInt());
 	settings.endGroup();
 }
 
 void DkPatchMatchingViewPort::init() {
 	
 	setAttribute(Qt::WA_MouseTracking);
-	polygonFinished = false;
+	mPolygonFinished = false;
 	panning = false;
 	cancelTriggered = false;
-	isOutside = false;
 	defaultCursor = Qt::CrossCursor;
 	setCursor(defaultCursor);
-	pen = QColor(0,0,0);
-	pen.setCapStyle(Qt::RoundCap);
-	pen.setJoinStyle(Qt::RoundJoin);
-	pen.setBrush(Qt::NoBrush);
-	pen.setWidth(1);
+	mPen = QColor(0,0,0);
+	mPen.setCapStyle(Qt::RoundCap);
+	mPen.setJoinStyle(Qt::RoundJoin);
+	mPen.setBrush(Qt::NoBrush);
+	mPen.setWidth(1);
 	
 	mtoolbar = new DkPatchMatchingToolBar(tr("Paint Toolbar"), this);
 
@@ -181,8 +182,8 @@ void DkPatchMatchingViewPort::init() {
 	connect(mtoolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
 	loadSettings();
-	mtoolbar->setPenColor(pen.color());
-	mtoolbar->setPenWidth(pen.width());
+	mtoolbar->setPenColor(mPen.color());
+	mtoolbar->setPenWidth(mPen.width());
 }
 
 void DkPatchMatchingViewPort::undoLastPaint() {
@@ -197,11 +198,11 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 
 void DkPatchMatchingViewPort::controlPointRemoved(DkControlPoint* sender)
 {
-	auto idx = controlPoints.indexOf(sender);
-	controlPoints.remove(idx);
+	auto idx = mControlPoints.indexOf(sender);
+	mControlPoints.remove(idx);
 	delete sender;
 	
-	controlPoints[0]->setType(DkControlPoint::type::circle);
+	mControlPoints[0]->setType(DkControlPoint::type::circle);
 	
 	update();
 }
@@ -220,17 +221,17 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 	//QWidget::mousePressEvent(event);
 	if (event->buttons() == Qt::LeftButton && parent()) {
 		QPointF point = mapToViewport(event->pos());
-			
-		auto cp = new DkControlPoint(point, mWorldMatrix, this);
+		
+		auto cp = new DkControlPoint(point, mWorldMatrix, mTransform, this);
 		cp->setVisible(true);
 		
 		connect(cp, SIGNAL(moved()), this, SLOT(update()));
 		connect(cp, &DkControlPoint::removed, this, &DkPatchMatchingViewPort::controlPointRemoved);
 
-		if (controlPoints.empty()) {
+		if (mControlPoints.empty()) {
 			cp->setType(DkControlPoint::type::circle);
 		}
-		controlPoints << cp;
+		mControlPoints << cp;
 				
 		update();
 	}
@@ -265,7 +266,7 @@ void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 
 	auto transform = (*mWorldMatrix);//(*mImgMatrix)
 	QPolygonF poly;
-	for (auto&& p: controlPoints) {
+	for (auto&& p: mControlPoints) {
 		QRectF g = p->geometry();
 		auto center = transform.map(p->truPosition());
 		g.moveCenter(center);
@@ -275,13 +276,8 @@ void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 
 	painter.setRenderHint(QPainter::HighQualityAntialiasing);
 	painter.setRenderHint(QPainter::Antialiasing);
-	painter.setPen(pen);
+	painter.setPen(mPen);
 	painter.drawPolyline(poly);
-
-	/*auto size = pen.widthF()*2;
-	if (!polygon.empty()) {
-		painter.drawEllipse(polygon.first(),size,size);
-	}*/
 
 	DkPluginViewPort::paintEvent(event);
 }
@@ -326,17 +322,17 @@ void DkPatchMatchingViewPort::setBrush(const QBrush& brush) {
 }
 
 void DkPatchMatchingViewPort::setPen(const QPen& pen) {
-	this->pen = pen;
+	this->mPen = pen;
 }
 
 void DkPatchMatchingViewPort::setPenWidth(int width) {
 
-	this->pen.setWidth(width);
+	this->mPen.setWidth(width);
 }
 
 void DkPatchMatchingViewPort::setPenColor(QColor color) {
 
-	this->pen.setColor(color);
+	this->mPen.setColor(color);
 }
 
 void DkPatchMatchingViewPort::setPanning(bool checked) {
@@ -348,9 +344,11 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 }
 
 void DkPatchMatchingViewPort::applyChangesAndClose() {
-	polygonFinished = true;
+	mPolygonFinished = true;
+	mTransform->translate(10, 0);
+	update();
 	//cancelTriggered = false;
-	emit closePlugin();
+	//emit closePlugin();
 }
 
 void DkPatchMatchingViewPort::discardChangesAndClose() {
@@ -364,7 +362,7 @@ QBrush DkPatchMatchingViewPort::getBrush() const {
 }
 
 QPen DkPatchMatchingViewPort::getPen() const {
-	return pen;
+	return mPen;
 }
 
 bool DkPatchMatchingViewPort::isCanceled() {
@@ -380,7 +378,7 @@ void DkPatchMatchingViewPort::setVisible(bool visible) {
 }
 
 
-void DkControlPoint::draw(QPainter* painter)
+void DkControlPoint::draw(QPainter* painter, bool transform)
 {
 	QPen penNoStroke;
 	penNoStroke.setWidth(0);
@@ -395,23 +393,26 @@ void DkControlPoint::draw(QPainter* painter)
 	// draw the control point
 	painter->setPen(penNoStroke);
 	painter->setBrush(QColor(0, 0, 0, 0));
-	drawPoint(painter, size().width());	// invisible rect for mouseevents...
+	drawPoint(painter, size().width(), transform);	// invisible rect for mouseevents...
 	
 	painter->setBrush(QColor(255, 255, 255, 100));
-	drawPoint(painter, 7);
+	drawPoint(painter, 7, transform);
 
 	painter->setBrush(QColor(0, 0, 0));
-	drawPoint(painter, 5);
+	drawPoint(painter, 5, transform);
 	
 	//draw bar
-	painter->setBrush(QColor(0,0,255,60));
-	drawPoint(painter, size().width());
+	painter->setBrush(QColor(transform?255:0,0,transform?0:255,60));
+	drawPoint(painter, size().width(), transform);
 }
 
-void DkControlPoint::drawPoint(QPainter* painter, int size)
+void DkControlPoint::drawPoint(QPainter* painter, int size, bool transform)
 {
 	QRectF rect(QPointF(), QSize(size, size));
 	rect.moveCenter(QRectF(QPointF(), this->size()).center());
+	if (transform) {
+		rect = mlocal->mapRect(rect);
+	}
 
 	switch (mType) {
 		case type::square: {
@@ -472,7 +473,8 @@ void DkControlPoint::enterEvent(QEvent* event)
 void DkControlPoint::paintEvent(QPaintEvent* event)
 {
 	QPainter painter(this);
-	draw(&painter);
+	draw(&painter, false);
+	draw(&painter, true);
 	QWidget::paintEvent(event);
 }
 
@@ -493,8 +495,8 @@ void DkControlPoint::setType(type t)
 
 
 
-	DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent)
-	: QWidget(parent), mWorldMatrix(worldMatrix), mPosition(center)
+	DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, std::shared_ptr<QTransform> local, QWidget* parent)
+	: QWidget(parent), mWorldMatrix(worldMatrix), mPosition(center), mlocal(local)
 {
 	QRect cpr(QPoint(), QSize(20, 20));
 	setGeometry(cpr);
@@ -570,6 +572,7 @@ void DkPatchMatchingToolBar::createLayout() {
 	QAction* cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
 	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
 	cancelAction->setObjectName("cancelAction");
+
 
 	panAction = new QAction(icons[pan_icon], tr("Pan"), this);
 	panAction->setShortcut(QKeySequence(Qt::Key_P));
