@@ -69,7 +69,11 @@ QString DkPaintPlugin::id() const {
 QImage DkPaintPlugin::image() const {
 
    return QImage(":/nomacsPluginPaint/img/description.png");
-};
+}
+
+bool DkPaintPlugin::hideHUD() const {
+	return false;
+}
 
 /**
 * Main function: runs plugin based on its ID
@@ -191,8 +195,6 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
-	DkPluginViewPort::init();
-
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
 	paintToolbar->setPenWidth(pen.width());

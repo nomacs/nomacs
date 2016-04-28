@@ -194,8 +194,6 @@ void DkPatchMatchingViewPort::init() {
 
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
-	DkPluginViewPort::init();
-
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
 	paintToolbar->setPenWidth(pen.width());

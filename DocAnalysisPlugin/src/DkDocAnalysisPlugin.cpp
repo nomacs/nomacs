@@ -399,9 +399,6 @@ void DkDocAnalysisViewPort::init() {
 	// the line detection tool
 	lineDetection = new DkLineDetection();
 	lineDetectionDialog = 0;
-
-
-	DkPluginViewPort::init();
 }
 
 

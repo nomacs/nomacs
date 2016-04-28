@@ -67,7 +67,7 @@ class DkDocAnalysisToolBar;
 class DkDocAnalysisPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkDocAnalysisPlugin/3.2" FILE "DkDocAnalysisPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkDocAnalysisPlugin/3.3" FILE "DkDocAnalysisPlugin.json")
 
 public:
     

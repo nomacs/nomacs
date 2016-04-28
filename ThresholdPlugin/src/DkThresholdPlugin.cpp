@@ -65,7 +65,10 @@ QString DkThresholdPlugin::id() const {
 QImage DkThresholdPlugin::image() const {
 
    return QImage(":/nomacsPluginThr/img/description.png");
-};
+}
+bool DkThresholdPlugin::hideHUD() const {
+	return false;
+}
 
 /**
 * Main function: runs plugin based on its ID
@@ -155,8 +158,6 @@ void DkThresholdViewPort::init() {
 	connect(thresholdToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(thresholdToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(thresholdToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
-
-	DkPluginViewPort::init();
 }
 
 void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
