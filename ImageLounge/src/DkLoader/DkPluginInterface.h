@@ -150,8 +150,8 @@ class DllLoaderExport DkPluginViewPort : public QWidget {
 public:
 	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0) : QWidget(parent, flags) {
 		
-		// >DIR: I have removed the init here (it was called twice before due to derived classes) [16.10.2013 markus]
-		//init();
+		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
@@ -193,13 +193,6 @@ protected:
 			return pos;
 
 		return mWorldMatrix->inverted().map(pos);
-	};
-
-	virtual void init() {
-
-		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
-		//setMouseTracking(true);
 	};
 
 	QTransform* mWorldMatrix = 0;
