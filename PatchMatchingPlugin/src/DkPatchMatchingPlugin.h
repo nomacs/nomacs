@@ -59,7 +59,7 @@ class DkPatchMatchingToolBar;
 class DkPatchMatchingPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPatchMatchingPlugin/3.2" FILE "DkPatchMatchingPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPatchMatchingPlugin/3.3" FILE "DkPatchMatchingPlugin.json")
 
 public:
     
@@ -91,7 +91,7 @@ public:
 	void draw(QPainter *painter);
 
 	QPointF getCenter() const {
-		return QPointF(size.width()*0.5f, size.height()*0.5f);
+		return QPointF(size().width()*0.5f, size().height()*0.5f);
 	};
 
 signals:
@@ -107,7 +107,7 @@ protected:
 
 	QPointF initialPos; 
 	QPointF posGrab;
-	QSize size;
+	//QSize size;
 };
 
 
@@ -135,7 +135,7 @@ public slots:
 	void undoLastPaint();
 
 protected:
-	bool event(QEvent *event);
+	//bool event(QEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
@@ -160,7 +160,7 @@ protected:
 	bool polygonFinished;
 	QPointF mousePos;
 	QPolygonF polygon;
-	std::vector<DkControlPoint*> controlPoints;
+	QVector<DkControlPoint*> controlPoints;
 };
 
 

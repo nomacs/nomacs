@@ -227,19 +227,25 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
 		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 		if(viewport) {
-			auto point = mapToImage(event->pos()); event->pos();//
+			QPoint point = event->pos();
 
-			if (controlPoints.empty()) {
-				auto cp = new DkControlPoint(point, this,windowFlags());
+
+			//if (controlPoints.empty()) {
+				auto cp = new DkControlPoint(point, this, windowFlags());
+				//cp->setGeometry(QRect(point, QSize(300,300)));
+				QRect cpr(QPoint(), QSize(100, 100));
+				cpr.moveCenter(point);
 				cp->setVisible(true);
-				controlPoints.push_back(cp);
+				cp->setGeometry(cpr);
+				
+				controlPoints << cp;
 				mousePos = point;
 				
 				/*if (QRectF(QPointF(), viewport->getImage().size()).contains(point)) {
 					polygon << point;
 					update();
 				}*/
-			} 
+			//} 
 		}
 	}
 }
@@ -286,7 +292,10 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
-	
+
+	//painter.setBrush(QColor(255, 0, 0, 40));
+	//painter.drawRect(QRect(QPoint(), size()));
+
 	if (mWorldMatrix)
 		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 		
@@ -321,30 +330,7 @@ void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 	DkPluginViewPort::paintEvent(event);
 }
 
-// mouse events --------------------------------------------------------------------
-bool DkPatchMatchingViewPort::event(QEvent *event) {
 
-	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
-	if (event->type() == QEvent::MouseButtonPress ||
-		event->type() == QEvent::MouseButtonDblClick ||
-		event->type() == QEvent::MouseButtonRelease ||
-		event->type() == QEvent::MouseMove ||
-		event->type() == QEvent::Wheel ||
-		event->type() == QEvent::KeyPress ||
-		event->type() == QEvent::KeyRelease ||
-		event->type() == QEvent::DragEnter ||
-
-		event->type() == QEvent::Drop) {
-
-		//qDebug() << "redirecting event...";
-		// mouse events that double are now fixed, since the mViewport is now overlayed by the mController
-		return QWidget::event(event);
-	}
-	else {
-		//qDebug() << "not redirecting - type: " << event->type();
-		return DkPluginViewPort::event(event);
-	}
-}
 
 QImage DkPatchMatchingViewPort::getPaintedImage() {
 
@@ -440,31 +426,35 @@ void DkPatchMatchingViewPort::setVisible(bool visible) {
 
 void DkControlPoint::draw(QPainter* painter)
 {
-	QPen penNoStroke;
-	penNoStroke.setWidth(0);
-	penNoStroke.setColor(QColor(0, 0, 0, 0));
 
-	QPen pen;
-	//pen.setWidth(1);
-	pen.setColor(QColor(255, 255, 0, 100));
+	painter->setBrush(QColor(0,0,255,60));
+	painter->drawRect(QRect(QPoint(), size()));
 
-	QRectF visibleRect(QPointF(), QSizeF(50,50));
-	//QRectF whiteRect(QPointF(), size);
-	visibleRect.moveCenter(geometry().center());
-	//whiteRect.moveCenter(geometry().center());
+	//QPen penNoStroke;
+	//penNoStroke.setWidth(0);
+	//penNoStroke.setColor(QColor(0, 0, 0, 0));
+
+	//QPen pen;
+	////pen.setWidth(1);
+	//pen.setColor(QColor(255, 255, 0, 100));
+
+	//QRectF visibleRect(QPointF(), QSizeF(50,50));
+	////QRectF whiteRect(QPointF(), size);
+	//visibleRect.moveCenter(geometry().center());
+	////whiteRect.moveCenter(geometry().center());
 
 
-	// draw the control point
-	//painter->setWorldMatrixEnabled(false);
-	painter->setPen(penNoStroke);
-	painter->setBrush(QColor(50, 50, 50, 50));
-	painter->drawRect(geometry());	// invisible rect for mouseevents...
-									//painter->setPen(pen);
-	painter->setBrush(QColor(255, 255, 255, 100));
-	//painter->drawRect(whiteRect);
-	painter->setBrush(QColor(0, 0, 0));
-	painter->drawRect(visibleRect);
-	//painter->setWorldMatrixEnabled(true);
+	//// draw the control point
+	////painter->setWorldMatrixEnabled(false);
+	//painter->setPen(penNoStroke);
+	//painter->setBrush(QColor(50, 50, 50, 50));
+	//painter->drawRect(geometry());	// invisible rect for mouseevents...
+	//								//painter->setPen(pen);
+	//painter->setBrush(QColor(255, 255, 255, 100));
+	////painter->drawRect(whiteRect);
+	//painter->setBrush(QColor(0, 0, 0));
+	//painter->drawRect(visibleRect);
+	////painter->setWorldMatrixEnabled(true);
 }
 
 void DkControlPoint::mousePressEvent(QMouseEvent* event)
@@ -474,7 +464,7 @@ void DkControlPoint::mousePressEvent(QMouseEvent* event)
 		initialPos = geometry().topLeft();
 	}
 	qDebug() << "mouse pressed control point";
-	QWidget::mousePressEvent(event);
+	//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
 }
 
 void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
@@ -482,7 +472,7 @@ void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
 	if (event->buttons() == Qt::LeftButton) {
 
 		QPointF pt = initialPos + event->globalPos() - posGrab;
-		setGeometry(pt.x(),pt.y(),size.width(),size.height());
+		setGeometry(pt.x(),pt.y(),size().width(),size().height());
 		emit ctrlMovedSignal(pt, event->modifiers());
 		qDebug() << "accepted false...";
 	}
@@ -507,12 +497,12 @@ void DkControlPoint::paintEvent(QPaintEvent* event)
 }
 
 DkControlPoint::DkControlPoint(const QPointF& center, QWidget* parent, Qt::WindowFlags flags)
-	:QWidget(parent,flags), size(300,300)
+	: QWidget(parent)
 {
 	setMouseTracking(true);
-	resize(size);
-	setGeometry(center.x() - size.width()/2.0, center.y() - size.height()/2.0, size.width(), size.height());
-	//setCursor(Qt::CrossCursor);
+	//resize(size);
+	//setGeometry(center.x() - size.width()/2.0, center.y() - size.height()/2.0, size.width(), size.height());
+	setCursor(Qt::CrossCursor);
 }
 
 	/*-----------------------------------DkPatchMatchingToolBar ---------------------------------------------*/
