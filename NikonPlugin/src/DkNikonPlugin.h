@@ -71,7 +71,7 @@ class DkNikonViewPort;
 class DkNikonPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/3.2" FILE "DkNikonPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkNikonPlugin/3.3" FILE "DkNikonPlugin.json")
 
 
 public:
@@ -101,7 +101,6 @@ public:
 	~DkNikonViewPort();
 
 protected:
-	virtual void init();
 
 };
 

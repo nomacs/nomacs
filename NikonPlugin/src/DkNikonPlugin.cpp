@@ -176,17 +176,10 @@ void DkNikonPlugin::deleteViewPort() {
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
 
 DkNikonViewPort::DkNikonViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
-
-	init();
 }
 
 DkNikonViewPort::~DkNikonViewPort() {
 	qDebug() << "[PAINT VIEWPORT] deleted...";
-}
-
-void DkNikonViewPort::init() {
-		
-	DkPluginViewPort::init();
 }
 
 };

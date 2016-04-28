@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Thomas Lang",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified"	: "2016-04-06",
+	"DateModified"	: "2016-04-28",
 	"Description"	: "Control Nikon D4 using nomacs.",
 	"Tagline" 		: "Live preview and controls for Nikon D4.",
 	"PluginId"		: "87c51045b38744caa9f389e000d64f3f",
