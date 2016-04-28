@@ -50,6 +50,7 @@
 #include "DkWidgets.h"
 #include "DkBaseViewPort.h"
 #include "DkImageStorage.h"
+#include <memory>
 
 namespace nmp {
 
@@ -70,22 +71,21 @@ public:
     QImage image() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
-	nmc::DkPluginViewPort* getViewPort();
-	void deleteViewPort();
-
+	nmc::DkPluginViewPort* getViewPort() override;
+	void deleteViewPort() override;
+	bool closesOnImageChange() const override;
+	
 protected:
-	nmc::DkPluginViewPort* viewport;
+	DkPatchMatchingViewPort* mViewport;
 
-protected slots:
-	void viewportDestroyed();
 };
 
 class DkControlPoint : public QWidget {
 	Q_OBJECT
 
 public:
-
-	DkControlPoint(const QPointF& center, QWidget* parent = nullptr, Qt::WindowFlags flags = 0);
+	
+	DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent = nullptr);
 	virtual ~DkControlPoint() {};
 
 	void draw(QPainter *painter);
@@ -94,8 +94,24 @@ public:
 		return QPointF(size().width()*0.5f, size().height()*0.5f);
 	};
 
+	const QPointF& truPosition() const;
+	void setPosition(const QPointF&);
+	QPointF mapToViewport(const QPointF& pos) const
+	{
+		return mWorldMatrix->inverted().map(pos);
+	}
+
+	enum class type
+	{
+		square,
+		circle
+	};
+
+	void setType(type t);
+	void drawPoint(QPainter* painter, int size);
 signals:
-	void ctrlMovedSignal(const QPointF&, Qt::KeyboardModifiers);
+	void moved();
+	void removed(DkControlPoint* sender);
 
 protected:
 
@@ -104,9 +120,12 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void enterEvent(QEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
-
+	
+	QTransform* mWorldMatrix;
 	QPointF initialPos; 
 	QPointF posGrab;
+	QPointF mPosition;
+	type mType;
 	//QSize size;
 };
 
@@ -133,6 +152,7 @@ public slots:
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
+	void controlPointRemoved(DkControlPoint* sender);
 
 protected:
 	//bool event(QEvent *event);
@@ -140,8 +160,9 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
-	virtual void init();
+	void init();
 
+	
 	void loadSettings();
 	void saveSettings() const;
 
@@ -154,7 +175,7 @@ protected:
 	QPen pen;
 	QPointF lastPoint;
 	bool panning;
-	DkPatchMatchingToolBar* paintToolbar;
+	DkPatchMatchingToolBar* mtoolbar;
 	QCursor defaultCursor;
 
 	bool polygonFinished;
