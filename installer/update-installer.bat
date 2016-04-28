@@ -6,6 +6,9 @@ REM sign exe
 
 "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool" sign /f C:\VSProjects\TU-code-signing.p12  /t http://timestamp.digicert.com .\packages\nomacs.x86\data\nomacs-x86\nomacs.exe
 
+REM update package verison numbers
+REM cscript /nologo ./package-incrementer-batch.vbs ./packages package.xml package-incrementer.vbs
+
 REM update repo
 C:\Qt\QtIFW2.0.1\bin\repogen.exe -p ./packages --update repository
 

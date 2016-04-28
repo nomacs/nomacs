@@ -7,6 +7,8 @@ nomacs 3.1.0
 - All Icons are SVG (UHD monitors)
 - Compression added to Batch
 - Image transitions extended (swipe)
+- Logging added
+- Recent files cleaned
 
 nomacs 3.0.0
 ============
