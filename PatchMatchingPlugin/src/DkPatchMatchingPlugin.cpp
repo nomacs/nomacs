@@ -197,6 +197,17 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 	update();
 }
 
+void DkPatchMatchingViewPort::controlPointRemoved(DkControlPoint* sender)
+{
+	auto idx = controlPoints.indexOf(sender);
+	controlPoints.remove(idx);
+	delete sender;
+	
+	controlPoints[0]->setType(DkControlPoint::type::circle);
+	
+	update();
+}
+
 void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
@@ -216,6 +227,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 		cp->setVisible(true);
 		
 		connect(cp, SIGNAL(moved()), this, SLOT(update()));
+		connect(cp, &DkControlPoint::removed, this, &DkPatchMatchingViewPort::controlPointRemoved);
 
 		if (controlPoints.empty()) {
 			cp->setType(DkControlPoint::type::circle);
@@ -388,10 +400,10 @@ void DkControlPoint::draw(QPainter* painter)
 	drawPoint(painter, size().width());	// invisible rect for mouseevents...
 	
 	painter->setBrush(QColor(255, 255, 255, 100));
-	drawPoint(painter, 20);
+	drawPoint(painter, 7);
 
 	painter->setBrush(QColor(0, 0, 0));
-	drawPoint(painter, 18);
+	drawPoint(painter, 5);
 	
 	//draw bar
 	painter->setBrush(QColor(0,0,255,60));
@@ -428,6 +440,10 @@ void DkControlPoint::mousePressEvent(QMouseEvent* event)
 		initialPos = truPosition();
 		update();
 	}
+
+	if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
+		emit removed(this);
+	}
 	qDebug() << "mouse pressed control point";
 	//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
 }
@@ -444,7 +460,11 @@ void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
 
 void DkControlPoint::mouseReleaseEvent(QMouseEvent* event)
 {	
-	update();
+	if (event->buttons() == Qt::LeftButton) {
+		update();
+	}
+
+
 }
 
 void DkControlPoint::enterEvent(QEvent* event)
@@ -478,7 +498,7 @@ void DkControlPoint::setType(type t)
 	DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, QWidget* parent)
 	: QWidget(parent), mWorldMatrix(worldMatrix), mPosition(center)
 {
-	QRect cpr(QPoint(), QSize(100, 100));
+	QRect cpr(QPoint(), QSize(20, 20));
 	setGeometry(cpr);
 	setMouseTracking(true);
 	setCursor(Qt::CrossCursor);

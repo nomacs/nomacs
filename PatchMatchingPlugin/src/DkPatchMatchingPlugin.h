@@ -111,6 +111,7 @@ public:
 	void drawPoint(QPainter* painter, int size);
 signals:
 	void moved();
+	void removed(DkControlPoint* sender);
 
 protected:
 
@@ -151,7 +152,8 @@ public slots:
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
-	
+	void controlPointRemoved(DkControlPoint* sender);
+
 protected:
 	//bool event(QEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
