@@ -51,7 +51,9 @@
 #include "DkBaseViewPort.h"
 #include "DkImageStorage.h"
 #include <memory>
-
+#include "DkPolygon.h"
+#include <QGraphicsView>
+#include <QHBoxLayout>
 namespace nmp {
 
 class DkPatchMatchingViewPort;
@@ -80,7 +82,26 @@ protected:
 
 };
 
+enum class ControlPointType
+{
+	square,
+	circle
+};
 
+class DkControlPointRepresentation : public QWidget
+{
+	Q_OBJECT
+
+public:
+	DkControlPointRepresentation(QWidget* parent = nullptr);
+	void draw(QPainter *painter);
+	void drawPoint(QPainter* painter, int size);
+	void setType(ControlPointType t);
+	void paintEvent(QPaintEvent *event) override;
+
+protected:
+	ControlPointType mType;
+};
 class DkControlPoint : public QWidget {
 	Q_OBJECT
 
@@ -102,14 +123,9 @@ public:
 		return mWorldMatrix->inverted().map(pos);
 	}
 
-	enum class type
-	{
-		square,
-		circle
-	};
+	void setType(ControlPointType t);
+	void paintEvent(QPaintEvent* event) override;
 
-	void setType(type t);
-	void drawPoint(QPainter* painter, int size, bool transform);
 signals:
 	void moved();
 	void removed(DkControlPoint* sender);
@@ -120,14 +136,18 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void enterEvent(QEvent *event) override;
-	void paintEvent(QPaintEvent *event) override;
+
 	
+	
+	DkControlPointRepresentation* mOriginal;
+	DkControlPointRepresentation* mClone;
 	QTransform* mWorldMatrix;
 	QPointF initialPos; 
 	QPointF posGrab;
 	QPointF mPosition;
-	type mType;
+	
 	std::shared_ptr<QTransform> mlocal;
+	int mSize;
 	//QSize size;
 };
 
@@ -180,7 +200,13 @@ protected:
 	QPen mPen;
 	bool mPolygonFinished;
 	QVector<DkControlPoint*> mControlPoints;
+	QVector<DkControlPoint*> mClonePoints;
 	std::shared_ptr<QTransform> mTransform;
+	DkPolygon* polygon;
+	DkPolygon* polygon2;
+	QGraphicsView* view;
+	QGraphicsScene* scene;
+	QHBoxLayout* layout;
 };
 
 
