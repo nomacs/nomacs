@@ -16,6 +16,7 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 
 ```REM cscript /nologo ./package-incrementer-batch.vbs ./packages package.xml package-incrementer.vbs```
 
+- clean plugin folders in nomacs.x64 and nomacs.x86
 - double-click `update-installer.bat`
 - zip the repository folder & name it `repository.zip`
 - upload the repository folder to http://download.nomacs.org/htdocs/repository
