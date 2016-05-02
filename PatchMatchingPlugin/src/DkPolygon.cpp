@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QCursor>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 namespace nmp {
 	DkPoint::DkPoint(QGraphicsItem* parent)
 		: QGraphicsItem(parent), 
@@ -77,8 +78,6 @@ namespace nmp {
 	DkPolygon::DkPolygon(QGraphicsItem* parent)
 		:QGraphicsItem(parent)
 	{
-		//setFlag(QGraphicsItem::ItemIsMovable);
-		mPoints << new DkPoint(this);
 	}
 
 
@@ -93,6 +92,9 @@ namespace nmp {
 
 	void DkPolygon::paint(QPainter* painter, const QStyleOptionGraphicsItem* style, QWidget* widget)
 	{
+		QRectF rect(boundingRect());
+		painter->setBrush(QColor(0, 255, 0, 40));
+		painter->drawRect(rect);
 		painter->setRenderHint(QPainter::HighQualityAntialiasing);
 		painter->setRenderHint(QPainter::Antialiasing);
 	}
@@ -103,6 +105,8 @@ namespace nmp {
 		auto point = new DkPoint(this);
 		point->setPos(mapFromScene(event->scenePos()));
 		mPoints << point;
+		
+		mPoints.first()->setType(DkPoint::type::circle);
 	}
 	DkGraphics::DkGraphics(QObject * parent)
 		:mPolygon(std::make_shared<DkPolygon>())
@@ -113,8 +117,19 @@ namespace nmp {
 	void DkGraphics::mousePressEvent(QGraphicsSceneMouseEvent * event)
 	{
 		QGraphicsScene::mousePressEvent(event);
-		if (!mouseGrabberItem()) {
-			mPolygon->addPoint(event);
-		}
+		//if (!mouseGrabberItem()) {
+		//	mPolygon->addPoint(event);
+		//}
+		//mPolygon->update();
+	}
+	void DkGraphics::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
+	{
+		QGraphicsScene::mouseReleaseEvent(event);
+		update();
+	}
+	void DkGraphics::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
+	{
+		QGraphicsScene::mouseMoveEvent(event);
+		update();
 	}
 }

@@ -121,20 +121,26 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	init();
 	setMouseTracking(true);
 
-	view = new QGraphicsView(this);
-	scene = new DkGraphics(this);
+	//view = new QGraphicsView(this);
+	//scene = new DkGraphics(this);
+
+	//view->setStyleSheet("background: transparent");
+	//view->setScene(scene);
+
+	//layout = new QHBoxLayout(this);
+	//setLayout(layout);
+	//layout->addWidget(view);
+	//layout->setMargin(0);
+	//
+	////scene->addRect(QRect(30, 30, 60, 60), QPen(), QBrush(QColor(0, 255, 0, 40)));
+	////view->setTransformationAnchor(QGraphicsView::NoAnchor);
+	////view->setTransformationAnchor(QGraphicsView::NoAnchor);
+	////scene->setSceneRect(geometr());
+
+	//scene->addRect(0, 0, 20, 20);
 	
-	//QList<QGraphicsItem*> list;
-	//list << polygon << polygon2;
-	//auto group = scene->createItemGroup(list);
-	//group->setFlag(QGraphicsItem::ItemIsMovable);
-
-	view->setStyleSheet("background: transparent");
-	view->setScene(scene);
-
-	layout = new QHBoxLayout(this);
-	setLayout(layout);
-	layout->addWidget(view);
+	//view->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	//view->setTransform(*mWorldMatrix);
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -238,7 +244,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton && parent()) {
 		QPointF point = mapToViewport(event->pos());
 		
-	/*	auto cp = new DkControlPoint(point, mWorldMatrix, mTransform, this);
+		auto cp = new DkControlPoint(point, mWorldMatrix, mTransform, this);
 		cp->setVisible(true);
 		
 		connect(cp, SIGNAL(moved()), this, SLOT(update()));
@@ -247,7 +253,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 		if (mControlPoints.empty()) {
 			cp->setType(ControlPointType::circle);
 		}
-		mControlPoints << cp;*/
+		mControlPoints << cp;
 		
 		update();
 	}
@@ -275,40 +281,43 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 
-	QPainter painter(this);
+	//QPainter painter(this);
 
-	painter.setBrush(QColor(255, 0, 0, 40));
-	painter.drawRect(QRect(QPoint(), size()));
+	//painter.setBrush(QColor(255, 0, 0, 40));
+	//painter.drawRect(QRect(QPoint(), size()));
 
-	auto transform = (*mWorldMatrix);//(*mImgMatrix)
-	QPolygonF poly;
-	for (auto&& p: mControlPoints) {
-		QRectF g = p->geometry();
-		auto center = transform.map(p->truPosition());
-		g.moveCenter(center);
-		p->setGeometry(g.toRect());
-		poly << center;
-	}
+	//auto transform = (*mWorldMatrix);//(*mImgMatrix)
+	//QPolygonF poly;
+	//for (auto&& p: mControlPoints) {
+	//	QRectF g = p->geometry();
+	//	auto center = transform.map(p->truPosition());
+	//	g.moveCenter(center);
+	//	p->setGeometry(g.toRect());
+	//	poly << center;
+	//}
 
-	painter.setRenderHint(QPainter::HighQualityAntialiasing);
-	painter.setRenderHint(QPainter::Antialiasing);
-	painter.setPen(mPen);
-	painter.drawPolyline(poly);
+	//painter.setRenderHint(QPainter::HighQualityAntialiasing);
+	//painter.setRenderHint(QPainter::Antialiasing);
+	//painter.setPen(mPen);
+	//painter.drawPolyline(poly);
 
-	poly.clear();
-	for (auto&& p : mClonePoints) {
-		QRectF g = p->geometry();
-		auto center = transform.map(mTransform->map(p->truPosition()));
-		g.moveCenter(center);
-		p->setGeometry(g.toRect());
-		poly << center;
-	}
+	//poly.clear();
+	//for (auto&& p : mClonePoints) {
+	//	QRectF g = p->geometry();
+	//	auto center = transform.map(mTransform->map(p->truPosition()));
+	//	g.moveCenter(center);
+	//	p->setGeometry(g.toRect());
+	//	poly << center;
+	//}
 
-	painter.setRenderHint(QPainter::HighQualityAntialiasing);
-	painter.setRenderHint(QPainter::Antialiasing);
-	painter.setPen(mPen);
-	painter.drawPolyline(poly);
+	//painter.setRenderHint(QPainter::HighQualityAntialiasing);
+	//painter.setRenderHint(QPainter::Antialiasing);
+	//painter.setPen(mPen);
+	//painter.drawPolyline(poly);
 
+	//auto t = (*mWorldMatrix)*(*mImgMatrix);
+	//view->fitInView(geometry(), Qt::KeepAspectRatio);
+	//view->setTransform(*mWorldMatrix);
 	DkPluginViewPort::paintEvent(event);
 }
 
@@ -503,8 +512,6 @@ void DkControlPoint::mouseReleaseEvent(QMouseEvent* event)
 	if (event->buttons() == Qt::LeftButton) {
 		update();
 	}
-
-
 }
 
 void DkControlPoint::enterEvent(QEvent* event)
@@ -550,9 +557,7 @@ DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, s
 		mClone(new DkControlPointRepresentation(this))
 {
 	QRect cpr(QPoint(), QSize(mSize, mSize));
-	//resize();
 	mOriginal->setGeometry(cpr);
-	setMouseTracking(true);
 	setCursor(Qt::CrossCursor);
 }
 

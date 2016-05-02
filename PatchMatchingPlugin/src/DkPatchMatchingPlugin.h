@@ -102,6 +102,7 @@ public:
 protected:
 	ControlPointType mType;
 };
+
 class DkControlPoint : public QWidget {
 	Q_OBJECT
 

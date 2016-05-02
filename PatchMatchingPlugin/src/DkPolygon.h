@@ -12,6 +12,8 @@ namespace nmp {
 		DkGraphics(QObject *parent = nullptr);
 		virtual ~DkGraphics() {}
 		void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+		void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+		void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
 	private:
 		std::shared_ptr<DkPolygon> mPolygon;
