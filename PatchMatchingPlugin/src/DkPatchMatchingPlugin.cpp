@@ -126,7 +126,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 
 	//view->setStyleSheet("background: transparent");
 	//view->setScene(scene);
-
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 	//layout = new QHBoxLayout(this);
 	//setLayout(layout);
 	//layout->addWidget(view);
@@ -141,6 +141,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	
 	//view->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	//view->setTransform(*mWorldMatrix);
+	poly = new DkSyncedPolygon(this, mWorldMatrix);
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -218,16 +219,16 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 	update();
 }
 
-void DkPatchMatchingViewPort::controlPointRemoved(DkControlPoint* sender)
-{
-	auto idx = mControlPoints.indexOf(sender);
-	mControlPoints.remove(idx);
-	delete sender;
-	
-	mControlPoints[0]->setType(ControlPointType::circle);
-	
-	update();
-}
+//void DkPatchMatchingViewPort::controlPointRemoved(DkControlPoint* sender)
+//{
+//	auto idx = mControlPoints.indexOf(sender);
+//	mControlPoints.remove(idx);
+//	delete sender;
+//	
+//	mControlPoints[0]->setType(ControlPointType::circle);
+//	
+//	update();
+//}
 
 void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -242,8 +243,11 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
 	//QWidget::mousePressEvent(event);
 	if (event->buttons() == Qt::LeftButton && parent()) {
-		QPointF point = mapToViewport(event->pos());
+		QPointF point = mapToViewport(event->pos()); //
 		
+		poly->addPoint(point);
+
+		/*
 		auto cp = new DkControlPoint(point, mWorldMatrix, mTransform, this);
 		cp->setVisible(true);
 		
@@ -254,7 +258,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 			cp->setType(ControlPointType::circle);
 		}
 		mControlPoints << cp;
-		
+		*/
 		update();
 	}
 }
@@ -280,8 +284,8 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
-
-	//QPainter painter(this);
+	poly->setWorldMatrix(mWorldMatrix);
+	QPainter painter(this);
 
 	//painter.setBrush(QColor(255, 0, 0, 40));
 	//painter.drawRect(QRect(QPoint(), size()));
@@ -354,6 +358,13 @@ QImage DkPatchMatchingViewPort::getPaintedImage() {
 	}
 	
 	return QImage();
+}
+
+void DkPatchMatchingViewPort::checkWorldMatrixChange()
+{
+	if (mWorldMatrix && mWorldMatrixCache != *mWorldMatrix) {
+		emit worldMatrixChanged(newMatrix);
+	}
 }
 
 void DkPatchMatchingViewPort::setBrush(const QBrush& brush) {
@@ -430,146 +441,79 @@ void DkPatchMatchingViewPort::setVisible(bool visible) {
 }
 
 
-void DkControlPointRepresentation::draw(QPainter* painter)
-{
-	QPen penNoStroke;
-	penNoStroke.setWidth(0);
-	penNoStroke.setColor(QColor(0, 0, 0, 0));
+//
+//void DkControlPoint::mousePressEvent(QMouseEvent* event)
+//{
+//	if (event->buttons() == Qt::LeftButton) {
+//		posGrab = event->globalPos();
+//		initialPos = truPosition();
+//		update();
+//	}
+//
+//	if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
+//		emit removed(this);
+//	}
+//	qDebug() << "mouse pressed control point";
+//	//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
+//}
+//
+//void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
+//{
+//	if (event->buttons() == Qt::LeftButton) {
+//		mPosition = initialPos + mapToViewport(event->globalPos()) - mapToViewport(posGrab);
+//		update();
+//		emit moved();
+//		qDebug() << "accepted false...";
+//	}
+//}
+//
+//void DkControlPoint::mouseReleaseEvent(QMouseEvent* event)
+//{	
+//	if (event->buttons() == Qt::LeftButton) {
+//		update();
+//	}
+//}
+//
+//void DkControlPoint::enterEvent(QEvent* event)
+//{
+//}
+//
+//
+//const QPointF& DkControlPoint::truPosition() const
+//{
+//	return mPosition;
+//}
+//
+//void DkControlPoint::setPosition(const QPointF& point)
+//{
+//	mPosition = point;
+//}
+//
+//void DkControlPoint::setType(ControlPointType t)
+//{
+//	mOriginal->setType(t);
+//	mClone->setType(t);
+//}
+//
+//void DkControlPoint::paintEvent(QPaintEvent* event)
+//{
+//	mClone->setGeometry(mlocal->mapRect(mOriginal->geometry()));
+//	QWidget::paintEvent(event);
+//}
+//
+//
+//DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, std::shared_ptr<QTransform> local, QWidget* parent)
+//	: QWidget(parent), mWorldMatrix(worldMatrix), 
+//		mPosition(center), mlocal(local), 
+//		mSize(20), 
+//		mOriginal(new DkControlPointRepresentation(this)),
+//		mClone(new DkControlPointRepresentation(this))
+//{
+//	QRect cpr(QPoint(), QSize(mSize, mSize));
+//	mOriginal->setGeometry(cpr);
+//	setCursor(Qt::CrossCursor);
+//}
 
-	QPen pen;
-	pen.setWidth(1);
-	pen.setColor(QColor(255, 255, 0, 100));
-	painter->setRenderHint(QPainter::HighQualityAntialiasing);
-	painter->setRenderHint(QPainter::Antialiasing);
-
-	// draw the control point
-	painter->setPen(penNoStroke);
-	painter->setBrush(QColor(0, 0, 0, 0));
-	drawPoint(painter, size().width());	// invisible rect for mouseevents...
-	
-	painter->setBrush(QColor(255, 255, 255, 100));
-	drawPoint(painter, 7);
-
-	painter->setBrush(QColor(0, 0, 0));
-	drawPoint(painter, 5);
-	
-	//draw bar
-	painter->setBrush(QColor(0,0,255,60));
-	drawPoint(painter, size().width());
-}
-
-void DkControlPointRepresentation::drawPoint(QPainter* painter, int size)
-{
-	QRectF rect(QPointF(), QSize(size, size));
-	rect.moveCenter(QRectF(QPointF(), this->size()).center());
-
-
-	switch (mType) {
-		case ControlPointType::square: {
-			painter->drawRect(rect);
-			break;
-		}
-
-		case ControlPointType::circle: {
-			painter->drawEllipse(rect);
-			break;
-		}
-
-		default: {
-			painter->drawRect(rect);
-			break;
-		}
-	}
-}	
-
-void DkControlPoint::mousePressEvent(QMouseEvent* event)
-{
-	if (event->buttons() == Qt::LeftButton) {
-		posGrab = event->globalPos();
-		initialPos = truPosition();
-		update();
-	}
-
-	if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
-		emit removed(this);
-	}
-	qDebug() << "mouse pressed control point";
-	//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
-}
-
-void DkControlPoint::mouseMoveEvent(QMouseEvent* event)
-{
-	if (event->buttons() == Qt::LeftButton) {
-		mPosition = initialPos + mapToViewport(event->globalPos()) - mapToViewport(posGrab);
-		update();
-		emit moved();
-		qDebug() << "accepted false...";
-	}
-}
-
-void DkControlPoint::mouseReleaseEvent(QMouseEvent* event)
-{	
-	if (event->buttons() == Qt::LeftButton) {
-		update();
-	}
-}
-
-void DkControlPoint::enterEvent(QEvent* event)
-{
-}
-
-void DkControlPointRepresentation::paintEvent(QPaintEvent* event)
-{
-	QPainter painter(this);
-	draw(&painter);
-	
-	QWidget::paintEvent(event);
-}
-
-const QPointF& DkControlPoint::truPosition() const
-{
-	return mPosition;
-}
-
-void DkControlPoint::setPosition(const QPointF& point)
-{
-	mPosition = point;
-}
-
-void DkControlPoint::setType(ControlPointType t)
-{
-	mOriginal->setType(t);
-	mClone->setType(t);
-}
-
-void DkControlPoint::paintEvent(QPaintEvent* event)
-{
-	mClone->setGeometry(mlocal->mapRect(mOriginal->geometry()));
-	QWidget::paintEvent(event);
-}
-
-
-DkControlPoint::DkControlPoint(const QPointF& center, QTransform* worldMatrix, std::shared_ptr<QTransform> local, QWidget* parent)
-	: QWidget(parent), mWorldMatrix(worldMatrix), 
-		mPosition(center), mlocal(local), 
-		mSize(20), 
-		mOriginal(new DkControlPointRepresentation(this)),
-		mClone(new DkControlPointRepresentation(this))
-{
-	QRect cpr(QPoint(), QSize(mSize, mSize));
-	mOriginal->setGeometry(cpr);
-	setCursor(Qt::CrossCursor);
-}
-
-DkControlPointRepresentation::DkControlPointRepresentation(QWidget* parent)
-	: QWidget(parent), mType(ControlPointType::square)
-{
-}
-
-	void DkControlPointRepresentation::setType(ControlPointType t)
-{
-	mType = t;
-}
 
 	/*-----------------------------------DkPatchMatchingToolBar ---------------------------------------------*/
 DkPatchMatchingToolBar::DkPatchMatchingToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
