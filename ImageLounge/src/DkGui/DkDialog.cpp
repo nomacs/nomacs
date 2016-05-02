@@ -3282,7 +3282,7 @@ void DkMosaicDialog::createLayout() {
 
 	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
 	openButton->setObjectName("openButton");
-	openButton->setToolTip(tr("Specify the Root Folder of the Image Database Desired."));
+	openButton->setToolTip(tr("Choose which image to mosaic."));
 
 	mFileLabel = new QLabel(tr("No Image loaded"), this);
 
@@ -3292,6 +3292,7 @@ void DkMosaicDialog::createLayout() {
 
 	QPushButton* dbButton = new QPushButton(tr("&Browse"), this);
 	dbButton->setObjectName("dbButton");
+	dbButton->setToolTip(tr("Specify the root folder of the image database."));
 
 	mFolderLabel = new QLabel(tr("Specify an Image Database"), this);
 
