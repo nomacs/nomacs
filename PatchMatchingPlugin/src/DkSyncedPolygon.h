@@ -1,11 +1,20 @@
 #pragma once
 #include <QWidget>
+#include <QPen>
+
+namespace {
+	template<class T>
+	auto mapToViewPort(const T& pos, QTransform world) {
+		return world.inverted().map(pos);
+	}
+}
 
 namespace nmp {
 
 	class DkPatchMatchingViewPort;
 	class DkPolygonRenderer;
 	class DkControlPointRepresentation;
+	class DkLineRepresentation;
 
 	enum class ControlPointType {
 		start,
@@ -43,15 +52,18 @@ namespace nmp {
 		virtual ~DkSyncedPolygon();
 
 		size_t size() const;
+		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);
 		void changed();
 
-	private:
-		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
-		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
+	public slots:
+		void removePoint(QSharedPointer<DkControlPoint> point);
 
+	private:
+		
+		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		QVector<DkPolygonRenderer*> mRenderer;
 	};
 
@@ -73,6 +85,7 @@ namespace nmp {
 
 	public slots:
 		void setWorldMatrix(QTransform worldMatrix);
+		void refresh();
 		void addPoint(QSharedPointer<DkControlPoint> point);
 		void update();
 
@@ -84,6 +97,7 @@ namespace nmp {
 		QTransform mTransform;
 
 		QVector<DkControlPointRepresentation*> mPoints;
+		QVector<DkLineRepresentation*> mLines;
 	};
 
 	class DkControlPointRepresentation : public QWidget
@@ -98,17 +112,25 @@ namespace nmp {
 			circle
 		};
 
-		DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QWidget* viewport);
+		DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QWidget* viewport, DkPolygonRenderer* renderer);
 		void draw(QPainter *painter);
 		void drawPoint(QPainter* painter, int size);
 		void paintEvent(QPaintEvent *event) override;
 		void move(QTransform transform);
+		void mousePressEvent(QMouseEvent* event) override;
+		void mouseMoveEvent(QMouseEvent* event) override;
+		void mouseReleaseEvent(QMouseEvent* event) override;
 
 	signals:
 		void moved();
+		void removed(QSharedPointer<DkControlPoint> point);
 
 	private:
+		QWidget* mViewport;
 		QSharedPointer<DkControlPoint> mPoint;
+		QPointF posGrab;
+		QPointF initialPos;
+		DkPolygonRenderer* mRenderer;
 	};
 
 	class DkLineRepresentation : public QWidget
@@ -119,8 +141,10 @@ namespace nmp {
 			QWidget* viewport);
 		void paintEvent(QPaintEvent *event) override;
 		void move(QTransform transform);
-
+	
 	private:
 		std::pair<QSharedPointer<DkControlPoint>, QSharedPointer<DkControlPoint>> mLine;
+		QPen pen;
+		std::pair<QPoint, QPoint> mMapped;
 	};
 }

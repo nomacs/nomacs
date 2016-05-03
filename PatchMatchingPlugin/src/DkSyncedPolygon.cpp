@@ -33,10 +33,17 @@ namespace nmp {
 		emit pointAdded(point);
 	}
 
+	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
+	{
+		mControlPoints.removeAll(point);
+		emit changed();
+	}
+
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon)
 		:QObject(polygon), mPolygon(polygon), mViewport(viewport)
 	{
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
+		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 	}
 
 	void DkPolygonRenderer::setTransform(const QTransform & transform)
@@ -53,11 +60,45 @@ namespace nmp {
 		return mTransform;
 	}
 
+
+	void DkPolygonRenderer::refresh()
+	{
+		for (auto p : mPoints) {
+			delete p;
+		}
+
+		for (auto l : mLines) {
+			delete l;
+		}
+
+		mPoints.clear();
+		mLines.clear();
+
+		for (auto p : mPolygon->points()) {
+			addPoint(p);
+		}
+	}
+
 	void DkPolygonRenderer::addPoint(QSharedPointer<DkControlPoint> point)
 	{
-		auto rep = new DkControlPointRepresentation(point, getViewport()); // create new widget
+		auto prev = mPolygon->points().indexOf(point)-1;
+		// add line if necessary
+		if (prev >= 0) {
+			auto pair = std::make_pair(mPolygon->points()[prev], point);
+			auto line = new DkLineRepresentation(pair, getViewport());
+			line->setVisible(true);
+			mLines.append(line);
+		}
+
+
+		// add point
+		auto rep = new DkControlPointRepresentation(point, getViewport(), this); // create new widget
+		connect(rep, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::update);
+		connect(rep, &DkControlPointRepresentation::removed, mPolygon, &DkSyncedPolygon::removePoint);
 		rep->setVisible(true);
+
 		mPoints.append(rep);
+
 		update();
 	}
 
@@ -67,12 +108,15 @@ namespace nmp {
 		for (auto p : mPoints) {
 			p->move(transform);
 		}
+		for (auto l : mLines) {
+			l->move(transform);
+		}
 		mViewport->update();
 	}
 
 	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
 	{
-		return getWorldMatrix().inverted().map(pos);
+		return mapToViewPort(pos, getWorldMatrix());
 	}
 
 	QTransform DkPolygonRenderer::getWorldMatrix() const
@@ -136,6 +180,36 @@ namespace nmp {
 		drawPoint(painter, size().width());
 	}
 
+	void DkControlPointRepresentation::mousePressEvent(QMouseEvent* event)
+	{
+		if (event->buttons() == Qt::LeftButton) {
+			posGrab = mRenderer->mapToViewport(event->globalPos());
+			initialPos = mPoint->getPos();
+
+		}
+	
+		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
+			emit removed(mPoint);
+		}
+		//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
+	}
+	
+	void DkControlPointRepresentation::mouseMoveEvent(QMouseEvent* event)
+	{
+		if (event->buttons() == Qt::LeftButton) {
+			mPoint->setPos(initialPos + mRenderer->mapToViewport(event->globalPos()) - posGrab);
+	
+			emit moved();
+		}
+	}
+
+	void DkControlPointRepresentation::mouseReleaseEvent(QMouseEvent* event)
+	{	
+		if (event->buttons() == Qt::LeftButton) {
+			emit moved();
+		}
+	}
+	
 	void DkControlPointRepresentation::drawPoint(QPainter* painter, int size)
 	{
 		QRectF rect(QPointF(), QSize(size, size));
@@ -161,8 +235,8 @@ namespace nmp {
 	}
 
 	DkControlPointRepresentation::DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, 
-																	QWidget* viewport)
-		: QWidget(viewport), mPoint(point)
+																	QWidget* viewport, DkPolygonRenderer* renderer)
+		: QWidget(viewport), mViewport(viewport), mPoint(point), mRenderer(renderer)
 	{
 		setGeometry(QRect(-10, -10, 20, 20));
 	}
@@ -202,15 +276,35 @@ namespace nmp {
 													QSharedPointer<DkControlPoint>>& line, QWidget * viewport)
 		:QWidget(viewport), mLine(line)
 	{
+		setAttribute(Qt::WA_TransparentForMouseEvents);
+		pen.setBrush(QColor(0, 0, 0));
+		pen.setWidth(1);
 	}
 
 	void DkLineRepresentation::paintEvent(QPaintEvent * event)
 	{
+		QPainter painter(this);
+		painter.setPen(pen);
+		painter.setRenderHint(QPainter::HighQualityAntialiasing);
+		painter.setRenderHint(QPainter::Antialiasing);
+		painter.setBrush(QColor(255, 255, 255, 60));
+		painter.setBrush(QColor(255, 0, 0, 60));
+		painter.drawLine(mMapped.first, mMapped.second);
+		//painter.drawRect(rect());
 
+		QWidget::paintEvent(event);
 	}
 
 	void DkLineRepresentation::move(QTransform transform)
-	{
+	{	
+		auto first = transform.map(mLine.first->getPos()).toPoint();
+		auto second = transform.map(mLine.second->getPos()).toPoint();
+
+		auto rect = QRect(QRect(first,QSize()))
+					.united(QRect(second, QSize()));
+
+		setGeometry(rect);
+		mMapped = std::make_pair(mapFromParent(first), mapFromParent(second));
 	}
 
 };

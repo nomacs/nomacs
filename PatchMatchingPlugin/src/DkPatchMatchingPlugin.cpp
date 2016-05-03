@@ -267,7 +267,7 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 	checkWorldMatrixChanged();
-	
+	//setpdatesEnabled(true)
 	//polygon.setWorldMatrix(mWorldMatrix);
 	QPainter painter(this);
 	
