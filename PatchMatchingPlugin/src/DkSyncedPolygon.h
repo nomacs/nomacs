@@ -4,7 +4,7 @@
 namespace nmp {
 
 	class DkPatchMatchingViewPort;
-	class DkPolygonWidget;
+	class DkPolygonRenderer;
 	class DkControlPointRepresentation;
 
 	enum class ControlPointType {
@@ -38,51 +38,52 @@ namespace nmp {
 		Q_OBJECT
 
 	public:
-		DkSyncedPolygon(DkPatchMatchingViewPort* viewport, QTransform* worldMatrix);
+		DkSyncedPolygon();
 		void addPoint(const QPointF& coordinates);
 		virtual ~DkSyncedPolygon();
-		QPointF mapToViewport(const QPointF& pos) const;
-		QTransform* worldMatrix() const;
-		DkPolygonWidget* addRenderer();
-		QVector<QSharedPointer<DkControlPoint> >& points();
-		void setWorldMatrix(QTransform* worldMatrix);
+
+		size_t size() const;
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);
 		void changed();
 
-		public slots:
-		void worldMatrixChanged(QTransform matrix);
-
-	protected:
+	private:
+		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 
-		QVector<DkPolygonWidget*> mRenderer;
-
-		DkPatchMatchingViewPort* mViewport;
+		QVector<DkPolygonRenderer*> mRenderer;
 	};
 
 
-	class DkPolygonWidget : public QObject
+	class DkPolygonRenderer : public QObject
 	{
 		Q_OBJECT
 
 	public:
-		DkPolygonWidget(DkPatchMatchingViewPort* viewport, DkSyncedPolygon* polygon);
-		void setTransform(const QTransform& transform);
-		virtual ~DkPolygonWidget();
-		QTransform transform();
+		DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon);
+		virtual ~DkPolygonRenderer();
+		
+		QPointF mapToViewport(const QPointF& pos) const;
+		QTransform getWorldMatrix() const;
+		QWidget* getViewport();
 
-		public slots:
+		void setTransform(const QTransform& transform);
+		QTransform getTransform() const;
+
+	public slots:
+		void setWorldMatrix(QTransform worldMatrix);
 		void addPoint(QSharedPointer<DkControlPoint> point);
+		void update();
 
 	private:
 		DkSyncedPolygon* mPolygon;
+		QWidget* mViewport;
+
+		QTransform mWorldMatrix;
 		QTransform mTransform;
 
-		QTransform mCombinedTransform;
 		QVector<DkControlPointRepresentation*> mPoints;
-		DkPatchMatchingViewPort* mViewport;
 	};
 
 	class DkControlPointRepresentation : public QWidget
@@ -97,22 +98,29 @@ namespace nmp {
 			circle
 		};
 
-		DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QTransform* transform, QWidget* parent);
+		DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QWidget* viewport);
 		void draw(QPainter *painter);
 		void drawPoint(QPainter* painter, int size);
 		void paintEvent(QPaintEvent *event) override;
-		void movePoint();
+		void move(QTransform transform);
 
 	signals:
 		void moved();
 
-		public slots:
-		void updatePoint();
-
-	protected:
-
-		QTransform* mTransform;
+	private:
 		QSharedPointer<DkControlPoint> mPoint;
-		DkPatchMatchingViewPort* mViewport;
+	};
+
+	class DkLineRepresentation : public QWidget
+	{
+	public:
+		DkLineRepresentation(
+			const std::pair<QSharedPointer<DkControlPoint>, QSharedPointer<DkControlPoint>>& line,
+			QWidget* viewport);
+		void paintEvent(QPaintEvent *event) override;
+		void move(QTransform transform);
+
+	private:
+		std::pair<QSharedPointer<DkControlPoint>, QSharedPointer<DkControlPoint>> mLine;
 	};
 }

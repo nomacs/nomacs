@@ -114,34 +114,12 @@ bool DkPatchMatchingPlugin::closesOnImageChange() const
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
 
 DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags) 
-	: DkPluginViewPort(parent, flags), mTransform(std::make_shared<QTransform>())
+	: DkPluginViewPort(parent, flags)
 {
 
 	setObjectName("DkPatchMatchingViewPort");
 	init();
 	setMouseTracking(true);
-
-	//view = new QGraphicsView(this);
-	//scene = new DkGraphics(this);
-
-	//view->setStyleSheet("background: transparent");
-	//view->setScene(scene);
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-	//layout = new QHBoxLayout(this);
-	//setLayout(layout);
-	//layout->addWidget(view);
-	//layout->setMargin(0);
-	//
-	////scene->addRect(QRect(30, 30, 60, 60), QPen(), QBrush(QColor(0, 255, 0, 40)));
-	////view->setTransformationAnchor(QGraphicsView::NoAnchor);
-	////view->setTransformationAnchor(QGraphicsView::NoAnchor);
-	////scene->setSceneRect(geometr());
-
-	//scene->addRect(0, 0, 20, 20);
-	
-	//view->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	//view->setTransform(*mWorldMatrix);
-	poly = new DkSyncedPolygon(this, mWorldMatrix);
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -207,6 +185,10 @@ void DkPatchMatchingViewPort::init() {
 	loadSettings();
 	mtoolbar->setPenColor(mPen.color());
 	mtoolbar->setPenWidth(mPen.width());
+
+	
+	mLeft = std::make_unique<DkPolygonRenderer>(this, &mPolygon);
+	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mLeft.get(), &DkPolygonRenderer::setWorldMatrix);
 }
 
 void DkPatchMatchingViewPort::undoLastPaint() {
@@ -245,7 +227,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton && parent()) {
 		QPointF point = mapToViewport(event->pos()); //
 		
-		poly->addPoint(point);
+		mPolygon.addPoint(point);
 
 		/*
 		auto cp = new DkControlPoint(point, mWorldMatrix, mTransform, this);
@@ -284,9 +266,11 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
-	poly->setWorldMatrix(mWorldMatrix);
+	checkWorldMatrixChanged();
+	
+	//polygon.setWorldMatrix(mWorldMatrix);
 	QPainter painter(this);
-
+	
 	//painter.setBrush(QColor(255, 0, 0, 40));
 	//painter.drawRect(QRect(QPoint(), size()));
 
@@ -360,12 +344,14 @@ QImage DkPatchMatchingViewPort::getPaintedImage() {
 	return QImage();
 }
 
-void DkPatchMatchingViewPort::checkWorldMatrixChange()
+void DkPatchMatchingViewPort::checkWorldMatrixChanged()
 {
-	if (mWorldMatrix && mWorldMatrixCache != *mWorldMatrix) {
-		emit worldMatrixChanged(newMatrix);
+	if (mWorldMatrix && *mWorldMatrix != mWorldMatrixCache) {
+		mWorldMatrixCache = *mWorldMatrix;
+		emit worldMatrixChanged(mWorldMatrixCache);
 	}
 }
+
 
 void DkPatchMatchingViewPort::setBrush(const QBrush& brush) {
 	this->brush = brush;
@@ -395,7 +381,6 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 
 void DkPatchMatchingViewPort::applyChangesAndClose() {
 	mPolygonFinished = true;
-	mTransform->translate(100, 0);
 	
 
 	//for (auto point : mClonePoints) {

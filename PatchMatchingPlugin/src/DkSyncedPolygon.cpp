@@ -1,109 +1,106 @@
 #include "DkSyncedPolygon.h"
 #include <QWidget>
 #include <QPainter>
+#include "DkPatchMatchingPlugin.h"
 
 namespace nmp {
-	DkSyncedPolygon::DkSyncedPolygon(DkPatchMatchingViewPort* viewport, QTransform* worldMatrix)
-		:QObject(viewport), mViewport(viewport)
+	DkSyncedPolygon::DkSyncedPolygon()
 	{
-		addRenderer();
-		auto r = addRenderer();
-		r->setTransform(QTransform().translate(100, 100));
 	}
 
 	DkSyncedPolygon::~DkSyncedPolygon()
 	{
 	}
 
-	QPointF DkSyncedPolygon::mapToViewport(const QPointF & pos) const
+	size_t DkSyncedPolygon::size() const
 	{
-		return mWorldMatrix->inverted().map(pos);
+		return mControlPoints.size();
 	}
 
-	QTransform* DkSyncedPolygon::worldMatrix() const
-	{
-		return mWorldMatrix;
-	}
-
-	QWidget * DkSyncedPolygon::viewport()
-	{
-		return mViewport;
-	}
-
-	DkPolygonWidget* DkSyncedPolygon::addRenderer()
-	{
-		auto renderer = new DkPolygonWidget(this);
-		mRenderer.append(renderer);
-		connect(this, &DkSyncedPolygon::pointAdded, renderer, &DkPolygonWidget::addPoint);
-		return renderer;
-	}
-
-	QVector<QSharedPointer<DkControlPoint> >& DkSyncedPolygon::points()
+	const QVector<QSharedPointer<DkControlPoint> >& DkSyncedPolygon::points() const
 	{
 		return mControlPoints;
-	}
-
-	void DkSyncedPolygon::setWorldMatrix(QTransform * worldMatrix)
-	{
-		mWorldMatrix = worldMatrix;
 	}
 
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
 		auto point = QSharedPointer<DkControlPoint>(new DkControlPoint(coordinates));
+		if (mControlPoints.empty()) {
+			point->setType(ControlPointType::start);
+		}
 		mControlPoints.append(point);
 		emit pointAdded(point);
 	}
 
-	DkPolygonWidget::DkPolygonWidget(DkPatchMatchingViewPort* viewport, DkSyncedPolygon* polygon)
-		:QObject(polygon), mPolygon(polygon)
+	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon)
+		:QObject(polygon), mPolygon(polygon), mViewport(viewport)
 	{
+		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 	}
 
-	void DkPolygonWidget::setTransform(const QTransform & transform)
+	void DkPolygonRenderer::setTransform(const QTransform & transform)
 	{
 		mTransform = transform;
-		auto world = mPolygon->worldMatrix();
-
-		if (world) {
-			mCombinedTransform = mTransform*(*world);
-		}
-		else {
-			mCombinedTransform = mTransform;
-		}
 	}
 
-	DkPolygonWidget::~DkPolygonWidget()
+	DkPolygonRenderer::~DkPolygonRenderer()
 	{
 	}
 
-	QTransform DkPolygonWidget::transform()
+	QTransform DkPolygonRenderer::getTransform() const
 	{
 		return mTransform;
 	}
 
-	void DkPolygonWidget::addPoint(QSharedPointer<DkControlPoint> point)
+	void DkPolygonRenderer::addPoint(QSharedPointer<DkControlPoint> point)
 	{
-		auto rep = new DkControlPointRepresentation(point, &mCombinedTransform, mViewport)); // create new widget
+		auto rep = new DkControlPointRepresentation(point, getViewport()); // create new widget
 		rep->setVisible(true);
 		mPoints.append(rep);
+		update();
 	}
+
+	void DkPolygonRenderer::update()
+	{
+		auto transform = getTransform()*getWorldMatrix();
+		for (auto p : mPoints) {
+			p->move(transform);
+		}
+		mViewport->update();
+	}
+
+	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
+	{
+		return getWorldMatrix().inverted().map(pos);
+	}
+
+	QTransform DkPolygonRenderer::getWorldMatrix() const
+	{
+		return mWorldMatrix;
+	}
+
+	QWidget * DkPolygonRenderer::getViewport()
+	{
+		return mViewport;
+	}
+
+	void DkPolygonRenderer::setWorldMatrix(QTransform worldMatrix)
+	{
+		mWorldMatrix = worldMatrix;
+		update();
+	}
+
 
 	void DkControlPointRepresentation::paintEvent(QPaintEvent* event)
 	{
-		movePoint();
 		QPainter painter(this);
 		draw(&painter);
 		QWidget::paintEvent(event);
 	}
 
-	void DkControlPointRepresentation::movePoint()
+	void DkControlPointRepresentation::move(QTransform transform)
 	{
-		auto transform = QTransform();
-		if (mTransform) {
-			transform = *mTransform;
-		}
 		auto center = transform.map(mPoint->getPos());	// transform central position
 		auto g = static_cast<QRectF>(geometry());	// get geometry
 		g.moveCenter(center);	// recenter
@@ -163,13 +160,9 @@ namespace nmp {
 		}
 	}
 
-	void DkControlPointRepresentation::updatePoint()
-	{
-		update();
-	}
-
-	DkControlPointRepresentation::DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QTransform* transform, QWidget* parent)
-		: QWidget(parent), mTransform(transform), mPoint(point)
+	DkControlPointRepresentation::DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, 
+																	QWidget* viewport)
+		: QWidget(viewport), mPoint(point)
 	{
 		setGeometry(QRect(-10, -10, 20, 20));
 	}
@@ -203,6 +196,21 @@ namespace nmp {
 	ControlPointType DkControlPoint::getType()
 	{
 		return mType;
+	}
+
+	DkLineRepresentation::DkLineRepresentation(const std::pair<QSharedPointer<DkControlPoint>,
+													QSharedPointer<DkControlPoint>>& line, QWidget * viewport)
+		:QWidget(viewport), mLine(line)
+	{
+	}
+
+	void DkLineRepresentation::paintEvent(QPaintEvent * event)
+	{
+
+	}
+
+	void DkLineRepresentation::move(QTransform transform)
+	{
 	}
 
 };

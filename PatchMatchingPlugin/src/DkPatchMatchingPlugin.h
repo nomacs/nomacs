@@ -83,56 +83,6 @@ protected:
 
 };
 
-
-//class DkControlPoint : public QWidget {
-//	Q_OBJECT
-//
-//public:
-//	
-//	DkControlPoint(const QPointF& center, QTransform* worldMatrix, std::shared_ptr<QTransform> local, QWidget* parent = nullptr);
-//	virtual ~DkControlPoint() {};
-//
-//	void draw(QPainter *painter, bool transform);
-//		
-//	QPointF getCenter() const {
-//		return QPointF(size().width()*0.5f, size().height()*0.5f);
-//	};
-//
-//	const QPointF& truPosition() const;
-//	void setPosition(const QPointF&);
-//	QPointF mapToViewport(const QPointF& pos) const
-//	{
-//		return mWorldMatrix->inverted().map(pos);
-//	}
-//
-//	void setType(ControlPointType t);
-//	void paintEvent(QPaintEvent* event) override;
-//
-//signals:
-//	void moved();
-//	void removed(DkControlPoint* sender);
-//
-//protected:
-//
-//	void mousePressEvent(QMouseEvent *event) override;
-//	void mouseMoveEvent(QMouseEvent *event) override;
-//	void mouseReleaseEvent(QMouseEvent *event) override;
-//	void enterEvent(QEvent *event) override;
-//
-//	
-//	
-//	DkControlPointRepresentation* mOriginal;
-//	DkControlPointRepresentation* mClone;
-//	QTransform* mWorldMatrix;
-//	QPointF initialPos; 
-//	QPointF posGrab;
-//	QPointF mPosition;
-//	
-//	std::shared_ptr<QTransform> mlocal;
-//	int mSize;
-//	//QSize size;
-//};
-
 class DkPatchMatchingViewPort : public nmc::DkPluginViewPort {
 	Q_OBJECT
 
@@ -144,11 +94,7 @@ public:
 	QPen getPen() const;
 	bool isCanceled();
 	QImage getPaintedImage();
-	void checkWorldMatrixChange();
-
-signals: 
-	void worldMatrixChanged(QTransform newMatrix);
-
+	void checkWorldMatrixChanged();
 
 public slots:
 	void setBrush(const QBrush& brush);
@@ -161,6 +107,9 @@ public slots:
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
 	//void controlPointRemoved(DkControlPoint* sender);
+
+signals:
+	void worldMatrixChanged(QTransform worldMatrix);
 
 protected:
 	//bool event(QEvent *event);
@@ -186,15 +135,10 @@ protected:
 
 	QPen mPen;
 	bool mPolygonFinished;
-	//QVector<DkControlPoint*> mControlPoints;
-	//QVector<DkControlPoint*> mClonePoints;
-	std::shared_ptr<QTransform> mTransform;
-	DkPolygon* polygon;
-	DkPolygon* polygon2;
-	QGraphicsView* view;
-	QGraphicsScene* scene;
-	QHBoxLayout* layout;
-	DkSyncedPolygon* poly;
+
+	DkSyncedPolygon mPolygon;
+	std::unique_ptr<DkPolygonRenderer> mLeft;
+	std::unique_ptr<DkPolygonRenderer> mRight;
 
 	QTransform mWorldMatrixCache;
 };
