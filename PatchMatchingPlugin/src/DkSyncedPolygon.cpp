@@ -124,7 +124,7 @@ namespace nmp {
 
 	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
 	{
-		return mapToViewPort(pos, getWorldMatrix());
+		return mapToViewPort(pos, getWorldMatrix()*getTransform());
 	}
 
 	QTransform DkPolygonRenderer::getWorldMatrix() const
