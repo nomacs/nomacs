@@ -36,19 +36,26 @@ namespace nmp {
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
 	{
 		mControlPoints.removeAll(point);
+
+		if (!mControlPoints.empty()) {
+			mControlPoints.first()->setType(ControlPointType::start);
+		}
 		emit changed();
 	}
 
-	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon)
-		:QObject(polygon), mPolygon(polygon), mViewport(viewport)
+	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
+		:QObject(polygon), mPolygon(polygon), mViewport(viewport), mWorldMatrix(worldMatrix)
 	{
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
+
+		refresh();
 	}
 
 	void DkPolygonRenderer::setTransform(const QTransform & transform)
 	{
 		mTransform = transform;
+		update();
 	}
 
 	DkPolygonRenderer::~DkPolygonRenderer()
@@ -94,6 +101,7 @@ namespace nmp {
 		// add point
 		auto rep = new DkControlPointRepresentation(point, getViewport(), this); // create new widget
 		connect(rep, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::update);
+		connect(point.data(), &DkControlPoint::moved, this, &DkPolygonRenderer::update);
 		connect(rep, &DkControlPointRepresentation::removed, mPolygon, &DkSyncedPolygon::removePoint);
 		rep->setVisible(true);
 
@@ -253,7 +261,7 @@ namespace nmp {
 	void DkControlPoint::setPos(const QPointF & point)
 	{
 		mPoint = point;
-		emit changed();
+		emit moved();
 	}
 
 	QPointF DkControlPoint::getPos() const
@@ -264,7 +272,6 @@ namespace nmp {
 	void DkControlPoint::setType(ControlPointType t)
 	{
 		mType = t;
-		emit changed();
 	}
 
 	ControlPointType DkControlPoint::getType()

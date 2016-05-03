@@ -35,7 +35,7 @@ namespace nmp {
 		ControlPointType getType();
 
 	signals:
-		void changed();
+		void moved();
 
 	private:
 		QPointF mPoint;
@@ -73,7 +73,7 @@ namespace nmp {
 		Q_OBJECT
 
 	public:
-		DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon);
+		DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix=QTransform());
 		virtual ~DkPolygonRenderer();
 		
 		QPointF mapToViewport(const QPointF& pos) const;
@@ -82,6 +82,7 @@ namespace nmp {
 
 		void setTransform(const QTransform& transform);
 		QTransform getTransform() const;
+		//void setColor(const QColor& color);
 
 	public slots:
 		void setWorldMatrix(QTransform worldMatrix);
@@ -98,6 +99,7 @@ namespace nmp {
 
 		QVector<DkControlPointRepresentation*> mPoints;
 		QVector<DkLineRepresentation*> mLines;
+		//QColor mColor;
 	};
 
 	class DkControlPointRepresentation : public QWidget

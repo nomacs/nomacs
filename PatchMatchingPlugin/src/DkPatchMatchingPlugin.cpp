@@ -317,13 +317,10 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 void DkPatchMatchingViewPort::applyChangesAndClose() {
 	mPolygonFinished = true;
 	
+	mRight = std::make_unique<DkPolygonRenderer>(this, &mPolygon, mWorldMatrixCache);
+	mRight->setTransform(QTransform().translate(200, 0));
+	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mRight.get(), &DkPolygonRenderer::setWorldMatrix);
 
-	//for (auto point : mControlPoints) {
-	//	auto clone = new DkControlPoint(point->truPosition(), mWorldMatrix, mTransform, this);
-	//	clone->setVisible(true);
-	//	mClonePoints.append(clone);
-	//	
-	//}
 
 	update();
 	//cancelTriggered = false;
