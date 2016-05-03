@@ -833,7 +833,7 @@ void DkFilePreference::createLayout() {
 	cacheBox->setMaximumWidth(200);
 	cacheBox->setValue(qRound(Settings::param().resources().cacheMemory));
 
-	QLabel* cLabel = new QLabel(tr("We recommend to set a moderate cache value arround 100 MB"), this);
+	QLabel* cLabel = new QLabel(tr("We recommend to set a moderate cache value around 100 MB"), this);
 	
 	DkGroupWidget* cacheGroup = new DkGroupWidget(tr("Maximal Cache Size"), this);
 	cacheGroup->addWidget(cacheBox);
@@ -849,7 +849,7 @@ void DkFilePreference::createLayout() {
 	historyBox->setMaximumWidth(200);
 	historyBox->setValue(qRound(Settings::param().resources().historyMemory));
 
-	QLabel* hLabel = new QLabel(tr("We recommend to set a moderate edit history value arround 100 MB"), this);
+	QLabel* hLabel = new QLabel(tr("We recommend to set a moderate edit history value around 100 MB"), this);
 
 	DkGroupWidget* historyGroup = new DkGroupWidget(tr("History Size"), this);
 	historyGroup->addWidget(historyBox);
