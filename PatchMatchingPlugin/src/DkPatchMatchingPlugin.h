@@ -106,13 +106,11 @@ public slots:
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
-	//void controlPointRemoved(DkControlPoint* sender);
 
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 
 protected:
-	//bool event(QEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
