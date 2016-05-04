@@ -317,16 +317,18 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 void DkPatchMatchingViewPort::applyChangesAndClose() {
 	mPolygonFinished = true;
 	
-	mRight = std::make_unique<DkPolygonRenderer>(this, &mPolygon, mWorldMatrixCache);
-	mRight->translate(400, 0);
-	mRight->rotate(45);
-	
-	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mRight.get(), &DkPolygonRenderer::setWorldMatrix);
+	if (!mRight) {
+		mRight = std::make_unique<DkPolygonRenderer>(this, &mPolygon, mWorldMatrixCache);
+		mRight->setColor(QColor(255, 0, 0));
+		mRight->translate(400, 0);
 
+		connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mRight.get(), &DkPolygonRenderer::setWorldMatrix);
+	}
+	else {
+		mRight->rotate(45);
+	}
 
 	update();
-	//cancelTriggered = false;
-	//emit closePlugin();
 }
 
 void DkPatchMatchingViewPort::discardChangesAndClose() {

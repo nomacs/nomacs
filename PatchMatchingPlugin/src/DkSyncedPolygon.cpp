@@ -6,8 +6,6 @@
 namespace nmp {
 	DkSyncedPolygon::DkSyncedPolygon()
 	{
-		mCenter = QSharedPointer<DkControlPoint>(new DkControlPoint(QPointF()));
-		mCenter->setType(ControlPointType::center);
 	}
 
 	DkSyncedPolygon::~DkSyncedPolygon()
@@ -39,15 +37,9 @@ namespace nmp {
 		return rect;
 	}
 
-	void DkSyncedPolygon::updateCenter() const
+	QPointF DkSyncedPolygon::center() const
 	{
-		auto rect = boundingRect();
-		mCenter->setPos(rect.center());
-	}
-
-	QSharedPointer<DkControlPoint> DkSyncedPolygon::center() const
-	{
-		return mCenter;
+		return boundingRect().center();
 	}
 
 
@@ -57,9 +49,9 @@ namespace nmp {
 		if (mControlPoints.empty()) {
 			point->setType(ControlPointType::start);
 		}
-		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::updateCenter);
+
 		mControlPoints.append(point);
-		updateCenter();
+	
 		emit pointAdded(point);
 	}
 
@@ -74,17 +66,23 @@ namespace nmp {
 	}
 
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
-		:	QObject(polygon), 
-			mPolygon(polygon), 
-			mViewport(viewport), 
-			mWorldMatrix(worldMatrix),
-			mAngle(0), mDx(0), mDy(0)
+		: QObject(polygon),
+		mPolygon(polygon),
+		mViewport(viewport),
+		mWorldMatrix(worldMatrix),
+		mControlCenter(new DkControlPoint(QPointF())),
+		mColor(0,0,255)
 	{
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 
-		mCenter = new DkControlPointRepresentation(polygon->center(), mViewport, this);
+
+		mControlCenter->setType(ControlPointType::center);
+
+		mCenter = new DkControlPointRepresentation(mControlCenter, mViewport, this);
+		connect(mCenter, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::translate);
 		mCenter->setVisible(true);
+		
 		refresh();
 	}
 
@@ -96,17 +94,12 @@ namespace nmp {
 		mTransform.rotate(angle);
 		mTransform.translate(-center.x(), -center.y());
 		
-		mAngle += angle;
-		
 		update();
 	}
 
 	void DkPolygonRenderer::translate(const qreal & dx, const qreal & dy)
 	{		
-		mTransform.rotate(-mAngle);
 		mTransform.translate(dx, dy);
-		mTransform.rotate(mAngle);
-
 		update();
 	}
 
@@ -123,16 +116,17 @@ namespace nmp {
 
 	QTransform DkPolygonRenderer::getTransform() const
 	{
-		//QPointF center = mPolygon->boundingRect().center();
-		//
-		//QTransform t;
-		//t.translate(mDx, mDy);
-		//t.translate(center.x(), center.y());
-		//t.rotate(mAngle);
-		//t.translate(-center.x(), -center.y());
-		//
-		//return t;
 		return mTransform;
+	}
+
+	void DkPolygonRenderer::setColor(const QColor & color)
+	{
+		mColor = color;
+	}
+
+	QColor DkPolygonRenderer::getColor() const
+	{
+		return mColor;
 	}
 
 
@@ -188,6 +182,7 @@ namespace nmp {
 			l->move(transform);
 		}
 		
+		mControlCenter->setPos(mPolygon->center());
 		mCenter->move(transform);
 
 		mViewport->update();
@@ -195,7 +190,7 @@ namespace nmp {
 
 	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
 	{
-		return mapToViewPort(pos, getWorldMatrix()*getTransform());
+		return mapToViewPort(pos, getTransform()*getWorldMatrix());
 	}
 
 	QTransform DkPolygonRenderer::getWorldMatrix() const
@@ -237,9 +232,9 @@ namespace nmp {
 		penNoStroke.setWidth(0);
 		penNoStroke.setColor(QColor(0, 0, 0, 0));
 
-		QPen pen;
-		pen.setWidth(1);
-		pen.setColor(QColor(255, 255, 0, 100));
+		//QPen pen;
+		//pen.setWidth(1);
+		//pen.setColor(QColor(255, 255, 0, 100));
 		painter->setRenderHint(QPainter::HighQualityAntialiasing);
 		painter->setRenderHint(QPainter::Antialiasing);
 
@@ -248,14 +243,16 @@ namespace nmp {
 		painter->setBrush(QColor(0, 0, 0, 0));
 		drawPoint(painter, size().width());	// invisible rect for mouseevents...
 
-		painter->setBrush(QColor(255, 255, 255, 100));
-		drawPoint(painter, 7);
+		//painter->setBrush(QColor(255, 255, 255, 100));
+		//drawPoint(painter, 11);
 
 		painter->setBrush(QColor(0, 0, 0));
-		drawPoint(painter, 5);
+		drawPoint(painter, 7);
 
+		auto color = mRenderer->getColor();
+		color.setAlpha(60);
 		//draw bar
-		painter->setBrush(QColor(0, 0, 255, 60));
+		painter->setBrush(color);
 		drawPoint(painter, size().width());
 	}
 
@@ -264,28 +261,30 @@ namespace nmp {
 		if (event->buttons() == Qt::LeftButton) {
 			posGrab = mRenderer->mapToViewport(event->globalPos());
 			initialPos = mPoint->getPos();
-
 		}
 	
 		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
 			emit removed(mPoint);
 		}
-		//QWidget::mousePressEvent(event);	// diem: eat this event - so the parent does not create a new point...
 	}
 	
 	void DkControlPointRepresentation::mouseMoveEvent(QMouseEvent* event)
 	{
 		if (event->buttons() == Qt::LeftButton) {
-			mPoint->setPos(initialPos + mRenderer->mapToViewport(event->globalPos()) - posGrab);
-	
-			emit moved();
+			auto newpos = mRenderer->mapToViewport(event->globalPos());
+			mPoint->setPos(initialPos + newpos - posGrab);
+			
+			auto diff = newpos - posGrab;
+			emit moved(diff.x(), diff.y());
 		}
 	}
 
 	void DkControlPointRepresentation::mouseReleaseEvent(QMouseEvent* event)
 	{	
 		if (event->buttons() == Qt::LeftButton) {
-			emit moved();
+			auto newpos = mRenderer->mapToViewport(event->globalPos());
+			auto diff = newpos - posGrab;
+			emit moved(diff.x(), diff.y());
 		}
 	}
 	
@@ -307,13 +306,12 @@ namespace nmp {
 		}
 
 		case ControlPointType::center: {
-			QPolygonF poly;
-			poly << QPointF(rect.left()+size/2, rect.top())
-				<< QPointF(rect.left()+size, rect.top()+size/2)
-				<< QPointF(rect.left() + size/2, rect.top()+size)
-				<< QPointF(rect.left() + 0, rect.top()+size/2);
+			QPolygonF poly;			//draw diamond
+			poly << QPointF(rect.left()+size/2., rect.top())
+				<< QPointF(rect.left()+size, rect.top()+size/2.)
+				<< QPointF(rect.left() + size/2., rect.top()+size)
+				<< QPointF(rect.left() + 0, rect.top()+size/2.);
 			painter->drawPolygon(poly);
-			//painter->drawRect(rect);
 			break;
 		}
 
@@ -376,8 +374,7 @@ namespace nmp {
 		painter.setPen(pen);
 		painter.setRenderHint(QPainter::HighQualityAntialiasing);
 		painter.setRenderHint(QPainter::Antialiasing);
-		painter.setBrush(QColor(255, 255, 255, 60));
-		painter.setBrush(QColor(255, 0, 0, 60));
+		painter.setBrush(QColor(0, 0, 0));
 		painter.drawLine(mMapped.first, mMapped.second);
 		//painter.drawRect(rect());
 

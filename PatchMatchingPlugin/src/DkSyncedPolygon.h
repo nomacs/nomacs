@@ -55,8 +55,7 @@ namespace nmp {
 		size_t size() const;
 		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
 		QRectF boundingRect() const;
-		void updateCenter() const;
-		QSharedPointer<DkControlPoint> center() const;
+		QPointF center() const;
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);
@@ -69,7 +68,6 @@ namespace nmp {
 		
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		QVector<DkPolygonRenderer*> mRenderer;
-		QSharedPointer<DkControlPoint> mCenter;
 	};
 
 
@@ -89,7 +87,8 @@ namespace nmp {
 		void translate(const qreal& dx, const qreal& dy);
 		void setTransform(const QTransform& transform);
 		QTransform getTransform() const;
-		//void setColor(const QColor& color);
+		void setColor(const QColor& color);
+		QColor getColor() const;
 
 	public slots:
 		void setWorldMatrix(QTransform worldMatrix);
@@ -103,14 +102,12 @@ namespace nmp {
 
 		QTransform mWorldMatrix;
 		QTransform mTransform;
-		
-		qreal mAngle;
-		qreal mDx, mDy;
 
 		QVector<DkControlPointRepresentation*> mPoints;
 		QVector<DkLineRepresentation*> mLines;
 		DkControlPointRepresentation* mCenter;
-		//QColor mColor;
+		QSharedPointer<DkControlPoint> mControlCenter;
+		QColor mColor;
 	};
 
 	class DkControlPointRepresentation : public QWidget
@@ -129,7 +126,7 @@ namespace nmp {
 		void mouseReleaseEvent(QMouseEvent* event) override;
 
 	signals:
-		void moved();
+		void moved(qreal dx, qreal dy);
 		void removed(QSharedPointer<DkControlPoint> point);
 
 	private:
@@ -137,6 +134,7 @@ namespace nmp {
 		QSharedPointer<DkControlPoint> mPoint;
 		QPointF posGrab;
 		QPointF initialPos;
+		QPointF lastPos;
 		DkPolygonRenderer* mRenderer;
 	};
 
