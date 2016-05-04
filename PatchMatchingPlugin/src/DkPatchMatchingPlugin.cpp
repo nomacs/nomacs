@@ -318,7 +318,9 @@ void DkPatchMatchingViewPort::applyChangesAndClose() {
 	mPolygonFinished = true;
 	
 	mRight = std::make_unique<DkPolygonRenderer>(this, &mPolygon, mWorldMatrixCache);
-	mRight->setTransform(QTransform().translate(200, 0));
+	mRight->translate(400, 0);
+	mRight->rotate(45);
+	
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mRight.get(), &DkPolygonRenderer::setWorldMatrix);
 
 

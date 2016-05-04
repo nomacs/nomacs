@@ -6,6 +6,8 @@
 namespace nmp {
 	DkSyncedPolygon::DkSyncedPolygon()
 	{
+		mCenter = QSharedPointer<DkControlPoint>(new DkControlPoint(QPointF()));
+		mCenter->setType(ControlPointType::center);
 	}
 
 	DkSyncedPolygon::~DkSyncedPolygon()
@@ -22,6 +24,32 @@ namespace nmp {
 		return mControlPoints;
 	}
 
+	QRectF DkSyncedPolygon::boundingRect() const
+	{
+		if (mControlPoints.empty()) {
+			return QRectF();
+		}
+
+		auto getR = [this](const auto& p) {return QRectF(p->getPos(), QSize()); };
+		auto rect = getR(mControlPoints.first());
+		for (auto p : mControlPoints) {
+			rect = rect.united(getR(p));
+		}
+
+		return rect;
+	}
+
+	void DkSyncedPolygon::updateCenter() const
+	{
+		auto rect = boundingRect();
+		mCenter->setPos(rect.center());
+	}
+
+	QSharedPointer<DkControlPoint> DkSyncedPolygon::center() const
+	{
+		return mCenter;
+	}
+
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
@@ -29,7 +57,9 @@ namespace nmp {
 		if (mControlPoints.empty()) {
 			point->setType(ControlPointType::start);
 		}
+		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::updateCenter);
 		mControlPoints.append(point);
+		updateCenter();
 		emit pointAdded(point);
 	}
 
@@ -44,13 +74,42 @@ namespace nmp {
 	}
 
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
-		:QObject(polygon), mPolygon(polygon), mViewport(viewport), mWorldMatrix(worldMatrix)
+		:	QObject(polygon), 
+			mPolygon(polygon), 
+			mViewport(viewport), 
+			mWorldMatrix(worldMatrix),
+			mAngle(0), mDx(0), mDy(0)
 	{
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 
+		mCenter = new DkControlPointRepresentation(polygon->center(), mViewport, this);
+		mCenter->setVisible(true);
 		refresh();
 	}
+
+	void DkPolygonRenderer::rotate(const qreal & angle)
+	{
+		QPointF center = mPolygon->boundingRect().center();
+
+		mTransform.translate(center.x(), center.y());
+		mTransform.rotate(angle);
+		mTransform.translate(-center.x(), -center.y());
+		
+		mAngle += angle;
+		
+		update();
+	}
+
+	void DkPolygonRenderer::translate(const qreal & dx, const qreal & dy)
+	{		
+		mTransform.rotate(-mAngle);
+		mTransform.translate(dx, dy);
+		mTransform.rotate(mAngle);
+
+		update();
+	}
+
 
 	void DkPolygonRenderer::setTransform(const QTransform & transform)
 	{
@@ -64,6 +123,15 @@ namespace nmp {
 
 	QTransform DkPolygonRenderer::getTransform() const
 	{
+		//QPointF center = mPolygon->boundingRect().center();
+		//
+		//QTransform t;
+		//t.translate(mDx, mDy);
+		//t.translate(center.x(), center.y());
+		//t.rotate(mAngle);
+		//t.translate(-center.x(), -center.y());
+		//
+		//return t;
 		return mTransform;
 	}
 
@@ -119,6 +187,9 @@ namespace nmp {
 		for (auto l : mLines) {
 			l->move(transform);
 		}
+		
+		mCenter->move(transform);
+
 		mViewport->update();
 	}
 
@@ -232,6 +303,17 @@ namespace nmp {
 
 		case ControlPointType::start: {
 			painter->drawEllipse(rect);
+			break;
+		}
+
+		case ControlPointType::center: {
+			QPolygonF poly;
+			poly << QPointF(rect.left()+size/2, rect.top())
+				<< QPointF(rect.left()+size, rect.top()+size/2)
+				<< QPointF(rect.left() + size/2, rect.top()+size)
+				<< QPointF(rect.left() + 0, rect.top()+size/2);
+			painter->drawPolygon(poly);
+			//painter->drawRect(rect);
 			break;
 		}
 

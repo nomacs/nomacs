@@ -18,7 +18,8 @@ namespace nmp {
 
 	enum class ControlPointType {
 		start,
-		intermediate
+		intermediate,
+		center
 	};
 
 	class DkControlPoint : public QObject
@@ -53,6 +54,9 @@ namespace nmp {
 
 		size_t size() const;
 		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
+		QRectF boundingRect() const;
+		void updateCenter() const;
+		QSharedPointer<DkControlPoint> center() const;
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);
@@ -65,6 +69,7 @@ namespace nmp {
 		
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		QVector<DkPolygonRenderer*> mRenderer;
+		QSharedPointer<DkControlPoint> mCenter;
 	};
 
 
@@ -80,6 +85,8 @@ namespace nmp {
 		QTransform getWorldMatrix() const;
 		QWidget* getViewport();
 
+		void rotate(const qreal& angle);
+		void translate(const qreal& dx, const qreal& dy);
 		void setTransform(const QTransform& transform);
 		QTransform getTransform() const;
 		//void setColor(const QColor& color);
@@ -96,9 +103,13 @@ namespace nmp {
 
 		QTransform mWorldMatrix;
 		QTransform mTransform;
+		
+		qreal mAngle;
+		qreal mDx, mDy;
 
 		QVector<DkControlPointRepresentation*> mPoints;
 		QVector<DkLineRepresentation*> mLines;
+		DkControlPointRepresentation* mCenter;
 		//QColor mColor;
 	};
 
@@ -107,12 +118,6 @@ namespace nmp {
 		Q_OBJECT
 
 	public:
-
-		enum class type
-		{
-			square,
-			circle
-		};
 
 		DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, QWidget* viewport, DkPolygonRenderer* renderer);
 		void draw(QPainter *painter);
