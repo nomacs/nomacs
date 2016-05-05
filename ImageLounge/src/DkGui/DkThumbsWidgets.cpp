@@ -292,7 +292,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		
 		// if the image is loaded draw that (it might be edited)
 		if (mThumbs.at(idx)->hasImage()) {
-			img = mThumbs.at(idx)->image();
+			img = mThumbs.at(idx)->imageScaledToHeight(Settings::param().display().thumbSize);
 		}
 		else {
 

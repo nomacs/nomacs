@@ -274,12 +274,52 @@ QImage DkImageContainer::image() {
 	return mLoader->image();
 }
 
+QImage DkImageContainer::imageScaledToHeight(int height) {
+
+	// check cash first
+	for (const QImage& img : scaledImages) {
+		if (img.height() == height)
+			return img;
+	}
+
+	// cache it
+	QImage sImg = image().scaledToHeight(height, Qt::SmoothTransformation);
+	scaledImages << sImg;
+
+	// clean up
+	if (scaledImages.size() > 10)
+		scaledImages.pop_front();
+
+	return sImg;
+}
+
+QImage DkImageContainer::imageScaledToWidth(int width) {
+
+	// check cash first
+	for (const QImage& img : scaledImages) {
+		if (img.width() == width)
+			return img;
+	}
+
+	// cache it
+	QImage sImg = image().scaledToWidth(width, Qt::SmoothTransformation);
+	scaledImages << sImg;
+
+	// clean up
+	if (scaledImages.size() > 10)
+		scaledImages.pop_front();
+
+	return sImg;
+}
+
 void DkImageContainer::setImage(const QImage& img, const QString& editName) {
 
 	setImage(img, editName, mFilePath);
 }
 
 void DkImageContainer::setImage(const QImage& img, const QString& editName, const QString& filePath) {
+
+	scaledImages.clear();	// invalid now
 
 	setFilePath(mFilePath);
 	getLoader()->setImage(img, editName, filePath);

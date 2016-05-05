@@ -75,6 +75,8 @@ public:
 	bool operator>= (const DkImageContainer& o) const;
 
 	QImage image();
+	QImage imageScaledToHeight(int height);
+	QImage imageScaledToWidth(int width);
 
 	bool hasImage() const;
 	int getLoadState() const;
@@ -131,6 +133,7 @@ protected:
 	bool mSelected	= false;
 
 	QFileInfo mFileInfo;
+	QVector<QImage> scaledImages;
 
 #ifdef WITH_QUAZIP	
 	QSharedPointer<DkZipContainer> mZipData;
