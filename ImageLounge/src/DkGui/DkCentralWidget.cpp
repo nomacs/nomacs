@@ -476,7 +476,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		showViewPort();
 		mViewport->unloadImage();
 		mViewport->deactivate();
-		showRecentFiles(true);
+
+		if (Settings::param().app().showRecentFiles)
+			showRecentFiles(true);
 	}
 
 	qDebug() << "[MARKUS] tab mode: " << mTabInfos.at(idx)->getMode();

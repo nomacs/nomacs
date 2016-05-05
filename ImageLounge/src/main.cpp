@@ -222,7 +222,6 @@ int main(int argc, char *argv[]) {
 		bool showRecent = nmc::Settings::param().app().showRecentFiles;
 		showRecent &= nmc::Settings::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
 		w->showRecentFiles(showRecent);
-
 	}
 
 	// load directory preview
