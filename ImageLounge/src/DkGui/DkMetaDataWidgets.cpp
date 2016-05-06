@@ -325,10 +325,10 @@ Qt::ItemFlags DkMetaDataModel::flags(const QModelIndex& index) const {
 DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : 
 	DkDockWidget(title, parent, flags) {
 
-		setObjectName("DkMetaDataDock");
+	setObjectName("DkMetaDataDock");
 
-		createLayout();
-		readSettings();
+	createLayout();
+	readSettings();
 }
 
 DkMetaDataDock::~DkMetaDataDock() {
@@ -375,14 +375,15 @@ void DkMetaDataDock::createLayout() {
 
 	QWidget* widget = new QWidget(this);
 	QVBoxLayout* layout = new QVBoxLayout(widget);
+	layout->setContentsMargins(2, 2, 2, 2);
 
 	// create our beautiful shortcut view
 	mModel = new DkMetaDataModel(this);
 	mTreeView = new QTreeView(this);
 	mTreeView->setModel(mModel);
 	mTreeView->setAlternatingRowColors(true);
-	mTreeView->setIndentation(8);
-	//treeView->setStyleSheet("QTreeView{border-color: #C3C3C4; alternate-background-color: blue; background: #AAAAAA;}");
+	//mTreeView->setIndentation(8);
+	//mTreeView->setStyleSheet("QTreeView{border: none;}");
 
 	mThumbNailLabel = new QLabel(tr("Thumbnail"), this);
 	mThumbNailLabel->hide();

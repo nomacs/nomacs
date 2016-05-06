@@ -771,12 +771,10 @@ void DkSettings::setToDefaultSettings() {
 	display_p.hudFgdColor = QColor(255, 255, 255);
 	display_p.bgColor = QColor(100, 100, 100, 255);
 	display_p.iconColor = QColor(100,100,100,255);
-	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
-	display_p.iconSize = 32;
+	display_p.iconSize = 16;
 	display_p.thumbPreviewSize = 64;
-	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;
 	display_p.tpPattern = false;
 	display_p.toolbarGradient = false;

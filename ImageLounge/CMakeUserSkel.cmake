@@ -3,9 +3,9 @@
 
 # set your preferred Qt Library path
 IF (CMAKE_CL_64)
-	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.5.0-x64/qtbase/bin/")
+	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.6.0-x64/qtbase/bin/")
 ELSE ()
-	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.5.0-x86/qtbase/bin/")
+	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.6.0-x86/qtbase/bin/")
 ENDIF ()
 
 # set your preferred OpenCV Library path
