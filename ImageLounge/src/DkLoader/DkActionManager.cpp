@@ -994,11 +994,11 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
 	mFileActions[menu_file_print]->setStatusTip(QObject::tr("Print an image"));
 
-	mFileActions[menu_file_show_recent] = new QAction(QObject::tr("&Recent Files and Folders"), parent);
+	mFileActions[menu_file_show_recent] = new QAction(QObject::tr("&Recent Files"), parent);
 	mFileActions[menu_file_show_recent]->setShortcut(QKeySequence(shortcut_recent_files));
 	mFileActions[menu_file_show_recent]->setCheckable(true);
 	mFileActions[menu_file_show_recent]->setChecked(false);
-	mFileActions[menu_file_show_recent]->setStatusTip(QObject::tr("Show Recent Files and Folders"));
+	mFileActions[menu_file_show_recent]->setStatusTip(QObject::tr("Show Recent Files"));
 
 	mFileActions[menu_file_reload] = new QAction(QObject::tr("&Reload File"), parent);
 	mFileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);

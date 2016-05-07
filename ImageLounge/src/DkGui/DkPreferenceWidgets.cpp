@@ -1158,7 +1158,7 @@ void DkAdvancedPreference::createLayout() {
 	QCheckBox* cbSaveExif = new QCheckBox(tr("Save Exif Orientation"), this);
 	cbSaveExif->setObjectName("saveExif");
 	cbSaveExif->setToolTip(tr("If checked, orientation is written to the Exif rather than rotating the image Matrix\n") +
-		tr("NOTE: this allows for rotating JPGs without loosing information."));
+		tr("NOTE: this allows for rotating JPGs without losing information."));
 	cbSaveExif->setChecked(Settings::param().metaData().saveExifOrientation);
 
 	DkGroupWidget* loadFileGroup = new DkGroupWidget(tr("File Loading/Saving"), this);

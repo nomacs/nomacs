@@ -2,6 +2,6 @@
 <Package>
     <DisplayName>Plugins [x86]</DisplayName>
     <Description>Select [x86] plugins to install for</Description>
-    <Version>3.1.0-5</Version>
-    <ReleaseDate>2016-04-28</ReleaseDate>
+    <Version>3.1.0-7</Version>
+    <ReleaseDate>2016-05-06</ReleaseDate>
 </Package>
