@@ -90,6 +90,8 @@ namespace nmp {
 		void setColor(const QColor& color);
 		QColor getColor() const;
 
+		void addPointMouseCoords(const QPointF& coordinates);
+
 	public slots:
 		void setWorldMatrix(QTransform worldMatrix);
 		void refresh();

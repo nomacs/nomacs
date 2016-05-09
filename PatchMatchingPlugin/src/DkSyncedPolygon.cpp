@@ -129,6 +129,11 @@ namespace nmp {
 		return mColor;
 	}
 
+	void DkPolygonRenderer::addPointMouseCoords(const QPointF & coordinates)
+	{
+		mPolygon->addPoint(mapToViewport(coordinates));
+	}
+
 
 	void DkPolygonRenderer::refresh()
 	{
@@ -147,6 +152,7 @@ namespace nmp {
 			addPoint(p);
 		}
 	}
+
 
 	void DkPolygonRenderer::addPoint(QSharedPointer<DkControlPoint> point)
 	{
@@ -300,12 +306,12 @@ namespace nmp {
 			break;
 		}
 
-		case ControlPointType::start: {
+		case ControlPointType::center: {
 			painter->drawEllipse(rect);
 			break;
 		}
 
-		case ControlPointType::center: {
+		case ControlPointType::start : {
 			QPolygonF poly;			//draw diamond
 			poly << QPointF(rect.left()+size/2., rect.top())
 				<< QPointF(rect.left()+size, rect.top()+size/2.)

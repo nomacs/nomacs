@@ -213,9 +213,9 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 	}
 
 	if (event->buttons() == Qt::LeftButton && parent()) {
-		QPointF point = mapToViewport(event->pos()); //
+		QPointF point = event->pos(); //
 		
-		mPolygon.addPoint(point);
+		mLeft->addPointMouseCoords(point);
 	}
 }
 
