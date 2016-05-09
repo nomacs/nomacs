@@ -29,7 +29,7 @@
 
 #include <QDebug>
 #include <QMouseEvent>
-
+#include <QActionGroup>
 
 namespace nmp {
 
@@ -174,21 +174,28 @@ void DkPatchMatchingViewPort::init() {
 	
 	mtoolbar = new DkPatchMatchingToolBar(tr("Paint Toolbar"), this);
 
+	// 
+	// OLD Toolbar stuff
+	// 
 	connect(mtoolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
 	connect(mtoolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
 	connect(mtoolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
 	connect(mtoolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
 	connect(mtoolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
-
 	connect(mtoolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
 	loadSettings();
 	mtoolbar->setPenColor(mPen.color());
 	mtoolbar->setPenWidth(mPen.width());
+	// 
+	// ~~END OLD Toolbar stuff
+	// 
 
-	
-	mLeft = std::make_unique<DkPolygonRenderer>(this, &mPolygon);
-	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mLeft.get(), &DkPolygonRenderer::setWorldMatrix);
+	addPoly();
+
+	// handler to clone the polygon
+	connect(mtoolbar, &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
+	connect(mtoolbar, &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
 }
 
 void DkPatchMatchingViewPort::undoLastPaint() {
@@ -199,6 +206,21 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 	paths.pop_back();
 	pathsPen.pop_back();
 	update();
+}
+
+void DkPatchMatchingViewPort::clonePolygon()
+{
+	//mPolygonFinished = true;
+	auto poly = addPoly();
+	poly->setColor(QColor(255, 0, 0));
+	poly->translate(400, 0);
+
+	update();
+}
+
+void DkPatchMatchingViewPort::selectedToolChanged(SelectedTool tool)
+{
+	qDebug() << "Selected tool changed to :" << static_cast<int>(tool);
 }
 
 void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
@@ -215,7 +237,7 @@ void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton && parent()) {
 		QPointF point = event->pos(); //
 		
-		mLeft->addPointMouseCoords(point);
+		firstPoly()->addPointMouseCoords(point);
 	}
 }
 
@@ -287,6 +309,19 @@ void DkPatchMatchingViewPort::checkWorldMatrixChanged()
 	}
 }
 
+QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
+{
+	return mRenderer.first();
+}
+
+QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
+{
+	QSharedPointer<DkPolygonRenderer> poly(new DkPolygonRenderer(this, &mPolygon));
+	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, poly.data(), &DkPolygonRenderer::setWorldMatrix);
+	mRenderer.append(poly);
+	return poly;
+}
+
 
 void DkPatchMatchingViewPort::setBrush(const QBrush& brush) {
 	this->brush = brush;
@@ -315,20 +350,7 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 }
 
 void DkPatchMatchingViewPort::applyChangesAndClose() {
-	mPolygonFinished = true;
 	
-	if (!mRight) {
-		mRight = std::make_unique<DkPolygonRenderer>(this, &mPolygon, mWorldMatrixCache);
-		mRight->setColor(QColor(255, 0, 0));
-		mRight->translate(400, 0);
-
-		connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, mRight.get(), &DkPolygonRenderer::setWorldMatrix);
-	}
-	else {
-		mRight->rotate(45);
-	}
-
-	update();
 }
 
 void DkPatchMatchingViewPort::discardChangesAndClose() {
@@ -413,6 +435,42 @@ void DkPatchMatchingToolBar::createIcons() {
 
 void DkPatchMatchingToolBar::createLayout() {
 
+	
+	// Setup group which handles mode changes
+	mModeGroup = new QActionGroup(this);
+	mModeGroup->setExclusive(true);		
+	
+	auto create = [this](const char* name) {	//convenience, add actions to group
+		QAction* action = new QAction(tr(name), this);
+		action->setCheckable(true);
+		action->setChecked(false);
+		mModeGroup->addAction(action);
+		return action;
+	};
+
+	mAddPointAction = create("Add");
+	mRemovePointAction = create("Remove");
+	mMoveAction = create("Move");
+	mRotateAction = create("Roate");
+	mAddPointAction->setChecked(true);
+
+	// connect with single handler
+	connect(mModeGroup, &QActionGroup::triggered, this, &DkPatchMatchingToolBar::modeChangeTriggered);
+
+	// setup clone action
+	mClonePolyAction = new QAction(tr("Clone"), this);
+	connect(mClonePolyAction, &QAction::triggered, this, &DkPatchMatchingToolBar::clonePolyTriggered);
+
+
+	// add actions to toolbar
+	addActions(mModeGroup->actions());
+	addSeparator();
+	addAction(mClonePolyAction);
+	addSeparator();
+
+	//
+	// OLD STUFF -> We should change this perhaps if we don't need it anymore
+	//
 	QList<QKeySequence> enterSc;
 	enterSc.append(QKeySequence(Qt::Key_Enter));
 	enterSc.append(QKeySequence(Qt::Key_Return));
@@ -472,6 +530,15 @@ void DkPatchMatchingToolBar::createLayout() {
 	addWidget(penColButton);
 	addWidget(alphaBox);
 }
+
+void DkPatchMatchingToolBar::modeChangeTriggered(QAction* action)
+{
+	if (action == mAddPointAction) emit selectedToolChanged(SelectedTool::AddPoint);
+	if (action == mRemovePointAction) emit selectedToolChanged(SelectedTool::RemovePoint);
+	if (action == mMoveAction) emit selectedToolChanged(SelectedTool::Move);
+	if (action == mRotateAction) emit selectedToolChanged(SelectedTool::Rotate);
+}
+
 
 void DkPatchMatchingToolBar::setVisible(bool visible) {
 

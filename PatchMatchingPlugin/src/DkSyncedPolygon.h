@@ -130,7 +130,7 @@ namespace nmp {
 	signals:
 		void moved(qreal dx, qreal dy);
 		void removed(QSharedPointer<DkControlPoint> point);
-
+		void rotated(qreal angle, QSharedPointer<DkControlPoint> point);
 	private:
 		QWidget* mViewport;
 		QSharedPointer<DkControlPoint> mPoint;

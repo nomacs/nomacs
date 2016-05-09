@@ -59,6 +59,7 @@ namespace nmp {
 
 class DkPatchMatchingViewPort;
 class DkPatchMatchingToolBar;
+enum class SelectedTool;
 
 class DkPatchMatchingPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
@@ -95,6 +96,7 @@ public:
 	bool isCanceled();
 	QImage getPaintedImage();
 	void checkWorldMatrixChanged();
+	
 
 public slots:
 	void setBrush(const QBrush& brush);
@@ -106,11 +108,15 @@ public slots:
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
-
+	
+	void clonePolygon();
+	void selectedToolChanged(SelectedTool tool);
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 
-protected:
+private:
+	QSharedPointer<DkPolygonRenderer> firstPoly();
+	QSharedPointer<DkPolygonRenderer> addPoly();
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
@@ -135,12 +141,17 @@ protected:
 	bool mPolygonFinished;
 
 	DkSyncedPolygon mPolygon;
-	std::unique_ptr<DkPolygonRenderer> mLeft;
-	std::unique_ptr<DkPolygonRenderer> mRight;
+	QVector<QSharedPointer<DkPolygonRenderer> > mRenderer;
 
 	QTransform mWorldMatrixCache;
 };
 
+enum class SelectedTool {
+	AddPoint,
+	RemovePoint,
+	Move, 
+	Rotate
+};
 
 class DkPatchMatchingToolBar : public QToolBar {
 	Q_OBJECT
@@ -165,6 +176,7 @@ public:
 
 
 public slots:
+	void modeChangeTriggered(QAction* action);
 	void on_applyAction_triggered();
 	void on_cancelAction_triggered();
 	void on_panAction_toggled(bool checked);
@@ -175,6 +187,8 @@ public slots:
 	virtual void setVisible(bool visible);
 
 signals:
+	void selectedToolChanged(SelectedTool tool);
+	void clonePolyTriggered();
 	void applySignal();
 	void cancelSignal();
 	void colorSignal(QColor color);
@@ -197,6 +211,12 @@ protected:
 	QAction* panAction;
 	QAction* undoAction;
 
+	QAction* mAddPointAction;
+	QAction* mRemovePointAction;
+	QAction* mClonePolyAction;
+	QAction* mRotateAction;
+	QAction* mMoveAction;
+	QActionGroup* mModeGroup;
 	QVector<QIcon> icons;		// needed for colorizing
 };
 

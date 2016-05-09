@@ -2,7 +2,8 @@
 #include <QWidget>
 #include <QPainter>
 #include "DkPatchMatchingPlugin.h"
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 namespace nmp {
 	DkSyncedPolygon::DkSyncedPolygon()
 	{
@@ -81,7 +82,7 @@ namespace nmp {
 
 		mCenter = new DkControlPointRepresentation(mControlCenter, mViewport, this);
 		connect(mCenter, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::translate);
-		mCenter->setVisible(true);
+		mCenter->setVisible(false);
 		
 		refresh();
 	}
@@ -165,6 +166,7 @@ namespace nmp {
 			mLines.append(line);
 		}
 
+	
 
 		// add point
 		auto rep = new DkControlPointRepresentation(point, getViewport(), this); // create new widget
@@ -173,7 +175,7 @@ namespace nmp {
 		connect(rep, &DkControlPointRepresentation::removed, mPolygon, &DkSyncedPolygon::removePoint);
 		rep->setVisible(true);
 
-		mPoints.append(rep);
+		mPoints.append(rep);		
 
 		update();
 	}
@@ -190,6 +192,9 @@ namespace nmp {
 		
 		mControlCenter->setPos(mPolygon->center());
 		mCenter->move(transform);
+
+		// make center visible if more than 2 points
+		mCenter->setVisible(mPoints.size() > 1);
 
 		mViewport->update();
 	}
@@ -264,19 +269,34 @@ namespace nmp {
 
 	void DkControlPointRepresentation::mousePressEvent(QMouseEvent* event)
 	{
-		if (event->buttons() == Qt::LeftButton) {
+
+		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
+			emit removed(mPoint);
+		}
+		else if (event->button() == event->modifiers() & Qt::ShiftModifier) {
+
+		}
+		else if (event->buttons() == Qt::LeftButton) {
 			posGrab = mRenderer->mapToViewport(event->globalPos());
 			initialPos = mPoint->getPos();
 		}
 	
-		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
-			emit removed(mPoint);
-		}
 	}
 	
 	void DkControlPointRepresentation::mouseMoveEvent(QMouseEvent* event)
 	{
-		if (event->buttons() == Qt::LeftButton) {
+		if (event->button() == Qt::LeftButton && event->modifiers() & Qt::ShiftModifier) {
+			auto newpos = mRenderer->mapToViewport(event->globalPos());
+			auto diff = newpos - posGrab;
+
+			if (diff.manhattanLength() > 20) {
+				auto angle = atan(abs(newpos.y() - posGrab.y() / (newpos.x() - posGrab.x())))*180./M_PI;
+				qDebug() << "Rotated " << angle << " degrees.";
+				emit rotated(angle, mPoint);
+			}
+
+		}
+		else if (event->buttons() == Qt::LeftButton) {
 			auto newpos = mRenderer->mapToViewport(event->globalPos());
 			mPoint->setPos(initialPos + newpos - posGrab);
 			
@@ -287,7 +307,10 @@ namespace nmp {
 
 	void DkControlPointRepresentation::mouseReleaseEvent(QMouseEvent* event)
 	{	
-		if (event->buttons() == Qt::LeftButton) {
+		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::Key_Shift) {
+			
+		}
+		else if (event->buttons() == Qt::LeftButton) {
 			auto newpos = mRenderer->mapToViewport(event->globalPos());
 			auto diff = newpos - posGrab;
 			emit moved(diff.x(), diff.y());
