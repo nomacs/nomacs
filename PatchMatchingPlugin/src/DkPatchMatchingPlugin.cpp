@@ -196,6 +196,16 @@ void DkPatchMatchingViewPort::init() {
 	// handler to clone the polygon
 	connect(mtoolbar, &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
 	connect(mtoolbar, &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
+
+
+	// add timeline stuff, should probably move this to the plugin part
+	// to separate it better from the view
+	mTimeline = std::make_unique<DkPolyTimeline>();
+	auto dock = new QDockWidget(this);
+	dock->setWidget(mTimeline.get());
+	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, dock);
+	connect(this, &DkPatchMatchingViewPort::polygonAdded, mTimeline.get(), &DkPolyTimeline::addPolygon);
+	//mTimeline->setVisible(true);
 }
 
 void DkPatchMatchingViewPort::undoLastPaint() {
@@ -216,6 +226,8 @@ void DkPatchMatchingViewPort::clonePolygon()
 	poly->translate(400, 0);
 
 	update();
+
+	emit polygonAdded();
 }
 
 void DkPatchMatchingViewPort::selectedToolChanged(SelectedTool tool)

@@ -55,6 +55,8 @@
 #include <QGraphicsView>
 #include <QHBoxLayout>
 #include "DkSyncedPolygon.h"
+#include "DkPolyTimeline.h"
+
 namespace nmp {
 
 class DkPatchMatchingViewPort;
@@ -113,6 +115,7 @@ public slots:
 	void selectedToolChanged(SelectedTool tool);
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
+	void polygonAdded(/*some parameters are probably needed here*/);
 
 private:
 	QSharedPointer<DkPolygonRenderer> firstPoly();
@@ -144,6 +147,7 @@ private:
 	QVector<QSharedPointer<DkPolygonRenderer> > mRenderer;
 
 	QTransform mWorldMatrixCache;
+	std::unique_ptr<DkPolyTimeline> mTimeline;
 };
 
 enum class SelectedTool {

@@ -280,7 +280,7 @@ namespace nmp {
 			auto posGrab = event->globalPos();
 			std::shared_ptr<double> lastAngle = std::make_shared<double>(0.);
 
-			mMouseMove = [this, posGrab, lastAngle](QMouseEvent* event) {
+			mMouseMove = [this, posGrab, lastAngle](auto event) {
 				auto newpos = event->globalPos();
 				auto diff = newpos - posGrab;
 
@@ -297,7 +297,7 @@ namespace nmp {
 			auto posGrab = mRenderer->mapToViewport(event->globalPos());
 			auto initialPos = mPoint->getPos();
 
-			mMouseMove = [this, posGrab, initialPos](auto* event) {
+			mMouseMove = [this, posGrab, initialPos](auto event) {
 				auto newpos = mRenderer->mapToViewport(event->globalPos());
 				mPoint->setPos(initialPos + newpos - posGrab);
 
