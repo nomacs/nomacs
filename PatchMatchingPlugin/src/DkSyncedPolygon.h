@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <QPen>
+#include <functional>
 
 namespace {
 	template<class T>
@@ -133,14 +134,11 @@ namespace nmp {
 		void removed(QSharedPointer<DkControlPoint> point);
 		void rotated(qreal angle, QPointF point);
 	private:
+
 		QWidget* mViewport;
 		QSharedPointer<DkControlPoint> mPoint;
-		QPointF posGrab;
-		QPointF posGrabView;
-		QPointF initialPos;
-		QPointF lastPos;
-		qreal lastAngle;
 		DkPolygonRenderer* mRenderer;
+		std::function<void(QMouseEvent* event)> mMouseMove;
 	};
 
 	class DkLineRepresentation : public QWidget

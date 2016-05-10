@@ -463,8 +463,8 @@ void DkPatchMatchingToolBar::createLayout() {
 
 
 	// add actions to toolbar
-	addActions(mModeGroup->actions());
-	addSeparator();
+	//addActions(mModeGroup->actions());
+	//addSeparator();
 	addAction(mClonePolyAction);
 	addSeparator();
 
