@@ -60,6 +60,7 @@ namespace nmp {
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);
+		void pointRemoved();
 		void changed();
 
 	public slots:
@@ -68,7 +69,6 @@ namespace nmp {
 	private:
 	
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
-		QVector<DkPolygonRenderer*> mRenderer;
 	};
 
 
@@ -85,19 +85,30 @@ namespace nmp {
 		QWidget* getViewport();
 
 		void translate(const qreal& dx, const qreal& dy);
+		
 		void setTransform(const QTransform& transform);
 		QTransform getTransform() const;
+
 		void setColor(const QColor& color);
 		QColor getColor() const;
-
+		
 		void addPointMouseCoords(const QPointF& coordinates);
+		QVector<QPointF> mapToImage(QTransform image);
 
+	signals:
+		// this signal is emitted whenever a transform is changed
+		// which is needed for updating stuff
+		void transformChanged(QTransform transform);
+	
 	public slots:
 		void rotate(qreal angle, QPointF center);
 		void rotateCenter(qreal angle);
 		void setWorldMatrix(QTransform worldMatrix);
+		
 		void refresh();
+		
 		void addPoint(QSharedPointer<DkControlPoint> point);
+		
 		void update();
 
 	private:

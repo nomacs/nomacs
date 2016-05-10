@@ -80,7 +80,7 @@ public:
 	nmc::DkPluginViewPort* getViewPort() override;
 	void deleteViewPort() override;
 	bool closesOnImageChange() const override;
-	
+
 protected:
 	DkPatchMatchingViewPort* mViewport;
 
@@ -143,7 +143,7 @@ private:
 	QPen mPen;
 	bool mPolygonFinished;
 
-	DkSyncedPolygon mPolygon;
+	std::shared_ptr<DkSyncedPolygon> mPolygon;
 	QVector<QSharedPointer<DkPolygonRenderer> > mRenderer;
 
 	QTransform mWorldMatrixCache;

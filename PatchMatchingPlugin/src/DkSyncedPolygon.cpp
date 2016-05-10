@@ -54,6 +54,7 @@ namespace nmp {
 		mControlPoints.append(point);
 	
 		emit pointAdded(point);
+		emit changed();
 	}
 
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
@@ -63,6 +64,7 @@ namespace nmp {
 		if (!mControlPoints.empty()) {
 			mControlPoints.first()->setType(ControlPointType::start);
 		}
+		emit pointRemoved();
 		emit changed();
 	}
 
@@ -75,7 +77,7 @@ namespace nmp {
 		mColor(0,0,255)
 	{
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
-		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
+		connect(polygon, &DkSyncedPolygon::pointRemoved, this, &DkPolygonRenderer::refresh);
 
 
 		mControlCenter->setType(ControlPointType::center);
@@ -90,9 +92,11 @@ namespace nmp {
 
 	void DkPolygonRenderer::rotate(qreal angle, QPointF center)
 	{
-		mTransform.translate(center.x(), center.y());
-		mTransform.rotate(angle);
-		mTransform.translate(-center.x(), -center.y());
+		QTransform t = getTransform();
+		t.translate(center.x(), center.y());
+		t.rotate(angle);
+		t.translate(-center.x(), -center.y());
+		setTransform(t);
 		update();
 	}
 
@@ -103,7 +107,9 @@ namespace nmp {
 
 	void DkPolygonRenderer::translate(const qreal & dx, const qreal & dy)
 	{		
-		mTransform.translate(dx, dy);
+		QTransform t = getTransform();
+		t.translate(dx, dy);
+		setTransform(t);
 		update();
 	}
 
@@ -111,6 +117,7 @@ namespace nmp {
 	void DkPolygonRenderer::setTransform(const QTransform & transform)
 	{
 		mTransform = transform;
+		emit transformChanged(transform);
 		update();
 	}
 
@@ -136,6 +143,16 @@ namespace nmp {
 	void DkPolygonRenderer::addPointMouseCoords(const QPointF & coordinates)
 	{
 		mPolygon->addPoint(mapToViewport(coordinates));
+	}
+
+	QVector<QPointF> DkPolygonRenderer::mapToImage(QTransform image)
+	{
+		QVector<QPointF> mapped;
+
+		for (auto point : mPoints) {
+			mapped.append(image.map(point->pos()));
+		}
+		return mapped;
 	}
 
 

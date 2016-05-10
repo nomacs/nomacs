@@ -15,9 +15,10 @@ public:
 	virtual QSize sizeHint() const;
 signals:
 
-	public slots :
-		void setPixmap(const QPixmap &);
+public slots :
+	void setPixmap(const QPixmap &);
 	void resizeEvent(QResizeEvent *);
+
 private:
 	QPixmap pix;
 };

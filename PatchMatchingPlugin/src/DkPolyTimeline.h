@@ -4,35 +4,50 @@
 #include <vector>
 #include <memory>
 #include <QScrollArea>
-class DkSingleTimeline : public QWidget
-{
-	Q_OBJECT
-public:
-	DkSingleTimeline(QWidget* parent = 0);
-	virtual ~DkSingleTimeline();
+#include "DkSyncedPolygon.h"
 
-public slots:
-	void refresh();
+namespace nmp {
 
-private:
-	void clear();
-	void addElement();
+	class DkPolyTimeline;
 
-	QHBoxLayout* mLayout;
-	std::vector<std::unique_ptr<QImage>> mElements;
-};
+	class DkSingleTimeline : public QWidget
+	{
+		Q_OBJECT
+	public:
+		DkSingleTimeline(QWidget* parent = 0);
+		virtual ~DkSingleTimeline();
+		void setPolygon(std::shared_ptr<DkSyncedPolygon> poly);
 
-class DkPolyTimeline : public QWidget
-{
-	Q_OBJECT
-public:
-	DkPolyTimeline();
-	virtual ~DkPolyTimeline();
-	void addPolygon(/*don't know which parameters yet*/);
+	public slots:
+		void setTransform(QTransform transform);
+		void update();
 
-private:
-	QVBoxLayout* mLayout;
-	QWidget* mWidget;
-	QScrollArea* mScrollArea;
-};
+	private:
+		void clear();
+		void addElement();
+
+		//std::vector<std::unique_ptr<QImage>> mElements;
+
+		QHBoxLayout* mLayout;
+		QTransform mTransform;
+		DkPolyTimeline* mParent;
+		std::shared_ptr<DkSyncedPolygon> mPoly;		//<! polygon stores the saved state
+	};
+
+	class DkPolyTimeline : public QWidget
+	{
+		Q_OBJECT
+	public:
+		DkPolyTimeline(QWidget* parent = 0);
+		virtual ~DkPolyTimeline();
+		DkSingleTimeline* addPolygon();
+
+	private:
+		
+		QVBoxLayout* mLayout;
+		QWidget* mWidget;
+		QScrollArea* mScrollArea;
+	};
+
+}
 
