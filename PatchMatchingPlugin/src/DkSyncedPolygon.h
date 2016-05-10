@@ -65,7 +65,7 @@ namespace nmp {
 		void removePoint(QSharedPointer<DkControlPoint> point);
 
 	private:
-		
+	
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		QVector<DkPolygonRenderer*> mRenderer;
 	};
@@ -83,7 +83,6 @@ namespace nmp {
 		QTransform getWorldMatrix() const;
 		QWidget* getViewport();
 
-		void rotate(const qreal& angle);
 		void translate(const qreal& dx, const qreal& dy);
 		void setTransform(const QTransform& transform);
 		QTransform getTransform() const;
@@ -93,6 +92,8 @@ namespace nmp {
 		void addPointMouseCoords(const QPointF& coordinates);
 
 	public slots:
+		void rotate(qreal angle, QPointF center);
+		void rotateCenter(qreal angle);
 		void setWorldMatrix(QTransform worldMatrix);
 		void refresh();
 		void addPoint(QSharedPointer<DkControlPoint> point);
@@ -130,13 +131,15 @@ namespace nmp {
 	signals:
 		void moved(qreal dx, qreal dy);
 		void removed(QSharedPointer<DkControlPoint> point);
-		void rotated(qreal angle, QSharedPointer<DkControlPoint> point);
+		void rotated(qreal angle, QPointF point);
 	private:
 		QWidget* mViewport;
 		QSharedPointer<DkControlPoint> mPoint;
 		QPointF posGrab;
+		QPointF posGrabView;
 		QPointF initialPos;
 		QPointF lastPos;
+		qreal lastAngle;
 		DkPolygonRenderer* mRenderer;
 	};
 
