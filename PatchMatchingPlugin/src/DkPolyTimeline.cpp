@@ -53,7 +53,7 @@ namespace nmp {
 	{
 	}
 
-	void DkSingleTimeline::setPolygon(std::shared_ptr<DkSyncedPolygon> poly)
+	void DkSingleTimeline::setPolygon(QSharedPointer<DkSyncedPolygon> poly)
 	{
 		mPoly = poly;
 		update();

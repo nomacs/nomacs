@@ -143,8 +143,8 @@ private:
 	QPen mPen;
 	bool mPolygonFinished;
 
-	std::shared_ptr<DkSyncedPolygon> mPolygon;
-	QVector<QSharedPointer<DkPolygonRenderer> > mRenderer;
+	QSharedPointer<DkSyncedPolygon> mPolygon;
+	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 
 	QTransform mWorldMatrixCache;
 	std::unique_ptr<DkPolyTimeline> mTimeline;

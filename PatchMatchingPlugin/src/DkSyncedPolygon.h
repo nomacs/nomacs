@@ -112,17 +112,18 @@ namespace nmp {
 		void update();
 
 	private:
+		//initialization list
 		DkSyncedPolygon* mPolygon;
 		QWidget* mViewport;
-
 		QTransform mWorldMatrix;
-		QTransform mTransform;
+		QSharedPointer<DkControlPoint> mControlCenter;
+		DkControlPointRepresentation* mCenter;
+		QColor mColor;
 
+		// using default constructor
+		QTransform mTransform;
 		QVector<DkControlPointRepresentation*> mPoints;
 		QVector<DkLineRepresentation*> mLines;
-		DkControlPointRepresentation* mCenter;
-		QSharedPointer<DkControlPoint> mControlCenter;
-		QColor mColor;
 	};
 
 	class DkControlPointRepresentation : public QWidget

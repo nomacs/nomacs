@@ -46,7 +46,7 @@ namespace nmp {
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
-		auto point = QSharedPointer<DkControlPoint>(new DkControlPoint(coordinates));
+		auto point = QSharedPointer<DkControlPoint>::create(coordinates);
 		if (mControlPoints.empty()) {
 			point->setType(ControlPointType::start);
 		}
@@ -73,16 +73,16 @@ namespace nmp {
 		mPolygon(polygon),
 		mViewport(viewport),
 		mWorldMatrix(worldMatrix),
-		mControlCenter(new DkControlPoint(QPointF())),
-		mColor(0,0,255)
+		mControlCenter(QSharedPointer<DkControlPoint>::create(QPointF())),
+		mCenter(new DkControlPointRepresentation(mControlCenter, mViewport, this)),
+		mColor(0, 0, 255)
 	{
+		// connect synced polygon to this
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 		connect(polygon, &DkSyncedPolygon::pointRemoved, this, &DkPolygonRenderer::refresh);
 
-
+		// connect center point to this
 		mControlCenter->setType(ControlPointType::center);
-
-		mCenter = new DkControlPointRepresentation(mControlCenter, mViewport, this);
 		connect(mCenter, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::translate);
 		connect(mCenter, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		mCenter->setVisible(false);
@@ -185,8 +185,6 @@ namespace nmp {
 			line->setVisible(true);
 			mLines.append(line);
 		}
-
-	
 
 		// add point
 		auto rep = new DkControlPointRepresentation(point, getViewport(), this); // create new widget
@@ -293,7 +291,7 @@ namespace nmp {
 		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
 			emit removed(mPoint);
 		}
-		else if (event->button() == Qt::LeftButton && event->modifiers() & Qt::ShiftModifier) {
+		else if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ShiftModifier) {
 			auto posGrab = event->globalPos();
 			std::shared_ptr<double> lastAngle = std::make_shared<double>(0.);
 

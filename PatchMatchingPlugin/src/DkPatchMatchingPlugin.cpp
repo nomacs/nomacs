@@ -114,7 +114,7 @@ bool DkPatchMatchingPlugin::closesOnImageChange() const
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
 
 DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags) 
-	: DkPluginViewPort(parent, flags), mPolygon(std::make_shared<DkSyncedPolygon>())
+	: DkPluginViewPort(parent, flags), mPolygon(QSharedPointer<DkSyncedPolygon>::create())
 {
 
 	setObjectName("DkPatchMatchingViewPort");
@@ -227,7 +227,7 @@ void DkPatchMatchingViewPort::clonePolygon()
 	auto timeline = mTimeline->addPolygon();
 	timeline->setPolygon(mPolygon);
 	connect(poly.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
-	connect(mPolygon.get(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
+	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
 
 	update();
 
@@ -283,7 +283,6 @@ void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 }
 
 
-
 QImage DkPatchMatchingViewPort::getPaintedImage() {
 
 	if(parent()) {
@@ -332,7 +331,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
-	QSharedPointer<DkPolygonRenderer> poly(new DkPolygonRenderer(this, mPolygon.get()));
+	auto poly = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data());
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, poly.data(), &DkPolygonRenderer::setWorldMatrix);
 	mRenderer.append(poly);
 	return poly;

@@ -16,7 +16,7 @@ namespace nmp {
 	public:
 		DkSingleTimeline(QWidget* parent = 0);
 		virtual ~DkSingleTimeline();
-		void setPolygon(std::shared_ptr<DkSyncedPolygon> poly);
+		void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
 
 	public slots:
 		void setTransform(QTransform transform);
@@ -31,7 +31,7 @@ namespace nmp {
 		QHBoxLayout* mLayout;
 		QTransform mTransform;
 		DkPolyTimeline* mParent;
-		std::shared_ptr<DkSyncedPolygon> mPoly;		//<! polygon stores the saved state
+		QSharedPointer<DkSyncedPolygon> mPoly;		//<! polygon stores the saved state
 	};
 
 	class DkPolyTimeline : public QWidget
