@@ -37,10 +37,12 @@ namespace nmp {
 	class DkPolyTimeline : public QWidget
 	{
 		Q_OBJECT
+
 	public:
 		DkPolyTimeline(QWidget* parent = 0);
 		virtual ~DkPolyTimeline();
 		DkSingleTimeline* addPolygon();
+		void reset();
 
 	private:
 		

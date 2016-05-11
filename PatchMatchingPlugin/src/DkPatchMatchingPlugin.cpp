@@ -74,6 +74,8 @@ QImage DkPatchMatchingPlugin::image() const {
 **/
 QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const {
 	
+	qDebug() << "Run PatchMatchinPlugin";
+
 	if (!image)
 		return image;
 
@@ -93,6 +95,8 @@ QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QSt
 **/
 nmc::DkPluginViewPort* DkPatchMatchingPlugin::getViewPort() {
 
+	qDebug() << "Get viewport";
+
 	if (!mViewport) {
 		mViewport = new DkPatchMatchingViewPort;
 	}
@@ -109,7 +113,7 @@ void DkPatchMatchingPlugin::deleteViewPort() {
 
 bool DkPatchMatchingPlugin::closesOnImageChange() const
 {
-	return false;
+	return true;
 }
 
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
@@ -154,8 +158,6 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	// ~~END OLD Toolbar stuff
 	// 
 
-	addPoly();
-
 	// handler to clone the polygon
 	connect(mtoolbar.data(), &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
 	connect(mtoolbar.data(), &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
@@ -165,6 +167,11 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	// to separate it better from the view
 	mDock->setWidget(mTimeline.data());
 	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, mDock.data());
+}
+
+void DkPatchMatchingViewPort::reset()
+{
+	
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -211,11 +218,6 @@ void DkPatchMatchingViewPort::clonePolygon()
 	poly->setColor(QColor(255, 0, 0));
 	poly->translate(400, 0);
 
-	auto timeline = mTimeline->addPolygon();
-	timeline->setPolygon(mPolygon);
-	connect(poly.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
-	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
-
 	update();
 
 	emit polygonAdded();
@@ -225,6 +227,7 @@ void DkPatchMatchingViewPort::selectedToolChanged(SelectedTool tool)
 {
 	qDebug() << "Selected tool changed to :" << static_cast<int>(tool);
 }
+
 
 void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -313,15 +316,48 @@ void DkPatchMatchingViewPort::checkWorldMatrixChanged()
 
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 {
+	if (mRenderer.empty()) {
+		addPoly();
+	}
 	return mRenderer.first();
 }
 
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
-	auto poly = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data());
-	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, poly.data(), &DkPolygonRenderer::setWorldMatrix);
-	mRenderer.append(poly);
-	return poly;
+	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data());
+	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
+	mRenderer.append(render);
+
+	auto timeline = mTimeline->addPolygon();
+	timeline->setPolygon(mPolygon);
+
+	// this is our cleanup slot
+	connect(render.data(), &DkPolygonRenderer::removed, this,
+	
+		[this, render, timeline]() {
+			// disconnect the polygon and clear it (delete all QWidgets which have viewport as parent)
+			render.data()->disconnect();
+			render->clear();
+
+			// disconnect the timeline and delete
+			timeline->disconnect();
+			timeline->deleteLater();
+
+			// remove the polygon from the renderer list
+			mRenderer.removeAll(render);
+
+			// if no render exists anymore also cean up the synced polygon
+			if (mRenderer.empty()) {
+				mPolygon->disconnect();
+				mPolygon = QSharedPointer<DkSyncedPolygon>::create();
+		}
+
+	});
+
+	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
+	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
+
+	return render;
 }
 
 

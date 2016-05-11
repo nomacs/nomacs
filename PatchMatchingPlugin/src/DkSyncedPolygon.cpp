@@ -74,7 +74,7 @@ namespace nmp {
 		mViewport(viewport),
 		mWorldMatrix(worldMatrix),
 		mControlCenter(QSharedPointer<DkControlPoint>::create(QPointF())),
-		mCenter(new DkControlPointRepresentation(mControlCenter, mViewport, this)),
+		mCenter(new DkControlPointRepresentation(mControlCenter, viewport, this)),
 		mColor(0, 0, 255)
 	{
 		// connect synced polygon to this
@@ -85,6 +85,7 @@ namespace nmp {
 		mControlCenter->setType(ControlPointType::center);
 		connect(mCenter, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::translate);
 		connect(mCenter, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
+		connect(mCenter, &DkControlPointRepresentation::removed, this, &DkPolygonRenderer::removed);
 		mCenter->setVisible(false);
 		
 		refresh();
@@ -216,6 +217,25 @@ namespace nmp {
 		mCenter->setVisible(mPoints.size() > 1);
 
 		mViewport->update();
+	}
+
+	void DkPolygonRenderer::clear()
+	{
+		mCenter->disconnect();
+		delete mCenter;
+		mCenter = nullptr;
+
+		for (auto p : mPoints) {
+			p->disconnect();
+			delete p;
+		}
+		mPoints.clear();
+
+		for (auto l : mLines) {
+			l->disconnect();
+			delete l;
+		}
+		mLines.clear();
 	}
 
 	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
@@ -370,7 +390,7 @@ namespace nmp {
 
 	DkControlPointRepresentation::DkControlPointRepresentation(QSharedPointer<DkControlPoint> point, 
 																	QWidget* viewport, DkPolygonRenderer* renderer)
-		: QWidget(viewport), mViewport(viewport), mPoint(point), mRenderer(renderer)
+		: QWidget(viewport), mPoint(point), mRenderer(renderer)
 	{
 		setGeometry(QRect(-10, -10, 20, 20));
 	}

@@ -113,6 +113,8 @@ public slots:
 	
 	void clonePolygon();
 	void selectedToolChanged(SelectedTool tool);
+	void reset();
+
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);

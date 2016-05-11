@@ -99,6 +99,8 @@ namespace nmp {
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff
 		void transformChanged(QTransform transform);
+		void removed();
+
 	
 	public slots:
 		void rotate(qreal angle, QPointF center);
@@ -110,6 +112,7 @@ namespace nmp {
 		void addPoint(QSharedPointer<DkControlPoint> point);
 		
 		void update();
+		void clear();
 
 	private:
 		//initialization list
@@ -147,7 +150,6 @@ namespace nmp {
 		void rotated(qreal angle, QPointF point);
 	private:
 
-		QWidget* mViewport;
 		QSharedPointer<DkControlPoint> mPoint;
 		DkPolygonRenderer* mRenderer;
 		std::function<void(QMouseEvent* event)> mMouseMove;

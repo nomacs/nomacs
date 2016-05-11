@@ -1,7 +1,7 @@
 #include "DkPolyTimeline.h"
 #include <QLabel>
 #include "AspectRatioPixmapLabel.h"
-
+#include <QDebug>
 namespace nmp {
 
 	DkPolyTimeline::DkPolyTimeline(QWidget* parent)
@@ -39,6 +39,17 @@ namespace nmp {
 		return tl;
 	}
 
+	void DkPolyTimeline::reset()
+	{
+		auto item = mLayout->itemAt(0);
+		while (item = mLayout->itemAt(0)) {
+			if (item->widget()) {
+				delete item->widget()
+					;
+			}
+		}
+	}
+
 	DkSingleTimeline::DkSingleTimeline(QWidget* parent)
 		: QWidget(parent),
 			mLayout(new QHBoxLayout(this))
@@ -46,7 +57,7 @@ namespace nmp {
 		setStyleSheet("background-color: #0000ff40");
 		setLayout(mLayout);
 		mLayout->setMargin(0);
-		//update();
+		mLayout->setAlignment(Qt::AlignLeft);
 	}
 
 	DkSingleTimeline::~DkSingleTimeline()
@@ -57,12 +68,16 @@ namespace nmp {
 	{
 		mPoly = poly;
 		update();
+		updateGeometry();
 	}
 
 	void DkSingleTimeline::clear()
 	{
-		for (auto c : mLayout->children()) {
-			delete c;
+		auto item = mLayout->itemAt(0);
+		while (item = mLayout->itemAt(0)) {
+			if (item->widget()) {
+				delete item->widget();
+			}
 		}
 	}
 
@@ -72,7 +87,7 @@ namespace nmp {
 		AspectRatioPixmapLabel* label = new AspectRatioPixmapLabel(this);
 
 		QPixmap pm(30, 30);
-		pm.fill(QColor(255, 0, 0, 255));
+		pm.fill(QColor(0, 255, 0, 255));
 		label->setPixmap(pm);
 		label->setMargin(0);
 
@@ -81,19 +96,21 @@ namespace nmp {
 
 	void DkSingleTimeline::setTransform(QTransform transform)
 	{
+		qDebug() << "Timeline transform changed";
 		mTransform = transform;
 	}
 
 	void DkSingleTimeline::update()
 	{
+		if (!mPoly) {
+			return;
+		}
+
+		qDebug() << "Timeline update";
 		clear();
 
-		addElement();
-		addElement();
-		addElement();
-		addElement();
-		addElement();
-		addElement();
-		addElement();
+		for (auto p : mPoly->points()) {
+			addElement();
+		}
 	}
 }
