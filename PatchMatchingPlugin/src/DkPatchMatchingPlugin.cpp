@@ -39,7 +39,8 @@ namespace nmp {
 *	Constructor
 **/
 DkPatchMatchingPlugin::DkPatchMatchingPlugin() 
-	: mViewport(nullptr) {
+	:mViewport(nullptr)
+{
 }
 
 /**
@@ -93,7 +94,7 @@ QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QSt
 nmc::DkPluginViewPort* DkPatchMatchingPlugin::getViewPort() {
 
 	if (!mViewport) {
-		mViewport = new DkPatchMatchingViewPort();			
+		mViewport = new DkPatchMatchingViewPort;
 	}
 	return mViewport;
 }
@@ -114,26 +115,62 @@ bool DkPatchMatchingPlugin::closesOnImageChange() const
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
 
 DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags) 
-	: DkPluginViewPort(parent, flags), mPolygon(QSharedPointer<DkSyncedPolygon>::create())
+	: DkPluginViewPort(parent, flags), 
+		cancelTriggered(false),
+		panning(false),
+		mtoolbar(new DkPatchMatchingToolBar(tr("Paint Toolbar"), this), &QDockWidget::deleteLater),
+		mPolygon(QSharedPointer<DkSyncedPolygon>::create()),
+		mDock(new QDockWidget(this), &QObject::deleteLater),
+		mTimeline(new DkPolyTimeline(mDock.data()), &QObject::deleteLater),
+		defaultCursor(Qt::CrossCursor)
 {
 
 	setObjectName("DkPatchMatchingViewPort");
-	init();
 	setMouseTracking(true);
+	setAttribute(Qt::WA_MouseTracking);
+	
+	setCursor(defaultCursor);
+
+	mPen.setColor(QColor(0, 0, 0));
+	mPen.setCapStyle(Qt::RoundCap);
+	mPen.setJoinStyle(Qt::RoundJoin);
+	mPen.setBrush(Qt::NoBrush);
+	mPen.setWidth(1);
+
+	// 
+	// OLD Toolbar stuff
+	// 
+	connect(mtoolbar.data(), SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
+	connect(mtoolbar.data(), SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
+	connect(mtoolbar.data(), SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	connect(mtoolbar.data(), SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
+	connect(mtoolbar.data(), SIGNAL(undoSignal()), this, SLOT(undoLastPaint()));
+	connect(mtoolbar.data(), SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
+
+	loadSettings();
+	mtoolbar->setPenColor(mPen.color());
+	mtoolbar->setPenWidth(mPen.width());
+	// 
+	// ~~END OLD Toolbar stuff
+	// 
+
+	addPoly();
+
+	// handler to clone the polygon
+	connect(mtoolbar.data(), &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
+	connect(mtoolbar.data(), &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
+
+
+	// add timeline stuff, should probably move this to the plugin part
+	// to separate it better from the view
+	mDock->setWidget(mTimeline.data());
+	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, mDock.data());
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
 	qDebug() << "[VIEWPORT] deleted...";
 	
 	saveSettings();
-
-	// active deletion since the MainWindow takes ownership...
-	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
-	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-	if (mtoolbar) {
-		delete mtoolbar;
-		mtoolbar = nullptr;
-	}
 }
 
 
@@ -158,55 +195,6 @@ void DkPatchMatchingViewPort::loadSettings() {
 	settings.endGroup();
 }
 
-void DkPatchMatchingViewPort::init() {
-	
-	setAttribute(Qt::WA_MouseTracking);
-	mPolygonFinished = false;
-	panning = false;
-	cancelTriggered = false;
-	defaultCursor = Qt::CrossCursor;
-	setCursor(defaultCursor);
-	mPen = QColor(0,0,0);
-	mPen.setCapStyle(Qt::RoundCap);
-	mPen.setJoinStyle(Qt::RoundJoin);
-	mPen.setBrush(Qt::NoBrush);
-	mPen.setWidth(1);
-	
-	mtoolbar = new DkPatchMatchingToolBar(tr("Paint Toolbar"), this);
-
-	// 
-	// OLD Toolbar stuff
-	// 
-	connect(mtoolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)), Qt::UniqueConnection);
-	connect(mtoolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)), Qt::UniqueConnection);
-	connect(mtoolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
-	connect(mtoolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
-	connect(mtoolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
-	connect(mtoolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
-	
-	loadSettings();
-	mtoolbar->setPenColor(mPen.color());
-	mtoolbar->setPenWidth(mPen.width());
-	// 
-	// ~~END OLD Toolbar stuff
-	// 
-
-	addPoly();
-
-	// handler to clone the polygon
-	connect(mtoolbar, &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
-	connect(mtoolbar, &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
-
-
-	// add timeline stuff, should probably move this to the plugin part
-	// to separate it better from the view
-	mTimeline = std::make_unique<DkPolyTimeline>();
-	auto dock = new QDockWidget(this);
-	dock->setWidget(mTimeline.get());
-	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, dock);
-	//mTimeline->setVisible(true);
-}
-
 void DkPatchMatchingViewPort::undoLastPaint() {
 
 	if (paths.empty())
@@ -219,7 +207,6 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 
 void DkPatchMatchingViewPort::clonePolygon()
 {
-	//mPolygonFinished = true;
 	auto poly = addPoly();
 	poly->setColor(QColor(255, 0, 0));
 	poly->translate(400, 0);
@@ -389,7 +376,7 @@ bool DkPatchMatchingViewPort::isCanceled() {
 void DkPatchMatchingViewPort::setVisible(bool visible) {
 
 	if (mtoolbar)
-		emit showToolbar(mtoolbar, visible);
+		emit showToolbar(mtoolbar.data(), visible);
 
 	DkPluginViewPort::setVisible(visible);
 }

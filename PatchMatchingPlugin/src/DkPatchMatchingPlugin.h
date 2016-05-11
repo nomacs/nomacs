@@ -124,30 +124,28 @@ private:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
-	void init();
-
 	
 	void loadSettings();
 	void saveSettings() const;
 
-	QVector<QPainterPath> paths;
-	QVector<QPen> pathsPen;
-
+	// initialization list
 	bool cancelTriggered;
 	QBrush brush;
 	
 	bool panning;
-	DkPatchMatchingToolBar* mtoolbar;
-	QCursor defaultCursor;
-
-	QPen mPen;
-	bool mPolygonFinished;
-
+	QSharedPointer<DkPatchMatchingToolBar> mtoolbar;
 	QSharedPointer<DkSyncedPolygon> mPolygon;
-	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
+	QSharedPointer<QDockWidget> mDock;
+	QSharedPointer<DkPolyTimeline> mTimeline;
 
+	QCursor defaultCursor;
+	
+	// default constructors
+	QPen mPen;
 	QTransform mWorldMatrixCache;
-	std::unique_ptr<DkPolyTimeline> mTimeline;
+	QVector<QPainterPath> paths;
+	QVector<QPen> pathsPen;
+	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 };
 
 enum class SelectedTool {
