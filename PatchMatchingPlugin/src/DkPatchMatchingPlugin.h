@@ -113,11 +113,12 @@ public slots:
 	
 	void clonePolygon();
 	void selectedToolChanged(SelectedTool tool);
-	void reset();
+	virtual void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;
 
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);
+	void reset();
 
 private:
 	QSharedPointer<DkPolygonRenderer> firstPoly();

@@ -113,7 +113,7 @@ void DkPatchMatchingPlugin::deleteViewPort() {
 
 bool DkPatchMatchingPlugin::closesOnImageChange() const
 {
-	return true;
+	return false;
 }
 
 	/*-----------------------------------DkPatchMatchingViewPort ---------------------------------------------*/
@@ -169,9 +169,10 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, mDock.data());
 }
 
-void DkPatchMatchingViewPort::reset()
+void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 {
-	
+	// just emit reset to clear everything
+	emit reset();
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -328,8 +329,13 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
 	mRenderer.append(render);
 
+	// add a new timeline for this renderer
 	auto timeline = mTimeline->addPolygon();
-	timeline->setPolygon(mPolygon);
+	timeline->setPolygon(mPolygon);		//and set the synced polygon as renderer
+
+	// connections for timeline
+	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
+	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,
@@ -354,8 +360,8 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 
 	});
 
-	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
-	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
+	// remove renderer if the whole viewport is reset
+	connect(this, &DkPatchMatchingViewPort::reset, render.data(), &DkPolygonRenderer::removed);
 
 	return render;
 }
