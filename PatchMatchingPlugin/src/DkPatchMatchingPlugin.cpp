@@ -309,8 +309,15 @@ QImage DkPatchMatchingViewPort::getPaintedImage() {
 
 void DkPatchMatchingViewPort::checkWorldMatrixChanged()
 {
-	if (mWorldMatrix && *mWorldMatrix != mWorldMatrixCache) {
-		mWorldMatrixCache = *mWorldMatrix;
+	QTransform mat;
+	if (mImgMatrix) {
+		mat = *mImgMatrix;
+	}
+	if (mWorldMatrix) {
+		mat = mat*(*mWorldMatrix);
+	}
+	if (mat != mWorldMatrixCache) {
+		mWorldMatrixCache = mat;
 		emit worldMatrixChanged(mWorldMatrixCache);
 	}
 }
@@ -325,7 +332,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
-	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data());
+	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
 	mRenderer.append(render);
 
