@@ -161,11 +161,18 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	// handler to clone the polygon
 	connect(mtoolbar.data(), &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
 	connect(mtoolbar.data(), &DkPatchMatchingToolBar::selectedToolChanged, this, &DkPatchMatchingViewPort::selectedToolChanged);
-
+	
 
 	// add timeline stuff, should probably move this to the plugin part
 	// to separate it better from the view
+	mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+	//QLabel* l = new QLabel(this);
+	//l->setStyleSheet("background-color: #00f;");
+
+	mDock->setStyleSheet("QDockWidget{background-color: #f00;}");
 	mDock->setWidget(mTimeline.data());
+	
 	dynamic_cast<QMainWindow*>(qApp->activeWindow())->addDockWidget(Qt::BottomDockWidgetArea, mDock.data());
 }
 
@@ -342,7 +349,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 
 	// connections for timeline
 	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
-	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::update);
+	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::refresh);
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,

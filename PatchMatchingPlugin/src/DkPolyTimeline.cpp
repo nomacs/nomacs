@@ -5,25 +5,45 @@
 namespace nmp {
 
 	DkPolyTimeline::DkPolyTimeline(QWidget* parent)
-		: QWidget(parent),
-			mLayout(new QVBoxLayout(this)),
-			mWidget(new QWidget(this)),
+		: QLabel(parent),
+		//mLayout(new QVBoxLayout(this)),
 			mScrollArea(new QScrollArea(this))
 	{
-		setStyleSheet("background-color: #00ff0060");
-		mWidget->setStyleSheet("background-color: #ffff0060");
-		mWidget->setLayout(mLayout);
-		mScrollArea->setWidgetResizable(true);
-		mScrollArea->setWidget(mWidget);
+		setStyleSheet("background-color: #fff");
+		//mWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+		//mWidget->setMinimumSize(100, 100);
+		//mWidget->setLayout(mLayout);
+		
+		
+		//mScrollArea->setWidgetResizable(true);
+		//mScrollArea->setWidget(mWidget);
+		//mScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		//mScrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+		//mScrollArea->setWidgetResizable(true);
+		//mScrollArea->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+		
 
-		auto dummy = new QVBoxLayout(this);
-		dummy->addWidget(mScrollArea);
+		//QWidget* content = new QWidget(this);
+		//content->setStyleSheet("background-color: #fff");
+
+		
+		mLayout = new QGridLayout(this);
+		mLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+
+		//auto dummy = new QVBoxLayout(mWidget);
+		//dummy->addWidget(content);
+
+		
+		////dummy->addWidget(mScrollArea);
 		//dummy->addWidget(mWidget);
-		mScrollArea->setStyleSheet("background-color: #0000ff60");
-		dummy->setMargin(0);
-		setLayout(dummy); // dummy layout
-
-		update();
+		////mScrollArea->setStyleSheet("background-color: #70ff0000");
+		//dummy->setMargin(0);
+		//setLayout(dummy); // dummy layout
+		//mLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+		//
+		mScrollArea->setVisible(false);
+		//update();
 	}
 
 
@@ -33,45 +53,26 @@ namespace nmp {
 
 	DkSingleTimeline* DkPolyTimeline::addPolygon()
 	{
-		auto tl = new DkSingleTimeline(this);
-		mLayout->addWidget(tl);
-		tl->setVisible(true);
+		
+		DkSingleTimeline* tl = new DkSingleTimeline(mList.size(), this);
+		mList.push_back(tl);
 		return tl;
 	}
 
+	void DkPolyTimeline::resizeEvent(QResizeEvent * resize)
+	{
+		qDebug() << "Timeline size = " << size();
+		
+		//auto cnt = mList.size();
+		//for (auto t : mList) {
+		//	t->setFixedHeight(floor(resize->size().height() / static_cast<double>(cnt)));
+		//}
+		QWidget::resizeEvent(resize);
+		//mScrollArea->setFixedSize(parent()->size);
+		qDebug() << "Scroll area size = " << mScrollArea->size();
+	}
+
 	void DkPolyTimeline::reset()
-	{
-		auto item = mLayout->itemAt(0);
-		while (item = mLayout->itemAt(0)) {
-			if (item->widget()) {
-				delete item->widget()
-					;
-			}
-		}
-	}
-
-	DkSingleTimeline::DkSingleTimeline(QWidget* parent)
-		: QWidget(parent),
-			mLayout(new QHBoxLayout(this))
-	{
-		setStyleSheet("background-color: #0000ff40");
-		setLayout(mLayout);
-		mLayout->setMargin(0);
-		mLayout->setAlignment(Qt::AlignLeft);
-	}
-
-	DkSingleTimeline::~DkSingleTimeline()
-	{
-	}
-
-	void DkSingleTimeline::setPolygon(QSharedPointer<DkSyncedPolygon> poly)
-	{
-		mPoly = poly;
-		update();
-		updateGeometry();
-	}
-
-	void DkSingleTimeline::clear()
 	{
 		auto item = mLayout->itemAt(0);
 		while (item = mLayout->itemAt(0)) {
@@ -81,17 +82,72 @@ namespace nmp {
 		}
 	}
 
+	void DkPolyTimeline::setGridElement(QWidget * widget, int row, int column)
+	{
+		mLayout->addWidget(widget, row, column);
+	}
+
+
+	DkSingleTimeline::DkSingleTimeline(int row, DkPolyTimeline* parent)
+		: QObject(parent),
+			mParent(parent),
+			mLayoutRow(row)
+	{
+	}
+
+	DkSingleTimeline::~DkSingleTimeline()
+	{
+	}
+
+	void DkSingleTimeline::setPolygon(QSharedPointer<DkSyncedPolygon> poly)
+	{
+		mPoly = poly;
+		refresh();
+	}
+
+
+
+	void DkSingleTimeline::clear()
+	{
+		//auto item = mLayout->itemAt(0);
+		//while (item = mLayout->itemAt(0)) {
+		//	if (item->widget()) {
+		//		delete item->widget();
+		//	}
+		//}
+		mElements.clear();
+	}
+
+	void DkSingleTimeline::updateSize(QResizeEvent * resize)
+	{
+		//qDebug() << "size = " << resize->size().height();
+		//QSize s(resize->size().height(), resize->size().height());
+		//for (auto e : mElements) {
+		//	//e->setFixedWidth(height());
+		//	
+		//	auto image = e->pixmap();
+		//	e->setPixmap(image->scaled(s, Qt::KeepAspectRatio, Qt::FastTransformation));
+		//	//e->setSize
+		//}
+	}
+
 	void DkSingleTimeline::addElement()
 	{
 		auto elem = std::make_shared<QImage>();
-		AspectRatioPixmapLabel* label = new AspectRatioPixmapLabel(this);
-
+		//AspectRatioPixmapLabel* label = new AspectRatioPixmapLabel(this);
+		auto label = new QLabel(mParent);
 		QPixmap pm(30, 30);
-		pm.fill(QColor(0, 255, 0, 255));
+		pm.fill(QColor(0, 0, 0, 150));
 		label->setPixmap(pm);
 		label->setMargin(0);
+		label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+		label->setMinimumSize(1, 1);
+		
+		mElements.push_back(label);
+		qDebug() << "has height for width " << label->hasHeightForWidth();
 
-		mLayout->addWidget(label);
+		mParent->setGridElement(label, mLayoutRow, mElements.size());
+		
 	}
 
 	void DkSingleTimeline::setTransform(QTransform transform)
@@ -100,7 +156,7 @@ namespace nmp {
 		mTransform = transform;
 	}
 
-	void DkSingleTimeline::update()
+	void DkSingleTimeline::refresh()
 	{
 		if (!mPoly) {
 			return;
@@ -112,5 +168,19 @@ namespace nmp {
 		for (auto p : mPoly->points()) {
 			addElement();
 		}
+
+		//updateSize();
+	}
+	DkTimelineLabel::DkTimelineLabel(QWidget * parent)
+		:QLabel(parent)
+	{
+	}
+	DkTimelineLabel::~DkTimelineLabel()
+	{
+	}
+
+	int DkTimelineLabel::heightForWidth(int w) const
+	{
+		return w;
 	}
 }
