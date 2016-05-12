@@ -122,7 +122,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	: DkPluginViewPort(parent, flags), 
 		cancelTriggered(false),
 		panning(false),
-		mtoolbar(new DkPatchMatchingToolBar(tr("Paint Toolbar"), this), &QDockWidget::deleteLater),
+		mtoolbar(new DkPatchMatchingToolBar(tr("Paint Toolbar"), this), &QObject::deleteLater),
 		mPolygon(QSharedPointer<DkSyncedPolygon>::create()),
 		mDock(new QDockWidget(this), &QObject::deleteLater),
 		mTimeline(new DkPolyTimeline(mDock.data()), &QObject::deleteLater),
@@ -414,7 +414,7 @@ void DkPatchMatchingViewPort::applyChangesAndClose() {
 void DkPatchMatchingViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
-	emit closePlugin();
+	emit DkPluginViewPort::closePlugin();
 }
 
 QBrush DkPatchMatchingViewPort::getBrush() const {
@@ -432,7 +432,7 @@ bool DkPatchMatchingViewPort::isCanceled() {
 void DkPatchMatchingViewPort::setVisible(bool visible) {
 
 	if (mtoolbar)
-		emit showToolbar(mtoolbar.data(), visible);
+		emit DkPluginViewPort::showToolbar(mtoolbar.data(), visible);
 
 	DkPluginViewPort::setVisible(visible);
 }

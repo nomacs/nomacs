@@ -17,9 +17,7 @@ namespace nmp {
 	public:
 		DkTimelineLabel(QWidget* parent = 0);
 		virtual ~DkTimelineLabel();
-		
-		virtual int heightForWidth(int w) const override;
-
+	
 	};
 	class DkSingleTimeline : public QObject
 	{
@@ -28,7 +26,6 @@ namespace nmp {
 		DkSingleTimeline(int row, DkPolyTimeline* parent = 0);
 		virtual ~DkSingleTimeline();
 		void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
-		void resizeEvent(QResizeEvent *resize);
 		
 
 	public slots:
@@ -37,10 +34,7 @@ namespace nmp {
 
 	private:
 		void clear();
-		void updateSize(QResizeEvent * resize);
 		void addElement();
-
-		//std::vector<std::unique_ptr<QImage>> mElements;
 
 		QVector<QLabel*> mElements;
 		QTransform mTransform;
@@ -57,9 +51,9 @@ namespace nmp {
 		DkPolyTimeline(QWidget* parent = 0);
 		virtual ~DkPolyTimeline();
 		DkSingleTimeline* addPolygon();
-		virtual void resizeEvent(QResizeEvent *resize) override;
 		void reset();
 		void setGridElement(QWidget* widget, int row, int column);
+		void clearGridElement(QWidget* widget);
 
 	private:
 		

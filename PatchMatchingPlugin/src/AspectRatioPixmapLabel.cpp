@@ -27,7 +27,8 @@ QSize AspectRatioPixmapLabel::sizeHint() const
 
 void AspectRatioPixmapLabel::resizeEvent(QResizeEvent * e)
 {
-	if (!pix.isNull())
-		QLabel::setPixmap(pix.scaled(this->size(),
-			Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	//if (!pix.isNull())
+	//	QLabel::setPixmap(pix.scaled(this->size(),
+	//		Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	QLabel::resizeEvent(e);
 }
