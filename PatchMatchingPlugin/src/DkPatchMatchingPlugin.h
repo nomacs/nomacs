@@ -149,6 +149,7 @@ private:
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
+	QSharedPointer<nmc::DkImageContainerT> mImage;
 };
 
 enum class SelectedTool {

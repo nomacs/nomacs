@@ -3,6 +3,7 @@
 #include <QLabel>
 #include "AspectRatioPixmapLabel.h"
 #include <QDebug>
+#include <QPainter>
 namespace nmp {
 
 	DkPolyTimeline::DkPolyTimeline(QWidget* parent)
@@ -68,7 +69,6 @@ namespace nmp {
 
 	DkSingleTimeline::~DkSingleTimeline()
 	{
-		clear();
 	}
 
 	void DkSingleTimeline::setPolygon(QSharedPointer<DkSyncedPolygon> poly)
@@ -80,37 +80,41 @@ namespace nmp {
 	void DkSingleTimeline::clear()
 	{
 		for (auto elem : mElements) {
-			mParent->clearGridElement(elem);
-			delete elem;
+			mParent->clearGridElement(elem.first);
+			delete elem.first;
 		}
 		mElements.clear();
 	}
 
-	void DkSingleTimeline::addElement()
+	void DkSingleTimeline::setImage(QSharedPointer<nmc::DkImageContainerT> img)
+	{
+		mImage = QPixmap::fromImage(img->image());
+	}
+
+	void DkSingleTimeline::addElement(QSharedPointer<DkControlPoint> point)
 	{
 		auto elem = std::make_shared<QImage>();
 		//AspectRatioPixmapLabel* label = new AspectRatioPixmapLabel(mParent);
+	
+		
 		auto label = new QLabel();
 		label->setStyleSheet("QLabel{background-color: #eee; }");
 		label->setMaximumSize(QSize(200, 200));
 		label->setMinimumWidth(100);
 
-		
-		QPixmap pm(":/nomacs/img/save.svg");
-		label->setPixmap(pm);
 		label->setScaledContents(true);
 		label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-		
-		mElements.push_back(label);
-		qDebug() << "has height for width " << label->hasHeightForWidth();
 
+		mElements.push_back(std::make_pair(label, point));
 		mParent->setGridElement(label, mLayoutRow, mElements.size());
-		
 	}
+
+
 
 	void DkSingleTimeline::setTransform(QTransform transform)
 	{
 		mTransform = transform;
+		redraw();
 	}
 
 	void DkSingleTimeline::refresh()
@@ -122,7 +126,31 @@ namespace nmp {
 		clear();
 
 		for (auto p : mPoly->points()) {
-			addElement();
+			addElement(p);
+		}
+		mParent->update();
+		redraw();
+	}
+
+	void DkSingleTimeline::addPoint(QSharedPointer<DkControlPoint> point)
+	{
+		addElement(point);
+		redraw();
+		//mPoly->points().last()
+	}
+
+	void DkSingleTimeline::redraw()
+	{
+		for (auto pair : mElements) {
+			QPixmap pm(50, 50);  // lets draw here
+			QPainter paint(&pm);  // our painter
+
+			QRect dest(pm.rect());
+			dest.moveCenter(mTransform.map(pair.second->getPos().toPoint()));
+			paint.drawPixmap(pm.rect(), mImage, dest);
+
+			pair.first->setPixmap(pm);
+			pair.first->update();
 		}
 	}
 

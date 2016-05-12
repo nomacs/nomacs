@@ -51,6 +51,8 @@ namespace nmp {
 			point->setType(ControlPointType::start);
 		}
 
+		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::movedPoint);
+
 		mControlPoints.append(point);
 	
 		emit pointAdded(point);

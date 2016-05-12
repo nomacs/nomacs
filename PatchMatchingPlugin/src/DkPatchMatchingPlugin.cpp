@@ -178,6 +178,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 
 void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 {
+	mImage = imgC;
 	// just emit reset to clear everything
 	emit reset();
 }
@@ -346,10 +347,13 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 	// add a new timeline for this renderer
 	auto timeline = mTimeline->addPolygon();
 	timeline->setPolygon(mPolygon);		//and set the synced polygon as renderer
+	timeline->setImage(mImage);
 
 	// connections for timeline
 	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
 	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::refresh);
+	connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, timeline, &DkSingleTimeline::addPoint);
+	connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, timeline, &DkSingleTimeline::redraw);
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,
@@ -361,6 +365,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 
 			// disconnect the timeline and delete
 			timeline->disconnect();
+			timeline->clear();	// clear to remove the widgets
 			timeline->deleteLater();
 
 			// remove the polygon from the renderer list
@@ -370,7 +375,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 			if (mRenderer.empty()) {
 				mPolygon->disconnect();
 				mPolygon = QSharedPointer<DkSyncedPolygon>::create();
-		}
+			}
 
 	});
 

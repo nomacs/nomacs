@@ -62,6 +62,7 @@ namespace nmp {
 		void pointAdded(QSharedPointer<DkControlPoint> point);
 		void pointRemoved();
 		void changed();
+		void movedPoint();
 
 	public slots:
 		void removePoint(QSharedPointer<DkControlPoint> point);

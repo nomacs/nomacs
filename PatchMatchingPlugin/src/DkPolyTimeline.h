@@ -6,6 +6,7 @@
 #include <QScrollArea>
 #include "DkSyncedPolygon.h"
 #include <QLabel>
+#include "DkImageContainer.h"
 
 namespace nmp {
 
@@ -26,17 +27,20 @@ namespace nmp {
 		DkSingleTimeline(int row, DkPolyTimeline* parent = 0);
 		virtual ~DkSingleTimeline();
 		void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
-		
+		void clear();
+		void setImage(QSharedPointer<nmc::DkImageContainerT> img);
 
 	public slots:
 		void setTransform(QTransform transform);
 		void refresh();
+		void addPoint(QSharedPointer<DkControlPoint> point);
+		void redraw();
 
 	private:
-		void clear();
-		void addElement();
+		void addElement(QSharedPointer<DkControlPoint> point);
 
-		QVector<QLabel*> mElements;
+		QPixmap mImage;
+		QVector<std::pair<QLabel*,QSharedPointer<DkControlPoint>>> mElements;
 		QTransform mTransform;
 		DkPolyTimeline* mParent;
 		QSharedPointer<DkSyncedPolygon> mPoly;		//<! polygon stores the saved state
