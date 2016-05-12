@@ -96,13 +96,13 @@ namespace nmp {
 		auto elem = std::make_shared<QImage>();
 		//AspectRatioPixmapLabel* label = new AspectRatioPixmapLabel(mParent);
 	
-		
 		auto label = new QLabel();
 		label->setStyleSheet("QLabel{background-color: #eee; }");
 		label->setMaximumSize(QSize(200, 200));
 		label->setMinimumWidth(100);
 
 		label->setScaledContents(true);
+		
 		label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 		mElements.push_back(std::make_pair(label, point));
@@ -119,6 +119,7 @@ namespace nmp {
 
 	void DkSingleTimeline::refresh()
 	{
+		qDebug() << "Refresh timeline ";
 		if (!mPoly) {
 			return;
 		}
@@ -128,7 +129,7 @@ namespace nmp {
 		for (auto p : mPoly->points()) {
 			addElement(p);
 		}
-		mParent->update();
+		//mParent->update();
 		redraw();
 	}
 
@@ -136,18 +137,19 @@ namespace nmp {
 	{
 		addElement(point);
 		redraw();
-		//mPoly->points().last()
 	}
 
 	void DkSingleTimeline::redraw()
 	{
 		for (auto pair : mElements) {
-			QPixmap pm(50, 50);  // lets draw here
+			QPixmap pm(40, 40);  // lets draw here
 			QPainter paint(&pm);  // our painter
 
-			QRect dest(pm.rect());
-			dest.moveCenter(mTransform.map(pair.second->getPos().toPoint()));
-			paint.drawPixmap(pm.rect(), mImage, dest);
+			QRect src(pm.rect());
+			src.moveCenter(pair.second->getPos().toPoint());
+			src = mTransform.mapRect(src);
+
+			paint.drawPixmap(pm.rect(), mImage, src);
 
 			pair.first->setPixmap(pm);
 			pair.first->update();
