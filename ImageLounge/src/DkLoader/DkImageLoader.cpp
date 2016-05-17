@@ -434,7 +434,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 	if (searchFile) {
 
-		QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : Settings::param().global().recentFiles.first();
+		QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : mCurrentDir;
 
 		mTmpFileIdx = findFileIdx(file, mImages);
 

@@ -60,7 +60,7 @@ namespace nmc {
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObject* parent) : QObject(parent) {
 
 	mImageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
-	
+
 	if (!imgC)
 		deactivate();
 	mImageLoader->setCurrentImage(imgC);
