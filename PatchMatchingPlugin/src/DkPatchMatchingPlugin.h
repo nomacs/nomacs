@@ -128,6 +128,7 @@ private:
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	
+	static QColor getNextColor();
 	void loadSettings();
 	void saveSettings() const;
 
@@ -150,6 +151,7 @@ private:
 	QVector<QPen> pathsPen;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
+	
 };
 
 enum class SelectedTool {

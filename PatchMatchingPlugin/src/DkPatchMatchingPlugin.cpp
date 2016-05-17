@@ -202,6 +202,15 @@ void DkPatchMatchingViewPort::saveSettings() const {
 
 }
 
+QColor DkPatchMatchingViewPort::getNextColor()
+{
+	static double div = 60;
+
+	static double current = - div/360.;
+	current += div/360.;
+	return QColor::fromHsvF(current,1,1);
+}
+
 void DkPatchMatchingViewPort::loadSettings() {
 
 	QSettings& settings = nmc:: Settings::instance().getSettings();
@@ -225,7 +234,6 @@ void DkPatchMatchingViewPort::undoLastPaint() {
 void DkPatchMatchingViewPort::clonePolygon()
 {
 	auto poly = addPoly();
-	poly->setColor(QColor(255, 0, 0));
 	poly->translate(400, 0);
 
 	update();
@@ -342,20 +350,18 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
 	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
+	render->setColor(getNextColor());
+	
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
 	mRenderer.append(render);
 
 	// add a new timeline for this renderer
-	auto transform = mTimeline->addPolygon();
+	auto transform = mTimeline->addPolygon(render->getColor());
 	mTimeline->setImage(mImage);
 
 	//// connections for timeline
 	connect(render.data(), &DkPolygonRenderer::transformChanged, 
 		transform.data(), &std::remove_pointer<decltype(transform.data())>::type::set);
-
-	//connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::refresh);
-	//connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, timeline, &DkSingleTimeline::addPoint);
-	//connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, timeline, &DkSingleTimeline::redraw);
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,

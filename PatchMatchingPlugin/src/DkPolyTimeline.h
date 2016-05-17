@@ -58,39 +58,14 @@ namespace nmp {
 		double mStep;
 	};
 
-	//class DkSingleTimeline : public QObject
-	//{
-	//	Q_OBJECT
-	//public:
-	//	DkSingleTimeline(int row, DkPolyTimeline* parent = 0);
-	//	virtual ~DkSingleTimeline();
-	//	void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
-	//	void clear();
-	//	void setImage(QSharedPointer<nmc::DkImageContainerT> img);
-
-	//public slots:
-	//	void setTransform(QTransform transform);
-	//	void refresh();
-	//	void addPoint(QSharedPointer<DkControlPoint> point);
-	//	void redraw();
-
-	//private:
-	//	void addElement(QSharedPointer<DkControlPoint> point);
-
-	//	
-	//	QTransform mTransform;
-	//	DkPolyTimeline* mParent;
-	//		//<! polygon stores the saved state
-	//	int mLayoutRow;
-	//};
-
 	class DkTrackedTransform : public QObject
 	{
 		Q_OBJECT
 	public:
-		DkTrackedTransform(QTransform transform = QTransform());
+		DkTrackedTransform(QColor color, QTransform transform = QTransform());
 		virtual ~DkTrackedTransform();
 		QTransform get();
+		QColor getColor();
 
 	signals:
 		void changed(QTransform newvalue);
@@ -100,6 +75,7 @@ namespace nmp {
 
 	private:
 		QTransform mTransform;
+		QColor mColor;
 	};
 
 	class DkPolyTimeline : public QLabel
@@ -109,7 +85,7 @@ namespace nmp {
 	public:
 		DkPolyTimeline(QSharedPointer<DkSyncedPolygon> poly, QWidget* parent = 0);
 		virtual ~DkPolyTimeline();
-		QSharedPointer<DkTrackedTransform> addPolygon();
+		QSharedPointer<DkTrackedTransform> addPolygon(QColor color);
 		void reset();
 
 	public slots:
@@ -132,6 +108,7 @@ namespace nmp {
 		// could be put in something else
 		QSharedPointer<DkInterpolatedSyncedPolyon> mPolygon;	//synced polygon wrapped to interpolate
 		QPixmap mImage;											//image to do stuff
+		qreal mSize;
 	};
 
 }

@@ -6,8 +6,8 @@
 #include <QPainter>
 #include <cassert>
 namespace nmp {
-	DkTrackedTransform::DkTrackedTransform(QTransform transform)
-		: mTransform(transform)
+	DkTrackedTransform::DkTrackedTransform(QColor color, QTransform transform)
+		: mColor(color), mTransform(transform)
 	{
 
 	}
@@ -19,6 +19,11 @@ namespace nmp {
 	QTransform DkTrackedTransform::get()
 	{
 		return mTransform;
+	}
+
+	QColor DkTrackedTransform::getColor()
+	{
+		return mColor;
 	}
 
 	void DkTrackedTransform::set(QTransform transform)
@@ -106,8 +111,9 @@ namespace nmp {
 
 	DkPolyTimeline::DkPolyTimeline(QSharedPointer<DkSyncedPolygon> poly, QWidget* parent)
 		: QLabel(parent),
-			mPolygon(QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly)),
-			mScrollArea(new QScrollArea(this))
+		mPolygon(QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly)),
+		mScrollArea(new QScrollArea(this)),
+		mSize(40)
 	{
 		QWidget* c = new QWidget(this);
 		mLayout = new QGridLayout(c);
@@ -134,9 +140,9 @@ namespace nmp {
 	{
 	}
 
-	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addPolygon()
+	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addPolygon(QColor color)
 	{
-		auto transform = QSharedPointer<DkTrackedTransform>::create();
+		auto transform = QSharedPointer<DkTrackedTransform>::create(color);
 		
 		// make sure we update on change
 		connect(transform.data(), &DkTrackedTransform::changed, 
@@ -187,8 +193,9 @@ namespace nmp {
 
 		auto iter = mElements[row].begin();
 		QPen pen;
-		pen.setWidth(1);
-		pen.setColor(QColor(255, 0, 0, 60));
+		pen.setWidth(0);
+		
+		//pen.setColor(QColor(255, 0, 0, 60));
 
 		qDebug() << "Elements per row = " << mElements[row].size();
 		auto poly = mPolygon->points();
@@ -197,7 +204,7 @@ namespace nmp {
 		for (const auto& p : mPolygon->points()) {
 			
 			
-			QPixmap pm(40, 40);  // lets draw here
+			QPixmap pm(mSize, mSize);  // lets draw here
 			pm.fill(Qt::red);
 			QPainter paint(&pm);  // our painter
 
@@ -209,9 +216,11 @@ namespace nmp {
 			paint.drawPixmap(pm.rect(), mImage, src);
 			
 			if (p.first == TimeLinePointType::Control) {
-				paint.setBrush(QBrush());
-				paint.setPen(pen);
-				paint.drawRect(QRect(0,0,39,39));
+				auto color = mList[row]->getColor();
+				color.setAlpha(60);
+				paint.setBrush(QBrush(color));
+				paint.setPen(QPen());
+				paint.drawRect(QRect(-1,-1,mSize+1, mSize+1));
 			}
 
 
@@ -311,71 +320,6 @@ namespace nmp {
 		update();  // should update 
 	}
 
-	//DkSingleTimeline::DkSingleTimeline(int row, DkPolyTimeline* parent)
-	//	: QObject(parent),
-	//		mParent(parent),
-	//		mLayoutRow(row)
-	//{
-	//}
-
-	//DkSingleTimeline::~DkSingleTimeline()
-	//{
-	//}
-
-	//void DkSingleTimeline::setPolygon(QSharedPointer<DkSyncedPolygon> poly)
-	//{
-	//	mPoly = poly;
-	//	refresh();
-	//}
-
-	//void DkSingleTimeline::clear()
-	//{
-	//	for (auto elem : mElements) {
-	//		mParent->clearGridElement(elem.first);
-	//		delete elem.first;
-	//	}
-	//	mElements.clear();
-	//}
-
-	//void DkSingleTimeline::setImage(QSharedPointer<nmc::DkImageContainerT> img)
-	//{
-	//	mImage = QPixmap::fromImage(img->image());
-	//}
-
-
-
-
-
-	//void DkSingleTimeline::setTransform(QTransform transform)
-	//{
-	//	mTransform = transform;
-	//	redraw();
-	//}
-
-	//void DkSingleTimeline::refresh()
-	//{
-	//	qDebug() << "Refresh timeline ";
-	//	if (!mPoly) {
-	//		return;
-	//	}
-
-	//	clear();
-
-	//	for (auto p : mPoly->points()) {
-	//		addElement(p);
-	//	}
-	//	//mParent->update();
-	//	redraw();
-	//}
-
-	//void DkSingleTimeline::addPoint(QSharedPointer<DkControlPoint> point)
-	//{
-	//	addElement(point);
-	//	redraw();
-	//}
-
-
-
 	DkTimelineLabel::DkTimelineLabel(QWidget * parent)
 		:QLabel(parent)
 	{
@@ -383,9 +327,4 @@ namespace nmp {
 	DkTimelineLabel::~DkTimelineLabel()
 	{
 	}
-
-	
-	
-
-
 }
