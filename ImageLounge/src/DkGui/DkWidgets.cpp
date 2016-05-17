@@ -2803,7 +2803,7 @@ void DkListWidget::dropEvent(QDropEvent *event) {
 	if (event->source() != this)
 		QListWidget::dropEvent(event);
 
-	// work arround for the empty rows
+	// workaround for the empty rows
 	emit dataDroppedSignal();
 }
 
