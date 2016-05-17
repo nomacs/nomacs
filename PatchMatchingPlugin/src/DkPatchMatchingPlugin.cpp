@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QActionGroup>
+#include "DkPolyTimeline.h"
 
 namespace nmp {
 
@@ -125,7 +126,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 		mtoolbar(new DkPatchMatchingToolBar(tr("Paint Toolbar"), this), &QObject::deleteLater),
 		mPolygon(QSharedPointer<DkSyncedPolygon>::create()),
 		mDock(new QDockWidget(this), &QObject::deleteLater),
-		mTimeline(new DkPolyTimeline(mDock.data()), &QObject::deleteLater),
+		mTimeline(new DkPolyTimeline(mPolygon, mDock.data()), &QObject::deleteLater),
 		defaultCursor(Qt::CrossCursor)
 {
 
@@ -345,36 +346,33 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 	mRenderer.append(render);
 
 	// add a new timeline for this renderer
-	auto timeline = mTimeline->addPolygon();
-	timeline->setPolygon(mPolygon);		//and set the synced polygon as renderer
-	timeline->setImage(mImage);
+	auto transform = mTimeline->addPolygon();
+	mTimeline->setImage(mImage);
 
-	// connections for timeline
-	connect(render.data(), &DkPolygonRenderer::transformChanged, timeline, &DkSingleTimeline::setTransform);
-	connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::refresh);
-	connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, timeline, &DkSingleTimeline::addPoint);
-	connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, timeline, &DkSingleTimeline::redraw);
+	//// connections for timeline
+	connect(render.data(), &DkPolygonRenderer::transformChanged, 
+		transform.data(), &std::remove_pointer<decltype(transform.data())>::type::set);
+
+	//connect(mPolygon.data(), &DkSyncedPolygon::changed, timeline, &DkSingleTimeline::refresh);
+	//connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, timeline, &DkSingleTimeline::addPoint);
+	//connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, timeline, &DkSingleTimeline::redraw);
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,
 	
-		[this, render, timeline]() {
+		[this, render, transform]() {
 			// disconnect the polygon and clear it (delete all QWidgets which have viewport as parent)
 			render.data()->disconnect();
 			render->clear();
 
-			// disconnect the timeline and delete
-			timeline->disconnect();
-			timeline->clear();	// clear to remove the widgets
-			timeline->deleteLater();
+			mTimeline->removeTransform(transform);
 
 			// remove the polygon from the renderer list
 			mRenderer.removeAll(render);
 
-			// if no render exists anymore also cean up the synced polygon
+			// if no render exists anymore also clean up the synced polygon
 			if (mRenderer.empty()) {
-				mPolygon->disconnect();
-				mPolygon = QSharedPointer<DkSyncedPolygon>::create();
+				mPolygon->clear();
 			}
 
 	});

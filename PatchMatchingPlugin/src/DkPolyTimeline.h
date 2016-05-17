@@ -20,31 +20,86 @@ namespace nmp {
 		virtual ~DkTimelineLabel();
 	
 	};
-	class DkSingleTimeline : public QObject
+
+	enum class TimeLinePointType {
+		Control,
+		Line,
+	};
+
+	struct DkTimeLinePoint {
+		QWidget* Widget;
+		TimeLinePointType Type;
+		QPointF Pos;
+	};
+
+	class DkInterpolatedSyncedPolyon : public QObject
+	{
+		Q_OBJECT
+	public: 
+		DkInterpolatedSyncedPolyon(QSharedPointer<DkSyncedPolygon> poly);
+		virtual ~DkInterpolatedSyncedPolyon();
+		
+		void setStep(double step);
+		auto getStep();
+		auto size();
+		const auto& points() const;
+
+	public slots:
+		void recalcuate();
+		
+		//void addPoint();
+
+	signals:
+		void changed();
+		
+	private:
+		QSharedPointer<DkSyncedPolygon> mPolygon;
+		QVector<std::pair<TimeLinePointType, QPointF>> mPoints;
+		double mStep;
+	};
+
+	//class DkSingleTimeline : public QObject
+	//{
+	//	Q_OBJECT
+	//public:
+	//	DkSingleTimeline(int row, DkPolyTimeline* parent = 0);
+	//	virtual ~DkSingleTimeline();
+	//	void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
+	//	void clear();
+	//	void setImage(QSharedPointer<nmc::DkImageContainerT> img);
+
+	//public slots:
+	//	void setTransform(QTransform transform);
+	//	void refresh();
+	//	void addPoint(QSharedPointer<DkControlPoint> point);
+	//	void redraw();
+
+	//private:
+	//	void addElement(QSharedPointer<DkControlPoint> point);
+
+	//	
+	//	QTransform mTransform;
+	//	DkPolyTimeline* mParent;
+	//		//<! polygon stores the saved state
+	//	int mLayoutRow;
+	//};
+
+	class DkTrackedTransform : public QObject
 	{
 		Q_OBJECT
 	public:
-		DkSingleTimeline(int row, DkPolyTimeline* parent = 0);
-		virtual ~DkSingleTimeline();
-		void setPolygon(QSharedPointer<DkSyncedPolygon> poly);
-		void clear();
-		void setImage(QSharedPointer<nmc::DkImageContainerT> img);
+		DkTrackedTransform(QTransform transform = QTransform());
+		virtual ~DkTrackedTransform();
+		QTransform get();
 
+	signals:
+		void changed(QTransform newvalue);
+	
 	public slots:
-		void setTransform(QTransform transform);
-		void refresh();
-		void addPoint(QSharedPointer<DkControlPoint> point);
-		void redraw();
+		void set(QTransform value);
 
 	private:
-		void addElement(QSharedPointer<DkControlPoint> point);
-
-		QPixmap mImage;
-		QVector<std::pair<QLabel*,QSharedPointer<DkControlPoint>>> mElements;
 		QTransform mTransform;
-		DkPolyTimeline* mParent;
-		QSharedPointer<DkSyncedPolygon> mPoly;		//<! polygon stores the saved state
-		int mLayoutRow = 0;
 	};
 
 	class DkPolyTimeline : public QLabel
@@ -52,19 +107,31 @@ namespace nmp {
 		Q_OBJECT
 
 	public:
-		DkPolyTimeline(QWidget* parent = 0);
+		DkPolyTimeline(QSharedPointer<DkSyncedPolygon> poly, QWidget* parent = 0);
 		virtual ~DkPolyTimeline();
-		DkSingleTimeline* addPolygon();
+		QSharedPointer<DkTrackedTransform> addPolygon();
 		void reset();
+
+	public slots:
+		void setImage(QSharedPointer<nmc::DkImageContainerT> img);
+		void updateTransform(QSharedPointer<DkTrackedTransform> sender);
+		void refresh();
+		void removeTransform(QSharedPointer<DkTrackedTransform> sender);
+
+	private:
+		void updateEmptyElements();
 		void setGridElement(QWidget* widget, int row, int column);
 		void clearGridElement(QWidget* widget);
 
-	private:
-		
 		QGridLayout* mLayout;
 		QScrollArea* mScrollArea;
-		QVector<DkSingleTimeline*> mList;
 
+		QVector<QSharedPointer<DkTrackedTransform>> mList;   //list of transforms (renderer)
+		QVector<QVector<QLabel*>> mElements;					//label elements for rendering
+
+		// could be put in something else
+		QSharedPointer<DkInterpolatedSyncedPolyon> mPolygon;	//synced polygon wrapped to interpolate
+		QPixmap mImage;											//image to do stuff
 	};
 
 }

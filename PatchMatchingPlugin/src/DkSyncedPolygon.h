@@ -57,6 +57,7 @@ namespace nmp {
 		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
 		QRectF boundingRect() const;
 		QPointF center() const;
+		void clear();
 
 	signals:
 		void pointAdded(QSharedPointer<DkControlPoint> point);

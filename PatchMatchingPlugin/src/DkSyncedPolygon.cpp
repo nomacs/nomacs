@@ -43,6 +43,12 @@ namespace nmp {
 		return boundingRect().center();
 	}
 
+	void DkSyncedPolygon::clear()
+	{
+		mControlPoints.clear();
+		emit changed();
+	}
+
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
@@ -56,7 +62,7 @@ namespace nmp {
 		mControlPoints.append(point);
 	
 		emit pointAdded(point);
-		emit changed();
+		//emit changed();
 	}
 
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
@@ -67,7 +73,7 @@ namespace nmp {
 			mControlPoints.first()->setType(ControlPointType::start);
 		}
 		emit pointRemoved();
-		emit changed();
+		//emit changed();
 	}
 
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
