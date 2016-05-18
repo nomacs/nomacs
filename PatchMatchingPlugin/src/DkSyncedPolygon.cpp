@@ -19,6 +19,9 @@ namespace {
 		auto proj = v + t*(w-v);
 		return std::make_pair(inside, proj);
 	}
+
+
+
 }
 
 namespace nmp {
@@ -66,12 +69,12 @@ namespace nmp {
 		emit changed();
 	}
 
-	auto DkSyncedPolygon::mapToNearestLine(const QPointF& point)
+	auto DkSyncedPolygon::mapToNearestLine(QPointF& point)
 	{
 		auto end = mControlPoints.end();
 		auto first = mControlPoints.begin();	// first and 
 		auto second = first;					// second iterator, we need line segment
-		auto res = std::make_tuple(false, QPointF(), end);		// default return, not on line, dummy point, and end (for insert)
+		auto res = std::make_pair(point, end);		// default return, not on line, dummy point, and end (for insert)
 		auto min_dist = mSnapDistance;			// we just look in proximity of the snap distance
 
 		while (first != end && (second = first + 1) != end) {	// iterate over the points
@@ -82,34 +85,82 @@ namespace nmp {
 
 			// when the mapping was inside the segment and the distance is minimal
 			if (curr.first && dist < min_dist) {
-				res = std::make_tuple(true, curr.second, second);   // second iter since vector::insert inserts before
+				res = std::make_pair(curr.second, second);   // second iter since vector::insert inserts before
 			}
 			++first;	
 		}
 
-		return res;
+		point = res.first;
+		return res.second;
 	}
+
+	auto DkSyncedPolygon::mapToImageRect(QPointF & point)
+	{
+		auto rect = QRectF {mImageRect.x() + mMargin, mImageRect.y() + mMargin,
+							mImageRect.width() - mMargin * 2, mImageRect.height() - mMargin * 2};
+
+		auto lastPoint = mControlPoints.empty() ? rect.center() : mControlPoints.last()->getPos();
+
+		auto lines = QVector<QLineF> {};
+		lines.append(QLineF{ rect.topLeft(), rect.topRight() });
+		lines.append(QLineF{ rect.topRight(), rect.bottomRight() });
+		lines.append(QLineF{ rect.bottomRight(), rect.bottomLeft() });
+		lines.append(QLineF{ rect.bottomLeft(), rect.topLeft() });
+
+		lastPoint = QLineF(lastPoint, rect.center()).pointAt(0.00001);
+		// small movement in direction of the center to be always inside the rectangle
+		// this helps with the intersection tests
+		
+		auto newLine = QLineF{ lastPoint, point };
+		auto intersection = QPointF {};
+
+		for (auto l : lines) {
+			if (QLineF::BoundedIntersection == newLine.intersect(l, &intersection)) {
+				
+				// store point in reference and return 
+				point = intersection;
+			}
+		}
+	}
+
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
-		auto mapped = mapToNearestLine(coordinates);  // try to map point to all line segments
-		auto mapped_coords = std::get<0>(mapped) ? std::get<1>(mapped) : coordinates;	// if mapping ok, use point
+		auto coords = coordinates;
+		// map to image rect
+		mapToImageRect(coords);	// returns false if point should be discarded
+		
+		// don't add point if the new one is on top of old one, 
+		// this does not seem very intuitive
+		//if (!mControlPoints.empty()){
+		//	auto last = mControlPoints.last()->getPos();
+		//	if (QLineF{ coords, mControlPoints.last()->getPos() }.length() < 2) {
+		//		return;
+		//	}
+		//}
 
-		auto point = QSharedPointer<DkControlPoint>::create(mapped_coords);	
+		
+		auto insert = mapToNearestLine(coords);  // try to map point to all line segments
+
+		auto point = QSharedPointer<DkControlPoint>::create(coords);
 		if (mControlPoints.empty()) {
 			point->setType(ControlPointType::start);		// first one has the start type
 		}
 
 		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::movedPoint);
-		mControlPoints.insert(std::get<2>(mapped), point);	// insert, default is end() so this works too
-	
-		if (std::get<0>(mapped)) {		
-			emit changed();			// structure changed
+			
+		// insert, default is end() so this works too
+		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end()) {
+			emit pointAdded(point);		// just point added			
 		}
 		else {
-			emit pointAdded(point);		// just point added
+			emit changed();			// structure changed
 		}
 	}
 
+	void DkSyncedPolygon::setImageRect(QRect rect)
+	{
+		mImageRect = rect;
+	}
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
 	{
 		mControlPoints.removeAll(point);
@@ -198,17 +249,6 @@ namespace nmp {
 	{
 		mPolygon->addPoint(mapToViewport(coordinates));
 	}
-
-	QVector<QPointF> DkPolygonRenderer::mapToImage(QTransform image)
-	{
-		QVector<QPointF> mapped;
-
-		for (auto point : mPoints) {
-			mapped.append(image.map(point->pos()));
-		}
-		return mapped;
-	}
-
 
 	void DkPolygonRenderer::refresh()
 	{

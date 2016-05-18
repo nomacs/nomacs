@@ -67,12 +67,16 @@ namespace nmp {
 
 	public slots:
 		void removePoint(QSharedPointer<DkControlPoint> point);
-	
+		void setImageRect(QRect rect);
+
 	private:
-		auto mapToNearestLine(const QPointF& point);
+		auto mapToNearestLine(QPointF& point);
+		auto mapToImageRect(QPointF& point);
 
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		double mSnapDistance = 30;
+		QRectF mImageRect;
+		double mMargin = 50;
 	};
 
 
@@ -97,7 +101,6 @@ namespace nmp {
 		QColor getColor() const;
 		
 		void addPointMouseCoords(const QPointF& coordinates);
-		QVector<QPointF> mapToImage(QTransform image);
 
 	signals:
 		// this signal is emitted whenever a transform is changed

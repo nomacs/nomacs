@@ -180,6 +180,7 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 {
 	mImage = imgC;
+	mPolygon->setImageRect(mImage->image().rect());
 	// just emit reset to clear everything
 	emit reset();
 }
@@ -300,7 +301,7 @@ QImage DkPatchMatchingViewPort::getPaintedImage() {
 			if (!paths.isEmpty()) {   // if nothing is drawn there is no need to change the image
 
 				QImage img = viewport->getImage();
-
+				
 				QPainter painter(&img);
 
 				// >DIR: do not apply world matrix if painting in the image [14.10.2014 markus]
