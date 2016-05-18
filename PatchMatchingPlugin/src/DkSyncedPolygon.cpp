@@ -260,6 +260,9 @@ namespace nmp {
 	}
 	QPointF DkPolygonRenderer::mapToImageRectSimple(const QPointF& point)
 	{
+		if (mImageRect == QRectF{}) {
+			return point;
+		}
 		auto rect = getImageRect();
 		auto p = getTransform().map(point);
 
@@ -273,6 +276,9 @@ namespace nmp {
 	}
 	QPointF DkPolygonRenderer::mapToImageRect(const QPointF & point)
 	{
+		if (mImageRect == QRectF{}) {
+			return point;
+		}
 		auto transform = getTransform();
 		auto rect = getImageRect();
 		auto lastPoint = mPolygon->points().empty() ? rect.center() : transform.map(mPolygon->points().last()->getPos());
@@ -364,6 +370,13 @@ namespace nmp {
 
 	void DkPolygonRenderer::update()
 	{
+		for (auto cp : mPolygon->points()) {
+			auto pos = cp->getPos();
+			auto mapped = mapToImageRectSimple(pos);
+			if (pos != mapped) {
+				cp->setPosSilent(mapped);
+			}
+		}
 		auto transform = getTransform()*getWorldMatrix();
 		for (auto p : mPoints) {
 			p->move(transform);
@@ -498,9 +511,7 @@ namespace nmp {
 				auto newpos = mRenderer->mapToViewport(mapToParent(event->pos()));
 
 				// map to image rect to restrict movement -> only inside rect
-				auto pos = mRenderer->mapToImageRectSimple(initialPos + newpos - posGrab);
-				mPoint->setPos(pos);
-
+				mPoint->setPos(initialPos + newpos - posGrab);
 				auto diff = newpos - posGrab;
 				
 				emit moved(diff.x(), diff.y());
@@ -570,6 +581,10 @@ namespace nmp {
 	{
 	}
 
+	void DkControlPoint::setPosSilent(const QPointF & point)
+	{	
+		mPoint = point;
+	}
 	void DkControlPoint::setPos(const QPointF & point)
 	{
 		mPoint = point;

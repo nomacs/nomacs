@@ -35,6 +35,7 @@ namespace nmp {
 		QPointF getPos() const;
 		void setType(ControlPointType t);
 		ControlPointType getType();
+		void setPosSilent(const QPointF& point);
 
 	signals:
 		void moved();
@@ -97,7 +98,7 @@ namespace nmp {
 		QColor getColor() const;
 		
 		void addPointMouseCoords(const QPointF& coordinates);
-
+		
 	signals:
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff
@@ -118,6 +119,9 @@ namespace nmp {
 		void clear();
 
 		void setImageRect(QRect rect);
+
+		//void checkPoint();
+
 		QPointF mapToImageRect(const QPointF& point);
 		QPointF mapToImageRectSimple(const QPointF& point);
 		
