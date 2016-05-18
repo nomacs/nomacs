@@ -94,40 +94,11 @@ namespace nmp {
 		return res.second;
 	}
 
-	auto DkSyncedPolygon::mapToImageRect(QPointF & point)
-	{
-		auto rect = QRectF {mImageRect.x() + mMargin, mImageRect.y() + mMargin,
-							mImageRect.width() - mMargin * 2, mImageRect.height() - mMargin * 2};
-
-		auto lastPoint = mControlPoints.empty() ? rect.center() : mControlPoints.last()->getPos();
-
-		auto lines = QVector<QLineF> {};
-		lines.append(QLineF{ rect.topLeft(), rect.topRight() });
-		lines.append(QLineF{ rect.topRight(), rect.bottomRight() });
-		lines.append(QLineF{ rect.bottomRight(), rect.bottomLeft() });
-		lines.append(QLineF{ rect.bottomLeft(), rect.topLeft() });
-
-		lastPoint = QLineF(lastPoint, rect.center()).pointAt(0.00001);
-		// small movement in direction of the center to be always inside the rectangle
-		// this helps with the intersection tests
-		
-		auto newLine = QLineF{ lastPoint, point };
-		auto intersection = QPointF {};
-
-		for (auto l : lines) {
-			if (QLineF::BoundedIntersection == newLine.intersect(l, &intersection)) {
-				
-				// store point in reference and return 
-				point = intersection;
-			}
-		}
-	}
-
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
 		auto coords = coordinates;
 		// map to image rect
-		mapToImageRect(coords);	// returns false if point should be discarded
+		//mapToImageRect(coords);	// returns false if point should be discarded
 		
 		// don't add point if the new one is on top of old one, 
 		// this does not seem very intuitive
@@ -157,10 +128,6 @@ namespace nmp {
 		}
 	}
 
-	void DkSyncedPolygon::setImageRect(QRect rect)
-	{
-		mImageRect = rect;
-	}
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
 	{
 		mControlPoints.removeAll(point);
@@ -245,9 +212,65 @@ namespace nmp {
 		return mColor;
 	}
 
+	QRectF DkPolygonRenderer::getImageRect()
+	{
+		// returns image rect with margin
+		auto rect = QRectF{ mImageRect.x() + mMargin, mImageRect.y() + mMargin,
+			mImageRect.width() - mMargin * 2, mImageRect.height() - mMargin * 2 };
+		return rect;
+	}
+	QPointF DkPolygonRenderer::mapToImageRectSimple(const QPointF& point)
+	{
+		auto rect = getImageRect();
+		auto p = getTransform().map(point);
+
+		p.setX(std::max(p.x(), rect.left()));
+		p.setX(std::min(p.x(), rect.right()));
+
+		p.setY(std::max(p.y(), rect.top()));
+		p.setY(std::min(p.y(), rect.bottom()));
+
+		return getTransform().inverted().map(p);
+	}
+	QPointF DkPolygonRenderer::mapToImageRect(const QPointF & point)
+	{
+		auto transform = getTransform();
+		auto rect = getImageRect();
+		auto lastPoint = mPolygon->points().empty() ? rect.center() : transform.map(mPolygon->points().last()->getPos());
+
+		auto transPoint = transform.map(point);
+		auto lines = QVector<QLineF>{};
+		lines.append(QLineF{ rect.topLeft(), rect.topRight() });
+		lines.append(QLineF{ rect.topRight(), rect.bottomRight() });
+		lines.append(QLineF{ rect.bottomRight(), rect.bottomLeft() });
+		lines.append(QLineF{ rect.bottomLeft(), rect.topLeft() });
+
+		lastPoint = QLineF(lastPoint, rect.center()).pointAt(0.00001);
+		// small movement in direction of the center to be always inside the rectangle
+		// this helps with the intersection tests
+
+		auto newLine = QLineF{ lastPoint, transPoint  };
+		auto intersection = QPointF{};
+
+		for (auto l : lines) {
+			if (QLineF::BoundedIntersection == newLine.intersect(l, &intersection)) {
+
+				// store point in reference and return 
+				transPoint = intersection;
+			}
+		}
+
+		return transform.inverted().map(transPoint);
+	}
+
 	void DkPolygonRenderer::addPointMouseCoords(const QPointF & coordinates)
 	{
-		mPolygon->addPoint(mapToViewport(coordinates));
+		auto point = coordinates;
+		
+		point = mapToViewport(point); // map to local coordinates
+		point = mapToImageRect(point);
+
+		mPolygon->addPoint(point);
 	}
 
 	void DkPolygonRenderer::refresh()
@@ -293,6 +316,13 @@ namespace nmp {
 		update();
 	}
 
+	void DkPolygonRenderer::setImageRect(QRect rect)
+	{
+		mImageRect = rect;
+	}
+
+
+
 	void DkPolygonRenderer::update()
 	{
 		auto transform = getTransform()*getWorldMatrix();
@@ -333,7 +363,7 @@ namespace nmp {
 
 	QPointF DkPolygonRenderer::mapToViewport(const QPointF & pos) const
 	{
-		return mapToViewPort(pos, getTransform()*getWorldMatrix());
+		return (getTransform()*getWorldMatrix()).inverted().map(pos);
 	}
 
 	QTransform DkPolygonRenderer::getWorldMatrix() const
@@ -422,14 +452,17 @@ namespace nmp {
 		}
 		else if (event->button() ==  Qt::LeftButton) {
 
-			auto posGrab = mRenderer->mapToViewport(event->globalPos());
+			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
 			auto initialPos = mPoint->getPos();
+			initialPos = mRenderer->mapToImageRectSimple(initialPos);
 
 			mMouseMove = [this, posGrab, initialPos](auto event) {
-				auto newpos = mRenderer->mapToViewport(event->globalPos());
-				mPoint->setPos(initialPos + newpos - posGrab);
+				auto newpos = mRenderer->mapToViewport(mapToParent(event->pos()));
+				auto pos = mRenderer->mapToImageRectSimple(initialPos + newpos - posGrab);
+				mPoint->setPos(pos);
 
 				auto diff = newpos - posGrab;
+				
 				emit moved(diff.x(), diff.y());
 			};
 		}

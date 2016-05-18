@@ -180,9 +180,8 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 {
 	mImage = imgC;
-	mPolygon->setImageRect(mImage->image().rect());
 	// just emit reset to clear everything
-	emit reset();
+	emit reset(mImage);
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -352,7 +351,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
 	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
 	render->setColor(getNextColor());
-	
+	render->setImageRect(mImage->image().rect());
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
 	mRenderer.append(render);
 

@@ -118,7 +118,7 @@ public slots:
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);
-	void reset();
+	void reset(QSharedPointer<nmc::DkImageContainerT> imgC);
 
 private:
 	QSharedPointer<DkPolygonRenderer> firstPoly();

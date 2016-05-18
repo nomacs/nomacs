@@ -67,16 +67,12 @@ namespace nmp {
 
 	public slots:
 		void removePoint(QSharedPointer<DkControlPoint> point);
-		void setImageRect(QRect rect);
 
 	private:
 		auto mapToNearestLine(QPointF& point);
-		auto mapToImageRect(QPointF& point);
 
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
 		double mSnapDistance = 30;
-		QRectF mImageRect;
-		double mMargin = 50;
 	};
 
 
@@ -121,7 +117,14 @@ namespace nmp {
 		void update();
 		void clear();
 
+		void setImageRect(QRect rect);
+		QPointF mapToImageRect(const QPointF& point);
+		QPointF mapToImageRectSimple(const QPointF& point);
+
+		QRectF getImageRect();
 	private:
+		
+
 		//initialization list
 		DkSyncedPolygon* mPolygon;
 		QWidget* mViewport;
@@ -134,6 +137,9 @@ namespace nmp {
 		QTransform mTransform;
 		QVector<DkControlPointRepresentation*> mPoints;
 		QVector<DkLineRepresentation*> mLines;
+
+		QRectF mImageRect;
+		double mMargin = 50;
 	};
 
 	class DkControlPointRepresentation : public QWidget
