@@ -187,16 +187,8 @@ namespace nmp {
 		updateEmptyElements();
 
 		auto row = mList.indexOf(sender);
-
-		//assert(row != -1); //check this
-		//assert(mPolygon->size() == mElements[row].size());
-
 		auto iter = mElements[row].begin();
-		QPen pen;
-		pen.setWidth(0);
 		
-		//pen.setColor(QColor(255, 0, 0, 60));
-
 		qDebug() << "Elements per row = " << mElements[row].size();
 		auto poly = mPolygon->points();
 		auto rowElement = mElements[row];

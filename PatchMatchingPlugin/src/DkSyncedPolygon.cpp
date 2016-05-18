@@ -4,6 +4,23 @@
 #include "DkPatchMatchingPlugin.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <tuple>
+
+namespace {
+	// calculate distance to given line
+	// additionally return true if the point can be mapped onto the line segment (not outside)
+	std::pair<bool,QPointF> mapToLine(const QPointF& point, const QLineF& line) {
+		auto len = line.length()*line.length();
+		auto v = line.p1();
+		auto w = line.p2();
+		auto t = ((point.x() - v.x()) * line.dx() + (point.y() - v.y()) * line.dy())/len;
+		auto inside = t > 0 && t < 1;
+
+		auto proj = v + t*(w-v);
+		return std::make_pair(inside, proj);
+	}
+}
+
 namespace nmp {
 	DkSyncedPolygon::DkSyncedPolygon()
 	{
@@ -49,20 +66,48 @@ namespace nmp {
 		emit changed();
 	}
 
+	auto DkSyncedPolygon::mapToNearestLine(const QPointF& point)
+	{
+		auto end = mControlPoints.end();
+		auto first = mControlPoints.begin();	// first and 
+		auto second = first;					// second iterator, we need line segment
+		auto res = std::make_tuple(false, QPointF(), end);		// default return, not on line, dummy point, and end (for insert)
+		auto min_dist = mSnapDistance;			// we just look in proximity of the snap distance
 
+		while (first != end && (second = first + 1) != end) {	// iterate over the points
+		
+			// map to line and calulate distance
+			auto curr = mapToLine(point, QLineF((*first)->getPos(), (*second)->getPos()));
+			auto dist = QLineF(point, curr.second).length();
+
+			// when the mapping was inside the segment and the distance is minimal
+			if (curr.first && dist < min_dist) {
+				res = std::make_tuple(true, curr.second, second);   // second iter since vector::insert inserts before
+			}
+			++first;	
+		}
+
+		return res;
+	}
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
-		auto point = QSharedPointer<DkControlPoint>::create(coordinates);
+		auto mapped = mapToNearestLine(coordinates);  // try to map point to all line segments
+		auto mapped_coords = std::get<0>(mapped) ? std::get<1>(mapped) : coordinates;	// if mapping ok, use point
+
+		auto point = QSharedPointer<DkControlPoint>::create(mapped_coords);	
 		if (mControlPoints.empty()) {
-			point->setType(ControlPointType::start);
+			point->setType(ControlPointType::start);		// first one has the start type
 		}
 
 		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::movedPoint);
-
-		mControlPoints.append(point);
+		mControlPoints.insert(std::get<2>(mapped), point);	// insert, default is end() so this works too
 	
-		emit pointAdded(point);
-		//emit changed();
+		if (std::get<0>(mapped)) {		
+			emit changed();			// structure changed
+		}
+		else {
+			emit pointAdded(point);		// just point added
+		}
 	}
 
 	void DkSyncedPolygon::removePoint(QSharedPointer<DkControlPoint> point)
@@ -73,7 +118,6 @@ namespace nmp {
 			mControlPoints.first()->setType(ControlPointType::start);
 		}
 		emit pointRemoved();
-		//emit changed();
 	}
 
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
@@ -88,6 +132,7 @@ namespace nmp {
 		// connect synced polygon to this
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
 		connect(polygon, &DkSyncedPolygon::pointRemoved, this, &DkPolygonRenderer::refresh);
+		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 
 		// connect center point to this
 		mControlCenter->setType(ControlPointType::center);

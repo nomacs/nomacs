@@ -67,10 +67,12 @@ namespace nmp {
 
 	public slots:
 		void removePoint(QSharedPointer<DkControlPoint> point);
-
-	private:
 	
+	private:
+		auto mapToNearestLine(const QPointF& point);
+
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;
+		double mSnapDistance = 30;
 	};
 
 
