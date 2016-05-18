@@ -55,7 +55,7 @@ namespace nmp {
 
 		size_t size() const;
 		const QVector<QSharedPointer<DkControlPoint> >&  points() const;
-		QRectF boundingRect() const;
+		QRectF boundingRect(QTransform transform = QTransform{}) const;
 		QPointF center() const;
 		void clear();
 
@@ -120,7 +120,7 @@ namespace nmp {
 		void setImageRect(QRect rect);
 		QPointF mapToImageRect(const QPointF& point);
 		QPointF mapToImageRectSimple(const QPointF& point);
-
+		
 		QRectF getImageRect();
 	private:
 		

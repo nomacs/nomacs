@@ -20,7 +20,29 @@ namespace {
 		return std::make_pair(inside, proj);
 	}
 
+	QPointF getCompTranslation(QRectF outer, QRectF inner)
+	{
+		auto dxn = .0;
+		auto dyn = .0;
 
+		if (inner.left() < outer.left()) {
+			dxn = outer.left() - inner.left();
+		}
+
+		if (inner.right() > outer.right()) {
+			dxn = outer.right() - inner.right();
+		}
+
+		if (inner.top() < outer.top()) {
+			dyn = outer.top() - inner.top();
+		}
+
+		if (inner.bottom() > outer.bottom()) {
+			dyn = outer.bottom() - inner.bottom();
+		}
+
+		return QPointF(dxn,dyn);
+	}
 
 }
 
@@ -43,13 +65,13 @@ namespace nmp {
 		return mControlPoints;
 	}
 
-	QRectF DkSyncedPolygon::boundingRect() const
+	QRectF DkSyncedPolygon::boundingRect(QTransform transform) const
 	{
 		if (mControlPoints.empty()) {
 			return QRectF();
 		}
 
-		auto getR = [this](const auto& p) {return QRectF(p->getPos(), QSize()); };
+		auto getR = [this, transform](const auto& p) {return QRectF(transform.map(p->getPos()), QSize()); };
 		auto rect = getR(mControlPoints.first());
 		for (auto p : mControlPoints) {
 			rect = rect.united(getR(p));
@@ -168,7 +190,14 @@ namespace nmp {
 		t.translate(center.x(), center.y());
 		t.rotate(angle);
 		t.translate(-center.x(), -center.y());
-		setTransform(t);
+		
+		auto rect = getImageRect();
+		auto bounding_rect = mPolygon->boundingRect(t);
+
+		auto comp = getCompTranslation(rect, bounding_rect);
+		if (comp == QPointF()) {
+			setTransform(t);
+		}
 		update();
 	}
 
@@ -178,9 +207,19 @@ namespace nmp {
 	}
 
 	void DkPolygonRenderer::translate(const qreal & dx, const qreal & dy)
-	{		
+	{
 		QTransform t = getTransform();
 		t.translate(dx, dy);
+
+		QTransform t2;
+		auto rect = getImageRect();
+		auto bounding_rect = mPolygon->boundingRect(t);
+
+		auto comp = getCompTranslation(rect, bounding_rect);
+
+		t2.translate(comp.x(), comp.y());
+
+		t = t * t2;
 		setTransform(t);
 		update();
 	}
@@ -454,10 +493,11 @@ namespace nmp {
 
 			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
 			auto initialPos = mPoint->getPos();
-			initialPos = mRenderer->mapToImageRectSimple(initialPos);
 
 			mMouseMove = [this, posGrab, initialPos](auto event) {
 				auto newpos = mRenderer->mapToViewport(mapToParent(event->pos()));
+
+				// map to image rect to restrict movement -> only inside rect
 				auto pos = mRenderer->mapToImageRectSimple(initialPos + newpos - posGrab);
 				mPoint->setPos(pos);
 
