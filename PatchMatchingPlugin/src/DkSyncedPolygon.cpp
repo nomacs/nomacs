@@ -374,7 +374,8 @@ namespace nmp {
 			auto pos = cp->getPos();
 			auto mapped = mapToImageRectSimple(pos);
 			if (pos != mapped) {
-				cp->setPosSilent(mapped);
+				cp->setPos(mapped);
+				return;
 			}
 		}
 		auto transform = getTransform()*getWorldMatrix();
@@ -581,10 +582,6 @@ namespace nmp {
 	{
 	}
 
-	void DkControlPoint::setPosSilent(const QPointF & point)
-	{	
-		mPoint = point;
-	}
 	void DkControlPoint::setPos(const QPointF & point)
 	{
 		mPoint = point;

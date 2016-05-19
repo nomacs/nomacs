@@ -350,9 +350,12 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
 	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
+	
 	render->setColor(getNextColor());
 	render->setImageRect(mImage->image().rect());
+	
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
+
 	mRenderer.append(render);
 
 	// add a new timeline for this renderer

@@ -35,7 +35,6 @@ namespace nmp {
 		QPointF getPos() const;
 		void setType(ControlPointType t);
 		ControlPointType getType();
-		void setPosSilent(const QPointF& point);
 
 	signals:
 		void moved();
