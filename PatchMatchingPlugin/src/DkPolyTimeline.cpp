@@ -9,11 +9,6 @@ namespace nmp {
 	DkTrackedTransform::DkTrackedTransform(QColor color, QTransform transform)
 		: mColor(color), mTransform(transform)
 	{
-
-	}
-
-	DkTrackedTransform::~DkTrackedTransform()
-	{
 	}
 
 	QTransform DkTrackedTransform::get()
@@ -55,15 +50,9 @@ namespace nmp {
 	{
 		// connect signals
 		connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, this, &DkInterpolatedSyncedPolyon::recalcuate);
-		connect(mPolygon.data(), &DkSyncedPolygon::pointRemoved, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::changed, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, this, &DkInterpolatedSyncedPolyon::recalcuate);
 	}
-
-	DkInterpolatedSyncedPolyon::~DkInterpolatedSyncedPolyon()
-	{
-	}
-
 
 	void DkInterpolatedSyncedPolyon::recalcuate()
 	{
@@ -112,8 +101,8 @@ namespace nmp {
 	DkPolyTimeline::DkPolyTimeline(QSharedPointer<DkSyncedPolygon> poly, QWidget* parent)
 		: QLabel(parent),
 		mPolygon(QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly)),
-		mScrollArea(new QScrollArea(this)),
-		mSize(40)
+		mSize(40),
+		mLayout(nullptr)
 	{
 		QWidget* c = new QWidget(this);
 		mLayout = new QGridLayout(c);
@@ -135,10 +124,6 @@ namespace nmp {
 						this, &std::remove_pointer<decltype(this)>::type::refresh);
 	}
 
-
-	DkPolyTimeline::~DkPolyTimeline()
-	{
-	}
 
 	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addPolygon(QColor color)
 	{
@@ -314,9 +299,6 @@ namespace nmp {
 
 	DkTimelineLabel::DkTimelineLabel(QWidget * parent)
 		:QLabel(parent)
-	{
-	}
-	DkTimelineLabel::~DkTimelineLabel()
 	{
 	}
 }

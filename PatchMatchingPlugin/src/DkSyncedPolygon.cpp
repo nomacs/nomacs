@@ -20,38 +20,38 @@ namespace {
 		return std::make_pair(inside, proj);
 	}
 
-	QPointF getCompTranslation(QRectF outer, QRectF inner)
+	// returns a matrix with translation which moves the rect inside
+	// so that it does fit inside outside
+	QTransform moveInside(QRectF outside, QRectF inside)
 	{
+		QTransform move;
 		auto dxn = .0;
 		auto dyn = .0;
 
-		if (inner.left() < outer.left()) {
-			dxn = outer.left() - inner.left();
+		if (inside.left() < outside.left()) {
+			dxn = outside.left() - inside.left();
 		}
 
-		if (inner.right() > outer.right()) {
-			dxn = outer.right() - inner.right();
+		if (inside.right() > outside.right()) {
+			dxn = outside.right() - inside.right();
 		}
 
-		if (inner.top() < outer.top()) {
-			dyn = outer.top() - inner.top();
+		if (inside.top() < outside.top()) {
+			dyn = outside.top() - inside.top();
 		}
 
-		if (inner.bottom() > outer.bottom()) {
-			dyn = outer.bottom() - inner.bottom();
+		if (inside.bottom() > outside.bottom()) {
+			dyn = outside.bottom() - inside.bottom();
 		}
 
-		return QPointF(dxn,dyn);
+		return move.translate(dxn,dyn);
 	}
 
 }
 
 namespace nmp {
 	DkSyncedPolygon::DkSyncedPolygon()
-	{
-	}
-
-	DkSyncedPolygon::~DkSyncedPolygon()
+		: mSnapDistance(30)
 	{
 	}
 
@@ -157,7 +157,7 @@ namespace nmp {
 		if (!mControlPoints.empty()) {
 			mControlPoints.first()->setType(ControlPointType::start);
 		}
-		emit pointRemoved();
+		emit changed();
 	}
 
 	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
@@ -167,11 +167,11 @@ namespace nmp {
 		mWorldMatrix(worldMatrix),
 		mControlCenter(QSharedPointer<DkControlPoint>::create(QPointF())),
 		mCenter(new DkControlPointRepresentation(mControlCenter, viewport, this)),
-		mColor(0, 0, 255)
+		mColor(0, 0, 255),
+		mMargin(50)
 	{
 		// connect synced polygon to this
 		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
-		connect(polygon, &DkSyncedPolygon::pointRemoved, this, &DkPolygonRenderer::refresh);
 		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 
 		// connect center point to this
@@ -191,11 +191,12 @@ namespace nmp {
 		t.rotate(angle);
 		t.translate(-center.x(), -center.y());
 		
+		// check if rotation would move polygon outside the image
 		auto rect = getImageRect();
 		auto bounding_rect = mPolygon->boundingRect(t);
-
-		auto comp = getCompTranslation(rect, bounding_rect);
-		if (comp == QPointF()) {
+		auto comp = moveInside(rect, bounding_rect);
+		
+		if (comp.isIdentity()) {	// if yes ignore rotation
 			setTransform(t);
 		}
 		update();
@@ -203,7 +204,7 @@ namespace nmp {
 
 	void DkPolygonRenderer::rotateCenter(qreal angle)
 	{
-		return rotateCenter(angle);
+		return rotate(angle, mPolygon->center());
 	}
 
 	void DkPolygonRenderer::translate(const qreal & dx, const qreal & dy)
@@ -211,15 +212,12 @@ namespace nmp {
 		QTransform t = getTransform();
 		t.translate(dx, dy);
 
-		QTransform t2;
+		// check if polygon is moved outside the image
 		auto rect = getImageRect();
 		auto bounding_rect = mPolygon->boundingRect(t);
+		auto move = moveInside(rect, bounding_rect);
 
-		auto comp = getCompTranslation(rect, bounding_rect);
-
-		t2.translate(comp.x(), comp.y());
-
-		t = t * t2;
+		t = t * move;	// and move it back
 		setTransform(t);
 		update();
 	}
@@ -230,10 +228,6 @@ namespace nmp {
 		mTransform = transform;
 		emit transformChanged(transform);
 		update();
-	}
-
-	DkPolygonRenderer::~DkPolygonRenderer()
-	{
 	}
 
 	QTransform DkPolygonRenderer::getTransform() const
@@ -313,7 +307,7 @@ namespace nmp {
 		auto point = coordinates;
 		
 		point = mapToViewport(point); // map to local coordinates
-		point = mapToImageRect(point);
+		point = mapToImageRect(point);	// restric movement to inside the image
 
 		mPolygon->addPoint(point);
 	}
@@ -366,8 +360,6 @@ namespace nmp {
 		mImageRect = rect;
 	}
 
-
-
 	void DkPolygonRenderer::update()
 	{
 		for (auto cp : mPolygon->points()) {
@@ -378,14 +370,16 @@ namespace nmp {
 				return;
 			}
 		}
+
+		// move the points to their respective position
 		auto transform = getTransform()*getWorldMatrix();
 		for (auto p : mPoints) {
 			p->move(transform);
 		}
-		for (auto l : mLines) {
+		for (auto l : mLines) {	// also lines
 			l->move(transform);
 		}
-		
+	
 		mControlCenter->setPos(mPolygon->center());
 		mCenter->move(transform);
 
@@ -578,10 +572,6 @@ namespace nmp {
 	{
 	}
 
-	DkControlPoint::~DkControlPoint()
-	{
-	}
-
 	void DkControlPoint::setPos(const QPointF & point)
 	{
 		mPoint = point;
@@ -620,7 +610,6 @@ namespace nmp {
 		painter.setRenderHint(QPainter::Antialiasing);
 		painter.setBrush(QColor(0, 0, 0));
 		painter.drawLine(mMapped.first, mMapped.second);
-		//painter.drawRect(rect());
 
 		QWidget::paintEvent(event);
 	}
