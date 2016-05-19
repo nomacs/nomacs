@@ -114,6 +114,9 @@ namespace nmp {
 		// removes a row/renderer
 		void removeTransform(QSharedPointer<DkTrackedTransform> sender);
 
+		// set step size
+		void setStepSize(int stepsize);
+
 	private:
 		// recalculates how many widgets are needed and add or removes thems
 		void updateEmptyElements();

@@ -77,17 +77,6 @@ QSharedPointer<nmc::DkImageContainer> DkPatchMatchingPlugin::runPlugin(const QSt
 	
 	qDebug() << "Run PatchMatchinPlugin";
 
-	if (!image)
-		return image;
-
-	//for a viewport plugin runID and image are null
-	if (mViewport) {
-		if (!mViewport->isCanceled())
-			image->setImage(mViewport->getPaintedImage(), tr("Drawings Added"));
-
-		mViewport->setVisible(false);
-	}
-	
 	return image;
 };
 
@@ -136,25 +125,17 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	
 	setCursor(defaultCursor);
 
-	mPen.setColor(QColor(0, 0, 0));
-	mPen.setCapStyle(Qt::RoundCap);
-	mPen.setJoinStyle(Qt::RoundJoin);
-	mPen.setBrush(Qt::NoBrush);
-	mPen.setWidth(1);
-
 	// 
 	// OLD Toolbar stuff
 	// 
 	connect(mtoolbar.data(), SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
-	connect(mtoolbar.data(), SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
 	connect(mtoolbar.data(), SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(mtoolbar.data(), SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(mtoolbar.data(), SIGNAL(undoSignal()), this, SLOT(undoLastPaint()));
 	connect(mtoolbar.data(), SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 
 	loadSettings();
-	mtoolbar->setPenColor(mPen.color());
-	mtoolbar->setPenWidth(mPen.width());
+
 	// 
 	// ~~END OLD Toolbar stuff
 	// 
@@ -167,6 +148,8 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 	// add timeline stuff, should probably move this to the plugin part
 	// to separate it better from the view
 	mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	mTimeline->setStepSize(mtoolbar->getStepSize());
+	connect(mtoolbar.data(), &DkPatchMatchingToolBar::stepSizeChanged, mTimeline.data(), &DkPolyTimeline::setStepSize);
 
 	//QLabel* l = new QLabel(this);
 	//l->setStyleSheet("background-color: #00f;");
@@ -196,10 +179,8 @@ void DkPatchMatchingViewPort::saveSettings() const {
 	QSettings& settings = nmc::Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	settings.setValue("penColor", mPen.color().rgba());
-	settings.setValue("penWidth", mPen.width());
+	settings.setValue("StepSize", mtoolbar->getStepSize());
 	settings.endGroup();
-
 }
 
 QColor DkPatchMatchingViewPort::getNextColor()
@@ -216,19 +197,8 @@ void DkPatchMatchingViewPort::loadSettings() {
 	QSettings& settings = nmc:: Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	mPen.setColor(QColor::fromRgba(settings.value("penColor", mPen.color().rgba()).toInt()));
-	mPen.setWidth(settings.value("penWidth", 15).toInt());
+	mtoolbar->setStepSize(settings.value("StepSize", 50).toInt());
 	settings.endGroup();
-}
-
-void DkPatchMatchingViewPort::undoLastPaint() {
-
-	if (paths.empty())
-		return;		// nothing to undo
-
-	paths.pop_back();
-	pathsPen.pop_back();
-	update();
 }
 
 void DkPatchMatchingViewPort::clonePolygon()
@@ -288,40 +258,6 @@ void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 void DkPatchMatchingViewPort::paintEvent(QPaintEvent *event) {
 	checkWorldMatrixChanged();
 	DkPluginViewPort::paintEvent(event);
-}
-
-
-QImage DkPatchMatchingViewPort::getPaintedImage() {
-
-	if(parent()) {
-		nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
-		if (viewport) {
-
-			if (!paths.isEmpty()) {   // if nothing is drawn there is no need to change the image
-
-				QImage img = viewport->getImage();
-				
-				QPainter painter(&img);
-
-				// >DIR: do not apply world matrix if painting in the image [14.10.2014 markus]
-				//if (worldMatrix)
-				//	painter.setWorldTransform(*worldMatrix);
-
-				painter.setRenderHint(QPainter::HighQualityAntialiasing);
-				painter.setRenderHint(QPainter::Antialiasing);
-
-				for (int idx = 0; idx < paths.size(); idx++) {
-					painter.setPen(pathsPen.at(idx));
-					painter.drawPath(paths.at(idx));
-				}
-				painter.end();
-
-				return img;
-			}
-		}
-	}
-	
-	return QImage();
 }
 
 void DkPatchMatchingViewPort::checkWorldMatrixChanged()
@@ -393,24 +329,6 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 }
 
 
-void DkPatchMatchingViewPort::setBrush(const QBrush& brush) {
-	this->brush = brush;
-}
-
-void DkPatchMatchingViewPort::setPen(const QPen& pen) {
-	this->mPen = pen;
-}
-
-void DkPatchMatchingViewPort::setPenWidth(int width) {
-
-	this->mPen.setWidth(width);
-}
-
-void DkPatchMatchingViewPort::setPenColor(QColor color) {
-
-	this->mPen.setColor(color);
-}
-
 void DkPatchMatchingViewPort::setPanning(bool checked) {
 
 	this->panning = checked;
@@ -427,18 +345,6 @@ void DkPatchMatchingViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
 	emit DkPluginViewPort::closePlugin();
-}
-
-QBrush DkPatchMatchingViewPort::getBrush() const {
-	return brush;
-}
-
-QPen DkPatchMatchingViewPort::getPen() const {
-	return mPen;
-}
-
-bool DkPatchMatchingViewPort::isCanceled() {
-	return cancelTriggered;
 }
 
 void DkPatchMatchingViewPort::setVisible(bool visible) {
@@ -475,11 +381,6 @@ DkPatchMatchingToolBar::DkPatchMatchingToolBar(const QString & title, QWidget * 
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 
 	qDebug() << "[PAINT TOOLBAR] created...";
-}
-
-DkPatchMatchingToolBar::~DkPatchMatchingToolBar() {
-
-	qDebug() << "[PAINT TOOLBAR] deleted...";
 }
 
 void DkPatchMatchingToolBar::createIcons() {
@@ -538,6 +439,19 @@ void DkPatchMatchingToolBar::createLayout() {
 	addAction(mClonePolyAction);
 	addSeparator();
 
+	// step size for timeline
+	mStepSizeSpinner = new QSpinBox(this);
+	mStepSizeSpinner->setObjectName("mStepSizeSpinner");
+	mStepSizeSpinner->setSuffix("px");
+	mStepSizeSpinner->setMinimum(10);
+	mStepSizeSpinner->setMaximum(500);
+
+	addWidget(mStepSizeSpinner);
+
+	connect(mStepSizeSpinner, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), 
+						this, &DkPatchMatchingToolBar::stepSizeChanged);
+	addSeparator();
+
 	//
 	// OLD STUFF -> We should change this perhaps if we don't need it anymore
 	//
@@ -576,13 +490,6 @@ void DkPatchMatchingToolBar::createLayout() {
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 
-	// pen width
-	widthBox = new QSpinBox(this);
-	widthBox->setObjectName("widthBox");
-	widthBox->setSuffix("px");
-	widthBox->setMinimum(1);
-	widthBox->setMaximum(500);	// huge sizes since images might have high resolutions
-
 	// pen alpha
 	alphaBox = new QSpinBox(this);
 	alphaBox->setObjectName("alphaBox");
@@ -592,13 +499,12 @@ void DkPatchMatchingToolBar::createLayout() {
 
 	addAction(applyAction);
 	addAction(cancelAction);
-	addSeparator();
-	addAction(panAction);
-	addAction(undoAction);
-	addSeparator();
-	addWidget(widthBox);
-	addWidget(penColButton);
-	addWidget(alphaBox);
+	//addSeparator();
+	//addAction(panAction);
+	//addAction(undoAction);
+
+	//addWidget(penColButton);
+	//addWidget(alphaBox);
 }
 
 void DkPatchMatchingToolBar::modeChangeTriggered(QAction* action)
@@ -636,7 +542,17 @@ void DkPatchMatchingToolBar::setPenColor(const QColor& col) {
 
 void DkPatchMatchingToolBar::setPenWidth(int width) {
 
-	widthBox->setValue(width);
+	mStepSizeSpinner->setValue(width);
+}
+
+int DkPatchMatchingToolBar::getStepSize()
+{
+	return mStepSizeSpinner->value();
+}
+
+void DkPatchMatchingToolBar::setStepSize(int size)
+{
+	mStepSizeSpinner->setValue(size);
 }
 
 void DkPatchMatchingToolBar::on_undoAction_triggered() {
@@ -654,11 +570,6 @@ void DkPatchMatchingToolBar::on_cancelAction_triggered() {
 void DkPatchMatchingToolBar::on_panAction_toggled(bool checked) {
 
 	emit panSignal(checked);
-}
-
-void DkPatchMatchingToolBar::on_widthBox_valueChanged(int val) {
-
-	emit widthSignal(val);
 }
 
 void DkPatchMatchingToolBar::on_alphaBox_valueChanged(int val) {

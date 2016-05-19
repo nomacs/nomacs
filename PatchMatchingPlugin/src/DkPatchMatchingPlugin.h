@@ -90,26 +90,21 @@ class DkPatchMatchingViewPort : public nmc::DkPluginViewPort {
 	Q_OBJECT
 
 public:
+	// ctor and sets up everything
 	DkPatchMatchingViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	// saves settings
 	~DkPatchMatchingViewPort();
-	
-	QBrush getBrush() const;
-	QPen getPen() const;
-	bool isCanceled();
-	QImage getPaintedImage();
+
+	// checks on update if worldmatrix has changed and
+	// emits corresponding signal when true
 	void checkWorldMatrixChanged();
-	
 
 public slots:
-	void setBrush(const QBrush& brush);
-	void setPen(const QPen& pen);
-	void setPenWidth(int width);
-	void setPenColor(QColor color);
 	void setPanning(bool checked);
 	void applyChangesAndClose();
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
-	void undoLastPaint();
 	
 	void clonePolygon();
 	void selectedToolChanged(SelectedTool tool);
@@ -134,7 +129,6 @@ private:
 
 	// initialization list
 	bool cancelTriggered;
-	QBrush brush;
 	
 	bool panning;
 	QSharedPointer<DkPatchMatchingToolBar> mtoolbar;
@@ -145,10 +139,7 @@ private:
 	QCursor defaultCursor;
 	
 	// default constructors
-	QPen mPen;
 	QTransform mWorldMatrixCache;
-	QVector<QPainterPath> paths;
-	QVector<QPen> pathsPen;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
 	
@@ -177,30 +168,38 @@ public:
 	};
 
 	DkPatchMatchingToolBar(const QString & title, QWidget * parent = 0);
-	virtual ~DkPatchMatchingToolBar();
+	virtual ~DkPatchMatchingToolBar() = default;
 
+	// setter and getter for the step size (timeline)
+	int getStepSize();
+	void setStepSize(int size);
+
+	// OLD STUFF
 	void setPenColor(const QColor& col);
 	void setPenWidth(int width);
 
-
 public slots:
 	void modeChangeTriggered(QAction* action);
+
+	// OLD STUFF, remove probably
 	void on_applyAction_triggered();
 	void on_cancelAction_triggered();
 	void on_panAction_toggled(bool checked);
 	void on_penColButton_clicked();
-	void on_widthBox_valueChanged(int val);
 	void on_alphaBox_valueChanged(int val);
 	void on_undoAction_triggered();
 	virtual void setVisible(bool visible);
 
 signals:
+	// emitted when the step size spinner is changed (timeline)
+	void stepSizeChanged(int width);
+
+	// OLD STUFF, remove probably
 	void selectedToolChanged(SelectedTool tool);
 	void clonePolyTriggered();
 	void applySignal();
 	void cancelSignal();
 	void colorSignal(QColor color);
-	void widthSignal(int width);
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
 	void panSignal(bool checked);
@@ -209,10 +208,16 @@ signals:
 protected:
 	void createLayout();
 	void createIcons();
+	
+	QSpinBox* mStepSizeSpinner;		// changes step size for timeline
+	QAction* mClonePolyAction;		// adds new polygon clone (renderer)
 
+	
+
+	// OLD STUFF, remove probably
 	QPushButton* penColButton;
 	QColorDialog* colorDialog;
-	QSpinBox* widthBox;
+	
 	QSpinBox* alphaBox;
 	QColor penCol;
 	int penAlpha;
@@ -221,7 +226,7 @@ protected:
 
 	QAction* mAddPointAction;
 	QAction* mRemovePointAction;
-	QAction* mClonePolyAction;
+	
 	QAction* mRotateAction;
 	QAction* mMoveAction;
 	QActionGroup* mModeGroup;

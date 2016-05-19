@@ -234,6 +234,11 @@ namespace nmp {
 		refresh();
 	}
 
+	void DkPolyTimeline::setStepSize(int stepsize)
+	{
+		mPolygon->setStep(stepsize);
+	}
+
 	void DkPolyTimeline::updateEmptyElements()
 	{
 		auto rows = mList.size();	//number of rows we need
