@@ -2,7 +2,7 @@
 #include <QWidget>
 #include <QPen>
 #include <functional>
-
+#include <QJsonObject>
 namespace {
 	template<class T>
 	auto mapToViewPort(const T& pos, QTransform world) {
@@ -87,6 +87,10 @@ namespace nmp {
 		// remove all points and start from scratch
 		void clear();
 
+		// write/read json
+		void write(QJsonObject& json) const;
+		void read(QJsonObject &json);
+
 	signals:
 		// point is added @ the end
 		void pointAdded(QSharedPointer<DkControlPoint> point);
@@ -153,6 +157,9 @@ namespace nmp {
 		// we need this to check the bounds
 		void setImageRect(QRect rect);
 
+		// read write json
+		void write(QJsonObject& json) const;
+		void read(QJsonObject& json);
 	signals:
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff

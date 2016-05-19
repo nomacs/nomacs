@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <tuple>
+#include <QJsonArray>
 
 namespace {
 	// calculate distance to given line
@@ -89,6 +90,25 @@ namespace nmp {
 	{
 		mControlPoints.clear();
 		emit changed();
+	}
+
+	void DkSyncedPolygon::read(QJsonObject & json)
+	{
+		auto array = json["points"].toArray();
+		for (auto p : array) {
+			auto jp = p.toArray();
+			addPoint(QPointF{ jp.at(0).toDouble(), jp.at(1).toDouble() });
+		}
+	}
+
+	void DkSyncedPolygon::write(QJsonObject & json) const
+	{
+		QJsonArray pointArray;
+		for (auto p : mControlPoints) {
+			QJsonArray pObj{ p->getPos().x(), p->getPos().y() };
+			pointArray.append(pObj);
+		}
+		json["points"] = pointArray;
 	}
 
 	auto DkSyncedPolygon::mapToNearestLine(QPointF& point)
@@ -180,7 +200,7 @@ namespace nmp {
 		connect(mCenter, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		connect(mCenter, &DkControlPointRepresentation::removed, this, &DkPolygonRenderer::removed);
 		mCenter->setVisible(false);
-		
+
 		refresh();
 	}
 
@@ -360,12 +380,41 @@ namespace nmp {
 		mImageRect = rect;
 	}
 
+	void DkPolygonRenderer::write(QJsonObject & json) const
+	{
+		auto t = getTransform();
+		QJsonArray pointArray;
+		pointArray.append(QJsonArray{ t.m11(),t.m12(),t.m13() });
+		pointArray.append(QJsonArray{ t.m21(),t.m22(),t.m23() });
+		pointArray.append(QJsonArray{ t.m31(),t.m32(),t.m33() });
+
+		json["transform"] = pointArray;
+	}
+
+	void DkPolygonRenderer::read(QJsonObject & json)
+	{
+		
+		auto array = json["transform"].toArray();
+	
+		auto m = [array](auto r, auto c){ 
+			return array.at(r -1).toArray().at(c -1).toDouble(); 
+		};
+
+		QTransform t( m(1,1), m(1,2), m(1,3),
+					  m(2,1), m(2,2), m(2,3), 
+					  m(3,1), m(3,2), m(3,3) );
+		mTransform = t;
+		//setTransform(t);
+	}
+
 	void DkPolygonRenderer::update()
 	{
 		for (auto cp : mPolygon->points()) {
 			auto pos = cp->getPos();
 			auto mapped = mapToImageRectSimple(pos);
-			if (pos != mapped) {
+			// check if mapped is the same, otherwise set position new but ignore if
+			// distance is too far (probably transform not set properly)
+			if ( pos != mapped && QLineF(pos,mapped).length() < 50) {
 				cp->setPos(mapped);
 				return;
 			}
@@ -592,6 +641,7 @@ namespace nmp {
 	{
 		return mType;
 	}
+
 
 	DkLineRepresentation::DkLineRepresentation(const std::pair<QSharedPointer<DkControlPoint>,
 													QSharedPointer<DkControlPoint>>& line, QWidget * viewport)

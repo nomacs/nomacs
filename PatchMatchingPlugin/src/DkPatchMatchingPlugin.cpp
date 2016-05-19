@@ -31,7 +31,8 @@
 #include <QMouseEvent>
 #include <QActionGroup>
 #include "DkPolyTimeline.h"
-
+#include <QjsonDocument>
+#include <Qjsonarray>
 namespace nmp {
 
 /*-----------------------------------DkPatchMatchingPlugin ---------------------------------------------*/
@@ -163,8 +164,34 @@ DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlag
 void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 {
 	mImage = imgC;
+
 	// just emit reset to clear everything
 	emit reset(mImage);
+
+	QFile file{ getJsonFilePath() };
+	if (!file.open(QIODevice::ReadOnly)) {
+		qDebug() << "[PatchMatchingPlugin] No json file found for this image: " << getJsonFilePath();
+	}
+	else {
+		auto doc = QJsonDocument::fromJson(file.readAll());
+		auto root = doc.object();
+		mPolygon->read(root["polygon"].toObject());
+		qDebug() << "[PatchMatchingPlugin] Json file found and successfully read.";
+		
+		auto array = root["clones"].toArray();
+		for (auto obj : array) {
+			auto poly = addPoly();
+			poly->read(obj.toObject());
+		}
+	}
+}
+
+QString DkPatchMatchingViewPort::getJsonFilePath() const
+{
+	if (!mImage) {
+		return "";
+	}
+	return mImage->filePath() + ".patches.json";
 }
 
 DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -297,10 +324,12 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 	// add a new timeline for this renderer
 	auto transform = mTimeline->addPolygon(render->getColor());
 	mTimeline->setImage(mImage);
-
+	
 	//// connections for timeline
 	connect(render.data(), &DkPolygonRenderer::transformChanged, 
 		transform.data(), &std::remove_pointer<decltype(transform.data())>::type::set);
+
+	mTimeline->refresh();
 
 	// this is our cleanup slot
 	connect(render.data(), &DkPolygonRenderer::removed, this,
@@ -339,6 +368,31 @@ void DkPatchMatchingViewPort::setPanning(bool checked) {
 
 void DkPatchMatchingViewPort::applyChangesAndClose() {
 	
+	QJsonObject root;
+
+	QJsonObject syncedPoly;
+	mPolygon->write(syncedPoly);
+	root["polygon"] = syncedPoly;
+
+	QJsonArray array;
+	for (auto p : mRenderer) {
+		QJsonObject obj;
+		p->write(obj);
+		array.append(obj);
+	}
+	root["clones"] = array;
+
+	QFile saveFile(getJsonFilePath());
+	
+	if (!saveFile.open(QIODevice::WriteOnly)) {
+		qWarning("Couldn't open save file.");
+		return;
+	}
+	
+	QJsonDocument doc{ root };
+	saveFile.write(doc.toJson());
+
+	qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
 }
 
 void DkPatchMatchingViewPort::discardChangesAndClose() {
@@ -499,12 +553,12 @@ void DkPatchMatchingToolBar::createLayout() {
 
 	addAction(applyAction);
 	addAction(cancelAction);
-	//addSeparator();
-	//addAction(panAction);
-	//addAction(undoAction);
+	addSeparator();
+	addAction(panAction);
+	addAction(undoAction);
 
-	//addWidget(penColButton);
-	//addWidget(alphaBox);
+	addWidget(penColButton);
+	addWidget(alphaBox);
 }
 
 void DkPatchMatchingToolBar::modeChangeTriggered(QAction* action)

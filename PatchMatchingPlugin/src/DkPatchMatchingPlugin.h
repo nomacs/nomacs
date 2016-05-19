@@ -109,7 +109,7 @@ public slots:
 	void clonePolygon();
 	void selectedToolChanged(SelectedTool tool);
 	virtual void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;
-
+	QString getJsonFilePath() const;
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);

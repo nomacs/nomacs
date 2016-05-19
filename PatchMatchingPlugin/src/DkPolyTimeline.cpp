@@ -134,7 +134,7 @@ namespace nmp {
 					this, [this, transform]() { updateTransform(transform); });
 
 		mList.push_back(transform);
-		
+	
 		return transform;
 	}
 
@@ -173,10 +173,6 @@ namespace nmp {
 
 		auto row = mList.indexOf(sender);
 		auto iter = mElements[row].begin();
-		
-		qDebug() << "Elements per row = " << mElements[row].size();
-		auto poly = mPolygon->points();
-		auto rowElement = mElements[row];
 
 		for (const auto& p : mPolygon->points()) {
 			
