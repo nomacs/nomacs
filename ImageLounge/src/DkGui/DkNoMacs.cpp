@@ -854,11 +854,32 @@ void DkNoMacs::convert2gray() {
 
 	QImage img = vp->getImage();
 
+#ifdef WITH_OPENCV
+
+	cv::Mat cvImg = DkImage::qImage2Mat(img);
+	cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
+
+	std::vector<cv::Mat> imgs;
+	cv::split(cvImg, imgs);
+	
+	// get the luminance channel
+	if (!imgs.empty())
+		cvImg = imgs[0];
+
+	// convert it back for the painter
+	cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
+
+	img = DkImage::mat2QImage(cvImg);
+#else
+
+
 	QVector<QRgb> table(256);
 	for(int i=0;i<256;++i)
 		table[i]=qRgb(i,i,i);
 
 	img = img.convertToFormat(QImage::Format_Indexed8,table);
+
+#endif
 
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot convert the Image..."));
