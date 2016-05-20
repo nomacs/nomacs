@@ -190,8 +190,8 @@ namespace nmp {
 		emit changed();
 	}
 
-	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix)
-		: QObject(polygon),
+	DkPolygonRenderer::DkPolygonRenderer(QWidget* viewport, QSharedPointer<DkSyncedPolygon> polygon, QTransform worldMatrix)
+		: QObject(),
 		mPolygon(polygon),
 		mViewport(viewport),
 		mWorldMatrix(worldMatrix),
@@ -201,8 +201,8 @@ namespace nmp {
 		mMargin(50)
 	{
 		// connect synced polygon to this
-		connect(polygon, &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
-		connect(polygon, &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
+		connect(polygon.data(), &DkSyncedPolygon::pointAdded, this, &DkPolygonRenderer::addPoint);
+		connect(polygon.data(), &DkSyncedPolygon::changed, this, &DkPolygonRenderer::refresh);
 
 		// connect center point to this
 		mControlCenter->setType(ControlPointType::center);
@@ -379,7 +379,7 @@ namespace nmp {
 		auto rep = new DkControlPointRepresentation(point, getViewport(), this); // create new widget
 		connect(rep, &DkControlPointRepresentation::moved, this, &DkPolygonRenderer::update);
 		connect(point.data(), &DkControlPoint::moved, this, &DkPolygonRenderer::update);
-		connect(rep, &DkControlPointRepresentation::removed, mPolygon, &DkSyncedPolygon::removePoint);
+		connect(rep, &DkControlPointRepresentation::removed, mPolygon.data(), &DkSyncedPolygon::removePoint);
 		connect(rep, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		rep->setVisible(true);
 
@@ -422,6 +422,11 @@ namespace nmp {
 	bool DkPolygonRenderer::isInactive() const
 	{
 		return mPolygon->isInactive();
+	}
+
+	QSharedPointer<DkSyncedPolygon> DkPolygonRenderer::getPolygon()
+	{
+		return mPolygon;
 	}
 
 	void DkPolygonRenderer::update()

@@ -106,12 +106,12 @@ namespace nmp {
 		: DkPluginViewPort(parent, flags),
 		cancelTriggered(false),
 		panning(false),
+		mCurrentPolygon(0),
+		mPolygonList(QVector < QSharedPointer<DkSyncedPolygon>>{QSharedPointer<DkSyncedPolygon>::create()}),
 		mtoolbar(new DkPatchMatchingToolBar(tr("PatchMatching Toolbar)"),this), &QObject::deleteLater),
-		mPolygon(QSharedPointer<DkSyncedPolygon>::create()),
 		mDock(new QDockWidget(this), &QObject::deleteLater),
-		mTimeline(new DkPolyTimeline(mPolygon, mDock.data()), &QObject::deleteLater),
-		defaultCursor(Qt::CrossCursor), 
-		mCurrentPolygon(-1)
+		mTimeline(new DkPolyTimeline(currentPolygon(), mDock.data()), &QObject::deleteLater),
+		defaultCursor(Qt::CrossCursor)
 	{
 
 		setObjectName("DkPatchMatchingViewPort");
@@ -129,7 +129,8 @@ namespace nmp {
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::closeTriggerd, this, &DkPatchMatchingViewPort::discardChangesAndClose);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::currentPolyChanged, this, &DkPatchMatchingViewPort::changeCurrentPolygon);
 		// timeline stuff
-		mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+		//mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		mTimeline->setStepSize(mtoolbar->getStepSize());
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::stepSizeChanged, mTimeline.data(), &DkPolyTimeline::setStepSize);
 
@@ -142,12 +143,13 @@ namespace nmp {
 	void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 	{
 		mImage = imgC;
+		mTimeline->setImage(mImage);
 		loadFromFile();
 	}
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
-		mCurrentPolygon = -1;
+		//mCurrentPolygon = -1;
 		mtoolbar->clearPolygons();
 		mPolygonList.clear();
 
@@ -155,8 +157,7 @@ namespace nmp {
 		if (!file.open(QIODevice::ReadOnly)) {
 			qDebug() << "[PatchMatchingPlugin] No json file found for this image: " << getJsonFilePath();
 
-			mtoolbar->addPolygon(true);
-			//mPolygon->setInactive(true);
+			addPolygon();
 		}
 		else {
 			auto doc = QJsonDocument::fromJson(file.readAll());
@@ -166,7 +167,20 @@ namespace nmp {
 			auto first = list.at(0).toObject();
 			
 			for (auto p : list) {
-				mPolygonList << p.toObject();
+				auto pobj = p.toObject();
+				auto poly = QSharedPointer<DkSyncedPolygon>::create();
+				// read synced polygon
+				poly->read(p.toObject()["polygon"].toObject());
+
+				// read clones
+				auto array = pobj["clones"].toArray();
+				for (auto obj : array) {
+					auto clone = addClone(poly);
+					clone->read(obj.toObject());
+					//mRenderer.push_back(clone);
+				}
+
+				mPolygonList << poly;
 				mtoolbar->addPolygon(first == p.toObject());
 			}
 		}
@@ -174,15 +188,9 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::load(QJsonObject& polygon)
 	{
-		// read synced polygon
-		mPolygon->read(polygon["polygon"].toObject());
 		
-		// read clones
-		auto array = polygon["clones"].toArray();
-		for (auto obj : array) {
-			auto poly = addClone();
-			poly->read(obj.toObject());
-		}
+		
+		
 	}
 
 	QString DkPatchMatchingViewPort::getJsonFilePath() const
@@ -226,9 +234,10 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::clonePolygon()
 	{
-		auto poly = addClone();
+		auto poly = addClone(currentPolygon());
 		poly->translate(400, 0);
 
+		updateInactive();
 		update();
 
 		emit polygonAdded();
@@ -236,26 +245,27 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::addPolygon()
 	{
+		auto poly = QSharedPointer<DkSyncedPolygon>::create();
+		mPolygonList.push_back(poly);
+		addClone(poly);
+
 		// just to make sure check that an polygon is actually selected
 		mtoolbar->addPolygon(true);
-
 		qDebug() << "[PatchMatchingPlugin] add polygon triggerd";
 	}
 
 	void DkPatchMatchingViewPort::saveToFile()
 	{
-		saveCurrent(); // store current polygon
-
 		QJsonArray root;
-		for (auto obj : mPolygonList) {
-			root << obj;
+		for (auto poly : mPolygonList) {
+			root << createJson(poly);
 		}
 
 		// write to file
 		QFile saveFile(getJsonFilePath());
 
 		if (!saveFile.open(QIODevice::WriteOnly)) {
-			qWarning("Couldn't open saveCurrent file.");
+			qWarning("Couldn't open savePolygon file.");
 			return;
 		}
 
@@ -326,15 +336,20 @@ namespace nmp {
 
 	QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
 	{
-		if (mRenderer.empty()) {
-			addClone();
+		// return first active renderer
+		for (auto r : mRenderer) {
+			if (!r->isInactive()) {
+				return r;
+			}
 		}
+
+		// this should not happen
 		return mRenderer.first();
 	}
 
-	QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addClone()
+	QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addClone(QSharedPointer<DkSyncedPolygon> poly)
 	{
-		auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
+		auto render = QSharedPointer<DkPolygonRenderer>::create(this, poly, mWorldMatrixCache);
 
 		render->setColor(getIndexedColor(mRenderer.size()));
 		render->setImageRect(mImage->image().rect());
@@ -343,34 +358,16 @@ namespace nmp {
 
 		mRenderer.append(render);
 
-		// add a new timeline for this renderer
-		auto transform = mTimeline->addPolygon(render->getColor());
-		mTimeline->setImage(mImage);
-
-		//// connections for timeline
-		connect(render.data(), &DkPolygonRenderer::transformChanged,
-			transform.data(), &std::remove_pointer<decltype(transform.data())>::type::set);
-
-		mTimeline->refresh();
-
 		// this is our cleanup slot
 		connect(render.data(), &DkPolygonRenderer::removed, this,
 
-			[this, render, transform]() {
+			[this, render]() {
 			// disconnect the polygon and clear it (delete all QWidgets which have viewport as parent)
 			render.data()->disconnect();
 			render->clear();
 
-			mTimeline->removeTransform(transform);
-
 			// remove the polygon from the renderer list
 			mRenderer.removeAll(render);
-
-			// if no render exists anymore also clean up the synced polygon
-			if (mRenderer.empty()) {
-				mPolygon->clear();
-			}
-
 		});
 
 		// remove renderer if the whole viewport is reset
@@ -388,52 +385,61 @@ namespace nmp {
 		setCursor(defaultCursor);
 	}
 
-	void DkPatchMatchingViewPort::saveCurrent() {
+	QJsonObject DkPatchMatchingViewPort::createJson(QSharedPointer<DkSyncedPolygon> poly) {
 
-		QJsonObject polygon;
+		QJsonObject json;
 
 		// save the synced polygon
 		QJsonObject syncedPoly;
-		mPolygon->write(syncedPoly);
-		polygon["polygon"] = syncedPoly;
+		poly->write(syncedPoly);
+		json["polygon"] = syncedPoly;
 
 		// save all clones
 		QJsonArray array;
 		for (auto p : mRenderer) {
-			QJsonObject obj;
-			p->write(obj);
-			array.append(obj);
+			if (p->getPolygon() == poly) {
+				QJsonObject obj;
+				p->write(obj);
+				array.append(obj);
+			}
 		}
-		polygon["clones"] = array;
+		json["clones"] = array;
 
-		if (mCurrentPolygon >= mPolygonList.size() ) {
-			mPolygonList.resize(mCurrentPolygon +1);
-		}
-		mPolygonList[mCurrentPolygon] = polygon;
+		return json;
 	}
 
 	void DkPatchMatchingViewPort::changeCurrentPolygon(int idx)
 	{
-		if (mCurrentPolygon == idx) {
-			return;
-		}
-
-		if (mCurrentPolygon >= 0) {
-			saveCurrent();
-		}
-
 		mCurrentPolygon = idx;
-		emit reset(mImage);
-
-		if (mCurrentPolygon < mPolygonList.size()) {	
-			load(mPolygonList[mCurrentPolygon]);		// load existing
-		} 
+		updateInactive();
 	}
 
-	//QSharedPointer<DkSyncedPolygon> DkPatchMatchingViewPort::currentPolygon()
-	//{
-	//	return mPolygonList[mCurrentPolygon];
-	//}
+	void DkPatchMatchingViewPort::updateInactive()
+	{
+		for (auto i = 0; i < mPolygonList.size(); ++i) {
+			mPolygonList[i]->setInactive(true);
+		}
+		mPolygonList[mCurrentPolygon]->setInactive(false);
+
+		mTimeline->reset();
+		mTimeline->setSyncedPolygon(mPolygonList[mCurrentPolygon]);
+
+		for (auto r : mRenderer) {
+			if (!r->isInactive()) {
+				mTimeline->addTimeline(r);
+			}
+			r->update();
+		}
+	}
+
+	QSharedPointer<DkSyncedPolygon> DkPatchMatchingViewPort::currentPolygon()
+	{
+		if (mCurrentPolygon >= mPolygonList.size()) {
+			qDebug() << "thats bad";
+		}
+		return mPolygonList[mCurrentPolygon];
+	}
+
 
 	void DkPatchMatchingViewPort::discardChangesAndClose() {
 

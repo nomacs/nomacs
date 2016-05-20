@@ -52,6 +52,8 @@ namespace nmp {
 		connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::changed, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, this, &DkInterpolatedSyncedPolyon::recalcuate);
+
+		recalcuate();
 	}
 
 	void DkInterpolatedSyncedPolyon::recalcuate()
@@ -100,7 +102,6 @@ namespace nmp {
 
 	DkPolyTimeline::DkPolyTimeline(QSharedPointer<DkSyncedPolygon> poly, QWidget* parent)
 		: QLabel(parent),
-		mPolygon(QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly)),
 		mSize(40),
 		mLayout(nullptr)
 	{
@@ -119,23 +120,47 @@ namespace nmp {
 		l->setSpacing(0);
 		l->setContentsMargins(0,0,0,0);
 		l->addWidget(mScrollArea);
-
-		connect(mPolygon.data(), &std::remove_pointer<decltype(mPolygon.data())>::type::changed,
-						this, &std::remove_pointer<decltype(this)>::type::refresh);
+		
+		setSyncedPolygon(poly); 
 	}
 
 
-	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addPolygon(QColor color)
+	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addTimeline(QSharedPointer<DkPolygonRenderer> renderer)
 	{
-		auto transform = QSharedPointer<DkTrackedTransform>::create(color);
+		auto transform = QSharedPointer<DkTrackedTransform>::create(renderer->getColor());
 		
 		// make sure we update on change
 		connect(transform.data(), &DkTrackedTransform::changed, 
 					this, [this, transform]() { updateTransform(transform); });
 
+		//// connections for timeline
+		connect(renderer.data(), &DkPolygonRenderer::transformChanged,
+			transform.data(), &std::remove_pointer<decltype(transform.data())>::type::set);
+
+		// this is our cleanup slot
+		connect(renderer.data(), &DkPolygonRenderer::removed, this, [this, transform]() {
+			removeTransform(transform);
+		});
+
 		mList.push_back(transform);
 	
+		refresh();
 		return transform;
+	}
+
+	void DkPolyTimeline::setSyncedPolygon(QSharedPointer<DkSyncedPolygon> poly)
+	{
+		mList.clear();
+
+		if (mPolygon) {		// disconnect old polygon
+			disconnect(mPolygon.data(), &std::remove_pointer<decltype(mPolygon.data())>::type::changed,
+							this, &std::remove_pointer<decltype(this)>::type::refresh);
+		}
+
+		// connect new one
+		mPolygon = QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly);
+		connect(mPolygon.data(), &std::remove_pointer<decltype(mPolygon.data())>::type::changed,
+			this, &std::remove_pointer<decltype(this)>::type::refresh);
 	}
 
 	void DkPolyTimeline::setImage(QSharedPointer<nmc::DkImageContainerT> img)
@@ -152,6 +177,9 @@ namespace nmp {
 			}
 		}
 
+		for (auto t : mList) {
+			t->disconnect();
+		}
 		// remove all transforms
 		mList.clear();
 		mElements.clear();

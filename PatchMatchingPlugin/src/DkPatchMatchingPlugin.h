@@ -115,9 +115,11 @@ public slots:
 	void clonePolygon();
 	void addPolygon();
 	void saveToFile();
-	void saveCurrent();
+	QJsonObject createJson(QSharedPointer<DkSyncedPolygon> poly);
 	void changeCurrentPolygon(int idx);
-	//void currentPolygon();
+	void updateInactive();
+	QSharedPointer<DkSyncedPolygon> currentPolygon();
+
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);
@@ -125,7 +127,7 @@ signals:
 
 private:
 	QSharedPointer<DkPolygonRenderer> firstPoly();
-	QSharedPointer<DkPolygonRenderer> addClone();
+	QSharedPointer<DkPolygonRenderer> addClone(QSharedPointer<DkSyncedPolygon> poly);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
@@ -139,22 +141,21 @@ private:
 	bool cancelTriggered;
 	
 	bool panning;
+	int mCurrentPolygon;
+
+	QVector<QSharedPointer<DkSyncedPolygon>> mPolygonList;
 	QSharedPointer<DkPatchMatchingToolBar> mtoolbar;
-	
-	QSharedPointer<DkSyncedPolygon> mPolygon;
 	QSharedPointer<QDockWidget> mDock;
 	QSharedPointer<DkPolyTimeline> mTimeline;
 
 	QCursor defaultCursor;
 	
-	int mCurrentPolygon;
+	
 
 	// default constructors
 	QTransform mWorldMatrixCache;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
-	QVector<QJsonObject> mPolygonList;
-	
 };
 
 enum class SelectedTool {

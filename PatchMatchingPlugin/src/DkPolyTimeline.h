@@ -100,7 +100,9 @@ namespace nmp {
 
 		// adds a polygon (renderer), i.e. a transform 
 		// returns transform to allow connecting the signals/slots to the renderer
-		QSharedPointer<DkTrackedTransform> addPolygon(QColor color);
+		QSharedPointer<DkTrackedTransform> addTimeline(QSharedPointer<DkPolygonRenderer> renderer);
+		void setSyncedPolygon(QSharedPointer<DkSyncedPolygon> poly);
+
 		void reset();
 
 	public slots:

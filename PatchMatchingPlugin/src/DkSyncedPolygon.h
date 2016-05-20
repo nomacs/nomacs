@@ -130,7 +130,7 @@ namespace nmp {
 
 	public:
 		// ctro with viewport (is crucial), synced polygon (also crucial)
-		DkPolygonRenderer(QWidget* viewport, DkSyncedPolygon* polygon, QTransform worldMatrix=QTransform());
+		DkPolygonRenderer(QWidget* viewport, QSharedPointer<DkSyncedPolygon> polygon, QTransform worldMatrix=QTransform());
 		virtual ~DkPolygonRenderer() = default;
 		
 		// maps a point from the syncedpolygon coordinate system to the viewport
@@ -166,6 +166,9 @@ namespace nmp {
 		void read(QJsonObject& json);
 
 		bool isInactive() const;
+
+		QSharedPointer<DkSyncedPolygon> getPolygon();
+
 	signals:
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff
@@ -211,7 +214,7 @@ namespace nmp {
 		
 
 		//initialization list
-		DkSyncedPolygon* mPolygon;		// polygon for points
+		QSharedPointer<DkSyncedPolygon> mPolygon;		// polygon for points
 		QWidget* mViewport;				// viewport to add widgets
 		QTransform mWorldMatrix;		// world matrix for rendering/positions
 		QSharedPointer<DkControlPoint> mControlCenter;	// control point @ center
