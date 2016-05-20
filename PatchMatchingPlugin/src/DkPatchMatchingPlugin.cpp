@@ -210,13 +210,10 @@ void DkPatchMatchingViewPort::saveSettings() const {
 	settings.endGroup();
 }
 
-QColor DkPatchMatchingViewPort::getNextColor()
+QColor DkPatchMatchingViewPort::getIndexedColor(int idx)
 {
-	static double div = 60;
-
-	static double current = - div/360.;
-	current += div/360.;
-	return QColor::fromHsvF(current,1,1);
+	const auto div = 60 / 360.;
+	return QColor::fromHsvF(fmod(static_cast<double>(idx)*div,1),1,1);
 }
 
 void DkPatchMatchingViewPort::loadSettings() {
@@ -314,7 +311,7 @@ QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addPoly()
 {
 	auto render = QSharedPointer<DkPolygonRenderer>::create(this, mPolygon.data(), mWorldMatrixCache);
 	
-	render->setColor(getNextColor());
+	render->setColor(getIndexedColor(mRenderer.size()));
 	render->setImageRect(mImage->image().rect());
 	
 	connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);

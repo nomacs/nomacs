@@ -403,8 +403,7 @@ namespace nmp {
 		QTransform t( m(1,1), m(1,2), m(1,3),
 					  m(2,1), m(2,2), m(2,3), 
 					  m(3,1), m(3,2), m(3,3) );
-		mTransform = t;
-		//setTransform(t);
+		setTransform(t);
 	}
 
 	void DkPolygonRenderer::update()
@@ -412,9 +411,8 @@ namespace nmp {
 		for (auto cp : mPolygon->points()) {
 			auto pos = cp->getPos();
 			auto mapped = mapToImageRectSimple(pos);
-			// check if mapped is the same, otherwise set position new but ignore if
-			// distance is too far (probably transform not set properly)
-			if ( pos != mapped && QLineF(pos,mapped).length() < 50) {
+			// check if mapped is the same, otherwise restrict movement
+			if ( pos != mapped ) {
 				cp->setPos(mapped);
 				return;
 			}

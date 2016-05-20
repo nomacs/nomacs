@@ -123,7 +123,7 @@ private:
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	
-	static QColor getNextColor();
+	static QColor getIndexedColor(int idx);
 	void loadSettings();
 	void saveSettings() const;
 
