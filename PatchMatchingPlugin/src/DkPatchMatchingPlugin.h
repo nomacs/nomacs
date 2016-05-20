@@ -69,21 +69,20 @@ class DkPatchMatchingPlugin : public QObject, nmc::DkViewPortInterface {
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPatchMatchingPlugin/3.3" FILE "DkPatchMatchingPlugin.json")
 
 public:
-    
 	DkPatchMatchingPlugin();
-	~DkPatchMatchingPlugin();
+	virtual ~DkPatchMatchingPlugin() = default;
 
 	QString id() const override;
     QImage image() const override;
 
-	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), 
+				QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort() override;
 	void deleteViewPort() override;
 	bool closesOnImageChange() const override;
 
 protected:
 	DkPatchMatchingViewPort* mViewport;
-
 };
 
 class DkPatchMatchingViewPort : public nmc::DkPluginViewPort {
@@ -101,15 +100,22 @@ public:
 	void checkWorldMatrixChanged();
 
 public slots:
+	void setVisible(bool visible) override;
+	void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;
 	void setPanning(bool checked);
-	void applyChangesAndClose();
 	void discardChangesAndClose();
-	virtual void setVisible(bool visible);
 	
-	void clonePolygon();
-	void selectedToolChanged(SelectedTool tool);
-	virtual void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;
+	
+	// load/save json sidecar file
 	QString getJsonFilePath() const;
+	void loadFromFile();
+	void load(QJsonObject& polygon);
+	
+	// stuff we can do with the toolbar
+	void clonePolygon();
+	void addPolygon();
+	void save();
+
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);
@@ -117,7 +123,7 @@ signals:
 
 private:
 	QSharedPointer<DkPolygonRenderer> firstPoly();
-	QSharedPointer<DkPolygonRenderer> addPoly();
+	QSharedPointer<DkPolygonRenderer> addClone();
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
@@ -174,63 +180,23 @@ public:
 	int getStepSize();
 	void setStepSize(int size);
 
-	// OLD STUFF
-	void setPenColor(const QColor& col);
-	void setPenWidth(int width);
-
 public slots:
-	void modeChangeTriggered(QAction* action);
-
-	// OLD STUFF, remove probably
-	void on_applyAction_triggered();
-	void on_cancelAction_triggered();
-	void on_panAction_toggled(bool checked);
-	void on_penColButton_clicked();
-	void on_alphaBox_valueChanged(int val);
-	void on_undoAction_triggered();
 	virtual void setVisible(bool visible);
 
 signals:
 	// emitted when the step size spinner is changed (timeline)
 	void stepSizeChanged(int width);
-
-	// OLD STUFF, remove probably
-	void selectedToolChanged(SelectedTool tool);
+	void saveTriggered();
 	void clonePolyTriggered();
-	void applySignal();
-	void cancelSignal();
-	void colorSignal(QColor color);
-	void paintHint(int paintMode);
-	void shadingHint(bool invert);
-	void panSignal(bool checked);
-	void undoSignal();
+	void addPolyTriggerd();
+	void closeTriggerd();
 
 protected:
 	void createLayout();
-	void createIcons();
 	
 	QSpinBox* mStepSizeSpinner;		// changes step size for timeline
 	QAction* mClonePolyAction;		// adds new polygon clone (renderer)
-
-	
-
-	// OLD STUFF, remove probably
-	QPushButton* penColButton;
-	QColorDialog* colorDialog;
-	
-	QSpinBox* alphaBox;
-	QColor penCol;
-	int penAlpha;
-	QAction* panAction;
-	QAction* undoAction;
-
-	QAction* mAddPointAction;
-	QAction* mRemovePointAction;
-	
-	QAction* mRotateAction;
-	QAction* mMoveAction;
-	QActionGroup* mModeGroup;
-	QVector<QIcon> icons;		// needed for colorizing
+	QComboBox* mPolygonCombobox;			// combobox for switching between different 
 };
 
 
