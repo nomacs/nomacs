@@ -101,6 +101,16 @@ namespace nmp {
 		}
 	}
 
+	void DkSyncedPolygon::setInactive(bool inactive)
+	{
+		mInactive = inactive;
+	}
+
+	bool DkSyncedPolygon::isInactive() const
+	{
+		return mInactive;
+	}
+
 	void DkSyncedPolygon::write(QJsonObject & json) const
 	{
 		QJsonArray pointArray;
@@ -262,6 +272,9 @@ namespace nmp {
 
 	QColor DkPolygonRenderer::getColor() const
 	{
+		if (isInactive()) {
+			return QColor(0, 0, 0, 40);
+		}
 		return mColor;
 	}
 
@@ -406,6 +419,11 @@ namespace nmp {
 		setTransform(t);
 	}
 
+	bool DkPolygonRenderer::isInactive() const
+	{
+		return mPolygon->isInactive();
+	}
+
 	void DkPolygonRenderer::update()
 	{
 		for (auto cp : mPolygon->points()) {
@@ -525,6 +543,9 @@ namespace nmp {
 
 	void DkControlPointRepresentation::mousePressEvent(QMouseEvent* event)
 	{
+		if (mRenderer->isInactive()) {
+			return;
+		}
 		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
 			emit removed(mPoint);
 		}

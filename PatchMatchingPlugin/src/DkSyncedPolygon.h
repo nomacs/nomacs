@@ -91,6 +91,9 @@ namespace nmp {
 		void write(QJsonObject& json) const;
 		void read(QJsonObject &json);
 
+		void setInactive(bool inactive);
+		bool isInactive() const;
+
 	signals:
 		// point is added @ the end
 		void pointAdded(QSharedPointer<DkControlPoint> point);
@@ -115,6 +118,7 @@ namespace nmp {
 
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;	// the points
 		double mSnapDistance;										// distance for mapToNearestLine
+		bool mInactive;
 	};
 
 	// renders the synced polygon
@@ -160,6 +164,8 @@ namespace nmp {
 		// read write json
 		void write(QJsonObject& json) const;
 		void read(QJsonObject& json);
+
+		bool isInactive() const;
 	signals:
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff

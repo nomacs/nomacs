@@ -106,11 +106,12 @@ namespace nmp {
 		: DkPluginViewPort(parent, flags),
 		cancelTriggered(false),
 		panning(false),
-		mtoolbar(new DkPatchMatchingToolBar(tr("Paint Toolbar"), this), &QObject::deleteLater),
+		mtoolbar(new DkPatchMatchingToolBar(tr("PatchMatching Toolbar)"),this), &QObject::deleteLater),
 		mPolygon(QSharedPointer<DkSyncedPolygon>::create()),
 		mDock(new QDockWidget(this), &QObject::deleteLater),
 		mTimeline(new DkPolyTimeline(mPolygon, mDock.data()), &QObject::deleteLater),
-		defaultCursor(Qt::CrossCursor)
+		defaultCursor(Qt::CrossCursor), 
+		mCurrentPolygon(-1)
 	{
 
 		setObjectName("DkPatchMatchingViewPort");
@@ -123,10 +124,10 @@ namespace nmp {
 
 		// handler to clone the polygon
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::clonePolyTriggered, this, &DkPatchMatchingViewPort::clonePolygon);
-		connect(mtoolbar.data(), &DkPatchMatchingToolBar::saveTriggered, this, &DkPatchMatchingViewPort::save);
+		connect(mtoolbar.data(), &DkPatchMatchingToolBar::saveTriggered, this, &DkPatchMatchingViewPort::saveToFile);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::addPolyTriggerd, this, &DkPatchMatchingViewPort::addPolygon);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::closeTriggerd, this, &DkPatchMatchingViewPort::discardChangesAndClose);
-
+		connect(mtoolbar.data(), &DkPatchMatchingToolBar::currentPolyChanged, this, &DkPatchMatchingViewPort::changeCurrentPolygon);
 		// timeline stuff
 		mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		mTimeline->setStepSize(mtoolbar->getStepSize());
@@ -141,18 +142,21 @@ namespace nmp {
 	void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 	{
 		mImage = imgC;
-
-		// just emit reset to clear everything
-		emit reset(mImage);
-
 		loadFromFile();
 	}
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
+		mCurrentPolygon = -1;
+		mtoolbar->clearPolygons();
+		mPolygonList.clear();
+
 		QFile file{ getJsonFilePath() };
 		if (!file.open(QIODevice::ReadOnly)) {
 			qDebug() << "[PatchMatchingPlugin] No json file found for this image: " << getJsonFilePath();
+
+			mtoolbar->addPolygon(true);
+			//mPolygon->setInactive(true);
 		}
 		else {
 			auto doc = QJsonDocument::fromJson(file.readAll());
@@ -160,7 +164,11 @@ namespace nmp {
 
 			auto list = doc.array();
 			auto first = list.at(0).toObject();
-			load(first);
+			
+			for (auto p : list) {
+				mPolygonList << p.toObject();
+				mtoolbar->addPolygon(first == p.toObject());
+			}
 		}
 	}
 
@@ -228,7 +236,34 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::addPolygon()
 	{
+		// just to make sure check that an polygon is actually selected
+		mtoolbar->addPolygon(true);
+
 		qDebug() << "[PatchMatchingPlugin] add polygon triggerd";
+	}
+
+	void DkPatchMatchingViewPort::saveToFile()
+	{
+		saveCurrent(); // store current polygon
+
+		QJsonArray root;
+		for (auto obj : mPolygonList) {
+			root << obj;
+		}
+
+		// write to file
+		QFile saveFile(getJsonFilePath());
+
+		if (!saveFile.open(QIODevice::WriteOnly)) {
+			qWarning("Couldn't open saveCurrent file.");
+			return;
+		}
+
+		QJsonDocument doc{ root };
+		saveFile.write(doc.toJson());
+
+		qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
+
 	}
 
 	void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
@@ -353,9 +388,8 @@ namespace nmp {
 		setCursor(defaultCursor);
 	}
 
-	void DkPatchMatchingViewPort::save() {
+	void DkPatchMatchingViewPort::saveCurrent() {
 
-		QJsonArray root;
 		QJsonObject polygon;
 
 		// save the synced polygon
@@ -372,20 +406,34 @@ namespace nmp {
 		}
 		polygon["clones"] = array;
 
-		// write to file
-		QFile saveFile(getJsonFilePath());
+		if (mCurrentPolygon >= mPolygonList.size() ) {
+			mPolygonList.resize(mCurrentPolygon +1);
+		}
+		mPolygonList[mCurrentPolygon] = polygon;
+	}
 
-		if (!saveFile.open(QIODevice::WriteOnly)) {
-			qWarning("Couldn't open save file.");
+	void DkPatchMatchingViewPort::changeCurrentPolygon(int idx)
+	{
+		if (mCurrentPolygon == idx) {
 			return;
 		}
 
-		root.append(polygon);		// array since we want multiple
-		QJsonDocument doc{ root };
-		saveFile.write(doc.toJson());
+		if (mCurrentPolygon >= 0) {
+			saveCurrent();
+		}
 
-		qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
+		mCurrentPolygon = idx;
+		emit reset(mImage);
+
+		if (mCurrentPolygon < mPolygonList.size()) {	
+			load(mPolygonList[mCurrentPolygon]);		// load existing
+		} 
 	}
+
+	//QSharedPointer<DkSyncedPolygon> DkPatchMatchingViewPort::currentPolygon()
+	//{
+	//	return mPolygonList[mCurrentPolygon];
+	//}
 
 	void DkPatchMatchingViewPort::discardChangesAndClose() {
 
@@ -450,6 +498,8 @@ namespace nmp {
 
 		mPolygonCombobox = new QComboBox(this);
 		addWidget(mPolygonCombobox);
+		connect(mPolygonCombobox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
+											, this, &DkPatchMatchingToolBar::currentPolyChanged);
 
 		auto addPolygonWidget = new QAction{ tr("Add"), this };
 		addAction(addPolygonWidget);
@@ -465,7 +515,7 @@ namespace nmp {
 		QAction* close = new QAction{ tr("Close"), this };
 		connect(close, &QAction::triggered, this, &DkPatchMatchingToolBar::closeTriggerd);
 
-		addAction(saveAction);
+		addAction(close);
 	}
 
 	void DkPatchMatchingToolBar::setVisible(bool visible) {
@@ -483,5 +533,21 @@ namespace nmp {
 	void DkPatchMatchingToolBar::setStepSize(int size)
 	{
 		mStepSizeSpinner->setValue(size);
+	}
+	int DkPatchMatchingToolBar::getCurrentPolygon()
+	{
+		return mPolygonCombobox->currentIndex();
+	}
+	void DkPatchMatchingToolBar::addPolygon(bool select)
+	{
+		auto text = "Polygon " + QString::number(mPolygonCombobox->count() + 1);
+		mPolygonCombobox->addItem(text);
+		if (select) {
+			mPolygonCombobox->setCurrentIndex(mPolygonCombobox->count() - 1);
+		}
+	}
+	void DkPatchMatchingToolBar::clearPolygons()
+	{
+		mPolygonCombobox->clear();
 	}
 };

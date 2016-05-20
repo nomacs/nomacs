@@ -114,8 +114,10 @@ public slots:
 	// stuff we can do with the toolbar
 	void clonePolygon();
 	void addPolygon();
-	void save();
-
+	void saveToFile();
+	void saveCurrent();
+	void changeCurrentPolygon(int idx);
+	//void currentPolygon();
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
 	void polygonAdded(/*some parameters are probably needed here*/);
@@ -138,16 +140,20 @@ private:
 	
 	bool panning;
 	QSharedPointer<DkPatchMatchingToolBar> mtoolbar;
+	
 	QSharedPointer<DkSyncedPolygon> mPolygon;
 	QSharedPointer<QDockWidget> mDock;
 	QSharedPointer<DkPolyTimeline> mTimeline;
 
 	QCursor defaultCursor;
 	
+	int mCurrentPolygon;
+
 	// default constructors
 	QTransform mWorldMatrixCache;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
+	QVector<QJsonObject> mPolygonList;
 	
 };
 
@@ -180,6 +186,10 @@ public:
 	int getStepSize();
 	void setStepSize(int size);
 
+	int getCurrentPolygon();
+	void addPolygon(bool select = false);
+	void clearPolygons();
+
 public slots:
 	virtual void setVisible(bool visible);
 
@@ -190,6 +200,7 @@ signals:
 	void clonePolyTriggered();
 	void addPolyTriggerd();
 	void closeTriggerd();
+	void currentPolyChanged(int newindex);
 
 protected:
 	void createLayout();
