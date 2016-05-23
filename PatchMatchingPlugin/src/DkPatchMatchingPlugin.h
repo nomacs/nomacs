@@ -109,16 +109,17 @@ public slots:
 	// load/save json sidecar file
 	QString getJsonFilePath() const;
 	void loadFromFile();
-	void load(QJsonObject& polygon);
-	
+
 	// stuff we can do with the toolbar
 	void clonePolygon();
 	void addPolygon();
+	void removePolygon();
 	void saveToFile();
 	QJsonObject createJson(QSharedPointer<DkSyncedPolygon> poly);
 	void changeCurrentPolygon(int idx);
 	void updateInactive();
 	QSharedPointer<DkSyncedPolygon> currentPolygon();
+	void clear();
 
 signals:
 	void worldMatrixChanged(QTransform worldMatrix);
@@ -188,16 +189,20 @@ public:
 	void setStepSize(int size);
 
 	int getCurrentPolygon();
-	void addPolygon(bool select = false);
+	void addPolygon(QColor color, bool select = false);
 	void clearPolygons();
 
 public slots:
 	virtual void setVisible(bool visible);
+	void removePoly(int idx);
+	void changeCurrentPoly(int newindex);
+	void highlightedPoly(int);
 
 signals:
 	// emitted when the step size spinner is changed (timeline)
 	void stepSizeChanged(int width);
 	void saveTriggered();
+	void removePolyTriggered();
 	void clonePolyTriggered();
 	void addPolyTriggerd();
 	void closeTriggerd();
@@ -207,7 +212,6 @@ protected:
 	void createLayout();
 	
 	QSpinBox* mStepSizeSpinner;		// changes step size for timeline
-	QAction* mClonePolyAction;		// adds new polygon clone (renderer)
 	QComboBox* mPolygonCombobox;			// combobox for switching between different 
 };
 

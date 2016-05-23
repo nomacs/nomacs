@@ -128,8 +128,9 @@ namespace nmp {
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::addPolyTriggerd, this, &DkPatchMatchingViewPort::addPolygon);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::closeTriggerd, this, &DkPatchMatchingViewPort::discardChangesAndClose);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::currentPolyChanged, this, &DkPatchMatchingViewPort::changeCurrentPolygon);
+		connect(mtoolbar.data(), &DkPatchMatchingToolBar::removePolyTriggered, this, &DkPatchMatchingViewPort::removePolygon);
+		
 		// timeline stuff
-
 		//mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		mTimeline->setStepSize(mtoolbar->getStepSize());
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::stepSizeChanged, mTimeline.data(), &DkPolyTimeline::setStepSize);
@@ -149,9 +150,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
-		//mCurrentPolygon = -1;
-		mtoolbar->clearPolygons();
-		mPolygonList.clear();
+		clear();
 
 		QFile file{ getJsonFilePath() };
 		if (!file.open(QIODevice::ReadOnly)) {
@@ -181,16 +180,9 @@ namespace nmp {
 				}
 
 				mPolygonList << poly;
-				mtoolbar->addPolygon(first == p.toObject());
+				mtoolbar->addPolygon(getIndexedColor(mRenderer.size()-array.size()), first == p.toObject());
 			}
 		}
-	}
-
-	void DkPatchMatchingViewPort::load(QJsonObject& polygon)
-	{
-		
-		
-		
 	}
 
 	QString DkPatchMatchingViewPort::getJsonFilePath() const
@@ -250,8 +242,35 @@ namespace nmp {
 		addClone(poly);
 
 		// just to make sure check that an polygon is actually selected
-		mtoolbar->addPolygon(true);
+		mtoolbar->addPolygon(getIndexedColor(mRenderer.size()-1), true);
 		qDebug() << "[PatchMatchingPlugin] add polygon triggerd";
+	}
+
+	void DkPatchMatchingViewPort::removePolygon()
+	{
+		auto current = currentPolygon();
+		decltype(mRenderer) list;
+		
+		for (auto r : mRenderer) {
+			if (r->getPolygon() == current) {
+				list.push_back(r);
+			}
+		}
+	
+		for (auto r : list) {
+			r->disconnect();
+			r->clear();
+			mRenderer.removeAll(r);
+		}
+
+		mPolygonList.removeAll(current);
+		
+		if (mPolygonList.empty()) {
+			clear();
+			addPolygon();
+		} else {
+			mtoolbar->removePoly(mCurrentPolygon);
+		}
 	}
 
 	void DkPatchMatchingViewPort::saveToFile()
@@ -410,6 +429,9 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::changeCurrentPolygon(int idx)
 	{
+		if (idx == -1) {
+			return;
+		}
 		mCurrentPolygon = idx;
 		updateInactive();
 	}
@@ -434,12 +456,19 @@ namespace nmp {
 
 	QSharedPointer<DkSyncedPolygon> DkPatchMatchingViewPort::currentPolygon()
 	{
-		if (mCurrentPolygon >= mPolygonList.size()) {
-			qDebug() << "thats bad";
-		}
 		return mPolygonList[mCurrentPolygon];
 	}
 
+	void DkPatchMatchingViewPort::clear()
+	{
+		for (auto r : mRenderer) {
+			r->disconnect();
+			r->clear();
+		}
+		mRenderer.clear();
+		mPolygonList.clear();
+		mtoolbar->clearPolygons();
+	}
 
 	void DkPatchMatchingViewPort::discardChangesAndClose() {
 
@@ -479,15 +508,6 @@ namespace nmp {
 
 	void DkPatchMatchingToolBar::createLayout() {
 
-		// setup clone action
-		mClonePolyAction = new QAction(tr("Clone"), this);
-		mClonePolyAction->setShortcuts(QList<QKeySequence>{ QKeySequence(Qt::Key_Enter), QKeySequence(Qt::Key_Return) });
-		connect(mClonePolyAction, &QAction::triggered, this, &DkPatchMatchingToolBar::clonePolyTriggered);
-
-		// add actions to toolbar
-		addAction(mClonePolyAction);
-		addSeparator();
-
 		// step size for timeline
 		mStepSizeSpinner = new QSpinBox(this);
 		mStepSizeSpinner->setObjectName("mStepSizeSpinner");
@@ -496,31 +516,46 @@ namespace nmp {
 		mStepSizeSpinner->setMaximum(500);
 
 		addWidget(new QLabel{ "Resolution:",this });
-		addWidget(mStepSizeSpinner);
-
 		connect(mStepSizeSpinner, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 			this, &DkPatchMatchingToolBar::stepSizeChanged);
+		addWidget(mStepSizeSpinner);
 		addSeparator();
-
+	
+		// select polygon
 		mPolygonCombobox = new QComboBox(this);
-		addWidget(mPolygonCombobox);
 		connect(mPolygonCombobox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged)
-											, this, &DkPatchMatchingToolBar::currentPolyChanged);
+											, this, &DkPatchMatchingToolBar::changeCurrentPoly);
+		connect(mPolygonCombobox, static_cast<void(QComboBox::*)(int)>(&QComboBox::highlighted)
+			, this, &DkPatchMatchingToolBar::highlightedPoly);
+		addWidget(mPolygonCombobox);
 
+		// add polygon
 		auto addPolygonWidget = new QAction{ tr("Add"), this };
-		addAction(addPolygonWidget);
 		connect(addPolygonWidget, &QAction::triggered, this, &DkPatchMatchingToolBar::addPolyTriggerd);
+		addAction(addPolygonWidget);
+
+		// clone
+		// setup clone action
+		auto clone = new QAction(tr("Clone"), this);
+		clone->setShortcuts(QList<QKeySequence>{ QKeySequence(Qt::Key_Enter), QKeySequence(Qt::Key_Return) });
+		connect(clone, &QAction::triggered, this, &DkPatchMatchingToolBar::clonePolyTriggered);
+		addAction(clone);
+
+		// remove
+		auto removePolygonWidget = new QAction{ tr("Remove"), this };
+		addAction(removePolygonWidget);
+		connect(removePolygonWidget, &QAction::triggered, this, &DkPatchMatchingToolBar::removePolyTriggered);
 
 		addSeparator();
 
+		// save
 		QAction* saveAction = new QAction{ tr("Save"), this };
 		connect(saveAction, &QAction::triggered, this, &DkPatchMatchingToolBar::saveTriggered);
-
 		addAction(saveAction);
 
+		// close
 		QAction* close = new QAction{ tr("Close"), this };
 		connect(close, &QAction::triggered, this, &DkPatchMatchingToolBar::closeTriggerd);
-
 		addAction(close);
 	}
 
@@ -544,16 +579,49 @@ namespace nmp {
 	{
 		return mPolygonCombobox->currentIndex();
 	}
-	void DkPatchMatchingToolBar::addPolygon(bool select)
+	void DkPatchMatchingToolBar::addPolygon(QColor color, bool select)
 	{
-		auto text = "Polygon " + QString::number(mPolygonCombobox->count() + 1);
+		auto text = "Polygon";
 		mPolygonCombobox->addItem(text);
+		qDebug() << "COunt = " << mPolygonCombobox->count();
+		mPolygonCombobox->setItemData(mPolygonCombobox->count() - 1, color, Qt::BackgroundRole);
 		if (select) {
-			mPolygonCombobox->setCurrentIndex(mPolygonCombobox->count() - 1);
+			changeCurrentPoly(mPolygonCombobox->count() - 1);
 		}
 	}
 	void DkPatchMatchingToolBar::clearPolygons()
 	{
 		mPolygonCombobox->clear();
+	}
+	void DkPatchMatchingToolBar::removePoly(int idx)
+	{
+		mPolygonCombobox->removeItem(idx);
+		changeCurrentPoly(std::max(0,idx-1));
+	}
+	void DkPatchMatchingToolBar::changeCurrentPoly(int newindex)
+	{
+		auto color = mPolygonCombobox->itemData(newindex, Qt::BackgroundRole).value<QColor>();
+		auto pal = mPolygonCombobox->palette();
+		//pal.setColor(QPalette::Active, QPalette::Button, color);
+		//pal.setColor(QPalette::Inactive, QPalette::Button, color);
+		pal.setColor(QPalette::Highlight, color);
+		pal.setColor(QPalette::Text, color);
+		//pal.setColor(QPalette::Button, color);
+		//pal.setColor(QPalette::Inactive, color);
+
+		//QString style = "selection-background-color: rgb(255,255,255);";
+		//style = style.arg(color.red()).arg(color.green()).arg(color.blue());
+		//qDebug() << "Style: " << style;
+		//mPolygonCombobox->setStyleSheet(style);
+		mPolygonCombobox->setPalette(pal);
+		emit currentPolyChanged(newindex);
+	}
+	void DkPatchMatchingToolBar::highlightedPoly(int idx)
+	{
+		auto color = mPolygonCombobox->itemData(idx, Qt::BackgroundRole).value<QColor>();
+
+		QPalette palette = mPolygonCombobox->view()->palette();
+		palette.setColor(QPalette::Highlight, color);
+		mPolygonCombobox->view()->setPalette(palette);
 	}
 };
