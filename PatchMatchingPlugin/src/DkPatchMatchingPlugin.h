@@ -137,10 +137,8 @@ private:
 	static QColor getIndexedColor(int idx);
 	void loadSettings();
 	void saveSettings() const;
-
-	// initialization list
-	bool cancelTriggered;
 	
+	//initialization list
 	bool panning;
 	int mCurrentPolygon;
 
@@ -207,6 +205,7 @@ signals:
 	void addPolyTriggerd();
 	void closeTriggerd();
 	void currentPolyChanged(int newindex);
+	void showTimelineTriggerd();
 
 protected:
 	void createLayout();

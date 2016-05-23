@@ -104,7 +104,6 @@ namespace nmp {
 
 	DkPatchMatchingViewPort::DkPatchMatchingViewPort(QWidget* parent, Qt::WindowFlags flags)
 		: DkPluginViewPort(parent, flags),
-		cancelTriggered(false),
 		panning(false),
 		mCurrentPolygon(0),
 		mPolygonList(QVector < QSharedPointer<DkSyncedPolygon>>{QSharedPointer<DkSyncedPolygon>::create()}),
@@ -113,7 +112,6 @@ namespace nmp {
 		mTimeline(new DkPolyTimeline(currentPolygon(), mDock.data()), &QObject::deleteLater),
 		defaultCursor(Qt::CrossCursor)
 	{
-
 		setObjectName("DkPatchMatchingViewPort");
 		setMouseTracking(true);
 		setAttribute(Qt::WA_MouseTracking);
@@ -129,6 +127,7 @@ namespace nmp {
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::closeTriggerd, this, &DkPatchMatchingViewPort::discardChangesAndClose);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::currentPolyChanged, this, &DkPatchMatchingViewPort::changeCurrentPolygon);
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::removePolyTriggered, this, &DkPatchMatchingViewPort::removePolygon);
+		connect(mtoolbar.data(), &DkPatchMatchingToolBar::showTimelineTriggerd, mDock.data(), &QWidget::show);
 		
 		// timeline stuff
 		//mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -472,7 +471,6 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::discardChangesAndClose() {
 
-		cancelTriggered = true;
 		emit DkPluginViewPort::closePlugin();
 	}
 
@@ -515,7 +513,12 @@ namespace nmp {
 		mStepSizeSpinner->setMinimum(10);
 		mStepSizeSpinner->setMaximum(500);
 
-		addWidget(new QLabel{ "Resolution:",this });
+		// add polygon
+		auto timeline = new QAction{ tr("Timeline"), this };
+		connect(timeline, &QAction::triggered, this, &DkPatchMatchingToolBar::showTimelineTriggerd);
+		addAction(timeline);
+
+		//addWidget(new QLabel{ "Resolution:",this });
 		connect(mStepSizeSpinner, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 			this, &DkPatchMatchingToolBar::stepSizeChanged);
 		addWidget(mStepSizeSpinner);
