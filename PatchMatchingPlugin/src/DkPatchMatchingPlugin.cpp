@@ -144,6 +144,10 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 	{
+		if (!imgC) {
+			return;
+		}
+
 		//auto empty = mCurrentFile.isEmpty();
 		//auto same = createCurrentJson() != mCurrentFile;
 		if (createCurrentJson() != mCurrentFile && !mCurrentFile.isEmpty()) {
