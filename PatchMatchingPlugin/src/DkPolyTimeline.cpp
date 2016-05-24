@@ -52,6 +52,7 @@ namespace nmp {
 		connect(mPolygon.data(), &DkSyncedPolygon::pointAdded, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::changed, this, &DkInterpolatedSyncedPolyon::recalcuate);
 		connect(mPolygon.data(), &DkSyncedPolygon::movedPoint, this, &DkInterpolatedSyncedPolyon::recalcuate);
+		connect(mPolygon.data(), &DkSyncedPolygon::pointRemoved, this, &DkInterpolatedSyncedPolyon::recalcuate);
 
 		recalcuate();
 	}
@@ -61,6 +62,7 @@ namespace nmp {
 		mPoints.clear();	// clear since we recalculate everything
 
 		if (mPolygon->points().empty()) {	// if no control points are here just quit
+			emit changed();
 			return;
 		}
 
