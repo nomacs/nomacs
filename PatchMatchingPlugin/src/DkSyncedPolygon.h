@@ -151,7 +151,7 @@ namespace nmp {
 
 		// color is used to distinguish the polygons
 		void setColor(const QColor& color);
-		QColor getColor() const;
+		QColor getColor(bool dynamic = true) const;
 		
 		// adds a point at these coordinates, 
 		// all the coordinate mapping and stuff is done here 

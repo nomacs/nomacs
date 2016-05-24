@@ -196,7 +196,7 @@ namespace nmp {
 				}
 
 				mPolygonList << poly;
-				mtoolbar->addPolygon(getNextColor(), first == p.toObject());
+				mtoolbar->addPolygon(mRenderer[mRenderer.size()-array.size()]->getColor(false), first == p.toObject());
 			}
 		}
 	}
@@ -266,7 +266,7 @@ namespace nmp {
 		addClone(poly);
 
 		// just to make sure check that an polygon is actually selected
-		mtoolbar->addPolygon(getNextColor(), true);
+		mtoolbar->addPolygon(mRenderer.last()->getColor(false), true);
 		qDebug() << "[PatchMatchingPlugin] add polygon triggerd";
 	}
 

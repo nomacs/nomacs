@@ -270,9 +270,9 @@ namespace nmp {
 		mColor = color;
 	}
 
-	QColor DkPolygonRenderer::getColor() const
+	QColor DkPolygonRenderer::getColor(bool dynamic) const
 	{
-		if (isInactive()) {
+		if (isInactive() && dynamic) {
 			return QColor(0, 0, 0, 40);
 		}
 		return mColor;
