@@ -135,7 +135,8 @@ private:
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	
-	static QColor getIndexedColor(int idx);
+	QColor getNextColor();
+	void resetColorIndex();
 	void loadSettings();
 	void saveSettings() const;
 	
@@ -157,6 +158,7 @@ private:
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
 	QByteArray mCurrentFile;
+	int mColorIndex;
 };
 
 enum class SelectedTool {

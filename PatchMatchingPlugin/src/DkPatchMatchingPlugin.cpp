@@ -111,7 +111,8 @@ namespace nmp {
 		mtoolbar(new DkPatchMatchingToolBar(tr("PatchMatching Toolbar)"),this), &QObject::deleteLater),
 		mDock(new QDockWidget(this), &QObject::deleteLater),
 		mTimeline(new DkPolyTimeline(currentPolygon(), mDock.data()), &QObject::deleteLater),
-		defaultCursor(Qt::CrossCursor)
+		defaultCursor(Qt::CrossCursor),
+		mColorIndex(0)
 	{
 		setObjectName("DkPatchMatchingViewPort");
 		setMouseTracking(true);
@@ -195,7 +196,7 @@ namespace nmp {
 				}
 
 				mPolygonList << poly;
-				mtoolbar->addPolygon(getIndexedColor(mRenderer.size()-array.size()), first == p.toObject());
+				mtoolbar->addPolygon(getNextColor(), first == p.toObject());
 			}
 		}
 	}
@@ -226,10 +227,15 @@ namespace nmp {
 		settings.endGroup();
 	}
 
-	QColor DkPatchMatchingViewPort::getIndexedColor(int idx)
+	QColor DkPatchMatchingViewPort::getNextColor()
 	{
 		const auto div = 60 / 360.;
-		return QColor::fromHsvF(fmod(static_cast<double>(idx)*div, 1), 1, 1);
+		return QColor::fromHsvF(fmod(static_cast<double>(mColorIndex++)*div, 1), 1, 1);
+	}
+
+	void DkPatchMatchingViewPort::resetColorIndex()
+	{
+		mColorIndex = 0;
 	}
 
 	void DkPatchMatchingViewPort::loadSettings() {
@@ -260,7 +266,7 @@ namespace nmp {
 		addClone(poly);
 
 		// just to make sure check that an polygon is actually selected
-		mtoolbar->addPolygon(getIndexedColor(mRenderer.size()-1), true);
+		mtoolbar->addPolygon(getNextColor(), true);
 		qDebug() << "[PatchMatchingPlugin] add polygon triggerd";
 	}
 
@@ -396,7 +402,7 @@ namespace nmp {
 	{
 		auto render = QSharedPointer<DkPolygonRenderer>::create(this, poly, mWorldMatrixCache);
 
-		render->setColor(getIndexedColor(mRenderer.size()));
+		render->setColor(getNextColor());
 		render->setImageRect(mImage->image().rect());
 
 		connect(this, &DkPatchMatchingViewPort::worldMatrixChanged, render.data(), &DkPolygonRenderer::setWorldMatrix);
@@ -494,6 +500,7 @@ namespace nmp {
 		mRenderer.clear();
 		mPolygonList.clear();
 		mtoolbar->clearPolygons();
+		resetColorIndex();
 	}
 
 	void DkPatchMatchingViewPort::discardChangesAndClose() {

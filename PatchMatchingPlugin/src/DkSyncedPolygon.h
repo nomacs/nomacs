@@ -209,7 +209,7 @@ namespace nmp {
 		QPointF mapToImageRectSimple(const QPointF& point);
 		
 		// returns image rect minus margins
-		QRectF getImageRect();
+		QRectF getImageRect(bool margin = true);
 	private:
 		
 

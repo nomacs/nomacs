@@ -278,11 +278,12 @@ namespace nmp {
 		return mColor;
 	}
 
-	QRectF DkPolygonRenderer::getImageRect()
+	QRectF DkPolygonRenderer::getImageRect(bool margin)
 	{
+		auto m = margin ? 1. : 0.;
 		// returns image rect with margin
-		auto rect = QRectF{ mImageRect.x() + mMargin, mImageRect.y() + mMargin,
-			mImageRect.width() - mMargin * 2, mImageRect.height() - mMargin * 2 };
+		auto rect = QRectF{ mImageRect.x() + mMargin*m, mImageRect.y() + mMargin*m,
+			mImageRect.width() - mMargin * 2*m, mImageRect.height() - mMargin * 2*m };
 		return rect;
 	}
 	QPointF DkPolygonRenderer::mapToImageRectSimple(const QPointF& point)
@@ -340,6 +341,12 @@ namespace nmp {
 		auto point = coordinates;
 		
 		point = mapToViewport(point); // map to local coordinates
+		auto rect = getImageRect(false);
+		
+		if (!rect.contains(getTransform().map(point))) {
+			return;
+		}
+	
 		point = mapToImageRect(point);	// restric movement to inside the image
 
 		mPolygon->addPoint(point);
