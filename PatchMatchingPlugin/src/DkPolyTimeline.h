@@ -136,6 +136,7 @@ namespace nmp {
 		QVector<QSharedPointer<DkTrackedTransform>> mList;   //list of transforms (renderer)
 		QVector<QVector<QLabel*>> mElements;					//label elements for rendering
 		QPixmap mImage;											//image to do stuff
+		int mStepSize;
 		
 	};
 

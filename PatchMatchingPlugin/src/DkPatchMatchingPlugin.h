@@ -98,6 +98,7 @@ public:
 	// checks on update if worldmatrix has changed and
 	// emits corresponding signal when true
 	void checkWorldMatrixChanged();
+	QByteArray createCurrentJson();
 
 public slots:
 	void setVisible(bool visible) override;
@@ -155,6 +156,7 @@ private:
 	QTransform mWorldMatrixCache;
 	QVector<QSharedPointer<DkPolygonRenderer>> mRenderer;
 	QSharedPointer<nmc::DkImageContainerT> mImage;
+	QByteArray mCurrentFile;
 };
 
 enum class SelectedTool {

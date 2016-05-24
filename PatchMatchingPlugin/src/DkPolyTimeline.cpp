@@ -127,7 +127,7 @@ namespace nmp {
 
 	QSharedPointer<DkTrackedTransform> DkPolyTimeline::addTimeline(QSharedPointer<DkPolygonRenderer> renderer)
 	{
-		auto transform = QSharedPointer<DkTrackedTransform>::create(renderer->getColor());
+		auto transform = QSharedPointer<DkTrackedTransform>::create(renderer->getColor(), renderer->getTransform());
 		
 		// make sure we update on change
 		connect(transform.data(), &DkTrackedTransform::changed, 
@@ -161,6 +161,8 @@ namespace nmp {
 		mPolygon = QSharedPointer<DkInterpolatedSyncedPolyon>::create(poly);
 		connect(mPolygon.data(), &std::remove_pointer<decltype(mPolygon.data())>::type::changed,
 			this, &std::remove_pointer<decltype(this)>::type::refresh);
+
+		mPolygon->setStep(mStepSize);
 	}
 
 	void DkPolyTimeline::setImage(QSharedPointer<nmc::DkImageContainerT> img)
@@ -260,6 +262,7 @@ namespace nmp {
 
 	void DkPolyTimeline::setStepSize(int stepsize)
 	{
+		mStepSize = stepsize;
 		mPolygon->setStep(stepsize);
 	}
 

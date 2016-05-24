@@ -34,6 +34,7 @@
 #include <QjsonDocument>
 #include <Qjsonarray>
 #include <QCombobox>
+#include <QMessageBox>
 namespace nmp {
 
 	/*-----------------------------------DkPatchMatchingPlugin ---------------------------------------------*/
@@ -142,6 +143,19 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC)
 	{
+		//auto empty = mCurrentFile.isEmpty();
+		//auto same = createCurrentJson() != mCurrentFile;
+		if (createCurrentJson() != mCurrentFile && !mCurrentFile.isEmpty()) {
+			auto res = QMessageBox::question(this, tr("Patchmatching Plugin"),
+				tr("The workspace has been modified.\n Do you want to save your changes?"),
+				QMessageBox::Save | QMessageBox::Discard, QMessageBox::Save);
+			if (res == QMessageBox::Save) {
+				saveToFile();
+			}
+		}
+
+		mCurrentFile.clear();
+
 		mImage = imgC;
 		mTimeline->setImage(mImage);
 		loadFromFile();
@@ -149,16 +163,18 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
+
 		clear();
 
 		QFile file{ getJsonFilePath() };
 		if (!file.open(QIODevice::ReadOnly)) {
 			qDebug() << "[PatchMatchingPlugin] No json file found for this image: " << getJsonFilePath();
-
 			addPolygon();
+			mCurrentFile = createCurrentJson();
 		}
 		else {
-			auto doc = QJsonDocument::fromJson(file.readAll());
+			mCurrentFile = file.readAll();
+			auto doc = QJsonDocument::fromJson(mCurrentFile);
 			qDebug() << "[PatchMatchingPlugin] Json file found and successfully read.";
 
 			auto list = doc.array();
@@ -189,7 +205,9 @@ namespace nmp {
 		if (!mImage) {
 			return "";
 		}
-		return mImage->filePath() + ".patches.json";
+
+		auto file = QFileInfo{ mImage->filePath() };
+		return QDir{ file.path() }.filePath(file.completeBaseName() + ".patches.json");
 	}
 
 	DkPatchMatchingViewPort::~DkPatchMatchingViewPort() {
@@ -228,8 +246,9 @@ namespace nmp {
 		auto poly = addClone(currentPolygon());
 		poly->translate(400, 0);
 
-		updateInactive();
+		//updateInactive();
 		update();
+		updateInactive();
 
 		emit polygonAdded();
 	}
@@ -274,10 +293,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::saveToFile()
 	{
-		QJsonArray root;
-		for (auto poly : mPolygonList) {
-			root << createJson(poly);
-		}
+	
 
 		// write to file
 		QFile saveFile(getJsonFilePath());
@@ -287,8 +303,8 @@ namespace nmp {
 			return;
 		}
 
-		QJsonDocument doc{ root };
-		saveFile.write(doc.toJson());
+		mCurrentFile = createCurrentJson();
+		saveFile.write(mCurrentFile);
 
 		qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
 
@@ -350,6 +366,17 @@ namespace nmp {
 			mWorldMatrixCache = mat;
 			emit worldMatrixChanged(mWorldMatrixCache);
 		}
+	}
+
+	QByteArray DkPatchMatchingViewPort::createCurrentJson()
+	{
+		QJsonArray root;
+		for (auto poly : mPolygonList) {
+			root << createJson(poly);
+		}
+
+		QJsonDocument doc{ root };
+		return doc.toJson();
 	}
 
 	QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::firstPoly()
