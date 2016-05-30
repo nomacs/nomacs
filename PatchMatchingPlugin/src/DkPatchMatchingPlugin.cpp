@@ -393,17 +393,18 @@ namespace nmp {
 	{
 		// return first active renderer
 		for (auto r : mRenderer) {
-			if (!r->isInactive()) {
+			if (r->getPolygon() == currentPolygon()) {
 				return r;
 			}
 		}
 
 		// this should not happen
-		return mRenderer.first();
+		return addClone(currentPolygon());
 	}
 
 	QSharedPointer<DkPolygonRenderer> DkPatchMatchingViewPort::addClone(QSharedPointer<DkSyncedPolygon> poly)
 	{
+		
 		auto render = QSharedPointer<DkPolygonRenderer>::create(this, poly, mWorldMatrixCache);
 
 		render->setColor(getNextColor());
@@ -421,8 +422,21 @@ namespace nmp {
 			render.data()->disconnect();
 			render->clear();
 
+			auto poly = render->getPolygon();
+
 			// remove the polygon from the renderer list
 			mRenderer.removeAll(render);
+			
+			auto cnt = 0;
+			for (auto r : mRenderer) {
+				if (r->getPolygon() == poly) {
+					++cnt;
+				}
+			}
+
+			if (cnt == 0) {
+				removePolygon();
+			}
 		});
 
 		// remove renderer if the whole viewport is reset
@@ -627,6 +641,7 @@ namespace nmp {
 		qDebug() << "COunt = " << mPolygonCombobox->count();
 		mPolygonCombobox->setItemData(mPolygonCombobox->count() - 1, color, Qt::BackgroundRole);
 		if (select) {
+			mPolygonCombobox->setCurrentIndex(mPolygonCombobox->count() - 1);
 			changeCurrentPoly(mPolygonCombobox->count() - 1);
 		}
 	}
