@@ -437,6 +437,7 @@ namespace nmp {
 			if (cnt == 0) {
 				removePolygon();
 			}
+			updateInactive();
 		});
 
 		// remove renderer if the whole viewport is reset
