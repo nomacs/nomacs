@@ -199,8 +199,13 @@ namespace nmp {
 					//mRenderer.push_back(clone);
 				}
 
+				auto size = array.size();
+				if (array.isEmpty()) {
+					addClone(poly);
+					size = 1;
+				}
 				mPolygonList << poly;
-				mtoolbar->addPolygon(mRenderer[mRenderer.size()-array.size()]->getColor(false), first == p.toObject());
+				mtoolbar->addPolygon(mRenderer[mRenderer.size()-size]->getColor(false), first == p.toObject());
 			}
 		}
 	}
