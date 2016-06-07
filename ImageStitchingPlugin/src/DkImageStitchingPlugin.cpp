@@ -30,7 +30,7 @@
 
 #include <QFileDialog>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/stitching/stitcher.hpp>
+#include <opencv2/stitching/detail/matchers.hpp>
 
 #include <DkImageStorage.h>
 
@@ -58,21 +58,18 @@ DkImageStitchingPlugin::DkImageStitchingPlugin(QObject* parent) : QObject(parent
     QVector<QString> runIds;
     runIds.resize(id_end);
 
-    //runIds[ID_GENERATE_PANORAMIC] = "ef24147e87014fb1ad54ee0b5b683269";
     mRunIDs = runIds.toList();
 
     // create menu actions
     QVector<QString> menuNames;
     menuNames.resize(id_end);
 
-    //menuNames[ID_GENERATE_PANORAMIC] = tr("Generate Panoramic Image");
     mMenuNames = menuNames.toList();
 
     // create menu status tips
     QVector<QString> statusTips;
     statusTips.resize(id_end);
 
-    //statusTips[ID_GENERATE_PANORAMIC] = tr("Generate a panoramic image from a photo collection");
     mMenuStatusTips = statusTips.toList();
 }
 
@@ -132,25 +129,96 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
 {
     QStringList files = QFileDialog::getOpenFileNames(Q_NULLPTR,"Select photos");
 
-    std::vector<cv::Mat> inputImgs;
-    for (QString &file : files)
+    cv::Ptr<cv::detail::FeaturesFinder> featureFinder = cv::makePtr<cv::detail::OrbFeaturesFinder>();
+    std::vector<cv::detail::ImageFeatures> features(files.size());
+    std::vector<cv::Mat> images;
+    for (int i = 0; i < files.size(); ++i)
     {
-        inputImgs.emplace_back(cv::imread(file.toStdString()));
+        cv::Mat img = cv::imread(files[i].toStdString());
+
+        if (img.empty())
+            continue;
+
+        images.emplace_back(img);
+
+        (*featureFinder)(img,features[i]);
     }
 
+    featureFinder->collectGarbage();
 
-    cv::Stitcher stitcher = cv::Stitcher::createDefault();
+    cv::detail::BestOf2NearestMatcher matcher;
 
-    cv::Mat pano;
-    cv::Stitcher::Status status = stitcher.stitch(inputImgs,pano);
+    cv::detail::MatchesInfo matchesInfo;
+    matcher(features[0],features[1],matchesInfo);
 
-    if (status != cv::Stitcher::Status::OK)
-        qWarning() << "Failed to create panoramic image";
-    else
+    ///Build the A matrix with the matching points
+
+    cv::Mat A(2*matchesInfo.num_inliers,9,CV_32F);
+    for (int i = 0; i < matchesInfo.inliers_mask.size(); ++i)
     {
-        cv::cvtColor(pano,pano,CV_BGR2RGB);
-        imgC = QSharedPointer<nmc::DkImageContainer>(new nmc::DkImageContainer(""));
-        imgC->setImage(nmc::DkImage::mat2QImage(pano),"Image");
+        if (!matchesInfo.inliers_mask[i])
+            continue;
+
+        cv::DMatch &m = matchesInfo.matches[i];
+        cv::Point2f pTarget = features[0].keypoints[m.queryIdx].pt;
+        cv::Point2f pReference = features[1].keypoints[m.trainIdx].pt;
+
+        A.at<float>(0,2*i) = 0.0;
+        A.at<float>(1,2*i) = 0.0;
+        A.at<float>(2,2*i) = 0.0;
+        A.at<float>(3,2*i) = -pReference.x;
+        A.at<float>(4,2*i) = -pReference.y;
+        A.at<float>(5,2*i) = 1.0;
+        A.at<float>(6,2*i) = pTarget.y*pReference.x;
+        A.at<float>(7,2*i) = pTarget.y*pReference.y;
+        A.at<float>(8,2*i) = pTarget.y;
+
+        A.at<float>(0,2*i+1) = pReference.x;
+        A.at<float>(1,2*i+1) = pReference.y;
+        A.at<float>(2,2*i+1) = 1.0;
+        A.at<float>(3,2*i+1) = 0.0;
+        A.at<float>(4,2*i+1) = 0.0;
+        A.at<float>(5,2*i+1) = 0.0;
+        A.at<float>(6,2*i+1) = -pTarget.x*pReference.x;
+        A.at<float>(7,2*i+1) = -pTarget.x*pReference.y;
+        A.at<float>(8,2*i+1) = -pTarget.x;
+    }
+
+    cv::Mat Wi(2*matchesInfo.num_inliers,2*matchesInfo.num_inliers,CV_32F);
+
+    const int CX = 25;
+    const int CY = 25;
+
+    const int cellWidth = images[1].size[0]/CX;
+    const int cellHeight = images[1].size[1]/CY;
+    const float sigmaSquared = 12.0*12.0;
+
+    cv::SVD svdSolver;
+    std::vector<cv::Mat> localHomographies(CX*CY);
+    for (int i = 0; i < CX; ++i)
+    {
+        for (int j = 0; j < CY; ++j)
+        {
+            int centerX = i*cellWidth+cellWidth/2;
+            int centerY = j*cellHeight+cellHeight/2;
+
+            ///Build W matrix for each cell center
+            for (int k = 0; k < matchesInfo.num_inliers; ++k)
+            {
+                cv::DMatch &m = matchesInfo.matches[i];
+                cv::Point2f xk = features[1].keypoints[m.trainIdx].pt;
+
+                float dx = xk.x-centerX;
+                float dy = xk.y-centerY;
+                float w = exp(-1.0*sqrt(dx*dx+dy*dy)/sigmaSquared);
+                Wi.at<float>(2*k,2*k) = w;
+                Wi.at<float>(2*k+1,2*k+1) = w;
+            }
+
+            ///Calculate local homography for each cell
+            svdSolver(Wi*A,cv::SVD::FULL_UV);
+            localHomographies[i*CX+j] = svdSolver.w;
+        }
     }
 
     return imgC;

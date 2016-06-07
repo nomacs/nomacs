@@ -31,7 +31,7 @@ namespace nmc {
 class DkImageStitchingPlugin : public QObject, DkPluginInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkPluginInterface)
-    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkImageStitchingPlugin/3.3" FILE "DkImageStitchingPlugin.json")
+    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkImageStitchingPlugin/3.2" FILE "DkImageStitchingPlugin.json")
 
 public:
 
