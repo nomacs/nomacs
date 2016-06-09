@@ -1251,7 +1251,7 @@ void DkViewPort::animateFade() {
 	mAnimationValue = 1.0f-(float)(mAnimationTime.elapsed()/1000.0)/Settings::param().display().animationDuration;
 	
 	// slow in - slow out
-	double speed = mAnimationValue > 0.5 ? abs(1.0 - mAnimationValue) : abs(mAnimationValue);
+	double speed = mAnimationValue > 0.5 ? fabs(1.0 - mAnimationValue) : fabs(mAnimationValue);
 	speed *= .05;
 
 	mAnimationValue += (float)speed;

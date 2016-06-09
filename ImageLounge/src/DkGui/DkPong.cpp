@@ -655,7 +655,7 @@ void DkBall::fixAngle() {
 	double angle = mDirection.angle();
 	double range = CV_PI / 5.0;
 	double sign = angle > 0 ? 1.0 : -1.0;
-	angle = abs(angle);
+	angle = fabs(angle);
 	double newAngle = 0.0;
 
 	if (angle < CV_PI*0.5 && angle > CV_PI*0.5 - range) {
