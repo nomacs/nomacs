@@ -99,6 +99,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
 #endif
 	try {
+		// [DIEM] READ  build crashed here 09.06.2016
 		if (baZip && !baZip->isEmpty())	
 			metaData.readMetaData(filePath, baZip);
 		else if (!ba || ba->isEmpty())
