@@ -51,6 +51,11 @@ DkMetaDataT::DkMetaDataT() {
 
 void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
+	if (mUseSidecar) {
+		loadSidecar(filePath);
+		return;
+	}
+
 	mFilePath = filePath;
 	QFileInfo fileInfo(filePath);
 
@@ -675,6 +680,16 @@ QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const {
 	return qImg;
 }
 
+void DkMetaDataT::setUseSidecar(bool useSidecar) {
+	
+	mUseSidecar = useSidecar;
+}
+
+bool DkMetaDataT::useSidecar() const {
+
+	return mUseSidecar;
+}
+
 
 bool DkMetaDataT::hasMetaData() const {
 
@@ -1221,11 +1236,13 @@ void DkMetaDataT::printMetaData() const {
 }
 
 
-void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
+bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
+
+	if (mExifState != loaded && mExifState != dirty)
+		return false;
 
 
-	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
-	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
+	Exiv2::XmpData xmpData = mExifImg->xmpData();
 
 	QRectF r = getRectCoordinates(rect, size);
 
@@ -1247,22 +1264,24 @@ void DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	cropAngleStr.setNum(angle, 'g', 6);
 
 	// Set the cropping coordinates here in percentage:
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", topStr);
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", leftStr);
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", bottomStr);
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", rightStr);
+	setXMPValue(xmpData, "Xmp.crs.CropTop", topStr);
+	setXMPValue(xmpData, "Xmp.crs.CropLeft", leftStr);
+	setXMPValue(xmpData, "Xmp.crs.CropBottom", bottomStr);
+	setXMPValue(xmpData, "Xmp.crs.CropRight", rightStr);
 
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", cropAngleStr);
+	setXMPValue(xmpData, "Xmp.crs.CropAngle", cropAngleStr);
 
-	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+	setXMPValue(xmpData, "Xmp.crs.HasCrop", "True");
 	// These key values are set by camera raw automatically, but I have found no documentation for them:
-	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
-	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+	setXMPValue(xmpData, "Xmp.crs.CropConstrainToWarp", "1");
+	setXMPValue(xmpData, "Xmp.crs.crs:AlreadyApplied", "False");
 
 	// Save the crop coordinates to the sidecar file:
-	xmpSidecar->setXmpData(sidecarXmpData);
-	xmpSidecar->writeMetadata();
+	mExifImg->setXmpData(xmpData);
+	mExifState = dirty;
+	//mExifImg->writeMetadata();
 
+	return true;
 }
 
 QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
@@ -1296,19 +1315,17 @@ QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& 
 	right /= imgSize.width();
 
 	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
-
-	
 }
 
-Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
+Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString& filePath) const {
 
 	Exiv2::Image::AutoPtr xmpImg;
 
 	//TODO: check if the file type supports xmp
 
 	// Create the path to the XMP file:	
-	QString dir = mFilePath;
-	QString ext = QFileInfo(mFilePath).suffix();
+	QString dir = filePath;
+	QString ext = QFileInfo(filePath).suffix();
 	QString xmpPath = dir.left(dir.length() - ext.length() - 1);
 	QString xmpExt = ".xmp";
 	QString xmpFilePath = xmpPath + xmpExt;
@@ -1342,9 +1359,7 @@ Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
 	}
 
 	return xmpImg;
-
 }
-
 
 bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue) {
 

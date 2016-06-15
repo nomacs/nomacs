@@ -281,7 +281,7 @@ public slots:
 
 signals:
 	void panSignal(bool checked);
-	void cropSignal();
+	void cropSignal(bool cropToMetadata = false);	// vs. crop
 	void cancelSignal();
 	void aspectRatio(const DkVector& diag);
 	void angleSignal(double angle);
@@ -306,6 +306,7 @@ protected:
 	QColor mBgCol;
 	QAction* mPanAction = 0;
 	QAction* mInfoAction = 0;
+	QCheckBox* mCbMeta = 0;
 
 	QVector<QIcon> mIcons;		// needed for colorizing
 };

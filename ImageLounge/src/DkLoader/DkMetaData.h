@@ -95,6 +95,7 @@ public:
 	QStringList getQtValues() const;
 	QStringList getIptcValues() const;
 	QStringList getXmpKeys() const;
+
 	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
 	void getAllMetaData(QStringList& keys, QStringList& values) const;
 	void setResolution(const QVector2D& res);
@@ -107,6 +108,7 @@ public:
 	void setThumbnail(QImage thumb);
 	void setQtValues(const QImage& cImg);
 	static QString exiv2ToQString(std::string exifString);
+	void setUseSidecar(bool useSideCar = false);
 
 	bool hasMetaData() const;
 	bool isLoaded() const;
@@ -114,16 +116,16 @@ public:
 	bool isJpg() const;
 	bool isRaw() const;
 	bool isDirty() const;
+	bool useSidecar() const;
 	void printMetaData() const; //only for debug
 
 	//code for metadata crop:
-	void saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
+	bool saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
 
 protected:
 	QRectF getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const;
-	Exiv2::Image::AutoPtr getExternalXmp();
-	//void xmpSidecarTest();
+	Exiv2::Image::AutoPtr loadSidecar(const QString& filePath) const;
 
 	enum {
 		not_loaded,
@@ -138,6 +140,7 @@ protected:
 	QStringList mQtValues;
 
 	int mExifState = not_loaded;
+	bool mUseSidecar = false;
 };
 
 class DllLoaderExport DkMetaDataHelper {

@@ -561,7 +561,8 @@ public:
 	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
+	void cropToImageSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
+	void cropToMetaDataSignal(const DkRotatingRect& cropArea) const;
 	void angleSignal(double angle) const;
 	void aRatioSignal(const QPointF& aRatio) const;
 
@@ -620,7 +621,7 @@ public:
 	DkCropToolBar* getToolbar() const;
 
 public slots:
-	void crop();
+	void crop(bool cropToMetadata = false);
 	virtual void setVisible(bool visible);
 
 signals:

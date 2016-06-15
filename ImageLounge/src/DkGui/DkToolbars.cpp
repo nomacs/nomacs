@@ -909,6 +909,7 @@ void DkCropToolBar::loadSettings() {
 	mGuideBox->setCurrentIndex(settings.value("guides", 0).toInt());
 	mInvertAction->setChecked(settings.value("inverted", false).toBool());
 	mInfoAction->setChecked(settings.value("info", true).toBool());
+	mCbMeta->setChecked(settings.value("cropToMetadata", false).toBool());
 	settings.endGroup();
 }
 
@@ -922,6 +923,7 @@ void DkCropToolBar::saveSettings() {
 	settings.setValue("guides", mGuideBox->currentIndex());
 	settings.setValue("inverted", mInvertAction->isChecked());
 	settings.setValue("info", mInfoAction->isChecked());
+	settings.setValue("cropToMetadata", mCbMeta->isChecked());
 	settings.endGroup();
 }
 
@@ -1019,6 +1021,7 @@ void DkCropToolBar::createLayout() {
 	mGuideBox->setObjectName("guideBox");
 	mGuideBox->setToolTip(tr("Show Guides in the Preview"));
 	mGuideBox->setStatusTip(mGuideBox->toolTip());
+	mGuideBox->setCurrentIndex(1);
 
 	mInvertAction = new QAction(mIcons[invert_icon], tr("Invert Crop Tool Color"), this);
 	mInvertAction->setObjectName("invertAction");
@@ -1029,6 +1032,9 @@ void DkCropToolBar::createLayout() {
 	mInfoAction->setObjectName("infoAction");
 	mInfoAction->setCheckable(true);
 	mInfoAction->setChecked(false);
+
+	mCbMeta = new QCheckBox(tr("Crop to Metadata"), this);
+	mCbMeta->setChecked(false);
 
 	addAction(cropAction);
 	addAction(mPanAction);
@@ -1045,6 +1051,7 @@ void DkCropToolBar::createLayout() {
 	addWidget(mGuideBox);
 	addAction(mInvertAction);
 	addAction(mInfoAction);
+	addWidget(mCbMeta);
 }
 
 void DkCropToolBar::setVisible(bool visible) {
@@ -1069,7 +1076,7 @@ void DkCropToolBar::setAspectRatio(const QPointF& aRatio) {
 }
 
 void DkCropToolBar::on_cropAction_triggered() {
-	emit cropSignal();
+	emit cropSignal(mCbMeta->isChecked());
 }
 
 void DkCropToolBar::on_cancelAction_triggered() {

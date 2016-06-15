@@ -1740,6 +1740,23 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 	qDebug() << "cropping...";
 }
 
+void DkViewPort::cropToMetaData(const DkRotatingRect& rect) {
+
+	// TODO: I have the slight feeling that this function is wrong here...
+	// ... but I put it to cropImage -> they should be migrated at once
+	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
+
+	if (!imgC) {
+		mController->setInfo(tr("I cannot crop to an empty image."));
+		return;
+	}
+
+	if (!imgC->getMetaData()->saveRectToXMP(rect, imgC->image().size()))
+		mController->setInfo(tr("Sorry, I cannot crop to the image."));
+	else
+		mController->setInfo(tr("Cropping saved to metadata."));
+}
+
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
 	

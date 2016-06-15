@@ -1934,19 +1934,7 @@ void DkEditableRect::keyPressEvent(QKeyEvent *event) {
 
 void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
-	//if (event->key() == Qt::Key_Escape)
-	//	hide();
-	//else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-	//	
-	//	if (!rect.isEmpty())
-	//		emit enterPressedSignal(rect);
-
-	//	setVisible(false);
-	//	setWindowOpacity(0);
-	//}
-
 	qDebug() << "key pressed rect";
-
 	QWidget::keyPressEvent(event);
 }
 
@@ -2022,7 +2010,7 @@ void DkCropWidget::createToolbar() {
 
 	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
-	connect(cropToolbar, SIGNAL(cropSignal()), this, SLOT(crop()));
+	connect(cropToolbar, SIGNAL(cropSignal(bool)), this, SLOT(crop(bool)));
 	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(cancelSignal()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
@@ -2041,13 +2029,15 @@ DkCropToolBar* DkCropWidget::getToolbar() const {
 	return cropToolbar;
 }
 
-void DkCropWidget::crop() {
+void DkCropWidget::crop(bool cropToMetadata) {
 
 	if (!cropToolbar)
 		return;
 
-	if (!mRect.isEmpty())
-		emit enterPressedSignal(mRect, cropToolbar->getColor());
+	if (!mRect.isEmpty() && !cropToMetadata)
+		emit cropToImageSignal(mRect, cropToolbar->getColor());
+	else if (!mRect.isEmpty())
+		emit cropToMetaDataSignal(mRect);
 
 	setVisible(false);
 	setWindowOpacity(0);

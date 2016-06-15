@@ -160,6 +160,7 @@ public slots:
 	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
+	void cropToMetaData(const DkRotatingRect& rect);
 	void repeatZoom();
 
 	void applyPlugin(DkPluginContainer* plugin, const QString& key);
