@@ -79,6 +79,7 @@ public:
 
 	int getOrientation() const;
 	int getRating() const;
+	QSize getImageSize() const;
 	QString getDescription() const;
 	QVector2D getResolution() const;
 	QString getNativeExifValue(const QString& key) const;
@@ -121,10 +122,10 @@ public:
 
 	//code for metadata crop:
 	bool saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
+	DkRotatingRect getXMPRect(const QSize& size) const;
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
 
 protected:
-	QRectF getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const;
 	Exiv2::Image::AutoPtr loadSidecar(const QString& filePath) const;
 
 	enum {

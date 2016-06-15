@@ -338,6 +338,27 @@ int DkMetaDataT::getRating() const {
 	return qRound(fRating);
 }
 
+QSize DkMetaDataT::getImageSize() const {
+
+	QSize size;
+
+	if (mExifState != loaded && mExifState != dirty)
+		return size;
+
+	bool ok = false;
+	int width = getNativeExifValue("Exif.Photo.PixelXDimension").toInt(&ok);
+
+	if (!ok)
+		return size;
+
+	int height = getNativeExifValue("Exif.Photo.PixelYDimension").toInt(&ok);
+
+	if (!ok)
+		return size;
+
+	return QSize(width, height);
+}
+
 QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 
 	QString info;
@@ -1241,18 +1262,9 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	if (mExifState != loaded && mExifState != dirty)
 		return false;
 
-
 	Exiv2::XmpData xmpData = mExifImg->xmpData();
 
-	QRectF r = getRectCoordinates(rect, size);
-
-	// precision = 6 is what Adobe Camera Raw uses (as it seems)
-	QString topStr, bottomStr, leftStr, rightStr, cropAngleStr;
-	
-	topStr.setNum(r.top(), 'g', 6);
-	bottomStr.setNum(r.bottom(), 'g', 6);
-	leftStr.setNum(r.left(), 'g', 6);
-	rightStr.setNum(r.right(), 'g', 6);
+	QRectF r = rect.toExifRect(size);
 
 	double angle = rect.getAngle()*DK_RAD2DEG;
 
@@ -1261,15 +1273,13 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	else if (angle < -45)
 		angle = angle + 90;
 
-	cropAngleStr.setNum(angle, 'g', 6);
-
 	// Set the cropping coordinates here in percentage:
-	setXMPValue(xmpData, "Xmp.crs.CropTop", topStr);
-	setXMPValue(xmpData, "Xmp.crs.CropLeft", leftStr);
-	setXMPValue(xmpData, "Xmp.crs.CropBottom", bottomStr);
-	setXMPValue(xmpData, "Xmp.crs.CropRight", rightStr);
+	setXMPValue(xmpData, "Xmp.crs.CropTop", QString::number(r.top()));
+	setXMPValue(xmpData, "Xmp.crs.CropLeft", QString::number(r.left()));
+	setXMPValue(xmpData, "Xmp.crs.CropBottom", QString::number(r.bottom()));
+	setXMPValue(xmpData, "Xmp.crs.CropRight", QString::number(r.right()));
 
-	setXMPValue(xmpData, "Xmp.crs.CropAngle", cropAngleStr);
+	setXMPValue(xmpData, "Xmp.crs.CropAngle", QString::number(angle));
 
 	setXMPValue(xmpData, "Xmp.crs.HasCrop", "True");
 	// These key values are set by camera raw automatically, but I have found no documentation for them:
@@ -1284,37 +1294,29 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	return true;
 }
 
-QRectF DkMetaDataT::getRectCoordinates(const DkRotatingRect& rect, const QSize& imgSize) const {
+DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 
-	QPointF center = rect.getCenter();
+	if (mExifState != loaded && mExifState != dirty)
+		return DkRotatingRect();
 
-	QPolygonF polygon = rect.getPoly();
-	DkVector vec;
+	// pretend it's not here if it is already applied
+	QString applied = getXmpValue("Xmp.crs.crs:AlreadyApplied");
+	if (applied.compare("true", Qt::CaseInsensitive) == 0)
+		return DkRotatingRect();
 
-	for (int i = 0; i < 4; i++) {
-		// We need the second quadrant, but I do not know why... just tried it out.
-		vec = polygon[i] - center;
-		if (vec.x <= 0 && vec.y > 0)
-			break;
-	}
+	Exiv2::XmpData xmpData = mExifImg->xmpData();
+	double top		= getXmpValue("Xmp.crs.CropTop").toDouble();
+	double bottom	= getXmpValue("Xmp.crs.CropBottom").toDouble();
+	double left		= getXmpValue("Xmp.crs.CropLeft").toDouble();
+	double right	= getXmpValue("Xmp.crs.CropRight").toDouble();
 
-	double angle = rect.getAngle();
-	vec.rotate(angle * 2);
+	double angle = getXmpValue("Xmp.crs.CropAngle").toDouble();
 
-	vec.abs();
+	QRectF r(left, top, right-left, bottom-top);
+	DkRotatingRect rr = DkRotatingRect::fromExifRect(r, size, angle*DK_DEG2RAD);
+	qDebug() << "rect: " << r;
 
-	float left = (float) center.x() - vec.x;
-	float right = (float) center.x() + vec.x;
-	float top = (float) center.y() - vec.y;
-	float bottom = (float) center.y() + vec.y;
-
-	// Normalize the coordinates:
-	top /= imgSize.height();
-	bottom /= imgSize.height();
-	left /= imgSize.width();
-	right /= imgSize.width();
-
-	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
+	return DkRotatingRect(rr);
 }
 
 Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString& filePath) const {
@@ -1344,7 +1346,6 @@ Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString& filePath) const {
 		}
 	}
 	if (!xmpImg.get()) {
-		
 
 #ifdef EXV_UNICODE_PATH
 		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	

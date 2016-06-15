@@ -54,6 +54,7 @@ class DkBasicLoader;
 class DkMetaDataT;
 class DkZipContainer;
 class FileDownloader;
+class DkRotatingRect;
 
 class DllLoaderExport DkImageContainer {
 
@@ -91,6 +92,8 @@ public:
 	QString getTitleAttribute() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
+	DkRotatingRect cropRect();
+
 	virtual QSharedPointer<DkBasicLoader> getLoader();
 	virtual QSharedPointer<DkMetaDataT> getMetaData();
 	virtual QSharedPointer<DkThumbNailT> getThumb();

@@ -265,6 +265,19 @@ float DkImageContainer::getFileSize() const {
 	return QFileInfo(mFilePath).size()/(1024.0f*1024.0f);
 }
 
+DkRotatingRect DkImageContainer::cropRect() {
+
+	QSharedPointer<DkMetaDataT> metaData = getMetaData();
+
+	if (metaData) {
+		return metaData->getXMPRect(image().size());
+	}
+	else
+		qWarning() << "empty crop rect because there are no metadata...";
+
+	return DkRotatingRect();
+}
+
 
 QImage DkImageContainer::image() {
 

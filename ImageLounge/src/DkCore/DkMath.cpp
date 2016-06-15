@@ -294,6 +294,77 @@ void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) const {
 
 }
 
+QRectF DkRotatingRect::toExifRect(const QSize & size) const {
+	
+	QPointF center = getCenter();
+
+	QPolygonF polygon = getPoly();
+	DkVector vec;
+
+	for (int i = 0; i < 4; i++) {
+		// We need the second quadrant, but I do not know why... just tried it out.
+		vec = polygon[i] - center;
+		if (vec.x <= 0 && vec.y > 0)
+			break;
+	}
+
+	double angle = getAngle();
+	vec.rotate(angle * 2);
+	vec.abs();
+
+	float left = (float) center.x() - vec.x;
+	float right = (float) center.x() + vec.x;
+	float top = (float) center.y() - vec.y;
+	float bottom = (float) center.y() + vec.y;
+
+	// Normalize the coordinates:
+	top /= size.height();
+	bottom /= size.height();
+	left /= size.width();
+	right /= size.width();
+
+	return QRectF(QPointF(left, top), QSizeF(right - left, bottom - top));
+}
+
+DkRotatingRect DkRotatingRect::fromExifRect(const QRectF& rect, const QSize& size, double angle) {
+
+	// is it rotated?
+	if (DkMath::distAngle(angle, 0.0) < 0.00001) {
+		QRect rt(rect.left()*size.width(), rect.top()*size.height(), rect.width()*size.width(), rect.height()*size.height());
+		return DkRotatingRect(rt);
+	}
+
+	DkVector s(size.width(), size.height());
+
+	DkVector ul(rect.topLeft());
+	DkVector c(rect.center());
+	ul = ul - c;
+
+	ul = ul.mul(s);
+	c = c.mul(s);
+	
+	double alpha = angle * 2;
+	DkVector vec = ul;
+
+	// decide the quadrant (NOTE: vec represents the rectangles angle)
+	if (ul.x < ul.y)
+		vec.rotate(CV_PI - alpha);
+
+	QPolygonF p;
+	p << DkVector(c + vec).toQPointF();
+	vec.rotate(alpha);
+	p << DkVector(c + vec).toQPointF();
+	vec.rotate(CV_PI-alpha);
+	p << DkVector(c + vec).toQPointF();
+	vec.rotate(alpha);
+	p << DkVector(c + vec).toQPointF();
+
+	DkRotatingRect rr;
+	rr.setPoly(p);
+
+	return rr;
+}
+
 std::ostream& DkRotatingRect::put(std::ostream& s) {
 
 	s << "DkRotatingRect: ";

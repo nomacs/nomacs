@@ -721,22 +721,26 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	else
 		drawBackground(&painter);
 
-	// this was the auto-show function of the zoom widget
-	//DkZoomWidget* zw = mController->getZoomWidget();
+	// draw the cropping rect
+	// TODO: add a setting to hide this!
+	if (imageContainer() && !imageContainer()->cropRect().isEmpty()) {
 
-	////in mode zoom/panning
-	//if (worldMatrix.m11() > 1 && !imageInside() && 
-	//	Settings::param().app().showOverview.testBit(Settings::param().app().currentAppMode)) {
+		// create path
+		QPainterPath path;
+		path.addRect(getImageViewRect().toRect());
 
-	//	if (!zw->isVisible())
-	//		zw->setVisible(true, true);
-	//}
-	//else if (zw->isVisible() && zw->isAutoHide())
-	//	mController->getZoomWidget()->hide();
+		DkRotatingRect r = imageContainer()->cropRect();
+		QPolygonF polyF;
+		polyF = r.getClosedPoly();
+		polyF = mImgMatrix.map(polyF);
+		polyF = mWorldMatrix.map(polyF);
+		path.addPolygon(polyF.toPolygon());
+
+		painter.setBrush(QColor(0,0,0,40));
+		painter.drawPath(path);
+	}
 
 	painter.end();
-
-	//qDebug() << "painting main widget...";
 
 	// propagate
 	QGraphicsView::paintEvent(event);

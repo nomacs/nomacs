@@ -805,6 +805,10 @@ public:
 		return QPointF(x, y);
 	};
 
+	DkVector mul(const DkVector& vec) const {
+		return DkVector(x*vec.x, y*vec.y);
+	};
+
 #ifdef WITH_OPENCV
 	/**
 	 * Convert DkVector to cv::Point.
@@ -860,6 +864,8 @@ public:
 	double getAngle() const;
 	float getAngleDeg() const;
 	void getTransform(QTransform& tForm, QPointF& size) const;
+	QRectF toExifRect(const QSize& size) const;
+	static DkRotatingRect fromExifRect(const QRectF& rect, const QSize& size, double angle);
 
 protected:
 
