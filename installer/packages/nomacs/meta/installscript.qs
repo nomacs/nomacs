@@ -96,10 +96,16 @@ Component.prototype.createOperations = function()
 				bitness.push("x86");
 				console.log("x86 is installed...");
 			}
+			else {
+				console.log("component nomacs.x86 is NOT installed...");
+			}
 			if (installer.componentByName("nomacs.x64").isInstalled()) {
 				bitness.push("x64");
 				console.log("x64 is installed...");
-			}			
+			}
+			else {
+				
+			}
 		}
 
 		for (idx = 0; idx < bitness.length; idx++) {
