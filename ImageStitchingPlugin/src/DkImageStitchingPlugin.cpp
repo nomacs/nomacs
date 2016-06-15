@@ -254,7 +254,6 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     const int cellHeight = images[1].size[1]/CY;
     const float sigmaSquared = 12.5*12.5;
 
-    cv::SVD svdSolver;
     std::vector<cv::Mat> localHomographies(CX*CY);
     cv::Mat Wi(2*matchesInfo.num_inliers,2*matchesInfo.num_inliers,CV_32F,0.0);
     for (int i = 0; i < CX; ++i)
@@ -278,8 +277,24 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
 
             //std::cout << "W = " << Wi << "\n";
             ///Calculate local homography for each cell
-            svdSolver(Wi*A);
-            cv::normalize(svdSolver.w,localHomographies[i*CY+j]);
+            cv::Mat w,u,vt;
+            cv::SVD::compute(Wi*A,w,u,vt);
+
+            float smallestSv = w.at<float>(0,0);
+            int indexSmallestSv = 0;
+            for (int k = 1; k < w.rows; ++k)
+            {
+                if (w.at<float>(k,0) < smallestSv)
+                {
+                    smallestSv = w.at<float>(k,0);
+                    indexSmallestSv = k;
+                }
+            }
+
+            localHomographies[i*CY+j] = vt.row(indexSmallestSv);
+
+            if (localHomographies[i*CY+j].at<float>(0,8) < 0)
+                localHomographies[i*CY+j] *= -1;
         }
     }
 
