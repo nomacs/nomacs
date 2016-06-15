@@ -1141,9 +1141,13 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8)
 			sImg = sImg.convertToFormat(QImage::Format_RGB32);
 
-		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+		if (fInfo.suffix().contains(QRegExp("(png)")))
+			compression = -1;
 
+		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+		
 		QBuffer fileBuffer(ba.data());
+		//size_t s = fileBuffer.size();
 		fileBuffer.open(QIODevice::WriteOnly);
 		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
 		imgWriter->setCompression(compression);
