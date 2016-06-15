@@ -230,7 +230,8 @@ macro(NMC_FINDQT)
 	set(CMAKE_AUTORCC OFF)
 	
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	if(NOT QT_QMAKE_EXECUTABLE)
+ 
+ if(NOT QT_QMAKE_EXECUTABLE)
 	 find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
  endif()
  if(NOT QT_QMAKE_EXECUTABLE)
