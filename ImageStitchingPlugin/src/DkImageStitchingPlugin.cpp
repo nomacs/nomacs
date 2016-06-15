@@ -32,6 +32,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/stitching/detail/matchers.hpp>
 
+#include <iostream>
 #include <DkImageStorage.h>
 
  /*******************************************************************************************************
@@ -151,50 +152,111 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     cv::detail::MatchesInfo matchesInfo;
     matcher(features[0],features[1],matchesInfo);
 
-    ///Build the A matrix with the matching points
+    ///Extract the matching points between the two images
+    std::vector<cv::Point2f> inliersSrc(matchesInfo.num_inliers);
+    std::vector<cv::Point2f> inliersDst(matchesInfo.num_inliers);
 
-    cv::Mat A(2*matchesInfo.num_inliers,9,CV_32F);
-    for (int i = 0; i < matchesInfo.inliers_mask.size(); ++i)
+    for (int i = 0, l = 0; i < matchesInfo.inliers_mask.size(); ++i)
     {
-        if (!matchesInfo.inliers_mask[i])
-            continue;
+        if (matchesInfo.inliers_mask[i])
+        {
+            cv::DMatch &m = matchesInfo.matches[i];
+            cv::Point2f pTarget = features[0].keypoints[m.queryIdx].pt;
+            pTarget.x -= features[0].img_size.width*0.5;
+            pTarget.y -= features[0].img_size.height*0.5;
 
-        cv::DMatch &m = matchesInfo.matches[i];
-        cv::Point2f pTarget = features[0].keypoints[m.queryIdx].pt;
-        cv::Point2f pReference = features[1].keypoints[m.trainIdx].pt;
+            cv::Point2f pReference = features[1].keypoints[m.trainIdx].pt;
+            pReference.x -= features[1].img_size.width*0.5;
+            pReference.y -= features[1].img_size.height*0.5;
 
-        A.at<float>(0,2*i) = 0.0;
-        A.at<float>(1,2*i) = 0.0;
-        A.at<float>(2,2*i) = 0.0;
-        A.at<float>(3,2*i) = -pReference.x;
-        A.at<float>(4,2*i) = -pReference.y;
-        A.at<float>(5,2*i) = 1.0;
-        A.at<float>(6,2*i) = pTarget.y*pReference.x;
-        A.at<float>(7,2*i) = pTarget.y*pReference.y;
-        A.at<float>(8,2*i) = pTarget.y;
-
-        A.at<float>(0,2*i+1) = pReference.x;
-        A.at<float>(1,2*i+1) = pReference.y;
-        A.at<float>(2,2*i+1) = 1.0;
-        A.at<float>(3,2*i+1) = 0.0;
-        A.at<float>(4,2*i+1) = 0.0;
-        A.at<float>(5,2*i+1) = 0.0;
-        A.at<float>(6,2*i+1) = -pTarget.x*pReference.x;
-        A.at<float>(7,2*i+1) = -pTarget.x*pReference.y;
-        A.at<float>(8,2*i+1) = -pTarget.x;
+            inliersSrc[l] = pTarget;
+            inliersDst[l] = pReference;
+            ++l;
+        }
     }
 
-    cv::Mat Wi(2*matchesInfo.num_inliers,2*matchesInfo.num_inliers,CV_32F);
+    ///Build the A matrix with the matching points
+    cv::Mat A(2*matchesInfo.num_inliers,9,CV_32F);
+    for (int i = 0; i < matchesInfo.num_inliers; ++i)
+    {
+        const cv::Point2f &pTarget = inliersSrc[i];
+        const cv::Point2f &pReference = inliersDst[i];
 
-    const int CX = 25;
-    const int CY = 25;
+        A.at<float>(2*i,0) = 0.0;
+        A.at<float>(2*i,1) = 0.0;
+        A.at<float>(2*i,2) = 0.0;
+        A.at<float>(2*i,3) = -pTarget.x;
+        A.at<float>(2*i,4) = -pTarget.y;
+        A.at<float>(2*i,5) = -1.0;
+        A.at<float>(2*i,6) = pReference.y*pTarget.x;
+        A.at<float>(2*i,7) = pReference.y*pTarget.y;
+        A.at<float>(2*i,8) = pReference.y;
+
+        A.at<float>(2*i+1,0) = pTarget.x;
+        A.at<float>(2*i+1,1) = pTarget.y;
+        A.at<float>(2*i+1,2) = 1.0;
+        A.at<float>(2*i+1,3) = 0.0;
+        A.at<float>(2*i+1,4) = 0.0;
+        A.at<float>(2*i+1,5) = 0.0;
+        A.at<float>(2*i+1,6) = -pReference.x*pTarget.x;
+        A.at<float>(2*i+1,7) = -pReference.x*pTarget.y;
+        A.at<float>(2*i+1,8) = -pReference.x;
+    }
+
+    std::cout << matchesInfo.H << "\n";
+
+    ///Calculate canvas size using global homography
+    double canvasCornersCoords[8] = {
+        0.0, 0.0, //TL
+        0.0, features[1].img_size.width, //BL
+        features[1].img_size.height, 0.0, //TR
+        features[1].img_size.height, features[1].img_size.width //BR
+    };
+
+    int maxX = 1, minX = 1;
+    int maxY = 1, minY = 1;
+    for (int i = 0; i < 4; ++i)
+    {
+        cv::Mat pt = cv::Mat(3,1,CV_64F,1.0);
+        pt.at<double>(0,0) = canvasCornersCoords[2*i];
+        pt.at<double>(1,0) = canvasCornersCoords[2*i+1];
+
+        cv::Mat corner;
+        cv::solve(matchesInfo.H,pt,corner);
+
+        double w = corner.at<double>(2,0);
+        int x = ceil(corner.at<double>(0,0)/w);
+        int y = ceil(corner.at<double>(1,0)/w);
+        maxX = std::max(maxX,x);
+        minX = std::min(minX,x);
+        maxY = std::max(maxY,y);
+        minY = std::min(minY,y);
+    }
+
+    int canvasWidth = maxX - minX + 1;
+    int canvasHeight = maxY - minY + 1;
+
+    std::cout << canvasWidth << " " << canvasHeight << "\n";
+
+    ///Calculate offset using global homography
+    cv::Point2i offset;
+    offset.x = 2 - std::min(features[0].img_size.width,minX);
+    offset.y = 2 - std::min(features[0].img_size.height,minY);
+
+    std::cout << offset << std::endl;
+
+    ///Divide the reference image into CX*CY cells and calculate their
+    ///local homographies.
+    const int CX = 100;
+    const int CY = 100;
 
     const int cellWidth = images[1].size[0]/CX;
     const int cellHeight = images[1].size[1]/CY;
-    const float sigmaSquared = 12.0*12.0;
+    const float sigmaSquared = 12.5*12.5;
 
     cv::SVD svdSolver;
     std::vector<cv::Mat> localHomographies(CX*CY);
+    cv::Mat Wi(2*matchesInfo.num_inliers,2*matchesInfo.num_inliers,CV_32F,0.0);
     for (int i = 0; i < CX; ++i)
     {
         for (int j = 0; j < CY; ++j)
@@ -205,21 +267,49 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
             ///Build W matrix for each cell center
             for (int k = 0; k < matchesInfo.num_inliers; ++k)
             {
-                cv::DMatch &m = matchesInfo.matches[i];
-                cv::Point2f xk = features[1].keypoints[m.trainIdx].pt;
+                cv::Point2f xk = inliersSrc[k];
+                xk.x = centerX-xk.x-offset.x;
+                xk.y = centerY-xk.y-offset.y;
 
-                float dx = xk.x-centerX;
-                float dy = xk.y-centerY;
-                float w = exp(-1.0*sqrt(dx*dx+dy*dy)/sigmaSquared);
+                float w = exp(-1.0*sqrt(xk.x*xk.x+xk.y*xk.y)/sigmaSquared);
                 Wi.at<float>(2*k,2*k) = w;
                 Wi.at<float>(2*k+1,2*k+1) = w;
             }
 
+            //std::cout << "W = " << Wi << "\n";
             ///Calculate local homography for each cell
-            svdSolver(Wi*A,cv::SVD::FULL_UV);
-            localHomographies[i*CX+j] = svdSolver.w;
+            svdSolver(Wi*A);
+            cv::normalize(svdSolver.w,localHomographies[i*CY+j]);
         }
     }
+
+    for (int i = 0; i < CX; ++i)
+    {
+        for (int j = 0; j < CY; ++j)
+        {
+            float H[9];
+            for (int k = 0; k < 9; ++k)
+                H[k] = localHomographies[i*CY+j].at<float>(k);
+
+            //std::cout << "Local H = " << localHomographies[i*CY+j] << "\n";
+
+            for (int k = 0; k < cellWidth; ++k)
+            {
+                for (int l = 0; l < cellHeight; ++l)
+                {
+                    int pX = i*cellWidth+k-offset.x;
+                    int pY = j*cellHeight+l-offset.y;
+
+                    int hX = (H[0]*pX+H[1]*pY+H[2])/(H[6]*pX+H[7]*pY+H[8]);
+                    int hY = (H[3]*pX+H[4]*pY+H[5])/(H[6]*pX+H[7]*pY+H[8]);
+
+                    //std::cout << "(" << pX << " , " << pY << ") = " << hX << " " << hY << "\n";
+                }
+            }
+        }
+    }
+
+    fflush(stdout);
 
     return imgC;
 }
