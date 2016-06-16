@@ -707,6 +707,14 @@ void DkDisplayPreference::createLayout() {
 	slideshowGroup->addWidget(displayTimeLabel);
 	slideshowGroup->addWidget(displayTimeBox);
 
+	// show crop from metadata
+	QCheckBox* showCrop = new QCheckBox(tr("Show crop rectangle"), this);
+	showCrop->setObjectName("showCrop");
+	showCrop->setChecked(Settings::param().display().showCrop);
+
+	DkGroupWidget* showCropGroup = new DkGroupWidget(tr("Show Metadata Cropping"), this);
+	showCropGroup->addWidget(showCrop);
+
 	// left column
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
@@ -715,6 +723,7 @@ void DkDisplayPreference::createLayout() {
 	leftLayout->addWidget(keepZoomGroup);
 	leftLayout->addWidget(iconGroup);
 	leftLayout->addWidget(slideshowGroup);
+	leftLayout->addWidget(showCropGroup);
 
 	// right column
 	QWidget* rightWidget = new QWidget(this);
@@ -788,6 +797,13 @@ void DkDisplayPreference::on_alwaysAnimate_toggled(bool checked) const {
 
 	if (Settings::param().display().alwaysAnimate != checked)
 		Settings::param().display().alwaysAnimate = checked;
+
+}
+
+void DkDisplayPreference::on_showCrop_toggled(bool checked) const {
+
+	if (Settings::param().display().showCrop != checked)
+		Settings::param().display().showCrop = checked;
 
 }
 

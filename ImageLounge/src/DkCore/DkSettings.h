@@ -189,6 +189,7 @@ public:
 		int thumbPreviewSize;
 		//bool saveThumb;
 		int interpolateZoomLevel;
+		bool showCrop;
 		bool antiAliasing;
 		bool toolbarGradient;	// 05.01.2016 - deprecated
 		bool showBorder;

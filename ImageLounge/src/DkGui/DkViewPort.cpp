@@ -726,7 +726,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// draw the cropping rect
 	// TODO: add a setting to hide this!
-	if (!mCropRect.isEmpty()) {
+	if (!mCropRect.isEmpty() && Settings::param().display().showCrop) {
 
 		// create path
 		QPainterPath path;

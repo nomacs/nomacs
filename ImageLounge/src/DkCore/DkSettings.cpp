@@ -356,6 +356,7 @@ void DkSettings::load() {
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
+	display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
 	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
@@ -581,6 +582,8 @@ void DkSettings::save(bool force) {
 	//	settings.setValue("saveThumb", display_p.saveThumb);
 	if (!force && display_p.antiAliasing != display_d.antiAliasing)
 		settings.setValue("antiAliasing", display_p.antiAliasing);
+	if (!force && display_p.showCrop != display_d.showCrop)
+		settings.setValue("showCrop", display_p.showCrop);
 	if (!force && display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
 	if (!force && display_p.toolbarGradient != display_d.toolbarGradient)
@@ -776,6 +779,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.iconSize = 16;
 	display_p.thumbPreviewSize = 64;
 	display_p.antiAliasing = true;
+	display_p.showCrop = true;
 	display_p.tpPattern = false;
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
