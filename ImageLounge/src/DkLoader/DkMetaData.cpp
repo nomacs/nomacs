@@ -1266,12 +1266,9 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 
 	QRectF r = rect.toExifRect(size);
 
-	double angle = rect.getAngle()*DK_RAD2DEG;
+	double angle = rect.getAngle();
 
-	if (angle > 45)
-		angle = angle - 90;
-	else if (angle < -45)
-		angle = angle + 90;
+	angle = DkMath::normAngleRad(angle, -CV_PI*0.25, CV_PI*0.25) * DK_RAD2DEG;
 
 	// Set the cropping coordinates here in percentage:
 	setXMPValue(xmpData, "Xmp.crs.CropTop", QString::number(r.top()));

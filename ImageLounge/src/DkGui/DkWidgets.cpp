@@ -1430,7 +1430,7 @@ void DkTransformRect::draw(QPainter *painter) {
 	painter->setWorldMatrixEnabled(false);
 	painter->setPen(penNoStroke);
 	painter->setBrush(QColor(0, 0, 0, 0));
-	painter->drawRect(geometry());	// invisible rect for mouseevents...
+	painter->drawRect(geometry());	// invisible mRect for mouseevents...
 	//painter->setPen(pen);
 	painter->setBrush(QColor(255,255,255, 100));
 	painter->drawRect(whiteRect);
@@ -1648,7 +1648,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	drawGuide(&painter, p, mPaintMode);
 	
 	//// debug
-	//painter.drawPoint(rect.getCenter());
+	//painter.drawPoint(mRect.getCenter());
 
 	// this changes the painter -> do it at the end
 	if (!mRect.isEmpty()) {
@@ -1814,7 +1814,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			
 			DkVector diag;
 			
-			// when initializing shift should make the rect a square
+			// when initializing shift should make the mRect a square
 			if (event->modifiers() == Qt::ShiftModifier)
 				diag = DkVector(1.0f, 1.0f);
 			else
@@ -1899,24 +1899,7 @@ void DkEditableRect::wheelEvent(QWheelEvent* event) {
 void DkEditableRect::applyTransform() {
 
 	// apply transform
-	QPolygonF p = mRect.getPoly();
-	p = mTtform.map(p);
-	p = mRtform.map(p); 
-	p = mTtform.inverted().map(p);
-
-	// Cropping tool fix start
-
-	// Check the order or vertexes
-	float signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y()) - (p[1].y()- p[0].y()) * (p[2].x() - p[0].x()));
-	// If it's wrong, just change it
-	if (signedArea > 0) {
-		QPointF tmp = p[1];
-		p[1] = p[3];
-		p[3] = tmp;
-	}
-	// Cropping tool fix end
-
-	mRect.setPoly(p);
+	mRect.transform(mTtform, mRtform);
 
 	mRtform.reset();	
 	mTtform.reset();

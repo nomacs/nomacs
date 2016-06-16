@@ -866,12 +866,14 @@ public:
 	void getTransform(QTransform& tForm, QPointF& size) const;
 	QRectF toExifRect(const QSize& size) const;
 	static DkRotatingRect fromExifRect(const QRectF& rect, const QSize& size, double angle);
+	void transform(const QTransform& translation, const QTransform& rotation);
+	void rotate(double angle);
 
 protected:
 
 	virtual std::ostream& put(std::ostream& s);
 
-	QPolygonF rect;
+	QPolygonF mRect;
 };
 
 }

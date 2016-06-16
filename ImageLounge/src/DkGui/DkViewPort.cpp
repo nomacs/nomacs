@@ -1759,6 +1759,9 @@ void DkViewPort::cropToMetaData(const DkRotatingRect& rect) {
 		mController->setInfo(tr("Sorry, I cannot crop to the image."));
 	else
 		mController->setInfo(tr("Cropping saved to metadata."));
+
+	//imgC->setImage(imgC->image(), tr("Cropped"));
+	//setEditedImage(imgC);
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
@@ -2163,7 +2166,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 //
 //	//QRectF initialRect = mMainScreen;
 //	//QPointF oldCenter = mImgViewRect.isEmpty() ? initialRect.center() : mImgViewRect.center();
-//	//qDebug() << "initial rect: " << initialRect;
+//	//qDebug() << "initial mRect: " << initialRect;
 //
 //	//QTransform cT;
 //	//cT.scale(800/initialRect.width(), 800/initialRect.width());
