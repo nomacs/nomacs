@@ -561,8 +561,7 @@ public:
 	virtual void setVisible(bool visible);
 
 signals:
-	void cropToImageSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
-	void cropToMetaDataSignal(const DkRotatingRect& cropArea) const;
+	void cropImageSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0), bool cropToMetaData = false) const;
 	void angleSignal(double angle) const;
 	void aRatioSignal(const QPointF& aRatio) const;
 

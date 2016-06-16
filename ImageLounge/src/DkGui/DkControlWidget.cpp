@@ -334,8 +334,7 @@ void DkControlWidget::connectWidgets() {
 	connect(mPlayer, SIGNAL(nextSignal()), mViewport, SLOT(loadNextFileFast()));
 
 	// cropping
-	connect(mCropWidget, SIGNAL(cropToImageSignal(const DkRotatingRect&, const QColor&)), mViewport, SLOT(cropImage(const DkRotatingRect&, const QColor&)));
-	connect(mCropWidget, SIGNAL(cropToMetaDataSignal(const DkRotatingRect&)), mViewport, SLOT(cropToMetaData(const DkRotatingRect&)));
+	connect(mCropWidget, SIGNAL(cropImageSignal(const DkRotatingRect&, const QColor&, bool)), mViewport, SLOT(cropImage(const DkRotatingRect&, const QColor&, bool)));
 	connect(mCropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 
 	// comment widget

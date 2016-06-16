@@ -122,6 +122,7 @@ public:
 
 	//code for metadata crop:
 	bool saveRectToXMP(const DkRotatingRect& rect, const QSize& imgSize);
+	bool clearXMPRect();
 	DkRotatingRect getXMPRect(const QSize& size) const;
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
 

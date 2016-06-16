@@ -30,6 +30,7 @@
 #include "DkBaseViewPort.h"
 #include "DkImageContainer.h"
 #include "DkTimer.h"
+#include "DkMath.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>	// needed to construct mTimers
@@ -159,8 +160,7 @@ public slots:
 	bool unloadImage(bool fileChange = true);
 	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
-	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
-	void cropToMetaData(const DkRotatingRect& rect);
+	void cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData);
 	void repeatZoom();
 
 	void applyPlugin(DkPluginContainer* plugin, const QString& key);
@@ -228,6 +228,8 @@ protected:
 
 	QPoint mCurrentPixelPos;
 	
+	DkRotatingRect mCropRect;
+
 	// functions
 #if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES

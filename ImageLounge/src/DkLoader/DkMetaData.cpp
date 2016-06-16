@@ -1267,7 +1267,6 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	QRectF r = rect.toExifRect(size);
 
 	double angle = rect.getAngle();
-
 	angle = DkMath::normAngleRad(angle, -CV_PI*0.25, CV_PI*0.25) * DK_RAD2DEG;
 
 	// Set the cropping coordinates here in percentage:
@@ -1291,6 +1290,19 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	return true;
 }
 
+bool DkMetaDataT::clearXMPRect() {
+
+	if (mExifState != loaded && mExifState != dirty)
+		return false;
+
+	Exiv2::XmpData xmpData = mExifImg->xmpData();
+	setXMPValue(xmpData, "Xmp.crs.HasCrop", "False");
+	mExifImg->setXmpData(xmpData);
+	mExifState = dirty;
+
+	return true;
+}
+
 DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 
 	if (mExifState != loaded && mExifState != dirty)
@@ -1298,8 +1310,12 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 
 	// pretend it's not here if it is already applied
 	QString applied = getXmpValue("Xmp.crs.crs:AlreadyApplied");
-	if (applied.compare("true", Qt::CaseInsensitive) == 0)
+	QString hasCrop = getXmpValue("Xmp.crs.HasCrop");
+	if (applied.compare("true", Qt::CaseInsensitive) == 0 ||
+		hasCrop.compare("false", Qt::CaseInsensitive) == 0)
 		return DkRotatingRect();
+
+	qDebug() << "has crop: " << hasCrop;
 
 	Exiv2::XmpData xmpData = mExifImg->xmpData();
 	double top		= getXmpValue("Xmp.crs.CropTop").toDouble();

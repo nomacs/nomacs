@@ -306,6 +306,9 @@ void DkViewPort::setImage(QImage newImg) {
 	else
 		mAnimationValue = 0.0f;
 
+	if (mLoader->getCurrentImage())
+		mCropRect = mLoader->getCurrentImage()->cropRect();
+
 	update();
 
 	// draw a histogram from the image -> does nothing if the histogram is invisible
@@ -723,7 +726,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// draw the cropping rect
 	// TODO: add a setting to hide this!
-	if (imageContainer() && !imageContainer()->cropRect().isEmpty()) {
+	if (!mCropRect.isEmpty()) {
 
 		// create path
 		QPainterPath path;
@@ -736,7 +739,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		polyF = mWorldMatrix.map(polyF);
 		path.addPolygon(polyF.toPolygon());
 
-		painter.setBrush(QColor(0,0,0,40));
+		painter.setPen(Qt::NoPen);
+		painter.setBrush(QColor(0,0,0,100));
 		painter.drawPath(path);
 	}
 
@@ -1423,7 +1427,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	}
 
 	int success = true;
-
+	
 	if (!mController->applyPluginChanges(true))		// user wants to apply changes first
 		return false;
 
@@ -1438,6 +1442,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	if (mSvg && success)
 		mSvg = QSharedPointer<QSvgRenderer>();
 
+	// clear crop rectangle
+	mCropRect = DkRotatingRect();
+	
 	return success != 0;
 }
 
@@ -1705,63 +1712,17 @@ DkControlWidget* DkViewPort::getController() {
 	return mController;
 }
 
-void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
+void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData) {
 
-	QTransform tForm; 
-	QPointF cImgSize;
-
-	rect.getTransform(tForm, cImgSize);
-
-	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
-		mController->setInfo(tr("I cannot crop an image that has 0 px, sorry."));
-		return;
-	}
-
-	qDebug() << cImgSize;
-
-	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
-	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
-
-	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
-	img.fill(bgCol.rgba());
-
-	// render the image into the new coordinate system
-	QPainter painter(&img);
-	painter.setWorldTransform(tForm);
-	
-	// for rotated rects we want perfect anti-aliasing
-	if (minD > FLT_EPSILON)
-		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-	
-	painter.drawImage(QRect(QPoint(), getImageSize()), getImage(), QRect(QPoint(), getImageSize()));
-	painter.end();
-
-	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
-
-	imgC->setImage(img, tr("Cropped"));
-	setEditedImage(imgC);
-
-	qDebug() << "cropping...";
-}
-
-void DkViewPort::cropToMetaData(const DkRotatingRect& rect) {
-
-	// TODO: I have the slight feeling that this function is wrong here...
-	// ... but I put it to cropImage -> they should be migrated at once
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 
 	if (!imgC) {
-		mController->setInfo(tr("I cannot crop to an empty image."));
+		qWarning() << "cannot crop NULL image...";
 		return;
 	}
-
-	if (!imgC->getMetaData()->saveRectToXMP(rect, imgC->image().size()))
-		mController->setInfo(tr("Sorry, I cannot crop to the image."));
-	else
-		mController->setInfo(tr("Cropping saved to metadata."));
-
-	//imgC->setImage(imgC->image(), tr("Cropped"));
-	//setEditedImage(imgC);
+	
+	imgC->cropImage(rect, bgCol, cropToMetaData);
+	setEditedImage(imgC);
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------

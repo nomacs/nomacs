@@ -29,6 +29,7 @@
 #include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkMath.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
@@ -786,6 +787,38 @@ QPixmap DkImage::merge(const QVector<QImage>& imgs) {
 	}
 
 	return pm;
+}
+
+QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, const QColor & fillColor) {
+
+	QTransform tForm; 
+	QPointF cImgSize;
+	rect.getTransform(tForm, cImgSize);
+
+	// illegal?
+	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f)
+		return src;
+
+	qDebug() << cImgSize;
+
+	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
+	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
+
+	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+	img.fill(fillColor.rgba());
+
+	// render the image into the new coordinate system
+	QPainter painter(&img);
+	painter.setWorldTransform(tForm);
+
+	// for rotated rects we want perfect anti-aliasing
+	if (minD > FLT_EPSILON)
+		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+
+	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
+	painter.end();
+
+	return img;
 }
 
 QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {

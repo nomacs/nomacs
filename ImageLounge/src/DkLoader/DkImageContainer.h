@@ -92,7 +92,6 @@ public:
 	QString getTitleAttribute() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
-	DkRotatingRect cropRect();
 
 	virtual QSharedPointer<DkBasicLoader> getLoader();
 	virtual QSharedPointer<DkMetaDataT> getMetaData();
@@ -119,6 +118,8 @@ public:
 	virtual void undo();
 	virtual void redo();
 	virtual void setHistoryIndex(int idx);
+	void cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata);
+	DkRotatingRect cropRect();
 
 protected:
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);

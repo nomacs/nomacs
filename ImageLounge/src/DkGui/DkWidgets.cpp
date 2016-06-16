@@ -2017,10 +2017,8 @@ void DkCropWidget::crop(bool cropToMetadata) {
 	if (!cropToolbar)
 		return;
 
-	if (!mRect.isEmpty() && !cropToMetadata)
-		emit cropToImageSignal(mRect, cropToolbar->getColor());
-	else if (!mRect.isEmpty())
-		emit cropToMetaDataSignal(mRect);
+	if (!mRect.isEmpty())
+		emit cropImageSignal(mRect, cropToolbar->getColor(), cropToMetadata);
 
 	setVisible(false);
 	setWindowOpacity(0);

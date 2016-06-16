@@ -296,10 +296,12 @@ void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) const {
 
 QRectF DkRotatingRect::toExifRect(const QSize & size) const {
 	
+	// TODO: if the angle is > 0 I get issues (photoshop has the same interpretation as we do)
 	QPointF center = getCenter();
 
 	QPolygonF polygon = getPoly();
 	DkVector vec;
+	double angle = getAngle();
 
 	for (int i = 0; i < 4; i++) {
 		// We need the second quadrant, but I do not know why... just tried it out.
@@ -308,7 +310,6 @@ QRectF DkRotatingRect::toExifRect(const QSize & size) const {
 			break;
 	}
 
-	double angle = getAngle();
 	vec.rotate(angle * 2);
 	vec.abs();
 
