@@ -28,11 +28,12 @@
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include <QFileDialog>
+#include <opencv2/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/stitching/detail/matchers.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+#include <QFileDialog>
 
-#include <iostream>
 #include <DkImageStorage.h>
 
  /*******************************************************************************************************
@@ -130,57 +131,59 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
 {
     QStringList files = QFileDialog::getOpenFileNames(Q_NULLPTR,"Select photos");
 
-    cv::Ptr<cv::detail::FeaturesFinder> featureFinder = cv::makePtr<cv::detail::OrbFeaturesFinder>();
-    std::vector<cv::detail::ImageFeatures> features(files.size());
-    std::vector<cv::Mat> images;
-    for (int i = 0; i < files.size(); ++i)
+    if (files.size() != 2)
+        return imgC;
+
+    cv::Mat reference = cv::imread(files[0].toStdString());
+    cv::Mat target = cv::imread(files[1].toStdString());
+
+    cv::Mat grayRef, grayTarget;
+    cv::cvtColor(reference,grayRef,CV_BGR2GRAY);
+    cv::cvtColor(target,grayTarget,CV_BGR2GRAY);
+
+    cv::SiftFeatureDetector detector;
+    std::vector<cv::KeyPoint> keypoints1, keypoints2;
+    detector.detect(grayRef,keypoints1);
+    detector.detect(grayTarget,keypoints2);
+
+    cv::SiftDescriptorExtractor extractor;
+    cv::Mat descriptor1, descriptor2;
+    extractor.compute(reference,keypoints1,descriptor1);
+    extractor.compute(target,keypoints2,descriptor2);
+
+    cv::BFMatcher matcher(cv::NORM_L2);
+    std::vector<cv::DMatch> matches;
+    matcher.match(descriptor1,descriptor2,matches);
+
+    if (matches.empty())
+        return imgC;
+
+    double minDist = matches[0].distance;
+    for (int i = 1; i < matches.size(); ++i)
     {
-        cv::Mat img = cv::imread(files[i].toStdString());
-
-        if (img.empty())
-            continue;
-
-        images.emplace_back(img);
-
-        (*featureFinder)(img,features[i]);
+        if (matches[i].distance < minDist)
+            minDist = matches[i].distance;
     }
 
-    featureFinder->collectGarbage();
-
-    cv::detail::BestOf2NearestMatcher matcher;
-
-    cv::detail::MatchesInfo matchesInfo;
-    matcher(features[0],features[1],matchesInfo);
-
-    ///Extract the matching points between the two images
-    std::vector<cv::Point2f> inliersSrc(matchesInfo.num_inliers);
-    std::vector<cv::Point2f> inliersDst(matchesInfo.num_inliers);
-
-    for (int i = 0, l = 0; i < matchesInfo.inliers_mask.size(); ++i)
+    std::vector<cv::Point2f> queryPts;
+    std::vector<cv::Point2f> trainPts;
+    for (int i = 0; i < matches.size(); ++i)
     {
-        if (matchesInfo.inliers_mask[i])
+        if (matches[i].distance < 3.0*minDist)
         {
-            cv::DMatch &m = matchesInfo.matches[i];
-            cv::Point2f pTarget = features[0].keypoints[m.queryIdx].pt;
-            pTarget.x -= features[0].img_size.width*0.5;
-            pTarget.y -= features[0].img_size.height*0.5;
-
-            cv::Point2f pReference = features[1].keypoints[m.trainIdx].pt;
-            pReference.x -= features[1].img_size.width*0.5;
-            pReference.y -= features[1].img_size.height*0.5;
-
-            inliersSrc[l] = pTarget;
-            inliersDst[l] = pReference;
-            ++l;
+            int queryIdx = matches[i].queryIdx;
+            int trainIdx = matches[i].trainIdx;
+            queryPts.push_back(keypoints1[queryIdx].pt);
+            trainPts.push_back(keypoints2[trainIdx].pt);
         }
     }
 
     ///Build the A matrix with the matching points
-    cv::Mat A(2*matchesInfo.num_inliers,9,CV_32F);
-    for (int i = 0; i < matchesInfo.num_inliers; ++i)
+    cv::Mat A(2*queryPts.size(),9,CV_32F);
+    for (int i = 0; i < queryPts.size(); ++i)
     {
-        const cv::Point2f &pTarget = inliersSrc[i];
-        const cv::Point2f &pReference = inliersDst[i];
+        const cv::Point2f &pTarget = trainPts[i];
+        const cv::Point2f &pReference = queryPts[i];
 
         A.at<float>(2*i,0) = 0.0;
         A.at<float>(2*i,1) = 0.0;
@@ -203,79 +206,36 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
         A.at<float>(2*i+1,8) = -pReference.x;
     }
 
-    std::cout << matchesInfo.H << "\n";
-
-    ///Calculate canvas size using global homography
-    double canvasCornersCoords[8] = {
-        0.0, 0.0, //TL
-        0.0, features[1].img_size.width, //BL
-        features[1].img_size.height, 0.0, //TR
-        features[1].img_size.height, features[1].img_size.width //BR
-    };
-
-    int maxX = 1, minX = 1;
-    int maxY = 1, minY = 1;
-    for (int i = 0; i < 4; ++i)
-    {
-        cv::Mat pt = cv::Mat(3,1,CV_64F,1.0);
-        pt.at<double>(0,0) = canvasCornersCoords[2*i];
-        pt.at<double>(1,0) = canvasCornersCoords[2*i+1];
-
-        cv::Mat corner;
-        cv::solve(matchesInfo.H,pt,corner);
-
-        double w = corner.at<double>(2,0);
-        int x = ceil(corner.at<double>(0,0)/w);
-        int y = ceil(corner.at<double>(1,0)/w);
-        maxX = std::max(maxX,x);
-        minX = std::min(minX,x);
-        maxY = std::max(maxY,y);
-        minY = std::min(minY,y);
-    }
-
-    int canvasWidth = maxX - minX + 1;
-    int canvasHeight = maxY - minY + 1;
-
-    std::cout << canvasWidth << " " << canvasHeight << "\n";
-
-    ///Calculate offset using global homography
-    cv::Point2i offset;
-    offset.x = 2 - std::min(features[0].img_size.width,minX);
-    offset.y = 2 - std::min(features[0].img_size.height,minY);
-
-    std::cout << offset << std::endl;
-
     ///Divide the reference image into CX*CY cells and calculate their
     ///local homographies.
     const int CX = 100;
     const int CY = 100;
 
-    const int cellWidth = images[1].size[0]/CX;
-    const int cellHeight = images[1].size[1]/CY;
+    const int cellWidth = (reference.cols+CX-1)/CX;
+    const int cellHeight = (reference.rows+CY-1)/CY;
     const float sigmaSquared = 12.5*12.5;
 
     std::vector<cv::Mat> localHomographies(CX*CY);
-    cv::Mat Wi(2*matchesInfo.num_inliers,2*matchesInfo.num_inliers,CV_32F,0.0);
+    cv::Mat Wi(2*queryPts.size(),2*queryPts.size(),CV_32F,0.0);
     for (int i = 0; i < CX; ++i)
     {
         for (int j = 0; j < CY; ++j)
         {
-            int centerX = i*cellWidth+cellWidth/2;
-            int centerY = j*cellHeight+cellHeight/2;
+            int centerX = i*cellWidth;
+            int centerY = j*cellHeight;
 
             ///Build W matrix for each cell center
-            for (int k = 0; k < matchesInfo.num_inliers; ++k)
+            for (int k = 0; k < queryPts.size(); ++k)
             {
-                cv::Point2f xk = inliersSrc[k];
-                xk.x = centerX-xk.x-offset.x;
-                xk.y = centerY-xk.y-offset.y;
+                cv::Point2f xk = queryPts[k];
+                xk.x = centerX-xk.x;
+                xk.y = centerY-xk.y;
 
                 float w = exp(-1.0*sqrt(xk.x*xk.x+xk.y*xk.y)/sigmaSquared);
                 Wi.at<float>(2*k,2*k) = w;
                 Wi.at<float>(2*k+1,2*k+1) = w;
             }
 
-            //std::cout << "W = " << Wi << "\n";
             ///Calculate local homography for each cell
             cv::Mat w,u,vt;
             cv::SVD::compute(Wi*A,w,u,vt);
@@ -298,35 +258,106 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
         }
     }
 
+    cv::Mat globalH = cv::findHomography(queryPts,trainPts, CV_RANSAC);
+
+    ///Calculate canvas size using global homography
+    cv::Point2f canvasCorners[4];
+    canvasCorners[0] = cv::Point2f(0,0);
+    canvasCorners[1] = cv::Point2f(reference.cols,0);
+    canvasCorners[2] = cv::Point2f(0,reference.rows);
+    canvasCorners[3] = cv::Point2f(reference.cols,reference.rows);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        cv::Mat pSrc(3,1,CV_64F,1.0);
+        pSrc.at<double>(0,0) = canvasCorners[i].x;
+        pSrc.at<double>(1,0) = canvasCorners[i].y;
+
+        cv::Mat pDst = globalH*pSrc;
+
+        double w = pDst.at<double>(2,0);
+        canvasCorners[i].x = 0.5+(pDst.at<double>(0,0)/w);
+        canvasCorners[i].y = 0.5+(pDst.at<double>(1,0)/w);
+    }
+
+    int minX = floor(canvasCorners[0].x);
+    int minY = floor(canvasCorners[0].y);
+    int maxX = minX;
+    int maxY = minY;
+
+    for (int i = 1; i < 4; ++i)
+    {
+        minX = std::min(minX,(int)floor(canvasCorners[i].x));
+        minY = std::min(minY,(int)floor(canvasCorners[i].y));
+        maxX = std::max(maxX,(int)floor(canvasCorners[i].x));
+        maxY = std::max(maxY,(int)floor(canvasCorners[i].y));
+    }
+
+    int canvasWidth = std::max(target.cols,maxX)-minX;
+    int canvasHeight = std::max(target.rows,maxY)-minY;
+
+    ///Calculate translation vector to properly position the
+    ///reference image.
+    cv::Mat T = cv::Mat::eye(3,3,CV_64F);
+
+    if (minX < 0)
+        T.at<double>(0,2) = -minX;
+    else
+        canvasWidth += minX;
+
+    if (minY < 0)
+        T.at<double>(1,2) = -minY;
+    else
+        canvasHeight += minY;
+
+    cv::Mat globalTH = T*globalH;
+
+    cv::Mat result(canvasHeight,canvasWidth,CV_8UC3,cv::Scalar(0,0,0));
     for (int i = 0; i < CX; ++i)
     {
         for (int j = 0; j < CY; ++j)
         {
-            float H[9];
-            for (int k = 0; k < 9; ++k)
-                H[k] = localHomographies[i*CY+j].at<float>(k);
-
-            //std::cout << "Local H = " << localHomographies[i*CY+j] << "\n";
-
-            for (int k = 0; k < cellWidth; ++k)
+            for (int k = 0; k < cellHeight; ++k)
             {
-                for (int l = 0; l < cellHeight; ++l)
+                int pX = i*cellHeight+k;
+
+                if (pX >= reference.rows)
+                    break;
+
+                for (int l = 0; l < cellWidth; ++l)
                 {
-                    int pX = i*cellWidth+k-offset.x;
-                    int pY = j*cellHeight+l-offset.y;
+                    int pY = j*cellWidth+l;
 
-                    int hX = (H[0]*pX+H[1]*pY+H[2])/(H[6]*pX+H[7]*pY+H[8]);
-                    int hY = (H[3]*pX+H[4]*pY+H[5])/(H[6]*pX+H[7]*pY+H[8]);
+                    if (pY >= reference.cols)
+                        break;
 
-                    //std::cout << "(" << pX << " , " << pY << ") = " << hX << " " << hY << "\n";
+                    cv::Mat ptSrc(3,1,CV_64F,1.0);
+                    ptSrc.at<double>(0,0) = pY;
+                    ptSrc.at<double>(1,0) = pX;
+
+                    cv::Mat ptDst = globalTH*ptSrc;
+                    ptDst /= ptDst.at<double>(2,0);
+
+                    int hX = ptDst.at<double>(0,0);
+                    int hY = ptDst.at<double>(1,0);
+
+                    if (hX >= 0 && hX < canvasWidth && hY >= 0 && hY < canvasHeight)
+                        result.at<cv::Vec3b>(hY,hX) = reference.at<cv::Vec3b>(pX,pY);
                 }
             }
         }
     }
 
-    fflush(stdout);
+    cv::Mat half(result,cv::Rect(std::max(0,-minX),std::max(0,-minY),target.cols,target.rows));
+    target.copyTo(half);
 
-    return imgC;
+    cv::cvtColor(result,result,CV_BGR2RGB);
+
+    if (!imgC)
+        imgC = QSharedPointer<nmc::DkImageContainer>(new nmc::DkImageContainer(QString("panoramic")));
+
+    imgC->setImage(nmc::DkImage::mat2QImage(result),"","");
+    return  imgC;
 }
 
 }
