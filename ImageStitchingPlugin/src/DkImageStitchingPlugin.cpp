@@ -251,10 +251,15 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
                 }
             }
 
-            localHomographies[i*CY+j] = vt.row(indexSmallestSv);
+            ///Represent the homography as a 3x3 matrix
+            cv::Mat localH(3,3,CV_64F,0.0);
+            for (int k = 0; k < 9; ++k)
+                localH.at<double>(k/3,k%3) = vt.row(indexSmallestSv).at<float>(k);
 
-            if (localHomographies[i*CY+j].at<float>(0,8) < 0)
-                localHomographies[i*CY+j] *= -1;
+            if (localH.at<float>(2,2) < 0)
+                localH *= -1;
+
+            localHomographies[i*CY+j] = localH;
         }
     }
 
@@ -335,7 +340,7 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
                     ptSrc.at<double>(0,0) = pY;
                     ptSrc.at<double>(1,0) = pX;
 
-                    cv::Mat ptDst = globalTH*ptSrc;
+                    cv::Mat ptDst = (T*localHomographies[i*CY+j])*ptSrc;
                     ptDst /= ptDst.at<double>(2,0);
 
                     int hX = ptDst.at<double>(0,0);
