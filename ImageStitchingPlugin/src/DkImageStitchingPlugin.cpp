@@ -221,8 +221,8 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     {
         for (int j = 0; j < CY; ++j)
         {
-            int centerX = i*cellWidth;
-            int centerY = j*cellHeight;
+            int centerX = i*cellHeight;
+            int centerY = j*cellWidth;
 
             ///Build W matrix for each cell center
             for (int k = 0; k < queryPts.size(); ++k)
