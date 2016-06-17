@@ -178,12 +178,27 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
         }
     }
 
-    ///Build the A matrix with the matching points
-    cv::Mat A(2*queryPts.size(),9,CV_32F);
-    for (int i = 0; i < queryPts.size(); ++i)
+    ///Obtain the global homography and inliers
+    std::vector<uchar> inliers_mask;
+    cv::Mat globalH = cv::findHomography(queryPts,trainPts, inliers_mask, CV_RANSAC);
+
+    std::vector<cv::Point2f> inliersTarget;
+    std::vector<cv::Point2f> inliersReference;
+    for (int i = 0; i < inliers_mask.size(); ++i)
     {
-        const cv::Point2f &pTarget = trainPts[i];
-        const cv::Point2f &pReference = queryPts[i];
+        if (inliers_mask[i])
+        {
+            inliersTarget.emplace_back(queryPts[i]);
+            inliersReference.emplace_back(trainPts[i]);
+        }
+    }
+
+    ///Build the A matrix with the matching points
+    cv::Mat A(2*inliersTarget.size(),9,CV_32F);
+    for (int i = 0; i < inliersTarget.size(); ++i)
+    {
+        const cv::Point2f &pTarget = inliersTarget[i];
+        const cv::Point2f &pReference = inliersReference[i];
 
         A.at<float>(2*i,0) = 0.0;
         A.at<float>(2*i,1) = 0.0;
@@ -216,7 +231,7 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     const float sigmaSquared = 12.5*12.5;
 
     std::vector<cv::Mat> localHomographies(CX*CY);
-    cv::Mat Wi(2*queryPts.size(),2*queryPts.size(),CV_32F,0.0);
+    cv::Mat Wi(2*inliersTarget.size(),2*inliersTarget.size(),CV_32F,0.0);
     for (int i = 0; i < CX; ++i)
     {
         for (int j = 0; j < CY; ++j)
@@ -225,9 +240,9 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
             int centerY = j*cellWidth;
 
             ///Build W matrix for each cell center
-            for (int k = 0; k < queryPts.size(); ++k)
+            for (int k = 0; k < inliersTarget.size(); ++k)
             {
-                cv::Point2f xk = queryPts[k];
+                cv::Point2f xk = inliersTarget[k];
                 xk.x = centerX-xk.x;
                 xk.y = centerY-xk.y;
 
@@ -262,8 +277,6 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
             localHomographies[i*CY+j] = localH;
         }
     }
-
-    cv::Mat globalH = cv::findHomography(queryPts,trainPts, CV_RANSAC);
 
     ///Calculate canvas size using global homography
     cv::Point2f canvasCorners[4];
