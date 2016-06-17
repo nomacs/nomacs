@@ -230,6 +230,17 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     const int cellHeight = (reference.rows+CY-1)/CY;
     const float sigmaSquared = 12.5*12.5;
 
+    std::vector<int> cellsType(CX*CY,false); ///(1 is overlapped cell)
+    for (int i = 0; i < inliersTarget.size(); ++i)
+    {
+        const cv::Point2f &pt = inliersTarget[i];
+        int cellX = (int)(pt.x/cellWidth);
+        int cellY = (int)(pt.y/cellHeight);
+
+        assert(cellX >= 0 && cellX < CX && cellY >= 0 && cellY < CY);
+        cellsType[cellY*CY+cellX] = true;
+    }
+
     std::vector<cv::Mat> localHomographies(CX*CY);
     cv::Mat Wi(2*inliersTarget.size(),2*inliersTarget.size(),CV_32F,0.0);
     for (int i = 0; i < CX; ++i)
