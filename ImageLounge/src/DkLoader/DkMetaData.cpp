@@ -1253,9 +1253,7 @@ void DkMetaDataT::printMetaData() const {
 		throw Exiv2::Error(1, "Failed to serialize XMP data");
 	}
 	std::cout << xmpPacket << "\n";
-	
 }
-
 
 bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 
@@ -1280,7 +1278,7 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	setXMPValue(xmpData, "Xmp.crs.HasCrop", "True");
 	// These key values are set by camera raw automatically, but I have found no documentation for them:
 	setXMPValue(xmpData, "Xmp.crs.CropConstrainToWarp", "1");
-	setXMPValue(xmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+	setXMPValue(xmpData, "Xmp.crs.crs:AlreadyApplied", "False");	// is this crs.crs: correct??
 
 	// Save the crop coordinates to the sidecar file:
 	mExifImg->setXmpData(xmpData);
