@@ -726,13 +726,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// draw the cropping rect
 	// TODO: add a setting to hide this!
-	if (!mCropRect.isEmpty() && Settings::param().display().showCrop) {
+	if (!mCropRect.isEmpty() && Settings::param().display().showCrop && imageContainer()) {
 
 		// create path
 		QPainterPath path;
 		path.addRect(getImageViewRect().toRect());
 
-		DkRotatingRect r = imageContainer()->cropRect();
+		DkRotatingRect r = mCropRect;//imageContainer()->cropRect();
 		QPolygonF polyF;
 		polyF = r.getClosedPoly();
 		polyF = mImgMatrix.map(polyF);

@@ -172,7 +172,6 @@ protected:
 	DkViewPort* mViewport = 0;
 	DkThumbScrollWidget* mThumbScrollWidget = 0;
 	DkRecentFilesWidget* mRecentFilesWidget = 0;
-	DkPreferenceWidget* mPreferenceWidget = 0;
 
 	QTabBar* mTabbar = 0;
 	QVector<QSharedPointer<DkTabInfo> > mTabInfos;
@@ -188,6 +187,7 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	bool loadFromMime(const QMimeData* mimeData);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
+	DkPreferenceWidget* createPreferences();
 
 	enum {
 		viewport_widget,

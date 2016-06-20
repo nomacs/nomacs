@@ -270,55 +270,6 @@ void DkCentralWidget::createLayout() {
 	
 	//thumbScrollWidget->hide();
 
-	// add preference widget ------------------------------
-	mPreferenceWidget = new DkPreferenceWidget(this);
-	connect(mPreferenceWidget, SIGNAL(restartSignal()), this, SLOT(restart()));
-	
-	// add actions
-	mPreferenceWidget->addActions(am.fileActions().toList());
-	mPreferenceWidget->addActions(am.viewActions().toList());
-	mPreferenceWidget->addActions(am.editActions().toList());
-	mPreferenceWidget->addActions(am.sortActions().toList());
-	mPreferenceWidget->addActions(am.toolsActions().toList());
-	mPreferenceWidget->addActions(am.panelActions().toList());
-	mPreferenceWidget->addActions(am.syncActions().toList());
-	mPreferenceWidget->addActions(am.pluginActions().toList());
-	mPreferenceWidget->addActions(am.lanActions().toList());
-	mPreferenceWidget->addActions(am.helpActions().toList());
-	mPreferenceWidget->addActions(am.hiddenActions().toList());
-	
-	// general preferences
-	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.svg"), tr("General"), this);
-	DkGeneralPreference* gp = new DkGeneralPreference(this);
-	tab->setWidget(gp);
-	mPreferenceWidget->addTabWidget(tab);
-
-	// display preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
-	DkDisplayPreference* dp = new DkDisplayPreference(this);
-	tab->setWidget(dp);
-	mPreferenceWidget->addTabWidget(tab);
-
-	// file preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/dir.svg"), tr("File"), this);
-	DkFilePreference* fp = new DkFilePreference(this);
-	tab->setWidget(fp);
-	mPreferenceWidget->addTabWidget(tab);
-
-	// file association preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
-	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
-	tab->setWidget(fap);
-	mPreferenceWidget->addTabWidget(tab);
-
-
-	// advanced preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
-	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
-	tab->setWidget(ap);
-	mPreferenceWidget->addTabWidget(tab);
-	// add preference widget ------------------------------
-
 	mTabbar = new QTabBar(this);
 	mTabbar->setShape(QTabBar::RoundedNorth);
 	mTabbar->setTabsClosable(true);
@@ -329,13 +280,14 @@ void DkCentralWidget::createLayout() {
 	mWidgets.resize(widget_end);
 	mWidgets[viewport_widget] = mViewport;
 	mWidgets[thumbs_widget] = mThumbScrollWidget;
-	mWidgets[preference_widget] = mPreferenceWidget;
+	mWidgets[preference_widget] = 0;
 
 	QWidget* viewWidget = new QWidget(this);
 	mViewLayout = new QStackedLayout(viewWidget);
 
 	for (QWidget* w : mWidgets)
-		mViewLayout->addWidget(w);
+		if (w)
+			mViewLayout->addWidget(w);
 
 	QVBoxLayout* vbLayout = new QVBoxLayout(this);
 	vbLayout->setContentsMargins(0,0,0,0);
@@ -510,6 +462,61 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 	connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)), Qt::UniqueConnection);
 
+}
+
+DkPreferenceWidget* DkCentralWidget::createPreferences() {
+
+	// add preference widget ------------------------------
+	DkActionManager& am = DkActionManager::instance();
+	DkPreferenceWidget* pw = new DkPreferenceWidget(this);
+	connect(pw, SIGNAL(restartSignal()), this, SLOT(restart()));
+
+	// add actions
+	pw->addActions(am.fileActions().toList());
+	pw->addActions(am.viewActions().toList());
+	pw->addActions(am.editActions().toList());
+	pw->addActions(am.sortActions().toList());
+	pw->addActions(am.toolsActions().toList());
+	pw->addActions(am.panelActions().toList());
+	pw->addActions(am.syncActions().toList());
+	pw->addActions(am.pluginActions().toList());
+	pw->addActions(am.lanActions().toList());
+	pw->addActions(am.helpActions().toList());
+	pw->addActions(am.hiddenActions().toList());
+
+	// general preferences
+	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.svg"), tr("General"), this);
+	DkGeneralPreference* gp = new DkGeneralPreference(this);
+	tab->setWidget(gp);
+	pw->addTabWidget(tab);
+
+	// display preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
+	DkDisplayPreference* dp = new DkDisplayPreference(this);
+	tab->setWidget(dp);
+	pw->addTabWidget(tab);
+
+	// file preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/dir.svg"), tr("File"), this);
+	DkFilePreference* fp = new DkFilePreference(this);
+	tab->setWidget(fp);
+	pw->addTabWidget(tab);
+
+	// file association preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
+	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
+	tab->setWidget(fap);
+	pw->addTabWidget(tab);
+
+
+	// advanced preferences
+	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
+	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
+	tab->setWidget(ap);
+	pw->addTabWidget(tab);
+	// add preference widget ------------------------------
+
+	return pw;
 }
 
 void DkCentralWidget::tabCloseRequested(int idx) {
@@ -753,9 +760,10 @@ void DkCentralWidget::showPreferences(bool show) {
 	if (show) {
 
 		// create the preferences...
-		if (!mPreferenceWidget) {
-			mPreferenceWidget = new DkPreferenceWidget(this);
-			connect(mPreferenceWidget, SIGNAL(restartSignal()), this, SLOT(restart()));
+		if (!mWidgets[preference_widget]) {
+			mWidgets[preference_widget] = createPreferences();
+			mViewLayout->insertWidget(preference_widget, mWidgets[preference_widget]);
+			connect(mWidgets[preference_widget], SIGNAL(restartSignal()), this, SLOT(restart()));
 		}
 		
 		switchWidget(mWidgets[preference_widget]);
