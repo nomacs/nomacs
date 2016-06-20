@@ -743,7 +743,6 @@ void DkCentralWidget::showRecentFiles(bool show) {
 		mRecentFilesWidget->setCustomStyle(!mViewport->getImage().isNull() || mThumbScrollWidget->isVisible());
 		mRecentFilesWidget->raise();
 		mRecentFilesWidget->show();
-		qDebug() << "recent files size: " << mRecentFilesWidget->size();
 	}
 	else
 		mRecentFilesWidget->hide();
@@ -760,7 +759,6 @@ void DkCentralWidget::showPreferences(bool show) {
 		}
 		
 		switchWidget(mWidgets[preference_widget]);
-		qDebug() << "recent files size: " << mRecentFilesWidget->size();
 	}
 	//else
 	//	mRecentFilesWidget->hide();

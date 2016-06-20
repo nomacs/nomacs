@@ -85,8 +85,6 @@ void DkFilePreview::init() {
 	xOffset = qRound(Settings::param().display().thumbSize*0.1f);
 	yOffset = qRound(Settings::param().display().thumbSize*0.1f);
 
-	qDebug() << "x offset: " << xOffset;
-
 	currentDx = 0;
 	currentFileIdx = -1;
 	oldFileIdx = -1;
@@ -487,8 +485,6 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	leftGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(borderTriggerI, 0) : QPoint(0, borderTriggerI));
 	rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width()-borderTriggerI, 0) : QPoint(0, height()-borderTriggerI));
 	rightGradient.setFinalStop((orientation == Qt::Horizontal) ?  QPoint(width(), 0) : QPoint(0, height()));
-
-	qDebug() << "file preview size: " << event->size();
 
 	//update();
 	QWidget::resizeEvent(event);
@@ -1211,18 +1207,11 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thum
 
 void DkThumbScene::updateThumbLabels() {
 
-	qDebug() << "updating thumb labels...";
-
-	DkTimer dt;
-
 	blockSignals(true);	// do not emit selection changed while clearing!
 	clear();	// deletes the thumbLabels
 	blockSignals(false);
 
-	qDebug() << "clearing mViewport: " << dt.getTotal();
 	mThumbLabels.clear();
-
-	qDebug() << "clearing labels takes: " << dt.getTotal();
 
 	for (int idx = 0; idx < mThumbs.size(); idx++) {
 		DkThumbLabel* thumb = new DkThumbLabel(mThumbs.at(idx)->getThumb());
@@ -1238,14 +1227,10 @@ void DkThumbScene::updateThumbLabels() {
 
 	showFile();
 
-	qDebug() << "creating labels takes: " << dt.getTotal();
-
 	if (!mThumbs.empty())
 		updateLayout();
 
 	emit selectionChanged();
-
-	qDebug() << "initializing labels takes: " << dt.getTotal();
 }
 
 void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader) {
@@ -1979,7 +1964,6 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 	if (visible) {
 		mThumbsScene->updateThumbLabels();
 		mFilterEdit->setText("");
-		qDebug() << "mShowing thumb scroll widget...";
 	}
 }
 

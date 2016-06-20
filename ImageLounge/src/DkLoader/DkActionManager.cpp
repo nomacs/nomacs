@@ -277,7 +277,7 @@ void DkAppManager::assignIcon(QAction* app) const {
 
 QString DkAppManager::searchForSoftware(const QString& organization, const QString& application, const QString& pathKey, const QString& exeName) const {
 
-	qDebug() << "searching for: " << organization;
+	//qDebug() << "searching for: " << organization;
 
 	// locate the settings entry
 	QSettings softwareSettings(QSettings::UserScope, organization, application);
@@ -314,6 +314,9 @@ QString DkAppManager::searchForSoftware(const QString& organization, const QStri
 	}
 	else
 		appPath = QFileInfo(appPath, exeName).absoluteFilePath();	// for correct separators
+
+	if (!appPath.isEmpty())
+		qInfo() << "I found" << organization << "in:" << appPath;
 
 	return appPath;
 }

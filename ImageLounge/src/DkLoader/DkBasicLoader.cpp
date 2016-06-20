@@ -168,7 +168,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
-	int orientation = -1;
+	int orientation = 1;
 
 	// this fixes an issue with the new jpg loader
 	// Qt considers an orientation of 0 as wrong and fails to load these jpgs

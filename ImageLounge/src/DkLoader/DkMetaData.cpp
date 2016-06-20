@@ -1281,9 +1281,16 @@ bool DkMetaDataT::saveRectToXMP(const DkRotatingRect& rect, const QSize& size) {
 	setXMPValue(xmpData, "Xmp.crs.crs:AlreadyApplied", "False");	// is this crs.crs: correct??
 
 	// Save the crop coordinates to the sidecar file:
-	mExifImg->setXmpData(xmpData);
-	mExifState = dirty;
-	//mExifImg->writeMetadata();
+	try {
+		mExifImg->setXmpData(xmpData);
+		mExifState = dirty;
+
+		qInfo() << r << "written to XMP";
+
+	}
+	catch (...) {
+		qWarning() << "[WARNING] I could not set the exif data for this image format...";
+	}
 
 	return true;
 }
@@ -1309,11 +1316,9 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 	// pretend it's not here if it is already applied
 	QString applied = getXmpValue("Xmp.crs.crs:AlreadyApplied");
 	QString hasCrop = getXmpValue("Xmp.crs.HasCrop");
-	if (applied.compare("true", Qt::CaseInsensitive) == 0 ||
-		hasCrop.compare("false", Qt::CaseInsensitive) == 0)
+	if (applied.compare("true", Qt::CaseInsensitive) == 0 ||	// compare is 0 if the strings are the same
+		hasCrop.compare("true", Qt::CaseInsensitive) != 0)
 		return DkRotatingRect();
-
-	qDebug() << "has crop: " << hasCrop;
 
 	Exiv2::XmpData xmpData = mExifImg->xmpData();
 	double top		= getXmpValue("Xmp.crs.CropTop").toDouble();
@@ -1325,7 +1330,6 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 
 	QRectF r(left, top, right-left, bottom-top);
 	DkRotatingRect rr = DkRotatingRect::fromExifRect(r, size, angle*DK_DEG2RAD);
-	qDebug() << "rect: " << r;
 
 	return DkRotatingRect(rr);
 }
@@ -1377,12 +1381,10 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString x
 
 	bool setXMPValueSuccessful = false;
 
-	if (!xmpData.empty()) {
+	//if (!xmpData.empty()) {
 
 		Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
-
 		Exiv2::XmpData::iterator pos = xmpData.findKey(key);
-
 
 		//Update the tag if it is set:
 		if (pos != xmpData.end() && pos->count() != 0) {
@@ -1398,7 +1400,7 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString x
 			}
 			
 		}
-	}
+	//}
 
 	return setXMPValueSuccessful;
 

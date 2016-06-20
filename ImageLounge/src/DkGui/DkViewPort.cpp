@@ -874,7 +874,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	mController->getOverview()->setViewPortRect(geometry());
 	
 	mController->resize(width(), height());
-	qDebug() << "mController geometry: " << mController->geometry();
 
 	return QGraphicsView::resizeEvent(event);
 }

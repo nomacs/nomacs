@@ -188,8 +188,6 @@ int main(int argc, char *argv[]) {
 		nmc::Settings::param().app().currentAppMode = mode;
 	}
 
-	qDebug() << "mode: " << mode;
-
 	nmc::DkTimer dt;
 
 	// initialize nomacs

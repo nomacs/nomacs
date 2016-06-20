@@ -1388,7 +1388,7 @@ void DkPlayer::show(int ms) {
 
 	DkWidget::show();
 
-	// automatic mShowing, don't store it in the display bits
+	// automatic showing, don't store it in the display bits
 	if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > Settings::param().app().currentAppMode) {
 		mDisplaySettingsBits->setBit(Settings::param().app().currentAppMode, showPlayer);
 	}
@@ -2543,7 +2543,6 @@ void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
 	
 	if (visible && !isVisible()) {
 		updateFileList();
-		qDebug() << "mShowing recent files...";
 	}
 
 	DkWidget::setVisible(saveSettings);

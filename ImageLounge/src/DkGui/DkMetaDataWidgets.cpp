@@ -78,6 +78,10 @@ void DkMetaDataModel::clear() {
 	endResetModel();
 }
 
+/// <summary>
+/// Adds the meta data.
+/// </summary>
+/// <param name="metaData">The meta data.</param>
 void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 	//metaData->printMetaData();
@@ -85,7 +89,6 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 	if (!metaData)
 		return;
 
-	DkTimer dt;
 	QStringList fileKeys, fileValues;
 	metaData->getFileMetaData(fileKeys, fileValues);
 
@@ -98,7 +101,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 	QStringList exifKeys = metaData->getExifKeys();
 
 	for (int idx = 0; idx < exifKeys.size(); idx++) {
-		
+
 		QString lastKey = exifKeys.at(idx).split(".").last();
 		QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
 		QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx));
@@ -142,8 +145,6 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 		createItem(tr("Data.") + cKey, translatedKey, exifValue);
 	}
-
-	qDebug() << "model refreshed in: " << dt.getTotal();
 }
 
 void DkMetaDataModel::createItem(const QString& key, const QString& keyName, const QString& value) {
@@ -366,7 +367,7 @@ void DkMetaDataDock::readSettings() {
 			mTreeView->setColumnWidth(idx, colWidth);
 	}
 	mExpandedNames = settings.value("expandedNames", QStringList()).toStringList();
-	qDebug() << "settings expanded names: " << mExpandedNames;
+	//qDebug() << "settings expanded names: " << mExpandedNames;
 
 	settings.endGroup();
 }
@@ -466,8 +467,6 @@ void DkMetaDataDock::thumbLoaded(bool loaded) {
 	}
 	else
 		mThumbNailLabel->hide();
-
-	qDebug() << "has thumbnail: " << loaded;
 
 }
 

@@ -840,7 +840,7 @@ void DkFilePreference::createLayout() {
 
 	// cache size
 	int maxCache = qMax(qRound(DkMemory::getTotalMemory()*0.1), 512);
-	qDebug() << "max cache" << maxCache;
+	qInfo() << "Cache size: " << maxCache;
 	QSpinBox* cacheBox = new QSpinBox(this);
 	cacheBox->setObjectName("cacheBox");
 	cacheBox->setMinimum(0);

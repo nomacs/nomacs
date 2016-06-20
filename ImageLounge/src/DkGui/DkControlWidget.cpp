@@ -544,10 +544,10 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 	else
 		mLayout->setCurrentWidget(mWidgets[hud_widget]);
 
-	if (mLayout->currentWidget())
-		qDebug() << "changed to widget: " << mLayout->currentWidget();
+	//if (mLayout->currentWidget())
+	//	qDebug() << "changed to widget: " << mLayout->currentWidget();
 
-	// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+	// ok, this is really nasty... however, the pImagfileInfo layout is destroyed otherwise
 	if (mLayout->currentIndex() == hud_widget && mFileInfoLabel->isVisible()) {
 		mFileInfoLabel->setVisible(false);
 		showFileInfo(true);
@@ -846,8 +846,6 @@ DkFolderScrollBar * DkControlWidget::getScroller() const {
 
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event) {
-
-	qDebug() << "has mouse tracking: " << hasMouseTracking();
 
 	mEnterPos = event->pos();
 

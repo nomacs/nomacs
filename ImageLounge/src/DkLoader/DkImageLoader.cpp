@@ -215,9 +215,10 @@ bool DkImageLoader::loadZipArchive(const QString& zipPath) {
 bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 
 	//if (creatingImages) {
-	//	//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop mShowing
+	//	//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop showing
 	//	return false;
 	//}
+
 	DkTimer dt;
 	
 	// folder changed signal was emitted
@@ -228,7 +229,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 
 		// might get empty too (e.g. someone deletes all images)
  		if (files.empty()) {
-			emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000);	// stop mShowing
+			emit showInfoSignal(tr("%1 \n does not contain any image").arg(newDirPath), 4000);	// stop showing
 			mImages.clear();
 			emit updateDirSignal(mImages);
 			return false;
@@ -264,7 +265,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 			files = getFilteredFileInfoList(mCurrentDir, mIgnoreKeywords, mKeywords, mFolderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
-			emit showInfoSignal(tr("%1 \n does not contain any image").arg(mCurrentDir), 4000);	// stop mShowing
+			emit showInfoSignal(tr("%1 \n does not contain any image").arg(mCurrentDir), 4000);	// stop showing
 			return false;
 		}
 
