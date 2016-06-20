@@ -249,26 +249,9 @@ DkCentralWidget::~DkCentralWidget() {
 }
 
 void DkCentralWidget::createLayout() {
-
-	mThumbScrollWidget = new DkThumbScrollWidget(this);
-	mThumbScrollWidget->getThumbWidget()->setBackgroundBrush(Settings::param().slideShow().backgroundColor);
-	mThumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 	
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
-	mThumbScrollWidget->addActions(am.fileActions().toList());
-	mThumbScrollWidget->addActions(am.viewActions().toList());
-	mThumbScrollWidget->addActions(am.editActions().toList());
-	mThumbScrollWidget->addActions(am.sortActions().toList());
-	mThumbScrollWidget->addActions(am.toolsActions().toList());
-	mThumbScrollWidget->addActions(am.panelActions().toList());
-	mThumbScrollWidget->addActions(am.syncActions().toList());
-	mThumbScrollWidget->addActions(am.pluginActions().toList());
-	mThumbScrollWidget->addActions(am.lanActions().toList());
-	mThumbScrollWidget->addActions(am.helpActions().toList());
-	mThumbScrollWidget->addActions(am.hiddenActions().toList());
-	
-	//thumbScrollWidget->hide();
 
 	mTabbar = new QTabBar(this);
 	mTabbar->setShape(QTabBar::RoundedNorth);
@@ -279,7 +262,7 @@ void DkCentralWidget::createLayout() {
 
 	mWidgets.resize(widget_end);
 	mWidgets[viewport_widget] = mViewport;
-	mWidgets[thumbs_widget] = mThumbScrollWidget;
+	mWidgets[thumbs_widget] = 0;
 	mWidgets[preference_widget] = 0;
 
 	QWidget* viewWidget = new QWidget(this);
@@ -316,10 +299,6 @@ void DkCentralWidget::createLayout() {
 
 	// recent files widget
 	connect(mRecentFilesWidget, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
-
-	// thumbnail preview widget
-	connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
-	connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
 
 	connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
 
@@ -389,7 +368,7 @@ DkViewPort* DkCentralWidget::getViewPort() const {
 
 DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
 
-	return mThumbScrollWidget;
+	return dynamic_cast<DkThumbScrollWidget*>(mWidgets[thumbs_widget]);
 }
 
 DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
@@ -403,7 +382,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		return;
 
 	updateLoader(mTabInfos.at(idx)->getImageLoader());
-	mThumbScrollWidget->clear();
+	
+	if (getThumbScrollWidget())
+		getThumbScrollWidget()->clear();
 
 	mTabInfos.at(idx)->activate();
 	QSharedPointer<DkImageContainerT> imgC = mTabInfos.at(idx)->getImage();
@@ -517,6 +498,32 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	// add preference widget ------------------------------
 
 	return pw;
+}
+
+DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
+
+	DkThumbScrollWidget* thumbScrollWidget = new DkThumbScrollWidget(this);
+	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(Settings::param().slideShow().backgroundColor);
+	thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
+
+	DkActionManager& am = DkActionManager::instance();
+	thumbScrollWidget->addActions(am.fileActions().toList());
+	thumbScrollWidget->addActions(am.viewActions().toList());
+	thumbScrollWidget->addActions(am.editActions().toList());
+	thumbScrollWidget->addActions(am.sortActions().toList());
+	thumbScrollWidget->addActions(am.toolsActions().toList());
+	thumbScrollWidget->addActions(am.panelActions().toList());
+	thumbScrollWidget->addActions(am.syncActions().toList());
+	thumbScrollWidget->addActions(am.pluginActions().toList());
+	thumbScrollWidget->addActions(am.lanActions().toList());
+	thumbScrollWidget->addActions(am.helpActions().toList());
+	thumbScrollWidget->addActions(am.hiddenActions().toList());
+
+	// thumbnail preview widget
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
+
+	return thumbScrollWidget;
 }
 
 void DkCentralWidget::tabCloseRequested(int idx) {
@@ -708,24 +715,37 @@ void DkCentralWidget::showThumbView(bool show) {
 	QSharedPointer<DkTabInfo> tabInfo = mTabInfos[mTabbar->currentIndex()];
 
 	if (show) {
+
+		if (!getThumbScrollWidget()) {
+			mWidgets[thumbs_widget] = createThumbScrollWidget();
+			mViewLayout->insertWidget(thumbs_widget, mWidgets[thumbs_widget]);
+		}
+
 		tabInfo->setMode(DkTabInfo::tab_thumb_preview);
 		switchWidget(thumbs_widget);
 		tabInfo->activate();
 		showViewPort(false);
-		mThumbScrollWidget->updateThumbs(tabInfo->getImageLoader()->getImages());
-		mThumbScrollWidget->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
 
-		if (tabInfo->getImage())
-			mThumbScrollWidget->getThumbWidget()->ensureVisible(tabInfo->getImage());
+		// should be definitely true
+		if (auto tw = getThumbScrollWidget()) {
+			tw->updateThumbs(tabInfo->getImageLoader()->getImages());
+			tw->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
 
+			if (tabInfo->getImage())
+				tw->getThumbWidget()->ensureVisible(tabInfo->getImage());
 
-		//mViewport->connectLoader(tabInfo->getImageLoader(), false);
-		connect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)), Qt::UniqueConnection);
-		connect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
+			//mViewport->connectLoader(tabInfo->getImageLoader(), false);
+			connect(tw, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)), Qt::UniqueConnection);
+			connect(tw, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
+		}
+
 	}
 	else {
-		disconnect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)));
-		disconnect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
+
+		if (auto tw = getThumbScrollWidget()) {
+			disconnect(tw, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)));
+			disconnect(tw, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
+		}
 		//mViewport->connectLoader(tabInfo->getImageLoader(), true);
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
 	}
@@ -747,7 +767,7 @@ void DkCentralWidget::showRecentFiles(bool show) {
 
 	// TODO: fix the missing recent files (e.g. after the thumbnails are loaded once)
 	if (show && currentViewMode() != DkTabInfo::tab_preferences) {
-		mRecentFilesWidget->setCustomStyle(!mViewport->getImage().isNull() || mThumbScrollWidget->isVisible());
+		mRecentFilesWidget->setCustomStyle(!mViewport->getImage().isNull() || (getThumbScrollWidget() && getThumbScrollWidget()->isVisible()));
 		mRecentFilesWidget->raise();
 		mRecentFilesWidget->show();
 	}
@@ -920,8 +940,8 @@ void DkCentralWidget::loadFile(const QString& filePath) {
 
 void DkCentralWidget::loadDir(const QString& filePath) {
 
-	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview)
-		mThumbScrollWidget->setDir(filePath);
+	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview && getThumbScrollWidget())
+		getThumbScrollWidget()->setDir(filePath);
 	else
 		mViewport->loadFile(filePath);
 }

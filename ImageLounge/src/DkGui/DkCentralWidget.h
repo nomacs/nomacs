@@ -170,7 +170,6 @@ public slots:
 
 protected:
 	DkViewPort* mViewport = 0;
-	DkThumbScrollWidget* mThumbScrollWidget = 0;
 	DkRecentFilesWidget* mRecentFilesWidget = 0;
 
 	QTabBar* mTabbar = 0;
@@ -188,6 +187,7 @@ protected:
 	bool loadFromMime(const QMimeData* mimeData);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 	DkPreferenceWidget* createPreferences();
+	DkThumbScrollWidget* createThumbScrollWidget();
 
 	enum {
 		viewport_widget,

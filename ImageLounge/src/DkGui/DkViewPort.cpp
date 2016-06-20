@@ -1221,7 +1221,8 @@ QMimeData * DkViewPort::createMime() const {
 	if (getImage().isNull() || !mLoader)
 		return 0;
 
-	QUrl fileUrl = QUrl("file:///" + mLoader->filePath());
+	// NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
+	QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
 
 	QList<QUrl> urls;
 	urls.append(fileUrl);
