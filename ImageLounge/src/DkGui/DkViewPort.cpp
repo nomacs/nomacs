@@ -306,8 +306,11 @@ void DkViewPort::setImage(QImage newImg) {
 	else
 		mAnimationValue = 0.0f;
 
+	// set/clear crop rect
 	if (mLoader->getCurrentImage())
 		mCropRect = mLoader->getCurrentImage()->cropRect();
+	else
+		mCropRect = DkRotatingRect();
 
 	update();
 
@@ -1441,9 +1444,6 @@ bool DkViewPort::unloadImage(bool fileChange) {
 
 	if (mSvg && success)
 		mSvg = QSharedPointer<QSvgRenderer>();
-
-	// clear crop rectangle
-	mCropRect = DkRotatingRect();
 	
 	return success != 0;
 }
