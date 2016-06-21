@@ -648,7 +648,7 @@ namespace nmp {
 	}
 
 	DkControlPoint::DkControlPoint(const QPointF& point)
-		: mPoint(point)
+		: mPoint(point), mType(ControlPointType::intermediate)
 	{
 	}
 
