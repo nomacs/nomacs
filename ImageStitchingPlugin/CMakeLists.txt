@@ -21,10 +21,10 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
   NMC_FINDQT()
 
   # OpenCV
-  NMC_FIND_OPENCV()
+  NMC_FIND_OPENCV("features2d" "xfeatures2d" "highgui")
 
 endif()
-
+NMC_FIND_OPENCV("flann" "calib3d" "features2d" "xfeatures2d" "stitching")
 include_directories (
     ${QT_INCLUDES}
     ${OpenCV_INCLUDE_DIRS}

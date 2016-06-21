@@ -26,19 +26,84 @@ macro(NMC_FINDQT)
 endmacro(NMC_FINDQT)
 
 macro(NMC_FIND_OPENCV)
-	SET(OpenCV_LIBS "")
-	if (PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
-	 pkg_check_modules(OpenCV  opencv>=2.1.0)
-	 SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
-	endif(PKG_CONFIG_FOUND)
-	IF (OpenCV_LIBS STREQUAL "") 
-		find_package(OpenCV REQUIRED core imgproc)
-	ENDIF()
-	IF (NOT OpenCV_FOUND)
-		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
-	ELSE()
-		add_definitions(-DWITH_OPENCV)
-	ENDIF()
+	set(ADDITIONAL_OPENCV_PACKAGES ${ARGN})
+		
+	list(LENGTH ADDITIONAL_OPENCV_PACKAGES NUM_ADDITONAL_PACKAGES) 
+	if( ${NUM_ADDITONAL_PACKAGES} EQUAL 0) 
+		message(STATUS "RDM_FIND_OPENCV called without arguments.... using ReadFramework dependecies")
+		set(PACKAGES ${RDF_REQUIRED_OPENCV_PACKAGES})
+	else()
+		message(STATUS "additional opencv dependency of ${PROJECT_NAME}: ${ADDITIONAL_OPENCV_PACKAGES}")
+		set(PACKAGES ${ADDITIONAL_OPENCV_PACKAGES})
+
+		# no longer unsetting opencv variables .... needed for opencv dependecies of plugins
+		# unset(OpenCV_LIB_DIR_DBG CACHE)
+		# unset(OpenCV_3RDPARTY_LIB_DIR_DBG CACHE)
+		# unset(OpenCV_3RDPARTY_LIB_DIR_OPT CACHE)
+		# unset(OpenCV_CONFIG_PATH CACHE)
+		# unset(OpenCV_LIB_DIR_DBG CACHE)
+		# unset(OpenCV_LIB_DIR_OPT CACHE)
+		# unset(OpenCV_LIBRARY_DIRS CACHE)
+		# unset(OpenCV_DIR)
+	 
+		find_package(OpenCV REQUIRED ${PACKAGES}) 
+		if( ${NUM_ADDITONAL_PACKAGES} EQUAL 0) # look for the optional components when searching for the RDF packages
+			find_package(OpenCV QUIET OPTIONAL_COMPONENTS ${RDF_OPTIONAL_OPENCV_PACKAGES}) 
+		endif() 
+		
+		if(NOT OpenCV_FOUND)
+		 message(FATAL_ERROR "OpenCV not found.") 
+		else()
+			add_definitions(-DWITH_OPENCV)
+		endif()
+
+		# unset include directories since OpenCV sets them global
+		# get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
+		# list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
+		# set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
+		
+		# make RelWithDebInfo link against release instead of debug opencv dlls
+		set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
+
+		if(MSVC)
+			foreach(opencvlib ${PACKAGES})
+				if( ${NUM_ADDITONAL_PACKAGES} GREATER 0) # copy additional opencv dependecies of the plugin to the plugin folder
+					file(MAKE_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/Release/plugins)
+					file(MAKE_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/Debug/plugins)
+					file(MAKE_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/RelWithDebInfo/plugins)
+					file(MAKE_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/MinSizeRel/plugins)
+					file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
+					file(GLOB dllpath ${OpenCV_DIR}/bin/RelWithDebInfo/opencv_${opencvlib}*.dll)
+					file(GLOB dllpath ${OpenCV_DIR}/bin/MinSizeRel/opencv_${opencvlib}*.dll)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/plugins)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/RelWithDebInfo/plugins)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/MinSizeRel/plugins)
+					
+					set(RDM_ADDITIONAL_OPENCV_BINARIES ${RDM_ADDITIONAL_OPENCV_BINARIES} ${dllpath})
+					# set(ADDITIONAL_OPENCV_PACKAGES_PATHS ${ADDITIONAL_OPENCV_PACKAGES_PATHS} ${dllpath})
+
+					file(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/plugins)
+					
+					# set(RDM_ADDITIONAL_OPENCV_BINARIES ${RDM_ADDITIONAL_OPENCV_BINARIES} ${dllpath})
+					message(STATUS "copying ${dllpath} to ${NOMACS_BUILD_DIRECTORY}/Debug/plugins")
+				else()
+					file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/RelWithDebInfo)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/MinSizeRel)
+					# set(RDM_OPENCV_BINARIES ${RDM_OPENCV_BINARIES} ${dllpath})
+					
+					file(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
+					file(COPY ${dllpath} DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug)
+					
+					# set(RDM_OPENCV_BINARIES ${RDM_OPENCV_BINARIES} ${dllpath})
+					message(STATUS "copying ${dllpath} to ${NOMACS_BUILD_DIRECTORY}/Debug")
+				endif()			
+				
+			endforeach(opencvlib)
+		endif(MSVC)
+	endif()
 endmacro(NMC_FIND_OPENCV)
 
 macro(NMC_PREPARE_PLUGIN)

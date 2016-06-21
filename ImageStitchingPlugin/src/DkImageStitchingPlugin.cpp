@@ -29,12 +29,13 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include <opencv2/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/nonfree/features2d.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
 #include <QFileDialog>
 
-#include <DkImageStorage.h>
+#include "DkImageStorage.h"
+#include "DkBasicLoader.h"
 
  /*******************************************************************************************************
   * PLUGIN_CLASS_NAME	- enter the plugin class name (e.g. DkPageExtractionPlugin)
@@ -129,27 +130,55 @@ QList<QAction*> DkImageStitchingPlugin::pluginActions() const
 **/
 QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QString& /*runID*/, QSharedPointer<nmc::DkImageContainer> imgC) const
 {
-    QStringList files = QFileDialog::getOpenFileNames(Q_NULLPTR,"Select photos");
+	
+	QString dp = "";
+	if(imgC)
+		dp = imgC->fileInfo().absolutePath();
+
+    QStringList files = QFileDialog::getOpenFileNames(DkPluginInterface::getMainWindow(), tr("Select photos"), dp);
 
     if (files.size() != 2)
         return imgC;
 
-    cv::Mat reference = cv::imread(files[0].toStdString());
-    cv::Mat target = cv::imread(files[1].toStdString());
+	// TODO: do NOT use highgui functions - nomacs is a image viewer, so we are much better in loading images than opencv
+	// NOTE: imgC is the currently loaded image, so you could use it as 'reference' image
+	// however, for the final plugin a nice UI has to be done anyhow
+    //cv::Mat reference = cv::imread(files[0].toStdString());
+    //cv::Mat target = cv::imread(files[1].toStdString());
+
+	// loading images using nomacs
+	nmc::DkBasicLoader loader;
+	loader.loadGeneral(files[0]);
+	cv::Mat reference = DkImage::qImage2Mat(loader.image());
+
+	loader.loadGeneral(files[0]);
+	cv::Mat target = DkImage::qImage2Mat(loader.image());
 
     cv::Mat grayRef, grayTarget;
     cv::cvtColor(reference,grayRef,CV_BGR2GRAY);
     cv::cvtColor(target,grayTarget,CV_BGR2GRAY);
 
-    cv::SiftFeatureDetector detector;
+	// updated for opencv 3
+	cv::Ptr<cv::Feature2D> f2d = cv::xfeatures2d::SIFT::create();
     std::vector<cv::KeyPoint> keypoints1, keypoints2;
-    detector.detect(grayRef,keypoints1);
-    detector.detect(grayTarget,keypoints2);
+	//cv::SiftFeatureDetector detector;
+    //detector.detect(grayRef,keypoints1);
+    //detector.detect(grayTarget,keypoints2);
+	f2d->detect(grayRef, keypoints1);
+	f2d->detect(grayTarget, keypoints2);
 
-    cv::SiftDescriptorExtractor extractor;
     cv::Mat descriptor1, descriptor2;
-    extractor.compute(reference,keypoints1,descriptor1);
-    extractor.compute(target,keypoints2,descriptor2);
+	//cv::SiftDescriptorExtractor extractor;
+    //extractor.compute(reference,keypoints1,descriptor1);
+    //extractor.compute(target,keypoints2,descriptor2);
+	f2d->compute(grayRef, keypoints1, descriptor1);
+	f2d->compute(grayTarget, keypoints2, descriptor2);
+
+	// TODO: this is pretty much spaghetti code https://en.wikipedia.org/wiki/Spaghetti_code
+	// you should:
+	// - split the code into different files (e.g. DkStitcher)
+	// - make classes where appropriate
+	// - split the code into functions
 
     cv::BFMatcher matcher(cv::NORM_L2);
     std::vector<cv::DMatch> matches;
@@ -164,6 +193,8 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
         if (matches[i].distance < minDist)
             minDist = matches[i].distance;
     }
+
+	minDist += 0.1;
 
     std::vector<cv::Point2f> queryPts;
     std::vector<cv::Point2f> trainPts;
@@ -282,6 +313,7 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
             for (int k = 0; k < 9; ++k)
                 localH.at<double>(k/3,k%3) = vt.row(indexSmallestSv).at<float>(k);
 
+			// TODO: crashes here...
             if (localH.at<float>(2,2) < 0)
                 localH *= -1;
 
@@ -383,9 +415,11 @@ QSharedPointer<nmc::DkImageContainer> DkImageStitchingPlugin::runPlugin(const QS
     cv::cvtColor(result,result,CV_BGR2RGB);
 
     if (!imgC)
+		// TODO: note, the constructor's input _should be_ the filepath not some name!
         imgC = QSharedPointer<nmc::DkImageContainer>(new nmc::DkImageContainer(QString("panoramic")));
 
-    imgC->setImage(nmc::DkImage::mat2QImage(result),"","");
+	// TODO: add a useful edit name (e.g. Stitching) and remove the empty quote of filepath
+    imgC->setImage(nmc::DkImage::mat2QImage(result),"");
     return  imgC;
 }
 
