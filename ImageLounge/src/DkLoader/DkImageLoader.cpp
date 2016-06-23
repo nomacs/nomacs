@@ -1319,19 +1319,17 @@ void DkImageLoader::updateHistory() {
 	QStringList tmpRecentFiles;
 
 	// try to collect images from different folders
-	for (int idx = 0; idx < Settings::param().global().recentFiles.size(); idx++) {
+	for (const QString& cFile : Settings::param().global().recentFiles) {
 		
-		if (Settings::param().global().recentFiles.at(idx).contains(file.absolutePath()))
-			tmpRecentFiles.append(Settings::param().global().recentFiles.at(idx));
+		QFileInfo fi(cFile);
+
+		if (fi.absolutePath() == file.absolutePath())
+			tmpRecentFiles.append(cFile);
 	}
 
-	if (tmpRecentFiles.size() < qFloor(0.5f*Settings::param().global().numFiles)) {
-
-		// maximum 4 most recent images from the same folder
-		for (int idx = tmpRecentFiles.size()-1; idx > 3; idx--) {
-			Settings::param().global().recentFiles.removeAll(tmpRecentFiles.at(idx));
-
-		}
+	// maximum 5 most recent images from the same folder
+	for (int idx = tmpRecentFiles.size()-1; idx > 3; idx--) {
+		Settings::param().global().recentFiles.removeAll(tmpRecentFiles.at(idx));
 	}
 
 	Settings::param().global().recentFiles.push_front(file.absoluteFilePath());

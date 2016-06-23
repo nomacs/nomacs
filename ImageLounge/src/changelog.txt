@@ -1,4 +1,11 @@
-nomacs 3.1.0
+nomacs 3.2.2
+============
+- Cropping to metadata
+- RGB to Gray improved
+- Crash on delete fixed
+- Slow thumbnail rendering fixed
+
+nomacs 3.2.0
 ============
 - Plugin framework redesigned
 - New preferences

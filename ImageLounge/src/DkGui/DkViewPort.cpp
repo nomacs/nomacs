@@ -306,8 +306,11 @@ void DkViewPort::setImage(QImage newImg) {
 	else
 		mAnimationValue = 0.0f;
 
+	// set/clear crop rect
 	if (mLoader->getCurrentImage())
 		mCropRect = mLoader->getCurrentImage()->cropRect();
+	else
+		mCropRect = DkRotatingRect();
 
 	update();
 
@@ -726,13 +729,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// draw the cropping rect
 	// TODO: add a setting to hide this!
-	if (!mCropRect.isEmpty() && Settings::param().display().showCrop) {
+	if (!mCropRect.isEmpty() && Settings::param().display().showCrop && imageContainer()) {
 
 		// create path
 		QPainterPath path;
 		path.addRect(getImageViewRect().toRect());
 
-		DkRotatingRect r = imageContainer()->cropRect();
+		DkRotatingRect r = mCropRect;//imageContainer()->cropRect();
 		QPolygonF polyF;
 		polyF = r.getClosedPoly();
 		polyF = mImgMatrix.map(polyF);
@@ -1221,7 +1224,8 @@ QMimeData * DkViewPort::createMime() const {
 	if (getImage().isNull() || !mLoader)
 		return 0;
 
-	QUrl fileUrl = QUrl("file:///" + mLoader->filePath());
+	// NOTE: if we do the file:/// thingy, we will get into problems with mounted drives (e.g. //hermes...)
+	QUrl fileUrl = QUrl::fromLocalFile(mLoader->filePath());
 
 	QList<QUrl> urls;
 	urls.append(fileUrl);
@@ -1440,9 +1444,6 @@ bool DkViewPort::unloadImage(bool fileChange) {
 
 	if (mSvg && success)
 		mSvg = QSharedPointer<QSvgRenderer>();
-
-	// clear crop rectangle
-	mCropRect = DkRotatingRect();
 	
 	return success != 0;
 }
