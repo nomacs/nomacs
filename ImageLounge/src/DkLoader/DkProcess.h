@@ -151,8 +151,8 @@ class DllLoaderExport DkBatchTransform : public DkAbstractBatch {
 public:
 	DkBatchTransform();
 
-	virtual void setProperties(int angle, bool horizontalFlip = false, bool verticalFlip = false);
-	virtual bool compute(QImage& img, QStringList& logStrings) const;
+	virtual void setProperties(int angle, bool horizontalFlip = false, bool verticalFlip = false, bool cropFromMetadata = false);
+	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual QString name() const;
 	virtual bool isActive() const;
 
@@ -161,6 +161,7 @@ protected:
 	int mAngle = 0;
 	bool mHorizontalFlip = false;
 	bool mVerticalFlip = false;
+	bool mCropFromMetadata = false;
 };
 
 class DllLoaderExport DkBatchProcess {

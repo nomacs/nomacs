@@ -1116,6 +1116,7 @@ void DkBatchTransformWidget::createLayout() {
 
 	mCbFlipH = new QCheckBox(tr("Flip &Horizontal"));
 	mCbFlipV = new QCheckBox(tr("Flip &Vertical"));
+	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->addWidget(mRbRotate0, 0, 0);
@@ -1125,11 +1126,13 @@ void DkBatchTransformWidget::createLayout() {
 
 	layout->addWidget(mCbFlipH, 0, 1);
 	layout->addWidget(mCbFlipV, 1, 1);
+	layout->addWidget(mCbCropMetadata, 2, 1);
 	layout->setColumnStretch(3, 10);
 
 	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
 	connect(mCbFlipV, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
 	connect(mCbFlipH, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
+	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
 }
 
 bool DkBatchTransformWidget::hasUserInput() const {
@@ -1164,14 +1167,16 @@ void DkBatchTransformWidget::updateHeader() const {
 		if (mCbFlipH->isChecked() || mCbFlipV->isChecked()) {
 			txt += tr(" Flipping");
 		}
-		
+		if(mCbCropMetadata->isChecked()) {
+			txt += tr(" Cropping from Metadata");
+		}
 		emit newHeaderText(txt);
 	}
 }
 
 void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const {
 
-	batchTransform->setProperties(getAngle(), mCbFlipH->isChecked(), mCbFlipV->isChecked());
+	batchTransform->setProperties(getAngle(), mCbFlipH->isChecked(), mCbFlipV->isChecked(), mCbCropMetadata->isChecked());
 }
 
 int DkBatchTransformWidget::getAngle() const {

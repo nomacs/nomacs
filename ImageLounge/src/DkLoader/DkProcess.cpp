@@ -31,6 +31,7 @@
 #include "DkImageStorage.h"
 #include "DkPluginManager.h"
 #include "DkSettings.h"
+#include "DkMath.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFuture>
@@ -197,25 +198,34 @@ QString DkBatchTransform::name() const {
 	return QObject::tr("[Transform Batch]");
 }
 
-void DkBatchTransform::setProperties(int angle, bool horizontalFlip /* = false */, bool verticalFlip /* = false */) {
+void DkBatchTransform::setProperties(int angle, bool horizontalFlip /* = false */, bool verticalFlip /* = false */, bool cropFromMetadata /* = false */) {
 	
 	mAngle = angle;
 	mHorizontalFlip = horizontalFlip;
 	mVerticalFlip = verticalFlip;
+	mCropFromMetadata = cropFromMetadata;
 }
 
 bool DkBatchTransform::isActive() const {
 
-	return mHorizontalFlip || mVerticalFlip || mAngle != 0;
+	return mHorizontalFlip || mVerticalFlip || mAngle != 0 || mCropFromMetadata;
 }
 
-bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
+bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
 
+	
 	if (!isActive()) {
 		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
 		return true;
 	}
 
+
+	if(mCropFromMetadata) {
+		DkRotatingRect rect = container->cropRect();
+		if (!rect.isEmpty())
+			container->cropImage(rect, QColor(), false);
+	}
+	QImage img = container->image();
 	QImage tmpImg;
 
 	if (mAngle != 0) {
@@ -227,7 +237,6 @@ bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
 		tmpImg = img;
 
 	tmpImg = tmpImg.mirrored(mHorizontalFlip, mVerticalFlip);
-
 	if (!tmpImg.isNull()) {
 		img = tmpImg;
 		logStrings.append(QObject::tr("%1 image transformed.").arg(name()));

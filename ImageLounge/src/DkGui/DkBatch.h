@@ -399,6 +399,7 @@ protected:
 
 	QCheckBox* mCbFlipH = 0;
 	QCheckBox* mCbFlipV = 0;
+	QCheckBox* mCbCropMetadata = 0;
 };
 
 class DkBatchDialog : public QDialog {
