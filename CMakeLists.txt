@@ -29,7 +29,7 @@ OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
 OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
 OPTION (ENABLE_PATCHMATCHING "Compile Patch Matching Plugin" OFF)
-OPTION (ENABLE_IMAGESTITCHING "Compile Image Stitching Plugin" ON)
+OPTION (ENABLE_IMAGESTITCHING "Compile Image Stitching Plugin" OFF)
 
 NMC_PREPARE_PLUGIN()
 
