@@ -436,7 +436,7 @@ QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal) {
 			gammaTable.append((numFmt)(qRound(i*12.92*(double)maxVal)));
 		}
 		else {
-			gammaTable.append((numFmt)(qRound(((1+a)*std::pow(i,1/2.4)-a)*(double)maxVal)));
+			gammaTable.append((numFmt)(qRound(((1+a)*pow(i,1/2.4)-a)*(double)maxVal)));
 		}
 	}
 
@@ -462,7 +462,7 @@ QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal) {
 			gammaTable.append((numFmt)(qRound(i/12.92*maxVal)));
 		}
 		else {
-			gammaTable.append(std::pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(std::pow((i+a)/(1+a),2.4)*maxVal) : 0);
+			gammaTable.append(pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(pow((i+a)/(1+a),2.4)*maxVal) : 0);
 		}
 	}
 

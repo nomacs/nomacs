@@ -1516,7 +1516,7 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
 	QStringList sList = value.split('/');
 
 	if (sList.size() == 2) {
-		double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
+		double val = pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
 		value = QString::fromStdString(DkUtils::stringify(val,1));
 	}
 

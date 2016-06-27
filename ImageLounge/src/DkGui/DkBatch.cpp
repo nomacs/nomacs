@@ -611,7 +611,7 @@ void DkFilenameWidget::checkForUserInput() {
 }
 
 void DkFilenameWidget::digitCBChanged(int index) {
-	mSbNumber->setMaximum(qRound(std::pow(10, index+1)-1));
+	mSbNumber->setMaximum(qRound(pow(10, index+1)-1));
 	emit changed();
 }
 
