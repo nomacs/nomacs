@@ -30,7 +30,7 @@ macro(NMC_FIND_OPENCV)
 		
 	list(LENGTH ADDITIONAL_OPENCV_PACKAGES NUM_ADDITONAL_PACKAGES) 
 	if(${NUM_ADDITONAL_PACKAGES} EQUAL 0) 
-		message(STATUS "${PROJECT} does not depend on OpenCV")
+		message(STATUS "${PROJECT_NAME} does not depend on OpenCV")
 	else()
 		message(STATUS "additional opencv dependency of ${PROJECT_NAME}: ${ADDITIONAL_OPENCV_PACKAGES}")
 		set(PACKAGES ${ADDITIONAL_OPENCV_PACKAGES})
