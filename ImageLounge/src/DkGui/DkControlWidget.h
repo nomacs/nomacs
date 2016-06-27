@@ -70,7 +70,7 @@ class DkDelayedMessage;
 class DkFileInfoLabel;
 class DkHistogram;
 class DkLabelBg;
-class DkAnimationLabel;
+//class DkAnimationLabel;
 class DkPluginViewPort;
 class DkMetaDataT;
 class DkDelayedInfo;
@@ -145,8 +145,6 @@ public slots:
 	void updateImage(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(const QString& msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(const QString& msg, bool start = false, int delayTime = 1000);
-	virtual void setSpinner(int time = 3000);
-	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
 	void updateRating(int rating);
 
 	void imageLoaded(bool loaded);
@@ -187,9 +185,7 @@ protected:
 	DkRatingLabelBg* mRatingLabel;
 
 	DkDelayedMessage* mDelayedInfo;
-	DkDelayedInfo* mDelayedSpinner;
 
-	DkAnimationLabel* mSpinnerLabel;
 	DkLabelBg* mCenterLabel;
 	DkLabelBg* mBottomLabel;
 	DkLabelBg* mBottomLeftLabel;

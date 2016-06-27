@@ -460,6 +460,10 @@ nmc--DkGroupWidget QLabel {
 	color: #666;
 }
 
+nmc--DkProgressBar {
+	max-height: 3px;
+}
+
 /* plugins */
 nmc--DkDescriptionEdit {
 	border: none;

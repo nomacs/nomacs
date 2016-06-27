@@ -260,6 +260,9 @@ void DkCentralWidget::createLayout() {
 	mTabbar->hide();
 	//addTab(QFileInfo());
 
+	mProgressBar = new DkProgressBar(this);
+	mProgressBar->hide();
+
 	mWidgets.resize(widget_end);
 	mWidgets[viewport_widget] = mViewport;
 	mWidgets[thumbs_widget] = 0;
@@ -276,6 +279,7 @@ void DkCentralWidget::createLayout() {
 	vbLayout->setContentsMargins(0,0,0,0);
 	vbLayout->setSpacing(0);
 	vbLayout->addWidget(mTabbar);
+	vbLayout->addWidget(mProgressBar);
 	vbLayout->addWidget(viewWidget);
 
 	mRecentFilesWidget = new DkRecentFilesWidget(viewWidget);
@@ -432,6 +436,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)));
 		disconnect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)));
 		disconnect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)));
+		disconnect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(showProgress(bool, int)));
 	}
 
 	if (!loader)
@@ -442,6 +447,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)), Qt::UniqueConnection);
+	connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(showProgress(bool, int)), Qt::UniqueConnection);
 
 }
 
@@ -865,6 +871,11 @@ void DkCentralWidget::restart() const {
 	// close me if the new instance started
 	if (started)
 		QApplication::closeAllWindows();
+}
+
+void DkCentralWidget::showProgress(bool show, int time) {
+
+	mProgressBar->setVisibleTimed(show, time);
 }
 
 QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
