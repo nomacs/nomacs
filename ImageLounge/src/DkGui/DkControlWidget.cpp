@@ -435,7 +435,7 @@ void DkControlWidget::showMetaData(bool visible) {
 
 	if (visible && !mMetaDataInfo->isVisible()) {
 		mMetaDataInfo->show();
-		qDebug() << "mShowing metadata...";
+		qDebug() << "showing metadata...";
 	}
 	else if (!visible && mMetaDataInfo->isVisible())
 		mMetaDataInfo->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport

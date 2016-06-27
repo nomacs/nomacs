@@ -735,7 +735,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		QPainterPath path;
 		path.addRect(getImageViewRect().toRect());
 
-		DkRotatingRect r = mCropRect;//imageContainer()->cropRect();
+		DkRotatingRect r = mCropRect;
 		QPolygonF polyF;
 		polyF = r.getClosedPoly();
 		polyF = mImgMatrix.map(polyF);

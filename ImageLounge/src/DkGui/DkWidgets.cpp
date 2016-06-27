@@ -1645,6 +1645,14 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(mBrush);
 	painter.drawPath(path);
 
+	//for (int idx = 0; idx < p.size()-1; idx++) {
+	//	
+	//	QPointF c = p[idx];
+	//	painter.setBrush(QColor(255, 255, 255));
+	//	painter.setPen(QColor(255, 255, 255));
+	//	painter.drawText(c+QPointF(10,10), QString::number(idx));
+	//}
+
 	drawGuide(&painter, p, mPaintMode);
 	
 	//// debug
