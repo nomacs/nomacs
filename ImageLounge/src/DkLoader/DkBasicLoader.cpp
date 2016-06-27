@@ -234,7 +234,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	// PSD loader
 	if (!imgLoaded) {
 
-		imgLoaded = loadPSDFile(mFile, ba);
+		imgLoaded = loadPSDFile(mFile, img, ba);
 		if (imgLoaded) mLoader = psd_loader;
 	}
 
@@ -252,7 +252,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
-		imgLoaded = loadRawFile(mFile, ba, fast);
+		imgLoaded = loadRawFile(mFile, img, ba, fast);
 		if (imgLoaded) mLoader = raw_loader;
 	}
 
@@ -271,7 +271,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	// this loader is a bit buggy -> be carefull
 	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 		
-		imgLoaded = loadRohFile(mFile, ba);
+		imgLoaded = loadRohFile(mFile, img, ba);
 		if (imgLoaded) mLoader = roh_loader;
 
 	} 
@@ -279,7 +279,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	// this loader is for OpenCV cascade training files
 	if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadOpenCVVecFile(mFile, ba);
+		imgLoaded = loadOpenCVVecFile(mFile, img, ba);
 		if (imgLoaded) mLoader = roh_loader;
 
 	} 
@@ -322,7 +322,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
  * @param fileName the filename of the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
+bool DkBasicLoader::loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
 
 	if (!ba)
 		ba = loadFileToBuffer(filePath);
@@ -335,7 +335,6 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
 	int rohH = 2672;
 	unsigned char fByte;	// first byte
 	unsigned char sByte;	// second byte
-	QImage img;
 
 	try {
 		
@@ -378,9 +377,9 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
 		imgLoaded = false;
 	}
 
-	if (imgLoaded) {
-		setEditImage(img, tr("Original Image"));
-	}
+	//if (imgLoaded) {
+	//	setEditImage(img, tr("Original Image"));
+	//}
 
 	return imgLoaded;
 }
@@ -392,12 +391,11 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArr
  * @param ba the file loaded into a bytearray.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArray> ba, bool fast) {
+bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, bool fast) const {
 	
 	bool imgLoaded = false;
 
 	DkTimer dt;
-	QImage img;
 
 	try {
 
@@ -417,8 +415,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 				img = mMetaData->getPreviewImage(minWidth);
 
 				if (!img.isNull()) {
-					
-					setEditImage(img, tr("Original Image"));
+					//setEditImage(img, tr("Original Image"));
 					qDebug() << "[RAW] loaded with exiv2";
 					return true;
 				}
@@ -477,7 +474,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 
 				if (!img.isNull()) {
 					imgLoaded = true;
-					setEditImage(img, tr("Original Image"));
+					//setEditImage(img, tr("Original Image"));
 					qDebug() << "[RAW] I loaded the RAW's thumbnail";
 
 					return imgLoaded;
@@ -771,16 +768,16 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArr
 
 	if (imgLoaded) {
 		qDebug() << "[RAW] image loaded from RAW in: " << dt.getTotal();
-		setEditImage(img, tr("Original Image"));
+		//setEditImage(img, tr("Original Image"));
 	}
 
 	return imgLoaded;
 }
 
 #ifdef Q_OS_WIN
-bool DkBasicLoader::loadPSDFile(const QString&, QSharedPointer<QByteArray>) {
+bool DkBasicLoader::loadPSDFile(const QString&, QImage&, QSharedPointer<QByteArray>) const {
 #else
-bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
+bool DkBasicLoader::loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
 
 	// load from file?
 	if (!ba || ba->isEmpty()) {
@@ -792,9 +789,8 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 		//psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
 
 		if (psdHandler.canRead(&file)) {
-			QImage img;
 			bool success = psdHandler.read(&img);
-			setEditImage(img, tr("Original Image"));
+			//setEditImage(img, tr("Original Image"));
 			
 			return success;
 		}
@@ -810,9 +806,8 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArr
 		//psdHandler.setFormat(file.suffix().toLocal8Bit());
 
 		if (psdHandler.canRead(&buffer)) {
-			QImage img;
 			bool success = psdHandler.read(&img);
-			setEditImage(img, tr("Original Image"));
+			//setEditImage(img, tr("Original Image"));
 
 			return success;
 		}
@@ -1416,7 +1411,7 @@ cv::Mat DkBasicLoader::getImageCv() {
 	return cv::Mat();
 }
 
-bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba, QSize s) {
+bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, QSize s) const {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -1488,10 +1483,10 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QB
 			cPatch.copyTo(cPatchAll);
 	}
 
-	QImage img = DkImage::mat2QImage(allPatches);
+	img = DkImage::mat2QImage(allPatches);
 	img = img.convertToFormat(QImage::Format_ARGB32);
 
-	setEditImage(img, tr("Original Image"));
+	//setEditImage(img, tr("Original Image"));
 
 	return true;
 }
