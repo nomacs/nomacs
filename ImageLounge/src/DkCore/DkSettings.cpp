@@ -41,6 +41,7 @@
 #include <QStyledItemDelegate>
 #include <QDir>
 #include <QApplication>
+#include <QThreadPool>
 
 #ifdef Q_OS_WIN
 #include "Shobjidl.h"
@@ -329,6 +330,7 @@ void DkSettings::load() {
 	global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
+	global_p.numThreads = settings.value("numThreads", global_p.numThreads).toInt();
 
 	global_p.sortMode = settings.value("sortMode", global_p.sortMode).toInt();
 	global_p.sortDir = settings.value("sortDir", global_p.sortDir).toInt();
@@ -436,6 +438,11 @@ void DkSettings::load() {
 
 	settings.endGroup();
 
+	if (global_p.numThreads != -1)
+		QThreadPool::globalInstance()->setMaxThreadCount(global_p.numThreads);
+	else
+		global_p.numThreads = QThreadPool::globalInstance()->maxThreadCount();
+
 	// keep loaded settings in mind
 	app_d = app_p;
 	global_d = global_p;
@@ -536,6 +543,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("tmpPath", global_p.tmpPath);
 	if (!force && global_p.language != global_d.language)
 		settings.setValue("language", global_p.language);
+	if (!force && global_p.numThreads != global_d.numThreads)
+		settings.setValue("numThreads", global_p.numThreads);
 	if (!force && global_p.sortMode != global_d.sortMode)
 		settings.setValue("sortMode", global_p.sortMode);
 	if (!force && global_p.sortDir != global_d.sortDir)
@@ -751,6 +760,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.language = "en";
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
+	global_p.numThreads = -1;
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
 	global_p.zoomOnWheel = true;
@@ -828,6 +838,15 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.waitForLastImg = true;
 
 	qDebug() << "ok... default settings are set";
+}
+
+void DkSettings::setNumThreads(int numThreads) {
+
+	if (numThreads != global_p.numThreads) {
+		global_p.numThreads = numThreads;
+		QThreadPool::globalInstance()->setMaxThreadCount(numThreads);
+	}
+
 }
 
 bool DkSettings::isPortable() {

@@ -226,6 +226,7 @@ public:
 
 		QString setupPath;
 		QString setupVersion;
+		int numThreads;
 
 		int sortMode;
 		int sortDir;
@@ -310,6 +311,7 @@ public:
 	void load();
 	void save(bool force = false);
 	void setToDefaultSettings();
+	void setNumThreads(int numThreads);
 
 	bool isPortable();
 	QString settingsPath() const;

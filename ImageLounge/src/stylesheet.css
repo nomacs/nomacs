@@ -433,7 +433,8 @@ QLabel#subTitle {
 }
 
 /* preferences widgets */
-QComboBox#languageCombo {
+QComboBox#languageCombo,
+QSpinBox#numThreads {
 	max-width: 200px;
 }
 

@@ -266,6 +266,7 @@ public slots:
 	void on_saveExif_toggled(bool checked) const;
 	void on_useLog_toggled(bool checked) const;
 	void on_logFolder_clicked() const;
+	void on_numThreads_valueChanged(int val) const;
 
 signals:
 	void infoSignal(const QString& msg) const;

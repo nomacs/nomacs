@@ -1182,6 +1182,17 @@ void DkAdvancedPreference::createLayout() {
 	loadFileGroup->addWidget(cbIgnoreExif);
 	loadFileGroup->addWidget(cbSaveExif);
 
+	// batch processing
+	QSpinBox* sbNumThreads = new QSpinBox(this);
+	sbNumThreads->setObjectName("numThreads");
+	sbNumThreads->setToolTip(tr("Choose the number of Threads in the thread pool"));
+	sbNumThreads->setMinimum(1);
+	sbNumThreads->setMaximum(100);
+	sbNumThreads->setValue(Settings::param().global().numThreads);
+
+	DkGroupWidget* threadsGroup = new DkGroupWidget(tr("Number of Threads"), this);
+	threadsGroup->addWidget(sbNumThreads);
+
 	// log
 	QCheckBox* cbUseLog = new QCheckBox(tr("Use Log File"), this);
 	cbUseLog->setObjectName("useLog");
@@ -1203,6 +1214,7 @@ void DkAdvancedPreference::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(loadRawGroup);
 	layout->addWidget(loadFileGroup);
+	layout->addWidget(threadsGroup);
 	layout->addWidget(useLogGroup);
 
 }
@@ -1250,7 +1262,14 @@ void DkAdvancedPreference::on_logFolder_clicked() const {
 	// TODO: add linux/mac os
 	QString logPath = QDir::toNativeSeparators(DkUtils::getLogFilePath());
 	QProcess::startDetached(QString("explorer /select, \"%1\"").arg(logPath));
-} 
+}
+
+void DkAdvancedPreference::on_numThreads_valueChanged(int val) const {
+
+	if (Settings::param().global().numThreads != val)
+		Settings::param().setNumThreads(val);
+
+}
 
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 
