@@ -53,6 +53,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDragEnterEvent>
+#include <QStandardPaths>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -904,7 +905,13 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
 
 QString DkCentralWidget::getCurrentDir() const {
 
-	return mTabInfos[mTabbar->currentIndex()]->getImageLoader()->getDirPath();
+	QString cDir = mTabInfos[mTabbar->currentIndex()]->getImageLoader()->getDirPath();
+
+	// load the picture folder if there is no recent directory
+	if (cDir.isEmpty())
+		cDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+
+	return cDir;
 }
 
 // DropEvents --------------------------------------------------------------------
