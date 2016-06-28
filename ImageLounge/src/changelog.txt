@@ -4,6 +4,8 @@ nomacs 3.2.2
 - RGB to Gray improved
 - Crash on delete fixed
 - Slow thumbnail rendering fixed
+- Start-up time improved
+- RAW/PSD orientation fixed
 
 nomacs 3.2.0
 ============

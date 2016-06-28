@@ -169,6 +169,11 @@ foreach(QM ${NOMACS_QM})
 	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 endforeach(QM)
 
+# add build incrementer command if requested
+if (ENABLE_INCREMENTER)
+	add_custom_command(TARGET ${DLL_GUI_NAME} POST_BUILD COMMAND cscript /nologo ${CMAKE_CURRENT_SOURCE_DIR}/src/incrementer.vbs ${CMAKE_CURRENT_SOURCE_DIR}/src/nomacs.rc)
+	message(STATUS "build incrementer enabled...")
+endif()
 
 # set properties for Visual Studio Projects
 add_definitions(/Zc:wchar_t-)
@@ -196,11 +201,6 @@ if(DLL_GUI_NAME)
 	get_property(GUI_DEBUG_NAME TARGET ${DLL_GUI_NAME} PROPERTY DEBUG_OUTPUT_NAME)
 	get_property(GUI_RELEASE_NAME TARGET ${DLL_GUI_NAME} PROPERTY RELEASE_OUTPUT_NAME)
 	set(NOMACS_GUI_LIB optimized ${CMAKE_BINARY_DIR}/libs/Release/${GUI_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${GUI_DEBUG_NAME}.lib)
-endif()
-
-# add build incrementer command if requested
-if (ENABLE_INCREMENTER)
-	add_custom_command(TARGET ${BINARY_NAME} COMMAND cscript /nologo ${CMAKE_CURRENT_SOURCE_DIR}/src/incrementer.vbs ${CMAKE_CURRENT_SOURCE_DIR}/src/nomacs.rc)
 endif()
 
 set(NOMACS_LIBS ${NOMACS_CORE_LIB} ${NOMACS_LOADER_LIB} ${NOMACS_GUI_LIB})

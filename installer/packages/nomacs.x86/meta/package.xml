@@ -2,7 +2,7 @@
 <Package>
 	<DisplayName>nomacs [x86]</DisplayName>
 	<Description>nomacs for x86 systems.</Description>
-	<Version>3.2.2</Version>
-	<ReleaseDate>2016-05-06</ReleaseDate>
+	<Version>3.2.4</Version>
+	<ReleaseDate>2016-06-28</ReleaseDate>
 	<Default>true</Default>
 </Package>
