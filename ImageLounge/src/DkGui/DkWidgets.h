@@ -38,6 +38,7 @@
 #include <QFutureWatcher>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QProgressBar>
 #pragma warning(pop)		// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -942,6 +943,26 @@ protected:
 	void dropEvent(QDropEvent *event);
 
 	QString mEmptyText = tr("Drag Items Here");
+};
+
+class DkProgressBar : public QProgressBar {
+	Q_OBJECT
+
+public:
+	DkProgressBar(QWidget* parent = 0);
+
+public slots:
+	void setVisible(bool visible) override;
+	void setVisibleTimed(bool visible, int time = -1);
+
+protected:
+	void paintEvent(QPaintEvent *ev);
+	void initPoints();
+	void animatePoint(double& xVal);
+
+	QTimer mTimer;
+	QTimer mShowTimer;
+	QVector<double> mPoints;
 };
 
 };

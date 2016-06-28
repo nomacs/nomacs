@@ -175,7 +175,7 @@ void DkInstallUpdater::checkForUpdates(bool silent) {
 		if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
 			mManager->setProxy(listOfProxies[0]);
 		}
-		qDebug() << "checking for proxy takes: " << dt.getTotal();
+		qDebug() << "checking for proxy takes: " << dt;
 	}
 
 	mManager->get(QNetworkRequest(url));
@@ -333,7 +333,7 @@ void DkUpdater::checkForUpdates() {
 			mAccessManagerSetup.setProxy(listOfProxies[0]);
 			mAccessManagerVersion.setProxy(listOfProxies[0]);
 		}
-		qDebug() << "checking for proxy takes: " << dt.getTotal();
+		qDebug() << "checking for proxy takes: " << dt;
 	}
 
 	qDebug() << "checking for updates";

@@ -252,7 +252,7 @@ public:
 
 #ifdef WITH_OPENCV
 	cv::Mat getImageCv();
-	bool loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize());
+	bool loadOpenCVVecFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize()) const;
 	cv::Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
 	int mergeVecFiles(const QStringList& vecFilePaths, QString& saveFileInfo) const;
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
@@ -265,7 +265,7 @@ public:
 
 #endif
 
-	bool loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;
@@ -282,8 +282,8 @@ public slots:
 	QImage rotate(const QImage& img, int orientation);
 
 protected:
-	bool loadRohFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	bool loadRawFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false);
+	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+	bool loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false) const;
 	void indexPages(const QString& filePath);
 	void convert32BitOrder(void *buffer, int width);
 

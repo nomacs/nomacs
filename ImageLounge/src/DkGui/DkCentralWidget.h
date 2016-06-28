@@ -57,6 +57,7 @@ namespace nmc {
 class DkImageLoader;
 class DkViewPort;
 class DkPreferenceWidget;
+class DkProgressBar;
 
 class DkTabInfo : public QObject {
 	Q_OBJECT
@@ -167,12 +168,14 @@ public slots:
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 	void openPreferences();
 	void restart() const;
+	void showProgress(bool show, int time = -1);
 
 protected:
 	DkViewPort* mViewport = 0;
 	DkRecentFilesWidget* mRecentFilesWidget = 0;
 
 	QTabBar* mTabbar = 0;
+	DkProgressBar* mProgressBar = 0;
 	QVector<QSharedPointer<DkTabInfo> > mTabInfos;
 
 	QVector<QWidget*> mWidgets;

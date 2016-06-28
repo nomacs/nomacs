@@ -236,7 +236,7 @@ QString DkMetaDataT::getDescription() const {
 
 }
 
-int DkMetaDataT::getOrientation() const {
+int DkMetaDataT::getOrientationDegree() const {
 
 	if (mExifState != loaded && mExifState != dirty)
 		return 0;
@@ -254,24 +254,17 @@ int DkMetaDataT::getOrientation() const {
 			if (pos != exifData.end() && pos->count() != 0) {
 			
 				Exiv2::Value::AutoPtr v = pos->getValue();
-
 				orientation = (int)pos->toFloat();
 
 				switch (orientation) {
-				case 6: orientation = 90;
-					break;
-				case 7: orientation = 90;
-					break;
-				case 3: orientation = 180;
-					break;
-				case 4: orientation = 180;
-					break;
-				case 8: orientation = -90;
-					break;
-				case 5: orientation = -90;
-					break;
-				default: orientation = -1;
-					break;
+				case 6:		orientation = 90;	break;
+				case 7:		orientation = 90;	break;
+				case 3:		orientation = 180;	break;
+				case 4:		orientation = 180;	break;
+				case 8:		orientation = -90;	break;
+				case 5:		orientation = -90;	break;
+				case 1:		orientation = 0; 	break;
+				default:	orientation = -1;	break;
 				}	
 			}
 		}
@@ -281,6 +274,27 @@ int DkMetaDataT::getOrientation() const {
 	}
 
 	return orientation;
+}
+
+DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const {
+
+	if (mExifState != loaded && mExifState != dirty)
+		return or_not_set;
+
+	QString orStr = getNativeExifValue("Exif.Image.Orientation");
+
+	bool ok = false;
+	int or = orStr.toInt(&ok);
+	
+	// orientation must be integer
+	if (!ok)
+		return or_illegal;
+
+	// according to the specs only values between 0 and 8 are valid
+	if (or > 0 && or <= 8)
+		return or_valid;
+
+	return or_illegal;
 }
 
 int DkMetaDataT::getRating() const {
@@ -1516,7 +1530,7 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
 	QStringList sList = value.split('/');
 
 	if (sList.size() == 2) {
-		double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
+		double val = pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
 		value = QString::fromStdString(DkUtils::stringify(val,1));
 	}
 

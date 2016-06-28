@@ -38,6 +38,7 @@
 #include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
+#include <QMainWindow>
 #include <QObject>
 #include <QColor>
 #include <QDoubleSpinBox>
@@ -1645,6 +1646,14 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(mBrush);
 	painter.drawPath(path);
 
+	//for (int idx = 0; idx < p.size()-1; idx++) {
+	//	
+	//	QPointF c = p[idx];
+	//	painter.setBrush(QColor(255, 255, 255));
+	//	painter.setPen(QColor(255, 255, 255));
+	//	painter.drawText(c+QPointF(10,10), QString::number(idx));
+	//}
+
 	drawGuide(&painter, p, mPaintMode);
 	
 	//// debug
@@ -2230,7 +2239,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	setPainted(false);
 #endif
 	
-	qDebug() << "drawing the histogram took me: " << dt.getTotal();
+	qDebug() << "drawing the histogram took me: " << dt;
 
 	update();
 }
@@ -2635,7 +2644,7 @@ void DkRecentFilesWidget::updateFiles() {
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
 	else {
-		qDebug() << "LOADING stopped at " << rFileIdx << " num files: " << recentFiles.size();
+		qDebug() << "[Recent Files] loading stopped at" << rFileIdx << "history size:" << recentFiles.size();
 	}
 
 	update();
@@ -2792,6 +2801,116 @@ void DkListWidget::paintEvent(QPaintEvent *event) {
 
 	p.setPen(QPen(QColor(100,100,100)));
 	p.drawText(rect(), Qt::AlignCenter, mEmptyText);
+}
+
+// DkProgressBar --------------------------------------------------------------------
+DkProgressBar::DkProgressBar(QWidget* parent) : QProgressBar(parent) {
+
+	initPoints();
+	mTimer.setInterval(20);
+	connect(&mTimer, SIGNAL(timeout()), this, SLOT(update()));
+
+	mShowTimer.setInterval(3000);
+	connect(&mShowTimer, SIGNAL(timeout()), this, SLOT(show()));
+}
+
+void DkProgressBar::setVisible(bool visible) {
+
+	if (visible)
+		mTimer.start();
+	else
+		mTimer.stop();
+
+	if (visible && !isVisible())
+		initPoints();
+
+	QProgressBar::setVisible(visible);
+}
+
+void DkProgressBar::setVisibleTimed(bool visible, int time) {
+
+	// nothing todo?
+	if (visible && mShowTimer.isActive())
+		return;
+
+	// hide
+	if (isVisible() && !visible)
+		hide();
+
+	// just stop the timer, if it is active & the process is done already
+	if (!visible && mShowTimer.isActive())
+		mShowTimer.stop();
+
+	// start the timer
+	if (!isVisible() && visible && time > 0) {
+		mShowTimer.setInterval(time);
+		mShowTimer.start();
+	}
+
+	// simply show
+	if (visible && !isVisible() && time <= 0)
+		show();
+}
+
+void DkProgressBar::paintEvent(QPaintEvent *) {
+
+	QPainter p(this);
+	p.setPen(Qt::NoPen);
+
+	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen())
+		p.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
+
+	p.setBrush(Settings::param().display().highlightColor);
+
+	if (value() != minimum()) {
+
+		int rv = qRound((value() - minimum()) / (double)(maximum() - minimum())*width());
+
+		// draw the current status bar
+		QRect r(QPoint(), size());
+		r.setRight(rv);
+
+		p.drawRect(r);
+	}
+
+	bool stillVisible = false;
+
+	// draw points
+	for (double& pt : mPoints) {
+
+		animatePoint(pt);
+
+		QRect r(QPoint(), QSize(height(), height()));
+		r.moveLeft(qRound(pt*width()));
+
+		p.drawRect(r);
+
+		if (pt < 0.99)
+			stillVisible = true;
+	}
+
+	if (!stillVisible)
+		initPoints();
+
+}
+
+void DkProgressBar::initPoints() {
+
+	mPoints.clear();
+
+	int m = 7;
+	for (int idx = 1; idx < m; idx++) {
+		mPoints.append((double)idx / m * 0.1);
+	}
+}
+
+void DkProgressBar::animatePoint(double& xVal) {
+
+
+	double speed = xVal > 0.5 ? std::abs(1.0 - xVal) : std::abs(xVal);
+	speed *= .05;
+
+	xVal += speed;
 }
 
 

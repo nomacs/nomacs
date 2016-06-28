@@ -54,7 +54,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	mViewport = parent;
 	setObjectName("DkControlWidget");
-	qDebug() << metaObject()->className();
 
 	// cropping
 	mCropWidget = new DkCropWidget(QRectF(), this);
@@ -77,11 +76,10 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	// delayed info
 	mDelayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
-	mDelayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
-	int loadSize = qMax(Settings::param().display().iconSize, 64);
-	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(loadSize, loadSize), this);
+	//int loadSize = qMax(Settings::param().display().iconSize, 64);
+	//mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(loadSize, loadSize), this);
 	mCenterLabel = new DkLabelBg(this, "");
 	mBottomLabel = new DkLabelBg(this, "");
 	mBottomLeftLabel = new DkLabelBg(this, "");
@@ -196,10 +194,11 @@ void DkControlWidget::init() {
 	cW->setMouseTracking(true);
 	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
 	cwLayout->setContentsMargins(0,0,0,0);
-	cwLayout->addStretch();
+	//cwLayout->addStretch();
+	cwLayout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	cwLayout->addWidget(mCenterLabel);
-	cwLayout->addWidget(mSpinnerLabel);
-	cwLayout->addStretch();
+	//cwLayout->addWidget(mSpinnerLabel);
+	//cwLayout->addStretch();
 
 	//// center player horizontally
 	//QWidget* cP = new QWidget(this);
@@ -289,14 +288,13 @@ void DkControlWidget::init() {
 	for (int idx = 0; idx < mWidgets.size(); idx++)
 		mLayout->addWidget(mWidgets[idx]);
 
-	//// TODO: remove...
+	//// debug code...
 	//centerLabel->setText("ich bin richtig...", -1);
 	//bottomLeftLabel->setText("topLeft label...", -1);
 	//spinnerLabel->show();
 	
 	show();
 	//thumbWidget->setVisible(true);
-	qDebug() << "controller initialized...";
 }
 
 void DkControlWidget::connectWidgets() {
@@ -322,7 +320,6 @@ void DkControlWidget::connectWidgets() {
 
 	// waiting
 	connect(mDelayedInfo, SIGNAL(infoSignal(const QString&, int)), this, SLOT(setInfo(const QString&, int)));
-	connect(mDelayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
 	// rating
 	connect(mFileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
@@ -435,7 +432,7 @@ void DkControlWidget::showMetaData(bool visible) {
 
 	if (visible && !mMetaDataInfo->isVisible()) {
 		mMetaDataInfo->show();
-		qDebug() << "mShowing metadata...";
+		qDebug() << "showing metadata...";
 	}
 	else if (!visible && mMetaDataInfo->isVisible())
 		mMetaDataInfo->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
@@ -707,23 +704,6 @@ void DkControlWidget::setInfoDelayed(const QString& msg, bool start, int delayTi
 
 }
 
-void DkControlWidget::setSpinner(int time) {
-
-	if (mSpinnerLabel)
-		mSpinnerLabel->showTimed(time);
-}
-
-void DkControlWidget::setSpinnerDelayed(bool start, int time) {
-
-	if (!mSpinnerLabel) 
-		return;
-
-	if (start)
-		mDelayedSpinner->setInfo(time);
-	else
-		mDelayedSpinner->stop();
-}
-
 void DkControlWidget::changeMetaDataPosition(int pos) {
 
 	if (pos == DkWidget::pos_west) {
@@ -763,7 +743,8 @@ void DkControlWidget::stopLabels() {
 
 	mCenterLabel->stop();
 	mBottomLabel->stop();
-	mSpinnerLabel->stop();
+	// TODO
+	//mProgressBar->hide();
 
 	switchWidget();
 }

@@ -303,6 +303,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 				img = thumb->getImage();
 		}
 
+		if (img.width() > 160)
+			qDebug() << thumb->getFilePath() << "size:" << img.size();
+
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
 		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(Settings::param().display().thumbSize, Settings::param().display().thumbSize));
 		if (orientation == Qt::Horizontal && height()-yOffset < r.height()*2)
@@ -1179,7 +1182,7 @@ void DkThumbScene::updateLayout() {
 		cYOffset += Settings::param().display().thumbPreviewSize + mXOffset;	// 20 for label 
 	}
 
-	qDebug() << "moving takes: " << dt.getTotal();
+	qDebug() << "moving takes: " << dt;
 
 	for (int idx = 0; idx < mThumbLabels.size(); idx++) {
 

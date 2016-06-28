@@ -436,7 +436,7 @@ QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal) {
 			gammaTable.append((numFmt)(qRound(i*12.92*(double)maxVal)));
 		}
 		else {
-			gammaTable.append((numFmt)(qRound(((1+a)*std::pow(i,1/2.4)-a)*(double)maxVal)));
+			gammaTable.append((numFmt)(qRound(((1+a)*pow(i,1/2.4)-a)*(double)maxVal)));
 		}
 	}
 
@@ -462,7 +462,7 @@ QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal) {
 			gammaTable.append((numFmt)(qRound(i/12.92*maxVal)));
 		}
 		else {
-			gammaTable.append(std::pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(std::pow((i+a)/(1+a),2.4)*maxVal) : 0);
+			gammaTable.append(pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(pow((i+a)/(1+a),2.4)*maxVal) : 0);
 		}
 	}
 
@@ -511,7 +511,7 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 		mPtr += pad;
 	}
 
-	qDebug() << "gamma computation takes: " << dt.getTotal();
+	qDebug() << "gamma computation takes: " << dt;
 }
 
 QImage DkImage::normImage(const QImage& img) {
@@ -669,7 +669,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	//qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
 	//qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
 	//qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
-	//qDebug() << "computed in: " << dt.getTotal();
+	//qDebug() << "computed in: " << dt;
 
 	if (ignoreR && ignoreG && ignoreB) {
 		qDebug() << "[Auto Adjust] There is no need to adjust the image";
@@ -713,7 +713,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		ptr += pad;
 	}
 
-	qDebug() << "[Auto Adjust] image adjusted in: " << dt.getTotal();
+	qDebug() << "[Auto Adjust] image adjusted in: " << dt;
 	
 	return true;
 }
@@ -981,7 +981,7 @@ void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTa
 		}
 	}
 
-	qDebug() << "gamma computation takes: " << dt.getTotal();
+	qDebug() << "gamma computation takes: " << dt;
 }
 
 void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale) {
@@ -1087,7 +1087,7 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
 	img = DkImage::mat2QImage(imgCv);
 
-	qDebug() << "unsharp mask takes: " << dt.getTotal();
+	qDebug() << "unsharp mask takes: " << dt;
 	//DkImage::linearToGamma(img);
 #endif
 
@@ -1327,7 +1327,7 @@ void DkImageStorage::computeImage() {
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << mImgs.size();
+	qDebug() << "pyramid computation took me: " << dt << " layers: " << mImgs.size();
 
 	if (mImgs.size() > 6)
 		qDebug() << "layer size > 6: " << mImg.size();

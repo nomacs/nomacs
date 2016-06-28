@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <math.h>
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>
 #include <QVector>
@@ -366,9 +368,9 @@ public:
 	template <typename numFmt>
 	static std::string stringify(numFmt number, double n) {
 
-		int rounded = qRound(number * std::pow(10,n));
+		int rounded = qRound(number * pow(10,n));
 
-		return stringify(rounded/std::pow(10,n));
+		return stringify(rounded/pow(10,n));
 	};
 
 	static bool isValid(const QFileInfo& fileInfo);

@@ -174,7 +174,8 @@ void DkSettings::initFileFilters() {
 
 	app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
 
-	// finally: fabians filter
+	// finally: fabians filter & OpenCV vecs
+	app_p.openFilters.append("OpenCV Haar Training (*.vec)");
 	app_p.openFilters.append("Rohkost (*.roh)");
 
 	// load user filters

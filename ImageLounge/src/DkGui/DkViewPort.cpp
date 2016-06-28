@@ -145,8 +145,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
 	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
 
-	qDebug() << "viewer created...";
-
 	// TODO:
 	// one could blur the canvas if a transparent GUI is present
 	// what we would need: QGraphicsBlurEffect...
@@ -349,7 +347,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	update();
 
-	qDebug() << "setting the image took me: " << dt.getTotal();
+	qDebug() << "setting the image took me: " << dt;
 }
 
 void DkViewPort::tcpSendImage(bool silent) {
@@ -735,7 +733,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		QPainterPath path;
 		path.addRect(getImageViewRect().toRect());
 
-		DkRotatingRect r = mCropRect;//imageContainer()->cropRect();
+		DkRotatingRect r = mCropRect;
 		QPolygonF polyF;
 		polyF = r.getClosedPoly();
 		polyF = mImgMatrix.map(polyF);
@@ -1674,7 +1672,6 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 
 		connect(loader.data(), SIGNAL(showInfoSignal(const QString&, int, int)), mController, SLOT(setInfo(const QString&, int, int)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), mController, SLOT(setSpinnerDelayed(bool, int)), Qt::UniqueConnection);
 
 		connect(loader.data(), SIGNAL(setPlayer(bool)), mController->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
 

@@ -65,7 +65,7 @@ DkThumbNail::~DkThumbNail() {}
  * @param forceLoad flag for loading/saving the thumbnail from exif only.
  **/ 
 void DkThumbNail::compute(int forceLoad) {
-	
+
 	// we do this that complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
 	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize, mMinThumbSize);
@@ -121,7 +121,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 
 	bool exifThumb = !thumb.isNull();
 
-	int orientation = metaData.getOrientation();
+	int orientation = metaData.getOrientationDegree();
 	int imgW = thumb.width();
 	int imgH = thumb.height();
 	int tS = minThumbSize;
@@ -164,7 +164,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		}
 	}
 
-	bool rescale = forceLoad == force_save_thumb;
+	// diem: do_not_force is the generic load - so also rescale these
+	bool rescale = forceLoad == force_save_thumb || forceLoad == do_not_force;
 
 	if (forceLoad != force_exif_thumb && 
 			(thumb.isNull() || 
@@ -240,7 +241,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
-	if (rescale || (forceLoad == save_thumb && !exifThumb)) {
+	if (forceLoad == force_save_thumb || (forceLoad == save_thumb && !exifThumb)) {
 		
 		try {
 
@@ -460,7 +461,7 @@ void DkThumbsLoader::init() {
 		mThumbs->push_back(cThumb);
 	}
 
-	qDebug() << "thumb stubs loaded in: " << dt.getTotal();
+	qDebug() << "thumb stubs loaded in: " << dt;
 }
 
 /**
