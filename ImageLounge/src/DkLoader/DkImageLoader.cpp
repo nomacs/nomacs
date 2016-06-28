@@ -345,11 +345,11 @@ void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 		else
 			mImages.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(files.at(idx).absoluteFilePath())));
 	}
-	qDebug() << "[DkImageLoader] " << mImages.size() << " containers created in " << dt.getTotal();
+	qDebugClean() << "[DkImageLoader] " << mImages.size() << " containers created in " << dt;
 
 	if (sort) {
 		qSort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
-		qDebug() << "[DkImageLoader] after sorting: " << dt.getTotal();
+		qDebug() << "[DkImageLoader] after sorting: " << dt;
 
 		emit updateDirSignal(mImages);
 
@@ -572,9 +572,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 		showInfoSignal(msg, 1000);
 		return imgC;
 	}
-	//}
-
-	//qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
 
 	mTmpFileIdx = newFileIdx;
 
@@ -1601,7 +1598,6 @@ QStringList DkImageLoader::getFoldersRecursive(const QString& dirPath) {
 	subFolders << dirPath;
 
 	qSort(subFolders.begin(), subFolders.end(), DkUtils::compLogicQString);
-	
 
 	qDebug() << dirPath << "loaded recursively...";
 	
@@ -1747,7 +1743,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 		}
 	}
 
-	qDebug() << "cache with: " << mem << " MB created in: " << dt.getTotal();
+	qDebug() << "cache with: " << mem << " MB created in: " << dt;
 
 }
 
@@ -1792,8 +1788,8 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 	QStringList fileFiltersClean = Settings::param().app().browseFilters;
 	for (QString& filter : fileFiltersClean)
 		filter.replace("*", "");
-
-	qDebug() << "browse filters: " << Settings::param().app().browseFilters;
+	
+	//qDebug() << "browse filters: " << Settings::param().app().browseFilters;
 
 	QStringList fileList;
 	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
@@ -1814,7 +1810,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 		}
 	}
 
-	qInfoClean() << "WinAPI, indexed (" << fileList.size() <<") files in: " << dt.getTotal();
+	qInfoClean() << "WinAPI, indexed (" << fileList.size() <<") files in: " << dt;
 #else
 
 	// true file list

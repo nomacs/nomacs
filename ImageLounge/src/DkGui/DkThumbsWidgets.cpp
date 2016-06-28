@@ -1182,7 +1182,7 @@ void DkThumbScene::updateLayout() {
 		cYOffset += Settings::param().display().thumbPreviewSize + mXOffset;	// 20 for label 
 	}
 
-	qDebug() << "moving takes: " << dt.getTotal();
+	qDebug() << "moving takes: " << dt;
 
 	for (int idx = 0; idx < mThumbLabels.size(); idx++) {
 

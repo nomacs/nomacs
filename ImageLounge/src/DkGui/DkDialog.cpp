@@ -652,7 +652,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		return;
 	
 	mResultList = DkUtils::filterStringList(text, mFileList);
-	qDebug() << "searching takes: " << dt.getTotal();
+	qDebug() << "searching takes: " << dt;
 	mCurrentSearch = text;
 
 	if (mResultList.empty()) {
@@ -677,7 +677,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	mResultListView->style()->polish(mResultListView);
 	mResultListView->update();
 
-	qDebug() << "searching takes (total): " << dt.getTotal();
+	qDebug() << "searching takes (total): " << dt;
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
@@ -3852,7 +3852,7 @@ int DkMosaicDialog::computeMosaic(const QString& filter, const QString& suffix, 
 
 	mProcessing = false;
 
-	qDebug() << "mosaic computed in: " << dt.getTotal();
+	qDebug() << "mosaic computed in: " << dt;
 
 	return QDialog::Accepted;
 }

@@ -121,7 +121,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 
 	bool exifThumb = !thumb.isNull();
 
-	int orientation = metaData.getOrientation();
+	int orientation = metaData.getOrientationDegree();
 	int imgW = thumb.width();
 	int imgH = thumb.height();
 	int tS = minThumbSize;
@@ -241,7 +241,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
-	if (rescale || (forceLoad == save_thumb && !exifThumb)) {
+	if (forceLoad == force_save_thumb || (forceLoad == save_thumb && !exifThumb)) {
 		
 		try {
 
@@ -461,7 +461,7 @@ void DkThumbsLoader::init() {
 		mThumbs->push_back(cThumb);
 	}
 
-	qDebug() << "thumb stubs loaded in: " << dt.getTotal();
+	qDebug() << "thumb stubs loaded in: " << dt;
 }
 
 /**

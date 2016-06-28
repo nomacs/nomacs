@@ -168,8 +168,6 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
-	int orientation = 1;
-
 	// this fixes an issue with the new jpg loader
 	// Qt considers an orientation of 0 as wrong and fails to load these jpgs
 	// however, the old nomacs wrote 0 if the orientation should be cleared
@@ -180,12 +178,12 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			mMetaData->readMetaData(filePath, ba);
 
 			if (!Settings::param().metaData().ignoreExifOrientation) {
-				orientation = mMetaData->getOrientation();
+				DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
 				
-				if (orientation == 0 || orientation == -1) {
+				if (orState == DkMetaDataT::or_illegal) {
 					mMetaData->clearOrientation();
 					mMetaData->saveMetaData(ba);
-					qWarning() << "deleting illegal EXIV orientation: " << orientation;
+					qWarning() << "deleting illegal EXIV orientation...";
 				}
 			}
 		}
@@ -299,9 +297,10 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		
 		try {
 			mMetaData->setQtValues(img);
-		
-			if (orientation != -1 && !mMetaData->isTiff() && !Settings::param().metaData().ignoreExifOrientation)
-				img = rotate(img, orientation);
+			int or = mMetaData->getOrientationDegree();
+
+			if (or != -1 && !mMetaData->isTiff() && !Settings::param().metaData().ignoreExifOrientation)
+				img = rotate(img, or);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}
@@ -738,7 +737,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 				merge(corrCh, rgbImg);
 				cvtColor(rgbImg, rgbImg, CV_YCrCb2RGB);
 
-				qDebug() << "median blurred in: " << dMed.getTotal() << ", winSize: " << winSize;
+				qDebug() << "median blurred in: " << dMed << ", winSize: " << winSize;
 			}
 			else
 				qDebug() << "median filter: unrecognizable ISO speed";
@@ -767,7 +766,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 	}
 
 	if (imgLoaded) {
-		qDebug() << "[RAW] image loaded from RAW in: " << dt.getTotal();
+		qDebug() << "[RAW] image loaded from RAW in: " << dt;
 		//setEditImage(img, tr("Original Image"));
 	}
 
@@ -969,7 +968,7 @@ void DkBasicLoader::indexPages(const QString& filePath) {
 	if (mNumPages > 1)
 		mPageIdx = 1;
 
-	qDebug() << dircount << " TIFF directories... " << dt.getTotal();
+	qDebug() << dircount << " TIFF directories... " << dt;
 	TIFFClose(tiff);
 
 	TIFFSetWarningHandler(oldWarningHandler);

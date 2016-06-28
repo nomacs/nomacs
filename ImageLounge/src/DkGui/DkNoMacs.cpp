@@ -2368,7 +2368,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 			mUpdater->silent = silent;
 			mUpdater->checkForUpdates();
 		}
-		qDebug() << "checking for updates takes: " << dt.getTotal();
+		qDebug() << "checking for updates takes: " << dt;
 	}
 #endif // !#ifndef Q_OS_LINUX
 }
@@ -2685,7 +2685,7 @@ void DkNoMacsSync::initLanClient() {
 
 
 
-	qDebug() << "start server takes: " << dt.getTotal();
+	qDebug() << "start server takes: " << dt;
 }
 
 void DkNoMacsSync::createActions() {

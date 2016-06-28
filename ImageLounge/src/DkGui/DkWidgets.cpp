@@ -2239,7 +2239,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	setPainted(false);
 #endif
 	
-	qDebug() << "drawing the histogram took me: " << dt.getTotal();
+	qDebug() << "drawing the histogram took me: " << dt;
 
 	update();
 }

@@ -73,11 +73,19 @@ class DllLoaderExport DkMetaDataT {
 public:
 	DkMetaDataT();
 
+
+	enum ExifOrientationState {
+		or_illegal = -1,
+		or_not_set,
+		or_valid,
+	};
+
 	void readMetaData(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 	bool saveMetaData(const QString& filePath, bool force = false);
 	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 
-	int getOrientation() const;
+	int getOrientationDegree() const;
+	ExifOrientationState checkExifOrientation() const;
 	int getRating() const;
 	QSize getImageSize() const;
 	QString getDescription() const;

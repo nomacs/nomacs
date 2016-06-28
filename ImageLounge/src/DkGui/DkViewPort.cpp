@@ -347,7 +347,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	update();
 
-	qDebug() << "setting the image took me: " << dt.getTotal();
+	qDebug() << "setting the image took me: " << dt;
 }
 
 void DkViewPort::tcpSendImage(bool silent) {

@@ -1436,7 +1436,7 @@ void DkLocalManagerThread::createClient(const QString& title) {
 	// but: take a look at a line which should be about 40 lines from here : )
 	clientManager = new DkLocalClientManager(title, 0);
 
-	qInfo() << "local client created in: " << dt.getTotal();	// takes 1 sec in the client thread
+	qInfo() << "local client created in: " << dt;	// takes 1 sec in the client thread
 }
 
 // DkLanManagerThread --------------------------------------------------------------------
