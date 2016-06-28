@@ -402,8 +402,8 @@ QMenu* DkActionManager::updateOpenWithMenu() {
 
 	QVector<QAction* > appActions = mAppManager->getActions();
 
-	for (int idx = 0; idx < appActions.size(); idx++)
-		qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
+	//for (int idx = 0; idx < appActions.size(); idx++)
+	//	qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
 
 	assignCustomShortcuts(appActions);
 	mOpenWithMenu->addActions(appActions.toList());
@@ -1093,7 +1093,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
 	mEditActions[menu_edit_rotate_ccw]->setStatusTip(QObject::tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str));
 
-	mEditActions[menu_edit_rotate_180] = new QAction(QObject::tr("1&80%1").arg(dk_degree_str), parent);
+	mEditActions[menu_edit_rotate_180] = new QAction(QObject::tr("180%1").arg(dk_degree_str), parent);
 	mEditActions[menu_edit_rotate_180]->setStatusTip(QObject::tr("rotate the image by 180%1").arg(dk_degree_str));
 
 	mEditActions[menu_edit_undo] = new QAction(QObject::tr("&Undo"), parent);

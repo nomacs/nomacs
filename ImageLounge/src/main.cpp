@@ -111,9 +111,7 @@ int main(int argc, char *argv[]) {
 		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
 	
 	if (!nmc::Settings::param().app().openFilters.empty())
-		qInfoClean() << "supported image extensions:" << nmc::Settings::param().app().openFilters[0];
-
-	qDebug() << "argument count: " << argc;
+		qInfoClean() << "supported image extensions: " << nmc::Settings::param().app().openFilters[0];
 
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;

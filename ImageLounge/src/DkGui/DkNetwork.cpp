@@ -952,6 +952,7 @@ void DkRCClientManager::sendNewMode(int mode) {
 
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
+	
 	this->startPort = local_tcp_port_start;
 	this->endPort = local_tcp_port_end;
 
@@ -960,7 +961,7 @@ DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
 			break;
 		}
 	}
-	qDebug() << "TCP Listening on port " << this->serverPort();
+	//qDebug() << "TCP Listening on port " << this->serverPort();
 }
 
 void DkLocalTcpServer::incomingConnection (qintptr socketDescriptor)  {
@@ -1435,7 +1436,7 @@ void DkLocalManagerThread::createClient(const QString& title) {
 	// but: take a look at a line which should be about 40 lines from here : )
 	clientManager = new DkLocalClientManager(title, 0);
 
-	qDebug() << "client created in: " << dt.getTotal();	// takes 1 sec in the main thread
+	qInfo() << "local client created in: " << dt.getTotal();	// takes 1 sec in the client thread
 }
 
 // DkLanManagerThread --------------------------------------------------------------------

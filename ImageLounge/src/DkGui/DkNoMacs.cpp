@@ -161,11 +161,12 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	resize(850, 504);
 	setMinimumSize(20, 20);
 
-	double an = pow(3987, 12);
-	double bn = pow(4365, 12);
+	//// fun fact
+	//double an = pow(3987, 12);
+	//double bn = pow(4365, 12);
 
-	qDebug() << "3987 ^ 12 + 4365 ^ 12 = " << pow(an + bn, 1/12.0) << "^ 12";
-	qDebug() << "Sorry Fermat, but the Simpsons are right.";
+	//qDebug() << "3987 ^ 12 + 4365 ^ 12 = " << pow(an + bn, 1/12.0) << "^ 12";
+	//qDebug() << "Sorry Fermat, but the Simpsons are right.";
 
 }
 
@@ -244,12 +245,9 @@ void DkNoMacs::createToolbar() {
 	mToolbar->setObjectName("EditToolBar");
 
 	mToolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
-	
-	qDebug() << mToolbar->styleSheet();
 
-	if (Settings::param().display().toolbarGradient) {
+	if (Settings::param().display().toolbarGradient)
 		mToolbar->setObjectName("toolBarWithGradient");
-	}
 
 	DkActionManager& am = DkActionManager::instance();
 
@@ -963,7 +961,6 @@ void DkNoMacs::tinyPlanet() {
 
 void DkNoMacs::readSettings() {
 	
-	qDebug() << "reading settings...";
 	QSettings& settings = Settings::instance().getSettings();
 
 #ifdef Q_WS_WIN
@@ -2620,8 +2617,6 @@ void DkNoMacsSync::initLanClient() {
 		delete mRcClient;
 	}
 
-	qDebug() << "client clearing takes: " << dt.getTotal();
-
 	if (!Settings::param().sync().enableNetworkSync) {
 
 		mLanClient = 0;
@@ -3001,12 +2996,10 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	Settings::param().app().appMode = 0;
 	initLanClient();
 	//emit sendTitleSignal(windowTitle());
-	qDebug() << "LAN client created in: " << dt;
+	qInfo() << "LAN client created in: " << dt;
 	// show it...
 	show();
 	Settings::param().app().appMode = DkSettings::mode_default;
-
-	qInfo() << "Viewport created in " << dt;
 }
 
 // FramelessNoMacs --------------------------------------------------------------------

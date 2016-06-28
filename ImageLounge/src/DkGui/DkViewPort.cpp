@@ -145,8 +145,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
 	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
 
-	qDebug() << "viewer created...";
-
 	// TODO:
 	// one could blur the canvas if a transparent GUI is present
 	// what we would need: QGraphicsBlurEffect...

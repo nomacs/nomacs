@@ -54,7 +54,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	mViewport = parent;
 	setObjectName("DkControlWidget");
-	qDebug() << metaObject()->className();
 
 	// cropping
 	mCropWidget = new DkCropWidget(QRectF(), this);
@@ -296,7 +295,6 @@ void DkControlWidget::init() {
 	
 	show();
 	//thumbWidget->setVisible(true);
-	qDebug() << "controller initialized...";
 }
 
 void DkControlWidget::connectWidgets() {
