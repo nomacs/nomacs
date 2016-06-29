@@ -1236,7 +1236,6 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
 
 	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
-	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), &DkGlobalProgress::instance(), SLOT(setProgressValue(int)));
 	connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
 	setWindowTitle(tr("Batch Conversion"));
@@ -1509,6 +1508,7 @@ bool DkBatchWidget::close() {
 void DkBatchWidget::processingFinished() {
 
 	stopProcessing();
+
 }
 
 void DkBatchWidget::startProcessing() {
@@ -1522,6 +1522,8 @@ void DkBatchWidget::startProcessing() {
 	mLogButton->setEnabled(false);
 	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(true);
+
+	DkGlobalProgress::instance().start();
 
 	mLogUpdateTimer.start(1000);
 }
@@ -1542,12 +1544,14 @@ void DkBatchWidget::stopProcessing() {
 	if (mBatchProcessing)
 		mBatchProcessing->postLoad();
 
+	DkGlobalProgress::instance().stop();
+
 	mProgressBar->hide();
 	mProgressBar->reset();
 	mLogButton->setEnabled(true);
 	mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
 	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
-
+	
 	int numFailures = mBatchProcessing->getNumFailures();
 	int numProcessed = mBatchProcessing->getNumProcessed();
 	int numItems = mBatchProcessing->getNumItems();
@@ -1575,6 +1579,8 @@ void DkBatchWidget::updateProgress(int progress) {
 
 	mProgressBar->setValue(progress);
 	mLogNeedsUpdate = true;
+
+	DkGlobalProgress::instance().setProgressValue(qRound((double)progress / mFileSelection->getSelectedFiles().size()*100));
 }
 
 void DkBatchWidget::logButtonClicked() {
