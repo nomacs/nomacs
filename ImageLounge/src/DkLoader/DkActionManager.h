@@ -594,6 +594,8 @@ public:
 #ifdef Q_OS_WIN
 	void setProgressBar(QWinTaskbarProgress* progressbar);
 	QWinTaskbarProgress* progressBar();
+#else
+	QProgressDialog* progressBar();
 #endif
 
 public slots:
@@ -608,7 +610,7 @@ private:
 #ifdef Q_OS_WIN
 	QWinTaskbarProgress* mProgress = 0;
 #else
-	void* mProgress = 0;
+	QObject* mProgress = 0;
 #endif
 };
 

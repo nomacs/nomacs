@@ -1707,7 +1707,7 @@ QWinTaskbarProgress* DkGlobalProgress::progressBar() {
 }
 #else
 QProgressDialog* DkGlobalProgress::progressBar() const {
-	return mProgress;
+	return 0;
 }
 #endif
 
