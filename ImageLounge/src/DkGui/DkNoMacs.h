@@ -87,7 +87,7 @@ class DkTransferToolBar;
 class DkPluginManagerDialog;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
-class DkBatchDialog;
+class DkBatchContainer;
 class DkViewPort;
 class DkCentralWidget;
 class DkMainToolBar;

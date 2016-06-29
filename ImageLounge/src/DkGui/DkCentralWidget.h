@@ -68,6 +68,7 @@ public:
 		tab_single_image,
 		tab_thumb_preview,
 		tab_preferences,
+		tab_batch,
 		
 		tab_recent_files,
 		tab_empty,
@@ -165,7 +166,8 @@ public slots:
 	void loadDir(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
-	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
+	void openBatch(const QStringList& selectedFiles = QStringList());
+	void showBatch(bool show = true);
 	void openPreferences();
 	void restart() const;
 	void showProgress(bool show, int time = -1);
@@ -196,6 +198,7 @@ protected:
 		viewport_widget,
 		thumbs_widget,
 		preference_widget,
+		batch_widget,
 
 		widget_end
 	};

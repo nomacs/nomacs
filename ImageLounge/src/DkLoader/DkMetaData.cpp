@@ -184,10 +184,10 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
-	
-	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
 
 	// now get the data again
+	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
+
 	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
 	if (exifBuf.pData_) {
 		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));

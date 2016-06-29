@@ -29,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QUrl>
-#include <QDialog>
 #include <QTextEdit>
 #include <QPushButton>
 #pragma warning(pop)		// no warnings from includes - end
@@ -117,11 +116,11 @@ protected:
 	QString mInfo;
 };
 
-class DkBatchWidget : public QObject {
+class DkBatchContainer : public QObject {
 	Q_OBJECT
 
 public:
-	DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent = 0);
+	DkBatchContainer(const QString& titleString, const QString& headerString, QWidget* parent = 0);
 	
 	void setContentWidget(QWidget* batchContent);
 	QWidget* contentWidget() const;
@@ -416,11 +415,11 @@ protected:
 	QCheckBox* mCbCropMetadata = 0;
 };
 
-class DkBatchDialog : public QDialog {
+class DkBatchWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	DkBatchDialog(const QString& currentDirectory = QString(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchWidget(const QString& currentDirectory = QString(), QWidget* parent = 0);
 
 	enum batchWidgets {
 		batch_input,
@@ -433,7 +432,7 @@ public:
 	};
 
 public slots:
-	virtual void accept() override;
+	virtual void accept();
 	virtual void reject();
 	void widgetChanged();
 	void logButtonClicked();
@@ -441,7 +440,7 @@ public slots:
 	void updateProgress(int progress);
 	void updateLog();
 	void setSelectedFiles(const QStringList& selFiles);
-	void changeWidget(DkBatchWidget* widget = 0);
+	void changeWidget(DkBatchContainer* widget = 0);
 	void nextTab();
 	void previousTab();
 
@@ -449,7 +448,7 @@ protected:
 	void createLayout();
 		
 private:
-	QVector<DkBatchWidget*> mWidgets;
+	QVector<DkBatchContainer*> mWidgets;
 		
 	QStackedLayout* mCentralLayout = 0;
 	int mCurrentIndex = 0;

@@ -179,6 +179,8 @@ QIcon DkTabInfo::getIcon() {
 		return QIcon(":/nomacs/img/thumbs-view.svg");
 	else if (mTabMode == tab_preferences)
 		return QIcon(":/nomacs/img/settings.svg");
+	else if (mTabMode == tab_batch)
+		return QIcon(":/nomacs/img/batch.svg");
 
 	QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
 
@@ -195,12 +197,15 @@ QIcon DkTabInfo::getIcon() {
 
 QString DkTabInfo::getTabText() const {
 
+
 	QString tabText(QObject::tr("New Tab"));
 
 	if (mTabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
 	else if (mTabMode == tab_preferences)
 		return QObject::tr("Settings");
+	else if (mTabMode == tab_batch)
+		return QObject::tr("Batch");
 
 	QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
 
@@ -242,7 +247,7 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
-	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(startBatchProcessing()));
+	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 }
 
@@ -410,6 +415,10 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		showRecentFiles(false);
 		showPreferences();
 	}
+	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
+		showRecentFiles(false);
+		showBatch();
+	}
 	else {
 		showViewPort();
 		mViewport->unloadImage();
@@ -528,7 +537,7 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
-	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
+	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(openBatch(const QStringList&)));
 
 	return thumbScrollWidget;
 }
@@ -617,7 +626,6 @@ void DkCentralWidget::openPreferences() {
 	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
 	addTab(info);
 }
-
 
 void DkCentralWidget::removeTab(int tabIdx) {
 
@@ -799,6 +807,35 @@ void DkCentralWidget::showPreferences(bool show) {
 	//	mRecentFilesWidget->hide();
 }
 
+void DkCentralWidget::showBatch(bool show) {
+
+	if (show) {
+
+		// create the batch dialog...
+		if (!mWidgets[batch_widget]) {
+			DkBatchWidget* bw = new DkBatchWidget(getCurrentDir(), this);
+			mWidgets[batch_widget] = bw;
+			mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
+
+			// add actions
+			DkActionManager& am = DkActionManager::instance();
+			bw->addActions(am.fileActions().toList());
+			bw->addActions(am.viewActions().toList());
+			bw->addActions(am.editActions().toList());
+			bw->addActions(am.sortActions().toList());
+			bw->addActions(am.toolsActions().toList());
+			bw->addActions(am.panelActions().toList());
+			bw->addActions(am.syncActions().toList());
+			bw->addActions(am.pluginActions().toList());
+			bw->addActions(am.lanActions().toList());
+			bw->addActions(am.helpActions().toList());
+			bw->addActions(am.hiddenActions().toList());
+		}
+
+		switchWidget(mWidgets[batch_widget]);
+	}
+}
+
 void DkCentralWidget::showTabs(bool show) {
 
 	if (show && mTabInfos.size() > 1)
@@ -841,6 +878,8 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 			mode = DkTabInfo::tab_thumb_preview;
 		else if (widget == mWidgets[preference_widget])
 			mode = DkTabInfo::tab_preferences;
+		else if (widget == mWidgets[batch_widget])
+			mode = DkTabInfo::tab_batch;
 
 		mTabInfos[mTabbar->currentIndex()]->setMode(mode);
 		updateTab(mTabInfos[mTabbar->currentIndex()]);
@@ -984,13 +1023,34 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 	showThumbView();
 }
 
-void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {
+void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
 
-	DkBatchDialog* batchDialog = new DkBatchDialog(getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
-	batchDialog->setSelectedFiles(selectedFiles);
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
 
-	batchDialog->exec();
-	batchDialog->deleteLater();
+		if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
+	addTab(info);
+
+	// create the batch dialog...
+	if (!mWidgets[batch_widget]) {
+		mWidgets[batch_widget] = new DkBatchWidget(getCurrentDir(), this);
+		mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
+	}
+
+	DkBatchWidget* bw = dynamic_cast<DkBatchWidget*>(mWidgets[batch_widget]);
+
+	if (!bw) {
+		qWarning() << "batch widget is NULL where it should not be!";
+		return;
+	}
+	
+	bw->setSelectedFiles(selectedFiles);
 }
 
 void DkCentralWidget::pasteImage() {

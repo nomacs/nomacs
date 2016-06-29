@@ -111,18 +111,18 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event) {
 
 }
 
-// DkBatchWidget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent) : QObject(parent) {
+// DkBatchContainer --------------------------------------------------------------------
+DkBatchContainer::DkBatchContainer(const QString& titleString, const QString& headerString, QWidget* parent) : QObject(parent) {
 	
 	mHeaderButton = new DkBatchTabButton(titleString, headerString, parent);
 	createLayout();
 }
 
-void DkBatchWidget::createLayout() {
+void DkBatchContainer::createLayout() {
 
 }
 
-void DkBatchWidget::setContentWidget(QWidget* batchContent) {
+void DkBatchContainer::setContentWidget(QWidget* batchContent) {
 	
 	mBatchContent = dynamic_cast<DkBatchContent*>(batchContent);
 
@@ -130,17 +130,17 @@ void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 	connect(batchContent, SIGNAL(newHeaderText(const QString&)), mHeaderButton, SLOT(setInfo(const QString&)));
 }
 
-QWidget* DkBatchWidget::contentWidget() const {
+QWidget* DkBatchContainer::contentWidget() const {
 	
 	return dynamic_cast<QWidget*>(mBatchContent);
 }
 
-DkBatchTabButton* DkBatchWidget::headerWidget() const {
+DkBatchTabButton* DkBatchContainer::headerWidget() const {
 
 	return mHeaderButton;
 }
 
-void DkBatchWidget::showContent(bool show) const {
+void DkBatchContainer::showContent(bool show) const {
 
 	if (show)
 		emit showSignal();
@@ -149,12 +149,12 @@ void DkBatchWidget::showContent(bool show) const {
 	//contentWidget()->setVisible(show);
 }
 
-//void DkBatchWidget::setTitle(const QString& titleString) {
+//void DkBatchContainer::setTitle(const QString& titleString) {
 //	mTitleString = titleString;
 //	mTitleLabel->setText(titleString);
 //}
 //
-//void DkBatchWidget::setHeader(const QString& headerString) {
+//void DkBatchContainer::setHeader(const QString& headerString) {
 //	mHeaderString = headerString;
 //	mHeaderLabel->setText(headerString);
 //}
@@ -1231,7 +1231,7 @@ int DkBatchTransformWidget::getAngle() const {
 }
 
 // Batch Dialog --------------------------------------------------------------------
-DkBatchDialog::DkBatchDialog(const QString& currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : QWidget(parent) {
 	
 	mCurrentDirectory = currentDirectory;
 	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
@@ -1261,34 +1261,34 @@ DkBatchDialog::DkBatchDialog(const QString& currentDirectory, QWidget* parent /*
 
 }
 
-void DkBatchDialog::createLayout() {
+void DkBatchWidget::createLayout() {
 
 	//setStyleSheet("QWidget{border: 1px solid #000000;}");
 
 	mWidgets.resize(batchWidgets_end);
 
 	// Input Directory
-	mWidgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("no files selected"), this);
+	mWidgets[batch_input] = new DkBatchContainer(tr("Input Directory"), tr("no files selected"), this);
 	mFileSelection  = new DkFileSelection(this);
 	mWidgets[batch_input]->setContentWidget(mFileSelection);
 	mFileSelection->setDir(mCurrentDirectory);
 	
 	// fold content
-	mWidgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("inactive"), this);
+	mWidgets[batch_resize] = new DkBatchContainer(tr("Resize"), tr("inactive"), this);
 	mResizeWidget = new DkBatchResizeWidget(this);
 	mWidgets[batch_resize]->setContentWidget(mResizeWidget);
 
-	mWidgets[batch_transform] = new DkBatchWidget(tr("Transform"), tr("inactive"), this);
+	mWidgets[batch_transform] = new DkBatchContainer(tr("Transform"), tr("inactive"), this);
 	mTransformWidget = new DkBatchTransformWidget(this);
 	mWidgets[batch_transform]->setContentWidget(mTransformWidget);
 
 #ifdef WITH_PLUGINS
-	mWidgets[batch_plugin] = new DkBatchWidget(tr("Plugins"), tr("inactive"), this);
+	mWidgets[batch_plugin] = new DkBatchContainer(tr("Plugins"), tr("inactive"), this);
 	mPluginWidget = new DkBatchPluginWidget(this);
 	mWidgets[batch_plugin]->setContentWidget(mPluginWidget);
 #endif
 
-	mWidgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
+	mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
 	mOutputSelection = new DkBatchOutput(this);
 	mWidgets[batch_output]->setContentWidget(mOutputSelection);
 
@@ -1319,7 +1319,7 @@ void DkBatchDialog::createLayout() {
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
 	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-	for (DkBatchWidget* w : mWidgets) {
+	for (DkBatchContainer* w : mWidgets) {
 		mCentralLayout->addWidget(w->contentWidget());
 		connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
 	}
@@ -1354,7 +1354,7 @@ void DkBatchDialog::createLayout() {
 	// tab buttons must be checked exclusively
 	QButtonGroup* tabGroup = new QButtonGroup(this);
 
-	for (DkBatchWidget* w : mWidgets) {
+	for (DkBatchContainer* w : mWidgets) {
 		tabLayout->addWidget(w->headerWidget());
 		tabGroup->addButton(w->headerWidget());
 	}
@@ -1369,7 +1369,7 @@ void DkBatchDialog::createLayout() {
 		mWidgets[0]->headerWidget()->click();
 }
 
-void DkBatchDialog::accept() {
+void DkBatchWidget::accept() {
 	
 	// check if we are good to go
 	if (mFileSelection->getSelectedFiles().empty()) {
@@ -1478,27 +1478,31 @@ void DkBatchDialog::accept() {
 	config.setProcessFunctions(processFunctions);
 	mBatchProcessing->setBatchConfig(config);
 
+	// reopen the input widget to show the status
+	if (!mWidgets.empty())
+		mWidgets[0]->headerWidget()->click();
+
 	startProcessing();
 	mBatchProcessing->compute();
 }
 
-void DkBatchDialog::reject() {
+void DkBatchWidget::reject() {
 
 	if (mBatchProcessing->isComputing()) {
 		mBatchProcessing->cancel();
 		mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
 		//stopProcessing();
 	}
-	else
-		QDialog::reject();
+
+	// TODO: see how we can cancel and close here correctly
 }
 
-void DkBatchDialog::processingFinished() {
+void DkBatchWidget::processingFinished() {
 
 	stopProcessing();
 }
 
-void DkBatchDialog::startProcessing() {
+void DkBatchWidget::startProcessing() {
 
 	mFileSelection->startProcessing();
 
@@ -1512,7 +1516,7 @@ void DkBatchDialog::startProcessing() {
 	mLogUpdateTimer.start(1000);
 }
 
-void DkBatchDialog::stopProcessing() {
+void DkBatchWidget::stopProcessing() {
 
 	mFileSelection->stopProcessing();
 
@@ -1553,18 +1557,18 @@ void DkBatchDialog::stopProcessing() {
 	updateLog();
 }
 
-void DkBatchDialog::updateLog() {
+void DkBatchWidget::updateLog() {
 
 	mFileSelection->setResults(mBatchProcessing->getResultList());
 }
 
-void DkBatchDialog::updateProgress(int progress) {
+void DkBatchWidget::updateProgress(int progress) {
 
 	mProgressBar->setValue(progress);
 	mLogNeedsUpdate = true;
 }
 
-void DkBatchDialog::logButtonClicked() {
+void DkBatchWidget::logButtonClicked() {
 
 	QStringList log = mBatchProcessing->getLog();
 
@@ -1575,7 +1579,7 @@ void DkBatchDialog::logButtonClicked() {
 	textDialog->exec();
 }
 
-void DkBatchDialog::setSelectedFiles(const QStringList& selFiles) {
+void DkBatchWidget::setSelectedFiles(const QStringList& selFiles) {
 
 	if (!selFiles.empty()) {
 		mFileSelection->getInputEdit()->appendFiles(selFiles);
@@ -1583,17 +1587,17 @@ void DkBatchDialog::setSelectedFiles(const QStringList& selFiles) {
 	}
 }
 
-void DkBatchDialog::changeWidget(DkBatchWidget* widget) {
+void DkBatchWidget::changeWidget(DkBatchContainer* widget) {
 
 	if (!widget)
-		widget = dynamic_cast<DkBatchWidget*>(sender());
+		widget = dynamic_cast<DkBatchContainer*>(sender());
 
 	if (!widget) {
 		qWarning() << "changeWidget() called with NULL widget";
 		return;
 	}
 
-	for (DkBatchWidget* cw : mWidgets) {
+	for (DkBatchContainer* cw : mWidgets) {
 
 		if (cw == widget) {
 			mCentralLayout->setCurrentWidget(cw->contentWidget());
@@ -1606,7 +1610,7 @@ void DkBatchDialog::changeWidget(DkBatchWidget* widget) {
 
 }
 
-void DkBatchDialog::nextTab() {
+void DkBatchWidget::nextTab() {
 
 	int idx = mCentralLayout->currentIndex() + 1;
 	idx %= mWidgets.size();
@@ -1614,7 +1618,7 @@ void DkBatchDialog::nextTab() {
 	changeWidget(mWidgets[idx]);
 }
 
-void DkBatchDialog::previousTab() {
+void DkBatchWidget::previousTab() {
 
 	int idx = mCentralLayout->currentIndex() - 1;
 	if (idx < 0)
@@ -1623,7 +1627,7 @@ void DkBatchDialog::previousTab() {
 	changeWidget(mWidgets[idx]);
 }
 
-void DkBatchDialog::widgetChanged() {
+void DkBatchWidget::widgetChanged() {
 	
 	if (mWidgets[batch_output] && mWidgets[batch_input])  {
 		QString inputDirPath = dynamic_cast<DkFileSelection*>(mWidgets[batch_input]->contentWidget())->getDir();
