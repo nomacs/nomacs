@@ -391,7 +391,9 @@ nmc--DkBatchTabButton {
 }
 
 QPushButton#DkTabEntryWidget:hover,
-nmc--DkBatchTabButton:hover {
+QPushButton#DkTabEntryWidget:checked:hover,
+nmc--DkBatchTabButton:hover,
+nmc--DkBatchTabButton:checked:hover {
 	background-color: rgba(255, 255, 255, 30);
 }
 

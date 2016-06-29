@@ -1241,13 +1241,24 @@ DkBatchDialog::DkBatchDialog(const QString& currentDirectory, QWidget* parent /*
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
+
 	connect(mFileSelection, SIGNAL(updateInputDir(const QString&)), mOutputSelection, SLOT(setInputDir(const QString&)));
-	
 	connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
 
 	mFileSelection->setDir(currentDirectory);
 	mOutputSelection->setInputDir(currentDirectory);
-	//mOutputSelection->setDir(currentDirectory);
+
+	QAction* nextAction = new QAction(tr("next"), this);
+	nextAction->setShortcut(Qt::Key_PageDown);
+	connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
+	addAction(nextAction);
+
+	QAction* previousAction = new QAction(tr("previous"), this);
+	previousAction->setShortcut(Qt::Key_PageUp);
+	previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
+	addAction(previousAction);
+
 }
 
 void DkBatchDialog::createLayout() {
@@ -1588,10 +1599,28 @@ void DkBatchDialog::changeWidget(DkBatchWidget* widget) {
 			mCentralLayout->setCurrentWidget(cw->contentWidget());
 			mContentTitle->setText(cw->headerWidget()->text());
 			mContentInfo->setText(cw->headerWidget()->info());
+			cw->headerWidget()->setChecked(true);
 			connect(cw->headerWidget(), SIGNAL(infoChanged(const QString&)), mContentInfo, SLOT(setText(const QString&)), Qt::UniqueConnection);
 		}
 	}
 
+}
+
+void DkBatchDialog::nextTab() {
+
+	int idx = mCentralLayout->currentIndex() + 1;
+	idx %= mWidgets.size();
+
+	changeWidget(mWidgets[idx]);
+}
+
+void DkBatchDialog::previousTab() {
+
+	int idx = mCentralLayout->currentIndex() - 1;
+	if (idx < 0)
+		idx = mWidgets.size()-1;
+
+	changeWidget(mWidgets[idx]);
 }
 
 void DkBatchDialog::widgetChanged() {

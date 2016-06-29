@@ -228,7 +228,7 @@ private:
 };
 
 class DkFilenameWidget : public QWidget {
-Q_OBJECT
+	Q_OBJECT
 
 public:	
 	DkFilenameWidget(QWidget* parent = 0);
@@ -442,6 +442,8 @@ public slots:
 	void updateLog();
 	void setSelectedFiles(const QStringList& selFiles);
 	void changeWidget(DkBatchWidget* widget = 0);
+	void nextTab();
+	void previousTab();
 
 protected:
 	void createLayout();
