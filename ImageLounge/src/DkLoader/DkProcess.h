@@ -52,6 +52,7 @@
 
 // Qt defines
 class QImage;
+class QSettings;
 
 namespace nmc {
 
@@ -65,12 +66,18 @@ public:
 	DkAbstractBatch() {};
 
 	virtual void setProperties(...) {};
+	virtual void saveSettings(QSettings&) const {};
+	virtual void loadSettings(QSettings&) {};
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const;
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual bool compute(QImage&, QStringList&) const { return true; };
-	virtual QString name() const {return "Abstract Batch";};
 	virtual bool isActive() const { return false; };
 	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >&) const {};
+
+	virtual QString name() const {return "Abstract Batch";};
+	QString settingsName() const;
+
+	static QSharedPointer<DkAbstractBatch> createFromName(const QString& settingsName);
 
 private:
 	// ok, this is important:
@@ -91,9 +98,11 @@ public:
 
 	// TODO: where shall we put the defines now? e.g. DkImage::ipl_area
 	virtual void setProperties(float scaleFactor, int mode = mode_default, int prop = prop_default, int iplMethod = 1/*DkImage::ipl_area*/, bool correctGamma = false);
-	virtual bool compute(QImage& img, QStringList& logStrings) const;
-	virtual QString name() const;
-	virtual bool isActive() const;
+	virtual void saveSettings(QSettings& settings) const override;
+	virtual void loadSettings(QSettings& settings) override;
+	virtual bool compute(QImage& img, QStringList& logStrings) const override;
+	virtual QString name() const override;
+	virtual bool isActive() const override;
 
 	enum {
 		mode_default,
@@ -129,12 +138,16 @@ class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
 public:
 	DkPluginBatch();
 
+	virtual void saveSettings(QSettings& settings) const override;
+	virtual void loadSettings(QSettings& settings) override;
+
 	virtual void preLoad();
 	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const override;
 	virtual void setProperties(const QStringList& pluginList);
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
 	virtual QString name() const override;
-	virtual bool isActive() const;
+	virtual bool isActive() const override;
+
 
 protected:
 	void loadAllPlugins();
@@ -150,6 +163,9 @@ class DllLoaderExport DkBatchTransform : public DkAbstractBatch {
 
 public:
 	DkBatchTransform();
+
+	virtual void saveSettings(QSettings& settings) const override;
+	virtual void loadSettings(QSettings& settings) override;
 
 	virtual void setProperties(int angle, bool horizontalFlip = false, bool verticalFlip = false, bool cropFromMetadata = false);
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
@@ -209,6 +225,9 @@ class DllLoaderExport DkBatchConfig {
 public:
 	DkBatchConfig() { init(); };
 	DkBatchConfig(const QStringList& fileList, const QString& outputDir, const QString& fileNamePattern);
+
+	virtual void saveSettings(QSettings& settings) const;
+	virtual void loadSettings(QSettings& settings);
 
 	bool isOk() const;
 

@@ -61,6 +61,7 @@
 #include <QListWidget>
 #include <QAction>
 #include <QStackedLayout>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1049,6 +1050,80 @@ bool DkBatchResizeWidget::requiresUserInput() const {
 	return false;
 }
 
+// DkProfileWidget --------------------------------------------------------------------
+DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkProfileWidget::createLayout() {
+
+	mProfileCombo = new QComboBox(this);
+	mProfileCombo->setObjectName("profileCombo");
+	mProfileCombo->addItem(tr("no profile"));
+	mProfileCombo->addItem(tr("test"));
+
+	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
+	saveButton->setObjectName("saveButton");
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	layout->addWidget(mProfileCombo);
+	layout->addWidget(saveButton);
+}
+
+bool DkProfileWidget::hasUserInput() const {
+	return false;
+}
+
+bool DkProfileWidget::requiresUserInput() const {
+	return false;
+}
+
+void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
+
+	emit loadProfileSignal(text);
+	emit newHeaderText(text);
+}
+
+void DkProfileWidget::on_saveButton_clicked() {
+
+	saveProfile();
+}
+
+void DkProfileWidget::saveProfile() {
+
+	// default mode is overwrite (UI is asking anyway)
+	QString dName = mProfileCombo->currentText().isEmpty() ? "Profile 1" : mProfileCombo->currentText();
+
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("Profile Name"),
+		tr("Profile Name:"), QLineEdit::Normal,
+		dName, &ok);
+
+	if (!ok || text.isEmpty())
+		return;	// user canceled
+
+				// is the profile name unique?
+	if (mProfileCombo->findText(text) != -1) {
+
+		QMessageBox::StandardButton button = QMessageBox::information(
+			this, 
+			tr("Profile Already Exists"), 
+			tr("Do you want to overwrite %1?").arg(text), 
+			QMessageBox::Yes | QMessageBox::No);
+
+		if (button == QMessageBox::No) {
+			saveProfile(); // start over
+			return;
+		}
+	}
+
+	emit saveProfileSignal(text);
+}
+
 #ifdef WITH_PLUGINS
 // DkBatchPlugin --------------------------------------------------------------------
 DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
@@ -1274,11 +1349,11 @@ void DkBatchWidget::createLayout() {
 	mWidgets.resize(batchWidgets_end);
 
 	// Input Directory
-	mWidgets[batch_input] = new DkBatchContainer(tr("Input Directory"), tr("no files selected"), this);
+	mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
 	mFileSelection  = new DkFileSelection(this);
 	mWidgets[batch_input]->setContentWidget(mFileSelection);
 	mFileSelection->setDir(mCurrentDirectory);
-	
+
 	// fold content
 	mWidgets[batch_resize] = new DkBatchContainer(tr("Resize"), tr("inactive"), this);
 	mResizeWidget = new DkBatchResizeWidget(this);
@@ -1297,6 +1372,11 @@ void DkBatchWidget::createLayout() {
 	mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
 	mOutputSelection = new DkBatchOutput(this);
 	mWidgets[batch_output]->setContentWidget(mOutputSelection);
+
+	// profiles
+	mWidgets[batch_profile] = new DkBatchContainer(tr("Profiles"), tr("inactive"), this);
+	mProfileWidget = new DkProfileWidget(this);
+	mWidgets[batch_profile]->setContentWidget(mProfileWidget);
 
 	mProgressBar = new QProgressBar(this);
 	mProgressBar->setVisible(false);
@@ -1531,15 +1611,6 @@ void DkBatchWidget::startProcessing() {
 void DkBatchWidget::stopProcessing() {
 
 	mFileSelection->stopProcessing();
-
-#ifdef WITH_PLUGINS
-	//// create processing functions
-	//QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
-	//mPluginWidget->transferProperties(pluginBatch);
-	//
-	//if (pluginBatch->isActive())
-	//	pluginBatch->postLoad();
-#endif
 
 	if (mBatchProcessing)
 		mBatchProcessing->postLoad();

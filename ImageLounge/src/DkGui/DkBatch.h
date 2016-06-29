@@ -356,6 +356,33 @@ protected:
 	QDoubleSpinBox* mSbPercent;
 };
 
+class DkProfileWidget : public QWidget, public DkBatchContent {
+	Q_OBJECT
+
+public:
+	DkProfileWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	//void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
+	bool hasUserInput() const;
+	bool requiresUserInput() const;
+
+public slots:
+	void on_profileCombo_currentIndexChanged(const QString& text);
+	void on_saveButton_clicked();
+
+signals:
+	void newHeaderText(const QString& txt) const;
+	void loadProfileSignal(const QString& profileName);
+	void saveProfileSignal(const QString& profileName);
+
+protected:
+	void createLayout();
+	void saveProfile();
+
+	QComboBox* mProfileCombo;
+};
+
+
 #ifdef WITH_PLUGINS
 class DkBatchPluginWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
@@ -428,6 +455,7 @@ public:
 		batch_transform,
 		batch_plugin,
 		batch_output,
+		batch_profile,
 
 		batchWidgets_end
 	};
@@ -459,6 +487,7 @@ private:
 	DkFileSelection* mFileSelection = 0;
 	DkBatchOutput* mOutputSelection = 0;
 	DkBatchResizeWidget* mResizeWidget = 0;
+	DkProfileWidget* mProfileWidget = 0;
 
 #ifdef WITH_PLUGINS
 	DkBatchPluginWidget* mPluginWidget = 0;

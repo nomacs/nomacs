@@ -79,6 +79,40 @@ bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStrin
 	return isOk;
 }
 
+QString DkAbstractBatch::settingsName() const {
+	
+	// make name() settings friendly
+	QString sn = name();
+	sn.replace("[", "");
+	sn.replace("]", "");
+	sn.replace(" ", "");
+	
+	return sn;
+}
+
+QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& settingsName) {
+
+	QSharedPointer<DkAbstractBatch> batch(new DkResizeBatch());
+
+	if (batch->settingsName() == settingsName)
+		return batch;
+	
+	batch = QSharedPointer<DkBatchTransform>::create();
+
+	if (batch->settingsName() == settingsName)
+		return batch;
+
+#ifdef WITH_PLUGINS
+	batch = QSharedPointer<DkPluginBatch>::create();
+
+	if (batch->settingsName() == settingsName)
+		return batch;
+#endif
+
+	qCritical() << "cannot instatiate batch, illegal settings name: " << settingsName;
+	return QSharedPointer<DkAbstractBatch>();
+}
+
 // DkResizeBatch --------------------------------------------------------------------
 DkResizeBatch::DkResizeBatch() {
 
@@ -97,6 +131,29 @@ void DkResizeBatch::setProperties(float scaleFactor, int mode, int prop, int ipl
 	mProperty = prop;
 	mIplMethod = iplMethod;
 	mCorrectGamma = correctGamma;
+}
+
+void DkResizeBatch::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup(settingsName());
+	settings.setValue("ScaleFactor", mScaleFactor);
+	settings.setValue("Mode", mMode);
+	settings.setValue("Property", mProperty);
+	settings.setValue("IplMethod", mIplMethod);
+	settings.setValue("CorrectGamma", mCorrectGamma);
+	settings.endGroup();
+
+}
+
+void DkResizeBatch::loadSettings(QSettings & settings) {
+
+	settings.beginGroup(settingsName());
+	mScaleFactor	= settings.value("ScaleFactor", mScaleFactor).toFloat();
+	mMode			= settings.value("Mode", mMode).toInt();
+	mProperty		= settings.value("Property", mProperty).toInt();
+	mIplMethod		= settings.value("IplMethod", mIplMethod).toInt();
+	mCorrectGamma	= settings.value("Correct Gamma", mCorrectGamma).toBool();
+	settings.endGroup();
 }
 
 bool DkResizeBatch::isActive() const {
@@ -206,6 +263,26 @@ void DkBatchTransform::setProperties(int angle, bool horizontalFlip /* = false *
 	mCropFromMetadata = cropFromMetadata;
 }
 
+void DkBatchTransform::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup(settingsName());
+	settings.setValue("Angle", mAngle);
+	settings.setValue("HorizontalFlip", mHorizontalFlip);
+	settings.setValue("VerticalFlip", mVerticalFlip);
+	settings.setValue("CropFromMetadata", mCropFromMetadata);
+	settings.endGroup();
+}
+
+void DkBatchTransform::loadSettings(QSettings & settings) {
+
+	settings.beginGroup(settingsName());
+	mAngle = settings.value("Angle", mAngle).toInt();
+	mHorizontalFlip = settings.value("HorizontalFlip", mHorizontalFlip).toBool();
+	mVerticalFlip = settings.value("VerticalFlip", mVerticalFlip).toBool();
+	mCropFromMetadata = settings.value("CropFromMetadata", mCropFromMetadata).toBool();
+	settings.endGroup();
+}
+
 bool DkBatchTransform::isActive() const {
 
 	return mHorizontalFlip || mVerticalFlip || mAngle != 0 || mCropFromMetadata;
@@ -260,6 +337,21 @@ DkPluginBatch::DkPluginBatch() {
 void DkPluginBatch::setProperties(const QStringList & pluginList) {
 	mPluginList = pluginList;
 }
+
+void DkPluginBatch::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup(settingsName());
+	settings.setValue("pluginList", mPluginList.join(";"));
+	settings.endGroup();
+}
+
+void DkPluginBatch::loadSettings(QSettings & settings) {
+
+	settings.beginGroup(settingsName());
+	mPluginList = settings.value("pluginList", mPluginList).toString().split(";");
+	settings.endGroup();
+}
+
 
 void DkPluginBatch::preLoad() {
 
@@ -750,6 +842,52 @@ void DkBatchProcessing::init() {
 
 		mBatchItems.push_back(cProcess);
 	}
+}
+
+void DkBatchConfig::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup("General");
+	settings.setValue("FileList", mFileList.join(";"));
+	settings.setValue("OutputDirPath", mOutputDirPath);
+	settings.setValue("FileNamePattern", mFileNamePattern);
+	settings.setValue("Compression", mCompression);
+	settings.setValue("Mode", mMode);
+	settings.setValue("DeleteOriginal", mDeleteOriginal);
+	settings.setValue("InputDirIsOutputDir", mInputDirIsOutputDir);
+
+	for (auto pf : mProcessFunctions)
+		pf->saveSettings(settings);
+
+	settings.endGroup();
+}
+
+void DkBatchConfig::loadSettings(QSettings & settings) {
+
+	settings.beginGroup("General");
+	mFileList = settings.value("FileList", mFileList).toString().split(";");
+	mOutputDirPath = settings.value("OutputDirPath", mOutputDirPath).toString();
+	mFileNamePattern = settings.value("FileNamePattern", mFileNamePattern).toString();
+	mCompression = settings.value("Compression", mCompression).toInt();
+	mMode = settings.value("Mode", mMode).toInt();
+	mDeleteOriginal = settings.value("DeleteOriginal", mDeleteOriginal).toBool();
+	mInputDirIsOutputDir = settings.value("InputDirIsOutputDir", mInputDirIsOutputDir).toBool();
+
+	QStringList groups = settings.childGroups();
+	
+	for (const QString& name : groups) {
+		QSharedPointer<DkAbstractBatch> batch = DkAbstractBatch::createFromName(name);
+
+		// if it is valid - append the process
+		if (batch) {
+			batch->loadSettings(settings);
+			mProcessFunctions << batch;
+		}
+	}
+
+	for (auto pf : mProcessFunctions)
+		pf->saveSettings(settings);
+
+	settings.endGroup();
 }
 
 void DkBatchProcessing::compute() {
