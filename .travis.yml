@@ -20,7 +20,8 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
   #- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install quazip; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install opencv3 --with-contrib --without-eigen --without-opencl --without-openexr --without-python --without-tests; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew ln opencv3 --force; fi
 
   # Linux dependencies
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi
