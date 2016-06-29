@@ -103,8 +103,13 @@ class DkBatchTabButton : public QPushButton {
 public:
 	DkBatchTabButton(const QString& title, const QString& info = QString(), QWidget* parent = 0);
 
+	QString info() const;
+
 public slots:
 	void setInfo(const QString& info);
+
+signals:
+	void infoChanged(const QString& msg) const;
 
 protected:
 	void paintEvent(QPaintEvent* event) override;
@@ -213,7 +218,6 @@ protected:
 	QTextEdit* mResultTextEdit = 0;
 	DkExplorer* mExplorer = 0;
 	DkDirectoryEdit* mDirectoryEdit = 0;
-	QLabel* mInfoLabel = 0;
 	QTabWidget* mInputTabs = 0;
 	QSharedPointer<DkImageLoader> mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 
@@ -437,7 +441,7 @@ public slots:
 	void updateProgress(int progress);
 	void updateLog();
 	void setSelectedFiles(const QStringList& selFiles);
-	void changeWidget();
+	void changeWidget(DkBatchWidget* widget = 0);
 
 protected:
 	void createLayout();
@@ -465,6 +469,10 @@ private:
 	QLabel* mSummaryLabel = 0;
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;
+
+	// title
+	QLabel* mContentTitle = 0;
+	QLabel* mContentInfo = 0;
 
 	void startProcessing();
 	void stopProcessing();

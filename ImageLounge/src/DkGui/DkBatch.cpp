@@ -76,6 +76,12 @@ DkBatchTabButton::DkBatchTabButton(const QString& title, const QString& info, QW
 void DkBatchTabButton::setInfo(const QString& info) {
 	mInfo = info;
 	update();
+
+	emit infoChanged(mInfo);
+}
+
+QString DkBatchTabButton::info() const {
+	return mInfo;
 }
 
 void DkBatchTabButton::paintEvent(QPaintEvent *event) {
@@ -87,9 +93,17 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event) {
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
 	QFont f;
-	f.setPointSize(11);
+	f.setPointSize(9);
 	f.setItalic(true);
 	p.setFont(f);
+
+	// change opacity
+	QColor c = p.pen().color();
+	c.setAlpha(200);
+	QPen fPen = p.pen();
+	fPen.setColor(c);
+	p.setPen(fPen);
+
 	p.drawText(QPoint(25, 50), mInfo);
 
 	QPushButton::paintEvent(event);
@@ -308,8 +322,6 @@ void DkFileSelection::createLayout() {
 	mThumbScrollWidget->setVisible(true);
 	mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
-	mInfoLabel = new QLabel(tr("No Files Selected"), this);
-
 	// add explorer
 	mExplorer = new DkExplorer(tr("File Explorer"));
 	mExplorer->getModel()->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
@@ -327,10 +339,10 @@ void DkFileSelection::createLayout() {
 	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/batch-processing.svg"), tr("File List"));
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
+	widgetLayout->setContentsMargins(0, 0, 0, 0);
 	widgetLayout->addWidget(mExplorer, 0, 0, 3, 1);
 	widgetLayout->addWidget(upperWidget, 0, 1);
 	widgetLayout->addWidget(mInputTabs, 1, 1);
-	widgetLayout->addWidget(mInfoLabel, 2, 1);
 	setLayout(widgetLayout);
 
 	connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
@@ -356,7 +368,6 @@ void DkFileSelection::changeTab(int tabIdx) const {
 }
 
 void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
-	qDebug() << "emitting updateDirSignal";
 	emit updateDirSignal(thumbs);
 }
 
@@ -431,13 +442,15 @@ void DkFileSelection::setDir(const QString& dirPath) {
 
 void DkFileSelection::selectionChanged() {
 
+	QString msg;
 	if (getSelectedFiles().empty())
-		mInfoLabel->setText(tr("No Files Selected"));
+		msg = tr("No Files Selected");
 	else if (getSelectedFiles().size() == 1)
-		mInfoLabel->setText(tr("%1 File Selected").arg(getSelectedFiles().size()));
+		msg = tr("%1 File Selected").arg(getSelectedFiles().size());
 	else
-		mInfoLabel->setText(tr("%1 Files Selected").arg(getSelectedFiles().size()));
-
+		msg = tr("%1 Files Selected").arg(getSelectedFiles().size());
+	
+	emit newHeaderText(msg);
 	emit changed();
 }
 
@@ -768,6 +781,7 @@ void DkBatchOutput::createLayout() {
 	previewGBLayout->setAlignment(Qt::AlignTop);
 	
 	QGridLayout* contentLayout = new QGridLayout(this);
+	contentLayout->setContentsMargins(0, 0, 0, 0);
 	contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	contentLayout->addWidget(outDirGroupBox, 0, 0, 1, 2);
 	contentLayout->addWidget(filenameGroupBox, 1, 0);
@@ -974,6 +988,7 @@ void DkBatchResizeWidget::createLayout() {
 	mSbPx->setValue(1920);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mComboMode);
 	layout->addWidget(mSbPercent);
@@ -1071,6 +1086,7 @@ void DkBatchPluginWidget::createLayout() {
 	mPluginListWidget->setEmptyText(tr("Drag Plugin Actions here."));
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(pluginSelectionWidget);
 	layout->addWidget(mPluginListWidget);
 
@@ -1134,6 +1150,7 @@ void DkBatchTransformWidget::createLayout() {
 	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
 	QGridLayout* layout = new QGridLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mRbRotate0, 0, 0);
 	layout->addWidget(mRbRotateRight, 1, 0);
@@ -1240,7 +1257,7 @@ void DkBatchDialog::createLayout() {
 	mWidgets.resize(batchWidgets_end);
 
 	// Input Directory
-	mWidgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
+	mWidgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("no files selected"), this);
 	mFileSelection  = new DkFileSelection(this);
 	mWidgets[batch_input]->setContentWidget(mFileSelection);
 	mFileSelection->setDir(mCurrentDirectory);
@@ -1299,19 +1316,29 @@ void DkBatchDialog::createLayout() {
 	connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
 
+	mContentTitle = new QLabel("", this);
+	mContentTitle->setObjectName("batchContentTitle");
+	mContentInfo = new QLabel("", this);
+	mContentInfo->setObjectName("batchContentInfo");
+
 	QWidget* contentWidget = new QWidget(this);
 	QVBoxLayout* dialogLayout = new QVBoxLayout(contentWidget);
+	dialogLayout->addWidget(mContentTitle);
+	dialogLayout->addWidget(mContentInfo);
 	dialogLayout->addWidget(centralWidget);		// almost everything
 	dialogLayout->addWidget(mProgressBar);
 	dialogLayout->addWidget(mSummaryLabel);
 	//dialogLayout->addStretch(10);
 	dialogLayout->addWidget(mButtons);
 
+	// the tabs left
 	QWidget* tabWidget = new QWidget(this);
 	tabWidget->setObjectName("DkBatchTabs");
 
 	QVBoxLayout* tabLayout = new QVBoxLayout(tabWidget);
 	tabLayout->setAlignment(Qt::AlignTop);
+	tabLayout->setContentsMargins(0, 0, 0, 0);
+	tabLayout->setSpacing(0);
 
 	// tab buttons must be checked exclusively
 	QButtonGroup* tabGroup = new QButtonGroup(this);
@@ -1325,6 +1352,10 @@ void DkBatchDialog::createLayout() {
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(tabWidget);
 	layout->addWidget(contentWidget);
+
+	// open the first tab
+	if (!mWidgets.empty())
+		mWidgets[0]->headerWidget()->click();
 }
 
 void DkBatchDialog::accept() {
@@ -1379,19 +1410,19 @@ void DkBatchDialog::accept() {
 	if (!config.isOk()) {
 
 		if (config.getOutputDirPath().isEmpty()) {
-			QMessageBox::critical(this, tr("Fatal Error"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::information(this, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 		else if (!QDir(config.getOutputDirPath()).exists()) {
-			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::critical(this, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 		else if (config.getFileList().empty()) {
-			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::critical(this, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 		else if (config.getFileNamePattern().isEmpty()) {
-			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::critical(this, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 		//else if (config.getOutputDir() == QDir()) {
@@ -1539,12 +1570,12 @@ void DkBatchDialog::setSelectedFiles(const QStringList& selFiles) {
 		mFileSelection->getInputEdit()->appendFiles(selFiles);
 		mFileSelection->changeTab(DkFileSelection::tab_text_input);
 	}
-
 }
 
-void DkBatchDialog::changeWidget() {
+void DkBatchDialog::changeWidget(DkBatchWidget* widget) {
 
-	DkBatchWidget* widget = dynamic_cast<DkBatchWidget*>(sender());
+	if (!widget)
+		widget = dynamic_cast<DkBatchWidget*>(sender());
 
 	if (!widget) {
 		qWarning() << "changeWidget() called with NULL widget";
@@ -1553,8 +1584,12 @@ void DkBatchDialog::changeWidget() {
 
 	for (DkBatchWidget* cw : mWidgets) {
 
-		if (cw == widget)
+		if (cw == widget) {
 			mCentralLayout->setCurrentWidget(cw->contentWidget());
+			mContentTitle->setText(cw->headerWidget()->text());
+			mContentInfo->setText(cw->headerWidget()->info());
+			connect(cw->headerWidget(), SIGNAL(infoChanged(const QString&)), mContentInfo, SLOT(setText(const QString&)), Qt::UniqueConnection);
+		}
 	}
 
 }
