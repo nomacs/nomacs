@@ -63,12 +63,12 @@ DkPreferenceWidget::DkPreferenceWidget(QWidget* parent) : DkWidget(parent) {
 	createLayout();
 
 	QAction* nextAction = new QAction(tr("next"), this);
-	nextAction->setShortcut(Qt::Key_Down);
+	nextAction->setShortcut(Qt::Key_PageDown);
 	connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
 	addAction(nextAction);
 
 	QAction* previousAction = new QAction(tr("previous"), this);
-	previousAction->setShortcut(Qt::Key_Up);
+	previousAction->setShortcut(Qt::Key_PageUp);
 	previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
 	addAction(previousAction);

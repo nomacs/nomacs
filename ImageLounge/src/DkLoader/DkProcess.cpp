@@ -757,7 +757,6 @@ void DkBatchProcessing::compute() {
 	init();
 
 	qDebug() << "computing...";
-	
 
 	if (batchWatcher.isRunning())
 		batchWatcher.waitForFinished();

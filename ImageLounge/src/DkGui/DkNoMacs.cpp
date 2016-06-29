@@ -530,6 +530,16 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(false);
 #endif
 
+	// hidden actions
+	am.action(DkActionManager::sc_skip_prev)->setEnabled(enable);
+	am.action(DkActionManager::sc_skip_prev_sync)->setEnabled(enable);
+	am.action(DkActionManager::sc_skip_next)->setEnabled(enable);
+	am.action(DkActionManager::sc_skip_next_sync)->setEnabled(enable);
+	am.action(DkActionManager::sc_first_file)->setEnabled(enable);
+	am.action(DkActionManager::sc_first_file_sync)->setEnabled(enable);
+	am.action(DkActionManager::sc_last_file)->setEnabled(enable);
+	am.action(DkActionManager::sc_last_file_sync)->setEnabled(enable);
+
 	// disable open with actions
 	for (QAction* a : DkActionManager::instance().appManager()->getActions())
 		a->setEnabled(enable);

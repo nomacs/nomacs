@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QUrl>
 #include <QDialog>
 #include <QTextEdit>
+#include <QPushButton>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -45,7 +46,6 @@ class QComboBox;
 class QLineEdit;
 class QSpinBox;
 class QDoubleSpinBox;
-class QPushButton;
 class QGridLayout;
 class QCheckBox;
 class QButtonGroup;
@@ -54,6 +54,7 @@ class QDialogButtonBox;
 class QProgressBar;
 class QTabWidget;
 class QListWidget;
+class QStackedLayout;
 
 namespace nmc {
 
@@ -96,33 +97,42 @@ public:
 	virtual bool requiresUserInput() const = 0;
 };
 
-class DkBatchWidget : public QWidget {
+class DkBatchTabButton : public QPushButton {
 	Q_OBJECT
 
 public:
-	DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchTabButton(const QString& title, const QString& info = QString(), QWidget* parent = 0);
+
+public slots:
+	void setInfo(const QString& info);
+
+protected:
+	void paintEvent(QPaintEvent* event) override;
+
+	QString mInfo;
+};
+
+class DkBatchWidget : public QObject {
+	Q_OBJECT
+
+public:
+	DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent = 0);
 	
 	void setContentWidget(QWidget* batchContent);
 	QWidget* contentWidget() const;
+	DkBatchTabButton* headerWidget() const;
 
 public slots:
-	void setTitle(const QString& title);
-	void setHeader(const QString& header);
-	void showContent(bool show);
+	void showContent(bool show) const;
+
+signals:
+	void showSignal() const;
 
 protected:
 	virtual void createLayout();
 
-private:
+	DkBatchTabButton* mHeaderButton = 0;
 	DkBatchContent* mBatchContent = 0;
-	QVBoxLayout* mBatchWidgetLayout = 0;
-
-	QLabel* mTitleLabel = 0; 
-	QLabel* mHeaderLabel = 0;
-	DkButton* mShowButton = 0;
-
-	QString mTitleString;
-	QString mHeaderString;
 };
 
 class DkInputTextEdit : public QTextEdit {
@@ -427,6 +437,7 @@ public slots:
 	void updateProgress(int progress);
 	void updateLog();
 	void setSelectedFiles(const QStringList& selFiles);
+	void changeWidget();
 
 protected:
 	void createLayout();
@@ -434,21 +445,24 @@ protected:
 private:
 	QVector<DkBatchWidget*> mWidgets;
 		
+	QStackedLayout* mCentralLayout = 0;
+	int mCurrentIndex = 0;
+
 	QString mCurrentDirectory;
-	QDialogButtonBox* mButtons;
-	DkFileSelection* mFileSelection;
-	DkBatchOutput* mOutputSelection;
-	DkBatchResizeWidget* mResizeWidget;
+	QDialogButtonBox* mButtons = 0;
+	DkFileSelection* mFileSelection = 0;
+	DkBatchOutput* mOutputSelection = 0;
+	DkBatchResizeWidget* mResizeWidget = 0;
 
 #ifdef WITH_PLUGINS
-	DkBatchPluginWidget* mPluginWidget;
+	DkBatchPluginWidget* mPluginWidget = 0;
 #endif
 
-	DkBatchTransformWidget* mTransformWidget;
-	DkBatchProcessing* mBatchProcessing;
-	QPushButton* mLogButton;
-	QProgressBar* mProgressBar;
-	QLabel* mSummaryLabel;
+	DkBatchTransformWidget* mTransformWidget = 0;
+	DkBatchProcessing* mBatchProcessing = 0;
+	QPushButton* mLogButton = 0;
+	QProgressBar* mProgressBar= 0;
+	QLabel* mSummaryLabel = 0;
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;
 

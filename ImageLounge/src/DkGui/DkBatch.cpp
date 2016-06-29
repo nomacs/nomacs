@@ -59,55 +59,61 @@
 #include <QSplitter>
 #include <QListWidget>
 #include <QAction>
+#include <QStackedLayout>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
+// DkBatchTabButton --------------------------------------------------------------------
+DkBatchTabButton::DkBatchTabButton(const QString& title, const QString& info, QWidget* parent) : QPushButton(title, parent) {
+
+	// TODO: add info
+	mInfo = info;
+	setFlat(true);
+	setCheckable(true);
+}
+
+void DkBatchTabButton::setInfo(const QString& info) {
+	mInfo = info;
+	update();
+}
+
+void DkBatchTabButton::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QFont f;
+	f.setPointSize(11);
+	f.setItalic(true);
+	p.setFont(f);
+	p.drawText(QPoint(25, 50), mInfo);
+
+	QPushButton::paintEvent(event);
+
+
+}
+
 // DkBatchWidget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
-	mTitleString = titleString;
-	mHeaderString = headerString;
+DkBatchWidget::DkBatchWidget(const QString& titleString, const QString& headerString, QWidget* parent) : QObject(parent) {
+	
+	mHeaderButton = new DkBatchTabButton(titleString, headerString, parent);
 	createLayout();
 }
 
 void DkBatchWidget::createLayout() {
-	
-	mShowButton = new DkButton(QIcon(":/nomacs/img/minus.svg"), QIcon(":/nomacs/img/plus.svg"), tr("Plus"));
-	mShowButton->setFixedSize(QSize(16,16));
-	mShowButton->setObjectName("showSelectionButton");
-	mShowButton->setCheckable(true);
-	mShowButton->setChecked(true);
 
-	mTitleLabel = new QLabel(mTitleString);
-	mTitleLabel->setObjectName("DkBatchTitle");
-	mTitleLabel->setAlignment(Qt::AlignBottom);
-	mHeaderLabel = new QLabel(mHeaderString);
-	mHeaderLabel->setObjectName("DkDecentInfo");
-	mHeaderLabel->setAlignment(Qt::AlignBottom);
-	
-	QWidget* headerWidget = new QWidget(this);
-	QHBoxLayout* headerWidgetLayout = new QHBoxLayout(headerWidget);
-	headerWidgetLayout->setContentsMargins(0,0,0,0);
-	headerWidgetLayout->addWidget(mShowButton);
-	headerWidgetLayout->addWidget(mTitleLabel);
-	headerWidgetLayout->addWidget(mHeaderLabel);
-	headerWidgetLayout->addStretch();
-
-	mBatchWidgetLayout = new QVBoxLayout(this);
-	mBatchWidgetLayout->setContentsMargins(0,0,0,0);
-	mBatchWidgetLayout->addWidget(headerWidget);
-	//mBatchWidgetLayout->addWidget(contentWidget);
-	//mBatchWidgetLayout->addStretch();
-	setLayout(mBatchWidgetLayout);
 }
 
 void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 	
 	mBatchContent = dynamic_cast<DkBatchContent*>(batchContent);
 
-	mBatchWidgetLayout->addWidget(batchContent);
-	connect(mShowButton, SIGNAL(toggled(bool)), batchContent, SLOT(setVisible(bool)));
-	connect(batchContent, SIGNAL(newHeaderText(const QString&)), this, SLOT(setHeader(const QString&)));
+	connect(mHeaderButton, SIGNAL(toggled(bool)), this, SLOT(showContent(bool)));
+	connect(batchContent, SIGNAL(newHeaderText(const QString&)), mHeaderButton, SLOT(setInfo(const QString&)));
 }
 
 QWidget* DkBatchWidget::contentWidget() const {
@@ -115,21 +121,29 @@ QWidget* DkBatchWidget::contentWidget() const {
 	return dynamic_cast<QWidget*>(mBatchContent);
 }
 
-void DkBatchWidget::showContent(bool) {
+DkBatchTabButton* DkBatchWidget::headerWidget() const {
 
-	mShowButton->click();
+	return mHeaderButton;
+}
+
+void DkBatchWidget::showContent(bool show) const {
+
+	if (show)
+		emit showSignal();
+
+	//mShowButton->click();
 	//contentWidget()->setVisible(show);
 }
 
-void DkBatchWidget::setTitle(const QString& titleString) {
-	mTitleString = titleString;
-	mTitleLabel->setText(titleString);
-}
-
-void DkBatchWidget::setHeader(const QString& headerString) {
-	mHeaderString = headerString;
-	mHeaderLabel->setText(headerString);
-}
+//void DkBatchWidget::setTitle(const QString& titleString) {
+//	mTitleString = titleString;
+//	mTitleLabel->setText(titleString);
+//}
+//
+//void DkBatchWidget::setHeader(const QString& headerString) {
+//	mHeaderString = headerString;
+//	mHeaderLabel->setText(headerString);
+//}
 
 // DkInputTextEdit --------------------------------------------------------------------
 DkInputTextEdit::DkInputTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) {
@@ -754,6 +768,7 @@ void DkBatchOutput::createLayout() {
 	previewGBLayout->setAlignment(Qt::AlignTop);
 	
 	QGridLayout* contentLayout = new QGridLayout(this);
+	contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	contentLayout->addWidget(outDirGroupBox, 0, 0, 1, 2);
 	contentLayout->addWidget(filenameGroupBox, 1, 0);
 	contentLayout->addWidget(previewGroupBox, 1, 1);
@@ -959,6 +974,7 @@ void DkBatchResizeWidget::createLayout() {
 	mSbPx->setValue(1920);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mComboMode);
 	layout->addWidget(mSbPercent);
 	layout->addWidget(mSbPx);
@@ -1057,7 +1073,6 @@ void DkBatchPluginWidget::createLayout() {
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->addWidget(pluginSelectionWidget);
 	layout->addWidget(mPluginListWidget);
-	layout->addStretch();
 
 	// connections
 	connect(pluginSelectionWidget, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
@@ -1119,6 +1134,7 @@ void DkBatchTransformWidget::createLayout() {
 	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
 	QGridLayout* layout = new QGridLayout(this);
+	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mRbRotate0, 0, 0);
 	layout->addWidget(mRbRotateRight, 1, 0);
 	layout->addWidget(mRbRotateLeft, 2, 0);
@@ -1165,10 +1181,14 @@ void DkBatchTransformWidget::updateHeader() const {
 		if (getAngle() != 0)
 			txt += tr("Rotating by: %1").arg(getAngle());
 		if (mCbFlipH->isChecked() || mCbFlipV->isChecked()) {
-			txt += tr(" Flipping");
+			if (!txt.isEmpty())
+				txt += " | ";
+			txt += tr("Flipping");
 		}
 		if(mCbCropMetadata->isChecked()) {
-			txt += tr(" Cropping from Metadata");
+			if (!txt.isEmpty())
+				txt += " | ";
+			txt += tr("Crop");
 		}
 		emit newHeaderText(txt);
 	}
@@ -1221,30 +1241,27 @@ void DkBatchDialog::createLayout() {
 
 	// Input Directory
 	mWidgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
-	mFileSelection  = new DkFileSelection(mWidgets[batch_input]);
+	mFileSelection  = new DkFileSelection(this);
 	mWidgets[batch_input]->setContentWidget(mFileSelection);
 	mFileSelection->setDir(mCurrentDirectory);
 	
 	// fold content
 	mWidgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("inactive"), this);
-	mResizeWidget = new DkBatchResizeWidget(mWidgets[batch_resize]);
+	mResizeWidget = new DkBatchResizeWidget(this);
 	mWidgets[batch_resize]->setContentWidget(mResizeWidget);
-	mWidgets[batch_resize]->showContent(false);
 
 	mWidgets[batch_transform] = new DkBatchWidget(tr("Transform"), tr("inactive"), this);
-	mTransformWidget = new DkBatchTransformWidget(mWidgets[batch_transform]);
+	mTransformWidget = new DkBatchTransformWidget(this);
 	mWidgets[batch_transform]->setContentWidget(mTransformWidget);
-	mWidgets[batch_transform]->showContent(false);
 
 #ifdef WITH_PLUGINS
 	mWidgets[batch_plugin] = new DkBatchWidget(tr("Plugins"), tr("inactive"), this);
-	mPluginWidget = new DkBatchPluginWidget(mWidgets[batch_plugin]);
+	mPluginWidget = new DkBatchPluginWidget(this);
 	mWidgets[batch_plugin]->setContentWidget(mPluginWidget);
-	mWidgets[batch_plugin]->showContent(false);
 #endif
 
 	mWidgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
-	mOutputSelection = new DkBatchOutput(mWidgets[batch_output]);
+	mOutputSelection = new DkBatchOutput(this);
 	mWidgets[batch_output]->setContentWidget(mOutputSelection);
 
 	mProgressBar = new QProgressBar(this);
@@ -1271,31 +1288,43 @@ void DkBatchDialog::createLayout() {
 	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 
-
-	QWidget* batchWidget = new QWidget(this);
-	QVBoxLayout* batchLayout = new QVBoxLayout(batchWidget);
-	batchLayout->setAlignment(Qt::AlignTop);
-	for (int i=0; i < mWidgets.size(); i++) {
-
-		if (i != batch_input)
-			batchLayout->addWidget(mWidgets[i]);
-		//connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); // most widgets do not have (and need) a changed signal ... perhaps uncomment this again 
+	QWidget* centralWidget = new QWidget(this);
+	mCentralLayout = new QStackedLayout(centralWidget);
+	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+	for (DkBatchWidget* w : mWidgets) {
+		mCentralLayout->addWidget(w->contentWidget());
+		connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
 	}
+
 	connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
 
-	QSplitter* splitter = new QSplitter(Qt::Vertical, this);
-	splitter->addWidget(mWidgets[batch_input]);
-	splitter->addWidget(batchWidget);
-
-	QVBoxLayout* dialogLayout = new QVBoxLayout(this);
-	dialogLayout->addWidget(splitter);		// almost everything
+	QWidget* contentWidget = new QWidget(this);
+	QVBoxLayout* dialogLayout = new QVBoxLayout(contentWidget);
+	dialogLayout->addWidget(centralWidget);		// almost everything
 	dialogLayout->addWidget(mProgressBar);
 	dialogLayout->addWidget(mSummaryLabel);
 	//dialogLayout->addStretch(10);
 	dialogLayout->addWidget(mButtons);
 
-	setLayout(dialogLayout);
+	QWidget* tabWidget = new QWidget(this);
+	tabWidget->setObjectName("DkBatchTabs");
+
+	QVBoxLayout* tabLayout = new QVBoxLayout(tabWidget);
+	tabLayout->setAlignment(Qt::AlignTop);
+
+	// tab buttons must be checked exclusively
+	QButtonGroup* tabGroup = new QButtonGroup(this);
+
+	for (DkBatchWidget* w : mWidgets) {
+		tabLayout->addWidget(w->headerWidget());
+		tabGroup->addButton(w->headerWidget());
+	}
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(tabWidget);
+	layout->addWidget(contentWidget);
 }
 
 void DkBatchDialog::accept() {
@@ -1509,6 +1538,23 @@ void DkBatchDialog::setSelectedFiles(const QStringList& selFiles) {
 	if (!selFiles.empty()) {
 		mFileSelection->getInputEdit()->appendFiles(selFiles);
 		mFileSelection->changeTab(DkFileSelection::tab_text_input);
+	}
+
+}
+
+void DkBatchDialog::changeWidget() {
+
+	DkBatchWidget* widget = dynamic_cast<DkBatchWidget*>(sender());
+
+	if (!widget) {
+		qWarning() << "changeWidget() called with NULL widget";
+		return;
+	}
+
+	for (DkBatchWidget* cw : mWidgets) {
+
+		if (cw == widget)
+			mCentralLayout->setCurrentWidget(cw->contentWidget());
 	}
 
 }

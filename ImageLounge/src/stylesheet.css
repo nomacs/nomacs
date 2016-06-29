@@ -371,11 +371,13 @@ daf--DkPreferenceWidget {
 	border: 1px solid #ccc;
 }
 
-QWidget#DkPreferenceTabs {
+QWidget#DkPreferenceTabs,
+QWidget#DkBatchTabs {
 	background-color: #333;
 }
 
-QPushButton#DkTabEntryWidget {
+QPushButton#DkTabEntryWidget,
+nmc--DkBatchTabButton {
 	color: #fff;
 	font: thin "Segoe UI";
 	font-size: 14pt;
@@ -383,11 +385,18 @@ QPushButton#DkTabEntryWidget {
 	text-align: left;
 }
 
-QPushButton#DkTabEntryWidget:hover {
+nmc--DkBatchTabButton {
+	min-width: 250px;
+	padding-bottom: 30px;
+}
+
+QPushButton#DkTabEntryWidget:hover,
+nmc--DkBatchTabButton:hover {
 	background-color: rgba(255, 255, 255, 30);
 }
 
-QPushButton#DkTabEntryWidget:checked {
+QPushButton#DkTabEntryWidget:checked,
+nmc--DkBatchTabButton:checked {
 	background-color: rgba(0, 0, 0, 80);
 	border: none;	/* clear border styles first */
 	border-left: 4px solid HIGHLIGHT_COLOR;
