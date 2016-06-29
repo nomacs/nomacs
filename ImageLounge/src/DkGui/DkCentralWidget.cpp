@@ -637,6 +637,14 @@ void DkCentralWidget::removeTab(int tabIdx) {
 	if (tabIdx == -1)
 		tabIdx = mTabbar->currentIndex();
 
+	// if user requests close on batch while processing - cancel batch
+	if (mTabInfos[tabIdx]->getMode() == DkTabInfo::tab_batch) {
+		DkBatchWidget* bw = dynamic_cast<DkBatchWidget*>(mWidgets[batch_widget]);
+
+		if (bw)
+			bw->close();
+	}
+
 	for (int idx = 0; idx < mTabInfos.size(); idx++) {
 		
 		if (mTabInfos.at(idx)->getTabIdx() == tabIdx) {
@@ -819,17 +827,17 @@ void DkCentralWidget::showBatch(bool show) {
 
 			// add actions
 			DkActionManager& am = DkActionManager::instance();
-			bw->addActions(am.fileActions().toList());
+			//bw->addActions(am.fileActions().toList());
 			bw->addActions(am.viewActions().toList());
-			bw->addActions(am.editActions().toList());
-			bw->addActions(am.sortActions().toList());
-			bw->addActions(am.toolsActions().toList());
+			//bw->addActions(am.editActions().toList());
+			//bw->addActions(am.sortActions().toList());
+			//bw->addActions(am.toolsActions().toList());
 			bw->addActions(am.panelActions().toList());
-			bw->addActions(am.syncActions().toList());
-			bw->addActions(am.pluginActions().toList());
-			bw->addActions(am.lanActions().toList());
-			bw->addActions(am.helpActions().toList());
-			bw->addActions(am.hiddenActions().toList());
+			//bw->addActions(am.syncActions().toList());
+			//bw->addActions(am.pluginActions().toList());
+			//bw->addActions(am.lanActions().toList());
+			//bw->addActions(am.helpActions().toList());
+			//bw->addActions(am.hiddenActions().toList());
 		}
 
 		switchWidget(mWidgets[batch_widget]);

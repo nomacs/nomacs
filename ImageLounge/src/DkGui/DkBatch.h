@@ -420,6 +420,7 @@ class DkBatchWidget : public QWidget {
 
 public:
 	DkBatchWidget(const QString& currentDirectory = QString(), QWidget* parent = 0);
+	~DkBatchWidget();
 
 	enum batchWidgets {
 		batch_input,
@@ -432,8 +433,8 @@ public:
 	};
 
 public slots:
-	virtual void accept();
-	virtual void reject();
+	void accept();
+	bool close();
 	void widgetChanged();
 	void logButtonClicked();
 	void processingFinished();

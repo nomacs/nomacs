@@ -724,13 +724,13 @@ DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* paren
 
 	mBatchConfig = config;
 
-	connect(&batchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
-	connect(&batchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
+	connect(&mBatchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
+	connect(&mBatchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
 }
 
 void DkBatchProcessing::init() {
 
-	batchItems.clear();
+	mBatchItems.clear();
 	
 	QStringList fileList = mBatchConfig.getFileList();
 
@@ -748,7 +748,7 @@ void DkBatchProcessing::init() {
 		cProcess.setProcessChain(mBatchConfig.getProcessFunctions());
 		cProcess.setCompression(mBatchConfig.getCompression());
 
-		batchItems.push_back(cProcess);
+		mBatchItems.push_back(cProcess);
 	}
 }
 
@@ -758,11 +758,11 @@ void DkBatchProcessing::compute() {
 
 	qDebug() << "computing...";
 
-	if (batchWatcher.isRunning())
-		batchWatcher.waitForFinished();
+	if (mBatchWatcher.isRunning())
+		mBatchWatcher.waitForFinished();
 
-	QFuture<void> future = QtConcurrent::map(batchItems, &nmc::DkBatchProcessing::computeItem);
-	batchWatcher.setFuture(future);
+	QFuture<void> future = QtConcurrent::map(mBatchItems, &nmc::DkBatchProcessing::computeItem);
+	mBatchWatcher.setFuture(future);
 }
 
 bool DkBatchProcessing::computeItem(DkBatchProcess& item) {
@@ -775,7 +775,7 @@ void DkBatchProcessing::postLoad() {
 	// collect batch infos
 	QVector<QSharedPointer<DkBatchInfo> > batchInfo;
 
-	for (DkBatchProcess batch : batchItems) {
+	for (DkBatchProcess batch : mBatchItems) {
 		batchInfo << batch.batchInfo();
 	}
 
@@ -788,7 +788,7 @@ QStringList DkBatchProcessing::getLog() const {
 
 	QStringList log;
 
-	for (DkBatchProcess batch : batchItems) {
+	for (DkBatchProcess batch : mBatchItems) {
 
 		log << batch.getLog();
 		log << "";	// add empty line between images
@@ -801,7 +801,7 @@ int DkBatchProcessing::getNumFailures() const {
 
 	int numFailures = 0;
 
-	for (DkBatchProcess batch : batchItems) {
+	for (DkBatchProcess batch : mBatchItems) {
 		
 		if (batch.hasFailed())
 			numFailures++;
@@ -814,7 +814,7 @@ int DkBatchProcessing::getNumProcessed() const {
 
 	int numProcessed = 0;
 
-	for (DkBatchProcess batch : batchItems) {
+	for (DkBatchProcess batch : mBatchItems) {
 
 		if (batch.wasProcessed())
 			numProcessed++;
@@ -825,28 +825,28 @@ int DkBatchProcessing::getNumProcessed() const {
 
 QList<int> DkBatchProcessing::getCurrentResults() {
 
-	if (resList.empty()) {
-		for (int idx = 0; idx < batchItems.size(); idx++)
-			resList.append(batch_item_not_computed);
+	if (mResList.empty()) {
+		for (int idx = 0; idx < mBatchItems.size(); idx++)
+			mResList.append(batch_item_not_computed);
 	}
 
-	for (int idx = 0; idx < resList.size(); idx++) {
+	for (int idx = 0; idx < mResList.size(); idx++) {
 
-		if (resList.at(idx) != batch_item_not_computed)
+		if (mResList.at(idx) != batch_item_not_computed)
 			continue;
 
-		if (batchItems.at(idx).wasProcessed())
-			resList[idx] = batchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
+		if (mBatchItems.at(idx).wasProcessed())
+			mResList[idx] = mBatchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
 	}
 
-	return resList;
+	return mResList;
 }
 
 QStringList DkBatchProcessing::getResultList() const {
 
 	QStringList results;
 
-	for (DkBatchProcess batch : batchItems) {
+	for (DkBatchProcess batch : mBatchItems) {
 
 		if (batch.wasProcessed())
 			results.append(getBatchSummary(batch));
@@ -867,19 +867,23 @@ QString DkBatchProcessing::getBatchSummary(const DkBatchProcess& batch) const {
 	return res;
 }
 
+void DkBatchProcessing::waitForFinished() {
+	mBatchWatcher.waitForFinished();
+}
+
 int DkBatchProcessing::getNumItems() const {
 
-	return batchItems.size();
+	return mBatchItems.size();
 }
 
 bool DkBatchProcessing::isComputing() const {
 
-	return batchWatcher.isRunning();
+	return mBatchWatcher.isRunning();
 }
 
 void DkBatchProcessing::cancel() {
 
-	batchWatcher.cancel();
+	mBatchWatcher.cancel();
 }
 
 }

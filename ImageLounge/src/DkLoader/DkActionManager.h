@@ -47,6 +47,7 @@
 // Qt defines
 class QMenu;
 class QMainWindow;
+class QWinTaskbarProgress;
 
 namespace nmc {
 	
@@ -577,6 +578,38 @@ protected:
 	DkPluginActionManager* mPluginManager = 0;
 
 	QSharedPointer<DkActionManager> inst;
+};
+
+class DllLoaderExport DkGlobalProgress : public QWidget {
+	Q_OBJECT
+
+public:
+	static DkGlobalProgress& instance();
+	~DkGlobalProgress();
+
+	QObject* progressObject() const;
+	void start();
+	void stop();
+
+#ifdef Q_OS_WIN
+	void setProgressBar(QWinTaskbarProgress* progressbar);
+	QWinTaskbarProgress* progressBar();
+#endif
+
+public slots:
+	void setProgressValue(int value);
+
+private:
+	DkGlobalProgress();
+
+	QSharedPointer<DkGlobalProgress> inst;
+	bool showProgress;
+
+#ifdef Q_OS_WIN
+	QWinTaskbarProgress* mProgress = 0;
+#else
+	void* mProgress = 0;
+#endif
 };
 
 

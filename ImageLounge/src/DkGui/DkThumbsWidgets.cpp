@@ -1145,9 +1145,6 @@ void DkThumbScene::updateLayout() {
 	mNumCols = qMin(mThumbLabels.size(), mNumCols);
 	mNumRows = qCeil((float)mThumbLabels.size()/mNumCols);
 
-	qDebug() << "num rows x num cols: " << mNumCols*mNumRows;
-	qDebug() << " thumb labels size: " << mThumbLabels.size();
-
 	int tso = Settings::param().display().thumbPreviewSize+mXOffset;
 	setSceneRect(0, 0, mNumCols*tso+mXOffset, mNumRows*tso+mXOffset);
 	//int fileIdx = thumbPool->getCurrentFileIdx();
@@ -1170,11 +1167,6 @@ void DkThumbScene::updateLayout() {
 			cLabel->setPos(cXOffset, cYOffset);
 			cLabel->updateSize();
 
-			//if (tIdx == fileIdx)
-			//	cLabel->ensureVisible();
-
-			//cLabel->show();
-
 			cXOffset += Settings::param().display().thumbPreviewSize + mXOffset;
 		}
 
@@ -1182,14 +1174,8 @@ void DkThumbScene::updateLayout() {
 		cYOffset += Settings::param().display().thumbPreviewSize + mXOffset;	// 20 for label 
 	}
 
-	qDebug() << "moving takes: " << dt;
-
 	for (int idx = 0; idx < mThumbLabels.size(); idx++) {
 
-		//if (thumbs.at(idx)->isSelected()) {
-		//	thumbLabels.at(idx)->ensureVisible();
-		//	thumbLabels.at(idx)->setSelected(true);	// not working here?!
-		//}
 		if (mThumbLabels.at(idx)->isSelected())
 			mThumbLabels.at(idx)->ensureVisible();
 	}
@@ -1804,17 +1790,10 @@ void DkThumbsView::fetchThumbs() {
 
 	// don't do anything if it is loading anyway
 	if (Settings::param().resources().numThumbsLoading/* > maxThreads*/) {
-		//qDebug() << "rejected because num thumbs loading: " << 
 		return;
 	}
 
-	qDebug() << "currently loading: " << Settings::param().resources().numThumbsLoading << " thumbs";
-
-	//bool firstReached = false;
-
 	QList<QGraphicsItem*> items = scene->items(mapToScene(viewport()->rect()).boundingRect(), Qt::IntersectsItemShape);
-
-	//qDebug() << mapToScene(mViewport()->rect()).boundingRect() << " number of items: " << items.size();
 
 	for (int idx = 0; idx < items.size(); idx++) {
 

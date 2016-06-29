@@ -43,10 +43,10 @@ target_include_directories(${DLL_GUI_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZL
 target_include_directories(${DLL_LOADER_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
-qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
-qt5_use_modules(${DLL_GUI_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
-qt5_use_modules(${DLL_LOADER_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
-qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg)
+qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
+qt5_use_modules(${DLL_GUI_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
+qt5_use_modules(${DLL_LOADER_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
+qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
 
 # qt_wrap_cpp(${DLL_GUI_NAME} ${GUI_SOURCES} ${LOADER_HEADERS});
 
@@ -106,7 +106,7 @@ foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 
 endforeach(opencvlib)
 
-set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent Qt5Svg)
+set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent Qt5Svg Qt5WinExtras)
 foreach(qtlib ${QTLIBLIST})
 	get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)

@@ -47,6 +47,11 @@
 #include <QDir>
 #include <QApplication>
 #include <QDebug>
+
+#ifdef Q_OS_WIN
+#include <QWinTaskbarProgress>
+#include <windows.h>
+#endif
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1636,5 +1641,75 @@ QMainWindow* DkActionManager::getMainWindow() const {
 
 	return win;
 }
+
+// DkGlobalProgress --------------------------------------------------------------------
+DkGlobalProgress::DkGlobalProgress() : showProgress(true) {
+#ifdef Q_OS_WIN
+	mProgress = new QWinTaskbarProgress(this);
+#endif
+}
+
+DkGlobalProgress::~DkGlobalProgress() {}
+
+DkGlobalProgress& DkGlobalProgress::instance() { 
+
+	static QSharedPointer<DkGlobalProgress> inst;
+	if (!inst)
+		inst = QSharedPointer<DkGlobalProgress>(new DkGlobalProgress());
+	return *inst; 
+}
+
+void DkGlobalProgress::start() {
+
+#ifdef Q_OS_WIN
+
+	if (!mProgress) {
+		qWarning() << "global progress bar is empty...";
+		return;
+	}
+
+	mProgress->setVisible(true);
+	mProgress->setValue(0);
+#endif
+
+}
+
+void DkGlobalProgress::stop() {
+
+	if (!mProgress)
+		return;
+
+#ifdef Q_OS_WIN
+	mProgress->setVisible(false);
+	mProgress->setValue(0);
+#endif
+}
+
+void DkGlobalProgress::setProgressValue(int value) {
+	
+#ifdef Q_OS_WIN
+	if (showProgress)
+		mProgress->setValue(value);
+#endif
+}
+
+QObject* DkGlobalProgress::progressObject() const {
+	return mProgress;
+}
+
+#ifdef Q_OS_WIN32
+void DkGlobalProgress::setProgressBar(QWinTaskbarProgress* progress) {
+	mProgress = progress;
+}
+
+QWinTaskbarProgress* DkGlobalProgress::progressBar() {
+	return mProgress;
+}
+#else
+QProgressDialog* DkGlobalProgress::progressBar() const {
+	return mProgress;
+}
+#endif
+
 
 }

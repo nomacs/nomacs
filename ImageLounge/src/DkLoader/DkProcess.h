@@ -278,6 +278,7 @@ public:
 	QList<int> getCurrentResults();
 	QStringList getResultList() const;
 	QString getBatchSummary(const DkBatchProcess& batch) const;
+	void waitForFinished();
 
 	// getter, setter
 	void setBatchConfig(const DkBatchConfig& config) { mBatchConfig = config; };
@@ -295,11 +296,11 @@ signals:
 
 protected:
 	DkBatchConfig mBatchConfig;
-	QVector<DkBatchProcess> batchItems;
-	QList<int> resList;
+	QVector<DkBatchProcess> mBatchItems;
+	QList<int> mResList;
 	
 	// threading
-	QFutureWatcher<void> batchWatcher;
+	QFutureWatcher<void> mBatchWatcher;
 	
 	void init();
 };

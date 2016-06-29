@@ -35,6 +35,7 @@
 #include "DkSettings.h"
 #include "DkMessageBox.h"
 #include "DkPluginManager.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>
@@ -107,8 +108,6 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event) {
 	p.drawText(QPoint(25, 50), mInfo);
 
 	QPushButton::paintEvent(event);
-
-
 }
 
 // DkBatchContainer --------------------------------------------------------------------
@@ -340,7 +339,7 @@ void DkFileSelection::createLayout() {
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
 	widgetLayout->setContentsMargins(0, 0, 0, 0);
-	widgetLayout->addWidget(mExplorer, 0, 0, 3, 1);
+	widgetLayout->addWidget(mExplorer, 0, 0, 2, 1);
 	widgetLayout->addWidget(upperWidget, 0, 1);
 	widgetLayout->addWidget(mInputTabs, 1, 1);
 	setLayout(widgetLayout);
@@ -1134,9 +1133,9 @@ void DkBatchTransformWidget::createLayout() {
 
 	mRbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
 	mRbRotate0->setChecked(true);
-	mRbRotateLeft = new QRadioButton(tr("9&0%1 Counter Clockwise").arg(dk_degree_str));
-	mRbRotateRight = new QRadioButton(tr("&90%1 Clockwise").arg(dk_degree_str));
-	mRbRotate180 = new QRadioButton(tr("&180%1").arg(dk_degree_str));
+	mRbRotateLeft = new QRadioButton(tr("90%1 Counter Clockwise").arg(dk_degree_str));
+	mRbRotateRight = new QRadioButton(tr("90%1 Clockwise").arg(dk_degree_str));
+	mRbRotate180 = new QRadioButton(tr("180%1").arg(dk_degree_str));
 
 	mRotateGroup = new QButtonGroup(this);
 
@@ -1237,6 +1236,7 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
 
 	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
+	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), &DkGlobalProgress::instance(), SLOT(setProgressValue(int)));
 	connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
 	setWindowTitle(tr("Batch Conversion"));
@@ -1259,6 +1259,13 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
 	addAction(previousAction);
 
+}
+
+DkBatchWidget::~DkBatchWidget() {
+
+	// close cancels the current process
+	if (!close())
+		mBatchProcessing->waitForFinished();
 }
 
 void DkBatchWidget::createLayout() {
@@ -1310,11 +1317,12 @@ void DkBatchWidget::createLayout() {
 	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	mButtons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
+	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
+	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
 	mButtons->addButton(mLogButton, QDialogButtonBox::ActionRole);
 
 	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(close()));
 
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
@@ -1486,15 +1494,16 @@ void DkBatchWidget::accept() {
 	mBatchProcessing->compute();
 }
 
-void DkBatchWidget::reject() {
+bool DkBatchWidget::close() {
 
 	if (mBatchProcessing->isComputing()) {
 		mBatchProcessing->cancel();
 		mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
 		//stopProcessing();
+		return false;
 	}
 
-	// TODO: see how we can cancel and close here correctly
+	return true;
 }
 
 void DkBatchWidget::processingFinished() {
@@ -1509,9 +1518,10 @@ void DkBatchWidget::startProcessing() {
 	mProgressBar->show();
 	mProgressBar->reset();
 	mProgressBar->setMaximum(mFileSelection->getSelectedFiles().size());
+	mProgressBar->setTextVisible(false);
 	mLogButton->setEnabled(false);
 	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(true);
 
 	mLogUpdateTimer.start(1000);
 }
@@ -1536,8 +1546,7 @@ void DkBatchWidget::stopProcessing() {
 	mProgressBar->reset();
 	mLogButton->setEnabled(true);
 	mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
-	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(true);
-	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
+	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
 
 	int numFailures = mBatchProcessing->getNumFailures();
 	int numProcessed = mBatchProcessing->getNumProcessed();

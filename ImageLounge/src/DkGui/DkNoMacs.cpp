@@ -96,6 +96,10 @@
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
+#ifdef Q_OS_WIN
+#include <QWinTaskbarButton>
+#endif
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
@@ -2119,6 +2123,15 @@ void DkNoMacs::onWindowLoaded() {
 
 	// load settings AFTER everything is initialized
 	getTabWidget()->loadSettings();
+
+// init global taskbar
+#ifdef WIN32
+	QWinTaskbarButton *button = new QWinTaskbarButton(this);
+	button->setWindow(windowHandle());
+
+	DkGlobalProgress::instance().setProgressBar(button->progress());
+#endif
+
 
 }
 
