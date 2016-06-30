@@ -135,6 +135,10 @@ QWidget* DkBatchContainer::contentWidget() const {
 	return dynamic_cast<QWidget*>(mBatchContent);
 }
 
+DkBatchContent * DkBatchContainer::batchContent() const {
+	return mBatchContent;
+}
+
 DkBatchTabButton* DkBatchContainer::headerWidget() const {
 
 	return mHeaderButton;
@@ -357,6 +361,12 @@ void DkFileSelection::createLayout() {
 	connect(mExplorer, SIGNAL(openDir(const QString&)), this, SLOT(setDir(const QString&)));
 	connect(mLoader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mThumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 
+}
+
+void DkFileSelection::applyDefault() {
+	
+	mInputTextEdit->clear();
+	selectionChanged();
 }
 
 void DkFileSelection::changeTab(int tabIdx) const {
@@ -932,6 +942,26 @@ int DkBatchOutput::getCompression() const {
 	return mSbCompression->value();
 }
 
+void DkBatchOutput::applyDefault() {
+
+	mCbUseInput->setChecked(false);
+	mCbDeleteOriginal->setChecked(false);
+	mCbOverwriteExisting->setChecked(false);
+	mCbExtension->setCurrentIndex(0);
+	mCbNewExtension->setCurrentIndex(0);
+	mOutputDirectory = "";
+	mInputDirectory = "";
+	mHUserInput = false;
+	mRUserInput = false;
+
+	// remove all but the first
+	for (int idx = mFilenameWidgets.size()-1; idx > 0; idx++) {
+		delete mFilenameWidgets[idx];
+	}
+
+	mOutputlineEdit->setText(mOutputDirectory);
+}
+
 int DkBatchOutput::overwriteMode() const {
 
 	if (mCbOverwriteExisting->isChecked())
@@ -960,7 +990,7 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 DkBatchResizeWidget::DkBatchResizeWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
 	createLayout();
-	modeChanged(0);	// init gui
+	applyDefault();
 }
 
 void DkBatchResizeWidget::createLayout() {
@@ -979,13 +1009,11 @@ void DkBatchResizeWidget::createLayout() {
 	mSbPercent->setSuffix(tr("%"));
 	mSbPercent->setMaximum(1000);
 	mSbPercent->setMinimum(0.1);
-	mSbPercent->setValue(100.0);
 
 	mSbPx = new QSpinBox(this);
 	mSbPx->setSuffix(tr(" px"));
 	mSbPx->setMaximum(SHRT_MAX);
 	mSbPx->setMinimum(1);
-	mSbPx->setValue(1920);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -1028,6 +1056,15 @@ void DkBatchResizeWidget::percentChanged(double val) {
 void DkBatchResizeWidget::pxChanged(int val) {
 
 	emit newHeaderText(mComboMode->itemText(mComboMode->currentIndex()) + ": " + QString::number(val) + " px");
+}
+
+void DkBatchResizeWidget::applyDefault() {
+
+	mSbPercent->setValue(100.0);
+	mSbPx->setValue(1920);
+	mComboMode->setCurrentIndex(0);
+	mComboProperties->setCurrentIndex(0);
+	modeChanged(0);	// init gui
 }
 
 void DkBatchResizeWidget::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
@@ -1078,16 +1115,8 @@ DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(p
 
 void DkProfileWidget::createLayout() {
 
-	DkBatchProfile bp;
-	QStringList pn = bp.profileNames();
-
 	mProfileCombo = new QComboBox(this);
 	mProfileCombo->setObjectName("profileCombo");
-	mProfileCombo->addItem(tr("no profile"));
-	
-	for (const QString& p : pn) {
-		mProfileCombo->addItem(p);
-	}
 
 	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
 	saveButton->setObjectName("saveButton");
@@ -1097,7 +1126,10 @@ void DkProfileWidget::createLayout() {
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mProfileCombo);
 	layout->addWidget(saveButton);
+
+	updateProfileCombo();
 }
+
 
 bool DkProfileWidget::hasUserInput() const {
 	return false;
@@ -1107,11 +1139,45 @@ bool DkProfileWidget::requiresUserInput() const {
 	return false;
 }
 
+void DkProfileWidget::applyDefault() {
+	// nothing todo here
+}
+
+void DkProfileWidget::profileSaved(const QString& profileName) {
+
+	updateProfileCombo();
+
+	int idx = mProfileCombo->findText(profileName);
+
+	qDebug() << "profile index: " << idx;
+	mProfileCombo->setCurrentIndex(idx);
+}
+
 void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
+
+	// first is the 'no profile'
+	if (text == mProfileCombo->itemText(0)) {
+		emit applyDefaultSignal();
+		return;
+	}
 
 	QString profilePath = DkBatchProfile::profileNameToPath(text);
 	emit loadProfileSignal(profilePath);
 	emit newHeaderText(text);
+}
+
+void DkProfileWidget::updateProfileCombo() {
+
+	mProfileCombo->clear();
+
+	DkBatchProfile bp;
+	QStringList pn = bp.profileNames();
+
+	mProfileCombo->addItem(tr("<no profile selected>"));
+
+	for (const QString& p : pn) {
+		mProfileCombo->addItem(p);
+	}
 }
 
 void DkProfileWidget::on_saveButton_clicked() {
@@ -1122,7 +1188,8 @@ void DkProfileWidget::on_saveButton_clicked() {
 void DkProfileWidget::saveProfile() {
 
 	// default mode is overwrite (UI is asking anyway)
-	QString dName = mProfileCombo->currentText().isEmpty() ? "Profile 1" : mProfileCombo->currentText();
+	QString cn = mProfileCombo->currentText();
+	QString dName = cn.isEmpty() || cn == mProfileCombo->itemText(0) ? "Profile 1" : mProfileCombo->currentText();
 
 	bool ok;
 	QString text = QInputDialog::getText(this, tr("Profile Name"),
@@ -1237,6 +1304,15 @@ bool DkBatchPluginWidget::requiresUserInput() const {
 	return false;
 }
 
+void DkBatchPluginWidget::applyDefault() {
+
+	QStringList selectedPlugins;
+	
+	for (int idx = 0; idx < mSelectedPluginList->count(); idx++) {
+		selectPlugin(mSelectedPluginList->item(idx)->text(), false);
+	}
+}
+
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
 
 	QStringList pluginActions;
@@ -1270,6 +1346,7 @@ void DkBatchPluginWidget::updateHeader() const {
 DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
 	createLayout();
+	applyDefault();
 }
 
 void DkBatchTransformWidget::createLayout() {
@@ -1304,10 +1381,20 @@ void DkBatchTransformWidget::createLayout() {
 	layout->addWidget(mCbCropMetadata, 2, 1);
 	layout->setColumnStretch(3, 10);
 
-	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
-	connect(mCbFlipV, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
-	connect(mCbFlipH, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
-	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
+	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
+	connect(mCbFlipV, SIGNAL(clicked()), this, SLOT(updateHeader()));
+	connect(mCbFlipH, SIGNAL(clicked()), this, SLOT(updateHeader()));
+	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
+}
+
+void DkBatchTransformWidget::applyDefault() {
+
+	mRbRotate0->setChecked(true);
+	mCbFlipH->setChecked(false);
+	mCbFlipV->setChecked(false);
+	mCbCropMetadata->setChecked(false);
+
+	updateHeader();
 }
 
 bool DkBatchTransformWidget::hasUserInput() const {
@@ -1318,16 +1405,6 @@ bool DkBatchTransformWidget::hasUserInput() const {
 bool DkBatchTransformWidget::requiresUserInput() const {
 
 	return false;
-}
-
-void DkBatchTransformWidget::radioButtonClicked(int) {
-
-	updateHeader();
-}
-
-void DkBatchTransformWidget::checkBoxClicked() {
-
-	updateHeader();
 }
 
 void DkBatchTransformWidget::updateHeader() const {
@@ -1356,6 +1433,32 @@ void DkBatchTransformWidget::updateHeader() const {
 void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const {
 
 	batchTransform->setProperties(getAngle(), mCbFlipH->isChecked(), mCbFlipV->isChecked(), mCbCropMetadata->isChecked());
+}
+
+bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> batchTransform) {
+	
+	if (!batchTransform) {
+		qWarning() << "cannot load settings, DkBatchTransform is NULL";
+		return false;
+	}
+
+	bool errored = false;
+
+	switch (batchTransform->angle()) {
+	case -90:	mRbRotateLeft->setChecked(true); break;
+	case 90:	mRbRotateLeft->setChecked(true); break;
+	case 180:	mRbRotateLeft->setChecked(true); break;
+	case 0:	break;	// nothing todo
+	default: errored = true;
+	}
+
+	mCbFlipH->setChecked(batchTransform->horizontalFlip());
+	mCbFlipV->setChecked(batchTransform->verticalFlip());
+	mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
+
+	updateHeader();
+
+	return !errored;
 }
 
 int DkBatchTransformWidget::getAngle() const {
@@ -1388,6 +1491,7 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
 	connect(mProfileWidget, SIGNAL(saveProfileSignal(const QString&)), this, SLOT(saveProfile(const QString&)));
 	connect(mProfileWidget, SIGNAL(loadProfileSignal(const QString&)), this, SLOT(loadProfile(const QString&)));
+	connect(mProfileWidget, SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
 
 	mFileSelection->setDir(currentDirectory);
 	mOutputSelection->setInputDir(currentDirectory);
@@ -1809,12 +1913,15 @@ void DkBatchWidget::saveProfile(const QString & profilePath) const {
 
 	if (!DkBatchProfile::saveProfile(profilePath, bc)) {
 		QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
+		return;
 	}
 	else
 		qInfo() << "batch profile written to: " << profilePath;
+
+	mProfileWidget->profileSaved(DkBatchProfile::makeUserFriendly(profilePath));
 }
 
-void DkBatchWidget::loadProfile(const QString & profilePath) const {
+void DkBatchWidget::loadProfile(const QString & profilePath) {
 
 	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
 
@@ -1825,6 +1932,12 @@ void DkBatchWidget::loadProfile(const QString & profilePath) const {
 			tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
 		return;
 	}
+
+	applyDefault();
+
+	// TODO: add use input option
+	if (!bc.getFileList().empty())
+		setSelectedFiles(bc.getFileList());
 
 	int warnings = 0;
 	auto functions = bc.getProcessFunctions();
@@ -1841,6 +1954,12 @@ void DkBatchWidget::loadProfile(const QString & profilePath) const {
 				warnings++;
 			}
 		}
+		// apply resize batch settings
+		else if (QSharedPointer<DkBatchTransform> tf = qSharedPointerDynamicCast<DkBatchTransform>(cf)) {
+			if (!mTransformWidget->loadProperties(tf)) {
+				warnings++;
+			}
+		}
 #ifdef WITH_PLUGINS
 		// apply plugin batch settings
 		else if (QSharedPointer<DkPluginBatch> pf = qSharedPointerDynamicCast<DkPluginBatch>(cf)) {
@@ -1849,11 +1968,21 @@ void DkBatchWidget::loadProfile(const QString & profilePath) const {
 			}
 		}
 #endif
+		else {
+			qWarning() << "illegal processing function: " << cf->name() << " - ignoring";
+			warnings++;
+		}
 	}
 
 	// TODO: feedback 
 	qInfo() << "settings loaded with" << warnings << "warnings";
 
+}
+
+void DkBatchWidget::applyDefault() {
+
+	for (DkBatchContainer* bc : mWidgets)
+		bc->batchContent()->applyDefault();
 }
 
 void DkBatchWidget::widgetChanged() {

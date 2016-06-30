@@ -95,6 +95,7 @@ class DkBatchContent {
 public:
 	virtual bool hasUserInput() const = 0;
 	virtual bool requiresUserInput() const = 0;
+	virtual void applyDefault() = 0;
 };
 
 class DkBatchTabButton : public QPushButton {
@@ -125,6 +126,7 @@ public:
 	
 	void setContentWidget(QWidget* batchContent);
 	QWidget* contentWidget() const;
+	DkBatchContent* batchContent() const;
 	DkBatchTabButton* headerWidget() const;
 
 public slots:
@@ -188,6 +190,8 @@ public:
 
 	virtual bool hasUserInput() const {return mHUserInput;};
 	virtual bool requiresUserInput() const {return mRUserInput;};
+	virtual void applyDefault();
+
 	void changeTab(int tabIdx) const;
 	void startProcessing();
 	void stopProcessing();
@@ -279,6 +283,7 @@ public:
 
 	virtual bool hasUserInput() const;
 	virtual bool requiresUserInput() const {return mRUserInput;};
+	void applyDefault();
 	int overwriteMode() const;
 	bool useInputDir() const;
 	bool deleteOriginal() const;
@@ -340,6 +345,7 @@ public:
 	bool loadProperties(QSharedPointer<DkResizeBatch> batchResize) const;
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
+	virtual void applyDefault();
 
 public slots:
 	void modeChanged(int idx);
@@ -367,6 +373,8 @@ public:
 	//void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
+	void applyDefault();
+	void profileSaved(const QString& profileName);
 
 public slots:
 	void on_profileCombo_currentIndexChanged(const QString& text);
@@ -376,10 +384,12 @@ signals:
 	void newHeaderText(const QString& txt) const;
 	void loadProfileSignal(const QString& profilePath) const;
 	void saveProfileSignal(const QString& profilePath) const;
+	void applyDefaultSignal() const;
 
 protected:
 	void createLayout();
 	void saveProfile();
+	void updateProfileCombo();
 
 	QComboBox* mProfileCombo;
 };
@@ -396,6 +406,7 @@ public:
 	bool loadProperties(QSharedPointer<DkPluginBatch> batchPlugin);
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
+	void applyDefault();
 
 public slots:
 	void selectPlugin(const QString& actionName, bool select = true);
@@ -423,19 +434,19 @@ public:
 	DkBatchTransformWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
+	bool loadProperties(QSharedPointer<DkBatchTransform> batchTransform);
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
+	void applyDefault();
 
 public slots:
-	void radioButtonClicked(int id);
-	void checkBoxClicked();
+	void updateHeader() const;
 
 signals:
 	void newHeaderText(const QString& txt) const;
 
 protected:
 	void createLayout();
-	void updateHeader() const;
 	int getAngle() const;
 
 	QButtonGroup* mRotateGroup = 0;
@@ -480,7 +491,8 @@ public slots:
 	void nextTab();
 	void previousTab();
 	void saveProfile(const QString& profilePath) const;
-	void loadProfile(const QString& profilePath) const;
+	void loadProfile(const QString& profilePath);
+	void applyDefault();
 
 protected:
 	void createLayout();

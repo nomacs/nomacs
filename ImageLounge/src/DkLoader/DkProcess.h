@@ -179,6 +179,11 @@ public:
 	virtual QString name() const;
 	virtual bool isActive() const;
 
+	int angle() const;
+	bool horizontalFlip() const;
+	bool verticalFlip() const;
+	bool cropMetatdata() const;
+
 protected:
 
 	int mAngle = 0;
@@ -340,12 +345,12 @@ public:
 	static bool saveProfile(const QString& profilePath, const DkBatchConfig& batchConfig);
 	static QString defaultProfilePath();
 	static QString profileNameToPath(const QString& profileName);
+	static QString makeUserFriendly(const QString& profilePath);
 
 	QStringList profileNames();
 
 protected:
 	QStringList index(const QString& profileDir) const;
-	QString makeUserFriendly(const QString& profilePath) const;
 
 	QString mProfileDir;
 	QStringList mProfilePaths;

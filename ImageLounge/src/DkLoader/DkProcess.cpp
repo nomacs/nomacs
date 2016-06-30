@@ -308,6 +308,22 @@ bool DkBatchTransform::isActive() const {
 	return mHorizontalFlip || mVerticalFlip || mAngle != 0 || mCropFromMetadata;
 }
 
+int DkBatchTransform::angle() const {
+	return mAngle;
+}
+
+bool DkBatchTransform::horizontalFlip() const {
+	return mHorizontalFlip;
+}
+
+bool DkBatchTransform::verticalFlip() const {
+	return mVerticalFlip;
+}
+
+bool DkBatchTransform::cropMetatdata() const {
+	return mCropFromMetadata;
+}
+
 bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
 
 	
@@ -1113,7 +1129,7 @@ QStringList DkBatchProfile::index(const QString & profileDir) const {
 	return profiles;
 }
 
-QString DkBatchProfile::makeUserFriendly(const QString & profilePath) const {
+QString DkBatchProfile::makeUserFriendly(const QString & profilePath) {
 	
 	QString pName = QFileInfo(profilePath).baseName();
 	return pName;
