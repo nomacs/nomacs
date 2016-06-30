@@ -60,6 +60,7 @@
 #include "DkTimer.h"
 #include "DkPong.h"
 #include "DkUtils.h"
+#include "DkProcess.h"
 
 #include <iostream>
 #include <cassert>
@@ -69,6 +70,7 @@
 #endif
 
 void createPluginsPath();
+void computeBatch(const QString& settingsPath, const QString& logPath = QString());
 
 #ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
@@ -109,8 +111,8 @@ int main(int argc, char *argv[]) {
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
 		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
 	
-	if (!nmc::Settings::param().app().openFilters.empty())
-		qInfoClean() << "supported image extensions: " << nmc::Settings::param().app().openFilters[0];
+	//if (!nmc::Settings::param().app().openFilters.empty())
+	//	qInfoClean() << "supported image extensions: " << nmc::Settings::param().app().openFilters[0];
 
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;
@@ -145,10 +147,32 @@ int main(int argc, char *argv[]) {
 		QObject::tr("images"));
 	parser.addOption(tabOpt);
 
+	QCommandLineOption batchOpt(QStringList() << "batch",
+		QObject::tr("Batch processing of <batch-settings.pnm>."),
+		QObject::tr("batch-settings-path"));
+	parser.addOption(batchOpt);
+
+	QCommandLineOption batchLogOpt(QStringList() << "batch-log",
+		QObject::tr("Saves batch log to <log-path.txt>."),
+		QObject::tr("log-path.txt"));
+	parser.addOption(batchLogOpt);
+
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
 
 	createPluginsPath();
+
+	// load to tabs
+	if (!parser.value(batchOpt).isEmpty()) {
+		
+		QString logPath;
+		if (!parser.value(batchLogOpt).isEmpty())
+			logPath = parser.value(batchLogOpt);
+
+		QString batchSettingsPath = parser.value(batchOpt);
+		computeBatch(batchSettingsPath, logPath);
+		return 0;
+	}
 
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
@@ -260,6 +284,41 @@ int main(int argc, char *argv[]) {
 		delete pw;
 
 	return rVal;
+}
+
+void computeBatch(const QString& settingsPath, const QString& logPath) {
+	
+	nmc::DkBatchConfig bc = nmc::DkBatchProfile::loadProfile(settingsPath);
+
+	// guarantee that the output path exists
+	if (!QDir().mkpath(bc.getOutputDirPath())) {
+		qCritical() << "Could not create:" << bc.getOutputDirPath();
+		return;
+	}
+
+	QSharedPointer<nmc::DkBatchProcessing> process(new nmc::DkBatchProcessing());
+	process->setBatchConfig(bc);
+	process->compute();
+
+	process->waitForFinished();	// block
+
+	if (!logPath.isEmpty()) {
+		
+		QFileInfo fi(logPath);
+		
+		QDir().mkpath(fi.absolutePath());
+
+		QFile file(logPath);
+		if (!file.open(QIODevice::WriteOnly))
+			qWarning() << "Sorry, I could not write to" << logPath;
+		else {
+			QStringList log = process->getLog();
+			QTextStream s(&file);
+			for (const QString& line : log)
+				s << line << '\n';
+			qInfo() << "log written to: " << logPath;
+		}
+	}
 }
 
 void createPluginsPath() {

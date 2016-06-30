@@ -1112,8 +1112,6 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 	bool saved = false;
 
 	QFileInfo fInfo(filePath);
-	qDebug() << "extension: " << fInfo.suffix();
-
 
 	if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
 		saved = saveWindowsIcon(img, ba);
@@ -1138,8 +1136,6 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		if (fInfo.suffix().contains(QRegExp("(png)")))
 			compression = -1;
 
-		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
-		
 		QBuffer fileBuffer(ba.data());
 		//size_t s = fileBuffer.size();
 		fileBuffer.open(QIODevice::WriteOnly);

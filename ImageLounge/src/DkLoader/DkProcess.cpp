@@ -1078,8 +1078,9 @@ DkBatchProfile::DkBatchProfile(const QString& profileDir) {
 
 DkBatchConfig DkBatchProfile::loadProfile(const QString & profilePath) {
 
-	if (!QFileInfo(profilePath).exists()) {
-		qInfo() << "cannot read profile from:" << profilePath << "no such file or directory...";
+	QFileInfo fi(profilePath);
+	if (!fi.exists() || !fi.isFile()) {
+		qInfo() << "cannot read profile from:" << profilePath;
 		return DkBatchConfig();
 	}
 
