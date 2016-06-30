@@ -333,10 +333,11 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 	}
 
 	DkRotatingRect rect = container->cropRect();
-	if(mCropFromMetadata) {
+	if (mCropFromMetadata) {
 		if (!rect.isEmpty())
 			container->cropImage(rect, QColor(), false);
 	}
+	
 	QImage img = container->image();
 	QImage tmpImg;
 
@@ -349,8 +350,11 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 		tmpImg = img;
 
 	tmpImg = tmpImg.mirrored(mHorizontalFlip, mVerticalFlip);
+	
 	if (!tmpImg.isNull()) {
-		img = tmpImg;
+	
+		container->setImage(tmpImg, QObject::tr("transformed"));
+
 		if (rect.isEmpty() && mCropFromMetadata)
 			logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
 		else
