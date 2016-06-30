@@ -167,6 +167,26 @@ bool DkResizeBatch::isActive() const {
 	return false;
 }
 
+int DkResizeBatch::mode() const {
+	return mMode;
+}
+
+int DkResizeBatch::property() const {
+	return mProperty;
+}
+
+int DkResizeBatch::iplMethod() const {
+	return mIplMethod;
+}
+
+float DkResizeBatch::scaleFactor() const {
+	return mScaleFactor;
+}
+
+bool DkResizeBatch::correctGamma() const {
+	return mCorrectGamma;
+}
+
 bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 
 	if (mScaleFactor == 1.0f) {
@@ -449,6 +469,10 @@ QString DkPluginBatch::name() const {
 bool DkPluginBatch::isActive() const {
 	
 	return !mPluginList.empty();
+}
+
+QStringList DkPluginBatch::pluginList() const {
+	return mPluginList;
 }
 
 void DkPluginBatch::loadAllPlugins() {
@@ -1023,5 +1047,77 @@ void DkBatchProcessing::cancel() {
 
 	mBatchWatcher.cancel();
 }
+
+// DkBatchProfile --------------------------------------------------------------------
+QString DkBatchProfile::ext = "pnm";	// profile file extension
+
+DkBatchProfile::DkBatchProfile(const QString& profileDir) {
+
+	mProfileDir = (profileDir.isEmpty()) ? defaultProfilePath() : profileDir;
+}
+
+DkBatchConfig DkBatchProfile::loadProfile(const QString & profilePath) {
+
+	if (!QFileInfo(profilePath).exists()) {
+		qInfo() << "cannot read profile from:" << profilePath << "no such file or directory...";
+		return DkBatchConfig();
+	}
+
+	QSettings s(profilePath, QSettings::IniFormat);
+	DkBatchConfig bc;
+	bc.loadSettings(s);
+
+	return bc;
+}
+
+bool DkBatchProfile::saveProfile(const QString & profilePath, const DkBatchConfig & batchConfig) {
+	
+	QSettings s(profilePath, QSettings::IniFormat);
+	s.clear();
+	batchConfig.saveSettings(s);
+
+	return true;
+}
+
+QString DkBatchProfile::defaultProfilePath() {
+
+	return DkUtils::getAppDataPath() + QDir::separator() + "Profiles";
+}
+
+QString DkBatchProfile::profileNameToPath(const QString & profileName) {
+	return defaultProfilePath() + QDir::separator() + profileName + "." + ext;
+}
+
+QStringList DkBatchProfile::profileNames() {
+
+	if (mProfilePaths.empty())
+		mProfilePaths = index(mProfileDir);
+
+	QStringList userNames;
+	for (const QString& p : mProfilePaths)
+		userNames << makeUserFriendly(p);
+
+	return userNames;
+}
+
+QStringList DkBatchProfile::index(const QString & profileDir) const {
+
+	QStringList exts;
+	exts << "*." + ext;
+
+	QDir pd(profileDir);
+	QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
+
+	qDebug() << "I have found these profiles: " << profiles;
+
+	return profiles;
+}
+
+QString DkBatchProfile::makeUserFriendly(const QString & profilePath) const {
+	
+	QString pName = QFileInfo(profilePath).baseName();
+	return pName;
+}
+
 
 }

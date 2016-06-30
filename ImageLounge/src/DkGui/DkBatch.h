@@ -88,6 +88,7 @@ class DkImageLoader;
 class DkExplorer;
 class DkDirectoryEdit;
 class DkListWidget;
+class DkBatchConfig;
 
 class DkBatchContent {
 
@@ -336,6 +337,7 @@ public:
 	DkBatchResizeWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
+	bool loadProperties(QSharedPointer<DkResizeBatch> batchResize) const;
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
 
@@ -372,8 +374,8 @@ public slots:
 
 signals:
 	void newHeaderText(const QString& txt) const;
-	void loadProfileSignal(const QString& profileName);
-	void saveProfileSignal(const QString& profileName);
+	void loadProfileSignal(const QString& profilePath) const;
+	void saveProfileSignal(const QString& profilePath) const;
 
 protected:
 	void createLayout();
@@ -391,8 +393,12 @@ public:
 	DkBatchPluginWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	void transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const;
+	bool loadProperties(QSharedPointer<DkPluginBatch> batchPlugin);
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
+
+public slots:
+	void selectPlugin(const QString& actionName, bool select = true);
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -404,7 +410,8 @@ protected:
 	void createLayout();
 	QStringList getPluginActionNames() const;
 
-	DkListWidget* mPluginListWidget;
+	DkListWidget* mLoadedPluginList;
+	DkListWidget* mSelectedPluginList;
 
 };
 #endif
@@ -472,11 +479,13 @@ public slots:
 	void changeWidget(DkBatchContainer* widget = 0);
 	void nextTab();
 	void previousTab();
+	void saveProfile(const QString& profilePath) const;
+	void loadProfile(const QString& profilePath) const;
 
 protected:
 	void createLayout();
+	DkBatchConfig createBatchConfig(bool strict = true) const;
 		
-private:
 	QVector<DkBatchContainer*> mWidgets;
 		
 	QStackedLayout* mCentralLayout = 0;

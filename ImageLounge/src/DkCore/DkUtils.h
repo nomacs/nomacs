@@ -150,6 +150,8 @@ public:
 
 	static QString getLogFilePath();
 
+	static QString getAppDataPath();
+
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)

@@ -431,6 +431,25 @@ QString DkUtils::getLogFilePath() {
 	return fileInfo.absoluteFilePath();
 }
 
+QString DkUtils::getAppDataPath() {
+
+	QString appPath;
+
+#if QT_VERSION >= 0x050000
+	appPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+#else
+	appPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+
+	// make our own folder
+	appPath += QDir::separator() + QCoreApplication::organizationName();
+	
+	if (!QDir().mkpath(appPath))
+		qWarning() << "I could not create" << appPath;
+
+	return appPath;
+}
+
 void DkUtils::mSleep(int ms) {
 
 #ifdef Q_OS_WIN

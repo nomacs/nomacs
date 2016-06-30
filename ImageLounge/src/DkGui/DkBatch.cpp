@@ -1040,6 +1040,25 @@ void DkBatchResizeWidget::transferProperties(QSharedPointer<DkResizeBatch> batch
 	}
 }
 
+bool DkBatchResizeWidget::loadProperties(QSharedPointer<DkResizeBatch> batchResize) const {
+
+	if (!batchResize) {
+		qWarning() << "cannot load properties, DkResizeBatch is NULL";
+		return false;
+	}
+
+	mComboMode->setCurrentIndex(batchResize->mode());
+	mComboProperties->setCurrentIndex(batchResize->property());
+	
+	float sf = batchResize->scaleFactor();
+	if (sf <= 1.0f)
+		mSbPercent->setValue(sf*100.0f);
+	else
+		mSbPx->setValue(qRound(sf));
+
+	return false;
+}
+
 bool DkBatchResizeWidget::hasUserInput() const {
 
 	return !(mComboMode->currentIndex() == DkResizeBatch::mode_default && mSbPercent->value() == 100.0);
@@ -1059,10 +1078,16 @@ DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(p
 
 void DkProfileWidget::createLayout() {
 
+	DkBatchProfile bp;
+	QStringList pn = bp.profileNames();
+
 	mProfileCombo = new QComboBox(this);
 	mProfileCombo->setObjectName("profileCombo");
 	mProfileCombo->addItem(tr("no profile"));
-	mProfileCombo->addItem(tr("test"));
+	
+	for (const QString& p : pn) {
+		mProfileCombo->addItem(p);
+	}
 
 	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
 	saveButton->setObjectName("saveButton");
@@ -1084,7 +1109,8 @@ bool DkProfileWidget::requiresUserInput() const {
 
 void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
 
-	emit loadProfileSignal(text);
+	QString profilePath = DkBatchProfile::profileNameToPath(text);
+	emit loadProfileSignal(profilePath);
 	emit newHeaderText(text);
 }
 
@@ -1120,8 +1146,8 @@ void DkProfileWidget::saveProfile() {
 			return;
 		}
 	}
-
-	emit saveProfileSignal(text);
+	
+	emit saveProfileSignal(DkBatchProfile::profileNameToPath(text));
 }
 
 #ifdef WITH_PLUGINS
@@ -1135,38 +1161,80 @@ DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
 
 	QStringList pluginList;
-	for (int idx = 0; idx < mPluginListWidget->count(); idx++) {
-		pluginList.append(mPluginListWidget->item(idx)->text());
+	for (int idx = 0; idx < mSelectedPluginList->count(); idx++) {
+		pluginList.append(mSelectedPluginList->item(idx)->text());
 	}
 
 	batchPlugin->setProperties(pluginList);
 }
 
+void DkBatchPluginWidget::createLayout() {
+
+	mLoadedPluginList = new DkListWidget(this);
+	mLoadedPluginList->setEmptyText(tr("Sorry, no Plugins found."));
+	mLoadedPluginList->addItems(getPluginActionNames());
+
+	mSelectedPluginList = new DkListWidget(this);
+	mSelectedPluginList->setEmptyText(tr("Drag Plugin Actions here."));
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(mLoadedPluginList);
+	layout->addWidget(mSelectedPluginList);
+
+	// connections
+	connect(mLoadedPluginList, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
+	connect(mSelectedPluginList, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
+}
+
+bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin) {
+
+	if (!batchPlugin) {
+		qWarning() << "cannot load properties, DkPluginBatch is NULL";
+		return false;
+	}
+
+	QStringList appliedPlugins = batchPlugin->pluginList();
+	QStringList loadedPlugins = getPluginActionNames();
+	bool errored = false;
+
+	for (const QString& plugin : appliedPlugins) {
+		if (loadedPlugins.contains(plugin)) {
+			selectPlugin(plugin);
+		}
+		else {
+			errored = true;
+			qWarning() << "I could not find" << plugin;
+		}
+	}
+
+	return !errored;
+}
+
+void DkBatchPluginWidget::selectPlugin(const QString& actionName, bool select) {
+
+	if (select) {
+		mSelectedPluginList->addItem(actionName);
+		auto items = mLoadedPluginList->findItems(actionName, Qt::MatchExactly);
+		for (auto i : items)
+			delete i;
+	}
+	else {
+		mLoadedPluginList->addItem(actionName);
+		auto items = mSelectedPluginList->findItems(actionName, Qt::MatchExactly);
+		for (auto i : items)
+			delete i;
+	}
+
+	updateHeader();
+}
+
 bool DkBatchPluginWidget::hasUserInput() const {
-	return false;	// TODO
+	return !mSelectedPluginList->isEmpty();
 }
 
 bool DkBatchPluginWidget::requiresUserInput() const {
 	return false;
-}
-
-void DkBatchPluginWidget::createLayout() {
-
-	DkListWidget* pluginSelectionWidget = new DkListWidget(this);
-	pluginSelectionWidget->setEmptyText(tr("Sorry, no Plugins found."));
-	pluginSelectionWidget->addItems(getPluginActionNames());
-
-	mPluginListWidget = new DkListWidget(this);
-	mPluginListWidget->setEmptyText(tr("Drag Plugin Actions here."));
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(pluginSelectionWidget);
-	layout->addWidget(mPluginListWidget);
-
-	// connections
-	connect(pluginSelectionWidget, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
-	connect(mPluginListWidget, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
 }
 
 QStringList DkBatchPluginWidget::getPluginActionNames() const {
@@ -1188,7 +1256,7 @@ QStringList DkBatchPluginWidget::getPluginActionNames() const {
 
 void DkBatchPluginWidget::updateHeader() const {
 	
-	int c = mPluginListWidget->count();
+	int c = mSelectedPluginList->count();
 	if (!c)
 		emit newHeaderText(tr("inactive"));
 	else
@@ -1318,10 +1386,13 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 
 	connect(mFileSelection, SIGNAL(updateInputDir(const QString&)), mOutputSelection, SLOT(setInputDir(const QString&)));
 	connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
+	connect(mProfileWidget, SIGNAL(saveProfileSignal(const QString&)), this, SLOT(saveProfile(const QString&)));
+	connect(mProfileWidget, SIGNAL(loadProfileSignal(const QString&)), this, SLOT(loadProfile(const QString&)));
 
 	mFileSelection->setDir(currentDirectory);
 	mOutputSelection->setInputDir(currentDirectory);
 
+	// change tabs with page up page down
 	QAction* nextAction = new QAction(tr("next"), this);
 	nextAction->setShortcut(Qt::Key_PageDown);
 	connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
@@ -1332,7 +1403,6 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
 	addAction(previousAction);
-
 }
 
 DkBatchWidget::~DkBatchWidget() {
@@ -1457,29 +1527,46 @@ void DkBatchWidget::createLayout() {
 }
 
 void DkBatchWidget::accept() {
-	
+
+	mBatchProcessing->setBatchConfig(createBatchConfig());
+
+	// reopen the input widget to show the status
+	if (!mWidgets.empty())
+		mWidgets[0]->headerWidget()->click();
+
+	startProcessing();
+	mBatchProcessing->compute();
+}
+
+DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
+
+	QMainWindow* mw = DkActionManager::instance().getMainWindow();
+
 	// check if we are good to go
-	if (mFileSelection->getSelectedFiles().empty()) {
-		QMessageBox::information(this, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
-		return;
+	if (strict && mFileSelection->getSelectedFiles().empty()) {
+		QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+		return DkBatchConfig();
 	}
 
 	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget());
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
-		QMessageBox::critical(this, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
-		return;
+		QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
+		return DkBatchConfig();
 	}
 
-	if (mWidgets[batch_output] && mWidgets[batch_input])  {
+	if (strict && mWidgets[batch_output] && mWidgets[batch_input])  {
 		bool outputChanged = dynamic_cast<DkBatchContent*>(mWidgets[batch_output]->contentWidget())->hasUserInput();
 		QString inputDirPath = dynamic_cast<DkFileSelection*>(mWidgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
-		
-		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->overwriteMode() != DkBatchConfig::mode_overwrite) {
-			QMessageBox::information(this, tr("Wrong Configuration"), tr("Please check 'Overwrite Existing Files' or choose a different output directory."), QMessageBox::Ok, QMessageBox::Ok);
-			return;
+
+		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
+			dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->overwriteMode() != DkBatchConfig::mode_overwrite) {
+			QMessageBox::information(mw, tr("Wrong Configuration"), 
+				tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
+				QMessageBox::Ok, QMessageBox::Ok);
+			return DkBatchConfig();
 		}
 	}
 
@@ -1501,27 +1588,27 @@ void DkBatchWidget::accept() {
 		int answer = msgBox->exec();
 
 		if (answer != QMessageBox::Accepted && answer != QMessageBox::Yes) {
-			return;
+			return DkBatchConfig();
 		}
 	}
 
-	if (!config.isOk()) {
+	if (strict && !config.isOk()) {
 
 		if (config.getOutputDirPath().isEmpty()) {
-			QMessageBox::information(this, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
-			return;
+			QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			return DkBatchConfig();
 		}
 		else if (!QDir(config.getOutputDirPath()).exists()) {
-			QMessageBox::critical(this, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
-			return;
+			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+			return DkBatchConfig();
 		}
 		else if (config.getFileList().empty()) {
-			QMessageBox::critical(this, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
-			return;
+			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+			return DkBatchConfig();
 		}
 		else if (config.getFileNamePattern().isEmpty()) {
-			QMessageBox::critical(this, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
-			return;
+			QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+			return DkBatchConfig();
 		}
 		//else if (config.getOutputDir() == QDir()) {
 		//	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
@@ -1529,8 +1616,8 @@ void DkBatchWidget::accept() {
 		//}
 
 		qDebug() << "config not ok - canceling";
-		QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
-		return;
+		QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
+		return DkBatchConfig();
 	}
 
 	// create processing functions
@@ -1548,7 +1635,7 @@ void DkBatchWidget::accept() {
 #endif
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
-	
+
 	if (resizeBatch->isActive())
 		processFunctions.append(resizeBatch);
 
@@ -1563,14 +1650,8 @@ void DkBatchWidget::accept() {
 #endif
 
 	config.setProcessFunctions(processFunctions);
-	mBatchProcessing->setBatchConfig(config);
 
-	// reopen the input widget to show the status
-	if (!mWidgets.empty())
-		mWidgets[0]->headerWidget()->click();
-
-	startProcessing();
-	mBatchProcessing->compute();
+	return config;
 }
 
 bool DkBatchWidget::close() {
@@ -1711,6 +1792,68 @@ void DkBatchWidget::previousTab() {
 		idx = mWidgets.size()-1;
 
 	changeWidget(mWidgets[idx]);
+}
+
+void DkBatchWidget::saveProfile(const QString & profilePath) const {
+
+	DkBatchConfig bc = createBatchConfig(false);	// false: no input/output must be profided
+	//if (!bc.isOk()) {
+	//	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings, since they are incomplete..."));
+	//	return;
+	//}
+
+	if (bc.getProcessFunctions().empty()) {
+		QMessageBox::information(DkActionManager::instance().getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
+		return;
+	}
+
+	if (!DkBatchProfile::saveProfile(profilePath, bc)) {
+		QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
+	}
+	else
+		qInfo() << "batch profile written to: " << profilePath;
+}
+
+void DkBatchWidget::loadProfile(const QString & profilePath) const {
+
+	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
+
+	if (bc.getProcessFunctions().empty()) {
+		
+		QMessageBox::critical(DkActionManager::instance().getMainWindow(), 
+			tr("Error Loading Profile"), 
+			tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
+		return;
+	}
+
+	int warnings = 0;
+	auto functions = bc.getProcessFunctions();
+	for (QSharedPointer<DkAbstractBatch> cf : functions) {
+
+		if (!cf) {
+			qWarning() << "processing function is NULL - ignoring";
+			continue;
+		}
+		
+		// apply resize batch settings
+		if (QSharedPointer<DkResizeBatch> rf = qSharedPointerDynamicCast<DkResizeBatch>(cf)) {
+			if (!mResizeWidget->loadProperties(rf)) {
+				warnings++;
+			}
+		}
+#ifdef WITH_PLUGINS
+		// apply plugin batch settings
+		else if (QSharedPointer<DkPluginBatch> pf = qSharedPointerDynamicCast<DkPluginBatch>(cf)) {
+			if (!mPluginWidget->loadProperties(pf)) {
+				warnings++;
+			}
+		}
+#endif
+	}
+
+	// TODO: feedback 
+	qInfo() << "settings loaded with" << warnings << "warnings";
+
 }
 
 void DkBatchWidget::widgetChanged() {

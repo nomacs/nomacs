@@ -104,6 +104,12 @@ public:
 	virtual QString name() const override;
 	virtual bool isActive() const override;
 
+	int mode() const;
+	int property() const;
+	int iplMethod() const;
+	float scaleFactor() const;
+	bool correctGamma() const;
+
 	enum {
 		mode_default,
 		mode_long_side,
@@ -147,6 +153,7 @@ public:
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
 	virtual QString name() const override;
 	virtual bool isActive() const override;
+	virtual QStringList pluginList() const;
 
 
 protected:
@@ -322,6 +329,27 @@ protected:
 	QFutureWatcher<void> mBatchWatcher;
 	
 	void init();
+};
+
+class DllLoaderExport DkBatchProfile {
+
+public:
+	DkBatchProfile(const QString& profileDir = QString());
+	
+	static DkBatchConfig loadProfile(const QString& profilePath);
+	static bool saveProfile(const QString& profilePath, const DkBatchConfig& batchConfig);
+	static QString defaultProfilePath();
+	static QString profileNameToPath(const QString& profileName);
+
+	QStringList profileNames();
+
+protected:
+	QStringList index(const QString& profileDir) const;
+	QString makeUserFriendly(const QString& profilePath) const;
+
+	QString mProfileDir;
+	QStringList mProfilePaths;
+	static QString ext;
 };
 
 }

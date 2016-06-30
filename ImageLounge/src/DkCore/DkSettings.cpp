@@ -226,10 +226,10 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 QStringList DkSettings::getTranslationDirs() {
 	QStringList translationDirs;
 	
-  #ifdef  Q_OS_WIN
+#ifdef  Q_OS_WIN
 	if (!isPortable())
 		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
-  #endif	
+#endif	
 #if QT_VERSION >= 0x050000
 	translationDirs.append(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
 #else
