@@ -1049,6 +1049,12 @@ void DkBatchOutput::applyDefault() {
 		mFilenameWidgets.pop_back();
 	}
 
+	if (!mFilenameWidgets.empty()) {
+		mFilenameWidgets[0]->setTag("c:0");	// current filename
+	}
+	else
+		qWarning() << "no filename widgets...";
+
 	mOutputlineEdit->setText(mOutputDirectory);
 }
 
@@ -1221,7 +1227,7 @@ void DkProfileWidget::createLayout() {
 	mProfileCombo = new QComboBox(this);
 	mProfileCombo->setObjectName("profileCombo");
 
-	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
+	QPushButton* saveButton = new QPushButton(tr("Save Profile"), this);
 	saveButton->setObjectName("saveButton");
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
