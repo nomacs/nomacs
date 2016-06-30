@@ -760,7 +760,6 @@ void DkBatchOutput::createLayout() {
 	QLabel* compressionLabel = new QLabel(tr("Compression"), this);
 
 	mSbCompression = new QSpinBox(this);
-	mSbCompression->setValue(90);
 	mSbCompression->setMinimum(1);
 	mSbCompression->setMaximum(100);
 	mSbCompression->setEnabled(false);
@@ -949,6 +948,7 @@ void DkBatchOutput::applyDefault() {
 	mCbOverwriteExisting->setChecked(false);
 	mCbExtension->setCurrentIndex(0);
 	mCbNewExtension->setCurrentIndex(0);
+	mSbCompression->setValue(90);
 	mOutputDirectory = "";
 	mInputDirectory = "";
 	mHUserInput = false;
@@ -960,6 +960,19 @@ void DkBatchOutput::applyDefault() {
 	}
 
 	mOutputlineEdit->setText(mOutputDirectory);
+}
+
+void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
+
+	mCbOverwriteExisting->setChecked(config.getMode() == DkBatchConfig::mode_overwrite);
+	mCbDeleteOriginal->setChecked(config.getDeleteOriginal());
+	mCbUseInput->setChecked(config.inputDirIsOutputDir());
+	mOutputlineEdit->setText(config.getOutputDirPath());
+	mSbCompression->setValue(config.getCompression());
+
+	// TODO
+	//QComboBox* mCbExtension = 0;
+	//QComboBox* mCbNewExtension = 0;
 }
 
 int DkBatchOutput::overwriteMode() const {
@@ -1158,11 +1171,12 @@ void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
 	// first is the 'no profile'
 	if (text == mProfileCombo->itemText(0)) {
 		emit applyDefaultSignal();
-		return;
 	}
-
-	QString profilePath = DkBatchProfile::profileNameToPath(text);
-	emit loadProfileSignal(profilePath);
+	else {
+		QString profilePath = DkBatchProfile::profileNameToPath(text);
+		emit loadProfileSignal(profilePath);
+	}
+	
 	emit newHeaderText(text);
 }
 
@@ -1938,6 +1952,8 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 	// TODO: add use input option
 	if (!bc.getFileList().empty())
 		setSelectedFiles(bc.getFileList());
+
+	mOutputSelection->loadProperties(bc);
 
 	int warnings = 0;
 	auto functions = bc.getProcessFunctions();

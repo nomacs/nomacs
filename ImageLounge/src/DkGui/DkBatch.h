@@ -284,13 +284,15 @@ public:
 	virtual bool hasUserInput() const;
 	virtual bool requiresUserInput() const {return mRUserInput;};
 	void applyDefault();
+	void loadProperties(const DkBatchConfig& config);
+
 	int overwriteMode() const;
+	int getCompression() const;
 	bool useInputDir() const;
 	bool deleteOriginal() const;
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
-	int getCompression() const;
 
 signals:
 	void newHeaderText(const QString&) const;
