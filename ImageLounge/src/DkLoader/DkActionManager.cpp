@@ -47,6 +47,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QDebug>
+#include <QProgressDialog>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarProgress>
@@ -1707,7 +1708,7 @@ QWinTaskbarProgress* DkGlobalProgress::progressBar() {
 }
 #else
 QProgressDialog* DkGlobalProgress::progressBar() const {
-	return 0;
+	return mProgress;
 }
 #endif
 
