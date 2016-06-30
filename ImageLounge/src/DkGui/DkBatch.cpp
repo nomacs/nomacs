@@ -356,7 +356,7 @@ void DkFileSelection::createLayout() {
 	
 	connect(mInputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
 
-	connect(mDirectoryEdit, SIGNAL(textChanged(const QString&)), this, SLOT(emitChangedSignal()));
+	connect(mDirectoryEdit, SIGNAL(textChanged(const QString&)), this, SLOT(parameterChanged()));
 	connect(mDirectoryEdit, SIGNAL(directoryChanged(const QString&)), this, SLOT(setDir(const QString&)));
 	connect(mExplorer, SIGNAL(openDir(const QString&)), this, SLOT(setDir(const QString&)));
 	connect(mLoader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mThumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
@@ -464,7 +464,7 @@ void DkFileSelection::selectionChanged() {
 	emit changed();
 }
 
-void DkFileSelection::emitChangedSignal() {
+void DkFileSelection::parameterChanged() {
 	
 	QString newDirPath = mDirectoryEdit->text();
 		
@@ -682,6 +682,35 @@ QString DkFilenameWidget::getTag() const {
 	return tag;
 }
 
+bool DkFilenameWidget::setTag(const QString & tag) {
+
+	QString cTag = tag;
+	QStringList cmds = cTag.split(":");
+
+	if (cmds.size() == 1) {
+		mCbType->setCurrentIndex(fileNameTypes_Text);
+		mLeText->setText(tag);
+	}
+	else {
+
+		if (cmds[0] == "c") {
+			mCbType->setCurrentIndex(fileNameTypes_fileName);
+			mCbCase->setCurrentIndex(cmds[1].toInt());
+		}
+		else if (cmds[0] == "d") {
+			mCbType->setCurrentIndex(fileNameTypes_Number);
+			mCbDigits->setCurrentIndex(cmds[1].toInt());
+			mSbNumber->setValue(cmds[2].toInt());
+		}
+		else {
+			qWarning() << "cannot parse" << cmds;
+			return false;
+		}
+	}
+
+	return true;
+}
+
 // DkBatchOutput --------------------------------------------------------------------
 DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(parent, f) {
 
@@ -741,7 +770,7 @@ void DkBatchOutput::createLayout() {
 	mFilenameVBLayout->addWidget(fwidget);
 	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
 	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
-	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
+	connect(fwidget, SIGNAL(changed()), this, SLOT(parameterChanged()));
 
 	QWidget* extensionWidget = new QWidget(this);
 	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
@@ -756,6 +785,7 @@ void DkBatchOutput::createLayout() {
 	mCbNewExtension->addItems(Settings::param().app().saveFilters);
 	mCbNewExtension->setFixedWidth(150);
 	mCbNewExtension->setEnabled(false);
+	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
 	QLabel* compressionLabel = new QLabel(tr("Compression"), this);
 
@@ -837,21 +867,38 @@ void DkBatchOutput::useInputFolderChanged(bool checked) {
 		setDir(mInputDirectory);
 }
 
-void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
-	
+void DkBatchOutput::plusPressed(DkFilenameWidget* widget, const QString& tag) {
+
+	DkFilenameWidget* fw = createFilenameWidget(tag);
+
 	int index = mFilenameVBLayout->indexOf(widget);
-	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
-	mFilenameWidgets.insert(index + 1, fwidget);
+	mFilenameWidgets.insert(index + 1, fw);
 	if (mFilenameWidgets.size() > 4) {
 		for (int i = 0; i  < mFilenameWidgets.size(); i++)
 			mFilenameWidgets[i]->enablePlusButton(false);
 	}
-	mFilenameVBLayout->insertWidget(index + 1, fwidget); // append to current widget
-	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
-	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
-	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
+	mFilenameVBLayout->insertWidget(index + 1, fw); // append to current widget
 
-	emitChangedSignal();
+	parameterChanged();
+}
+
+void DkBatchOutput::addFilenameWidget(const QString& tag) {
+
+	DkFilenameWidget* fw = createFilenameWidget(tag);
+	mFilenameWidgets.append(fw);
+	mFilenameVBLayout->insertWidget(mFilenameWidgets.size()-1, fw); // append to current widget
+}
+
+DkFilenameWidget * DkBatchOutput::createFilenameWidget(const QString & tag) {
+
+	DkFilenameWidget* fw = new DkFilenameWidget(this);
+	fw->setTag(tag);
+
+	connect(fw, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
+	connect(fw, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
+	connect(fw, SIGNAL(changed()), this, SLOT(parameterChanged()));
+
+	return fw;
 }
 
 void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
@@ -865,14 +912,14 @@ void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
 
 	widget->hide();
 
-	emitChangedSignal();
+	parameterChanged();
 }
 
 void DkBatchOutput::extensionCBChanged(int index) {
 	
 	mCbNewExtension->setEnabled(index > 0);
 	mSbCompression->setEnabled(index > 0);
-	emitChangedSignal();
+	parameterChanged();
 }
 
 
@@ -881,7 +928,7 @@ bool DkBatchOutput::hasUserInput() const {
 	return mFilenameWidgets.size() > 1 || mFilenameWidgets[0]->hasUserInput() || mCbExtension->currentIndex() == 1;
 }
 
-void DkBatchOutput::emitChangedSignal() {
+void DkBatchOutput::parameterChanged() {
 
 	updateFileLabelPreview();
 	emit changed();
@@ -937,6 +984,48 @@ QString DkBatchOutput::getFilePattern() {
 	return pattern;
 }
 
+void DkBatchOutput::loadFilePattern(const QString & pattern) {
+
+	QStringList nameList = pattern.split(".");
+	QString ext = nameList.last();
+
+	QString p = pattern;
+	p = p.replace("." + ext, "");		// remove extension
+	p = p.replace(">", "<");
+		
+	QStringList cmdsRaw = p.split("<");
+	QStringList cmds;
+
+	for (const QString& c : cmdsRaw) {
+		if (!c.trimmed().isEmpty())
+			cmds << c;
+	}
+
+	// uff - first is special
+	if (!cmds.empty() && !mFilenameWidgets.empty()) {
+		mFilenameWidgets.first()->setTag(cmds.first());
+		cmds.pop_front();
+	}
+
+	for (const QString& c : cmds) {
+
+		if (c.isEmpty())
+			continue;
+		
+		qDebug() << "processing: " << c;
+		addFilenameWidget(c);
+	}
+
+	if (ext != "<old>") {
+		mCbExtension->setCurrentIndex(1);
+		int idx = mCbNewExtension->findText(ext, Qt::MatchContains);
+		mCbNewExtension->setCurrentIndex(idx);
+	}
+	else {
+		mCbExtension->setCurrentIndex(0);
+	}
+}
+
 int DkBatchOutput::getCompression() const {
 	return mSbCompression->value();
 }
@@ -955,8 +1044,9 @@ void DkBatchOutput::applyDefault() {
 	mRUserInput = false;
 
 	// remove all but the first
-	for (int idx = mFilenameWidgets.size()-1; idx > 0; idx++) {
-		delete mFilenameWidgets[idx];
+	for (int idx = mFilenameWidgets.size()-1; idx > 0; idx--) {
+		mFilenameWidgets[idx]->deleteLater();
+		mFilenameWidgets.pop_back();
 	}
 
 	mOutputlineEdit->setText(mOutputDirectory);
@@ -970,9 +1060,9 @@ void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
 	mOutputlineEdit->setText(config.getOutputDirPath());
 	mSbCompression->setValue(config.getCompression());
 
-	// TODO
-	//QComboBox* mCbExtension = 0;
-	//QComboBox* mCbNewExtension = 0;
+	loadFilePattern(config.getFileNamePattern());
+
+	parameterChanged();
 }
 
 int DkBatchOutput::overwriteMode() const {

@@ -202,7 +202,7 @@ public slots:
 	void browse();
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
 	void setVisible(bool visible);
-	void emitChangedSignal();
+	void parameterChanged();
 	void selectionChanged();
 	void setFileInfo(QFileInfo file);
 
@@ -240,6 +240,7 @@ public:
 	void enablePlusButton(bool enable);
 	bool hasUserInput() const {return hasChanged;};
 	QString getTag() const;
+	bool setTag(const QString& tag);
 
 signals:
 	void plusPressed(DkFilenameWidget*) const;
@@ -292,6 +293,7 @@ public:
 	bool deleteOriginal() const;
 	QString getOutputDirectory();
 	QString getFilePattern();
+	void loadFilePattern(const QString& pattern);
 	void setExampleFilename(const QString& exampleName);
 
 signals:
@@ -303,16 +305,18 @@ public slots:
 
 protected slots:
 	void browse();
-	void plusPressed(DkFilenameWidget* widget);
+	void plusPressed(DkFilenameWidget* widget, const QString& tag = QString());
 	void minusPressed(DkFilenameWidget* widget);
 	void extensionCBChanged(int index);
-	void emitChangedSignal();
+	void parameterChanged();
 	void updateFileLabelPreview();
 	void useInputFolderChanged(bool checked);
 	void setDir(const QString& dirPath, bool updateLineEdit = true);
 
 protected:
 	virtual void createLayout();
+	DkFilenameWidget* createFilenameWidget(const QString& tag = QString());
+	void addFilenameWidget(const QString& tag = QString());
 
 private:
 
