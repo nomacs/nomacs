@@ -1169,7 +1169,7 @@ void DkBatchTransformWidget::createLayout() {
 
 bool DkBatchTransformWidget::hasUserInput() const {
 	
-	return !mRbRotate0->isChecked() || mCbFlipH->isChecked() || mCbFlipV->isChecked();
+	return !mRbRotate0->isChecked() || mCbFlipH->isChecked() || mCbFlipV->isChecked() || mCbCropMetadata->isChecked();
 }
 
 bool DkBatchTransformWidget::requiresUserInput() const {
