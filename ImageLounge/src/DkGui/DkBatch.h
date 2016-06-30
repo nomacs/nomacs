@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
+#include "DkBaseWidgets.h"
 
 // Qt defines
 class QListView;
@@ -168,7 +169,7 @@ protected:
 	QList<int> mResultList;
 };
 
-class DkFileSelection : public QWidget, public DkBatchContent  {
+class DkBatchInput : public QWidget, public DkBatchContent  {
 	Q_OBJECT
 
 public:
@@ -181,7 +182,7 @@ public:
 		tab_end
 	};
 
-	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	QString getDir() const;
 	QStringList getSelectedFiles() const;
@@ -466,7 +467,7 @@ protected:
 	QCheckBox* mCbCropMetadata = 0;
 };
 
-class DkBatchWidget : public QWidget {
+class DkBatchWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -511,7 +512,7 @@ protected:
 
 	QString mCurrentDirectory;
 	QDialogButtonBox* mButtons = 0;
-	DkFileSelection* mFileSelection = 0;
+	DkBatchInput* mFileSelection = 0;
 	DkBatchOutput* mOutputSelection = 0;
 	DkBatchResizeWidget* mResizeWidget = 0;
 	DkProfileWidget* mProfileWidget = 0;

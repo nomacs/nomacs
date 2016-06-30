@@ -1,3 +1,21 @@
+/* batch */
+nmc--DkBatchWidget QLabel,
+nmc--DkBatchWidget QRadioButton,
+nmc--DkBatchWidget QCheckBox,
+/* nmc--DkBatchWidget QPushButton, */	/* NOTE: this somehow overwrites the special font-size */
+nmc--DkBatchWidget QSpinBox,
+nmc--DkBatchWidget QDoubleSpinBox,
+nmc--DkBatchWidget QComboBox,
+nmc--DkBatchWidget QLineEdit,
+nmc--DkBatchWidget QListWidget,
+nmc--DkBatchWidget QGroupBox {
+	font-size: 10pt;
+}
+
+nmc--DkBatchInput QTextEdit {
+	border: none;
+}
+
 QTabBar::close-button {
     image: url(:/nomacs/img/close-tab.svg);
 }
@@ -426,6 +444,7 @@ QLabel#batchContentInfo {
 	font-style: italic;
 	padding-bottom: 20px;
 	color: #666;
+	font-size: 8pt;
 }
 
 QPushButton#infoButton {

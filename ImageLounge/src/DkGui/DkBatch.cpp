@@ -299,15 +299,15 @@ void DkInputTextEdit::clear() {
 }
 
 // File Selection --------------------------------------------------------------------
-DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+DkBatchInput::DkBatchInput(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
-	setObjectName("DkFileSelection");
+	setObjectName("DkBatchInput");
 	createLayout();
 	setMinimumHeight(300);
 
 }
 
-void DkFileSelection::createLayout() {
+void DkBatchInput::createLayout() {
 	
 	mDirectoryEdit = new DkDirectoryEdit(this);
 
@@ -363,13 +363,13 @@ void DkFileSelection::createLayout() {
 
 }
 
-void DkFileSelection::applyDefault() {
+void DkBatchInput::applyDefault() {
 	
 	mInputTextEdit->clear();
 	selectionChanged();
 }
 
-void DkFileSelection::changeTab(int tabIdx) const {
+void DkBatchInput::changeTab(int tabIdx) const {
 
 	if (tabIdx < 0 || tabIdx >= mInputTabs->count())
 		return;
@@ -377,17 +377,17 @@ void DkFileSelection::changeTab(int tabIdx) const {
 	mInputTabs->setCurrentIndex(tabIdx);
 }
 
-void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
+void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
 	emit updateDirSignal(thumbs);
 }
 
-void DkFileSelection::setVisible(bool visible) {
+void DkBatchInput::setVisible(bool visible) {
 
 	QWidget::setVisible(visible);
 	mThumbScrollWidget->getThumbWidget()->updateLayout();
 }
 
-void DkFileSelection::browse() {
+void DkBatchInput::browse() {
 
 	// load system default open dialog
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
@@ -399,12 +399,12 @@ void DkFileSelection::browse() {
 	setDir(dirName);
 }
 
-QString DkFileSelection::getDir() const {
+QString DkBatchInput::getDir() const {
 
 	return mDirectoryEdit->existsDirectory() ? QDir(mDirectoryEdit->text()).absolutePath() : "";
 }
 
-QStringList DkFileSelection::getSelectedFiles() const {
+QStringList DkBatchInput::getSelectedFiles() const {
 	
 	QStringList textList = mInputTextEdit->getFileList();
 
@@ -414,7 +414,7 @@ QStringList DkFileSelection::getSelectedFiles() const {
 		return textList;
 }
 
-QStringList DkFileSelection::getSelectedFilesBatch() {
+QStringList DkBatchInput::getSelectedFilesBatch() {
 
 	QStringList textList = mInputTextEdit->getFileList();
 
@@ -427,17 +427,17 @@ QStringList DkFileSelection::getSelectedFilesBatch() {
 }
 
 
-DkInputTextEdit* DkFileSelection::getInputEdit() const {
+DkInputTextEdit* DkBatchInput::getInputEdit() const {
 
 	return mInputTextEdit;
 }
 
-void DkFileSelection::setFileInfo(QFileInfo file) {
+void DkBatchInput::setFileInfo(QFileInfo file) {
 
 	setDir(file.absoluteFilePath());
 }
 
-void DkFileSelection::setDir(const QString& dirPath) {
+void DkBatchInput::setDir(const QString& dirPath) {
 
 	mExplorer->setCurrentPath(dirPath);
 
@@ -450,7 +450,7 @@ void DkFileSelection::setDir(const QString& dirPath) {
 	mThumbScrollWidget->updateThumbs(mLoader->getImages());
 }
 
-void DkFileSelection::selectionChanged() {
+void DkBatchInput::selectionChanged() {
 
 	QString msg;
 	if (getSelectedFiles().empty())
@@ -464,7 +464,7 @@ void DkFileSelection::selectionChanged() {
 	emit changed();
 }
 
-void DkFileSelection::parameterChanged() {
+void DkBatchInput::parameterChanged() {
 	
 	QString newDirPath = mDirectoryEdit->text();
 		
@@ -476,7 +476,7 @@ void DkFileSelection::parameterChanged() {
 	}
 }
 
-void DkFileSelection::setResults(const QStringList& results) {
+void DkBatchInput::setResults(const QStringList& results) {
 
 	if (mInputTabs->count() < 3) {
 		mInputTabs->addTab(mResultTextEdit, tr("Results"));
@@ -490,7 +490,7 @@ void DkFileSelection::setResults(const QStringList& results) {
 	mResultTextEdit->setVisible(true);
 }
 
-void DkFileSelection::startProcessing() {
+void DkBatchInput::startProcessing() {
 
 	if (mInputTabs->count() < 3) {
 		mInputTabs->addTab(mResultTextEdit, tr("Results"));
@@ -501,7 +501,7 @@ void DkFileSelection::startProcessing() {
 	mResultTextEdit->clear();
 }
 
-void DkFileSelection::stopProcessing() {
+void DkBatchInput::stopProcessing() {
 
 	mInputTextEdit->clear();
 	mInputTextEdit->setEnabled(true);
@@ -1585,8 +1585,8 @@ int DkBatchTransformWidget::getAngle() const {
 	return 0;
 }
 
-// Batch Dialog --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : QWidget(parent) {
+// Batch Widget --------------------------------------------------------------------
+DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkWidget(parent) {
 	
 	mCurrentDirectory = currentDirectory;
 	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
@@ -1594,7 +1594,6 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
 	connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
-	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
 
 	connect(mFileSelection, SIGNAL(updateInputDir(const QString&)), mOutputSelection, SLOT(setInputDir(const QString&)));
@@ -1634,7 +1633,7 @@ void DkBatchWidget::createLayout() {
 
 	// Input Directory
 	mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
-	mFileSelection  = new DkFileSelection(this);
+	mFileSelection  = new DkBatchInput(this);
 	mWidgets[batch_input]->setContentWidget(mFileSelection);
 	mFileSelection->setDir(mCurrentDirectory);
 
@@ -1772,7 +1771,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (strict && mWidgets[batch_output] && mWidgets[batch_input])  {
 		bool outputChanged = dynamic_cast<DkBatchContent*>(mWidgets[batch_output]->contentWidget())->hasUserInput();
-		QString inputDirPath = dynamic_cast<DkFileSelection*>(mWidgets[batch_input]->contentWidget())->getDir();
+		QString inputDirPath = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
 
 		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
@@ -1964,7 +1963,7 @@ void DkBatchWidget::setSelectedFiles(const QStringList& selFiles) {
 
 	if (!selFiles.empty()) {
 		mFileSelection->getInputEdit()->appendFiles(selFiles);
-		mFileSelection->changeTab(DkFileSelection::tab_text_input);
+		mFileSelection->changeTab(DkBatchInput::tab_text_input);
 	}
 }
 
@@ -2100,7 +2099,7 @@ void DkBatchWidget::applyDefault() {
 void DkBatchWidget::widgetChanged() {
 	
 	if (mWidgets[batch_output] && mWidgets[batch_input])  {
-		QString inputDirPath = dynamic_cast<DkFileSelection*>(mWidgets[batch_input]->contentWidget())->getDir();
+		QString inputDirPath = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
 		
 		if (inputDirPath == "" || outputDirPath == "")
