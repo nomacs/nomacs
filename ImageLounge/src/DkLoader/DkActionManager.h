@@ -48,6 +48,7 @@
 class QMenu;
 class QMainWindow;
 class QWinTaskbarProgress;
+class QProgressDialog;
 
 namespace nmc {
 	
@@ -595,7 +596,7 @@ public:
 	void setProgressBar(QWinTaskbarProgress* progressbar);
 	QWinTaskbarProgress* progressBar();
 #else
-	QProgressDialog* progressBar();
+	QProgressDialog* progressBar() const;
 #endif
 
 public slots:
@@ -610,7 +611,7 @@ private:
 #ifdef Q_OS_WIN
 	QWinTaskbarProgress* mProgress = 0;
 #else
-	QObject* mProgress = 0;
+	QProgressDialog* mProgress = 0;
 #endif
 };
 

@@ -47,6 +47,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QDebug>
+#include <QProgressDialog>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarProgress>
