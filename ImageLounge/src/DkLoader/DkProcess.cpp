@@ -53,7 +53,7 @@ namespace nmc {
 /// <returns>
 /// true on success
 /// </returns>
-bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >&) const {
+bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, const DkSaveInfo& , QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >&) const {
 
 	return compute(container, logStrings);
 }
@@ -420,7 +420,11 @@ void DkPluginBatch::postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchI
 	}
 }
 
-bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const {
+bool DkPluginBatch::compute(
+	QSharedPointer<DkImageContainer> container, 
+	const DkSaveInfo& saveInfo,
+	QStringList& logStrings, 
+	QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const {
 
 	if (!isActive()) {
 		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
@@ -452,7 +456,7 @@ bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringL
 					QSharedPointer<DkBatchInfo> info;
 
 					if (bPlugin)
-						result = bPlugin->runPlugin(runID, container, info);
+						result = bPlugin->runPlugin(runID, container, saveInfo, info);
 					else 
 						logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.").arg(name()).arg(pluginContainer->pluginName()));
 
@@ -647,7 +651,7 @@ bool DkBatchProcess::process() {
 		}
 
 		QVector<QSharedPointer<DkBatchInfo> > cInfos;
-		if (!batch->compute(imgC, mLogStrings, cInfos)) {
+		if (!batch->compute(imgC, mSaveInfo, mLogStrings, cInfos)) {
 			mLogStrings.append(QObject::tr("%1 failed").arg(batch->name()));
 			mFailure++;
 		}

@@ -68,7 +68,11 @@ public:
 	virtual void setProperties(...) {};
 	virtual void saveSettings(QSettings&) const {};
 	virtual void loadSettings(QSettings&) {};
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const;
+	virtual bool compute(
+		QSharedPointer<DkImageContainer> container, 
+		const DkSaveInfo& saveInfo, 
+		QStringList& logStrings, 
+		QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const;
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual bool compute(QImage&, QStringList&) const { return true; };
 	virtual bool isActive() const { return false; };
@@ -150,7 +154,11 @@ public:
 	virtual void preLoad();
 	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const override;
 	virtual void setProperties(const QStringList& pluginList);
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
+	virtual bool compute(
+		QSharedPointer<DkImageContainer> container, 
+		const DkSaveInfo& saveInfo, 
+		QStringList& logStrings, 
+		QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
 	virtual QString name() const override;
 	virtual bool isActive() const override;
 	virtual QStringList pluginList() const;

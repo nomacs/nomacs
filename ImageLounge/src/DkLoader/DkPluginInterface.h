@@ -117,12 +117,21 @@ public:
 		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const {
 		
 		QSharedPointer<DkBatchInfo> dummy;
-		return runPlugin(runID, imgC, dummy);
+		DkSaveInfo saveInfo;
+
+		if (imgC) {
+			saveInfo.setInputFilePath(imgC->filePath());
+			saveInfo.setOutputFilePath(imgC->filePath());
+			saveInfo.setInputDirIsOutputDir(true);
+		}
+
+		return runPlugin(runID, imgC, saveInfo, dummy);
 	};
 
 	virtual QSharedPointer<DkImageContainer> runPlugin(
 		const QString & runID,
 		QSharedPointer<DkImageContainer> imgC,
+		const DkSaveInfo& saveInfo,
 		QSharedPointer<DkBatchInfo>& batchInfo) const = 0;
 
 	virtual void preLoadPlugin() const = 0;	// is called before batch processing
@@ -203,5 +212,5 @@ protected:
 
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.2")
-Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.2")
+Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.3")
 Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.3")
