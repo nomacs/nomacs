@@ -346,6 +346,7 @@ public:
 	static QString defaultProfilePath();
 	static QString profileNameToPath(const QString& profileName);
 	static QString makeUserFriendly(const QString& profilePath);
+	static QString extension();
 
 	QStringList profileNames();
 

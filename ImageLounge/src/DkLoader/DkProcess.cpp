@@ -1140,5 +1140,9 @@ QString DkBatchProfile::makeUserFriendly(const QString & profilePath) {
 	return pName;
 }
 
+QString DkBatchProfile::extension() {
+	return ext;
+}
+
 
 }

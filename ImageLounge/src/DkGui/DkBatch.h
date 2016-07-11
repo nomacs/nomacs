@@ -386,6 +386,7 @@ public:
 public slots:
 	void on_profileCombo_currentIndexChanged(const QString& text);
 	void on_saveButton_clicked();
+	void on_exportButton_clicked();
 
 signals:
 	void newHeaderText(const QString& txt) const;

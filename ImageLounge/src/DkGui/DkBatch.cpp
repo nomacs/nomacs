@@ -62,6 +62,7 @@
 #include <QAction>
 #include <QStackedLayout>
 #include <QInputDialog>
+#include <QStandardPaths>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1230,11 +1231,15 @@ void DkProfileWidget::createLayout() {
 	QPushButton* saveButton = new QPushButton(tr("Save Profile"), this);
 	saveButton->setObjectName("saveButton");
 
+	QPushButton* exportButton = new QPushButton(tr("Export Profile"), this);
+	exportButton->setObjectName("exportButton");
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mProfileCombo);
 	layout->addWidget(saveButton);
+	layout->addWidget(exportButton);
 
 	updateProfileCombo();
 }
@@ -1257,9 +1262,10 @@ void DkProfileWidget::profileSaved(const QString& profileName) {
 	updateProfileCombo();
 
 	int idx = mProfileCombo->findText(profileName);
-
 	qDebug() << "profile index: " << idx;
-	mProfileCombo->setCurrentIndex(idx);
+
+	if (idx >= 0)
+		mProfileCombo->setCurrentIndex(idx);
 }
 
 void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
@@ -1293,6 +1299,16 @@ void DkProfileWidget::updateProfileCombo() {
 void DkProfileWidget::on_saveButton_clicked() {
 
 	saveProfile();
+}
+
+void DkProfileWidget::on_exportButton_clicked() {
+
+	QString sPath = QFileDialog::getSaveFileName(this, 
+		tr("Export Batch Profile"), 
+		QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+		tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()));
+
+	emit saveProfileSignal(sPath);
 }
 
 void DkProfileWidget::saveProfile() {
