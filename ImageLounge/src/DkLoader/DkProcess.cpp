@@ -38,7 +38,6 @@
 #include <QFutureWatcher>
 #include <QtConcurrentMap>
 #include <QWidget>
-#include <QUuid>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -544,11 +543,8 @@ void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPl
 #endif
 
 // DkBatchProcess --------------------------------------------------------------------
-DkBatchProcess::DkBatchProcess(const QString& filePathIn, const QString& filePathOut) {
-	mFilePathIn = filePathIn;
-	mFilePathOut = filePathOut;
-
-	mMode = DkBatchConfig::mode_skip_existing;
+DkBatchProcess::DkBatchProcess(const DkSaveInfo& saveInfo) {
+	mSaveInfo = saveInfo;
 }
 
 void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes) {
@@ -556,28 +552,14 @@ void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatc
 	mProcessFunctions = processes;
 }
 
-void DkBatchProcess::setMode(int mode) {
-
-	mMode = mode;
-}
-
-void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
-
-	mDeleteOriginal = deleteOriginal;
-}
-
-void DkBatchProcess::setCompression(int compression) {
-	mCompression = compression;
-}
-
 QString DkBatchProcess::inputFile() const {
 
-	return mFilePathIn;
+	return mSaveInfo.inputFilePath();
 }
 
 QString DkBatchProcess::outputFile() const {
 
-	return mFilePathOut;
+	return mSaveInfo.outputFilePath();
 }
 
 QVector<QSharedPointer<DkBatchInfo> > DkBatchProcess::batchInfo() const {
@@ -599,29 +581,29 @@ bool DkBatchProcess::compute() {
 
 	mIsProcessed = true;
 
-	QFileInfo fInfoIn(mFilePathIn);
-	QFileInfo fInfoOut(mFilePathOut);
+	QFileInfo fInfoIn(mSaveInfo.inputFilePath());
+	QFileInfo fInfoOut(mSaveInfo.outputFilePath());
 
 	// check errors
-	if (fInfoOut.exists() && mMode == DkBatchConfig::mode_skip_existing) {
-		mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mFilePathOut));
+	if (fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing) {
+		mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mSaveInfo.outputFilePath()));
 		mFailure++;
 		return mFailure == 0;
 	}
 	else if (!fInfoIn.exists()) {
 		mLogStrings.append(QObject::tr("Error: input file does not exist"));
-		mLogStrings.append(QObject::tr("Input: %1").arg(mFilePathIn));
+		mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
 		mFailure++;
 		return mFailure == 0;
 	}
-	else if (mFilePathIn == mFilePathOut && mProcessFunctions.empty()) {
+	else if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && mProcessFunctions.empty()) {
 		mLogStrings.append(QObject::tr("Skipping: nothing to do here."));
 		mFailure++;
 		return mFailure == 0;
 	}
 	
 	// do the work
-	if (mProcessFunctions.empty() && mFilePathIn == mFilePathOut && fInfoIn.suffix() == fInfoOut.suffix()) {	// rename?
+	if (mProcessFunctions.empty() && mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && fInfoIn.suffix() == fInfoOut.suffix()) {	// rename?
 		if (!renameFile())
 			mFailure++;
 		return mFailure == 0;
@@ -647,9 +629,9 @@ QStringList DkBatchProcess::getLog() const {
 
 bool DkBatchProcess::process() {
 
-	mLogStrings.append(QObject::tr("processing %1").arg(mFilePathIn));
+	mLogStrings.append(QObject::tr("processing %1").arg(mSaveInfo.inputFilePath()));
 
-	QSharedPointer<DkImageContainer> imgC(new DkImageContainer(mFilePathIn));
+	QSharedPointer<DkImageContainer> imgC(new DkImageContainer(mSaveInfo.inputFilePath()));
 
 	if (!imgC->loadImage() || imgC->image().isNull()) {
 		mLogStrings.append(QObject::tr("Error while loading..."));
@@ -679,11 +661,11 @@ bool DkBatchProcess::process() {
 		return false;
 	}
 
-	if (imgC->saveImage(mFilePathOut, mCompression)) {
-		mLogStrings.append(QObject::tr("%1 saved...").arg(mFilePathOut));
+	if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {
+		mLogStrings.append(QObject::tr("%1 saved...").arg(mSaveInfo.outputFilePath()));
 	}
 	else {
-		mLogStrings.append(QObject::tr("Could not save: %1").arg(mFilePathOut));
+		mLogStrings.append(QObject::tr("Could not save: %1").arg(mSaveInfo.outputFilePath()));
 		mFailure++;
 	}
 
@@ -697,70 +679,68 @@ bool DkBatchProcess::process() {
 
 bool DkBatchProcess::renameFile() {
 
-	if (QFileInfo(mFilePathOut).exists()) {
+	if (QFileInfo(mSaveInfo.outputFilePath()).exists()) {
 		mLogStrings.append(QObject::tr("Error: could not rename file, the target file exists already."));
 		return false;
 	}
 
-	QFile file(mFilePathIn);
+	QFile file(mSaveInfo.inputFilePath());
 
 	// Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race Condition
-	if (!file.rename(mFilePathOut)) {
+	if (!file.rename(mSaveInfo.outputFilePath())) {
 		mLogStrings.append(QObject::tr("Error: could not rename file"));
 		mLogStrings.append(file.errorString());
 		return false;
 	}
 	else
-		mLogStrings.append(QObject::tr("Renaming: %1 -> %2").arg(mFilePathIn).arg(mFilePathOut));
+		mLogStrings.append(QObject::tr("Renaming: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
 
 	return true;
 }
 
 bool DkBatchProcess::copyFile() {
 
-	QFile file(mFilePathIn);
+	QFile file(mSaveInfo.inputFilePath());
 
-	if (QFileInfo(mFilePathOut).exists() && mMode == DkBatchConfig::mode_overwrite) {
+	if (QFileInfo(mSaveInfo.outputFilePath()).exists() && mSaveInfo.mode() == DkSaveInfo::mode_overwrite) {
 		if (!deleteOrRestoreExisting())
 			return false;	// early break
 	}
 
-	if (!file.copy(mFilePathOut)) {
+	if (!file.copy(mSaveInfo.outputFilePath())) {
 		mLogStrings.append(QObject::tr("Error: could not copy file"));
-		mLogStrings.append(QObject::tr("Input: %1").arg(mFilePathIn));
-		mLogStrings.append(QObject::tr("Output: %1").arg(mFilePathOut));
+		mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
+		mLogStrings.append(QObject::tr("Output: %1").arg(mSaveInfo.outputFilePath()));
 		mLogStrings.append(file.errorString());
 		return false;
 	}
 	else
-		mLogStrings.append(QObject::tr("Copying: %1 -> %2").arg(mFilePathIn).arg(mFilePathOut));
+		mLogStrings.append(QObject::tr("Copying: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
 
 	return true;
 }
 
 bool DkBatchProcess::prepareDeleteExisting() {
 
-	if (QFileInfo(mFilePathOut).exists() && mMode == DkBatchConfig::mode_overwrite) {
+	if (QFileInfo(mSaveInfo.outputFilePath()).exists() && mSaveInfo.mode() == DkSaveInfo::mode_overwrite) {
 
-		// create unique back-up file name
-		QFileInfo buFile(mFilePathOut);
-		buFile = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix());
+		mSaveInfo.createBackupFilePath();
 
 		// check the uniqueness : )
-		if (buFile.exists()) {
-			mLogStrings.append(QObject::tr("Error: back-up (%1) file already exists").arg(buFile.absoluteFilePath()));
+		if (QFileInfo(mSaveInfo.backupFilePath()).exists()) {
+			mLogStrings.append(QObject::tr("Error: back-up (%1) file already exists").arg(mSaveInfo.backupFilePath()));
+			mSaveInfo.clearBackupFilePath();
 			return false;
 		}
 
-		QFile file(mFilePathOut);
+		QFile file(mSaveInfo.outputFilePath());
 
-		if (!file.rename(buFile.absoluteFilePath())) {
-			mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(buFile.absoluteFilePath()));
+		if (!file.rename(mSaveInfo.backupFilePath())) {
+			mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(mSaveInfo.backupFilePath()));
 			mLogStrings.append(file.errorString());
+			mSaveInfo.clearBackupFilePath();
 			return false;
 		}
-		else
-			mBackupFilePath = buFile.absoluteFilePath();
 	}
 
 	return true;
@@ -768,9 +748,10 @@ bool DkBatchProcess::prepareDeleteExisting() {
 
 bool DkBatchProcess::deleteOrRestoreExisting() {
 
-	QFileInfo outInfo(mFilePathOut);
-	if (outInfo.exists() && !mBackupFilePath.isEmpty() && QFileInfo(mBackupFilePath).exists()) {
-		QFile file(mBackupFilePath);
+	QFileInfo outInfo(mSaveInfo.outputFilePath());
+
+	if (outInfo.exists() && !mSaveInfo.backupFilePath().isEmpty() && mSaveInfo.backupFileInfo().exists()) {
+		QFile file(mSaveInfo.backupFilePath());
 
 		if (!file.remove()) {
 			mLogStrings.append(QObject::tr("Error: could not delete existing file"));
@@ -781,15 +762,15 @@ bool DkBatchProcess::deleteOrRestoreExisting() {
 	// fall-back
 	else if (!outInfo.exists()) {
 		
-		QFile file(mBackupFilePath);
+		QFile file(mSaveInfo.backupFilePath());
 
-		if (!file.rename(mFilePathOut)) {
-			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong sorry, your original file can be found here: %1").arg(mBackupFilePath));
+		if (!file.rename(mSaveInfo.outputFilePath())) {
+			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong sorry, your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
 			mLogStrings.append(file.errorString());
 			return false;
 		}
 		else {
-			mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mFilePathOut));
+			mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mSaveInfo.outputFilePath()));
 		}
 	}
 
@@ -798,17 +779,17 @@ bool DkBatchProcess::deleteOrRestoreExisting() {
 
 bool DkBatchProcess::deleteOriginalFile() {
 
-	if (mFilePathIn == mFilePathOut)
+	if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath())
 		return true;
 
-	if (!mFailure && mDeleteOriginal) {
-		QFile oFile(mFilePathIn);
+	if (!mFailure && mSaveInfo.isDeleteOriginal()) {
+		QFile oFile(mSaveInfo.inputFilePath());
 
 		if (oFile.remove())
-			mLogStrings.append(QObject::tr("%1 deleted.").arg(mFilePathIn));
+			mLogStrings.append(QObject::tr("%1 deleted.").arg(mSaveInfo.inputFilePath()));
 		else {
 			mFailure++;
-			mLogStrings.append(QObject::tr("I could not delete %1").arg(mFilePathIn));
+			mLogStrings.append(QObject::tr("I could not delete %1").arg(mSaveInfo.inputFilePath()));
 			return false;
 		}
 	}
@@ -825,14 +806,7 @@ DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QString& outputD
 	mOutputDirPath = outputDir;
 	mFileNamePattern = fileNamePattern;
 	
-	init();
 };
-
-void DkBatchConfig::init() {
-
-	mCompression = -1;
-	mMode = mode_skip_existing;
-}
 
 bool DkBatchConfig::isOk() const {
 
@@ -855,6 +829,7 @@ bool DkBatchConfig::isOk() const {
 	return true;
 }
 
+
 // DkBatchProcessing --------------------------------------------------------------------
 DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* parent /*= 0*/) : QObject(parent) {
 
@@ -872,17 +847,20 @@ void DkBatchProcessing::init() {
 
 	for (int idx = 0; idx < fileList.size(); idx++) {
 
+		DkSaveInfo si = mBatchConfig.saveInfo();
+
 		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
-		QString outDir = mBatchConfig.inputDirIsOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
+		QString outDir = si.isInputDirOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
 
 		DkFileNameConverter converter(cFileInfo.fileName(), mBatchConfig.getFileNamePattern(), idx);
-		QFileInfo newFileInfo(outDir, converter.getConvertedFileName());
+		QString outputFilePath = QFileInfo(outDir, converter.getConvertedFileName()).absoluteFilePath();
 
-		DkBatchProcess cProcess(fileList.at(idx), newFileInfo.absoluteFilePath());
-		cProcess.setMode(mBatchConfig.getMode());
-		cProcess.setDeleteOriginal(mBatchConfig.getDeleteOriginal());
+		// set input/output file path
+		si.setInputFilePath(fileList.at(idx));
+		si.setOutputFilePath(outputFilePath);
+
+		DkBatchProcess cProcess(si);
 		cProcess.setProcessChain(mBatchConfig.getProcessFunctions());
-		cProcess.setCompression(mBatchConfig.getCompression());
 
 		mBatchItems.push_back(cProcess);
 	}
@@ -894,10 +872,8 @@ void DkBatchConfig::saveSettings(QSettings & settings) const {
 	settings.setValue("FileList", mFileList.join(";"));
 	settings.setValue("OutputDirPath", mOutputDirPath);
 	settings.setValue("FileNamePattern", mFileNamePattern);
-	settings.setValue("Compression", mCompression);
-	settings.setValue("Mode", mMode);
-	settings.setValue("DeleteOriginal", mDeleteOriginal);
-	settings.setValue("InputDirIsOutputDir", mInputDirIsOutputDir);
+
+	mSaveInfo.saveSettings(settings);
 
 	for (auto pf : mProcessFunctions)
 		pf->saveSettings(settings);
@@ -911,10 +887,8 @@ void DkBatchConfig::loadSettings(QSettings & settings) {
 	mFileList = settings.value("FileList", mFileList).toString().split(";");
 	mOutputDirPath = settings.value("OutputDirPath", mOutputDirPath).toString();
 	mFileNamePattern = settings.value("FileNamePattern", mFileNamePattern).toString();
-	mCompression = settings.value("Compression", mCompression).toInt();
-	mMode = settings.value("Mode", mMode).toInt();
-	mDeleteOriginal = settings.value("DeleteOriginal", mDeleteOriginal).toBool();
-	mInputDirIsOutputDir = settings.value("InputDirIsOutputDir", mInputDirIsOutputDir).toBool();
+
+	mSaveInfo.loadSettings(settings);
 
 	QStringList groups = settings.childGroups();
 	

@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkBaseWidgets.h"
+#include "DkBatchInfo.h"
 
 // Qt defines
 class QListView;
@@ -288,7 +289,7 @@ public:
 	void applyDefault();
 	void loadProperties(const DkBatchConfig& config);
 
-	int overwriteMode() const;
+	DkSaveInfo::OverwriteMode overwriteMode() const;
 	int getCompression() const;
 	bool useInputDir() const;
 	bool deleteOriginal() const;

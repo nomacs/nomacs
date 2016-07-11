@@ -44,6 +44,7 @@
 
 // Qt defines
 class QFileInfo;
+class QSettings;
 
 namespace nmc {
 
@@ -74,5 +75,57 @@ private:
 	QString mId;
 
 };
+
+class DllLoaderExport DkSaveInfo {
+
+public:
+	DkSaveInfo(const QString& filePathIn = QString(), const QString& filePathOut = QString());
+
+	enum OverwriteMode {
+		mode_overwrite,
+		mode_skip_existing,
+
+		mode_end
+	};
+
+	void loadSettings(QSettings& settings);
+	void saveSettings(QSettings& settings) const;
+
+	void setInputFilePath(const QString& inputFilePath);
+	void setOutputFilePath(const QString& outputFilePath);
+
+	void setMode(OverwriteMode mode);
+	void setDeleteOriginal(bool deleteOriginal);
+	void setCompression(int compression);
+	void setInputDirIsOutputDir(bool isOutputDir);
+
+	QString inputFilePath() const;
+	QString outputFilePath() const;
+	QString backupFilePath() const;
+
+	QFileInfo inputFileInfo() const;
+	QFileInfo outputFileInfo() const;
+	QFileInfo backupFileInfo() const;
+
+	OverwriteMode mode() const;
+	bool isDeleteOriginal() const;
+	bool isInputDirOutputDir() const;
+	int compression() const;
+
+	void createBackupFilePath();
+	void clearBackupFilePath();
+
+private:
+	QString mFilePathIn;
+	QString mFilePathOut;
+	QString mBackupPath;
+
+	OverwriteMode mMode = mode_skip_existing;
+	int mCompression = -1;
+	bool mDeleteOriginal = false;
+	bool mInputDirIsOutputDir = false;
+
+};
+
 
 }

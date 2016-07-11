@@ -33,6 +33,9 @@
 #include <QSharedPointer>
 #include <QVector>
 #include <QDebug>
+#include <QUuid>
+#include <QDir>
+#include <QSettings>
 #pragma warning(pop)
 
 namespace nmc {
@@ -143,6 +146,110 @@ QVector<QSharedPointer<DkBatchInfo> > DkBatchInfo::filter(const QVector<QSharedP
 	}
 	
 	return fInfos;
+}
+
+DkSaveInfo::DkSaveInfo(const QString& filePathIn, const QString& filePathOut) {
+	
+	mFilePathIn = filePathIn;
+	mFilePathOut = filePathOut;
+}
+
+void DkSaveInfo::createBackupFilePath() {
+
+	QFileInfo buFile(mFilePathOut);
+	mBackupPath = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix()).absoluteFilePath();
+}
+
+void DkSaveInfo::clearBackupFilePath() {
+	mBackupPath = QString();
+}
+
+void DkSaveInfo::loadSettings(QSettings & settings) {
+
+	settings.beginGroup("SaveInfo");
+	mCompression = settings.value("Compression", mCompression).toInt();
+	mMode = (DkSaveInfo::OverwriteMode)settings.value("Mode", mMode).toInt();
+	mDeleteOriginal = settings.value("DeleteOriginal", mDeleteOriginal).toBool();
+	mInputDirIsOutputDir = settings.value("InputDirIsOutputDir", mInputDirIsOutputDir).toBool();
+
+	settings.endGroup();
+}
+
+void DkSaveInfo::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup("SaveInfo");
+
+	settings.setValue("Compression", mCompression);
+	settings.setValue("Mode", mMode);
+	settings.setValue("DeleteOriginal", mDeleteOriginal);
+	settings.setValue("InputDirIsOutputDir", mInputDirIsOutputDir);
+
+	settings.endGroup();
+}
+
+void DkSaveInfo::setInputFilePath(const QString & inputFilePath) {
+	mFilePathIn = inputFilePath;
+}
+
+void DkSaveInfo::setOutputFilePath(const QString & outputFilePath) {
+	mFilePathOut = outputFilePath;
+	clearBackupFilePath();
+}
+
+void DkSaveInfo::setMode(OverwriteMode mode) {
+	mMode = mode;
+}
+
+void DkSaveInfo::setDeleteOriginal(bool deleteOriginal) {
+	mDeleteOriginal = deleteOriginal;
+}
+
+void DkSaveInfo::setCompression(int compression) {
+	mCompression = compression;
+}
+
+void DkSaveInfo::setInputDirIsOutputDir(bool isOutputDir) {
+	mInputDirIsOutputDir = isOutputDir;
+}
+
+QString DkSaveInfo::inputFilePath() const {
+	return mFilePathIn;
+}
+
+QString DkSaveInfo::outputFilePath() const {
+	return mFilePathOut;
+}
+
+QString DkSaveInfo::backupFilePath() const {
+	return mBackupPath;
+}
+
+QFileInfo DkSaveInfo::inputFileInfo() const {
+	return QFileInfo(mFilePathIn);
+}
+
+QFileInfo DkSaveInfo::outputFileInfo() const {
+	return QFileInfo(mFilePathOut);
+}
+
+QFileInfo DkSaveInfo::backupFileInfo() const {
+	return QFileInfo(mBackupPath);
+}
+
+DkSaveInfo::OverwriteMode DkSaveInfo::mode() const {
+	return mMode;
+}
+
+bool DkSaveInfo::isDeleteOriginal() const {
+	return mDeleteOriginal;
+}
+
+bool DkSaveInfo::isInputDirOutputDir() const {
+	return mInputDirIsOutputDir;
+}
+
+int DkSaveInfo::compression() const {
+	return mCompression;
 }
 
 }
