@@ -91,6 +91,7 @@ class DkExplorer;
 class DkDirectoryEdit;
 class DkListWidget;
 class DkBatchConfig;
+class DkProgressBar;
 
 class DkBatchContent {
 
@@ -582,7 +583,7 @@ protected:
 	DkBatchInfoWidget* mInfoWidget = 0;
 
 	//QPushButton* mLogButton = 0;
-	QProgressBar* mProgressBar= 0;
+	DkProgressBar* mProgressBar = 0;
 	//QLabel* mSummaryLabel = 0;
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;

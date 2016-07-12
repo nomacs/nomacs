@@ -1680,9 +1680,9 @@ void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
 
 	QPixmap pm;
 	switch (mode) {
-	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(32); break;
-	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(32); break;
-	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(32); break;
+	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
+	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
+	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(24); break;
 	}
 	pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
 	mIcon->setPixmap(pm);
@@ -1766,8 +1766,9 @@ void DkBatchWidget::createLayout() {
 	mProfileWidget = new DkProfileWidget(this);
 	mWidgets[batch_profile]->setContentWidget(mProfileWidget);
 
-	mProgressBar = new QProgressBar(this);
+	mProgressBar = new DkProgressBar(this);
 	mProgressBar->setVisible(false);
+	mProgressBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);	// progressbar is greedy otherwise
 
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
@@ -1790,7 +1791,6 @@ void DkBatchWidget::createLayout() {
 	dialogLayout->addWidget(mContentTitle);
 	dialogLayout->addWidget(mContentInfo);
 	dialogLayout->addWidget(centralWidget);		// almost everything
-	dialogLayout->addWidget(mProgressBar);
 	//dialogLayout->addStretch(10);
 	//dialogLayout->addWidget(mButtons);
 
@@ -1817,6 +1817,7 @@ void DkBatchWidget::createLayout() {
 	mButtonWidget->show();
 	tabLayout->addStretch();
 	tabLayout->addWidget(mInfoWidget);
+	tabLayout->addWidget(mProgressBar);
 	tabLayout->addWidget(mButtonWidget);
 
 	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
@@ -1868,7 +1869,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	// check if we are good to go
 	if (strict && mFileSelection->getSelectedFiles().empty()) {
-		emit infoSignal(tr("Please select files for processing."));
+		emit infoSignal(tr("Please select files for processing."), DkBatchInfoWidget::InfoMode::info_warning);
 		//QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
@@ -1926,7 +1927,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	if (strict && !config.isOk()) {
 
 		if (config.getOutputDirPath().isEmpty()) {
-			emit infoSignal(tr("Please select an output directory."));
+			emit infoSignal(tr("Please select an output directory."), DkBatchInfoWidget::InfoMode::info_warning);
 			//QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
@@ -1993,8 +1994,9 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 bool DkBatchWidget::cancel() {
 
 	if (mBatchProcessing->isComputing()) {
+		emit infoSignal(tr("Canceling..."), DkBatchInfoWidget::InfoMode::info_message);
 		mBatchProcessing->cancel();
-		mButtonWidget->playButton()->setEnabled(false);
+		//mButtonWidget->playButton()->setEnabled(false);
 		//stopProcessing();
 		return false;
 	}
@@ -2013,6 +2015,8 @@ void DkBatchWidget::startProcessing() {
 	mFileSelection->startProcessing();
 	mInfoWidget->setInfo("");
 
+	//mProgressBar->setFixedWidth(100);
+	qDebug() << "progressbar width: " << mProgressBar->width();
 	mProgressBar->show();
 	mProgressBar->reset();
 	mProgressBar->setMaximum(mFileSelection->getSelectedFiles().size());
