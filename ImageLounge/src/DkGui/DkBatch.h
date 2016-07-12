@@ -490,6 +490,30 @@ protected:
 	QPushButton* mLogButton = 0;
 };
 
+class DkBatchInfoWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkBatchInfoWidget(QWidget* parent);
+
+	enum InfoMode {
+		info_message,
+		info_warning,
+		info_critical,
+
+		info_end
+	};
+
+public slots:
+	void setInfo(const QString& message, const DkBatchInfoWidget::InfoMode& mode = DkBatchInfoWidget::InfoMode::info_message);
+
+protected:
+	void createLayout();
+
+	QLabel* mInfo = 0;
+	QLabel* mIcon = 0;
+};
+
 class DkBatchWidget : public DkWidget {
 	Q_OBJECT
 
@@ -508,14 +532,6 @@ public:
 		batchWidgets_end
 	};
 
-	enum InfoMode {
-		info_message,
-		info_warning,
-		info_critical,
-
-		info_end
-	};
-
 	bool cancel();
 
 public slots:
@@ -532,10 +548,9 @@ public slots:
 	void saveProfile(const QString& profilePath) const;
 	void loadProfile(const QString& profilePath);
 	void applyDefault();
-	void setInfo(const QString& message, const InfoMode& mode = InfoMode::info_message);
 
 signals:
-	void infoSignal(const QString& message, const InfoMode& mode = InfoMode::info_message) const;	// to keep constness
+	void infoSignal(const QString& message, const DkBatchInfoWidget::InfoMode& mode = DkBatchInfoWidget::InfoMode::info_message) const;
 
 protected:
 	void createLayout();
@@ -564,16 +579,17 @@ protected:
 
 	DkBatchButtonsWidget* mButtonWidget = 0;
 
+	DkBatchInfoWidget* mInfoWidget = 0;
+
 	//QPushButton* mLogButton = 0;
 	QProgressBar* mProgressBar= 0;
-	QLabel* mSummaryLabel = 0;
+	//QLabel* mSummaryLabel = 0;
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;
 
 	// title
 	QLabel* mContentTitle = 0;
 	QLabel* mContentInfo = 0;
-	QLabel* mInfoLabel = 0;
 
 };
 

@@ -504,7 +504,7 @@ void DkBatchInput::startProcessing() {
 
 void DkBatchInput::stopProcessing() {
 
-	mInputTextEdit->clear();
+	//mInputTextEdit->clear();
 	mInputTextEdit->setEnabled(true);
 }
 
@@ -1653,6 +1653,43 @@ QPushButton * DkBatchButtonsWidget::playButton() {
 	return mPlayButton;
 }
 
+// DkBatchInfo --------------------------------------------------------------------
+DkBatchInfoWidget::DkBatchInfoWidget(QWidget* parent) : DkWidget(parent) {
+	createLayout();
+}
+
+void DkBatchInfoWidget::createLayout() {
+
+	mInfo = new QLabel(this);
+	mInfo->setObjectName("BatchInfo");
+
+	mIcon = new QLabel(this);
+	
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+	layout->addWidget(mIcon);
+	layout->addWidget(mInfo);
+}
+
+void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
+
+	if (message == "")
+		hide();
+	else
+		show();
+
+	QPixmap pm;
+	switch (mode) {
+	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(32); break;
+	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(32); break;
+	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(32); break;
+	}
+	pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
+	mIcon->setPixmap(pm);
+
+	mInfo->setText(message);
+}
+
 // Batch Widget --------------------------------------------------------------------
 DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkWidget(parent) {
 	
@@ -1732,11 +1769,6 @@ void DkBatchWidget::createLayout() {
 	mProgressBar = new QProgressBar(this);
 	mProgressBar->setVisible(false);
 
-	mSummaryLabel = new QLabel("", this);
-	mSummaryLabel->setObjectName("DkDecentInfo");
-	mSummaryLabel->setVisible(false);
-	mSummaryLabel->setAlignment(Qt::AlignRight);
-
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
 	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
@@ -1759,7 +1791,6 @@ void DkBatchWidget::createLayout() {
 	dialogLayout->addWidget(mContentInfo);
 	dialogLayout->addWidget(centralWidget);		// almost everything
 	dialogLayout->addWidget(mProgressBar);
-	dialogLayout->addWidget(mSummaryLabel);
 	//dialogLayout->addStretch(10);
 	//dialogLayout->addWidget(mButtons);
 
@@ -1780,13 +1811,12 @@ void DkBatchWidget::createLayout() {
 		tabGroup->addButton(w->headerWidget());
 	}
 
-	mInfoLabel = new QLabel(this);
-	mInfoLabel->setObjectName("BatchInfo");
+	mInfoWidget = new DkBatchInfoWidget(this);
 
 	mButtonWidget = new DkBatchButtonsWidget(this);
 	mButtonWidget->show();
 	tabLayout->addStretch();
-	tabLayout->addWidget(mInfoLabel);
+	tabLayout->addWidget(mInfoWidget);
 	tabLayout->addWidget(mButtonWidget);
 
 	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
@@ -1801,7 +1831,7 @@ void DkBatchWidget::createLayout() {
 	if (!mWidgets.empty())
 		mWidgets[0]->headerWidget()->click();
 
-	connect(this, SIGNAL(infoSignal(const QString&, const InfoMode&)), this, SLOT(setInfo(const QString&, const InfoMode&)));
+	connect(this, SIGNAL(infoSignal(const QString&, const DkBatchInfoWidget::InfoMode&)), mInfoWidget, SLOT(setInfo(const QString&, const DkBatchInfoWidget::InfoMode&)));
 }
 
 void DkBatchWidget::toggleBatch(bool start) {
@@ -1847,7 +1877,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
-		emit infoSignal(tr("I am missing a widget."), InfoMode::info_critical);
+		emit infoSignal(tr("I am missing a widget."), DkBatchInfoWidget::InfoMode::info_critical);
 		//QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
@@ -1901,17 +1931,17 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 			return DkBatchConfig();
 		}
 		else if (!QDir(config.getOutputDirPath()).exists()) {
-			emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), InfoMode::info_critical);
+			emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), DkBatchInfoWidget::InfoMode::info_critical);
 			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileList().empty()) {
-			emit infoSignal(tr("Sorry, I cannot find files to process."), InfoMode::info_critical);
+			emit infoSignal(tr("Sorry, I cannot find files to process."), DkBatchInfoWidget::InfoMode::info_critical);
 			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileNamePattern().isEmpty()) {
-			emit infoSignal(tr("Sorry, the file pattern is empty."), InfoMode::info_critical);
+			emit infoSignal(tr("Sorry, the file pattern is empty."), DkBatchInfoWidget::InfoMode::info_critical);
 			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
@@ -1921,7 +1951,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 		//}
 
 		qDebug() << "config not ok - canceling";
-		emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), InfoMode::info_critical);
+		emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), DkBatchInfoWidget::InfoMode::info_critical);
 		//QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
@@ -1981,7 +2011,7 @@ void DkBatchWidget::processingFinished() {
 void DkBatchWidget::startProcessing() {
 
 	mFileSelection->startProcessing();
-	setInfo("");
+	mInfoWidget->setInfo("");
 
 	mProgressBar->show();
 	mProgressBar->reset();
@@ -2013,13 +2043,8 @@ void DkBatchWidget::stopProcessing() {
 	int numProcessed = mBatchProcessing->getNumProcessed();
 	int numItems = mBatchProcessing->getNumItems();
 
-	mSummaryLabel->setText(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures));
-	mSummaryLabel->show();
-
-	mSummaryLabel->setProperty("warning", numFailures > 0);
-	mSummaryLabel->style()->unpolish(this);
-	mSummaryLabel->style()->polish(this);
-	update();
+	DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning : DkBatchInfoWidget::InfoMode::info_message;
+	mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures), im);
 
 	mLogNeedsUpdate = false;
 	mLogUpdateTimer.stop();
@@ -2045,6 +2070,7 @@ void DkBatchWidget::showLog() {
 	QStringList log = mBatchProcessing->getLog();
 
 	DkTextDialog* textDialog = new DkTextDialog(this);
+	textDialog->setWindowTitle(tr("Batch Log"));
 	textDialog->getTextEdit()->setReadOnly(true);
 	textDialog->setText(log);
 
@@ -2187,10 +2213,6 @@ void DkBatchWidget::applyDefault() {
 
 	for (DkBatchContainer* bc : mWidgets)
 		bc->batchContent()->applyDefault();
-}
-
-void DkBatchWidget::setInfo(const QString & message, const InfoMode & mode) {
-	mInfoLabel->setText(message);
 }
 
 void DkBatchWidget::widgetChanged() {
