@@ -476,6 +476,8 @@ public:
 	DkBatchButtonsWidget(QWidget* parent = 0);
 
 	void setPaused(bool paused = true);
+	QPushButton* logButton();
+	QPushButton* playButton();
 
 signals:
 	void playSignal(bool play = true) const;
@@ -485,6 +487,7 @@ protected:
 	void createLayout();
 
 	QPushButton* mPlayButton = 0;
+	QPushButton* mLogButton = 0;
 };
 
 class DkBatchWidget : public DkWidget {
@@ -505,11 +508,12 @@ public:
 		batchWidgets_end
 	};
 
+	bool cancel();
+
 public slots:
-	void accept();
-	bool close();
+	void toggleBatch(bool start);
 	void widgetChanged();
-	void logButtonClicked();
+	void showLog();
 	void processingFinished();
 	void updateProgress(int progress);
 	void updateLog();
@@ -524,14 +528,16 @@ public slots:
 protected:
 	void createLayout();
 	DkBatchConfig createBatchConfig(bool strict = true) const;
-		
+	void startProcessing();
+	void stopProcessing();
+	void startBatch();
+
 	QVector<DkBatchContainer*> mWidgets;
 		
 	QStackedLayout* mCentralLayout = 0;
 	int mCurrentIndex = 0;
 
 	QString mCurrentDirectory;
-	QDialogButtonBox* mButtons = 0;
 	DkBatchInput* mFileSelection = 0;
 	DkBatchOutput* mOutputSelection = 0;
 	DkBatchResizeWidget* mResizeWidget = 0;
@@ -546,7 +552,7 @@ protected:
 
 	DkBatchButtonsWidget* mButtonWidget = 0;
 
-	QPushButton* mLogButton = 0;
+	//QPushButton* mLogButton = 0;
 	QProgressBar* mProgressBar= 0;
 	QLabel* mSummaryLabel = 0;
 	QTimer mLogUpdateTimer;
@@ -556,8 +562,6 @@ protected:
 	QLabel* mContentTitle = 0;
 	QLabel* mContentInfo = 0;
 
-	void startProcessing();
-	void stopProcessing();
 };
 
 }

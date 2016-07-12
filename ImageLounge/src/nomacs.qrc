@@ -82,5 +82,6 @@
         <file>stylesheet.css</file>
         <file>img/power.svg</file>
         <file>img/plugin-banner.svg</file>
+        <file>img/player-stop.svg</file>
     </qresource>
 </RCC>
