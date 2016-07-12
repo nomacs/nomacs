@@ -508,6 +508,14 @@ public:
 		batchWidgets_end
 	};
 
+	enum InfoMode {
+		info_message,
+		info_warning,
+		info_critical,
+
+		info_end
+	};
+
 	bool cancel();
 
 public slots:
@@ -524,6 +532,10 @@ public slots:
 	void saveProfile(const QString& profilePath) const;
 	void loadProfile(const QString& profilePath);
 	void applyDefault();
+	void setInfo(const QString& message, const InfoMode& mode = InfoMode::info_message);
+
+signals:
+	void infoSignal(const QString& message, const InfoMode& mode = InfoMode::info_message) const;	// to keep constness
 
 protected:
 	void createLayout();
@@ -561,6 +573,7 @@ protected:
 	// title
 	QLabel* mContentTitle = 0;
 	QLabel* mContentInfo = 0;
+	QLabel* mInfoLabel = 0;
 
 };
 

@@ -39,7 +39,6 @@
 #include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDialogButtonBox>
 #include <QLabel>
 #include <QListView>
 #include <QLineEdit>
@@ -1626,11 +1625,12 @@ void DkBatchButtonsWidget::createLayout() {
 	icon = QIcon();
 	QPixmap pm = QIcon(":/nomacs/img/batch-processing.svg").pixmap(100);
 	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
-	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(100, 100, 100)), QIcon::Normal, QIcon::Off);
+	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(100, 100, 100)), QIcon::Disabled, QIcon::On);
 
 	mLogButton = new QPushButton(icon, "", this);
 	mLogButton->setIconSize(QSize(100, 50));
 	mLogButton->setFlat(true);
+	mLogButton->setEnabled(false);
 	
 	// connect
 	connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
@@ -1737,14 +1737,6 @@ void DkBatchWidget::createLayout() {
 	mSummaryLabel->setVisible(false);
 	mSummaryLabel->setAlignment(Qt::AlignRight);
 
-	//mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	//mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
-	//mButtons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	//mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	////mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
-	//mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
-	//mButtons->addButton(mLogButton, QDialogButtonBox::ActionRole);
-
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
 	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
@@ -1788,9 +1780,13 @@ void DkBatchWidget::createLayout() {
 		tabGroup->addButton(w->headerWidget());
 	}
 
+	mInfoLabel = new QLabel(this);
+	mInfoLabel->setObjectName("BatchInfo");
+
 	mButtonWidget = new DkBatchButtonsWidget(this);
 	mButtonWidget->show();
 	tabLayout->addStretch();
+	tabLayout->addWidget(mInfoLabel);
 	tabLayout->addWidget(mButtonWidget);
 
 	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
@@ -1804,6 +1800,8 @@ void DkBatchWidget::createLayout() {
 	// open the first tab
 	if (!mWidgets.empty())
 		mWidgets[0]->headerWidget()->click();
+
+	connect(this, SIGNAL(infoSignal(const QString&, const InfoMode&)), this, SLOT(setInfo(const QString&, const InfoMode&)));
 }
 
 void DkBatchWidget::toggleBatch(bool start) {
@@ -1826,7 +1824,6 @@ void DkBatchWidget::startBatch() {
 
 	mBatchProcessing->setBatchConfig(bc);
 
-
 	// reopen the input widget to show the status
 	if (!mWidgets.empty())
 		mWidgets[0]->headerWidget()->click();
@@ -1837,11 +1834,12 @@ void DkBatchWidget::startBatch() {
 
 DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
-	QMainWindow* mw = DkActionManager::instance().getMainWindow();
+	//QMainWindow* mw = DkActionManager::instance().getMainWindow();
 
 	// check if we are good to go
 	if (strict && mFileSelection->getSelectedFiles().empty()) {
-		QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+		emit infoSignal(tr("Please select files for processing."));
+		//QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
@@ -1849,7 +1847,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
-		QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
+		emit infoSignal(tr("I am missing a widget."), InfoMode::info_critical);
+		//QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
@@ -1860,9 +1859,10 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
 			dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->overwriteMode() != DkSaveInfo::mode_overwrite) {
-			QMessageBox::information(mw, tr("Wrong Configuration"), 
-				tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
-				QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
+			//QMessageBox::information(mw, tr("Wrong Configuration"), 
+			//	tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
+			//	QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 	}
@@ -1896,19 +1896,23 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	if (strict && !config.isOk()) {
 
 		if (config.getOutputDirPath().isEmpty()) {
-			QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Please select an output directory."));
+			//QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (!QDir(config.getOutputDirPath()).exists()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileList().empty()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, I cannot find files to process."), InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileNamePattern().isEmpty()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, the file pattern is empty."), InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		//else if (config.getOutputDir() == QDir()) {
@@ -1917,7 +1921,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 		//}
 
 		qDebug() << "config not ok - canceling";
-		QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
+		emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), InfoMode::info_critical);
+		//QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
@@ -1976,6 +1981,7 @@ void DkBatchWidget::processingFinished() {
 void DkBatchWidget::startProcessing() {
 
 	mFileSelection->startProcessing();
+	setInfo("");
 
 	mProgressBar->show();
 	mProgressBar->reset();
@@ -2181,6 +2187,10 @@ void DkBatchWidget::applyDefault() {
 
 	for (DkBatchContainer* bc : mWidgets)
 		bc->batchContent()->applyDefault();
+}
+
+void DkBatchWidget::setInfo(const QString & message, const InfoMode & mode) {
+	mInfoLabel->setText(message);
 }
 
 void DkBatchWidget::widgetChanged() {
