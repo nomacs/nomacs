@@ -559,6 +559,15 @@ protected:
 	void startProcessing();
 	void stopProcessing();
 	void startBatch();
+	DkBatchInput* inputWidget() const;
+	DkBatchOutput* outputWidget() const;
+	DkBatchResizeWidget* resizeWidget() const;
+	DkProfileWidget* profileWidget() const;
+	DkBatchTransformWidget* transformWidget() const;
+
+#ifdef WITH_PLUGINS
+	DkBatchPluginWidget* pluginWidget() const;
+#endif
 
 	QVector<DkBatchContainer*> mWidgets;
 		
@@ -566,32 +575,20 @@ protected:
 	int mCurrentIndex = 0;
 
 	QString mCurrentDirectory;
-	DkBatchInput* mFileSelection = 0;
-	DkBatchOutput* mOutputSelection = 0;
-	DkBatchResizeWidget* mResizeWidget = 0;
-	DkProfileWidget* mProfileWidget = 0;
 
-#ifdef WITH_PLUGINS
-	DkBatchPluginWidget* mPluginWidget = 0;
-#endif
-
-	DkBatchTransformWidget* mTransformWidget = 0;
 	DkBatchProcessing* mBatchProcessing = 0;
 
-	DkBatchButtonsWidget* mButtonWidget = 0;
-
+	// info/controls
 	DkBatchInfoWidget* mInfoWidget = 0;
-
-	//QPushButton* mLogButton = 0;
 	DkProgressBar* mProgressBar = 0;
-	//QLabel* mSummaryLabel = 0;
+	DkBatchButtonsWidget* mButtonWidget = 0;
+	
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;
 
 	// title
 	QLabel* mContentTitle = 0;
 	QLabel* mContentInfo = 0;
-
 };
 
 }
