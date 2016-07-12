@@ -469,6 +469,24 @@ protected:
 	QCheckBox* mCbCropMetadata = 0;
 };
 
+class DkBatchButtonsWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkBatchButtonsWidget(QWidget* parent = 0);
+
+	void setPaused(bool paused = true);
+
+signals:
+	void playSignal(bool play = true) const;
+	void showLogSignal() const;
+
+protected:
+	void createLayout();
+
+	QPushButton* mPlayButton = 0;
+};
+
 class DkBatchWidget : public DkWidget {
 	Q_OBJECT
 
@@ -525,6 +543,9 @@ protected:
 
 	DkBatchTransformWidget* mTransformWidget = 0;
 	DkBatchProcessing* mBatchProcessing = 0;
+
+	DkBatchButtonsWidget* mButtonWidget = 0;
+
 	QPushButton* mLogButton = 0;
 	QProgressBar* mProgressBar= 0;
 	QLabel* mSummaryLabel = 0;

@@ -36,6 +36,7 @@
 #include "DkMessageBox.h"
 #include "DkPluginManager.h"
 #include "DkActionManager.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>
@@ -1602,6 +1603,49 @@ int DkBatchTransformWidget::getAngle() const {
 	return 0;
 }
 
+// Batch Buttons --------------------------------------------------------------------
+DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkWidget(parent) {
+	createLayout();
+	setPaused();
+}
+
+void DkBatchButtonsWidget::createLayout() {
+
+	// play - pause button
+	QIcon icon;
+	icon.addPixmap(QIcon(":/nomacs/img/player-pause.svg").pixmap(100), QIcon::Normal, QIcon::On);
+	icon.addPixmap(QIcon(":/nomacs/img/player-play.svg").pixmap(100), QIcon::Normal, QIcon::Off);
+
+	mPlayButton = new QPushButton(icon, "", this);
+	mPlayButton->setIconSize(QSize(100, 50));
+	mPlayButton->setCheckable(true);
+	mPlayButton->setFlat(true);
+
+	icon = QIcon();
+	QPixmap pm = QIcon(":/nomacs/img/batch-processing.svg").pixmap(100);
+	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
+	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(100, 100, 100)), QIcon::Normal, QIcon::Off);
+
+	QPushButton* showLogButton = new QPushButton(icon, "", this);
+	showLogButton->setIconSize(QSize(100, 50));
+	showLogButton->setFlat(true);
+	
+	//mPlayButton->setEnabled(false);
+	showLogButton->setEnabled(false);
+
+	// connect
+	connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
+	connect(showLogButton, SIGNAL(clicked()), this, SIGNAL(showLogSignal(bool)));
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->addWidget(mPlayButton);
+	layout->addWidget(showLogButton);
+}
+
+void DkBatchButtonsWidget::setPaused(bool paused) {
+	mPlayButton->setChecked(!paused);
+}
+
 // Batch Widget --------------------------------------------------------------------
 DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkWidget(parent) {
 	
@@ -1745,6 +1789,11 @@ void DkBatchWidget::createLayout() {
 		tabLayout->addWidget(w->headerWidget());
 		tabGroup->addButton(w->headerWidget());
 	}
+
+	mButtonWidget = new DkBatchButtonsWidget(this);
+	mButtonWidget->show();
+	tabLayout->addStretch();
+	tabLayout->addWidget(mButtonWidget);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
