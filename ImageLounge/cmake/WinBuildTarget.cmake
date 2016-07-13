@@ -164,7 +164,6 @@ configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsCo
 
 ### DependencyCollector
 set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
-set(DC_SCRIPT "D:/VSProjects/DependencyCollector/DependencyCollector.py")
 set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
 
 GET_FILENAME_COMPONENT(VS_PATH ${CMAKE_LINKER} PATH)
