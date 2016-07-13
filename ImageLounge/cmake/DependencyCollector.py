@@ -204,11 +204,16 @@ if __name__ == "__main__":
                         (Release|Debug|...)""", required=True)
     parser.add_argument('--debug', action="store_true",
                         help="""enable debug messages""")
+    parser.add_argument('--create', action="store_true",
+                        help="""force create mode""")
 
     args = parser.parse_args()
 
     if args.debug:
         logger.setLevel(logging.DEBUG)
+
+    if args.create:
+        logger.info("create mode forced due to argument")
 
     if not os.path.isfile(args.infile):
         logger.error("input file does not exist:" + args.infile)
@@ -228,7 +233,7 @@ if __name__ == "__main__":
     logger.debug("using paths:" + str(conf['paths']))
     logger.debug("using blacklist:" + str(conf['blacklist']))
 
-    if conf['create'] is True:
+    if conf['create'] is True or args.create:
         create_mode(args.infile, conf)
         logger.debug("resetting create flag")
         config = configparser.ConfigParser()
