@@ -1,23 +1,30 @@
 /* batch */
-/* nmc--DkBatchWidget QLabel,
-nmc--DkBatchWidget QRadioButton,
-nmc--DkBatchWidget QCheckBox,
-nmc--DkBatchWidget QSpinBox,
-nmc--DkBatchWidget QDoubleSpinBox,
-nmc--DkBatchWidget QComboBox,
-nmc--DkBatchWidget QLineEdit,
-nmc--DkBatchWidget QListWidget,
-nmc--DkBatchWidget QGroupBox {
-	font-size: 10pt;
-} */
-
 nmc--DkBatchInput QTextEdit {
 	border: none;
+}
+
+QLabel#batchContentTitle {
+	text-transform: uppercase;
+	font: light "Segoe UI";
+	font-size: 16pt;
+	font-weight: 100;
+	color: #333;
+}
+
+QLabel#batchContentInfo {
+	font-style: italic;
+	padding-bottom: 20px;
+	color: #666;
+	font-size: 8pt;
 }
 
 QLabel#BatchInfo {
 	color: #fff;
 	font-style: italic;
+}
+
+QLabel#FileNamePreviewLabel {
+	font-size: 10pt;
 }
 
 nmc--DkBatchWidget nmc--DkResizableScrollArea {
@@ -456,21 +463,6 @@ QLabel#DkPreferenceTitle {
 	font-weight: 100;
 	border-bottom: 1px solid #333;
 	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
-}
-
-QLabel#batchContentTitle {
-	text-transform: uppercase;
-	font: light "Segoe UI";
-	font-size: 16pt;
-	font-weight: 100;
-	color: #333;
-}
-
-QLabel#batchContentInfo {
-	font-style: italic;
-	padding-bottom: 20px;
-	color: #666;
-	font-size: 8pt;
 }
 
 QPushButton#infoButton {

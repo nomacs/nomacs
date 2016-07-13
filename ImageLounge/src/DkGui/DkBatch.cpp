@@ -722,8 +722,8 @@ DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(par
 void DkBatchOutput::createLayout() {
 
 	// Output Directory Groupbox
-	QGroupBox* outDirGroupBox = new QGroupBox(this);
-	outDirGroupBox->setTitle(tr("Output Directory"));
+	QLabel* outDirLabel = new QLabel(tr("Output Directory"), this);
+	outDirLabel->setObjectName("subTitle");
 
 	mOutputBrowseButton = new QPushButton(tr("Browse"));
 	mOutputlineEdit = new DkDirectoryEdit(this);
@@ -746,25 +746,27 @@ void DkBatchOutput::createLayout() {
 	mCbDeleteOriginal->setToolTip(tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
 
 	QWidget* cbWidget = new QWidget(this);
-	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
+	QVBoxLayout* cbLayout = new QVBoxLayout(cbWidget);
 	cbLayout->setContentsMargins(0,0,0,0);
 	cbLayout->addWidget(mCbUseInput);
 	cbLayout->addWidget(mCbOverwriteExisting);
 	cbLayout->addWidget(mCbDeleteOriginal);
-	cbLayout->addStretch();
 
-	QGridLayout* outDirLayout = new QGridLayout(outDirGroupBox);
+	QWidget* outDirWidget = new QWidget(this);
+	QGridLayout* outDirLayout = new QGridLayout(outDirWidget);
 	//outDirLayout->setContentsMargins(0, 0, 0, 0);
 	outDirLayout->addWidget(mOutputBrowseButton, 0, 0);
 	outDirLayout->addWidget(mOutputlineEdit, 0, 1);
-	outDirLayout->addWidget(cbWidget, 1, 1);
+	outDirLayout->addWidget(cbWidget, 1, 0);
 
 	// Filename Groupbox
-	QGroupBox* filenameGroupBox = new QGroupBox(this);
-	filenameGroupBox->setTitle(tr("Filename"));
-	mFilenameVBLayout = new QVBoxLayout(filenameGroupBox);
+	QLabel* fileNameLabel = new QLabel(tr("Filename"), this);
+	fileNameLabel->setObjectName("subTitle");
+
+	QWidget* fileNameWidget = new QWidget(this);
+	mFilenameVBLayout = new QVBoxLayout(fileNameWidget);
 	mFilenameVBLayout->setSpacing(0);
-	//filenameVBLayout->setContentsMargins(0,0,0,0);
+	
 	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
 	fwidget->enableMinusButton(false);
 	mFilenameWidgets.push_back(fwidget);
@@ -775,6 +777,7 @@ void DkBatchOutput::createLayout() {
 
 	QWidget* extensionWidget = new QWidget(this);
 	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
+	extensionLayout->setAlignment(Qt::AlignLeft);
 	//extensionLayout->setSpacing(0);
 	extensionLayout->setContentsMargins(0,0,0,0);
 	mCbExtension = new QComboBox(this);
@@ -802,17 +805,23 @@ void DkBatchOutput::createLayout() {
 	//extensionLayout->addStretch();
 	mFilenameVBLayout->addWidget(extensionWidget);
 	
-	QLabel* oldLabel = new QLabel(tr("Old: "));
-	mOldFileNameLabel = new QLabel("");
+	QLabel* previewLabel = new QLabel(tr("Preview"), this);
+	previewLabel->setObjectName("subTitle");
 
-	QLabel* newLabel = new QLabel(tr("New: "));
+	QLabel* oldLabel = new QLabel(tr("Old Filename: "));
+	oldLabel->setObjectName("FileNamePreviewLabel");
+	mOldFileNameLabel = new QLabel("");
+	mOldFileNameLabel->setObjectName("FileNamePreviewLabel");
+
+	QLabel* newLabel = new QLabel(tr("New Filename: "));
+	newLabel->setObjectName("FileNamePreviewLabel");
 	mNewFileNameLabel = new QLabel("");
+	mNewFileNameLabel->setObjectName("FileNamePreviewLabel");
 
 	// Preview Widget
-	QGroupBox* previewGroupBox = new QGroupBox(this);
-	previewGroupBox->setTitle(tr("Filename Preview"));
-	QGridLayout* previewGBLayout = new QGridLayout(previewGroupBox);
-	//previewGroupBox->hide();	// show if more than 1 file is selected
+	QWidget* previewWidget = new QWidget(this);
+	QGridLayout* previewGBLayout = new QGridLayout(previewWidget);
+	//previewWidget->hide();	// show if more than 1 file is selected
 	previewGBLayout->addWidget(oldLabel, 0, 0);
 	previewGBLayout->addWidget(mOldFileNameLabel, 0, 1);
 	previewGBLayout->addWidget(newLabel, 1, 0);
@@ -823,9 +832,12 @@ void DkBatchOutput::createLayout() {
 	QGridLayout* contentLayout = new QGridLayout(this);
 	contentLayout->setContentsMargins(0, 0, 0, 0);
 	contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	contentLayout->addWidget(outDirGroupBox, 0, 0, 1, 2);
-	contentLayout->addWidget(filenameGroupBox, 1, 0);
-	contentLayout->addWidget(previewGroupBox, 1, 1);
+	contentLayout->addWidget(outDirLabel, 2, 0);
+	contentLayout->addWidget(outDirWidget, 3, 0);
+	contentLayout->addWidget(fileNameLabel, 4, 0);
+	contentLayout->addWidget(fileNameWidget, 5, 0);
+	contentLayout->addWidget(previewLabel, 6, 0);
+	contentLayout->addWidget(previewWidget, 7, 0);
 	setLayout(contentLayout);
 }
 
@@ -1028,6 +1040,10 @@ void DkBatchOutput::loadFilePattern(const QString & pattern) {
 }
 
 int DkBatchOutput::getCompression() const {
+
+	if (!mSbCompression->isEnabled())
+		return -1;
+
 	return mSbCompression->value();
 }
 
@@ -1364,17 +1380,25 @@ void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batch
 
 void DkBatchPluginWidget::createLayout() {
 
+	QLabel* loadedLabel = new QLabel("All Plugins");
+	loadedLabel->setObjectName("subTitle");
+
 	mLoadedPluginList = new DkListWidget(this);
 	mLoadedPluginList->setEmptyText(tr("Sorry, no Plugins found."));
 	mLoadedPluginList->addItems(getPluginActionNames());
 
+	QLabel* selectedLabel = new QLabel("Selected Plugins");
+	selectedLabel->setObjectName("subTitle");
+
 	mSelectedPluginList = new DkListWidget(this);
 	mSelectedPluginList->setEmptyText(tr("Drag Plugin Actions here."));
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
+	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(mLoadedPluginList);
-	layout->addWidget(mSelectedPluginList);
+	layout->addWidget(loadedLabel, 0, 0);
+	layout->addWidget(mLoadedPluginList, 1, 0);
+	layout->addWidget(selectedLabel, 0, 1);
+	layout->addWidget(mSelectedPluginList, 1, 1);
 
 	// connections
 	connect(mLoadedPluginList, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
@@ -1478,6 +1502,9 @@ DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::Wi
 
 void DkBatchTransformWidget::createLayout() {
 
+	QLabel* rotateLabel = new QLabel(tr("Orientation"), this);
+	rotateLabel->setObjectName("subTitle");
+
 	mRbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
 	mRbRotate0->setChecked(true);
 	mRbRotateLeft = new QRadioButton(tr("90%1 Counter Clockwise").arg(dk_degree_str));
@@ -1491,6 +1518,9 @@ void DkBatchTransformWidget::createLayout() {
 	mRotateGroup->addButton(mRbRotateRight);
 	mRotateGroup->addButton(mRbRotate180);
 
+	QLabel* transformLabel = new QLabel(tr("Transformations"), this);
+	transformLabel->setObjectName("subTitle");
+
 	mCbFlipH = new QCheckBox(tr("Flip &Horizontal"));
 	mCbFlipV = new QCheckBox(tr("Flip &Vertical"));
 	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
@@ -1498,14 +1528,16 @@ void DkBatchTransformWidget::createLayout() {
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	layout->addWidget(mRbRotate0, 0, 0);
-	layout->addWidget(mRbRotateRight, 1, 0);
-	layout->addWidget(mRbRotateLeft, 2, 0);
-	layout->addWidget(mRbRotate180, 3, 0);
+	layout->addWidget(rotateLabel, 0, 0);
+	layout->addWidget(mRbRotate0, 1, 0);
+	layout->addWidget(mRbRotateRight, 2, 0);
+	layout->addWidget(mRbRotateLeft, 3, 0);
+	layout->addWidget(mRbRotate180, 4, 0);
 
-	layout->addWidget(mCbFlipH, 0, 1);
-	layout->addWidget(mCbFlipV, 1, 1);
-	layout->addWidget(mCbCropMetadata, 2, 1);
+	layout->addWidget(transformLabel, 5, 0);
+	layout->addWidget(mCbFlipH, 6, 0);
+	layout->addWidget(mCbFlipV, 7, 0);
+	layout->addWidget(mCbCropMetadata, 8, 0);
 	layout->setColumnStretch(3, 10);
 
 	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));

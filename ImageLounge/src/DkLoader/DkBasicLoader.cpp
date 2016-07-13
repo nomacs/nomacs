@@ -1140,8 +1140,11 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		//size_t s = fileBuffer.size();
 		fileBuffer.open(QIODevice::WriteOnly);
 		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
-		imgWriter->setCompression(compression);
-		imgWriter->setQuality(compression);
+		
+		if (compression >= 0) {	// -1 -> use Qt's default
+			imgWriter->setCompression(compression);
+			imgWriter->setQuality(compression);
+		}
 #if QT_VERSION >= 0x050500
 		imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
 		imgWriter->setProgressiveScanWrite(true);
