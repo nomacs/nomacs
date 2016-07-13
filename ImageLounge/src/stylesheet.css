@@ -1,8 +1,7 @@
 /* batch */
-nmc--DkBatchWidget QLabel,
+/* nmc--DkBatchWidget QLabel,
 nmc--DkBatchWidget QRadioButton,
 nmc--DkBatchWidget QCheckBox,
-/* nmc--DkBatchWidget QPushButton, */	/* NOTE: this somehow overwrites the special font-size */
 nmc--DkBatchWidget QSpinBox,
 nmc--DkBatchWidget QDoubleSpinBox,
 nmc--DkBatchWidget QComboBox,
@@ -10,9 +9,32 @@ nmc--DkBatchWidget QLineEdit,
 nmc--DkBatchWidget QListWidget,
 nmc--DkBatchWidget QGroupBox {
 	font-size: 10pt;
-}
+} */
 
 nmc--DkBatchInput QTextEdit {
+	border: none;
+}
+
+QLabel#BatchInfo {
+	color: #fff;
+	font-style: italic;
+}
+
+nmc--DkBatchButtonsWidget QPushButton:hover,
+nmc--DkBatchButtonsWidget QPushButton:checked:hover {
+	background-color: rgba(255, 255, 255, 30);
+} 
+
+nmc--DkBatchButtonsWidget QPushButton:pressed,
+nmc--DkBatchButtonsWidget QPushButton:checked:pressed {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+nmc--DkBatchButtonsWidget QPushButton:checked {
+	background-color: none;
+}
+
+nmc--DkBatchButtonsWidget QPushButton {
 	border: none;
 }
 

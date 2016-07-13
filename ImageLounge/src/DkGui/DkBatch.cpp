@@ -36,9 +36,9 @@
 #include "DkMessageBox.h"
 #include "DkPluginManager.h"
 #include "DkActionManager.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDialogButtonBox>
 #include <QLabel>
 #include <QListView>
 #include <QLineEdit>
@@ -504,7 +504,7 @@ void DkBatchInput::startProcessing() {
 
 void DkBatchInput::stopProcessing() {
 
-	mInputTextEdit->clear();
+	//mInputTextEdit->clear();
 	mInputTextEdit->setEnabled(true);
 }
 
@@ -1199,7 +1199,7 @@ bool DkBatchResizeWidget::loadProperties(QSharedPointer<DkResizeBatch> batchResi
 	mComboProperties->setCurrentIndex(batchResize->property());
 	
 	float sf = batchResize->scaleFactor();
-	if (sf <= 1.0f)
+	if (batchResize->mode() == DkResizeBatch::mode_default)
 		mSbPercent->setValue(sf*100.0f);
 	else
 		mSbPx->setValue(qRound(sf));
@@ -1602,6 +1602,94 @@ int DkBatchTransformWidget::getAngle() const {
 	return 0;
 }
 
+// Batch Buttons --------------------------------------------------------------------
+DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkWidget(parent) {
+	createLayout();
+	setPaused();
+}
+
+void DkBatchButtonsWidget::createLayout() {
+
+	// play - pause button
+	QIcon icon;
+	icon.addPixmap(QIcon(":/nomacs/img/player-play.svg").pixmap(100), QIcon::Normal, QIcon::Off);
+	icon.addPixmap(QIcon(":/nomacs/img/player-stop.svg").pixmap(100), QIcon::Normal, QIcon::On);
+
+	mPlayButton = new QPushButton(icon, "", this);
+	mPlayButton->setIconSize(QSize(100, 50));
+	mPlayButton->setCheckable(true);
+	mPlayButton->setFlat(true);
+	mPlayButton->setShortcut(Qt::ALT + Qt::Key_Return);
+	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
+
+	icon = QIcon();
+	QPixmap pm = QIcon(":/nomacs/img/batch-processing.svg").pixmap(100);
+	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
+	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(100, 100, 100)), QIcon::Disabled, QIcon::On);
+
+	mLogButton = new QPushButton(icon, "", this);
+	mLogButton->setIconSize(QSize(100, 50));
+	mLogButton->setFlat(true);
+	mLogButton->setEnabled(false);
+	
+	// connect
+	connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
+	connect(mLogButton, SIGNAL(clicked()), this, SIGNAL(showLogSignal()));
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->addWidget(mPlayButton);
+	layout->addWidget(mLogButton);
+}
+
+void DkBatchButtonsWidget::setPaused(bool paused) {
+	mPlayButton->setChecked(!paused);
+}
+
+QPushButton * DkBatchButtonsWidget::logButton() {
+	return mLogButton;
+}
+
+QPushButton * DkBatchButtonsWidget::playButton() {
+	return mPlayButton;
+}
+
+// DkBatchInfo --------------------------------------------------------------------
+DkBatchInfoWidget::DkBatchInfoWidget(QWidget* parent) : DkWidget(parent) {
+	createLayout();
+}
+
+void DkBatchInfoWidget::createLayout() {
+
+	mInfo = new QLabel(this);
+	mInfo->setObjectName("BatchInfo");
+
+	mIcon = new QLabel(this);
+	
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+	layout->addWidget(mIcon);
+	layout->addWidget(mInfo);
+}
+
+void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
+
+	if (message == "")
+		hide();
+	else
+		show();
+
+	QPixmap pm;
+	switch (mode) {
+	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
+	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
+	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(24); break;
+	}
+	pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
+	mIcon->setPixmap(pm);
+
+	mInfo->setText(message);
+}
+
 // Batch Widget --------------------------------------------------------------------
 DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkWidget(parent) {
 	
@@ -1613,14 +1701,14 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 
 	createLayout();
 
-	connect(mFileSelection, SIGNAL(updateInputDir(const QString&)), mOutputSelection, SLOT(setInputDir(const QString&)));
+	connect(inputWidget(), SIGNAL(updateInputDir(const QString&)), outputWidget(), SLOT(setInputDir(const QString&)));
 	connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
-	connect(mProfileWidget, SIGNAL(saveProfileSignal(const QString&)), this, SLOT(saveProfile(const QString&)));
-	connect(mProfileWidget, SIGNAL(loadProfileSignal(const QString&)), this, SLOT(loadProfile(const QString&)));
-	connect(mProfileWidget, SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
+	connect(profileWidget(), SIGNAL(saveProfileSignal(const QString&)), this, SLOT(saveProfile(const QString&)));
+	connect(profileWidget(), SIGNAL(loadProfileSignal(const QString&)), this, SLOT(loadProfile(const QString&)));
+	connect(profileWidget(), SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
 
-	mFileSelection->setDir(currentDirectory);
-	mOutputSelection->setInputDir(currentDirectory);
+	inputWidget()->setDir(currentDirectory);
+	outputWidget()->setInputDir(currentDirectory);
 
 	// change tabs with page up page down
 	QAction* nextAction = new QAction(tr("next"), this);
@@ -1638,7 +1726,7 @@ DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /*
 DkBatchWidget::~DkBatchWidget() {
 
 	// close cancels the current process
-	if (!close())
+	if (!cancel())
 		mBatchProcessing->waitForFinished();
 }
 
@@ -1650,58 +1738,31 @@ void DkBatchWidget::createLayout() {
 
 	// Input Directory
 	mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
-	mFileSelection  = new DkBatchInput(this);
-	mWidgets[batch_input]->setContentWidget(mFileSelection);
-	mFileSelection->setDir(mCurrentDirectory);
+	mWidgets[batch_input]->setContentWidget(new DkBatchInput(this));
+	inputWidget()->setDir(mCurrentDirectory);
 
 	// fold content
 	mWidgets[batch_resize] = new DkBatchContainer(tr("Resize"), tr("inactive"), this);
-	mResizeWidget = new DkBatchResizeWidget(this);
-	mWidgets[batch_resize]->setContentWidget(mResizeWidget);
+	mWidgets[batch_resize]->setContentWidget(new DkBatchResizeWidget(this));
 
 	mWidgets[batch_transform] = new DkBatchContainer(tr("Transform"), tr("inactive"), this);
-	mTransformWidget = new DkBatchTransformWidget(this);
-	mWidgets[batch_transform]->setContentWidget(mTransformWidget);
+	mWidgets[batch_transform]->setContentWidget(new DkBatchTransformWidget(this));
 
 #ifdef WITH_PLUGINS
 	mWidgets[batch_plugin] = new DkBatchContainer(tr("Plugins"), tr("inactive"), this);
-	mPluginWidget = new DkBatchPluginWidget(this);
-	mWidgets[batch_plugin]->setContentWidget(mPluginWidget);
+	mWidgets[batch_plugin]->setContentWidget(new DkBatchPluginWidget(this));
 #endif
 
 	mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
-	mOutputSelection = new DkBatchOutput(this);
-	mWidgets[batch_output]->setContentWidget(mOutputSelection);
+	mWidgets[batch_output]->setContentWidget(new DkBatchOutput(this));
 
 	// profiles
 	mWidgets[batch_profile] = new DkBatchContainer(tr("Profiles"), tr("inactive"), this);
-	mProfileWidget = new DkProfileWidget(this);
-	mWidgets[batch_profile]->setContentWidget(mProfileWidget);
+	mWidgets[batch_profile]->setContentWidget(new DkProfileWidget(this));
 
-	mProgressBar = new QProgressBar(this);
+	mProgressBar = new DkProgressBar(this);
 	mProgressBar->setVisible(false);
-
-	mSummaryLabel = new QLabel("", this);
-	mSummaryLabel->setObjectName("DkDecentInfo");
-	mSummaryLabel->setVisible(false);
-	mSummaryLabel->setAlignment(Qt::AlignRight);
-
-	// mButtons
-	mLogButton = new QPushButton(tr("Show &Log"), this);
-	mLogButton->setToolTip(tr("Shows detailed status messages."));
-	mLogButton->setEnabled(false);
-	connect(mLogButton, SIGNAL(clicked()), this, SLOT(logButtonClicked()));
-
-	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
-	mButtons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
-	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
-	mButtons->addButton(mLogButton, QDialogButtonBox::ActionRole);
-
-	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(mButtons, SIGNAL(rejected()), this, SLOT(close()));
+	mProgressBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);	// progressbar is greedy otherwise
 
 	QWidget* centralWidget = new QWidget(this);
 	mCentralLayout = new QStackedLayout(centralWidget);
@@ -1724,10 +1785,8 @@ void DkBatchWidget::createLayout() {
 	dialogLayout->addWidget(mContentTitle);
 	dialogLayout->addWidget(mContentInfo);
 	dialogLayout->addWidget(centralWidget);		// almost everything
-	dialogLayout->addWidget(mProgressBar);
-	dialogLayout->addWidget(mSummaryLabel);
 	//dialogLayout->addStretch(10);
-	dialogLayout->addWidget(mButtons);
+	//dialogLayout->addWidget(mButtons);
 
 	// the tabs left
 	QWidget* tabWidget = new QWidget(this);
@@ -1746,6 +1805,18 @@ void DkBatchWidget::createLayout() {
 		tabGroup->addButton(w->headerWidget());
 	}
 
+	mInfoWidget = new DkBatchInfoWidget(this);
+
+	mButtonWidget = new DkBatchButtonsWidget(this);
+	mButtonWidget->show();
+	tabLayout->addStretch();
+	tabLayout->addWidget(mInfoWidget);
+	tabLayout->addWidget(mProgressBar);
+	tabLayout->addWidget(mButtonWidget);
+
+	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
+	connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
+
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(tabWidget);
@@ -1754,11 +1825,88 @@ void DkBatchWidget::createLayout() {
 	// open the first tab
 	if (!mWidgets.empty())
 		mWidgets[0]->headerWidget()->click();
+
+	connect(this, SIGNAL(infoSignal(const QString&, const DkBatchInfoWidget::InfoMode&)), mInfoWidget, SLOT(setInfo(const QString&, const DkBatchInfoWidget::InfoMode&)));
 }
 
-void DkBatchWidget::accept() {
+DkBatchInput* DkBatchWidget::inputWidget() const {
 
-	mBatchProcessing->setBatchConfig(createBatchConfig());
+	DkBatchInput* w = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchInput";
+
+	return w;
+}
+
+DkBatchOutput* DkBatchWidget::outputWidget() const {
+	
+	DkBatchOutput* w = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchOutput";
+
+	return w;
+}
+
+DkBatchResizeWidget* DkBatchWidget::resizeWidget() const {
+
+	DkBatchResizeWidget* w = dynamic_cast<DkBatchResizeWidget*>(mWidgets[batch_resize]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchResizeWidget";
+
+	return w;
+}
+
+DkProfileWidget* DkBatchWidget::profileWidget() const {
+	DkProfileWidget* w = dynamic_cast<DkProfileWidget*>(mWidgets[batch_profile]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchProfileWidget";
+
+	return w;
+
+}
+
+#ifdef WITH_PLUGINS
+DkBatchPluginWidget* DkBatchWidget::pluginWidget() const {
+
+	DkBatchPluginWidget* w = dynamic_cast<DkBatchPluginWidget*>(mWidgets[batch_plugin]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchPluginWidget";
+
+	return w;
+
+}
+#endif
+
+DkBatchTransformWidget* DkBatchWidget::transformWidget() const {
+
+	DkBatchTransformWidget* w = dynamic_cast<DkBatchTransformWidget*>(mWidgets[batch_transform]->contentWidget());
+
+	if (!w)
+		qCritical() << "cannot cast to DkBatchTransformWidget";
+
+	return w;
+}
+
+
+void DkBatchWidget::toggleBatch(bool start) {
+
+	if (start)
+		startBatch();
+	else
+		cancel();
+}
+
+void DkBatchWidget::startBatch() {
+
+	const DkBatchConfig& bc = createBatchConfig();
+
+	if (!bc.isOk()) {
+		mButtonWidget->setPaused();
+		qWarning() << "could not create batch config...";
+		return;
+	}
+
+	mBatchProcessing->setBatchConfig(bc);
 
 	// reopen the input widget to show the status
 	if (!mWidgets.empty())
@@ -1770,11 +1918,12 @@ void DkBatchWidget::accept() {
 
 DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
-	QMainWindow* mw = DkActionManager::instance().getMainWindow();
+	//QMainWindow* mw = DkActionManager::instance().getMainWindow();
 
 	// check if we are good to go
-	if (strict && mFileSelection->getSelectedFiles().empty()) {
-		QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+	if (strict && inputWidget()->getSelectedFiles().empty()) {
+		emit infoSignal(tr("Please select files for processing."), DkBatchInfoWidget::InfoMode::info_warning);
+		//QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
@@ -1782,7 +1931,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
-		QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
+		emit infoSignal(tr("I am missing a widget."), DkBatchInfoWidget::InfoMode::info_critical);
+		//QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
@@ -1793,9 +1943,10 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
 			dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->overwriteMode() != DkSaveInfo::mode_overwrite) {
-			QMessageBox::information(mw, tr("Wrong Configuration"), 
-				tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
-				QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
+			//QMessageBox::information(mw, tr("Wrong Configuration"), 
+			//	tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
+			//	QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 	}
@@ -1807,7 +1958,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	si.setInputDirIsOutputDir(outputWidget->useInputDir());
 	si.setCompression(outputWidget->getCompression());
 
-	DkBatchConfig config(mFileSelection->getSelectedFilesBatch(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
+	DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setSaveInfo(si);
 
 	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
@@ -1829,19 +1980,23 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	if (strict && !config.isOk()) {
 
 		if (config.getOutputDirPath().isEmpty()) {
-			QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Please select an output directory."), DkBatchInfoWidget::InfoMode::info_warning);
+			//QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (!QDir(config.getOutputDirPath()).exists()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), DkBatchInfoWidget::InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileList().empty()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, I cannot find files to process."), DkBatchInfoWidget::InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		else if (config.getFileNamePattern().isEmpty()) {
-			QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+			emit infoSignal(tr("Sorry, the file pattern is empty."), DkBatchInfoWidget::InfoMode::info_critical);
+			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 			return DkBatchConfig();
 		}
 		//else if (config.getOutputDir() == QDir()) {
@@ -1850,22 +2005,23 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 		//}
 
 		qDebug() << "config not ok - canceling";
-		QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
+		emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), DkBatchInfoWidget::InfoMode::info_critical);
+		//QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
 		return DkBatchConfig();
 	}
 
 	// create processing functions
 	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
-	mResizeWidget->transferProperties(resizeBatch);
+	resizeWidget()->transferProperties(resizeBatch);
 
 	// create processing functions
 	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
-	mTransformWidget->transferProperties(transformBatch);
+	transformWidget()->transferProperties(transformBatch);
 
 #ifdef WITH_PLUGINS
 	// create processing functions
 	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
-	mPluginWidget->transferProperties(pluginBatch);
+	pluginWidget()->transferProperties(pluginBatch);
 #endif
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
@@ -1888,11 +2044,12 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	return config;
 }
 
-bool DkBatchWidget::close() {
+bool DkBatchWidget::cancel() {
 
 	if (mBatchProcessing->isComputing()) {
+		emit infoSignal(tr("Canceling..."), DkBatchInfoWidget::InfoMode::info_message);
 		mBatchProcessing->cancel();
-		mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
+		//mButtonWidget->playButton()->setEnabled(false);
 		//stopProcessing();
 		return false;
 	}
@@ -1908,15 +2065,17 @@ void DkBatchWidget::processingFinished() {
 
 void DkBatchWidget::startProcessing() {
 
-	mFileSelection->startProcessing();
+	inputWidget()->startProcessing();
+	mInfoWidget->setInfo("");
 
+	//mProgressBar->setFixedWidth(100);
+	qDebug() << "progressbar width: " << mProgressBar->width();
 	mProgressBar->show();
 	mProgressBar->reset();
-	mProgressBar->setMaximum(mFileSelection->getSelectedFiles().size());
+	mProgressBar->setMaximum(inputWidget()->getSelectedFiles().size());
 	mProgressBar->setTextVisible(false);
-	mLogButton->setEnabled(false);
-	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(true);
+	mButtonWidget->logButton()->setEnabled(false);
+	mButtonWidget->setPaused(false);
 
 	DkGlobalProgress::instance().start();
 
@@ -1925,7 +2084,7 @@ void DkBatchWidget::startProcessing() {
 
 void DkBatchWidget::stopProcessing() {
 
-	mFileSelection->stopProcessing();
+	inputWidget()->stopProcessing();
 
 	if (mBatchProcessing)
 		mBatchProcessing->postLoad();
@@ -1934,21 +2093,15 @@ void DkBatchWidget::stopProcessing() {
 
 	mProgressBar->hide();
 	mProgressBar->reset();
-	mLogButton->setEnabled(true);
-	mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
-	mButtons->button(QDialogButtonBox::Cancel)->setEnabled(false);
+	mButtonWidget->logButton()->setEnabled(true);
+	mButtonWidget->setPaused(true);
 	
 	int numFailures = mBatchProcessing->getNumFailures();
 	int numProcessed = mBatchProcessing->getNumProcessed();
 	int numItems = mBatchProcessing->getNumItems();
 
-	mSummaryLabel->setText(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures));
-	mSummaryLabel->show();
-
-	mSummaryLabel->setProperty("warning", numFailures > 0);
-	mSummaryLabel->style()->unpolish(this);
-	mSummaryLabel->style()->polish(this);
-	update();
+	DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning : DkBatchInfoWidget::InfoMode::info_message;
+	mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures), im);
 
 	mLogNeedsUpdate = false;
 	mLogUpdateTimer.stop();
@@ -1958,7 +2111,7 @@ void DkBatchWidget::stopProcessing() {
 
 void DkBatchWidget::updateLog() {
 
-	mFileSelection->setResults(mBatchProcessing->getResultList());
+	inputWidget()->setResults(mBatchProcessing->getResultList());
 }
 
 void DkBatchWidget::updateProgress(int progress) {
@@ -1966,14 +2119,15 @@ void DkBatchWidget::updateProgress(int progress) {
 	mProgressBar->setValue(progress);
 	mLogNeedsUpdate = true;
 
-	DkGlobalProgress::instance().setProgressValue(qRound((double)progress / mFileSelection->getSelectedFiles().size()*100));
+	DkGlobalProgress::instance().setProgressValue(qRound((double)progress / inputWidget()->getSelectedFiles().size()*100));
 }
 
-void DkBatchWidget::logButtonClicked() {
+void DkBatchWidget::showLog() {
 
 	QStringList log = mBatchProcessing->getLog();
 
 	DkTextDialog* textDialog = new DkTextDialog(this);
+	textDialog->setWindowTitle(tr("Batch Log"));
 	textDialog->getTextEdit()->setReadOnly(true);
 	textDialog->setText(log);
 
@@ -1983,8 +2137,8 @@ void DkBatchWidget::logButtonClicked() {
 void DkBatchWidget::setSelectedFiles(const QStringList& selFiles) {
 
 	if (!selFiles.empty()) {
-		mFileSelection->getInputEdit()->appendFiles(selFiles);
-		mFileSelection->changeTab(DkBatchInput::tab_text_input);
+		inputWidget()->getInputEdit()->appendFiles(selFiles);
+		inputWidget()->changeTab(DkBatchInput::tab_text_input);
 	}
 }
 
@@ -2031,6 +2185,7 @@ void DkBatchWidget::previousTab() {
 void DkBatchWidget::saveProfile(const QString & profilePath) const {
 
 	DkBatchConfig bc = createBatchConfig(false);	// false: no input/output must be profided
+
 	//if (!bc.isOk()) {
 	//	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings, since they are incomplete..."));
 	//	return;
@@ -2048,7 +2203,7 @@ void DkBatchWidget::saveProfile(const QString & profilePath) const {
 	else
 		qInfo() << "batch profile written to: " << profilePath;
 
-	mProfileWidget->profileSaved(DkBatchProfile::makeUserFriendly(profilePath));
+	profileWidget()->profileSaved(DkBatchProfile::makeUserFriendly(profilePath));
 }
 
 void DkBatchWidget::loadProfile(const QString & profilePath) {
@@ -2065,11 +2220,10 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 
 	applyDefault();
 
-	// TODO: add use input option
 	if (!bc.getFileList().empty())
 		setSelectedFiles(bc.getFileList());
 
-	mOutputSelection->loadProperties(bc);
+	outputWidget()->loadProperties(bc);
 
 	int warnings = 0;
 	auto functions = bc.getProcessFunctions();
@@ -2082,20 +2236,20 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 		
 		// apply resize batch settings
 		if (QSharedPointer<DkResizeBatch> rf = qSharedPointerDynamicCast<DkResizeBatch>(cf)) {
-			if (!mResizeWidget->loadProperties(rf)) {
+			if (!resizeWidget()->loadProperties(rf)) {
 				warnings++;
 			}
 		}
 		// apply resize batch settings
 		else if (QSharedPointer<DkBatchTransform> tf = qSharedPointerDynamicCast<DkBatchTransform>(cf)) {
-			if (!mTransformWidget->loadProperties(tf)) {
+			if (!transformWidget()->loadProperties(tf)) {
 				warnings++;
 			}
 		}
 #ifdef WITH_PLUGINS
 		// apply plugin batch settings
 		else if (QSharedPointer<DkPluginBatch> pf = qSharedPointerDynamicCast<DkPluginBatch>(cf)) {
-			if (!mPluginWidget->loadProperties(pf)) {
+			if (!pluginWidget()->loadProperties(pf)) {
 				warnings++;
 			}
 		}
@@ -2122,16 +2276,14 @@ void DkBatchWidget::widgetChanged() {
 	if (mWidgets[batch_output] && mWidgets[batch_input])  {
 		QString inputDirPath = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
-		
-		if (inputDirPath == "" || outputDirPath == "")
-			mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
-		else
-			mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
+	
+		// TODO: shouldn't we enable it always?
+		//mButtonWidget->playButton()->setEnabled(inputDirPath == "" || outputDirPath == "");
 	}
 
-	if (!mFileSelection->getSelectedFiles().isEmpty()) {
+	if (!inputWidget()->getSelectedFiles().isEmpty()) {
 
-		QUrl url = mFileSelection->getSelectedFiles().first();
+		QUrl url = inputWidget()->getSelectedFiles().first();
 		QString fString = url.toString();
 		fString = fString.replace("file:///", "");
 
@@ -2139,8 +2291,8 @@ void DkBatchWidget::widgetChanged() {
 		if (!cFileInfo.exists())	// try an alternative conversion
 			cFileInfo = QFileInfo(url.toLocalFile());
 
-		dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->setExampleFilename(cFileInfo.fileName());
-		mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
+		outputWidget()->setExampleFilename(cFileInfo.fileName());
+		mButtonWidget->playButton()->setEnabled(true);
 	}
 }
 

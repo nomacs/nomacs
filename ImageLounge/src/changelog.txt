@@ -1,5 +1,7 @@
 nomacs 3.2.2
 ============
+- Batch UI reworked
+- Batch Profiles added
 - Cropping to metadata
 - RGB to Gray improved
 - Crash on delete fixed

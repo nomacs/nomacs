@@ -91,6 +91,7 @@ class DkExplorer;
 class DkDirectoryEdit;
 class DkListWidget;
 class DkBatchConfig;
+class DkProgressBar;
 
 class DkBatchContent {
 
@@ -469,6 +470,51 @@ protected:
 	QCheckBox* mCbCropMetadata = 0;
 };
 
+class DkBatchButtonsWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkBatchButtonsWidget(QWidget* parent = 0);
+
+	void setPaused(bool paused = true);
+	QPushButton* logButton();
+	QPushButton* playButton();
+
+signals:
+	void playSignal(bool play = true) const;
+	void showLogSignal() const;
+
+protected:
+	void createLayout();
+
+	QPushButton* mPlayButton = 0;
+	QPushButton* mLogButton = 0;
+};
+
+class DkBatchInfoWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkBatchInfoWidget(QWidget* parent);
+
+	enum InfoMode {
+		info_message,
+		info_warning,
+		info_critical,
+
+		info_end
+	};
+
+public slots:
+	void setInfo(const QString& message, const DkBatchInfoWidget::InfoMode& mode = DkBatchInfoWidget::InfoMode::info_message);
+
+protected:
+	void createLayout();
+
+	QLabel* mInfo = 0;
+	QLabel* mIcon = 0;
+};
+
 class DkBatchWidget : public DkWidget {
 	Q_OBJECT
 
@@ -487,11 +533,12 @@ public:
 		batchWidgets_end
 	};
 
+	bool cancel();
+
 public slots:
-	void accept();
-	bool close();
+	void toggleBatch(bool start);
 	void widgetChanged();
-	void logButtonClicked();
+	void showLog();
 	void processingFinished();
 	void updateProgress(int progress);
 	void updateLog();
@@ -503,40 +550,45 @@ public slots:
 	void loadProfile(const QString& profilePath);
 	void applyDefault();
 
+signals:
+	void infoSignal(const QString& message, const DkBatchInfoWidget::InfoMode& mode = DkBatchInfoWidget::InfoMode::info_message) const;
+
 protected:
 	void createLayout();
 	DkBatchConfig createBatchConfig(bool strict = true) const;
-		
+	void startProcessing();
+	void stopProcessing();
+	void startBatch();
+	DkBatchInput* inputWidget() const;
+	DkBatchOutput* outputWidget() const;
+	DkBatchResizeWidget* resizeWidget() const;
+	DkProfileWidget* profileWidget() const;
+	DkBatchTransformWidget* transformWidget() const;
+
+#ifdef WITH_PLUGINS
+	DkBatchPluginWidget* pluginWidget() const;
+#endif
+
 	QVector<DkBatchContainer*> mWidgets;
 		
 	QStackedLayout* mCentralLayout = 0;
 	int mCurrentIndex = 0;
 
 	QString mCurrentDirectory;
-	QDialogButtonBox* mButtons = 0;
-	DkBatchInput* mFileSelection = 0;
-	DkBatchOutput* mOutputSelection = 0;
-	DkBatchResizeWidget* mResizeWidget = 0;
-	DkProfileWidget* mProfileWidget = 0;
 
-#ifdef WITH_PLUGINS
-	DkBatchPluginWidget* mPluginWidget = 0;
-#endif
-
-	DkBatchTransformWidget* mTransformWidget = 0;
 	DkBatchProcessing* mBatchProcessing = 0;
-	QPushButton* mLogButton = 0;
-	QProgressBar* mProgressBar= 0;
-	QLabel* mSummaryLabel = 0;
+
+	// info/controls
+	DkBatchInfoWidget* mInfoWidget = 0;
+	DkProgressBar* mProgressBar = 0;
+	DkBatchButtonsWidget* mButtonWidget = 0;
+	
 	QTimer mLogUpdateTimer;
 	bool mLogNeedsUpdate = false;
 
 	// title
 	QLabel* mContentTitle = 0;
 	QLabel* mContentInfo = 0;
-
-	void startProcessing();
-	void stopProcessing();
 };
 
 }

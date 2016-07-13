@@ -108,7 +108,7 @@ QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& s
 		return batch;
 #endif
 
-	qCritical() << "cannot instatiate batch, illegal settings name: " << settingsName;
+	qCritical() << "cannot instantiate batch, illegal settings name: " << settingsName;
 	return QSharedPointer<DkAbstractBatch>();
 }
 
@@ -897,6 +897,11 @@ void DkBatchConfig::loadSettings(QSettings & settings) {
 	QStringList groups = settings.childGroups();
 	
 	for (const QString& name : groups) {
+
+		// known groups that are not batch processes
+		if (name == "SaveInfo")
+			continue;
+
 		QSharedPointer<DkAbstractBatch> batch = DkAbstractBatch::createFromName(name);
 
 		// if it is valid - append the process
