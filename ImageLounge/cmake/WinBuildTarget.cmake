@@ -92,17 +92,18 @@ set_target_properties(${DLL_GUI_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_GUI_N
 
 # make RelWithDebInfo link against release instead of debug opencv dlls
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
+set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
 
 # copy additional Qt files
-#file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
-#file(GLOB QT_IMAGE_FORMATS "${QT_DLL_PATH_tmp}/../plugins/imageformats/*.dll")
-#file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
+file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}}/../plugins/imageformats/*.dll")
+file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
 
-#file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
-#file(COPY ${QT_DLL_PATH_tmp}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
+file(COPY ${QT_QMAKE_PATH}}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
 
-#file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
-#file(COPY ${QT_DLL_PATH_tmp}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
+file(COPY ${QT_QMAKE_PATH}}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo)
@@ -125,10 +126,10 @@ else()
 endif()
 
 # copy translation files after each build
-add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
-foreach(QM ${NOMACS_QM})
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
-endforeach(QM)
+# add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+# foreach(QM ${NOMACS_QM})
+	# add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+# endforeach(QM)
 
 # add build incrementer command if requested
 if (ENABLE_INCREMENTER)
@@ -170,10 +171,23 @@ set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOU
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
 
 ### DependencyCollector
-find_path(DC_PATH NAMES DependencyCollector.py PATHS ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-message(STATUS "DC_PATH: ${DC_PATH}")
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if 1==$<CONFIG:Debug> execute_process())
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if 1==$<CONFIG:Release> ${CMAKE_COMMAND} -E copy ${matches} ${NOMACS_BUILD_DIRECTORY}/Release)
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if 1==$<CONFIG:RelWithDebInfo> ${CMAKE_COMMAND} -E copy ${matches} ${NOMACS_BUILD_DIRECTORY}/RelWithDebInfo)
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND if 1==$<CONFIG:MinSizeRel> ${CMAKE_COMMAND} -E copy ${matches} ${NOMACS_BUILD_DIRECTORY}/MinSizeRel)
+set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
+set(DC_SCRIPT "D:/VSProjects/DependencyCollector/DependencyCollector.py")
+set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
+
+GET_FILENAME_COMPONENT(VS_PATH ${CMAKE_LINKER} PATH)
+# SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/")
+if(CMAKE_CL_64)
+	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
+else()
+	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x86")
+endif()
+SET(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
+SET(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+
+configure_file(${NOMACS_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
+message(STATUS "${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION> --debug")
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION> --debug)
+
+
 
