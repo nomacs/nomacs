@@ -7,6 +7,5 @@
 	"DateCreated" 	: "2016-05-26",
 	"DateModified"	: "2016-06-21",
 	"PluginId"		: "da74f14a21d04f3c932665366c1c9bcf",
-	"Version"		: "0.1.0",
-	"Dependencies"	: "opencv_flann310,opencv_features2d310,opencv_xfeatures2d310,opencv_calib3d310,opencv_stitching310"	
+	"Version"		: "0.1.0"
 }
