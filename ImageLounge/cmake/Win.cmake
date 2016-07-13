@@ -52,45 +52,13 @@ find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp"
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 
-# copy files to the build directory
-if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll AND
-	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND
+if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND
 	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
-	if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll AND
-		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll)
-		if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll AND
-			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll )
 
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/RelWithDebInfo)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/MinSizeRel)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Debug)
-
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-
-			set(EXIV2_LIBRARIES optimized libexiv2.lib debug libexiv2.lib)
-			set(EXIV2_LIBRARY_DIRS "")
-			set(EXIV2_FOUND true)
-			add_definitions(-DEXV_UNICODE_PATH)
-		else()
-			message(WARNING "zlib build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/zlib1.dll and DebugDLL/zlib1d.dll")
-		endif()
-	else()
-		message(WARNING "expat build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexpat.dll and DebugDLL/libexpat.dll")
-	endif()
+	set(EXIV2_LIBRARIES optimized ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib debug ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
+	set(EXIV2_LIBRARY_DIRS "")
+	set(EXIV2_FOUND true)
+	add_definitions(-DEXV_UNICODE_PATH)
 else()
 	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexiv2.dll, ReleaseDLL/libexiv2.lib, DebugDLL/libexiv2d.dll and DebugDLL/libexiv2d.lib")
 endif()
@@ -151,22 +119,9 @@ if(ENABLE_RAW)
 
 	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
 								PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
-
-	if(EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
-		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND
-		EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND
+	if(EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND
 		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
-
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Release)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/RelWithDebInfo)
-			file(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/MinSizeRel)
-			file(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-			file(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Debug)
-
-			set(LIBRAW_LIBRARIES optimized libraw.lib debug libraw.lib)
+			set(LIBRAW_LIBRARIES optimized ${LIBRAW_BUILD_PATH}/release/libraw.lib debug ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
 
 			set(LIBRAW_FOUND true)
 			add_definitions(-DWITH_LIBRAW)
@@ -190,30 +145,11 @@ if(ENABLE_TIFF)
 	unset(TIFF_CONFIG_DIR CACHE)
 
 	find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" "${OpenCV_DIR}/3rdparty/lib" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
-	if(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
-		FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Debug)
-		FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Release)
-		FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/RelWithDebInfo)
-		FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/MinSizeRel)
-	else()
-		message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib Note: tif_config.h (which is also mandatory) is only available if you have compiled OpenCV on yourself. If you want to use the precompiled version you have to disable TIFF")
-	endif()
-
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
 	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
-
-  # copy zlib from opencv ... Qt zlib is no longer working with Qt5
-	if(EXISTS "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" AND EXISTS "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib")
-		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Debug)
-		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/Release)
-		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/RelWithDebInfo)
-		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib DESTINATION ${CMAKE_BINARY_DIR}/libs/MinSizeRel)
-	else()
-		message(FATAL_ERROR, "could not locate zlib liberaries from OpenCV. Needs OpenCV_DIR which contains /3rdparty/lib/Release/zlib.lib, /3rdparty/lib/Debug/zlibd.lib ")
-	endif()
-  set(TIFF_LIBRARIES optimized "libtiff;" optimized "zlib" debug "libtiffd"  debug "zlibd")
+    set(TIFF_LIBRARIES optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib" debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib")
 
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)

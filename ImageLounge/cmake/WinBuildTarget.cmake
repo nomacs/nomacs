@@ -92,39 +92,18 @@ set_target_properties(${DLL_GUI_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_GUI_N
 
 # make RelWithDebInfo link against release instead of debug opencv dlls
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
-
-# copy required dlls to the directories
-set(OpenCV_REQUIRED_MODULES core imgproc FORCE)
-foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
-	file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Release)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-
-	file(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
-	file(COPY ${dllpath} DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-
-endforeach(opencvlib)
-
-set(QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent Qt5Svg Qt5WinExtras)
-foreach(qtlib ${QTLIBLIST})
-	get_filename_component(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-	file(COPY ${QT_DLL_PATH_tmp}/${qtlib}d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-endforeach(qtlib)
+set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
 
 # copy additional Qt files
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
-file(GLOB QT_IMAGE_FORMATS "${QT_DLL_PATH_tmp}/../plugins/imageformats/*.dll")
+file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}}/../plugins/imageformats/*.dll")
 file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
-file(COPY ${QT_DLL_PATH_tmp}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
+file(COPY ${QT_QMAKE_PATH}}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
-file(COPY ${QT_DLL_PATH_tmp}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
+file(COPY ${QT_QMAKE_PATH}}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo)
@@ -137,31 +116,6 @@ if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
 	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.nfo "")
 endif()
 
-
-# copy msvcpXXX.dll to Really Release
-# todo: visual studio 2013
-if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
-	set(VS_VERSION 11)
-else()
-	set(VS_VERSION 10)
-endif()
-
-if (MSVC11)
-	get_filename_component(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\11.0\\Setup\\VS;ProductDir] REALPATH CACHE)
-	set(VS_VERSION 11)
-elseif (MSVC10)
-	get_filename_component(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VS;ProductDir] REALPATH CACHE)
-	set(VS_VERSION 10)
-elseif (MSVC12)
-	get_filename_component(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\12.0\\Setup\\VS;ProductDir] REALPATH CACHE)
-	set(VS_VERSION 12)
-endif()
-
-if(CMAKE_CL_64)
-	set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x64/Microsoft.VC${VS_VERSION}0.CRT")
-else()
-	set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x86/Microsoft.VC${VS_VERSION}0.CRT")
-endif()
 
 # copy translation files after each build
 add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
@@ -207,3 +161,24 @@ set(NOMACS_LIBS ${NOMACS_CORE_LIB} ${NOMACS_LOADER_LIB} ${NOMACS_GUI_LIB})
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
+
+### DependencyCollector
+set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
+set(DC_SCRIPT "D:/VSProjects/DependencyCollector/DependencyCollector.py")
+set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
+
+GET_FILENAME_COMPONENT(VS_PATH ${CMAKE_LINKER} PATH)
+if(CMAKE_CL_64)
+	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
+else()
+	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x86")
+endif()
+SET(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
+SET(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+
+configure_file(${NOMACS_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
+
+
+
