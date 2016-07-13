@@ -20,6 +20,10 @@ QLabel#BatchInfo {
 	font-style: italic;
 }
 
+nmc--DkBatchWidget nmc--DkResizableScrollArea {
+	border: none;
+}
+
 nmc--DkBatchButtonsWidget QPushButton:hover,
 nmc--DkBatchButtonsWidget QPushButton:checked:hover {
 	background-color: rgba(255, 255, 255, 30);
