@@ -130,6 +130,9 @@ protected:
 	QString mName;
 
 	QSharedPointer<QLibrary> mLib;
+	QVector<DkLibrary> mDependencies;
+	
+	QVector<DkLibrary> loadDependencies() const;
 };
 
 class DllLoaderExport DkPluginContainer : public QObject {
@@ -195,7 +198,6 @@ protected:
 	QString mDescription;
 	QString mVersion;
 	QString mTagline;
-	QStringList mDependencies;
 
 	QDate mDateCreated;
 	QDate mDateModified;
@@ -213,7 +215,6 @@ protected:
 	void createMenu();
 	void loadJson();
 	void loadMetaData(const QJsonValue& val);
-	bool loadDependencies();
 };
 
 class DllLoaderExport DkPluginActionManager : public QObject {

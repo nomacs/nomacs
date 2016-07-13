@@ -62,6 +62,8 @@
 #include "DkUtils.h"
 #include "DkProcess.h"
 
+#include "DkDependencyResolver.h"
+
 #include <iostream>
 #include <cassert>
 
@@ -173,6 +175,17 @@ int main(int argc, char *argv[]) {
 		computeBatch(batchSettingsPath, logPath);
 		return 0;
 	}
+
+	//// DEBUG --------------------------------------------------------------------
+	//nmc::DkDependencyWalker dw("C:/VSProjects/READ/nomacs/build2015-x64/Debug/plugins/writerIdentificationPlugin.dll");
+	//if (!dw.findDependencies())
+	//	qWarning() << "could not find dependencies for" << dw.filePath();
+
+	//qDebug() << "all dependencies:" << dw.dependencies();
+	//qDebug() << "filtered dependencies:" << dw.filteredDependencies();
+
+	//return 0;
+	//// DEBUG --------------------------------------------------------------------
 
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong

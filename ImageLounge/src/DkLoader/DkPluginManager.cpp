@@ -30,6 +30,8 @@
 #include "DkActionManager.h"
 #include "DkUpdater.h"
 #include "DkUtils.h"
+#include "DkDependencyResolver.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -94,9 +96,7 @@ bool DkLibrary::load() {
 	QString suffix;
 	QString prefix;
 
-#if defined(_DEBUG) && defined(Q_OS_WIN)
-	suffix = "d";
-#elif defined(Q_OS_LINUX) // TODO: add your operating system if libs are prefixed
+#if defined(Q_OS_LINUX) // TODO: add your operating system if libs are prefixed
 	prefix = "lib";
 #endif
 
@@ -104,15 +104,29 @@ bool DkLibrary::load() {
 
 	for (const QString& libPath : QCoreApplication::libraryPaths()) {
 
-		mFullPath = libPath + QDir::separator() + prefix + mName + suffix;
-		mLib->setFileName(mFullPath);
+		QString fullPath = libPath + QDir::separator() + prefix + mName + suffix;
+		mLib->setFileName(fullPath);
 		mLib->load();
 
-		if (mLib->isLoaded())
+		if (mLib->isLoaded()) {
+			mFullPath = fullPath;
 			break;
+		}
+
+		// just needed for windows dlls
+		if (QFileInfo(fullPath).exists())
+			mFullPath = fullPath;
 	}
 
-	if (!mLib->isLoaded())
+	// if we could find the library but not load it, there is probably a dependency missing...
+	if (!mLib->isLoaded() && !mFullPath.isEmpty()) {
+
+		mDependencies = loadDependencies();
+
+		mLib->setFileName(mFullPath);
+		return mLib->load();
+	}
+	else if (!mLib->isLoaded())
 		return false;
 
 	return true;
@@ -124,6 +138,29 @@ bool DkLibrary::uninstall() {
 		mLib->unload();
 
 	return QFile::remove(fullPath());
+}
+
+QVector<DkLibrary> DkLibrary::loadDependencies() const {
+	
+	QVector<DkLibrary> dependencies;
+	DkDllDependency d(mFullPath);
+
+	if (!d.findDependencies()) {
+		qDebug() << "sorry, but I could not find dependencies of" << mName;
+		return dependencies;
+	}
+
+	QStringList fd = d.filteredDependencies();
+
+	for (const QString& name : fd) {
+		DkLibrary lib(name);
+		if (lib.load())
+			dependencies << lib;
+		else
+			qWarning() << "could not load" << name << "which is needed for" << mName;
+	}
+
+	return dependencies;
 }
 
 // DkPluginContainer --------------------------------------------------------------------
@@ -169,17 +206,26 @@ bool DkPluginContainer::load() {
 	}
 	else {
 
-#ifdef Q_OS_WIN
-		if (!loadDependencies()) {
-			return false;
-		}
-#endif
+//#ifdef Q_OS_WIN
+//		if (!loadDependencies()) {
+//			return false;
+//		}
+//#endif
 
 		if (!mLoader->load()) {
-			qWarning() << "Could not load: " << mPluginPath;
-			qDebug() << "name: " << mPluginName;
-			qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
-			return false;
+
+			// ok - load it's dependencies first
+			QString fn = QFileInfo(mLoader->fileName()).fileName();
+			DkLibrary l(fn);
+			if (l.load()) {
+				mLoader->load();
+			}
+			else {
+				qWarning() << "Could not load: " << mPluginPath;
+				qDebug() << "name: " << mPluginName;
+				qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
+				return false;
+			}
 		}
 	}
 
@@ -209,7 +255,7 @@ bool DkPluginContainer::uninstall() {
 
 	mLoader->unload();
 
-	// remove dependencies
+	// remove filteredDependencies
 	for (DkLibrary& l : mLibs) {
 
 		if (!l.uninstall())
@@ -293,8 +339,6 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 			mDescription = metaData.value(key).toString();
 		else if (key == "Tagline")
 			mTagline = metaData.value(key).toString();
-		else if (key == "Dependencies")
-			mDependencies = metaData.value(key).toString().split(",");
 		else if (key == "Version")
 			mVersion = metaData.value(key).toString();
 		else if (key == "PluginId") {
@@ -310,29 +354,6 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 		qWarning() << "invalid plugin - missing the PluginName in the json metadata...";
 	}
 
-}
-
-bool DkPluginContainer::loadDependencies() {
-
-	for (const QString& depName : mDependencies) {
-
-		DkLibrary lib(depName);
-		lib.load();
-
-		if (lib.isLoaded()) {
-			mLibs << lib;
-		}
-
-		if (!lib.isLoaded()) {
-			qWarning() << "could not load" << depName << "which is needed for" << pluginName();
-			qInfo() << "search paths: " << QCoreApplication::libraryPaths();
-			return false;
-		}
-		else
-			qInfo() << depName << "loaded for" << pluginName();
-	}
-
-	return true;
 }
 
 void DkPluginContainer::run() {
@@ -396,7 +417,6 @@ QString DkPluginContainer::fullDescription() const {
 	QString trCompany = tr("Company:");
 	QString trCreated = tr("Created:");
 	QString trModified = tr("Last Modified:");
-	QString trDependencies = tr("Dependencies:");
 
 	QString fs;
 
@@ -412,9 +432,6 @@ QString DkPluginContainer::fullDescription() const {
 
 	fs += "<b>" + trCreated		+ "</b> " + mDateCreated.toString(Qt::LocalDate) + "<br>";
 	fs += "<b>" + trModified	+ "</b> " + mDateModified.toString(Qt::LocalDate) + "<br>";
-
-	if (!mDependencies.isEmpty())
-	fs += "<b>" + trDependencies	+ "</b> " + mDependencies.join(", ") + "<br>";
 
 	return fs;
 }
@@ -1112,6 +1129,8 @@ void DkPluginManager::loadPlugins() {
 	if (!mPlugins.empty())
 		return;
 
+	DkTimer dt;
+
 	QStringList loadedPluginFileNames = QStringList();
 	QStringList libPaths = QCoreApplication::libraryPaths();
 	libPaths.append(QCoreApplication::applicationDirPath() + "/plugins");
@@ -1145,6 +1164,7 @@ void DkPluginManager::loadPlugins() {
 	}
 
 	qSort(mPlugins.begin(), mPlugins.end());// , &DkPluginContainer::operator<);
+	qInfo() << mPlugins.size() << "plugins loaded in" << dt;
 }
 
 /**
