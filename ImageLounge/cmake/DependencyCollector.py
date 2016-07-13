@@ -75,7 +75,7 @@ def update_mode(infile, conf):
     import ntpath
     import time
 
-    logger.debug("running update mode")
+    logger.info("running update mode")
     dir = os.path.dirname(os.path.realpath(infile))
     existing_dlls = glob.glob(dir+"/*.dll")
 
@@ -102,7 +102,7 @@ def update_mode(infile, conf):
 def create_mode(infile, conf):
     import ntpath
 
-    logger.debug("running create mode")
+    logger.info("running create mode")
     path = os.path.dirname(os.path.realpath(infile))
     infile_name = ntpath.basename(infile)
     dlls = search_for_used_dlls(infile_name, path, [], conf)
@@ -134,9 +134,7 @@ def search_for_used_dlls(infile, path, dll_list, conf):
                     and not dllname.lower() in dll_list:
                 (dllpath, mod_date) = \
                     search_for_newest_file(dllname, conf['paths'])
-                if dllpath == "":
-                    logger.warning(dllname + " not found")
-                else:
+                if dllpath != "":
                     if os.path.dirname(dllpath) != conf['localpath']:
                         copy_dll(dllpath, path)
                     dll_list.append(dllname.lower())
