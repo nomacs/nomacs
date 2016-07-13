@@ -117,19 +117,11 @@ if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
 endif()
 
 
-# copy msvcpXXX.dll to Really Release
-# todo: visual studio 2013
-if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
-	set(VS_VERSION 11)
-else()
-	set(VS_VERSION 10)
-endif()
-
 # copy translation files after each build
-# add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
-# foreach(QM ${NOMACS_QM})
-	# add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
-# endforeach(QM)
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+foreach(QM ${NOMACS_QM})
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+endforeach(QM)
 
 # add build incrementer command if requested
 if (ENABLE_INCREMENTER)
@@ -176,7 +168,6 @@ set(DC_SCRIPT "D:/VSProjects/DependencyCollector/DependencyCollector.py")
 set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
 
 GET_FILENAME_COMPONENT(VS_PATH ${CMAKE_LINKER} PATH)
-# SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/")
 if(CMAKE_CL_64)
 	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
 else()
@@ -186,8 +177,8 @@ SET(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release
 SET(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
 
 configure_file(${NOMACS_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
-message(STATUS "${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION> --debug")
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION> --debug)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
 
 
 
