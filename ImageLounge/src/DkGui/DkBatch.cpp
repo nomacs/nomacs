@@ -1814,18 +1814,29 @@ void DkBatchWidget::createLayout() {
 	tabLayout->addWidget(mProgressBar);
 	tabLayout->addWidget(mButtonWidget);
 
-	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
-	connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
+	DkResizableScrollArea* tabScroller = new DkResizableScrollArea(this);
+	tabScroller->setWidgetResizable(true);
+	tabScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	tabScroller->setWidget(tabWidget);
+	tabScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+	DkResizableScrollArea* contentScroller = new DkResizableScrollArea(this);
+	contentScroller->setWidgetResizable(true);
+	contentScroller->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+	contentScroller->setWidget(contentWidget);
+	//contentScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(tabWidget);
-	layout->addWidget(contentWidget);
+	layout->addWidget(tabScroller);
+	layout->addWidget(contentScroller);
 
 	// open the first tab
 	if (!mWidgets.empty())
 		mWidgets[0]->headerWidget()->click();
 
+	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
+	connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
 	connect(this, SIGNAL(infoSignal(const QString&, const DkBatchInfoWidget::InfoMode&)), mInfoWidget, SLOT(setInfo(const QString&, const DkBatchInfoWidget::InfoMode&)));
 }
 
