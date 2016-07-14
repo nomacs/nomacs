@@ -48,6 +48,8 @@
 // Qt defines
 class QBitArray;
 class QGraphicsOpacityEffect;
+class QPushButton;
+class QComboBox;
 
 namespace nmc {
 
@@ -257,4 +259,5 @@ protected:
 
 };
 
-}
+
+};

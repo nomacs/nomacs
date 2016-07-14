@@ -965,4 +965,35 @@ protected:
 	QVector<double> mPoints;
 };
 
+class DllGuiExport DkGenericProfileWidget : public DkNamedWidget {
+	Q_OBJECT
+
+public:
+	DkGenericProfileWidget(const QString& name, QWidget* parent);
+	virtual ~DkGenericProfileWidget();
+
+	public slots:
+	void saveSettings() const;
+	virtual void saveSettings(const QString& name) const;
+	virtual void loadSettings(const QString& name) = 0;
+	void deleteCurrentSetting();
+	void activate(bool active = true);
+	void setDefaultModel() const;
+
+protected:
+	void paintEvent(QPaintEvent* ev) override;
+
+	virtual void init();
+	void createLayout();
+	QStringList loadProfileStrings() const;
+	QString loadDefaultProfileString() const;
+
+	QPushButton* mSaveButton;
+	QPushButton* mDeleteButton;
+	QComboBox* mProfileList;
+	bool mEmpty = true;
+
+	QString mSettingsGroup = "ILLEGAL_GENERIC_GROUP";
+};
+
 };

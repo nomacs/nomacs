@@ -3,7 +3,7 @@
     <Name>nomacs | Image Lounge</Name>
     <Version>3.0.0</Version>
     <Title>nomacs</Title>
-    <Publisher>nomacs</Publisher>
+    <Publisher>CVL TU Wien</Publisher>
     <StartMenuDir>nomacs - Image Lounge</StartMenuDir>
     <TargetDir>@ApplicationsDir@/nomacs</TargetDir>
 	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
@@ -11,11 +11,11 @@
 
  	<RemoteRepositories>
 		 <Repository>
-				 <Url>http://download.nomacs.org/repository/</Url>
+				 <Url>ftp://scruffy.caa.tuwien.ac.at/staff/read/repository/</Url>
 				 <Enabled>1</Enabled>
 				 <Username></Username>
 				 <Password></Password>
-				 <DisplayName>nomacs - Image Lounge</DisplayName>
+				 <DisplayName>READ Framework - TU Wien</DisplayName>
 		 </Repository>
 	</RemoteRepositories>
 </Installer>

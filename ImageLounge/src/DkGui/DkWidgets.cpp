@@ -94,7 +94,7 @@
 #include <QDirModel>
 #include <QSvgRenderer>
 #include <QFileDialog>
-
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -2913,6 +2913,184 @@ void DkProgressBar::animatePoint(double& xVal) {
 	xVal += speed;
 }
 
+// DkGenericProfileWidget --------------------------------------------------------------------
+DkGenericProfileWidget::DkGenericProfileWidget(const QString& name, QWidget* parent) : DkNamedWidget(name, parent) {
+
+}
+
+DkGenericProfileWidget::~DkGenericProfileWidget() {
+
+	for (int idx = 0; idx < mProfileList->count(); idx++) {
+		saveSettings(mProfileList->itemText(idx));
+	}
+}
+
+void DkGenericProfileWidget::init() {
+
+	createLayout();
+
+	connect(mSaveButton, SIGNAL(clicked()), this, SLOT(saveSettings()));
+	connect(mDeleteButton, SIGNAL(clicked()), this, SLOT(deleteCurrentSetting()));
+	connect(mProfileList, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(loadSettings(const QString&)));
+
+	activate(false);	// inits gui states
+}
+
+void DkGenericProfileWidget::createLayout() {
+
+	QPixmap pm = QPixmap(":/nomacs/img/save.svg");
+	mSaveButton = new QPushButton(this);
+	mSaveButton->setIcon(QIcon(pm));
+	//mSaveButton->setIconSize(pm.size());
+	mSaveButton->setFlat(true);
+
+	pm = QPixmap(":/nomacs/img/trash.svg");
+	mDeleteButton = new QPushButton(this);
+	mDeleteButton->setIcon(QIcon(pm));
+	//mDeleteButton->setIconSize(pm.size());
+	mDeleteButton->setFlat(true);
+
+	mProfileList = new QComboBox(this);
+	mProfileList->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+
+	QAction* delGradientAction = new QAction(tr("Set As Default"), mProfileList);
+	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(setDefaultModel()));
+
+	mProfileList->addAction(delGradientAction);
+	mProfileList->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+	QStringList modelStrings = loadProfileStrings();
+
+	if (!modelStrings.empty()) {
+		mProfileList->addItems(loadProfileStrings());
+		mProfileList->setCurrentText(loadDefaultProfileString());
+	}
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setAlignment(Qt::AlignTop);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(mProfileList);
+	layout->addWidget(mSaveButton);
+	layout->addWidget(mDeleteButton);
+}
+
+QStringList DkGenericProfileWidget::loadProfileStrings() const {
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(mSettingsGroup);
+	QStringList modelStrings = settings.childGroups();
+	settings.endGroup();
+
+	qDebug() << "profile settings of group: " << mSettingsGroup;
+
+	return modelStrings;
+}
+
+void DkGenericProfileWidget::deleteCurrentSetting() {
+
+	QString modelName = mProfileList->currentText();
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(mSettingsGroup);
+	settings.beginGroup(modelName);
+	settings.remove("");	// remove all group entries
+	settings.endGroup();
+	settings.endGroup();
+
+	// update list
+	mProfileList->removeItem(mProfileList->currentIndex());
+}
+
+void DkGenericProfileWidget::saveSettings() const {
+
+	// default mode is overwrite (UI is asking anyway)
+	QString dName = mProfileList->currentText().isEmpty() ? "Profile 1" : mProfileList->currentText();
+
+	bool ok;
+	QString text = QInputDialog::getText(DkActionManager::instance().getMainWindow(), tr("Profile Name"),
+		tr("Profile Name:"), QLineEdit::Normal,
+		dName, &ok);
+
+	if (!ok || text.isEmpty())
+		return;	// user canceled
+
+				// is the model name unique?
+	if (mProfileList->findText(text) != -1) {
+
+		QMessageBox::StandardButton button = QMessageBox::information(
+			DkActionManager::instance().getMainWindow(), 
+			tr("Profile Already Exists"), 
+			tr("Do you want to overwrite %1?").arg(text), 
+			QMessageBox::Yes | QMessageBox::No);
+
+		if (button == QMessageBox::No) {
+			saveSettings(); // start over
+			return;
+		}
+	}
+
+	saveSettings(text);
+}
+
+void DkGenericProfileWidget::saveSettings(const QString& name) const {
+
+	if (mProfileList->findText(name) == -1)
+		mProfileList->addItem(name);
+
+	int idx = mProfileList->findText(name);
+	if (idx != -1)
+		mProfileList->setCurrentIndex(idx);
+}
+
+void DkGenericProfileWidget::activate(bool active) {
+
+	mProfileList->setVisible(active);
+	mSaveButton->setVisible(active);
+	mDeleteButton->setVisible(active);
+	mEmpty = !active;
+
+	if (active)
+		loadSettings(mProfileList->currentText());
+
+	update();
+}
+
+void DkGenericProfileWidget::setDefaultModel() const {
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup(mSettingsGroup);
+	settings.setValue("DefaultProfileString", mProfileList->currentText());
+	settings.endGroup();
+}
+
+QString DkGenericProfileWidget::loadDefaultProfileString() const {
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup(mSettingsGroup);
+	QString defaultString = settings.value("DefaultProfileString", "").toString();
+	settings.endGroup();
+
+	return defaultString;
+}
+
+void DkGenericProfileWidget::paintEvent(QPaintEvent* ev) {
+
+	if (mEmpty) {
+
+		// The view is empty.
+		QPainter p(this);
+		p.setPen(Qt::NoPen);
+		p.setBrush(QBrush(QColor(200,200,200), Qt::BDiagPattern));
+		p.drawRect(QRect(QPoint(), size()));
+
+		p.setPen(QPen(QColor(100,100,100)));
+		p.drawText(rect(), Qt::AlignCenter, tr("No Profiles"));
+	}
+	else
+		DkNamedWidget::paintEvent(ev);
+}
 
 }
 
