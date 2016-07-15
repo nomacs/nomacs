@@ -1435,6 +1435,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	if (fileChange)
 		success = mLoader->unloadFile();		// returns false if the user cancels
 	
+	// notify controller
+	mController->updateImage(imageContainer());
+
 	if (mMovie && success) {
 		mMovie->stop();
 		mMovie = QSharedPointer<QMovie>();

@@ -663,10 +663,13 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 
 void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 
+	mImgC = imgC;
+
+	if (mPluginViewport)
+		mPluginViewport->updateImageContainer(imgC);
+
 	if (!imgC)
 		return;
-
-	mImgC = imgC;
 
 	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
@@ -676,8 +679,6 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 	mCommentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
 
-	if (mPluginViewport)
-		mPluginViewport->updateImageContainer(imgC);
 }
 
 void DkControlWidget::setInfo(const QString& msg, int time, int location) {
