@@ -28,6 +28,7 @@
 #include "DkBaseWidgets.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QGraphicsEffect>
@@ -38,6 +39,11 @@
 #include <QStyleOption>
 #include <QEvent>
 #include <QScrollBar>
+#include <QPushButton>
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QInputDialog>
+#include <QMessageBox>
 #pragma warning(pop)	// no warnings from includes - end
 
 namespace nmc {

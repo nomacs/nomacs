@@ -21,6 +21,10 @@ target_link_libraries(${BINARY_NAME} ${LIB_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_N
 
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 
+if (DEFINED GLOBAL_READ_BUILD)
+	set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DREAD_TUWIEN")
+endif ()
+
 # add core
 add_library(${DLL_CORE_NAME} SHARED ${CORE_SOURCES} ${NOMACS_UI} ${CORE_HEADERS} ${NOMACS_RCC} ${NOMACS_RC})
 target_link_libraries(${DLL_CORE_NAME} ${VERSION_LIB} ${OpenCV_LIBS})
