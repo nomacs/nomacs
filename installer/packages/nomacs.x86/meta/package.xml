@@ -3,6 +3,6 @@
 	<DisplayName>nomacs [x86]</DisplayName>
 	<Description>nomacs for x86 systems.</Description>
 	<Version>3.2.0</Version>
-	<ReleaseDate>2016-07-13</ReleaseDate>
+	<ReleaseDate>2016-07-14</ReleaseDate>
 	<Default>true</Default>
 </Package>
