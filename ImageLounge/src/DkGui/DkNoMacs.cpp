@@ -2105,6 +2105,8 @@ void DkNoMacs::onWindowLoaded() {
 		showExplorer(true);
 	if (DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock))
 		showMetaDataDock(true);
+	if (DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock))
+		showHistoryDock(true);
 
 	if (firstTime) {
 
