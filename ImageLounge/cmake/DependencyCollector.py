@@ -26,6 +26,7 @@ logging.basicConfig(level=logging.INFO, format=OUTPUT_NAME +
                     ' %(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
+
 # parses the config file and stores the values into a dictionary
 def parse_config_file(configfile, conftype):
     import configparser
@@ -66,6 +67,7 @@ def parse_config_file(configfile, conftype):
     conf = {'create': create, 'paths': paths, 'blacklist': blacklist_lower}
     return conf
 
+
 # the update_mode looks up all dll files in the directory of the input file
 # and checks if a newer version (according to modified date) of any  dll
 # can be found within the paths specified in the config file and copyies the
@@ -74,6 +76,7 @@ def update_mode(infile, conf):
     import glob
     import ntpath
     import time
+    import re
 
     logger.info("running update mode")
     dir = os.path.dirname(os.path.realpath(infile))
@@ -84,7 +87,10 @@ def update_mode(infile, conf):
         dll_name = ntpath.basename(dll)
         logger.debug("searching for a newer version of " + dll +
                      "("+time.ctime(os.path.getmtime(dll))+")")
-        if dll_name.lower() not in conf['blacklist']:
+
+        blacklist_match = re.findall(
+            r"(?=(" + '|'.join(conf['blacklist']) + r"))", dll_name.lower())
+        if not blacklist_match:
             (newest_dll, mod_date) = search_for_newest_file(dll_name,
                                                             conf['paths'])
             if newest_dll != "" and mod_date > os.path.getmtime(dll):
@@ -94,6 +100,7 @@ def update_mode(infile, conf):
         else:
             logger.debug(dll + " skipped because of blacklist")
     return
+
 
 # create_mode parses recursively the executable resp. library (and their
 # dependencies) for dependencies and searches them in the paths specified
@@ -109,6 +116,7 @@ def create_mode(infile, conf):
     logger.debug("all dlls found:" + str(dlls))
 
     return
+
 
 # searches recursively all dependencies of the 'infile' and copies
 # them into 'path'
@@ -130,7 +138,9 @@ def search_for_used_dlls(infile, path, dll_list, conf):
 
             dllname = line[pos:match.end()].decode()
 
-            if not dllname.lower() in conf['blacklist'] \
+            blacklist_match = re.findall(
+                r"(?=(" + '|'.join(conf['blacklist']) + r"))", dllname.lower())
+            if not blacklist_match \
                     and not dllname.lower() in dll_list:
                 (dllpath, mod_date) = \
                     search_for_newest_file(dllname, conf['paths'])
@@ -196,10 +206,12 @@ if __name__ == "__main__":
                         help="""executable or dependency which dependencies
                         should be copied""",
                         required=True)
-    parser.add_argument('--configfile', default='config.ini', metavar="configfile",
+    parser.add_argument('--configfile', default='config.ini',
+                        metavar="configfile",
                         help="""configuration file of the
                         dependencycollector""", required=True)
-    parser.add_argument('--configuration', default='Release', metavar='configuration',
+    parser.add_argument('--configuration', default='Release',
+                        metavar='configuration',
                         help="""current build configuration
                         (Release|Debug|...)""", required=True)
     parser.add_argument('--debug', action="store_true",
