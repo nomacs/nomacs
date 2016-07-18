@@ -46,7 +46,6 @@
 #endif
 
 // Qt defines
-class QNativeGestureEvent;
 class QGestureEvent;
 class QShortcut;
 class QSvgRenderer;
@@ -184,10 +183,6 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 	virtual void paintEvent(QPaintEvent* event) override;
 
-#ifndef QT_NO_GESTURES
-	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
-	virtual int swipeRecognition(QNativeGestureEvent*) { return no_swipe;};	// dummy
-#endif
 	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void swipeAction(int) {};
 

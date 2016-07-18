@@ -43,12 +43,6 @@
 // gestures
 #include <QSwipeGesture>
 
-#if QT_VERSION < 0x050000
-// native gestures
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
 #pragma warning(pop)		// no warnings from includes - end
 
 #include <float.h>
@@ -397,101 +391,12 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
 bool DkBaseViewPort::event(QEvent *event) {
 
-#ifndef QT_NO_GESTURES	// for now we block all gestures on systems except for windows
-	if (event->type() == QEvent::NativeGesture)
-		return nativeGestureEvent(static_cast<QNativeGestureEvent*>(event));
-	else if (event->type() == QEvent::Gesture)
+	// TODO: check if we still need this
+	if (event->type() == QEvent::Gesture)
 		return gestureEvent(static_cast<QGestureEvent*>(event));
-#endif
 
-	//if (event->type() == QEvent::Paint)
-	//	return QGraphicsView::event(event);
-	//else
 	return QGraphicsView::event(event);
-
-	//qDebug() << "event caught..." << event->type();
-
-
 }
-
-#ifndef QT_NO_GESTURES
-bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
-
-	qDebug() << "native gesture...";
-
-#if QT_VERSION < 0x050000
-
-#ifdef Q_OS_WIN
-	float cZoom = (float)event->argument;
-#else
-	float cZoom = 0;	// ignore on other os
-#endif
-
-	switch (event->gestureType) {
-	case  QNativeGestureEvent::Zoom:
-
-		if (mLastZoom != 0 && mStartZoom != 0) {
-			float scale = cZoom-mLastZoom;
-			scale /= 100;	// tested on surface 2 - is pretty handy like this...
-
-			if (fabs(scale) > FLT_EPSILON) {
-				zoom(1.0f+scale, event->position-QWidget::mapToGlobal(pos()));
-				mLastZoom = cZoom;
-			}
-		}
-		else if (mStartZoom == 0)
-			mStartZoom = cZoom;
-		else if (mLastZoom == 0)
-			mLastZoom = cZoom;
-
-
-
-		qDebug() << "zooming: " << cZoom << " pos: " << event->position << " angle: " << event->angle;
-		break;
-	case QNativeGestureEvent::Pan:
-
-		//if (!cZoom)	// sometimes a pan gesture is triggered at the end of a pinch gesture
-		mSwipeGesture = swipeRecognition(event);
-
-		qDebug() << "panning....";
-		break;
-	case QNativeGestureEvent::Rotate:
-		qDebug() << "rotating: " << event->angle;
-	case QNativeGestureEvent::Swipe:
-		qDebug() << "SWIPPING..........................";
-		break;
-		//if (event->gestureType == QNativeGestureEvent::Pan) {
-		//	QPoint dxy = event->position-lastPos;
-		//	if (dxy.y() != 0)
-		//		verticalScrollBar()->setValue(verticalScrollBar()->value()-dxy.y());
-		//}
-	case QNativeGestureEvent::GestureBegin:
-		mPosGrab = event->position;
-		mLastZoom = cZoom;
-		mStartZoom = cZoom;
-		mSwipeGesture = no_swipe;
-		qDebug() << "beginning";
-		break;
-	case QNativeGestureEvent::GestureEnd:
-
-		swipeAction(mSwipeGesture);
-
-		mPosGrab = QPoint();
-		mLastZoom = 0;
-		mStartZoom = 0;
-		qDebug() << "ending...";
-		break;
-	default:
-		return false;	// ignored type
-	}
-#else
-	Q_UNUSED(event);
-#endif
-
-	return true;
-}
-#endif
-
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 

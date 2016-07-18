@@ -1046,21 +1046,6 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 }
 
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
-	
-
-	if (mPosGrab.isNull()) {
-		mPosGrab = event->position;
-		return no_swipe;
-	}
-
-	return swipeRecognition(event->position, mPosGrab.toPoint());
-}
-#endif
-#endif
-
 int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 
 	DkVector vec((float)(start.x()-end.x()), (float)(start.y()-end.y()));

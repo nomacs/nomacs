@@ -231,11 +231,6 @@ protected:
 	DkRotatingRect mCropRect;
 
 	// functions
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-	virtual int swipeRecognition(QNativeGestureEvent* event);
-#endif
-#endif
 	virtual int swipeRecognition(QPoint start, QPoint end);
 	virtual void swipeAction(int swipeGesture);
 	virtual void createShortcuts();
