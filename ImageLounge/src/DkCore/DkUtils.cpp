@@ -72,6 +72,9 @@ QDebug qDebugClean() {
 QDebug qInfoClean() {
 	return qInfo().noquote().nospace();
 }
+QDebug qWarningClean() {
+	return qWarning().noquote().nospace();
+}
 #endif
 
 namespace nmc {

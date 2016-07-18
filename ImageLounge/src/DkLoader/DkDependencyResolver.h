@@ -68,6 +68,7 @@ protected:
 
 	QVector<int> markerLocations(const QByteArray& ba, const QByteArray& marker) const;
 	QString resolveName(const QByteArray& ba, int location) const;
+	bool isStopCharacter(const char& val) const;
 };
 
 };

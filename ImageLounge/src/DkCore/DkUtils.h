@@ -72,9 +72,11 @@
 #if QT_VERSION >= 0x050500 && !defined(QT_NO_DEBUG_OUTPUT)
 DllCoreExport QDebug qDebugClean();
 DllCoreExport QDebug qInfoClean();
+DllCoreExport QDebug qWarningClean();
 #else
 #define qDebugClean() qDebug()
 #define qInfoClean() qDebug()
+#define qWarningClean() qDebug()
 #endif
 
 #if QT_VERSION < 0x050500

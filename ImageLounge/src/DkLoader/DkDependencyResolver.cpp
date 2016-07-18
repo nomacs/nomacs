@@ -31,6 +31,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QByteArrayMatcher>
+#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -58,16 +59,17 @@ bool DkDllDependency::findDependencies() {
 	QByteArray ba(dllFile.readAll());
 	dllFile.close();
 
+	QString myName = QFileInfo(mFilePath).fileName();
 	QVector<int> dllLocations = markerLocations(ba, marker());
 
 	for (int l : dllLocations) {
 		
 		QString n = resolveName(ba, l);
 
-		if (!n.isEmpty()) {
+		if (!n.isEmpty() && n != myName) {
 			mDependencies << n;
 		}
-		else
+		else if (n.isEmpty())
 			qWarning() << "I could not resolve the name at location" << l;
 	}
 
@@ -135,7 +137,7 @@ QString DkDllDependency::resolveName(const QByteArray & ba, int location) const 
 	int start = -1;
 	for (int idx = location; idx > 0; idx--) {
 		
-		if (ba[idx] == '\0') {
+		if (isStopCharacter(ba[idx])) {
 			start = idx;
 			break;
 		}
@@ -147,7 +149,7 @@ QString DkDllDependency::resolveName(const QByteArray & ba, int location) const 
 	int end = -1;
 	for (int idx = location; idx < ba.size(); idx++) {
 		
-		if (ba[idx] == '\0') {
+		if (isStopCharacter(ba[idx])) {
 			end = idx;
 			break;
 		}
@@ -158,6 +160,8 @@ QString DkDllDependency::resolveName(const QByteArray & ba, int location) const 
 	return name;
 }
 
-
+bool DkDllDependency::isStopCharacter(const char& val) const {
+	return val == '\0' || val == '\u0001' || val == '\u0006';	// NULL || SOH || ACK
+}
 
 }

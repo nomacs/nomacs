@@ -150,6 +150,9 @@ QVector<DkLibrary> DkLibrary::loadDependencies() const {
 		return dependencies;
 	}
 
+	//// debug:
+	//qDebug() << mFullPath << "has these dependencies: " << d.dependencies();
+
 	QStringList fd = d.filteredDependencies();
 
 	for (const QString& name : fd) {
@@ -200,32 +203,33 @@ bool DkPluginContainer::isLoaded() const {
 
 bool DkPluginContainer::load() {
 
+	DkTimer dt;
+
 	if (!isValid()) {
-		qInfo() << "Invalid: " << mPluginPath;
+		
+		// inform that we have found a dll that does not fit what we expect
+		if (!mPluginPath.contains("opencv") && !mPluginPath.contains("Read"))
+#ifdef Q_OS_WIN
+			if (mPluginPath.contains("dll"))
+#endif
+			qInfo() << "Invalid: " << mPluginPath;
 		return false;
 	}
 	else {
 
-//#ifdef Q_OS_WIN
-//		if (!loadDependencies()) {
-//			return false;
-//		}
-//#endif
+#ifdef Q_OS_WIN
+		// ok - load it's dependencies first
+		QString fn = QFileInfo(mLoader->fileName()).fileName();
+		DkLibrary l(fn);
+		l.load();
+#endif
 
 		if (!mLoader->load()) {
-
-			// ok - load it's dependencies first
-			QString fn = QFileInfo(mLoader->fileName()).fileName();
-			DkLibrary l(fn);
-			if (l.load()) {
-				mLoader->load();
-			}
-			else {
-				qWarning() << "Could not load: " << mPluginPath;
-				qDebug() << "name: " << mPluginName;
-				qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
-				return false;
-			}
+			qWarningClean() << "Could not load: " << fn;
+			qDebug() << "name: " << mPluginName;
+			qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
+			qDebug() << "error: " << mLoader->errorString();
+			return false;
 		}
 	}
 
@@ -246,7 +250,7 @@ bool DkPluginContainer::load() {
 		createMenu();
 	}
 
-	qInfo() << mPluginPath << " loaded...";
+	qInfoClean() << mPluginPath << " loaded in " << dt;
 	return true;
 
 }
@@ -254,15 +258,7 @@ bool DkPluginContainer::load() {
 bool DkPluginContainer::uninstall() {
 
 	mLoader->unload();
-
-	// remove filteredDependencies
-	for (DkLibrary& l : mLibs) {
-
-		if (!l.uninstall())
-			qWarning() << "could not remove: " << l.fullPath();
-		else
-			qInfo() << l.fullPath() << "removed";
-	}
+	// NOTE: dependencies are not removed yet -> they might be used by other plugins
 
 	return QFile::remove(mPluginPath);
 }
@@ -275,7 +271,6 @@ void DkPluginContainer::createMenu() {
 	if (!p || p->pluginActions().empty())
 		return;
 
-	qDebug() << "creating plugin menu for " << pluginName();
 	mPluginMenu = new QMenu(pluginName(), QApplication::activeWindow());
 
 	for (auto action : p->pluginActions()) {
@@ -1135,7 +1130,7 @@ void DkPluginManager::loadPlugins() {
 	QStringList libPaths = QCoreApplication::libraryPaths();
 	libPaths.append(QCoreApplication::applicationDirPath() + "/plugins");
 
-	qDebug() << "lib paths" << libPaths;
+	//qDebug() << "lib paths" << libPaths;
 
 	for (const QString& cPath : libPaths) {
 
@@ -1146,20 +1141,24 @@ void DkPluginManager::loadPlugins() {
 		QDir pluginsDir(cPath);
 
 		for (const QString& fileName : pluginsDir.entryList(QDir::Files)) {
+			DkTimer dtt;
 #ifdef Q_OS_LINUX
 			// needed because of symbolic links of sonames
 			QFileInfo file(pluginsDir.absoluteFilePath(fileName));
 			if(file.isSymLink())
 				continue;
-#endif
+#else ifdef Q_OS_WIN
+			if (!fileName.contains(".dll"))
+				continue;
 
+#endif
 			QString shortFileName = fileName.split("/").last();
 			if (!loadedPluginFileNames.contains(shortFileName)) { // prevent double loading of the same plugin
 				if (singlePluginLoad(pluginsDir.absoluteFilePath(fileName)))
 					loadedPluginFileNames.append(shortFileName);
 			}
-			else
-				qDebug() << "rejected since it is twice: " << shortFileName;
+			//else
+			//	qDebug() << "rejected since it is twice: " << shortFileName;
 		}
 	}
 
@@ -1173,6 +1172,10 @@ void DkPluginManager::loadPlugins() {
 **/
 bool DkPluginManager::singlePluginLoad(const QString& filePath) {
 
+	if (isBlackListed(filePath))
+		return false;
+
+	DkTimer dt;
 	QSharedPointer<DkPluginContainer> plugin = QSharedPointer<DkPluginContainer>(new DkPluginContainer(filePath));
 	if (plugin->load())
 		mPlugins.append(plugin);
@@ -1269,6 +1272,21 @@ void DkPluginManager::runPlugin(QSharedPointer<DkPluginContainer> plugin) {
 	}
 
 	plugin->setActive();
+}
+
+bool DkPluginManager::isBlackListed(const QString & pluginPath) const {
+
+	QString fileName = QFileInfo(pluginPath).fileName();
+
+	for (const QString& filter : blackList())
+		if (pluginPath.contains(filter))
+			return true;
+
+	return false;
+}
+
+QStringList DkPluginManager::blackList() {
+	return QStringList() << "opencv";
 }
 
 // DkPluginActionManager --------------------------------------------------------------------

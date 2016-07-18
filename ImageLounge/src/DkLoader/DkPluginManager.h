@@ -209,7 +209,6 @@ protected:
 
 	QMenu* mPluginMenu = 0;
 
-	QVector<DkLibrary> mLibs;
 	QSharedPointer<QPluginLoader> mLoader = QSharedPointer<QPluginLoader>();
 
 	void createMenu();
@@ -280,6 +279,9 @@ public:
 	void clearRunningPlugin();
 	QSharedPointer<DkPluginContainer> getRunningPlugin() const;
 	void runPlugin(QSharedPointer<DkPluginContainer> plugin);
+
+	bool isBlackListed(const QString& pluginPath) const;
+	static QStringList blackList();
 
 private:
 	DkPluginManager();
