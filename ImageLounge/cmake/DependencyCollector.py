@@ -63,7 +63,9 @@ def parse_config_file(configfile, conftype):
         blacklist = blacklist.split(';')
     blacklist_lower = []
     for b in blacklist:
-        blacklist_lower.append(b.lower())
+        # if line ends with ; an empty string is also in the list
+        if b != '':
+            blacklist_lower.append(b.lower())
     conf = {'create': create, 'paths': paths, 'blacklist': blacklist_lower}
     return conf
 
@@ -88,8 +90,9 @@ def update_mode(infile, conf):
         logger.debug("searching for a newer version of " + dll +
                      "("+time.ctime(os.path.getmtime(dll))+")")
 
-        blacklist_match = re.findall(
-            r"(?=(" + '|'.join(conf['blacklist']) + r"))", dll_name.lower())
+        regexp = "(" + ")|(".join(conf['blacklist']) + ")"
+        blacklist_match = re.match(
+            regexp, dll_name.lower())
         if not blacklist_match:
             (newest_dll, mod_date) = search_for_newest_file(dll_name,
                                                             conf['paths'])
@@ -138,8 +141,9 @@ def search_for_used_dlls(infile, path, dll_list, conf):
 
             dllname = line[pos:match.end()].decode()
 
-            blacklist_match = re.findall(
-                r"(?=(" + '|'.join(conf['blacklist']) + r"))", dllname.lower())
+            regexp = "("+")|(".join(conf['blacklist'])+")"
+            blacklist_match = re.match(
+                regexp, dllname.lower())
             if not blacklist_match \
                     and not dllname.lower() in dll_list:
                 (dllpath, mod_date) = \
