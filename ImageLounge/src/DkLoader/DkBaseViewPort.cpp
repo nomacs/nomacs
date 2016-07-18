@@ -141,11 +141,6 @@ void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
 void DkBaseViewPort::release() {
 }
 
-QWidget* DkBaseViewPort::parentWidget() const {
-
-	return qobject_cast<QWidget*>(parent());
-}
-
 // zoom - pan --------------------------------------------------------------------
 void DkBaseViewPort::resetView() {
 
@@ -362,7 +357,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
-		draw(&painter);
+		draw(painter);
 
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled(false);
@@ -640,18 +635,18 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter *painter, double opacity) {
+void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 
-	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen()) {
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
-		painter->setWorldMatrixEnabled(true);
+	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	if (backgroundBrush() != Qt::NoBrush) {
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), backgroundBrush());
-		painter->setWorldMatrixEnabled(true);
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), backgroundBrush());
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
@@ -664,23 +659,23 @@ void DkBaseViewPort::draw(QPainter *painter, double opacity) {
 		scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
 		mPattern.setTransform(scaleIv.inverted());
 
-		painter->setPen(QPen(Qt::NoPen));	// no border
-		painter->setBrush(mPattern);
-		painter->drawRect(mImgViewRect);
+		painter.setPen(QPen(Qt::NoPen));	// no border
+		painter.setBrush(mPattern);
+		painter.drawRect(mImgViewRect);
 	}
 
-	float oldOp = (float)painter->opacity();
-	painter->setOpacity(opacity);
+	float oldOp = (float)painter.opacity();
+	painter.setOpacity(opacity);
 
 	if (mSvg && mSvg->isValid()) {
-		mSvg->render(painter, mImgViewRect);
+		mSvg->render(&painter, mImgViewRect);
 	}
 	else if (mMovie && mMovie->isValid())
-		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
 	else
-		painter->drawImage(mImgViewRect, imgQt, imgQt.rect());
+		painter.drawImage(mImgViewRect, imgQt, imgQt.rect());
 
-	painter->setOpacity(oldOp);
+	painter.setOpacity(oldOp);
 
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }

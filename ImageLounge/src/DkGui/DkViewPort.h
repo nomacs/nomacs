@@ -240,8 +240,8 @@ protected:
 	virtual void swipeAction(int swipeGesture);
 	virtual void createShortcuts();
 
-	void drawPolygon(QPainter *painter, QPolygon *polygon);
-	virtual void drawBackground(QPainter *painter);
+	void drawPolygon(QPainter & painter, const QPolygon & polygon);
+	virtual void drawBackground(QPainter & painter);
 	virtual void updateImageMatrix();
 	void showZoom();
 	void toggleLena(bool fullscreen);
@@ -281,9 +281,9 @@ protected:
 	// functions
 	//QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
-	virtual void draw(QPainter *painter, double opacity = 1.0);
-	void drawFrame(QPainter* painter);
-	virtual void drawBackground(QPainter *painter);
+	virtual void draw(QPainter & painter, double opacity = 1.0);
+	void drawFrame(QPainter & painter);
+	virtual void drawBackground(QPainter & painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 
@@ -318,7 +318,7 @@ public slots:
 	virtual void setImage(QImage newImg);
 
 protected:
-	virtual void draw(QPainter *painter, double opacity = 1.0);
+	virtual void draw(QPainter & painter, double opacity = 1.0);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
