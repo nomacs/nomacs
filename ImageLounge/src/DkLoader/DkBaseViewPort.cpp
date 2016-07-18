@@ -43,12 +43,6 @@
 // gestures
 #include <QSwipeGesture>
 
-#if QT_VERSION < 0x050000
-// native gestures
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
 #pragma warning(pop)		// no warnings from includes - end
 
 #include <float.h>
@@ -139,11 +133,6 @@ void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
 }
 
 void DkBaseViewPort::release() {
-}
-
-QWidget* DkBaseViewPort::parentWidget() const {
-
-	return qobject_cast<QWidget*>(parent());
 }
 
 // zoom - pan --------------------------------------------------------------------
@@ -362,7 +351,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
-		draw(&painter);
+		draw(painter);
 
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled(false);
@@ -402,101 +391,12 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
 bool DkBaseViewPort::event(QEvent *event) {
 
-#ifndef QT_NO_GESTURES	// for now we block all gestures on systems except for windows
-	if (event->type() == QEvent::NativeGesture)
-		return nativeGestureEvent(static_cast<QNativeGestureEvent*>(event));
-	else if (event->type() == QEvent::Gesture)
+	// TODO: check if we still need this
+	if (event->type() == QEvent::Gesture)
 		return gestureEvent(static_cast<QGestureEvent*>(event));
-#endif
 
-	//if (event->type() == QEvent::Paint)
-	//	return QGraphicsView::event(event);
-	//else
 	return QGraphicsView::event(event);
-
-	//qDebug() << "event caught..." << event->type();
-
-
 }
-
-#ifndef QT_NO_GESTURES
-bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
-
-	qDebug() << "native gesture...";
-
-#if QT_VERSION < 0x050000
-
-#ifdef Q_OS_WIN
-	float cZoom = (float)event->argument;
-#else
-	float cZoom = 0;	// ignore on other os
-#endif
-
-	switch (event->gestureType) {
-	case  QNativeGestureEvent::Zoom:
-
-		if (mLastZoom != 0 && mStartZoom != 0) {
-			float scale = cZoom-mLastZoom;
-			scale /= 100;	// tested on surface 2 - is pretty handy like this...
-
-			if (fabs(scale) > FLT_EPSILON) {
-				zoom(1.0f+scale, event->position-QWidget::mapToGlobal(pos()));
-				mLastZoom = cZoom;
-			}
-		}
-		else if (mStartZoom == 0)
-			mStartZoom = cZoom;
-		else if (mLastZoom == 0)
-			mLastZoom = cZoom;
-
-
-
-		qDebug() << "zooming: " << cZoom << " pos: " << event->position << " angle: " << event->angle;
-		break;
-	case QNativeGestureEvent::Pan:
-
-		//if (!cZoom)	// sometimes a pan gesture is triggered at the end of a pinch gesture
-		mSwipeGesture = swipeRecognition(event);
-
-		qDebug() << "panning....";
-		break;
-	case QNativeGestureEvent::Rotate:
-		qDebug() << "rotating: " << event->angle;
-	case QNativeGestureEvent::Swipe:
-		qDebug() << "SWIPPING..........................";
-		break;
-		//if (event->gestureType == QNativeGestureEvent::Pan) {
-		//	QPoint dxy = event->position-lastPos;
-		//	if (dxy.y() != 0)
-		//		verticalScrollBar()->setValue(verticalScrollBar()->value()-dxy.y());
-		//}
-	case QNativeGestureEvent::GestureBegin:
-		mPosGrab = event->position;
-		mLastZoom = cZoom;
-		mStartZoom = cZoom;
-		mSwipeGesture = no_swipe;
-		qDebug() << "beginning";
-		break;
-	case QNativeGestureEvent::GestureEnd:
-
-		swipeAction(mSwipeGesture);
-
-		mPosGrab = QPoint();
-		mLastZoom = 0;
-		mStartZoom = 0;
-		qDebug() << "ending...";
-		break;
-	default:
-		return false;	// ignored type
-	}
-#else
-	Q_UNUSED(event);
-#endif
-
-	return true;
-}
-#endif
-
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 
@@ -640,18 +540,18 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter *painter, double opacity) {
+void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 
-	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen()) {
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
-		painter->setWorldMatrixEnabled(true);
+	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	if (backgroundBrush() != Qt::NoBrush) {
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), backgroundBrush());
-		painter->setWorldMatrixEnabled(true);
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), backgroundBrush());
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
@@ -664,23 +564,23 @@ void DkBaseViewPort::draw(QPainter *painter, double opacity) {
 		scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
 		mPattern.setTransform(scaleIv.inverted());
 
-		painter->setPen(QPen(Qt::NoPen));	// no border
-		painter->setBrush(mPattern);
-		painter->drawRect(mImgViewRect);
+		painter.setPen(QPen(Qt::NoPen));	// no border
+		painter.setBrush(mPattern);
+		painter.drawRect(mImgViewRect);
 	}
 
-	float oldOp = (float)painter->opacity();
-	painter->setOpacity(opacity);
+	float oldOp = (float)painter.opacity();
+	painter.setOpacity(opacity);
 
 	if (mSvg && mSvg->isValid()) {
-		mSvg->render(painter, mImgViewRect);
+		mSvg->render(&painter, mImgViewRect);
 	}
 	else if (mMovie && mMovie->isValid())
-		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
 	else
-		painter->drawImage(mImgViewRect, imgQt, imgQt.rect());
+		painter.drawImage(mImgViewRect, imgQt, imgQt.rect());
 
-	painter->setOpacity(oldOp);
+	painter.setOpacity(oldOp);
 
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }

@@ -667,6 +667,12 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	QPainter painter(viewport());
 
 	if (mImgStorage.hasImage()) {
+
+		// usually the QGraphicsView should do this - but we have seen issues(e.g. #706)
+		painter.setPen(Qt::NoPen);
+		painter.setBrush(backgroundBrush());
+		painter.drawRect(QRect(QPoint(), size()));
+
 		painter.setWorldTransform(mWorldMatrix);
 
 		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
@@ -697,7 +703,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 		// TODO: if fading is active we interpolate with background instead of the other image
 		double opacity = (Settings::param().display().transition == DkSettings::trans_fade) ? 1.0 - mAnimationValue : 1.0;
-		draw(&painter, opacity);
+		draw(painter, opacity);
 
 		if (!mAnimationBuffer.isNull() && mAnimationValue > 0) {
 
@@ -723,7 +729,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		painter.setWorldMatrixEnabled(false);
 	}
 	else
-		drawBackground(&painter);
+		drawBackground(painter);
 
 	// draw the cropping rect
 	// TODO: add a setting to hide this!
@@ -757,9 +763,9 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::drawBackground(QPainter *painter) {
+void DkViewPort::drawBackground(QPainter & painter) {
 	
-	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	// fit to mViewport
 	QSize s = mImgBg.size();
@@ -772,7 +778,7 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	QRect bgRect(QPoint(), s);
 	bgRect.moveBottomRight(QPoint(width()-20, height()-20));
 
-	painter->drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
+	painter.drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 }
 
 void DkViewPort::loadMovie() {
@@ -846,16 +852,14 @@ void DkViewPort::stopMovie() {
 	mMovie = QSharedPointer<QMovie>();
 }
 
-void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
+void DkViewPort::drawPolygon(QPainter & painter, const QPolygon & polygon) {
 
 	QPoint lastPoint;
 
-	for (int idx = 0; idx < polygon->size(); idx++) {
-
-		QPoint p = polygon->at(idx);
+	for (const QPoint& p : polygon) {
 
 		if (!lastPoint.isNull())
-			painter->drawLine(p, lastPoint);
+			painter.drawLine(p, lastPoint);
 
 		lastPoint = p;
 	}
@@ -1041,21 +1045,6 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 	tcpSynchronize();
 
 }
-
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
-	
-
-	if (mPosGrab.isNull()) {
-		mPosGrab = event->position;
-		return no_swipe;
-	}
-
-	return swipeRecognition(event->position, mPosGrab.toPoint());
-}
-#endif
-#endif
 
 int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 
@@ -1417,7 +1406,7 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-	if (Settings::param().display().animationDuration && 
+	if (Settings::param().display().animationDuration > 0 && 
 			(mController->getPlayer()->isPlaying() || 
 			DkActionManager::instance().getMainWindow()->isFullScreen() || 
 			Settings::param().display().alwaysAnimate)) {
@@ -1435,6 +1424,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	if (fileChange)
 		success = mLoader->unloadFile();		// returns false if the user cancels
 	
+	// notify controller
+	mController->updateImage(imageContainer());
+
 	if (mMovie && success) {
 		mMovie->stop();
 		mMovie = QSharedPointer<QMovie>();
@@ -1838,28 +1830,28 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
 		QPainter painter(viewport());
 		painter.setWorldTransform(mWorldMatrix);
-		drawFrame(&painter);
+		drawFrame(painter);
 		painter.end();
 	}
 
 	DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter *painter, double) {
+void DkViewPortFrameless::draw(QPainter & painter, double) {
 	
 	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
 		QColor col = QColor(0,0,0);
 		col.setAlpha(150);
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), col);
-		painter->setWorldMatrixEnabled(true);
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), col);
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	if (mSvg && mSvg->isValid()) {
-		mSvg->render(painter, mImgViewRect);
+		mSvg->render(&painter, mImgViewRect);
 	}
 	else if (mMovie && mMovie->isValid()) {
-		painter->drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
 	}
 	else {
 		QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
@@ -1871,22 +1863,22 @@ void DkViewPortFrameless::draw(QPainter *painter, double) {
 			scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
 			mPattern.setTransform(scaleIv.inverted());
 
-			painter->setPen(QPen(Qt::NoPen));	// no border
-			painter->setBrush(mPattern);
-			painter->drawRect(mImgViewRect);
+			painter.setPen(QPen(Qt::NoPen));	// no border
+			painter.setBrush(mPattern);
+			painter.drawRect(mImgViewRect);
 		}
 
-		painter->drawImage(mImgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
+		painter.drawImage(mImgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
 	}
 
 }
 
-void DkViewPortFrameless::drawBackground(QPainter *painter) {
+void DkViewPortFrameless::drawBackground(QPainter & painter) {
 	
-	painter->setWorldTransform(mImgMatrix);
-	painter->setRenderHint(QPainter::SmoothPixmapTransform);
-	painter->setBrush(QColor(127, 144, 144, 200));
-	painter->setPen(QColor(100, 100, 100, 255));
+	painter.setWorldTransform(mImgMatrix);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	painter.setBrush(QColor(127, 144, 144, 200));
+	painter.setPen(QColor(100, 100, 100, 255));
 
 	QRectF initialRect = mMainScreen;
 	QPointF oldCenter = initialRect.center();
@@ -1902,8 +1894,8 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	QRectF bgRect(QPoint(), s);
 	bgRect.moveCenter(initialRect.center());//moveTopLeft(QPointF(size().width(), size().height())*0.5 - initialRect.bottomRight()*0.5);
 
-	//painter->drawRect(initialRect);
-	painter->drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
+	//painter.drawRect(initialRect);
+	painter.drawImage(bgRect, mImgBg, QRect(QPoint(), mImgBg.size()));
 
 	if (mStartActions.isEmpty())
 		return;
@@ -1930,29 +1922,29 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	for (int idx = 0; idx < mStartActions.size(); idx++) {
 		
 		if (!mStartIcons[idx].isNull())
-			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
+			painter.drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		else
-			painter->drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
+			painter.drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		
 		QRectF tmpRect = mStartActionsRects[idx];
 		QString text = mStartActions[idx]->text().replace("&", "");
 		tmpRect.moveTop(tmpRect.bottom()+10);
-		painter->drawText(tmpRect, text);
+		painter.drawText(tmpRect, text);
 	}
 
 	QString infoText = tr("Press F10 to exit Frameless view");
 	QRectF tmpRect(bgRect.left()+50, bgRect.bottom()-60, bgRect.width()-100, 20);
-	painter->drawText(tmpRect, infoText);
+	painter.drawText(tmpRect, infoText);
 }
 
-void DkViewPortFrameless::drawFrame(QPainter* painter) {
+void DkViewPortFrameless::drawFrame(QPainter & painter) {
 
 	// TODO: replace hasAlphaChannel with has alphaBorder
 	if (mImgStorage.hasImage() && mImgStorage.getImage().hasAlphaChannel() || !Settings::param().display().showBorder)	// braces
 		return;
 
-	painter->setBrush(QColor(255, 255, 255, 200));
-	painter->setPen(QColor(100, 100, 100, 255));
+	painter.setBrush(QColor(255, 255, 255, 200));
+	painter.setPen(QColor(100, 100, 100, 255));
 
 	QRectF frameRect;
 
@@ -1966,7 +1958,7 @@ void DkViewPortFrameless::drawFrame(QPainter* painter) {
 	frameRect.setSize(frameRect.size() + QSize(qRound(fs), qRound(fs)));
 	frameRect.moveCenter(mImgViewRect.center());
 
-	painter->drawRect(frameRect);
+	painter.drawRect(frameRect);
 }
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
@@ -2258,7 +2250,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	
 }
 
-void DkViewPortContrast::draw(QPainter *painter, double opacity) {
+void DkViewPortContrast::draw(QPainter & painter, double opacity) {
 
 	if (!mDrawFalseColorImg || mSvg || mMovie) {
 		DkBaseViewPort::draw(painter, opacity);
@@ -2266,9 +2258,9 @@ void DkViewPortContrast::draw(QPainter *painter, double opacity) {
 	}
 
 	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
-		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
-		painter->setWorldMatrixEnabled(true);
+		painter.setWorldMatrixEnabled(false);
+		painter.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
+		painter.setWorldMatrixEnabled(true);
 	}
 
 	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
@@ -2280,13 +2272,13 @@ void DkViewPortContrast::draw(QPainter *painter, double opacity) {
 		scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
 		mPattern.setTransform(scaleIv.inverted());
 
-		painter->setPen(QPen(Qt::NoPen));	// no border
-		painter->setBrush(mPattern);
-		painter->drawRect(mImgViewRect);
+		painter.setPen(QPen(Qt::NoPen));	// no border
+		painter.setBrush(mPattern);
+		painter.drawRect(mImgViewRect);
 	}
 
 	if (mDrawFalseColorImg)
-		painter->drawImage(mImgViewRect, mFalseColorImg, mImgRect);
+		painter.drawImage(mImgViewRect, mFalseColorImg, mImgRect);
 }
 
 void DkViewPortContrast::setImage(QImage newImg) {

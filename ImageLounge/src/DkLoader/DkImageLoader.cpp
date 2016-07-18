@@ -677,7 +677,8 @@ int DkImageLoader::findFileIdx(const QString& filePath, const QVector<QSharedPoi
 
 	// this seems a bit bizare...
 	// however, in converting the string from a fileInfo - we quarantee that the separators are the same (/ vs \)
-	QString lFilePath = QFileInfo(filePath).absoluteFilePath();
+	QString lFilePath = filePath;
+	lFilePath.replace("\\", QDir::separator());
 
 	for (int idx = 0; idx < images.size(); idx++) {
 
