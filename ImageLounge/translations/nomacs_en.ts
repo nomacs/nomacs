@@ -373,7 +373,7 @@
     <message>
         <location filename="../src/DkLoader/DkActionManager.cpp" line="1102"/>
         <source>180%1</source>
-        <translation type="unfinished">1&amp;80° {180%1?}</translation>
+        <translation type="unfinished">1&amp;80%1</translation>
     </message>
     <message>
         <location filename="../src/DkLoader/DkActionManager.cpp" line="1103"/>
