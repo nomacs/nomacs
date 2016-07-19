@@ -101,7 +101,7 @@ QString DkDllDependency::filePath() const {
 
 QString DkDllDependency::filter() {
 	
-	static QString filter = "(opencv.*|Read.*)";
+	static QString filter = "(opencv.*|Read.*|libDk.*)";
 
 	return filter;
 }
@@ -161,7 +161,7 @@ QString DkDllDependency::resolveName(const QByteArray & ba, int location) const 
 }
 
 bool DkDllDependency::isStopCharacter(const char& val) const {
-	return val == '\0' || val == '\u0001' || val == '\u0006';	// NULL || SOH || ACK
+	return val == '\0' || val == '\u0001' || val == '\u0003' || val == '\u0006';	// NULL || SOH || ETX || ACK
 }
 
 }
