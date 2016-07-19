@@ -23,7 +23,9 @@ __status__ = "Production"
 OUTPUT_NAME = "DependencyCollector"
 
 logging.basicConfig(level=logging.INFO, format=OUTPUT_NAME +
-                    ' %(asctime)s - %(levelname)s - %(message)s')
+                    ' %(levelname)s %(message)s')
+# ' %(asctime)s - %(levelname)s - %(message)s')
+
 logger = logging.getLogger()
 
 
@@ -86,17 +88,20 @@ def update_mode(infile, conf):
 
     logger.debug("dll found in directory:" + str(existing_dlls))
     for dll in existing_dlls:
-        dll_name = ntpath.basename(dll)
+        dllname = ntpath.basename(dll)
         logger.debug("searching for a newer version of " + dll +
                      "("+time.ctime(os.path.getmtime(dll))+")")
 
         regexp = "(" + ")|(".join(conf['blacklist']) + ")"
         blacklist_match = re.match(
-            regexp, dll_name.lower())
+            regexp, dllname.lower())
         if not blacklist_match:
-            (newest_dll, mod_date) = search_for_newest_file(dll_name,
+            (newest_dll, mod_date) = search_for_newest_file(dllname,
                                                             conf['paths'])
-            if newest_dll != "" and mod_date > os.path.getmtime(dll):
+
+            if newest_dll == "":
+                logger.info("no dll found in given directories for %s" % dllname)
+            elif mod_date > os.path.getmtime(dll):
                 copy_dll(newest_dll, dir)
             else:
                 logger.debug("not copying dll because local file is newer")
@@ -145,15 +150,16 @@ def search_for_used_dlls(infile, path, dll_list, conf):
             blacklist_match = re.match(
                 regexp, dllname.lower())
             if not blacklist_match \
-                    and not dllname.lower() in dll_list:
+               and not dllname.lower() in dll_list:
                 (dllpath, mod_date) = \
                     search_for_newest_file(dllname, conf['paths'])
                 if dllpath != "":
-                    if os.path.dirname(dllpath) != conf['localpath']:
-                        copy_dll(dllpath, path)
+                    copy_dll(dllpath, path)
                     dll_list.append(dllname.lower())
                     dll_list = \
                         search_for_used_dlls(dllname, path, dll_list, conf)
+                else:
+                    logger.warning("no file found for %s " % dllname)
 
     ifile.close()
     logger.debug(infile + " uses dlls:" + str(dll_list))
@@ -164,9 +170,10 @@ def search_for_used_dlls(infile, path, dll_list, conf):
 # copies the given file 'dllpath' to the 'targetpath'
 def copy_dll(dllpath, targetpath):
     import shutil
-    logger.info("copying " + dllpath + " to " + targetpath)
+
     try:
         shutil.copy(dllpath, targetpath)
+        logger.info(dllpath + " -> " + targetpath)
     except OSError as error:
         logger.error("unable to copy " + dllpath + " to " +
                      targetpath + "(" + str(error) + ")")
@@ -192,15 +199,15 @@ def search_for_newest_file(file, paths):
             logger.debug("newest dll found in " + p + " for " + file +
                          " (date:" + time.ctime(mod_date) + ")")
 
-    if newest_file == "":
-        logger.warning("no dll found for " + file)
-
     return(newest_file, mod_date)
 
 if __name__ == "__main__":
     import argparse
     import configparser
     import os
+    import time
+
+    start_time = time.time()
 
     parser = argparse.ArgumentParser(
        description='searches for dependencies of an executable or library and'
@@ -242,12 +249,13 @@ if __name__ == "__main__":
                 args.configuration)
     conf = parse_config_file(args.configfile, args.configuration)
     conf['localpath'] = os.path.dirname(os.path.realpath(args.infile))
-    conf['paths'].append(os.path.dirname(
-                         os.path.realpath(args.infile)))  # adding local path
 
     logger.debug("running create mode:" + str(conf['create']))
     logger.debug("using paths:" + str(conf['paths']))
     logger.debug("using blacklist:" + str(conf['blacklist']))
+
+    # add my name to blacklist - we don't need to copy it
+    conf['blacklist'].append(os.path.basename(args.infile).lower())
 
     if conf['create'] is True or args.create:
         create_mode(args.infile, conf)
@@ -265,4 +273,4 @@ if __name__ == "__main__":
         logger.error("create mode unkown")
         exit()
 
-    logger.info("finished")
+    logger.info("finished in %s seconds" % round((time.time() - start_time), 2))
