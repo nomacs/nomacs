@@ -2471,7 +2471,7 @@ This option might destroy your images - so be careful!</source>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1138"/>
         <source>180%1</source>
-        <translation type="unfinished">1&amp;80° {180%1?}</translation>
+        <translation type="unfinished">1&amp;80%1</translation>
     </message>
     <message>
         <location filename="../src/DkGui/DkBatch.cpp" line="1147"/>
