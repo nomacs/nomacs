@@ -86,7 +86,6 @@ public:
 	enum HorPos {left_thumbs = 0, left_metadata, left, hor_center, right, right_metadata, right_thumbs, hor_pos_end};
 
 	enum InfoPos {
-		center_label,
 		bottom_left_label,
 		bottom_right_label,
 		top_left_label
@@ -143,7 +142,7 @@ public slots:
 	bool applyPluginChanges(bool askForSaving);
 
 	void updateImage(QSharedPointer<DkImageContainerT> imgC);
-	void setInfo(const QString& msg, int time = 3000, int location = center_label);
+	void setInfo(const QString& msg, int time = 3000, int location = bottom_left_label);
 	virtual void setInfoDelayed(const QString& msg, bool start = false, int delayTime = 1000);
 	void updateRating(int rating);
 
@@ -186,7 +185,6 @@ protected:
 
 	DkDelayedMessage* mDelayedInfo;
 
-	DkLabelBg* mCenterLabel;
 	DkLabelBg* mBottomLabel;
 	DkLabelBg* mBottomLeftLabel;
 
