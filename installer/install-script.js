@@ -44,9 +44,9 @@ Controller.prototype.IntroductionPageCallback = function()
 Controller.prototype.ComponentSelectionPageCallback = function()
 {
 	// Select your components -----------------------------------------------------
-	// var page = gui.currentPageWidget();
+	var page = gui.currentPageWidget();
 	// page.selectComponent("nomacs.x86");
-	// page.deselectComponent("nomacs.x64");
+	page.deselectComponent("nomacs.x64");
 	// Select your components -----------------------------------------------------
 
 	gui.clickButton(buttons.NextButton);
@@ -67,5 +67,11 @@ Controller.prototype.PerformInstallationPageCallback = function()
 // close installer
 Controller.prototype.FinishedPageCallback = function()
 {
-    gui.clickButton(buttons.FinishButton);
+	// uncheck 'open nomacs'
+	var cbForm = gui.currentPageWidget().OpenAppCheckBoxForm;
+	if (cbForm && cbForm.openAppCheckBox) {
+		cbForm.openAppCheckBox.checked = false;
+	}
+	
+	gui.clickButton(buttons.FinishButton);
 }

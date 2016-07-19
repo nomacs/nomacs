@@ -245,7 +245,7 @@ void DkNoMacs::init() {
 
 void DkNoMacs::createToolbar() {
 
-	mToolbar = new DkMainToolBar(tr("Edit"), this);
+	mToolbar = new DkMainToolBar(tr("Edit Toolbar"), this);
 	mToolbar->setObjectName("EditToolBar");
 
 	mToolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
@@ -262,6 +262,7 @@ void DkNoMacs::createToolbar() {
 	mToolbar->addAction(am.action(DkActionManager::menu_file_open));
 	mToolbar->addAction(am.action(DkActionManager::menu_file_open_dir));
 	mToolbar->addAction(am.action(DkActionManager::menu_file_save));
+	mToolbar->addAction(am.action(DkActionManager::menu_edit_delete));
 	mToolbar->addAction(am.action(DkActionManager::menu_tools_filter));
 	mToolbar->addSeparator();
 
