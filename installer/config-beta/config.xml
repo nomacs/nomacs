@@ -8,6 +8,7 @@
     <TargetDir>@ApplicationsDir@/nomacs</TargetDir>
 	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
 	<InstallerApplicationIcon>nomacs</InstallerApplicationIcon>
+	<AllowSpaceInPath>true</AllowSpaceInPath>
 
  	<RemoteRepositories>
 		 <Repository>

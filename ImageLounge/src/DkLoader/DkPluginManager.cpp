@@ -217,9 +217,10 @@ bool DkPluginContainer::load() {
 	}
 	else {
 
+		QString fn = QFileInfo(mLoader->fileName()).fileName();
+
 #ifdef Q_OS_WIN
 		// ok - load it's dependencies first
-		QString fn = QFileInfo(mLoader->fileName()).fileName();
 		DkLibrary l(fn);
 		l.load();
 #endif

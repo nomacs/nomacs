@@ -110,6 +110,7 @@ void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
 		txt = "[FATAL] " + msg;
 		break;
 	default:
+		//txt = "unknown message type: " + QString::number(type) + msg;
 		return;
 	}
 

@@ -34,7 +34,7 @@
 
 function Component()
 {
-	console.log("v 05.01 --------------------------------");
+	console.log("v1 19.07.2016 --------------------------------");
 	installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 	
@@ -47,14 +47,14 @@ function Component()
         installer.componentByName("nomacs.x64").setValue("Default", "true");
 		installer.componentByName("nomacs.x86").setValue("Default", "false");
 		
-		// var programFiles = installer.environmentVariable("ProgramFiles");
+		var pf = "C:/Program Files/";
 		
-		// if (programFiles !== "") {
-			// installer.setValue("TargetDir", programFiles + "/nomacs");
-			// console.log("Target dir changed to program files: " + programFiles);
-		// }
-		// else
-			// console.log("WARNING: programFiles is empty...");
+		if (installer.fileExists(pf)) {
+			installer.setValue("TargetDir", pf + "/nomacs");
+			console.log(pf + " exists...");
+		}
+		else
+			console.log(pf + " does NOT exists...");
     }
 	else {
         installer.componentByName("nomacs.x64").setValue("Default", "false");

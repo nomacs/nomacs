@@ -2373,7 +2373,10 @@ void DkNoMacs::checkForUpdate(bool silent) {
 #ifndef Q_OS_LINUX
 
 	// do we really need to check for update?
-	if (!silent || (!Settings::param().sync().updateDialogShown && QDate::currentDate() > Settings::param().sync().lastUpdateCheck && Settings::param().sync().checkForUpdates)) {
+	if (!silent || 
+		(!Settings::param().sync().updateDialogShown && 
+		 QDate::currentDate() > Settings::param().sync().lastUpdateCheck && 
+		 Settings::param().sync().checkForUpdates)) {
 
 		DkTimer dt;
 
