@@ -175,8 +175,11 @@ def copy_dll(dllpath, targetpath):
         shutil.copy(dllpath, targetpath)
         logger.info(dllpath + " -> " + targetpath)
     except OSError as error:
-        logger.error("unable to copy " + dllpath + " to " +
-                     targetpath + "(" + str(error) + ")")
+        if ("are the same file" in str(error)):
+            logger.debug("I don't need to copy " + dllpath)
+        else:
+            logger.error("unable to copy " + dllpath + " to " +
+                         targetpath + "\n(" + str(error) + ")")
     except:
         logger.error("unable to copy " + dllpath + " to " + targetpath)
     return
