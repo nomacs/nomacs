@@ -1147,7 +1147,7 @@ void DkPluginManager::loadPlugins() {
 			QFileInfo file(pluginsDir.absoluteFilePath(fileName));
 			if(file.isSymLink())
 				continue;
-#else ifdef Q_OS_WIN
+#elif defined(Q_OS_WIN)
 			if (!fileName.contains(".dll"))
 				continue;
 
