@@ -353,7 +353,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 void DkViewPort::tcpSendImage(bool silent) {
 
 	if (!silent)
-		mController->setInfo("sending image...", 3000, DkControlWidget::center_label);
+		mController->setInfo("sending image...", 3000);
 
 	if (mLoader)
 		emit sendImageSignal(mImgStorage.getImage(), mLoader->fileName());

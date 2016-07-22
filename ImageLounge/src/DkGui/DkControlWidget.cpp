@@ -64,6 +64,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mMetaDataInfo = new DkMetaDataHUD(this);
 	mZoomWidget = new DkZoomWidget(this);
 	mPlayer = new DkPlayer(this);
+	mPlayer->setMaximumHeight(110);
 	addActions(mPlayer->getActions().toList());
 
 	mFolderScroll = new DkFolderScrollBar(this);
@@ -78,9 +79,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mDelayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
 
 	// info labels
-	//int loadSize = qMax(Settings::param().display().iconSize, 64);
-	//mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.svg", QSize(loadSize, loadSize), this);
-	mCenterLabel = new DkLabelBg(this, "");
 	mBottomLabel = new DkLabelBg(this, "");
 	mBottomLeftLabel = new DkLabelBg(this, "");
 
@@ -129,7 +127,6 @@ void DkControlWidget::init() {
 	mBottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	mBottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	mRatingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	mCenterLabel->setAlignment(Qt::AlignCenter);
 	mZoomWidget->setContentsMargins(10, 10, 0, 0);
 	mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -166,17 +163,6 @@ void DkControlWidget::init() {
 	zLayout->addWidget(mBottomLeftLabel);
 	zLayout->addWidget(mCommentWidget);
 
-	//// comment widget
-	//QWidget* cw = new QWidget();
-	//cw->setContentsMargins(0,20,0,20);
-	//cw->setMouseTracking(true);
-	//cw->setMinimumHeight(40);
-	//cw->setMaximumHeight(80);
-	//QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
-	//coLayout->setAlignment(Qt::AlignLeft);
-	//coLayout->setContentsMargins(0,0,0,0);
-	//coLayout->addWidget(commentWidget);
-
 	// left column widget
 	QWidget* leftWidget = new QWidget(this);
 	leftWidget->setMouseTracking(true);
@@ -187,35 +173,13 @@ void DkControlWidget::init() {
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
-	//ulLayout->addWidget(cw);
-
-	// center column
-	QWidget* cW = new QWidget(this);
-	cW->setMouseTracking(true);
-	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
-	cwLayout->setContentsMargins(0,0,0,0);
-	//cwLayout->addStretch();
-	cwLayout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	cwLayout->addWidget(mCenterLabel);
-	//cwLayout->addWidget(mSpinnerLabel);
-	//cwLayout->addStretch();
-
-	//// center player horizontally
-	//QWidget* cP = new QWidget(this);
-	//cP->setMouseTracking(true);
-	//QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
-	//cpLayout->setContentsMargins(0,0,0,0);
-	//cpLayout->addWidget(mPlayer);
 
 	// center column
 	QWidget* center = new QWidget(this);
 	center->setMouseTracking(true);
-	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
+	QVBoxLayout* cLayout = new QVBoxLayout(center);
 	cLayout->setContentsMargins(0,0,0,0);
 	cLayout->setAlignment(Qt::AlignBottom);
-	cLayout->addStretch();
-	cLayout->addWidget(cW);
-	cLayout->addStretch();
 	cLayout->addWidget(mPlayer);
 	
 	// rating widget
@@ -683,9 +647,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 
 void DkControlWidget::setInfo(const QString& msg, int time, int location) {
 
-	if (location == center_label && mCenterLabel)
-		mCenterLabel->setText(msg, time);
-	else if (location == bottom_left_label && mBottomLabel)
+	if (location == bottom_left_label && mBottomLabel)
 		mBottomLabel->setText(msg, time);
 	else if (location == top_left_label && mBottomLeftLabel)
 		mBottomLeftLabel->setText(msg, time);
@@ -695,14 +657,10 @@ void DkControlWidget::setInfo(const QString& msg, int time, int location) {
 
 void DkControlWidget::setInfoDelayed(const QString& msg, bool start, int delayTime) {
 
-	if (!mCenterLabel)
-		return;
-
 	if (start)
 		mDelayedInfo->setInfo(msg, delayTime);
 	else
 		mDelayedInfo->stop();
-
 }
 
 void DkControlWidget::changeMetaDataPosition(int pos) {
@@ -742,7 +700,7 @@ void DkControlWidget::changeThumbNailPosition(int pos) {
 
 void DkControlWidget::stopLabels() {
 
-	mCenterLabel->stop();
+	mBottomLeftLabel->stop();
 	mBottomLabel->stop();
 	// TODO
 	//mProgressBar->hide();

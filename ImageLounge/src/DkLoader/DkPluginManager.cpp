@@ -150,17 +150,19 @@ QVector<DkLibrary> DkLibrary::loadDependencies() const {
 		return dependencies;
 	}
 
-	//// debug:
-	//qDebug() << mFullPath << "has these dependencies: " << d.dependencies();
-
+	// debug:
+	//qInfo() << name() << "has these dependencies: " << d.dependencies();
+	
 	QStringList fd = d.filteredDependencies();
 
-	for (const QString& name : fd) {
-		DkLibrary lib(name);
-		if (lib.load())
+	for (const QString& n : fd) {
+		DkLibrary lib(n);
+		if (lib.load()) {
 			dependencies << lib;
+			//qInfo() << lib.name() << "loaded for" << name();
+		}
 		else
-			qWarning() << "could not load" << name << "which is needed for" << mName;
+			qWarning() << "could not load" << lib.name() << "which is needed for" << name();
 	}
 
 	return dependencies;
@@ -226,10 +228,10 @@ bool DkPluginContainer::load() {
 #endif
 
 		if (!mLoader->load()) {
-			qWarningClean() << "Could not load: " << fn;
-			qDebug() << "name: " << mPluginName;
-			qDebug() << "modified: " << mDateModified.toString("dd-MM-yyyy");
-			qDebug() << "error: " << mLoader->errorString();
+			qWarning() << "Could not load:" << fn;
+			qInfo() << "name: " << mPluginName;
+			qInfo() << "modified: " << mDateModified.toString("dd-MM-yyyy");
+			qInfo() << "error: " << mLoader->errorString();
 			return false;
 		}
 	}
@@ -251,7 +253,7 @@ bool DkPluginContainer::load() {
 		createMenu();
 	}
 
-	qInfoClean() << mPluginPath << " loaded in " << dt;
+	qInfo() << mPluginPath << "loaded in" << dt;
 	return true;
 
 }
@@ -574,7 +576,6 @@ QMap<QString, QString> DkPluginManagerDialog::getPreviouslyInstalledPlugins() {
 /**********************************************************************************
  * DkPluginTableWidget : Widget with table views containing plugin data
  **********************************************************************************/
-
 DkPluginTableWidget::DkPluginTableWidget(QWidget* parent) : QWidget(parent) {
 
 	createLayout();
@@ -1131,8 +1132,6 @@ void DkPluginManager::loadPlugins() {
 	QStringList libPaths = QCoreApplication::libraryPaths();
 	libPaths.append(QCoreApplication::applicationDirPath() + "/plugins");
 
-	//qDebug() << "lib paths" << libPaths;
-
 	for (const QString& cPath : libPaths) {
 
 		// skip the nomacs dir
@@ -1165,6 +1164,9 @@ void DkPluginManager::loadPlugins() {
 
 	qSort(mPlugins.begin(), mPlugins.end());// , &DkPluginContainer::operator<);
 	qInfo() << mPlugins.size() << "plugins loaded in" << dt;
+
+	if (mPlugins.empty())
+		qInfo() << "I was searching these paths" << libPaths;
 }
 
 /**

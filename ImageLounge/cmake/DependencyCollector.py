@@ -242,20 +242,24 @@ if __name__ == "__main__":
         logger.info("create mode forced due to argument")
 
     if not os.path.isfile(args.infile):
-        logger.error("input file does not exist:" + args.infile)
+        logger.error("input file does not exist: " + args.infile)
         exit()
     if not os.path.isfile(args.configfile):
-        logger.error("config file does not exist" + args.configfile)
+        logger.error("config file does not exist: " + args.configfile)
         exit()
 
-    logger.info("called with file:" + args.infile + " and configuration " +
-                args.configuration)
+    logger.debug("processing: " + args.infile)
+    logger.debug("config: " + args.configuration)
     conf = parse_config_file(args.configfile, args.configuration)
     conf['localpath'] = os.path.dirname(os.path.realpath(args.infile))
 
-    logger.debug("running create mode:" + str(conf['create']))
-    logger.debug("using paths:" + str(conf['paths']))
-    logger.debug("using blacklist:" + str(conf['blacklist']))
+    # add local path - there might be our own-built dependencies
+    conf['paths'].append(os.path.dirname(
+                         os.path.realpath(args.infile)))  # adding local path
+
+    logger.debug("running create mode: " + str(conf['create']))
+    logger.debug("using paths: " + str(conf['paths']))
+    logger.debug("using blacklist: " + str(conf['blacklist']))
 
     # add my name to blacklist - we don't need to copy it
     conf['blacklist'].append(os.path.basename(args.infile).lower())

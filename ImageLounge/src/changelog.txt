@@ -1,4 +1,4 @@
-nomacs 3.2.2
+nomacs 3.4.0
 ============
 - Batch UI reworked
 - Batch Profiles added
