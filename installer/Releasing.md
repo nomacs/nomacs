@@ -2,6 +2,7 @@
 
 ## Windows
 - Update Version Number (in `CMakeLists.txt` *and* `nomacs.rc`)
+- Update translations
 - Tag commit - Title: version (e.g. 3.2)
 - Add changelog to Release on https://github.com/nomacs/nomacs/releases
 - Batch build
