@@ -577,6 +577,7 @@ namespace nmp {
 				*lastAngle = angle;
 			};
 		}
+
 		else if (event->button() ==  Qt::LeftButton) {
 
 			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
