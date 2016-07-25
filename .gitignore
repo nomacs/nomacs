@@ -18,3 +18,4 @@ installer/repository
 CMakeUser.cmake
 package.xml
 installer-test
+repository.zip

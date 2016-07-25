@@ -252,7 +252,7 @@ void DkInstallUpdater::replyFinished(QNetworkReply* reply) {
 		}
 
 		if (update)
-			updateNomacs("--update");
+			updateNomacs("--updater");
 	}
 	else if (!mSilent) {
 		QMessageBox::information(QApplication::activeWindow(), tr("nomacs Updates"), tr("nomacs is up-to-date"));
