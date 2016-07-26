@@ -1386,8 +1386,6 @@ void DkViewPort::setEditedImage(const QImage& newImg, const QString& editName) {
 	unloadImage(false);
 	mLoader->setImage(imgC);
 	qDebug() << "mLoader gets this size: " << newImg.size();
-
-	// TODO: contrast mViewport does not add * 
 }
 
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {

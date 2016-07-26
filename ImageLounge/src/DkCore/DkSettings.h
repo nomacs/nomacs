@@ -354,6 +354,7 @@ public:
 	static DkSettings& param();		// convenience
 	QSettings& getSettings();
 	DkSettings& settings();			// rename
+	void init();
 
 private:
 	Settings();

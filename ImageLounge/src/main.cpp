@@ -95,24 +95,11 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, (char**)argv);
 
 	// init settings
-	nmc::Settings::param().initFileFilters();
+	nmc::Settings::instance().init();
+
 	QSettings& settings = nmc::Settings::instance().getSettings();
-
-	nmc::Settings::param().load();	// load in constructor??
-
 	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
-	nmc::Settings::param().app().currentAppMode = mode;
 
-	// init debug
-	nmc::DkUtils::initializeDebug();
-
-	if (nmc::Settings::param().app().useLogFile)
-		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
-
-	qInfo() << "Hi there";
-	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
-		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
-	
 	//if (!nmc::Settings::param().app().openFilters.empty())
 	//	qInfoClean() << "supported image extensions: " << nmc::Settings::param().app().openFilters[0];
 

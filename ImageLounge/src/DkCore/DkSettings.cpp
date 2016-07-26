@@ -28,6 +28,8 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
+#include <iostream>
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QImageReader>
 #include <QDesktopServices>
@@ -914,6 +916,29 @@ QSettings& Settings::getSettings() {
 DkSettings& Settings::settings() {
 	//QMutexLocker(&mutex);
 	return *m_params;
+}
+
+void Settings::init() {
+	
+	// init settings
+	param().initFileFilters();
+	QSettings& settings = getSettings();
+
+	param().load();	// load in constructor??
+
+	int mode = settings.value("AppSettings/appMode", param().app().appMode).toInt();
+	param().app().currentAppMode = mode;
+
+	// init debug
+	DkUtils::initializeDebug();
+
+	if (nmc::Settings::param().app().useLogFile)
+		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
+
+	qInfo() << "Hi there";
+	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
+		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
+
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
