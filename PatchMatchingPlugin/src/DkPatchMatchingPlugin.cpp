@@ -346,29 +346,29 @@ namespace nmp {
 
 			auto nearest_poly = firstPoly();
 			QPointF startDiff;
-			for (auto r : mRenderer) {
-				auto poly_points = r->getPolygon()->points();
-				auto first = unmapToViewPort(r, poly_points.first()->getPos());
-				auto last = unmapToViewPort(r, poly_points.last()->getPos());
-				if (startDiff.isNull()) {
-					startDiff = first - point;
-				}
 
-				auto first_diff = first - point;
-				auto last_diff = last - point;
-				if (qAbs(first_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
-					startDiff = first_diff;
-					nearest_poly = r;
-				}
-				if (qAbs(last_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
-					startDiff = last_diff;
-					nearest_poly = r;
+			if (!currentPolygon()->points().isEmpty()) {
+				for (auto r : mRenderer) {
+					auto poly_points = r->getPolygon()->points();
+					auto first = unmapToViewPort(r, poly_points.first()->getPos());
+					auto last = unmapToViewPort(r, poly_points.last()->getPos());
+					if (startDiff.isNull()) {
+						startDiff = first - point;
+					}
+
+					auto first_diff = first - point;
+					auto last_diff = last - point;
+					if (qAbs(first_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
+						startDiff = first_diff;
+						nearest_poly = r;
+					}
+					if (qAbs(last_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
+						startDiff = last_diff;
+						nearest_poly = r;
+					}
 				}
 			}
-
-			//(getTransform()*getWorldMatrix()).inverted().map(pos)
-
-			//std::cout << "Nearest Poly: " << nearest_poly->getColor().name << std::endl;
+			
 			nearest_poly->addPointMouseCoords(point);
 		}
 	}

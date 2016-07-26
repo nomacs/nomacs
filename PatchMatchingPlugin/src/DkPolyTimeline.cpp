@@ -107,9 +107,7 @@ namespace nmp {
 		mSize(40),
 		mLayout(nullptr)
 	{
-		qDebug() << "Inside PolyTimeLine Constructor";
 		QWidget* c = new QWidget(this);
-		qDebug() << "QWidget: " << c->frameSize().rheight() << "/" << c->frameSize().rwidth();
 		mLayout = new QGridLayout(c);
 		mLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
@@ -126,7 +124,6 @@ namespace nmp {
 		l->addWidget(mScrollArea);
 		
 		setSyncedPolygon(poly); 
-		qDebug() << "End of PolyTimeLine Constructor";
 	}
 
 

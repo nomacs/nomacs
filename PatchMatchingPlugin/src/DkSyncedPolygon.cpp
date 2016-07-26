@@ -7,8 +7,6 @@
 #include <tuple>
 #include <QJsonArray>
 
-#include <iostream> // For Testing
-
 namespace {
 	// calculate distance to given line
 	// additionally return true if the point can be mapped onto the line segment (not outside)
@@ -164,7 +162,6 @@ namespace nmp {
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
-		//std::cout << "Added with DkSyncedPolygon" << std::endl;
 		auto coords = coordinates;
 		// map to image rect
 		//mapToImageRect(coords);	// returns false if point should be discarded
@@ -192,7 +189,7 @@ namespace nmp {
 		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::movedPoint);
 			
 		// insert, default is end() so this works too
-		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end() || toFirstPt) {
+		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end()) {
 			emit pointAdded(point);		// just point added			
 		}
 		else {
@@ -395,20 +392,15 @@ namespace nmp {
 		//counter++;
 		//std::cout << "Added with DkPolygonRenderer " << counter << std::endl;
 
-		auto prev = mPolygon->points().indexOf(point);
+		auto prev = mPolygon->points().indexOf(point) - 1;
+		qDebug() << prev;
 
 		// add line if necessary
-		if (prev > 0) {
-			auto pair = std::make_pair(mPolygon->points()[prev-1], point);
+		if (prev >= 0) {
+			auto pair = std::make_pair(mPolygon->points()[prev], point);
 			auto line = new DkLineRepresentation(pair, getViewport());
 			line->setVisible(true);
 			mLines.append(line);
-		}
-		else if (prev == 0){
-			auto pair = std::make_pair(mPolygon->points()[prev+1], point);
-			auto line = new DkLineRepresentation(pair, getViewport());
-			line->setVisible(true);
-			mLines.prepend(line);
 		}
 
 		// add point
@@ -419,12 +411,12 @@ namespace nmp {
 		connect(rep, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		rep->setVisible(true);
 
-		if (prev == 0) {
-			mPoints.prepend(rep);
-		}
-		else {
+		//if (prev == 0) {
+		//	mPoints.prepend(rep);
+		//}
+		//else {
 			mPoints.append(rep);
-		}
+		//}
 
 		update();
 	}
