@@ -80,7 +80,7 @@ namespace nmp {
 		// if transform is provided, the bounding box of the mapped points
 		// is calculated
 		QRectF boundingRect(QTransform transform = QTransform{}) const;
-		
+
 		// center of the bounding box (not center of gravity)
 		QPointF center() const;
 
@@ -94,6 +94,9 @@ namespace nmp {
 		void setInactive(bool inactive);
 		bool isInactive() const;
 
+		// Get the default point to append
+		auto getDefaultPoint(QPointF point);
+
 	signals:
 		// point is added @ the end
 		void pointAdded(QSharedPointer<DkControlPoint> point);
@@ -103,18 +106,18 @@ namespace nmp {
 
 		// structural changes (i.e., point inserted in the middle or removed)
 		void changed();
-		
+
 		// one control point moved
 		void movedPoint();
 
-	public slots:
+		public slots:
 		// removes the given control point  from the polygon
 		void removePoint(QSharedPointer<DkControlPoint> point);
 
 	private:
 		// checks if this function is near any edge of the polygon
 		// if yes, moves point to this point
-		auto mapToNearestLine(QPointF& point);
+		auto mapToNearestLine(QPointF& point, QSharedPointer<nmp::DkControlPoint>* default_pt);
 
 		QVector<QSharedPointer<DkControlPoint> > mControlPoints;	// the points
 		double mSnapDistance;										// distance for mapToNearestLine

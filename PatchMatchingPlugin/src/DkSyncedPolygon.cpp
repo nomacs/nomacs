@@ -121,26 +121,13 @@ namespace nmp {
 		json["points"] = pointArray;
 	}
 
-	auto DkSyncedPolygon::mapToNearestLine(QPointF& point)
+	auto DkSyncedPolygon::mapToNearestLine(QPointF& point, QSharedPointer<nmp::DkControlPoint>* default_pt)
 	{
 		auto end = mControlPoints.end();
 		auto first = mControlPoints.begin();	// first and 
 		auto second = first;					// second iterator, we need line segment
-		auto res = std::make_pair(point, end);		// default return, not on line, dummy point, and end (for insert)
+		auto res = std::make_pair(point, default_pt);		// default return, not on line, dummy point, and end (for insert)
 		auto min_dist = mSnapDistance;			// we just look in proximity of the snap distance
-
-		// Check if Start or End is closer
-		if (!mControlPoints.empty()) {
-			auto st_pos = mControlPoints.first()->getPos();
-			auto ed_pos = mControlPoints.last()->getPos();
-
-			auto diffStart = st_pos - point;
-			auto diffEnd = ed_pos - point;
-
-			if (qAbs(diffStart.manhattanLength()) < qAbs(diffEnd.manhattanLength())) {
-				res = std::make_pair(point, first);
-			}
-		}
 
 		while (first != end && (second = first + 1) != end) {	// iterate over the points
 		
@@ -160,6 +147,21 @@ namespace nmp {
 		return res.second;
 	}
 
+	auto DkSyncedPolygon::getDefaultPoint(QPointF point) {
+		if (!mControlPoints.empty()) {
+			auto st_pos = mControlPoints.first()->getPos();
+			auto ed_pos = mControlPoints.last()->getPos();
+			
+			auto st_diff = QLineF(st_pos, point).length();
+			auto ed_diff = QLineF(ed_pos, point).length();
+
+			if (st_diff < ed_diff) {
+				return mControlPoints.begin();
+			}
+		}
+		return mControlPoints.end();
+	}
+
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
 		auto coords = coordinates;
@@ -175,8 +177,9 @@ namespace nmp {
 		//	}
 		//}
 		
-		auto insert = mapToNearestLine(coords);  // try to map point to all line segments
-		auto toFirstPt = (insert == mControlPoints.begin()) ? true : false;	// Check if adding to Start
+		auto default_pt = getDefaultPoint(coords);								// Get default point to append
+		auto insert = mapToNearestLine(coords, default_pt);						// try to map point to all line segments
+		auto toFirstPt = (insert == mControlPoints.begin()) ? true : false;		// Check if append to start point
 
 		auto point = QSharedPointer<DkControlPoint>::create(coords);
 		if (mControlPoints.empty() || toFirstPt) {

@@ -356,7 +356,7 @@ namespace nmp {
 						startDiff = first - point;
 					}
 
-					auto first_diff = first - point;
+					auto first_diff = last - point;
 					auto last_diff = last - point;
 					if (qAbs(first_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
 						startDiff = first_diff;
@@ -674,7 +674,7 @@ namespace nmp {
 	{
 		auto text = "Polygon";
 		mPolygonCombobox->addItem(text);
-		qDebug() << "COunt = " << mPolygonCombobox->count();
+		qDebug() << "Count = " << mPolygonCombobox->count();
 		mPolygonCombobox->setItemData(mPolygonCombobox->count() - 1, color, Qt::BackgroundRole);
 		if (select) {
 			mPolygonCombobox->setCurrentIndex(mPolygonCombobox->count() - 1);
