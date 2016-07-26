@@ -330,6 +330,33 @@ namespace nmp {
 		return (poly->getTransform()*poly->getWorldMatrix()).map(point);
 	}
 
+	auto DkPatchMatchingViewPort::getNearestPolygon(QPointF point) {
+		auto polygon = firstPoly();
+		if (!currentPolygon()->points().isEmpty()) {
+			auto startDiff = QLineF(currentPolygon()->points().first()->getPos(), point).length();	// Set Start Difference to First Point of the current Polygon
+			for (auto r : mRenderer) {
+				if (!r->isInactive()) {
+					auto poly_points = r->getPolygon()->points();
+					auto first = unmapToViewPort(r, poly_points.first()->getPos());
+					auto last = unmapToViewPort(r, poly_points.last()->getPos());
+
+					auto first_diff = QLineF(first, point).length();
+					auto last_diff = QLineF(last, point).length();
+
+					if (first_diff < startDiff) {
+						polygon = r;
+						startDiff = first_diff;
+					}
+					if (last_diff < startDiff){
+						polygon = r;
+						startDiff = last_diff;
+					}
+				}
+			}
+		}
+		return polygon;
+	}
+
 	void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 
 		// panning -> redirect to viewport
@@ -344,31 +371,7 @@ namespace nmp {
 		if (event->buttons() == Qt::LeftButton && parent()) {
 			QPointF point = event->pos();
 
-			auto nearest_poly = firstPoly();
-			QPointF startDiff;
-
-			if (!currentPolygon()->points().isEmpty()) {
-				for (auto r : mRenderer) {
-					auto poly_points = r->getPolygon()->points();
-					auto first = unmapToViewPort(r, poly_points.first()->getPos());
-					auto last = unmapToViewPort(r, poly_points.last()->getPos());
-					if (startDiff.isNull()) {
-						startDiff = first - point;
-					}
-
-					auto first_diff = last - point;
-					auto last_diff = last - point;
-					if (qAbs(first_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
-						startDiff = first_diff;
-						nearest_poly = r;
-					}
-					if (qAbs(last_diff.manhattanLength()) < qAbs(startDiff.manhattanLength())) {
-						startDiff = last_diff;
-						nearest_poly = r;
-					}
-				}
-			}
-			
+			auto nearest_poly = getNearestPolygon(point);
 			nearest_poly->addPointMouseCoords(point);
 		}
 	}
