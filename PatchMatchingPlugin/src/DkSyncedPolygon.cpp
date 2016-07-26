@@ -393,7 +393,6 @@ namespace nmp {
 		//std::cout << "Added with DkPolygonRenderer " << counter << std::endl;
 
 		auto prev = mPolygon->points().indexOf(point) - 1;
-		qDebug() << prev;
 
 		// add line if necessary
 		if (prev >= 0) {
