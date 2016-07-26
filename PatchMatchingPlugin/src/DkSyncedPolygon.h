@@ -168,7 +168,6 @@ namespace nmp {
 		bool isInactive() const;
 
 		QSharedPointer<DkSyncedPolygon> getPolygon();
-
 	signals:
 		// this signal is emitted whenever a transform is changed
 		// which is needed for updating stuff

@@ -7,6 +7,8 @@
 #include <tuple>
 #include <QJsonArray>
 
+#include <iostream> // For Testing
+
 namespace {
 	// calculate distance to given line
 	// additionally return true if the point can be mapped onto the line segment (not outside)
@@ -129,6 +131,19 @@ namespace nmp {
 		auto res = std::make_pair(point, end);		// default return, not on line, dummy point, and end (for insert)
 		auto min_dist = mSnapDistance;			// we just look in proximity of the snap distance
 
+		// Check if Start or End is closer
+		if (!mControlPoints.empty()) {
+			auto st_pos = mControlPoints.first()->getPos();
+			auto ed_pos = mControlPoints.last()->getPos();
+
+			auto diffStart = st_pos - point;
+			auto diffEnd = ed_pos - point;
+
+			if (qAbs(diffStart.manhattanLength()) < qAbs(diffEnd.manhattanLength())) {
+				res = std::make_pair(point, first);
+			}
+		}
+
 		while (first != end && (second = first + 1) != end) {	// iterate over the points
 		
 			// map to line and calulate distance
@@ -143,11 +158,13 @@ namespace nmp {
 		}
 
 		point = res.first;
+
 		return res.second;
 	}
 
 	void DkSyncedPolygon::addPoint(const QPointF & coordinates)
 	{
+		//std::cout << "Added with DkSyncedPolygon" << std::endl;
 		auto coords = coordinates;
 		// map to image rect
 		//mapToImageRect(coords);	// returns false if point should be discarded
@@ -160,19 +177,22 @@ namespace nmp {
 		//		return;
 		//	}
 		//}
-
 		
 		auto insert = mapToNearestLine(coords);  // try to map point to all line segments
+		auto toFirstPt = (insert == mControlPoints.begin()) ? true : false;	// Check if adding to Start
 
 		auto point = QSharedPointer<DkControlPoint>::create(coords);
-		if (mControlPoints.empty()) {
+		if (mControlPoints.empty() || toFirstPt) {
 			point->setType(ControlPointType::start);		// first one has the start type
+			if (!mControlPoints.empty() && toFirstPt) {
+				mControlPoints.first()->setType(ControlPointType::intermediate); // Set last start type to normal
+			}
 		}
 
 		connect(point.data(), &DkControlPoint::moved, this, &DkSyncedPolygon::movedPoint);
 			
 		// insert, default is end() so this works too
-		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end()) {
+		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end() || toFirstPt) {
 			emit pointAdded(point);		// just point added			
 		}
 		else {
@@ -364,22 +384,31 @@ namespace nmp {
 
 		mPoints.clear();
 		mLines.clear();
-
 		for (auto p : mPolygon->points()) {
 			addPoint(p);
 		}
 	}
 
-
 	void DkPolygonRenderer::addPoint(QSharedPointer<DkControlPoint> point)
 	{
-		auto prev = mPolygon->points().indexOf(point)-1;
+		//static int counter = 0;
+		//counter++;
+		//std::cout << "Added with DkPolygonRenderer " << counter << std::endl;
+
+		auto prev = mPolygon->points().indexOf(point);
+
 		// add line if necessary
-		if (prev >= 0) {
-			auto pair = std::make_pair(mPolygon->points()[prev], point);
+		if (prev > 0) {
+			auto pair = std::make_pair(mPolygon->points()[prev-1], point);
 			auto line = new DkLineRepresentation(pair, getViewport());
 			line->setVisible(true);
 			mLines.append(line);
+		}
+		else if (prev == 0){
+			auto pair = std::make_pair(mPolygon->points()[prev+1], point);
+			auto line = new DkLineRepresentation(pair, getViewport());
+			line->setVisible(true);
+			mLines.prepend(line);
 		}
 
 		// add point
@@ -390,7 +419,12 @@ namespace nmp {
 		connect(rep, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		rep->setVisible(true);
 
-		mPoints.append(rep);		
+		if (prev == 0) {
+			mPoints.prepend(rep);
+		}
+		else {
+			mPoints.append(rep);
+		}
 
 		update();
 	}
@@ -576,6 +610,18 @@ namespace nmp {
 				}
 				*lastAngle = angle;
 			};
+		}
+		else if (event->button() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
+			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
+			auto initialPos = mPoint->getPos();
+
+			mMouseMove = [this, posGrab, initialPos](auto event) {
+				auto newpos = mRenderer->mapToViewport(mapToParent(event->pos()));
+				auto diff = newpos - posGrab;
+
+				emit mRenderer->translate(diff.x(), diff.y());
+			};
+		
 		}
 
 		else if (event->button() ==  Qt::LeftButton) {
