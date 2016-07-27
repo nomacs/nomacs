@@ -24,7 +24,6 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  *******************************************************************************************************/
-#include <iostream> // For Testing
 
 #include "DkPatchMatchingPlugin.h"
 
@@ -169,7 +168,6 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
-
 		clear();
 
 		QFile file{ getJsonFilePath() };
@@ -262,7 +260,6 @@ namespace nmp {
 		auto poly = addClone(currentPolygon());
 		poly->translate(400, 0);
 
-		//updateInactive();
 		update();
 		updateInactive();
 
@@ -309,8 +306,6 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::saveToFile()
 	{
-	
-
 		// write to file
 		QFile saveFile(getJsonFilePath());
 
@@ -323,7 +318,6 @@ namespace nmp {
 		saveFile.write(mCurrentFile);
 
 		qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
-
 	}
 
 	auto unmapToViewPort(QSharedPointer<nmp::DkPolygonRenderer> poly, QPointF point) {
@@ -331,10 +325,13 @@ namespace nmp {
 	}
 
 	auto DkPatchMatchingViewPort::getNearestPolygon(QPointF point) {
+		// First Point is default polygon
 		auto polygon = firstPoly();
+
 		if (!currentPolygon()->points().isEmpty()) {
-			auto startDiff = QLineF(currentPolygon()->points().first()->getPos(), point).length();	// Set Start Difference to First Point of the current Polygon
+			auto startDiff = QLineF(currentPolygon()->points().first()->getPos(), point).length();	// Set Start Difference from first to point of the current Polygon
 			for (auto r : mRenderer) {
+				// Only on active polygon
 				if (!r->isInactive()) {
 					auto poly_points = r->getPolygon()->points();
 					auto first = unmapToViewPort(r, poly_points.first()->getPos());
@@ -358,7 +355,6 @@ namespace nmp {
 	}
 
 	void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
-
 		// panning -> redirect to viewport
 		if (event->buttons() == Qt::LeftButton &&
 			(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
@@ -371,6 +367,7 @@ namespace nmp {
 		if (event->buttons() == Qt::LeftButton && parent()) {
 			QPointF point = event->pos();
 
+			// Get nearest polygon to point
 			auto nearest_poly = getNearestPolygon(point);
 			nearest_poly->addPointMouseCoords(point);
 		}

@@ -126,7 +126,7 @@ namespace nmp {
 		auto end = mControlPoints.end();
 		auto first = mControlPoints.begin();	// first and 
 		auto second = first;					// second iterator, we need line segment
-		auto res = std::make_pair(point, default_pt);		// default return, not on line, dummy point, and end (for insert)
+		auto res = std::make_pair(point, default_pt);		// default return, not on line, dummy point, and default point (for insert)
 		auto min_dist = mSnapDistance;			// we just look in proximity of the snap distance
 
 		while (first != end && (second = first + 1) != end) {	// iterate over the points
@@ -148,6 +148,7 @@ namespace nmp {
 	}
 
 	auto DkSyncedPolygon::getDefaultPoint(QPointF point) {
+		// Get Default Point(Start or End) to insert when not mapping to line
 		if (!mControlPoints.empty()) {
 			auto st_pos = mControlPoints.first()->getPos();
 			auto ed_pos = mControlPoints.last()->getPos();
@@ -193,7 +194,7 @@ namespace nmp {
 			
 		// insert, default is end() so this works too
 		if (mControlPoints.insert(insert, point)+1 == mControlPoints.end()) {
-			emit pointAdded(point);		// just point added			
+			emit pointAdded(point);		// just point added	at the end		
 		}
 		else {
 			emit changed();			// structure changed
@@ -391,10 +392,6 @@ namespace nmp {
 
 	void DkPolygonRenderer::addPoint(QSharedPointer<DkControlPoint> point)
 	{
-		//static int counter = 0;
-		//counter++;
-		//std::cout << "Added with DkPolygonRenderer " << counter << std::endl;
-
 		auto prev = mPolygon->points().indexOf(point) - 1;
 
 		// add line if necessary
@@ -413,12 +410,7 @@ namespace nmp {
 		connect(rep, &DkControlPointRepresentation::rotated, this, &DkPolygonRenderer::rotate);
 		rep->setVisible(true);
 
-		//if (prev == 0) {
-		//	mPoints.prepend(rep);
-		//}
-		//else {
-			mPoints.append(rep);
-		//}
+		mPoints.append(rep);
 
 		update();
 	}
@@ -586,9 +578,11 @@ namespace nmp {
 		if (mRenderer->isInactive()) {
 			return;
 		}
+		// Left Button + Ctrl -> remove point
 		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::CTRL) {
 			emit removed(mPoint);
 		}
+		// Left Button + Shift -> rotate polygon
 		else if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ShiftModifier) {
 			auto posGrab = event->globalPos();
 			std::shared_ptr<double> lastAngle = std::make_shared<double>(0.);
@@ -605,6 +599,7 @@ namespace nmp {
 				*lastAngle = angle;
 			};
 		}
+		// Left Button + Alt -> move whole polygon
 		else if (event->button() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
 			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
 			auto initialPos = mPoint->getPos();
@@ -617,7 +612,7 @@ namespace nmp {
 			};
 		
 		}
-
+		// Left Button -> move point
 		else if (event->button() ==  Qt::LeftButton) {
 
 			auto posGrab = mRenderer->mapToViewport(mapToParent(event->pos()));
