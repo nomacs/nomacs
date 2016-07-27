@@ -496,7 +496,8 @@ QLabel#subTitle {
 
 /* preferences widgets */
 QComboBox#languageCombo,
-QSpinBox#numThreads {
+QSpinBox#numThreads,
+QPushButton#logFolder {
 	max-width: 200px;
 }
 

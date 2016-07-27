@@ -1203,12 +1203,12 @@ void DkAdvancedPreference::createLayout() {
 
 	QPushButton* pbLog = new QPushButton(tr("Open Log"), this);
 	pbLog->setObjectName("logFolder");
-	pbLog->setMaximumWidth(400);
 #ifdef Q_OS_WIN
 	pbLog->setVisible(Settings::param().app().useLogFile);
 #else
 	pbLog->setVisible(false);
 #endif
+
 	DkGroupWidget* useLogGroup = new DkGroupWidget(tr("Logging"), this);
 	useLogGroup->addWidget(cbUseLog);
 	useLogGroup->addWidget(pbLog);
