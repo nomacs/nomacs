@@ -116,6 +116,9 @@ public:
 	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);
 	static bool alphaChannelUsed(const QImage& img);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
+	static QPixmap loadIcon(const QString& filePath = QString());
+	static QPixmap loadIcon(const QString& filePath, const QColor& col);
+	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
 	static QImage createThumb(const QImage& img);
 	static bool addToImage(QImage& img, unsigned char val = 1);
 	static QColor getMeanColor(const QImage& img);

@@ -48,6 +48,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QProgressDialog>
+#include <QSvgRenderer>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarProgress>
@@ -884,75 +885,44 @@ void DkActionManager::init() {
 void DkActionManager::createIcons() {
 
 	mFileIcons.resize(icon_file_end);
-	mFileIcons[icon_file_dir] = QIcon(":/nomacs/img/dir.svg");
-	mFileIcons[icon_file_open] = QIcon(":/nomacs/img/open.svg");
-	mFileIcons[icon_file_save] = QIcon(":/nomacs/img/save.svg");
-	mFileIcons[icon_file_print] = QIcon(":/nomacs/img/printer.svg");
+	mFileIcons[icon_file_dir] = DkImage::loadIcon(":/nomacs/img/dir.svg");
+	mFileIcons[icon_file_open] = DkImage::loadIcon(":/nomacs/img/open.svg");
+	mFileIcons[icon_file_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
+	mFileIcons[icon_file_print] = DkImage::loadIcon(":/nomacs/img/printer.svg");
 	mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open.svg");
 	mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir.svg");
-	mFileIcons[icon_file_prev] = QIcon(":/nomacs/img/previous.svg");
-	mFileIcons[icon_file_next] = QIcon(":/nomacs/img/next.svg");
-	mFileIcons[icon_file_filter] = QIcon();
-	mFileIcons[icon_file_filter].addPixmap(QIcon(":/nomacs/img/filter.svg").pixmap(Settings::param().display().iconSize), QIcon::Normal, QIcon::On);
-	mFileIcons[icon_file_filter].addPixmap(QIcon(":/nomacs/img/nofilter.svg").pixmap(Settings::param().display().iconSize), QIcon::Normal, QIcon::Off);
+	mFileIcons[icon_file_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
+	mFileIcons[icon_file_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
+	mFileIcons[icon_file_filter] = DkImage::loadIcon();
+	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter.svg"), QIcon::Normal, QIcon::On);
+	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/nofilter.svg"), QIcon::Normal, QIcon::Off);
 
 	mEditIcons.resize(icon_edit_end);
-	mEditIcons[icon_edit_rotate_cw] = QIcon(":/nomacs/img/rotate-cw.svg");
-	mEditIcons[icon_edit_rotate_ccw] = QIcon(":/nomacs/img/rotate-cc.svg");
-	mEditIcons[icon_edit_crop] = QIcon(":/nomacs/img/crop.svg");
-	mEditIcons[icon_edit_resize] = QIcon(":/nomacs/img/resize.svg");
-	mEditIcons[icon_edit_copy] = QIcon(":/nomacs/img/copy.svg");
-	mEditIcons[icon_edit_paste] = QIcon(":/nomacs/img/paste.svg");
-	mEditIcons[icon_edit_delete] = QIcon(":/nomacs/img/trash.svg");
+	mEditIcons[icon_edit_rotate_cw] = DkImage::loadIcon(":/nomacs/img/rotate-cw.svg");
+	mEditIcons[icon_edit_rotate_ccw] = DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
+	mEditIcons[icon_edit_crop] = DkImage::loadIcon(":/nomacs/img/crop.svg");
+	mEditIcons[icon_edit_resize] = DkImage::loadIcon(":/nomacs/img/resize.svg");
+	mEditIcons[icon_edit_copy] = DkImage::loadIcon(":/nomacs/img/copy.svg");
+	mEditIcons[icon_edit_paste] = DkImage::loadIcon(":/nomacs/img/paste.svg");
+	mEditIcons[icon_edit_delete] = DkImage::loadIcon(":/nomacs/img/trash.svg");
 
 	mViewIcons.resize(icon_view_end);
-	mViewIcons[icon_view_fullscreen] = QIcon(":/nomacs/img/fullscreen.svg");
-	mViewIcons[icon_view_reset] = QIcon(":/nomacs/img/zoomReset.svg");
-	mViewIcons[icon_view_100] = QIcon(":/nomacs/img/zoom100.svg");
-	mViewIcons[icon_view_gps] = QIcon(":/nomacs/img/gps-globe.svg");
-	mViewIcons[icon_view_zoom_in] = QIcon(":/nomacs/img/zoom-in.svg");
-	mViewIcons[icon_view_zoom_out] = QIcon(":/nomacs/img/zoom-out.svg");
+	mViewIcons[icon_view_fullscreen] = DkImage::loadIcon(":/nomacs/img/fullscreen.svg");
+	mViewIcons[icon_view_reset] = DkImage::loadIcon(":/nomacs/img/zoomReset.svg");
+	mViewIcons[icon_view_100] = DkImage::loadIcon(":/nomacs/img/zoom100.svg");
+	mViewIcons[icon_view_gps] = DkImage::loadIcon(":/nomacs/img/gps-globe.svg");
+	mViewIcons[icon_view_zoom_in] = DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
+	mViewIcons[icon_view_zoom_out] = DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
 
-	mViewIcons[icon_view_movie_play] = QIcon();
+	mViewIcons[icon_view_movie_play] = DkImage::loadIcon();
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-play.svg"), QIcon::Normal, QIcon::On);
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.svg"), QIcon::Normal, QIcon::Off);
-	mViewIcons[icon_view_movie_prev] = QIcon(":/nomacs/img/movie-prev.svg");
-	mViewIcons[icon_view_movie_next] = QIcon(":/nomacs/img/movie-next.svg");
+	mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/movie-prev.svg");
+	mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/movie-next.svg");
 
 	mToolsIcons.resize(icon_tools_end);
-	mToolsIcons[icon_tools_manipulation] = QIcon(":/nomacs/img/manipulation.svg");
+	mToolsIcons[icon_tools_manipulation] = DkImage::loadIcon(":/nomacs/img/manipulation.svg");
 
-	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode) {
-		colorizeIcons(Settings::param().display().iconColor);
-	}
-
-}
-
-void DkActionManager::colorizeIcons(const QColor& col) {
-
-	// now colorize all icons
-	for (int idx = 0; idx < mFileIcons.size(); idx++) {
-
-		// never colorize these large icons
-		if (idx == icon_file_open_large || idx == icon_file_dir_large)
-			continue;
-
-		mFileIcons[idx].addPixmap(DkImage::colorizePixmap(mFileIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::On), col), QIcon::Normal, QIcon::On);
-		mFileIcons[idx].addPixmap(DkImage::colorizePixmap(mFileIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), col), QIcon::Normal, QIcon::Off);
-	}
-
-	// now colorize all icons
-	for (QIcon& icon : mEditIcons)
-		icon.addPixmap(DkImage::colorizePixmap(icon.pixmap(Settings::param().display().iconSize), col));
-
-	for (QIcon& icon : mViewIcons)
-		icon.addPixmap(DkImage::colorizePixmap(icon.pixmap(Settings::param().display().iconSize), col));
-
-	for (QIcon& icon : mToolsIcons)
-		icon.addPixmap(DkImage::colorizePixmap(icon.pixmap(Settings::param().display().iconSize), col));
-
-	for (QAction* action : mPreviewActions)
-		action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(Settings::param().display().iconSize), Settings::param().display().iconColor));
 }
 
 void DkActionManager::createActions(QWidget* parent) {
@@ -1494,36 +1464,36 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPreviewActions[preview_select_all]->setShortcut(QKeySequence::SelectAll);
 	mPreviewActions[preview_select_all]->setCheckable(true);
 
-	mPreviewActions[preview_zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.svg"), QObject::tr("Zoom &In"), parent);
+	mPreviewActions[preview_zoom_in] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-in.svg"), QObject::tr("Zoom &In"), parent);
 	mPreviewActions[preview_zoom_in]->setShortcut(QKeySequence::ZoomIn);
 
-	mPreviewActions[preview_zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.svg"), QObject::tr("Zoom &Out"), parent);
+	mPreviewActions[preview_zoom_out] = new QAction(DkImage::loadIcon(":/nomacs/img/zoom-out.svg"), QObject::tr("Zoom &Out"), parent);
 	mPreviewActions[preview_zoom_out]->setShortcut(QKeySequence::ZoomOut);
 
-	mPreviewActions[preview_display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.svg"), QObject::tr("Display &Squares"), parent);
+	mPreviewActions[preview_display_squares] = new QAction(DkImage::loadIcon(":/nomacs/img/thumbs-view.svg"), QObject::tr("Display &Squares"), parent);
 	mPreviewActions[preview_display_squares]->setCheckable(true);
 	mPreviewActions[preview_display_squares]->setChecked(Settings::param().display().displaySquaredThumbs);
 
-	mPreviewActions[preview_show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.svg"), QObject::tr("Show &Filename"), parent);
+	mPreviewActions[preview_show_labels] = new QAction(DkImage::loadIcon(":/nomacs/img/show-filename.svg"), QObject::tr("Show &Filename"), parent);
 	mPreviewActions[preview_show_labels]->setCheckable(true);
 	mPreviewActions[preview_show_labels]->setChecked(Settings::param().display().showThumbLabel);
 
 	mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
 	mPreviewActions[preview_filter]->setShortcut(QKeySequence::Find);
 
-	mPreviewActions[preview_delete] = new QAction(QIcon(":/nomacs/img/trash.svg"), QObject::tr("&Delete"), parent);
+	mPreviewActions[preview_delete] = new QAction(DkImage::loadIcon(":/nomacs/img/trash.svg"), QObject::tr("&Delete"), parent);
 	mPreviewActions[preview_delete]->setShortcut(QKeySequence::Delete);
 
-	mPreviewActions[preview_copy] = new QAction(QIcon(":/nomacs/img/copy.svg"), QObject::tr("&Copy"), parent);
+	mPreviewActions[preview_copy] = new QAction(DkImage::loadIcon(":/nomacs/img/copy.svg"), QObject::tr("&Copy"), parent);
 	mPreviewActions[preview_copy]->setShortcut(QKeySequence::Copy);
 
-	mPreviewActions[preview_paste] = new QAction(QIcon(":/nomacs/img/paste.svg"), QObject::tr("&Paste"), parent);
+	mPreviewActions[preview_paste] = new QAction(DkImage::loadIcon(":/nomacs/img/paste.svg"), QObject::tr("&Paste"), parent);
 	mPreviewActions[preview_paste]->setShortcut(QKeySequence::Paste);
 
-	mPreviewActions[preview_rename] = new QAction(QIcon(":/nomacs/img/rename.svg"), QObject::tr("&Rename"), parent);
+	mPreviewActions[preview_rename] = new QAction(DkImage::loadIcon(":/nomacs/img/rename.svg"), QObject::tr("&Rename"), parent);
 	mPreviewActions[preview_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 
-	mPreviewActions[preview_batch] = new QAction(QIcon(":/nomacs/img/batch-processing.svg"), QObject::tr("&Batch Process"), parent);
+	mPreviewActions[preview_batch] = new QAction(DkImage::loadIcon(":/nomacs/img/batch-processing.svg"), QObject::tr("&Batch Process"), parent);
 	mPreviewActions[preview_batch]->setToolTip(QObject::tr("Adds selected files to batch processing."));
 	mPreviewActions[preview_batch]->setShortcut(QKeySequence(Qt::Key_B));
 

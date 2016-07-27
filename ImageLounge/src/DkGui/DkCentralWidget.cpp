@@ -482,32 +482,32 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addActions(am.hiddenActions().toList());
 
 	// general preferences
-	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/settings.svg"), tr("General"), this);
+	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg"), tr("General"), this);
 	DkGeneralPreference* gp = new DkGeneralPreference(this);
 	tab->setWidget(gp);
 	pw->addTabWidget(tab);
 
 	// display preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
 	DkDisplayPreference* dp = new DkDisplayPreference(this);
 	tab->setWidget(dp);
 	pw->addTabWidget(tab);
 
 	// file preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/dir.svg"), tr("File"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg"), tr("File"), this);
 	DkFilePreference* fp = new DkFilePreference(this);
 	tab->setWidget(fp);
 	pw->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
 	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
 	tab->setWidget(fap);
 	pw->addTabWidget(tab);
 
 
 	// advanced preferences
-	tab = new DkPreferenceTabWidget(QIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
 	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
 	tab->setWidget(ap);
 	pw->addTabWidget(tab);

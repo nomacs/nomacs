@@ -229,9 +229,10 @@ DkTabEntryWidget::DkTabEntryWidget(const QIcon& icon, const QString& text, QWidg
 
 	setObjectName("DkTabEntryWidget");
 
-	QPixmap pm = DkImage::colorizePixmap(icon.pixmap(QSize(32, 32)), QColor(255, 255, 255));
+	QSize s(Settings::param().display().iconSize, Settings::param().display().iconSize);
+	QPixmap pm = DkImage::colorizePixmap(icon.pixmap(s), QColor(255, 255, 255));
 	setIcon(pm);
-	setIconSize(QSize(24, 24));
+	setIconSize(s);
 
 	setFlat(true);
 	setCheckable(true);

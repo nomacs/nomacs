@@ -522,7 +522,6 @@ protected:
 	
 	void init();
 	void createIcons();
-	void colorizeIcons(const QColor& col);
 
 	QMenu* createFileMenu(QWidget* parent);
 	QMenu* createSortMenu(QWidget* parent);

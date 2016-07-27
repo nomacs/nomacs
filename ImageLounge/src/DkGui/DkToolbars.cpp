@@ -69,8 +69,6 @@
 
 namespace nmc {
 
-#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
-
 // DkMainToolBar --------------------------------------------------------------------
 DkMainToolBar::DkMainToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
@@ -606,17 +604,10 @@ void DkTransferToolBar::createIcons() {
 			
 	mToolBarIcons.resize(icon_toolbar_end);
 
-	mToolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.svg");
-	mToolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.svg");
-	mToolBarIcons[icon_toolbar_save] = ICON("", ":/nomacs/img/save.svg");
+	mToolBarIcons[icon_toolbar_reset] = DkImage::loadIcon(":/nomacs/img/gradient-reset.svg");
+	mToolBarIcons[icon_toolbar_pipette] = DkImage::loadIcon(":/nomacs/img/pipette.svg");
+	mToolBarIcons[icon_toolbar_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
 
-	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode) {
-		// now colorize the icons
-		mToolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_reset].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
-		mToolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_pipette].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
-		mToolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(mToolBarIcons[icon_toolbar_save].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
-	}
-	
 	mToolBarActions.resize(toolbar_end);
 	mToolBarActions[toolbar_reset] = new QAction(mToolBarIcons[icon_toolbar_reset], tr("Reset"), this);
 	mToolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
@@ -932,13 +923,13 @@ void DkCropToolBar::createIcons() {
 	// create icons
 	mIcons.resize(icons_end);
 
-	mIcons[crop_icon] = QIcon(":/nomacs/img/crop.svg");
-	mIcons[cancel_icon] = QIcon(":/nomacs/img/cancel.svg");
-	mIcons[pan_icon] = 	QIcon(":/nomacs/img/pan.svg");
-	mIcons[pan_icon].addPixmap(QPixmap(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
-	mIcons[invert_icon] = QIcon(":/nomacs/img/crop-invert.svg");
-	mIcons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
-	mIcons[info_icon] = QIcon(":/nomacs/img/info.svg");
+	mIcons[crop_icon] = DkImage::loadIcon(":/nomacs/img/crop.svg");
+	mIcons[cancel_icon] = DkImage::loadIcon(":/nomacs/img/cancel.svg");
+	mIcons[pan_icon] = 	DkImage::loadIcon(":/nomacs/img/pan.svg");
+	mIcons[pan_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
+	mIcons[invert_icon] = DkImage::loadIcon(":/nomacs/img/crop-invert.svg");
+	mIcons[invert_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
+	mIcons[info_icon] = DkImage::loadIcon(":/nomacs/img/info.svg");
 
 	if (!Settings::param().display().defaultIconColor) {
 		// now colorize all icons
@@ -984,7 +975,7 @@ void DkCropToolBar::createLayout() {
 	mHorValBox->setToolTip(tr("Horizontal Constraint"));
 	mHorValBox->setStatusTip(mHorValBox->toolTip());
 
-	QAction* swapAction = new QAction(QIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
+	QAction* swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
 	swapAction->setObjectName("swapAction");
 	swapAction->setToolTip(tr("Swap Dimensions"));
 	swapAction->setStatusTip(swapAction->toolTip());

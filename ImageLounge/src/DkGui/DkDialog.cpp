@@ -2162,21 +2162,15 @@ void DkPrintPreviewDialog::createIcons() {
 
 	mIcons.resize(print_end);
 
-	mIcons[print_fit_width]	= QIcon(":/nomacs/img/fit-width.svg");
-	mIcons[print_fit_page]	= QIcon(":/nomacs/img/zoomReset.svg");
-	mIcons[print_zoom_in]	= QIcon(":/nomacs/img/zoom-in.svg");
-	mIcons[print_zoom_out]	= QIcon(":/nomacs/img/zoom-out.svg");
-	mIcons[print_reset_dpi]	= QIcon(":/nomacs/img/zoom100.svg");
-	mIcons[print_landscape]	= QIcon(":/nomacs/img/landscape.svg");
-	mIcons[print_portrait]	= QIcon(":/nomacs/img/portrait.svg");
-	mIcons[print_setup]		= QIcon(":/nomacs/img/print-setup.svg");
-	mIcons[print_printer]	= QIcon(":/nomacs/img/printer.svg");
-
-	if (!Settings::param().display().defaultIconColor) {
-		// now colorize all icons
-		for (int idx = 0; idx < mIcons.size(); idx++)
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize), Settings::param().display().iconColor));
-	}
+	mIcons[print_fit_width]	= DkImage::loadIcon(":/nomacs/img/fit-width.svg");
+	mIcons[print_fit_page]	= DkImage::loadIcon(":/nomacs/img/zoomReset.svg");
+	mIcons[print_zoom_in]	= DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
+	mIcons[print_zoom_out]	= DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
+	mIcons[print_reset_dpi]	= DkImage::loadIcon(":/nomacs/img/zoom100.svg");
+	mIcons[print_landscape]	= DkImage::loadIcon(":/nomacs/img/landscape.svg");
+	mIcons[print_portrait]	= DkImage::loadIcon(":/nomacs/img/portrait.svg");
+	mIcons[print_setup]		= DkImage::loadIcon(":/nomacs/img/print-setup.svg");
+	mIcons[print_printer]	= DkImage::loadIcon(":/nomacs/img/printer.svg");
 }
 
 void DkPrintPreviewDialog::setupActions() {

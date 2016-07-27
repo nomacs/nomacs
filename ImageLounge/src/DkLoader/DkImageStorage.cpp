@@ -38,6 +38,7 @@
 #include <QPainter>
 #include <QBitmap>
 #include <qmath.h>
+#include <QSvgRenderer>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -837,7 +838,44 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 	painter.drawPixmap(glow.rect(), sGlow);
 
 	return glow;
-};
+}
+
+QPixmap DkImage::loadIcon(const QString & filePath) {
+	
+	if (filePath.isEmpty())
+		return QPixmap();
+
+	int s = Settings::param().display().iconSize;
+	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
+	
+	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode)
+		icon = colorizePixmap(icon, Settings::param().display().iconColor);
+
+	return icon;
+}
+
+QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col) {
+
+	int s = Settings::param().display().iconSize;
+	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
+	icon = colorizePixmap(icon, col);
+
+	return icon;
+}
+
+QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
+
+	QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
+	
+	QPixmap pm(size);
+	pm.fill(QColor(0, 0, 0, 0));	// clear background
+
+	QPainter p(&pm);
+	svg->render(&p);
+
+	return pm;
+}
+
 
 #ifdef WITH_OPENCV
 
