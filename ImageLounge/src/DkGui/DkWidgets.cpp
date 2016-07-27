@@ -2857,7 +2857,7 @@ void DkProgressBar::paintEvent(QPaintEvent *) {
 	QPainter p(this);
 	p.setPen(Qt::NoPen);
 
-	if (parentWidget() && DkActionManager::instance().getMainWindow()->isFullScreen())
+	if (parentWidget() && DkUtils::getMainWindow()->isFullScreen())
 		p.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
 
 	p.setBrush(Settings::param().display().highlightColor);
@@ -3009,8 +3009,11 @@ void DkGenericProfileWidget::saveSettings() const {
 	QString dName = mProfileList->currentText().isEmpty() ? "Profile 1" : mProfileList->currentText();
 
 	bool ok;
-	QString text = QInputDialog::getText(DkActionManager::instance().getMainWindow(), tr("Profile Name"),
-		tr("Profile Name:"), QLineEdit::Normal,
+	QString text = QInputDialog::getText(
+		DkUtils::getMainWindow(), 
+		tr("Profile Name"),
+		tr("Profile Name:"), 
+		QLineEdit::Normal,
 		dName, &ok);
 
 	if (!ok || text.isEmpty())
@@ -3020,7 +3023,7 @@ void DkGenericProfileWidget::saveSettings() const {
 	if (mProfileList->findText(text) != -1) {
 
 		QMessageBox::StandardButton button = QMessageBox::information(
-			DkActionManager::instance().getMainWindow(), 
+			DkUtils::getMainWindow(), 
 			tr("Profile Already Exists"), 
 			tr("Do you want to overwrite %1?").arg(text), 
 			QMessageBox::Yes | QMessageBox::No);

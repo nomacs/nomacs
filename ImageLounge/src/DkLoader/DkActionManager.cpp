@@ -1596,23 +1596,6 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 	settings.endGroup();
 }
 
-QMainWindow* DkActionManager::getMainWindow() const {
-
-	QWidgetList widgets = QApplication::topLevelWidgets();
-
-	QMainWindow* win = 0;
-
-	for (int idx = 0; idx < widgets.size(); idx++) {
-
-		if (widgets.at(idx)->inherits("QMainWindow")) {
-			win = qobject_cast<QMainWindow*>(widgets.at(idx));
-			break;
-		}
-	}
-
-	return win;
-}
-
 // DkGlobalProgress --------------------------------------------------------------------
 DkGlobalProgress::DkGlobalProgress() : showProgress(true) {
 #ifdef Q_OS_WIN

@@ -542,7 +542,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 
-	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
+	if (DkUtils::getMainWindow()->isFullScreen()) {
 		painter.setWorldMatrixEnabled(false);
 		painter.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
 		painter.setWorldMatrixEnabled(true);

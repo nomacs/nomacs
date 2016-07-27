@@ -371,7 +371,8 @@ void DkLocalClientManager::stopSynchronizeWith(quint16) {
 }
 
 void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
-	int screen = QApplication::desktop()->screenNumber(QApplication::activeWindow());
+	
+	int screen = QApplication::desktop()->screenNumber(DkUtils::getMainWindow());
 	const QRect screenGeometry =  QApplication::desktop()->availableGeometry(screen);
 	int connectedInstances = mPeerList.getSynchronizedPeers().size() + 1 ; // +1 because of this instance itself
 	if (connectedInstances == 1)

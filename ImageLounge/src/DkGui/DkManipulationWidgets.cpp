@@ -28,6 +28,7 @@
 #include "DkManipulationWidgets.h"
 #include "BorderLayout.h"
 #include "DkImageStorage.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -632,7 +633,7 @@ cv::Mat DkImageManipulationWidget::manipulateImage(cv::Mat inImg){
 
 	if (historyToolsVec.size() > 0) {
 
-		QProgressDialog* progress = new QProgressDialog("Applying changes to image...", "Cancel", 0, 100, qApp->activeWindow());
+		QProgressDialog* progress = new QProgressDialog("Applying changes to image...", "Cancel", 0, 100, DkUtils::getMainWindow());
 		int step = (int) (100 / historyToolsVec.size());
 		progress->setWindowModality(Qt::WindowModal);
 		progress->setValue(1);	// a strange behavior of the progress dialog: first setValue shows an empty dialog (setting to zero won't work)

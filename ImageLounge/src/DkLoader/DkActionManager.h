@@ -511,7 +511,6 @@ public:
 	QVector<QAction*> hiddenActions() const;	
 	DkAppManager* appManager() const;
 	DkPluginActionManager* pluginActionManager() const;
-	QMainWindow* getMainWindow() const;
 
 	void assignCustomShortcuts(QVector<QAction*> actions) const;
 

@@ -734,8 +734,12 @@ bool DkImageLoader::unloadFile() {
 
 	// if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask the user
 	if (mCurrentImage->isEdited() && (Settings::param().sync().syncMode == DkSettings::sync_mode_default)) {
-		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(QFileInfo(mCurrentImage->filePath()).fileName()), 
-			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), QApplication::activeWindow());
+		DkMessageBox* msgBox = new DkMessageBox(
+			QMessageBox::Question, 
+			tr("Save Image"), 
+			tr("Do you want to save changes to:\n%1").arg(QFileInfo(mCurrentImage->filePath()).fileName()), 
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
+			DkUtils::getMainWindow());
 
 		msgBox->setDefaultButton(QMessageBox::No);
 		msgBox->setObjectName("saveEditDialog");

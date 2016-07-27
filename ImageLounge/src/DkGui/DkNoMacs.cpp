@@ -1797,7 +1797,7 @@ void DkNoMacs::deleteFile() {
 		tr("Delete File"), 
 		question, 
 		(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
-		qApp->activeWindow());
+		this);
 
 	msgBox->setDefaultButton(QMessageBox::Yes);
 	msgBox->setObjectName("deleteFileDialog");

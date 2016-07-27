@@ -235,7 +235,7 @@ void DkInstallUpdater::replyFinished(QNetworkReply* reply) {
 				tr("Updates Available"), 
 				msg, 
 				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
-				QApplication::activeWindow());
+				DkUtils::getMainWindow());
 
 			msgBox->button(QMessageBox::Yes)->setText(tr("&Upgrade"));
 			msgBox->button(QMessageBox::Cancel)->setText(tr("Remind Me &Later"));
@@ -255,7 +255,7 @@ void DkInstallUpdater::replyFinished(QNetworkReply* reply) {
 			updateNomacs("--updater");
 	}
 	else if (!mSilent) {
-		QMessageBox::information(QApplication::activeWindow(), tr("nomacs Updates"), tr("nomacs is up-to-date"));
+		QMessageBox::information(DkUtils::getMainWindow(), tr("nomacs Updates"), tr("nomacs is up-to-date"));
 	}
 	else
 		qDebug() << "nomacs is up-to-date...";

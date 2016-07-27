@@ -154,6 +154,8 @@ public:
 
 	static QString getAppDataPath();
 
+	static QWidget* getMainWindow();
+
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)

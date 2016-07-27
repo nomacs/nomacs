@@ -1391,7 +1391,7 @@ void DkThumbScene::copyImages(const QMimeData* mimeData) const {
 			continue;
 
 		if (!file.copy(newFilePath)) {
-			int answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot copy %1 to %2")
+			int answer = QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot copy %1 to %2")
 				.arg(fileInfo.absoluteFilePath(), newFilePath), QMessageBox::Ok | QMessageBox::Cancel);
 
 			if (answer == QMessageBox::Cancel) {
@@ -1422,7 +1422,7 @@ void DkThumbScene::deleteSelected() const {
 		tr("Delete File"), 
 		question, 
 		(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
-		qApp->activeWindow());
+		DkUtils::getMainWindow());
 
 	msgBox->setDefaultButton(QMessageBox::Yes);
 	msgBox->setObjectName("deleteThumbFileDialog");
@@ -1440,7 +1440,11 @@ void DkThumbScene::deleteSelected() const {
 			qDebug() << "deleting: " << fString;
 
 			if (!DkUtils::moveToTrash(fString)) {
-				answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot delete:\n%1").arg(fName), QMessageBox::Ok | QMessageBox::Cancel);
+				answer = QMessageBox::critical(
+					DkUtils::getMainWindow(), 
+					tr("Error"), 
+					tr("Sorry, I cannot delete:\n%1").arg(fName), 
+					QMessageBox::Ok | QMessageBox::Cancel);
 
 				if (answer == QMessageBox::Cancel) {
 					break;
@@ -1464,8 +1468,11 @@ void DkThumbScene::renameSelected() const {
 		return;
 
 	bool ok;
-	QString newFileName = QInputDialog::getText(qApp->activeWindow(), tr("Rename File(s)"),
-		tr("New Filename:"), QLineEdit::Normal,
+	QString newFileName = QInputDialog::getText(
+		DkUtils::getMainWindow(), 
+		tr("Rename File(s)"),
+		tr("New Filename:"), 
+		QLineEdit::Normal,
 		"", &ok);
 	
 	if (ok && !newFileName.isEmpty()) {
@@ -1479,8 +1486,11 @@ void DkThumbScene::renameSelected() const {
 			QFileInfo newFileInfo(fileInfo.dir(), converter.getConvertedFileName());
 			if (!file.rename(newFileInfo.absoluteFilePath())) {
 				
-				int answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot rename: %1 to %2")
-					.arg(fileInfo.fileName(), newFileInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel);
+				int answer = QMessageBox::critical(
+					DkUtils::getMainWindow(), 
+					tr("Error"), 
+					tr("Sorry, I cannot rename: %1 to %2").arg(fileInfo.fileName(), newFileInfo.fileName()), 
+					QMessageBox::Ok | QMessageBox::Cancel);
 
 				if (answer == QMessageBox::Cancel) {
 					break;

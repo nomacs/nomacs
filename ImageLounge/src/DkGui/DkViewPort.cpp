@@ -296,7 +296,7 @@ void DkViewPort::setImage(QImage newImg) {
 	// init fading
 	if (Settings::param().display().animationDuration && 
 		(mController->getPlayer()->isPlaying() ||
-			DkActionManager::instance().getMainWindow()->isFullScreen() ||
+			DkUtils::getMainWindow()->isFullScreen() ||
 			Settings::param().display().alwaysAnimate)) {
 		mAnimationTimer->start();
 		mAnimationTime.start();
@@ -1315,7 +1315,7 @@ void DkViewPort::loadLena() {
 	// pass phrase
 	if (ok && !text.isEmpty() && text == "lena") {
 		mTestLoaded = true;
-		toggleLena(DkActionManager::instance().getMainWindow()->isFullScreen());
+		toggleLena(DkUtils::getMainWindow()->isFullScreen());
 	}
 	else if (!ok) {
 		QMessageBox warningDialog(QApplication::activeWindow());
@@ -1406,7 +1406,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 
 	if (Settings::param().display().animationDuration > 0 && 
 			(mController->getPlayer()->isPlaying() || 
-			DkActionManager::instance().getMainWindow()->isFullScreen() || 
+			DkUtils::getMainWindow()->isFullScreen() || 
 			Settings::param().display().alwaysAnimate)) {
 		mAnimationBuffer = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 		mFadeImgViewRect = mImgViewRect;
@@ -1824,7 +1824,7 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
-	if (!DkActionManager::instance().getMainWindow()->isFullScreen()) {
+	if (!DkUtils::getMainWindow()->isFullScreen()) {
 
 		QPainter painter(viewport());
 		painter.setWorldTransform(mWorldMatrix);
@@ -1837,7 +1837,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
 void DkViewPortFrameless::draw(QPainter & painter, double) {
 	
-	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
+	if (DkUtils::getMainWindow()->isFullScreen()) {
 		QColor col = QColor(0,0,0);
 		col.setAlpha(150);
 		painter.setWorldMatrixEnabled(false);
@@ -2255,7 +2255,7 @@ void DkViewPortContrast::draw(QPainter & painter, double opacity) {
 		return;
 	}
 
-	if (DkActionManager::instance().getMainWindow()->isFullScreen()) {
+	if (DkUtils::getMainWindow()->isFullScreen()) {
 		painter.setWorldMatrixEnabled(false);
 		painter.fillRect(QRect(QPoint(), size()), Settings::param().slideShow().backgroundColor);
 		painter.setWorldMatrixEnabled(true);

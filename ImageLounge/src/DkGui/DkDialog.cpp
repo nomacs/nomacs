@@ -4070,7 +4070,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 	catch(...) {
 		origR.release();
 
-		QMessageBox::critical(QApplication::activeWindow(), tr("Error"), tr("Sorry, I could not mix the image..."));
+		QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I could not mix the image..."));
 		qDebug() << "exception caught...";
 		mMosaic = DkImage::mat2QImage(mMosaicMat);
 	}
@@ -4579,7 +4579,7 @@ void DkDialogManager::openShortcutsDialog() const {
 
 	QList<QAction* > openWithActionList = am.openWithMenu()->actions();
 
-	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(QApplication::activeWindow());
+	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
 	shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
 	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
 	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
@@ -4613,7 +4613,7 @@ void DkDialogManager::openAppManager() const {
 
 	DkActionManager& am = DkActionManager::instance();
 
-	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), am.getMainWindow());
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(am.appManager(), DkUtils::getMainWindow());
 	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), am.appManager(), SIGNAL(openFileSignal(QAction*)));	// forward
 	appManagerDialog->exec();
 

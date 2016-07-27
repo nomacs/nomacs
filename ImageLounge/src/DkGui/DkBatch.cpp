@@ -2006,9 +2006,11 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
 
-		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Create Output Directory"), 
+		DkMessageBox* msgBox = new DkMessageBox(
+			QMessageBox::Question, tr("Create Output Directory"), 
 			tr("Should I create:\n%1").arg(config.getOutputDirPath()), 
-			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), qApp->activeWindow());
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
+			DkUtils::getMainWindow());
 
 		msgBox->setDefaultButton(QMessageBox::Yes);
 		msgBox->setObjectName("batchOutputDirDialog");
@@ -2235,12 +2237,12 @@ void DkBatchWidget::saveProfile(const QString & profilePath) const {
 	//}
 
 	if (bc.getProcessFunctions().empty()) {
-		QMessageBox::information(DkActionManager::instance().getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
+		QMessageBox::information(DkUtils::getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
 		return;
 	}
 
 	if (!DkBatchProfile::saveProfile(profilePath, bc)) {
-		QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
+		QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
 		return;
 	}
 	else
@@ -2255,7 +2257,7 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 
 	if (bc.getProcessFunctions().empty()) {
 		
-		QMessageBox::critical(DkActionManager::instance().getMainWindow(), 
+		QMessageBox::critical(DkUtils::getMainWindow(), 
 			tr("Error Loading Profile"), 
 			tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
 		return;

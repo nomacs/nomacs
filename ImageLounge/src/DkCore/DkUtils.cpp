@@ -51,6 +51,7 @@
 #include <QUrl>
 #include <QStandardPaths>
 #include <QApplication>
+#include <QMainWindow>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -452,6 +453,23 @@ QString DkUtils::getAppDataPath() {
 		qWarning() << "I could not create" << appPath;
 
 	return appPath;
+}
+
+QWidget * DkUtils::getMainWindow() {
+
+	QWidgetList widgets = QApplication::topLevelWidgets();
+
+	QMainWindow* win = 0;
+
+	for (int idx = 0; idx < widgets.size(); idx++) {
+
+		if (widgets.at(idx)->inherits("QMainWindow")) {
+			win = qobject_cast<QMainWindow*>(widgets.at(idx));
+			break;
+		}
+	}
+
+	return win;
 }
 
 void DkUtils::mSleep(int ms) {
