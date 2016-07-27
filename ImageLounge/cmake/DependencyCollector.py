@@ -100,7 +100,8 @@ def update_mode(infile, conf):
                                                             conf['paths'])
 
             if newest_dll == "":
-                logger.info("no dll found in given directories for %s" % dllname)
+                logger.info("no dll found in given directories for %s"
+                            % dllname)
             elif mod_date > os.path.getmtime(dll):
                 copy_dll(newest_dll, dir)
             else:
@@ -172,7 +173,7 @@ def copy_dll(dllpath, targetpath):
     import shutil
 
     try:
-        shutil.copy(dllpath, targetpath)
+        shutil.copy2(dllpath, targetpath)
         logger.info(dllpath + " -> " + targetpath)
     except OSError as error:
         if ("are the same file" in str(error)):
@@ -242,24 +243,20 @@ if __name__ == "__main__":
         logger.info("create mode forced due to argument")
 
     if not os.path.isfile(args.infile):
-        logger.error("input file does not exist: " + args.infile)
+        logger.error("input file does not exist:" + args.infile)
         exit()
     if not os.path.isfile(args.configfile):
-        logger.error("config file does not exist: " + args.configfile)
+        logger.error("config file does not exist" + args.configfile)
         exit()
 
-    logger.debug("processing: " + args.infile)
-    logger.debug("config: " + args.configuration)
+    logger.info("called with file:" + args.infile + " and configuration " +
+                args.configuration)
     conf = parse_config_file(args.configfile, args.configuration)
     conf['localpath'] = os.path.dirname(os.path.realpath(args.infile))
 
-    # add local path - there might be our own-built dependencies
-    conf['paths'].append(os.path.dirname(
-                         os.path.realpath(args.infile)))  # adding local path
-
-    logger.debug("running create mode: " + str(conf['create']))
-    logger.debug("using paths: " + str(conf['paths']))
-    logger.debug("using blacklist: " + str(conf['blacklist']))
+    logger.debug("running create mode:" + str(conf['create']))
+    logger.debug("using paths:" + str(conf['paths']))
+    logger.debug("using blacklist:" + str(conf['blacklist']))
 
     # add my name to blacklist - we don't need to copy it
     conf['blacklist'].append(os.path.basename(args.infile).lower())
@@ -280,4 +277,5 @@ if __name__ == "__main__":
         logger.error("create mode unkown")
         exit()
 
-    logger.info("finished in %s seconds" % round((time.time() - start_time), 2))
+    logger.info("finished in %s seconds" %
+                round((time.time() - start_time), 2))

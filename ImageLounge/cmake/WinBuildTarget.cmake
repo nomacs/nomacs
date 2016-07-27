@@ -182,8 +182,8 @@ if(CMAKE_CL_64)
 else()
 	SET(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
-SET(DC_PATHS_RELEASE C:/Windows/System32 ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-SET(DC_PATHS_DEBUG C:/Windows/System32 ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+SET(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
+SET(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 
