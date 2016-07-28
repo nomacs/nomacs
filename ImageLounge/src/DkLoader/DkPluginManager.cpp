@@ -1138,6 +1138,10 @@ void DkPluginManager::loadPlugins() {
 		if (cPath == QApplication::applicationDirPath())
 			continue;
 
+		// skip image plugins
+		if (cPath.contains("imageformats"))
+			continue;
+
 		QDir pluginsDir(cPath);
 
 		for (const QString& fileName : pluginsDir.entryList(QDir::Files)) {

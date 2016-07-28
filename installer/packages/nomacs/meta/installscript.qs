@@ -34,7 +34,7 @@
 
 function Component()
 {
-	console.log("v1 19.07.2016 --------------------------------");
+	console.log("v1 27.07.2016 --------------------------------");
 	installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 	
@@ -42,23 +42,37 @@ function Component()
     console.log("Kernel: " + systemInfo.kernelType + "/" + systemInfo.kernelVersion);
 	console.log("CPU: " + systemInfo.currentCpuArchitecture);
 		
+	nmcX64 = installer.componentByName("nomacs.x64");
+	nmcX86 = installer.componentByName("nomacs.x86");
+		
 	// do we have an x64 OS?
 	if (systemInfo.currentCpuArchitecture === "x86_64") {
-        installer.componentByName("nomacs.x64").setValue("Default", "true");
-		installer.componentByName("nomacs.x86").setValue("Default", "false");
+        
+		if (nmcX64)
+			nmcX64.setValue("Default", "true");
+				
+		if (nmcX86)
+			nmcX64.setValue("Default", "false");
+				
+		if (!installer.isUpdater()) { // new installer
 		
-		var pf = "C:/Program Files/";
-		
-		if (installer.fileExists(pf)) {
-			installer.setValue("TargetDir", pf + "/nomacs");
-			console.log(pf + " exists...");
+			// change default target dir to Program Files
+			var pf = "C:/Program Files/";
+			
+			if (installer.fileExists(pf)) {
+				installer.setValue("TargetDir", pf + installer.value("ProductName"));
+				console.log(pf + " exists...");
+			}
+			else
+				console.log(pf + " does NOT exists...");
 		}
-		else
-			console.log(pf + " does NOT exists...");
     }
 	else {
-        installer.componentByName("nomacs.x64").setValue("Default", "false");
-		installer.componentByName("nomacs.x86").setValue("Default", "true");
+        if (nmcX64)
+			nmcX64.setValue("Default", "false");
+		
+		if (nmcX86)
+			nmcX86.setValue("Default", "true");
     }
 	
 	// hide ready for installation page:
@@ -80,31 +94,34 @@ Component.prototype.createOperations = function()
 	
 		var bitness = new Array();
 	
+		nmcX64 = installer.componentByName("nomacs.x64");
+		nmcX86 = installer.componentByName("nomacs.x86");
+	
 		if (!installer.isUpdater()) { // new installer
 			// diem 05.01.2016 - installationRequested() is always true in the updater?!
-			if (installer.componentByName("nomacs.x86").installationRequested()) {
+			if (nmcX86 && nmcX86.installationRequested()) {
 				bitness.push("x86");
 				console.log("x86 installation requested...");
 			}
-			if (installer.componentByName("nomacs.x64").installationRequested()) {
+			if (nmcX64 && nmcX64.installationRequested()) {
 				bitness.push("x64");
 				console.log("x64 installation requested...");
 			}
 		}
 		else {	// updater
-			if (installer.componentByName("nomacs.x86").isInstalled()) {
+			if (nmcX86 && nmcX86.isInstalled()) {
 				bitness.push("x86");
 				console.log("x86 is installed...");
 			}
 			else {
 				console.log("component nomacs.x86 is NOT installed...");
 			}
-			if (installer.componentByName("nomacs.x64").isInstalled()) {
+			if (nmcX64 && nmcX64.isInstalled()) {
 				bitness.push("x64");
 				console.log("x64 is installed...");
 			}
 			else {
-				
+				console.log("component nomacs.x64 is NOT installed...");
 			}
 		}
 
@@ -118,15 +135,6 @@ Component.prototype.createOperations = function()
     }
 
 }
-
-// Component.prototype.loaded = function ()
-// {
-    // var page = gui.pageByObjectName("DynamicPage");
-    // if (page != null) {
-        // console.log("Connecting the dynamic page entered signal.");
-        // page.entered.connect(Component.prototype.dynamicPageEntered);
-    // }
-// }
 
 Component.prototype.installationFinishedPageIsShown = function()
 {
