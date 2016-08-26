@@ -19,7 +19,7 @@ function Controller()
     installer.setDefaultPageVisible(QInstaller.PerformInstallation, true);
     installer.setDefaultPageVisible(QInstaller.InstallationFinished, true);
   	installer.setDefaultPageVisible(QInstaller.StartMenuSelection, false);
-    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+    installer.setDefaultPageVisible(QInstaller.ComponentSelection, true);
 
   	// pages we don't need
     installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
@@ -46,7 +46,8 @@ Controller.prototype.ComponentSelectionPageCallback = function()
 	// Select your components -----------------------------------------------------
 	var page = gui.currentPageWidget();
 	// page.selectComponent("nomacs.x86");
-	page.deselectComponent("nomacs.x64");
+	page.selectComponent("nomacs.x64");
+	page.selectComponent("plugins.x64");
 	// Select your components -----------------------------------------------------
 
 	gui.clickButton(buttons.NextButton);

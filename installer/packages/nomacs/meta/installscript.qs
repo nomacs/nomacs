@@ -34,7 +34,7 @@
 
 function Component()
 {
-	console.log("v1 27.07.2016 --------------------------------");
+	console.log("26.08.2016 --------------------------------");
 	installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 	
@@ -54,7 +54,7 @@ function Component()
 		if (nmcX86)
 			nmcX64.setValue("Default", "false");
 				
-		if (!installer.isUpdater()) { // new installer
+		if (!installer.isUpdater() && installer.value("TargetDir").contains("(x86)")) { // new installer
 		
 			// change default target dir to Program Files
 			var pf = "C:/Program Files/";
