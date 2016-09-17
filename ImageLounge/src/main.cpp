@@ -92,7 +92,9 @@ int main(int argc, char *argv[]) {
 	
 	nmc::DkUtils::registerFileVersion();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
+#endif
 	QApplication a(argc, (char**)argv);
 
 	// init settings
