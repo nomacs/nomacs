@@ -1178,14 +1178,14 @@ void DkCommentWidget::createLayout() {
 	QPushButton* saveButton = new QPushButton(this);
 	saveButton->setObjectName("saveButton");
 	saveButton->setFlat(true);
-	saveButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/save.svg").pixmap(Settings::param().display().iconSize), Settings::param().display().hudFgdColor, 1.0f)));
+	saveButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/save.svg").pixmap(Settings::param().effectiveIconSize()), Settings::param().display().hudFgdColor, 1.0f)));
 	saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
 	saveButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return));
 
 	QPushButton* cancelButton = new QPushButton(this);
 	cancelButton->setObjectName("cancelButton");
 	cancelButton->setFlat(true);
-	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/trash.svg").pixmap(Settings::param().display().iconSize), Settings::param().display().hudFgdColor, 1.0f)));
+	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/trash.svg").pixmap(Settings::param().effectiveIconSize()), Settings::param().display().hudFgdColor, 1.0f)));
 	cancelButton->setToolTip(tr("Discard Changes (ESC)"));
 	cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
 

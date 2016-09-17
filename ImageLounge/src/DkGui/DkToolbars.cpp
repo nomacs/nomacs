@@ -600,7 +600,7 @@ DkTransferToolBar::~DkTransferToolBar() {
 void DkTransferToolBar::createIcons() {
 
 	// user needs to decide...
-	//this->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	//this->setIconSize(QSize(Settings::param().effectiveIconSize(), Settings::param().effectiveIconSize()));
 			
 	mToolBarIcons.resize(icon_toolbar_end);
 
@@ -876,7 +876,7 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
 
 	if (Settings::param().display().toolbarGradient) 
 		setObjectName("toolBarWithGradient");
@@ -935,8 +935,8 @@ void DkCropToolBar::createIcons() {
 		// now colorize all icons
 		for (int idx = 0; idx < mIcons.size(); idx++) {
 
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::On), Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().display().iconSize, QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().effectiveIconSize(this), QIcon::Normal, QIcon::On), Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().effectiveIconSize(this), QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

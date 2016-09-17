@@ -30,6 +30,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkMath.h"
+#include "DkThumbs.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
@@ -845,7 +846,7 @@ QPixmap DkImage::loadIcon(const QString & filePath) {
 	if (filePath.isEmpty())
 		return QPixmap();
 
-	int s = Settings::param().display().iconSize;
+	int s = Settings::param().effectiveIconSize();
 	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
 	
 	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode)
@@ -856,7 +857,7 @@ QPixmap DkImage::loadIcon(const QString & filePath) {
 
 QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col) {
 
-	int s = Settings::param().display().iconSize;
+	int s = Settings::param().effectiveIconSize();
 	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
 	icon = colorizePixmap(icon, col);
 
@@ -1138,7 +1139,7 @@ QImage DkImage::createThumb(const QImage& image) {
 	if (image.isNull())
 		return image;
 
-	int maxThumbSize = 160;
+	int maxThumbSize = (int)(max_thumb_size * Settings::param().dPIScaleFactor());
 	int imgW = image.width();
 	int imgH = image.height();
 

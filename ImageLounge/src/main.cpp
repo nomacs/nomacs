@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
 	
 	nmc::DkUtils::registerFileVersion();
 
+    QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 	QApplication a(argc, (char**)argv);
 
 	// init settings
