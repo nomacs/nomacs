@@ -65,7 +65,7 @@ Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
 Install required dependencies:
 
 ```
-$ brew install qt4 exiv2 homebrew/science/opencv libraw quazip
+$ brew install qt5 exiv2 homebrew/science/opencv libraw quazip
 
 ```
 
@@ -74,7 +74,7 @@ Go to the `nomacs` directory and run cmake to get the Makefiles
 ```
 $ mkdir build
 $ cd build
-$ cmake ../ImageLounge/.
+$ Qt5_DIR=/usr/local/opt/qt5/ cmake ../ImageLounge/.
 ```
 
 Run make:
