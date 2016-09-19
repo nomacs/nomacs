@@ -33,6 +33,7 @@
 #include "DkSettings.h"
 #include "DkTimer.h"
 #include "DkMath.h"
+#include "DkUtils.h"	// just needed for qInfo() #ifdef
 
 #pragma warning(push, 0)        
 #include <QObject>
