@@ -32,6 +32,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QImageReader>
+#include <QScreen>
 #include <QDesktopServices>
 #include <QTranslator>
 #include <QFileInfo>
@@ -86,6 +87,33 @@ void DkSettings::init() {
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Keywords") <<
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
+}
+
+
+qreal DkSettings::dPIScaleFactor(QWidget *widget) const {
+    qreal dpi = 96.0;
+    if (widget) {
+        dpi = (qreal) widget->logicalDpiX();
+    } else {
+        QList<QScreen*> screens = QApplication::screens();
+        for(QList<QScreen*>::const_iterator s = screens.constBegin(); s != screens.constEnd(); s++) {
+            if ((*s)->logicalDotsPerInch() > dpi) dpi = (*s)->logicalDotsPerInch();
+        }
+    }
+    if (dpi < 96.0) dpi = 96.0;
+    return dpi / 96.0;
+}
+
+int DkSettings::effectiveIconSize(QWidget *widget) const {
+    return (int)(display_p.iconSize * dPIScaleFactor(widget));
+}
+
+int DkSettings::effectiveThumbSize(QWidget *widget) const {
+    return (int)(display_p.thumbSize * dPIScaleFactor(widget));
+}
+
+int DkSettings::effectiveThumbPreviewSize(QWidget *widget) const {
+    return (int)(display_p.thumbPreviewSize * dPIScaleFactor(widget));
 }
 
 QStringList DkSettings::translatedCamData() const {

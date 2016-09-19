@@ -319,6 +319,10 @@ public:
 	App& app();
 	Global& global();
 	Display& display();
+	qreal dPIScaleFactor(QWidget *w=NULL) const;
+	int effectiveIconSize(QWidget *w=NULL) const;
+	int effectiveThumbSize(QWidget *w=NULL) const;
+	int effectiveThumbPreviewSize(QWidget *w=NULL) const;
 	SlideShow& slideShow();
 	Sync& sync();
 	MetaData& metaData();
