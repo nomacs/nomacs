@@ -229,7 +229,7 @@ DkTabEntryWidget::DkTabEntryWidget(const QIcon& icon, const QString& text, QWidg
 
 	setObjectName("DkTabEntryWidget");
 
-	QSize s(Settings::param().display().iconSize, Settings::param().display().iconSize);
+	QSize s(Settings::param().effectiveIconSize(parent), Settings::param().effectiveIconSize(parent));
 	QPixmap pm = DkImage::colorizePixmap(icon.pixmap(s), QColor(255, 255, 255));
 	setIcon(pm);
 	setIconSize(s);
@@ -649,7 +649,7 @@ void DkDisplayPreference::createLayout() {
 	sbIconSize->setSuffix(" px");
 	sbIconSize->setMinimum(16);
 	sbIconSize->setMaximum(1024);
-	sbIconSize->setValue(Settings::param().display().iconSize);
+	sbIconSize->setValue(Settings::param().effectiveIconSize(sbIconSize));
 
 	DkGroupWidget* iconGroup = new DkGroupWidget(tr("Icon Size"), this);
 	iconGroup->addWidget(sbIconSize);

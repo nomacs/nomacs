@@ -126,7 +126,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	exitButton = new QPushButton(tr("CLOSE"), this);
 	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
-	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(Settings::param().display().iconSize), QColor(0,0,0,200), 1.0f)));
+	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(Settings::param().effectiveIconSize(this)), QColor(0,0,0,200), 1.0f)));
 	exitButton->setToolTip(tr("Close (ESC)"));
 	exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
 	exitButton->move(10, 435);
@@ -2279,7 +2279,7 @@ void DkPrintPreviewDialog::createLayout() {
 	if (Settings::param().display().toolbarGradient)
 		toolbar->setObjectName("toolbarWithGradient");
 
-	toolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	toolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
 
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
 	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(mZoomInAction));

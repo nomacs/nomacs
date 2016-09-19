@@ -248,7 +248,7 @@ void DkNoMacs::createToolbar() {
 	mToolbar = new DkMainToolBar(tr("Edit Toolbar"), this);
 	mToolbar->setObjectName("EditToolBar");
 
-	mToolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	mToolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
 
 	if (Settings::param().display().toolbarGradient)
 		mToolbar->setObjectName("toolBarWithGradient");
@@ -302,7 +302,7 @@ void DkNoMacs::createToolbar() {
 	if (Settings::param().display().toolbarGradient)
 		mMovieToolbar->setObjectName("toolBarWithGradient");
 
-	mMovieToolbar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	mMovieToolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
 
 	mToolbar->allActionsAdded();
 
@@ -3255,7 +3255,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect((DkViewPortContrast*)viewport(), SIGNAL(tFSliderAdded(qreal)), mTransferToolBar, SLOT(insertSlider(qreal)));
 	connect((DkViewPortContrast*)viewport(), SIGNAL(imageModeSet(int)), mTransferToolBar, SLOT(setImageMode(int)));
 
-	mTransferToolBar->setIconSize(QSize(Settings::param().display().iconSize, Settings::param().display().iconSize));
+	mTransferToolBar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
 
 	if (Settings::param().display().toolbarGradient)
 		mTransferToolBar->setObjectName("toolBarWithGradient");

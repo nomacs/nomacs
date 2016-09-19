@@ -227,7 +227,7 @@ void DkLabel::init() {
 
 	mTime = -1;
 	mFixedWidth = -1;
-	mFontSize = 17;
+	mFontSize = 12;
 	mTextCol = Settings::param().display().hudFgdColor;
 	mBlocked = false;
 
@@ -236,7 +236,7 @@ void DkLabel::init() {
 
 	// default look and feel
 	QFont font;
-	font.setPixelSize(mFontSize);
+	font.setPointSize(mFontSize);
 	QLabel::setFont(font);
 	QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse);
 
@@ -289,10 +289,10 @@ QString DkLabel::getText() {
 
 void DkLabel::setFontSize(int fontSize) {
 
-	mFontSize = fontSize;
+	mFontSize = fontSize; 
 
 	QFont font;
-	font.setPixelSize(fontSize);
+	font.setPointSize(fontSize);
 	QLabel::setFont(font);
 	QLabel::adjustSize();
 }
