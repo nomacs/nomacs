@@ -381,6 +381,11 @@ void DkGeneralPreference::createLayout() {
 	cbZoomOnWheel->setToolTip(tr("If checked, the mouse wheel zooms - otherwise it is used to switch between images."));
 	cbZoomOnWheel->setChecked(Settings::param().global().zoomOnWheel);
 
+	QCheckBox* cbHorZoomSkips = new QCheckBox(tr("Next Image on Horizontal Zoom"), this);
+	cbHorZoomSkips->setObjectName("horZoomSkips");
+	cbHorZoomSkips->setToolTip(tr("If checked, horizontal wheel events load the next/previous images."));
+	cbHorZoomSkips->setChecked(Settings::param().global().horZoomSkips);
+
 	QCheckBox* cbDoubleClickForFullscreen = new QCheckBox(tr("Double Click Opens Fullscreen"), this);
 	cbDoubleClickForFullscreen->setObjectName("doubleClickForFullscreen");
 	cbDoubleClickForFullscreen->setToolTip(tr("If checked, a double click on the canvas opens the fullscreen mode."));
@@ -416,6 +421,7 @@ void DkGeneralPreference::createLayout() {
 	generalGroup->addWidget(cbLogRecentFiles);
 	generalGroup->addWidget(cbLoopImages);
 	generalGroup->addWidget(cbZoomOnWheel);
+	generalGroup->addWidget(cbHorZoomSkips);
 	generalGroup->addWidget(cbDoubleClickForFullscreen);
 	generalGroup->addWidget(cbSwitchModifier);
 	generalGroup->addWidget(cbEnableNetworkSync);
@@ -496,6 +502,13 @@ void DkGeneralPreference::on_zoomOnWheel_toggled(bool checked) const {
 
 	if (Settings::param().global().zoomOnWheel != checked) {
 		Settings::param().global().zoomOnWheel = checked;
+	}
+}
+
+void DkGeneralPreference::on_horZoomSkips_toggled(bool checked) const {
+
+	if (Settings::param().global().horZoomSkips != checked) {
+		Settings::param().global().horZoomSkips = checked;
 	}
 }
 

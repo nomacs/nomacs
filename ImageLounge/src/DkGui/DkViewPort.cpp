@@ -1032,7 +1032,8 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 	//	qDebug() << "ALT modifier";
 
 	if ((!Settings::param().global().zoomOnWheel && event->modifiers() != mCtrlMod) || 
-		(Settings::param().global().zoomOnWheel && (event->modifiers() & mCtrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
+		(Settings::param().global().zoomOnWheel && (event->modifiers() & mCtrlMod || 
+		(Settings::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();

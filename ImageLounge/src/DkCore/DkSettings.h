@@ -221,6 +221,7 @@ public:
 		Qt::KeyboardModifier altMod;
 		Qt::KeyboardModifier ctrlMod;
 		bool zoomOnWheel;
+		bool horZoomSkips;
 		bool doubleClickForFullscreen;
 		bool showBgImage;
 
