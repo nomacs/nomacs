@@ -1800,6 +1800,8 @@ void DkBatchWidget::createLayout() {
 	mCentralLayout = new QStackedLayout(centralWidget);
 	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 	for (DkBatchContainer* w : mWidgets) {
+		if (!w)
+			continue;
 		mCentralLayout->addWidget(w->contentWidget());
 		connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
 	}
@@ -1833,6 +1835,9 @@ void DkBatchWidget::createLayout() {
 	QButtonGroup* tabGroup = new QButtonGroup(this);
 
 	for (DkBatchContainer* w : mWidgets) {
+
+		if (!w)
+			continue;
 		tabLayout->addWidget(w->headerWidget());
 		tabGroup->addButton(w->headerWidget());
 	}
