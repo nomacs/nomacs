@@ -52,6 +52,7 @@
 #include <QTextStream>
 #include <QDesktopServices>
 #include <QCommandLineParser>
+#include <QMessageBox>
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
@@ -279,7 +280,15 @@ int main(int argc, char *argv[]) {
 		w, SLOT(loadFile(const QFileInfo&)));
 #endif
 
-	int rVal = a.exec();
+	int rVal = -1;
+	try {
+		rVal = a.exec();
+	}
+	catch (const std::bad_alloc&) {
+		
+		QMessageBox::critical(0, QObject::tr("Critical Error"), 
+			QObject::tr("Sorry, nomacs ran out of memory..."), QMessageBox::Ok);
+	}
 
 	if (w)
 		delete w;	// we need delete so that settings are saved (from destructors)

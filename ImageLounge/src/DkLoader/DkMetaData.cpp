@@ -767,16 +767,14 @@ QStringList DkMetaDataT::getExifKeys() const {
 		return exifKeys;
 
 	Exiv2::ExifData &exifData = mExifImg->exifData();
-	Exiv2::ExifData::const_iterator end = exifData.end();
 
 	if (exifData.empty()) {
 		return exifKeys;
-
 	} else {
 
-		for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+		for (Exiv2::Exifdatum i : exifData) {
 
-			std::string tmp = i->key();
+			std::string tmp = i.key();
 			exifKeys << QString::fromStdString(tmp);
 
 			//qDebug() << QString::fromStdString(tmp);

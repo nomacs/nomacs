@@ -849,6 +849,7 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 }
 
 QImage DkBasicLoader::image() const {
+	
 	if (mImages.empty())
 		return QImage();
 

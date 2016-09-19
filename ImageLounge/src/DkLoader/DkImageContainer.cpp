@@ -319,7 +319,7 @@ QImage DkImageContainer::imageScaledToHeight(int height) {
 
 QImage DkImageContainer::imageScaledToWidth(int width) {
 
-	// check cash first
+	// check cache first
 	for (const QImage& img : scaledImages) {
 		if (img.width() == width)
 			return img;
@@ -435,7 +435,9 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString& f
 
 	try {
 		loader->loadGeneral(filePath, fileBuffer, true);
-	} catch(...) {}
+	} catch (...) {
+		qWarning() << "Unknown error in DkImageContainer::loadImageIntern";
+	}
 
 	return loader;
 }
