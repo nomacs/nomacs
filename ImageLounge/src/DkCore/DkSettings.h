@@ -316,13 +316,14 @@ public:
 	bool isPortable();
 	QString settingsPath() const;
 
-	App& app();
-	Global& global();
-	Display& display();
-	qreal dPIScaleFactor(QWidget *w=NULL) const;
+	double dPIScaleFactor(QWidget *w=NULL) const;
 	int effectiveIconSize(QWidget *w=NULL) const;
 	int effectiveThumbSize(QWidget *w=NULL) const;
 	int effectiveThumbPreviewSize(QWidget *w=NULL) const;
+
+	App& app();
+	Global& global();
+	Display& display();
 	SlideShow& slideShow();
 	Sync& sync();
 	MetaData& metaData();

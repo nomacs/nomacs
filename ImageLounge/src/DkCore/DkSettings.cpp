@@ -90,11 +90,11 @@ void DkSettings::init() {
 }
 
 
-qreal DkSettings::dPIScaleFactor(QWidget *widget) const {
+double DkSettings::dPIScaleFactor(QWidget *widget) const {
     
-	qreal dpi = 96.0;
+	double dpi = 96.0;
     if (widget) {
-        dpi = (qreal) widget->logicalDpiX();
+        dpi = (double) widget->logicalDpiX();
     } else {
         QList<QScreen*> screens = QApplication::screens();
         for(const QScreen* s : screens) {

@@ -258,7 +258,7 @@ public:
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QString&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) { return false; };
+	bool loadOpenCVVecFile(const QString&, QImage&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) { return false; };
 	int mergeVecFiles(const QStringList&, QString&) const { return 0; };
 	bool readHeader(const unsigned char**, int&, int&) const { return false; };
 	void getPatchSizeFromFileName(const QString&, int&, int&) const {};
