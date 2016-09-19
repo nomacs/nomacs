@@ -28,9 +28,9 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <iostream>
 
-#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QImageReader>
 #include <QScreen>
 #include <QDesktopServices>
@@ -91,13 +91,15 @@ void DkSettings::init() {
 
 
 qreal DkSettings::dPIScaleFactor(QWidget *widget) const {
-    qreal dpi = 96.0;
+    
+	qreal dpi = 96.0;
     if (widget) {
         dpi = (qreal) widget->logicalDpiX();
     } else {
         QList<QScreen*> screens = QApplication::screens();
-        for(QList<QScreen*>::const_iterator s = screens.constBegin(); s != screens.constEnd(); s++) {
-            if ((*s)->logicalDotsPerInch() > dpi) dpi = (*s)->logicalDotsPerInch();
+        for(const QScreen* s : screens) {
+            if (s->logicalDotsPerInch() > dpi) 
+				dpi = s->logicalDotsPerInch();
         }
     }
     if (dpi < 96.0) dpi = 96.0;

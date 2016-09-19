@@ -366,7 +366,7 @@ protected:
 
 };
 
-class DkExplorer : public DkDockWidget {
+class DllGuiExport DkExplorer : public DkDockWidget {
 	Q_OBJECT
 
 public:

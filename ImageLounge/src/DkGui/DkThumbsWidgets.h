@@ -41,6 +41,16 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
+#ifndef DllGuiExport
+#ifdef DK_GUI_DLL_EXPORT
+#define DllGuiExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllGuiExport Q_DECL_IMPORT
+#else
+#define DllGuiExport Q_DECL_IMPORT
+#endif
+#endif
+
 // Qt defines
 class QMenu;
 class QToolBar;
@@ -213,7 +223,7 @@ protected:
 	QPointF mLastMove;
 };
 
-class DkThumbScene : public QGraphicsScene {
+class DllGuiExport DkThumbScene : public QGraphicsScene {
 	Q_OBJECT
 
 public:
@@ -290,7 +300,7 @@ protected:
 
 };
 
-class DkThumbScrollWidget : public DkWidget {
+class DllGuiExport DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:

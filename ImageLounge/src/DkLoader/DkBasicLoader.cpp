@@ -146,7 +146,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, bool loadMetaData, bool
  **/ 
 bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast) {
 
-
+	DkTimer dt;
 	bool imgLoaded = false;
 	
 	QFileInfo fInfo(filePath);
@@ -311,7 +311,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	if (imgLoaded)
 		setEditImage(img, tr("Original Image"));
 
-	//qDebug() << qImg.text();
+	qInfo() << filePath << "loaded in" << dt;
 
 	return imgLoaded;
 }
@@ -1657,7 +1657,8 @@ QUrl FileDownloader::getUrl() const {
 // DkZipContainer --------------------------------------------------------------------
 DkZipContainer::DkZipContainer(const QString& encodedFilePath) {
 
-	if(encodedFilePath.contains(mZipMarker)) {
+	if (!encodedFilePath.isEmpty() && 
+		encodedFilePath.contains(mZipMarker)) {
 		mImageInZip = true;
 		mEncodedFilePath = encodedFilePath;
 		mZipFilePath = decodeZipFile(encodedFilePath);
