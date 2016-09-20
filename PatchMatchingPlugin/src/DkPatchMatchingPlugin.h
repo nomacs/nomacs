@@ -100,6 +100,8 @@ public:
 	void checkWorldMatrixChanged();
 	QByteArray createCurrentJson();
 
+	auto getNearestPolygon(QPointF point);
+
 public slots:
 	void setVisible(bool visible) override;
 	void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;

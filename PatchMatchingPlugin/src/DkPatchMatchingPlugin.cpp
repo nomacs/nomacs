@@ -168,7 +168,6 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::loadFromFile()
 	{
-
 		clear();
 
 		QFile file{ getJsonFilePath() };
@@ -261,7 +260,6 @@ namespace nmp {
 		auto poly = addClone(currentPolygon());
 		poly->translate(400, 0);
 
-		//updateInactive();
 		update();
 		updateInactive();
 
@@ -308,8 +306,6 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::saveToFile()
 	{
-	
-
 		// write to file
 		QFile saveFile(getJsonFilePath());
 
@@ -322,11 +318,43 @@ namespace nmp {
 		saveFile.write(mCurrentFile);
 
 		qDebug() << "[PatchMatchingPlugin] Saving file : Success!!!";
+	}
 
+	auto unmapToViewPort(QSharedPointer<nmp::DkPolygonRenderer> poly, QPointF point) {
+		return (poly->getTransform()*poly->getWorldMatrix()).map(point);
+	}
+
+	auto DkPatchMatchingViewPort::getNearestPolygon(QPointF point) {
+		// First Point is default polygon
+		auto polygon = firstPoly();
+
+		if (!currentPolygon()->points().isEmpty()) {
+			auto startDiff = QLineF(currentPolygon()->points().first()->getPos(), point).length();	// Set Start Difference from first to point of the current Polygon
+			for (auto r : mRenderer) {
+				// Only on active polygon
+				if (!r->isInactive()) {
+					auto poly_points = r->getPolygon()->points();
+					auto first = unmapToViewPort(r, poly_points.first()->getPos());
+					auto last = unmapToViewPort(r, poly_points.last()->getPos());
+
+					auto first_diff = QLineF(first, point).length();
+					auto last_diff = QLineF(last, point).length();
+
+					if (first_diff < startDiff) {
+						polygon = r;
+						startDiff = first_diff;
+					}
+					if (last_diff < startDiff){
+						polygon = r;
+						startDiff = last_diff;
+					}
+				}
+			}
+		}
+		return polygon;
 	}
 
 	void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
-
 		// panning -> redirect to viewport
 		if (event->buttons() == Qt::LeftButton &&
 			(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
@@ -337,9 +365,11 @@ namespace nmp {
 		}
 
 		if (event->buttons() == Qt::LeftButton && parent()) {
-			QPointF point = event->pos(); //
+			QPointF point = event->pos();
 
-			firstPoly()->addPointMouseCoords(point);
+			// Get nearest polygon to point
+			auto nearest_poly = getNearestPolygon(point);
+			nearest_poly->addPointMouseCoords(point);
 		}
 	}
 
@@ -644,7 +674,7 @@ namespace nmp {
 	{
 		auto text = "Polygon";
 		mPolygonCombobox->addItem(text);
-		qDebug() << "COunt = " << mPolygonCombobox->count();
+		qDebug() << "Count = " << mPolygonCombobox->count();
 		mPolygonCombobox->setItemData(mPolygonCombobox->count() - 1, color, Qt::BackgroundRole);
 		if (select) {
 			mPolygonCombobox->setCurrentIndex(mPolygonCombobox->count() - 1);
