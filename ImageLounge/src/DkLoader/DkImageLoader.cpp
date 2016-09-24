@@ -225,7 +225,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 	if (mFolderUpdated && newDirPath == mCurrentDir) {
 		
 		mFolderUpdated = false;
-		QFileInfoList files = getFilteredFileInfoList(newDirPath, mIgnoreKeywords, mKeywords, mFolderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		QFileInfoList files = getFilteredFileInfoList(newDirPath, mIgnoreKeywords, mKeywords, mFolderFilterString);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images)
  		if (files.empty()) {
@@ -257,12 +257,12 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 		mCurrentDir = newDirPath;
 		mFolderUpdated = false;
 
-		mFolderKeywords.clear();	// delete key words -> otherwise user may be confused
+		mFolderFilterString.clear();	// delete key words -> otherwise user may be confused
 
 		if (scanRecursive && Settings::param().global().scanSubFolders)
 			files = updateSubFolders(mCurrentDir);
 		else 
-			files = getFilteredFileInfoList(mCurrentDir, mIgnoreKeywords, mKeywords, mFolderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+			files = getFilteredFileInfoList(mCurrentDir, mIgnoreKeywords, mKeywords, mFolderFilterString);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
 			emit showInfoSignal(tr("%1 \n does not contain any image").arg(mCurrentDir), 4000);	// stop showing
@@ -781,7 +781,7 @@ void DkImageLoader::deactivate() {
 void DkImageLoader::activate(bool isActive /* = true */) {
 
 	if (!isActive) {
-		// go to sleep - schlofand wöhlar ihr camölar
+		// go to sleep - schlofand wï¿½hlar ihr camï¿½lar
 		blockSignals(true);
 		clearPath();
 	}
@@ -1762,7 +1762,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
  * @param keywords if one of these keywords is not in the file name, the file will be ignored.
  * @return QStringList all filtered files of the current directory.
  **/ 
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords, QStringList keywords, QStringList folderKeywords) {
+QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords, QStringList keywords, QString folderKeywords) {
 
 	DkTimer dt;
 
@@ -1836,20 +1836,9 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
 	}
 
-	if (!folderKeywords.empty()) {
-		
-		QStringList resultList = fileList;
-		for (int idx = 0; idx < folderKeywords.size(); idx++) {
-			resultList = resultList.filter(folderKeywords[idx], Qt::CaseInsensitive);
-		}
-
-		// if string match returns nothing -> try a regexp
-		if (resultList.empty())
-			resultList = fileList.filter(QRegExp(folderKeywords.join(" ")));
-
-		qDebug() << "filtered file list (get)" << resultList;
-		qDebug() << "keywords: " << folderKeywords;
-		fileList = resultList;
+	if (folderKeywords != "") {
+		QStringList filterList = fileList;
+		fileList = DkUtils::filterStringList(folderKeywords, filterList);
 	}
 
 	if (Settings::param().resources().filterDuplicats) {
@@ -2009,20 +1998,24 @@ void DkImageLoader::loadLastDir() {
 	setDir(Settings::param().global().recentFolders[0]);
 }
 
-void DkImageLoader::setFolderFilter(const QString& filter) {
+void DkImageLoader::setFolderFilters(const QStringList& filter) {
 
-	setFolderFilters(filter.split(" "));
+	setFolderFilter(filter.join(" "));
 }
 
-void DkImageLoader::setFolderFilters(const QStringList& filters) {
+void DkImageLoader::setFolderFilter(const QString& filter) {
 
-	mFolderKeywords = filters;
+	mFolderFilterString = filter;
 	mFolderUpdated = true;
 	loadDir(mCurrentDir);	// simulate a folder update operation
 }
 
+QString DkImageLoader::getFolderFilter() {
+	return mFolderFilterString;
+}
+
 QStringList DkImageLoader::getFolderFilters() {
-	return mFolderKeywords;
+	return mFolderFilterString.split(" ");
 }
 
 /**

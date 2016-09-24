@@ -229,7 +229,7 @@ public slots:
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
-	void filterSignal(const QStringList&) const;
+	void filterSignal(const QString&) const;
 
 protected:
 

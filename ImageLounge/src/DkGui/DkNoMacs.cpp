@@ -1602,7 +1602,7 @@ void DkNoMacs::find(bool filterAction) {
 		searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
 		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDirPath());
 
-		connect(searchDialog, SIGNAL(filterSignal(const QStringList&)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(const QStringList&)));
+		connect(searchDialog, SIGNAL(filterSignal(const QString&)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilter(const QString&)));
 		connect(searchDialog, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		int answer = searchDialog->exec();
 
@@ -1610,7 +1610,7 @@ void DkNoMacs::find(bool filterAction) {
 	}
 	else {
 		// remove the filter 
-		getTabWidget()->getCurrentImageLoader()->setFolderFilters(QStringList());
+		getTabWidget()->getCurrentImageLoader()->setFolderFilter(QString());
 	}
 
 }

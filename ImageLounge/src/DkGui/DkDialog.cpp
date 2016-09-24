@@ -599,7 +599,7 @@ void DkSearchDialog::init() {
 	history->setCompletionMode(QCompleter::InlineCompletion);
 	mSearchBar = new QLineEdit();
 	mSearchBar->setObjectName("searchBar");
-	mSearchBar->setToolTip(tr("Type a search word or a regular expression"));
+	mSearchBar->setToolTip(tr("Type search words or a regular expression"));
 	mSearchBar->setCompleter(history);
 
 	mStringModel = new QStringListModel(this);
@@ -614,7 +614,7 @@ void DkSearchDialog::init() {
 	mFilterButton->setObjectName("filterButton");
 
 	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	mButtons->button(QDialogButtonBox::Ok)->setDefault(false);
 	mButtons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
 	mButtons->addButton(mFilterButton, QDialogButtonBox::ActionRole);
 
@@ -652,7 +652,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		return;
 	
 	mResultList = DkUtils::filterStringList(text, mFileList);
-	qDebug() << "searching takes: " << dt;
+	qDebug() << "searching [" << text << "] - converted to individual keywords [" << text.split(" ") << "] takes: " << dt;
 	mCurrentSearch = text;
 
 	if (mResultList.empty()) {
@@ -717,8 +717,10 @@ void DkSearchDialog::accept() {
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
-	filterSignal(mCurrentSearch.split(" "));
+
+	filterSignal(mCurrentSearch);
 	mIsFilterPressed = true;
+	DkSearchDialog::accept(); 
 	done(filter_button);
 }
 
@@ -726,10 +728,12 @@ void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
 
 	if (defaultButton == find_button) {
 		mButtons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+		mButtons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
 		mFilterButton->setAutoDefault(false);
 	}
 	else if (defaultButton == filter_button) {
 		mButtons->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+		mButtons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
 		mFilterButton->setAutoDefault(true);
 	}
 }

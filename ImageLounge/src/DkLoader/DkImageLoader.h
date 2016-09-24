@@ -72,7 +72,7 @@ public:
 
 	static QStringList getFoldersRecursive(const QString& dirPath);
 	QFileInfoList updateSubFolders(const QString& rootDirPath);
-	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
+	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QString folderKeywords = QString());
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -157,6 +157,7 @@ public slots:
 	QString saveTempFile(const QImage& img, const QString& name = "img", const QString& fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilter(const QString& filter);
 	void setFolderFilters(const QStringList& filters);
+	QString getFolderFilter();
 	QStringList getFolderFilters();
 	bool loadDir(const QString& newDirPath, bool scanRecursive = true);
 	void errorDialog(const QString& msg) const;
@@ -182,7 +183,7 @@ protected:
 
 	QStringList mIgnoreKeywords;
 	QStringList mKeywords;
-	QStringList mFolderKeywords;		// are deleted if a new folder is opened
+	QString mFolderFilterString;		// are deleted if a new folder is opened
 
 	QTimer mDelayedUpdateTimer;
 	bool mTimerBlockedUpdate = false;
