@@ -1,0 +1,38 @@
+nomacs 3.4.0
+============
+- Batch UI reworked
+- Batch Profiles added
+- Cropping to metadata
+- RGB to Gray improved
+- Crash on delete fixed
+- Slow thumbnail rendering fixed
+- Start-up time improved
+- RAW/PSD orientation fixed
+
+nomacs 3.2.0
+============
+- Plugin framework redesigned
+- New preferences
+- Undo & History dock added
+- Statusbar improved (e.g. zoom level)
+- All Icons are SVG (UHD monitors)
+- Compression added to Batch
+- Image transitions extended (swipe)
+- Logging added
+- Recent files cleaned
+
+nomacs 3.0.0
+============
+- New online installer (Windows)
+- Plugins are now available on Linux
+- Full SVG support
+- Quick Launch added
+- Tiny planet option added
+- Batch processing improved
+- Signed executable (Windows only)
+- Libraries updated (Qt 5.5, OpenCV 3)
+- Command line arguments added
+- Zoom control improved
+- nomacs learned two new languages: Bulgarian and Ukrainian
+
+- new plugin: Page Extraction (detects and/or crops document pages)

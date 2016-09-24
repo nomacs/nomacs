@@ -121,7 +121,7 @@ bool QPsdHandler::canRead() const
         input >> signature >> version;
         if (version == 1)
             setFormat("psd");
-        else if (version == 1)
+        else if (version == 2)
             setFormat("psb");
         else return false;
         return true;
@@ -134,11 +134,8 @@ bool QPsdHandler::canRead(QIODevice *device)
     return device->peek(4) == "8BPS";
 }
 
-#include <QDebug>
-
 bool QPsdHandler::read(QImage *image)
 {
-	
     QDataStream input(device());
     quint32 signature, height, width, colorModeDataLength, imageResourcesLength;
     quint16 version, channels, depth, colorMode, compression;
@@ -148,7 +145,6 @@ bool QPsdHandler::read(QImage *image)
 
     input >> signature;
     if (signature != 0x38425053) //'8BPS'
-	//if (signature == '8BPS')
         return false;
 
     input >> version; //version should be 1(PSD) or 2(PSB)
@@ -261,13 +257,13 @@ bool QPsdHandler::read(QImage *image)
     quint64 totalBytesPerChannel = width * height * depth / 8;
 
     switch (compression) {
-    case 0: /*RAW IMAGE DATA - UNDER TESTING*/
+    case 0: /*RAW IMAGE DATA*/
     {
         /* NOTE: This algorithm might be inaccurate and was based ONLY
          * on a psd file I obtained (no references) */
 
         /* This code is faster than the alternative below */
-        int size = channels * totalBytesPerChannel;
+        quint64 size = channels * totalBytesPerChannel;
         imageData.resize(size);
         input.readRawData(imageData.data(), size);
         /* Alternative:
@@ -292,7 +288,6 @@ bool QPsdHandler::read(QImage *image)
 
         /* Code based on PackBits implementation which is primarily used by
          * Photoshop for RLE encoding/decoding */
-
         while (!input.atEnd()) {
             input >> byte;
             if (byte > 128) {
@@ -322,7 +317,7 @@ bool QPsdHandler::read(QImage *image)
                 delete [] temp;
                 */
                 /* This code is faster than the 2 alternatives above */
-                int size = imageData.size();
+                quint64 size = imageData.size();
                 imageData.resize(size + count);
                 input.readRawData(imageData.data() + size, count);
             }
@@ -468,59 +463,8 @@ bool QPsdHandler::read(QImage *image)
             break;
         case 32:
         {
-
-			//BUG: "scale" is almost close... obtained through trial and error
-			const qreal scale = (qPow(2, 8) - 1) *  (qPow(2, 8) - 1) / (qPow(2, 32) - 1);
-			switch (channels) {
-			case 1:
-				{
-					quint32 data32;
-					QImage result(width, height, QImage::Format_RGB32);
-					quint8 *data8 = (quint8*)imageData.constData();
-					QRgb  *p, *end;
-					for (quint32 y = 0; y < height; ++y) {
-						p = (QRgb *)result.scanLine(y);
-						end = p + width;
-						while (p < end) {
-							data32 = ((*data8 << 24) + (*(data8 + 1) << 16) +
-								(*(data8 + 2) << 8) + *(data8 + 3)) * scale;
-							*p = qRgb(data32, data32, data32);
-							++p; data8 += 4;
-						}
-					}
-					*image = result;
-					return true;
-				}
-				break;
-				/* graycale with alpha channel */
-			default: //excess channels other than Gray are considered alphas
-				{
-					quint32 data32, alpha32;
-					QImage result(width, height, QImage::Format_ARGB32);
-					quint8 *data8 = (quint8*)imageData.constData();
-					quint8 *alpha8 = data8 + totalBytesPerChannel;
-					QRgb  *p, *end;
-					for (quint32 y = 0; y < height; ++y) {
-						p = (QRgb *)result.scanLine(y);
-						end = p + width;
-						while (p < end) {
-							data32 = ((*data8 << 24) + (*(data8 + 1) << 16) +
-								(*(data8 + 2) << 8) + *(data8 + 3)) * scale;
-							alpha32 = ((*alpha8 << 24) + (*(alpha8 + 1) << 16) +
-								(*(alpha8 + 2) << 8) + *(alpha8 + 3)) * scale;
-							*p = qRgba(data32, data32, data32, alpha32);
-							++p; data8 += 4; alpha8 += 4;
-						}
-					}
-					*image = result;
-					return true;
-				}
-				break;
-			}
-
-			
-			////32 bpc (HDR)... requires tonemapping
-   //         return false;
+            //32 bpc (HDR)... requires tonemapping
+            return false;
         }
             break;
         default:
@@ -604,7 +548,25 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = qRgba(*red, *green, *blue, *alpha);
+                        // Fix for blending image with white
+                        if(*alpha != 0)
+                        {
+                            quint8 r = *red;
+                            quint8 g = *green;
+                            quint8 b = *blue;
+                            quint8 a = *alpha;
+
+                            quint8 rFixed = (((r + a) - 255) * 255) / a;
+                            quint8 gFixed = (((g + a) - 255) * 255) / a;
+                            quint8 bFixed = (((b + a) - 255) * 255) / a;
+
+                            *p = qRgba(rFixed, gFixed, bFixed, a);
+                        }
+                        else
+                        {
+                            *p = qRgba(*red, *green, *blue, *alpha);
+                        }
+
                         ++p; ++red; ++green; ++blue; ++alpha;
                     }
                 }
@@ -668,69 +630,11 @@ bool QPsdHandler::read(QImage *image)
                 break;
             }
         }
-            break;
+            break;            
         case 32:
         {
-			
-			//BUG: "scale" is almost close... obtained through trial and error
-			const qreal scale = (qPow(2, 8) - 1) *  (qPow(2, 8) - 1) / (qPow(2, 32) - 1);
-			switch (channels) {
-			case 3:
-				{
-					QImage result(width, height, QImage::Format_RGB32);
-					quint32 red32, blue32, green32;
-					quint8 *red8 = (quint8*)imageData.constData();
-					quint8 *green8 = red8 + totalBytesPerChannel;
-					quint8 *blue8 = green8 + totalBytesPerChannel;
-					QRgb  *p, *end;
-					for (quint32 y = 0; y < height; ++y) {
-						p = (QRgb *)result.scanLine(y);
-						end = p + width;
-						while (p < end) {
-							red32 = ((*red8 << 24) + (*(red8 + 1) << 16) +
-								(*(red8 + 2) << 8) + *(red8 + 3)) * scale;
-							green32 = ((*green8 << 24) + (*(green8 + 1) << 16) +
-								(*(green8 + 2) << 8) + *(green8 + 3)) * scale;
-							blue32 = ((*blue8 << 24) + (*(blue8 + 1) << 16) +
-								(*(blue8 + 2) << 8) + *(blue8 + 3)) * scale;
-							*p = qRgb(red32, green32, blue32);
-							++p;  red8 += 4; green8 += 4; blue8 += 4;
-						}
-					}
-					*image = result;
-					return true;
-				}
-				break;
-			default: //excess channels other than RGB are considered alphas
-				{
-					QImage result(width, height, QImage::Format_ARGB32);
-					quint32 red32, blue32, green32, alpha32;
-					quint8 *red8 = (quint8*)imageData.constData();
-					quint8 *green8 = red8 + totalBytesPerChannel;
-					quint8 *blue8 = green8 + totalBytesPerChannel;
-					quint8 *alpha8 = blue8 + totalBytesPerChannel;
-					QRgb  *p, *end;
-					for (quint32 y = 0; y < height; ++y) {
-						p = (QRgb *)result.scanLine(y);
-						end = p + width;
-						while (p < end) {
-							red32 = ((*red8 << 24) + (*(red8 + 1) << 16) +
-								(*(red8 + 2) << 8) + *(red8 + 3)) * scale;
-							green32 = ((*green8 << 24) + (*(green8 + 1) << 16) +
-								(*(green8 + 2) << 8) + *(green8 + 3)) * scale;
-							blue32 = ((*blue8 << 24) + (*(blue8 + 1) << 16) +
-								(*(blue8 + 2) << 8) + *(blue8 + 1)) * scale;
-							alpha32 = ((*alpha8 << 24) + (*(alpha8 + 1) << 16) +
-								(*(alpha8 + 2) << 8) + *(alpha8 + 3)) * scale;
-							*p = qRgba(red32, green32, blue32, alpha32);
-							++p;  red8 += 4; green8 += 4; blue8 += 4; alpha8 += 4;
-						}
-					}
-					*image = result;
-					return true;
-				}
-				break;
-			}
+            //32 bpc (HDR)... requires tonemapping
+            return false;
         }
             break;
         default:

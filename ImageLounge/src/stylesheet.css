@@ -1,0 +1,535 @@
+/* batch */
+nmc--DkBatchInput QTextEdit {
+	border: none;
+}
+
+QLabel#batchContentTitle {
+	text-transform: uppercase;
+	font: light "Segoe UI";
+	font-size: 16pt;
+	font-weight: 100;
+	color: #333;
+}
+
+QLabel#batchContentInfo {
+	font-style: italic;
+	padding-bottom: 20px;
+	color: #666;
+	font-size: 8pt;
+}
+
+QLabel#BatchInfo {
+	color: #fff;
+	font-style: italic;
+}
+
+QLabel#FileNamePreviewLabel {
+	font-size: 10pt;
+}
+
+nmc--DkBatchWidget nmc--DkResizableScrollArea {
+	border: none;
+}
+
+nmc--DkBatchButtonsWidget QPushButton:hover,
+nmc--DkBatchButtonsWidget QPushButton:checked:hover {
+	background-color: rgba(255, 255, 255, 30);
+} 
+
+nmc--DkBatchButtonsWidget QPushButton:pressed,
+nmc--DkBatchButtonsWidget QPushButton:checked:pressed {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+nmc--DkBatchButtonsWidget QPushButton:checked {
+	background-color: none;
+}
+
+nmc--DkBatchButtonsWidget QPushButton {
+	border: none;
+}
+
+QTabBar::close-button {
+    image: url(:/nomacs/img/close-tab.svg);
+}
+
+QTabBar::close-button:hover {
+	image: url(:/nomacs/img/close-tab-hover.svg);
+}
+
+QDockWidget {
+	font: light "Segoe UI";
+	color: #000;
+	border: 1px solid #ccc;
+}
+
+QDockWidget::title {
+    text-align: left; /* align the text to the left */
+    padding-left: 5px;
+	border-bottom: 1px solid #ccc;
+}
+
+QPushButton#DkPlayerButton {
+	margin: 0px;
+	border: none;
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
+QPushButton#DkPlayerButton:hover{
+	background-color: rgba(0,0,0,.6);
+} 
+
+QPushButton#DkPlayerButton:pressed {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+QPushButton#DkRestartButton {
+	border: none;
+	padding: 4px;
+}
+
+QPushButton#DkRestartButton:hover{
+	background-color: rgba(255,255,255,.2);
+} 
+
+QPushButton#DkRestartButton:pressed {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+
+/* NoMacs */
+QToolBar#toolBarWithGradient {
+	border: none; 
+	background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); 
+}
+QToolBar#toolBarWithGradient::separator {
+	background: #656565; width: 1px; height: 1px; margin: 3px;
+}
+
+QToolBar {
+	border-top: none;
+	border-bottom: 1px solid #cdcdcd;
+}
+
+QStatusBar#statusBarWithGradient {
+	border-top: none; 
+	background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); 
+}
+  
+QLabel#thumbsTitle {
+	background: rgba(0,0,0,30);
+}
+
+QGraphicsView#DkThumbsView {
+	border: none;
+}
+
+QToolButton#DkThumbToolButton::menu-indicator { 
+	image: none; 
+}
+
+
+QLabel#statusBarLabel {
+	color: #555555;
+}
+
+/* 
+QToolButton:hover{
+	border: none; 
+	background-color: rgba(255,255,255,90);
+} 
+
+QToolButton:pressed{
+	margin: 0px; 
+	border: none; 
+	background-color: HIGHLIGHT_COLOR;
+}
+ */
+ 
+/* ViewPort */
+QGraphicsView#DkBaseViewPortGradient {
+	border-style: none; 
+	background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);
+ }
+ 
+QGraphicsView#DkBaseViewPortDefaultColor {
+	border-style: none; 
+	background-color: WINDOW_COLOR;
+}
+
+QGraphicsView#DkBaseViewPort {
+	border-style: none; 
+	background-color: BACKGROUND_COLOR;
+} 
+
+/* DEBUG */
+/* QWidget {
+	background-color: QColor(0,0,0,20); border: 1px solid #000000;
+}
+*/
+
+ /* Batch Widgets */
+ QLabel#DkBatchTitle {
+	font-size: 16px;
+}
+
+QLabel#DkFileSelection{
+	border-radius: 5px; border: 1px solid #AAAAAA;
+}
+
+/* Dialogs */
+QDialog#DkSplashScreenMac {
+	background-color: white;
+	font-size: 11px;
+}
+
+QLabel#DkSplashInfoLabel {
+	font-size: 11px;
+}
+
+QPushButton#cancelButtonSplash {
+	font-size: 15px; font: bold; color: rgba(0,0,0,200)
+}
+
+QLabel#DkDecentInfo {
+	color: #666;
+}
+
+QLabel#DkDecentInfo[warning="true"] {
+	color: #9f1d1d;
+}
+
+QLineEdit#DkWarningEdit {
+	color: #000;
+}
+
+QLineEdit#DkWarningEdit[error="true"] {
+	color: #9f1d1d;
+}
+
+QListView#resultListView {
+
+}
+
+QListView#resultListView[empty="true"] {
+	color: #777777; 
+	font-style: italic;
+}
+
+QListWidget#historyList {
+	font-size: 12pt;
+}
+
+QListWidget#historyList::item:disabled {
+	color: #666;
+	font-style: italic;
+}
+
+/* DkRecentFiles */
+nmc--DkRecentFilesWidget QLabel {
+	padding: 2 0 2 0; 
+	font-size: 13px; 
+	color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkRecentFilesWidget QLabel#DkFileLabel:hover {
+	color: HUD_FOREGROUND_COLOR;
+	background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 HUD_BACKGROUND_COLOR, stop: 1 rgba(0,0,0,0));
+}
+
+nmc--DkRecentFilesWidget[imageLoaded="true"] QLabel {
+	color: HUD_FOREGROUND_COLOR; 
+}
+
+nmc--DkRecentFilesWidget[imageLoaded="true"] > QLabel#bgLabel {
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
+nmc--DkRecentFilesWidget[imageLoaded="true"] QLabel#DkFileLabel:hover {
+	color: HUD_BACKGROUND_COLOR;
+	background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 rgba(255,255,255,200), stop: 1 rgba(0,0,0,0));
+}
+
+/* DkManipulationWidget */
+QSlider#DkBrightnessSlider::groove:horizontal {
+	border: 1px solid #999999; 
+	height: 4px; 
+	margin: 2px 0;
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8)
+}
+
+QSlider#DkBrightnessSlider::handle:horizontal {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); 
+	border: 1px solid #5c5c5c; 
+	width: 6px; 
+	margin:-4px 0px -6px 0px;
+	border-radius: 3px;
+}
+
+QSlider#DkSaturationSlider::groove:horizontal {
+	border: 1px solid #999999; 
+	height: 4px; 
+	margin: 2px 0;
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);
+}
+
+QSlider#DkSaturationSlider::handle:horizontal {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); 
+	border: 1px solid #5c5c5c; 
+	width: 6px; 
+	margin:-4px 0px -6px 0px;
+	border-radius: 3px;
+}
+
+QSlider#DkHueSlider::groove:horizontal {
+	border: 1px solid #999999; 
+	height: 4px; 
+	margin: 2px 0;
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
+}
+
+QSlider#DkHueSlider::handle:horizontal {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); 
+	border: 1px solid #5c5c5c; 
+	width: 6px; 
+	margin:-4px 0px -6px 0px;
+	border-radius: 3px;
+}
+
+/* HUD Widgets */
+QLabel#DkCommentWidget{
+	color: #f00;
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
+QSlider#slZoom::groove:horizontal {
+    height: 5px;
+    border: 1px solid HUD_FOREGROUND_COLOR;
+}
+
+QSlider#slZoom::handle:horizontal {
+    width: 10px;
+    border-radius: 3px;
+	background: HUD_FOREGROUND_COLOR;
+}
+
+QLabel#DkOverview {
+	background: HUD_BACKGROUND_COLOR;
+}
+
+QLabel#DkOverviewSliderWidget {
+	background: HUD_BACKGROUND_COLOR;
+}
+
+QLabel#commentTitleLabel {
+	color: HUD_FOREGROUND_COLOR;
+	margin: 0; 
+	padding: 0; 
+	font-size: 25px; 
+	font-family: Segoe UI; 
+	font-weight: light;
+}
+
+nmc--DkCommentWidget > nmc--DkCommentTextEdit {
+	border: 0; 
+	padding-top: 10px; 
+	background-color: rgba(0,0,0,0);
+	border-top: 2px dotted HUD_FOREGROUND_COLOR; 
+	color: HUD_FOREGROUND_COLOR; 
+	font-size: 15px; 
+	selection-background-color: HIGHLIGHT_COLOR; 
+}
+
+QLabel#DkMetaDataHUDTitle {
+	color: HUD_FOREGROUND_COLOR; 
+	margin: 0; 
+	font-size: 21px; 
+	font-family: Segoe UI; 
+	font-weight: light;
+}
+
+QLabel#DkSeparator {
+	border-top: 2px dotted HUD_FOREGROUND_COLOR; 
+}
+
+nmc--DkFolderScrollBar {
+	background-color: HUD_BACKGROUND_COLOR;
+	max-height: 15px;
+	border: 1px solid #000;
+}
+
+nmc--DkFolderScrollBar:handle {
+	background-color: HIGHLIGHT_LIGHT;
+	width: 30px;
+}
+
+nmc--DkFolderScrollBar:handle:hover {
+	background-color: HIGHLIGHT_COLOR;
+}
+
+nmc--DkFolderScrollBar::groove:horizontal {
+	background-color: rgba(0,0,0,0);
+}
+
+nmc--DkFileInfoLabel {
+	background-color: HUD_BACKGROUND_COLOR;
+	color: HUD_FOREGROUND_COLOR;
+}
+
+QLabel#DkMetaDataLabel {
+	color: HUD_FOREGROUND_COLOR;
+}
+
+QLabel#DkMetaDataKeyLabel {
+	color: HUD_FOREGROUND_COLOR;
+}
+
+QLabel#DkMetadataValueLabel {
+	color: #666;
+}
+
+nmc--DkMetaDataHUD > QScrollArea {
+	background-color: transparent;
+	border: none;
+}
+
+nmc--DkMetaDataHUD > QScrollArea > QWidget > QWidget {
+	background-color: transparent;
+	border: none;
+}
+
+nmc--DkMetaDataHUD {
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
+QPushButton#removeFileButton {
+	margin: 0 0 0 0; 
+	padding: 0 0 0 0; 
+	border: none;
+}
+
+QPushButton#removeFileButton:hover {
+	background-color: rgba(255,255,255,.4);
+}
+
+/* Settings */
+QWidget#memoryGradient {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);
+}
+ 
+/* preferences */
+daf--DkPreferenceWidget {
+	border: 1px solid #ccc;
+}
+
+QWidget#DkPreferenceTabs,
+QWidget#DkBatchTabs {
+	background-color: #333;
+}
+
+QPushButton#DkTabEntryWidget,
+nmc--DkBatchTabButton {
+	color: #fff;
+	font: thin "Segoe UI";
+	font-size: 14pt;
+	padding: 10px 20px;
+	text-align: left;
+}
+
+nmc--DkBatchTabButton {
+	min-width: 250px;
+	padding-bottom: 30px;
+}
+
+QPushButton#DkTabEntryWidget:hover,
+QPushButton#DkTabEntryWidget:checked:hover,
+nmc--DkBatchTabButton:hover,
+nmc--DkBatchTabButton:checked:hover {
+	background-color: rgba(255, 255, 255, 30);
+}
+
+QPushButton#DkTabEntryWidget:checked,
+nmc--DkBatchTabButton:checked {
+	background-color: rgba(0, 0, 0, 80);
+	border: none;	/* clear border styles first */
+	border-left: 4px solid HIGHLIGHT_COLOR;
+}
+
+QLabel#DkPreferenceTitle {
+	text-transform: uppercase;
+	padding: 10px 20px;
+	font: light "Segoe UI";
+	font-size: 24pt;
+	font-weight: 100;
+	border-bottom: 1px solid #333;
+	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
+}
+
+QPushButton#infoButton {
+	font: light "Segoe UI";
+	font-size: 16pt;
+	font-weight: 100;
+	color: #666;
+	text-align: left;
+	padding-left: 20px;
+	border: none;
+}
+
+QPushButton#infoButton:hover {
+	color: HIGHLIGHT_COLOR;
+}
+
+QPushButton#infoButton:pressed {
+	color: HIGHLIGHT_LIGHT;
+}
+
+QWidget#DkPreferenceWidget {
+	margin-top: 10px; /* not working?! */
+	margin-left: 10px;
+}
+
+QLabel#subTitle {
+	margin-top: 10px;
+	font-size: 14pt;
+	color: #666;
+}
+
+/* preferences widgets */
+QComboBox#languageCombo,
+QSpinBox#numThreads,
+QPushButton#logFolder {
+	max-width: 200px;
+}
+
+QLabel#settingsInfoLabel {
+	padding-top: 6px;
+	font: italic;
+}
+
+nmc--DkGroupWidget QCheckBox,
+nmc--DkGroupWidget QRadioButton,
+nmc--DkGroupWidget QPushButton,
+nmc--DkGroupWidget QSpinBox,
+nmc--DkGroupWidget QDoubleSpinBox,
+nmc--DkGroupWidget QComboBox,
+nmc--DkGroupWidget QLineEdit,
+nmc--DkGroupWidget QLabel {
+	font-size: 10pt;
+}
+
+nmc--DkGroupWidget QCheckBox,
+nmc--DkGroupWidget QRadioButton,
+nmc--DkGroupWidget QLineEdit,
+nmc--DkGroupWidget QLabel {
+	color: #666;
+}
+
+nmc--DkProgressBar {
+	max-height: 3px;
+}
+
+/* plugins */
+nmc--DkDescriptionEdit {
+	border: none;
+	background-color: rgba(0,0,0,0);
+}

@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>LibRaw: C API</title>
+  </head>
+
+  <body>
+    <a href=index.html>[back to Index]</a>
+    <h1>LibRaw: C API</h1>
+    <p>LibRaw C API is a wrapper around C++ API; therefore, virtually all documentation to C 
+      API functions  is represented by a set of hyperlinks to the corresponding places in the <a href="API-CXX.html">description of C++ API</a>.
+    </p>
+    <p>Contents</p>
+    <ol>
+      <li><a href="#init">Initialization:  libraw_data_t       *libraw_init(unsigned int flags);</a></li>
+      <li><a href="#return">Returned values</a></li>
+      <li><a href="#dataload">Data loading</a></li>
+      <li><a href="#utility">Auxiliary Functions</a></li>
+      <li><a href="#dcrawemu">Data Postprocessing, Emulation of dcraw Behavior</a>
+        <ul>
+          <li><a href="#dcrawparams">Setting of Parameters</a></li>
+          <li><a href="#emu">Emulation of dcraw Behavior</a></li>
+        </ul>
+        </li>
+      <li><a href="#write">Writing to Output Files</a></li>
+      <li><a href="#memwrite">Writing processing results to memory buffer</a></li>
+    </ol>
+
+
+    <a name="init"></a>
+    <h2>Initialization:  libraw_data_t       *libraw_init(unsigned int flags);</h2>
+    <p>
+      The function returns the pointer to the <a href=#API-datastruct.html#libraw_data_t>instance of
+        libraw_data_t structure</a>.<br/>
+      The resultant pointer should be passed as the first argument to all C API functions (except for libraw_strerror).
+    </p>
+    <p>Returns NULL in case of error, pointer to the structure in all other cases.</p>
+
+    <a name="return"></a>
+    <h2>Returned values</h2>
+    <p>Functions of C API return EINVAL (see errno.h) if the null pointer was passed to them as the first argument. 
+In all other cases, the <a href="API-CXX.html#return">C++ API return code</a> is returned.
+    </p>
+
+    <a name="dataload"></a>
+    <h2>Data Loading from a File</h2>
+    <dl>
+      <dt>int libraw_open_file(libraw_data_t*, const char *)</dt>
+      <dt>int libraw_open_file_ex(libraw_data_t*, const char *,INT64 bigfile_size)</dt>
+      <dt>WIN32: int libraw_open_wfile(libraw_data_t*, const wchar_t *)</dt>
+      <dt>WIN32: int libraw_open_wfile_ex(libraw_data_t*, const wchar_t *,INT64 bigfile_size)</dt>
+      <dd>
+        See <a href="API-CXX.html#open_file">LibRaw::open_file()</a>
+      </dd>
+      <dt>int libraw_open_buffer(libraw_data_t*, void *buffer, size_t bufsize)</dt>
+      <dd>
+        See <a href="API-CXX.html#open_buffer">LibRaw::open_buffer()</a>
+      </dd>
+      <dt>    int                 libraw_unpack(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#unpack">LibRaw::unpack()</a>
+      </dd>
+      <dt>    int                 libraw_unpack_thumb(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#unpack_thumb">LibRaw::unpack_thumb()</a>
+      </dd>
+
+    </dl>
+    <a name="utility"></a>
+    <h2>Auxiliary Functions</h2>
+    <dl>
+      <dt>const char* libraw_version()</dt>
+      <dd>
+        See <a href="API-CXX.html#version">LibRaw::version()</a>
+      </dd>
+      <dt>const char* libraw_versionNumber()</dt>
+      <dd>
+        See <a href="API-CXX.html#versionNumber">LibRaw::versionNumber()</a>
+      </dd>
+      <dt>bool LIBRAW_CHECK_VERSION(major,minor,patch)</dt>
+      <dd>
+        See <a href="API-CXX.html#LIBRAW_CHECK_VERSION">LIBRAW_CHECK_VERSION</a> 
+      </dd>
+    <dt>int libraw_cameraCount()</dt>
+      <dd>
+        See <a href="API-CXX.html#cameraCount">LibRaw::cameraCount()</a>
+      </dd>
+    <dt>int libraw_cameraList()</dt>
+      <dd>
+        See <a href="API-CXX.html#cameraList">LibRaw::cameraList()</a>
+      </dd>
+      <dt>void                libraw_get_decoder_info(libraw_data_t*,libraw_decoder_info_t *);</dt>
+      <dd>
+        See <a href="API-CXX.html#get_decoder_info">LibRaw::get_decoder_info()</a>
+      </dd>
+      <dt>void                libraw_unpack_function_name(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#unpack_function_name">LibRaw::unpack_function_name()</a>
+      </dd>
+      <dt>void                libraw_COLOR(libraw_data_t*,int row,int col);</dt>
+      <dd>
+        See <a href="API-CXX.html#COLOR">LibRaw::COLOR()</a>
+      </dd>
+      <dt>void                libraw_subtract_black(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#add_subtract_black">LibRaw::subtract_black()</a>
+      </dd>
+      <dt>void                libraw_recycle_datastream(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#recycle_datastream">LibRaw::recycle_datastream()</a>
+      </dd>
+    <dt>void                libraw_recycle(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#recycle">LibRaw::recycle()</a>
+      </dd>
+    <dt>void                libraw_close(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#~LibRaw">LibRaw::~LibRaw()</a>
+      </dd>
+    <dt>const char          *libraw_strerror(int errorcode);</dt>
+      <dd>
+        See <a href="API-CXX.html#libraw_strerror">LibRaw::strerror</a>
+      </dd>
+    <dt>const char          *libraw_strprogress(enum LibRaw_progress);</dt>
+      <dd>
+        See <a href="API-CXX.html#strprogress">LibRaw::strprogress</a>
+      </dd>
+    <dt>void                libraw_set_memerror_handler(libraw_data_t*, memory_callback cb);</dt>
+      <dd>
+        See <a href="API-CXX.html#memerror">LibRaw::set_memerror_handler()</a>
+      </dd>
+    <dt>void                libraw_set_dataerror_handler(libraw_data_t*,data_callback func);</dt>
+      <dd>
+        See <a href="API-CXX.html#dataerror">LibRaw::set_dataerror_handler()</a>
+      </dd>
+    <dt>void                libraw_set_progress_handler(libraw_data_t*,progress_callback func);</dt>
+      <dd>
+        See <a href="API-CXX.html#progress">LibRaw::set_progress_handler()</a>
+      </dd>
+    </dl>
+    <a name="dcrawemu"></a>
+    <h2>Data Postprocessing, Emulation of dcraw Behavior</h2>
+    <a name="dcrawparams"></a>
+    <h3>Setting of Parameters</h3>
+    <p>
+      The postprocessing parameters for the calls described below are set, just as for C++ API, via setting of fields in the
+      libraw_output_params_t structure:
+    </p>
+    <pre>
+ libraw_data_t *ptr = libraw_init(0);
+ ptr->params.output_tiff = 1; //  output to TIFF
+    </pre>
+    <p>
+    Fields of this structure are described in the <a href="API-datastruct.html#libraw_output_params_t">documentation to
+      libraw_output_params_t</a>. For notes on their use, see <a href=API-notes.html>API notes</a>.
+    </p>
+    <a name="emu"></a>
+    <h3>Emulation of dcraw Behavior</h3>
+    <dl>
+    <dt>int                 libraw_raw2image(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#raw2image">LibRaw::raw2image</a>
+      </dd>
+    <dt>int                 libraw_free_image(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#free_image">LibRaw::free_image</a>
+      </dd>
+    <dt>int                 libraw_adjust_sizes_info_only(libraw_data_t*);</dt>
+      <dd>
+        See <a href="API-CXX.html#adjust_sizes_info_only">LibRaw::adjust_sizes_info_only()</a>
+      </dd>
+    <dt>int                 libraw_dcraw_process(libraw_data_t* lr);</dt>
+      <dd>
+        See <a href="API-CXX.html#dcraw_process">LibRaw::dcraw_process()</a>
+      </dd>
+    </dl>
+    <h2>Writing to Output Files</h2>
+    <dl>
+      <dt>int                 libraw_dcraw_ppm_tiff_writer(libraw_data_t* lr,const char *filename);</dt>
+      <dd>
+        See <a href="API-CXX.html#dcraw_ppm_tiff_writer">LibRaw::dcraw_ppm_tiff_writer()</a>
+      </dd>
+      <dt>int                 libraw_dcraw_thumb_writer(libraw_data_t* lr,const char *fname);</dt>
+      <dd>
+        See <a href="API-CXX.html#dcraw_thumb_writer">LibRaw::dcraw_thumb_writer()</a>
+      </dd>
+    </dl>
+    <h2>Writing processing results to memory buffer</h2>
+    <dl>
+      <dt>libraw_processed_image_t *libraw_dcraw_make_mem_image(libraw_data_t* lr,int * errcode)</dt>
+      <dd>
+        See <a href="API-CXX.html#dcraw_make_mem_image">LibRaw::dcraw_make_mem_image()</a>
+      </dd>
+      <dt>libraw_processed_image_t *libraw_dcraw_make_mem_thumb(libraw_data_t* lr,int * errcode)</dt>
+      <dd>
+        See <a href="API-CXX.html#dcraw_make_mem_thumb">LibRaw::dcraw_make_mem_thumb()</a>
+      </dd>
+    </dl>
+    <a href=index.html>[back to Index]</a>
+  </body>
+</html>

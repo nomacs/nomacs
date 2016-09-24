@@ -3,16 +3,16 @@
 
 # set your preferred Qt Library path
 IF (CMAKE_CL_64)
-	SET(CMAKE_PREFIX_PATH "C:/Qt/qt-everywhere-opensource-src-4.8.5-x64-native-gestures/bin/")
+	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.6.0-x64/qtbase/bin/")
 ELSE ()
-	SET(CMAKE_PREFIX_PATH "C:/Qt/qt-everywhere-opensource-src-4.8.5-x86-native-gestures/bin/")
+	SET(CMAKE_PREFIX_PATH "D:/Qt/qt-everywhere-opensource-src-5.6.0-x86/qtbase/bin/")
 ENDIF ()
 
 # set your preferred OpenCV Library path
 IF (CMAKE_CL_64)
-	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/VSProjects/OpenCV/build2012x64")
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/VSProjects/OpenCV/build2015x64")
 ELSE ()
-	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/VSProjects/OpenCV/build2012x86")
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "C:/VSProjects/OpenCV/build2015x86")
 ENDIF ()
 
 # set your preferred HUpnp path

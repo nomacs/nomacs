@@ -1,0 +1,79 @@
+<div class="tabs">
+  <ul>
+    <li><a href="tags-exif.html"><span>Exif</span></a></li> 
+  </ul>
+  <ul>
+    <li><a href="tags-canon.html"><span>Canon</span></a></li> 
+    <li><a href="tags-fujifilm.html"><span>Fujifilm</span></a></li> 
+    <li><a href="tags-minolta.html"><span>Minolta</span></a></li> 
+    <li><a href="tags-nikon.html"><span>Nikon</span></a></li> 
+    <li><a href="tags-olympus.html"><span>Olympus</span></a></li> 
+    <li><a href="tags-panasonic.html"><span>Panasonic</span></a></li> 
+    <li><a href="tags-pentax.html"><span>Pentax</span></a></li> 
+    <li><a href="tags-samsung.html"><span>Samsung</span></a></li> 
+    <li><a href="tags-sigma.html"><span>Sigma/Foveon</span></a></li> 
+    <li><a href="tags-sony.html"><span>Sony</span></a></li> 
+  </ul>
+</div>
+
+<div class="tabs">
+  <ul>
+    <li><a href="tags-iptc.html"><span>IPTC&nbsp;datasets</span></a></li>
+  </ul>
+</div>
+
+<div class="tabs">
+  <ul>
+    <li><a href="tags-xmp-dc.html"><span>dc</span></a></li>
+    <li><a href="tags-xmp-xmp.html"><span>xmp</span></a></li>
+    <li><a href="tags-xmp-xmpRights.html"><span>xmpRights</span></a></li>
+    <li><a href="tags-xmp-xmpMM.html"><span>xmpMM</span></a></li>
+    <li><a href="tags-xmp-xmpBJ.html"><span>xmpBJ</span></a></li>
+    <li><a href="tags-xmp-xmpTPg.html"><span>xmpTPg</span></a></li>
+    <li><a href="tags-xmp-xmpDM.html"><span>xmpDM</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-pdf.html"><span>pdf</span></a></li>
+    <li><a href="tags-xmp-photoshop.html"><span>photoshop</span></a></li>
+    <li><a href="tags-xmp-crs.html"><span>crs</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-tiff.html"><span>tiff</span></a></li>
+    <li><a href="tags-xmp-exif.html"><span>exif</span></a></li>
+    <li><a href="tags-xmp-aux.html"><span>aux</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-iptc.html"><span>Iptc4xmpCore</span></a></li>
+    <li><a href="tags-xmp-iptcExt.html"><span>Iptc4xmpExt</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-plus.html"><span>plus</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-mwg-rs.html"><span>mwg-rs</span></a></li>
+    <li><a href="tags-xmp-mwg-kw.html"><span>mwg-kw</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-dwc.html"><span>dwc</span></a></li>
+    <li><a href="tags-xmp-dcterms.html"><span>dcterms</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-digiKam.html"><span>digiKam</span></a></li>
+    <li><a href="tags-xmp-kipi.html"><span>kipi</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-GPano.html"><span>GPano</span></a></li>
+    <li><a href="tags-xmp-lr.html"><span>lr</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-MP.html"><span>Microsoft Photo Region</span></a></li>
+  </ul>
+  <ul>
+    <li><a href="tags-xmp-acdsee.html"><span>acdsee</span></a></li>
+    <li><a href="tags-xmp-mediapro.html"><span>mediapro</span></a></li>
+    <li><a href="tags-xmp-expressionmedia.html"><span>expressionmedia</span></a></li>
+    <li><a href="tags-xmp-MicrosoftPhoto.html"><span>MicrosoftPhoto</span></a></li>
+  </ul>
+</div>
+
+<h1>Exiv2 Tag Tables</h1>

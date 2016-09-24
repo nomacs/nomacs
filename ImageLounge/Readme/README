@@ -34,14 +34,14 @@ Compile Instructions:
 		Cmake is used to build Nomacs.
 		
 		you need following libraries:		
-			- Qt  > 4.7.0
+			- Qt  > 5.2.0
 			- exiv2  > 0.20
 			if you want to enable raw images you need
 				- OpenCV  > 0.2.1 
 				- libraw > 0.12.0
 		on ubuntu you can compile nomacs with:
 			Get the required packages:
-				sudo apt-get install debhelper cdbs qt4-qmake libqt4-dev libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev git
+				sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qt5tools-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev git build-essential
 			Checkout the code from github:
 				git clone https://github.com/nomacs/nomacs.git
 			This will by default place the source into ~/nomacs
