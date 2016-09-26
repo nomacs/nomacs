@@ -781,7 +781,7 @@ void DkImageLoader::deactivate() {
 void DkImageLoader::activate(bool isActive /* = true */) {
 
 	if (!isActive) {
-		// go to sleep - schlofand w�hlar ihr cam�lar
+		// go to sleep - schlofand wöhlar ihr camölar
 		blockSignals(true);
 		clearPath();
 	}

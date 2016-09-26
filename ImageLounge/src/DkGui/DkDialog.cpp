@@ -614,7 +614,7 @@ void DkSearchDialog::init() {
 	mFilterButton->setObjectName("filterButton");
 
 	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	mButtons->button(QDialogButtonBox::Ok)->setDefault(false);
+	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);
 	mButtons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
 	mButtons->addButton(mFilterButton, QDialogButtonBox::ActionRole);
 
