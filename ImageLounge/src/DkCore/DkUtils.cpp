@@ -721,6 +721,10 @@ QStringList DkUtils::filterStringList(const QString& query, const QStringList& l
 	QStringList resultList = list;
 
 	for (int idx = 0; idx < queries.size(); idx++) {
+		// Detect and correct special case where a space is leading or trailing the search term - this should be significant
+		if (idx == 0 && queries.size() > 1 && queries[idx].size() == 0) queries[idx] = " " + queries[idx + 1];
+		if (idx == queries.size() - 1 && queries.size() > 2 && queries[idx].size() == 0) queries[idx] = queries[idx - 1] + " ";
+		// The queries will be repeated, but this is okay - it will just be matched both with and without the space. 
 		resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
 		qDebug() << "query: " << queries[idx];
 	}
