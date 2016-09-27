@@ -826,7 +826,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.iconSize = 16;
 	display_p.thumbPreviewSize = 64;
 	display_p.antiAliasing = true;
-	display_p.showCrop = true;
+	display_p.showCrop = false;
 	display_p.tpPattern = false;
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
