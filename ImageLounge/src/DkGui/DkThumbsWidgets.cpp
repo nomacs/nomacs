@@ -1245,12 +1245,6 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
 }
 
 void DkThumbScene::showFile(const QString& filePath) {
-
-	if (filePath == QDir::currentPath() || filePath.isEmpty())
-		DkStatusBarManager::instance().setMessage(tr("").arg(QString::number(mThumbLabels.size())));
-	else
-		DkStatusBarManager::instance().setMessage(QFileInfo(filePath).fileName());
-
 	DkStatusBarManager::instance().setMessage(tr("%1 Images").arg(QString::number(mThumbLabels.size())), DkStatusBar::status_filenumber_info);
 }
 
