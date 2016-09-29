@@ -75,10 +75,29 @@
 void createPluginsPath();
 void computeBatch(const QString& settingsPath, const QString& logPath = QString());
 
+#ifndef Q_OS_WIN
+void silence_info_message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+  {
+      QByteArray localMsg = msg.toLocal8Bit();
+      switch (type) {
+      case QtWarningMsg:
+          fprintf(stderr, "[WARN] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+          break;
+      case QtCriticalMsg:
+          fprintf(stderr, "[CRIT] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+          break;
+      case QtFatalMsg:
+          fprintf(stderr, "[FATAL] %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+          abort();
+      }
+  }
+#endif
+
 #ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
 int main(int argc, char *argv[]) {
+    if (getenv("NOMACS_SILENT")) qInstallMessageHandler(silence_info_message_handler);
 #endif
 
 #ifdef READ_TUWIEN
