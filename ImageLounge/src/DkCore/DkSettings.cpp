@@ -969,7 +969,6 @@ void Settings::init() {
 	if (nmc::Settings::param().app().useLogFile)
 		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
 
-	qInfo() << "Hi there";
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
 		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
 
