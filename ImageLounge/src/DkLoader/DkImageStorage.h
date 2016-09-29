@@ -33,6 +33,10 @@
 #include <QVector>
 #include <QObject>
 #include <QColor>
+#include <QSvgRenderer>
+#include <QSharedPointer>
+#include <QImageReader>
+#include <QFutureWatcher>
 
 // opencv
 #ifdef WITH_OPENCV
@@ -63,6 +67,32 @@ class QSize;
 class QColor;
 
 namespace nmc {
+
+class DllLoaderExport SvgRenderer : public QObject {
+    Q_OBJECT
+private:
+    QSharedPointer<QSvgRenderer> qsvg;
+    QString current_svg_path;
+    bool svg_is_valid;
+    bool svg_rendered;
+    QFutureWatcher<QImage> watcher;
+    QImage rasterized_svg;
+public:
+    SvgRenderer(QObject *parent=Q_NULLPTR);
+    void start_load(const QString &path);
+    void render(QPainter *painter, const QRectF &bounds);
+    QSize defaultSize() const;
+    bool isValid() const;
+    static QPixmap render_sync(const QString &, const QSize &);
+    static QImage render_thumb(QImageReader *, const QString &);
+    static QImage render_thumb(const QString &);
+signals:
+	void repaintNeeded() const;
+public slots:
+	void rendering_finished();
+    
+};
+
 
 class DkRotatingRect;
 

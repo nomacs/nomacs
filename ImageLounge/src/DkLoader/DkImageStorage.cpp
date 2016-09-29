@@ -39,13 +39,187 @@
 #include <QPainter>
 #include <QBitmap>
 #include <qmath.h>
-#include <QSvgRenderer>
+#include <QProcess>
+#include <QtConcurrent>
+#include <QNetworkDiskCache>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
+
+#ifdef Q_OS_WIN
+#define RSVG "rsvg-convert.exe"
+#else
+#define RSVG "rsvg-convert"
+#endif
+
 namespace nmc {
+
+// SvgRenderer --------------------------------------------------------------------
+
+static int has_rsvg = -1;
+static QNetworkDiskCache svg_cache;
+static QMutex svg_cache_mutex;
+
+static bool check_for_rsvg() {
+    if (has_rsvg == -1) {
+        QScopedPointer<QProcess> p(new QProcess());
+        p->start(RSVG, QStringList() << "-v");
+        has_rsvg = p->waitForFinished(3000) && p->exitStatus() == QProcess::NormalExit && p->exitCode() == 0;
+        p->close();
+        if (has_rsvg) {
+            QString t = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QString("/svg-cache");
+            svg_cache.setCacheDirectory(t);
+            svg_cache.setMaximumCacheSize(200 * 1024 * 1024);  // TODO: Make this configurable
+        }
+    }
+    return (bool)has_rsvg;
+}
+
+static bool write_all(const char* data, const qint64 sz, QIODevice *out) {
+    qint64 written = 0, ret = 0;
+    while (written < sz) {
+        ret = out->write(data + written, sz - written);
+        if (ret < 0) return false;
+        written += ret;
+    }
+    return true;
+}
+
+template<typename T>
+static T render_svg(const QString &path, const QSize &sz) {
+    T pm;
+    QFileInfo info(path);
+    QUrl url = QUrl::fromLocalFile(info.canonicalFilePath());
+    url.setQuery(QString("mtime=%1&w=%2&h=%3&sz=%4").arg(info.lastModified().toMSecsSinceEpoch()).arg(sz.width()).arg(sz.height()).arg(info.size()));
+    svg_cache_mutex.lock();
+    QIODevice *data = svg_cache.data(url);
+    svg_cache_mutex.unlock();
+    if (data) {
+        qDebug() << "Using cached pixmap for: " << path;
+        svg_cache_mutex.lock();
+        QByteArray img_data = data->readAll();
+        svg_cache_mutex.unlock();
+        pm.loadFromData(img_data, "PNG");
+        data->close();
+        delete data;
+        data = Q_NULLPTR;
+    } else {
+        QStringList args;
+        QScopedPointer<QProcess> p(new QProcess());
+        p->setProcessChannelMode(QProcess::ForwardedChannels);
+        qDebug() << "Running rsvg-convert on: " << path;
+        args << "--keep-aspect-ratio";
+        if (sz.isValid()) args << "-w" << QString::number(sz.width()) << "-h" << QString::number(sz.height());
+        args << path;
+        QTemporaryFile temp;
+        if (temp.open()) {
+            temp.close();
+            args << "-o" << temp.fileName();
+            p->start(RSVG, args);
+            if (p->waitForFinished(60000) && p->exitStatus() == QProcess::NormalExit && p->exitCode() == 0) {
+                temp.open();
+                QByteArray img_data = temp.readAll();
+                temp.close();
+                pm.loadFromData(img_data, "PNG");
+                if (!pm.isNull()) {
+                    svg_cache_mutex.lock();
+                    QNetworkCacheMetaData md;
+                    md.setUrl(url);
+                    QIODevice *cacheio = svg_cache.prepare(md);
+                    if (cacheio) {
+                        if(write_all(img_data.constData(), img_data.size(), cacheio)) svg_cache.insert(cacheio);
+                    }
+                    svg_cache_mutex.unlock();
+                }
+            }
+            p->close();
+        }
+    }
+    return pm;
+}
+
+SvgRenderer::SvgRenderer(QObject *parent) : QObject(parent), qsvg(), svg_is_valid(0), svg_rendered(0), watcher(), rasterized_svg() {
+    connect(&watcher, SIGNAL(finished()), this, SLOT(rendering_finished()));
+}
+
+void SvgRenderer::start_load(const QString &path) {
+    if (check_for_rsvg() && !path.startsWith(':')) {
+        current_svg_path = path;
+        svg_is_valid = true;
+        svg_rendered = false;
+        rasterized_svg = QImage();
+    } else {
+        current_svg_path = QString();
+        svg_is_valid = false;
+        qsvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer());
+        connect(qsvg.data(), SIGNAL(repaintNeeded()), this, SIGNAL(repaintNeeded()));
+        qsvg->load(path);
+    }
+}
+
+void SvgRenderer::render(QPainter *painter, const QRectF &bounds) { 
+    if (current_svg_path.isEmpty()) {
+        qsvg->render(painter, bounds);
+        return;
+    }
+    if (svg_rendered) {
+        if (svg_is_valid) {
+            if (rasterized_svg.width() <= bounds.toRect().size().width() && rasterized_svg.height() <= bounds.toRect().height()) {
+                painter->drawImage(bounds, rasterized_svg, rasterized_svg.rect());
+                return;
+            }
+        }
+    }
+    if (!watcher.isRunning()) {
+         QFuture<QImage> future = QtConcurrent::run(render_svg<QImage>, current_svg_path, bounds.toRect().size());
+         watcher.setFuture(future);
+    }
+}
+
+void SvgRenderer::rendering_finished() {
+    rasterized_svg = watcher.future().result();
+    svg_rendered = true;
+    svg_is_valid = !rasterized_svg.isNull();
+    emit repaintNeeded();
+}
+
+QSize SvgRenderer::defaultSize() const { 
+    return current_svg_path.isEmpty() ? qsvg->defaultSize() : QSize();
+}
+
+bool SvgRenderer::isValid() const { 
+    return current_svg_path.isEmpty() ? qsvg->isValid() : svg_is_valid;
+}
+	
+QPixmap SvgRenderer::render_sync(const QString &filePath, const QSize &size) {
+    QString key;
+    if (check_for_rsvg() && !filePath.startsWith(':')) return render_svg<QPixmap>(filePath, size);
+    QPixmap pm(size);
+    pm.fill(QColor(0, 0, 0, 0));	// clear background
+    QPainter p(&pm);
+    QSvgRenderer(filePath).render(&p);
+	return pm;
+}
+
+QImage SvgRenderer::render_thumb(QImageReader *reader, const QString &path) {
+    if (check_for_rsvg() && !path.startsWith(':')) {
+        return render_svg<QImage>(path, reader->scaledSize());
+    } else {
+        return reader->read();
+    }
+}
+
+QImage SvgRenderer::render_thumb(const QString &path) {
+    if (check_for_rsvg() && !path.startsWith(':')) {
+        return render_svg<QImage>(path, QSize());
+    } else {
+        QImage img;
+        img.load(path);
+        return img;
+    }
+}
 
 // DkImage --------------------------------------------------------------------
 #ifdef Q_OS_WIN
@@ -865,16 +1039,7 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col) {
 }
 
 QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
-
-	QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
-	
-	QPixmap pm(size);
-	pm.fill(QColor(0, 0, 0, 0));	// clear background
-
-	QPainter p(&pm);
-	svg->render(&p);
-
-	return pm;
+    return SvgRenderer::render_sync(filePath, size);
 }
 
 

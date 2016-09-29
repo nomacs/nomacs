@@ -53,7 +53,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QDesktopWidget>
-#include <QSvgRenderer>
 #include <QMenu>
 
 #include <qmath.h>
@@ -801,7 +800,8 @@ void DkViewPort::loadSvg() {
 	if (!mLoader)
 		return;
 
-	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
+	mSvg = QSharedPointer<SvgRenderer>(new SvgRenderer());
+    mSvg->start_load(mLoader->filePath());
 
 	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
 
@@ -1432,7 +1432,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	}
 
 	if (mSvg && success)
-		mSvg = QSharedPointer<QSvgRenderer>();
+		mSvg = QSharedPointer<SvgRenderer>();
 	
 	return success != 0;
 }
