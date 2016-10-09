@@ -45,6 +45,7 @@
 //#include <QLibrary>
 #include "DkOcr.h"
 #include <DkBaseViewPort.h>
+#include <DkLoader/DkImageContainer.h>
 
 namespace nmc {
 
@@ -56,7 +57,7 @@ namespace nmc {
 
 		// Create Settings Toolbar
 
-		auto* mainWindow = getMainWidnow();
+		QMainWindow* mainWindow = getMainWindow();
 		mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
 		mainWindow->addDockWidget(Qt::RightDockWidgetArea, mDockWidgetSettings);
 		
@@ -165,7 +166,7 @@ namespace nmc {
 	/**
 	* Returns unique ID for the generated dll
 	**/
-	QString DkOcrPlugin::pluginID() const {
+	QString DkOcrPlugin::id() const {
 
 		return PLUGIN_ID;
 	};
@@ -255,7 +256,7 @@ namespace nmc {
 		return mActions;
 	}
 
-	QSharedPointer<DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<DkImageContainer> imgC) const
+	QSharedPointer<nmc::DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<nmc::DkImageContainer> imgC) const
 	{
 		if (runID == mRunIDs[ACTION_TESTRUN]) {
 
@@ -264,7 +265,7 @@ namespace nmc {
 			auto img = imgC->image();
 			auto text = Ocr::testOcr(img);
 			te_resultText->setText(text);
-			imgC->setImage(img);
+			imgC->setImage(img, "");
 		}
 
 		// wrong runID? - do nothing
@@ -285,4 +286,13 @@ namespace nmc {
 		}
 		return randomString;
 	}
+
+	QImage DkOcrPlugin::image() const {
+
+		return QImage(":/nomacsPluginPaint/img/description.png");
+	}
+
+	/*bool DkOcrPlugin::hideHUD() const {
+		return false;
+	}*/
 }

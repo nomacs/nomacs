@@ -1,5 +1,11 @@
 {
-    "name" : [ "DkOcrPlugin" ],
-	"PluginId"		: "9791acc7e9654ff7888a9e857290956d",
+    "PluginName" 	: "Ocr4Nomacs",
+	"AuthorName" 	: "Dominik Schörkhuber",
+	"Company"		: "",
+	"DateCreated" 	: "2016-10-08",
+	"DateModified"	: "2016-10-09",
+	"Description"	: "Optical Character Recognition",
+	"Tagline" 		: "Bla Blub nothing",
+	"PluginId"		: "ad970ef36cc24737afd2b53ad015ff0d",
 	"Version"		: "0.0.1"
 }
