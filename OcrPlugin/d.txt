@@ -1,1 +1,0 @@
-x86 x86/ocrPlugin.dll
