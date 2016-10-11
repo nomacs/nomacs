@@ -606,6 +606,7 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 		connect(mPluginViewport, SIGNAL(closePlugin(bool)), this, SLOT(closePlugin(bool)), Qt::UniqueConnection);
 		connect(mPluginViewport, SIGNAL(loadFile(const QString&)), mViewport, SLOT(loadFile(const QString&)), Qt::UniqueConnection);
 		connect(mPluginViewport, SIGNAL(loadImage(const QImage&)), mViewport, SLOT(setImage(const QImage&)), Qt::UniqueConnection);
+		connect(mPluginViewport, SIGNAL(showInfo(const QString&)), this, SLOT(setInfo(const QString&)), Qt::UniqueConnection);
 	}
 
 	setAttribute(Qt::WA_TransparentForMouseEvents, !removeWidget && pluginWidget->hideHUD());

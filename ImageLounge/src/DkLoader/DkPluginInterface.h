@@ -178,6 +178,7 @@ signals:
 	void showToolbar(QToolBar* toolbar, bool show) const;
 	void loadFile(const QString& filePath) const;
 	void loadImage(const QImage& image) const;
+	void showInfo(const QString& msg) const;
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) {
