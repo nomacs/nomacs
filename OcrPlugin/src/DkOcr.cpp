@@ -2,12 +2,14 @@
 
 #include <baseapi.h> //Tesseract
 #include <QtGui/QPainter>
+#include <QDir>
 
 QString Ocr::testOcr(QImage& image)
 {
 	tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
 	// Initialize tesseract-ocr with English, without specifying tessdata path
-	if (api->Init("E:/dev/tesseract", "eng")) {
+
+	if (api->Init((QDir::currentPath() + "/tessdata").toStdString().c_str(), "eng")) {
 		qCritical("Could not initialize tesseract");
 	}
 
