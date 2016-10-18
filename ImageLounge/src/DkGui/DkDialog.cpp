@@ -174,7 +174,9 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	if (!Settings::param().isPortable())
 		qDebug() << "nomacs is not portable: " << Settings::param().settingsPath();
 
-	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform + "<br>" +
+	versionLabel->setText(
+		QApplication::applicationName() + "<br>" +
+		"Version: " + QApplication::applicationVersion() + platform + "<br>" +
 #ifdef WITH_LIBRAW
 		"RAW support: Yes<br>"
 #else
