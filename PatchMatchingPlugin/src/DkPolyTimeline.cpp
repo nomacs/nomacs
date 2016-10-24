@@ -268,6 +268,12 @@ namespace nmp {
 		mPolygon->setStep(stepsize);
 	}
 
+	void DkPolyTimeline::setPatchSize(int size)
+	{
+		mSize = size;
+		refresh();
+	}
+
 	void DkPolyTimeline::updateEmptyElements()
 	{
 		auto rows = mList.size();	//number of rows we need

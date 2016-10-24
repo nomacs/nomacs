@@ -192,6 +192,10 @@ public:
 	int getStepSize();
 	void setStepSize(int size);
 
+	// setter and gett for patch size (timeline)
+	int getPatchSize();
+	void setPatchSize(int size);
+
 	int getCurrentPolygon();
 	void addPolygon(QColor color, bool select = false);
 	void clearPolygons();
@@ -205,6 +209,7 @@ public slots:
 signals:
 	// emitted when the step size spinner is changed (timeline)
 	void stepSizeChanged(int width);
+	void patchSizeChanged(int width);
 	void saveTriggered();
 	void removePolyTriggered();
 	void clonePolyTriggered();
@@ -216,6 +221,7 @@ signals:
 protected:
 	void createLayout();
 	
+	QSpinBox* mPatchSizeSpinner;
 	QSpinBox* mStepSizeSpinner;		// changes step size for timeline
 	QComboBox* mPolygonCombobox;			// combobox for switching between different 
 };
