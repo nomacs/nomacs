@@ -34,6 +34,7 @@
 #include <QWidget>
 #include <QSettings>
 #include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 #pragma warning(pop)
 
 #ifndef DllGuiExport
@@ -47,7 +48,8 @@
 #endif
 
 // Qt defines
-
+class QTreeView;
+class QLineEdit;
 
 namespace nmc {
 
@@ -86,6 +88,17 @@ protected:
 	QVector<DkSettingsEntry> mEntries;
 };
 
+class DkSettingsProxyModel : public QSortFilterProxyModel {
+	Q_OBJECT
+
+public:
+	DkSettingsProxyModel(QObject * parent = 0);
+	virtual ~DkSettingsProxyModel() {}
+
+protected:
+	virtual bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
+
+};
 
 class DkSettingsModel : public QAbstractItemModel {
 	Q_OBJECT
@@ -126,10 +139,17 @@ public:
 
 	void setSettings(QSettings& settings, const QString& parentName = "");
 
+public slots:
+	void focusFilter();
+	void on_Filter_textChanged(const QString& text);
+
 protected:
 	void createLayout();
 
-	DkSettingsModel* mModel;
+	DkSettingsModel* mSettingsModel;
+	DkSettingsProxyModel* mProxyModel;
+	QLineEdit* mSettingsFilter;
+	QTreeView* mTreeView;
 };
 
 

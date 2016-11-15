@@ -28,10 +28,13 @@
 
 #include "DkSettingsWidget.h"
 
+#include "DkActionManager.h"
+
 #pragma warning(push, 0)	// no warnings from includes
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QHeaderView>
+#include <QLineEdit>
 #pragma warning(pop)
 
 namespace nmc {
@@ -41,14 +44,20 @@ namespace nmc {
 DkSettingsWidget::DkSettingsWidget(QWidget* parent) : QWidget(parent) {
 
 	createLayout();
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentName) {
 
+	//if (parentName.isEmpty()) {
+		//DkSettingsGroup sg = DkSettingsGroup::fromSettings(parentName, settings);
+		//mSettingsModel->addSettingsGroup(sg, parentName);
+	//}
+
 	for (const QString& gName : settings.childGroups()) {
 		
 		DkSettingsGroup sg = DkSettingsGroup::fromSettings(gName, settings);
-		mModel->addSettingsGroup(sg, parentName);
+		mSettingsModel->addSettingsGroup(sg, parentName);
 
 		qDebug() << parentName << ">" << gName;
 
@@ -56,6 +65,18 @@ void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentNa
 		setSettings(settings, gName);
 		settings.endGroup();
 	}
+
+	if (parentName.isEmpty()) {
+
+		// that call is weird!
+		mProxyModel->setSourceModel(mSettingsModel);
+
+		//for (int idx = 0; idx < mProxyModel->rowCount(); idx++) {
+		//	mTreeView->expand(mProxyModel->index(idx, 0, QModelIndex()));
+		//	qDebug() << "expanding...";
+		//}
+	}
+
 }
 
 void DkSettingsWidget::createLayout() {
@@ -76,21 +97,45 @@ void DkSettingsWidget::createLayout() {
 //
 //	QItemEditorFactory::setDefaultFactory(factory);
 
+	DkActionManager& m = DkActionManager::instance();
+
+	mSettingsFilter = new QLineEdit(this);
+	mSettingsFilter->setObjectName("Filter");
+	mSettingsFilter->setPlaceholderText(tr("Filter Settings (%1)").arg(m.action(DkActionManager::menu_file_find)->shortcut().toString()));
+
 	// create our beautiful shortcut view
-	mModel = new DkSettingsModel(this);
+	mSettingsModel = new DkSettingsModel(this);
 
-	//DkShortcutDelegate* scDelegate = new DkShortcutDelegate(this);
+	mProxyModel = new DkSettingsProxyModel(this);
+	mProxyModel->setSourceModel(mSettingsModel);
+	//mSettingsModel->setProxyFilterModel(mProxyModel);
 
-	QTreeView* treeView = new QTreeView(this);
-	treeView->setModel(mModel);
-	//treeView->setItemDelegate(scDelegate);
-	treeView->setAlternatingRowColors(true);
-	//treeView->setIndentation(8);
-	treeView->header()->resizeSection(0, 200);
+	mTreeView = new QTreeView(this);
+	mTreeView->setModel(mProxyModel);
+	mTreeView->setAlternatingRowColors(true);
+	//mTreeView->setIndentation(8);
+	mTreeView->header()->resizeSection(0, 200);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addWidget(treeView);
+	layout->addWidget(mSettingsFilter);
+	layout->addWidget(mTreeView);
 
+
+	connect(m.action(DkActionManager::menu_file_find), SIGNAL(triggered()), this, SLOT(focusFilter()));
+	addAction(m.action(DkActionManager::menu_file_find));
+}
+
+void DkSettingsWidget::on_Filter_textChanged(const QString& filterText) {
+
+	mProxyModel->setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::FixedString));
+	//mProxyModel->setFilterKeyColumn(0);
+
+	qDebug() << "filtering: " << filterText;
+}
+
+void DkSettingsWidget::focusFilter() {
+	
+	mSettingsFilter->setFocus();
 }
 
 // DkSettingsEntry --------------------------------------------------------------------
@@ -171,6 +216,24 @@ int DkSettingsGroup::size() const {
 QVector<DkSettingsEntry> DkSettingsGroup::entries() const {
 	return mEntries;
 }
+
+// DkSettingsProxyModel --------------------------------------------------------------------
+DkSettingsProxyModel::DkSettingsProxyModel(QObject* parent) : QSortFilterProxyModel(parent) {
+
+}
+
+bool DkSettingsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex & sourceParent) const {
+
+	//	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+
+	TreeItem* t = static_cast<TreeItem*>(sourceParent.internalPointer());
+
+	if (t)
+		return true;
+
+	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+}
+
 
 // DkSettingsModel --------------------------------------------------------------------
 DkSettingsModel::DkSettingsModel(QObject* parent) : QAbstractItemModel(parent) {
