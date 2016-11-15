@@ -54,17 +54,18 @@ namespace nmc {
 class DkSettingsEntry {
 
 public:
-
-	DkSettingsEntry(const QString& key = QString(), const QString& value = QString());
+	DkSettingsEntry(const QString& key = QString(), const QVariant& value = QVariant());
 
 	QString key() const;
 
-	void setValue(const QString& value);
-	QString value() const;
+	void setValue(const QVariant& value);
+	QVariant value() const;
+
+	static DkSettingsEntry fromSettings(const QString& key, const QSettings& settings);
 
 protected:
 	QString mKey;
-	QString mValue;
+	QVariant mValue;
 };
 
 class DkSettingsGroup {

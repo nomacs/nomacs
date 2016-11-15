@@ -31,6 +31,7 @@
 #pragma warning(push, 0)	// no warnings from includes
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QHeaderView>
 #pragma warning(pop)
 
 namespace nmc {
@@ -84,8 +85,8 @@ void DkSettingsWidget::createLayout() {
 	treeView->setModel(mModel);
 	//treeView->setItemDelegate(scDelegate);
 	treeView->setAlternatingRowColors(true);
-	treeView->setIndentation(8);
-	//treeView->header()->resizeSection(0, 200);
+	//treeView->setIndentation(8);
+	treeView->header()->resizeSection(0, 200);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(treeView);
@@ -93,7 +94,7 @@ void DkSettingsWidget::createLayout() {
 }
 
 // DkSettingsEntry --------------------------------------------------------------------
-DkSettingsEntry::DkSettingsEntry(const QString & key, const QString & value) {
+DkSettingsEntry::DkSettingsEntry(const QString & key, const QVariant & value) {
 	mKey = key;
 	mValue = value;
 }
@@ -102,12 +103,37 @@ QString DkSettingsEntry::key() const {
 	return mKey;
 }
 
-void DkSettingsEntry::setValue(const QString & value) {
+void DkSettingsEntry::setValue(const QVariant & value) {
 	mValue = value;
 }
 
-QString DkSettingsEntry::value() const {
+QVariant DkSettingsEntry::value() const {
 	return mValue;
+}
+
+DkSettingsEntry DkSettingsEntry::fromSettings(const QString & key, const QSettings & settings) {
+
+	DkSettingsEntry se(key);
+
+	// int settings
+	bool ok = false;
+	int iVal = settings.value(key, -1).toInt(&ok);
+
+	if (ok) {
+		se.setValue(iVal);
+		return se;
+	}
+	
+	// double settings?
+	double dVal = settings.value(key, -1.0).toDouble(&ok);
+
+	if (ok) {
+		se.setValue(dVal);
+		return se;
+	}
+
+	se.setValue(settings.value(key));
+	return se;
 }
 
 // DkSettingsGroup --------------------------------------------------------------------
@@ -125,7 +151,8 @@ DkSettingsGroup DkSettingsGroup::fromSettings(const QString & groupName, QSettin
 	settings.beginGroup(groupName);
 
 	for (const QString& key : settings.allKeys()) {
-		sg.mEntries << DkSettingsEntry(key, settings.value(key).toString());
+		if (!key.contains("/"))	// skip entries from different hierarchies
+			sg.mEntries << DkSettingsEntry::fromSettings(key, settings);
 	}
 
 	settings.endGroup();
