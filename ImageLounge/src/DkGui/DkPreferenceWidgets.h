@@ -57,6 +57,7 @@ class QStandardItemModel;
 namespace nmc {
 
 class DkWorkingDirWidget;
+class DkSettingsWidget;
 
 // extend this class if you want to add general preference functions
 class DllGuiExport DkPreferenceTabWidget : public DkNamedWidget {
@@ -275,7 +276,22 @@ signals:
 protected:
 	void createLayout();
 	void paintEvent(QPaintEvent* ev);
+};
 
+class DkEditorPreference : public QWidget {
+	Q_OBJECT
+
+public:
+	DkEditorPreference(QWidget* parent = 0);
+
+signals:
+   void infoSignal(const QString& msg) const;
+
+protected:
+	void createLayout();
+
+	DkSettingsWidget* mSettingsWidget;
+	void paintEvent(QPaintEvent* ev);
 };
 
 //class DkDummyPreference : public QWidget {

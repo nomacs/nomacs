@@ -2,7 +2,7 @@
 <Package>
 	<DisplayName>nomacs [x64]</DisplayName>
 	<Description>nomacs for x64 systems.</Description>
-	<Version>3.4.10</Version>
-	<ReleaseDate>2016-10-13</ReleaseDate>
+	<Version>3.4.3</Version>
+	<ReleaseDate>2016-10-18</ReleaseDate>
 	<Default>true</Default>
 </Package>

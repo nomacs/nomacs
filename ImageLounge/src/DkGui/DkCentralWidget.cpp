@@ -505,12 +505,18 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	tab->setWidget(fap);
 	pw->addTabWidget(tab);
 
-
 	// advanced preferences
 	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
 	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
 	tab->setWidget(ap);
 	pw->addTabWidget(tab);
+
+	// file association preferences
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/manipulation.svg"), tr("Editor"), this);
+	DkEditorPreference* ep = new DkEditorPreference(this);
+	tab->setWidget(ep);
+	pw->addTabWidget(tab);
+
 	// add preference widget ------------------------------
 
 	return pw;

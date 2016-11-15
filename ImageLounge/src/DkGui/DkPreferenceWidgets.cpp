@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkSettings.h"
 #include "DkUtils.h"
 #include "DkBasicWidgets.h"
+#include "DkSettingsWidget.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -1288,6 +1289,35 @@ void DkAdvancedPreference::on_numThreads_valueChanged(int val) const {
 }
 
 void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
+
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
+// DkDummySettings --------------------------------------------------------------------
+DkEditorPreference::DkEditorPreference(QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkEditorPreference::createLayout() {
+
+	mSettingsWidget = new DkSettingsWidget(this);
+	mSettingsWidget->setSettings(Settings::instance().getSettings());
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+
+	layout->addWidget(mSettingsWidget);
+
+}
+void DkEditorPreference::paintEvent(QPaintEvent *event) {
 
 	// fixes stylesheets which are not applied to custom widgets
 	QStyleOption opt;
