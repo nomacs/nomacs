@@ -467,7 +467,9 @@ public:
 
 	void appendChild(TreeItem *child);
 
-	TreeItem *child(int row);
+	bool contains(const QRegExp& regExp, int column = 0, bool recursive = true) const;
+
+	TreeItem* child(int row) const;
 	int childCount() const;
 	int columnCount() const;
 	QVariant data(int column) const;

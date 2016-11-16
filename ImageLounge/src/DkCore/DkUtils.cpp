@@ -1050,7 +1050,41 @@ void TreeItem::appendChild(TreeItem *item) {
 	//item->setParent(this);
 }
 
-TreeItem* TreeItem::child(int row) {
+bool TreeItem::contains(const QRegExp& regExp, int column, bool recursive) const {
+
+	bool found = false;
+
+	if (column == -1) {
+
+		for (int idx = 0; idx < columnCount(); idx++)
+			if (contains(regExp, idx))
+				return true;
+
+		return false;
+	}
+
+	found = data(column).toString().contains(regExp);
+
+	// if the parent contains the key, I am valid too
+	TreeItem* p = parent();
+	if (!found && p)
+		found = p->contains(regExp, column, false);	// the parent must not check its kid's again
+
+	// if a child contains the key, I am valid too
+	if (!found && recursive) {
+		for (int idx = 0; idx < childCount(); idx++) {
+			assert(child(idx));
+			found = child(idx)->contains(regExp, column, recursive);
+
+			if (found)
+				break;
+		}
+	}
+
+	return found;
+}
+
+TreeItem* TreeItem::child(int row) const {
 
 	if (row < 0 || row >= childItems.size())
 		return 0;
@@ -1081,6 +1115,10 @@ int TreeItem::columnCount() const {
 }
 
 QVariant TreeItem::data(int column) const {
+	
+	if (column >= itemData.size())
+		return QVariant();
+	
 	return itemData.value(column);
 }
 

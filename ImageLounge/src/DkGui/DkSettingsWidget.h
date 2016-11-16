@@ -140,7 +140,7 @@ public:
 	void setSettings(QSettings& settings, const QString& parentName = "");
 
 public slots:
-	void focusFilter();
+	//void focusFilter();
 	void on_Filter_textChanged(const QString& text);
 
 protected:

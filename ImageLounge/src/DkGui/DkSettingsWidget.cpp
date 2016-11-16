@@ -97,17 +97,16 @@ void DkSettingsWidget::createLayout() {
 //
 //	QItemEditorFactory::setDefaultFactory(factory);
 
-	DkActionManager& m = DkActionManager::instance();
-
 	mSettingsFilter = new QLineEdit(this);
 	mSettingsFilter->setObjectName("Filter");
-	mSettingsFilter->setPlaceholderText(tr("Filter Settings (%1)").arg(m.action(DkActionManager::menu_file_find)->shortcut().toString()));
+	mSettingsFilter->setPlaceholderText(tr("Filter Settings"));
 
 	// create our beautiful shortcut view
 	mSettingsModel = new DkSettingsModel(this);
 
 	mProxyModel = new DkSettingsProxyModel(this);
 	mProxyModel->setSourceModel(mSettingsModel);
+	//mProxyModel->setDynamicSortFilter(true);
 	//mSettingsModel->setProxyFilterModel(mProxyModel);
 
 	mTreeView = new QTreeView(this);
@@ -115,27 +114,20 @@ void DkSettingsWidget::createLayout() {
 	mTreeView->setAlternatingRowColors(true);
 	//mTreeView->setIndentation(8);
 	mTreeView->header()->resizeSection(0, 200);
+	//mTreeView->setSortingEnabled(true);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(mSettingsFilter);
 	layout->addWidget(mTreeView);
-
-
-	connect(m.action(DkActionManager::menu_file_find), SIGNAL(triggered()), this, SLOT(focusFilter()));
-	addAction(m.action(DkActionManager::menu_file_find));
 }
 
 void DkSettingsWidget::on_Filter_textChanged(const QString& filterText) {
 
+	if (!filterText.isEmpty())
+		mTreeView->expandAll();
+
 	mProxyModel->setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::FixedString));
-	//mProxyModel->setFilterKeyColumn(0);
-
 	qDebug() << "filtering: " << filterText;
-}
-
-void DkSettingsWidget::focusFilter() {
-	
-	mSettingsFilter->setFocus();
 }
 
 // DkSettingsEntry --------------------------------------------------------------------
@@ -224,14 +216,25 @@ DkSettingsProxyModel::DkSettingsProxyModel(QObject* parent) : QSortFilterProxyMo
 
 bool DkSettingsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex & sourceParent) const {
 
-	//	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
-	TreeItem* t = static_cast<TreeItem*>(sourceParent.internalPointer());
+	TreeItem* t = static_cast<TreeItem*>(index.internalPointer());
+	if (t) {
+		return t->contains(filterRegExp(), filterKeyColumn());
+	}
 
-	if (t)
-		return true;
+	return true;
+	//return false;
+	//return sourceModel()->data(index).toString().contains(filterRegExp());
 
-	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+	//TreeItem* t = static_cast<TreeItem*>(sourceParent.internalPointer());
+
+	//if (t)
+		//return true;
+
+	//return false;
+
+	//return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
 }
 
 
@@ -240,7 +243,7 @@ DkSettingsModel::DkSettingsModel(QObject* parent) : QAbstractItemModel(parent) {
 
 	// create root
 	QVector<QVariant> rootData;
-	rootData << tr("Key") << tr("Value");
+	rootData << tr("Settings") << tr("Value");
 
 	mRootItem = new TreeItem(rootData);
 
