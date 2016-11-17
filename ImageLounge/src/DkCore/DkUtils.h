@@ -477,6 +477,7 @@ public:
 	int row() const;
 	TreeItem* parent() const;
 	TreeItem* find(const QVariant& value, int column);
+	void parentList(QStringList& parentKeys) const;
 	void setParent(TreeItem* parent);
 	void clear();
 

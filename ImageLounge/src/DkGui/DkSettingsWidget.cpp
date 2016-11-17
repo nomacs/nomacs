@@ -70,13 +70,30 @@ void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentNa
 
 		// that call is weird!
 		mProxyModel->setSourceModel(mSettingsModel);
-
-		//for (int idx = 0; idx < mProxyModel->rowCount(); idx++) {
-		//	mTreeView->expand(mProxyModel->index(idx, 0, QModelIndex()));
-		//	qDebug() << "expanding...";
-		//}
 	}
 
+	mSettings = &settings;
+}
+
+
+
+void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups) {
+
+	if (!mSettings)
+		return;
+
+	QStringList groupsClean = groups;
+	groupsClean.pop_front();
+
+	for (const QString& gName : groupsClean) {
+		mSettings->beginGroup(gName);
+	}
+
+	mSettings->setValue(key, value);
+	qDebug() << key << ":" << value << "written...";
+
+	for (int idx = 0; idx < groupsClean.size(); idx++)
+		mSettings->endGroup();
 }
 
 void DkSettingsWidget::createLayout() {
@@ -103,6 +120,7 @@ void DkSettingsWidget::createLayout() {
 
 	// create our beautiful shortcut view
 	mSettingsModel = new DkSettingsModel(this);
+	mSettingsModel->setObjectName("SettingsModel");
 
 	mProxyModel = new DkSettingsProxyModel(this);
 	mProxyModel->setSourceModel(mSettingsModel);
@@ -224,17 +242,6 @@ bool DkSettingsProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex & s
 	}
 
 	return true;
-	//return false;
-	//return sourceModel()->data(index).toString().contains(filterRegExp());
-
-	//TreeItem* t = static_cast<TreeItem*>(sourceParent.internalPointer());
-
-	//if (t)
-		//return true;
-
-	//return false;
-
-	//return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
 }
 
 
@@ -346,6 +353,7 @@ bool DkSettingsModel::setData(const QModelIndex& index, const QVariant& value, i
 
 	if (index.column() == 1) {
 
+
 		QString val = value.value<QString>();
 		// TODO: check value & write it directely?
 
@@ -357,7 +365,19 @@ bool DkSettingsModel::setData(const QModelIndex& index, const QVariant& value, i
 		item->setData(value, index.column());
 	}
 
-	//emit duplicateSignal("");		// TODO: we also have to clear if the user hits ESC
+	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+
+	if (item) {
+		item->setData(value, index.column());
+
+		if (index.column() == 1) {
+			
+			QStringList groups;
+			item->parentList(groups);
+			emit settingChanged(item->data(0).toString(), item->data(1), groups);
+		}
+	}
+
 	emit dataChanged(index, index);
 	return true;
 }
@@ -404,7 +424,6 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QStri
 
 	parentItem->appendChild(settingsItem);
 	//qDebug() << "menu item has: " << menuItem->childCount();
-
 }
 
 }

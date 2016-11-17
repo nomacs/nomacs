@@ -1146,6 +1146,14 @@ TreeItem* TreeItem::find(const QVariant& value, int column) {
 	return 0;
 }
 
+void TreeItem::parentList(QStringList& parentKeys) const {
+
+	if (parent()) {
+		parent()->parentList(parentKeys);
+		parentKeys << parent()->data(0).toString();
+	}
+}
+
 TreeItem* TreeItem::parent() const {
 	return parentItem;
 }

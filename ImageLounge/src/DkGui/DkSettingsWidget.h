@@ -121,13 +121,11 @@ public:
 
 	void addSettingsGroup(const DkSettingsGroup& group, const QString& parentName = "");
 
-	//void resetSettings();
-	//void saveSettings() const;
+signals:
+	void settingChanged(const QString& key, const QVariant& value, const QStringList& groups) const;
 
 protected:
 	TreeItem* mRootItem;
-	//QVector<DkSettingsGroup> mGroups;
-
 };
 
 // nomacs defines
@@ -142,6 +140,7 @@ public:
 public slots:
 	//void focusFilter();
 	void on_Filter_textChanged(const QString& text);
+	void on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups);
 
 protected:
 	void createLayout();
@@ -150,6 +149,8 @@ protected:
 	DkSettingsProxyModel* mProxyModel;
 	QLineEdit* mSettingsFilter;
 	QTreeView* mTreeView;
+
+	QSettings* mSettings = 0;
 };
 
 
