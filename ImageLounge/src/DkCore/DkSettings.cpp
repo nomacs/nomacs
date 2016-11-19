@@ -279,11 +279,9 @@ QStringList DkSettings::getTranslationDirs() {
 	return translationDirs;
 }
 
-void DkSettings::load() {
+void DkSettings::load(QSettings& settings) {
 
 	setToDefaultSettings();
-
-	QSettings& settings = Settings::instance().getSettings();
 	qInfoClean() << "loading settings from: " << settings.fileName();
 
 	settings.beginGroup("AppSettings");
@@ -486,254 +484,250 @@ void DkSettings::load() {
 	resources_d = resources_p;
 }
 
-void DkSettings::save(bool force) {
+void DkSettings::save(QSettings& settings, bool force) {
 		
 	if (Settings::param().app().privateMode)
 		return;
 
-	QSettings& settings = Settings::instance().getSettings();
-	
-	settings.beginGroup("AppSettings");
-
-	if (!force && app_p.showMenuBar != app_d.showMenuBar)
+	if (force ||app_p.showMenuBar != app_d.showMenuBar)
 		settings.setValue("showMenuBar", app_p.showMenuBar);
 
 	if (app_p.currentAppMode != mode_frameless && app_p.currentAppMode != mode_frameless_fullscreen) {
 		
-		if (!force && app_p.showToolBar != app_d.showToolBar)
+		if (force ||app_p.showToolBar != app_d.showToolBar)
 			settings.setValue("showToolBar", app_p.showToolBar);
 
-		if (!force && app_p.showStatusBar != app_d.showStatusBar)
+		if (force ||app_p.showStatusBar != app_d.showStatusBar)
 			settings.setValue("showStatusBar", app_p.showStatusBar);
 	}
 
-	if (!force && app_p.showFileInfoLabel != app_d.showFileInfoLabel)
+	if (force ||app_p.showFileInfoLabel != app_d.showFileInfoLabel)
 		settings.setValue("showFileInfoLabel", app_p.showFileInfoLabel);
-	if (!force && app_p.showFilePreview != app_d.showFilePreview)
+	if (force ||app_p.showFilePreview != app_d.showFilePreview)
 		settings.setValue("showFilePreview", app_p.showFilePreview);
-	if (!force && app_p.showScroller != app_d.showScroller)
+	if (force ||app_p.showScroller != app_d.showScroller)
 		settings.setValue("showScroller", app_p.showScroller);
-	if (!force && app_p.showMetaData != app_d.showMetaData)
+	if (force ||app_p.showMetaData != app_d.showMetaData)
 		settings.setValue("showMetaData", app_p.showMetaData);
-	if (!force && app_p.showPlayer != app_d.showPlayer)
+	if (force ||app_p.showPlayer != app_d.showPlayer)
 		settings.setValue("showPlayer", app_p.showPlayer);
-	if (!force && app_p.showHistogram != app_d.showHistogram)
+	if (force ||app_p.showHistogram != app_d.showHistogram)
 		settings.setValue("showHistogram", app_p.showHistogram);
-	if (!force && app_p.showComment != app_d.showComment)
+	if (force ||app_p.showComment != app_d.showComment)
 		settings.setValue("showComment", app_p.showComment);
-	if (!force && app_p.showOverview != app_d.showOverview)
+	if (force ||app_p.showOverview != app_d.showOverview)
 		settings.setValue("showOverview", app_p.showOverview);
-	if (!force && app_p.showExplorer != app_d.showExplorer)
+	if (force ||app_p.showExplorer != app_d.showExplorer)
 		settings.setValue("showExplorer", app_p.showExplorer);
-	if (!force && app_p.showMetaDataDock != app_d.showMetaDataDock)
+	if (force ||app_p.showMetaDataDock != app_d.showMetaDataDock)
 		settings.setValue("showMetaDataDock", app_p.showMetaDataDock);
-	if (!force && app_p.showHistoryDock != app_d.showHistoryDock)
+	if (force ||app_p.showHistoryDock != app_d.showHistoryDock)
 		settings.setValue("showHistoryDock", app_p.showHistoryDock);
-	if (!force && app_p.advancedSettings != app_d.advancedSettings)
+	if (force ||app_p.advancedSettings != app_d.advancedSettings)
 		settings.setValue("advancedSettings", app_p.advancedSettings);
-	//if (!force && app_p.appMode != app_d.appMode)
+	//if (force ||app_p.appMode != app_d.appMode)
 		settings.setValue("appMode", app_p.appMode);
-	//if (!force && app_p.currentAppMode != app_d.currentAppMode)
+	//if (force ||app_p.currentAppMode != app_d.currentAppMode)
 		settings.setValue("currentAppMode", app_p.currentAppMode);
-	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
+	if (force ||app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
-	if (!force && app_p.showRecentFiles != app_d.showRecentFiles)
+	if (force ||app_p.showRecentFiles != app_d.showRecentFiles)
 		settings.setValue("showRecentFiles", app_p.showRecentFiles);
-	if (!force && app_p.useLogFile != app_d.useLogFile)
+	if (force ||app_p.useLogFile != app_d.useLogFile)
 		settings.setValue("useLogFile", app_p.useLogFile);
-	if (!force && app_p.browseFilters != app_d.browseFilters)
+	if (force ||app_p.browseFilters != app_d.browseFilters)
 		settings.setValue("browseFilters", app_p.browseFilters);
-	if (!force && app_p.registerFilters != app_d.registerFilters)
+	if (force ||app_p.registerFilters != app_d.registerFilters)
 		settings.setValue("registerFilters", app_p.registerFilters);
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
 	settings.beginGroup("GlobalSettings");
 
-	if (!force && global_p.skipImgs != global_d.skipImgs)
+	if (force ||global_p.skipImgs != global_d.skipImgs)
 		settings.setValue("skipImgs",global_p.skipImgs);
-	//if (!force && global_p.numFiles != global_d.numFiles)
+	//if (force ||global_p.numFiles != global_d.numFiles)
 	//	settings.setValue("numFiles",global_p.numFiles);
-	if (!force && global_p.loop != global_d.loop)
+	if (force ||global_p.loop != global_d.loop)
 		settings.setValue("loop",global_p.loop);
-	if (!force && global_p.scanSubFolders != global_d.scanSubFolders)
+	if (force ||global_p.scanSubFolders != global_d.scanSubFolders)
 		settings.setValue("scanRecursive",global_p.scanSubFolders);
-	if (!force && global_p.lastDir != global_d.lastDir)
+	if (force ||global_p.lastDir != global_d.lastDir)
 		settings.setValue("lastDir", global_p.lastDir);
-	if (!force && global_p.searchHistory != global_d.searchHistory)
+	if (force ||global_p.searchHistory != global_d.searchHistory)
 		settings.setValue("searchHistory", global_p.searchHistory);
-	if (!force && global_p.recentFolders != global_d.recentFolders)
+	if (force ||global_p.recentFolders != global_d.recentFolders)
 		settings.setValue("recentFolders", global_p.recentFolders);
-	if (!force && global_p.recentFiles != global_d.recentFiles)
+	if (force ||global_p.recentFiles != global_d.recentFiles)
 		settings.setValue("recentFiles", global_p.recentFiles);
-	if (!force && global_p.logRecentFiles != global_d.logRecentFiles)
+	if (force ||global_p.logRecentFiles != global_d.logRecentFiles)
 		settings.setValue("logRecentFiles", global_p.logRecentFiles);
-	if (!force && global_p.useTmpPath != global_d.useTmpPath)
+	if (force ||global_p.useTmpPath != global_d.useTmpPath)
 		settings.setValue("useTmpPath", global_p.useTmpPath);
-	if (!force && global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
+	if (force ||global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
 		settings.setValue("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles);
-	if (!force && global_p.tmpPath != global_d.tmpPath)
+	if (force ||global_p.tmpPath != global_d.tmpPath)
 		settings.setValue("tmpPath", global_p.tmpPath);
-	if (!force && global_p.language != global_d.language)
+	if (force ||global_p.language != global_d.language)
 		settings.setValue("language", global_p.language);
-	if (!force && global_p.numThreads != global_d.numThreads)
+	if (force ||global_p.numThreads != global_d.numThreads)
 		settings.setValue("numThreads", global_p.numThreads);
-	if (!force && global_p.sortMode != global_d.sortMode)
+	if (force ||global_p.sortMode != global_d.sortMode)
 		settings.setValue("sortMode", global_p.sortMode);
-	if (!force && global_p.sortDir != global_d.sortDir)
+	if (force ||global_p.sortDir != global_d.sortDir)
 		settings.setValue("sortDir", global_p.sortDir);
-	if (!force && global_p.setupPath != global_d.setupPath)
+	if (force ||global_p.setupPath != global_d.setupPath)
 		settings.setValue("setupPath", global_p.setupPath);
-	if (!force && global_p.setupVersion != global_d.setupVersion)
+	if (force ||global_p.setupVersion != global_d.setupVersion)
 		settings.setValue("setupVersion", global_p.setupVersion);
-	if (!force && global_p.zoomOnWheel != global_d.zoomOnWheel)
+	if (force ||global_p.zoomOnWheel != global_d.zoomOnWheel)
 		settings.setValue("zoomOnWheel", global_p.zoomOnWheel);
-	if (!force && global_p.horZoomSkips != global_d.horZoomSkips)
+	if (force ||global_p.horZoomSkips != global_d.horZoomSkips)
 		settings.setValue("horZoomSkips", global_p.horZoomSkips);
-	if (!force && global_p.doubleClickForFullscreen != global_d.doubleClickForFullscreen)
+	if (force ||global_p.doubleClickForFullscreen != global_d.doubleClickForFullscreen)
 		settings.setValue("doubleClickForFullscreen", global_p.doubleClickForFullscreen);
-	if (!force && global_p.showBgImage != global_d.showBgImage)
+	if (force ||global_p.showBgImage != global_d.showBgImage)
 		settings.setValue("showBgImage", global_p.showBgImage);
 
 	settings.endGroup();
 	// Display Settings --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
-	if (!force && display_p.keepZoom != display_d.keepZoom)
+	if (force ||display_p.keepZoom != display_d.keepZoom)
 		settings.setValue("keepZoom",display_p.keepZoom);
-	if (!force && display_p.invertZoom != display_d.invertZoom)
+	if (force ||display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
-	if (!force && display_p.zoomToFit != display_d.zoomToFit)
+	if (force ||display_p.zoomToFit != display_d.zoomToFit)
 		settings.setValue("zoomToFit",display_p.zoomToFit);
-	if (!force && display_p.highlightColor != display_d.highlightColor)
+	if (force ||display_p.highlightColor != display_d.highlightColor)
 		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
-	if (!force && display_p.hudBgColor != display_d.hudBgColor)
+	if (force ||display_p.hudBgColor != display_d.hudBgColor)
 		settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
-	if (!force && display_p.hudFgdColor != display_d.hudFgdColor)
+	if (force ||display_p.hudFgdColor != display_d.hudFgdColor)
 		settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
-	if (!force && display_p.bgColor != display_d.bgColor)
+	if (force ||display_p.bgColor != display_d.bgColor)
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
-	if (!force && display_p.iconColor != display_d.iconColor)
+	if (force ||display_p.iconColor != display_d.iconColor)
 		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
-	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
+	if (force ||display_p.bgColorFrameless != display_d.bgColorFrameless)
 		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
-	if (!force && display_p.thumbSize != display_d.thumbSize)
+	if (force ||display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
-	if (!force && display_p.iconSize != display_d.iconSize)
+	if (force ||display_p.iconSize != display_d.iconSize)
 		settings.setValue("iconSize", display_p.iconSize);
-	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
+	if (force ||display_p.thumbPreviewSize != display_d.thumbPreviewSize)
 		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
-	//if (!force && display_p.saveThumb != display_d.saveThumb)
+	//if (force ||display_p.saveThumb != display_d.saveThumb)
 	//	settings.setValue("saveThumb", display_p.saveThumb);
-	if (!force && display_p.antiAliasing != display_d.antiAliasing)
+	if (force ||display_p.antiAliasing != display_d.antiAliasing)
 		settings.setValue("antiAliasing", display_p.antiAliasing);
-	if (!force && display_p.showCrop != display_d.showCrop)
+	if (force ||display_p.showCrop != display_d.showCrop)
 		settings.setValue("showCrop", display_p.showCrop);
-	if (!force && display_p.tpPattern != display_d.tpPattern)
+	if (force ||display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
-	if (!force && display_p.toolbarGradient != display_d.toolbarGradient)
+	if (force ||display_p.toolbarGradient != display_d.toolbarGradient)
 		settings.setValue("toolbarGradient", display_p.toolbarGradient);
-	if (!force && display_p.showBorder != display_d.showBorder)
+	if (force ||display_p.showBorder != display_d.showBorder)
 		settings.setValue("showBorder", display_p.showBorder);
-	if (!force && display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
+	if (force ||display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
 		settings.setValue("displaySquaredThumbs", display_p.displaySquaredThumbs);
-	if (!force && display_p.showThumbLabel != display_d.showThumbLabel)
+	if (force ||display_p.showThumbLabel != display_d.showThumbLabel)
 		settings.setValue("showThumbLabel", display_p.showThumbLabel);
-	if (!force && display_p.alwaysAnimate != display_d.alwaysAnimate)
+	if (force ||display_p.alwaysAnimate != display_d.alwaysAnimate)
 		settings.setValue("alwaysAnimate", display_p.alwaysAnimate);
-	if (!force && display_p.animationDuration != display_d.animationDuration)
+	if (force ||display_p.animationDuration != display_d.animationDuration)
 		settings.setValue("fadeSec", display_p.animationDuration);
-	if (!force && display_p.transition != display_d.transition)
+	if (force ||display_p.transition != display_d.transition)
 		settings.setValue("transition", display_p.transition);
-	if (!force && display_p.defaultBackgroundColor != display_d.defaultBackgroundColor)
+	if (force ||display_p.defaultBackgroundColor != display_d.defaultBackgroundColor)
 		settings.setValue("useDefaultColor", display_p.defaultBackgroundColor);
-	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
+	if (force ||display_p.defaultIconColor != display_d.defaultIconColor)
 		settings.setValue("defaultIconColor", display_p.defaultIconColor);
-	if (!force && display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
+	if (force ||display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
 		settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
 
 	settings.endGroup();
 	// MetaData Settings --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 	
-	if (!force && meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
+	if (force ||meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
 		settings.setValue("ignoreExifOrientation", meta_p.ignoreExifOrientation);
-	if (!force && meta_p.saveExifOrientation != meta_d.saveExifOrientation)
+	if (force ||meta_p.saveExifOrientation != meta_d.saveExifOrientation)
 		settings.setValue("saveExifOrientation", meta_p.saveExifOrientation);
 
 	settings.endGroup();
 	// SlideShow Settings --------------------------------------------------------------------
 	settings.beginGroup("SlideShowSettings");
 
-	if (!force && slideShow_p.filter != slideShow_d.filter)
+	if (force ||slideShow_p.filter != slideShow_d.filter)
 		settings.setValue("filter", slideShow_p.filter);
-	if (!force && slideShow_p.time != slideShow_d.time)
+	if (force ||slideShow_p.time != slideShow_d.time)
 		settings.setValue("time", slideShow_p.time);
-	if (!force && slideShow_p.moveSpeed != slideShow_d.moveSpeed)
+	if (force ||slideShow_p.moveSpeed != slideShow_d.moveSpeed)
 		settings.setValue("moveSpeed", slideShow_p.moveSpeed);
-	if (!force && slideShow_p.display != slideShow_d.display)
+	if (force ||slideShow_p.display != slideShow_d.display)
 		settings.setValue("display", slideShow_p.display);
-	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
+	if (force ||slideShow_p.backgroundColor != slideShow_d.backgroundColor)
 		settings.setValue("backgroundColorRGBA", slideShow_p.backgroundColor.rgba());
-	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
+	if (force ||slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
 	settings.endGroup();
 	// Sync Settings --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
-	if (!force && sync_p.enableNetworkSync != sync_d.enableNetworkSync)
+	if (force ||sync_p.enableNetworkSync != sync_d.enableNetworkSync)
 		settings.setValue("enableNetworkSync", sync_p.enableNetworkSync);
-	if (!force && sync_p.allowTransformation != sync_d.allowTransformation)
+	if (force ||sync_p.allowTransformation != sync_d.allowTransformation)
 		settings.setValue("allowTransformation", sync_p.allowTransformation);
-	if (!force && sync_p.allowPosition != sync_d.allowPosition)
+	if (force ||sync_p.allowPosition != sync_d.allowPosition)
 		settings.setValue("allowPosition", sync_p.allowPosition);
-	if (!force && sync_p.allowFile != sync_d.allowFile)
+	if (force ||sync_p.allowFile != sync_d.allowFile)
 		settings.setValue("allowFile", sync_p.allowFile);
-	if (!force && sync_p.allowImage != sync_d.allowImage)
+	if (force ||sync_p.allowImage != sync_d.allowImage)
 		settings.setValue("allowImage", sync_p.allowImage);
-	if (!force && sync_p.checkForUpdates != sync_d.checkForUpdates)
+	if (force ||sync_p.checkForUpdates != sync_d.checkForUpdates)
 		settings.setValue("checkForUpdates", sync_p.checkForUpdates);
-	if (!force && sync_p.updateDialogShown != sync_d.updateDialogShown)
+	if (force ||sync_p.updateDialogShown != sync_d.updateDialogShown)
 		settings.setValue("updateDialogShown", sync_p.updateDialogShown);
-	if (!force && sync_p.lastUpdateCheck != sync_d.lastUpdateCheck)
+	if (force ||sync_p.lastUpdateCheck != sync_d.lastUpdateCheck)
 		settings.setValue("lastUpdateCheck", sync_p.lastUpdateCheck);
-	if (!force && sync_p.syncAbsoluteTransform != sync_d.syncAbsoluteTransform)
+	if (force ||sync_p.syncAbsoluteTransform != sync_d.syncAbsoluteTransform)
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
-	if (!force && sync_p.switchModifier != sync_d.switchModifier)
+	if (force ||sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
-	//if (!force && sync_p.syncMode != sync_d.syncMode)
+	//if (force ||sync_p.syncMode != sync_d.syncMode)
 	//	settings.setValue("syncMode", sync_p.syncMode);
-	if (!force && sync_p.syncActions != sync_d.syncActions)
+	if (force ||sync_p.syncActions != sync_d.syncActions)
 		settings.setValue("syncActions", sync_p.syncActions);
-	if (!force && sync_p.recentSyncNames != sync_d.recentSyncNames)
+	if (force ||sync_p.recentSyncNames != sync_d.recentSyncNames)
 		settings.setValue("recentSyncNames", sync_p.recentSyncNames);
-	if (!force && sync_p.syncWhiteList != sync_d.syncWhiteList)
+	if (force ||sync_p.syncWhiteList != sync_d.syncWhiteList)
 		settings.setValue("syncWhiteList", sync_p.syncWhiteList);
-	if (!force && sync_p.recentLastSeen != sync_d.recentLastSeen)
+	if (force ||sync_p.recentLastSeen != sync_d.recentLastSeen)
 		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
-	if (!force && resources_p.cacheMemory != resources_d.cacheMemory)
+	if (force ||resources_p.cacheMemory != resources_d.cacheMemory)
 		settings.setValue("cacheMemory", resources_p.cacheMemory);
-	if (!force && resources_p.historyMemory != resources_d.historyMemory)
+	if (force ||resources_p.historyMemory != resources_d.historyMemory)
 		settings.setValue("historyMemory", resources_p.historyMemory);
-	if (!force && resources_p.maxImagesCached != resources_d.maxImagesCached)
+	if (force ||resources_p.maxImagesCached != resources_d.maxImagesCached)
 		settings.setValue("maxImagesCached", resources_p.maxImagesCached);
-	if (!force && resources_p.waitForLastImg != resources_d.waitForLastImg)
+	if (force ||resources_p.waitForLastImg != resources_d.waitForLastImg)
 		settings.setValue("waitForLastImg", resources_p.waitForLastImg);
-	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
+	if (force ||resources_p.filterRawImages != resources_d.filterRawImages)
 		settings.setValue("filterRawImages", resources_p.filterRawImages);
-	if (!force && resources_p.loadRawThumb != resources_d.loadRawThumb)
+	if (force ||resources_p.loadRawThumb != resources_d.loadRawThumb)
 		settings.setValue("loadRawThumb", resources_p.loadRawThumb);
-	if (!force && resources_p.filterDuplicats != resources_d.filterDuplicats)
+	if (force ||resources_p.filterDuplicats != resources_d.filterDuplicats)
 		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
-	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
+	if (force ||resources_p.preferredExtension != resources_d.preferredExtension)
 		settings.setValue("preferredExtension", resources_p.preferredExtension);
-	if (!force && resources_p.gammaCorrection != resources_d.gammaCorrection)
+	if (force ||resources_p.gammaCorrection != resources_d.gammaCorrection)
 		settings.setValue("gammaCorrection", resources_p.gammaCorrection);
 	settings.endGroup();
 
@@ -958,7 +952,7 @@ void Settings::init() {
 	param().initFileFilters();
 	QSettings& settings = getSettings();
 
-	param().load();	// load in constructor??
+	param().load(settings);	// load in constructor??
 
 	int mode = settings.value("AppSettings/appMode", param().app().appMode).toInt();
 	param().app().currentAppMode = mode;

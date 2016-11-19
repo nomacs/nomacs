@@ -75,8 +75,6 @@ void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentNa
 	mSettings = &settings;
 }
 
-
-
 void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups) {
 
 	if (!mSettings)
@@ -97,22 +95,6 @@ void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const
 }
 
 void DkSettingsWidget::createLayout() {
-
-
-//	// register our special shortcut editor
-//	QItemEditorFactory *factory = new QItemEditorFactory;
-//
-//#if QT_VERSION < 0x050000
-//	QItemEditorCreatorBase *shortcutListCreator =
-//		new QStandardItemEditorCreator<DkShortcutEditor>();
-//#else
-//	QItemEditorCreatorBase *shortcutListCreator =
-//		new QStandardItemEditorCreator<QKeySequenceEdit>();
-//#endif
-//
-//	factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
-//
-//	QItemEditorFactory::setDefaultFactory(factory);
 
 	mSettingsFilter = new QLineEdit(this);
 	mSettingsFilter->setObjectName("Filter");
@@ -135,6 +117,7 @@ void DkSettingsWidget::createLayout() {
 	//mTreeView->setSortingEnabled(true);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(mSettingsFilter);
 	layout->addWidget(mTreeView);
 }

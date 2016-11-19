@@ -309,8 +309,8 @@ public:
 	void loadTranslation(const QString& fileName, QTranslator& translator);
 	QStringList getTranslationDirs();
 
-	void load();
-	void save(bool force = false);
+	void load(QSettings& settings);
+	void save(QSettings& settings, bool force = false);
 	void setToDefaultSettings();
 	void setNumThreads(int numThreads);
 

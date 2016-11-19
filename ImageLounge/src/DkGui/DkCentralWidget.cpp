@@ -911,7 +911,7 @@ int DkCentralWidget::currentViewMode() const {
 void DkCentralWidget::restart() const {
 
 	// safe settings first - since the intention of a restart is often a global settings change
-	Settings::param().save();
+	Settings::param().save(Settings::instance().getSettings());
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;

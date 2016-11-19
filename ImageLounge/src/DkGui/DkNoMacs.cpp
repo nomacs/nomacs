@@ -235,7 +235,7 @@ void DkNoMacs::init() {
 		if (!QFileInfo(nmc::Settings::param().global().setupPath).exists() || QFile::remove(nmc::Settings::param().global().setupPath)) {
 			nmc::Settings::param().global().setupPath = "";
 			nmc::Settings::param().global().setupVersion = "";
-			nmc::Settings::param().save();
+			nmc::Settings::param().save(Settings::instance().getSettings());
 		}
 	}
 #endif // Q_WS_WIN
@@ -669,7 +669,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		if (mThumbsDock)
 			settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
 
-		nmc::Settings::param().save();
+		nmc::Settings::param().save(Settings::instance().getSettings());
 	}
 
 	QMainWindow::closeEvent(event);
@@ -1073,7 +1073,7 @@ void DkNoMacs::setFrameless(bool) {
 	if (getTabWidget()->getCurrentImage())
 		args.append(getTabWidget()->getCurrentImage()->filePath());
 	
-	nmc::Settings::param().save();
+	nmc::Settings::param().save(Settings::instance().getSettings());
 	
 	bool started = mProcess.startDetached(exe, args);
 
@@ -2421,7 +2421,7 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 	}
 
 	Settings::param().sync().updateDialogShown = true;
-	Settings::param().save();
+	Settings::param().save(Settings::instance().getSettings());
 	
 	if (!mUpdateDialog) {
 		mUpdateDialog = new DkUpdateDialog(this);
@@ -3173,7 +3173,7 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 	// do not save the window size
 	if (mSaveSettings)
-		Settings::param().save();
+		Settings::param().save(Settings::instance().getSettings());
 
 	mSaveSettings = false;
 

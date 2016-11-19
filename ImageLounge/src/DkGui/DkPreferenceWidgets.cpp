@@ -998,7 +998,7 @@ DkFileAssociationsPreference::~DkFileAssociationsPreference() {
 	if (mSaveSettings) {
 		writeSettings();
 		mSaveSettings = false;
-		Settings::param().save();
+		Settings::param().save(Settings::instance().getSettings());
 	}
 }
 
