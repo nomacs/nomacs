@@ -343,7 +343,7 @@ void DkSettings::load(QSettings& settings) {
 	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();
 
 	settings.endGroup();
-	// Global DkSettingsManager --------------------------------------------------------------------
+	// Global Settings --------------------------------------------------------------------
 	settings.beginGroup("GlobalSettings");
 
 	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
@@ -372,7 +372,7 @@ void DkSettings::load(QSettings& settings) {
 	global_p.showBgImage = settings.value("showBgImage", global_p.showBgImage).toBool();
 
 	settings.endGroup();
-	// Display DkSettingsManager --------------------------------------------------------------------
+	// Display Settings --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
@@ -404,14 +404,14 @@ void DkSettings::load(QSettings& settings) {
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
 
 	settings.endGroup();
-	// MetaData DkSettingsManager --------------------------------------------------------------------
+	// MetaData Settings --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
 	settings.endGroup();
-	// SlideShow DkSettingsManager --------------------------------------------------------------------
+	// SlideShow Settings --------------------------------------------------------------------
 	settings.beginGroup("SlideShowSettings");
 
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
@@ -425,7 +425,7 @@ void DkSettings::load(QSettings& settings) {
 		slideShow_p.display = tmpDisplay;
 
 	settings.endGroup();
-	// Synchronize DkSettingsManager --------------------------------------------------------------------
+	// Synchronize Settings --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
 	sync_p.enableNetworkSync= settings.value("enableNetworkSync", sync_p.enableNetworkSync).toBool();
@@ -445,7 +445,7 @@ void DkSettings::load(QSettings& settings) {
 	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
-	// Resource DkSettingsManager --------------------------------------------------------------------
+	// Resource Settings --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
@@ -541,7 +541,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("registerFilters", app_p.registerFilters);
 
 	settings.endGroup();
-	// Global DkSettingsManager --------------------------------------------------------------------
+	// Global Settings --------------------------------------------------------------------
 	settings.beginGroup("GlobalSettings");
 
 	if (force ||global_p.skipImgs != global_d.skipImgs)
@@ -590,7 +590,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showBgImage", global_p.showBgImage);
 
 	settings.endGroup();
-	// Display DkSettingsManager --------------------------------------------------------------------
+	// Display Settings --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
 	if (force ||display_p.keepZoom != display_d.keepZoom)
@@ -647,7 +647,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
 
 	settings.endGroup();
-	// MetaData DkSettingsManager --------------------------------------------------------------------
+	// MetaData Settings --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 	
 	if (force ||meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
@@ -656,7 +656,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("saveExifOrientation", meta_p.saveExifOrientation);
 
 	settings.endGroup();
-	// SlideShow DkSettingsManager --------------------------------------------------------------------
+	// SlideShow Settings --------------------------------------------------------------------
 	settings.beginGroup("SlideShowSettings");
 
 	if (force ||slideShow_p.filter != slideShow_d.filter)
@@ -673,7 +673,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
 	settings.endGroup();
-	// Sync DkSettingsManager --------------------------------------------------------------------
+	// Sync Settings --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
 	if (force ||sync_p.enableNetworkSync != sync_d.enableNetworkSync)
@@ -708,7 +708,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
-	// Resource DkSettingsManager --------------------------------------------------------------------
+	// Resource Settings --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
 	if (force ||resources_p.cacheMemory != resources_d.cacheMemory)

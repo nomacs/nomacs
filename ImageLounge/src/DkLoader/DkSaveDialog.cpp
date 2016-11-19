@@ -137,9 +137,9 @@ void DkCompressDialog::init() {
 	if (mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) {
 
 		if (mDialogMode == jpg_dialog)
-			setWindowTitle(tr("JPG DkSettingsManager"));
+			setWindowTitle(tr("JPG Settings"));
 		else
-			setWindowTitle(tr("J2K DkSettingsManager"));
+			setWindowTitle(tr("J2K Settings"));
 
 		mSlider->show();
 		mColChooser->show();
@@ -148,7 +148,7 @@ void DkCompressDialog::init() {
 		mSlider->setEnabled(true);
 	}
 	else if (mDialogMode == webp_dialog) {
-		setWindowTitle(tr("WebP DkSettingsManager"));
+		setWindowTitle(tr("WebP Settings"));
 		mColChooser->setEnabled(false);
 		mSlider->show();
 		mColChooser->show();

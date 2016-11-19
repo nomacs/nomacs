@@ -1157,7 +1157,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_shortcuts]->setShortcut(QKeySequence(shortcut_shortcuts));
 	mEditActions[menu_edit_shortcuts]->setStatusTip(QObject::tr("lets you customize your keyboard shortcuts"));
 
-	mEditActions[menu_edit_preferences] = new QAction(QObject::tr("&DkSettingsManager"), parent);
+	mEditActions[menu_edit_preferences] = new QAction(QObject::tr("&Settings"), parent);
 	mEditActions[menu_edit_preferences]->setShortcut(QKeySequence(shortcut_settings));
 	mEditActions[menu_edit_preferences]->setStatusTip(QObject::tr("settings"));
 

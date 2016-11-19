@@ -336,7 +336,7 @@ void DkGeneralPreference::createLayout() {
 		&DkSettingsManager::param().display().bgColorFrameless : &DkSettingsManager::param().display().hudBgColor);
 	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
-	DkGroupWidget* colorGroup = new DkGroupWidget(tr("Color DkSettingsManager"), this);
+	DkGroupWidget* colorGroup = new DkGroupWidget(tr("Color Settings"), this);
 	colorGroup->addWidget(highlightColorChooser);
 	colorGroup->addWidget(iconColorChooser);
 	colorGroup->addWidget(bgColorChooser);
@@ -345,11 +345,11 @@ void DkGeneralPreference::createLayout() {
 	colorGroup->addWidget(bgHUDColorChooser);
 
 	// default pushbutton
-	QPushButton* defaultSettings = new QPushButton(tr("Reset All DkSettingsManager"));
+	QPushButton* defaultSettings = new QPushButton(tr("Reset All Settings"));
 	defaultSettings->setObjectName("defaultSettings");
 	defaultSettings->setMaximumWidth(300);
 
-	DkGroupWidget* defaultGroup = new DkGroupWidget(tr("Default DkSettingsManager"), this);
+	DkGroupWidget* defaultGroup = new DkGroupWidget(tr("Default Settings"), this);
 	defaultGroup->addWidget(defaultSettings);
 
 	// the left column (holding all color settings)
@@ -566,7 +566,7 @@ void DkGeneralPreference::on_networkSync_toggled(bool checked) const {
 
 void DkGeneralPreference::on_defaultSettings_clicked() {
 
-	int answer = QMessageBox::warning(this, tr("Reset All DkSettingsManager"), tr("This will reset all personal settings!"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+	int answer = QMessageBox::warning(this, tr("Reset All Settings"), tr("This will reset all personal settings!"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 	
 	if (answer == QMessageBox::Yes) {
 		DkSettingsManager::param().setToDefaultSettings();
@@ -1170,7 +1170,7 @@ void DkAdvancedPreference::createLayout() {
 	cbFilterRaw->setToolTip(tr("If checked, a noise filter is applied which reduced color noise"));
 	cbFilterRaw->setChecked(DkSettingsManager::param().resources().filterRawImages);
 
-	DkGroupWidget* loadRawGroup = new DkGroupWidget(tr("RAW Loader DkSettingsManager"), this);
+	DkGroupWidget* loadRawGroup = new DkGroupWidget(tr("RAW Loader Settings"), this);
 	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_always]);
 	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_if_large]);
 	loadRawGroup->addWidget(loadRawButtons[DkSettings::raw_thumb_never]);

@@ -203,7 +203,7 @@ QString DkTabInfo::getTabText() const {
 	if (mTabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
 	else if (mTabMode == tab_preferences)
-		return QObject::tr("DkSettingsManager");
+		return QObject::tr("Settings");
 	else if (mTabMode == tab_batch)
 		return QObject::tr("Batch");
 
