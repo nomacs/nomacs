@@ -35,7 +35,8 @@
 #include <QDebug>
 #pragma warning(pop)		// no warnings from includes - end
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable: 4251)	// dll interface missing
+#pragma warning(disable: 4714)	// Qt's force inline
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed

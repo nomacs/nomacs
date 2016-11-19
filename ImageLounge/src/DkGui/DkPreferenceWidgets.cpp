@@ -50,6 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QHeaderView>
 #include <QStandardPaths>
 #include <QProcess>
+#include <QFileDialog>
+#include <QStandardPaths>
 
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -587,14 +589,38 @@ void DkGeneralPreference::on_defaultSettings_clicked() {
 }
 
 void DkGeneralPreference::on_importSettings_clicked() {
+
+	QString filePath = QFileDialog::getOpenFileName(
+		DkUtils::getMainWindow(), 
+		tr("Import Settings"),
+		QDir::homePath(), 
+		"Nomacs Settings (*.nfo)");
+
+	// user canceled?
+	if (filePath.isEmpty())
+		return;
+
+	DkSettingsManager::importSettings(filePath);
+
+	emit infoSignal(tr("Please Restart nomacs to apply changes"));
 }
 
 void DkGeneralPreference::on_exportSettings_clicked() {
 
-	Q
+	QString filePath = QFileDialog::getSaveFileName(
+		DkUtils::getMainWindow(), 
+		tr("Export Settings"),
+		QDir::homePath(), 
+		"Nomacs Settings (*.nfo)");
 
+	// user canceled?
+	if (filePath.isEmpty())
+		return;
 
+	QSettings settings(filePath, QSettings::IniFormat);
+	DkSettingsManager::instance().settings().save(settings, true);
 
+	emit infoSignal(tr("Settings exported"));
 }
 
 void DkGeneralPreference::on_languageCombo_currentIndexChanged(int index) const {

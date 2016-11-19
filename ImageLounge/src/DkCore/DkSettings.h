@@ -309,7 +309,7 @@ public:
 	void loadTranslation(const QString& fileName, QTranslator& translator);
 	QStringList getTranslationDirs();
 
-	void load(QSettings& settings);
+	void load(QSettings& settings, bool defaults = false);
 	void save(QSettings& settings, bool force = false);
 	void setToDefaultSettings();
 	void setNumThreads(int numThreads);
@@ -361,6 +361,8 @@ public:
 	QSettings& qSettings();
 	DkSettings& settings();			// rename
 	void init();
+
+	static void importSettings(const QString& settingsPath);
 
 private:
 	DkSettingsManager();

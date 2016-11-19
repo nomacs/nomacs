@@ -279,7 +279,7 @@ QStringList DkSettings::getTranslationDirs() {
 	return translationDirs;
 }
 
-void DkSettings::load(QSettings& settings) {
+void DkSettings::load(QSettings& settings, bool defaults) {
 
 	setToDefaultSettings();
 	qInfoClean() << "loading settings from: " << settings.fileName();
@@ -475,13 +475,15 @@ void DkSettings::load(QSettings& settings) {
 		global_p.numThreads = QThreadPool::globalInstance()->maxThreadCount();
 
 	// keep loaded settings in mind
-	app_d = app_p;
-	global_d = global_p;
-	display_d = display_p;
-	slideShow_d = slideShow_p;
-	sync_d = sync_p;
-	meta_d = meta_p;
-	resources_d = resources_p;
+	if (defaults) {
+		app_d = app_p;
+		global_d = global_p;
+		display_d = display_p;
+		slideShow_d = slideShow_p;
+		sync_d = sync_p;
+		meta_d = meta_p;
+		resources_d = resources_p;
+	}
 }
 
 void DkSettings::save(QSettings& settings, bool force) {
@@ -489,6 +491,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 	if (DkSettingsManager::param().app().privateMode)
 		return;
 
+	settings.beginGroup("AppSettings");
 	if (force ||app_p.showMenuBar != app_d.showMenuBar)
 		settings.setValue("showMenuBar", app_p.showMenuBar);
 
@@ -950,7 +953,7 @@ void DkSettingsManager::init() {
 	param().initFileFilters();
 	QSettings& settings = qSettings();
 
-	param().load(settings);	// load in constructor??
+	param().load(settings, true);	// load defaults
 
 	int mode = settings.value("AppSettings/appMode", param().app().appMode).toInt();
 	param().app().currentAppMode = mode;
@@ -965,6 +968,13 @@ void DkSettingsManager::init() {
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
 		<< " v " << QApplication::applicationVersion() << (nmc::DkSettingsManager::param().isPortable() ? " portable" : " installed");
 
+}
+
+void DkSettingsManager::importSettings(const QString & settingsPath) {
+
+	QSettings settings(settingsPath, QSettings::IniFormat);
+	param().load(settings);
+	param().save(DkSettingsManager::instance().qSettings());
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {

@@ -150,6 +150,11 @@ int main(int argc, char *argv[]) {
 		QObject::tr("log-path.txt"));
 	parser.addOption(batchLogOpt);
 
+	QCommandLineOption importSettingsOpt(QStringList() << "import-settings",
+		QObject::tr("Imports the settings from <settings-path.nfo> and saves them."),
+		QObject::tr("settings-path.nfo"));
+	parser.addOption(importSettingsOpt);
+
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
 
@@ -164,6 +169,13 @@ int main(int argc, char *argv[]) {
 
 		QString batchSettingsPath = parser.value(batchOpt);
 		computeBatch(batchSettingsPath, logPath);
+		return 0;
+	}
+
+	// apply default settings
+	if (!parser.value(importSettingsOpt).isEmpty()) {
+		QString settingsPath = parser.value(importSettingsOpt);
+		nmc::DkSettingsManager::importSettings(settingsPath);
 		return 0;
 	}
 
