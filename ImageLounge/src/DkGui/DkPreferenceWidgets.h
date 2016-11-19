@@ -162,6 +162,8 @@ public slots:
 	void on_loopImages_toggled(bool checked) const;
 	void on_networkSync_toggled(bool checked) const;
 	void on_defaultSettings_clicked();
+	void on_importSettings_clicked();
+	void on_exportSettings_clicked();
 	void on_languageCombo_currentIndexChanged(int index) const;
 	void showRestartLabel() const;
 

@@ -995,7 +995,10 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 
 		if (!tmpPath.isDir()) {
 			// load system default open dialog
-			QString dirName = QFileDialog::getExistingDirectory(QApplication::activeWindow(), tr("Save Directory"),	getDirPath());
+			QString dirName = QFileDialog::getExistingDirectory(
+				DkUtils::getMainWindow(), 
+				tr("Save Directory"), 
+				getDirPath());
 
 			tmpPath = dirName + "/";
 
@@ -1020,7 +1023,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 
 void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	
-	QWidget* dialogParent = QApplication::activeWindow();
+	QWidget* dialogParent = DkUtils::getMainWindow();
 	QString saveName;
 	QFileInfo saveFileInfo;
 
@@ -1072,7 +1075,7 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 	// the subsequent modals destroy the active window
-	QWidget* dialogParent = QApplication::activeWindow();
+	QWidget* dialogParent = DkUtils::getMainWindow();
 
 	QString selectedFilter;
 	QString saveName = fileName();

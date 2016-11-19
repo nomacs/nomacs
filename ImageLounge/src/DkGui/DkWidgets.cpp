@@ -292,7 +292,11 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	mCLoadIdx = 0;
 	mNumSaved = 0;
 
-	mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), QApplication::activeWindow());
+	mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), 
+		tr("Cancel"), 
+		0, 
+		(int)images.size(), 
+		DkUtils::getMainWindow());
 	mPd->setWindowTitle(tr("Thumbnails"));
 
 	//pd->setWindowModality(Qt::WindowModal);
@@ -1143,7 +1147,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 		!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date) &&
 		!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_file_rating) && visible) {
 			
-			QMessageBox infoDialog(QApplication::activeWindow());
+			QMessageBox infoDialog(DkUtils::getMainWindow());
 			infoDialog.setWindowTitle(tr("Info Box"));
 			infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
 			infoDialog.setIcon(QMessageBox::Information);

@@ -249,7 +249,7 @@ bool DkPluginContainer::load() {
 
 	if (mType != type_unknown) {
 		// init actions
-		plugin()->createActions(QApplication::activeWindow());
+		plugin()->createActions(DkUtils::getMainWindow());
 		createMenu();
 	}
 
@@ -274,7 +274,7 @@ void DkPluginContainer::createMenu() {
 	if (!p || p->pluginActions().empty())
 		return;
 
-	mPluginMenu = new QMenu(pluginName(), QApplication::activeWindow());
+	mPluginMenu = new QMenu(pluginName(), DkUtils::getMainWindow());
 
 	for (auto action : p->pluginActions()) {
 		mPluginMenu->addAction(action);
@@ -1105,7 +1105,10 @@ bool DkPluginManager::deletePlugin(QSharedPointer<DkPluginContainer> plugin) {
 
 		if (!plugin->uninstall()) {
 			qDebug() << "Failed to delete plugin file!";
-			QMessageBox::critical(QApplication::activeWindow(), QObject::tr("Plugin Manager"), QObject::tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
+			QMessageBox::critical(
+				DkUtils::getMainWindow(), 
+				QObject::tr("Plugin Manager"), 
+				QObject::tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
 			return false;
 		}
 		else
@@ -1267,7 +1270,7 @@ void DkPluginManager::runPlugin(QSharedPointer<DkPluginContainer> plugin) {
 	if (getRunningPlugin()) {
 
 		// the plugin is not closed in time
-		QMessageBox infoDialog(QApplication::activeWindow());
+		QMessageBox infoDialog(DkUtils::getMainWindow());
 		infoDialog.setWindowTitle(QObject::tr("Close plugin"));
 		infoDialog.setIcon(QMessageBox::Information);
 		infoDialog.setText(QObject::tr("Please close the currently opened plugin."));
@@ -1406,7 +1409,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 		DkPluginInterface* pi = plugin->plugin();
 
 		if (pi && plugin->pluginMenu()) {
-			QList<QAction*> actions = pi->createActions(QApplication::activeWindow());
+			QList<QAction*> actions = pi->createActions(DkUtils::getMainWindow());
 			mPluginSubMenus.append(plugin->pluginMenu());
 			mMenu->addMenu(plugin->pluginMenu());
 		}

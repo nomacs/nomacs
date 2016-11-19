@@ -1319,7 +1319,7 @@ void DkViewPort::loadLena() {
 		toggleLena(DkUtils::getMainWindow()->isFullScreen());
 	}
 	else if (!ok) {
-		QMessageBox warningDialog(QApplication::activeWindow());
+		QMessageBox warningDialog(DkUtils::getMainWindow());
 		warningDialog.setIcon(QMessageBox::Warning);
 		warningDialog.setText(tr("you cannot cancel this"));
 		warningDialog.exec();

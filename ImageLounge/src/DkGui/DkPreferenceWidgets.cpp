@@ -349,8 +349,18 @@ void DkGeneralPreference::createLayout() {
 	defaultSettings->setObjectName("defaultSettings");
 	defaultSettings->setMaximumWidth(300);
 
+	QPushButton* importSettings = new QPushButton(tr("&Import Settings"));
+	importSettings->setObjectName("importSettings");
+	importSettings->setMaximumWidth(300);
+
+	QPushButton* exportSettings = new QPushButton(tr("&Export Settings"));
+	exportSettings->setObjectName("exportSettings");
+	exportSettings->setMaximumWidth(300);
+
 	DkGroupWidget* defaultGroup = new DkGroupWidget(tr("Default Settings"), this);
 	defaultGroup->addWidget(defaultSettings);
+	defaultGroup->addWidget(importSettings);
+	defaultGroup->addWidget(exportSettings);
 
 	// the left column (holding all color settings)
 	QWidget* leftColumn = new QWidget(this);
@@ -573,6 +583,17 @@ void DkGeneralPreference::on_defaultSettings_clicked() {
 		emit infoSignal(tr("Please Restart nomacs to apply changes"));
 		qDebug() << "answer is: " << answer << "flushing all settings...";
 	}
+
+}
+
+void DkGeneralPreference::on_importSettings_clicked() {
+}
+
+void DkGeneralPreference::on_exportSettings_clicked() {
+
+	Q
+
+
 
 }
 

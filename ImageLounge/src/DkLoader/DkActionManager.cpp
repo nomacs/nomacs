@@ -873,10 +873,10 @@ void DkActionManager::createMenus(QWidget* parent) {
 
 void DkActionManager::init() {
 
-	mAppManager = new DkAppManager(QApplication::activeWindow());
+	mAppManager = new DkAppManager(DkUtils::getMainWindow());
 
 #ifdef WITH_PLUGINS
-	mPluginManager = new DkPluginActionManager(QApplication::activeWindow());
+	mPluginManager = new DkPluginActionManager(DkUtils::getMainWindow());
 #endif
 
 	createIcons();
