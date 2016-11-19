@@ -210,9 +210,9 @@ void DkNoMacs::init() {
 	readSettings();
 	installEventFilter(this);
 
-	showMenuBar(Settings::param().app().showMenuBar);
-	showToolbar(Settings::param().app().showToolBar);
-	showStatusBar(Settings::param().app().showStatusBar);
+	showMenuBar(DkSettingsManager::param().app().showMenuBar);
+	showToolbar(DkSettingsManager::param().app().showToolBar);
+	showStatusBar(DkSettingsManager::param().app().showStatusBar);
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
@@ -229,13 +229,13 @@ void DkNoMacs::init() {
 
 // clean up nomacs
 #ifdef Q_OS_WIN
-	if (!nmc::Settings::param().global().setupPath.isEmpty() && QApplication::applicationVersion() == nmc::Settings::param().global().setupVersion) {
+	if (!nmc::DkSettingsManager::param().global().setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettingsManager::param().global().setupVersion) {
 
 		// ask for exists - otherwise we always try to delete it if the user deleted it
-		if (!QFileInfo(nmc::Settings::param().global().setupPath).exists() || QFile::remove(nmc::Settings::param().global().setupPath)) {
-			nmc::Settings::param().global().setupPath = "";
-			nmc::Settings::param().global().setupVersion = "";
-			nmc::Settings::param().save(Settings::instance().getSettings());
+		if (!QFileInfo(nmc::DkSettingsManager::param().global().setupPath).exists() || QFile::remove(nmc::DkSettingsManager::param().global().setupPath)) {
+			nmc::DkSettingsManager::param().global().setupPath = "";
+			nmc::DkSettingsManager::param().global().setupVersion = "";
+			nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 		}
 	}
 #endif // Q_WS_WIN
@@ -248,9 +248,9 @@ void DkNoMacs::createToolbar() {
 	mToolbar = new DkMainToolBar(tr("Edit Toolbar"), this);
 	mToolbar->setObjectName("EditToolBar");
 
-	mToolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
+	mToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	if (Settings::param().display().toolbarGradient)
+	if (DkSettingsManager::param().display().toolbarGradient)
 		mToolbar->setObjectName("toolBarWithGradient");
 
 	DkActionManager& am = DkActionManager::instance();
@@ -299,10 +299,10 @@ void DkNoMacs::createToolbar() {
 	mMovieToolbar->addAction(am.action(DkActionManager::menu_view_movie_pause));
 	mMovieToolbar->addAction(am.action(DkActionManager::menu_view_movie_next));
 
-	if (Settings::param().display().toolbarGradient)
+	if (DkSettingsManager::param().display().toolbarGradient)
 		mMovieToolbar->setObjectName("toolBarWithGradient");
 
-	mMovieToolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
+	mMovieToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
 	mToolbar->allActionsAdded();
 
@@ -328,15 +328,15 @@ void DkNoMacs::loadStyleSheet() {
 
 		QString cssString = file.readAll();
 
-		QColor hc = Settings::param().display().highlightColor;
+		QColor hc = DkSettingsManager::param().display().highlightColor;
 		hc.setAlpha(150);
 
 		// replace color placeholders
-		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(Settings::param().display().highlightColor));
+		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().highlightColor));
 		cssString.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
-		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(Settings::param().display().hudBgColor));
-		cssString.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(Settings::param().display().hudFgdColor));
-		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(Settings::param().display().bgColor));
+		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
+		cssString.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
+		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
 		cssString.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
 
 		qApp->setStyleSheet(cssString);
@@ -358,7 +358,7 @@ void DkNoMacs::createMenu() {
 	mMenu->addMenu(am.toolsMenu());
 
 	// no sync menu in frameless view
-	if (Settings::param().app().appMode != DkSettings::mode_frameless)
+	if (DkSettingsManager::param().app().appMode != DkSettings::mode_frameless)
 		mSyncMenu = mMenu->addMenu(tr("&Sync"));
 
 #ifdef WITH_PLUGINS
@@ -553,7 +553,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 void DkNoMacs::enableMovieActions(bool enable) {
 
-	Settings::param().app().showMovieToolBar = enable;
+	DkSettingsManager::param().app().showMovieToolBar = enable;
 	
 	DkActionManager& am = DkActionManager::instance();
 
@@ -573,11 +573,11 @@ void DkNoMacs::enableMovieActions(bool enable) {
 }
 
 void DkNoMacs::clearFileHistory() {
-	Settings::param().global().recentFiles.clear();
+	DkSettingsManager::param().global().recentFiles.clear();
 }
 
 void DkNoMacs::clearFolderHistory() {
-	Settings::param().global().recentFolders.clear();
+	DkSettingsManager::param().global().recentFolders.clear();
 }
 
 
@@ -657,7 +657,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	//showNormal();
 
 	if (mSaveSettings) {
-		QSettings& settings = Settings::instance().getSettings();
+		QSettings& settings = DkSettingsManager::instance().qSettings();
 		settings.setValue("geometryNomacs", geometry());
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
@@ -669,7 +669,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		if (mThumbsDock)
 			settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
 
-		nmc::Settings::param().save(Settings::instance().getSettings());
+		nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 	}
 
 	QMainWindow::closeEvent(event);
@@ -707,7 +707,7 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 
 	if (isFullScreen())
 		exitFullScreen();
-	else if (Settings::instance().param().global().doubleClickForFullscreen)
+	else if (DkSettingsManager::instance().param().global().doubleClickForFullscreen)
 		enterFullScreen();
 
 	//QMainWindow::mouseDoubleClickEvent(event);
@@ -976,7 +976,7 @@ void DkNoMacs::tinyPlanet() {
 
 void DkNoMacs::readSettings() {
 	
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 
 #ifdef Q_WS_WIN
 	// fixes #392 - starting maximized on 2nd screen - tested on win8 only
@@ -1000,10 +1000,10 @@ void DkNoMacs::toggleFullScreen() {
 
 void DkNoMacs::enterFullScreen() {
 	
-	Settings::param().app().currentAppMode += qFloor(DkSettings::mode_end*0.5f);
-	if (Settings::param().app().currentAppMode < 0) {
-		qDebug() << "illegal state: " << Settings::param().app().currentAppMode;
-		Settings::param().app().currentAppMode = DkSettings::mode_default;
+	DkSettingsManager::param().app().currentAppMode += qFloor(DkSettings::mode_end*0.5f);
+	if (DkSettingsManager::param().app().currentAppMode < 0) {
+		qDebug() << "illegal state: " << DkSettingsManager::param().app().currentAppMode;
+		DkSettingsManager::param().app().currentAppMode = DkSettings::mode_default;
 	}
 	
 	menuBar()->hide();
@@ -1012,11 +1012,11 @@ void DkNoMacs::enterFullScreen() {
 	DkStatusBarManager::instance().statusbar()->hide();
 	getTabWidget()->showTabs(false);
 
-	showExplorer(DkDockWidget::testDisplaySettings(Settings::param().app().showExplorer), false);
-	showMetaDataDock(DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock), false);
-	showHistoryDock(DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock), false);
+	showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
+	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
+	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
 
-	Settings::param().app().maximizedMode = isMaximized();
+	DkSettingsManager::param().app().maximizedMode = isMaximized();
 	setWindowState(Qt::WindowFullScreen);
 	
 	if (viewport())
@@ -1028,21 +1028,21 @@ void DkNoMacs::enterFullScreen() {
 void DkNoMacs::exitFullScreen() {
 
 	if (isFullScreen()) {
-		Settings::param().app().currentAppMode -= qFloor(DkSettings::mode_end*0.5f);
-		if (Settings::param().app().currentAppMode < 0) {
-			qDebug() << "illegal state: " << Settings::param().app().currentAppMode;
-			Settings::param().app().currentAppMode = DkSettings::mode_default;
+		DkSettingsManager::param().app().currentAppMode -= qFloor(DkSettings::mode_end*0.5f);
+		if (DkSettingsManager::param().app().currentAppMode < 0) {
+			qDebug() << "illegal state: " << DkSettingsManager::param().app().currentAppMode;
+			DkSettingsManager::param().app().currentAppMode = DkSettings::mode_default;
 		}
 
-		if (Settings::param().app().showMenuBar) mMenu->show();
-		if (Settings::param().app().showToolBar) mToolbar->show();
-		if (Settings::param().app().showStatusBar) DkStatusBarManager::instance().statusbar()->show();
-		if (Settings::param().app().showMovieToolBar) mMovieToolbar->show();
-		showExplorer(DkDockWidget::testDisplaySettings(Settings::param().app().showExplorer), false);
-		showMetaDataDock(DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock), false);
-		showHistoryDock(DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock), false);
+		if (DkSettingsManager::param().app().showMenuBar) mMenu->show();
+		if (DkSettingsManager::param().app().showToolBar) mToolbar->show();
+		if (DkSettingsManager::param().app().showStatusBar) DkStatusBarManager::instance().statusbar()->show();
+		if (DkSettingsManager::param().app().showMovieToolBar) mMovieToolbar->show();
+		showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
+		showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
+		showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
 
-		if(Settings::param().app().maximizedMode) 
+		if(DkSettingsManager::param().app().maximizedMode) 
 			setWindowState(Qt::WindowMaximized);
 		else 
 			setWindowState(Qt::WindowNoState);
@@ -1073,7 +1073,7 @@ void DkNoMacs::setFrameless(bool) {
 	if (getTabWidget()->getCurrentImage())
 		args.append(getTabWidget()->getCurrentImage()->filePath());
 	
-	nmc::Settings::param().save(Settings::instance().getSettings());
+	nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 	
 	bool started = mProcess.startDetached(exe, args);
 
@@ -1126,7 +1126,7 @@ void DkNoMacs::fitFrame() {
 
 void DkNoMacs::setRecursiveScan(bool recursive) {
 
-	Settings::param().global().scanSubFolders = recursive;
+	DkSettingsManager::param().global().scanSubFolders = recursive;
 
 	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
 	
@@ -1316,7 +1316,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 		// get last location
 		mExplorer = new DkExplorer(tr("File Explorer"));
 		mExplorer->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_explorer));
-		mExplorer->setDisplaySettings(&Settings::param().app().showExplorer);
+		mExplorer->setDisplaySettings(&DkSettingsManager::param().app().showExplorer);
 		addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);
 
 		connect(mExplorer, SIGNAL(openFile(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
@@ -1330,7 +1330,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 		mExplorer->setCurrentPath(getTabWidget()->getCurrentFilePath());
 	}
 	else {
-		QStringList folders = Settings::param().global().recentFiles;
+		QStringList folders = DkSettingsManager::param().global().recentFiles;
 
 		if (folders.size() > 0)
 			mExplorer->setCurrentPath(folders[0]);
@@ -1344,7 +1344,7 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 		mMetaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
 		mMetaDataDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_metadata_dock));
-		mMetaDataDock->setDisplaySettings(&Settings::param().app().showMetaDataDock);
+		mMetaDataDock->setDisplaySettings(&DkSettingsManager::param().app().showMetaDataDock);
 		addDockWidget(mMetaDataDock->getDockLocationSettings(Qt::RightDockWidgetArea), mMetaDataDock);
 
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mMetaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
@@ -1362,7 +1362,7 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 
 		mHistoryDock = new DkHistoryDock(tr("History"), this);
 		mHistoryDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_history));
-		mHistoryDock->setDisplaySettings(&Settings::param().app().showHistoryDock);
+		mHistoryDock->setDisplaySettings(&DkSettingsManager::param().app().showHistoryDock);
 		addDockWidget(mHistoryDock->getDockLocationSettings(Qt::RightDockWidgetArea), mHistoryDock);
 
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mHistoryDock, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
@@ -1385,8 +1385,8 @@ void DkNoMacs::showThumbsDock(bool show) {
 	if (winPos != DkFilePreview::cm_pos_dock_hor && winPos != DkFilePreview::cm_pos_dock_ver) {
 		if (mThumbsDock) {
 
-			//Settings::param().display().thumbDockSize = qMin(thumbsDock->width(), thumbsDock->height());
-			QSettings& settings = Settings::instance().getSettings();
+			//DkSettingsManager::param().display().thumbDockSize = qMin(thumbsDock->width(), thumbsDock->height());
+			QSettings& settings = DkSettingsManager::instance().qSettings();
 			settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(mThumbsDock));
 
 			mThumbsDock->hide();
@@ -1400,7 +1400,7 @@ void DkNoMacs::showThumbsDock(bool show) {
 	if (!mThumbsDock) {
 		mThumbsDock = new DkDockWidget(tr("Thumbnails"), this);
 		mThumbsDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_preview));
-		mThumbsDock->setDisplaySettings(&Settings::param().app().showFilePreview);
+		mThumbsDock->setDisplaySettings(&DkSettingsManager::param().app().showFilePreview);
 		mThumbsDock->setWidget(viewport()->getController()->getFilePreview());
 		addDockWidget(mThumbsDock->getDockLocationSettings(Qt::TopDockWidgetArea), mThumbsDock);
 		thumbsDockAreaChanged();
@@ -1451,7 +1451,7 @@ void DkNoMacs::openFile() {
 	if (!viewport())
 		return;
 
-	QStringList openFilters = Settings::param().app().openFilters;
+	QStringList openFilters = DkSettingsManager::param().app().openFilters;
 	openFilters.pop_front();
 	openFilters.prepend(tr("All Files (*.*)"));
 
@@ -1481,8 +1481,8 @@ void DkNoMacs::openQuickLaunch() {
 		connect(mQuickAccess, SIGNAL(hideEdit()), mToolbar->getQuickAccess(), SLOT(clearAccess()));
 	}
 	
-	mQuickAccess->addDirs(Settings::param().global().recentFolders);
-	mQuickAccess->addFiles(Settings::param().global().recentFiles);
+	mQuickAccess->addDirs(DkSettingsManager::param().global().recentFolders);
+	mQuickAccess->addFiles(DkSettingsManager::param().global().recentFiles);
 
 	if (mToolbar->isVisible())
 		mToolbar->setQuickAccessModel(mQuickAccess->getModel());
@@ -1624,17 +1624,17 @@ void DkNoMacs::changeSorting(bool change) {
 		QString senderName = QObject::sender()->objectName();
 
 		if (senderName == "menu_sort_filename")
-			Settings::param().global().sortMode = DkSettings::sort_filename;
+			DkSettingsManager::param().global().sortMode = DkSettings::sort_filename;
 		else if (senderName == "menu_sort_date_created")
-			Settings::param().global().sortMode = DkSettings::sort_date_created;
+			DkSettingsManager::param().global().sortMode = DkSettings::sort_date_created;
 		else if (senderName == "menu_sort_date_modified")
-			Settings::param().global().sortMode = DkSettings::sort_date_modified;
+			DkSettingsManager::param().global().sortMode = DkSettings::sort_date_modified;
 		else if (senderName == "menu_sort_random")
-			Settings::param().global().sortMode = DkSettings::sort_random;
+			DkSettingsManager::param().global().sortMode = DkSettings::sort_random;
 		else if (senderName == "menu_sort_ascending")
-			Settings::param().global().sortDir = DkSettings::sort_ascending;
+			DkSettingsManager::param().global().sortDir = DkSettings::sort_ascending;
 		else if (senderName == "menu_sort_descending")
-			Settings::param().global().sortDir = DkSettings::sort_descending;
+			DkSettingsManager::param().global().sortDir = DkSettings::sort_descending;
 
 		if (getTabWidget()->getCurrentImageLoader()) 
 			getTabWidget()->getCurrentImageLoader()->sort();
@@ -1644,9 +1644,9 @@ void DkNoMacs::changeSorting(bool change) {
 	for (int idx = 0; idx < sortActions.size(); idx++) {
 
 		if (idx < DkActionManager::menu_sort_ascending)
-			sortActions[idx]->setChecked(idx == Settings::param().global().sortMode);
+			sortActions[idx]->setChecked(idx == DkSettingsManager::param().global().sortMode);
 		else if (idx >= DkActionManager::menu_sort_ascending)
-			sortActions[idx]->setChecked(idx-DkActionManager::menu_sort_ascending == Settings::param().global().sortDir);
+			sortActions[idx]->setChecked(idx-DkActionManager::menu_sort_ascending == DkSettingsManager::param().global().sortDir);
 	}
 }
 
@@ -2010,7 +2010,7 @@ void DkNoMacs::featureRequest() {
 
 void DkNoMacs::cleanSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.clear();
 
 	readSettings();
@@ -2077,9 +2077,9 @@ void DkNoMacs::setContrast(bool contrast) {
 	args.append(getTabWidget()->getCurrentFilePath());
 	
 	//if (contrast)
-	//	Settings::param().app().appMode = DkSettings::mode_contrast;
+	//	DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 	//else
-	//	Settings::param().app().appMode = DkSettings::mode_default;
+	//	DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 	
 	bool started = mProcess.startDetached(exe, args);
 
@@ -2092,21 +2092,21 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::showRecentFiles(bool show) {
 
-	if (!Settings::param().global().recentFiles.empty())
+	if (!DkSettingsManager::param().global().recentFiles.empty())
 		getTabWidget()->showRecentFiles(show);
 
 }
 
 void DkNoMacs::onWindowLoaded() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	bool firstTime = settings.value("AppSettings/firstTime.nomacs.3", true).toBool();
 
-	if (DkDockWidget::testDisplaySettings(Settings::param().app().showExplorer))
+	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer))
 		showExplorer(true);
-	if (DkDockWidget::testDisplaySettings(Settings::param().app().showMetaDataDock))
+	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock))
 		showMetaDataDock(true);
-	if (DkDockWidget::testDisplaySettings(Settings::param().app().showHistoryDock))
+	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock))
 		showHistoryDock(true);
 
 	if (firstTime) {
@@ -2167,7 +2167,7 @@ bool DkNoMacs::eventFilter(QObject*, QEvent* event) {
 			exitFullScreen();
 			return true;
 		}
-		else if (keyEvent->key() == Qt::Key_Escape && Settings::param().app().closeOnEsc)
+		else if (keyEvent->key() == Qt::Key_Escape && DkSettingsManager::param().app().closeOnEsc)
 			close();
 	}
 	if (event->type() == QEvent::Gesture) {
@@ -2179,9 +2179,9 @@ bool DkNoMacs::eventFilter(QObject*, QEvent* event) {
 
 void DkNoMacs::showMenuBar(bool show) {
 
-	Settings::param().app().showMenuBar = show;
-	int tts = (Settings::param().app().showMenuBar) ? -1 : 5000;
-	DkActionManager::instance().action(DkActionManager::menu_panel_menu)->setChecked(Settings::param().app().showMenuBar);
+	DkSettingsManager::param().app().showMenuBar = show;
+	int tts = (DkSettingsManager::param().app().showMenuBar) ? -1 : 5000;
+	DkActionManager::instance().action(DkActionManager::menu_panel_menu)->setChecked(DkSettingsManager::param().app().showMenuBar);
 	mMenu->setTimeToShow(tts);
 	mMenu->showMenu();
 
@@ -2228,10 +2228,10 @@ void DkNoMacs::showToolbarsTemporarily(bool show) {
 
 void DkNoMacs::showToolbar(bool show) {
 
-	Settings::param().app().showToolBar = show;
-	DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(Settings::param().app().showToolBar);
+	DkSettingsManager::param().app().showToolBar = show;
+	DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
 	
-	if (Settings::param().app().showToolBar)
+	if (DkSettingsManager::param().app().showToolBar)
 		mToolbar->show();
 	else
 		mToolbar->hide();
@@ -2243,8 +2243,8 @@ void DkNoMacs::showStatusBar(bool show, bool permanent) {
 		return;
 
 	if (permanent)
-		Settings::param().app().showStatusBar = show;
-	DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(Settings::param().app().showStatusBar);
+		DkSettingsManager::param().app().showStatusBar = show;
+	DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(DkSettingsManager::param().app().showStatusBar);
 
 	DkStatusBarManager::instance().statusbar()->setVisible(show);
 }
@@ -2314,7 +2314,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	
 	if (title.isEmpty()) {
 		title = "nomacs - Image Lounge";
-		if (Settings::param().app().privateMode) 
+		if (DkSettingsManager::param().app().privateMode) 
 			title.append(tr(" [Private Mode]"));
 	}
 
@@ -2330,7 +2330,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 		attributes.sprintf(" - %i x %i", size.width(), size.height());
 	if (size.isEmpty() && viewport())
 		attributes.sprintf(" - %i x %i", viewport()->getImage().width(), viewport()->getImage().height());
-	if (Settings::param().app().privateMode) 
+	if (DkSettingsManager::param().app().privateMode) 
 		attributes.append(tr(" [Private Mode]"));
 
 	QMainWindow::setWindowTitle(title.append(attributes));
@@ -2341,7 +2341,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	DkStatusBar* bar = DkStatusBarManager::instance().statusbar();
 
 	if ((!viewport()->getController()->getFileInfoLabel()->isVisible() || 
-		!Settings::param().slideShow().display.testBit(DkSettings::display_creation_date)) && getTabWidget()->getCurrentImage()) {
+		!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)) && getTabWidget()->getCurrentImage()) {
 		
 		// create statusbar info
 		QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
@@ -2362,9 +2362,9 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 void DkNoMacs::settingsChanged() {
 	
 	if (!isFullScreen()) {
-		showMenuBar(Settings::param().app().showMenuBar);
-		showToolbar(Settings::param().app().showToolBar);
-		showStatusBar(Settings::param().app().showStatusBar);
+		showMenuBar(DkSettingsManager::param().app().showMenuBar);
+		showToolbar(DkSettingsManager::param().app().showToolBar);
+		showStatusBar(DkSettingsManager::param().app().showStatusBar);
 	}
 }
 
@@ -2375,13 +2375,13 @@ void DkNoMacs::checkForUpdate(bool silent) {
 
 	// do we really need to check for update?
 	if (!silent || 
-		(!Settings::param().sync().updateDialogShown && 
-		 QDate::currentDate() > Settings::param().sync().lastUpdateCheck && 
-		 Settings::param().sync().checkForUpdates)) {
+		(!DkSettingsManager::param().sync().updateDialogShown && 
+		 QDate::currentDate() > DkSettingsManager::param().sync().lastUpdateCheck && 
+		 DkSettingsManager::param().sync().checkForUpdates)) {
 
 		DkTimer dt;
 
-		if (!Settings::param().isPortable()) {
+		if (!DkSettingsManager::param().isPortable()) {
 			
 			if (!mInstallUpdater)
 				mInstallUpdater = new DkInstallUpdater(this);
@@ -2420,8 +2420,8 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 		return;
 	}
 
-	Settings::param().sync().updateDialogShown = true;
-	Settings::param().save(Settings::instance().getSettings());
+	DkSettingsManager::param().sync().updateDialogShown = true;
+	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 	
 	if (!mUpdateDialog) {
 		mUpdateDialog = new DkUpdateDialog(this);
@@ -2611,7 +2611,7 @@ DkNoMacsSync::~DkNoMacsSync() {
 
 	if (mRcClient) {
 
-		if (Settings::param().sync().syncMode == DkSettings::sync_mode_remote_control)
+		if (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_remote_control)
 			mRcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
@@ -2646,7 +2646,7 @@ void DkNoMacsSync::initLanClient() {
 		delete mRcClient;
 	}
 
-	if (!Settings::param().sync().enableNetworkSync) {
+	if (!DkSettingsManager::param().sync().enableNetworkSync) {
 
 		mLanClient = 0;
 		mRcClient = 0;
@@ -2699,7 +2699,7 @@ void DkNoMacsSync::initLanClient() {
 	connect(this, SIGNAL(startTCPServerSignal(bool)), mLanClient, SLOT(startServer(bool)));
 	connect(this, SIGNAL(startRCServerSignal(bool)), mRcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
-	if (!Settings::param().sync().syncWhiteList.empty()) {
+	if (!DkSettingsManager::param().sync().syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
 #ifdef WITH_UPNP
 		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
@@ -2843,7 +2843,7 @@ void DkNoMacsSync::tcpConnectAll() {
 
 void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
-	if (syncMode == Settings::param().sync().syncMode || !mRcClient)
+	if (syncMode == DkSettingsManager::param().sync().syncMode || !mRcClient)
 		return;
 
 	// turn off everything
@@ -2854,16 +2854,16 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 	DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setChecked(false);
 
 	if (syncMode == DkSettings::sync_mode_default) {
-		Settings::param().sync().syncMode = syncMode;
+		DkSettingsManager::param().sync().syncMode = syncMode;
 		return;
 	}
 
 	// if we do not connect with the white list, the signal came from the rc client
 	// so we can easily assume that we are connected
-	bool connected = (connectWithWhiteList) ? connectWhiteList(syncMode, Settings::param().sync().syncMode == DkSettings::sync_mode_default) : true;
+	bool connected = (connectWithWhiteList) ? connectWhiteList(syncMode, DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default) : true;
 
 	if (!connected) {
-		Settings::param().sync().syncMode = DkSettings::sync_mode_default;
+		DkSettingsManager::param().sync().syncMode = DkSettings::sync_mode_default;
 		viewport()->getController()->setInfo(tr("Sorry, I could not find any clients."));
 		return;
 	}
@@ -2879,7 +2879,7 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 	//default:
 	}
 
-	Settings::param().sync().syncMode = syncMode;
+	DkSettingsManager::param().sync().syncMode = syncMode;
 }
 
 
@@ -2902,7 +2902,7 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
 
-	Settings::param().sync().syncActions = connect;
+	DkSettingsManager::param().sync().syncActions = connect;
 }
 
 #ifdef WITH_UPNP
@@ -3022,13 +3022,13 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
-	Settings::param().app().appMode = 0;
+	DkSettingsManager::param().app().appMode = 0;
 	initLanClient();
 	//emit sendTitleSignal(windowTitle());
 	qInfo() << "LAN client created in: " << dt;
 	// show it...
 	show();
-	Settings::param().app().appMode = DkSettings::mode_default;
+	DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
@@ -3036,7 +3036,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacs(parent, flags) {
 
 		setObjectName("DkNoMacsFrameless");
-		Settings::param().app().appMode = DkSettings::mode_frameless;
+		DkSettingsManager::param().app().appMode = DkSettings::mode_frameless;
 		
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
@@ -3173,7 +3173,7 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 	// do not save the window size
 	if (mSaveSettings)
-		Settings::param().save(Settings::instance().getSettings());
+		DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 
 	mSaveSettings = false;
 
@@ -3215,7 +3215,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
 
-		Settings::param().app().appMode = DkSettings::mode_contrast;
+		DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 		setObjectName("DkNoMacsContrast");
 
 		// show it...
@@ -3255,9 +3255,9 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect((DkViewPortContrast*)viewport(), SIGNAL(tFSliderAdded(qreal)), mTransferToolBar, SLOT(insertSlider(qreal)));
 	connect((DkViewPortContrast*)viewport(), SIGNAL(imageModeSet(int)), mTransferToolBar, SLOT(setImageMode(int)));
 
-	mTransferToolBar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
+	mTransferToolBar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	if (Settings::param().display().toolbarGradient)
+	if (DkSettingsManager::param().display().toolbarGradient)
 		mTransferToolBar->setObjectName("toolBarWithGradient");
 
 }

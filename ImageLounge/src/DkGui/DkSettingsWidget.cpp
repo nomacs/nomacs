@@ -98,7 +98,7 @@ void DkSettingsWidget::createLayout() {
 
 	mSettingsFilter = new QLineEdit(this);
 	mSettingsFilter->setObjectName("Filter");
-	mSettingsFilter->setPlaceholderText(tr("Filter Settings"));
+	mSettingsFilter->setPlaceholderText(tr("Filter DkSettingsManager"));
 
 	// create our beautiful shortcut view
 	mSettingsModel = new DkSettingsModel(this);
@@ -233,7 +233,7 @@ DkSettingsModel::DkSettingsModel(QObject* parent) : QAbstractItemModel(parent) {
 
 	// create root
 	QVector<QVariant> rootData;
-	rootData << tr("Settings") << tr("Value");
+	rootData << tr("DkSettingsManager") << tr("Value");
 
 	mRootItem = new TreeItem(rootData);
 

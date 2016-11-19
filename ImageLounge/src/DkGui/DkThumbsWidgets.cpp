@@ -82,8 +82,8 @@ void DkFilePreview::init() {
 	
 	//thumbsLoader = 0;
 
-	xOffset = qRound(Settings::param().effectiveThumbSize(this)*0.1f);
-	yOffset = qRound(Settings::param().effectiveThumbSize(this)*0.1f);
+	xOffset = qRound(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);
+	yOffset = qRound(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);
 
 	currentDx = 0;
 	currentFileIdx = -1;
@@ -109,7 +109,7 @@ void DkFilePreview::init() {
 	rightGradient.setColorAt(1, Qt::black);
 	rightGradient.setColorAt(0, Qt::white);
 
-	minHeight = Settings::param().effectiveThumbSize(this) + yOffset;
+	minHeight = DkSettingsManager::param().effectiveThumbSize(this) + yOffset;
 	//resize(parent->width(), minHeight);
 	
 	selected = -1;
@@ -132,7 +132,7 @@ void DkFilePreview::initOrientations() {
 	if (windowPosition == pos_dock_ver || windowPosition == pos_dock_hor)
 		minHeight = max_thumb_size;
 	else
-		minHeight = Settings::param().effectiveThumbSize(this);
+		minHeight = DkSettingsManager::param().effectiveThumbSize(this);
 
 	if (orientation == Qt::Horizontal) {
 
@@ -169,7 +169,7 @@ void DkFilePreview::initOrientations() {
 
 void DkFilePreview::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 	windowPosition = settings.value("windowPosition", windowPosition).toInt();
 	settings.endGroup();
@@ -178,7 +178,7 @@ void DkFilePreview::loadSettings() {
 
 void DkFilePreview::saveSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("windowPosition", windowPosition);
 	settings.endGroup();
@@ -219,12 +219,12 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != Settings::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
+	if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
-		xOffset = qCeil(Settings::param().effectiveThumbSize(this)*0.1f);
-		yOffset = qCeil(Settings::param().effectiveThumbSize(this)*0.1f);
+		xOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);
+		yOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);
 
-		minHeight = Settings::param().effectiveThumbSize(this) + yOffset;
+		minHeight = DkSettingsManager::param().effectiveThumbSize(this) + yOffset;
 		
 		if (orientation == Qt::Horizontal)
 			setMaximumSize(QWIDGETSIZE_MAX, minHeight);
@@ -290,7 +290,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		
 		// if the image is loaded draw that (it might be edited)
 		if (mThumbs.at(idx)->hasImage()) {
-			img = mThumbs.at(idx)->imageScaledToHeight(Settings::param().effectiveThumbSize(this));
+			img = mThumbs.at(idx)->imageScaledToHeight(DkSettingsManager::param().effectiveThumbSize(this));
 		}
 		else {
 
@@ -303,11 +303,11 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 				img = thumb->getImage();
 		}
 
-		if (img.width() > max_thumb_size * Settings::param().dPIScaleFactor())
+		if (img.width() > max_thumb_size * DkSettingsManager::param().dPIScaleFactor())
 			qDebug() << thumb->getFilePath() << "size:" << img.size();
 
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
-		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(Settings::param().effectiveThumbSize(this), Settings::param().effectiveThumbSize(this)));
+		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(DkSettingsManager::param().effectiveThumbSize(this), DkSettingsManager::param().effectiveThumbSize(this)));
 		if (orientation == Qt::Horizontal && height()-yOffset < r.height()*2)
 			r.setSize(QSizeF(qFloor(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
 		else if (orientation == Qt::Vertical && width()-yOffset < r.width()*2)
@@ -345,7 +345,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			break;
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
-			Settings::param().resources().numThumbsLoading < Settings::param().resources().maxThumbsLoading) {
+			DkSettingsManager::param().resources().numThumbsLoading < DkSettingsManager::param().resources().maxThumbsLoading) {
 				thumb->fetchThumb();
 				connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
 		}
@@ -380,7 +380,7 @@ void DkFilePreview::drawNoImgEffect(QPainter* painter, const QRectF& r) {
 	QBrush oldBrush = painter->brush();
 	QPen oldPen = painter->pen();
 
-	QPen noImgPen(Settings::param().display().bgColor);
+	QPen noImgPen(DkSettingsManager::param().display().bgColor);
 	painter->setPen(noImgPen);
 	painter->setBrush(QColor(0,0,0,0));
 	painter->drawRect(r);
@@ -395,7 +395,7 @@ void DkFilePreview::drawSelectedEffect(QPainter* painter, const QRectF& r) {
 	
 	// drawing
 	painter->setOpacity(0.4);
-	painter->setBrush(Settings::param().display().highlightColor);
+	painter->setBrush(DkSettingsManager::param().display().highlightColor);
 	painter->drawRect(r);
 	
 	// reset painter
@@ -414,7 +414,7 @@ void DkFilePreview::drawCurrentImgEffect(QPainter* painter, const QRectF& r) {
 	cr.setSize(QSize((int)cr.width()+1, (int)cr.height()+1));
 	cr.moveCenter(cr.center() + QPointF(-1,-1));
 
-	QPen cPen(Settings::param().display().highlightColor, 1);
+	QPen cPen(DkSettingsManager::param().display().highlightColor, 1);
 	painter->setBrush(QColor(0,0,0,0));
 	painter->setOpacity(1.0);
 	painter->setPen(cPen);
@@ -569,7 +569,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 				if (selected <= mThumbs.size() && selected >= 0) {
 					QSharedPointer<DkThumbNailT> thumb = mThumbs.at(selected)->getThumb();
-					//selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), Settings::param().display().highlightColor, 0.3f);
+					//selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettingsManager::param().display().highlightColor, 0.3f);
 
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())
@@ -650,7 +650,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
-		int newSize = Settings::param().display().thumbSize;
+		int newSize = DkSettingsManager::param().display().thumbSize;
 		newSize += qRound(event->delta()*0.05f);
 
 		// make sure it is even
@@ -662,8 +662,8 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 		else if (newSize > max_thumb_size)
 			newSize = max_thumb_size;
 
-		if (newSize != Settings::param().display().thumbSize) {
-			Settings::param().display().thumbSize = newSize;
+		if (newSize != DkSettingsManager::param().display().thumbSize) {
+			DkSettingsManager::param().display().thumbSize = newSize;
 			update();
 		}
 	}
@@ -671,7 +671,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 		
 		int fc = (event->delta() > 0) ? -1 : 1;
 		
-		if (!Settings::param().resources().waitForLastImg) {
+		if (!DkSettingsManager::param().resources().waitForLastImg) {
 			currentFileIdx += fc;
 			scrollToCurrentImage = true;
 		}
@@ -907,10 +907,10 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 	mNoImagePen.setColor(QColor(150,150,150));
 	mNoImageBrush = QColor(100,100,100,50);
 
-	QColor col = Settings::param().display().highlightColor;
+	QColor col = DkSettingsManager::param().display().highlightColor;
 	col.setAlpha(90);
 	mSelectBrush = col;
-	mSelectPen.setColor(Settings::param().display().highlightColor);
+	mSelectPen.setColor(DkSettingsManager::param().display().highlightColor);
 	//selectPen.setWidth(2);
 }
 
@@ -921,7 +921,7 @@ QPixmap DkThumbLabel::pixmap() const {
 
 QRectF DkThumbLabel::boundingRect() const {
 
-    int sz = Settings::param().effectiveThumbPreviewSize();
+    int sz = DkSettingsManager::param().effectiveThumbPreviewSize();
 	return QRectF(QPoint(0,0), QSize(sz, sz));
 }
 
@@ -944,7 +944,7 @@ void DkThumbLabel::updateLabel() {
 
 		pm = QPixmap::fromImage(mThumb->getImage());
 
-		if (Settings::param().display().displaySquaredThumbs) {
+		if (DkSettingsManager::param().display().displaySquaredThumbs) {
 
 			pm = DkImage::makeSquare(pm);
 		}
@@ -985,7 +985,7 @@ void DkThumbLabel::updateSize() {
 
 	// resize pixmap label
 	int maxSize = qMax(mIcon.pixmap().width(), mIcon.pixmap().height());
-	int ps = Settings::param().effectiveThumbPreviewSize();
+	int ps = DkSettingsManager::param().effectiveThumbPreviewSize();
 
 	if ((float)ps/maxSize != mIcon.scale()) {
 		mIcon.setScale(1.0f);
@@ -1042,7 +1042,7 @@ void DkThumbLabel::setVisible(bool visible) {
 void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	
 	if (!mFetchingThumb && mThumb->hasImage() == DkThumbNail::not_loaded && 
-		Settings::param().resources().numThumbsLoading < Settings::param().resources().maxThumbsLoading*2) {
+		DkSettingsManager::param().resources().numThumbsLoading < DkSettingsManager::param().resources().maxThumbsLoading*2) {
 			mThumb->fetchThumb();
 			mFetchingThumb = true;
 	}
@@ -1062,7 +1062,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		painter->drawRect(boundingRect());
 	}
 	else if (mIcon.pixmap().isNull()) {
-		QColor c = Settings::param().display().highlightColor;
+		QColor c = DkSettingsManager::param().display().highlightColor;
 		c.setAlpha(30);
 		painter->setPen(mNoImagePen);
 		painter->setBrush(c);
@@ -1092,7 +1092,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 	painter->setTransform(mt);
 
 	// draw text
-	if (boundingRect().width() > 50 && Settings::param().display().showThumbLabel) {
+	if (boundingRect().width() > 50 && DkSettingsManager::param().display().showThumbLabel) {
 		
 		QTransform tt = mt;
 		tt.translate(0, boundingRect().height()-mText.boundingRect().height());
@@ -1101,7 +1101,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		r.setWidth(boundingRect().width());
 		painter->setPen(Qt::NoPen);
 		painter->setWorldTransform(tt);
-		painter->setBrush(Settings::param().display().hudBgColor);
+		painter->setBrush(DkSettingsManager::param().display().hudBgColor);
 		painter->drawRect(r);
 		mText.paint(painter, &noSelOption, widget);
 		painter->setWorldTransform(mt);
@@ -1141,7 +1141,7 @@ void DkThumbScene::updateLayout() {
 	if (!views().empty())
 		pSize = QSize(views().first()->viewport()->size());
 
-    int psz = Settings::param().effectiveThumbPreviewSize();
+    int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
 	mXOffset = qCeil(psz*0.1f);
 	mNumCols = qMax(qFloor(((float)pSize.width()-mXOffset)/(psz + mXOffset)), 1);
 	mNumCols = qMin(mThumbLabels.size(), mNumCols);
@@ -1271,25 +1271,25 @@ void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const {
 
 void DkThumbScene::toggleThumbLabels(bool show) {
 
-	Settings::param().display().showThumbLabel = show;
+	DkSettingsManager::param().display().showThumbLabel = show;
 
 	for (int idx = 0; idx < mThumbLabels.size(); idx++)
 		mThumbLabels.at(idx)->updateLabel();
 
 	//// well, that's not too beautiful
-	//if (Settings::param().display().displaySquaredThumbs)
+	//if (DkSettingsManager::param().display().displaySquaredThumbs)
 	//	updateLayout();
 }
 
 void DkThumbScene::toggleSquaredThumbs(bool squares) {
 
-	Settings::param().display().displaySquaredThumbs = squares;
+	DkSettingsManager::param().display().displaySquaredThumbs = squares;
 
 	for (int idx = 0; idx < mThumbLabels.size(); idx++)
 		mThumbLabels.at(idx)->updateLabel();
 
 	// well, that's not too beautiful
-	if (Settings::param().display().displaySquaredThumbs)
+	if (DkSettingsManager::param().display().displaySquaredThumbs)
 		updateLayout();
 }
 
@@ -1308,12 +1308,12 @@ void DkThumbScene::resizeThumbs(float dx) {
 	if (dx < 0)
 		dx += 2.0f;
 
-	int newSize = qRound(Settings::param().display().thumbPreviewSize * dx);
+	int newSize = qRound(DkSettingsManager::param().display().thumbPreviewSize * dx);
 	qDebug() << "delta: " << dx;
 	qDebug() << "newsize: " << newSize;
 
 	if (newSize > 6 && newSize <= max_thumb_size) {
-		Settings::param().display().thumbPreviewSize = newSize;
+		DkSettingsManager::param().display().thumbPreviewSize = newSize;
 		updateLayout();
 	}
 }
@@ -1798,10 +1798,10 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 void DkThumbsView::fetchThumbs() {
 
-	int maxThreads = Settings::param().resources().maxThumbsLoading*2;
+	int maxThreads = DkSettingsManager::param().resources().maxThumbsLoading*2;
 
 	// don't do anything if it is loading anyway
-	if (Settings::param().resources().numThumbsLoading/* > maxThreads*/) {
+	if (DkSettingsManager::param().resources().numThumbsLoading/* > maxThreads*/) {
 		return;
 	}
 
@@ -1857,11 +1857,11 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 void DkThumbScrollWidget::createToolbar() {
 
 	mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
-	mToolbar->setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
+	mToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
 	qDebug() << mToolbar->styleSheet();
 
-	if (Settings::param().display().toolbarGradient) {
+	if (DkSettingsManager::param().display().toolbarGradient) {
 		mToolbar->setObjectName("toolBarWithGradient");
 	}
 
@@ -1888,10 +1888,10 @@ void DkThumbScrollWidget::createToolbar() {
 	toolButton->setMenu(m);
 	toolButton->setAccessibleName(menuTitle);
 	toolButton->setText(menuTitle);
-	QPixmap pm = QIcon(":/nomacs/img/sort.svg").pixmap(Settings::param().effectiveIconSize(this));
+	QPixmap pm = QIcon(":/nomacs/img/sort.svg").pixmap(DkSettingsManager::param().effectiveIconSize(this));
 
-	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode)
-		pm = DkImage::colorizePixmap(pm, Settings::param().display().iconColor);
+	if (!DkSettingsManager::param().display().defaultIconColor || DkSettingsManager::param().app().privateMode)
+		pm = DkImage::colorizePixmap(pm, DkSettingsManager::param().display().iconColor);
 
 	toolButton->setIcon(pm);
 	toolButton->setPopupMode(QToolButton::InstantPopup);

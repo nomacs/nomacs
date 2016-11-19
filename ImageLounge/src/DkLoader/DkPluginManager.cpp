@@ -597,7 +597,7 @@ void DkPluginTableWidget::createLayout() {
 
 	QPushButton* updateButton = new QPushButton(tr("Add or Remove Plugins"), this);
 	updateButton->setObjectName("updateButton");
-	if (Settings::param().isPortable())
+	if (DkSettingsManager::param().isPortable())
 		updateButton->hide();
 
 	QWidget* searchWidget = new QWidget(this);
@@ -629,7 +629,7 @@ void DkPluginTableWidget::createLayout() {
     mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
 	mTableView->setAlternatingRowColors(true);
 
-	if (Settings::instance().param().isPortable()) {
+	if (DkSettingsManager::instance().param().isPortable()) {
 		DkPushButtonDelegate* buttonDelegate = new DkPushButtonDelegate(mTableView);
 		mTableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
 		connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(uninstallPlugin(QModelIndex)));
@@ -731,7 +731,7 @@ int DkInstalledPluginsModel::rowCount(const QModelIndex&) const {
 
 int DkInstalledPluginsModel::columnCount(const QModelIndex&) const {
 
-	return Settings::param().isPortable() ? ip_column_size : ip_column_size-1;
+	return DkSettingsManager::param().isPortable() ? ip_column_size : ip_column_size-1;
 }
 
 QVariant DkInstalledPluginsModel::data(const QModelIndex &index, int role) const {
@@ -1304,7 +1304,7 @@ DkPluginActionManager::DkPluginActionManager(QObject* parent) : QObject(parent) 
 
 void DkPluginActionManager::assignCustomPluginShortcuts() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("CustomPluginShortcuts");
 	QStringList psKeys = settings.allKeys();
 	settings.endGroup();
@@ -1487,7 +1487,7 @@ void DkPluginActionManager::runPluginFromShortcut() {
 
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("CustomPluginShortcuts");
 	settings.remove("");
 	for (int i = 0; i < actions.size(); i++)

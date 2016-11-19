@@ -84,7 +84,7 @@ namespace nmc {
 void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
 
 #if QT_VERSION >= 0x050500
-	if (!Settings::param().app().useLogFile)
+	if (!DkSettingsManager::param().app().useLogFile)
 		return;	// should not be called anyhow
 
 	static QString filePath;
@@ -327,7 +327,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 	QDir qmDir = qApp->applicationDirPath();
 
 	// find all translations
-	QStringList translationDirs = Settings::param().getTranslationDirs();
+	QStringList translationDirs = DkSettingsManager::param().getTranslationDirs();
 	QStringList fileNames;
 
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
@@ -343,7 +343,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 		locale.chop(3);
 
 		QTranslator translator;
-		Settings::param().loadTranslation(fileNames[i], translator);
+		DkSettingsManager::param().loadTranslation(fileNames[i], translator);
 
 		//: this should be the name of the language in which nomacs is translated to
 		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
@@ -354,7 +354,7 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 		languages << locale;
 	}
 
-	langCombo->setCurrentIndex(languages.indexOf(Settings::param().global().language));
+	langCombo->setCurrentIndex(languages.indexOf(DkSettingsManager::param().global().language));
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
@@ -418,7 +418,7 @@ void DkUtils::registerFileVersion() {
 
 void DkUtils::initializeDebug() {
 
-	if (Settings::param().app().useLogFile)
+	if (DkSettingsManager::param().app().useLogFile)
 		qInstallMessageHandler(qtMessageOutput);
 
 	// format console
@@ -547,7 +547,7 @@ bool DkUtils::isValid(const QFileInfo& fileInfo) {
 
 bool DkUtils::isSavable(const QString & fileName) {
 	
-	QStringList cleanSaveFilters = suffixOnly(Settings::param().app().saveFilters);
+	QStringList cleanSaveFilters = suffixOnly(DkSettingsManager::param().app().saveFilters);
 
 	for (const QString& cFilter : cleanSaveFilters) {
 
@@ -565,9 +565,9 @@ bool DkUtils::isSavable(const QString & fileName) {
 
 bool DkUtils::hasValidSuffix(const QString& fileName) {
 
-	for (int idx = 0; idx < Settings::param().app().fileFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettingsManager::param().app().fileFilters.size(); idx++) {
 
-		QRegExp exp = QRegExp(Settings::param().app().fileFilters.at(idx), Qt::CaseInsensitive);
+		QRegExp exp = QRegExp(DkSettingsManager::param().app().fileFilters.at(idx), Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;

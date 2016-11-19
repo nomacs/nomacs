@@ -49,7 +49,7 @@ void DkHistoryDock::createLayout() {
 
 	mHistoryList = new QListWidget(this);
 	mHistoryList->setObjectName("historyList");
-	mHistoryList->setIconSize(QSize(Settings::param().effectiveIconSize(), Settings::param().effectiveIconSize()));
+	mHistoryList->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
 
 	QWidget* contentWidget = new QWidget(this);
 	QVBoxLayout* layout = new QVBoxLayout(contentWidget);

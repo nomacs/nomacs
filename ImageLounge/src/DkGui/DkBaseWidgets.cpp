@@ -56,9 +56,9 @@ void DkWidget::init() {
 
 	setMouseTracking(true);
 
-	mBgCol = (Settings::param().app().appMode == DkSettings::mode_frameless) ?
-		Settings::param().display().bgColorFrameless :
-	Settings::param().display().hudBgColor;
+	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
+		DkSettingsManager::param().display().bgColorFrameless :
+	DkSettingsManager::param().display().hudBgColor;
 
 	mShowing = false;
 	mHiding = false;
@@ -106,12 +106,12 @@ bool DkWidget::getCurrentDisplaySetting() {
 	if (!mDisplaySettingsBits)
 		return false;
 
-	if (Settings::param().app().currentAppMode < 0 || Settings::param().app().currentAppMode >= mDisplaySettingsBits->size()) {
-		qDebug() << "[WARNING] illegal app mode: " << Settings::param().app().currentAppMode;
+	if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= mDisplaySettingsBits->size()) {
+		qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
 		return false;
 	}
 
-	return mDisplaySettingsBits->testBit(Settings::param().app().currentAppMode);
+	return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
 };
 
 bool DkWidget::isHiding() const {
@@ -137,8 +137,8 @@ void DkWidget::hide(bool saveSetting) {
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > Settings::param().app().currentAppMode) {
-			mDisplaySettingsBits->setBit(Settings::param().app().currentAppMode, false);
+		if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+			mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
 		}
 	}
 }
@@ -156,8 +156,8 @@ void DkWidget::setVisible(bool visible, bool saveSetting) {
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > Settings::param().app().currentAppMode) {
-		mDisplaySettingsBits->setBit(Settings::param().app().currentAppMode, true);
+	if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, true);
 	}
 
 }
@@ -209,9 +209,9 @@ QString DkNamedWidget::name() const {
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
-	mBgCol = (Settings::param().app().appMode == DkSettings::mode_frameless) ?
-		Settings::param().display().bgColorFrameless :
-	Settings::param().display().hudBgColor;
+	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
+		DkSettingsManager::param().display().bgColorFrameless :
+	DkSettingsManager::param().display().hudBgColor;
 
 	setMouseTracking(true);
 	mParent = parent;
@@ -228,7 +228,7 @@ void DkLabel::init() {
 	mTime = -1;
 	mFixedWidth = -1;
 	mFontSize = 12;
-	mTextCol = Settings::param().display().hudFgdColor;
+	mTextCol = DkSettingsManager::param().display().hudFgdColor;
 	mBlocked = false;
 
 	mTimer.setSingleShot(true);
@@ -349,9 +349,9 @@ void DkLabel::setTextToLabel() {
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 
-	mBgCol = (Settings::param().app().appMode == DkSettings::mode_frameless) ?
-		Settings::param().display().bgColorFrameless :
-	Settings::param().display().hudBgColor;
+	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
+		DkSettingsManager::param().display().bgColorFrameless :
+	DkSettingsManager::param().display().hudBgColor;
 
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
 
@@ -379,9 +379,9 @@ DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent,
 
 void DkFadeLabel::init() {
 
-	mBgCol = (Settings::param().app().appMode == DkSettings::mode_frameless) ?
-		Settings::param().display().bgColorFrameless :
-	Settings::param().display().hudBgColor;
+	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
+		DkSettingsManager::param().display().bgColorFrameless :
+	DkSettingsManager::param().display().hudBgColor;
 
 	showing = false;
 	hiding = false;
@@ -415,12 +415,12 @@ bool DkFadeLabel::getCurrentDisplaySetting() {
 	if (!displaySettingsBits)
 		return false;
 
-	if (Settings::param().app().currentAppMode < 0 || Settings::param().app().currentAppMode >= displaySettingsBits->size()) {
-		qDebug() << "[WARNING] illegal app mode: " << Settings::param().app().currentAppMode;
+	if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= displaySettingsBits->size()) {
+		qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
 		return false;
 	}
 
-	return displaySettingsBits->testBit(Settings::param().app().currentAppMode);
+	return displaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
 void DkFadeLabel::show(bool saveSettings) {
@@ -441,8 +441,8 @@ void DkFadeLabel::hide(bool saveSettings) {
 		animateOpacityDown();
 	}
 
-	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > Settings::param().app().currentAppMode) {
-		displaySettingsBits->setBit(Settings::param().app().currentAppMode, false);
+	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+		displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, false);
 	}
 }
 
@@ -459,8 +459,8 @@ void DkFadeLabel::setVisible(bool visible, bool saveSettings) {
 	emit visibleSignal(visible);
 	DkLabel::setVisible(visible);
 
-	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > Settings::param().app().currentAppMode) {
-		displaySettingsBits->setBit(Settings::param().app().currentAppMode, visible);
+	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+		displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
 	}
 
 }
@@ -527,12 +527,12 @@ bool DkDockWidget::getCurrentDisplaySetting() const {
 
 bool DkDockWidget::testDisplaySettings(const QBitArray& displaySettingsBits) {
 
-	if (Settings::param().app().currentAppMode < 0 || Settings::param().app().currentAppMode >= displaySettingsBits.size()) {
-		qDebug() << "[WARNING] illegal app mode: " << Settings::param().app().currentAppMode;
+	if (DkSettingsManager::param().app().currentAppMode < 0 || DkSettingsManager::param().app().currentAppMode >= displaySettingsBits.size()) {
+		qDebug() << "[WARNING] illegal app mode: " << DkSettingsManager::param().app().currentAppMode;
 		return false;
 	}
 
-	return displaySettingsBits.testBit(Settings::param().app().currentAppMode);
+	return displaySettingsBits.testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
 void DkDockWidget::setVisible(bool visible, bool saveSetting) {
@@ -540,8 +540,8 @@ void DkDockWidget::setVisible(bool visible, bool saveSetting) {
 	QDockWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > Settings::param().app().currentAppMode) {
-		displaySettingsBits->setBit(Settings::param().app().currentAppMode, visible);
+	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
+		displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);
 	}
 }
 
@@ -554,7 +554,7 @@ void DkDockWidget::closeEvent(QCloseEvent* event) {
 
 Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const {
 	
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	Qt::DockWidgetArea location = (Qt::DockWidgetArea)settings.value(objectName(), defaultArea).toInt();
 
 	return location;

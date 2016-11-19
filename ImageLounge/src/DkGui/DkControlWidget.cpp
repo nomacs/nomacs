@@ -114,14 +114,14 @@ void DkControlWidget::init() {
 	setMouseTracking(true);
 
 	// connect widgets with their settings
-	mFilePreview->setDisplaySettings(&Settings::param().app().showFilePreview);
-	mMetaDataInfo->setDisplaySettings(&Settings::param().app().showMetaData);
-	mFileInfoLabel->setDisplaySettings(&Settings::param().app().showFileInfoLabel);
-	mPlayer->setDisplaySettings(&Settings::param().app().showPlayer);
-	mHistogram->setDisplaySettings(&Settings::param().app().showHistogram);
-	mCommentWidget->setDisplaySettings(&Settings::param().app().showComment);
-	mZoomWidget->setDisplaySettings(&Settings::param().app().showOverview);
-	mFolderScroll->setDisplaySettings(&Settings::param().app().showScroller);
+	mFilePreview->setDisplaySettings(&DkSettingsManager::param().app().showFilePreview);
+	mMetaDataInfo->setDisplaySettings(&DkSettingsManager::param().app().showMetaData);
+	mFileInfoLabel->setDisplaySettings(&DkSettingsManager::param().app().showFileInfoLabel);
+	mPlayer->setDisplaySettings(&DkSettingsManager::param().app().showPlayer);
+	mHistogram->setDisplaySettings(&DkSettingsManager::param().app().showHistogram);
+	mCommentWidget->setDisplaySettings(&DkSettingsManager::param().app().showComment);
+	mZoomWidget->setDisplaySettings(&DkSettingsManager::param().app().showOverview);
+	mFolderScroll->setDisplaySettings(&DkSettingsManager::param().app().showScroller);
 
 	// some adjustments
 	mBottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -343,7 +343,7 @@ void DkControlWidget::showWidgetsSettings() {
 		return;
 	}
 
-	//qDebug() << "current app mode: " << Settings::param().app().currentAppMode;
+	//qDebug() << "current app mode: " << DkSettingsManager::param().app().currentAppMode;
 
 	showOverview(mZoomWidget->getCurrentDisplaySetting());
 	showPreview(mFilePreview->getCurrentDisplaySetting());

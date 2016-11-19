@@ -1474,11 +1474,11 @@ void DkMetaDataHelper::init() {
 	mDescSearchTags.append("Path");
 	mDescSearchTags.append("FileSize");
 
-	for (int i = 0; i  < Settings::param().translatedCamData().size(); i++) 
-		mTranslatedCamTags << qApp->translate("nmc::DkMetaData", Settings::param().translatedCamData().at(i).toLatin1());
+	for (int i = 0; i  < DkSettingsManager::param().translatedCamData().size(); i++) 
+		mTranslatedCamTags << qApp->translate("nmc::DkMetaData", DkSettingsManager::param().translatedCamData().at(i).toLatin1());
 
-	for (int i = 0; i  < Settings::param().translatedDescriptionData().size(); i++)
-		mTranslatedDescTags << qApp->translate("nmc::DkMetaData", Settings::param().translatedDescriptionData().at(i).toLatin1());
+	for (int i = 0; i  < DkSettingsManager::param().translatedDescriptionData().size(); i++)
+		mTranslatedDescTags << qApp->translate("nmc::DkMetaData", DkSettingsManager::param().translatedDescriptionData().at(i).toLatin1());
 
 	mExposureModes.append(QObject::tr("not defined"));
 	mExposureModes.append(QObject::tr("manual"));

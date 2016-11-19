@@ -90,7 +90,7 @@ int DkPongSettings::totalScore() const {
 
 void DkPongSettings::writeSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("DkPong");
 
 	settings.setValue("field", mField);
@@ -127,7 +127,7 @@ float DkPongSettings::playerRatio() const {
 
 void DkPongSettings::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("DkPong");
 
 	mField = settings.value("field", mField).toRect();

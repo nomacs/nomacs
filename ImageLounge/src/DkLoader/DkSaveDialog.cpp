@@ -104,7 +104,7 @@ DkCompressDialog::~DkCompressDialog() {
 
 void DkCompressDialog::saveSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("Compression" + QString::number(mDialogMode), getCompression());
 	
@@ -118,7 +118,7 @@ void DkCompressDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 
 	mBgCol = settings.value("bgCompressionColor" + QString::number(mDialogMode), QColor(255,255,255).rgba()).toInt();
@@ -137,9 +137,9 @@ void DkCompressDialog::init() {
 	if (mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) {
 
 		if (mDialogMode == jpg_dialog)
-			setWindowTitle(tr("JPG Settings"));
+			setWindowTitle(tr("JPG DkSettingsManager"));
 		else
-			setWindowTitle(tr("J2K Settings"));
+			setWindowTitle(tr("J2K DkSettingsManager"));
 
 		mSlider->show();
 		mColChooser->show();
@@ -148,7 +148,7 @@ void DkCompressDialog::init() {
 		mSlider->setEnabled(true);
 	}
 	else if (mDialogMode == webp_dialog) {
-		setWindowTitle(tr("WebP Settings"));
+		setWindowTitle(tr("WebP DkSettingsManager"));
 		mColChooser->setEnabled(false);
 		mSlider->show();
 		mColChooser->show();

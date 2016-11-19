@@ -338,7 +338,7 @@ DkMetaDataDock::~DkMetaDataDock() {
 
 void DkMetaDataDock::writeSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 	
 	for (int idx = 0; idx < mModel->columnCount(QModelIndex()); idx++) {
@@ -355,7 +355,7 @@ void DkMetaDataDock::writeSettings() {
 
 void DkMetaDataDock::readSettings() {
 	
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup(objectName());
 
 	for (int idx = 0; idx < mModel->columnCount(QModelIndex()); idx++) {
@@ -691,13 +691,13 @@ void DkMetaDataHUD::createLayout() {
 	titleLayout->addWidget(titleSeparator);
 
 	QString scrollbarStyle = 
-		QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
-		+ QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; min-height: 0px;}")
+		QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
+		+ QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
 		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
 		+ QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
 		+ QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}")
-	+ QString("QScrollBar:horizontal {border: 1px solid " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); height: 7px; margin: 0 0 0 0;}")	// horizontal
-		+ QString("QScrollBar::handle:horizontal {background: " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; min-width: 0px;}")
+	+ QString("QScrollBar:horizontal {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); height: 7px; margin: 0 0 0 0;}")	// horizontal
+		+ QString("QScrollBar::handle:horizontal {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-width: 0px;}")
 		+ QString("QScrollBar::add-line:horizontal {width: 0px;}")
 		+ QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}")
 		+ QString("QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}");
@@ -759,7 +759,7 @@ void DkMetaDataHUD::createActions() {
 
 void DkMetaDataHUD::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 
 	settings.beginGroup(objectName());
 	QStringList keyVals = settings.value("keyValues", QStringList()).toStringList();
@@ -776,7 +776,7 @@ void DkMetaDataHUD::saveSettings() const {
 	if (mKeyValues.isEmpty())
 		return;
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 
 	settings.beginGroup(objectName());
 	settings.setValue("keyValues", mKeyValues);
@@ -1163,8 +1163,8 @@ void DkCommentWidget::createLayout() {
 	titleLabel->setObjectName("commentTitleLabel");
 
 	QString scrollbarStyle = 
-		QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
-		+ QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(Settings::param().display().hudFgdColor) + "; min-height: 0px;}")
+		QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
+		+ QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
 		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
 		+ QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
 		+ QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
@@ -1178,14 +1178,14 @@ void DkCommentWidget::createLayout() {
 	QPushButton* saveButton = new QPushButton(this);
 	saveButton->setObjectName("saveButton");
 	saveButton->setFlat(true);
-	saveButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/save.svg").pixmap(Settings::param().effectiveIconSize()), Settings::param().display().hudFgdColor, 1.0f)));
+	saveButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/save.svg").pixmap(DkSettingsManager::param().effectiveIconSize()), DkSettingsManager::param().display().hudFgdColor, 1.0f)));
 	saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
 	saveButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return));
 
 	QPushButton* cancelButton = new QPushButton(this);
 	cancelButton->setObjectName("cancelButton");
 	cancelButton->setFlat(true);
-	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/trash.svg").pixmap(Settings::param().effectiveIconSize()), Settings::param().display().hudFgdColor, 1.0f)));
+	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/trash.svg").pixmap(DkSettingsManager::param().effectiveIconSize()), DkSettingsManager::param().display().hudFgdColor, 1.0f)));
 	cancelButton->setToolTip(tr("Discard Changes (ESC)"));
 	cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
 

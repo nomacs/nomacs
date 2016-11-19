@@ -600,7 +600,7 @@ DkTransferToolBar::~DkTransferToolBar() {
 void DkTransferToolBar::createIcons() {
 
 	// user needs to decide...
-	//this->setIconSize(QSize(Settings::param().effectiveIconSize(), Settings::param().effectiveIconSize()));
+	//this->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
 			
 	mToolBarIcons.resize(icon_toolbar_end);
 
@@ -631,7 +631,7 @@ void DkTransferToolBar::createIcons() {
 
 void DkTransferToolBar::saveSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("Pseudo Color");
 
 	settings.beginWriteArray("oldGradients", mOldGradients.size());
@@ -656,7 +656,7 @@ void DkTransferToolBar::saveSettings() {
 
 void DkTransferToolBar::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("Pseudo Color");
 
 	int gSize = settings.beginReadArray("oldGradients");
@@ -876,9 +876,9 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(Settings::param().effectiveIconSize(this), Settings::param().effectiveIconSize(this)));
+	setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	if (Settings::param().display().toolbarGradient) 
+	if (DkSettingsManager::param().display().toolbarGradient) 
 		setObjectName("toolBarWithGradient");
 	else {
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
@@ -892,7 +892,7 @@ DkCropToolBar::~DkCropToolBar() {
 
 void DkCropToolBar::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("Crop");
 
 	mHorValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
@@ -906,7 +906,7 @@ void DkCropToolBar::loadSettings() {
 
 void DkCropToolBar::saveSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("Crop");
 
 	settings.setValue("AspectRatioHorizontal", mHorValBox->value());
@@ -931,12 +931,12 @@ void DkCropToolBar::createIcons() {
 	mIcons[invert_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
 	mIcons[info_icon] = DkImage::loadIcon(":/nomacs/img/info.svg");
 
-	if (!Settings::param().display().defaultIconColor) {
+	if (!DkSettingsManager::param().display().defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < mIcons.size(); idx++) {
 
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().effectiveIconSize(this), QIcon::Normal, QIcon::On), Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
-			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(Settings::param().effectiveIconSize(this), QIcon::Normal, QIcon::Off), Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::On), DkSettingsManager::param().display().iconColor), QIcon::Normal, QIcon::On);
+			mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::Off), DkSettingsManager::param().display().iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

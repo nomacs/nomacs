@@ -205,7 +205,7 @@ void DkTcpMenu::enableActions(bool enable, bool local) {
 
 		if (mTcpActions.at(idx)->objectName() == "serverAction")
 			mTcpActions.at(idx)->setEnabled(!anyConnected);
-		if (mTcpActions.at(idx)->objectName() == "sendImageAction" && Settings::param().sync().syncMode == DkSettings::sync_mode_default)
+		if (mTcpActions.at(idx)->objectName() == "sendImageAction" && DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default)
 			mTcpActions.at(idx)->setEnabled(anyConnected);
 	}
 

@@ -99,13 +99,13 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, (char**)argv);
 
 	// init settings
-	nmc::Settings::instance().init();
+	nmc::DkSettingsManager::instance().init();
 
-	QSettings& settings = nmc::Settings::instance().getSettings();
-	int mode = settings.value("AppSettings/appMode", nmc::Settings::param().app().appMode).toInt();
+	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettingsManager::param().app().appMode).toInt();
 
-	//if (!nmc::Settings::param().app().openFilters.empty())
-	//	qInfoClean() << "supported image extensions: " << nmc::Settings::param().app().openFilters[0];
+	//if (!nmc::DkSettingsManager::param().app().openFilters.empty())
+	//	qInfoClean() << "supported image extensions: " << nmc::DkSettingsManager::param().app().openFilters[0];
 
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;
@@ -181,46 +181,46 @@ int main(int argc, char *argv[]) {
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
 
-	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::Settings::param().global().language).toString() + ".qm";
-	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::Settings::param().global().language).toString() + ".qm";
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
 	
 	QTranslator translator;
-	nmc::Settings::param().loadTranslation(translationName, translator);
+	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
 	
 	QTranslator translatorQt;
-	nmc::Settings::param().loadTranslation(translationNameQt, translatorQt);
+	nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
 	a.installTranslator(&translatorQt);
 
 	// show pink icons if nomacs is in private mode
 	if(parser.isSet(privateOpt)) {
-		nmc::Settings::param().display().iconColor = QColor(136, 0, 125);
-		nmc::Settings::param().app().privateMode = true;
+		nmc::DkSettingsManager::param().display().iconColor = QColor(136, 0, 125);
+		nmc::DkSettingsManager::param().app().privateMode = true;
 	}
 
 	if (parser.isSet(modeOpt)) {
 		QString pm = parser.value(modeOpt);// .trimmed();
 
 		if (pm == "default")
-			mode = nmc::Settings::param().mode_default;
+			mode = nmc::DkSettingsManager::param().mode_default;
 		else if (pm == "frameless")
-			mode = nmc::Settings::param().mode_frameless;
+			mode = nmc::DkSettingsManager::param().mode_frameless;
 		else if (pm == "pseudocolor")
-			mode = nmc::Settings::param().mode_contrast;
+			mode = nmc::DkSettingsManager::param().mode_contrast;
 		else
 			qWarning() << "illegal mode: " << pm << "use either <default>, <frameless> or <pseudocolor>";
 
-		nmc::Settings::param().app().currentAppMode = mode;
+		nmc::DkSettingsManager::param().app().currentAppMode = mode;
 	}
 
 	nmc::DkTimer dt;
 
 	// initialize nomacs
-	if (mode == nmc::Settings::param().mode_frameless) {
+	if (mode == nmc::DkSettingsManager::param().mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
-	else if (mode == nmc::Settings::param().mode_contrast) {
+	else if (mode == nmc::DkSettingsManager::param().mode_contrast) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
@@ -242,8 +242,8 @@ int main(int argc, char *argv[]) {
 		qDebug() << "loading: " << parser.positionalArguments()[0];
 	}
 	else {
-		bool showRecent = nmc::Settings::param().app().showRecentFiles;
-		showRecent &= nmc::Settings::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
+		bool showRecent = nmc::DkSettingsManager::param().app().showRecentFiles;
+		showRecent &= nmc::DkSettingsManager::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
 		w->showRecentFiles(showRecent);
 	}
 
@@ -263,11 +263,11 @@ int main(int argc, char *argv[]) {
 			cw->addTab(filePath);
 	}
 
-	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::Settings::param().app().currentAppMode).toInt();
+	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettingsManager::param().app().currentAppMode).toInt();
 
-	if (fullScreenMode == nmc::Settings::param().mode_default_fullscreen		||
-		fullScreenMode == nmc::Settings::param().mode_frameless_fullscreen		||
-		fullScreenMode == nmc::Settings::param().mode_contrast_fullscreen		||
+	if (fullScreenMode == nmc::DkSettingsManager::param().mode_default_fullscreen		||
+		fullScreenMode == nmc::DkSettingsManager::param().mode_frameless_fullscreen		||
+		fullScreenMode == nmc::DkSettingsManager::param().mode_contrast_fullscreen		||
 		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
 		qDebug() << "trying to enter fullscreen...";
@@ -347,10 +347,10 @@ void createPluginsPath() {
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
-	nmc::Settings::param().global().pluginsDir = pluginsDir.absolutePath();
-	qDebug() << "plugins dir set to: " << nmc::Settings::param().global().pluginsDir;
+	nmc::DkSettingsManager::param().global().pluginsDir = pluginsDir.absolutePath();
+	qDebug() << "plugins dir set to: " << nmc::DkSettingsManager::param().global().pluginsDir;
 
-	QCoreApplication::addLibraryPath(nmc::Settings::param().global().pluginsDir);
+	QCoreApplication::addLibraryPath(nmc::DkSettingsManager::param().global().pluginsDir);
 
 	QCoreApplication::addLibraryPath("./imageformats");
 

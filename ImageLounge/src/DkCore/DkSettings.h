@@ -353,20 +353,20 @@ protected:
 	void init();
 };
 
-class DllCoreExport Settings {
+class DllCoreExport DkSettingsManager {
 
 public:
-	static Settings& instance();
+	static DkSettingsManager& instance();
 	static DkSettings& param();		// convenience
-	QSettings& getSettings();
+	QSettings& qSettings();
 	DkSettings& settings();			// rename
 	void init();
 
 private:
-	Settings();
+	DkSettingsManager();
 
-	QSharedPointer<QSettings> m_settings;
-	QSharedPointer<DkSettings> m_params;
+	QSharedPointer<QSettings> mSettings;
+	QSharedPointer<DkSettings> mParams;
 };
 
 };

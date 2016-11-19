@@ -533,8 +533,8 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	DkPeer* syncedPeer = mPeerList.getPeerById(connection->getPeerId());
 	if (!syncedPeer)
 		return;
-	Settings::param().sync().recentSyncNames << syncedPeer->clientName;
-	Settings::param().sync().recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
+	DkSettingsManager::param().sync().recentSyncNames << syncedPeer->clientName;
+	DkSettingsManager::param().sync().recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
 	qDebug() << "added " << syncedPeer->clientName << " to recently seen list";
 }
 
@@ -880,8 +880,8 @@ void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersO
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	Settings::param().sync().recentSyncNames << peer->clientName;
-	Settings::param().sync().recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
+	DkSettingsManager::param().sync().recentSyncNames << peer->clientName;
+	DkSettingsManager::param().sync().recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
 
 }
 

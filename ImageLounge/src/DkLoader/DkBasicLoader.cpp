@@ -178,7 +178,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		try {
 			mMetaData->readMetaData(filePath, ba);
 
-			if (!Settings::param().metaData().ignoreExifOrientation) {
+			if (!DkSettingsManager::param().metaData().ignoreExifOrientation) {
 				DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
 				
 				if (orState == DkMetaDataT::or_illegal) {
@@ -300,7 +300,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			mMetaData->setQtValues(img);
 			int orientation = mMetaData->getOrientationDegree();
 
-			if (orientation != -1 && !mMetaData->isTiff() && !Settings::param().metaData().ignoreExifOrientation)
+			if (orientation != -1 && !mMetaData->isTiff() && !DkSettingsManager::param().metaData().ignoreExifOrientation)
 				img = rotate(img, orientation);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
@@ -401,15 +401,15 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 
 		// try to get preview image from exiv2
 		if (mMetaData) {
-			if (fast || Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-				Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
+			if (fast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+				DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
 
 				mMetaData->readMetaData(filePath, ba);
 
 				int minWidth = 0;
 
 #ifdef WITH_LIBRAW	// if nomacs has libraw - we can still hope for a fallback -> otherwise try whatever we have here
-				if (Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
+				if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
 					minWidth = 1920;
 #endif
 				img = mMetaData->getPreviewImage(minWidth);
@@ -461,8 +461,8 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
 
-		if (fast || Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-			(Settings::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
+		if (fast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+			(DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
 
 			// crashes here if image is broken
 			int err = iProcessor.unpack_thumb();
@@ -714,7 +714,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 		rgbImg.convertTo(rgbImg, CV_8U);
 
 		// filter color noise withe a median filter
-		if (Settings::param().resources().filterRawImages) {
+		if (DkSettingsManager::param().resources().filterRawImages) {
 
 			float isoSpeed = iProcessor.imgdata.other.iso_speed;
 
@@ -840,7 +840,7 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 
 	DkEditImage newImg(img, editName);
 
-	if (historySize + newImg.size() > Settings::param().resources().historyMemory && mImages.size() > 2) {
+	if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory && mImages.size() > 2) {
 		mImages.removeAt(1);
 		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
 	}
@@ -1228,9 +1228,9 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
 
 	QString suffix = fInfo.suffix();
 
-	for (int idx = 0; idx < Settings::param().app().containerFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
 
-		if (Settings::param().app().containerFilters[idx].contains(suffix))
+		if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
 			return true;
 	}
 

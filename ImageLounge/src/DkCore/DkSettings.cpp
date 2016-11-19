@@ -212,7 +212,7 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters.append("Rohkost (*.roh)");
 
 	// load user filters
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	app_p.openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 
 	for (int idx = 0; idx < app_p.openFilters.size(); idx++) {
@@ -343,7 +343,7 @@ void DkSettings::load(QSettings& settings) {
 	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();
 
 	settings.endGroup();
-	// Global Settings --------------------------------------------------------------------
+	// Global DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("GlobalSettings");
 
 	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
@@ -372,7 +372,7 @@ void DkSettings::load(QSettings& settings) {
 	global_p.showBgImage = settings.value("showBgImage", global_p.showBgImage).toBool();
 
 	settings.endGroup();
-	// Display Settings --------------------------------------------------------------------
+	// Display DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
@@ -404,14 +404,14 @@ void DkSettings::load(QSettings& settings) {
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
 
 	settings.endGroup();
-	// MetaData Settings --------------------------------------------------------------------
+	// MetaData DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
 	settings.endGroup();
-	// SlideShow Settings --------------------------------------------------------------------
+	// SlideShow DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("SlideShowSettings");
 
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
@@ -425,7 +425,7 @@ void DkSettings::load(QSettings& settings) {
 		slideShow_p.display = tmpDisplay;
 
 	settings.endGroup();
-	// Synchronize Settings --------------------------------------------------------------------
+	// Synchronize DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
 	sync_p.enableNetworkSync= settings.value("enableNetworkSync", sync_p.enableNetworkSync).toBool();
@@ -445,7 +445,7 @@ void DkSettings::load(QSettings& settings) {
 	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
-	// Resource Settings --------------------------------------------------------------------
+	// Resource DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
@@ -486,7 +486,7 @@ void DkSettings::load(QSettings& settings) {
 
 void DkSettings::save(QSettings& settings, bool force) {
 		
-	if (Settings::param().app().privateMode)
+	if (DkSettingsManager::param().app().privateMode)
 		return;
 
 	if (force ||app_p.showMenuBar != app_d.showMenuBar)
@@ -541,7 +541,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("registerFilters", app_p.registerFilters);
 
 	settings.endGroup();
-	// Global Settings --------------------------------------------------------------------
+	// Global DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("GlobalSettings");
 
 	if (force ||global_p.skipImgs != global_d.skipImgs)
@@ -590,7 +590,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showBgImage", global_p.showBgImage);
 
 	settings.endGroup();
-	// Display Settings --------------------------------------------------------------------
+	// Display DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
 	if (force ||display_p.keepZoom != display_d.keepZoom)
@@ -647,7 +647,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
 
 	settings.endGroup();
-	// MetaData Settings --------------------------------------------------------------------
+	// MetaData DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 	
 	if (force ||meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
@@ -656,7 +656,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("saveExifOrientation", meta_p.saveExifOrientation);
 
 	settings.endGroup();
-	// SlideShow Settings --------------------------------------------------------------------
+	// SlideShow DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("SlideShowSettings");
 
 	if (force ||slideShow_p.filter != slideShow_d.filter)
@@ -673,7 +673,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
 	settings.endGroup();
-	// Sync Settings --------------------------------------------------------------------
+	// Sync DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
 	if (force ||sync_p.enableNetworkSync != sync_d.enableNetworkSync)
@@ -708,7 +708,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
-	// Resource Settings --------------------------------------------------------------------
+	// Resource DkSettingsManager --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
 	if (force ||resources_p.cacheMemory != resources_d.cacheMemory)
@@ -918,39 +918,37 @@ DkSettings::Resources & DkSettings::resources() {
 	return resources_p;
 }
 
-Settings::Settings() {
+DkSettingsManager::DkSettingsManager() {
 	
-	m_params = QSharedPointer<DkSettings>(new DkSettings());
-	m_settings = m_params->isPortable() ? QSharedPointer<QSettings>(new QSettings(m_params->settingsPath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
+	mParams = QSharedPointer<DkSettings>(new DkSettings());
+	mSettings = mParams->isPortable() ? QSharedPointer<QSettings>(new QSettings(mParams->settingsPath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
 
 }
 
-Settings& Settings::instance() { 
-	static QSharedPointer<Settings> inst;
+DkSettingsManager& DkSettingsManager::instance() { 
+	static QSharedPointer<DkSettingsManager> inst;
 	if (!inst)
-		inst = QSharedPointer<Settings>(new Settings());
+		inst = QSharedPointer<DkSettingsManager>(new DkSettingsManager());
 	return *inst; 
 }
 
-DkSettings& Settings::param() {
+DkSettings& DkSettingsManager::param() {
 	return instance().settings();
 }
 
-QSettings& Settings::getSettings() {
-	//QMutexLocker(&mutex);
-	return *m_settings;
+QSettings& DkSettingsManager::qSettings() {
+	return *mSettings;
 }
 
-DkSettings& Settings::settings() {
-	//QMutexLocker(&mutex);
-	return *m_params;
+DkSettings& DkSettingsManager::settings() {
+	return *mParams;
 }
 
-void Settings::init() {
+void DkSettingsManager::init() {
 	
 	// init settings
 	param().initFileFilters();
-	QSettings& settings = getSettings();
+	QSettings& settings = qSettings();
 
 	param().load(settings);	// load in constructor??
 
@@ -960,12 +958,12 @@ void Settings::init() {
 	// init debug
 	DkUtils::initializeDebug();
 
-	if (nmc::Settings::param().app().useLogFile)
+	if (nmc::DkSettingsManager::param().app().useLogFile)
 		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
 
 	qInfo() << "Hi there";
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
-		<< " v " << QApplication::applicationVersion() << (nmc::Settings::param().isPortable() ? " portable" : " installed");
+		<< " v " << QApplication::applicationVersion() << (nmc::DkSettingsManager::param().isPortable() ? " portable" : " installed");
 
 }
 
@@ -974,7 +972,7 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 #ifdef Q_OS_WIN
 	
 	// do not register if nomacs is portable
-	if (Settings::param().isPortable() && !showDefaultApps)
+	if (DkSettingsManager::param().isPortable() && !showDefaultApps)
 		return;
 
 	// TODO: this is still not working for me on win8??
@@ -987,10 +985,10 @@ void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
 	settings.setValue("ApplicationIcon", QApplication::applicationFilePath() + ",0");
 
 	settings.beginGroup("FileAssociations");
-	QStringList rFilters = Settings::param().app().openFilters;
+	QStringList rFilters = DkSettingsManager::param().app().openFilters;
 
-	for (int idx = 0; idx < Settings::param().app().containerFilters.size(); idx++)
-		rFilters.removeAll(Settings::param().app().containerFilters.at(idx));
+	for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++)
+		rFilters.removeAll(DkSettingsManager::param().app().containerFilters.at(idx));
 
 	for (int idx = 0; idx < rFilters.size(); idx++) {
 
@@ -1096,7 +1094,7 @@ QString DkFileFilterHandling::getIconID(const QString& ext) const {
 	else if (ext.contains(".tif") || ext.contains(".tiff") || ext.contains(".bmp") || ext.contains(".pgm") || ext.contains(".webp")) {
 		return "4";
 	}
-	else if (!Settings::param().app().rawFilters.filter(ext).empty()) {
+	else if (!DkSettingsManager::param().app().rawFilters.filter(ext).empty()) {
 		return "5";
 	}
 	else
@@ -1125,7 +1123,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 
 #ifdef Q_OS_WIN
 
-	if (Settings::param().app().privateMode)
+	if (DkSettingsManager::param().app().privateMode)
 		return;
 	
 	QString friendlyName;

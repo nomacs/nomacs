@@ -86,7 +86,7 @@ DkAppManager::~DkAppManager() {
 
 void DkAppManager::saveSettings() const {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("DkAppManager");
 	// clear it first
 	settings.remove("Apps");
@@ -105,7 +105,7 @@ void DkAppManager::saveSettings() const {
 
 void DkAppManager::loadSettings() {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("DkAppManager");
 
 	int size = settings.beginReadArray("Apps");
@@ -1012,7 +1012,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_recursive] = new QAction(QObject::tr("Scan Folder Re&cursive"), parent);
 	mFileActions[menu_file_recursive]->setStatusTip(QObject::tr("Step through Folder and Sub Folders"));
 	mFileActions[menu_file_recursive]->setCheckable(true);
-	mFileActions[menu_file_recursive]->setChecked(Settings::param().global().scanSubFolders);
+	mFileActions[menu_file_recursive]->setChecked(DkSettingsManager::param().global().scanSubFolders);
 
 	mFileActions[menu_file_exit] = new QAction(QObject::tr("&Exit"), parent);
 	mFileActions[menu_file_exit]->setStatusTip(QObject::tr("Exit"));
@@ -1024,37 +1024,37 @@ void DkActionManager::createActions(QWidget* parent) {
 	mSortActions[menu_sort_filename]->setObjectName("menu_sort_filename");
 	mSortActions[menu_sort_filename]->setStatusTip(QObject::tr("Sort by Filename"));
 	mSortActions[menu_sort_filename]->setCheckable(true);
-	mSortActions[menu_sort_filename]->setChecked(Settings::param().global().sortMode == DkSettings::sort_filename);
+	mSortActions[menu_sort_filename]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_filename);
 
 	mSortActions[menu_sort_date_created] = new QAction(QObject::tr("by Date &Created"), parent);
 	mSortActions[menu_sort_date_created]->setObjectName("menu_sort_date_created");
 	mSortActions[menu_sort_date_created]->setStatusTip(QObject::tr("Sort by Date Created"));
 	mSortActions[menu_sort_date_created]->setCheckable(true);
-	mSortActions[menu_sort_date_created]->setChecked(Settings::param().global().sortMode == DkSettings::sort_date_created);
+	mSortActions[menu_sort_date_created]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_date_created);
 
 	mSortActions[menu_sort_date_modified] = new QAction(QObject::tr("by Date Modified"), parent);
 	mSortActions[menu_sort_date_modified]->setObjectName("menu_sort_date_modified");
 	mSortActions[menu_sort_date_modified]->setStatusTip(QObject::tr("Sort by Date Last Modified"));
 	mSortActions[menu_sort_date_modified]->setCheckable(true);
-	mSortActions[menu_sort_date_modified]->setChecked(Settings::param().global().sortMode == DkSettings::sort_date_modified);
+	mSortActions[menu_sort_date_modified]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_date_modified);
 
 	mSortActions[menu_sort_random] = new QAction(QObject::tr("Random"), parent);
 	mSortActions[menu_sort_random]->setObjectName("menu_sort_random");
 	mSortActions[menu_sort_random]->setStatusTip(QObject::tr("Sort in Random Order"));
 	mSortActions[menu_sort_random]->setCheckable(true);
-	mSortActions[menu_sort_random]->setChecked(Settings::param().global().sortMode == DkSettings::sort_random);
+	mSortActions[menu_sort_random]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_random);
 
 	mSortActions[menu_sort_ascending] = new QAction(QObject::tr("&Ascending"), parent);
 	mSortActions[menu_sort_ascending]->setObjectName("menu_sort_ascending");
 	mSortActions[menu_sort_ascending]->setStatusTip(QObject::tr("Sort in Ascending Order"));
 	mSortActions[menu_sort_ascending]->setCheckable(true);
-	mSortActions[menu_sort_ascending]->setChecked(Settings::param().global().sortDir == Qt::AscendingOrder);
+	mSortActions[menu_sort_ascending]->setChecked(DkSettingsManager::param().global().sortDir == Qt::AscendingOrder);
 
 	mSortActions[menu_sort_descending] = new QAction(QObject::tr("&Descending"), parent);
 	mSortActions[menu_sort_descending]->setObjectName("menu_sort_descending");
 	mSortActions[menu_sort_descending]->setStatusTip(QObject::tr("Sort in Descending Order"));
 	mSortActions[menu_sort_descending]->setCheckable(true);
-	mSortActions[menu_sort_descending]->setChecked(Settings::param().global().sortDir == Qt::DescendingOrder);
+	mSortActions[menu_sort_descending]->setChecked(DkSettingsManager::param().global().sortDir == Qt::DescendingOrder);
 
 	// edit actions
 	mEditActions.resize(menu_edit_end);
@@ -1157,7 +1157,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_shortcuts]->setShortcut(QKeySequence(shortcut_shortcuts));
 	mEditActions[menu_edit_shortcuts]->setStatusTip(QObject::tr("lets you customize your keyboard shortcuts"));
 
-	mEditActions[menu_edit_preferences] = new QAction(QObject::tr("&Settings"), parent);
+	mEditActions[menu_edit_preferences] = new QAction(QObject::tr("&DkSettingsManager"), parent);
 	mEditActions[menu_edit_preferences]->setShortcut(QKeySequence(shortcut_settings));
 	mEditActions[menu_edit_preferences]->setStatusTip(QObject::tr("settings"));
 
@@ -1187,7 +1187,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
 	mPanelActions[menu_panel_overview]->setStatusTip(QObject::tr("Shows the Zoom Overview"));
 	mPanelActions[menu_panel_overview]->setCheckable(true);
-	mPanelActions[menu_panel_overview]->setChecked(Settings::param().app().showOverview.testBit(Settings::param().app().currentAppMode));
+	mPanelActions[menu_panel_overview]->setChecked(DkSettingsManager::param().app().showOverview.testBit(DkSettingsManager::param().app().currentAppMode));
 
 	mPanelActions[menu_panel_player] = new QAction(QObject::tr("Pla&yer"), parent);
 	mPanelActions[menu_panel_player]->setShortcut(QKeySequence(shortcut_show_player));
@@ -1277,13 +1277,13 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_anti_aliasing]->setShortcut(QKeySequence(shortcut_anti_aliasing));
 	mViewActions[menu_view_anti_aliasing]->setStatusTip(QObject::tr("if checked images are smoother"));
 	mViewActions[menu_view_anti_aliasing]->setCheckable(true);
-	mViewActions[menu_view_anti_aliasing]->setChecked(Settings::param().display().antiAliasing);
+	mViewActions[menu_view_anti_aliasing]->setChecked(DkSettingsManager::param().display().antiAliasing);
 
 	mViewActions[menu_view_tp_pattern] = new QAction(QObject::tr("&Transparency Pattern"), parent);
 	mViewActions[menu_view_tp_pattern]->setShortcut(QKeySequence(shortcut_tp_pattern));
 	mViewActions[menu_view_tp_pattern]->setStatusTip(QObject::tr("if checked, a pattern will be displayed for transparent objects"));
 	mViewActions[menu_view_tp_pattern]->setCheckable(true);
-	mViewActions[menu_view_tp_pattern]->setChecked(Settings::param().display().tpPattern);
+	mViewActions[menu_view_tp_pattern]->setChecked(DkSettingsManager::param().display().tpPattern);
 
 	mViewActions[menu_view_frameless] = new QAction(QObject::tr("&Frameless"), parent);
 	mViewActions[menu_view_frameless]->setShortcut(QKeySequence(shortcut_frameless));
@@ -1368,7 +1368,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mToolsActions[menu_tools_export_tiff]->setStatusTip(QObject::tr("Export TIFF pages to multiple tiff files"));
 
 	mToolsActions[menu_tools_extract_archive] = new QAction(QObject::tr("Extract From Archive"), parent);
-	mToolsActions[menu_tools_extract_archive]->setStatusTip(QObject::tr("Extract images from an archive (%1)").arg(Settings::param().app().containerRawFilters));
+	mToolsActions[menu_tools_extract_archive]->setStatusTip(QObject::tr("Extract images from an archive (%1)").arg(DkSettingsManager::param().app().containerRawFilters));
 	mToolsActions[menu_tools_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
 
 	mToolsActions[menu_tools_mosaic] = new QAction(QObject::tr("&Mosaic Image"), parent);
@@ -1424,7 +1424,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mSyncActions[menu_sync_all_actions] = new QAction(QObject::tr("&Sync All Actions"), parent);
 	mSyncActions[menu_sync_all_actions]->setStatusTip(QObject::tr("Transmit All Signals Automatically."));
 	mSyncActions[menu_sync_all_actions]->setCheckable(true);
-	mSyncActions[menu_sync_all_actions]->setChecked(Settings::param().sync().syncActions);
+	mSyncActions[menu_sync_all_actions]->setChecked(DkSettingsManager::param().sync().syncActions);
 
 	mSyncActions[menu_sync_start_upnp] = new QAction(QObject::tr("&Start Upnp"), parent);
 	mSyncActions[menu_sync_start_upnp]->setStatusTip(QObject::tr("Starts a Upnp Media Renderer."));
@@ -1472,11 +1472,11 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mPreviewActions[preview_display_squares] = new QAction(DkImage::loadIcon(":/nomacs/img/thumbs-view.svg"), QObject::tr("Display &Squares"), parent);
 	mPreviewActions[preview_display_squares]->setCheckable(true);
-	mPreviewActions[preview_display_squares]->setChecked(Settings::param().display().displaySquaredThumbs);
+	mPreviewActions[preview_display_squares]->setChecked(DkSettingsManager::param().display().displaySquaredThumbs);
 
 	mPreviewActions[preview_show_labels] = new QAction(DkImage::loadIcon(":/nomacs/img/show-filename.svg"), QObject::tr("Show &Filename"), parent);
 	mPreviewActions[preview_show_labels]->setCheckable(true);
-	mPreviewActions[preview_show_labels]->setChecked(Settings::param().display().showThumbLabel);
+	mPreviewActions[preview_show_labels]->setChecked(DkSettingsManager::param().display().showThumbLabel);
 
 	mPreviewActions[preview_filter] = new QAction(QObject::tr("&Filter"), parent);
 	mPreviewActions[preview_filter]->setShortcut(QKeySequence::Find);
@@ -1580,7 +1580,7 @@ QVector<QAction*> DkActionManager::allActions() const {
 
 void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("CustomShortcuts");
 
 	for (int idx = 0; idx < actions.size(); idx++) {

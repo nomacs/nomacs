@@ -203,7 +203,7 @@ QString DkTabInfo::getTabText() const {
 	if (mTabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
 	else if (mTabMode == tab_preferences)
-		return QObject::tr("Settings");
+		return QObject::tr("DkSettingsManager");
 	else if (mTabMode == tab_batch)
 		return QObject::tr("Batch");
 
@@ -319,7 +319,7 @@ void DkCentralWidget::createLayout() {
 
 void DkCentralWidget::saveSettings(bool saveTabs) const {
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 
 	settings.beginGroup(objectName());
 	settings.remove("Tabs");
@@ -343,7 +343,7 @@ void DkCentralWidget::loadSettings() {
 
 	QVector<QSharedPointer<DkTabInfo> > tabInfos;
 
-	QSettings& settings = Settings::instance().getSettings();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
 
 	settings.beginGroup(objectName());
 
@@ -424,7 +424,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		mViewport->unloadImage();
 		mViewport->deactivate();
 
-		if (Settings::param().app().showRecentFiles)
+		if (DkSettingsManager::param().app().showRecentFiles)
 			showRecentFiles(true);
 	}
 
@@ -525,7 +525,7 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 
 	DkThumbScrollWidget* thumbScrollWidget = new DkThumbScrollWidget(this);
-	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(Settings::param().slideShow().backgroundColor);
+	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettingsManager::param().slideShow().backgroundColor);
 	thumbScrollWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_thumbview));
 
 	DkActionManager& am = DkActionManager::instance();
@@ -911,7 +911,7 @@ int DkCentralWidget::currentViewMode() const {
 void DkCentralWidget::restart() const {
 
 	// safe settings first - since the intention of a restart is often a global settings change
-	Settings::param().save(Settings::instance().getSettings());
+	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;

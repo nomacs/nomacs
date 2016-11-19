@@ -202,7 +202,7 @@ void DkInputTextEdit::appendDir(const QString& newDir, bool recursive) {
 
 	QDir tmpDir = newDir;
 	tmpDir.setSorting(QDir::LocaleAware);
-	QFileInfoList fileList = tmpDir.entryInfoList(Settings::param().app().fileFilters);
+	QFileInfoList fileList = tmpDir.entryInfoList(DkSettingsManager::param().app().fileFilters);
 	QStringList strFileList;
 
 	for (QFileInfo entry : fileList) {
@@ -333,7 +333,7 @@ void DkBatchInput::createLayout() {
 	mExplorer->getModel()->setNameFilters(QStringList());
 	mExplorer->setMaximumWidth(300);
 
-	QStringList folders = Settings::param().global().recentFiles;
+	QStringList folders = DkSettingsManager::param().global().recentFiles;
 
 	if (folders.size() > 0)
 		mExplorer->setCurrentPath(folders[0]);
@@ -786,7 +786,7 @@ void DkBatchOutput::createLayout() {
 	connect(mCbExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
 	mCbNewExtension = new QComboBox(this);
-	mCbNewExtension->addItems(Settings::param().app().saveFilters);
+	mCbNewExtension->addItems(DkSettingsManager::param().app().saveFilters);
 	mCbNewExtension->setFixedWidth(150);
 	mCbNewExtension->setEnabled(false);
 	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));

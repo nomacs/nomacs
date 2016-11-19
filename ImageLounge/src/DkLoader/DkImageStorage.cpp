@@ -846,18 +846,18 @@ QPixmap DkImage::loadIcon(const QString & filePath) {
 	if (filePath.isEmpty())
 		return QPixmap();
 
-	int s = Settings::param().effectiveIconSize();
+	int s = DkSettingsManager::param().effectiveIconSize();
 	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
 	
-	if (!Settings::param().display().defaultIconColor || Settings::param().app().privateMode)
-		icon = colorizePixmap(icon, Settings::param().display().iconColor);
+	if (!DkSettingsManager::param().display().defaultIconColor || DkSettingsManager::param().app().privateMode)
+		icon = colorizePixmap(icon, DkSettingsManager::param().display().iconColor);
 
 	return icon;
 }
 
 QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col) {
 
-	int s = Settings::param().effectiveIconSize();
+	int s = DkSettingsManager::param().effectiveIconSize();
 	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
 	icon = colorizePixmap(icon, col);
 
@@ -1139,7 +1139,7 @@ QImage DkImage::createThumb(const QImage& image) {
 	if (image.isNull())
 		return image;
 
-	int maxThumbSize = (int)(max_thumb_size * Settings::param().dPIScaleFactor());
+	int maxThumbSize = (int)(max_thumb_size * DkSettingsManager::param().dPIScaleFactor());
 	int imgW = image.width();
 	int imgH = image.height();
 
@@ -1250,7 +1250,7 @@ QColor DkImage::getMeanColor(const QImage& img) {
 	if (maxColCount > 0)
 		return QColor(qRound((float)qRed(maxCol)/numCols*255), qRound((float)qGreen(maxCol)/numCols*255), qRound((float)qBlue(maxCol)/numCols*255));
 	else
-		return Settings::param().display().hudBgColor;
+		return DkSettingsManager::param().display().hudBgColor;
 }
 
 
@@ -1274,7 +1274,7 @@ void DkImageStorage::setImage(const QImage& img) {
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
-	Settings::param().display().antiAliasing = antiAliasing;
+	DkSettingsManager::param().display().antiAliasing = antiAliasing;
 
 	if (!antiAliasing) {
 		mStop = true;
@@ -1293,7 +1293,7 @@ QImage DkImageStorage::getImageConst() const {
 
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 0.5f || mImg.isNull() || !Settings::param().display().antiAliasing)
+	if (factor >= 0.5f || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing)
 		return mImg;
 
 	// check if we have an image similar to that requested
