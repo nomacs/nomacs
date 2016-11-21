@@ -164,7 +164,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
+		(event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -177,7 +177,7 @@ void DkThresholdViewPort::mousePressEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == nmc::Settings::param().global().altMod ||
+	if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -190,7 +190,7 @@ void DkThresholdViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkThresholdViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
+	if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -433,24 +433,7 @@ DkThresholdToolBar::DkThresholdToolBar(const QString & title, QWidget * parent /
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
 	setObjectName("ThresholdToolBar");
-
-	if (nmc::Settings::param().display().toolbarGradient) {
-
-		QColor hCol = nmc::Settings::param().display().highlightColor;
-		hCol.setAlpha(80);
-
-		setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-	else
-		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 }
 
 DkThresholdToolBar::~DkThresholdToolBar() {
@@ -462,19 +445,10 @@ void DkThresholdToolBar::createIcons() {
 	// create icons
 	icons.resize(icons_end);
 
-	icons[apply_icon] = QIcon(":/nomacsPluginThr/img/apply.png");
-	icons[cancel_icon] = QIcon(":/nomacsPluginThr/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacsPluginThr/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginThr/img/pan_checked.png"), QIcon::Normal, QIcon::On);
-
-	if (!nmc::Settings::param().display().defaultIconColor) {
-		// now colorize all icons
-		for (int idx = 0; idx < icons.size(); idx++) {
-
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
-		}
-	}
+	icons[apply_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
+	icons[cancel_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/cancel.svg");
+	icons[pan_icon]		= nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
+	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
 }
 
 void DkThresholdToolBar::createLayout() {
