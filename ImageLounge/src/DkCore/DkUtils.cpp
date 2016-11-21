@@ -1045,9 +1045,16 @@ void TreeItem::clear() {
 	childItems.clear();
 }
 
+void TreeItem::remove(int rowIdx) {
+	
+	if (rowIdx < childCount()) {
+		delete childItems[rowIdx];
+		childItems.remove(rowIdx);
+	}
+}
+
 void TreeItem::appendChild(TreeItem *item) {
 	childItems.append(item);
-	//item->setParent(this);
 }
 
 bool TreeItem::contains(const QRegExp& regExp, int column, bool recursive) const {
@@ -1144,6 +1151,14 @@ TreeItem* TreeItem::find(const QVariant& value, int column) {
 			return child;
 
 	return 0;
+}
+
+QStringList TreeItem::parentList() const {
+
+	QStringList pl;
+	parentList(pl);
+
+	return pl;
 }
 
 void TreeItem::parentList(QStringList& parentKeys) const {

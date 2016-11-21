@@ -478,14 +478,18 @@ public:
 	int row() const;
 	TreeItem* parent() const;
 	TreeItem* find(const QVariant& value, int column);
-	void parentList(QStringList& parentKeys) const;
+
+	QStringList parentList() const;
 	void setParent(TreeItem* parent);
 	void clear();
+	void remove(int rowIdx);
 
 private:
 	QVector<TreeItem*> childItems;
 	QVector<QVariant> itemData;
-	TreeItem *parentItem;
+	TreeItem *parentItem = 0;
+
+	void parentList(QStringList& parentKeys) const;
 };
 
 };

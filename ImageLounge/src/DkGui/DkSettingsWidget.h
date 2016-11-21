@@ -121,8 +121,11 @@ public:
 
 	void addSettingsGroup(const DkSettingsGroup& group, const QString& parentName = "");
 
+	virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
 signals:
 	void settingChanged(const QString& key, const QVariant& value, const QStringList& groups) const;
+	void settingRemoved(const QString& key, const QStringList& groups) const;
 
 protected:
 	TreeItem* mRootItem;
@@ -141,6 +144,8 @@ public slots:
 	//void focusFilter();
 	void on_Filter_textChanged(const QString& text);
 	void on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups);
+	void on_SettingsModel_settingRemoved(const QString& key, const QStringList& groups);
+	void on_removeRows_triggered();
 
 protected:
 	void createLayout();

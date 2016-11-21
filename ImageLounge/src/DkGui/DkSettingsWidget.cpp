@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QMenu>
 #pragma warning(pop)
 
 namespace nmc {
@@ -94,6 +95,34 @@ void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const
 		mSettings->endGroup();
 }
 
+void DkSettingsWidget::on_SettingsModel_settingRemoved(const QString & key, const QStringList & groups) {
+
+	if (!mSettings)
+		return;
+
+	QStringList groupsClean = groups;
+	groupsClean.pop_front();
+
+	for (const QString& gName : groupsClean) {
+		mSettings->beginGroup(gName);
+	}
+
+	mSettings->remove(key);
+	qDebug() << key << "removed...";
+
+	for (int idx = 0; idx < groupsClean.size(); idx++)
+		mSettings->endGroup();
+}
+
+void DkSettingsWidget::on_removeRows_triggered() {
+	
+	QModelIndexList selList = mTreeView->selectionModel()->selectedRows();
+	for (const QModelIndex index : selList) {
+		const QModelIndex cIndex = mProxyModel->mapToSource(index.parent());
+		mSettingsModel->removeRows(index.row(), 1, cIndex);
+	}
+}
+
 void DkSettingsWidget::createLayout() {
 
 	mSettingsFilter = new QLineEdit(this);
@@ -107,7 +136,6 @@ void DkSettingsWidget::createLayout() {
 	mProxyModel = new DkSettingsProxyModel(this);
 	mProxyModel->setSourceModel(mSettingsModel);
 	//mProxyModel->setDynamicSortFilter(true);
-	//mSettingsModel->setProxyFilterModel(mProxyModel);
 
 	mTreeView = new QTreeView(this);
 	mTreeView->setModel(mProxyModel);
@@ -120,6 +148,16 @@ void DkSettingsWidget::createLayout() {
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(mSettingsFilter);
 	layout->addWidget(mTreeView);
+
+	// contextMenu
+	QMenu* contextMenu = new QMenu(mTreeView);
+	mTreeView->setContextMenuPolicy(Qt::ActionsContextMenu);
+	
+	QAction* removeAction = new QAction(tr("Delete"), contextMenu);
+	removeAction->setObjectName("removeRows");
+	removeAction->setShortcut(QKeySequence::Delete);
+	mTreeView->addAction(removeAction);
+	
 }
 
 void DkSettingsWidget::on_Filter_textChanged(const QString& filterText) {
@@ -299,7 +337,6 @@ int DkSettingsModel::columnCount(const QModelIndex& parent) const {
 		return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
 	else
 		return mRootItem->columnCount();
-	//return 2;
 }
 
 QVariant DkSettingsModel::data(const QModelIndex& index, int role) const {
@@ -312,14 +349,11 @@ QVariant DkSettingsModel::data(const QModelIndex& index, int role) const {
 	if (role == Qt::DisplayRole || role == Qt::EditRole) {
 
 		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-		//qDebug() << "returning: " << item->data(0) << "row: " << index.row();
-
 		return item->data(index.column());
 	}
 
 	return QVariant();
 }
-
 
 QVariant DkSettingsModel::headerData(int section, Qt::Orientation orientation, int role) const {
 
@@ -354,10 +388,7 @@ bool DkSettingsModel::setData(const QModelIndex& index, const QVariant& value, i
 		item->setData(value, index.column());
 
 		if (index.column() == 1) {
-			
-			QStringList groups;
-			item->parentList(groups);
-			emit settingChanged(item->data(0).toString(), item->data(1), groups);
+			emit settingChanged(item->data(0).toString(), item->data(1), item->parentList());
 		}
 	}
 
@@ -407,6 +438,39 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QStri
 
 	parentItem->appendChild(settingsItem);
 	//qDebug() << "menu item has: " << menuItem->childCount();
+}
+
+bool DkSettingsModel::removeRows(int row, int count, const QModelIndex & parent) {
+
+	bool success = false;
+
+	TreeItem* item = static_cast<TreeItem*>(parent.internalPointer());
+	if (!item)
+		item = mRootItem;
+
+	//if (item) {
+
+		beginRemoveRows(parent, row, row);
+		for (int rIdx = row; rIdx < row + count; rIdx++) {
+
+			TreeItem* deleteRow = item->child(rIdx);
+
+			if (deleteRow) {
+				emit settingRemoved(deleteRow->data(0).toString(), deleteRow->parentList());
+				item->remove(rIdx);
+				success = true;
+			}
+			else
+				qWarning() << "I cannot delete a non-existing row:" << row;
+		}
+		endRemoveRows();
+
+	//}
+	//else
+	//	qWarning() << "parent is NULL - cannot remove row" << row;
+
+
+	return success;
 }
 
 }
