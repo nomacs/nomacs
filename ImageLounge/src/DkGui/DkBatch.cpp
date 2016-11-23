@@ -1985,9 +1985,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 		return DkBatchConfig();
 	}
 
-	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget());
-
-	if (!outputWidget) {
+	if (!outputWidget()) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
 		emit infoSignal(tr("I am missing a widget."), DkBatchInfoWidget::InfoMode::info_critical);
 		//QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
@@ -1995,12 +1993,14 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	}
 
 	if (strict && mWidgets[batch_output] && mWidgets[batch_input])  {
-		bool outputChanged = dynamic_cast<DkBatchContent*>(mWidgets[batch_output]->contentWidget())->hasUserInput();
-		QString inputDirPath = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget())->getDir();
-		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
+		bool outputChanged = outputWidget()->hasUserInput();
+		QString inputDirPath = inputWidget()->getDir();
+		QString outputDirPath = outputWidget()->getOutputDirectory();
 
+		
 		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
-			dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->overwriteMode() != DkSaveInfo::mode_overwrite) {
+			!(outputWidget()->overwriteMode() == DkSaveInfo::mode_overwrite ||
+			 outputWidget()->overwriteMode() == DkSaveInfo::mode_do_not_save_output)) {
 			emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
 			//QMessageBox::information(mw, tr("Wrong Configuration"), 
 			//	tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
@@ -2011,12 +2011,12 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 
 	DkSaveInfo si;
-	si.setMode(outputWidget->overwriteMode());
-	si.setDeleteOriginal(outputWidget->deleteOriginal());
-	si.setInputDirIsOutputDir(outputWidget->useInputDir());
-	si.setCompression(outputWidget->getCompression());
+	si.setMode(outputWidget()->overwriteMode());
+	si.setDeleteOriginal(outputWidget()->deleteOriginal());
+	si.setInputDirIsOutputDir(outputWidget()->useInputDir());
+	si.setCompression(outputWidget()->getCompression());
 
-	DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
+	DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget()->getOutputDirectory(), outputWidget()->getFilePattern());
 	config.setSaveInfo(si);
 
 	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
