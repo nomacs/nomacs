@@ -58,10 +58,23 @@ include_directories(${Tesseract_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Tesseract_LIBRARIES})
 
 ## leptonica
-find_package(Leptonica REQUIRED CONFIG)
-target_link_libraries(${PROJECT_NAME} ${Leptonica_LIBRARIES})
+#find_package(Leptonica REQUIRED CONFIG)
+#target_link_libraries(${PROJECT_NAME} ${Leptonica_LIBRARIES})
 
-NMC_CREATE_TARGETS()
+message(${Tesseract_LIBRARIES})
+
+message(${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
+message(${DLL_DIR}/eng.traineddata)
+
+set(DLL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
+# make plugins/tessdata directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${DLL_DIR}/eng.traineddata ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${DLL_DIR}/deu.traineddata ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
+
+set(DLL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+NMC_CREATE_TARGETS(${DLL_DIR}/lept174d.dll ${DLL_DIR}/tesseract305d.dll ${DLL_DIR}/eng.traineddata)
 NMC_GENERATE_USER_FILE()
 NMC_GENERATE_PACKAGE_XML(${PLUGIN_JSON})
 
