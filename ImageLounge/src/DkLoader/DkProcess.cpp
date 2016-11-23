@@ -665,6 +665,12 @@ bool DkBatchProcess::process() {
 		return false;
 	}
 
+	// early break
+	if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
+		mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
+		return true;
+	}
+
 	if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {
 		mLogStrings.append(QObject::tr("%1 saved...").arg(mSaveInfo.outputFilePath()));
 	}
@@ -705,6 +711,11 @@ bool DkBatchProcess::renameFile() {
 bool DkBatchProcess::copyFile() {
 
 	QFile file(mSaveInfo.inputFilePath());
+
+	if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
+		mLogStrings.append(QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
+		return false;
+	}
 
 	if (QFileInfo(mSaveInfo.outputFilePath()).exists() && mSaveInfo.mode() == DkSaveInfo::mode_overwrite) {
 		if (!deleteOrRestoreExisting())

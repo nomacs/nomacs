@@ -84,6 +84,7 @@ public:
 	enum OverwriteMode {
 		mode_overwrite,
 		mode_skip_existing,
+		mode_do_not_save_output,
 
 		mode_end
 	};

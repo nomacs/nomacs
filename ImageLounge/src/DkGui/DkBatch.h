@@ -331,6 +331,7 @@ private:
 	DkDirectoryEdit* mOutputlineEdit = 0;
 	QVBoxLayout* mFilenameVBLayout = 0;
 	QCheckBox* mCbOverwriteExisting = 0;
+	QCheckBox* mCbDoNotSave = 0;
 	QCheckBox* mCbUseInput = 0;
 	QCheckBox* mCbDeleteOriginal = 0;
 	QPushButton* mOutputBrowseButton = 0;

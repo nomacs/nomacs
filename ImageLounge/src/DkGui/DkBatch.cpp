@@ -736,6 +736,11 @@ void DkBatchOutput::createLayout() {
 	mCbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
 	connect(mCbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
+	// overwrite existing
+	mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
+	mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only usefull if plugins save sidecar files - so be careful!"));
+	connect(mCbDoNotSave, SIGNAL(clicked()), this, SIGNAL(changed()));
+
 	// Use Input Folder
 	mCbUseInput = new QCheckBox(tr("Use Input Folder"));
 	mCbUseInput->setToolTip(tr("If checked, the batch is applied to the input folder - so be careful!"));
@@ -750,6 +755,7 @@ void DkBatchOutput::createLayout() {
 	cbLayout->setContentsMargins(0,0,0,0);
 	cbLayout->addWidget(mCbUseInput);
 	cbLayout->addWidget(mCbOverwriteExisting);
+	cbLayout->addWidget(mCbDoNotSave);
 	cbLayout->addWidget(mCbDeleteOriginal);
 
 	QWidget* outDirWidget = new QWidget(this);
@@ -1052,6 +1058,7 @@ void DkBatchOutput::applyDefault() {
 	mCbUseInput->setChecked(false);
 	mCbDeleteOriginal->setChecked(false);
 	mCbOverwriteExisting->setChecked(false);
+	mCbDoNotSave->setChecked(false);
 	mCbExtension->setCurrentIndex(0);
 	mCbNewExtension->setCurrentIndex(0);
 	mSbCompression->setValue(90);
@@ -1079,6 +1086,7 @@ void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
 
 	DkSaveInfo si = config.saveInfo();
 	mCbOverwriteExisting->setChecked(si.mode() == DkSaveInfo::mode_overwrite);
+	mCbDoNotSave->setChecked(si.mode() == DkSaveInfo::mode_do_not_save_output);
 	mCbDeleteOriginal->setChecked(si.isDeleteOriginal());
 	mCbUseInput->setChecked(si.isInputDirOutputDir());
 	mOutputlineEdit->setText(config.getOutputDirPath());
@@ -1093,6 +1101,8 @@ DkSaveInfo::OverwriteMode DkBatchOutput::overwriteMode() const {
 
 	if (mCbOverwriteExisting->isChecked())
 		return DkSaveInfo::mode_overwrite;
+	else if (mCbDoNotSave->isChecked())
+		return DkSaveInfo::mode_do_not_save_output;
 
 	return DkSaveInfo::mode_skip_existing;
 }

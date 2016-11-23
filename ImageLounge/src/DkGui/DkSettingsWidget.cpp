@@ -448,27 +448,20 @@ bool DkSettingsModel::removeRows(int row, int count, const QModelIndex & parent)
 	if (!item)
 		item = mRootItem;
 
-	//if (item) {
+	beginRemoveRows(parent, row, row);
+	for (int rIdx = row; rIdx < row + count; rIdx++) {
 
-		beginRemoveRows(parent, row, row);
-		for (int rIdx = row; rIdx < row + count; rIdx++) {
+		TreeItem* deleteRow = item->child(rIdx);
 
-			TreeItem* deleteRow = item->child(rIdx);
-
-			if (deleteRow) {
-				emit settingRemoved(deleteRow->data(0).toString(), deleteRow->parentList());
-				item->remove(rIdx);
-				success = true;
-			}
-			else
-				qWarning() << "I cannot delete a non-existing row:" << row;
+		if (deleteRow) {
+			emit settingRemoved(deleteRow->data(0).toString(), deleteRow->parentList());
+			item->remove(rIdx);
+			success = true;
 		}
-		endRemoveRows();
-
-	//}
-	//else
-	//	qWarning() << "parent is NULL - cannot remove row" << row;
-
+		else
+			qWarning() << "I cannot delete a non-existing row:" << row;
+	}
+	endRemoveRows();
 
 	return success;
 }
