@@ -118,6 +118,7 @@ namespace nmp {
 
 		// set step size
 		void setStepSize(int stepsize);
+		void setPatchSize(int size);
 
 	private:
 		// recalculates how many widgets are needed and add or removes thems

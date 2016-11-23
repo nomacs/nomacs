@@ -1,10 +1,5 @@
 <RCC>
     <qresource prefix="/nomacsPluginPaint">
-        <file>img/description.png</file>
-        <file>img/pan.png</file>
-        <file>img/pan_checked.png</file>
-        <file>img/apply.png</file>
-        <file>img/cancel.png</file>
-        <file>img/undo.png</file>
+	        <file>img/description.png</file>
     </qresource>
 </RCC>

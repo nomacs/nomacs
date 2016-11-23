@@ -135,6 +135,7 @@ namespace nmp {
 		//mTimeline->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		mTimeline->setStepSize(mtoolbar->getStepSize());
 		connect(mtoolbar.data(), &DkPatchMatchingToolBar::stepSizeChanged, mTimeline.data(), &DkPolyTimeline::setStepSize);
+		connect(mtoolbar.data(), &DkPatchMatchingToolBar::patchSizeChanged, mTimeline.data(), &DkPolyTimeline::setPatchSize);
 
 		// add the neccesarry dock
 		mDock->setStyleSheet("QDockWidget{background-color: #f00;}");
@@ -232,6 +233,7 @@ namespace nmp {
 
 		settings.beginGroup(objectName());
 		settings.setValue("StepSize", mtoolbar->getStepSize());
+		settings.setValue("PatchSize",mtoolbar->getPatchSize());
 		settings.endGroup();
 	}
 
@@ -252,6 +254,7 @@ namespace nmp {
 
 		settings.beginGroup(objectName());
 		mtoolbar->setStepSize(settings.value("StepSize", 50).toInt());
+		mtoolbar->setPatchSize(settings.value("PatchSize", 40).toInt());
 		settings.endGroup();
 	}
 
@@ -609,7 +612,19 @@ namespace nmp {
 		//addWidget(new QLabel{ "Resolution:",this });
 		connect(mStepSizeSpinner, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
 			this, &DkPatchMatchingToolBar::stepSizeChanged);
+		addWidget(new QLabel{ tr("Step"), this });
 		addWidget(mStepSizeSpinner);
+
+		mPatchSizeSpinner = new QSpinBox(this);
+		mPatchSizeSpinner->setObjectName("mPatchSizeSpinner");
+		mPatchSizeSpinner->setSuffix("px");
+		mPatchSizeSpinner->setMinimum(10);
+		mPatchSizeSpinner->setMaximum(500);
+		connect(mPatchSizeSpinner, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+			this, &DkPatchMatchingToolBar::patchSizeChanged);
+
+		addWidget(new QLabel{ tr("Size"), this });
+		addWidget(mPatchSizeSpinner);
 		addSeparator();
 	
 		// select polygon
@@ -665,6 +680,14 @@ namespace nmp {
 	void DkPatchMatchingToolBar::setStepSize(int size)
 	{
 		mStepSizeSpinner->setValue(size);
+	}
+	int DkPatchMatchingToolBar::getPatchSize()
+	{
+		return mPatchSizeSpinner->value();
+	}
+	void DkPatchMatchingToolBar::setPatchSize(int size)
+	{
+		mPatchSizeSpinner->setValue(size);
 	}
 	int DkPatchMatchingToolBar::getCurrentPolygon()
 	{

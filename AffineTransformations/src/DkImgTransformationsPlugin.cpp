@@ -154,7 +154,7 @@ void DkImgTransformationsViewPort::init() {
 	panning = false;
 	cancelTriggered = false;
 	defaultCursor = Qt::ArrowCursor;
-	rotatingCursor = QCursor(QPixmap(":/nomacsPluginImgTrans/img/rotating-cursor.png"));
+	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
 	setCursor(defaultCursor);
 	setMouseTracking(true);
 	scaleValues = QPointF(1,1);
@@ -202,7 +202,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton &&
-		(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
+		(event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
 		setCursor(Qt::ClosedHandCursor);
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the mViewport
 		event->ignore();
@@ -257,7 +257,7 @@ void DkImgTransformationsViewPort::mousePressEvent(QMouseEvent *event) {
 void DkImgTransformationsViewPort::mouseMoveEvent(QMouseEvent *event) {
 	
 	// panning -> redirect to mViewport
-	if (event->modifiers() == nmc::Settings::param().global().altMod ||
+	if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
@@ -360,7 +360,7 @@ void DkImgTransformationsViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	intrIdx = 100;
 
 	// panning -> redirect to mViewport
-	if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
+	if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning) {
 		setCursor(defaultCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -388,7 +388,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
 
-	painter.fillRect(this->rect(), nmc::Settings::param().display().bgColor);
+	painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
 
 
 	if (mWorldMatrix)
@@ -446,7 +446,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	else if (selectedMode == mode_rotate) {
 
 		if (angleLinesEnabled) {
-			QPen linePen(nmc::Settings::param().display().highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QPen linePen(nmc::DkSettingsManager::param().display().highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
 			QColor hCAlpha(50,50,50);
 			hCAlpha.setAlpha(200);
 
@@ -454,7 +454,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 			QVector<QVector4D> lines = skewEstimator.getLines();
 			QVector<int> lineTypes = skewEstimator.getLineTypes();
 			for (int i = 0; i < lines.size(); i++) {
-				(lineTypes.at(i)) ? linePen.setColor(nmc::Settings::param().display().highlightColor) : linePen.setColor(hCAlpha);
+				(lineTypes.at(i)) ? linePen.setColor(nmc::DkSettingsManager::param().display().highlightColor) : linePen.setColor(hCAlpha);
 				painter.setPen(linePen);
 				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
 			}
@@ -764,24 +764,6 @@ DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, 
 	createIcons();
 	createLayout(defaultMode);
 	QMetaObject::connectSlotsByName(this);
-
-	setIconSize(QSize(nmc::Settings::param().display().iconSize, nmc::Settings::param().display().iconSize));
-
-	if (nmc::Settings::param().display().toolbarGradient) {
-
-		QColor hCol = nmc::Settings::param().display().highlightColor;
-		hCol.setAlpha(80);
-
-		setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + nmc::DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-	else
-		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 }
 
 DkImgTransformationsToolBar::~DkImgTransformationsToolBar() {
@@ -793,22 +775,14 @@ void DkImgTransformationsToolBar::createIcons() {
 	// create icons
 	icons.resize(icons_end);
 
-	icons[apply_icon] = QIcon(":/nomacsPluginImgTrans/img/apply.png");
-	icons[cancel_icon] = QIcon(":/nomacsPluginImgTrans/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacsPluginImgTrans/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginImgTrans/img/pan_checked.png"), QIcon::Normal, QIcon::On);
-	icons[scale_icon] = QIcon(":/nomacsPluginImgTrans/img/scale.png");
-	icons[rotate_icon] = QIcon(":/nomacsPluginImgTrans/img/rotate.png");
-	icons[shear_icon] = QIcon(":/nomacsPluginImgTrans/img/shear.png");
+	icons[apply_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
+	icons[cancel_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/cancel.svg");
+	icons[pan_icon]		= nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
+	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
+	icons[scale_icon]	= nmc::DkImage::loadIcon(":/nomacsPluginImgTrans/img/scale.svg");
+	icons[rotate_icon]	= nmc::DkImage::loadIcon(":/nomacsPluginImgTrans/img/rotate-plugin.svg");
+	icons[shear_icon]	= nmc::DkImage::loadIcon(":/nomacsPluginImgTrans/img/shear.svg");
 
-	if (!nmc::Settings::param().display().defaultIconColor) {
-		// now colorize all icons
-		for (int idx = 0; idx < icons.size(); idx++) {
-
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(nmc::DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), nmc::Settings::param().display().iconColor), QIcon::Normal, QIcon::Off);
-		}
-	}
 }
 
 void DkImgTransformationsToolBar::createLayout(int defaultMode) {
