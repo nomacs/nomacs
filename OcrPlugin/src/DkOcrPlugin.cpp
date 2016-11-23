@@ -3,7 +3,7 @@
 
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
 
- Copyright (C) 2015 #YOUR_NAME
+ Copyright (C) 2015 Dominik Schoerkhuber
 
  This file is part of nomacs.
 
@@ -29,10 +29,10 @@
 #pragma warning(pop)		// no warnings from includes - end
 
  /*******************************************************************************************************
-  * PLUGIN_CLASS_NAME	- enter the plugin class name (e.g. DkPageExtractionPlugin)
-  * #YOUR_NAME			- your name/pseudonym whatever
-  * #DATE				- today...
-  * #DESCRIPTION		- describe your plugin in one sentence
+  * DkOcrPlugin     	- enter the plugin class name (e.g. DkPageExtractionPlugin)
+  * Dominik Schoerkhuber- your name/pseudonym whatever
+  * 21.10.2016			- today...
+  * Optical Character Recognition Plugin - describe your plugin in one sentence
   * #MENU_NAME			- a user friendly name (e.g. Flip Image)
   * #MENU_STATUS_TIPP	- status tip of your plugin
   * #RUN_ID_1			- generate an ID using: GUID without hyphens generated at http://www.guidgenerator.com/
@@ -112,6 +112,29 @@ namespace nmc {
 		btn_layout->addWidget(btn_sendtoeditor);
 		layout->addLayout(btn_layout);
 
+		auto api = new Ocr::TesseractApi();
+		api->initialize({});
+		
+		auto* langlist = buildLanguageList(api->getAvailableLanguages());
+		connect(langlist, &QListWidget::itemChanged, [&](QListWidgetItem* item) {
+			qInfo() << "selection changed";
+
+			std::vector<std::string> langs;
+			for (int i = 0; i < langlist->count(); ++i) {
+				auto* items = langlist->item(i);
+				if(items->checkState() == Qt::Checked) {
+					langs.push_back(items->text().toStdString());
+				}
+			}
+
+			//api->initialize(langs);
+		});
+
+		auto* languagelist_layout = new QHBoxLayout();
+		languagelist_layout->addWidget(langlist);
+		layout->addLayout(languagelist_layout);
+
+
 		mDockWidgetSettings->setLayout(layout);
 		QGroupBox* widget = new QGroupBox();
 		widget->setLayout(layout);
@@ -162,6 +185,20 @@ namespace nmc {
 	DkOcrPlugin::~DkOcrPlugin() {
 	}
 
+	QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const
+	{
+		auto* languagelist_widget = new QListWidget();
+
+		for (const QString lang : langList)
+		{
+			QListWidgetItem* langListItem = new QListWidgetItem(lang);
+			langListItem->setFlags(langListItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
+			langListItem->setCheckState(Qt::Unchecked); // AND initialize check state
+			languagelist_widget->addItem(langListItem);
+		}
+
+		return languagelist_widget;
+	}
 
 	/**
 	* Returns unique ID for the generated dll
@@ -169,70 +206,6 @@ namespace nmc {
 	QString DkOcrPlugin::id() const {
 
 		return PLUGIN_ID;
-	};
-
-
-	/**
-	* Returns plugin name
-	* @param plugin ID
-	**/
-	QString DkOcrPlugin::pluginName() const {
-
-		return tr("Ocr Plugin");
-	};
-
-	/**
-	* Returns long description for every ID
-	* @param plugin ID
-	**/
-	QString DkOcrPlugin::pluginDescription() const {
-
-		return "<b>Created by:</b> Dominik Schörkhuber <br><b>Modified:</b>9.10.2015<br><b>Description:</b> #DESCRIPTION.";
-	};
-
-	/**
-	* Returns descriptive iamge for every ID
-	* @param plugin ID
-	**/
-	QImage DkOcrPlugin::pluginDescriptionImage() const {
-
-		return QImage(":/#PLUGIN_NAME/img/your-image.png");
-	};
-
-	/**
-	* Returns plugin version for every ID
-	* @param plugin ID
-	**/
-	QString DkOcrPlugin::pluginVersion() const {
-
-		return PLUGIN_VERSION;
-	};
-
-	/**
-	* Returns unique IDs for every plugin in this dll
-	**/
-	QStringList DkOcrPlugin::runID() const {
-
-		//GUID without hyphens generated at http://www.guidgenerator.com/
-		return QStringList() << "4acb88c461024cb080ae5cd15d0ef0ec";
-	};
-
-	/**
-	* Returns plugin name for every ID
-	* @param plugin ID
-	**/
-	QString DkOcrPlugin::pluginMenuName(const QString &runID) const {
-
-		return tr("Run Ocr");
-	};
-
-	/**
-	* Returns short description for status tip for every ID
-	* @param plugin ID
-	**/
-	QString DkOcrPlugin::pluginStatusTip(const QString &runID) const {
-
-		return tr("#MENU_STATUS_TIP");
 	};
 
 	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
@@ -263,9 +236,12 @@ namespace nmc {
 			qInfo("testrun action");
 
 			auto img = imgC->image();
-			auto text = Ocr::testOcr(img);
+
+			auto api = new Ocr::TesseractApi();
+			api->initialize({ "eng" });
+			auto text = api->runOcr(img);
 			te_resultText->setText(text);
-			imgC->setImage(img, "");
+			imgC->setImage(img, "OCR Image");
 		}
 
 		// wrong runID? - do nothing
@@ -291,8 +267,4 @@ namespace nmc {
 
 		return QImage(":/nomacsPluginPaint/img/description.png");
 	}
-
-	/*bool DkOcrPlugin::hideHUD() const {
-		return false;
-	}*/
 }

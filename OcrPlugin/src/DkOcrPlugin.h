@@ -45,19 +45,12 @@ public:
 	~DkOcrPlugin();
 
 	QImage image() const override;
-	//bool hideHUD() const override;
-
 	QString id() const override;
-	QString pluginName() const;// override;
-	QString pluginDescription() const;// override;
-	QImage pluginDescriptionImage() const;// override;
-	QString pluginVersion() const;// override;
-
-	QStringList runID() const;// override;
-	QString pluginMenuName(const QString &runID = QString()) const;// override;
-	QString pluginStatusTip(const QString &runID = QString()) const;// override;
+	
 	QList<QAction*> pluginActions() const override;
 	QList<QAction*> createActions(QWidget*) override;
+
+	QListWidget* buildLanguageList(const QList<QString>& langList) const;
 
 	// DIEM: I think this should solve the sub-menu: 	
 	// getMainWindow() call if you need a (or the) parent
