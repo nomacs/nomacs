@@ -381,6 +381,13 @@ void DkPluginBatch::saveSettings(QSettings & settings) const {
 
 	settings.beginGroup(settingsName());
 	settings.setValue("pluginList", mPluginList.join(";"));
+
+	for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
+		assert(bPlugin);
+		bPlugin->saveSettings(settings);
+	}
+
 	settings.endGroup();
 }
 
@@ -388,6 +395,15 @@ void DkPluginBatch::loadSettings(QSettings & settings) {
 
 	settings.beginGroup(settingsName());
 	mPluginList = settings.value("pluginList", mPluginList).toString().split(";");
+
+	loadAllPlugins();
+
+	for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
+		assert(bPlugin);
+		bPlugin->loadSettings(settings);
+	}
+
 	settings.endGroup();
 }
 
@@ -499,6 +515,10 @@ QStringList DkPluginBatch::pluginList() const {
 }
 
 void DkPluginBatch::loadAllPlugins() {
+
+	// already loaded?
+	if (mPlugins.size() == mPluginList.size())
+		return;
 
 	QString runId;
 
