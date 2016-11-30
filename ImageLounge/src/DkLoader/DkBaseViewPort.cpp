@@ -37,7 +37,6 @@
 #include <QShortcut>
 #include <QDebug>
 #include <QTimer>
-#include <QSvgRenderer>
 #include <QMainWindow>
 
 // gestures

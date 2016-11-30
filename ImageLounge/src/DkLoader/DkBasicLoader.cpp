@@ -34,6 +34,7 @@
 #include "DkTimer.h"
 #include "DkMath.h"
 #include "DkUtils.h"	// just needed for qInfo() #ifdef
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)        
 #include <QObject>
@@ -216,6 +217,11 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			imgLoaded = true;
 		}
 	}
+
+    if (!imgLoaded && suf == "svg") {
+        img = SvgRenderer::render_thumb(filePath);
+        imgLoaded = !img.isNull();
+    }
 
 	// default Qt loader
 	// here we just try those formats that are officially supported

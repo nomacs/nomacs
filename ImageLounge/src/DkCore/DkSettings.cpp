@@ -964,7 +964,6 @@ void DkSettingsManager::init() {
 	if (nmc::DkSettingsManager::param().app().useLogFile)
 		std::cout << "log is saved to: " << nmc::DkUtils::getLogFilePath().toStdString() << std::endl;
 
-	qInfo() << "Hi there";
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
 		<< " v " << QApplication::applicationVersion() << (nmc::DkSettingsManager::param().isPortable() ? " portable" : " installed");
 

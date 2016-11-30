@@ -184,7 +184,9 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		QSize initialSize = imageReader->size();
 
 		imageReader->setScaledSize(QSize(imgW, imgH));
-		thumb = imageReader->read();
+        if (imageReader->format() == "svg") {
+            thumb = SvgRenderer::render_thumb(imageReader, lFilePath);
+        } else thumb = imageReader->read();
 
 		// try to read the image
 		if (thumb.isNull()) {
