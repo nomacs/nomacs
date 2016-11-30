@@ -797,7 +797,7 @@ void DkBatchOutput::createLayout() {
 	mCbNewExtension->setEnabled(false);
 	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
-	QLabel* compressionLabel = new QLabel(tr("Compression"), this);
+	QLabel* compressionLabel = new QLabel(tr("Quality"), this);
 
 	mSbCompression = new QSpinBox(this);
 	mSbCompression->setMinimum(1);
