@@ -50,6 +50,7 @@ public:
 		id_crop_to_page,
 		id_crop_to_metadata,
 		id_draw_to_page,
+		id_eval_page,
 		// add actions here
 
 		id_end
@@ -60,6 +61,10 @@ protected:
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
+
+	QPolygonF readGT(const QString& imgPath) const;
+	double jaccardIndex(const QSize& imgSize, const QPolygonF& gt, const QPolygonF& computed) const;
+	QImage drawPoly(const QSize& imgSize, const QPolygonF& poly) const;
 };
 
 };
