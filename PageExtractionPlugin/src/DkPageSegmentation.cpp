@@ -22,10 +22,6 @@
 
  *******************************************************************************************************/
 
-// TODO just for debugging purposes
-#include <iostream>
-#include <opencv2/highgui/highgui.hpp>
-
 #include "DkPageSegmentation.h"
 #include "DkPageSegmentationUtils.h"
 #include "DkMath.h"	// nomacs
@@ -94,43 +90,10 @@ void DkPageSegmentation::compute() {
 
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
 
-	float g_sigma = 2.0;
-	cv::Mat gray, bw;
+	PageExtractor extractor;
+	extractor.run(img, scale);
 
-	cv::cvtColor(img, gray, CV_RGB2GRAY);
-	if (scale != 1.0f) {
-		cv::resize(gray, gray, cv::Size(), scale, scale, CV_INTER_AREA);	// inter nn -> assuming resize to be 1/(2^n)
-	}
-	
-//	std::vector<cv::Point> pts;
-//	pts.push_back(cv::Point(0.f, 0.f));
-//	pts.push_back(cv::Point(0.f, 100.f));
-//	pts.push_back(cv::Point(100.f, 100.f));
-//	pts.push_back(cv::Point(100.f, 0.f));
-//	DkPolyRect r(pts);
-//	rects.push_back(r);
-	
-	// TODO iterate over sigmas, half size
-	
-	cv::equalizeHist(gray, gray);
-	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
-//	cv::namedWindow("gray gaussian");
-//	cv::imshow("gray gaussian", gray);
-//	cv::waitKey();
-	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
-	cv::dilate(bw, bw, cv::Mat::ones(3, 3, CV_8UC1));
-	cv::namedWindow("bw");
-	cv::imshow("bw", bw);
-	cv::waitKey();
-	cv::Mat lines;
-	cv::HoughLines(bw, lines, 1, CV_PI / 180.0, 100);
-	for (size_t i = 0; i < lines.total(); i += 2) {
-		
-	}
-	
-	// TODO remove text regions
-
-	return bw;
+	return img;
 	
 	//__________________________-
 	

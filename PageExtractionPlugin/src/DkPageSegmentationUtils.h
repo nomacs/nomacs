@@ -454,4 +454,16 @@ protected:
 	void computeMaxCosine();
 };
 
+class PageExtractor {
+	
+public:
+	PageExtractor() {}
+	
+	void run(cv::Mat img, float scale) const;
+	
+protected:
+	const int maxLinesHough = 30;
+	const float parallelTol = CV_PI / 9; // angle tolerance for parallel lines
+};
+
 };

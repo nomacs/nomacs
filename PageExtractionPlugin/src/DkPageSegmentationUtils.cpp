@@ -22,6 +22,11 @@
 
  *******************************************************************************************************/
 
+// TODO just for debugging purposes
+#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+
 #include "DkPageSegmentationUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -53,7 +58,7 @@ double DkIntersectPoly::compute() {
 
 	scale = maxRange - minRange;
 
-	if (scale.minCoord() == 0) return 0; //rechteck mit höhe oder breite = 0
+	if (scale.minCoord() == 0) return 0; //rechteck mit hÃ¶he oder breite = 0
 
 	scale.x = gamut / scale.x;
 	scale.y = gamut / scale.y;
@@ -423,6 +428,70 @@ QPolygonF DkPolyRect::toPolygon() const {
 	}
 
 	return poly;
+}
+
+void PageExtractor::run(cv::Mat img, float scale) const {
+	float g_sigma = 2.0;
+	cv::Mat gray, bw;
+
+	cv::cvtColor(img, gray, CV_RGB2GRAY);
+	if (scale != 1.0f) {
+		cv::resize(gray, gray, cv::Size(), scale, scale, CV_INTER_AREA);	// inter nn -> assuming resize to be 1/(2^n)
+	}
+	
+//	std::vector<cv::Point> pts;
+//	pts.push_back(cv::Point(0.f, 0.f));
+//	pts.push_back(cv::Point(0.f, 100.f));
+//	pts.push_back(cv::Point(100.f, 100.f));
+//	pts.push_back(cv::Point(100.f, 0.f));
+//	DkPolyRect r(pts);
+//	rects.push_back(r);
+	
+	// TODO iterate over sigmas, half size
+	
+	cv::equalizeHist(gray, gray);
+	
+	// TODO remove text
+	
+	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
+//	cv::namedWindow("gray gaussian");
+//	cv::imshow("gray gaussian", gray);
+//	cv::waitKey();
+	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
+	cv::dilate(bw, bw, cv::Mat::ones(3, 3, CV_8UC1));
+	cv::namedWindow("bw");
+	cv::imshow("bw", bw);
+	cv::waitKey();
+	
+	std::vector<cv::Vec2f> lines;
+	// we assume that the lines are sorted by accumulator values in descending order
+	cv::HoughLines(bw, lines, 1, CV_PI / 180.0, 100); 
+	if (lines.size() > maxLinesHough) {
+		lines.resize(maxLinesHough);
+	}
+	// plot lines
+	for( size_t i = 0; i < lines.size(); i++ )
+	{
+		float rho = lines[i][0], theta = lines[i][1];
+		cv::Point pt1, pt2;
+		double a = cos(theta), b = sin(theta);
+		double x0 = a*rho, y0 = b*rho;
+		pt1.x = cvRound(x0 + 1000*(-b));
+		pt1.y = cvRound(y0 + 1000*(a));
+		pt2.x = cvRound(x0 - 1000*(-b));
+		pt2.y = cvRound(y0 - 1000*(a));
+		cv::line( gray, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
+	}
+	cv::namedWindow("hough lines");
+	cv::imshow("hough lines", gray);
+	cv::waitKey();
+	
+	// iterate trough all pairs of lines
+	for (int i = 0; i < lines.size() - 1; i++) {
+		for (int j = i + 1; j < lines.size(); j++) {
+			//if (lines[i][1] - lines[j][1] < parallelTol && 
+		}
+	}
 }
 
 };
