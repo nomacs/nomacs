@@ -463,27 +463,56 @@ void PageExtractor::run(cv::Mat img, float scale) const {
 	cv::imshow("bw", bw);
 	cv::waitKey();
 	
-	std::vector<cv::Vec2f> lines;
-	// we assume that the lines are sorted by accumulator values in descending order
-	cv::HoughLines(bw, lines, 1, CV_PI / 180.0, 100); 
-	if (lines.size() > maxLinesHough) {
-		lines.resize(maxLinesHough);
+	cv::Mat lineImg;
+	
+//	std::vector<cv::Vec2f> lines1;
+//	// we assume that the lines are sorted by accumulator values in descending order
+//	cv::HoughLines(bw, lines1, 1, CV_PI / 180.0, 100); 
+//	if (lines1.size() > maxLinesHough) {
+//		lines1.resize(maxLinesHough);
+//	}
+//	for (cv::Vec2f l : lines1) {
+//		std::cout << l[0] << " " << l[1] << std::endl;
+//	}
+//	lineImg = gray.clone();
+//	// plot lines
+//	for( size_t i = 0; i < lines1.size(); i++ )
+//	{
+//		float rho = lines1[i][0], theta = lines1[i][1];
+//		cv::Point pt1, pt2;
+//		double a = cos(theta), b = sin(theta);
+//		double x0 = a*rho, y0 = b*rho;
+//		pt1.x = cvRound(x0 + 1000*(-b));
+//		pt1.y = cvRound(y0 + 1000*(a));
+//		pt2.x = cvRound(x0 - 1000*(-b));
+//		pt2.y = cvRound(y0 - 1000*(a));
+//		cv::line( lineImg, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
+//	}
+//	cv::namedWindow("lineImg");
+//	cv::imshow("lineImg", lineImg);
+//	cv::waitKey();
+	
+	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 100, maxLinesHough);
+	for (HoughLine l : lines) {
+		std::cout << l.acc << " " << l.rho << " " << l.angle << std::endl;
 	}
-	// plot lines
+	std::cout << lines.size() << std::endl;
+	lineImg = gray.clone();
 	for( size_t i = 0; i < lines.size(); i++ )
 	{
-		float rho = lines[i][0], theta = lines[i][1];
-		cv::Point pt1, pt2;
-		double a = cos(theta), b = sin(theta);
-		double x0 = a*rho, y0 = b*rho;
-		pt1.x = cvRound(x0 + 1000*(-b));
-		pt1.y = cvRound(y0 + 1000*(a));
-		pt2.x = cvRound(x0 - 1000*(-b));
-		pt2.y = cvRound(y0 - 1000*(a));
-		cv::line( gray, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
+	  float rho = lines[i].rho, theta = lines[i].angle;
+	  cv::Point pt1, pt2;
+	  double a = cos(theta), b = sin(theta);
+	  double x0 = a*rho, y0 = b*rho;
+	  pt1.x = cvRound(x0 + 1000*(-b));
+	  pt1.y = cvRound(y0 + 1000*(a));
+	  pt2.x = cvRound(x0 - 1000*(-b));
+	  pt2.y = cvRound(y0 - 1000*(a));
+	  cv::line( lineImg, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
 	}
-	cv::namedWindow("hough lines");
-	cv::imshow("hough lines", gray);
+	
+	cv::namedWindow("lineImg");
+	cv::imshow("lineImg", lineImg);
 	cv::waitKey();
 	
 	// iterate trough all pairs of lines
@@ -492,6 +521,79 @@ void PageExtractor::run(cv::Mat img, float scale) const {
 			//if (lines[i][1] - lines[j][1] < parallelTol && 
 		}
 	}
+}
+
+std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::InputArray _img, float rho, float theta, int threshold, int linesMax) const {
+	// the implementation is very similar to the one from opencv 2, but it returns the accumulator values and uses data structures that are easier to handle (but maybe less efficient)
+	
+	cv::Mat img = _img.getMat();
+	int width = img.size().width;
+	int height = img.size().height;
+	std::vector<HoughLine> lines;
+	
+	CV_Assert(img.type() == CV_8UC1);
+
+	int numAngle = cvRound(CV_PI / theta);
+	int numRho = (width + height) * 2; // always even
+	cv::Mat accum = cv::Mat::zeros(numRho, numAngle, CV_16UC1);
+	float tabSin[numAngle];
+	float tabCos[numAngle];
+	
+	float angle = 0.0f;
+	for (int n = 0; n < numAngle; n++, angle += theta) {
+		tabSin[n] = static_cast<float>(sin(static_cast<double>(angle)));
+		tabCos[n] = static_cast<float>(cos(static_cast<double>(angle)));
+	}
+	
+	// fill the accumulator
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			if (img.at<unsigned char>(i, j) != 0) {
+				for (int n = 0; n < numAngle; n++) {
+					int r = cvRound((j * tabCos[n] + i * tabSin[n]) / rho) + numRho / 2;
+					accum.at<std::uint16_t>(r, n)++;
+				}
+			}
+		}
+	}
+	
+//	// show accumulator
+//	cv::namedWindow("accumulator");
+//	double min_, max_;
+//	cv::Mat accumLine = accum.reshape(1);
+//	cv::minMaxLoc(accumLine, &min_, &max_);
+//	cv::Mat accumDraw;
+//	accum.convertTo(accumDraw, CV_32FC1, 1.0 / max_);
+//	cv::imshow("accumulator", accumDraw);
+//	cv::waitKey();
+	
+	// find local maxima
+	for (int r = 0; r < numRho; r++) {
+		for (int n = 0; n < numAngle; n++) {
+			int val = accum.at<std::uint16_t>(r, n);
+			int valRl = (r - 1 >= 0) ? accum.at<std::uint16_t>(r - 1, n) : 0;
+			int valRr = (r + 1 < numRho) ? accum.at<std::uint16_t>(r + 1, n) : 0;
+			int valNl = (n - 1 >= 0) ? accum.at<std::uint16_t>(r, n - 1) : 0;
+			int valNr = (n + 1 < numAngle) ? accum.at<std::uint16_t>(r, n + 1) : 0;
+			if (val > threshold && 
+				val > valRl && val > valRr &&
+				val > valNl  && val > valNr) {
+				
+				//sortBuf[total++] = base;
+				HoughLine l;
+				l.acc = val;
+				l.rho = (r - numRho / 2) * rho;
+				l.angle = n * theta;
+				lines.push_back(l);
+			}
+		}
+	}
+
+	// sort by accumulator value
+	std::sort(lines.begin(), lines.end(), [] (HoughLine l1, HoughLine l2) { return l1.acc > l2.acc; });
+	lines.resize(linesMax);
+	
+	return lines;
 }
 
 };

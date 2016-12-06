@@ -464,6 +464,16 @@ public:
 protected:
 	const int maxLinesHough = 30;
 	const float parallelTol = CV_PI / 9; // angle tolerance for parallel lines
+	
+	typedef struct HoughLine
+	{
+		int acc;
+		float rho;
+		float angle;
+	}
+	HoughLine;
+	
+	std::vector<HoughLine> houghTransform(cv::InputArray img, float rho, float theta, int threshold, int linesMax) const;
 };
 
 };
