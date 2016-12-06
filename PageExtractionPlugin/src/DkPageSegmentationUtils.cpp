@@ -53,7 +53,7 @@ double DkIntersectPoly::compute() {
 
 	scale = maxRange - minRange;
 
-	if (scale.minCoord() == 0) return 0; //rechteck mit höhe oder breite = 0
+	if (scale.minCoord() == 0) return 0; //rechteck mit hï¿½he oder breite = 0
 
 	scale.x = gamut / scale.x;
 	scale.y = gamut / scale.y;

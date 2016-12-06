@@ -32,6 +32,8 @@
 #include <QAction>
 #include <QDebug>
 #include <QUuid>
+#include <QDateTime>
+#include <QDir>
 
 #include <QXMLStreamReader>
 #pragma warning(pop)		// no warnings from includes - end
@@ -70,6 +72,9 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
 	statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
 	mMenuStatusTips = statusTips.toList();
+
+	QFileInfo resPath(QDir("D:/dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
+	mResultPath = resPath.absoluteFilePath();
 }
 
 /**
@@ -173,25 +178,26 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QS
 
 		QPolygonF gt = readGT(imgC->filePath());
 		
-		QPen pen(QColor(255, 200, 0));
-		pen.setWidth(5);
+		QPen pen(QColor(100, 200, 50));
+		pen.setWidth(10);
 		QPainter p(&dImg);
 		p.setPen(pen);
 		p.drawPolygon(gt);
 		p.end();
 
 		segM.draw(dImg);
-		imgC->setImage(dImg, tr("Page Annotated"));
+		imgC->setImage(dImg, tr("Result vs GT"));
 
 		double ji = jaccardIndex(imgC->image().size(), gt, segM.getMaxRect().toPolygon());
 
 		QString data = imgC->fileName() + ", " + QString::number(ji) + "\n";
 		qDebug() << data;
 
-		QFile file("C:/temp/results.txt");
+		QFile file(mResultPath);
 		file.open(QIODevice::WriteOnly | QIODevice::Append);
 		QTextStream stream(&file);
 		stream << data;
+		qInfo() << "results written to" << mResultPath;
 
 	}
 
@@ -214,7 +220,6 @@ QPolygonF DkPageExtractionPlugin::readGT(const QString& imgPath) const {
 		qWarning() << "could not load" << xmlFileI.absoluteFilePath();
 		return QPolygonF();
 	}
-
 
 	QXmlStreamReader xmlReader(&xmlFile);
 	QPolygonF rect;

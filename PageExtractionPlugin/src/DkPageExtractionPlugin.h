@@ -61,6 +61,7 @@ protected:
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
+	QString mResultPath;
 
 	QPolygonF readGT(const QString& imgPath) const;
 	double jaccardIndex(const QSize& imgSize, const QPolygonF& gt, const QPolygonF& computed) const;
