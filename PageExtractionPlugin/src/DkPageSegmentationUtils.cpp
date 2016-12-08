@@ -529,11 +529,21 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	std::vector<ExtendedPeak> EPs;
 	for (size_t i = 0; i < lines.size() - 1; i++) {
 		for (size_t j = i + 1; j < lines.size(); j++) {
+			// test for parallelity
 			if (angleDiff(lines[i].angle, lines[j].angle) < t_theta && 
 					std::abs(lines[i].acc - lines[j].acc) < t_l * 0.5 * (lines[i].acc + lines[j].acc)) {
 				
-				// TODO findLineSegments only once for every line
+				// 'parallel' line segments must not intersect
 				ExtendedPeak ep(lines[i], lineSegments[i], lines[j], lineSegments[j]);
+				if (ep.intersectionPoint.first) {
+					std::vector<cv::Point2f> epHull;
+					cv::convexHull(std::vector<cv::Point2f> {lineSegments[i].p1, lineSegments[i].p2, lineSegments[j].p1, lineSegments[j].p2}, epHull);
+					if (cv::pointPolygonTest(epHull, ep.intersectionPoint.second, false) >= 0) {
+						continue;
+					}
+				}
+				
+				
 //				for (LineSegment l : ep.spatialLines) {
 //					std::cout << l.p1.x << ", " << l.p1.y << " --- " << l.p2.x << ", " << l.p2.y << std::endl;
 //				}
@@ -563,7 +573,7 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	
 	// test IP corners
 	std::vector<Rectangle> candidates;
-	for (IntermediatePeak ip : IPs) {
+	for (const IntermediatePeak& ip : IPs) {
 		std::vector<cv::Point2f> corners;
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
@@ -579,23 +589,52 @@ void PageExtractor::run(cv::Mat img, float scale) {
 			}
 		}
 		
-		if (corners.size() < 4) {
-			continue;
-		}
-		
-		// check if large enough
 		std::vector<cv::Point2f> rectCorners;
-		cv::convexHull(corners, rectCorners);
-		Rectangle rect(ip, rectCorners);
+		if (corners.size() == 4) {
+			cv::convexHull(corners, rectCorners);
+			candidates.emplace_back(ip, rectCorners);
+		}		
+	}
+	
+	// check rectangle candidates for validity
+	std::vector<Rectangle> rectangles;
+	for (const Rectangle& c : candidates) {
+		// check if sides are large enough
 		bool largeEnough = true;
 		for (int i = 0; i < 4; i++) {
-			if (cv::norm(rect.corners[i] - rect.corners[(i + 1) % 4]) < minLineSegmentLength) {
+			if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minLineSegmentLength) {
 				largeEnough = false;
 			}
 		}
-
-		candidates.push_back(rect);
+		if (!largeEnough) {
+			continue;
+		}
+		rectangles.push_back(c);
 	}
+	
+	if (rectangles.size()) {
+		std::cout << "no valid rectangles have been detected!" << std::endl; // TODO gui output, return value
+	}
+	
+	// find rectangle with highest overall accumulator value
+	int maxAccSum = 0;
+	size_t maxAccIdx = -1;
+	for (size_t i = 0; i < rectangles.size(); i++) {
+		int accSum = rectangles[i].ip.ep1.line1.acc + rectangles[i].ip.ep1.line2.acc + rectangles[i].ip.ep2.line1.acc + rectangles[i].ip.ep2.line2.acc;
+		if (accSum > maxAccSum) {
+			maxAccSum = accSum;
+			maxAccIdx = i;
+		}
+	}
+	
+	Rectangle& finalRect = rectangles[maxAccIdx];
+	lineImg = gray.clone();
+	for (size_t i = 0; i < finalRect.corners.size(); i++) {
+		cv::line(lineImg, finalRect.corners[i], finalRect.corners[(i + 1) % 4], cv::Scalar(0, 0, 255), 3, CV_AA);
+	}
+	cv::namedWindow("finalRect");
+	cv::imshow("finalRect", lineImg);
+	cv::waitKey();
 }
 
 float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
