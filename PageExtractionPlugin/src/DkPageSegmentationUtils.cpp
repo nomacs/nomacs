@@ -617,17 +617,12 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	}
 	
 	// find rectangle with highest overall accumulator value
-	int maxAccSum = 0;
-	size_t maxAccIdx = -1;
-	for (size_t i = 0; i < rectangles.size(); i++) {
-		int accSum = rectangles[i].ip.ep1.line1.acc + rectangles[i].ip.ep1.line2.acc + rectangles[i].ip.ep2.line1.acc + rectangles[i].ip.ep2.line2.acc;
-		if (accSum > maxAccSum) {
-			maxAccSum = accSum;
-			maxAccIdx = i;
-		}
-	}
+	auto finalRectangleIt = std::max_element(rectangles.begin(), rectangles.end(), [] (Rectangle a, Rectangle b) { 
+		return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) < 
+			(b.ip.ep1.line1.acc + b.ip.ep1.line2.acc + b.ip.ep2.line1.acc + b.ip.ep2.line2.acc);
+	});
 	
-	Rectangle& finalRect = rectangles[maxAccIdx];
+	Rectangle& finalRect = *finalRectangleIt;
 	lineImg = gray.clone();
 	for (size_t i = 0; i < finalRect.corners.size(); i++) {
 		cv::line(lineImg, finalRect.corners[i], finalRect.corners[(i + 1) % 4], cv::Scalar(0, 0, 255), 3, CV_AA);
@@ -810,8 +805,8 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 		
 		// for every line in houghLines add only the longest line (including gaps) that was found in the image
 		assert(lineSegmentsCurrent.size() > 0);
-		std::sort(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
-		lineSegments.push_back(lineSegmentsCurrent[0]);
+		auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
+		lineSegments.push_back(*longestLineSegmentIt);
 	}
 	
 	return lineSegments;
