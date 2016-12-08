@@ -22,10 +22,9 @@
 
  *******************************************************************************************************/
 
-// TODO just for debugging purposes
-#include <iostream>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>
+#include <iostream> // TODO remove; just for debugging purposes
+#include <algorithm>
+#include <opencv2/highgui/highgui.hpp> // TODO remove; just for debugging purposes
 
 #include "DkPageSegmentationUtils.h"
 
@@ -493,45 +492,74 @@ void PageExtractor::run(cv::Mat img, float scale) const {
 //	cv::waitKey();
 	
 	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 100, maxLinesHough);
-	for (HoughLine l : lines) {
-		std::cout << l.acc << " " << l.rho << " " << l.angle << std::endl;
-	}
+	
+	// DEBUG OUTPUT
 	std::cout << lines.size() << std::endl;
 	lineImg = gray.clone();
-	for( size_t i = 0; i < lines.size(); i++ )
-	{
-	  float rho = lines[i].rho, theta = lines[i].angle;
-	  cv::Point pt1, pt2;
-	  double a = cos(theta), b = sin(theta);
-	  double x0 = a*rho, y0 = b*rho;
-	  pt1.x = cvRound(x0 + 1000*(-b));
-	  pt1.y = cvRound(y0 + 1000*(a));
-	  pt2.x = cvRound(x0 - 1000*(-b));
-	  pt2.y = cvRound(y0 - 1000*(a));
-	  cv::line( lineImg, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
+	for (size_t i = 0; i < lines.size(); i++) {
+		std::cout << lines[i].acc << " " << lines[i].rho << " " << lines[i].angle << std::endl;
+		float rho = lines[i].rho, theta = lines[i].angle;
+		cv::Point pt1, pt2;
+		double a = cos(theta), b = sin(theta);
+		double x0 = a*rho, y0 = b*rho;
+		pt1.x = cvRound(x0 + 1000*(-b));
+		pt1.y = cvRound(y0 + 1000*(a));
+		pt2.x = cvRound(x0 - 1000*(-b));
+		pt2.y = cvRound(y0 - 1000*(a));
+		cv::line( lineImg, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
 	}
-	
 	cv::namedWindow("lineImg");
 	cv::imshow("lineImg", lineImg);
 	cv::waitKey();
 	
+	// find line segments in image
+	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, 3, 50, false);
+	std::cout << lineSegments.size() << std::endl;
+	for (size_t i = 0; i < lines.size(); i++) {
+		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
+		lineImg = gray.clone();
+		cv::line(lineImg, lineSegments[i].p1, lineSegments[i].p2, cv::Scalar(0,0,255), 3, CV_AA);
+		cv::namedWindow("lineImg spatial");
+		cv::imshow("lineImg spatial", lineImg);
+		cv::waitKey(0);
+	}
+	
+	// 4.3 transform domain peak filtering
 	// iterate trough all pairs of lines
-	for (int i = 0; i < lines.size() - 1; i++) {
-		for (int j = i + 1; j < lines.size(); j++) {
-			//if (lines[i][1] - lines[j][1] < parallelTol && 
+	for (size_t i = 0; i < lines.size() - 1; i++) {
+		for (size_t j = i + 1; j < lines.size(); j++) {
+			if (angleDiff(lines[i].angle, lines[j].angle) < t_theta && 
+					std::abs(lines[i].acc - lines[j].acc) < t_l * 0.5 * (lines[i].acc + lines[j].acc)) {
+				
+				// TODO findLineSegments only once for every line
+				ExtendedPeak ep;
+				ep.line1 = lines[i];
+				ep.line2 = lines[j];
+				ep.spatialLines = std::vector<LineSegment> {lineSegments[i], lineSegments[j]};
+//				for (LineSegment l : ep.spatialLines) {
+//					std::cout << l.p1.x << ", " << l.p1.y << " --- " << l.p2.x << ", " << l.p2.y << std::endl;
+//				}
+//				
+//				lineImg = gray.clone();
+//				for (LineSegment l : ep.spatialLines) {
+//					cv::line(lineImg, l.p1, l.p2, cv::Scalar(0,0,255), 3, CV_AA);
+//				}
+//				cv::namedWindow("lineImg spatial");
+//				cv::imshow("lineImg spatial", lineImg);
+//				cv::waitKey();
+			}
 		}
 	}
 }
 
-std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::InputArray _img, float rho, float theta, int threshold, int linesMax) const {
+std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const {
 	// the implementation is very similar to the one from opencv 2, but it returns the accumulator values and uses data structures that are easier to handle (but maybe less efficient)
 	
-	cv::Mat img = _img.getMat();
-	int width = img.size().width;
-	int height = img.size().height;
+	int width = bwImg.size().width;
+	int height = bwImg.size().height;
 	std::vector<HoughLine> lines;
 	
-	CV_Assert(img.type() == CV_8UC1);
+	CV_Assert(bwImg.type() == CV_8UC1);
 
 	int numAngle = cvRound(CV_PI / theta);
 	int numRho = (width + height) * 2; // always even
@@ -546,9 +574,9 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::InputArr
 	}
 	
 	// fill the accumulator
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			if (img.at<unsigned char>(i, j) != 0) {
+	for (size_t i = 0; i < height; i++) {
+		for (size_t j = 0; j < width; j++) {
+			if (bwImg.at<unsigned char>(i, j) != 0) {
 				for (int n = 0; n < numAngle; n++) {
 					int r = cvRound((j * tabCos[n] + i * tabSin[n]) / rho) + numRho / 2;
 					accum.at<std::uint16_t>(r, n)++;
@@ -576,8 +604,8 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::InputArr
 			int valNl = (n - 1 >= 0) ? accum.at<std::uint16_t>(r, n - 1) : 0;
 			int valNr = (n + 1 < numAngle) ? accum.at<std::uint16_t>(r, n + 1) : 0;
 			if (val > threshold && 
-				val > valRl && val > valRr &&
-				val > valNl  && val > valNr) {
+					val > valRl && val > valRr &&
+					val > valNl  && val > valNr) {
 				
 				//sortBuf[total++] = base;
 				HoughLine l;
@@ -594,6 +622,111 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::InputArr
 	lines.resize(linesMax);
 	
 	return lines;
+}
+
+float PageExtractor::angleDiff(float a, float b) {
+	return std::min(std::abs(a - b), static_cast<float>(CV_PI) - std::abs(a - b));
+}
+
+std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const {
+	if (dilate) {
+		bwImg = bwImg.clone();
+		cv::dilate(bwImg, bwImg, cv::Mat::ones(3, 3, CV_8UC1));
+	}
+	
+	std::vector<LineSegment> lineSegments; // final line segments
+	std::vector<LineSegment> lineSegmentsCurrent; // line segments per line
+	LineFindingMode mode;
+	int lastImgIdx = 0;
+	
+	for (HoughLine line : houghLines) {
+		lineSegmentsCurrent.clear();
+		cv::Point2f startPos;
+		bool active = false; // if true: a line is being followed
+		bool inGap = false; // if true: a line is being followed and currently not interrupted
+		cv::Point2f stopPos;
+		cv::Point2f prevPos;
+		int gapCounter = 0;
+		
+		if (line.angle <= CV_PI / 4 || line.angle > (3 * CV_PI) / 4) {
+			mode = LineFindingMode::Vertical;
+			lastImgIdx = bwImg.size().height;
+		} else {
+			mode = LineFindingMode::Horizontal;
+			lastImgIdx = bwImg.size().width;
+		}
+		
+		for (size_t i = 0; i < lastImgIdx; i++) {
+			float x;
+			float y;
+			if (mode == LineFindingMode::Horizontal) {
+				x = i;
+				//y = std::max(std::min((line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle) + 0.000001f), bwImg.size().height - 1.0f), 0.0f);
+				y = (line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle));
+				if (y > bwImg.size().height - 1.0f || y < 0.0f) {
+					continue;
+				}
+			} else {
+				y = i;
+				//x = std::max(std::min((line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle) + 0.000001f), bwImg.size().width - 1.0f), 0.0f);
+				x = (line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle));
+				if (x > bwImg.size().width - 1.0f || x < 0.0f) {
+					continue;
+				}
+			}
+			
+			// close open lines at the end
+			if (i == lastImgIdx - 1) {
+				if (active) {
+					LineSegment l;
+					if (!inGap) {
+						l.p1 = startPos;
+						l.p2 = cv::Point2f(x, y);
+					} else {
+						l.p1 = startPos;
+						l.p2 = stopPos;
+					}
+					
+					if (cv::norm(l.p1 - l.p2) > minLength) {
+						lineSegmentsCurrent.push_back(l);
+					}
+				}
+			}
+			
+			if (bwImg.at<std::uint8_t>((int) ceil(y), (int) ceil(x)) != 0 ||
+					bwImg.at<std::uint8_t>((int) ceil(y), (int) floor(x)) != 0 || 
+					bwImg.at<std::uint8_t>((int) floor(y), (int) ceil(x)) != 0 ||
+					bwImg.at<std::uint8_t>((int) floor(y), (int) floor(x)) != 0) {
+				
+				if (!active) {
+					startPos = cv::Point2f(x, y);
+				}
+				active = true;
+				inGap = false;
+			} else {
+				if (!inGap) {
+					gapCounter = 0;
+					inGap = true;
+					stopPos = prevPos;
+				}
+				gapCounter++;
+				if (gapCounter >= maxGap && active) {
+					if (cv::norm(stopPos - startPos) > minLength) {
+						lineSegmentsCurrent.push_back(LineSegment {startPos, stopPos, static_cast<float>(cv::norm(stopPos - startPos))});
+					}
+					active = false;
+				}
+			}
+			prevPos = cv::Point2f(x, y);
+		}
+		
+		// for every line in houghLines add only the longest line (including gaps) that was found in the image
+		assert(lineSegmentsCurrent.size() > 0);
+		std::sort(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
+		lineSegments.push_back(lineSegmentsCurrent[0]);
+	}
+	
+	return lineSegments;
 }
 
 };

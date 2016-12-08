@@ -463,17 +463,33 @@ public:
 	
 protected:
 	const int maxLinesHough = 30;
-	const float parallelTol = CV_PI / 9; // angle tolerance for parallel lines
+	const float t_theta = CV_PI / 9; // angle tolerance for parallel lines
+	const float t_l = 0.5f;
 	
-	typedef struct HoughLine
-	{
+	typedef struct HoughLine {
 		int acc;
 		float rho;
 		float angle;
 	}
 	HoughLine;
 	
-	std::vector<HoughLine> houghTransform(cv::InputArray img, float rho, float theta, int threshold, int linesMax) const;
+	struct LineSegment {
+		cv::Point2f p1;
+		cv::Point2f p2;
+		float length;
+	};
+	
+	struct ExtendedPeak {
+		HoughLine line1;
+		HoughLine line2;
+		std::vector<LineSegment> spatialLines;
+	};
+	
+	enum class LineFindingMode {Horizontal, Vertical};
+	
+	static float angleDiff(float a, float b);
+	std::vector<HoughLine> houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const;
+	std::vector<LineSegment> findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const;
 };
 
 };
