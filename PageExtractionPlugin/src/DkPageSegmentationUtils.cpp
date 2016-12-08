@@ -429,7 +429,7 @@ QPolygonF DkPolyRect::toPolygon() const {
 	return poly;
 }
 
-void PageExtractor::run(cv::Mat img, float scale) const {
+void PageExtractor::run(cv::Mat img, float scale) {
 	float g_sigma = 2.0;
 	cv::Mat gray, bw;
 
@@ -513,29 +513,27 @@ void PageExtractor::run(cv::Mat img, float scale) const {
 	cv::waitKey();
 	
 	// find line segments in image
-	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, 3, 50, false);
-	std::cout << lineSegments.size() << std::endl;
-	for (size_t i = 0; i < lines.size(); i++) {
-		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
-		lineImg = gray.clone();
-		cv::line(lineImg, lineSegments[i].p1, lineSegments[i].p2, cv::Scalar(0,0,255), 3, CV_AA);
-		cv::namedWindow("lineImg spatial");
-		cv::imshow("lineImg spatial", lineImg);
-		cv::waitKey(0);
-	}
+	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, false);
+//	std::cout << lineSegments.size() << std::endl;
+//	for (size_t i = 0; i < lines.size(); i++) {
+//		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
+//		lineImg = gray.clone();
+//		cv::line(lineImg, lineSegments[i].p1, lineSegments[i].p2, cv::Scalar(0,0,255), 3, CV_AA);
+//		cv::namedWindow("lineImg spatial");
+//		cv::imshow("lineImg spatial", lineImg);
+//		cv::waitKey(0);
+//	}
 	
 	// 4.3 transform domain peak filtering
-	// iterate trough all pairs of lines
+	// iterate through all pairs of lines and build pairs of parallel line segments called extended peak pairs (EPs)
+	std::vector<ExtendedPeak> EPs;
 	for (size_t i = 0; i < lines.size() - 1; i++) {
 		for (size_t j = i + 1; j < lines.size(); j++) {
 			if (angleDiff(lines[i].angle, lines[j].angle) < t_theta && 
 					std::abs(lines[i].acc - lines[j].acc) < t_l * 0.5 * (lines[i].acc + lines[j].acc)) {
 				
 				// TODO findLineSegments only once for every line
-				ExtendedPeak ep;
-				ep.line1 = lines[i];
-				ep.line2 = lines[j];
-				ep.spatialLines = std::vector<LineSegment> {lineSegments[i], lineSegments[j]};
+				ExtendedPeak ep(lines[i], lineSegments[i], lines[j], lineSegments[j]);
 //				for (LineSegment l : ep.spatialLines) {
 //					std::cout << l.p1.x << ", " << l.p1.y << " --- " << l.p2.x << ", " << l.p2.y << std::endl;
 //				}
@@ -547,9 +545,61 @@ void PageExtractor::run(cv::Mat img, float scale) const {
 //				cv::namedWindow("lineImg spatial");
 //				cv::imshow("lineImg spatial", lineImg);
 //				cv::waitKey();
+				EPs.push_back(ep);
 			}
 		}
 	}
+	
+	// iterate through pairs of EPs and combine them to intermediate peak pairs (IPs) if they form a rectangular shape 
+	std::vector<IntermediatePeak> IPs;
+	for (size_t i = 0; i < EPs.size(); i++) {
+		for (size_t j = i + 1; j < EPs.size(); j++) {
+			// test for orthogonality
+			if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5f)) < orthoTol) {
+				IPs.push_back(IntermediatePeak {EPs[i], EPs[j]});
+			}
+		}
+	}
+	
+	// test IP corners
+	std::vector<Rectangle> candidates;
+	for (IntermediatePeak ip : IPs) {
+		std::vector<cv::Point2f> corners;
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				auto r = findLineIntersection(ip.ep1.spatialLines[i], ip.ep2.spatialLines[j]);
+				// since the lines of different EPs can not be parallel, they have to intersect at some point
+				assert(r.first == true); // TODO replace assert with gui error
+				cv::Point2f p = r.second;
+				if (pointToLineDistance(ip.ep1.spatialLines[i], p) < cornerGapTol &&
+						pointToLineDistance(ip.ep2.spatialLines[j], p) < cornerGapTol) {
+					
+					corners.push_back(p);
+				}
+			}
+		}
+		
+		if (corners.size() < 4) {
+			continue;
+		}
+		
+		// check if large enough
+		std::vector<cv::Point2f> rectCorners;
+		cv::convexHull(corners, rectCorners);
+		Rectangle rect(ip, rectCorners);
+		bool largeEnough = true;
+		for (int i = 0; i < 4; i++) {
+			if (cv::norm(rect.corners[i] - rect.corners[(i + 1) % 4]) < minLineSegmentLength) {
+				largeEnough = false;
+			}
+		}
+
+		candidates.push_back(rect);
+	}
+}
+
+float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
+	return cv::Mat(p - ls.p1).dot(cv::Mat(p - ls.p2)) / std::pow(cv::norm(ls.p2 - ls.p1), 2);
 }
 
 std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const {
@@ -607,7 +657,6 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 					val > valRl && val > valRr &&
 					val > valNl  && val > valNr) {
 				
-				//sortBuf[total++] = base;
 				HoughLine l;
 				l.acc = val;
 				l.rho = (r - numRho / 2) * rho;
@@ -727,6 +776,39 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 	}
 	
 	return lineSegments;
+}
+
+PageExtractor::ExtendedPeak::ExtendedPeak(const HoughLine& line1, const LineSegment& ls1, const HoughLine& line2, const LineSegment& ls2)
+		: line1(line1), 
+		line2(line2), 
+		spatialLines(std::vector<LineSegment> {ls1, ls2}),
+		intersectionPoint(findLineIntersection(ls1, ls2)) {
+	
+	// store mean angle
+	if (abs(line1.angle - line2.angle) > CV_PI * 0.5) { // if angle difference is large enough, the angles become closer to each other 
+		// note: lines are always in [0, pi]
+		theta_k = 0.5f * ((std::min(line1.angle, line2.angle) + CV_PI) + std::max(line1.angle, line2.angle));
+		if (theta_k > CV_PI) {
+			theta_k -= CV_PI;
+		}
+	} else {
+		theta_k = 0.5f * (line1.angle + line2.angle);
+	}
+	A_k = 0.5f * (line1.acc + line2.acc);
+}
+
+std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegment& ls1, const LineSegment& ls2) {
+	cv::Mat A = cv::Mat::zeros(2, 2, CV_32F);
+	A.at<float>(0, 0) = ls1.p1.y - ls1.p2.y;
+	A.at<float>(0, 1) = ls1.p2.x - ls1.p1.x;
+	A.at<float>(1, 0) = ls2.p1.y - ls2.p2.y;
+	A.at<float>(1, 1) = ls2.p2.x - ls2.p1.x;
+	cv::Mat b = cv::Mat::zeros(2, 1, CV_32F);
+	b.at<float>(0) = ls1.p1.x * (ls1.p1.y - ls1.p2.y) + ls1.p1.y * (ls1.p2.x - ls1.p1.x);
+	b.at<float>(1) = ls2.p1.x * (ls2.p1.y - ls2.p2.y) + ls2.p1.y * (ls2.p2.x - ls2.p1.x);
+	cv::Mat x;
+	bool r = cv::solve(A, b, x);
+	return std::pair<bool, cv::Point2f>(r, cv::Point2f(x));
 }
 
 };

@@ -459,12 +459,16 @@ class PageExtractor {
 public:
 	PageExtractor() {}
 	
-	void run(cv::Mat img, float scale) const;
+	void run(cv::Mat img, float scale);
 	
 protected:
 	const int maxLinesHough = 30;
 	const float t_theta = CV_PI / 9; // angle tolerance for parallel lines
 	const float t_l = 0.5f;
+	const float maxGapLength = 50;
+	const float minLineSegmentLength = 10;
+	const float orthoTol = CV_PI / 9; // orthogonality tolerance
+	const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
 	
 	typedef struct HoughLine {
 		int acc;
@@ -480,14 +484,36 @@ protected:
 	};
 	
 	struct ExtendedPeak {
+		ExtendedPeak(const HoughLine& line1, const LineSegment& ls1, const HoughLine& line2, const LineSegment& ls2);
+		//~ExtendedPeak() {}
+		
 		HoughLine line1;
 		HoughLine line2;
 		std::vector<LineSegment> spatialLines;
+		std::pair<bool, cv::Point2f> intersectionPoint;
+		float theta_k;
+		float A_k;
+	};
+	
+	struct IntermediatePeak {
+		IntermediatePeak(const ExtendedPeak& ep1, const ExtendedPeak& ep2) : ep1(ep1), ep2(ep2) {}
+		
+		ExtendedPeak ep1;
+		ExtendedPeak ep2;
+	};
+	
+	struct Rectangle {
+		Rectangle(const IntermediatePeak& ip, const std::vector<cv::Point2f>& corners) : ip(ip), corners(corners) {}
+		
+		IntermediatePeak ip;
+		std::vector<cv::Point2f> corners;
 	};
 	
 	enum class LineFindingMode {Horizontal, Vertical};
 	
 	static float angleDiff(float a, float b);
+	static std::pair<bool, cv::Point2f> findLineIntersection(const LineSegment& ls1, const LineSegment& ls2);
+	static float pointToLineDistance(LineSegment ls, cv::Point2f p);
 	std::vector<HoughLine> houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const;
 	std::vector<LineSegment> findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const;
 };
