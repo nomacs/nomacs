@@ -612,9 +612,11 @@ void PageExtractor::run(cv::Mat img, float scale) {
 		rectangles.push_back(c);
 	}
 	
-	if (rectangles.size()) {
+	if (rectangles.empty()) {
 		std::cout << "no valid rectangles have been detected!" << std::endl; // TODO gui output, return value
+		return;
 	}
+	std::cout << "DEBUG: " << rectangles.size() << " valid rectangles have been detected" << std::endl;
 	
 	// find rectangle with highest overall accumulator value
 	auto finalRectangleIt = std::max_element(rectangles.begin(), rectangles.end(), [] (Rectangle a, Rectangle b) { 
@@ -720,7 +722,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 	std::vector<LineSegment> lineSegments; // final line segments
 	std::vector<LineSegment> lineSegmentsCurrent; // line segments per line
 	LineFindingMode mode;
-	int lastImgIdx = 0;
+	int dimRange = 0;
 	
 	for (HoughLine line : houghLines) {
 		lineSegmentsCurrent.clear();
@@ -731,35 +733,33 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 		cv::Point2f prevPos;
 		int gapCounter = 0;
 		
-		if (line.angle <= CV_PI / 4 || line.angle > (3 * CV_PI) / 4) {
+		//if (line.angle <= CV_PI / 4 || line.angle > (3 * CV_PI) / 4) {
+		if (abs(line.angle - CV_PI / 2) > CV_PI / 4) {
 			mode = LineFindingMode::Vertical;
-			lastImgIdx = bwImg.size().height;
+			dimRange = bwImg.size().height;
 		} else {
 			mode = LineFindingMode::Horizontal;
-			lastImgIdx = bwImg.size().width;
+			dimRange = bwImg.size().width;
 		}
 		
-		for (size_t i = 0; i < lastImgIdx; i++) {
+		for (size_t i = 0; i < dimRange; i++) {
 			float x;
 			float y;
 			if (mode == LineFindingMode::Horizontal) {
 				x = i;
 				//y = std::max(std::min((line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle) + 0.000001f), bwImg.size().height - 1.0f), 0.0f);
 				y = (line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle));
-				if (y > bwImg.size().height - 1.0f || y < 0.0f) {
-					continue;
-				}
 			} else {
 				y = i;
 				//x = std::max(std::min((line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle) + 0.000001f), bwImg.size().width - 1.0f), 0.0f);
 				x = (line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle));
-				if (x > bwImg.size().width - 1.0f || x < 0.0f) {
-					continue;
-				}
+			}
+			if (x > bwImg.size().width - 1.0f || x < 0.0f || y > bwImg.size().height - 1.0f || y < 0.0f) {
+				continue;
 			}
 			
 			// close open lines at the end
-			if (i == lastImgIdx - 1) {
+			if (i == dimRange - 1) {
 				if (active) {
 					LineSegment l;
 					if (!inGap) {
@@ -770,10 +770,12 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 						l.p2 = stopPos;
 					}
 					
-					if (cv::norm(l.p1 - l.p2) > minLength) {
+					l.length = cv::norm(l.p1 - l.p2);
+					if (l.length > minLength) {
 						lineSegmentsCurrent.push_back(l);
 					}
 				}
+				break;
 			}
 			
 			if (bwImg.at<std::uint8_t>((int) ceil(y), (int) ceil(x)) != 0 ||
@@ -803,6 +805,11 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 			prevPos = cv::Point2f(x, y);
 		}
 		
+//		std::cout << "DEBUG: acc " << line.acc << " (" << line.rho << ", " << line.angle << "), segments: ";
+//		for (int k = 0; k < lineSegmentsCurrent.size(); k++) {
+//			std::cout << lineSegmentsCurrent[k].length << " ";
+//		}
+//		std::cout << std::endl;
 		// for every line in houghLines add only the longest line (including gaps) that was found in the image
 		assert(lineSegmentsCurrent.size() > 0);
 		auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
