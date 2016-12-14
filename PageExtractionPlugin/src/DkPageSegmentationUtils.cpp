@@ -450,14 +450,14 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	
 	cv::equalizeHist(gray, gray);
 	
-	// TODO remove text
+	bw = removeText(gray, 2.0f, 5, 2);
+	cv::namedWindow("text removed");
+	cv::imshow("text removed", bw);
+	cv::waitKey();
 	
-	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
-//	cv::namedWindow("gray gaussian");
-//	cv::imshow("gray gaussian", gray);
-//	cv::waitKey();
-	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
-	cv::dilate(bw, bw, cv::Mat::ones(3, 3, CV_8UC1));
+//	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
+//	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
+	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6)));
 	cv::namedWindow("bw");
 	cv::imshow("bw", bw);
 	cv::waitKey();
@@ -513,7 +513,7 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	cv::waitKey();
 	
 	// find line segments in image
-	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, false);
+	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, true);
 //	std::cout << lineSegments.size() << std::endl;
 //	for (size_t i = 0; i < lines.size(); i++) {
 //		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
@@ -716,7 +716,7 @@ float PageExtractor::angleDiff(float a, float b) {
 std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const {
 	if (dilate) {
 		bwImg = bwImg.clone();
-		cv::dilate(bwImg, bwImg, cv::Mat::ones(3, 3, CV_8UC1));
+		cv::dilate(bwImg, bwImg, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	}
 	
 	std::vector<LineSegment> lineSegments; // final line segments
@@ -850,6 +850,73 @@ std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegme
 	cv::Mat x;
 	bool r = cv::solve(A, b, x);
 	return std::pair<bool, cv::Point2f>(r, cv::Point2f(x));
+}
+
+cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int threshold) {
+	static const float eps = 0.001f;
+	cv::Mat gray;
+	cv::Mat bw;
+	cv::Mat sobel_h;
+	cv::Mat sobel_v;
+	cv::Mat sobel_angle = cv::Mat::zeros(gray_.size(), CV_32F);
+	cv::GaussianBlur(gray_, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
+	cv::Canny(gray, bw, 0.1 * 255, 0.3 * 255);
+	cv::imshow("canny", bw);
+	cv::waitKey();
+	cv::Sobel(gray, sobel_h, CV_32F, 0, 1, 3);
+	cv::Sobel(gray, sobel_v, CV_32F, 1, 0, 3);
+	for (int i = 0; i < sobel_angle.size().height; i++) {
+		for (int j = 0; j < sobel_angle.size().width; j++) {
+			// calculate gradient angle
+			sobel_angle.at<float>(i, j) = (atan2(sobel_v.at<float>(i, j), sobel_h.at<float>(i, j)));
+			// shift [-pi, 0] to [pi, 2pi]
+			if (sobel_angle.at<float>(i, j) < 0.0f) {
+				sobel_angle.at<float>(i, j) += 2 * CV_PI;
+			}
+			// set 2pi to 0
+			if (sobel_angle.at<float>(i, j) >= 2 * CV_PI) {
+				sobel_angle.at<float>(i, j) = 0.0f;
+			}
+		}
+	}
+//	cv::imshow("sobel_angle", sobel_angle / (2 * CV_PI));
+//	cv::waitKey();
+	
+	// edge plane decomposition
+	
+	std::vector<cv::Mat> E_i(8);
+	std::vector<cv::Mat> E_i_ex(8);
+	cv::Mat H = cv::Mat::zeros(gray.size(), CV_8U);
+	cv::Mat mask;
+	cv::Mat M_text;
+	float rangeStart;
+	float rangeEnd;
+	// go through angles in pi/4 steps
+	for (int i = 0; i < 8; i++) {
+		E_i[i] = cv::Mat::zeros(gray.size(), CV_8U);
+		E_i_ex[i] = cv::Mat::zeros(gray.size(), CV_8U);
+		rangeStart = CV_PI / 4 * i;
+		rangeEnd = CV_PI / 4 * (i + 1);
+		mask = ((sobel_angle >= rangeStart) & (sobel_angle < rangeEnd)) & (cv::abs(sobel_h) > eps | cv::abs(sobel_v) > eps);
+		E_i[i] = mask & bw;
+		cv::dilate(E_i[i], E_i_ex[i], cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * selemSize, 2 * selemSize)));
+		cv::threshold(E_i_ex[i], E_i_ex[i], 1, 1, cv::THRESH_TRUNC); // E_i_ex is binary, true pixels are 255, we have to truncate them to 1
+		H += E_i_ex[i];
+	}
+	
+	// remove text regions
+	M_text = H > threshold;
+//	cv::imshow("M_text", M_text);
+//	cv::waitKey();
+	std::vector<cv::Mat> T(8);
+	std::vector<cv::Mat> E_i_hat(8);
+	
+	for (int i = 0; i < 8; i++) {
+		T[i] = E_i[i] & M_text;
+		E_i_hat[i] = T[i] ^ E_i[i];
+	}
+	
+	return (E_i_hat[0] | E_i_hat[1] | E_i_hat[2] | E_i_hat[3] | E_i_hat[4] | E_i_hat[5] | E_i_hat[6] | E_i_hat[7]);
 }
 
 };

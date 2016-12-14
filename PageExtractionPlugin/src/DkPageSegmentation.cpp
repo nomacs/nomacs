@@ -79,8 +79,8 @@ void DkPageSegmentation::compute() {
 
 	//cv::Mat imgLab;
 
-	if (scale == 1.0f && img.cols > 300.0f)
-		scale = 300.0f/img.cols;
+	if (scale == 1.0f && img.cols > 700.0f)
+		scale = 700.0f/img.cols;
 
 	//cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
 	cv::Mat lImg = findRectangles(img, rects);
