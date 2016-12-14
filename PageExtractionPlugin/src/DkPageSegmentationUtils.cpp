@@ -732,6 +732,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 		cv::Point2f stopPos;
 		cv::Point2f prevPos;
 		int gapCounter = 0;
+		bool notYetInImageRange = true;
 		
 		//if (line.angle <= CV_PI / 4 || line.angle > (3 * CV_PI) / 4) {
 		if (abs(line.angle - CV_PI / 2) > CV_PI / 4) {
@@ -742,24 +743,30 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 			dimRange = bwImg.size().width;
 		}
 		
+		float x;
+		float y;
 		for (size_t i = 0; i < dimRange; i++) {
-			float x;
-			float y;
 			if (mode == LineFindingMode::Horizontal) {
 				x = i;
 				//y = std::max(std::min((line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle) + 0.000001f), bwImg.size().height - 1.0f), 0.0f);
 				y = (line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle));
+				if (notYetInImageRange && y <= bwImg.size().height - 1 && y >= 0) {
+					notYetInImageRange = false;
+				}
 			} else {
 				y = i;
 				//x = std::max(std::min((line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle) + 0.000001f), bwImg.size().width - 1.0f), 0.0f);
 				x = (line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle));
+				if (notYetInImageRange && x <= bwImg.size().width - 1 && x >= 0) {
+					notYetInImageRange = false;
+				}
 			}
-			if (x > bwImg.size().width - 1.0f || x < 0.0f || y > bwImg.size().height - 1.0f || y < 0.0f) {
+			if (notYetInImageRange) {
 				continue;
 			}
 			
 			// close open lines at the end
-			if (i == dimRange - 1) {
+			if (i == dimRange - 1 || x > bwImg.size().width - 1 || x < 0 || y > bwImg.size().height - 1 || y < 0) {
 				if (active) {
 					LineSegment l;
 					if (!inGap) {
@@ -785,8 +792,8 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 				
 				if (!active) {
 					startPos = cv::Point2f(x, y);
+					active = true;
 				}
-				active = true;
 				inGap = false;
 			} else {
 				if (!inGap) {
