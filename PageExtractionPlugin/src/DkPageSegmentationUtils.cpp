@@ -429,7 +429,7 @@ QPolygonF DkPolyRect::toPolygon() const {
 	return poly;
 }
 
-void PageExtractor::run(cv::Mat img, float scale) {
+void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& rects) {
 	float g_sigma = 2.0;
 	cv::Mat gray, bw;
 
@@ -449,35 +449,21 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	// TODO iterate over sigmas, half size
 	
 	cv::equalizeHist(gray, gray);
-	
 	bw = removeText(gray, 2.0f, 5, 2);
-	cv::namedWindow("text removed");
-	cv::imshow("text removed", bw);
-	cv::waitKey();
 	
 //	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
 //	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
 	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6)));
-	cv::namedWindow("bw");
-	cv::imshow("bw", bw);
-	cv::waitKey();
 	
 	cv::Mat lineImg;
+	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 100, maxLinesHough);
 	
-//	std::vector<cv::Vec2f> lines1;
-//	// we assume that the lines are sorted by accumulator values in descending order
-//	cv::HoughLines(bw, lines1, 1, CV_PI / 180.0, 100); 
-//	if (lines1.size() > maxLinesHough) {
-//		lines1.resize(maxLinesHough);
-//	}
-//	for (cv::Vec2f l : lines1) {
-//		std::cout << l[0] << " " << l[1] << std::endl;
-//	}
+	// DEBUG OUTPUT
+//	std::cout << lines.size() << std::endl;
 //	lineImg = gray.clone();
-//	// plot lines
-//	for( size_t i = 0; i < lines1.size(); i++ )
-//	{
-//		float rho = lines1[i][0], theta = lines1[i][1];
+//	for (size_t i = 0; i < lines.size(); i++) {
+//		std::cout << lines[i].acc << " " << lines[i].rho << " " << lines[i].angle << std::endl;
+//		float rho = lines[i].rho, theta = lines[i].angle;
 //		cv::Point pt1, pt2;
 //		double a = cos(theta), b = sin(theta);
 //		double x0 = a*rho, y0 = b*rho;
@@ -490,27 +476,6 @@ void PageExtractor::run(cv::Mat img, float scale) {
 //	cv::namedWindow("lineImg");
 //	cv::imshow("lineImg", lineImg);
 //	cv::waitKey();
-	
-	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 100, maxLinesHough);
-	
-	// DEBUG OUTPUT
-	std::cout << lines.size() << std::endl;
-	lineImg = gray.clone();
-	for (size_t i = 0; i < lines.size(); i++) {
-		std::cout << lines[i].acc << " " << lines[i].rho << " " << lines[i].angle << std::endl;
-		float rho = lines[i].rho, theta = lines[i].angle;
-		cv::Point pt1, pt2;
-		double a = cos(theta), b = sin(theta);
-		double x0 = a*rho, y0 = b*rho;
-		pt1.x = cvRound(x0 + 1000*(-b));
-		pt1.y = cvRound(y0 + 1000*(a));
-		pt2.x = cvRound(x0 - 1000*(-b));
-		pt2.y = cvRound(y0 - 1000*(a));
-		cv::line( lineImg, pt1, pt2, cv::Scalar(0,0,255), 3, CV_AA);
-	}
-	cv::namedWindow("lineImg");
-	cv::imshow("lineImg", lineImg);
-	cv::waitKey();
 	
 	// find line segments in image
 	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, true);
@@ -542,12 +507,7 @@ void PageExtractor::run(cv::Mat img, float scale) {
 						continue;
 					}
 				}
-				
-				
-//				for (LineSegment l : ep.spatialLines) {
-//					std::cout << l.p1.x << ", " << l.p1.y << " --- " << l.p2.x << ", " << l.p2.y << std::endl;
-//				}
-//				
+
 //				lineImg = gray.clone();
 //				for (LineSegment l : ep.spatialLines) {
 //					cv::line(lineImg, l.p1, l.p2, cv::Scalar(0,0,255), 3, CV_AA);
@@ -602,7 +562,7 @@ void PageExtractor::run(cv::Mat img, float scale) {
 		// check if sides are large enough
 		bool largeEnough = true;
 		for (int i = 0; i < 4; i++) {
-			if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minLineSegmentLength) {
+			if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minRelSideLength * std::min(gray.size().width, gray.size().height)) {
 				largeEnough = false;
 			}
 		}
@@ -625,13 +585,21 @@ void PageExtractor::run(cv::Mat img, float scale) {
 	});
 	
 	Rectangle& finalRect = *finalRectangleIt;
-	lineImg = gray.clone();
-	for (size_t i = 0; i < finalRect.corners.size(); i++) {
-		cv::line(lineImg, finalRect.corners[i], finalRect.corners[(i + 1) % 4], cv::Scalar(0, 0, 255), 3, CV_AA);
+//	lineImg = gray.clone();
+//	for (size_t i = 0; i < finalRect.corners.size(); i++) {
+//		cv::line(lineImg, finalRect.corners[i], finalRect.corners[(i + 1) % 4], cv::Scalar(0, 0, 255), 3, CV_AA);
+//	}
+//	cv::namedWindow("finalRect");
+//	cv::imshow("finalRect", lineImg);
+//	cv::waitKey();
+	
+	std::vector<cv::Point> cornerPoints;
+	for (int i = 0; i < 4; i++) {
+		cornerPoints.emplace_back((int) round(finalRect.corners[i].x), (int) round(finalRect.corners[i].y));
 	}
-	cv::namedWindow("finalRect");
-	cv::imshow("finalRect", lineImg);
-	cv::waitKey();
+	DkPolyRect r(cornerPoints);
+	r.scale(1.0f / scale);
+	rects.push_back(r);
 }
 
 float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
@@ -868,8 +836,6 @@ cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int
 	cv::Mat sobel_angle = cv::Mat::zeros(gray_.size(), CV_32F);
 	cv::GaussianBlur(gray_, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
 	cv::Canny(gray, bw, 0.1 * 255, 0.3 * 255);
-	cv::imshow("canny", bw);
-	cv::waitKey();
 	cv::Sobel(gray, sobel_h, CV_32F, 0, 1, 3);
 	cv::Sobel(gray, sobel_v, CV_32F, 1, 0, 3);
 	for (int i = 0; i < sobel_angle.size().height; i++) {

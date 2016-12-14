@@ -91,7 +91,7 @@ void DkPageSegmentation::compute() {
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
 
 	PageExtractor extractor;
-	extractor.run(img, scale);
+	extractor.findPage(img, scale, rects);
 
 	return img;
 	

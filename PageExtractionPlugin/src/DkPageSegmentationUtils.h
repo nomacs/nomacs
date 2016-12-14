@@ -459,7 +459,7 @@ class PageExtractor {
 public:
 	PageExtractor() {}
 	
-	void run(cv::Mat img, float scale);
+	void findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& rects);
 	
 protected:
 	const int maxLinesHough = 30;
@@ -467,6 +467,7 @@ protected:
 	const float t_l = 0.5f;
 	const float maxGapLength = 50;
 	const float minLineSegmentLength = 10;
+	const float minRelSideLength = 0.3; // minimum length of final rectangle sides relative to smaller image dimension
 	const float orthoTol = CV_PI / 9; // orthogonality tolerance
 	const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
 	
