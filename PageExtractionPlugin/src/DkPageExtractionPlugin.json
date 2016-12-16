@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Markus Diem",
 	"Company"		: "Computer Vision Lab",
 	"DateCreated" 	: "2015-08-27",
-	"DateModified"	: "2016-12-16",
+	"DateModified"	: "2016-12-17",
 	"Description"	: "This plugin detects document pages and either crops the image accordingly or annotates the region.",
 	"Tagline" 		: "Detect document pages in images",
 	"PluginId"		: "4acb88c461024cb080ae5cd15d0ef0ec",

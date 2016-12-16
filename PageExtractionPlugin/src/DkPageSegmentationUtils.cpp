@@ -430,7 +430,7 @@ QPolygonF DkPolyRect::toPolygon() const {
 }
 
 void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& rects) {
-	float g_sigma = 2.0;
+	float g_sigma = 2.0f;
 	cv::Mat gray, bw;
 
 	cv::cvtColor(img, gray, CV_RGB2GRAY);
@@ -449,14 +449,15 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	// TODO iterate over sigmas, half size
 	
 	cv::equalizeHist(gray, gray);
-	bw = removeText(gray, 2.0f, 5, 2);
+	bw = removeText(gray, g_sigma, 5, 2);
 	
-//	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
-//	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
-	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6)));
+	//cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
+	//cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255, 3, true);
+	
+	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	
 	cv::Mat lineImg;
-	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 100, maxLinesHough);
+	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 50, maxLinesHough);
 	
 	// DEBUG OUTPUT
 //	std::cout << lines.size() << std::endl;
@@ -684,7 +685,7 @@ float PageExtractor::angleDiff(float a, float b) {
 std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const {
 	if (dilate) {
 		bwImg = bwImg.clone();
-		cv::dilate(bwImg, bwImg, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
+		cv::dilate(bwImg, bwImg, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(4, 4)));
 	}
 	
 	std::vector<LineSegment> lineSegments; // final line segments
@@ -828,6 +829,7 @@ std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegme
 }
 
 cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int threshold) {
+	assert(gray_.type() == CV_8U);
 	static const float eps = 0.001f;
 	cv::Mat gray;
 	cv::Mat bw;
@@ -835,7 +837,7 @@ cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int
 	cv::Mat sobel_v;
 	cv::Mat sobel_angle = cv::Mat::zeros(gray_.size(), CV_32F);
 	cv::GaussianBlur(gray_, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
-	cv::Canny(gray, bw, 0.1 * 255, 0.3 * 255);
+	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
 	cv::Sobel(gray, sobel_h, CV_32F, 0, 1, 3);
 	cv::Sobel(gray, sobel_v, CV_32F, 1, 0, 3);
 	for (int i = 0; i < sobel_angle.size().height; i++) {
