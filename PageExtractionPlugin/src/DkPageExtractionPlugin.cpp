@@ -35,7 +35,7 @@
 #include <QDateTime>
 #include <QDir>
 
-#include <QXMLStreamReader>
+#include <QXmlStreamReader>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmp {
@@ -209,6 +209,10 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 	return imgC;
 }
 
+QString DkPageExtractionPlugin::name() const {
+	return "Page Extraction";
+}
+
 QPolygonF DkPageExtractionPlugin::readGT(const QString& imgPath) const {
 
 	QFileInfo imgInfo(imgPath);
@@ -253,10 +257,10 @@ double DkPageExtractionPlugin::jaccardIndex(const QSize & imgSize, const QPolygo
 	cv::Mat gtImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, gt));
 	cv::Mat evImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, computed));
 
-	double and = cv::sum(gtImg & evImg)[0];
-	double or = cv::sum(gtImg | evImg)[0];
+	double and_ = cv::sum(gtImg & evImg)[0];
+	double or_ = cv::sum(gtImg | evImg)[0];
 
-	return and/or;
+	return and_/or_;
 }
 
 QImage DkPageExtractionPlugin::drawPoly(const QSize & imgSize, const QPolygonF & poly) const {
