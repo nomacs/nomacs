@@ -28,9 +28,9 @@
 
 namespace nmp {
 
-class DkPageExtractionPlugin : public QObject, nmc::DkPluginInterface {
+class DkPageExtractionPlugin : public QObject, nmc::DkBatchPluginInterface {
 	Q_OBJECT
-	Q_INTERFACES(nmc::DkPluginInterface)
+	Q_INTERFACES(nmc::DkBatchPluginInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.2" FILE "DkPageExtractionPlugin.json")
 
 public:
@@ -44,12 +44,21 @@ public:
 
 	QList<QAction*> createActions(QWidget* parent) override;
 	QList<QAction*> pluginActions() const override;
-	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+	QSharedPointer<nmc::DkImageContainer> runPlugin(
+		const QString &runID, 
+		QSharedPointer<nmc::DkImageContainer> image, 
+		const nmc::DkSaveInfo& saveInfo,
+		QSharedPointer<nmc::DkBatchInfo>& batchInfo) const override;
+
+	virtual void preLoadPlugin() const {};	// is called before batch processing
+	virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> > & batchInfo) const {};	// is called after batch processing
+
 
 	enum {
 		id_crop_to_page,
 		id_crop_to_metadata,
 		id_draw_to_page,
+		id_eval_page,
 		// add actions here
 
 		id_end
@@ -60,6 +69,11 @@ protected:
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
+	QString mResultPath;
+
+	QPolygonF readGT(const QString& imgPath) const;
+	double jaccardIndex(const QSize& imgSize, const QPolygonF& gt, const QPolygonF& computed) const;
+	QImage drawPoly(const QSize& imgSize, const QPolygonF& poly) const;
 };
 
 };
