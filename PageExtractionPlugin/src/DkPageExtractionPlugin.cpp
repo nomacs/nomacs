@@ -137,7 +137,11 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions() const {
 * @param plugin ID
 * @param image to be processed
 **/
-QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
+QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
+	const QString &runID, 
+	QSharedPointer<nmc::DkImageContainer> imgC, 
+	const nmc::DkSaveInfo& saveInfo, 
+	QSharedPointer<nmc::DkBatchInfo>& batchInfo) const {
 
 	if (!mRunIDs.contains(runID) || !imgC)
 		return imgC;
