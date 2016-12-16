@@ -463,9 +463,10 @@ public:
 	
 protected:
 	const int maxLinesHough = 30;
+	const int houghPeakThresholdRel = 0.4; // minimum accumulator value of hough lines, relative to smaller image dimension
 	const float t_theta = CV_PI / 9; // angle tolerance for parallel lines
 	const float t_l = 0.5f;
-	const float maxGapLength = 50;
+	const float maxGapLengthRel = 0.3; // maximum gap size in findLineSegments, relative to smaller image dimension
 	const float minLineSegmentLength = 10;
 	const float minRelSideLength = 0.3; // minimum length of final rectangle sides relative to smaller image dimension
 	const float orthoTol = CV_PI / 9; // orthogonality tolerance

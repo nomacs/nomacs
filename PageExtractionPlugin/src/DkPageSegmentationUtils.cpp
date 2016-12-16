@@ -430,7 +430,6 @@ QPolygonF DkPolyRect::toPolygon() const {
 }
 
 void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& rects) {
-	float g_sigma = 2.0f;
 	cv::Mat gray, bw;
 
 	cv::cvtColor(img, gray, CV_RGB2GRAY);
@@ -449,7 +448,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	// TODO iterate over sigmas, half size
 	
 	cv::equalizeHist(gray, gray);
-	bw = removeText(gray, g_sigma, 5, 2);
+	bw = removeText(gray, 2.0f, 5, 2);
 	
 	//cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
 	//cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255, 3, true);
@@ -457,7 +456,8 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	
 	cv::Mat lineImg;
-	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, 50, maxLinesHough);
+	int accMin = (int) houghPeakThresholdRel * std::min(bw.size().width, bw.size().height);
+	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, accMin, maxLinesHough);
 	
 	// DEBUG OUTPUT
 //	std::cout << lines.size() << std::endl;
@@ -479,7 +479,8 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 //	cv::waitKey();
 	
 	// find line segments in image
-	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, true);
+	int maxGapLength = maxGapLengthRel * std::min(bw.size().width, bw.size().height);
+	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, false);
 //	std::cout << lineSegments.size() << std::endl;
 //	for (size_t i = 0; i < lines.size(); i++) {
 //		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
