@@ -73,7 +73,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
 	mMenuStatusTips = statusTips.toList();
 
-	QFileInfo resPath(QDir("D:/dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
+	QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
 	mResultPath = resPath.absoluteFilePath();
 }
 
