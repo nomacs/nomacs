@@ -35,7 +35,7 @@
 #include <QDateTime>
 #include <QDir>
 
-#include <QXMLStreamReader>
+#include <QXmlStreamReader>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmp {
