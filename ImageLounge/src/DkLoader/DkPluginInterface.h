@@ -137,6 +137,9 @@ public:
 	virtual void preLoadPlugin() const = 0;	// is called before batch processing
 	virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
 
+	virtual QString name() const = 0;	// is needed for settings
+	virtual void loadSettings(QSettings&) {};			// dummy
+	virtual void saveSettings(QSettings&) const {};		// dummy
 };
 
 class DkViewPortInterface : public DkPluginInterface {
