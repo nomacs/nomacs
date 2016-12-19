@@ -41,6 +41,7 @@ public:
 	QString id() const override;
 	QImage image() const;
 	QString version() const;
+	QString name() const;
 
 	QList<QAction*> createActions(QWidget* parent) override;
 	QList<QAction*> pluginActions() const override;
@@ -52,7 +53,6 @@ public:
 
 	virtual void preLoadPlugin() const {};	// is called before batch processing
 	virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> > & batchInfo) const {};	// is called after batch processing
-	virtual QString name() const override;
 
 	enum {
 		id_crop_to_page,

@@ -28,6 +28,8 @@
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 
+#include "DkUtils.h"	// for qInfo compatibility
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #include <QDebug>
@@ -109,7 +111,11 @@ QImage DkPageExtractionPlugin::image() const {
 QString DkPageExtractionPlugin::version() const {
 
 	return PLUGIN_VERSION;
-};
+}
+
+QString DkPageExtractionPlugin::name() const {
+	return "PageExtraction";
+}
 
 QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
 
@@ -209,10 +215,6 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 	return imgC;
 }
 
-QString DkPageExtractionPlugin::name() const {
-	return "Page Extraction";
-}
-
 QPolygonF DkPageExtractionPlugin::readGT(const QString& imgPath) const {
 
 	QFileInfo imgInfo(imgPath);
@@ -257,10 +259,10 @@ double DkPageExtractionPlugin::jaccardIndex(const QSize & imgSize, const QPolygo
 	cv::Mat gtImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, gt));
 	cv::Mat evImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, computed));
 
-	double and_ = cv::sum(gtImg & evImg)[0];
-	double or_ = cv::sum(gtImg | evImg)[0];
+	double andVal = (double)cv::sum(gtImg & evImg)[0];
+	double orVal = (double)cv::sum(gtImg | evImg)[0];
 
-	return and_/or_;
+	return andVal/orVal;
 }
 
 QImage DkPageExtractionPlugin::drawPoly(const QSize & imgSize, const QPolygonF & poly) const {
