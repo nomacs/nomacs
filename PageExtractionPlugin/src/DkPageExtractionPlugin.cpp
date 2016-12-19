@@ -259,10 +259,10 @@ double DkPageExtractionPlugin::jaccardIndex(const QSize & imgSize, const QPolygo
 	cv::Mat gtImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, gt));
 	cv::Mat evImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, computed));
 
-	double and = (double)cv::sum(gtImg & evImg)[0];
-	double or = (double)cv::sum(gtImg | evImg)[0];
+	double andVal = (double)cv::sum(gtImg & evImg)[0];
+	double orVal = (double)cv::sum(gtImg | evImg)[0];
 
-	return and/or;
+	return andVal/orVal;
 }
 
 QImage DkPageExtractionPlugin::drawPoly(const QSize & imgSize, const QPolygonF & poly) const {
