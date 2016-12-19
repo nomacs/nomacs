@@ -28,6 +28,8 @@
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 
+#include "DkUtils.h"	// for qInfo compatibility
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #include <QDebug>
@@ -109,7 +111,11 @@ QImage DkPageExtractionPlugin::image() const {
 QString DkPageExtractionPlugin::version() const {
 
 	return PLUGIN_VERSION;
-};
+}
+
+QString DkPageExtractionPlugin::name() const {
+	return "PageExtraction";
+}
 
 QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
 
@@ -253,8 +259,8 @@ double DkPageExtractionPlugin::jaccardIndex(const QSize & imgSize, const QPolygo
 	cv::Mat gtImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, gt));
 	cv::Mat evImg = nmc::DkImage::qImage2Mat(drawPoly(imgSize, computed));
 
-	double and = cv::sum(gtImg & evImg)[0];
-	double or = cv::sum(gtImg | evImg)[0];
+	double and = (double)cv::sum(gtImg & evImg)[0];
+	double or = (double)cv::sum(gtImg | evImg)[0];
 
 	return and/or;
 }
