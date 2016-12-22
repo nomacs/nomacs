@@ -518,7 +518,7 @@ protected:
 	static float pointToLineDistance(LineSegment ls, cv::Point2f p);
 	static cv::Mat removeText(cv::Mat gray, float sigma, int selemSize, int threshold = 2);
 	std::vector<HoughLine> houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const;
-	std::vector<LineSegment> findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const;
+	std::vector<LineSegment> findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap) const;
 };
 
 };

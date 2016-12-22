@@ -436,22 +436,10 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	if (scale != 1.0f) {
 		cv::resize(gray, gray, cv::Size(), scale, scale, CV_INTER_AREA);	// inter nn -> assuming resize to be 1/(2^n)
 	}
-	
-//	std::vector<cv::Point> pts;
-//	pts.push_back(cv::Point(0.f, 0.f));
-//	pts.push_back(cv::Point(0.f, 100.f));
-//	pts.push_back(cv::Point(100.f, 100.f));
-//	pts.push_back(cv::Point(100.f, 0.f));
-//	DkPolyRect r(pts);
-//	rects.push_back(r);
-	
-	// TODO iterate over sigmas, half size
+	const int smallerSide = std::min(gray.size().width, gray.size().height);
 	
 	cv::equalizeHist(gray, gray);
 	bw = removeText(gray, 2.0f, 5, 2);
-	
-	//cv::GaussianBlur(gray, gray, cv::Size(2 * floor(g_sigma * 3) + 1, 2 * floor(g_sigma * 3) + 1), g_sigma);
-	//cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255, 3, true);
 	
 	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	
@@ -479,8 +467,8 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 //	cv::waitKey();
 	
 	// find line segments in image
-	int maxGapLength = maxGapLengthRel * std::min(bw.size().width, bw.size().height);
-	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength, false);
+	int maxGapLength = maxGapLengthRel * smallerSide;
+	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength);
 //	std::cout << lineSegments.size() << std::endl;
 //	for (size_t i = 0; i < lines.size(); i++) {
 //		std::cout << "line " << i << ": (" << lines[i].acc << "), " << lines[i].rho << ", " << lines[i].angle << std::endl;
@@ -564,7 +552,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 		// check if sides are large enough
 		bool largeEnough = true;
 		for (int i = 0; i < 4; i++) {
-			if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minRelSideLength * std::min(gray.size().width, gray.size().height)) {
+			if (cv::norm(c.corners[i] - c.corners[(i + 1) % 4]) < minRelSideLength * smallerSide) {
 				largeEnough = false;
 			}
 		}
@@ -609,22 +597,22 @@ float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
 }
 
 std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const {
-	// the implementation is very similar to the one from opencv 2, but it returns the accumulator values and uses data structures that are easier to handle (but maybe less efficient)
+	// the implementation is very similar to the one from opencv 2, but it returns the accumulator values and uses data structures that are easier to handle
 	
-	int width = bwImg.size().width;
-	int height = bwImg.size().height;
+	int width = bwImg.cols;
+	int height = bwImg.rows;
 	std::vector<HoughLine> lines;
 	
 	CV_Assert(bwImg.type() == CV_8UC1);
 
-	int numAngle = cvRound(CV_PI / theta);
-	int numRho = (width + height) * 2; // always even
-	cv::Mat accum = cv::Mat::zeros(numRho, numAngle, CV_16UC1);
-	float tabSin[numAngle];
-	float tabCos[numAngle];
+	int numAngle = cvRound(CV_PI / theta) + 2;
+	int numRho = (width + height) * 2 + 2; // always even
+	cv::Mat accum = cv::Mat::zeros(numRho, numAngle, CV_16U);
+	float tabSin[numAngle - 2];
+	float tabCos[numAngle - 2];
 	
 	float angle = 0.0f;
-	for (int n = 0; n < numAngle; n++, angle += theta) {
+	for (int n = 0; n < numAngle - 2; n++, angle += theta) {
 		tabSin[n] = static_cast<float>(sin(static_cast<double>(angle)));
 		tabCos[n] = static_cast<float>(cos(static_cast<double>(angle)));
 	}
@@ -633,9 +621,9 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 	for (size_t i = 0; i < height; i++) {
 		for (size_t j = 0; j < width; j++) {
 			if (bwImg.at<unsigned char>(i, j) != 0) {
-				for (int n = 0; n < numAngle; n++) {
+				for (int n = 0; n < numAngle - 2; n++) {
 					int r = cvRound((j * tabCos[n] + i * tabSin[n]) / rho) + numRho / 2;
-					accum.at<std::uint16_t>(r, n)++;
+					accum.at<std::uint16_t>(r + 1, n + 1)++;
 				}
 			}
 		}
@@ -652,21 +640,21 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 //	cv::waitKey();
 	
 	// find local maxima
-	for (int r = 0; r < numRho; r++) {
-		for (int n = 0; n < numAngle; n++) {
+	for (int r = 1; r < numRho - 1; r++) {
+		for (int n = 1; n < numAngle - 1; n++) {
 			int val = accum.at<std::uint16_t>(r, n);
-			int valRl = (r - 1 >= 0) ? accum.at<std::uint16_t>(r - 1, n) : 0;
-			int valRr = (r + 1 < numRho) ? accum.at<std::uint16_t>(r + 1, n) : 0;
-			int valNl = (n - 1 >= 0) ? accum.at<std::uint16_t>(r, n - 1) : 0;
-			int valNr = (n + 1 < numAngle) ? accum.at<std::uint16_t>(r, n + 1) : 0;
+			int valRl = accum.at<std::uint16_t>(r - 1, n);
+			int valRr = accum.at<std::uint16_t>(r + 1, n);
+			int valNl = accum.at<std::uint16_t>(r, n - 1);
+			int valNr = accum.at<std::uint16_t>(r, n + 1);
 			if (val > threshold && 
 					val > valRl && val > valRr &&
 					val > valNl  && val > valNr) {
 				
 				HoughLine l;
 				l.acc = val;
-				l.rho = (r - numRho / 2) * rho;
-				l.angle = n * theta;
+				l.rho = ((r - 1) - numRho / 2) * rho;
+				l.angle = (n - 1) * theta;
 				lines.push_back(l);
 			}
 		}
@@ -683,12 +671,7 @@ float PageExtractor::angleDiff(float a, float b) {
 	return std::min(std::abs(a - b), static_cast<float>(CV_PI) - std::abs(a - b));
 }
 
-std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap, bool dilate) const {
-	if (dilate) {
-		bwImg = bwImg.clone();
-		cv::dilate(bwImg, bwImg, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(4, 4)));
-	}
-	
+std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap) const {
 	std::vector<LineSegment> lineSegments; // final line segments
 	std::vector<LineSegment> lineSegmentsCurrent; // line segments per line
 	LineFindingMode mode;
@@ -720,14 +703,14 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 				x = i;
 				//y = std::max(std::min((line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle) + 0.000001f), bwImg.size().height - 1.0f), 0.0f);
 				y = (line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle));
-				if (notYetInImageRange && y <= bwImg.size().height - 1 && y >= 0) {
+				if (notYetInImageRange && y <= bwImg.rows - 1 && y >= 0) {
 					notYetInImageRange = false;
 				}
 			} else {
 				y = i;
 				//x = std::max(std::min((line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle) + 0.000001f), bwImg.size().width - 1.0f), 0.0f);
 				x = (line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle));
-				if (notYetInImageRange && x <= bwImg.size().width - 1 && x >= 0) {
+				if (notYetInImageRange && x <= bwImg.cols - 1 && x >= 0) {
 					notYetInImageRange = false;
 				}
 			}
@@ -736,7 +719,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 			}
 			
 			// close open lines at the end
-			if (i == dimRange - 1 || x > bwImg.size().width - 1 || x < 0 || y > bwImg.size().height - 1 || y < 0) {
+			if (i == dimRange - 1 || x > bwImg.cols - 1 || x < 0 || y > bwImg.rows - 1 || y < 0) {
 				if (active) {
 					LineSegment l;
 					if (!inGap) {
@@ -755,10 +738,10 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 				break;
 			}
 			
-			if (bwImg.at<std::uint8_t>((int) ceil(y), (int) ceil(x)) != 0 ||
-					bwImg.at<std::uint8_t>((int) ceil(y), (int) floor(x)) != 0 || 
-					bwImg.at<std::uint8_t>((int) floor(y), (int) ceil(x)) != 0 ||
-					bwImg.at<std::uint8_t>((int) floor(y), (int) floor(x)) != 0) {
+			if (bwImg.at<unsigned char>((int) ceil(y), (int) ceil(x)) != 0 ||
+					bwImg.at<unsigned char>((int) ceil(y), (int) floor(x)) != 0 || 
+					bwImg.at<unsigned char>((int) floor(y), (int) ceil(x)) != 0 ||
+					bwImg.at<unsigned char>((int) floor(y), (int) floor(x)) != 0) {
 				
 				if (!active) {
 					startPos = cv::Point2f(x, y);
@@ -782,13 +765,8 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 			prevPos = cv::Point2f(x, y);
 		}
 		
-//		std::cout << "DEBUG: acc " << line.acc << " (" << line.rho << ", " << line.angle << "), segments: ";
-//		for (int k = 0; k < lineSegmentsCurrent.size(); k++) {
-//			std::cout << lineSegmentsCurrent[k].length << " ";
-//		}
-//		std::cout << std::endl;
 		// for every line in houghLines add only the longest line (including gaps) that was found in the image
-		assert(lineSegmentsCurrent.size() > 0);
+		assert(lineSegmentsCurrent.size() > 0); // TODO replace
 		auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
 		lineSegments.push_back(*longestLineSegmentIt);
 	}
@@ -829,34 +807,33 @@ std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegme
 	return std::pair<bool, cv::Point2f>(r, cv::Point2f(x));
 }
 
-cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int threshold) {
-	assert(gray_.type() == CV_8U);
+cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int threshold) {
+	assert(gray.type() == CV_8U); // TODO replace
 	static const float eps = 0.001f;
-	cv::Mat gray;
 	cv::Mat bw;
 	cv::Mat sobel_h;
 	cv::Mat sobel_v;
-	cv::Mat sobel_angle = cv::Mat::zeros(gray_.size(), CV_32F);
-	cv::GaussianBlur(gray_, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
+	cv::Mat sobel_angle = cv::Mat::zeros(gray.size(), CV_32F);
+	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
 	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
 	cv::Sobel(gray, sobel_h, CV_32F, 0, 1, 3);
 	cv::Sobel(gray, sobel_v, CV_32F, 1, 0, 3);
-	for (int i = 0; i < sobel_angle.size().height; i++) {
-		for (int j = 0; j < sobel_angle.size().width; j++) {
+	
+	for (size_t i = 0; i < sobel_angle.rows; i++) {
+		for (size_t j = 0; j < sobel_angle.cols; j++) {
 			// calculate gradient angle
-			sobel_angle.at<float>(i, j) = (atan2(sobel_v.at<float>(i, j), sobel_h.at<float>(i, j)));
+			float angle = (atan2(sobel_v.at<float>(i, j), sobel_h.at<float>(i, j)));
 			// shift [-pi, 0] to [pi, 2pi]
-			if (sobel_angle.at<float>(i, j) < 0.0f) {
-				sobel_angle.at<float>(i, j) += 2 * CV_PI;
+			if (angle < 0.0f) {
+				angle += 2 * CV_PI;
 			}
 			// set 2pi to 0
-			if (sobel_angle.at<float>(i, j) >= 2 * CV_PI) {
-				sobel_angle.at<float>(i, j) = 0.0f;
+			if (angle >= 2 * CV_PI) {
+				angle = 0.0f;
 			}
+			sobel_angle.at<float>(i, j) = angle;
 		}
 	}
-//	cv::imshow("sobel_angle", sobel_angle / (2 * CV_PI));
-//	cv::waitKey();
 	
 	// edge plane decomposition
 	
@@ -864,16 +841,17 @@ cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int
 	std::vector<cv::Mat> E_i_ex(8);
 	cv::Mat H = cv::Mat::zeros(gray.size(), CV_8U);
 	cv::Mat mask;
-	cv::Mat M_text;
+	cv::Mat mask_factor = (cv::abs(sobel_h) > eps | cv::abs(sobel_v) > eps);
+	cv::Mat M_text_inv;
 	float rangeStart;
 	float rangeEnd;
 	// go through angles in pi/4 steps
 	for (int i = 0; i < 8; i++) {
-		E_i[i] = cv::Mat::zeros(gray.size(), CV_8U);
-		E_i_ex[i] = cv::Mat::zeros(gray.size(), CV_8U);
+		//E_i[i] = cv::Mat::zeros(gray.size(), CV_8U);
+		//E_i_ex[i] = cv::Mat::zeros(gray.size(), CV_8U);
 		rangeStart = CV_PI / 4 * i;
 		rangeEnd = CV_PI / 4 * (i + 1);
-		mask = ((sobel_angle >= rangeStart) & (sobel_angle < rangeEnd)) & (cv::abs(sobel_h) > eps | cv::abs(sobel_v) > eps);
+		mask = ((sobel_angle >= rangeStart) & (sobel_angle < rangeEnd)) & mask_factor;
 		E_i[i] = mask & bw;
 		cv::dilate(E_i[i], E_i_ex[i], cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * selemSize, 2 * selemSize)));
 		cv::threshold(E_i_ex[i], E_i_ex[i], 1, 1, cv::THRESH_TRUNC); // E_i_ex is binary, true pixels are 255, we have to truncate them to 1
@@ -881,18 +859,15 @@ cv::Mat PageExtractor::removeText(cv::Mat gray_, float sigma, int selemSize, int
 	}
 	
 	// remove text regions
-	M_text = H > threshold;
-//	cv::imshow("M_text", M_text);
-//	cv::waitKey();
-	std::vector<cv::Mat> T(8);
-	std::vector<cv::Mat> E_i_hat(8);
-	
+	M_text_inv = H <= threshold;
+	cv::Mat E_i_hat = cv::Mat::zeros(bw.size(), CV_8U);
 	for (int i = 0; i < 8; i++) {
-		T[i] = E_i[i] & M_text;
-		E_i_hat[i] = T[i] ^ E_i[i];
+		//T[i] = E_i[i] & M_text;
+		//E_i_hat[i] = T[i] ^ E_i[i];
+		E_i_hat = E_i_hat | (E_i[i] & M_text_inv); // equals (E_i[i] AND M_text) XOR E_i[i]
 	}
 	
-	return (E_i_hat[0] | E_i_hat[1] | E_i_hat[2] | E_i_hat[3] | E_i_hat[4] | E_i_hat[5] | E_i_hat[6] | E_i_hat[7]);
+	return E_i_hat;
 }
 
 };
