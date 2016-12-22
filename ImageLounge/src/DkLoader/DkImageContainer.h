@@ -214,9 +214,18 @@ protected:
 
 	QSharedPointer<FileDownloader> mFileDownloader;
 
+	enum UpdateStates {
+		update_idle,
+		update_pending,
+		update_loading,
+
+		update_end
+	};
+
+	int mWaitForUpdate = false;
+
 	bool mFetchingImage = false;
 	bool mFetchingBuffer = false;
-	bool mWaitForUpdate = false;
 	bool mDownloaded = false;
 
 	QTimer mFileUpdateTimer;
