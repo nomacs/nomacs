@@ -267,6 +267,7 @@ void DkCentralWidget::createLayout() {
 	//addTab(QFileInfo());
 
 	mProgressBar = new DkProgressBar(this);
+	//mProgressBar->setStyleSheet(mProgressBar->styleSheet() + "QProgressBar{background-color: #fff;}");
 	mProgressBar->hide();
 
 	mWidgets.resize(widget_end);

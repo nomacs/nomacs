@@ -2858,7 +2858,11 @@ void DkProgressBar::setVisibleTimed(bool visible, int time) {
 
 void DkProgressBar::paintEvent(QPaintEvent *) {
 
+	QStyleOption opt;
+	opt.init(this);
+
 	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 	p.setPen(Qt::NoPen);
 
 	if (parentWidget() && DkUtils::getMainWindow()->isFullScreen())
