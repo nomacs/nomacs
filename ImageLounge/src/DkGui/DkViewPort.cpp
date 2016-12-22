@@ -295,6 +295,7 @@ void DkViewPort::setImage(QImage newImg) {
 	
 	// init fading
 	if (DkSettingsManager::param().display().animationDuration && 
+		DkSettingsManager::param().display().transition != DkSettingsManager::param().trans_appear && 
 		(mController->getPlayer()->isPlaying() ||
 			DkUtils::getMainWindow()->isFullScreen() ||
 			DkSettingsManager::param().display().alwaysAnimate)) {
