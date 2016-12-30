@@ -36,7 +36,7 @@ namespace nmp {
 
 // DkSegmentBurger --------------------------------------------------------------------
 // This code is based on OpenCV's rectangle sample (squares.cpp)
-DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */) {
+DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */, bool alternativeMethod /* = false */) : alternativeMethod(alternativeMethod) {
 
 	this->img = colImg;
 }
@@ -77,157 +77,165 @@ QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
 void DkPageSegmentation::compute() {
 
-	//cv::Mat imgLab;
-
-	if (scale == 1.0f && img.rows > 700.0f)
-		scale = 700.0f / img.rows;
-
-	//cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
-	cv::Mat lImg = findRectangles(img, rects);
+	cv::Mat lImg;
+	if (alternativeMethod) {
+		if (scale == 1.0f && img.rows > 700.0f)
+			scale = 700.0f / img.rows;
+			
+		lImg = findRectanglesAlternative(img, rects);
+	} else {
+		cv::Mat imgLab;
+		
+		if (scale == 1.0f && 960.0f/img.cols < 0.8f)
+			scale = 960.0f/img.cols;
+			
+		cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
+		lImg = findRectangles(img, rects);
+	}
 
 	qDebug() << "[DkPageSegmentation] " << rects.size() << " rectangles circles found resize factor: " << scale;
 }
 
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
+	
+	cv::Mat tImg, gray;
 
+
+	if (scale != 1.0f)
+		cv::resize(img, tImg, cv::Size(), scale, scale, CV_INTER_AREA);	// inter nn -> assuming resize to be 1/(2^n)
+	else
+		tImg = img;
+
+	std::vector<std::vector<cv::Point> > contours;
+
+	cv::Mat gray0(tImg.size(), CV_8UC1);
+	cv::Mat lImg(tImg.size(), CV_8UC1);
+
+	// find squares in every color plane of the image
+	for( int c = 0; c < 3; c++ ) {
+
+		int ch[] = {c, 0};
+		mixChannels(&tImg, 1, &gray0, 1, ch, 1);
+		cv::normalize(gray0, gray0, 255, 0, cv::NORM_MINMAX);
+
+		if (c == 0)	// back-up the luminance channel - we use it as precomputed image for the circle detection
+			lImg = gray0.clone();
+
+		int nT = numThresh;//(c == 0) ? numThresh*2 : numThresh;	// more luminance thresholds
+
+							// try several threshold levels
+		for( int l = 0; l < nT; l++ ) {
+
+			// hack: use Canny instead of zero threshold level.
+			// Canny helps to catch squares with gradient shading
+			if( l == 0 ) {
+
+				Canny(gray0, gray, thresh, thresh*3, 5);
+				// dilate canny output to remove potential
+				// holes between edge segments
+				dilate(gray, gray, cv::Mat(), cv::Point(-1,-1));
+
+				//DkIP::imwrite("edgeImg.png", gray);
+			}
+			else {
+				gray = gray0 >= (l+1)*255/numThresh;
+			}
+
+			// find contours and store them all as a list
+			findContours(gray, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+
+			if (looseDetection) {
+				std::vector<std::vector<cv::Point> > hull;
+				for (int i = 0; i < (int)contours.size(); i++) { 
+
+					double cArea = contourArea(cv::Mat(contours[i]));
+
+					if (fabs(cArea) > minArea*scale*scale && (!maxArea || fabs(cArea) < maxArea*(scale*scale))) {
+						std::vector<cv::Point> cHull;
+						cv::convexHull(cv::Mat(contours[i]), cHull, false);
+						hull.push_back(cHull);
+					}
+				}
+
+				contours = hull;
+			}
+
+			std::vector<cv::Point> approx;
+
+			// DEBUG ------------------------
+			//cv::Mat pImg = image.clone();
+			//cv::cvtColor(pImg, pImg, CV_Lab2RGB);
+			// DEBUG ------------------------
+
+			// test each contour
+			for( size_t i = 0; i < contours.size(); i++ ) {
+				// approxicv::Mate contour with accuracy proportional
+				// to the contour perimeter
+				approxPolyDP(cv::Mat(contours[i]), approx, arcLength(cv::Mat(contours[i]), true)*0.02, true);
+
+				double cArea = contourArea(cv::Mat(approx));
+
+				// DEBUG ------------------------
+				//if (fabs(cArea) < maxArea)
+				//	fillConvexPoly(pImg, &approx[0], (int)approx.size(), DkUtils::blue);
+				// DEBUG ------------------------
+
+				// square contours should have 4 vertices after approxicv::Mation
+				// relatively large area (to filter out noisy contours)
+				// and be convex.
+				// Note: absolute value of an area is used because
+				// area may be positive or negative - in accordance with the
+				// contour orientation
+				if( approx.size() == 4 &&
+					fabs(cArea) > minArea*scale*scale &&
+					(!maxArea || fabs(cArea) < maxArea*scale*scale) && 
+					isContourConvex(cv::Mat(approx)) ) {
+
+					DkPolyRect cr(approx);
+					//moutc << minArea*scale*scale << " < " << fabs(cArea) << " < " << maxArea*scale*scale << dkendl;
+
+					// if cosines of all angles are small
+					// (all angles are ~90 degree)
+					if(/*cr.maxSide() < std::max(tImg.rows, tImg.cols)*maxSideFactor && */
+						(!maxSide || cr.maxSide() < maxSide*scale) && 
+						cr.getMaxCosine() < 0.3 ) {
+						rects.push_back(cr);
+					}
+				}
+			}
+			// DEBUG ------------------------
+			//cv::cvtColor(pImg, pImg, CV_RGB2BGR);
+			//DkIP::imwrite("polyImg" + DkUtils::stringify(c) + "-" + DkUtils::stringify(l) + ".png", pImg);
+			// DEBUG ------------------------
+		}
+	}
+
+	for (size_t idx = 0; idx < rects.size(); idx++)
+		rects[idx].scale(1.0f/scale);
+
+
+	// filter rectangles which are found because of the image border
+	std::vector<DkPolyRect> noLargeRects;
+	for (const DkPolyRect& p : rects) {
+
+		DkBox b = p.getBBox();
+
+		if (b.size().height < img.rows*maxSideFactor &&
+			b.size().width < img.cols*maxSideFactor) {
+			noLargeRects.push_back(p);
+		}
+	}
+
+	rects = noLargeRects;
+
+	return lImg;
+}
+
+cv::Mat DkPageSegmentation::findRectanglesAlternative(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
 	PageExtractor extractor;
 	extractor.findPage(img, scale, rects);
 
 	return img;
-	
-	//__________________________-
-	
-//	cv::Mat tImg, gray;
-//
-//
-//	if (scale != 1.0f)
-//		cv::resize(img, tImg, cv::Size(), scale, scale, CV_INTER_AREA);	// inter nn -> assuming resize to be 1/(2^n)
-//	else
-//		tImg = img;
-//
-//	std::vector<std::vector<cv::Point> > contours;
-//
-//	cv::Mat gray0(tImg.size(), CV_8UC1);
-//	cv::Mat lImg(tImg.size(), CV_8UC1);
-//
-//	// find squares in every color plane of the image
-//	for( int c = 0; c < 3; c++ ) {
-//
-//		int ch[] = {c, 0};
-//		mixChannels(&tImg, 1, &gray0, 1, ch, 1);
-//		cv::normalize(gray0, gray0, 255, 0, cv::NORM_MINMAX);
-//
-//		if (c == 0)	// back-up the luminance channel - we use it as precomputed image for the circle detection
-//			lImg = gray0.clone();
-//
-//		int nT = numThresh;//(c == 0) ? numThresh*2 : numThresh;	// more luminance thresholds
-//
-//							// try several threshold levels
-//		for( int l = 0; l < nT; l++ ) {
-//
-//			// hack: use Canny instead of zero threshold level.
-//			// Canny helps to catch squares with gradient shading
-//			if( l == 0 ) {
-//
-//				Canny(gray0, gray, thresh, thresh*3, 5);
-//				// dilate canny output to remove potential
-//				// holes between edge segments
-//				dilate(gray, gray, cv::Mat(), cv::Point(-1,-1));
-//
-//				//DkIP::imwrite("edgeImg.png", gray);
-//			}
-//			else {
-//				gray = gray0 >= (l+1)*255/numThresh;
-//			}
-//
-//			// find contours and store them all as a list
-//			findContours(gray, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-//
-//			if (looseDetection) {
-//				std::vector<std::vector<cv::Point> > hull;
-//				for (int i = 0; i < (int)contours.size(); i++) { 
-//
-//					double cArea = contourArea(cv::Mat(contours[i]));
-//
-//					if (fabs(cArea) > minArea*scale*scale && (!maxArea || fabs(cArea) < maxArea*(scale*scale))) {
-//						std::vector<cv::Point> cHull;
-//						cv::convexHull(cv::Mat(contours[i]), cHull, false);
-//						hull.push_back(cHull);
-//					}
-//				}
-//
-//				contours = hull;
-//			}
-//
-//			std::vector<cv::Point> approx;
-//
-//			// DEBUG ------------------------
-//			//cv::Mat pImg = image.clone();
-//			//cv::cvtColor(pImg, pImg, CV_Lab2RGB);
-//			// DEBUG ------------------------
-//
-//			// test each contour
-//			for( size_t i = 0; i < contours.size(); i++ ) {
-//				// approxicv::Mate contour with accuracy proportional
-//				// to the contour perimeter
-//				approxPolyDP(cv::Mat(contours[i]), approx, arcLength(cv::Mat(contours[i]), true)*0.02, true);
-//
-//				double cArea = contourArea(cv::Mat(approx));
-//
-//				// DEBUG ------------------------
-//				//if (fabs(cArea) < maxArea)
-//				//	fillConvexPoly(pImg, &approx[0], (int)approx.size(), DkUtils::blue);
-//				// DEBUG ------------------------
-//
-//				// square contours should have 4 vertices after approxicv::Mation
-//				// relatively large area (to filter out noisy contours)
-//				// and be convex.
-//				// Note: absolute value of an area is used because
-//				// area may be positive or negative - in accordance with the
-//				// contour orientation
-//				if( approx.size() == 4 &&
-//					fabs(cArea) > minArea*scale*scale &&
-//					(!maxArea || fabs(cArea) < maxArea*scale*scale) && 
-//					isContourConvex(cv::Mat(approx)) ) {
-//
-//					DkPolyRect cr(approx);
-//					//moutc << minArea*scale*scale << " < " << fabs(cArea) << " < " << maxArea*scale*scale << dkendl;
-//
-//					// if cosines of all angles are small
-//					// (all angles are ~90 degree)
-//					if(/*cr.maxSide() < std::max(tImg.rows, tImg.cols)*maxSideFactor && */
-//						(!maxSide || cr.maxSide() < maxSide*scale) && 
-//						cr.getMaxCosine() < 0.3 ) {
-//						rects.push_back(cr);
-//					}
-//				}
-//			}
-//			// DEBUG ------------------------
-//			//cv::cvtColor(pImg, pImg, CV_RGB2BGR);
-//			//DkIP::imwrite("polyImg" + DkUtils::stringify(c) + "-" + DkUtils::stringify(l) + ".png", pImg);
-//			// DEBUG ------------------------
-//		}
-//	}
-//
-//	for (size_t idx = 0; idx < rects.size(); idx++)
-//		rects[idx].scale(1.0f/scale);
-//
-//
-//	// filter rectangles which are found because of the image border
-//	std::vector<DkPolyRect> noLargeRects;
-//	for (const DkPolyRect& p : rects) {
-//
-//		DkBox b = p.getBBox();
-//
-//		if (b.size().height < img.rows*maxSideFactor &&
-//			b.size().width < img.cols*maxSideFactor) {
-//			noLargeRects.push_back(p);
-//		}
-//	}
-//
-//	rects = noLargeRects;
-//
-//	return lImg;
 }
 
 QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingRect & rect, const QColor & bgCol) const {
@@ -398,8 +406,6 @@ void DkPageSegmentation::draw(cv::Mat& img, const std::vector<DkPolyRect>& rects
 		r.draw(img, col);
 	}
 }
-
-
 
 };
 

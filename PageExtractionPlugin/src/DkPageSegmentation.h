@@ -39,7 +39,7 @@ class DkRotatingRect;
 class DkPageSegmentation {
 
 public:
-	DkPageSegmentation(const cv::Mat& colImg = cv::Mat());
+	DkPageSegmentation(const cv::Mat& colImg = cv::Mat(), bool alternativeMethod = false);
 
 	virtual void compute();
 	virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);
@@ -66,10 +66,12 @@ protected:
 	float maxSide = 0;
 	float maxSideFactor = 0.97f;
 	float scale = 1.0f;
+	bool alternativeMethod;
 
 	std::vector<DkPolyRect> rects;
 
 	virtual cv::Mat findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;
+	virtual cv::Mat findRectanglesAlternative(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;
 	QImage cropToRect(const QImage& img, const nmc::DkRotatingRect& rect, const QColor& bgCol = QColor(0,0,0)) const;
 	void drawRects(QPainter* p, const std::vector<DkPolyRect>& rects, const QColor& col = QColor(100, 100, 100)) const;
 };

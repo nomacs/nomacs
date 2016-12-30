@@ -58,6 +58,7 @@ public:
 		id_crop_to_page,
 		id_crop_to_metadata,
 		id_draw_to_page,
+		id_draw_to_page_alternative,
 		id_eval_page,
 		// add actions here
 

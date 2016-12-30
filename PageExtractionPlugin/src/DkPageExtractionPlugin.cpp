@@ -62,6 +62,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	menuNames[id_crop_to_page] = tr("Crop to Page");
 	menuNames[id_crop_to_metadata] = tr("Crop to Metadata");
 	menuNames[id_draw_to_page] = tr("Draw to Page");
+	menuNames[id_draw_to_page_alternative] = tr("Draw to page (alternative method)");
 	menuNames[id_eval_page] = tr("Evaluate Page");
 	mMenuNames = menuNames.toList();
 
@@ -72,6 +73,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips[id_crop_to_page] = tr("Finds a page in a document image and then crops the image to that page.");
 	statusTips[id_crop_to_metadata] = tr("Finds a page in a document image and then saves the coordinates to the XMP metadata.");
 	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
+	statusTips[id_draw_to_page_alternative] = tr("Finds a page in a document image and then draws the found document boundaries (alternative method).");
 	statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
 	mMenuStatusTips = statusTips.toList();
 
@@ -151,11 +153,15 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 
 	if (!mRunIDs.contains(runID) || !imgC)
 		return imgC;
-
+		
 	cv::Mat img = nmc::DkImage::qImage2Mat(imgC->image());
+	bool alternativeMethod = false;
+	if (runID == mRunIDs[id_draw_to_page_alternative]) {
+		alternativeMethod = true;
+	}
+	DkPageSegmentation segM(img, alternativeMethod);
 
 	// run the page segmentation
-	DkPageSegmentation segM(img);
 	segM.compute();
 	segM.filterDuplicates();
 
@@ -164,7 +170,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		imgC->setImage(segM.getCropped(imgC->image()), tr("Page Cropped"));
 	}
 	// save to metadata
-	if(runID == mRunIDs[id_crop_to_metadata]) {
+	else if(runID == mRunIDs[id_crop_to_metadata]) {
 		
 		if (segM.getRects().empty())
 			imgC = QSharedPointer<nmc::DkImageContainer>();	// notify parent
@@ -176,7 +182,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		}
 	}
 	// draw rectangles to the image
-	else if(runID == mRunIDs[id_draw_to_page]) {
+	else if(runID == mRunIDs[id_draw_to_page] || runID == mRunIDs[id_draw_to_page_alternative]) {
 		
 		QImage dImg = imgC->image();
 		segM.draw(dImg);
