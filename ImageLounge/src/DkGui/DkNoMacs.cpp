@@ -175,10 +175,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 }
 
 DkNoMacs::~DkNoMacs() {
-	release();
-}
-
-void DkNoMacs::release() {
 }
 
 void DkNoMacs::init() {
@@ -3078,10 +3074,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() {
-	release();
-}
-
-void DkNoMacsFrameless::release() {
 }
 
 void DkNoMacsFrameless::createContextMenu() {
@@ -3231,10 +3223,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 }
 
 DkNoMacsContrast::~DkNoMacsContrast() {
-	release();
-}
-
-void DkNoMacsContrast::release() {
 }
 
 void DkNoMacsContrast::createTransferToolbar() {

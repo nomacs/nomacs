@@ -357,6 +357,7 @@ DkThumbNailT::~DkThumbNailT() {
 	//	qDebug() << "[WARNING]: thumb watcher is started but not running while releasing!";
 	//}
 
+	// DESTRUCTOR: might be hot!
 	if (mFetching && DkSettingsManager::param().resources().numThumbsLoading > 0)
 		DkSettingsManager::param().resources().numThumbsLoading--;
 

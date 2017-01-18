@@ -332,8 +332,8 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 }
 
 DkMetaDataDock::~DkMetaDataDock() {
-	// DELETER TODO: move!
-	writeSettings();
+	// DESTRUCTOR: move!
+	//writeSettings();
 }
 
 void DkMetaDataDock::writeSettings() {
@@ -673,7 +673,8 @@ DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
 
 DkMetaDataHUD::~DkMetaDataHUD() {
 
-	saveSettings();
+	// DESTRUCTOR: move!
+	//saveSettings();
 }
 
 void DkMetaDataHUD::createLayout() {

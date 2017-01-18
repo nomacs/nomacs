@@ -157,10 +157,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 DkViewPort::~DkViewPort() {
 
-	release();
-}
-
-void DkViewPort::release() {
 }
 
 void DkViewPort::createShortcuts() {
@@ -1741,13 +1737,6 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 }
 
 DkViewPortFrameless::~DkViewPortFrameless() {
-
-	release();
-}
-
-void DkViewPortFrameless::release() {
-
-	DkViewPort::release();
 }
 
 void DkViewPortFrameless::setImage(QImage newImg) {
@@ -2154,13 +2143,6 @@ DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) :
 }
 
 DkViewPortContrast::~DkViewPortContrast() {
-
-	release();
-}
-
-void DkViewPortContrast::release() {
-
-	DkViewPort::release();
 }
 
 void DkViewPortContrast::changeChannel(int channel) {

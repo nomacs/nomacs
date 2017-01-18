@@ -91,8 +91,6 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
-
-	release();
 }
 
 void DkBaseViewPort::createShortcuts() {
@@ -130,9 +128,6 @@ void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
 
 	mMinZoom = minZoom;
 	mMaxZoom = maxZoom;
-}
-
-void DkBaseViewPort::release() {
 }
 
 // zoom - pan --------------------------------------------------------------------

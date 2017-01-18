@@ -67,7 +67,6 @@ DkImageContainer::DkImageContainer(const QString& filePath) {
 }
 
 DkImageContainer::~DkImageContainer() {
-
 }
 
 void DkImageContainer::init() {
