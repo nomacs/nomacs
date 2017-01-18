@@ -80,7 +80,7 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject* parent) : QObject(parent) {
 }
 
 DkTabInfo::~DkTabInfo() {
-	qDebug() << "tab at: " << mTabIdx << " released...";
+	//qDebug() << "tab at: " << mTabIdx << " released...";
 }
 
 bool DkTabInfo::operator ==(const DkTabInfo& o) const {
@@ -267,6 +267,7 @@ void DkCentralWidget::createLayout() {
 	//addTab(QFileInfo());
 
 	mProgressBar = new DkProgressBar(this);
+	//mProgressBar->setStyleSheet(mProgressBar->styleSheet() + "QProgressBar{background-color: #fff;}");
 	mProgressBar->hide();
 
 	mWidgets.resize(widget_end);

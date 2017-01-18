@@ -238,7 +238,6 @@ DkGradient::DkGradient(QWidget *parent)
 };
 
 DkGradient::~DkGradient() {
-
 };
 
 void DkGradient::init() {
@@ -592,8 +591,6 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 };
 
 DkTransferToolBar::~DkTransferToolBar() {
-
-	//saveSettings();
 };
 
 
@@ -887,7 +884,9 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 }
 
 DkCropToolBar::~DkCropToolBar() {
-	saveSettings();
+	
+	// DESTRUCTOR: move!
+	// saveSettings();
 }
 
 void DkCropToolBar::loadSettings() {

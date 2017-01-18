@@ -1246,12 +1246,17 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
 
 void DkThumbScene::showFile(const QString& filePath) {
 
-	if (filePath == QDir::currentPath() || filePath.isEmpty())
-		DkStatusBarManager::instance().setMessage(tr("").arg(QString::number(mThumbLabels.size())));
+	if (filePath == QDir::currentPath() || filePath.isEmpty()) {
+		int sf = getSelectedFiles().size();
+
+		if (sf > 1)
+			DkStatusBarManager::instance().setMessage(tr("%1 selected").arg(QString::number(sf)));
+		else
+			DkStatusBarManager::instance().setMessage(tr("%1 images").arg(QString::number(mThumbLabels.size())));
+	}
 	else
 		DkStatusBarManager::instance().setMessage(QFileInfo(filePath).fileName());
 
-	DkStatusBarManager::instance().setMessage(tr("%1 Images").arg(QString::number(mThumbLabels.size())), DkStatusBar::status_filenumber_info);
 }
 
 void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const {
@@ -1348,6 +1353,7 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	}
 	blockSignals(false);
 	emit selectionChanged();
+	showFile();	// update selection label
 }
 
 void DkThumbScene::copySelected() const {

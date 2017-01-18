@@ -177,10 +177,6 @@ DkPluginContainer::DkPluginContainer(const QString& pluginPath) {
 }
 
 DkPluginContainer::~DkPluginContainer() {
-
-	//if (mLoader) {
-	//	qDebug() << "unloaded: " << mLoader->unload();
-	//}
 }
 
 bool operator<(const QSharedPointer<DkPluginContainer>& l, const QSharedPointer<DkPluginContainer>& r) {
@@ -583,9 +579,7 @@ DkPluginTableWidget::DkPluginTableWidget(QWidget* parent) : QWidget(parent) {
 }
 
 DkPluginTableWidget::~DkPluginTableWidget() {
-
 }
-
 
 // create the main layout of the plugin manager
 void DkPluginTableWidget::createLayout() {

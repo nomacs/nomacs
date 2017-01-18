@@ -98,7 +98,6 @@ public:
 	DkBaseViewPort(QWidget *parent = 0);
 	virtual ~DkBaseViewPort();
 
-	virtual void release();
 	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {

@@ -138,13 +138,7 @@ class DllGuiExport DkNoMacs : public QMainWindow {
 public:
 
 	virtual ~DkNoMacs();
-
-	void release();
 	
-	//static int infoDialog(const QString& msg, QWidget* parent = 0, QString title = "Question");
-	//static int dialog(const QString& msg, QWidget* parent = 0, QString title = "Error");
-	//static QWidget* getDialogParent();
-
 	virtual DkViewPort* viewport() const;
 	virtual DkCentralWidget* getTabWidget() const;
 	
@@ -421,8 +415,6 @@ public:
 	
 	virtual ~DkNoMacsFrameless();
 
-	void release();
-	
 public slots:
 	virtual void enableNoImageActions(bool enable = true);
 	void exitFullScreen();
@@ -443,7 +435,6 @@ public:
 	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	
 	virtual ~DkNoMacsContrast();
-	void release();	
 
 protected:
 	void createTransferToolbar();

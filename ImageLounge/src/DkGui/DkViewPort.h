@@ -75,8 +75,6 @@ class DllGuiExport DkViewPort : public DkBaseViewPort {
 public:
 	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
-
-	virtual void release();
 	
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
@@ -251,7 +249,6 @@ public:
 	DkViewPortFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortFrameless();
 
-	void release();
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	virtual void setMainGeometry(const QRect &geometry) {
 		mMainScreen = geometry;
@@ -296,8 +293,6 @@ class DllGuiExport DkViewPortContrast : public DkViewPort {
 public:
 	DkViewPortContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortContrast();
-
-	void release();
 
 signals:
 	void tFSliderAdded(qreal pos) const;

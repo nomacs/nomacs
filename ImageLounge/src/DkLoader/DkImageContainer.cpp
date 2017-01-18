@@ -67,14 +67,13 @@ DkImageContainer::DkImageContainer(const QString& filePath) {
 }
 
 DkImageContainer::~DkImageContainer() {
-
 }
 
 void DkImageContainer::init() {
 
 	mEdited = false;
 	mSelected = false;
-	
+
 	// always keep in mind that a file does not exist
 	if (!mEdited && mLoadState != exists_not)
 		mLoadState = not_loaded;
@@ -613,8 +612,8 @@ void DkImageContainerT::checkForFileUpdates() {
 		changed = true;
 	}
 
-	if (mFileInfo.lastModified() != modifiedBefore)
-		mWaitForUpdate = true;
+	if (mWaitForUpdate != update_loading && mFileInfo.lastModified() != modifiedBefore)
+		mWaitForUpdate = update_pending;
 
 #ifdef WITH_QUAZIP
 	if(isFromZip()) 
@@ -635,9 +634,9 @@ void DkImageContainerT::checkForFileUpdates() {
 	// be more accurate. however, the locks are pretty nasty
 	// if the user e.g. wants to delete the file while watching
 	// it in nomacs
-	if (mWaitForUpdate && mFileInfo.isReadable()) {
-		mWaitForUpdate = false;
-		getThumb()->setImage(QImage());
+	if (mWaitForUpdate == update_pending && mFileInfo.isReadable()) {
+	
+		mWaitForUpdate = update_loading;
 		loadImageThreaded(true);
 	}
 
@@ -778,6 +777,21 @@ void DkImageContainerT::loadingFinished() {
 		mLoadState = not_loaded;
 		clear();
 		return;
+	}
+
+	// fix the update states
+	if (mWaitForUpdate != update_idle) {
+			
+		if (!getLoader()->hasImage()) {
+			mWaitForUpdate = update_pending;
+			mLoadState = not_loaded;
+			qInfo() << "could not load while updating - is somebody writing to the file?";
+			return;
+		}
+		else {
+			emit showInfoSignal(tr("updated..."));
+			mWaitForUpdate = update_idle;
+		}
 	}
 
 	if (!getLoader()->hasImage()) {
