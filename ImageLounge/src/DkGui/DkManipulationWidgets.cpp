@@ -26,7 +26,6 @@
  *******************************************************************************************************/
 
 #include "DkManipulationWidgets.h"
-#include "BorderLayout.h"
 #include "DkImageStorage.h"
 #include "DkUtils.h"
 
@@ -77,7 +76,6 @@ DkImageManipulationDialog::DkImageManipulationDialog(QWidget* parent, Qt::Window
 }
 
 DkImageManipulationDialog::~DkImageManipulationDialog() {
-
 }
 
 /**
@@ -174,13 +172,20 @@ void DkImageManipulationDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(buttons, BorderLayout::South);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-	borderLayout->addWidget(eastWidget, BorderLayout::East);
-	this->setSizeGripEnabled(false);
+	QWidget* dummy = new QWidget(this);
+	QHBoxLayout* cLayout = new QHBoxLayout(dummy);
+	cLayout->setContentsMargins(0, 0, 0, 0);
+	//cLayout->setSpacing(0);
 
-	this->setLayout(borderLayout);
+	cLayout->addWidget(centralWidget);
+	cLayout->addWidget(eastWidget);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(dummy);
+	layout->addWidget(buttons);
+
+	this->setSizeGripEnabled(false);
 }
 
 /**
@@ -290,8 +295,6 @@ DkImageManipulationWidget::DkImageManipulationWidget(QWidget *parent, DkImageMan
 };
 
 DkImageManipulationWidget::~DkImageManipulationWidget() {
-
-
 };
 
 /**
@@ -909,8 +912,6 @@ DkBrightness::DkBrightness(QWidget *parent, DkImageManipulationDialog *parentDia
 };
 
 DkBrightness::~DkBrightness() {
-
-
 };
 
 #ifdef WITH_OPENCV
@@ -1003,8 +1004,6 @@ DkContrast::DkContrast(QWidget *parent, DkImageManipulationDialog *parentDialog)
 };
 
 DkContrast::~DkContrast() {
-
-
 };
 
 #ifdef WITH_OPENCV
@@ -1097,8 +1096,6 @@ DkSaturation::DkSaturation(QWidget *parent, DkImageManipulationDialog *parentDia
 };
 
 DkSaturation::~DkSaturation() {
-
-
 };
 
 #ifdef WITH_OPENCV
@@ -1202,8 +1199,6 @@ DkHue::DkHue(QWidget *parent, DkImageManipulationDialog *parentDialog)
 };
 
 DkHue::~DkHue() {
-
-	
 };
 
 #ifdef WITH_OPENCV
@@ -1305,8 +1300,6 @@ DkGamma::DkGamma(QWidget *parent, DkImageManipulationDialog *parentDialog)
 };
 
 DkGamma::~DkGamma() {
-
-
 };
 
 #ifdef WITH_OPENCV
@@ -1403,8 +1396,6 @@ DkExposure::DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog)
 };
 
 DkExposure::~DkExposure() {
-
-
 };
 
 #ifdef WITH_OPENCV

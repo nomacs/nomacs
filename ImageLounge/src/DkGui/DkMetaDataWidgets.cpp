@@ -67,7 +67,6 @@ DkMetaDataModel::DkMetaDataModel(QObject* parent /* = 0 */) : QAbstractItemModel
 }
 
 DkMetaDataModel::~DkMetaDataModel() {
-
 	delete rootItem;
 }
 
@@ -333,6 +332,7 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 }
 
 DkMetaDataDock::~DkMetaDataDock() {
+	// DELETER TODO: move!
 	writeSettings();
 }
 

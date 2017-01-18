@@ -80,7 +80,7 @@ DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject* parent) : QObject(parent) {
 }
 
 DkTabInfo::~DkTabInfo() {
-	qDebug() << "tab at: " << mTabIdx << " released...";
+	//qDebug() << "tab at: " << mTabIdx << " released...";
 }
 
 bool DkTabInfo::operator ==(const DkTabInfo& o) const {
