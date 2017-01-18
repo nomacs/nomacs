@@ -33,6 +33,10 @@
 #include <sys/sysinfo.h>
 #endif
 
+#ifndef WITH_OPENCV
+#include <cassert>
+#endif
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QString>
 #include <QFileInfo>
