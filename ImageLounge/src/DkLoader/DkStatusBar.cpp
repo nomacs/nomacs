@@ -82,12 +82,8 @@ DkStatusBarManager::DkStatusBarManager() {
 
 DkStatusBarManager& DkStatusBarManager::instance() {
 
-	static QSharedPointer<DkStatusBarManager> inst;
-
-	if (!inst)
-		inst = QSharedPointer<DkStatusBarManager>(new DkStatusBarManager());
-
-	return *inst;
+	static DkStatusBarManager inst;
+	return inst;
 }
 
 void DkStatusBarManager::setMessage(const QString& msg, DkStatusBar::StatusLabel which) {

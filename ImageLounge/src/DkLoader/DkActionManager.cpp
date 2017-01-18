@@ -342,17 +342,15 @@ DkActionManager::DkActionManager() {
 	init();
 };
 
-DkActionManager::~DkActionManager() {}
+DkActionManager::~DkActionManager() {
 
-
-void noop_deleter_to_prevent_crash(DkActionManager*) {} 
+	qDebug() << "releasing...";
+}
 
 DkActionManager& DkActionManager::instance() { 
 
-	static QSharedPointer<DkActionManager> inst;
-	if (!inst)
-		inst = QSharedPointer<DkActionManager>(new DkActionManager(), noop_deleter_to_prevent_crash);
-	return *inst; 
+	static DkActionManager inst;
+	return inst; 
 }
 
 QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
@@ -1611,10 +1609,8 @@ DkGlobalProgress::~DkGlobalProgress() {}
 
 DkGlobalProgress& DkGlobalProgress::instance() { 
 
-	static QSharedPointer<DkGlobalProgress> inst;
-	if (!inst)
-		inst = QSharedPointer<DkGlobalProgress>(new DkGlobalProgress());
-	return *inst; 
+	static DkGlobalProgress inst;
+	return inst; 
 }
 
 void DkGlobalProgress::start() {

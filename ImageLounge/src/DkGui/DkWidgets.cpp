@@ -2650,9 +2650,9 @@ void DkRecentFilesWidget::updateFiles() {
 		connect(cLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
-	else {
-		qDebug() << "[Recent Files] loading stopped at" << rFileIdx << "history size:" << recentFiles.size();
-	}
+	//else {
+	//	qDebug() << "[Recent Files] loading stopped at" << rFileIdx << "history size:" << recentFiles.size();
+	//}
 
 	update();
 }

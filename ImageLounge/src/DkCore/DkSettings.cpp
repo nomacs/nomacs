@@ -923,16 +923,26 @@ DkSettings::Resources & DkSettings::resources() {
 
 DkSettingsManager::DkSettingsManager() {
 	
-	mParams = QSharedPointer<DkSettings>(new DkSettings());
-	mSettings = mParams->isPortable() ? QSharedPointer<QSettings>(new QSettings(mParams->settingsPath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
-
+	mParams = new DkSettings();
+	mSettings = mParams->isPortable() ? new QSettings(mParams->settingsPath(), QSettings::IniFormat) : new QSettings();
 }
 
 DkSettingsManager& DkSettingsManager::instance() { 
-	static QSharedPointer<DkSettingsManager> inst;
-	if (!inst)
-		inst = QSharedPointer<DkSettingsManager>(new DkSettingsManager());
-	return *inst; 
+	static DkSettingsManager inst;
+	return inst; 
+}
+
+DkSettingsManager::~DkSettingsManager() {
+
+	if (mSettings) {
+		delete mSettings;
+		mSettings = 0;
+	}
+
+	if (mParams) {
+		delete mParams;
+		mParams = 0;
+	}
 }
 
 DkSettings& DkSettingsManager::param() {

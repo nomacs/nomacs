@@ -83,6 +83,10 @@ class DllLoaderExport DkStatusBarManager {
 public:
 	static DkStatusBarManager& instance();
 
+	// singleton
+	DkStatusBarManager(DkStatusBarManager const&)   = delete;
+	void operator=(DkStatusBarManager const&)		= delete;
+
 	DkStatusBar* statusbar();
 	void setMessage(const QString& msg, DkStatusBar::StatusLabel which = DkStatusBar::status_pixel_info);
 

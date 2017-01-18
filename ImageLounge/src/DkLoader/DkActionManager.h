@@ -106,6 +106,10 @@ public:
 	static DkActionManager& instance();
 	~DkActionManager();
 
+	// singleton
+	DkActionManager(DkActionManager const&)		= delete;
+	void operator=(DkActionManager const&)		= delete;
+
 	enum FileMenuActions {
 		menu_file_open,
 		menu_file_open_dir,
@@ -516,8 +520,6 @@ public:
 
 protected:
 	DkActionManager();
-	DkActionManager(DkActionManager const&);	// remove
-	void operator=(DkActionManager const&);	// remove
 	
 	void init();
 	void createIcons();
@@ -585,6 +587,11 @@ class DllLoaderExport DkGlobalProgress : public QWidget {
 public:
 	static DkGlobalProgress& instance();
 	~DkGlobalProgress();
+
+	// singleton
+	DkGlobalProgress(DkGlobalProgress const&)   = delete;
+	void operator=(DkGlobalProgress const&)		= delete;
+
 
 	QObject* progressObject() const;
 	void start();

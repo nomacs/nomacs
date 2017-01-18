@@ -357,6 +357,13 @@ class DllCoreExport DkSettingsManager {
 
 public:
 	static DkSettingsManager& instance();
+	~DkSettingsManager();
+
+	// singleton
+	DkSettingsManager(DkSettingsManager const&)		= delete;
+	void operator=(DkSettingsManager const&)		= delete;
+
+
 	static DkSettings& param();		// convenience
 	QSettings& qSettings();
 	DkSettings& settings();			// rename
@@ -367,8 +374,8 @@ public:
 private:
 	DkSettingsManager();
 
-	QSharedPointer<QSettings> mSettings;
-	QSharedPointer<DkSettings> mParams;
+	QSettings* mSettings = 0;
+	DkSettings* mParams = 0;
 };
 
 };

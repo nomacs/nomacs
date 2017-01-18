@@ -256,6 +256,10 @@ public:
 	static DkPluginManager& instance();
 	~DkPluginManager();
 
+	// singleton
+	DkPluginManager(DkPluginManager const&)		= delete;
+	void operator=(DkPluginManager const&)		= delete;
+	
 	QVector<QSharedPointer<DkPluginContainer> > getPlugins() const;
 	QSharedPointer<DkPluginContainer> getPlugin(const QString& key) const;
 	QSharedPointer<DkPluginContainer> getPluginByName(const QString& pluginName) const;

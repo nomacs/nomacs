@@ -429,7 +429,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 			showRecentFiles(true);
 	}
 
-	qDebug() << "[MARKUS] tab mode: " << mTabInfos.at(idx)->getMode();
+	//qDebug() << "[MARKUS] tab mode: " << mTabInfos.at(idx)->getMode();
 
 	//switchWidget(tabInfos.at(idx)->getMode());
 }

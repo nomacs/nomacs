@@ -1026,12 +1026,8 @@ void DkDescriptionImage::selectionChanged(const QItemSelection&, const QItemSele
 // DkPluginManager --------------------------------------------------------------------
 DkPluginManager & DkPluginManager::instance() {
 
-	static QSharedPointer<DkPluginManager> inst;
-
-	if (!inst)
-		inst = QSharedPointer<DkPluginManager>(new DkPluginManager());
-
-	return *inst;
+	static DkPluginManager inst;
+	return inst;
 }
 
 DkPluginManager::DkPluginManager() {
@@ -1322,7 +1318,7 @@ void DkPluginActionManager::assignCustomPluginShortcuts() {
 			// assign widget shortcuts to all of them
 			action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 			mPluginDummyActions.append(action);
-			qDebug() << "new plugin action: " << psKeys.at(i);
+			//qDebug() << "new plugin action: " << psKeys.at(i);
 		}
 
 		settings.endGroup();
