@@ -344,11 +344,14 @@ DkActionManager::DkActionManager() {
 
 DkActionManager::~DkActionManager() {}
 
+
+void noop_deleter_to_prevent_crash(DkActionManager*) {} 
+
 DkActionManager& DkActionManager::instance() { 
 
 	static QSharedPointer<DkActionManager> inst;
 	if (!inst)
-		inst = QSharedPointer<DkActionManager>(new DkActionManager());
+		inst = QSharedPointer<DkActionManager>(new DkActionManager(), noop_deleter_to_prevent_crash);
 	return *inst; 
 }
 
