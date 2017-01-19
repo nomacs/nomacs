@@ -55,6 +55,7 @@
 #include <QDesktopWidget>
 #include <QSvgRenderer>
 #include <QMenu>
+#include <QtConcurrentRun>
 
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
@@ -145,9 +146,11 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), this, SLOT(pauseMovie(bool)));
 	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
 	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
-
+	
 	for (auto action : am.manipulatorActions())
 		connect(action, SIGNAL(triggered()), this, SLOT(applyManipulator()));
+
+	connect(&mManipulatorWatcher, SIGNAL(finished()), this, SLOT(manipulatorApplied()));
 
 	// TODO:
 	// one could blur the canvas if a transparent GUI is present
@@ -253,6 +256,9 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit movieLoadedSignal(false);
 	stopMovie();	// just to be sure
+
+	if (mManipulatorWatcher.isRunning())
+		mManipulatorWatcher.cancel();
 
 	//imgPyramid.clear();
 
@@ -665,6 +671,11 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 void DkViewPort::applyManipulator() {
 
+	if (mManipulatorWatcher.isRunning()) {
+		mController->setInfo(tr("Busy"));
+		return;
+	}
+
 	QAction* action = dynamic_cast<QAction*>(QObject::sender());
 
 	if (!action) {
@@ -673,20 +684,38 @@ void DkViewPort::applyManipulator() {
 	}
 
 	DkActionManager& am = DkActionManager::instance();
-	QSharedPointer<DkBaseManipulator> bm = am.manipulatorManager().manipulator(action);
+	mActiveManipulator = am.manipulatorManager().manipulator(action);
 
-	if (!bm) {
+	if (!mActiveManipulator) {
 		qWarning() << "could not find manipulator for:" << action;
 		return;
 	}
 
-	// TODO: thread here...
-	QImage img = bm->apply(getImage());
+	mManipulatorWatcher.setFuture(
+		QtConcurrent::run(
+			mActiveManipulator.data(), 
+			&nmc::DkBaseManipulator::apply,
+			getImage()));
+
+	DkGlobalProgress::instance().start();
+}
+
+void DkViewPort::manipulatorApplied() {
+
+	DkGlobalProgress::instance().stop();
+
+	if (mManipulatorWatcher.isCanceled() || !mActiveManipulator) {
+		qDebug() << "manipulator applied - but it's canceled";
+		return;
+	}
+
+	QImage img = mManipulatorWatcher.result();
 
 	if (!img.isNull())
-		setEditedImage(img, bm->name());
+		setEditedImage(img, mActiveManipulator->name());
 	else
-		mController->setInfo(bm->errorMessage());
+		mController->setInfo(mActiveManipulator->errorMessage());
+
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {
@@ -1402,6 +1431,9 @@ void DkViewPort::setEditedImage(const QImage& newImg, const QString& editName) {
 		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
 	}
+
+	if (mManipulatorWatcher.isRunning())
+		mManipulatorWatcher.cancel();
 
 	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
 

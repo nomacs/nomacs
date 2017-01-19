@@ -521,7 +521,7 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 
 QMenu * DkActionManager::createManipulatorMenu(QWidget * parent) {
 	
-	mManipulatorMenu = new QMenu(QObject::tr("&Image Manipulation"), parent);
+	mManipulatorMenu = new QMenu(QObject::tr("&Image"), parent);
 	
 	for (auto action : mManipulators.actions())
 		mManipulatorMenu->addAction(action);

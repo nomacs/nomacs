@@ -68,6 +68,7 @@ class DkPeer;
 class DkRotatingRect;
 class DkPluginInterface;
 class DkPluginContainer;
+class DkBaseManipulator;
 
 class DllGuiExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
@@ -170,7 +171,8 @@ public slots:
 	QMimeData* createMime() const;
 
 	// image manipulators
-	virtual void applyManipulator();	// TODO: make const if threading 
+	virtual void applyManipulator();
+	void manipulatorApplied();
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(const QImage& newImg);
@@ -230,6 +232,10 @@ protected:
 	QPoint mCurrentPixelPos;
 	
 	DkRotatingRect mCropRect;
+
+	// image manipulators
+	QFutureWatcher<QImage> mManipulatorWatcher;
+	QSharedPointer<DkBaseManipulator> mActiveManipulator;
 
 	// functions
 	virtual int swipeRecognition(QPoint start, QPoint end);
