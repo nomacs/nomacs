@@ -68,7 +68,7 @@ DkMessageBox::DkMessageBox(QWidget* parent /* = 0 */) : QDialog(parent) {
 
 DkMessageBox::~DkMessageBox() {
 	
-	// DESTRUCTOR: move!
+	// save settings
 	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("DkDialog");
 	settings.setValue(objectName(), !showAgain->isChecked());

@@ -81,7 +81,7 @@ DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 
 DkAppManager::~DkAppManager() {
 
-	// DESTRUCTOR: move!
+	// save settings
 	saveSettings();
 }
 

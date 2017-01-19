@@ -100,7 +100,7 @@ DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 
 DkCompressDialog::~DkCompressDialog() {
 	
-	// DESTRUCTOR: move!
+	// save settings
 	saveSettings();
 }
 

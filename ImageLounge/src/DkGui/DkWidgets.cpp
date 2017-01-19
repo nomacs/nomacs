@@ -422,7 +422,7 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 
 DkExplorer::~DkExplorer() {
 	
-	// DESTRUCTOR: move!
+	// save settings
 	writeSettings();
 }
 
@@ -2931,7 +2931,7 @@ DkGenericProfileWidget::DkGenericProfileWidget(const QString& name, QWidget* par
 
 DkGenericProfileWidget::~DkGenericProfileWidget() {
 
-	// DESTRUCTOR: move!
+	// save settings
 	for (int idx = 0; idx < mProfileList->count(); idx++) {
 		saveSettings(mProfileList->itemText(idx));
 	}
