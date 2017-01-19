@@ -78,4 +78,31 @@ public:
 	QImage apply(const QImage& img) const override;
 	QString errorMessage() const override;
 };
+
+class DkInvertManipulator : public DkBaseManipulator {
+
+public:
+	DkInvertManipulator(QAction* action = 0);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+};
+
+class DkFlipHManipulator : public DkBaseManipulator {
+
+public:
+	DkFlipHManipulator(QAction* action = 0);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+};
+
+class DkFlipVManipulator : public DkBaseManipulator {
+
+public:
+	DkFlipVManipulator(QAction* action = 0);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+};
 }

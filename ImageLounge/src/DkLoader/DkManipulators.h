@@ -76,6 +76,9 @@ public:
 		m_grayscale = 0,
 		m_auto_adjust,
 		m_normalize,
+		m_invert,
+		m_flip_h,
+		m_flip_v,
 
 		m_end
 	};

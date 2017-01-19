@@ -503,10 +503,7 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 
 	mEditMenu->addAction(mEditActions[menu_edit_transform]);
 	mEditMenu->addAction(mEditActions[menu_edit_crop]);
-	mEditMenu->addAction(mEditActions[menu_edit_flip_h]);
-	mEditMenu->addAction(mEditActions[menu_edit_flip_v]);
 	mEditMenu->addSeparator();
-	mEditMenu->addAction(mEditActions[menu_edit_invert]);
 #ifdef WITH_OPENCV
 	mEditMenu->addAction(mEditActions[menu_edit_unsharp]);
 	mEditMenu->addAction(mEditActions[menu_edit_tiny_planet]);
@@ -670,8 +667,6 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_cw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_ccw]);
 	editContextMenu->addAction(mEditActions[menu_edit_rotate_180]);
-	editContextMenu->addAction(mEditActions[menu_edit_flip_h]);
-	editContextMenu->addAction(mEditActions[menu_edit_flip_v]);
 	editContextMenu->addSeparator();
 	editContextMenu->addAction(mEditActions[menu_edit_transform]);
 	editContextMenu->addAction(mEditActions[menu_edit_crop]);
@@ -1138,15 +1133,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
 	mEditActions[menu_edit_crop]->setCheckable(true);
 	mEditActions[menu_edit_crop]->setChecked(false);
-
-	mEditActions[menu_edit_flip_h] = new QAction(QObject::tr("Flip &Horizontal"), parent);
-	mEditActions[menu_edit_flip_h]->setStatusTip(QObject::tr("Flip Image Horizontally"));
-
-	mEditActions[menu_edit_flip_v] = new QAction(QObject::tr("Flip &Vertical"), parent);
-	mEditActions[menu_edit_flip_v]->setStatusTip(QObject::tr("Flip Image Vertically"));
-
-	mEditActions[menu_edit_invert] = new QAction(QObject::tr("&Invert Image"), parent);
-	mEditActions[menu_edit_invert]->setStatusTip(QObject::tr("Invert the Image"));
 
 	mEditActions[menu_edit_unsharp] = new QAction(QObject::tr("&Unsharp Mask"), parent);
 	mEditActions[menu_edit_unsharp]->setStatusTip(QObject::tr("Stretches the Local Contrast of an Image"));

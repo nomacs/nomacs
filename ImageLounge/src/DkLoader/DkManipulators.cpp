@@ -86,6 +86,19 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
 	action->setStatusTip(QObject::tr("Normalize the Image"));
 	mManipulators[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
+
+	// flip horizontal
+	action = new QAction(QObject::tr("Flip &Horizontal"), parent);
+	action->setStatusTip(QObject::tr("Flip Image Horizontally"));
+	mManipulators[m_flip_h] = QSharedPointer<DkFlipHManipulator>::create(action);
+
+	action = new QAction(QObject::tr("Flip &Vertical"), parent);
+	action->setStatusTip(QObject::tr("Flip Image Vertically"));
+	mManipulators[m_flip_v] = QSharedPointer<DkFlipVManipulator>::create(action);
+
+	action = new QAction(QObject::tr("&Invert Image"), parent);
+	action->setStatusTip(QObject::tr("Invert the Image"));
+	mManipulators[m_invert] = QSharedPointer<DkInvertManipulator>::create(action);
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {

@@ -94,7 +94,7 @@ QImage DkAutoAdjustManipulator::apply(const QImage & img) const {
 }
 
 QString DkAutoAdjustManipulator::errorMessage() const {
-	return QString(QObject::tr("Could not auto adjust"));
+	return QString(QObject::tr("Cannot auto adjust"));
 }
 
 // DkNormalizeManipulator --------------------------------------------------------------------
@@ -113,6 +113,46 @@ QImage DkNormalizeManipulator::apply(const QImage & img) const {
 
 QString DkNormalizeManipulator::errorMessage() const {
 	return QObject::tr("The Image is Already Normalized...");
+}
+
+// DkInvertManipulator --------------------------------------------------------------------
+DkInvertManipulator::DkInvertManipulator(QAction * action) : DkBaseManipulator(action) {
+}
+
+QImage DkInvertManipulator::apply(const QImage & img) const {
+	
+	QImage imgR = img;
+	imgR.invertPixels();
+	return imgR;
+}
+
+QString DkInvertManipulator::errorMessage() const {
+	return QObject::tr("Cannot invert image");
+}
+
+// Flip Horizontally --------------------------------------------------------------------
+DkFlipHManipulator::DkFlipHManipulator(QAction * action) : DkBaseManipulator(action) {
+}
+
+QImage DkFlipHManipulator::apply(const QImage & img) const {
+	
+	return img.mirrored(true, false);
+}
+
+QString DkFlipHManipulator::errorMessage() const {
+	return QObject::tr("Cannot flip image");
+}
+
+// Flip Vertically --------------------------------------------------------------------
+DkFlipVManipulator::DkFlipVManipulator(QAction * action) : DkBaseManipulator(action) {
+}
+
+QImage DkFlipVManipulator::apply(const QImage & img) const {
+	return img.mirrored(false, true);
+}
+
+QString DkFlipVManipulator::errorMessage() const {
+	return QObject::tr("Cannot flip image");
 }
 
 }

@@ -401,9 +401,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_sort_descending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
-	connect(am.action(DkActionManager::menu_edit_flip_h), SIGNAL(triggered()), this, SLOT(flipImageHorizontal()));
-	connect(am.action(DkActionManager::menu_edit_flip_v), SIGNAL(triggered()), this, SLOT(flipImageVertical()));
-	connect(am.action(DkActionManager::menu_edit_invert), SIGNAL(triggered()), this, SLOT(invertImage()));
 	connect(am.action(DkActionManager::menu_edit_unsharp), SIGNAL(triggered()), this, SLOT(unsharpMask()));
 	connect(am.action(DkActionManager::menu_edit_tiny_planet), SIGNAL(triggered()), this, SLOT(tinyPlanet()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
@@ -481,8 +478,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_edit_copy_buffer)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_copy_color)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_wallpaper)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_flip_h)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_flip_v)->setEnabled(enable);
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(enable);
 #else
@@ -493,8 +488,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	am.action(DkActionManager::menu_edit_tiny_planet)->setEnabled(false);
 #endif
-
-	am.action(DkActionManager::menu_edit_invert)->setEnabled(enable);
 
 	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
 	
@@ -789,62 +782,6 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
-}
-
-void DkNoMacs::flipImageHorizontal() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-	img = img.mirrored(true, false);
-
-	if (img.isNull())
-		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
-	else
-		vp->setEditedImage(img, tr("Flipped"));
-}
-
-void DkNoMacs::flipImageVertical() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-	img = img.mirrored(false, true);
-
-	if (img.isNull())
-		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
-	else
-		vp->setEditedImage(img, tr("Flipped"));
-
-}
-
-void DkNoMacs::invertImage() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-	img.invertPixels();
-
-	if (img.isNull())
-		vp->getController()->setInfo(tr("Sorry, I cannot Invert the Image..."));
-	else
-		vp->setEditedImage(img, tr("Inverted"));
-
 }
 
 void DkNoMacs::unsharpMask() {
