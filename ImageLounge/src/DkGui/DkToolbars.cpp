@@ -886,7 +886,7 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 DkCropToolBar::~DkCropToolBar() {
 	
 	// DESTRUCTOR: move!
-	// saveSettings();
+	saveSettings();
 }
 
 void DkCropToolBar::loadSettings() {

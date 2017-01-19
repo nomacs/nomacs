@@ -82,7 +82,7 @@ DkClientManager::DkClientManager(const QString& title, QObject* parent) : QThrea
 DkClientManager::~DkClientManager() {
 	
 	// DESTRUCTOR: move!
-	//sendGoodByeToAll();	// does nothing...
+	sendGoodByeToAll();	// does nothing...
 };
 
 

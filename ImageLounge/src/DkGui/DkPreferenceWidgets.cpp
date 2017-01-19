@@ -1043,11 +1043,11 @@ DkFileAssociationsPreference::DkFileAssociationsPreference(QWidget* parent) : QW
 DkFileAssociationsPreference::~DkFileAssociationsPreference() {
 
 	// DESTRUCTOR: move!
-	//if (mSaveSettings) {
-	//	writeSettings();
-	//	mSaveSettings = false;
-	//	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
-	//}
+	if (mSaveSettings) {
+		writeSettings();
+		mSaveSettings = false;
+		DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	}
 }
 
 void DkFileAssociationsPreference::createLayout() {

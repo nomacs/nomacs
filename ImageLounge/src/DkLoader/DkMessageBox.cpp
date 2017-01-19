@@ -69,10 +69,10 @@ DkMessageBox::DkMessageBox(QWidget* parent /* = 0 */) : QDialog(parent) {
 DkMessageBox::~DkMessageBox() {
 	
 	// DESTRUCTOR: move!
-	//QSettings& settings = DkSettingsManager::instance().qSettings();
-	//settings.beginGroup("DkDialog");
-	//settings.setValue(objectName(), !showAgain->isChecked());
-	//settings.endGroup();
+	QSettings& settings = DkSettingsManager::instance().qSettings();
+	settings.beginGroup("DkDialog");
+	settings.setValue(objectName(), !showAgain->isChecked());
+	settings.endGroup();
 }
 
 void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons) {

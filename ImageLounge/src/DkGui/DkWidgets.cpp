@@ -423,7 +423,7 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 DkExplorer::~DkExplorer() {
 	
 	// DESTRUCTOR: move!
-	// writeSettings();
+	writeSettings();
 }
 
 void DkExplorer::createLayout() {
@@ -2932,9 +2932,9 @@ DkGenericProfileWidget::DkGenericProfileWidget(const QString& name, QWidget* par
 DkGenericProfileWidget::~DkGenericProfileWidget() {
 
 	// DESTRUCTOR: move!
-	//for (int idx = 0; idx < mProfileList->count(); idx++) {
-	//	saveSettings(mProfileList->itemText(idx));
-	//}
+	for (int idx = 0; idx < mProfileList->count(); idx++) {
+		saveSettings(mProfileList->itemText(idx));
+	}
 }
 
 void DkGenericProfileWidget::init() {
