@@ -74,6 +74,18 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action = new QAction(QObject::tr("&Grayscale"), parent);
 	action->setStatusTip(QObject::tr("Convert to Grayscale"));
 	mManipulators[m_grayscale] = QSharedPointer<DkGrayScaleManipulator>::create(action);
+
+	// auto adjust
+	action = new QAction(QObject::tr("&Auto Adjust"), parent);
+	action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_L);
+	action->setStatusTip(QObject::tr("Auto Adjust Image Contrast and Color Balance"));
+	mManipulators[m_auto_adjust] = QSharedPointer<DkAutoAdjustManipulator>::create(action);
+
+	// normalize
+	action = new QAction(QObject::tr("Nor&malize Image"), parent);
+	action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
+	action->setStatusTip(QObject::tr("Normalize the Image"));
+	mManipulators[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {

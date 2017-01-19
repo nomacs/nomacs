@@ -167,8 +167,6 @@ public:
 		menu_edit_flip_h,
 		menu_edit_flip_v,
 		menu_edit_invert,
-		menu_edit_norm,
-		menu_edit_auto_adjust,
 		menu_edit_unsharp,
 		menu_edit_tiny_planet,
 		menu_edit_wallpaper,
@@ -435,8 +433,6 @@ public:
 		shortcut_crop			= Qt::Key_C,
 		shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
 		shortcut_copy_color		= Qt::CTRL + Qt::ALT + Qt::Key_C,
-		shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
-		shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
 		// tools
 		shortcut_batch_processing = Qt::CTRL + Qt::SHIFT + Qt::Key_B,

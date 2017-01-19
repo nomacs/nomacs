@@ -403,8 +403,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
 	connect(am.action(DkActionManager::menu_edit_flip_h), SIGNAL(triggered()), this, SLOT(flipImageHorizontal()));
 	connect(am.action(DkActionManager::menu_edit_flip_v), SIGNAL(triggered()), this, SLOT(flipImageVertical()));
-	connect(am.action(DkActionManager::menu_edit_norm), SIGNAL(triggered()), this, SLOT(normalizeImage()));
-	connect(am.action(DkActionManager::menu_edit_auto_adjust), SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
 	connect(am.action(DkActionManager::menu_edit_invert), SIGNAL(triggered()), this, SLOT(invertImage()));
 	connect(am.action(DkActionManager::menu_edit_unsharp), SIGNAL(triggered()), this, SLOT(unsharpMask()));
 	connect(am.action(DkActionManager::menu_edit_tiny_planet), SIGNAL(triggered()), this, SLOT(tinyPlanet()));
@@ -485,8 +483,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_edit_wallpaper)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_flip_h)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_flip_v)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_norm)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_auto_adjust)->setEnabled(enable);
 #ifdef WITH_OPENCV
 	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(enable);
 #else
@@ -849,44 +845,6 @@ void DkNoMacs::invertImage() {
 	else
 		vp->setEditedImage(img, tr("Inverted"));
 
-}
-
-void DkNoMacs::normalizeImage() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-	
-	bool normalized = DkImage::normImage(img);
-
-	if (!normalized || img.isNull())
-		vp->getController()->setInfo(tr("The Image is Already Normalized..."));
-	else
-		vp->setEditedImage(img, tr("Normalized"));
-}
-
-void DkNoMacs::autoAdjustImage() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-
-	bool normalized = DkImage::autoAdjustImage(img);
-
-	if (!normalized || img.isNull())
-		vp->getController()->setInfo(tr("Sorry, I cannot Auto Adjust"));
-	else
-		vp->setEditedImage(img, tr("Auto Adjust"));
 }
 
 void DkNoMacs::unsharpMask() {

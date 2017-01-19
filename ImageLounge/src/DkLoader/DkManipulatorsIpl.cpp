@@ -80,4 +80,39 @@ QString DkGrayScaleManipulator::errorMessage() const {
 	return QObject::tr("Could not convert to grayscale");
 }
 
+// DkAutoAdjustManipulator --------------------------------------------------------------------
+DkAutoAdjustManipulator::DkAutoAdjustManipulator(QAction * action) : DkBaseManipulator(action) {
+}
+
+QImage DkAutoAdjustManipulator::apply(const QImage & img) const {
+	
+	QImage imgR = img;
+	if (DkImage::autoAdjustImage(imgR))
+		return imgR;
+
+	return QImage();
+}
+
+QString DkAutoAdjustManipulator::errorMessage() const {
+	return QString(QObject::tr("Could not auto adjust"));
+}
+
+// DkNormalizeManipulator --------------------------------------------------------------------
+DkNormalizeManipulator::DkNormalizeManipulator(QAction * action) : DkBaseManipulator(action) {
+}
+
+QImage DkNormalizeManipulator::apply(const QImage & img) const {
+	
+	QImage imgR = img;
+	if (DkImage::normImage(imgR)) {
+		return imgR;
+	}
+
+	return QImage();
+}
+
+QString DkNormalizeManipulator::errorMessage() const {
+	return QObject::tr("The Image is Already Normalized...");
+}
+
 }

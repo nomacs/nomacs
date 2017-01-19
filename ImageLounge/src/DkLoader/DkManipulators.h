@@ -64,7 +64,6 @@ public:
 	virtual QImage apply(const QImage& img) const = 0;
 
 private:
-
 	QAction* mAction = 0;
 };
 
@@ -75,6 +74,8 @@ public:
 	
 	enum ManipulatorActions {
 		m_grayscale = 0,
+		m_auto_adjust,
+		m_normalize,
 
 		m_end
 	};

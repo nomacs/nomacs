@@ -506,8 +506,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_flip_h]);
 	mEditMenu->addAction(mEditActions[menu_edit_flip_v]);
 	mEditMenu->addSeparator();
-	mEditMenu->addAction(mEditActions[menu_edit_auto_adjust]);
-	mEditMenu->addAction(mEditActions[menu_edit_norm]);
 	mEditMenu->addAction(mEditActions[menu_edit_invert]);
 #ifdef WITH_OPENCV
 	mEditMenu->addAction(mEditActions[menu_edit_unsharp]);
@@ -1146,16 +1144,6 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mEditActions[menu_edit_flip_v] = new QAction(QObject::tr("Flip &Vertical"), parent);
 	mEditActions[menu_edit_flip_v]->setStatusTip(QObject::tr("Flip Image Vertically"));
-
-	mEditActions[menu_edit_norm] = new QAction(QObject::tr("Nor&malize Image"), parent);
-	mEditActions[menu_edit_norm]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mEditActions[menu_edit_norm]->setShortcut(shortcut_norm_image);
-	mEditActions[menu_edit_norm]->setStatusTip(QObject::tr("Normalize the Image"));
-
-	mEditActions[menu_edit_auto_adjust] = new QAction(QObject::tr("&Auto Adjust"), parent);
-	mEditActions[menu_edit_auto_adjust]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mEditActions[menu_edit_auto_adjust]->setShortcut(shortcut_auto_adjust);
-	mEditActions[menu_edit_auto_adjust]->setStatusTip(QObject::tr("Auto Adjust Image Contrast and Color Balance"));
 
 	mEditActions[menu_edit_invert] = new QAction(QObject::tr("&Invert Image"), parent);
 	mEditActions[menu_edit_invert]->setStatusTip(QObject::tr("Invert the Image"));

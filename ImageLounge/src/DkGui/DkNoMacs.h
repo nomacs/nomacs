@@ -220,8 +220,6 @@ public slots:
 	virtual void newClientConnected(bool connected, bool local);
 	void flipImageHorizontal();
 	void flipImageVertical();
-	void normalizeImage();
-	void autoAdjustImage();
 	void unsharpMask();
 	void tinyPlanet();
 	void invertImage();

@@ -51,7 +51,6 @@
 namespace nmc {
 
 // nomacs defines
-class DkImageContainer;
 
 class DkGrayScaleManipulator : public DkBaseManipulator {
 
@@ -62,4 +61,21 @@ public:
 	QString errorMessage() const override;
 };
 
+class DkAutoAdjustManipulator : public DkBaseManipulator {
+
+public:
+	DkAutoAdjustManipulator(QAction* action = 0);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+};
+
+class DkNormalizeManipulator : public DkBaseManipulator {
+
+public:
+	DkNormalizeManipulator(QAction* action = 0);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+};
 }
