@@ -169,7 +169,7 @@ public slots:
 	virtual bool unloadImage(bool fileChange = true);
 
 	virtual void setImage(QImage newImg);
-
+	
 protected:
 	virtual bool event(QEvent *event) override;
 	virtual void keyPressEvent(QKeyEvent *event) override;

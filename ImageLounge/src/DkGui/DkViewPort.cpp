@@ -106,6 +106,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	addActions(am.fileActions().toList());
 	addActions(am.viewActions().toList());
 	addActions(am.editActions().toList());
+	addActions(am.manipulatorActions().toList());
 	addActions(am.sortActions().toList());
 	addActions(am.toolsActions().toList());
 	addActions(am.panelActions().toList());
@@ -144,6 +145,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), this, SLOT(pauseMovie(bool)));
 	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
 	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
+
+	for (auto action : am.manipulatorActions())
+		connect(action, SIGNAL(triggered()), this, SLOT(applyManipulator()));
 
 	// TODO:
 	// one could blur the canvas if a transparent GUI is present
@@ -657,6 +661,32 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 	plugin->setActive(false);
 #endif
+}
+
+void DkViewPort::applyManipulator() {
+
+	QAction* action = dynamic_cast<QAction*>(QObject::sender());
+
+	if (!action) {
+		qWarning() << "applyManipulator is not called from its action!";
+		return;
+	}
+
+	DkActionManager& am = DkActionManager::instance();
+	QSharedPointer<DkBaseManipulator> bm = am.manipulatorManager().manipulator(action);
+
+	if (!bm) {
+		qWarning() << "could not find manipulator for:" << action;
+		return;
+	}
+
+	// TODO: thread here...
+	QImage img = bm->apply(getImage());
+
+	if (!img.isNull())
+		setEditedImage(img, bm->name());
+	else
+		mController->setInfo(bm->errorMessage());
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {

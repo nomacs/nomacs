@@ -169,6 +169,9 @@ public slots:
 	void copyImage();
 	QMimeData* createMime() const;
 
+	// image manipulators
+	virtual void applyManipulator();	// TODO: make const if threading 
+
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(const QImage& newImg);
 	virtual void loadImage(QSharedPointer<DkImageContainerT> img);

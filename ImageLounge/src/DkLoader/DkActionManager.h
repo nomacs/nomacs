@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "DkManipulators.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QAction>
@@ -165,7 +167,6 @@ public:
 		menu_edit_flip_h,
 		menu_edit_flip_v,
 		menu_edit_invert,
-		menu_edit_gray_convert,	
 		menu_edit_norm,
 		menu_edit_auto_adjust,
 		menu_edit_unsharp,
@@ -465,6 +466,7 @@ public:
 	QMenu* openWithMenu() const;
 	QMenu* viewMenu() const;
 	QMenu* editMenu() const;
+	QMenu* manipulatorMenu() const;
 	QMenu* toolsMenu() const;
 	QMenu* panelMenu() const;
 	//QMenu* pluginMenu() const;
@@ -473,6 +475,8 @@ public:
 	QMenu* syncMenu() const;
 	DkTcpMenu* localMenu() const;
 	DkTcpMenu* lanMenu() const;
+
+	DkManipulatorManager manipulatorManager() const;
 
 	void createActions(QWidget* parent);
 	void createMenus(QWidget* parent);
@@ -509,6 +513,7 @@ public:
 	QVector<QAction *> lanActions() const;
 	QVector<QAction *> helpActions() const;
 	QVector<QAction *> previewActions() const;
+	QVector<QAction *> manipulatorActions() const;
 
 	QVector<QAction *> allActions() const;
 
@@ -529,6 +534,7 @@ protected:
 	QMenu* createOpenWithMenu(QWidget* parent);
 	QMenu* createViewMenu(QWidget* parent);
 	QMenu* createEditMenu(QWidget* parent);
+	QMenu* createManipulatorMenu(QWidget* parent);
 	QMenu* createToolsMenu(QWidget* parent);
 	QMenu* createPanelMenu(QWidget* parent);
 	//QMenu* createPluginMenu(QWidget* parent);
@@ -550,7 +556,9 @@ protected:
 	QVector<QAction *> mHelpActions;
 	QVector<QAction *> mPreviewActions;
 
-	QVector<QAction *> mHiddenActions;	
+	QVector<QAction *> mHiddenActions;
+
+	DkManipulatorManager mManipulators;
 
 	// dynamic menus
 	QMenu* mFileMenu = 0;
@@ -558,6 +566,7 @@ protected:
 	QMenu* mSortMenu = 0;
 	QMenu* mViewMenu = 0;
 	QMenu* mEditMenu = 0;
+	QMenu* mManipulatorMenu = 0;
 	QMenu* mToolsMenu = 0;
 	QMenu* mPanelMenu = 0;
 	//QMenu* mPluginMenu = 0;

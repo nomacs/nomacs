@@ -509,7 +509,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_auto_adjust]);
 	mEditMenu->addAction(mEditActions[menu_edit_norm]);
 	mEditMenu->addAction(mEditActions[menu_edit_invert]);
-	mEditMenu->addAction(mEditActions[menu_edit_gray_convert]);
 #ifdef WITH_OPENCV
 	mEditMenu->addAction(mEditActions[menu_edit_unsharp]);
 	mEditMenu->addAction(mEditActions[menu_edit_tiny_planet]);
@@ -523,6 +522,16 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_preferences]);
 
 	return mEditMenu;
+}
+
+QMenu * DkActionManager::createManipulatorMenu(QWidget * parent) {
+	
+	mManipulatorMenu = new QMenu(QObject::tr("&Image Manipulation"), parent);
+	
+	for (auto action : mManipulators.actions())
+		mManipulatorMenu->addAction(action);
+
+	return mManipulatorMenu;
 }
 
 QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
@@ -803,6 +812,10 @@ QVector<QAction*> DkActionManager::previewActions() const {
 	return mPreviewActions;
 }
 
+QVector<QAction*> DkActionManager::manipulatorActions() const {
+	return mManipulators.actions();
+}
+
 DkAppManager* DkActionManager::appManager() const {
 	return mAppManager;
 }
@@ -851,12 +864,20 @@ QMenu* DkActionManager::syncMenu() const {
 	return mSyncMenu;
 }
 
+QMenu * DkActionManager::manipulatorMenu() const {
+	return mManipulatorMenu;
+}
+
 DkTcpMenu* DkActionManager::localMenu() const {
 	return mLocalMenu;
 }
 
 DkTcpMenu* DkActionManager::lanMenu() const {
 	return mLanMenu;
+}
+
+DkManipulatorManager DkActionManager::manipulatorManager() const {
+	return mManipulators;
 }
 
 void DkActionManager::createMenus(QWidget* parent) {
@@ -866,6 +887,7 @@ void DkActionManager::createMenus(QWidget* parent) {
 	createFileMenu(parent);
 	createViewMenu(parent);
 	createEditMenu(parent);
+	createManipulatorMenu(parent);
 	createToolsMenu(parent);
 	createPanelMenu(parent);
 	//createPluginMenu(parent);
@@ -1137,9 +1159,6 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mEditActions[menu_edit_invert] = new QAction(QObject::tr("&Invert Image"), parent);
 	mEditActions[menu_edit_invert]->setStatusTip(QObject::tr("Invert the Image"));
-
-	mEditActions[menu_edit_gray_convert] = new QAction(QObject::tr("&Convert to Grayscale"), parent);
-	mEditActions[menu_edit_gray_convert]->setStatusTip(QObject::tr("Convert to Grayscale"));
 
 	mEditActions[menu_edit_unsharp] = new QAction(QObject::tr("&Unsharp Mask"), parent);
 	mEditActions[menu_edit_unsharp]->setStatusTip(QObject::tr("Stretches the Local Contrast of an Image"));
@@ -1550,6 +1569,8 @@ void DkActionManager::createActions(QWidget* parent) {
 	mHiddenActions[sc_delete_silent]->setStatusTip(QObject::tr("Deletes a file without warning"));
 	mHiddenActions[sc_delete_silent]->setShortcut(QKeySequence(shortcut_delete_silent));
 
+	mManipulators.createManipulators(parent);
+
 	assignCustomShortcuts(allActions());
 
 	// automatically add status tip as tool tip
@@ -1567,6 +1588,7 @@ QVector<QAction*> DkActionManager::allActions() const {
 	all += openWithActions();
 	all += viewActions();
 	all += editActions();
+	all += manipulatorActions();
 	all += toolsActions();
 	all += panelActions();
 	all += syncActions();
@@ -1585,14 +1607,14 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 	QSettings& settings = DkSettingsManager::instance().qSettings();
 	settings.beginGroup("CustomShortcuts");
 
-	for (int idx = 0; idx < actions.size(); idx++) {
-		QString val = settings.value(actions[idx]->text(), "no-shortcut").toString();
+	for (QAction* a : actions) {
+		QString val = settings.value(a->text(), "no-shortcut").toString();
 
 		if (val != "no-shortcut")
-			actions[idx]->setShortcut(val);
+			a->setShortcut(val);
 
 		// assign widget shortcuts to all of them
-		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
 
 	settings.endGroup();

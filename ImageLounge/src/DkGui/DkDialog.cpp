@@ -4590,6 +4590,7 @@ void DkDialogManager::openShortcutsDialog() const {
 	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
 	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
 	shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
+	shortcutsDialog->addActions(am.manipulatorActions(), am.manipulatorMenu()->title());
 	shortcutsDialog->addActions(am.viewActions(), am.viewMenu()->title());
 	shortcutsDialog->addActions(am.panelActions(), am.panelMenu()->title());
 	shortcutsDialog->addActions(am.toolsActions(), am.toolsMenu()->title());

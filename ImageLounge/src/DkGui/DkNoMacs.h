@@ -225,7 +225,6 @@ public slots:
 	void unsharpMask();
 	void tinyPlanet();
 	void invertImage();
-	void convert2gray();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);

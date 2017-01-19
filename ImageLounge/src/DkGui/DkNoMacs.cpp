@@ -349,6 +349,7 @@ void DkNoMacs::createMenu() {
 	DkActionManager& am = DkActionManager::instance();
 	mMenu->addMenu(am.fileMenu());
 	mMenu->addMenu(am.editMenu());
+	mMenu->addMenu(am.manipulatorMenu());
 	mMenu->addMenu(am.viewMenu());
 	mMenu->addMenu(am.panelMenu());
 	mMenu->addMenu(am.toolsMenu());
@@ -405,7 +406,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_edit_norm), SIGNAL(triggered()), this, SLOT(normalizeImage()));
 	connect(am.action(DkActionManager::menu_edit_auto_adjust), SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
 	connect(am.action(DkActionManager::menu_edit_invert), SIGNAL(triggered()), this, SLOT(invertImage()));
-	connect(am.action(DkActionManager::menu_edit_gray_convert), SIGNAL(triggered()), this, SLOT(convert2gray()));
 	connect(am.action(DkActionManager::menu_edit_unsharp), SIGNAL(triggered()), this, SLOT(unsharpMask()));
 	connect(am.action(DkActionManager::menu_edit_tiny_planet), SIGNAL(triggered()), this, SLOT(tinyPlanet()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
@@ -499,7 +499,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #endif
 
 	am.action(DkActionManager::menu_edit_invert)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_gray_convert)->setEnabled(enable);	
 
 	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
 	
@@ -850,50 +849,6 @@ void DkNoMacs::invertImage() {
 	else
 		vp->setEditedImage(img, tr("Inverted"));
 
-}
-
-void DkNoMacs::convert2gray() {
-
-	DkViewPort* vp = viewport();
-
-	if (!vp)
-		return;
-
-	viewport()->getController()->applyPluginChanges(true);
-
-	QImage img = vp->getImage();
-
-#ifdef WITH_OPENCV
-
-	cv::Mat cvImg = DkImage::qImage2Mat(img);
-	cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
-
-	std::vector<cv::Mat> imgs;
-	cv::split(cvImg, imgs);
-	
-	// get the luminance channel
-	if (!imgs.empty())
-		cvImg = imgs[0];
-
-	// convert it back for the painter
-	cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
-
-	img = DkImage::mat2QImage(cvImg);
-#else
-
-
-	QVector<QRgb> table(256);
-	for(int i=0;i<256;++i)
-		table[i]=qRgb(i,i,i);
-
-	img = img.convertToFormat(QImage::Format_Indexed8,table);
-
-#endif
-
-	if (img.isNull())
-		vp->getController()->setInfo(tr("Sorry, I cannot convert the Image..."));
-	else
-		vp->setEditedImage(img, tr("Grayscale"));
 }
 
 void DkNoMacs::normalizeImage() {
