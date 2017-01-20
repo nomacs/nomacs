@@ -151,6 +151,7 @@ public:
 		QBitArray showComment;
 		QBitArray showExplorer;
 		QBitArray showMetaDataDock;
+		QBitArray showEditDock;
 		QBitArray showHistoryDock;
 		bool showRecentFiles;
 		bool useLogFile;

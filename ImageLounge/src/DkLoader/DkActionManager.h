@@ -150,6 +150,7 @@ public:
 	};
 
 	enum EditMenuActions {
+		menu_edit_image,
 		menu_edit_rotate_cw,
 		menu_edit_rotate_ccw,
 		menu_edit_rotate_180,
@@ -320,6 +321,7 @@ public:
 	};
 
 	enum EditIcons {
+		icon_edit_image,
 		icon_edit_rotate_cw,
 		icon_edit_rotate_ccw,
 		icon_edit_crop,
@@ -421,6 +423,7 @@ public:
 		shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
 
 		// edit
+		shortcut_edit_image		= Qt::Key_D,
 		shortcut_rotate_cw		= Qt::Key_R,
 		shortcut_rotate_ccw		= Qt::SHIFT + Qt::Key_R,
 		shortcut_transform		= Qt::CTRL + Qt::Key_R,

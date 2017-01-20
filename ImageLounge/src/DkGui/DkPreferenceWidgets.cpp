@@ -227,31 +227,6 @@ QIcon DkPreferenceTabWidget::icon() const {
 	return mIcon;
 }
 
-// DkTabEntryWidget --------------------------------------------------------------------
-DkTabEntryWidget::DkTabEntryWidget(const QIcon& icon, const QString& text, QWidget* parent) : QPushButton(text, parent) {
-
-	setObjectName("DkTabEntryWidget");
-
-	QSize s(DkSettingsManager::param().effectiveIconSize(parent), DkSettingsManager::param().effectiveIconSize(parent));
-	QPixmap pm = DkImage::colorizePixmap(icon.pixmap(s), QColor(255, 255, 255));
-	setIcon(pm);
-	setIconSize(s);
-
-	setFlat(true);
-	setCheckable(true);
-}
-
-void DkTabEntryWidget::paintEvent(QPaintEvent *event) {
-
-	// fixes stylesheets which are not applied to custom widgets
-	QStyleOption opt;
-	opt.init(this);
-	QPainter p(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
-	QPushButton::paintEvent(event);
-}
-
 // DkGroupWidget --------------------------------------------------------------------
 DkGroupWidget::DkGroupWidget(const QString& title, QWidget* parent) : QWidget(parent) {
 

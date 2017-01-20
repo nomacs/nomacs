@@ -58,6 +58,7 @@ namespace nmc {
 
 class DkWorkingDirWidget;
 class DkSettingsWidget;
+class DkTabEntryWidget;
 
 // extend this class if you want to add general preference functions
 class DllGuiExport DkPreferenceTabWidget : public DkNamedWidget {
@@ -85,17 +86,6 @@ protected:
 	QPushButton* mInfoButton;
 
 	QIcon mIcon;
-};
-
-class DllGuiExport DkTabEntryWidget : public QPushButton {
-	Q_OBJECT
-
-public:
-	DkTabEntryWidget(const QIcon& icon, const QString& text, QWidget* parent);
-
-protected:
-	void paintEvent(QPaintEvent* event);
-
 };
 
 class DllGuiExport DkPreferenceWidget : public DkWidget {

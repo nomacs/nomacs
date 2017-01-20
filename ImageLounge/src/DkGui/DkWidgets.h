@@ -996,4 +996,16 @@ protected:
 	QString mSettingsGroup = "ILLEGAL_GENERIC_GROUP";
 };
 
+
+class DllGuiExport DkTabEntryWidget : public QPushButton {
+	Q_OBJECT
+
+public:
+	DkTabEntryWidget(const QIcon& icon, const QString& text, QWidget* parent);
+
+protected:
+	void paintEvent(QPaintEvent* event);
+
+};
+
 };

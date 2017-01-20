@@ -320,6 +320,9 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	tmpShow = settings.value("showMetaDataDock", app_p.showMetaDataDock).toBitArray();
 	if (tmpShow.size() == app_p.showMetaDataDock.size())	
 		app_p.showMetaDataDock = tmpShow;
+	tmpShow = settings.value("showEditDock", app_p.showMetaDataDock).toBitArray();
+	if (tmpShow.size() == app_p.showEditDock.size())	
+		app_p.showEditDock = tmpShow;
 	tmpShow = settings.value("showHistoryDock", app_p.showHistoryDock).toBitArray();
 	if (tmpShow.size() == app_p.showHistoryDock.size())	
 		app_p.showHistoryDock = tmpShow;
@@ -524,6 +527,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showExplorer", app_p.showExplorer);
 	if (force ||app_p.showMetaDataDock != app_d.showMetaDataDock)
 		settings.setValue("showMetaDataDock", app_p.showMetaDataDock);
+	if (force ||app_p.showEditDock != app_d.showEditDock)
+		settings.setValue("showEditDock", app_p.showEditDock);
 	if (force ||app_p.showHistoryDock != app_d.showHistoryDock)
 		settings.setValue("showHistoryDock", app_p.showHistoryDock);
 	if (force ||app_p.advancedSettings != app_d.advancedSettings)
@@ -761,6 +766,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showOverview = QBitArray(mode_end, false);
 	app_p.showExplorer = QBitArray(mode_end, false);
 	app_p.showMetaDataDock = QBitArray(mode_end, false);
+	app_p.showEditDock = QBitArray(mode_end, false);
 	app_p.showHistoryDock = QBitArray(mode_end, false);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;

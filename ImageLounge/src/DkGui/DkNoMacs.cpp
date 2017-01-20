@@ -38,6 +38,7 @@
 #include "DkManipulationWidgets.h"
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
+#include "DkManipulatorWidgets.h"
 #include "DkThumbsWidgets.h"
 #include "DkBatch.h"
 #include "DkCentralWidget.h"
@@ -413,6 +414,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_panel_transfertoolbar), SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 	connect(am.action(DkActionManager::menu_panel_explorer), SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
 	connect(am.action(DkActionManager::menu_panel_metadata_dock), SIGNAL(toggled(bool)), this, SLOT(showMetaDataDock(bool)));
+	connect(am.action(DkActionManager::menu_edit_image), SIGNAL(toggled(bool)), this, SLOT(showEditDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_history), SIGNAL(toggled(bool)), this, SLOT(showHistoryDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
 
@@ -860,6 +862,7 @@ void DkNoMacs::enterFullScreen() {
 
 	showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
 	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
+	showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
 	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
 
 	DkSettingsManager::param().app().maximizedMode = isMaximized();
@@ -886,6 +889,7 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettingsManager::param().app().showMovieToolBar) mMovieToolbar->show();
 		showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
 		showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
+		showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
 		showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
 
 		if(DkSettingsManager::param().app().maximizedMode) 
@@ -1184,7 +1188,8 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
 }
 
-void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
+void DkNoMacs::showEditDock(bool show, bool saveSettings) {
+//void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!mMetaDataDock) {
 
@@ -1200,6 +1205,25 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (getTabWidget()->getCurrentImage())
 		mMetaDataDock->setImage(getTabWidget()->getCurrentImage());
+}
+
+//void DkNoMacs::showEditDock(bool show, bool saveSettings) {
+void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
+
+	if (!mEditDock) {
+
+		mEditDock = new DkEditDock(tr("Edit Image"), this);
+		mEditDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_edit_image));
+		mEditDock->setDisplaySettings(&DkSettingsManager::param().app().showEditDock);
+		addDockWidget(mEditDock->getDockLocationSettings(Qt::RightDockWidgetArea), mEditDock);
+
+		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mEditDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
+	}
+
+	mEditDock->setVisible(show, saveSettings);
+
+	if (getTabWidget()->getCurrentImage())
+		mEditDock->setImage(getTabWidget()->getCurrentImage());
 }
 
 void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {

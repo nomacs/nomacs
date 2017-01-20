@@ -488,6 +488,8 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 
 	mEditMenu = new QMenu(QObject::tr("&Edit"), parent);
 
+	mEditMenu->addAction(mEditActions[menu_edit_image]);
+	mEditMenu->addSeparator();
 	mEditMenu->addAction(mEditActions[menu_edit_copy]);
 	mEditMenu->addAction(mEditActions[menu_edit_copy_buffer]);
 	mEditMenu->addAction(mEditActions[menu_edit_paste]);
@@ -661,6 +663,8 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	viewContextMenu->addAction(mViewActions[menu_view_fit_frame]);
 
 	QMenu* editContextMenu = mContextMenu->addMenu(QObject::tr("&Edit"));
+	editContextMenu->addAction(mEditActions[menu_edit_image]);
+	editContextMenu->addSeparator();
 	editContextMenu->addAction(mEditActions[menu_edit_undo]);
 	editContextMenu->addAction(mEditActions[menu_edit_redo]);
 	editContextMenu->addSeparator();
@@ -915,6 +919,7 @@ void DkActionManager::createIcons() {
 	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/nofilter.svg"), QIcon::Normal, QIcon::Off);
 
 	mEditIcons.resize(icon_edit_end);
+	mEditIcons[icon_edit_image] = DkImage::loadIcon(":/nomacs/img/manipulation.svg");
 	mEditIcons[icon_edit_rotate_cw] = DkImage::loadIcon(":/nomacs/img/rotate-cw.svg");
 	mEditIcons[icon_edit_rotate_ccw] = DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
 	mEditIcons[icon_edit_crop] = DkImage::loadIcon(":/nomacs/img/crop.svg");
@@ -1075,6 +1080,13 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	// edit actions
 	mEditActions.resize(menu_edit_end);
+
+	mEditActions[menu_edit_image] = new QAction(mEditIcons[icon_edit_image], QObject::tr("Edit &Image"), parent);
+	mEditActions[menu_edit_image]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_image]->setShortcut(QKeySequence(shortcut_edit_image));
+	mEditActions[menu_edit_image]->setStatusTip(QObject::tr("open image manipulation toolbox"));
+	mSortActions[menu_edit_image]->setCheckable(true);
+	mSortActions[menu_edit_image]->setChecked(DkSettingsManager::param().app().showEditDock.testBit(DkSettingsManager::param().app().currentAppMode));
 
 	mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw], QObject::tr("9&0%1 Clockwise").arg(dk_degree_str), parent);
 	mEditActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);

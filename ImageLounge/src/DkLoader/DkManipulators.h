@@ -51,6 +51,13 @@ namespace nmc {
 // nomacs defines
 class DkImageContainer;
 
+/// <summary>
+/// Base class of simple image manipulators.
+/// Manipulators are functions that map
+/// an image to an image (e.g. grayscale).
+/// If this class is extended, batch processing
+/// can make use of it too.
+/// </summary>
 class DllLoaderExport DkBaseManipulator {
 
 public:
@@ -65,6 +72,29 @@ public:
 
 private:
 	QAction* mAction = 0;
+};
+
+/// <summary>
+/// Extended image manipulators.
+/// These manipulators have settings
+/// and a UI that allows users to manipulate
+/// the settings.
+/// </summary>
+/// <seealso cref="DkBaseManipulator" />
+class DllLoaderExport DkBaseManipulatorExt : public DkBaseManipulator {
+
+public:
+	DkBaseManipulatorExt(QAction* action);
+
+	void setWidget(QWidget* widget);
+	QWidget* widget() const;
+
+	void setDirty(bool dirty);
+	bool isDirty() const;
+
+private:
+	QWidget* mWidget = 0;
+	bool mDirty = false;
 };
 
 class DllLoaderExport DkManipulatorManager {

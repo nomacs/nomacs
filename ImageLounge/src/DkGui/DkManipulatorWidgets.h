@@ -28,8 +28,11 @@
 
 #pragma once
 
+#include "DkBaseWidgets.h"
+#include "DkImageContainer.h"
+
 #pragma warning(push, 0)	// no warnings from includes
-// Qt Includes
+
 #pragma warning(pop)
 
 #ifndef DllExport
@@ -47,5 +50,42 @@
 namespace nmc {
 
 // nomacs defines
+
+class DkManipulatorWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkManipulatorWidget(QWidget* parent = 0);
+
+	void setImage(QSharedPointer<DkImageContainerT> imgC);
+
+public slots:
+	void selectManipulator();
+
+private:
+	void createLayout();
+
+	QSharedPointer<DkImageContainerT> mImgC;
+	QWidget* mSettingsWidget = 0;
+	QLabel* mPreview = 0;
+};
+
+class DkEditDock : public DkDockWidget {
+	Q_OBJECT
+
+public:
+	DkEditDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	void setImage(QSharedPointer<DkImageContainerT> imgC);
+
+protected:
+	void createLayout();
+
+	//void writeSettings();
+	//void readSettings();
+
+	DkManipulatorWidget* mMplWidget = 0;
+};
 
 }

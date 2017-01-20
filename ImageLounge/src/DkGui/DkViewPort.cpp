@@ -671,11 +671,6 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 void DkViewPort::applyManipulator() {
 
-	if (mManipulatorWatcher.isRunning()) {
-		mController->setInfo(tr("Busy"));
-		return;
-	}
-
 	QAction* action = dynamic_cast<QAction*>(QObject::sender());
 
 	if (!action) {
@@ -684,19 +679,36 @@ void DkViewPort::applyManipulator() {
 	}
 
 	DkActionManager& am = DkActionManager::instance();
-	mActiveManipulator = am.manipulatorManager().manipulator(action);
+	QSharedPointer<DkBaseManipulator> mpl = am.manipulatorManager().manipulator(action);
 
-	if (!mActiveManipulator) {
+	if (!mpl) {
 		qWarning() << "could not find manipulator for:" << action;
+		return;
+	}
+
+	// try to cast up
+	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
+
+	// mark dirty
+	if (mManipulatorWatcher.isRunning() && mplExt && mActiveManipulator == mpl) {
+		mplExt->setDirty(true);
+		return;
+	}
+
+	if (mManipulatorWatcher.isRunning()) {
+		mController->setInfo(tr("Busy"));
 		return;
 	}
 
 	mManipulatorWatcher.setFuture(
 		QtConcurrent::run(
-			mActiveManipulator.data(), 
+			mpl.data(), 
 			&nmc::DkBaseManipulator::apply,
 			getImage()));
 
+	mActiveManipulator = mpl;
+
+	// not working?
 	DkGlobalProgress::instance().start();
 }
 
@@ -716,6 +728,11 @@ void DkViewPort::manipulatorApplied() {
 	else
 		mController->setInfo(mActiveManipulator->errorMessage());
 
+	// trigger again if it's dirty
+	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
+	if (mplExt && mplExt->isDirty()) {
+		mplExt->action()->trigger();
+	}
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {

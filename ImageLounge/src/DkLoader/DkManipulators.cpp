@@ -128,4 +128,24 @@ QString DkBaseManipulator::errorMessage() const {
 	return "";
 }
 
+// DkBaseMainpulatorExt --------------------------------------------------------------------
+DkBaseManipulatorExt::DkBaseManipulatorExt(QAction * action) : DkBaseManipulator(action) {
+}
+
+void DkBaseManipulatorExt::setWidget(QWidget * widget) {
+	mWidget = widget;
+}
+
+QWidget * DkBaseManipulatorExt::widget() const {
+	return mWidget;
+}
+
+void DkBaseManipulatorExt::setDirty(bool dirty) {
+	mDirty = dirty;
+}
+
+bool DkBaseManipulatorExt::isDirty() const {
+	return mDirty;
+}
+
 }
