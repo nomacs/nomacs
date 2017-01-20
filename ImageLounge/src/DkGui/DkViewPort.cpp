@@ -40,6 +40,7 @@
 #include "DkActionManager.h"
 #include "DkStatusBar.h"
 #include "DkUtils.h"
+#include "DkBasicLoader.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -163,6 +164,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 }
 
 DkViewPort::~DkViewPort() {
+
+	mManipulatorWatcher.cancel();
+	mManipulatorWatcher.blockSignals(true);
+	mManipulatorWatcher.waitForFinished();
 
 }
 
@@ -700,11 +705,26 @@ void DkViewPort::applyManipulator() {
 		return;
 	}
 
+	// undo last if it is an extended manipulator
+	QImage img;
+	if (mplExt && imageContainer()) {
+
+		auto l = imageContainer()->getLoader();
+		if (l->lastEdit().editName() == mplExt->name()) {
+			l->undo();
+			qDebug() << "popping back...";
+		}
+
+		img = imageContainer()->image();
+	}
+	else
+		img = getImage();
+
 	mManipulatorWatcher.setFuture(
 		QtConcurrent::run(
 			mpl.data(), 
 			&nmc::DkBaseManipulator::apply,
-			getImage()));
+			img));
 
 	mActiveManipulator = mpl;
 
@@ -731,7 +751,9 @@ void DkViewPort::manipulatorApplied() {
 	// trigger again if it's dirty
 	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
 	if (mplExt && mplExt->isDirty()) {
+		mplExt->setDirty(false);
 		mplExt->action()->trigger();
+		qDebug() << "triggering manipulator - it's dirty";
 	}
 }
 

@@ -30,6 +30,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
+#include "DkManipulators.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 
@@ -51,6 +52,38 @@ namespace nmc {
 
 // nomacs defines
 
+	class DkBaseManipulatorWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkBaseManipulatorExt> baseManipulator() const;
+
+private:
+	QSharedPointer<DkBaseManipulatorExt> mBaseManipulator;
+};
+
+class DkTinyPlanetWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
+
+public slots:
+	void on_scaleSlider_valueChanged(int val);
+	void on_angleSlider_valueChanged(int val);
+	void on_invertBox_toggled(bool val);
+
+private:
+	void createLayout();
+
+
+};
+
+// dock --------------------------------------------------------------------
 class DkManipulatorWidget : public DkWidget {
 	Q_OBJECT
 
@@ -65,8 +98,9 @@ public slots:
 private:
 	void createLayout();
 
+	QVector<DkBaseManipulatorWidget*> mWidgets;
+
 	QSharedPointer<DkImageContainerT> mImgC;
-	QWidget* mSettingsWidget = 0;
 	QLabel* mPreview = 0;
 };
 
@@ -86,6 +120,8 @@ protected:
 	//void readSettings();
 
 	DkManipulatorWidget* mMplWidget = 0;
+
 };
+
 
 }

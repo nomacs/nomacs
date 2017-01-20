@@ -536,3 +536,15 @@ nmc--DkDescriptionEdit {
 	border: none;
 	background-color: rgba(0,0,0,0);
 }
+
+/* edit image */
+nmc--DkBaseManipulatorWidget QLabel QCheckBox {
+	/* color: #fff; */
+}
+
+
+nmc--DkBaseManipulatorWidget {
+	background-color: palette(light);
+	border-radius: 7px;
+}
+

@@ -33,11 +33,13 @@
 #include "DkUtils.h"
 #include "DkSettings.h"
 #include "DkImageStorage.h"
+#include "DkBasicWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QButtonGroup>
+#include <QCheckBox>
 #pragma warning(pop)
 
 namespace nmc {
@@ -45,13 +47,15 @@ namespace nmc {
 // DkManipulatorWidget --------------------------------------------------------------------
 DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	
+	// create widgets
+	DkActionManager& am = DkActionManager::instance();
+	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+
 	setObjectName("DkPreferenceTabs");
 	createLayout();
 
-	DkActionManager& am = DkActionManager::instance();
 	for (QAction* a : am.manipulatorActions())
 		connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
-
 }
 
 void DkManipulatorWidget::createLayout() {
@@ -89,9 +93,6 @@ void DkManipulatorWidget::createLayout() {
 	actionScroller->setWidget(actionWidget);
 	actionScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	// settings
-	mSettingsWidget = new QWidget(this);
-
 	// preview
 	mPreview = new QLabel(this);
 
@@ -106,13 +107,16 @@ void DkManipulatorWidget::createLayout() {
 
 	QWidget* mplWidget = new QWidget(this);
 	QVBoxLayout* mplLayout = new QVBoxLayout(mplWidget);
-	mplLayout->setAlignment(Qt::AlignBottom);
-	mplLayout->addWidget(undoButton);
-	mplLayout->addWidget(mSettingsWidget);
+	mplLayout->setAlignment(Qt::AlignTop);
+	
+	for (QWidget* w : mWidgets) 
+		mplLayout->addWidget(w);
 	mplLayout->addWidget(mPreview);
+	mplLayout->addWidget(undoButton);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setAlignment(Qt::AlignTop);
 	layout->addWidget(actionScroller);
 	layout->addWidget(mplWidget);
 }
@@ -138,24 +142,22 @@ void DkManipulatorWidget::selectManipulator() {
 	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
 
 	// compute preview
-	const QPixmap* pm = mPreview->pixmap();
-
-	if (mpl && pm) {
+	if (mpl && mImgC) {
 		DkTimer dt;
-		QImage img = mpl->apply(pm->toImage());
+		QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), 300)));
 		
 		if (!img.isNull())
 			mPreview->setPixmap(QPixmap::fromImage(img));
 		qDebug() << "preview computed in " << dt;
 	}
 
-	if (!mplExt) {
-		if (mSettingsWidget)
-			mSettingsWidget->hide();
-		return;
-	}
+	for (QWidget* w : mWidgets)
+		w->hide();
 
-	mSettingsWidget = mplExt->widget();
+	if (!mplExt)
+		return;
+
+	mplExt->widget()->show();
 }
 
 // DkMainpulatorDoc --------------------------------------------------------------------
@@ -173,5 +175,64 @@ void DkEditDock::createLayout() {
 void DkEditDock::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	mMplWidget->setImage(imgC);
 }
+
+// DkManipulatorWidget --------------------------------------------------------------------
+DkBaseManipulatorWidget::DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkWidget(parent) {
+	mBaseManipulator = manipulator;
+}
+
+QSharedPointer<DkBaseManipulatorExt> DkBaseManipulatorWidget::baseManipulator() const {
+	return mBaseManipulator;
+}
+
+// DkTinyPlanetWidget --------------------------------------------------------------------
+DkTinyPlanetWidget::DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+void DkTinyPlanetWidget::createLayout() {
+
+	// post processing sliders
+	DkSlider* scaleSlider = new DkSlider(tr("Planet Size"), this);
+	scaleSlider->setObjectName("scaleSlider");
+	scaleSlider->setMinimum(1);
+	scaleSlider->setMaximum(1000);
+	scaleSlider->setValue(manipulator()->size());
+
+	DkSlider* angleSlider = new DkSlider(tr("Angle"), this);
+	angleSlider->setObjectName("angleSlider");
+	angleSlider->setValue(manipulator()->angle());
+	angleSlider->setMinimum(-180);
+	angleSlider->setMaximum(179);
+
+	QCheckBox* invertBox = new QCheckBox(tr("Invert Planet"), this);
+	invertBox->setObjectName("invertBox");
+	invertBox->setChecked(manipulator()->inverted());
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(scaleSlider);
+	sliderLayout->addWidget(angleSlider);
+	sliderLayout->addWidget(invertBox);
+}
+
+void DkTinyPlanetWidget::on_scaleSlider_valueChanged(int val) {
+	manipulator()->setSize(val);
+}
+
+void DkTinyPlanetWidget::on_angleSlider_valueChanged(int val) {
+	manipulator()->setAngle(val);
+}
+
+void DkTinyPlanetWidget::on_invertBox_toggled(bool val) {
+	manipulator()->setInverted(val);
+}
+
+QSharedPointer<DkTinyPlanetManipulator> DkTinyPlanetWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkTinyPlanetManipulator>(baseManipulator());
+}
+
 
 }

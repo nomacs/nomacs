@@ -878,6 +878,10 @@ QVector<DkEditImage>* DkBasicLoader::history() {
 	return &mImages;
 }
 
+DkEditImage DkBasicLoader::lastEdit() const {
+	return mImages.last();
+}
+
 int DkBasicLoader::historyIndex() const {
 	return mImageIndex;
 }

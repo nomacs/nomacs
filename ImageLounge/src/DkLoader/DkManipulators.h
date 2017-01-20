@@ -93,16 +93,41 @@ public:
 	bool isDirty() const;
 
 private:
-	QWidget* mWidget = 0;
 	bool mDirty = false;
+	QWidget* mWidget = 0;
+};
+
+// Extended --------------------------------------------------------------------
+class DllLoaderExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkTinyPlanetManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setSize(int size);
+	int size() const;
+
+	void setAngle(int angle);
+	int angle() const;
+
+	void setInverted(bool invert);
+	bool inverted() const;
+
+private:
+	int mSize = 30;
+	int mAngle = 0;
+	bool mInverted = false;
 };
 
 class DllLoaderExport DkManipulatorManager {
 
 public:
 	DkManipulatorManager();
-	
-	enum ManipulatorActions {
+
+	// simple manipulators
+	enum ManipulatorId {
 		m_grayscale = 0,
 		m_auto_adjust,
 		m_normalize,
@@ -113,13 +138,22 @@ public:
 		m_end
 	};
 
+	// extended manipulators
+	enum ManipulatorExtId {
+		m_tiny_planet = m_end,
+
+		m_ext_end
+	};
+
 	void createManipulators(QWidget* parent);
 
 	QVector<QAction*> actions() const;
+	
+	QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId& mId) const;
+	QSharedPointer<DkBaseManipulator> manipulator(const ManipulatorId& mId) const;
 	QSharedPointer<DkBaseManipulator> manipulator(const QAction* action) const;
 
 private:
 	QVector<QSharedPointer<DkBaseManipulator> > mManipulators;
 };
-
 }

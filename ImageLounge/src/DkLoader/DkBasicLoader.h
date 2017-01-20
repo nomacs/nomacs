@@ -240,6 +240,8 @@ public:
 	void undo();
 	void redo();
 	QVector<DkEditImage>* history();
+	DkEditImage lastEdit() const;
+
 	void setHistoryIndex(int idx);
 	int historyIndex() const;
 
