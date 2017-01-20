@@ -121,6 +121,25 @@ private:
 	bool mInverted = false;
 };
 
+class DllLoaderExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkUnsharpMaskManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setSigma(int sigma);
+	int sigma() const;
+
+	void setAmount(int amount);
+	int amount() const;
+
+private:
+	int mSigma = 30;
+	int mAmount = 0;
+};
+
 class DllLoaderExport DkManipulatorManager {
 
 public:
@@ -141,6 +160,7 @@ public:
 	// extended manipulators
 	enum ManipulatorExtId {
 		m_tiny_planet = m_end,
+		m_unsharp_mask,
 
 		m_ext_end
 	};

@@ -79,6 +79,22 @@ public slots:
 
 private:
 	void createLayout();
+};
+
+class DkUnsharpMaskWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
+
+public slots:
+	void on_sigmaSlider_valueChanged(int val);
+	void on_amountSlider_valueChanged(int val);
+
+private:
+	void createLayout();
 
 
 };

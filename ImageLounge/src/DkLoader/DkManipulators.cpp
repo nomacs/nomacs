@@ -104,10 +104,17 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Invert the Image"));
 	mManipulators[m_invert] = QSharedPointer<DkInvertManipulator>::create(action);
 
+	// extended --------------------------------------------------------------------
 	// tiny planet
 	action = new QAction(QObject::tr("&Tiny Planet"), parent);
 	action->setStatusTip(QObject::tr("Create a Tiny Planet"));
 	mManipulators[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
+
+	// unsharlp mask
+	action = new QAction(QObject::tr("&Sharpen"), parent);
+	action->setStatusTip(QObject::tr("Sharpens the image by applying an unsharp mask"));
+	mManipulators[m_unsharp_mask] = QSharedPointer<DkUnsharpMaskManipulator>::create(action);
+
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {
@@ -220,6 +227,47 @@ void DkTinyPlanetManipulator::setInverted(bool inverted) {
 
 bool DkTinyPlanetManipulator::inverted() const {
 	return mInverted;
+}
+
+// DkUnsharlpMaskManipulator --------------------------------------------------------------------
+DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkUnsharpMaskManipulator::apply(const QImage & img) const {
+
+	QImage imgC = img.copy();
+	DkImage::unsharpMask(imgC, (float)sigma(), 1.0f+amount()/100.0f);
+	return imgC;
+}
+
+QString DkUnsharpMaskManipulator::errorMessage() const {
+	return QObject::tr("Cannot sharpen image");
+}
+
+void DkUnsharpMaskManipulator::setSigma(int sigma) {
+
+	if (mSigma == sigma)
+		return;
+
+	mSigma = sigma;
+	action()->trigger();
+}
+
+int DkUnsharpMaskManipulator::sigma() const {
+	return mSigma;
+}
+
+void DkUnsharpMaskManipulator::setAmount(int amount) {
+
+	if (mAmount == amount)
+		return;
+
+	mAmount = amount;
+	action()->trigger();
+}
+
+int DkUnsharpMaskManipulator::amount() const {
+	return mAmount;
 }
 
 }

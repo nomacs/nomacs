@@ -50,6 +50,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	// create widgets
 	DkActionManager& am = DkActionManager::instance();
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 
 	setObjectName("DkPreferenceTabs");
 	createLayout();
@@ -231,6 +232,43 @@ void DkTinyPlanetWidget::on_invertBox_toggled(bool val) {
 
 QSharedPointer<DkTinyPlanetManipulator> DkTinyPlanetWidget::manipulator() const {
 	return qSharedPointerDynamicCast<DkTinyPlanetManipulator>(baseManipulator());
+}
+
+// DkUnsharlpMaskWidget --------------------------------------------------------------------
+DkUnsharpMaskWidget::DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+void DkUnsharpMaskWidget::createLayout() {
+
+	// post processing sliders
+	DkSlider* sigmaSlider = new DkSlider(tr("Sigma"), this);
+	sigmaSlider->setObjectName("sigmaSlider");
+	sigmaSlider->setValue(manipulator()->sigma());
+	//darkenSlider->hide();
+
+	DkSlider* amountSlider = new DkSlider(tr("Amount"), this);
+	amountSlider->setObjectName("amountSlider");
+	amountSlider->setValue(manipulator()->amount());
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(sigmaSlider);
+	sliderLayout->addWidget(amountSlider);
+}
+
+void DkUnsharpMaskWidget::on_sigmaSlider_valueChanged(int val) {
+	manipulator()->setSigma(val);
+}
+
+void DkUnsharpMaskWidget::on_amountSlider_valueChanged(int val) {
+	manipulator()->setAmount(val);
+}
+
+QSharedPointer<DkUnsharpMaskManipulator> DkUnsharpMaskWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkUnsharpMaskManipulator>(baseManipulator());
 }
 
 
