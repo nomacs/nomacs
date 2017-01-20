@@ -116,7 +116,6 @@ void DkManipulatorWidget::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setAlignment(Qt::AlignTop);
 	layout->addWidget(actionScroller);
 	layout->addWidget(mplWidget);
 }

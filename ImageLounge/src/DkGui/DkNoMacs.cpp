@@ -403,7 +403,6 @@ void DkNoMacs::createActions() {
 
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
 	connect(am.action(DkActionManager::menu_edit_unsharp), SIGNAL(triggered()), this, SLOT(unsharpMask()));
-	connect(am.action(DkActionManager::menu_edit_tiny_planet), SIGNAL(triggered()), this, SLOT(tinyPlanet()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
 	connect(am.action(DkActionManager::menu_edit_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
 	//connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openSettings()));
@@ -484,11 +483,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(enable);
 #else
 	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(false);
-#endif
-#ifdef WITH_OPENCV
-	am.action(DkActionManager::menu_edit_tiny_planet)->setEnabled(enable);
-#else
-	am.action(DkActionManager::menu_edit_tiny_planet)->setEnabled(false);
 #endif
 
 	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
@@ -799,26 +793,6 @@ void DkNoMacs::unsharpMask() {
 	}
 
 	unsharpDialog->deleteLater();
-#endif
-}
-
-void DkNoMacs::tinyPlanet() {
-
-#ifdef WITH_OPENCV
-	
-	viewport()->getController()->applyPluginChanges(true);
-
-	DkTinyPlanetDialog* tinyPlanetDialog = new DkTinyPlanetDialog(this);
-	tinyPlanetDialog->setImage(viewport()->getImage());
-	
-	int answer = tinyPlanetDialog->exec();
-
-	if (answer == QDialog::Accepted) {
-		QImage editedImage = tinyPlanetDialog->getImage();
-		viewport()->setEditedImage(editedImage, tr("Tiny Planet"));
-	}
-
-	tinyPlanetDialog->deleteLater();
 #endif
 }
 

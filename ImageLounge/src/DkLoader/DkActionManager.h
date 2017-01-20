@@ -166,7 +166,6 @@ public:
 		menu_edit_delete,
 		menu_edit_crop,
 		menu_edit_unsharp,
-		menu_edit_tiny_planet,
 		menu_edit_wallpaper,
 
 		menu_edit_end,	// nothing beyond this point

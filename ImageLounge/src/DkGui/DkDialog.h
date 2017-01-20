@@ -729,47 +729,6 @@ protected:
 	QImage mImg;
 };
 
-class DkTinyPlanetDialog : public QDialog {
-	Q_OBJECT
-
-public:
-	DkTinyPlanetDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	QImage getImage();
-
-public slots:
-	void on_scaleLogSlider_valueChanged(int i);
-	void on_angleSlider_valueChanged(int i);
-	void on_invertBox_toggled(bool t);
-	void setFile(const QString& filePath);
-	void setImage(const QImage& img);
-	void computePreview();
-	void updateImageSlot(const QImage&);
-	void reject();
-	QImage computeTinyPlanet(const QImage& img, float scaleLog, double angle, QSize s);
-	void tinyPlanetFinished();
-
-signals:
-	void updateImage(const QImage& img);
-
-protected:
-	void createLayout();
-	void dropEvent(QDropEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void resizeEvent(QResizeEvent *event);
-
-	QLabel* mImgPreview = 0;
-	QLabel* mPreviewLabel = 0;
-	QDialogButtonBox* mButtons = 0;
-	QFutureWatcher<QImage> mTinyPlanetWatcher;
-
-	DkSlider* mScaleLogSlider = 0;
-	DkSlider* mAngleSlider = 0;
-	QCheckBox* mInvertBox = 0;
-
-	bool mProcessing = false;
-	QImage mImg;
-};
-
 class DkMosaicDialog : public QDialog {
 	Q_OBJECT
 

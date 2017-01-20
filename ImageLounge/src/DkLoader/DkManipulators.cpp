@@ -106,9 +106,8 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 
 	// tiny planet
 	action = new QAction(QObject::tr("&Tiny Planet"), parent);
-	action->setStatusTip(QObject::tr("Create a Tiny planet"));
+	action->setStatusTip(QObject::tr("Create a Tiny Planet"));
 	mManipulators[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
-
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {

@@ -508,7 +508,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addSeparator();
 #ifdef WITH_OPENCV
 	mEditMenu->addAction(mEditActions[menu_edit_unsharp]);
-	mEditMenu->addAction(mEditActions[menu_edit_tiny_planet]);
 #endif
 	mEditMenu->addSeparator();
 #ifdef Q_OS_WIN
@@ -1147,9 +1146,6 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mEditActions[menu_edit_unsharp] = new QAction(QObject::tr("&Unsharp Mask"), parent);
 	mEditActions[menu_edit_unsharp]->setStatusTip(QObject::tr("Stretches the Local Contrast of an Image"));
-
-	mEditActions[menu_edit_tiny_planet] = new QAction(QObject::tr("&Tiny Planet"), parent);
-	mEditActions[menu_edit_tiny_planet]->setStatusTip(QObject::tr("Computes a tiny planet image"));
 
 	mEditActions[menu_edit_delete] = new QAction(mEditIcons[icon_edit_delete], QObject::tr("&Delete"), parent);
 	mEditActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
