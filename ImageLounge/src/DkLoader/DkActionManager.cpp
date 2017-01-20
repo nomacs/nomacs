@@ -506,10 +506,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_transform]);
 	mEditMenu->addAction(mEditActions[menu_edit_crop]);
 	mEditMenu->addSeparator();
-#ifdef WITH_OPENCV
-	mEditMenu->addAction(mEditActions[menu_edit_unsharp]);
-#endif
-	mEditMenu->addSeparator();
 #ifdef Q_OS_WIN
 	mEditMenu->addAction(mEditActions[menu_edit_wallpaper]);
 	mEditMenu->addSeparator();
@@ -1143,9 +1139,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
 	mEditActions[menu_edit_crop]->setCheckable(true);
 	mEditActions[menu_edit_crop]->setChecked(false);
-
-	mEditActions[menu_edit_unsharp] = new QAction(QObject::tr("&Unsharp Mask"), parent);
-	mEditActions[menu_edit_unsharp]->setStatusTip(QObject::tr("Stretches the Local Contrast of an Image"));
 
 	mEditActions[menu_edit_delete] = new QAction(mEditIcons[icon_edit_delete], QObject::tr("&Delete"), parent);
 	mEditActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);

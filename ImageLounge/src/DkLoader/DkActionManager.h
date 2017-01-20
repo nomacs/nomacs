@@ -82,7 +82,7 @@ public:
 		app_idx_end
 	};
 
-	public slots:
+public slots:
 	void openTriggered() const;
 
 signals:
@@ -165,7 +165,6 @@ public:
 		menu_edit_transform,
 		menu_edit_delete,
 		menu_edit_crop,
-		menu_edit_unsharp,
 		menu_edit_wallpaper,
 
 		menu_edit_end,	// nothing beyond this point

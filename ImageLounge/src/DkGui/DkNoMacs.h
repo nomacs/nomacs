@@ -220,7 +220,6 @@ public slots:
 	void tcpSendWindowRect();
 	void tcpSendArrange();
 	virtual void newClientConnected(bool connected, bool local);
-	void unsharpMask();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);

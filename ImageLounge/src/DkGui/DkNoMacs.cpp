@@ -402,7 +402,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_sort_descending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
-	connect(am.action(DkActionManager::menu_edit_unsharp), SIGNAL(triggered()), this, SLOT(unsharpMask()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
 	connect(am.action(DkActionManager::menu_edit_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
 	//connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openSettings()));
@@ -479,11 +478,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_edit_copy_buffer)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_copy_color)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_wallpaper)->setEnabled(enable);
-#ifdef WITH_OPENCV
-	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(enable);
-#else
-	am.action(DkActionManager::menu_edit_unsharp)->setEnabled(false);
-#endif
 
 	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
 	
@@ -778,22 +772,6 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
-}
-
-void DkNoMacs::unsharpMask() {
-#ifdef WITH_OPENCV
-	viewport()->getController()->applyPluginChanges(true);
-
-	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
-	unsharpDialog->setImage(viewport()->getImage());
-	int answer = unsharpDialog->exec();
-	if (answer == QDialog::Accepted) {
-		QImage editedImage = unsharpDialog->getImage();
-		viewport()->setEditedImage(editedImage, tr("Unsharp Mask"));
-	}
-
-	unsharpDialog->deleteLater();
-#endif
 }
 
 void DkNoMacs::readSettings() {

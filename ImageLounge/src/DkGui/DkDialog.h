@@ -692,42 +692,6 @@ protected:
 };
 
 #ifdef WITH_OPENCV
-class DkUnsharpDialog : public QDialog {
-	Q_OBJECT
-
-public:
-	DkUnsharpDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-	QImage getImage();
-
-public slots:
-	void on_sigmaSlider_valueChanged(int i);
-	void on_amountSlider_valueChanged(int i);
-	void setFile(const QString& filePath);
-	void setImage(const QImage& img);
-	void computePreview();
-	void reject();
-	QImage computeUnsharp(const QImage& img, int sigma, int amount);
-	void unsharpFinished();
-
-signals:
-	void updateImage(const QImage& img) const;
-
-protected:
-	void createLayout();
-	void dropEvent(QDropEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-
-	DkBaseViewPort* mViewport;
-	QLabel* mPreview;
-	QDialogButtonBox* mButtons;
-	QFutureWatcher<QImage> mUnsharpWatcher;
-
-	DkSlider* mSigmaSlider;
-	DkSlider* mAmountSlider;
-
-	bool mProcessing = false;
-	QImage mImg;
-};
 
 class DkMosaicDialog : public QDialog {
 	Q_OBJECT
