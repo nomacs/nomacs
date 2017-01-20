@@ -1085,8 +1085,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_image]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	mEditActions[menu_edit_image]->setShortcut(QKeySequence(shortcut_edit_image));
 	mEditActions[menu_edit_image]->setStatusTip(QObject::tr("open image manipulation toolbox"));
-	mSortActions[menu_edit_image]->setCheckable(true);
-	mSortActions[menu_edit_image]->setChecked(DkSettingsManager::param().app().showEditDock.testBit(DkSettingsManager::param().app().currentAppMode));
+	mEditActions[menu_edit_image]->setCheckable(true);
 
 	mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw], QObject::tr("9&0%1 Clockwise").arg(dk_degree_str), parent);
 	mEditActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);

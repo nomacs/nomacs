@@ -1188,8 +1188,8 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
 }
 
-void DkNoMacs::showEditDock(bool show, bool saveSettings) {
-//void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
+//void DkNoMacs::showEditDock(bool show, bool saveSettings) {
+void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!mMetaDataDock) {
 
@@ -1207,8 +1207,8 @@ void DkNoMacs::showEditDock(bool show, bool saveSettings) {
 		mMetaDataDock->setImage(getTabWidget()->getCurrentImage());
 }
 
-//void DkNoMacs::showEditDock(bool show, bool saveSettings) {
-void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
+void DkNoMacs::showEditDock(bool show, bool saveSettings) {
+//void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!mEditDock) {
 
@@ -1976,6 +1976,8 @@ void DkNoMacs::onWindowLoaded() {
 		showExplorer(true);
 	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock))
 		showMetaDataDock(true);
+	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock))
+		showEditDock(true);
 	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock))
 		showHistoryDock(true);
 

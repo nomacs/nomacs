@@ -30,6 +30,9 @@
 #include "DkActionManager.h"
 #include "DkWidgets.h"
 #include "DkTimer.h"
+#include "DkUtils.h"
+#include "DkSettings.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -72,20 +75,45 @@ void DkManipulatorWidget::createLayout() {
 		group->addButton(mpl);
 	}
 
+	QString scrollbarStyle = 
+		QString("QScrollBar:vertical {border: 1px solid " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
+		+ QString("QScrollBar::handle:vertical {background: " + DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + "; min-height: 0px;}")
+		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
+		+ QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+		+ QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
+
+	QScrollArea* actionScroller = new QScrollArea(this);
+	actionScroller->setStyleSheet(scrollbarStyle + actionScroller->styleSheet());
+	actionScroller->setWidgetResizable(true);
+	actionScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	actionScroller->setWidget(actionWidget);
+	actionScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 	// settings
+	mSettingsWidget = new QWidget(this);
 
 	// preview
 	mPreview = new QLabel(this);
 
+	// undo
+	QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cc.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
+	QPushButton* undoButton = new QPushButton(pm, "", this);
+	undoButton->setFlat(true);
+	undoButton->setIconSize(QSize(32, 32));
+	undoButton->setObjectName("DkRestartButton");
+	undoButton->setStatusTip(tr("Undo"));
+	connect(undoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_undo), SIGNAL(triggered()));
+
 	QWidget* mplWidget = new QWidget(this);
 	QVBoxLayout* mplLayout = new QVBoxLayout(mplWidget);
 	mplLayout->setAlignment(Qt::AlignBottom);
+	mplLayout->addWidget(undoButton);
 	mplLayout->addWidget(mSettingsWidget);
 	mplLayout->addWidget(mPreview);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(actionWidget);
+	layout->addWidget(actionScroller);
 	layout->addWidget(mplWidget);
 }
 
@@ -93,7 +121,7 @@ void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	mImgC = imgC;
 
 	if (mImgC) {
-		QImage img = mImgC->imageScaledToWidth(mPreview->width());
+		QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), 300));
 		mPreview->setPixmap(QPixmap::fromImage(img));
 		mPreview->show();
 	}

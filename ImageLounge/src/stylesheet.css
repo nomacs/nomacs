@@ -388,11 +388,13 @@ QLabel#DkMetadataValueLabel {
 	color: #666;
 }
 
+nmc--DkManipulatorWidget > QScrollArea,
 nmc--DkMetaDataHUD > QScrollArea {
 	background-color: transparent;
 	border: none;
 }
 
+nmc--DkManipulatorWidget > QScrollArea > QWidget > QWidget,
 nmc--DkMetaDataHUD > QScrollArea > QWidget > QWidget {
 	background-color: transparent;
 	border: none;
@@ -422,6 +424,7 @@ daf--DkPreferenceWidget {
 	border: 1px solid #ccc;
 }
 
+QScrollArea#DkPreferenceTabs,
 QWidget#DkPreferenceTabs,
 QWidget#DkBatchTabs {
 	background-color: #333;
