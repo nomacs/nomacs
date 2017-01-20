@@ -137,7 +137,7 @@ public:
 
 private:
 	int mSigma = 30;
-	int mAmount = 0;
+	int mAmount = 15;
 };
 
 class DllLoaderExport DkManipulatorManager {

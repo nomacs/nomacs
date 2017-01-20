@@ -66,7 +66,7 @@ public:
 	int value() const;
 	void setFocus(Qt::FocusReason reason);
 
-	public slots:
+public slots:
 	void setValue(int value);
 
 signals:

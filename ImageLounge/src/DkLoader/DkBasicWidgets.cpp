@@ -79,6 +79,10 @@ void DkSlider::createLayout() {
 	minValLabel = new QLabel(this);
 	maxValLabel = new QLabel(this);
 
+	// hide min-max for now - delete in future releases...
+	minValLabel->hide();
+	maxValLabel->hide();
+
 	titleLayout->addWidget(titleLabel);
 	titleLayout->addStretch();
 	titleLayout->addWidget(sliderBox);
