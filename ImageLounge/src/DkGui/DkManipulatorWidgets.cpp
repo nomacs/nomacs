@@ -34,6 +34,7 @@
 #include "DkSettings.h"
 #include "DkImageStorage.h"
 #include "DkBasicWidgets.h"
+#include "DkManipulatorsIpl.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -48,9 +49,11 @@ namespace nmc {
 DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	
 	// create widgets
+	// TODO: do not create them here...?!
 	DkActionManager& am = DkActionManager::instance();
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
+	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
 
 	setObjectName("DkPreferenceTabs");
 	createLayout();
@@ -135,11 +138,26 @@ void DkManipulatorWidget::createLayout() {
 	layout->addWidget(mplWidget);
 }
 
+QImage DkManipulatorWidget::scaledPreview(const QImage& img) const {
+
+	QImage imgR;
+
+	if (img.height() > img.width())
+		imgR = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+	else
+		imgR = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+
+	return imgR;
+}
+
 void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	mImgC = imgC;
 
 	if (mImgC) {
+
 		QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), 300));
+		img = scaledPreview(img);
+
 		mPreview->setPixmap(QPixmap::fromImage(img));
 		mPreview->show();
 	}
@@ -159,7 +177,8 @@ void DkManipulatorWidget::selectManipulator() {
 	if (mpl && mImgC) {
 		DkTimer dt;
 		QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), 300)));
-		
+		img = scaledPreview(img);
+
 		if (!img.isNull())
 			mPreview->setPixmap(QPixmap::fromImage(img));
 		qDebug() << "preview computed in " << dt;
@@ -260,7 +279,7 @@ void DkUnsharpMaskWidget::createLayout() {
 
 	// post processing sliders
 	DkSlider* sigmaSlider = new DkSlider(tr("Sigma"), this);
-	sigmaSlider->setObjectName("sigmaSlider");
+	sigmaSlider->setObjectName("angleSlider");
 	sigmaSlider->setValue(manipulator()->sigma());
 	//darkenSlider->hide();
 
@@ -284,6 +303,35 @@ void DkUnsharpMaskWidget::on_amountSlider_valueChanged(int val) {
 QSharedPointer<DkUnsharpMaskManipulator> DkUnsharpMaskWidget::manipulator() const {
 	return qSharedPointerDynamicCast<DkUnsharpMaskManipulator>(baseManipulator());
 }
+
+// DkRotateWidget --------------------------------------------------------------------
+DkRotateWidget::DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+
+QSharedPointer<DkRotateManipulator> DkRotateWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkRotateManipulator>(baseManipulator());
+}
+
+void DkRotateWidget::createLayout() {
+
+	DkSlider* angleSlider = new DkSlider(tr("Angle"), this);
+	angleSlider->setObjectName("angleSlider");
+	angleSlider->setValue(manipulator()->angle());
+	angleSlider->setMinimum(-180);
+	angleSlider->setMaximum(180);
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(angleSlider);
+}
+void DkRotateWidget::on_angleSlider_valueChanged(int val) {
+	manipulator()->setAngle(val);
+}
+
 
 
 }

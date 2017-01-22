@@ -31,7 +31,6 @@
 
 #include "DkImageStorage.h"
 #include "DkImageContainer.h"
-#include "DkMath.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QSharedPointer>
@@ -110,10 +109,15 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Create a Tiny Planet"));
 	mManipulators[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
 
-	// unsharlp mask
+	// unsharp mask
 	action = new QAction(QObject::tr("&Sharpen"), parent);
 	action->setStatusTip(QObject::tr("Sharpens the image by applying an unsharp mask"));
 	mManipulators[m_unsharp_mask] = QSharedPointer<DkUnsharpMaskManipulator>::create(action);
+
+	// rotate
+	action = new QAction(QObject::tr("&Rotate"), parent);
+	action->setStatusTip(QObject::tr("Rotate the image"));
+	mManipulators[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
 }
 
@@ -170,104 +174,6 @@ void DkBaseManipulatorExt::setDirty(bool dirty) {
 
 bool DkBaseManipulatorExt::isDirty() const {
 	return mDirty;
-}
-
-// DkTinyPlanetManipulator --------------------------------------------------------------------
-DkTinyPlanetManipulator::DkTinyPlanetManipulator(QAction * action) : DkBaseManipulatorExt(action) {
-}
-
-QImage DkTinyPlanetManipulator::apply(const QImage & img) const {
-	
-	int ms = qMax(img.width(), img.height());
-	QSize s(ms, ms);
-
-	QImage imgR = img.copy();
-	DkImage::tinyPlanet(imgR, size(), angle()*DK_DEG2RAD, s, inverted());
-	return imgR;
-}
-
-QString DkTinyPlanetManipulator::errorMessage() const {
-	return QObject::tr("Sorry, I could not create a tiny planet");
-}
-
-void DkTinyPlanetManipulator::setAngle(int angle) {
-	
-	if (angle == mAngle)
-		return;
-	
-	mAngle = angle;
-	action()->trigger();
-}
-
-int DkTinyPlanetManipulator::angle() const {
-	return mAngle;
-}
-
-void DkTinyPlanetManipulator::setSize(int size) {
-	
-	if (mSize == size)
-		return;
-	
-	mSize = size;
-	action()->trigger();
-}
-
-int DkTinyPlanetManipulator::size() const {
-	return mSize;
-}
-
-void DkTinyPlanetManipulator::setInverted(bool inverted) {
-	
-	if (mInverted == inverted)
-		return;
-	
-	mInverted = inverted;
-	action()->trigger();
-}
-
-bool DkTinyPlanetManipulator::inverted() const {
-	return mInverted;
-}
-
-// DkUnsharlpMaskManipulator --------------------------------------------------------------------
-DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction * action) : DkBaseManipulatorExt(action) {
-}
-
-QImage DkUnsharpMaskManipulator::apply(const QImage & img) const {
-
-	QImage imgC = img.copy();
-	DkImage::unsharpMask(imgC, (float)sigma(), 1.0f+amount()/100.0f);
-	return imgC;
-}
-
-QString DkUnsharpMaskManipulator::errorMessage() const {
-	return QObject::tr("Cannot sharpen image");
-}
-
-void DkUnsharpMaskManipulator::setSigma(int sigma) {
-
-	if (mSigma == sigma)
-		return;
-
-	mSigma = sigma;
-	action()->trigger();
-}
-
-int DkUnsharpMaskManipulator::sigma() const {
-	return mSigma;
-}
-
-void DkUnsharpMaskManipulator::setAmount(int amount) {
-
-	if (mAmount == amount)
-		return;
-
-	mAmount = amount;
-	action()->trigger();
-}
-
-int DkUnsharpMaskManipulator::amount() const {
-	return mAmount;
 }
 
 }

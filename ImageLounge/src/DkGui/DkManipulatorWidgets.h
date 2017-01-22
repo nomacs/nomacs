@@ -30,7 +30,7 @@
 
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
-#include "DkManipulators.h"
+#include "DkManipulatorsIpl.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 
@@ -96,6 +96,22 @@ public slots:
 private:
 	void createLayout();
 
+};
+
+class DkRotateWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkRotateManipulator> manipulator() const;
+
+public slots:
+	void on_angleSlider_valueChanged(int val);
+
+private:
+	void createLayout();
+
 
 };
 
@@ -113,11 +129,13 @@ public slots:
 
 private:
 	void createLayout();
+	QImage scaledPreview(const QImage& img) const;
 
 	QVector<DkBaseManipulatorWidget*> mWidgets;
 
 	QSharedPointer<DkImageContainerT> mImgC;
 	QLabel* mPreview = 0;
+	int mMaxPreview = 300;
 };
 
 class DkEditDock : public DkDockWidget {

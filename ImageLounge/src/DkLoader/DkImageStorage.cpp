@@ -425,6 +425,45 @@ bool DkImage::alphaChannelUsed(const QImage& img) {
 	return false;
 }
 
+QImage DkImage::rotateImage(const QImage & img, double angle) {
+
+	// compute new image size
+	DkVector nSl((float)img.width(), (float)img.height());
+	DkVector nSr = nSl;
+	double angleRad = angle*DK_DEG2RAD;
+	
+	// size left
+	nSl.rotate(angleRad);
+	nSl.abs();
+
+	// size right
+	nSr.swap();
+	nSr.rotate(angleRad);
+	nSr.abs();
+	nSr.swap();
+	
+	DkVector ns = nSl.maxVec(nSr);
+	QSize newSize(ns.width, ns.height);
+
+	// create image
+	QImage imgR(newSize, QImage::Format_RGBA8888);
+	imgR.fill(Qt::transparent);
+
+	// create transformation
+	QTransform trans; 
+	trans.translate(imgR.width()/2, imgR.height()/2); 
+	trans.rotate(angle); 
+	trans.translate(-img.width()/2, -img.height()/2);
+
+	// render
+	QPainter p(&imgR);
+	p.setRenderHint(QPainter::SmoothPixmapTransform);
+	p.setTransform(trans);
+	p.drawImage(QPoint(), img);
+
+	return imgR;
+}
+
 template <typename numFmt>
 QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal) {
 

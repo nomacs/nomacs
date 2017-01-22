@@ -97,49 +97,6 @@ private:
 	QWidget* mWidget = 0;
 };
 
-// Extended --------------------------------------------------------------------
-class DllLoaderExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
-
-public:
-	DkTinyPlanetManipulator(QAction* action);
-
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
-
-	void setSize(int size);
-	int size() const;
-
-	void setAngle(int angle);
-	int angle() const;
-
-	void setInverted(bool invert);
-	bool inverted() const;
-
-private:
-	int mSize = 30;
-	int mAngle = 0;
-	bool mInverted = false;
-};
-
-class DllLoaderExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
-
-public:
-	DkUnsharpMaskManipulator(QAction* action);
-
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
-
-	void setSigma(int sigma);
-	int sigma() const;
-
-	void setAmount(int amount);
-	int amount() const;
-
-private:
-	int mSigma = 30;
-	int mAmount = 15;
-};
-
 class DllLoaderExport DkManipulatorManager {
 
 public:
@@ -159,9 +116,10 @@ public:
 
 	// extended manipulators
 	enum ManipulatorExtId {
-		m_tiny_planet = m_end,
+		m_rotate = m_end,
+		m_tiny_planet,
 		m_unsharp_mask,
-
+		
 		m_ext_end
 	};
 

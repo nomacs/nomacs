@@ -44,6 +44,7 @@
 
 #ifdef Q_OS_WIN
 #pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable: 4714)	// Qt's force inline
 #endif
 
 #ifndef DllLoaderExport
@@ -115,6 +116,7 @@ public:
 	static bool autoAdjustImage(QImage& img);
 	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);
 	static bool alphaChannelUsed(const QImage& img);
+	static QImage rotateImage(const QImage& img, double angle);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
 	static QPixmap loadIcon(const QString& filePath = QString());
 	static QPixmap loadIcon(const QString& filePath, const QColor& col);

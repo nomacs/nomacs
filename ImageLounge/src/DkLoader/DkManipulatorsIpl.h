@@ -105,4 +105,63 @@ public:
 	QImage apply(const QImage& img) const override;
 	QString errorMessage() const override;
 };
+
+// Extended --------------------------------------------------------------------
+class DllLoaderExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkTinyPlanetManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setSize(int size);
+	int size() const;
+
+	void setAngle(int angle);
+	int angle() const;
+
+	void setInverted(bool invert);
+	bool inverted() const;
+
+private:
+	int mSize = 30;
+	int mAngle = 0;
+	bool mInverted = false;
+};
+
+class DllLoaderExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkUnsharpMaskManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setSigma(int sigma);
+	int sigma() const;
+
+	void setAmount(int amount);
+	int amount() const;
+
+private:
+	int mSigma = 30;
+	int mAmount = 15;
+};
+
+class DllLoaderExport DkRotateManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkRotateManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setAngle(int angle);
+	int angle() const;
+
+private:
+	int mAngle = 0;
+};
+
 }
