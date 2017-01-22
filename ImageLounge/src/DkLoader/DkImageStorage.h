@@ -128,6 +128,7 @@ public:
 	static QPixmap makeSquare(const QPixmap& pm);
 	static QPixmap merge(const QVector<QImage>& imgs);
 	static QImage cropToImage(const QImage& src, const DkRotatingRect& rect, const QColor& fillColor = QColor());
+	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
 };
 
 class DllLoaderExport DkImageStorage : public QObject {

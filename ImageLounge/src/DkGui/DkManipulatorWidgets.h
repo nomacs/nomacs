@@ -112,7 +112,23 @@ public slots:
 private:
 	void createLayout();
 
+};
 
+class DkHueWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkHueManipulator> manipulator() const;
+
+public slots:
+	void on_hueSlider_valueChanged(int val);
+	void on_satSlider_valueChanged(int val);
+	void on_brightnessSlider_valueChanged(int val);
+
+private:
+	void createLayout();
 };
 
 // dock --------------------------------------------------------------------

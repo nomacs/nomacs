@@ -443,7 +443,7 @@ QImage DkImage::rotateImage(const QImage & img, double angle) {
 	nSr.swap();
 	
 	DkVector ns = nSl.maxVec(nSr);
-	QSize newSize(ns.width, ns.height);
+	QSize newSize((int)ns.width, (int)ns.height);
 
 	// create image
 	QImage imgR(newSize, QImage::Format_RGBA8888);
@@ -860,6 +860,57 @@ QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, con
 	painter.end();
 
 	return img;
+}
+
+QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightness) {
+	
+	QImage imgR;
+
+#ifdef WITH_OPENCV
+
+	// normalize brightness/saturation
+	int brightnessN = qRound(brightness / 100.0 * 255.0);
+	int satN = qRound(sat / 100.0 * 255.0);
+
+	cv::Mat hsvImg = DkImage::qImage2Mat(src);
+	cv::cvtColor(hsvImg, hsvImg, CV_RGB2HSV);
+
+	// apply hue/saturation changes
+	for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
+
+		unsigned char* iPtr = hsvImg.ptr<unsigned char>(rIdx);
+
+		for (int cIdx = 0; cIdx < hsvImg.cols*3; cIdx+=3) {
+
+			// adopt hue
+			int h = iPtr[cIdx] + hue;
+			if (h < 0)		h += 180;
+			if (h >= 180)	h -= 180;
+
+			iPtr[cIdx] = (unsigned char)h;
+
+			// adopt value
+			int v = iPtr[cIdx + 2] + brightnessN;
+			if (v < 0)		v = 0;
+			if (v > 255) 	v = 255;
+			iPtr[cIdx + 2] = (unsigned char)v;
+
+			// adopt saturation
+			float m = qMin(v, 255-v)/255.0f;
+			int s = qRound(iPtr[cIdx + 1] + (satN * m));
+			if (s < 0)		s = 0;
+			if (s > 255) 	s = 255;
+			iPtr[cIdx + 1] = (unsigned char)s;
+
+		}
+	}
+	
+	cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
+	imgR = DkImage::mat2QImage(hsvImg);
+
+#endif // WITH_OPENCV
+	
+	return imgR;
 }
 
 QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {

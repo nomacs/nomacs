@@ -119,6 +119,11 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Rotate the image"));
 	mManipulators[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
+	// hue/saturation
+	action = new QAction(QObject::tr("&Hue/Saturation"), parent);
+	action->setStatusTip(QObject::tr("Change Hue and Saturation"));
+	mManipulators[m_hue] = QSharedPointer<DkHueManipulator>::create(action);
+
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {

@@ -279,4 +279,55 @@ int DkRotateManipulator::angle() const {
 	return mAngle;
 }
 
+// DkHueManipulator --------------------------------------------------------------------
+DkHueManipulator::DkHueManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkHueManipulator::apply(const QImage & img) const {
+	return DkImage::hueSaturation(img, hue(), saturation(), value());
+}
+
+QString DkHueManipulator::errorMessage() const {
+	return QObject::tr("Cannot change Hue/Saturation");
+}
+
+void DkHueManipulator::setHue(int hue) {
+	
+	if (mHue == hue)
+		return;
+	
+	mHue = hue;
+	action()->trigger();
+}
+
+int DkHueManipulator::hue() const {
+	return mHue;
+}
+
+void DkHueManipulator::setSaturation(int sat) {
+
+	if (mSat == sat)
+		return;
+
+	mSat = sat;
+	action()->trigger();
+}
+
+int DkHueManipulator::saturation() const {
+	return mSat;
+}
+
+void DkHueManipulator::setValue(int val) {
+
+	if (mValue == val)
+		return;
+
+	mValue = val;
+	action()->trigger();
+}
+
+int DkHueManipulator::value() const {
+	return mValue;
+}
+
 }

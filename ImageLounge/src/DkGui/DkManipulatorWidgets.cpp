@@ -54,6 +54,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
+	mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
 
 	setObjectName("DkPreferenceTabs");
 	createLayout();
@@ -279,7 +280,7 @@ void DkUnsharpMaskWidget::createLayout() {
 
 	// post processing sliders
 	DkSlider* sigmaSlider = new DkSlider(tr("Sigma"), this);
-	sigmaSlider->setObjectName("angleSlider");
+	sigmaSlider->setObjectName("sigmaSlider");
 	sigmaSlider->setValue(manipulator()->sigma());
 	//darkenSlider->hide();
 
@@ -332,6 +333,56 @@ void DkRotateWidget::on_angleSlider_valueChanged(int val) {
 	manipulator()->setAngle(val);
 }
 
+// DkHueWidget --------------------------------------------------------------------
+DkHueWidget::DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+
+QSharedPointer<DkHueManipulator> DkHueWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkHueManipulator>(baseManipulator());
+}
+
+void DkHueWidget::createLayout() {
+
+	DkSlider* hueSlider = new DkSlider(tr("Hue"), this);
+	hueSlider->setObjectName("hueSlider");
+	hueSlider->setValue(manipulator()->hue());
+	hueSlider->setMinimum(-180);
+	hueSlider->setMaximum(180);
+
+	DkSlider* satSlider = new DkSlider(tr("Saturation"), this);
+	satSlider->setObjectName("satSlider");
+	satSlider->setValue(manipulator()->saturation());
+	satSlider->setMinimum(-100);
+	satSlider->setMaximum(100);
+
+	DkSlider* brightnessSlider = new DkSlider(tr("Brightness"), this);
+	brightnessSlider->setObjectName("brightnessSlider");
+	brightnessSlider->setValue(manipulator()->hue());
+	brightnessSlider->setMinimum(-100);
+	brightnessSlider->setMaximum(100);
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(hueSlider);
+	sliderLayout->addWidget(satSlider);
+	sliderLayout->addWidget(brightnessSlider);
+}
+
+void DkHueWidget::on_hueSlider_valueChanged(int val) {
+	manipulator()->setHue(val);
+}
+
+void DkHueWidget::on_satSlider_valueChanged(int val) {
+	manipulator()->setSaturation(val);
+}
+
+void DkHueWidget::on_brightnessSlider_valueChanged(int val) {
+	manipulator()->setValue(val);
+}
 
 
 }

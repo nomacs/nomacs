@@ -164,4 +164,26 @@ private:
 	int mAngle = 0;
 };
 
+class DllLoaderExport DkHueManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkHueManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setHue(int hue);
+	int hue() const;
+
+	void setSaturation(int sat);
+	int saturation() const;
+
+	void setValue(int val);
+	int value() const;
+
+private:
+	int mHue = 0;
+	int mSat = 0;
+	int mValue = 0;
+};
 }
