@@ -124,6 +124,11 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Change Hue and Saturation"));
 	mManipulators[m_hue] = QSharedPointer<DkHueManipulator>::create(action);
 
+	// exposure
+	action = new QAction(QObject::tr("&Exposure"), parent);
+	action->setStatusTip(QObject::tr("Change the Exposure and Gamma"));
+	mManipulators[m_exposure] = QSharedPointer<DkExposureManipulator>::create(action);
+
 }
 
 QVector<QAction*> DkManipulatorManager::actions() const {

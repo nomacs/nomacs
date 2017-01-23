@@ -186,4 +186,27 @@ private:
 	int mSat = 0;
 	int mValue = 0;
 };
+
+class DllLoaderExport DkExposureManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkExposureManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const;
+	QString errorMessage() const;
+
+	void setExposure(double exposure);
+	double exposure() const;
+
+	void setOffset(double offset);
+	double offset() const;
+
+	void setGamma(double gamma);
+	double gamma() const;
+
+private:
+	double mExposure = 0.0;
+	double mOffset = 0.0;
+	double mGamma = 1.0;
+};
 }

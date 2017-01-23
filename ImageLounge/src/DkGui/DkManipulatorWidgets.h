@@ -131,6 +131,23 @@ private:
 	void createLayout();
 };
 
+class DkExposureWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkExposureManipulator> manipulator() const;
+
+public slots:
+	void on_exposureSlider_valueChanged(double val);
+	void on_offsetSlider_valueChanged(double val);
+	void on_gammaSlider_valueChanged(double val);
+
+private:
+	void createLayout();
+};
+
 // dock --------------------------------------------------------------------
 class DkManipulatorWidget : public DkWidget {
 	Q_OBJECT

@@ -129,6 +129,14 @@ public:
 	static QPixmap merge(const QVector<QImage>& imgs);
 	static QImage cropToImage(const QImage& src, const DkRotatingRect& rect, const QColor& fillColor = QColor());
 	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
+	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
+	
+#ifdef WITH_OPENCV
+	static cv::Mat exposureMat(const cv::Mat& src, double exposure);
+	static cv::Mat gammaMat(const cv::Mat& src, double gmma);
+	static cv::Mat applyLUT(const cv::Mat& src, const cv::Mat& lut);
+#endif // WITH_OPENCV
+	
 };
 
 class DllLoaderExport DkImageStorage : public QObject {

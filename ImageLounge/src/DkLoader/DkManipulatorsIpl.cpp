@@ -330,4 +330,54 @@ int DkHueManipulator::value() const {
 	return mValue;
 }
 
+DkExposureManipulator::DkExposureManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkExposureManipulator::apply(const QImage & img) const {
+	return DkImage::exposure(img, exposure(), offset(), gamma());
+}
+
+QString DkExposureManipulator::errorMessage() const {
+	return QObject::tr("Cannot apply exposure");
+}
+
+void DkExposureManipulator::setExposure(double exposure) {
+
+	if (mExposure == exposure)
+		return;
+
+	mExposure = exposure;
+	action()->trigger();
+}
+
+double DkExposureManipulator::exposure() const {
+	return mExposure;
+}
+
+void DkExposureManipulator::setOffset(double offset) {
+
+	if (mOffset == offset)
+		return;
+
+	mOffset = offset;
+	action()->trigger();
+}
+
+double DkExposureManipulator::offset() const {
+	return mOffset;
+}
+
+void DkExposureManipulator::setGamma(double gamma) {
+
+	if (mGamma == gamma)
+		return;
+
+	mGamma = gamma;
+	action()->trigger();
+}
+
+double DkExposureManipulator::gamma() const {
+	return mGamma;
+}
+
 }

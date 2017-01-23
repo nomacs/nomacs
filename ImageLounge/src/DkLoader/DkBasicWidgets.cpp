@@ -141,6 +141,122 @@ void DkSlider::setValue(int value) {
 	emit valueChanged(value);
 }
 
+// DkDoubleSlider --------------------------------------------------------------------
+DkDoubleSlider::DkDoubleSlider(const QString& title, QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+
+	// init
+	mTitleLabel->setText(title);
+
+	// defaults
+	setMinimum(0.0);	
+	setMaximum(1.0);
+	setTickInterval(0.01);
+	setValue(0.5);
+}
+
+void DkDoubleSlider::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setSpacing(0);
+	layout->setContentsMargins(0,0,0,0);
+
+	QWidget* dummy = new QWidget(this);
+	QHBoxLayout* titleLayout = new QHBoxLayout(dummy);
+	titleLayout->setContentsMargins(0,0,0,5);
+
+	mTitleLabel = new QLabel(this);
+
+	mSliderBox = new QDoubleSpinBox(this);
+
+	mSlider = new QSlider(this);
+	mSlider->setOrientation(Qt::Horizontal);
+
+	titleLayout->addWidget(mTitleLabel);
+	titleLayout->addStretch();
+	titleLayout->addWidget(mSliderBox);
+
+	layout->addWidget(dummy);
+	layout->addWidget(mSlider);
+
+	// connect
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(setIntValue(int)));
+	connect(mSliderBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
+}
+
+QSlider* DkDoubleSlider::getSlider() const {
+	return mSlider;
+}
+
+void DkDoubleSlider::setMinimum(double minValue) {
+	mSliderBox->setMinimum(minValue);
+}
+
+void DkDoubleSlider::setMaximum(double maxValue) {
+	mSliderBox->setMaximum(maxValue);
+}
+
+void DkDoubleSlider::setTickInterval(double ticValue) {
+	mSlider->setMaximum(qRound(1.0 / ticValue));
+}
+
+double DkDoubleSlider::value() const {
+	return mSliderBox->value();
+}
+
+void DkDoubleSlider::setFocus(Qt::FocusReason reason) {
+	mSliderBox->setFocus(reason);
+}
+
+void DkDoubleSlider::setSliderInverted(bool inverted) {
+	mSliderInverted = inverted;
+}
+
+void DkDoubleSlider::setValue(double value) {
+
+	double dr = mSliderBox->maximum() - mSliderBox->minimum();
+	double nVal = (value - mSliderBox->minimum()) / dr;
+
+	if (mSliderInverted)
+		nVal = 1.0 - nVal;
+	
+	int sVal = qRound(nVal * mSlider->maximum());
+	qDebug() << value << "mapped to (int)" << sVal;
+
+	mSlider->blockSignals(true);
+	mSlider->setValue(sVal);
+	mSlider->blockSignals(false);
+
+	mSliderBox->blockSignals(true);
+	mSliderBox->setValue(value);
+	mSliderBox->blockSignals(false);
+
+	emit valueChanged(value);
+}
+
+void DkDoubleSlider::setIntValue(int value) {
+
+	double dr = mSliderBox->maximum() - mSliderBox->minimum();
+	double nVal = value / (double)mSlider->maximum();
+	if (mSliderInverted)
+		nVal = 1.0 - nVal;
+	double sVal = nVal * dr + mSliderBox->minimum();
+
+
+	qDebug() << value << "mapped to (double)" << sVal;
+
+	mSlider->blockSignals(true);
+	mSlider->setValue(value);
+	mSlider->blockSignals(false);
+
+	mSliderBox->blockSignals(true);
+	mSliderBox->setValue(sVal);
+	mSliderBox->blockSignals(false);
+
+	emit valueChanged(sVal);
+}
+
 // DkColorChooser ------------------------------------
 DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 

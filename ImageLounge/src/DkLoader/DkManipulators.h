@@ -118,6 +118,7 @@ public:
 	enum ManipulatorExtId {
 		m_rotate = m_end,
 		m_hue,
+		m_exposure,
 		m_tiny_planet,
 		m_unsharp_mask,
 		

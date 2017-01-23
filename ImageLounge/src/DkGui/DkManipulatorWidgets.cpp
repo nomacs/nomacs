@@ -55,6 +55,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
 	mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
+	mWidgets << new DkExposureWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_exposure), this);
 
 	setObjectName("DkPreferenceTabs");
 	createLayout();
@@ -384,5 +385,59 @@ void DkHueWidget::on_brightnessSlider_valueChanged(int val) {
 	manipulator()->setValue(val);
 }
 
+// DkExposureWidget --------------------------------------------------------------------
+DkExposureWidget::DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+
+QSharedPointer<DkExposureManipulator> DkExposureWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkExposureManipulator>(baseManipulator());
+}
+
+void DkExposureWidget::createLayout() {
+
+	DkDoubleSlider* exposureSlider = new DkDoubleSlider(tr("Exposure"), this);
+	exposureSlider->setObjectName("exposureSlider");
+	exposureSlider->setMinimum(-20.0);
+	exposureSlider->setMaximum(20.0);
+	exposureSlider->setTickInterval(0.0005);
+	exposureSlider->setValue(manipulator()->exposure());
+
+	DkDoubleSlider* offsetSlider = new DkDoubleSlider(tr("Offset"), this);
+	offsetSlider->setObjectName("offsetSlider");
+	offsetSlider->setMinimum(-0.5);
+	offsetSlider->setMaximum(0.5);
+	offsetSlider->setTickInterval(0.001);
+	offsetSlider->setValue(manipulator()->offset());
+
+	DkDoubleSlider* gammaSlider = new DkDoubleSlider(tr("Gamma"), this);
+	gammaSlider->setObjectName("gammaSlider");
+	gammaSlider->setMinimum(0);
+	gammaSlider->setMaximum(10);
+	gammaSlider->setTickInterval(0.001);
+	gammaSlider->setSliderInverted(true);
+	gammaSlider->setValue(manipulator()->gamma());
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(exposureSlider);
+	sliderLayout->addWidget(offsetSlider);
+	sliderLayout->addWidget(gammaSlider);
+}
+
+void DkExposureWidget::on_exposureSlider_valueChanged(double val) {
+	manipulator()->setExposure(val);
+}
+
+void DkExposureWidget::on_offsetSlider_valueChanged(double val) {
+	manipulator()->setOffset(val);
+}
+
+void DkExposureWidget::on_gammaSlider_valueChanged(double val) {
+	manipulator()->setGamma(val);
+}
 
 }

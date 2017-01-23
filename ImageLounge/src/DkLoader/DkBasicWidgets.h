@@ -46,6 +46,7 @@
 class QSlider;
 class QLabel;
 class QSpinBox;
+class QDoubleSpinBox;
 class QColorDialog;
 class QPushButton;
 
@@ -81,6 +82,37 @@ protected:
 	QLabel* maxValLabel;
 	QSlider* slider;
 	QSpinBox* sliderBox;
+};
+
+class DllLoaderExport DkDoubleSlider : public QWidget {
+	Q_OBJECT
+
+public:
+	DkDoubleSlider(const QString& title = "", QWidget* parent = 0);
+
+	QSlider* getSlider() const;
+	void setMinimum(double minValue);
+	void setMaximum(double maxValue);
+	void setTickInterval(double ticValue);
+	double value() const;
+	void setFocus(Qt::FocusReason reason);
+	void setSliderInverted(bool inverted);
+
+public slots:
+	void setValue(double value);
+	void setIntValue(int value);
+
+signals:
+	void sliderMoved(double value);
+	void valueChanged(double value);
+
+protected:
+	void createLayout();
+
+	QLabel* mTitleLabel;
+	QSlider* mSlider;
+	QDoubleSpinBox* mSliderBox;
+	bool mSliderInverted = false;
 };
 
 class DllLoaderExport DkColorChooser : public QWidget {
