@@ -877,7 +877,7 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 	int satN = qRound(sat / 100.0 * 255.0);
 
 	cv::Mat hsvImg = DkImage::qImage2Mat(src);
-	cv::cvtColor(hsvImg, hsvImg, CV_RGB2HSV);
+	cv::cvtColor(hsvImg, hsvImg, CV_BGR2HSV);
 
 	// apply hue/saturation changes
 	for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
@@ -905,7 +905,6 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 			if (s < 0)		s = 0;
 			if (s > 255) 	s = 255;
 			iPtr[cIdx + 1] = (unsigned char)s;
-
 		}
 	}
 	
@@ -922,22 +921,20 @@ QImage DkImage::exposure(const QImage & src, double exposure, double offset, dou
 	QImage imgR;
 #ifdef WITH_OPENCV
 
-	cv::Mat hsvImg = DkImage::qImage2Mat(src);
-	hsvImg.convertTo(hsvImg, CV_16U, 256, offset*std::numeric_limits<unsigned short>::max());
+	cv::Mat rgbImg = DkImage::qImage2Mat(src);
+	rgbImg.convertTo(rgbImg, CV_16U, 256, offset*std::numeric_limits<unsigned short>::max());
 
-	if (hsvImg.channels() > 3)
-		cv::cvtColor(hsvImg, hsvImg, CV_RGBA2BGR);
-	//cv::cvtColor(hsvImg, hsvImg, CV_RGB2HSV);
+	if (rgbImg.channels() > 3)
+		cv::cvtColor(rgbImg, rgbImg, CV_RGBA2BGR);
 
 	if (exposure != 0.0)
-		hsvImg = exposureMat(hsvImg, exposure);
+		rgbImg = exposureMat(rgbImg, exposure);
 
 	if (gamma != 1.0)
-		hsvImg = gammaMat(hsvImg, gamma);
+		rgbImg = gammaMat(rgbImg, gamma);
 
-	//cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
-	hsvImg.convertTo(hsvImg, CV_8U, 1.0/256.0);
-	imgR = DkImage::mat2QImage(hsvImg);
+	rgbImg.convertTo(rgbImg, CV_8U, 1.0/256.0);
+	imgR = DkImage::mat2QImage(rgbImg);
 
 #endif // WITH_OPENCV
 
