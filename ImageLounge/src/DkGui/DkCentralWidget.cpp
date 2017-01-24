@@ -303,6 +303,7 @@ void DkCentralWidget::createLayout() {
 	// connections
 	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(mViewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
+	connect(mViewport, SIGNAL(showProgress(bool, int)), this, SLOT(showProgress(bool, int)));
 
 	connect(mTabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(mTabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));

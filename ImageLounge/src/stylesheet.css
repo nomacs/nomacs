@@ -553,3 +553,10 @@ QSlider#DkSaturationSlider::groove:horizontal {
 QSlider#DkHueSlider::groove:horizontal {
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
 }
+
+QLabel#DkManipulatorSettingsTitle {
+	font: thin "Segoe UI";
+	font-size: 14pt;
+	color: #fff;
+	margin-bottom: 5pt;
+}

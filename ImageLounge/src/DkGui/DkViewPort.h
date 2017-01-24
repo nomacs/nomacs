@@ -123,6 +123,7 @@ signals:
 	void addTabSignal(const QString& filePath) const;
 	void zoomSignal(float zoomLevel) const;
 	void mouseClickSignal(QMouseEvent* event, QPoint imgPos) const;
+	void showProgress(bool show, int time = -1) const;
 
 public slots:
 	void rotateCW();

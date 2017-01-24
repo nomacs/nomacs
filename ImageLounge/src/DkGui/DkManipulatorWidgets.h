@@ -52,7 +52,7 @@ namespace nmc {
 
 // nomacs defines
 
-	class DkBaseManipulatorWidget : public DkWidget {
+class DkBaseManipulatorWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -168,6 +168,7 @@ private:
 
 	QSharedPointer<DkImageContainerT> mImgC;
 	QLabel* mPreview = 0;
+	QLabel* mTitleLabel = 0;
 	int mMaxPreview = 300;
 };
 

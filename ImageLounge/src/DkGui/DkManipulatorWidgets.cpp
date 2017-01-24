@@ -100,6 +100,8 @@ void DkManipulatorWidget::createLayout() {
 	actionScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	// preview
+	mTitleLabel = new QLabel(this);
+	mTitleLabel->setObjectName("DkManipulatorSettingsTitle");
 	mPreview = new QLabel(this);
 
 	// undo
@@ -117,7 +119,7 @@ void DkManipulatorWidget::createLayout() {
 	redoButton->setIconSize(QSize(32, 32));
 	redoButton->setObjectName("DkRestartButton");
 	redoButton->setStatusTip(tr("Undo"));
-	connect(undoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
+	connect(redoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
 
 	QWidget* buttonWidget = new QWidget(this);
 	QHBoxLayout* buttonLayout = new QHBoxLayout(buttonWidget);
@@ -129,6 +131,7 @@ void DkManipulatorWidget::createLayout() {
 	QVBoxLayout* mplLayout = new QVBoxLayout(mplWidget);
 	mplLayout->setAlignment(Qt::AlignTop);
 	
+	mplLayout->addWidget(mTitleLabel);
 	for (QWidget* w : mWidgets) 
 		mplLayout->addWidget(w);
 	mplLayout->addWidget(mPreview);
@@ -189,10 +192,13 @@ void DkManipulatorWidget::selectManipulator() {
 	for (QWidget* w : mWidgets)
 		w->hide();
 
-	if (!mplExt)
+	if (!mplExt) {
+		mTitleLabel->hide();
 		return;
+	}
 
 	mplExt->widget()->show();
+	mTitleLabel->setText(mpl->name());
 }
 
 // DkMainpulatorDoc --------------------------------------------------------------------

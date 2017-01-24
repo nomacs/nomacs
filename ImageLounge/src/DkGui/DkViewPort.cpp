@@ -323,7 +323,8 @@ void DkViewPort::setImage(QImage newImg) {
 	update();
 
 	// draw a histogram from the image -> does nothing if the histogram is invisible
-	if (mController->getHistogram()) mController->getHistogram()->drawHistogram(newImg);
+	if (mController->getHistogram()) 
+		mController->getHistogram()->drawHistogram(newImg);
 	if (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_remote_display)
 		tcpSendImage(true);
 
@@ -731,8 +732,7 @@ void DkViewPort::applyManipulator() {
 
 	mActiveManipulator = mpl;
 
-	// not working?
-	DkGlobalProgress::instance().start();
+	emit showProgress(true, 500);
 }
 
 void DkViewPort::manipulatorApplied() {
@@ -760,6 +760,8 @@ void DkViewPort::manipulatorApplied() {
 		mplExt->action()->trigger();
 		qDebug() << "triggering manipulator - it's dirty";
 	}
+
+	emit showProgress(false);
 }
 
 void DkViewPort::paintEvent(QPaintEvent* event) {
