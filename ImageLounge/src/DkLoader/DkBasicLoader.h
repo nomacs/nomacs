@@ -242,6 +242,7 @@ public:
 	QVector<DkEditImage>* history();
 	DkEditImage lastEdit() const;
 
+	void setMinHistorySize(int size);
 	void setHistoryIndex(int idx);
 	int historyIndex() const;
 
@@ -299,6 +300,7 @@ protected:
 	bool mPageIdxDirty;
 	QSharedPointer<DkMetaDataT> mMetaData;
 	QVector<DkEditImage> mImages;
+	int mMinHistorySize = 2;
 	int mImageIndex = 0;
 };
 

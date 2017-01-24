@@ -829,8 +829,9 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 		return;
 
 	// delete all hidden edit states
-	for (int idx = mImages.size() - 1; idx > mImageIndex; idx--)
+	for (int idx = mImages.size() - 1; idx > mImageIndex; idx--) {
 		mImages.pop_back();
+	}
 
 	// compute new history size
 	int historySize = 0;
@@ -840,7 +841,7 @@ void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 
 	DkEditImage newImg(img, editName);
 
-	if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory && mImages.size() > 2) {
+	if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory && mImages.size() > mMinHistorySize) {
 		mImages.removeAt(1);
 		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
 	}
@@ -879,11 +880,17 @@ QVector<DkEditImage>* DkBasicLoader::history() {
 }
 
 DkEditImage DkBasicLoader::lastEdit() const {
-	return mImages.last();
+	
+	assert(mImageIndex >= 0 && mImageIndex < mImages.size());
+	return mImages[mImageIndex];
 }
 
 int DkBasicLoader::historyIndex() const {
 	return mImageIndex;
+}
+
+void DkBasicLoader::setMinHistorySize(int size) {
+	mMinHistorySize = size;
 }
 
 void DkBasicLoader::setHistoryIndex(int idx) {

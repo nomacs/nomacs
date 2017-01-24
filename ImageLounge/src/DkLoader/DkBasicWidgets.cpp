@@ -222,7 +222,6 @@ void DkDoubleSlider::setValue(double value) {
 		nVal = 1.0 - nVal;
 	
 	int sVal = qRound(nVal * mSlider->maximum());
-	qDebug() << value << "mapped to (int)" << sVal;
 
 	mSlider->blockSignals(true);
 	mSlider->setValue(sVal);
@@ -242,10 +241,7 @@ void DkDoubleSlider::setIntValue(int value) {
 	if (mSliderInverted)
 		nVal = 1.0 - nVal;
 	double sVal = nVal * dr + mSliderBox->minimum();
-
-
-	qDebug() << value << "mapped to (double)" << sVal;
-
+	
 	mSlider->blockSignals(true);
 	mSlider->setValue(value);
 	mSlider->blockSignals(false);

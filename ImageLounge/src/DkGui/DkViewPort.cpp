@@ -710,11 +710,11 @@ void DkViewPort::applyManipulator() {
 	if (mplExt && imageContainer()) {
 
 		auto l = imageContainer()->getLoader();
+		l->setMinHistorySize(3);	// increase the min history size to 3 for correctly popping back
 		if (l->lastEdit().editName() == mplExt->name()) {
 			l->undo();
-			qDebug() << "popping back...";
 		}
-
+		
 		img = imageContainer()->image();
 	}
 	else
@@ -741,6 +741,10 @@ void DkViewPort::manipulatorApplied() {
 		return;
 	}
 
+	// trigger again if it's dirty
+	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
+
+	// set the edited image
 	QImage img = mManipulatorWatcher.result();
 
 	if (!img.isNull())
@@ -748,8 +752,6 @@ void DkViewPort::manipulatorApplied() {
 	else
 		mController->setInfo(mActiveManipulator->errorMessage());
 
-	// trigger again if it's dirty
-	QSharedPointer<DkBaseManipulatorExt> mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mActiveManipulator);
 	if (mplExt && mplExt->isDirty()) {
 		mplExt->setDirty(false);
 		mplExt->action()->trigger();

@@ -918,6 +918,9 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 
 QImage DkImage::exposure(const QImage & src, double exposure, double offset, double gamma) {
 
+	if (exposure == 0.0 && offset == 0.0 && gamma == 1.0)
+		return src;
+
 	QImage imgR;
 #ifdef WITH_OPENCV
 
