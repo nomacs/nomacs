@@ -561,9 +561,6 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 
 	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
 	mToolsMenu->addAction(mToolsActions[menu_tools_filter]);
-#ifdef WITH_OPENCV
-	mToolsMenu->addAction(mToolsActions[menu_tools_manipulation]);
-#endif
 #ifdef WITH_LIBTIFF
 	mToolsMenu->addAction(mToolsActions[menu_tools_export_tiff]);
 #endif
@@ -746,10 +743,6 @@ QIcon DkActionManager::icon(ViewIcons icon) const {
 
 QIcon DkActionManager::icon(EditIcons icon) const {
 	return mEditIcons[icon];
-}
-
-QIcon DkActionManager::icon(ToolsIcons icon) const {
-	return mToolsIcons[icon];
 }
 
 QVector<QAction*> DkActionManager::fileActions() const {
@@ -936,10 +929,6 @@ void DkActionManager::createIcons() {
 	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.svg"), QIcon::Normal, QIcon::Off);
 	mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/movie-prev.svg");
 	mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/movie-next.svg");
-
-	mToolsIcons.resize(icon_tools_end);
-	mToolsIcons[icon_tools_manipulation] = DkImage::loadIcon(":/nomacs/img/manipulation.svg");
-
 }
 
 void DkActionManager::createActions(QWidget* parent) {
@@ -1354,10 +1343,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mToolsActions[menu_tools_filter]->setStatusTip(QObject::tr("Find an image"));
 	mToolsActions[menu_tools_filter]->setCheckable(true);
 	mToolsActions[menu_tools_filter]->setChecked(false);
-
-	mToolsActions[menu_tools_manipulation] = new QAction(mToolsIcons[icon_tools_manipulation], QObject::tr("Image &Manipulation"), parent);
-	mToolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
-	mToolsActions[menu_tools_manipulation]->setStatusTip(QObject::tr("modify the current image"));
 
 	mToolsActions[menu_tools_export_tiff] = new QAction(QObject::tr("Export Multipage &TIFF"), parent);
 	mToolsActions[menu_tools_export_tiff]->setStatusTip(QObject::tr("Export TIFF pages to multiple tiff files"));

@@ -35,7 +35,6 @@
 #include "DkSettings.h"
 #include "DkMenu.h"
 #include "DkToolbars.h"
-#include "DkManipulationWidgets.h"
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
 #include "DkManipulatorWidgets.h"
@@ -138,7 +137,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	mOpacityDialog = 0;
 	mUpdater = 0;
 	mTranslationUpdater = 0;
-	mImgManipulationDialog = 0;
 	mExportTiffDialog = 0;
 	mUpdateDialog = 0;
 	mProgressDialog = 0;
@@ -428,7 +426,6 @@ void DkNoMacs::createActions() {
 	
 	connect(am.action(DkActionManager::menu_tools_thumbs), SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
 	connect(am.action(DkActionManager::menu_tools_filter), SIGNAL(triggered(bool)), this, SLOT(find(bool)));
-	connect(am.action(DkActionManager::menu_tools_manipulation), SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
 	connect(am.action(DkActionManager::menu_tools_export_tiff), SIGNAL(triggered()), this, SLOT(exportTiff()));
 	connect(am.action(DkActionManager::menu_tools_extract_archive), SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 	connect(am.action(DkActionManager::menu_tools_mosaic), SIGNAL(triggered()), this, SLOT(computeMosaic()));
@@ -502,12 +499,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_view_zoom_out)->setEnabled(enable);
 	am.action(DkActionManager::menu_view_tp_pattern)->setEnabled(enable);
 	am.action(DkActionManager::menu_view_anti_aliasing)->setEnabled(enable);
-
-#ifdef WITH_OPENCV
-	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(enable);
-#else
-	am.action(DkActionManager::menu_tools_manipulation)->setEnabled(false);
-#endif
 
 	// hidden actions
 	am.action(DkActionManager::sc_skip_prev)->setEnabled(enable);
@@ -1663,35 +1654,6 @@ void DkNoMacs::computeMosaic() {
 	mosaicDialog->deleteLater();
 #endif
 }
-
-void DkNoMacs::openImgManipulationDialog() {
-
-	if (!viewport() || viewport()->getImage().isNull())
-		return;
-
-	if (!mImgManipulationDialog)
-		mImgManipulationDialog = new DkImageManipulationDialog(this);
-	else 
-		mImgManipulationDialog->resetValues();
-
-	QImage tmpImg = viewport()->getImage();
-	mImgManipulationDialog->setImage(&tmpImg);
-
-	bool ok = mImgManipulationDialog->exec() != 0;
-
-	if (ok) {
-
-#ifdef WITH_OPENCV
-
-		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImage())));
-
-		if (!mImg.isNull())
-			viewport()->setEditedImage(mImg, tr("Adjusted"));
-
-#endif
-	}
-}
-
 
 void DkNoMacs::setWallpaper() {
 

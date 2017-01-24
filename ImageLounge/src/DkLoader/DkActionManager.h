@@ -173,7 +173,6 @@ public:
 	enum ToolsMenuActions {
 		menu_tools_thumbs,
 		menu_tools_filter,
-		menu_tools_manipulation,
 		menu_tools_export_tiff,
 		menu_tools_extract_archive,
 		menu_tools_mosaic,
@@ -345,12 +344,6 @@ public:
 		icon_view_end,	// nothing beyond this point
 	};
 
-	enum ToolsIcons {
-		icon_tools_manipulation,
-
-		icon_tools_end,
-	};
-
 	// default nomacs shortcuts
 	// keyboard shortcuts
 	enum Shortcuts {	
@@ -493,7 +486,6 @@ public:
 	QIcon icon(FileIcons icon) const;
 	QIcon icon(ViewIcons icon) const;
 	QIcon icon(EditIcons icon) const;
-	QIcon icon(ToolsIcons icon) const;
 	
 	QVector<QAction *> fileActions() const;
 	QVector<QAction *> sortActions() const;

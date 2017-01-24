@@ -167,8 +167,6 @@ DkViewPort::~DkViewPort() {
 
 	mManipulatorWatcher.cancel();
 	mManipulatorWatcher.blockSignals(true);
-	mManipulatorWatcher.waitForFinished();
-
 }
 
 void DkViewPort::createShortcuts() {

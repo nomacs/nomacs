@@ -351,19 +351,21 @@ void DkHueWidget::createLayout() {
 
 	DkSlider* hueSlider = new DkSlider(tr("Hue"), this);
 	hueSlider->setObjectName("hueSlider");
+	hueSlider->getSlider()->setObjectName("DkHueSlider");
 	hueSlider->setValue(manipulator()->hue());
 	hueSlider->setMinimum(-180);
 	hueSlider->setMaximum(180);
 
 	DkSlider* satSlider = new DkSlider(tr("Saturation"), this);
 	satSlider->setObjectName("satSlider");
-	satSlider->getSlider()->setObjectName("DkSaturationsSlider");
+	satSlider->getSlider()->setObjectName("DkSaturationSlider");
 	satSlider->setValue(manipulator()->saturation());
 	satSlider->setMinimum(-100);
 	satSlider->setMaximum(100);
 
 	DkSlider* brightnessSlider = new DkSlider(tr("Brightness"), this);
 	brightnessSlider->setObjectName("brightnessSlider");
+	brightnessSlider->getSlider()->setObjectName("DkBrightnessSlider");
 	brightnessSlider->setValue(manipulator()->hue());
 	brightnessSlider->setMinimum(-100);
 	brightnessSlider->setMaximum(100);

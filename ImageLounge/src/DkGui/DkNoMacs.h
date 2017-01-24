@@ -77,7 +77,6 @@ class DkMetaDataDock;
 class DkEditDock;
 class DkHistoryDock;
 class DkExportTiffDialog;
-class DkImageManipulationDialog;
 class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
@@ -184,7 +183,6 @@ public slots:
 	void extractImagesFromArchive();
 	void trainFormat();
 	void resizeImage();
-	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
 	void deleteFile();
@@ -306,7 +304,6 @@ protected:
 	DkDockWidget* mThumbsDock = 0;
 	DkExportTiffDialog* mExportTiffDialog = 0;
 	DkThumbsSaver* mThumbSaver = 0;
-	DkImageManipulationDialog* mImgManipulationDialog = 0;
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
 	DkDialogManager* mDialogManager = 0;
