@@ -357,6 +357,7 @@ void DkHueWidget::createLayout() {
 
 	DkSlider* satSlider = new DkSlider(tr("Saturation"), this);
 	satSlider->setObjectName("satSlider");
+	satSlider->getSlider()->setObjectName("DkSaturationsSlider");
 	satSlider->setValue(manipulator()->saturation());
 	satSlider->setMinimum(-100);
 	satSlider->setMaximum(100);

@@ -705,6 +705,11 @@ void DkViewPort::applyManipulator() {
 		return;
 	}
 
+	// show the dock (in case it's not shown yet)
+	if (mplExt) {
+		am.action(DkActionManager::menu_edit_image)->setChecked(true);
+	}
+
 	// undo last if it is an extended manipulator
 	QImage img;
 	if (mplExt && imageContainer()) {

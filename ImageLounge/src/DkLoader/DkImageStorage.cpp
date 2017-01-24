@@ -877,6 +877,10 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 	int satN = qRound(sat / 100.0 * 255.0);
 
 	cv::Mat hsvImg = DkImage::qImage2Mat(src);
+	
+	if (hsvImg.channels() > 3)
+		cv::cvtColor(hsvImg, hsvImg, CV_RGBA2BGR);
+
 	cv::cvtColor(hsvImg, hsvImg, CV_BGR2HSV);
 
 	// apply hue/saturation changes
