@@ -71,6 +71,15 @@
         <file>img/show-filename.svg</file>
         <file>img/dummy.svg</file>
         <file>img/settings.svg</file>
+		<file>img/flip-horizontal.svg</file>
+		<file>img/flip-vertical.svg</file>
+		<file>img/exposure.svg</file>
+		<file>img/sharpen.svg</file>
+		<file>img/tiny-planet.svg</file>
+		<file>img/invert.svg</file>
+		<file>img/normalize.svg</file>
+		<file>img/auto-adjust.svg</file>
+		<file>img/grayscale.svg</file>
         <file>img/display-settings.svg</file>
         <file>img/advanced-settings.svg</file>
         <file>descriptions/nomacs-device.xml</file>

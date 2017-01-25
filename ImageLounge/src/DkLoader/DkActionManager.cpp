@@ -488,8 +488,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 
 	mEditMenu = new QMenu(QObject::tr("&Edit"), parent);
 
-	mEditMenu->addAction(mEditActions[menu_edit_image]);
-	mEditMenu->addSeparator();
 	mEditMenu->addAction(mEditActions[menu_edit_copy]);
 	mEditMenu->addAction(mEditActions[menu_edit_copy_buffer]);
 	mEditMenu->addAction(mEditActions[menu_edit_paste]);
@@ -503,9 +501,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_redo]);
 	mEditMenu->addSeparator();
 
-	mEditMenu->addAction(mEditActions[menu_edit_transform]);
-	mEditMenu->addAction(mEditActions[menu_edit_crop]);
-	mEditMenu->addSeparator();
 #ifdef Q_OS_WIN
 	mEditMenu->addAction(mEditActions[menu_edit_wallpaper]);
 	mEditMenu->addSeparator();
@@ -518,10 +513,16 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 
 QMenu * DkActionManager::createManipulatorMenu(QWidget * parent) {
 	
-	mManipulatorMenu = new QMenu(QObject::tr("&Image"), parent);
+	mManipulatorMenu = new QMenu(QObject::tr("&Adjustments"), parent);
 	
 	for (auto action : mManipulators.actions())
 		mManipulatorMenu->addAction(action);
+
+	mManipulatorMenu->addSeparator();
+	mManipulatorMenu->addAction(mEditActions[menu_edit_transform]);
+	mManipulatorMenu->addAction(mEditActions[menu_edit_crop]);
+	mManipulatorMenu->addSeparator();
+	mManipulatorMenu->addAction(mEditActions[menu_edit_image]);
 
 	return mManipulatorMenu;
 }
@@ -559,8 +560,6 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 
 	mToolsMenu = new QMenu(QObject::tr("&Tools"), parent);
 
-	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
-	mToolsMenu->addAction(mToolsActions[menu_tools_filter]);
 #ifdef WITH_LIBTIFF
 	mToolsMenu->addAction(mToolsActions[menu_tools_export_tiff]);
 #endif
@@ -571,6 +570,7 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	mToolsMenu->addAction(mToolsActions[menu_tools_mosaic]);
 #endif
 	mToolsMenu->addAction(mToolsActions[menu_tools_batch]);
+	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
 
 	return mToolsMenu;
 }
@@ -1065,12 +1065,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	// edit actions
 	mEditActions.resize(menu_edit_end);
 
-	mEditActions[menu_edit_image] = new QAction(mEditIcons[icon_edit_image], QObject::tr("Edit &Image"), parent);
-	mEditActions[menu_edit_image]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mEditActions[menu_edit_image]->setShortcut(QKeySequence(shortcut_edit_image));
-	mEditActions[menu_edit_image]->setStatusTip(QObject::tr("open image manipulation toolbox"));
-	mEditActions[menu_edit_image]->setCheckable(true);
-
 	mEditActions[menu_edit_rotate_cw] = new QAction(mEditIcons[icon_edit_rotate_cw], QObject::tr("9&0%1 Clockwise").arg(dk_degree_str), parent);
 	mEditActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	mEditActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
@@ -1117,18 +1111,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_paste]->setShortcuts(pastScs);
 	mEditActions[menu_edit_paste]->setStatusTip(QObject::tr("paste image"));
 
-	mEditActions[menu_edit_transform] = new QAction(mEditIcons[icon_edit_resize], QObject::tr("R&esize Image"), parent);
-	mEditActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mEditActions[menu_edit_transform]->setShortcut(shortcut_transform);
-	mEditActions[menu_edit_transform]->setStatusTip(QObject::tr("resize the current image"));
-
-	mEditActions[menu_edit_crop] = new QAction(mEditIcons[icon_edit_crop], QObject::tr("Cr&op Image"), parent);
-	mEditActions[menu_edit_crop]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mEditActions[menu_edit_crop]->setShortcut(shortcut_crop);
-	mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
-	mEditActions[menu_edit_crop]->setCheckable(true);
-	mEditActions[menu_edit_crop]->setChecked(false);
-
 	mEditActions[menu_edit_delete] = new QAction(mEditIcons[icon_edit_delete], QObject::tr("&Delete"), parent);
 	mEditActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	mEditActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
@@ -1144,6 +1126,25 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_preferences] = new QAction(QObject::tr("&Settings"), parent);
 	mEditActions[menu_edit_preferences]->setShortcut(QKeySequence(shortcut_settings));
 	mEditActions[menu_edit_preferences]->setStatusTip(QObject::tr("settings"));
+
+	// image adjustments menu
+	mEditActions[menu_edit_image] = new QAction(mEditIcons[icon_edit_image], QObject::tr("Image &Adjustments"), parent);
+	mEditActions[menu_edit_image]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_image]->setShortcut(QKeySequence(shortcut_edit_image));
+	mEditActions[menu_edit_image]->setStatusTip(QObject::tr("open image manipulation toolbox"));
+	mEditActions[menu_edit_image]->setCheckable(true);
+
+	mEditActions[menu_edit_transform] = new QAction(mEditIcons[icon_edit_resize], QObject::tr("R&esize Image"), parent);
+	mEditActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_transform]->setShortcut(shortcut_transform);
+	mEditActions[menu_edit_transform]->setStatusTip(QObject::tr("resize the current image"));
+
+	mEditActions[menu_edit_crop] = new QAction(mEditIcons[icon_edit_crop], QObject::tr("Cr&op Image"), parent);
+	mEditActions[menu_edit_crop]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	mEditActions[menu_edit_crop]->setShortcut(shortcut_crop);
+	mEditActions[menu_edit_crop]->setStatusTip(QObject::tr("cut the current image"));
+	mEditActions[menu_edit_crop]->setCheckable(true);
+	mEditActions[menu_edit_crop]->setChecked(false);
 
 	// panel actions
 	mPanelActions.resize(menu_panel_end);
