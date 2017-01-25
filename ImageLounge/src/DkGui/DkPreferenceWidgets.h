@@ -77,7 +77,7 @@ public slots:
 
 signals:
 	void restartSignal() const;
-
+	
 protected:
 	void createLayout();
 
