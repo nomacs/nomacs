@@ -1058,13 +1058,18 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 	return glow;
 }
 
-QPixmap DkImage::loadIcon(const QString & filePath) {
+QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size) {
 	
 	if (filePath.isEmpty())
 		return QPixmap();
 
-	int s = DkSettingsManager::param().effectiveIconSize();
-	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
+	QSize s = size * DkSettingsManager::param().dPIScaleFactor();
+	if (size.isEmpty()) {
+		int eis = DkSettingsManager::param().effectiveIconSize();
+		s = QSize(eis, eis);
+	}
+
+	QPixmap icon = loadFromSvg(filePath, s);
 	
 	if (!DkSettingsManager::param().display().defaultIconColor || DkSettingsManager::param().app().privateMode)
 		icon = colorizePixmap(icon, DkSettingsManager::param().display().iconColor);

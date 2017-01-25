@@ -107,15 +107,15 @@ double DkSettings::dPIScaleFactor(QWidget *widget) const {
 }
 
 int DkSettings::effectiveIconSize(QWidget *widget) const {
-    return (int)(display_p.iconSize * dPIScaleFactor(widget));
+    return qRound(display_p.iconSize * dPIScaleFactor(widget));
 }
 
 int DkSettings::effectiveThumbSize(QWidget *widget) const {
-    return (int)(display_p.thumbSize * dPIScaleFactor(widget));
+    return qRound(display_p.thumbSize * dPIScaleFactor(widget));
 }
 
 int DkSettings::effectiveThumbPreviewSize(QWidget *widget) const {
-    return (int)(display_p.thumbPreviewSize * dPIScaleFactor(widget));
+    return qRound(display_p.thumbPreviewSize * dPIScaleFactor(widget));
 }
 
 QStringList DkSettings::translatedCamData() const {

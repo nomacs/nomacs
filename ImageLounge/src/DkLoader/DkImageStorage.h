@@ -118,7 +118,7 @@ public:
 	static bool alphaChannelUsed(const QImage& img);
 	static QImage rotateImage(const QImage& img, double angle);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
-	static QPixmap loadIcon(const QString& filePath = QString());
+	static QPixmap loadIcon(const QString& filePath = QString(), const QSize& size = QSize());
 	static QPixmap loadIcon(const QString& filePath, const QColor& col);
 	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
 	static QImage createThumb(const QImage& img);

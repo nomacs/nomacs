@@ -31,6 +31,7 @@
 
 #include "DkImageStorage.h"
 #include "DkImageContainer.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QSharedPointer>
@@ -45,8 +46,10 @@ DkBaseManipulator::DkBaseManipulator(QAction * action) {
 	mAction = action;
 	
 	// add default icon
-	if (mAction->icon().isNull())
-		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/manipulation.svg"));
+	if (mAction->icon().isNull()) {
+		QSize size(21, 21);
+		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/manipulation.svg", size));
+	}
 }
 
 QString DkBaseManipulator::name() const {
@@ -70,52 +73,54 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 
 	mManipulators.resize(m_ext_end);
 
+	QSize size(22, 22);
+
 	// grayscale
 	QAction* action;
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/grayscale.svg"), QObject::tr("&Grayscale"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/grayscale.svg", size), QObject::tr("&Grayscale"), parent);
 	action->setStatusTip(QObject::tr("Convert to Grayscale"));
 	mManipulators[m_grayscale] = QSharedPointer<DkGrayScaleManipulator>::create(action);
 
 	// auto adjust
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/auto-adjust.svg"), QObject::tr("&Auto Adjust"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/auto-adjust.svg", size), QObject::tr("&Auto Adjust"), parent);
 	action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_L);
 	action->setStatusTip(QObject::tr("Auto Adjust Image Contrast and Color Balance"));
 	mManipulators[m_auto_adjust] = QSharedPointer<DkAutoAdjustManipulator>::create(action);
 
 	// normalize
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/normalize.svg"), QObject::tr("Nor&malize Image"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/normalize.svg", size), QObject::tr("Nor&malize Image"), parent);
 	action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
 	action->setStatusTip(QObject::tr("Normalize the Image"));
 	mManipulators[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
 
 	// flip horizontal
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg"), QObject::tr("Flip &Horizontal"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg", size), QObject::tr("Flip &Horizontal"), parent);
 	action->setStatusTip(QObject::tr("Flip Image Horizontally"));
 	mManipulators[m_flip_h] = QSharedPointer<DkFlipHManipulator>::create(action);
 
 	// flip vertical
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg"), QObject::tr("Flip &Vertical"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg", size), QObject::tr("Flip &Vertical"), parent);
 	action->setStatusTip(QObject::tr("Flip Image Vertically"));
 	mManipulators[m_flip_v] = QSharedPointer<DkFlipVManipulator>::create(action);
 
 	// invert image
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/invert.svg"), QObject::tr("&Invert Image"), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/invert.svg", size), QObject::tr("&Invert Image"), parent);
 	action->setStatusTip(QObject::tr("Invert the Image"));
 	mManipulators[m_invert] = QSharedPointer<DkInvertManipulator>::create(action);
 
 	// extended --------------------------------------------------------------------
 	// tiny planet
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg"), QObject::tr("&Tiny Planet..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg", size), QObject::tr("&Tiny Planet..."), parent);
 	action->setStatusTip(QObject::tr("Create a Tiny Planet"));
 	mManipulators[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
 
 	// unsharp mask
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/sharpen.svg"), QObject::tr("&Sharpen..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/sharpen.svg", size), QObject::tr("&Sharpen..."), parent);
 	action->setStatusTip(QObject::tr("Sharpens the image by applying an unsharp mask"));
 	mManipulators[m_unsharp_mask] = QSharedPointer<DkUnsharpMaskManipulator>::create(action);
 
 	// rotate
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/rotate-cc.svg"), QObject::tr("&Rotate..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/rotate-cc.svg", size), QObject::tr("&Rotate..."), parent);
 	action->setStatusTip(QObject::tr("Rotate the image"));
 	mManipulators[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
@@ -125,7 +130,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	mManipulators[m_hue] = QSharedPointer<DkHueManipulator>::create(action);
 
 	// exposure
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/exposure.svg"), QObject::tr("&Exposure..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/exposure.svg", size), QObject::tr("&Exposure..."), parent);
 	action->setStatusTip(QObject::tr("Change the Exposure and Gamma"));
 	mManipulators[m_exposure] = QSharedPointer<DkExposureManipulator>::create(action);
 

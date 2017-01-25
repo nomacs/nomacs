@@ -318,10 +318,10 @@ public:
 	bool isPortable();
 	QString settingsPath() const;
 
-	double dPIScaleFactor(QWidget *w=NULL) const;
-	int effectiveIconSize(QWidget *w=NULL) const;
-	int effectiveThumbSize(QWidget *w=NULL) const;
-	int effectiveThumbPreviewSize(QWidget *w=NULL) const;
+	double dPIScaleFactor(QWidget *w = 0) const;
+	int effectiveIconSize(QWidget *w = 0) const;
+	int effectiveThumbSize(QWidget *w = 0) const;
+	int effectiveThumbPreviewSize(QWidget *w = 0) const;
 
 	App& app();
 	Global& global();

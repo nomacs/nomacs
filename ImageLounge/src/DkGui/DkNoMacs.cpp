@@ -401,7 +401,7 @@ void DkNoMacs::createActions() {
 
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
-	connect(am.action(DkActionManager::menu_edit_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
+	connect(am.action(DkActionManager::menu_tools_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
 	//connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openSettings()));
 
 	connect(am.action(DkActionManager::menu_panel_menu), SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
@@ -474,7 +474,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	am.action(DkActionManager::menu_edit_copy)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_copy_buffer)->setEnabled(enable);
 	am.action(DkActionManager::menu_edit_copy_color)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_wallpaper)->setEnabled(enable);
+	am.action(DkActionManager::menu_tools_wallpaper)->setEnabled(enable);
 
 	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
 	

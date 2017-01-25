@@ -165,7 +165,6 @@ public:
 		menu_edit_transform,
 		menu_edit_delete,
 		menu_edit_crop,
-		menu_edit_wallpaper,
 
 		menu_edit_end,	// nothing beyond this point
 	};
@@ -177,6 +176,7 @@ public:
 		menu_tools_extract_archive,
 		menu_tools_mosaic,
 		menu_tools_batch,
+		menu_tools_wallpaper,
 
 		menu_tools_end,
 	};

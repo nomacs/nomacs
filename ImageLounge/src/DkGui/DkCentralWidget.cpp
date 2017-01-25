@@ -483,38 +483,40 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addActions(am.helpActions().toList());
 	pw->addActions(am.hiddenActions().toList());
 
+	QSize s(22, 22);
+
 	// general preferences
-	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg"), tr("General"), this);
+	DkPreferenceTabWidget* tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/settings.svg", s), tr("General"), this);
 	DkGeneralPreference* gp = new DkGeneralPreference(this);
 	tab->setWidget(gp);
 	pw->addTabWidget(tab);
 
 	// display preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display-settings.svg"), tr("Display"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display-settings.svg", s), tr("Display"), this);
 	DkDisplayPreference* dp = new DkDisplayPreference(this);
 	tab->setWidget(dp);
 	pw->addTabWidget(tab);
 
 	// file preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg"), tr("File"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/dir.svg", s), tr("File"), this);
 	DkFilePreference* fp = new DkFilePreference(this);
 	tab->setWidget(fp);
 	pw->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs.svg"), tr("File Associations"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs.svg", s), tr("File Associations"), this);
 	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
 	tab->setWidget(fap);
 	pw->addTabWidget(tab);
 
 	// advanced preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg"), tr("Advanced"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/advanced-settings.svg", s), tr("Advanced"), this);
 	DkAdvancedPreference* ap = new DkAdvancedPreference(this);
 	tab->setWidget(ap);
 	pw->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/manipulation.svg"), tr("Editor"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/manipulation.svg", s), tr("Editor"), this);
 	DkEditorPreference* ep = new DkEditorPreference(this);
 	tab->setWidget(ep);
 	pw->addTabWidget(tab);

@@ -500,11 +500,6 @@ QMenu* DkActionManager::createEditMenu(QWidget* parent /* = 0 */) {
 	mEditMenu->addAction(mEditActions[menu_edit_undo]);
 	mEditMenu->addAction(mEditActions[menu_edit_redo]);
 	mEditMenu->addSeparator();
-
-#ifdef Q_OS_WIN
-	mEditMenu->addAction(mEditActions[menu_edit_wallpaper]);
-	mEditMenu->addSeparator();
-#endif
 	mEditMenu->addAction(mEditActions[menu_edit_shortcuts]);
 	mEditMenu->addAction(mEditActions[menu_edit_preferences]);
 
@@ -568,6 +563,10 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 #endif
 #ifdef WITH_OPENCV
 	mToolsMenu->addAction(mToolsActions[menu_tools_mosaic]);
+#endif
+#ifdef Q_OS_WIN
+	mEditMenu->addAction(mEditActions[menu_tools_wallpaper]);
+	mEditMenu->addSeparator();
 #endif
 	mToolsMenu->addAction(mToolsActions[menu_tools_batch]);
 	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
@@ -1116,9 +1115,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mEditActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
 	mEditActions[menu_edit_delete]->setStatusTip(QObject::tr("delete current fileInfo"));
 
-	mEditActions[menu_edit_wallpaper] = new QAction(QObject::tr("&Wallpaper"), parent);
-	mEditActions[menu_edit_wallpaper]->setStatusTip(QObject::tr("set the current image as wallpaper"));
-
 	mEditActions[menu_edit_shortcuts] = new QAction(QObject::tr("&Keyboard Shortcuts"), parent);
 	mEditActions[menu_edit_shortcuts]->setShortcut(QKeySequence(shortcut_shortcuts));
 	mEditActions[menu_edit_shortcuts]->setStatusTip(QObject::tr("lets you customize your keyboard shortcuts"));
@@ -1358,6 +1354,9 @@ void DkActionManager::createActions(QWidget* parent) {
 	mToolsActions[menu_tools_batch] = new QAction(QObject::tr("Batch Processing"), parent);
 	mToolsActions[menu_tools_batch]->setStatusTip(QObject::tr("Apply actions to multiple images"));
 	mToolsActions[menu_tools_batch]->setShortcut(QKeySequence(shortcut_batch_processing));
+
+	mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("&Wallpaper"), parent);
+	mToolsActions[menu_tools_wallpaper]->setStatusTip(QObject::tr("set the current image as wallpaper"));
 
 	// help menu
 	mHelpActions.resize(menu_help_end);
