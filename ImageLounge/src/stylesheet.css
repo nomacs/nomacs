@@ -492,65 +492,65 @@ nmc--DkDescriptionEdit {
 }
 
 /* edit image */
-nmc--DkBaseManipulatorWidget QSpinBox,
-nmc--DkBaseManipulatorWidget QLabel,
-nmc--DkBaseManipulatorWidget QCheckBox,
-nmc--DkBaseManipulatorWidget QDoubleSpinBox {
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox,
+nmc--DkBaseManipulatorWidget#darkManipulator QLabel,
+nmc--DkBaseManipulatorWidget#darkManipulator QCheckBox,
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox {
 	color: #fff;
 }
 
-nmc--DkBaseManipulatorWidget QDoubleSpinBox,
-nmc--DkBaseManipulatorWidget QSpinBox {
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox {
 	background: #333;
 	border: none;
 	border-bottom: 1px solid #fff;
 }
 
-nmc--DkBaseManipulatorWidget QDoubleSpinBox::up-button,
-nmc--DkBaseManipulatorWidget QDoubleSpinBox::down-button,
-nmc--DkBaseManipulatorWidget QSpinBox::up-button,
-nmc--DkBaseManipulatorWidget QSpinBox::down-button {
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::down-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::up-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::down-button {
 	border: none;
 	/* background-color: rgba(0,0,0,0); */
 }	
 
-nmc--DkBaseManipulatorWidget QSlider::groove:horizontal {
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider::groove:horizontal {
 	border: none; 
 	height: 3px; 
 	margin: 2px 0;
 	background: #fff;
 }
 
-nmc--DkBaseManipulatorWidget QSlider::handle:horizontal {
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider::handle:horizontal {
 	background-color: #fff; 
 	width: 6px; 
 	margin:-8px 0px -8px 0px;
 	border: 2px solid #333;
 }
 
-nmc--DkBaseManipulatorWidget QDoubleSpinBox::up-button,
-nmc--DkBaseManipulatorWidget QDoubleSpinBox::down-button,
-nmc--DkBaseManipulatorWidget QSpinBox::up-button,
-nmc--DkBaseManipulatorWidget QSlider::down-button {
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::down-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox::up-button,
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider::down-button {
 	border: none;
 	background-color: rgba(0,0,0,0);
 }
 
-nmc--DkBaseManipulatorWidget {
+nmc--DkBaseManipulatorWidget#darkManipulator {
 	/* background-color: palette(light); */
 	/* border-radius: 7px; */
 }
 
 /* DkManipulationWidget */
-QSlider#DkBrightnessSlider::groove:horizontal {
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkBrightnessSlider::groove:horizontal {
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8);
 }
 
-QSlider#DkSaturationSlider::groove:horizontal {
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkSaturationSlider::groove:horizontal {
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);
 }
 
-QSlider#DkHueSlider::groove:horizontal {
+nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkHueSlider::groove:horizontal {
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
 }
 

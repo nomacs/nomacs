@@ -32,6 +32,7 @@
 #include "DkPluginManager.h"
 #include "DkSettings.h"
 #include "DkMath.h"
+#include "DkManipulators.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFuture>
@@ -97,6 +98,11 @@ QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& s
 		return batch;
 	
 	batch = QSharedPointer<DkBatchTransform>::create();
+
+	if (batch->settingsName() == settingsName)
+		return batch;
+
+	batch = QSharedPointer<DkManipulatorBatch>::create();
 
 	if (batch->settingsName() == settingsName)
 		return batch;
@@ -366,6 +372,71 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 	}
 
 	return true;
+}
+
+// DkManipulatorBatch --------------------------------------------------------------------
+DkManipulatorBatch::DkManipulatorBatch() {
+
+}
+
+void DkManipulatorBatch::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup(settingsName());
+	mManager.saveSettings(settings);
+	settings.endGroup();
+}
+
+void DkManipulatorBatch::loadSettings(QSettings & settings) {
+
+	settings.beginGroup(settingsName());
+	mManager.loadSettings(settings);
+	settings.endGroup();
+}
+
+void DkManipulatorBatch::setProperties(const DkManipulatorManager& manager) {
+	mManager = manager;
+}
+
+bool DkManipulatorBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
+
+	if (!isActive()) {
+		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+		return true;
+	}
+
+	if (container && container->hasImage()) {
+		for (const QSharedPointer<DkBaseManipulator>& mpl : mManager.manipulators()) {
+
+			if (mpl->isSelected()) {
+				QImage img = mpl->apply(container->image());
+				if (!img.isNull()) {
+					container->setImage(img, mpl->name());
+					logStrings.append(QObject::tr("%1 %2 applied.").arg(name()).arg(mpl->name()));
+				}
+				else
+					logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(mpl->name()));
+			}
+		}
+	}
+	
+	if (!container || !container->hasImage()) {
+		logStrings.append(QObject::tr("%1 error, could not apply image adjustments.").arg(name()));
+		return false;
+	}
+
+	return true;
+}
+
+QString DkManipulatorBatch::name() const {
+	return QObject::tr("[Adjustment Batch]");
+}
+
+bool DkManipulatorBatch::isActive() const {
+	return mManager.numSelected() > 0;
+}
+
+DkManipulatorManager DkManipulatorBatch::manager() const {
+	return mManager;
 }
 
 #ifdef WITH_PLUGINS
@@ -1157,6 +1228,5 @@ QString DkBatchProfile::makeUserFriendly(const QString & profilePath) {
 QString DkBatchProfile::extension() {
 	return ext;
 }
-
 
 }

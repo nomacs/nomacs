@@ -49,7 +49,6 @@ namespace nmc {
 DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	
 	// create widgets
-	// TODO: do not create them here...?!
 	DkActionManager& am = DkActionManager::instance();
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
@@ -59,6 +58,9 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 
 	setObjectName("DkPreferenceTabs");
 	createLayout();
+
+	for (QWidget* w : mWidgets)
+		w->setObjectName("darkManipulator");
 
 	for (QAction* a : am.manipulatorActions())
 		connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);

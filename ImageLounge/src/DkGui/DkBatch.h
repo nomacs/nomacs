@@ -31,12 +31,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QUrl>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QItemSelection>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
 #include "DkImageLoader.h"
 #include "DkBaseWidgets.h"
 #include "DkBatchInfo.h"
+#include "DkManipulators.h"
 
 // Qt defines
 class QListView;
@@ -56,6 +58,8 @@ class QProgressBar;
 class QTabWidget;
 class QListWidget;
 class QStackedLayout;
+class QStandardItem;
+class QStandardItemModel;
 
 namespace nmc {
 
@@ -81,6 +85,7 @@ enum fileNameWidget {
 // nomacs defines
 class DkResizeBatch;
 class DkPluginBatch;
+class DkManipulatorBatch;
 class DkBatchProcessing;
 class DkBatchTransform;
 class DkBatchContent;
@@ -438,6 +443,41 @@ protected:
 };
 #endif
 
+class DkBatchManipulatorWidget : public QWidget, public DkBatchContent {
+	Q_OBJECT
+
+public:
+	DkBatchManipulatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	void transferProperties(QSharedPointer<DkManipulatorBatch> batchPlugin) const;
+	bool loadProperties(QSharedPointer<DkManipulatorBatch> batchPlugin);
+	bool hasUserInput() const;
+	bool requiresUserInput() const;
+	void applyDefault();
+
+public slots:
+	void itemChanged(QStandardItem * item);
+	void selectionChanged(const QItemSelection &selected);
+	void selectManipulator(QSharedPointer<DkBaseManipulator> mpl);
+
+signals:
+	void newHeaderText(const QString& txt) const;
+
+public slots:
+	void updateHeader() const;
+
+protected:
+	void createLayout();
+	void addSettingsWidgets(DkManipulatorManager& manager);
+	void setManager(const DkManipulatorManager& manager);
+
+	QStandardItemModel* mModel = 0;
+	DkManipulatorManager mManager;
+	QVector<QWidget*> mMplWidgets;
+	QVBoxLayout* mSettingsLayout = 0;
+	QLabel* mSettingsTitle = 0;
+};
+
 class DkBatchTransformWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
@@ -525,6 +565,7 @@ public:
 
 	enum batchWidgets {
 		batch_input,
+		batch_manipulator,
 		batch_resize,
 		batch_transform,
 		batch_plugin,
@@ -563,6 +604,7 @@ protected:
 	DkBatchInput* inputWidget() const;
 	DkBatchOutput* outputWidget() const;
 	DkBatchResizeWidget* resizeWidget() const;
+	DkBatchManipulatorWidget* manipulatorWidget() const;
 	DkProfileWidget* profileWidget() const;
 	DkBatchTransformWidget* transformWidget() const;
 

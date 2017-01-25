@@ -30,6 +30,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QAction>
+#include <QSettings>
 #pragma warning(pop)
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -67,11 +68,18 @@ public:
 	QAction* action() const;
 	QIcon icon() const;
 
+	void setSelected(bool select);
+	bool isSelected() const;
+
 	virtual QString errorMessage() const = 0;
 	virtual QImage apply(const QImage& img) const = 0;
 
+	virtual void saveSettings(QSettings& settings);
+	virtual void loadSettings(QSettings& settings);
+
 private:
 	QAction* mAction = 0;
+	bool mIsSelected = false;
 };
 
 /// <summary>
@@ -128,10 +136,18 @@ public:
 	void createManipulators(QWidget* parent);
 
 	QVector<QAction*> actions() const;
+	QStringList names() const;
 	
 	QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId& mId) const;
 	QSharedPointer<DkBaseManipulator> manipulator(const ManipulatorId& mId) const;
 	QSharedPointer<DkBaseManipulator> manipulator(const QAction* action) const;
+	QSharedPointer<DkBaseManipulator> manipulator(const QString& name) const;
+	QVector<QSharedPointer<DkBaseManipulator> > manipulators() const;
+
+	int numSelected() const;
+
+	void loadSettings(QSettings & settings);
+	void saveSettings(QSettings & settings) const;
 
 private:
 	QVector<QSharedPointer<DkBaseManipulator> > mManipulators;

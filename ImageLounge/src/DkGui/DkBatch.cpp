@@ -37,6 +37,7 @@
 #include "DkPluginManager.h"
 #include "DkActionManager.h"
 #include "DkImageStorage.h"
+#include "DkManipulatorWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QLabel>
@@ -63,6 +64,8 @@
 #include <QStackedLayout>
 #include <QInputDialog>
 #include <QStandardPaths>
+#include <QStandardItemModel>
+#include <QStandardItem>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1503,6 +1506,182 @@ void DkBatchPluginWidget::updateHeader() const {
 }
 #endif
 
+// DkBatchManipulatorWidget --------------------------------------------------------------------
+DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+
+	mManager.createManipulators(this);
+	createLayout();
+	addSettingsWidgets(mManager);
+
+}
+
+void DkBatchManipulatorWidget::createLayout() {
+
+	QLabel* listLabel = new QLabel(tr("Select Image Adjustments"));
+	listLabel->setObjectName("subTitle");
+
+	mModel = new QStandardItemModel(this);
+
+	int idx = 0;
+	for (auto mpl : mManager.manipulators()) {
+
+		QStandardItem * item = new QStandardItem(mpl->action()->icon(), mpl->name());
+		item->setCheckable(true);
+
+		mModel->setItem(idx, item); 
+		idx++;
+	}
+
+	QListView* manipulatorList = new QListView(this);
+	manipulatorList->setModel(mModel);
+
+	// settings
+	mSettingsTitle = new QLabel(this);
+	mSettingsTitle->setObjectName("subTitle");
+
+	QWidget* settingsWidget = new QWidget(this);
+	mSettingsLayout = new QVBoxLayout(settingsWidget);
+	mSettingsLayout->setAlignment(Qt::AlignTop);
+
+	QGridLayout* layout = new QGridLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(listLabel, 0, 0);
+	layout->addWidget(mSettingsTitle, 0, 1);
+	layout->addWidget(manipulatorList, 1, 0);
+	layout->addWidget(settingsWidget, 1, 1);
+	
+	connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
+	connect(manipulatorList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&)));
+
+}
+
+void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager) {
+
+	for (auto w : mMplWidgets) {
+		mSettingsLayout->removeWidget(w);
+		delete w;
+	}
+
+	mMplWidgets.clear();	// TODO: delete the old ones now?
+
+	mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+	mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
+	mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
+	mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
+	mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
+	
+	for (QWidget* w : mMplWidgets)
+		mSettingsLayout->addWidget(w);
+}
+
+bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators) {
+
+	if (!batchManipulators) {
+		qWarning() << "cannot load properties, DkManipulatorBatch is NULL";
+		return false;
+	}
+
+	setManager(batchManipulators->manager());
+	addSettingsWidgets(mManager);
+
+	return true;
+}
+
+void DkBatchManipulatorWidget::setManager(const DkManipulatorManager& manager) {
+
+	mManager = manager;
+	addSettingsWidgets(mManager);
+
+	for (const QSharedPointer<DkBaseManipulator>& mpl : mManager.manipulators()) {
+		auto items = mModel->findItems(mpl->name());
+
+		for (auto i : items)
+			i->setCheckState(mpl->isSelected() ? Qt::Checked : Qt::Unchecked);
+
+		qDebug() << mpl->name() << "is" << (mpl->isSelected() ? "selected" : "NOT selected");
+	}
+}
+
+void DkBatchManipulatorWidget::transferProperties(QSharedPointer<DkManipulatorBatch> batchManipulator) const {
+
+	batchManipulator->setProperties(mManager);
+}
+
+bool DkBatchManipulatorWidget::hasUserInput() const {
+	
+	return mManager.numSelected() > 0;
+}
+
+bool DkBatchManipulatorWidget::requiresUserInput() const {
+	return false;
+}
+
+void DkBatchManipulatorWidget::applyDefault() {
+
+	for (int rIdx = 0; rIdx < mModel->rowCount(); rIdx++) {
+		mModel->item(rIdx)->setCheckState(Qt::Unchecked);
+	}
+}
+
+void DkBatchManipulatorWidget::selectionChanged(const QItemSelection & selected) {
+
+	for (auto mIdx : selected.indexes()) {
+
+		QStandardItem* item = mModel->item(mIdx.row());
+		
+		if (!item)
+			continue;
+
+		selectManipulator(mManager.manipulator(item->text()));
+	}
+	
+	qDebug() << "selection changed...";
+}
+
+void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl) {
+
+	for (auto w : mMplWidgets)
+		w->hide();
+
+	auto mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
+
+	if (!mplExt)
+		return;
+
+	mSettingsTitle->setText(mplExt->name());
+	mSettingsTitle->show();
+	mplExt->widget()->show();
+
+	if (!mplExt)
+		mSettingsTitle->hide();
+}
+
+void DkBatchManipulatorWidget::itemChanged(QStandardItem * item) {
+
+	auto mpl = mManager.manipulator(item->text());
+
+	if (!mpl) {
+		qCritical() << "could not cast item in DkBatchManipulatorWidget!";
+		return;
+	}
+
+	mpl->setSelected(item->checkState() == Qt::Checked);
+	selectManipulator(mpl);
+
+	updateHeader();
+	qDebug() << "item: " << item->text();
+}
+
+void DkBatchManipulatorWidget::updateHeader() const {
+
+	int c = mManager.numSelected();
+	if (!c)
+		emit newHeaderText(tr("inactive"));
+	else
+		emit newHeaderText(tr("%1 manipulators selected").arg(c));
+
+}
+
 // DkBatchTransform --------------------------------------------------------------------
 DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
@@ -1784,6 +1963,9 @@ void DkBatchWidget::createLayout() {
 	inputWidget()->setDir(mCurrentDirectory);
 
 	// fold content
+	mWidgets[batch_manipulator] = new DkBatchContainer(tr("Adjustments"), tr("inactive"), this);
+	mWidgets[batch_manipulator]->setContentWidget(new DkBatchManipulatorWidget(this));
+
 	mWidgets[batch_resize] = new DkBatchContainer(tr("Resize"), tr("inactive"), this);
 	mWidgets[batch_resize]->setContentWidget(new DkBatchResizeWidget(this));
 
@@ -1910,6 +2092,15 @@ DkBatchResizeWidget* DkBatchWidget::resizeWidget() const {
 	DkBatchResizeWidget* w = dynamic_cast<DkBatchResizeWidget*>(mWidgets[batch_resize]->contentWidget());
 	if (!w)
 		qCritical() << "cannot cast to DkBatchResizeWidget";
+
+	return w;
+}
+
+DkBatchManipulatorWidget* DkBatchWidget::manipulatorWidget() const {
+
+	DkBatchManipulatorWidget* w = dynamic_cast<DkBatchManipulatorWidget*>(mWidgets[batch_manipulator]->contentWidget());
+	if (!w)
+		qCritical() << "cannot cast to DkBatchManipulatorWidget";
 
 	return w;
 }
@@ -2071,6 +2262,10 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	}
 
 	// create processing functions
+	QSharedPointer<DkManipulatorBatch> manipulatorBatch(new DkManipulatorBatch);
+	manipulatorWidget()->transferProperties(manipulatorBatch);
+
+	// create processing functions
 	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
 	resizeWidget()->transferProperties(resizeBatch);
 
@@ -2085,6 +2280,9 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 #endif
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
+
+	if (manipulatorBatch->isActive())
+		processFunctions.append(manipulatorBatch);
 
 	if (resizeBatch->isActive())
 		processFunctions.append(resizeBatch);
@@ -2297,6 +2495,12 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 		// apply resize batch settings
 		if (QSharedPointer<DkResizeBatch> rf = qSharedPointerDynamicCast<DkResizeBatch>(cf)) {
 			if (!resizeWidget()->loadProperties(rf)) {
+				warnings++;
+			}
+		}
+		// apply manipulator batch settings
+		else if (QSharedPointer<DkManipulatorBatch> mf = qSharedPointerDynamicCast<DkManipulatorBatch>(cf)) {
+			if (!manipulatorWidget()->loadProperties(mf)) {
 				warnings++;
 			}
 		}

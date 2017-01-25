@@ -37,6 +37,7 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBatchInfo.h"
+#include "DkManipulators.h"
 
 #pragma warning(disable: 4251)	// TODO: remove
 
@@ -59,6 +60,7 @@ namespace nmc {
 // nomacs defines
 class DkImageContainer;
 class DkPluginContainer;
+class DkBaseManipulator;
 
 class DllLoaderExport DkAbstractBatch {
 
@@ -173,6 +175,27 @@ protected:
 	QStringList mPluginList;
 };
 #endif
+
+class DllLoaderExport DkManipulatorBatch : public DkAbstractBatch {
+
+public:
+	DkManipulatorBatch();
+
+	virtual void saveSettings(QSettings& settings) const override;
+	virtual void loadSettings(QSettings& settings) override;
+
+	virtual void setProperties(const DkManipulatorManager& manager);
+	virtual bool compute(
+		QSharedPointer<DkImageContainer> container, 
+		QStringList& logStrings) const override;
+	virtual QString name() const override;
+	virtual bool isActive() const override;
+
+	DkManipulatorManager manager() const;
+
+protected:
+	DkManipulatorManager mManager;
+};
 
 class DllLoaderExport DkBatchTransform : public DkAbstractBatch {
 
