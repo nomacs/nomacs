@@ -59,9 +59,6 @@
 #include <QAbstractButton>
 #include <QProcess>
 #include <qmath.h>
-#ifdef WITH_UPNP
-#include "DkUpnp.h"
-#endif // WITH_UPNP
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
@@ -776,14 +773,6 @@ void DkLANClientManager::startServer(bool flag) {
 		}
 	}
 	server->startServer(flag);
-#ifdef WITH_UPNP
-	qDebug() << "server address:" << server->serverAddress() << " port:" << server->serverPort();
-	if (flag) {
-		emit serverPortChanged(server->serverPort());
-	} else {
-		emit serverPortChanged(0);
-	}
-#endif // WITH_UPNP
 }
 
 
@@ -1455,17 +1444,6 @@ void DkLanManagerThread::connectClient() {
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(goodByeToAllSignal()), clientManager, SLOT(sendGoodByeToAll()));
 
-	// TODO: uncomment OR do a better signaling here...
-	//connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->viewport()->getController(), SLOT(setInfo(const QString&, int)));
-
-#ifdef WITH_UPNP
-	qRegisterMetaType<QHostAddress>("QHostAddress");
-	connect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(const QHostAddress&, quint16, const QString&)), clientManager, SLOT(startConnection(const QHostAddress&, quint16, const QString&)), Qt::QueuedConnection);
-	connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)), Qt::QueuedConnection);
-	
-#endif // WITH_UPNP
-
-
 	DkManagerThread::connectClient();
 }
 
@@ -1493,25 +1471,11 @@ void DkRCManagerThread::createClient(const QString& title) {
 void DkRCManagerThread::connectClient() {
 	// not sure if we need something here
 
-	//connect(parent->mViewport(), SIGNAL(sendImageSignal(QImage, const QString&)), clientManager, SLOT(sendNewImage(QImage, const QString&)));
-	//connect(clientManager, SIGNAL(receivedImage(const QImage&)), parent->mViewport(), SLOT(loadImage(const QImage&)));
-	//connect(clientManager, SIGNAL(sendInfoSignal(const QString&, int)), parent->mViewport()->getController(), SLOT(setInfo(const QString&, int)));
-	//connect(clientManager, SIGNAL(receivedImageTitle(const QString&)), parent, SLOT(setWindowTitle(const QString&)));
-	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
 	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
 	connect(clientManager, SIGNAL(connectedReceivedNewMode(int)), parent, SLOT(tcpChangeSyncMode(int)));
 
 	DkLanManagerThread::connectClient();
-
-#ifdef WITH_UPNP
-	 //disconnect signals made by lan manager thread
-	disconnect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(const QHostAddress&, quint16, const QString&)), clientManager, SLOT(startConnection(const QHostAddress&, quint16, const QString&)));
-	disconnect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)));
-	connect(upnpControlPoint.data(), SIGNAL(newRCNomacsFound(const QHostAddress&, quint16, const QString&)), clientManager, SLOT(startConnection(const QHostAddress&, quint16, const QString&)), Qt::QueuedConnection);
-	connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(wlServerPortChanged(quint16)), Qt::QueuedConnection);
-#endif // WITH_UPNP
-
 }
 
 void DkRCManagerThread::sendNewMode(int mode) {

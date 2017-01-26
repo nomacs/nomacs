@@ -50,8 +50,6 @@ namespace nmc {
 class DkLocalTcpServer;
 class DkLANTcpServer;
 class DkLANUdpSocket;
-class DkUpnpControlPoint;
-class DkUpnpDeviceHost;
 
 class DkPeer : public QObject{
 	Q_OBJECT;
@@ -443,11 +441,6 @@ class DkLanManagerThread : public DkManagerThread {
 public:
 	DkLanManagerThread(DkNoMacs* parent);
 	virtual void connectClient();
-
-#ifdef WITH_UPNP
-	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
-	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
-#endif // WITH_UPNP
 
 signals:
 	void startServerSignal(bool start);

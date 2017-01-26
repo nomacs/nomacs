@@ -97,12 +97,6 @@ class DkImageLoader;
 class DkQuickAccessEdit;
 class DkDialogManager;
 
-#ifdef WITH_UPNP
-class DkUpnpControlPoint;
-class DkUpnpDeviceHost;
-class DkUpnpRendererDeviceHost;
-#endif // WITH_UPNP
-
 /*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
@@ -356,7 +350,6 @@ public slots:
 	void tcpRemoteControl(bool start);
 	void tcpRemoteDisplay(bool start);
 	void tcpAutoConnect(bool connect);
-	void startUpnpRenderer(bool start);
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
@@ -382,11 +375,6 @@ protected:
 	DkLocalManagerThread* mLocalClient = 0;
 	DkLanManagerThread* mLanClient = 0;
 	DkRCManagerThread* mRcClient = 0;
-#ifdef WITH_UPNP
-	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
-	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
-	QSharedPointer<DkUpnpRendererDeviceHost> upnpRendererDeviceHost;
-#endif // WITH_UPNP
 
 };
 

@@ -596,11 +596,6 @@ void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMe
 	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
-#ifdef WITH_UPNP
-	// disable this action since it does not work using herqq
-	mSyncMenu->addAction(syncActions[menu_sync_start_upnp]);
-#endif // WITH_UPNP
-
 }
 
 QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
@@ -1409,10 +1404,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mSyncActions[menu_sync_all_actions]->setStatusTip(QObject::tr("Transmit All Signals Automatically."));
 	mSyncActions[menu_sync_all_actions]->setCheckable(true);
 	mSyncActions[menu_sync_all_actions]->setChecked(DkSettingsManager::param().sync().syncActions);
-
-	mSyncActions[menu_sync_start_upnp] = new QAction(QObject::tr("&Start Upnp"), parent);
-	mSyncActions[menu_sync_start_upnp]->setStatusTip(QObject::tr("Starts a Upnp Media Renderer."));
-	mSyncActions[menu_sync_start_upnp]->setCheckable(true);
 
 	mSyncActions[menu_sync_remote_control] = new QAction(QObject::tr("&Remote Control"), parent);
 	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));

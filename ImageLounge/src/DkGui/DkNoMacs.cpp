@@ -59,10 +59,6 @@
 #endif //  WITH_PLUGINS
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#ifdef WITH_UPNP
-#include "DkUpnp.h"
-#endif // WITH_UPNP
-
 #include <QBoxLayout>
 #include <QResizeEvent>
 #include <QAction>
@@ -2449,16 +2445,6 @@ void DkNoMacsSync::initLanClient() {
 	// start lan client/server
 	mLanClient = new DkLanManagerThread(this);
 	mLanClient->setObjectName("lanClient");
-#ifdef WITH_UPNP
-	if (!upnpControlPoint) {
-		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
-	}
-	mLanClient->upnpControlPoint = upnpControlPoint;
-	if (!upnpDeviceHost) {
-		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
-	}
-	mLanClient->upnpDeviceHost = upnpDeviceHost;
-#endif // WITH_UPNP
 	mLanClient->start();
 
 	lanMenu->setClientManager(mLanClient);
@@ -2469,16 +2455,6 @@ void DkNoMacsSync::initLanClient() {
 
 	mRcClient = new DkRCManagerThread(this);
 	mRcClient->setObjectName("rcClient");
-#ifdef WITH_UPNP
-	if (!upnpControlPoint) {
-		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
-	}
-	mRcClient->upnpControlPoint = upnpControlPoint;
-	if (!upnpDeviceHost) {
-		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
-	}
-	mRcClient->upnpDeviceHost = upnpDeviceHost;
-#endif // WITH_UPNP
 	
 	mRcClient->start();
 	
@@ -2487,9 +2463,6 @@ void DkNoMacsSync::initLanClient() {
 
 	if (!DkSettingsManager::param().sync().syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
-#ifdef WITH_UPNP
-		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
-#endif // WITH_UPNP
 
 		// TODO: currently blocking : )
 		emit startRCServerSignal(true);
@@ -2519,7 +2492,6 @@ void DkNoMacsSync::createActions() {
 	connect(am.action(DkActionManager::menu_sync_arrange), SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 	connect(am.action(DkActionManager::menu_sync_connect_all), SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 	connect(am.action(DkActionManager::menu_sync_all_actions), SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
-	connect(am.action(DkActionManager::menu_sync_start_upnp), SIGNAL(triggered(bool)), this, SLOT(startUpnpRenderer(bool)));
 	connect(am.action(DkActionManager::menu_sync_remote_control), SIGNAL(triggered(bool)), this, SLOT(tcpRemoteControl(bool)));
 	connect(am.action(DkActionManager::menu_sync_remote_display), SIGNAL(triggered(bool)), this, SLOT(tcpRemoteDisplay(bool)));
 }
@@ -2691,21 +2663,6 @@ void DkNoMacsSync::tcpAutoConnect(bool connect) {
 	DkSettingsManager::param().sync().syncActions = connect;
 }
 
-#ifdef WITH_UPNP
-void DkNoMacsSync::startUpnpRenderer(bool start) {
-	if (!upnpRendererDeviceHost) {
-		upnpRendererDeviceHost = QSharedPointer<DkUpnpRendererDeviceHost>(new DkUpnpRendererDeviceHost());
-		connect(upnpRendererDeviceHost.data(), SIGNAL(newImage(QImage)), viewport(), SLOT(setImage(QImage)));
-	}
-	if(start)
-		upnpRendererDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs_mediarenderer_description.xml");
-	else
-		upnpDeviceHost->stopDevicehost();
-}
-#else
-void DkNoMacsSync::startUpnpRenderer(bool) {}	// dummy
-#endif // WITH_UPNP
-
 bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
 	if (!mRcClient)
@@ -2752,10 +2709,6 @@ void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
 void DkNoMacsSync::startTCPServer(bool start) {
 	
-#ifdef WITH_UPNP
-	if (!upnpDeviceHost->isStarted())
-		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
-#endif // WITH_UPNP
 	emit startTCPServerSignal(start);
 }
 
@@ -2766,18 +2719,6 @@ void DkNoMacsSync::settingsChanged() {
 }
 
 void DkNoMacsSync::clientInitialized() {
-	
-	//TODO: things that need to be done after the clientManager has finished initialization
-#ifdef WITH_UPNP
-	QObject* obj = QObject::sender();
-	if (obj && (obj->objectName() == "lanClient" || obj->objectName() == "rcClient")) {
-		qDebug() << "sender:" << obj->objectName();
-		if (!upnpControlPoint->isStarted()) {
-			qDebug() << "initializing upnpControlPoint";
-			upnpControlPoint->init();
-		}
-	} 
-#endif // WITH_UPNP
 	
 	emit clientInitializedSignal();
 }
