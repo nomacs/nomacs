@@ -4,13 +4,8 @@ set(VERSION_LIB Version.lib)
 # create the targets
 set(BINARY_NAME ${PROJECT_NAME})
 set(DLL_CORE_NAME ${PROJECT_NAME}Core)
-set(DLL_LOADER_NAME ${PROJECT_NAME}Loader)
-set(DLL_GUI_NAME ${PROJECT_NAME}Gui)
 
 set(LIB_CORE_NAME optimized ${DLL_CORE_NAME}.lib debug ${DLL_CORE_NAME}d.lib)
-set(LIB_LOADER_NAME optimized ${DLL_LOADER_NAME}.lib debug ${DLL_LOADER_NAME}d.lib)
-set(LIB_NAME optimized ${DLL_GUI_NAME}.lib debug ${DLL_GUI_NAME}d.lib)
-
 
 #binary
 link_directories(${OpenCV_LIBRARY_DIRS} ${CMAKE_BINARY_DIR}/libs/)
@@ -34,7 +29,7 @@ add_library(${DLL_LOADER_NAME} SHARED ${LOADER_SOURCES} ${NOMACS_UI} ${NOMACS_RC
 target_link_libraries(${DLL_LOADER_NAME} ${LIB_CORE_NAME} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY})
 
 # add GUI
-add_library(${DLL_GUI_NAME} SHARED ${GUI_SOURCES} ${NOMACS_UI} ${NOMACS_RCC} ${GUI_HEADERS} ${NOMACS_RC})
+add_library(${DLL_CORE_NAME} SHARED ${GUI_HEADERS} ${GUI_SOURCES} ${LOADER_HEADERS} ${LOADER_SOURCES} ${CORE_HEADERS} ${CORE_SOURCES} ${NOMACS_UI} ${NOMACS_RCC} ${NOMACS_RC})
 target_link_libraries(${DLL_GUI_NAME} ${LIB_CORE_NAME} ${LIB_LOADER_NAME} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${QUAZIP_DEPENDENCY})
 
 
@@ -149,6 +144,10 @@ source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${N
 #set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
 source_group("Changelog" FILES ${CHANGLOG_FILE})
+
+# I/O files
+# source_group("fcs" FILES ${FCS_HEADERS})
+# source_group("flowCore" FILES ${FLOWCORE_HEADERS} ${FLOWCORE_SOURCES})
 
 # generate configuration file
 if(DLL_CORE_NAME)

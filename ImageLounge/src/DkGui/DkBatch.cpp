@@ -1597,8 +1597,6 @@ void DkBatchManipulatorWidget::setManager(const DkManipulatorManager& manager) {
 
 		for (auto i : items)
 			i->setCheckState(mpl->isSelected() ? Qt::Checked : Qt::Unchecked);
-
-		qDebug() << mpl->name() << "is" << (mpl->isSelected() ? "selected" : "NOT selected");
 	}
 }
 
@@ -1635,7 +1633,7 @@ void DkBatchManipulatorWidget::selectionChanged(const QItemSelection & selected)
 		selectManipulator(mManager.manipulator(item->text()));
 	}
 	
-	qDebug() << "selection changed...";
+	//qDebug() << "selection changed...";
 }
 
 void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl) {
@@ -1669,7 +1667,7 @@ void DkBatchManipulatorWidget::itemChanged(QStandardItem * item) {
 	selectManipulator(mpl);
 
 	updateHeader();
-	qDebug() << "item: " << item->text();
+	//qDebug() << "item: " << item->text();
 }
 
 void DkBatchManipulatorWidget::updateHeader() const {
