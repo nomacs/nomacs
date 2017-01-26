@@ -31,13 +31,13 @@
 #include <QDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -52,9 +52,9 @@ namespace nmc {
 // nomacs defines
 class DkSlider;
 class DkColorChooser;
-class DllLoaderExport DkBaseViewPort;
+class DllCoreExport DkBaseViewPort;
 
-class DllLoaderExport DkTifDialog : public QDialog {
+class DllCoreExport DkTifDialog : public QDialog {
 	Q_OBJECT
 
 public:
@@ -70,7 +70,7 @@ protected:
 
 };
 
-class DllLoaderExport DkCompressDialog : public QDialog {
+class DllCoreExport DkCompressDialog : public QDialog {
 	Q_OBJECT
 
 public:

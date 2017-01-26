@@ -1,6 +1,0 @@
-#ifndef H_PLAYLISTITEM_
-#define H_PLAYLISTITEM_
-
-#include "public/hplaylistitem.h"
-
-#endif // H_PLAYLISTITEM_

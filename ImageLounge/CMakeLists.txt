@@ -27,16 +27,25 @@ else()
 	SET(NMC_ARCHITECTURE "x86")
 endif()
 
-option(GLOBAL_READ_BUILD "READ build" OFF)
-
-
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
-if(DEFINED GLOBAL_READ_BUILD)
-	if(${GLOBAL_READ_BUILD}) # cannot be incooperated into if one line above
+# include macros needed
+include("cmake/Utils.cmake")
+
+# different compile options
+option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
+option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
+option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
+option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
+option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
+
+if(DEFINED ENABLE_READ_BUILD)
+	if(${ENABLE_READ_BUILD}) # cannot be incooperated into if one line above
 		# set output path when building for READ
 		if(MSVC)
 			SET(CMAKE_LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -52,33 +61,18 @@ if(DEFINED GLOBAL_READ_BUILD)
 	endif()
 endif()
 
-# include macros needed
-include("cmake/Utils.cmake")
-
-# different compile options
-option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
-option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
-option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
-option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
-option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
-
 if(MSVC)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
-	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" ON)
 elseif(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
-	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" OFF)
-	message(STATUS "QuaZip disabled cause^ ur using a mac")
+	message(STATUS "QuaZip disabled because you are using a mac")
 
 elseif(UNIX)
-	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" ON)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 else()
-	option(ENABLE_UPNP "Compile with UPNP" OFF)
 	option(ENABLE_PLUGINS "Compile with plugin system" OFF)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 endif()
@@ -133,10 +127,6 @@ file(GLOB NOMACS_EXE_HEADERS "src/*.h")
 file(GLOB GUI_SOURCES "src/DkGui/*.cpp")
 file(GLOB GUI_HEADERS "src/DkGui/*.h")
 
-# loader
-file(GLOB LOADER_SOURCES "src/DkLoader/*.cpp")
-file(GLOB LOADER_HEADERS "src/DkLoader/*.h")
-
 # core
 file(GLOB CORE_SOURCES "src/DkCore/*.cpp")
 file(GLOB CORE_HEADERS "src/DkCore/*.h")
@@ -148,11 +138,9 @@ include_directories (
 	${CMAKE_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
-	${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
-	${HUPNP_INCLUDE_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	# ${ZLIB_INCLUDE_DIRS}
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
@@ -161,11 +149,6 @@ include_directories (
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
 endif (APPLE)
-
-IF(NOT ENABLE_UPNP)
-	LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkUpnp.cpp)
-	LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkUpnp.h)
-ENDIF(NOT ENABLE_UPNP)
 
 IF(NOT ENABLE_PLUGINS)
 	LIST(REMOVE_ITEM GUI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.cpp)
@@ -183,7 +166,6 @@ QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
 
 QT5_WRAP_CPP(CORE_MOC_SRC ${CORE_HEADERS})
-QT5_WRAP_CPP(LOADER_MOC_SRC ${LOADER_HEADERS})
 QT5_WRAP_CPP(GUI_MOC_SRC ${GUI_HEADERS})
 
 

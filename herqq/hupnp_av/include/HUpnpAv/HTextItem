@@ -1,6 +1,0 @@
-#ifndef H_TEXTITEM_
-#define H_TEXTITEM_
-
-#include "public/htextitem.h"
-
-#endif // H_TEXTITEM_

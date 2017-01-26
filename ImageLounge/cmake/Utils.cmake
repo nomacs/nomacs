@@ -1,7 +1,7 @@
 # Searches for Qt with the required components
 macro(NMC_FINDQT)
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC OFF)
+	# set(CMAKE_AUTOMOC ON)
+	# set(CMAKE_AUTORCC OFF)
 	
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
  

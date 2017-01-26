@@ -135,7 +135,7 @@ protected:
 	QVector<DkLibrary> loadDependencies() const;
 };
 
-class DllLoaderExport DkPluginContainer : public QObject {
+class DllCoreExport DkPluginContainer : public QObject {
 	Q_OBJECT
 
 public:
@@ -216,7 +216,7 @@ protected:
 	void loadMetaData(const QJsonValue& val);
 };
 
-class DllLoaderExport DkPluginActionManager : public QObject {
+class DllCoreExport DkPluginActionManager : public QObject {
 	Q_OBJECT
 
 public:
@@ -250,7 +250,7 @@ protected:
 	QVector<QMenu*> mPluginSubMenus;
 };
 
-class DllLoaderExport DkPluginManager {
+class DllCoreExport DkPluginManager {
 
 public:
 	static DkPluginManager& instance();
@@ -294,7 +294,7 @@ private:
 };
 
 // Plug-in manager dialog for enabling/disabling plug-ins and downloading new ones
-class DllLoaderExport DkPluginManagerDialog : public QDialog {
+class DllCoreExport DkPluginManagerDialog : public QDialog {
 	Q_OBJECT
 
 public:

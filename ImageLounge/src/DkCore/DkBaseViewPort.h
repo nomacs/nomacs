@@ -35,13 +35,13 @@
 
 #include "DkImageStorage.h"
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -52,7 +52,7 @@ class QSvgRenderer;
 
 namespace nmc {
 
-class DllLoaderExport DkBaseViewPort : public QGraphicsView {
+class DllCoreExport DkBaseViewPort : public QGraphicsView {
 	Q_OBJECT
 
 public:

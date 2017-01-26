@@ -1,6 +1,0 @@
-#ifndef H_AUDIOPROGRAM_
-#define H_AUDIOPROGRAM_
-
-#include "public/haudioprogram.h"
-
-#endif // H_AUDIOPROGRAM_

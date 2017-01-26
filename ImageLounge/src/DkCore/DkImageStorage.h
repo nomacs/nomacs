@@ -47,13 +47,13 @@
 #pragma warning(disable: 4714)	// Qt's force inline
 #endif
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -71,7 +71,7 @@ class DkRotatingRect;
  * DkImage holds some basic image processing
  * methods that are generally needed.
  **/ 
-class DllLoaderExport DkImage {
+class DllCoreExport DkImage {
 
 public:
 
@@ -139,7 +139,7 @@ public:
 	
 };
 
-class DllLoaderExport DkImageStorage : public QObject {
+class DllCoreExport DkImageStorage : public QObject {
 	Q_OBJECT
 
 public:

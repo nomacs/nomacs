@@ -32,13 +32,13 @@
 #include <QObject>
 #pragma warning(pop)
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -50,7 +50,7 @@ namespace nmc {
 
 // nomacs defines
 
-class DllLoaderExport DkBatchInfo {
+class DllCoreExport DkBatchInfo {
 
 public:
 	DkBatchInfo(const QString& id = QString(), const QString& filePath = QString());
@@ -67,8 +67,8 @@ public:
 	QString toString() const;
 
 	static QVector<QSharedPointer<DkBatchInfo> > filter(const QVector<QSharedPointer<DkBatchInfo> >& infos, const QString& id);
-	friend DllLoaderExport QDataStream& operator<<(QDataStream& s, const DkBatchInfo& b);
-	friend DllLoaderExport QDebug operator<< (QDebug d, const DkBatchInfo &b);
+	friend DllCoreExport QDataStream& operator<<(QDataStream& s, const DkBatchInfo& b);
+	friend DllCoreExport QDebug operator<< (QDebug d, const DkBatchInfo &b);
 
 private:
 	QString mFilePath;
@@ -76,7 +76,7 @@ private:
 
 };
 
-class DllLoaderExport DkSaveInfo {
+class DllCoreExport DkSaveInfo {
 
 public:
 	DkSaveInfo(const QString& filePathIn = QString(), const QString& filePathOut = QString());

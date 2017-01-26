@@ -35,13 +35,13 @@
 #include <QTimer>
 #pragma warning(pop)	// no warnings from includes - end
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -53,7 +53,7 @@ class QComboBox;
 
 namespace nmc {
 
-class DllGuiExport DkWidget : public QWidget {
+class DllCoreExport DkWidget : public QWidget {
 	Q_OBJECT
 
 public:
@@ -102,7 +102,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 };
 
-class DllGuiExport DkNamedWidget : public DkWidget {
+class DllCoreExport DkNamedWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -114,7 +114,7 @@ protected:
 	QString mName;
 };
 
-class DllGuiExport DkLabel : public QLabel {
+class DllCoreExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -217,7 +217,7 @@ protected:
 
 };
 
-class DllGuiExport DkDockWidget : public QDockWidget {
+class DllCoreExport DkDockWidget : public QDockWidget {
 	Q_OBJECT
 
 public:
@@ -243,7 +243,7 @@ protected:
 
 };
 
-class DllGuiExport DkResizableScrollArea : public QScrollArea {
+class DllCoreExport DkResizableScrollArea : public QScrollArea {
 	Q_OBJECT
 
 public:

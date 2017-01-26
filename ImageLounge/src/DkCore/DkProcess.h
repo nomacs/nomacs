@@ -41,13 +41,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -62,7 +62,7 @@ class DkImageContainer;
 class DkPluginContainer;
 class DkBaseManipulator;
 
-class DllLoaderExport DkAbstractBatch {
+class DllCoreExport DkAbstractBatch {
 
 public:
 	DkAbstractBatch() {};
@@ -97,7 +97,7 @@ private:
 
 };
 
-class DllLoaderExport DkResizeBatch : public DkAbstractBatch {
+class DllCoreExport DkResizeBatch : public DkAbstractBatch {
 
 public:
 	DkResizeBatch();
@@ -145,7 +145,7 @@ protected:
 };
 
 #ifdef WITH_PLUGINS
-class DllLoaderExport DkPluginBatch : public DkAbstractBatch {
+class DllCoreExport DkPluginBatch : public DkAbstractBatch {
 
 public:
 	DkPluginBatch();
@@ -176,7 +176,7 @@ protected:
 };
 #endif
 
-class DllLoaderExport DkManipulatorBatch : public DkAbstractBatch {
+class DllCoreExport DkManipulatorBatch : public DkAbstractBatch {
 
 public:
 	DkManipulatorBatch();
@@ -197,7 +197,7 @@ protected:
 	DkManipulatorManager mManager;
 };
 
-class DllLoaderExport DkBatchTransform : public DkAbstractBatch {
+class DllCoreExport DkBatchTransform : public DkAbstractBatch {
 
 public:
 	DkBatchTransform();
@@ -223,7 +223,7 @@ protected:
 	bool mCropFromMetadata = false;
 };
 
-class DllLoaderExport DkBatchProcess {
+class DllCoreExport DkBatchProcess {
 
 public:
 	DkBatchProcess(const DkSaveInfo& saveInfo = DkSaveInfo());
@@ -255,7 +255,7 @@ protected:
 	QStringList mLogStrings;
 };
 
-class DllLoaderExport DkBatchConfig {
+class DllCoreExport DkBatchConfig {
 
 public:
 	DkBatchConfig() { };
@@ -289,7 +289,7 @@ protected:
 	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
 };
 
-class DllLoaderExport DkBatchProcessing : public QObject {
+class DllCoreExport DkBatchProcessing : public QObject {
 	Q_OBJECT
 
 public:
@@ -343,7 +343,7 @@ protected:
 	void init();
 };
 
-class DllLoaderExport DkBatchProfile {
+class DllCoreExport DkBatchProfile {
 
 public:
 	DkBatchProfile(const QString& profileDir = QString());

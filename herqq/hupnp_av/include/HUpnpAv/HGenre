@@ -1,6 +1,0 @@
-#ifndef H_GENRE_
-#define H_GENRE_
-
-#include "public/hgenre.h"
-
-#endif // H_GENRE_

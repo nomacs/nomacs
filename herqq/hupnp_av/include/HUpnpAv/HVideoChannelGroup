@@ -1,6 +1,0 @@
-#ifndef H_VIDEOCHANNELGROUP_
-#define H_VIDEOCHANNELGROUP_
-
-#include "public/hvideochannelgroup.h"
-
-#endif // H_VIDEOCHANNELGROUP_

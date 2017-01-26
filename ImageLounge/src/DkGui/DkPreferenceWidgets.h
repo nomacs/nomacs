@@ -38,13 +38,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -61,7 +61,7 @@ class DkSettingsWidget;
 class DkTabEntryWidget;
 
 // extend this class if you want to add general preference functions
-class DllGuiExport DkPreferenceTabWidget : public DkNamedWidget {
+class DllCoreExport DkPreferenceTabWidget : public DkNamedWidget {
 	Q_OBJECT
 
 public:
@@ -88,7 +88,7 @@ protected:
 	QIcon mIcon;
 };
 
-class DllGuiExport DkPreferenceWidget : public DkWidget {
+class DllCoreExport DkPreferenceWidget : public DkWidget {
 	Q_OBJECT
 
 public:

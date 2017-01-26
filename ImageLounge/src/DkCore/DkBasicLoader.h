@@ -52,13 +52,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -70,7 +70,7 @@ namespace nmc {
 class DkMetaDataT;
 
 #ifdef WITH_QUAZIP
-class DllLoaderExport DkZipContainer {
+class DllCoreExport DkZipContainer {
 
 public:
 	DkZipContainer(const QString& fileName);
@@ -95,7 +95,7 @@ protected:
 };
 #endif
 
-class DllLoaderExport DkEditImage {
+class DllCoreExport DkEditImage {
 
 public:
 	DkEditImage(const QImage& img = QImage(), const QString& editName = "");
@@ -115,7 +115,7 @@ protected:
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.
  **/ 
-class DllLoaderExport DkBasicLoader : public QObject {
+class DllCoreExport DkBasicLoader : public QObject {
 	Q_OBJECT
 
 public:

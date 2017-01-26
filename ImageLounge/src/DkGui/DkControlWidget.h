@@ -34,13 +34,13 @@
 #include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -77,7 +77,7 @@ class DkDelayedInfo;
 class DkOverview;
 class DkViewPortInterface;
 
-class DllGuiExport DkControlWidget : public QWidget {
+class DllCoreExport DkControlWidget : public QWidget {
 	Q_OBJECT
 
 public:

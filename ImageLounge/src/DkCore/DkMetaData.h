@@ -47,13 +47,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -68,7 +68,7 @@ class QImage;
 
 namespace nmc {
 
-class DllLoaderExport DkMetaDataT {
+class DllCoreExport DkMetaDataT {
 
 public:
 	DkMetaDataT();
@@ -153,7 +153,7 @@ protected:
 	bool mUseSidecar = false;
 };
 
-class DllLoaderExport DkMetaDataHelper {
+class DllCoreExport DkMetaDataHelper {
 
 public:
 

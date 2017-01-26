@@ -41,13 +41,13 @@
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
 #endif
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -59,7 +59,7 @@ namespace nmc {
 static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
 
-class DllGuiExport DkConnection : public QTcpSocket {
+class DllCoreExport DkConnection : public QTcpSocket {
 	Q_OBJECT;
 
 	public:
@@ -154,7 +154,7 @@ class DllGuiExport DkConnection : public QTcpSocket {
 		quint16 mPeerId;
 };
 
-class DllGuiExport DkLocalConnection : public DkConnection {
+class DllCoreExport DkLocalConnection : public DkConnection {
 	Q_OBJECT;
 
 	public:
@@ -187,7 +187,7 @@ class DllGuiExport DkLocalConnection : public DkConnection {
 		LocalDataType mCurrentLocalDataType = Undefined;
 };
 
-class DllGuiExport DkLANConnection : public DkConnection {
+class DllCoreExport DkLANConnection : public DkConnection {
 	Q_OBJECT;
 
 	public:
@@ -245,7 +245,7 @@ class DllGuiExport DkLANConnection : public DkConnection {
 };
 
 
-class DllGuiExport DkRCConnection : public DkLANConnection {
+class DllCoreExport DkRCConnection : public DkLANConnection {
 	Q_OBJECT
 
 	public:

@@ -1,6 +1,0 @@
-#ifndef H_DURATION_
-#define H_DURATION_
-
-#include "public/hduration.h"
-
-#endif // H_DURATION_

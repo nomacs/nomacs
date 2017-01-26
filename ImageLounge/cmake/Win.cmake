@@ -133,9 +133,10 @@ endif(ENABLE_RAW)
 
 # search for multi-layer tiff
 # we try to grab the OpenCV's libtiff
-	unset(TIFF_BUILD_PATH CACHE)
-	unset(TIFF_CONFIG_DIR CACHE)
-	unset(TIFF_INCLUDE_DIR CACHE)
+unset(TIFF_BUILD_PATH CACHE)
+unset(TIFF_CONFIG_DIR CACHE)
+unset(TIFF_INCLUDE_DIR CACHE)
+	
 if(ENABLE_TIFF)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
@@ -159,31 +160,6 @@ if(ENABLE_TIFF)
 		message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 	endif()
 endif(ENABLE_TIFF)
-
-#search for UPnP
-if(ENABLE_UPNP)
-	unset(HUpnp_DIR CACHE)
-	find_package(HUpnp)
-	if(HUpnp_FOUND)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnp.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-		file(COPY ${HUPNP_LIB_DIR}/Release/HUpnpAV.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/Release)
-		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo)
-		file(COPY ${HUPNP_LIB_DIR}/Release/QtSoap27.dll DESTINATION ${CMAKE_BINARY_DIR}/MinSizeRel)
-
-		file(COPY ${HUPNP_LIB_DIR}/Debug/HUpnpd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-		file(COPY ${HUPNP_LIB_DIR}/Debug/HUpnpAVd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-		file(COPY ${HUPNP_LIB_DIR}/Debug/QtSoap27d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
-		add_definitions(-DWITH_UPNP)
-	else()
-		message(FATAL_ERROR "HUpnp not found. Mandatory when UPNP is enabled. You have to compile herqq")
-	endif(HUpnp_FOUND)
-endif(ENABLE_UPNP)
-
 
 # these variables need to be set before adding subdirectory with projects
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})

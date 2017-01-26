@@ -1,6 +1,0 @@
-#ifndef H_RESOURCE_
-#define H_RESOURCE_
-
-#include "public/hresource.h"
-
-#endif // H_RESOURCE_

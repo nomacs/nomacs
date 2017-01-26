@@ -41,13 +41,13 @@
 #include "DkBaseWidgets.h"
 #include "DkImageContainer.h"
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -223,7 +223,7 @@ protected:
 	QPointF mLastMove;
 };
 
-class DllGuiExport DkThumbScene : public QGraphicsScene {
+class DllCoreExport DkThumbScene : public QGraphicsScene {
 	Q_OBJECT
 
 public:
@@ -300,7 +300,7 @@ protected:
 
 };
 
-class DllGuiExport DkThumbScrollWidget : public DkWidget {
+class DllCoreExport DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:

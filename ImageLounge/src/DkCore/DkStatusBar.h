@@ -33,13 +33,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -49,7 +49,7 @@ class QLabel;
 namespace nmc {
 
 
-class DllLoaderExport DkStatusBar : public QStatusBar {
+class DllCoreExport DkStatusBar : public QStatusBar {
 	Q_OBJECT
 
 public:
@@ -78,7 +78,7 @@ protected:
 	QVector<QLabel*> mLabels;
 };
 
-class DllLoaderExport DkStatusBarManager {
+class DllCoreExport DkStatusBarManager {
 
 public:
 	static DkStatusBarManager& instance();

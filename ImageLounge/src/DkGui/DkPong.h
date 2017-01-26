@@ -38,19 +38,19 @@
 #include "DkMath.h"
 #pragma warning(disable: 4251)
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
 namespace nmc {
 
-class DllGuiExport DkPongSettings {
+class DllCoreExport DkPongSettings {
 
 public:
 	DkPongSettings();
@@ -93,7 +93,7 @@ protected:
 	void loadSettings();
 };
 
-class DllGuiExport DkPongPlayer {
+class DllCoreExport DkPongPlayer {
 	
 public:
 	DkPongPlayer(const QString& playerName = QObject::tr("Anonymous"), QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
@@ -127,7 +127,7 @@ protected:
 	QString mPlayerName;
 };
 
-class DllGuiExport DkBall {
+class DllCoreExport DkBall {
 
 public:
 	DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
@@ -153,7 +153,7 @@ protected:
 	void setDirection(const DkVector& dir);
 };
 
-class DllGuiExport DkScoreLabel : public QLabel {
+class DllCoreExport DkScoreLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -167,7 +167,7 @@ protected:
 	QSharedPointer<DkPongSettings> mS;
 };
 
-class DllGuiExport DkPongPort : public QGraphicsView {
+class DllCoreExport DkPongPort : public QGraphicsView {
 	Q_OBJECT
 
 public:
@@ -213,7 +213,7 @@ private:
 	void startCountDown(int sec = 3);
 };
 
-class DllGuiExport DkPong : public QMainWindow {
+class DllCoreExport DkPong : public QMainWindow {
 	Q_OBJECT
 
 public:

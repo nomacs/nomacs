@@ -1,6 +1,0 @@
-#ifndef H_CHANNELID_
-#define H_CHANNELID_
-
-#include "public/hchannel_id.h"
-
-#endif // H_CHANNELID_

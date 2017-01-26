@@ -1,8 +1,0 @@
-#ifndef H_UPNPAV_
-#define H_UPNPAV_
-
-#include "public/hav_defs.h"
-#include "public/hav_fwd.h"
-#include "public/hav_global.h"
-
-#endif // H_UPNPAV_

@@ -34,13 +34,13 @@
 #pragma warning(push, 0)	// no warnings from includes
 #pragma warning(pop)
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -51,7 +51,7 @@ class QListWidgetItem;
 namespace nmc {
 
 // nomacs defines
-class DllGuiExport DkHistoryDock : public DkDockWidget {
+class DllCoreExport DkHistoryDock : public DkDockWidget {
 	Q_OBJECT
 
 public:

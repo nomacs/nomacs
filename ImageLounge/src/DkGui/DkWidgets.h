@@ -366,7 +366,7 @@ protected:
 
 };
 
-class DllGuiExport DkExplorer : public DkDockWidget {
+class DllCoreExport DkExplorer : public DkDockWidget {
 	Q_OBJECT
 
 public:
@@ -641,7 +641,7 @@ protected:
  * Uses animation from the path
  * to display it in a DkLabel.
  */
-class DllGuiExport DkAnimationLabel : public DkLabel {
+class DllCoreExport DkAnimationLabel : public DkLabel {
 
 public:
 	DkAnimationLabel(QString animationPath = QString(), QWidget* parent = 0);
@@ -965,7 +965,7 @@ protected:
 	QVector<double> mPoints;
 };
 
-class DllGuiExport DkGenericProfileWidget : public DkNamedWidget {
+class DllCoreExport DkGenericProfileWidget : public DkNamedWidget {
 	Q_OBJECT
 
 public:
@@ -997,7 +997,7 @@ protected:
 };
 
 
-class DllGuiExport DkTabEntryWidget : public QPushButton {
+class DllCoreExport DkTabEntryWidget : public QPushButton {
 	Q_OBJECT
 
 public:

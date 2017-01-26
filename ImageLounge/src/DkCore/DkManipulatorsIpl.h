@@ -36,13 +36,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -107,7 +107,7 @@ public:
 };
 
 // Extended --------------------------------------------------------------------
-class DllLoaderExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
+class DllCoreExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkTinyPlanetManipulator(QAction* action);
@@ -130,7 +130,7 @@ private:
 	bool mInverted = false;
 };
 
-class DllLoaderExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
+class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkUnsharpMaskManipulator(QAction* action);
@@ -149,7 +149,7 @@ private:
 	int mAmount = 15;
 };
 
-class DllLoaderExport DkRotateManipulator : public DkBaseManipulatorExt {
+class DllCoreExport DkRotateManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkRotateManipulator(QAction* action);
@@ -164,7 +164,7 @@ private:
 	int mAngle = 0;
 };
 
-class DllLoaderExport DkHueManipulator : public DkBaseManipulatorExt {
+class DllCoreExport DkHueManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkHueManipulator(QAction* action);
@@ -187,7 +187,7 @@ private:
 	int mValue = 0;
 };
 
-class DllLoaderExport DkExposureManipulator : public DkBaseManipulatorExt {
+class DllCoreExport DkExposureManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkExposureManipulator(QAction* action);

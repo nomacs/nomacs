@@ -36,13 +36,13 @@
 #include <QTimer>	// needed to construct mTimers
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -70,7 +70,7 @@ class DkPluginInterface;
 class DkPluginContainer;
 class DkBaseManipulator;
 
-class DllGuiExport DkViewPort : public DkBaseViewPort {
+class DllCoreExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
@@ -252,7 +252,7 @@ protected:
 
 };
 
-class DllGuiExport DkViewPortFrameless : public DkViewPort {
+class DllCoreExport DkViewPortFrameless : public DkViewPort {
 	Q_OBJECT
 
 public:
@@ -297,7 +297,7 @@ protected:
 	QRect mMainScreen;	// TODO: let user choose which one to take
 };
 
-class DllGuiExport DkViewPortContrast : public DkViewPort {
+class DllCoreExport DkViewPortContrast : public DkViewPort {
 	Q_OBJECT
 
 public:

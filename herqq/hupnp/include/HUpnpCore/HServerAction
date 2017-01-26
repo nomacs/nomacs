@@ -1,6 +1,0 @@
-#ifndef H_SERVER_ACTION_
-#define H_SERVER_ACTION_
-
-#include "public/hserveraction.h"
-
-#endif // H_SERVER_ACTION_

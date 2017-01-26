@@ -35,13 +35,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -59,7 +59,7 @@ class DkImageContainer;
 /// If this class is extended, batch processing
 /// can make use of it too.
 /// </summary>
-class DllLoaderExport DkBaseManipulator {
+class DllCoreExport DkBaseManipulator {
 
 public:
 	DkBaseManipulator(QAction* action = 0);
@@ -89,7 +89,7 @@ private:
 /// the settings.
 /// </summary>
 /// <seealso cref="DkBaseManipulator" />
-class DllLoaderExport DkBaseManipulatorExt : public DkBaseManipulator {
+class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator {
 
 public:
 	DkBaseManipulatorExt(QAction* action);
@@ -105,7 +105,7 @@ private:
 	QWidget* mWidget = 0;
 };
 
-class DllLoaderExport DkManipulatorManager {
+class DllCoreExport DkManipulatorManager {
 
 public:
 	DkManipulatorManager();

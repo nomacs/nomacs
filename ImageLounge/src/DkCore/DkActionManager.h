@@ -34,13 +34,13 @@
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifndef DllLoaderExport
-#ifdef DK_LOADER_DLL_EXPORT
-#define DllLoaderExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllLoaderExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -59,7 +59,7 @@ class DkManagerThread;
 class DkTcpMenu;
 class DkPluginActionManager;
 
-class DllLoaderExport DkAppManager : public QObject {
+class DllCoreExport DkAppManager : public QObject {
 	Q_OBJECT
 
 public:
@@ -102,7 +102,7 @@ protected:
 	bool mFirstTime = true;
 };
 
-class DllLoaderExport DkActionManager {
+class DllCoreExport DkActionManager {
 
 public:
 	static DkActionManager& instance();
@@ -576,7 +576,7 @@ protected:
 	QSharedPointer<DkActionManager> inst;
 };
 
-class DllLoaderExport DkGlobalProgress : public QWidget {
+class DllCoreExport DkGlobalProgress : public QWidget {
 	Q_OBJECT
 
 public:

@@ -1,6 +1,0 @@
-#ifndef H_DEVICEINFO_
-#define H_DEVICEINFO_
-
-#include "public/hdeviceinfo.h"
-
-#endif // H_DEVICEINFO_

@@ -35,13 +35,13 @@
 
 #pragma warning(disable: 4251)	// TODO: remove
 
-#ifndef DllGuiExport
-#ifdef DK_GUI_DLL_EXPORT
-#define DllGuiExport Q_DECL_EXPORT
+#ifndef DllCoreExport
+#ifdef DK_CORE_DLL_EXPORT
+#define DllCoreExport Q_DECL_EXPORT
 #elif DK_DLL_IMPORT
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #else
-#define DllGuiExport Q_DECL_IMPORT
+#define DllCoreExport Q_DECL_IMPORT
 #endif
 #endif
 
@@ -116,7 +116,7 @@ class DkViewPort;
 class DkThumbScrollWidget;
 class DkRecentFilesWidget;
 
-class DllGuiExport DkCentralWidget : public QWidget {
+class DllCoreExport DkCentralWidget : public QWidget {
 	Q_OBJECT
 
 public:
