@@ -162,12 +162,16 @@ DkTinyPlanetManipulator::DkTinyPlanetManipulator(QAction * action) : DkBaseManip
 
 QImage DkTinyPlanetManipulator::apply(const QImage & img) const {
 
+#ifdef WITH_OPENCV
 	int ms = qMax(img.width(), img.height());
 	QSize s(ms, ms);
 
 	QImage imgR = img.copy();
 	DkImage::tinyPlanet(imgR, size(), angle()*DK_DEG2RAD, s, inverted());
 	return imgR;
+#else
+	return QImage();	// trigger warning
+#endif
 }
 
 QString DkTinyPlanetManipulator::errorMessage() const {

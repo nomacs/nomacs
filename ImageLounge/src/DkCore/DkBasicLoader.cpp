@@ -49,6 +49,7 @@
 #include <QDebug>
 
 #include <qmath.h>
+#include <assert.h>
 
 // quazip
 #ifdef WITH_QUAZIP
