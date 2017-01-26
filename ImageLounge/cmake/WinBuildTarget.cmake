@@ -26,8 +26,7 @@ target_link_libraries(
 	${TIFF_LIBRARIES} 
 	${QUAZIP_DEPENDENCY}
 	)
-	# ${VERSION_LIB} 
-
+	
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 
 if (GLOBAL_READ_BUILD)
@@ -43,11 +42,12 @@ add_library(
 	)
 target_link_libraries(
 	${DLL_CORE_NAME}
-	${EXIV2_LIBRARIES} 
-	${LIBRAW_LIBRARIES} 
-	${OpenCV_LIBS} 
-	${TIFF_LIBRARIES} 
-	${QUAZIP_DEPENDENCY}
+	${EXIV2_LIBRARIES} 		# metadata support
+	${VERSION_LIB} 			# needed for registering the curren version
+	${LIBRAW_LIBRARIES} 	# RAW support (optional)
+	${OpenCV_LIBS} 			# image manipulation support (optional)
+	${TIFF_LIBRARIES} 		# multip page tiff support (optional)
+	${QUAZIP_DEPENDENCY}	# ZIP support (optional)
 	)
 # ${VERSION_LIB} 
 
@@ -64,8 +64,8 @@ target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZL
 qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
 qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
 
-set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
-file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp")
+# set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
+file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp ${CMAKE_BINARY_DIR}/moc_.cpp")
 
 # core flags
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
@@ -142,7 +142,7 @@ add_definitions(/Zc:wchar_t-)
 set(CMAKE_CXX_FLAGS_DEBUG "/W4 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}")
 
-source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC} ${CORE_MOC_SRC} ${CORE_MOC_SRC})
+source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
 source_group("Changelog" FILES ${CHANGLOG_FILE})
 

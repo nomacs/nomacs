@@ -1,9 +1,8 @@
 # Searches for Qt with the required components
 macro(NMC_FINDQT)
-	# set(CMAKE_AUTOMOC ON)
-	# set(CMAKE_AUTORCC OFF)
-	
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC OFF)
+	# set(CMAKE_INCLUDE_CURRENT_DIR ON)
  
  if(NOT QT_QMAKE_EXECUTABLE)
 	find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
@@ -17,7 +16,7 @@ macro(NMC_FINDQT)
  SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5)
  find_package(Qt5 REQUIRED Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
  if (NOT Qt5_FOUND)
-		message(FATAL_ERROR "Qt5Widgets not found. Check your QT_QMAKE_EXECUTABLE path and set it to the correct location")
+	message(FATAL_ERROR "Qt5Widgets not found. Check your QT_QMAKE_EXECUTABLE path and set it to the correct location")
  endif()
  add_definitions(-DQT5)
  
@@ -29,7 +28,7 @@ macro(NMC_INSTALL)
 	if (MSVC)
 		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/packages/${PROJECT_NAME}.${NMC_ARCHITECTURE})
 		set(DATA_PACKAGE_DIR ${PACKAGE_DIR}/data/nomacs-${NMC_ARCHITECTURE})
-		install(TARGETS ${PROJECT_NAME} ${DLL_GUI_NAME} ${DLL_LOADER_NAME} ${DLL_CORE_NAME} RUNTIME DESTINATION ${DATA_PACKAGE_DIR} CONFIGURATIONS Release)
+		install(TARGETS ${PROJECT_NAME} ${DLL_CORE_NAME} RUNTIME DESTINATION ${DATA_PACKAGE_DIR} CONFIGURATIONS Release)
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml DESTINATION ${PACKAGE_DIR}/meta CONFIGURATIONS Release)
 
 		if (NOT GLOBAL_READ_BUILD)
