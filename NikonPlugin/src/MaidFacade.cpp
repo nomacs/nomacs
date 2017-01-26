@@ -507,7 +507,8 @@ void MaidFacade::acquireItemObjectsFinished() {
 
 	[&] () {
 
-		QFileInfo fileInfo(QDir(nmc::Settings::param().global().lastDir), makePictureFilename());
+		
+		QFileInfo fileInfo(QDir(nmc::DkSettingsManager::param().global().lastDir), makePictureFilename());
 		QString filename = getCapturedFileName(fileInfo);
 
 		QFileInfo firstFilenameInfo = QFileInfo(firstFilename);

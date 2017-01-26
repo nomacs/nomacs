@@ -229,7 +229,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::saveSettings() const {
 
-		QSettings& settings = nmc::Settings::instance().getSettings();
+		QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
 
 		settings.beginGroup(objectName());
 		settings.setValue("StepSize", mtoolbar->getStepSize());
@@ -250,7 +250,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::loadSettings() {
 
-		QSettings& settings = nmc::Settings::instance().getSettings();
+		QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
 
 		settings.beginGroup(objectName());
 		mtoolbar->setStepSize(settings.value("StepSize", 50).toInt());
@@ -360,7 +360,7 @@ namespace nmp {
 	void DkPatchMatchingViewPort::mousePressEvent(QMouseEvent *event) {
 		// panning -> redirect to viewport
 		if (event->buttons() == Qt::LeftButton &&
-			(event->modifiers() == nmc::Settings::param().global().altMod || panning)) {
+			(event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning)) {
 			setCursor(Qt::ClosedHandCursor);
 			event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 			event->ignore();
@@ -378,7 +378,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::mouseMoveEvent(QMouseEvent *event) {
 		// panning -> redirect to viewport
-		if (event->modifiers() == nmc::Settings::param().global().altMod ||
+		if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod ||
 			panning) {
 
 			event->setModifiers(Qt::NoModifier);
@@ -389,7 +389,7 @@ namespace nmp {
 
 	void DkPatchMatchingViewPort::mouseReleaseEvent(QMouseEvent *event) {
 		// panning -> redirect to viewport
-		if (event->modifiers() == nmc::Settings::param().global().altMod || panning) {
+		if (event->modifiers() == nmc::DkSettingsManager::param().global().altMod || panning) {
 			setCursor(defaultCursor);
 			event->setModifiers(Qt::NoModifier);
 			event->ignore();
@@ -577,9 +577,9 @@ namespace nmp {
 
 		createLayout();
 
-		if (nmc::Settings::param().display().toolbarGradient) {
+		if (nmc::DkSettingsManager::param().display().toolbarGradient) {
 
-			QColor hCol = nmc::Settings::param().display().highlightColor;
+			QColor hCol = nmc::DkSettingsManager::param().display().highlightColor;
 			hCol.setAlpha(80);
 
 			setStyleSheet(
