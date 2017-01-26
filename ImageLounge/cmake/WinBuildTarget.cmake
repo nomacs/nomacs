@@ -38,7 +38,7 @@ add_library(
 	${DLL_CORE_NAME} SHARED 
 	${GUI_HEADERS} ${GUI_SOURCES} 
 	${CORE_HEADERS} ${CORE_SOURCES} 
-	${NOMACS_UI} ${NOMACS_RCC} ${NOMACS_RC}
+	${NOMACS_RCC} ${NOMACS_RC}
 	)
 target_link_libraries(
 	${DLL_CORE_NAME}
@@ -142,7 +142,7 @@ add_definitions(/Zc:wchar_t-)
 set(CMAKE_CXX_FLAGS_DEBUG "/W4 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}")
 
-source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
+source_group("Generated Files" FILES ${NOMACS_RCC} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
 source_group("Changelog" FILES ${CHANGLOG_FILE})
 
