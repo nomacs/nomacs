@@ -42,7 +42,13 @@ option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+
+if(APPLE)
+	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
+	message(STATUS "QuaZip disabled because you are using a mac")
+else()
+	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+endif()
 
 if(DEFINED ENABLE_READ_BUILD)
 	if(${ENABLE_READ_BUILD}) # cannot be incooperated into if one line above
@@ -59,12 +65,6 @@ if(DEFINED ENABLE_READ_BUILD)
 			SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
 		endif()
 	endif()
-endif()
-
-if(APPLE)
-	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
-	option(ENABLE_PLUGINS "Compile with plugin system" OFF)
-	message(STATUS "QuaZip disabled because you are using a mac")
 endif()
 
 if (ENABLE_QUAZIP)
