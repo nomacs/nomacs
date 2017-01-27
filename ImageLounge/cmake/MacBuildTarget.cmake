@@ -17,8 +17,6 @@ add_definitions(-DWITH_PLUGINS)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-
 # create the targets
 set(BINARY_NAME ${PROJECT_NAME})
 set(DLL_CORE_NAME ${PROJECT_NAME}Core)
@@ -95,7 +93,6 @@ install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} BUNDLE DESTINATION ${CMAKE_INSTA
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
 add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
 
-# generate configuration file
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(NOMACS_LIBS ${DLL_CORE_NAME})
