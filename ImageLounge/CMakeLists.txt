@@ -40,9 +40,13 @@ option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
 option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
+if (APPLE)	# turn quazip off for mac os
+	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
+else()
+	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+endif()
 
 if(DEFINED ENABLE_READ_BUILD)
 	if(${ENABLE_READ_BUILD}) # cannot be incooperated into if one line above
