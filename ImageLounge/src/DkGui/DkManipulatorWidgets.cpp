@@ -78,13 +78,16 @@ void DkManipulatorWidget::createLayout() {
 	QButtonGroup* group = new QButtonGroup(this);
 
 	DkActionManager& am = DkActionManager::instance();
-	for (QAction* a : am.manipulatorActions()) {
+	//for (QAction* a : am.manipulatorActions()) {	// if you want to get all
+	for (int idx = DkManipulatorManager::m_end; idx < DkManipulatorManager::m_ext_end; idx++) {
 
-		DkTabEntryWidget* mpl = new DkTabEntryWidget(a->icon(), a->text(), this);
-		connect(mpl, SIGNAL(clicked()), a, SIGNAL(triggered()), Qt::UniqueConnection);	// TODO: different connection if ManipulatorExt?
+		auto mpl = am.manipulatorManager().manipulatorExt((DkManipulatorManager::ManipulatorExtId)idx);
+
+		DkTabEntryWidget* entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
+		connect(entry, SIGNAL(clicked()), mpl->action(), SIGNAL(triggered()), Qt::UniqueConnection);	// TODO: different connection if ManipulatorExt?
 		
-		aLayout->addWidget(mpl);
-		group->addButton(mpl);
+		aLayout->addWidget(entry);
+		group->addButton(entry);
 	}
 
 	QString scrollbarStyle = 
