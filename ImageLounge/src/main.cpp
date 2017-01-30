@@ -367,5 +367,4 @@ void createPluginsPath() {
 	QCoreApplication::addLibraryPath("./imageformats");
 
 #endif // WITH_PLUGINS
-
 }
