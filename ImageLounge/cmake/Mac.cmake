@@ -1,9 +1,5 @@
 # nomacs cmake file for a mac build
 
-if(ENABLE_PLUGINS)
-	message(FATAL_ERROR "Plugin system is currently only supported on windows systems")
-endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 	message(STATUS "A debug build. -DDEBUG is defined")
 	add_definitions(-DDEBUG)

@@ -1,3 +1,7 @@
+if(ENABLE_PLUGINS)
+	add_definitions(-DWITH_PLUGINS)
+endif()
+
 #taken from https://cmake.org/Wiki/CMake_RPATH_handling to avoid warning
 # use, i.e. don't skip the full RPATH for the build tree
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -12,8 +16,6 @@ SET(CMAKE_INSTALL_RPATH "")
 # don't add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-
-add_definitions(-DWITH_PLUGINS)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
