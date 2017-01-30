@@ -42,6 +42,7 @@ option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
+option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 
 if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)

@@ -1,4 +1,7 @@
-add_definitions(-DWITH_PLUGINS)
+if(ENABLE_PLUGINS)
+	add_definitions(-DWITH_PLUGINS)
+endif()
+
 
 SET(OUR_SO_VERSION "")
 SET(OUR_VERSION "")
