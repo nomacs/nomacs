@@ -23,7 +23,6 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install -v opencv3 --with-contrib --without-eigen --without-opencl --without-openexr --without-python --without-tests; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew ln opencv3 --force; fi
 
-
   # Linux dependencies
   #- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi # Qt 5.5.1 - switching back to Qt 5.2.1
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
