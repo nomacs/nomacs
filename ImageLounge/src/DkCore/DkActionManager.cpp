@@ -569,8 +569,8 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	mToolsMenu->addAction(mToolsActions[menu_tools_mosaic]);
 #endif
 #ifdef Q_OS_WIN
-	mEditMenu->addAction(mEditActions[menu_tools_wallpaper]);
-	mEditMenu->addSeparator();
+	mToolsMenu->addAction(mToolsActions[menu_tools_wallpaper]);
+	mToolsMenu->addSeparator();
 #endif
 	mToolsMenu->addAction(mToolsActions[menu_tools_batch]);
 	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
