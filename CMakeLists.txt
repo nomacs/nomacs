@@ -32,11 +32,7 @@ OPTION (ENABLE_PATCHMATCHING "Compile Patch Matching Plugin" OFF)
 OPTION (ENABLE_IMAGESTITCHING "Compile Image Stitching Plugin" OFF)
 
 NMC_PREPARE_PLUGIN()
-
 NMC_FINDQT()
-
-# OpenCV
-# TODO ein if wenn zumindest 1 projekt ausgewählt ist das opencv braucht
 NMC_FIND_OPENCV()
 
 set(BUILDING_MULTIPLE_PLUGINS true)

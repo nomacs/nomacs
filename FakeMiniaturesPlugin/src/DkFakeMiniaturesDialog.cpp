@@ -109,12 +109,21 @@ void DkFakeMiniaturesDialog::createLayout() {
 
 	eastWidget->setLayout(toolsLayout);
 
-	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-	borderLayout->addWidget(eastWidget, BorderLayout::East);
+	QWidget* dummy = new QWidget(this);
+	QHBoxLayout* cLayout = new QHBoxLayout(dummy);
+	cLayout->setContentsMargins(0, 0, 0, 0);
+	//cLayout->setSpacing(0);
+
+	cLayout->addWidget(centralWidget);
+	cLayout->addWidget(eastWidget);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(dummy);
+	//layout->addWidget(buttons);
+
 	this->setSizeGripEnabled(false);
 
-	this->setLayout(borderLayout);
 }
 
 /**

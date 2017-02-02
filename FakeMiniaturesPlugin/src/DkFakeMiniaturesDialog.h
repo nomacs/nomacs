@@ -37,8 +37,6 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-#include "BorderLayout.h"
-
 // OpenCV
 #ifdef WITH_OPENCV
 
