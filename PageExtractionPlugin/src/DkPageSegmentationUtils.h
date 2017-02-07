@@ -472,12 +472,11 @@ protected:
 	const float orthoTol = CV_PI / 9; // orthogonality tolerance
 	const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
 	
-	typedef struct HoughLine {
+	struct HoughLine {
 		int acc;
 		float rho;
 		float angle;
-	}
-	HoughLine;
+	};
 	
 	struct LineSegment {
 		cv::Point2f p1;
