@@ -58,6 +58,11 @@ You will now have a binary (~/nomacs/nomacs), which you can test (or use directl
 ``` console
 sudo make install
 ```
+note that you have to execute 
+``` console
+sudo ldconfig
+```
+on your own after a successfully install
 
 ## Build nomacs (OSX)
 Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
