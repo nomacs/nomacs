@@ -22,9 +22,7 @@
 
  *******************************************************************************************************/
 
-#include <iostream> // TODO remove; just for debugging purposes
 #include <algorithm>
-#include <opencv2/highgui/highgui.hpp> // TODO remove; just for debugging purposes
 
 #include "DkPageSegmentationUtils.h"
 
@@ -448,10 +446,18 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	cv::Mat lineImg;
 	int accMin = (int) houghPeakThresholdRel * std::min(bw.size().width, bw.size().height);
 	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, accMin, maxLinesHough);
+	if (lines.empty()) {
+		qDebug() << "no hough lines detected";
+		return;
+	}
 	
 	// find line segments in image
 	int maxGapLength = maxGapLengthRel * smallerSide;
 	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength);
+	if (lineSegments.empty()) {
+		qDebug() << "findLineSegments has not found any line segments, even though hough lines were detected.";
+		return;
+	}
 	
 	// 4.3 transform domain peak filtering
 	// iterate through all pairs of lines and build pairs of parallel line segments called extended peak pairs (EPs)
@@ -495,7 +501,10 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 			for (int j = 0; j < 2; j++) {
 				auto r = findLineIntersection(ip.ep1.spatialLines[i], ip.ep2.spatialLines[j]);
 				// since the lines of different EPs can not be parallel, they have to intersect at some point
-				assert(r.first == true); // TODO replace assert with gui error
+				if (r.first != true) {
+					qDebug() << "no intersection was found for two lines that should not be parallel";
+					return;
+				}
 				cv::Point2f p = r.second;
 				if (pointToLineDistance(ip.ep1.spatialLines[i], p) < cornerGapTol &&
 						pointToLineDistance(ip.ep2.spatialLines[j], p) < cornerGapTol) {
@@ -529,26 +538,9 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	}
 	
 	if (rectangles.empty()) {
-		std::cout << "no valid rectangles have been detected!" << std::endl; // TODO gui output, return value
+		qDebug() << "no valid rectangles have been detected!";
 		return;
 	}
-	//std::cout << "DEBUG: " << rectangles.size() << " valid rectangles have been detected" << std::endl;
-	
-	// find rectangle with highest overall accumulator value
-//	auto finalRectangleIt = std::max_element(rectangles.begin(), rectangles.end(), [] (Rectangle a, Rectangle b) { 
-//		return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) < 
-//			(b.ip.ep1.line1.acc + b.ip.ep1.line2.acc + b.ip.ep2.line1.acc + b.ip.ep2.line2.acc);
-//	});
-	
-//	Rectangle& finalRect = *finalRectangleIt;
-//	std::vector<cv::Point> cornerPoints;
-//	for (int i = 0; i < 4; i++) {
-//		cornerPoints.emplace_back((int) round(finalRect.corners[i].x), (int) round(finalRect.corners[i].y));
-//	}
-//	DkPolyRect r(cornerPoints);
-//	r.scale(1.0f / scale);
-//	
-//	rects.push_back(r);
 
 	// sort rectangles by overall accumulator value in descending order
 	std::sort(rectangles.begin(), rectangles.end(), [] (const Rectangle& a, const Rectangle& b) { 
@@ -560,6 +552,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 		rectangles.erase(rectangles.begin() + numFinalRects, rectangles.end());
 	}
 
+	// construct DkPolyRects for the rectangles to be returned
 	for (Rectangle rect : rectangles) {
 		std::vector<cv::Point> cornerPoints;
 		for (int i = 0; i < 4; i++) {
@@ -580,12 +573,15 @@ float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
  */
 std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const {
 	// the implementation is very similar to the one from opencv 2, but it returns the accumulator values and uses some different data structures
+
+	if (bwImg.type() != CV_8U) {
+		qDebug() << "custom houghTransform only supports CV_8U input images";
+		return std::vector<PageExtractor::HoughLine>();
+	}
 	
 	int width = bwImg.cols;
 	int height = bwImg.rows;
 	std::vector<HoughLine> lines;
-	
-	CV_Assert(bwImg.type() == CV_8UC1);
 
 	int numAngle = cvRound(CV_PI / theta) + 2;
 	int numRho = (width + height) * 2 + 2; // always even
@@ -750,9 +746,10 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 		}
 		
 		// for every line in houghLines add only the longest line (including gaps) that was found in the image
-		assert(lineSegmentsCurrent.size() > 0); // TODO replace
-		auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
-		lineSegments.push_back(*longestLineSegmentIt);
+		if (!lineSegmentsCurrent.empty()) {
+			auto longestLineSegmentIt = std::max_element(lineSegmentsCurrent.begin(), lineSegmentsCurrent.end(), [] (LineSegment l1, LineSegment l2) { return l1.length < l2.length; });
+			lineSegments.push_back(*longestLineSegmentIt);
+		}
 	}
 	
 	return lineSegments;
@@ -798,7 +795,12 @@ std::pair<bool, cv::Point2f> PageExtractor::findLineIntersection(const LineSegme
  * Generates an edge image of gray, tries to remove small text-like structures and returns it.
  */
 cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int threshold) {
-	assert(gray.type() == CV_8U); // TODO replace
+	
+	if (gray.type() != CV_8U) {
+		qDebug() << "removeText only supports CV_8U format";
+		return gray;
+	}
+	
 	static const float eps = 0.001f;
 	cv::Mat bw;
 	cv::Mat sobel_h;
