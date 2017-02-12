@@ -64,6 +64,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	menuNames[id_draw_to_page] = tr("Draw to Page");
 	menuNames[id_draw_to_page_alternative] = tr("Draw to page (alternative method)");
 	menuNames[id_eval_page] = tr("Evaluate Page");
+	menuNames[id_eval_page_alternative] = tr("Evaluate Page (alternative method)");
 	mMenuNames = menuNames.toList();
 
 	// create menu status tips
@@ -75,6 +76,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
 	statusTips[id_draw_to_page_alternative] = tr("Finds a page in a document image and then draws the found document boundaries (alternative method).");
 	statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
+	statusTips[id_eval_page_alternative] = tr("Loads GT and computes the Jaccard index using the alternative method.");
 	mMenuStatusTips = statusTips.toList();
 
 	QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
@@ -156,7 +158,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		
 	cv::Mat img = nmc::DkImage::qImage2Mat(imgC->image());
 	bool alternativeMethod = false;
-	if (runID == mRunIDs[id_draw_to_page_alternative]) {
+	if (runID == mRunIDs[id_draw_to_page_alternative] || runID == mRunIDs[id_eval_page_alternative]) {
 		alternativeMethod = true;
 	}
 	DkPageSegmentation segM(img, alternativeMethod);
@@ -188,7 +190,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		segM.draw(dImg);
 		imgC->setImage(dImg, tr("Page Annotated"));
 	}
-	else if (runID == mRunIDs[id_eval_page]) {
+	else if (runID == mRunIDs[id_eval_page] || runID == mRunIDs[id_eval_page_alternative]) {
 
 		QImage dImg = imgC->image();
 

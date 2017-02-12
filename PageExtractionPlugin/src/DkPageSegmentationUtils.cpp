@@ -440,6 +440,8 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	
 	cv::equalizeHist(gray, gray);
 	bw = removeText(gray, 2.0f, 5, 2);
+//	cv::imshow("bw after removeText", bw);
+//	cv::waitKey(0);
 	
 	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	
@@ -533,19 +535,40 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	//std::cout << "DEBUG: " << rectangles.size() << " valid rectangles have been detected" << std::endl;
 	
 	// find rectangle with highest overall accumulator value
-	auto finalRectangleIt = std::max_element(rectangles.begin(), rectangles.end(), [] (Rectangle a, Rectangle b) { 
-		return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) < 
+//	auto finalRectangleIt = std::max_element(rectangles.begin(), rectangles.end(), [] (Rectangle a, Rectangle b) { 
+//		return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) < 
+//			(b.ip.ep1.line1.acc + b.ip.ep1.line2.acc + b.ip.ep2.line1.acc + b.ip.ep2.line2.acc);
+//	});
+	
+//	Rectangle& finalRect = *finalRectangleIt;
+//	std::vector<cv::Point> cornerPoints;
+//	for (int i = 0; i < 4; i++) {
+//		cornerPoints.emplace_back((int) round(finalRect.corners[i].x), (int) round(finalRect.corners[i].y));
+//	}
+//	DkPolyRect r(cornerPoints);
+//	r.scale(1.0f / scale);
+//	
+//	rects.push_back(r);
+
+	// sort rectangles by overall accumulator value in descending order
+	std::sort(rectangles.begin(), rectangles.end(), [] (const Rectangle& a, const Rectangle& b) { 
+		return (a.ip.ep1.line1.acc + a.ip.ep1.line2.acc + a.ip.ep2.line1.acc + a.ip.ep2.line2.acc) > // descending
 			(b.ip.ep1.line1.acc + b.ip.ep1.line2.acc + b.ip.ep2.line1.acc + b.ip.ep2.line2.acc);
 	});
 	
-	Rectangle& finalRect = *finalRectangleIt;
-	std::vector<cv::Point> cornerPoints;
-	for (int i = 0; i < 4; i++) {
-		cornerPoints.emplace_back((int) round(finalRect.corners[i].x), (int) round(finalRect.corners[i].y));
+	if (rectangles.size() > numFinalRects) {
+		rectangles.erase(rectangles.begin() + numFinalRects, rectangles.end());
 	}
-	DkPolyRect r(cornerPoints);
-	r.scale(1.0f / scale);
-	rects.push_back(r);
+
+	for (Rectangle rect : rectangles) {
+		std::vector<cv::Point> cornerPoints;
+		for (int i = 0; i < 4; i++) {
+			cornerPoints.emplace_back((int) round(rect.corners[i].x), (int) round(rect.corners[i].y));
+		}
+		DkPolyRect r(cornerPoints);
+		r.scale(1.0f / scale);
+		rects.push_back(r);
+	}
 }
 
 float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {

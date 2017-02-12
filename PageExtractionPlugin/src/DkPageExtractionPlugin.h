@@ -60,6 +60,7 @@ public:
 		id_draw_to_page,
 		id_draw_to_page_alternative,
 		id_eval_page,
+		id_eval_page_alternative,
 		// add actions here
 
 		id_end
