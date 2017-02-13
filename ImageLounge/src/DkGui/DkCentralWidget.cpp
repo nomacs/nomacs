@@ -233,6 +233,7 @@ void DkTabInfo::setMode(int mode) {
 	mTabMode = mode;
 }
 
+// DkCenteralWidget --------------------------------------------------------------------
 DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidget(parent) {
 
 	mViewport = viewport;

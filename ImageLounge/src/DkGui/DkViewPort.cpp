@@ -132,6 +132,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
 	connect(am.action(DkActionManager::menu_file_next), SIGNAL(triggered()), this, SLOT(loadNextFileFast()));
 	connect(am.action(DkActionManager::menu_file_prev), SIGNAL(triggered()), this, SLOT(loadPrevFileFast()));
+	connect(am.action(DkActionManager::menu_file_save), SIGNAL(triggered()), this, SLOT(saveFile()));
+	connect(am.action(DkActionManager::menu_file_save_as), SIGNAL(triggered()), this, SLOT(saveFileAs()));
+	connect(am.action(DkActionManager::menu_file_save_web), SIGNAL(triggered()), this, SLOT(saveFileWeb()));
+
 	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), this, SLOT(rotate180()));
@@ -671,6 +675,25 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 	plugin->setActive(false);
 #endif
+}
+
+void DkViewPort::saveFile() {
+	saveFileAs(true);
+}
+
+void DkViewPort::saveFileAs(bool silent) {
+
+	if (mLoader) {
+		mController->closePlugin(false);
+		mLoader->saveUserFileAs(getImage(), silent);
+	}
+}
+
+void DkViewPort::saveFileWeb() {
+	if (mLoader) {
+		mController->closePlugin(false);
+		mLoader->saveFileWeb(getImage());
+	}
 }
 
 void DkViewPort::applyManipulator() {

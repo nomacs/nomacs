@@ -376,9 +376,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_quick_launch), SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
 	connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
-	connect(am.action(DkActionManager::menu_file_save), SIGNAL(triggered()), this, SLOT(saveFile()));
-	connect(am.action(DkActionManager::menu_file_save_as), SIGNAL(triggered()), this, SLOT(saveFileAs()));
-	connect(am.action(DkActionManager::menu_file_save_web), SIGNAL(triggered()), this, SLOT(saveFileWeb()));
 	connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(printDialog()));
 	connect(am.action(DkActionManager::menu_file_show_recent), SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));	
 	connect(am.action(DkActionManager::menu_file_train_format), SIGNAL(triggered()), this, SLOT(trainFormat()));
@@ -1513,28 +1510,6 @@ void DkNoMacs::extractImagesFromArchive() {
 #endif
 }
 
-
-void DkNoMacs::saveFile() {
-
-	saveFileAs(true);
-}
-
-void DkNoMacs::saveFileAs(bool silent) {
-	
-	qDebug() << "saving...";
-
-	// TODO: move to current image loader
-	if (getTabWidget()->getCurrentImageLoader())
-		getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
-}
-
-void DkNoMacs::saveFileWeb() {
-
-	// TODO: move to current image loader
-	if (getTabWidget()->getCurrentImageLoader())
-		getTabWidget()->getCurrentImageLoader()->saveFileWeb(getTabWidget()->getViewPort()->getImage());
-}
-
 void DkNoMacs::resizeImage() {
 
 	if (!viewport() || viewport()->getImage().isNull())
@@ -1644,7 +1619,7 @@ void DkNoMacs::computeMosaic() {
 	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
 		QImage editedImage = mosaicDialog->getImage();
 		viewport()->setEditedImage(editedImage, tr("Mosaic"));
-		saveFileAs();
+		getTabWidget()->getViewPort()->saveFileAs();
 	}
 
 	mosaicDialog->deleteLater();
@@ -1654,7 +1629,6 @@ void DkNoMacs::computeMosaic() {
 void DkNoMacs::setWallpaper() {
 
 	// based on code from: http://qtwiki.org/Set_windows_background_using_QT
-
 	QImage img = viewport()->getImage();
 
 	QImage dImg = img;

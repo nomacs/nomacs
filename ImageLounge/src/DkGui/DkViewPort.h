@@ -165,6 +165,11 @@ public slots:
 
 	void applyPlugin(DkPluginContainer* plugin, const QString& key);
 
+	// image saving
+	void saveFile();
+	void saveFileAs(bool silent = false);
+	void saveFileWeb();
+
 	// copy & paste
 	void copyPixelColorValue();
 	void copyImageBuffer();

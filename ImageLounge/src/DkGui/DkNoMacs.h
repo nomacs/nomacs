@@ -171,9 +171,6 @@ public slots:
 	void changeSorting(bool change);
 	void goTo();
 	void find(bool filterAction = true);
-	void saveFile();
-	void saveFileAs(bool silent = false);
-	void saveFileWeb();
 	void extractImagesFromArchive();
 	void trainFormat();
 	void resizeImage();
