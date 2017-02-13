@@ -29,6 +29,7 @@
 
 #include "DkImageContainer.h"
 #include "DkBatchInfo.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStringList>
@@ -39,6 +40,7 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QMainWindow>
+#include <QSettings>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifndef DllCoreExport
@@ -138,6 +140,7 @@ public:
 	virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
 
 	virtual QString name() const = 0;	// is needed for settings
+	virtual QSettings& settings() const { return DkSettingsManager::instance().qSettings();  };	// default: load nomacs settings
 	virtual void loadSettings(QSettings&) {};			// dummy
 	virtual void saveSettings(QSettings&) const {};		// dummy
 };

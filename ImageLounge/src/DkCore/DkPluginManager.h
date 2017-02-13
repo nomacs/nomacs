@@ -181,7 +181,6 @@ public:
 	DkBatchPluginInterface* batchPlugin() const;
 	DkViewPortInterface* pluginViewPort() const;
 	QString actionNameToRunId(const QString& actionName) const;
-	
 
 signals:
 	void runPlugin(DkViewPortInterface* viewport, bool close) const;

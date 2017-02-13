@@ -669,6 +669,10 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 	if (!plugin)
 		return;
 
+	DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
+	if (bPlugin)
+		bPlugin->loadSettings(bPlugin->settings());
+
 	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->plugin()->runPlugin(key, imageContainer()));
 	if (result) 
 		setEditedImage(result);
