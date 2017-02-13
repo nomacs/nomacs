@@ -97,53 +97,6 @@ private:
 
 };
 
-class DllCoreExport DkResizeBatch : public DkAbstractBatch {
-
-public:
-	DkResizeBatch();
-
-	// TODO: where shall we put the defines now? e.g. DkImage::ipl_area
-	virtual void setProperties(float scaleFactor, int mode = mode_default, int prop = prop_default, int iplMethod = 1/*DkImage::ipl_area*/, bool correctGamma = false);
-	virtual void saveSettings(QSettings& settings) const override;
-	virtual void loadSettings(QSettings& settings) override;
-	virtual bool compute(QImage& img, QStringList& logStrings) const override;
-	virtual QString name() const override;
-	virtual bool isActive() const override;
-
-	int mode() const;
-	int property() const;
-	int iplMethod() const;
-	float scaleFactor() const;
-	bool correctGamma() const;
-
-	enum {
-		mode_default,
-		mode_long_side,
-		mode_short_side,
-		mode_width,
-		mode_height,
-
-		mode_end
-	};
-
-	enum {
-		prop_default,
-		prop_decrease_only,
-		prop_increase_only,
-
-		prop_end
-	};
-
-protected:
-	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
-
-	int mMode = mode_default;
-	int mProperty = prop_default;
-	float mScaleFactor = 1.0f;
-	int mIplMethod = 0;
-	bool mCorrectGamma = false;
-};
-
 #ifdef WITH_PLUGINS
 class DllCoreExport DkPluginBatch : public DkAbstractBatch {
 
@@ -202,10 +155,37 @@ class DllCoreExport DkBatchTransform : public DkAbstractBatch {
 public:
 	DkBatchTransform();
 
+	enum ResizeMode {
+		resize_mode_default,
+		resize_mode_long_side,
+		resize_mode_short_side,
+		resize_mode_width,
+		resize_mode_height,
+
+		resize_mode_end
+	};
+
+	enum ResizeProperty {
+		resize_prop_default,
+		resize_prop_decrease_only,
+		resize_prop_increase_only,
+
+		resize_prop_end
+	};
+
 	virtual void saveSettings(QSettings& settings) const override;
 	virtual void loadSettings(QSettings& settings) override;
 
-	virtual void setProperties(int angle, bool horizontalFlip = false, bool verticalFlip = false, bool cropFromMetadata = false);
+	virtual void setProperties(
+		int angle, 
+		bool cropFromMetadata,
+		float scaleFactor, 
+		const ResizeMode& mode = resize_mode_default, 
+		const ResizeProperty& prop = resize_prop_default, 
+		int iplMethod = 1/*DkImage::ipl_area*/, 
+		bool correctGamma = false
+		);
+
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual QString name() const;
 	virtual bool isActive() const;
@@ -215,12 +195,26 @@ public:
 	bool verticalFlip() const;
 	bool cropMetatdata() const;
 
+	// resize
+	ResizeMode mode() const;
+	ResizeProperty prop() const;
+	int iplMethod() const;
+	float scaleFactor() const;
+	bool correctGamma() const;
+
 protected:
+	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
+	bool isResizeActive() const;
 
 	int mAngle = 0;
-	bool mHorizontalFlip = false;
-	bool mVerticalFlip = false;
 	bool mCropFromMetadata = false;
+
+	ResizeMode mResizeMode = resize_mode_default;
+	ResizeProperty mResizeProperty = resize_prop_default;
+	float mResizeScaleFactor = 1.0f;
+	int mResizeIplMethod = 0;
+	bool mResizeCorrectGamma = false;
+
 };
 
 class DllCoreExport DkBatchProcess {

@@ -92,11 +92,7 @@ QString DkAbstractBatch::settingsName() const {
 
 QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& settingsName) {
 
-	QSharedPointer<DkAbstractBatch> batch(new DkResizeBatch());
-
-	if (batch->settingsName() == settingsName)
-		return batch;
-	
+	QSharedPointer<DkAbstractBatch> batch;
 	batch = QSharedPointer<DkBatchTransform>::create();
 
 	if (batch->settingsName() == settingsName)
@@ -118,183 +114,47 @@ QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& s
 	return QSharedPointer<DkAbstractBatch>();
 }
 
-// DkResizeBatch --------------------------------------------------------------------
-DkResizeBatch::DkResizeBatch() {
-
-	mIplMethod = DkImage::ipl_area;	// define here because of included
-}
-
-QString DkResizeBatch::name() const {
-
-	return QObject::tr("[Resize Batch]");
-}
-
-void DkResizeBatch::setProperties(float scaleFactor, int mode, int prop, int iplMethod, bool correctGamma) {
-
-	mScaleFactor = scaleFactor;
-	mMode = mode;
-	mProperty = prop;
-	mIplMethod = iplMethod;
-	mCorrectGamma = correctGamma;
-}
-
-void DkResizeBatch::saveSettings(QSettings & settings) const {
-
-	settings.beginGroup(settingsName());
-	settings.setValue("ScaleFactor", mScaleFactor);
-	settings.setValue("Mode", mMode);
-	settings.setValue("Property", mProperty);
-	settings.setValue("IplMethod", mIplMethod);
-	settings.setValue("CorrectGamma", mCorrectGamma);
-	settings.endGroup();
-
-}
-
-void DkResizeBatch::loadSettings(QSettings & settings) {
-
-	settings.beginGroup(settingsName());
-	mScaleFactor	= settings.value("ScaleFactor", mScaleFactor).toFloat();
-	mMode			= settings.value("Mode", mMode).toInt();
-	mProperty		= settings.value("Property", mProperty).toInt();
-	mIplMethod		= settings.value("IplMethod", mIplMethod).toInt();
-	mCorrectGamma	= settings.value("Correct Gamma", mCorrectGamma).toBool();
-	settings.endGroup();
-}
-
-bool DkResizeBatch::isActive() const {
-
-	if (mMode != mode_default)
-		return true;
-
-	if (mScaleFactor != 1.0f)
-		return true;
-
-	return false;
-}
-
-int DkResizeBatch::mode() const {
-	return mMode;
-}
-
-int DkResizeBatch::property() const {
-	return mProperty;
-}
-
-int DkResizeBatch::iplMethod() const {
-	return mIplMethod;
-}
-
-float DkResizeBatch::scaleFactor() const {
-	return mScaleFactor;
-}
-
-bool DkResizeBatch::correctGamma() const {
-	return mCorrectGamma;
-}
-
-bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
-
-	if (mScaleFactor == 1.0f) {
-		logStrings.append(QObject::tr("%1 scale factor is 1 -> ignoring").arg(name()));
-		return true;
-	}
-
-	QSize size;
-	float sf = 1.0f;
-	QImage tmpImg;
-
-	if (prepareProperties(img.size(), size, sf, logStrings))
-		tmpImg = DkImage::resizeImage(img, size, sf, mIplMethod, mCorrectGamma);
-	else {
-		logStrings.append(QObject::tr("%1 no need for resizing.").arg(name()));
-		return true;
-	}
-
-	if (tmpImg.isNull()) {
-		logStrings.append(QObject::tr("%1 could not resize image.").arg(name()));
-		return false;
-	}
-
-	if (mMode == mode_default)
-		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(mScaleFactor*100.0f));
-	else
-		logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(mScaleFactor));
-
-	img = tmpImg;
-
-	return true;
-}
-
-bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const {
-
-	float sf = 1.0f;
-	QSize normalizedSize = imgSize; 
-
-	if (mMode == mode_default) {
-		scaleFactor = this->mScaleFactor;
-		return true;
-	}
-	else if (mMode == mode_long_side) {
-		
-		if (imgSize.width() < imgSize.height())
-			normalizedSize.transpose();
-	}
-	else if (mMode == mode_short_side) {
-
-		if (imgSize.width() > imgSize.height())
-			normalizedSize.transpose();
-	}
-	else if (mMode == mode_height)
-		normalizedSize.transpose();
-
-	sf = this->mScaleFactor/normalizedSize.width();
-
-	if (sf > 1.0 && this->mProperty == prop_decrease_only) {
-		
-		logStrings.append(QObject::tr("%1 I need to increase the image, but the option is set to decrease only -> skipping.").arg(name()));
-		return false;
-	}
-	else if (sf < 1.0f && this->mProperty == prop_increase_only) {
-		logStrings.append(QObject::tr("%1 I need to decrease the image, but the option is set to increase only -> skipping.").arg(name()));
-		return false;
-	}
-	else if (sf == 1.0f) {
-		logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
-		return false;
-	}
-
-	size.setWidth(qRound(this->mScaleFactor));
-	size.setHeight(qRound(sf*normalizedSize.height()));
-
-	if (normalizedSize != imgSize)
-		size.transpose();
-
-	return true;
-}
-
 // DkTransformBatch --------------------------------------------------------------------
 DkBatchTransform::DkBatchTransform() {
+	mResizeIplMethod = DkImage::ipl_area;	// define here because of included
 }
 
 QString DkBatchTransform::name() const {
 	return QObject::tr("[Transform Batch]");
 }
 
-void DkBatchTransform::setProperties(int angle, bool horizontalFlip /* = false */, bool verticalFlip /* = false */, bool cropFromMetadata /* = false */) {
+void DkBatchTransform::setProperties(		
+	int angle, 
+	bool cropFromMetadata,
+	float scaleFactor, 
+	const ResizeMode& mode /*= resize_mode_default*/, 
+	const ResizeProperty& prop /*= resize_prop_default*/, 
+	int iplMethod /*= DkImage::ipl_area*/, 
+	bool correctGamma /*= false*/) {
 	
 	mAngle = angle;
-	mHorizontalFlip = horizontalFlip;
-	mVerticalFlip = verticalFlip;
 	mCropFromMetadata = cropFromMetadata;
+
+	mResizeScaleFactor = scaleFactor;
+	mResizeMode = mode;
+	mResizeProperty = prop;
+	mResizeIplMethod = iplMethod;
+	mResizeCorrectGamma = correctGamma;
 }
 
 void DkBatchTransform::saveSettings(QSettings & settings) const {
 
 	settings.beginGroup(settingsName());
 	settings.setValue("Angle", mAngle);
-	settings.setValue("HorizontalFlip", mHorizontalFlip);
-	settings.setValue("VerticalFlip", mVerticalFlip);
 	settings.setValue("CropFromMetadata", mCropFromMetadata);
+
+	// resize
+	settings.setValue("ScaleFactor", mResizeScaleFactor);
+	settings.setValue("Mode", mResizeMode);
+	settings.setValue("Property", mResizeProperty);
+	settings.setValue("IplMethod", mResizeIplMethod);
+	settings.setValue("CorrectGamma", mResizeCorrectGamma);
+
 	settings.endGroup();
 }
 
@@ -302,31 +162,58 @@ void DkBatchTransform::loadSettings(QSettings & settings) {
 
 	settings.beginGroup(settingsName());
 	mAngle = settings.value("Angle", mAngle).toInt();
-	mHorizontalFlip = settings.value("HorizontalFlip", mHorizontalFlip).toBool();
-	mVerticalFlip = settings.value("VerticalFlip", mVerticalFlip).toBool();
 	mCropFromMetadata = settings.value("CropFromMetadata", mCropFromMetadata).toBool();
+
+	mResizeScaleFactor	= settings.value("ScaleFactor", mResizeScaleFactor).toFloat();
+	mResizeMode			= (ResizeMode)settings.value("Mode", mResizeMode).toInt();
+	mResizeProperty		= (ResizeProperty)settings.value("Property", mResizeProperty).toInt();
+	mResizeIplMethod	= settings.value("IplMethod", mResizeIplMethod).toInt();
+	mResizeCorrectGamma	= settings.value("Correct Gamma", mResizeCorrectGamma).toBool();
 	settings.endGroup();
+}
+
+bool DkBatchTransform::isResizeActive() const {
+	
+	if (mResizeMode != resize_mode_default)
+		return true;
+
+	if (mResizeScaleFactor != 1.0f)
+		return true;
+
+	return false;
 }
 
 bool DkBatchTransform::isActive() const {
 
-	return mHorizontalFlip || mVerticalFlip || mAngle != 0 || mCropFromMetadata;
+	return mAngle != 0 || mCropFromMetadata || isResizeActive();
 }
 
 int DkBatchTransform::angle() const {
 	return mAngle;
 }
 
-bool DkBatchTransform::horizontalFlip() const {
-	return mHorizontalFlip;
-}
-
-bool DkBatchTransform::verticalFlip() const {
-	return mVerticalFlip;
-}
-
 bool DkBatchTransform::cropMetatdata() const {
 	return mCropFromMetadata;
+}
+
+DkBatchTransform::ResizeMode DkBatchTransform::mode() const {
+	return mResizeMode;
+}
+
+DkBatchTransform::ResizeProperty DkBatchTransform::prop() const {
+	return mResizeProperty;
+}
+
+int DkBatchTransform::iplMethod() const {
+	return mResizeIplMethod;
+}
+
+float DkBatchTransform::scaleFactor() const {
+	return mResizeScaleFactor;
+}
+
+bool DkBatchTransform::correctGamma() const {
+	return mResizeCorrectGamma;
 }
 
 bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
@@ -346,22 +233,41 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 	QImage img = container->image();
 	QImage tmpImg;
 
-	if (mAngle != 0) {
-		QTransform rotationMatrix;
-		rotationMatrix.rotate((double)mAngle);
-		tmpImg = img.transformed(rotationMatrix);
+	// resize
+	if (isResizeActive()) {
+		QSize size;
+		float sf = 1.0f;
+
+		if (prepareProperties(img.size(), size, sf, logStrings))
+			tmpImg = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
+		else
+			tmpImg = img;
 	}
 	else
 		tmpImg = img;
 
-	tmpImg = tmpImg.mirrored(mHorizontalFlip, mVerticalFlip);
-	
+	// rotate
+	if (mAngle != 0) {
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)mAngle);
+		tmpImg = tmpImg.transformed(rotationMatrix);
+	}
+	else
+		tmpImg = img;
+
+	// logs
 	if (!tmpImg.isNull()) {
 	
 		container->setImage(tmpImg, QObject::tr("transformed"));
 
 		if (rect.isEmpty() && mCropFromMetadata)
 			logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
+		else if (isResizeActive()) {
+			if (mResizeMode == resize_mode_default)
+				logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(mResizeScaleFactor*100.0f));
+			else
+				logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(mResizeScaleFactor));
+		}
 		else
 			logStrings.append(QObject::tr("%1 image transformed and cropped.").arg(name()));
 
@@ -373,6 +279,55 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 
 	return true;
 }
+
+bool DkBatchTransform::prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const {
+
+	float sf = 1.0f;
+	QSize normalizedSize = imgSize; 
+
+	if (mResizeMode == resize_mode_default) {
+		scaleFactor = mResizeScaleFactor;
+		return true;
+	}
+	else if (mResizeMode == resize_mode_long_side) {
+
+		if (imgSize.width() < imgSize.height())
+			normalizedSize.transpose();
+	}
+	else if (mResizeMode == resize_mode_short_side) {
+
+		if (imgSize.width() > imgSize.height())
+			normalizedSize.transpose();
+	}
+	else if (mResizeMode == resize_mode_height)
+		normalizedSize.transpose();
+
+	sf = mResizeScaleFactor/normalizedSize.width();
+
+	if (sf > 1.0 && mResizeProperty == resize_prop_decrease_only) {
+
+		logStrings.append(QObject::tr("%1 I need to increase the image, but the option is set to decrease only -> skipping.").arg(name()));
+		return false;
+	}
+	else if (sf < 1.0f && mResizeProperty == resize_prop_increase_only) {
+		logStrings.append(QObject::tr("%1 I need to decrease the image, but the option is set to increase only -> skipping.").arg(name()));
+		return false;
+	}
+	else if (sf == 1.0f) {
+		logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
+		return false;
+	}
+
+	size.setWidth(qRound(mResizeScaleFactor));
+	size.setHeight(qRound(sf*normalizedSize.height()));
+
+	if (normalizedSize != imgSize)
+		size.transpose();
+
+	return true;
+}
+
+
 
 // DkManipulatorBatch --------------------------------------------------------------------
 DkManipulatorBatch::DkManipulatorBatch() {

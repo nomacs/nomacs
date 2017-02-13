@@ -83,7 +83,6 @@ enum fileNameWidget {
 };
 
 // nomacs defines
-class DkResizeBatch;
 class DkPluginBatch;
 class DkManipulatorBatch;
 class DkBatchProcessing;
@@ -350,35 +349,6 @@ private:
 
 };
 
-class DkBatchResizeWidget : public QWidget, public DkBatchContent {
-	Q_OBJECT
-
-public:
-	DkBatchResizeWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
-
-	void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
-	bool loadProperties(QSharedPointer<DkResizeBatch> batchResize) const;
-	bool hasUserInput() const;
-	bool requiresUserInput() const;
-	virtual void applyDefault();
-
-public slots:
-	void modeChanged(int idx);
-	void percentChanged(double val);
-	void pxChanged(int val);
-
-signals:
-	void newHeaderText(const QString& txt) const;
-
-protected:
-	void createLayout();
-
-	QComboBox* mComboMode;
-	QComboBox* mComboProperties;
-	QSpinBox* mSbPx;
-	QDoubleSpinBox* mSbPercent;
-};
-
 class DkProfileWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
@@ -492,6 +462,7 @@ public:
 
 public slots:
 	void updateHeader() const;
+	void modeChanged();
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -506,9 +477,13 @@ protected:
 	QRadioButton* mRbRotateRight = 0;
 	QRadioButton* mRbRotate180 = 0;
 
-	QCheckBox* mCbFlipH = 0;
-	QCheckBox* mCbFlipV = 0;
 	QCheckBox* mCbCropMetadata = 0;
+
+	QComboBox* mResizeComboMode;
+	QComboBox* mResizeComboProperties;
+	QSpinBox* mResizeSbPx;
+	QDoubleSpinBox* mResizeSbPercent;
+
 };
 
 class DkBatchButtonsWidget : public DkWidget {
@@ -566,7 +541,6 @@ public:
 	enum batchWidgets {
 		batch_input,
 		batch_manipulator,
-		batch_resize,
 		batch_transform,
 		batch_plugin,
 		batch_output,
@@ -603,7 +577,6 @@ protected:
 	void startBatch();
 	DkBatchInput* inputWidget() const;
 	DkBatchOutput* outputWidget() const;
-	DkBatchResizeWidget* resizeWidget() const;
 	DkBatchManipulatorWidget* manipulatorWidget() const;
 	DkProfileWidget* profileWidget() const;
 	DkBatchTransformWidget* transformWidget() const;

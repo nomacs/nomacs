@@ -1126,126 +1126,6 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 	updateFileLabelPreview();
 }
 
-// DkResizeWidget --------------------------------------------------------------------
-DkBatchResizeWidget::DkBatchResizeWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
-
-	createLayout();
-	applyDefault();
-}
-
-void DkBatchResizeWidget::createLayout() {
-
-	mComboMode = new QComboBox(this);
-	QStringList modeItems;
-	modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
-	mComboMode->addItems(modeItems);
-
-	mComboProperties = new QComboBox(this);
-	QStringList propertyItems;
-	propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
-	mComboProperties->addItems(propertyItems);
-
-	mSbPercent = new QDoubleSpinBox(this);
-	mSbPercent->setSuffix(tr("%"));
-	mSbPercent->setMaximum(1000);
-	mSbPercent->setMinimum(0.1);
-
-	mSbPx = new QSpinBox(this);
-	mSbPx->setSuffix(tr(" px"));
-	mSbPx->setMaximum(SHRT_MAX);
-	mSbPx->setMinimum(1);
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	layout->addWidget(mComboMode);
-	layout->addWidget(mSbPercent);
-	layout->addWidget(mSbPx);
-	layout->addWidget(mComboProperties);
-	layout->addStretch();
-
-	connect(mComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged(int)));
-	connect(mSbPercent, SIGNAL(valueChanged(double)), this, SLOT(percentChanged(double)));
-	connect(mSbPx, SIGNAL(valueChanged(int)), this, SLOT(pxChanged(int)));
-}
-
-void DkBatchResizeWidget::modeChanged(int) {
-
-	if (mComboMode->currentIndex() == DkResizeBatch::mode_default) {
-		mSbPx->hide();
-		mSbPercent->show();
-		mComboProperties->hide();
-		percentChanged(mSbPercent->value());
-	}
-	else {
-		mSbPx->show();
-		mSbPercent->hide();
-		mComboProperties->show();
-		pxChanged(mSbPx->value());
-	}
-}
-
-void DkBatchResizeWidget::percentChanged(double val) {
-
-	if (val == 100.0)
-		emit newHeaderText(tr("inactive"));
-	else
-		emit newHeaderText(QString::number(val) + "%");
-}
-
-void DkBatchResizeWidget::pxChanged(int val) {
-
-	emit newHeaderText(mComboMode->itemText(mComboMode->currentIndex()) + ": " + QString::number(val) + " px");
-}
-
-void DkBatchResizeWidget::applyDefault() {
-
-	mSbPercent->setValue(100.0);
-	mSbPx->setValue(1920);
-	mComboMode->setCurrentIndex(0);
-	mComboProperties->setCurrentIndex(0);
-	modeChanged(0);	// init gui
-}
-
-void DkBatchResizeWidget::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
-
-	if (mComboMode->currentIndex() == DkResizeBatch::mode_default) {
-		batchResize->setProperties((float)mSbPercent->value()/100.0f, mComboMode->currentIndex());
-	}
-	else {
-		batchResize->setProperties((float)mSbPx->value(), mComboMode->currentIndex(), mComboProperties->currentIndex());
-	}
-}
-
-bool DkBatchResizeWidget::loadProperties(QSharedPointer<DkResizeBatch> batchResize) const {
-
-	if (!batchResize) {
-		qWarning() << "cannot load properties, DkResizeBatch is NULL";
-		return false;
-	}
-
-	mComboMode->setCurrentIndex(batchResize->mode());
-	mComboProperties->setCurrentIndex(batchResize->property());
-	
-	float sf = batchResize->scaleFactor();
-	if (batchResize->mode() == DkResizeBatch::mode_default)
-		mSbPercent->setValue(sf*100.0f);
-	else
-		mSbPx->setValue(qRound(sf));
-
-	return false;
-}
-
-bool DkBatchResizeWidget::hasUserInput() const {
-
-	return !(mComboMode->currentIndex() == DkResizeBatch::mode_default && mSbPercent->value() == 100.0);
-}
-
-bool DkBatchResizeWidget::requiresUserInput() const {
-
-	return false;
-}
-
 // DkProfileWidget --------------------------------------------------------------------
 DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
@@ -1689,6 +1569,41 @@ DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::Wi
 
 void DkBatchTransformWidget::createLayout() {
 
+	// resize
+	QLabel* resizeLabel = new QLabel(tr("Resize"), this);
+	resizeLabel->setObjectName("subTitle");
+
+	mResizeComboMode = new QComboBox(this);
+	QStringList modeItems;
+	modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
+	mResizeComboMode->addItems(modeItems);
+
+	mResizeSbPercent = new QDoubleSpinBox(this);
+	mResizeSbPercent->setSuffix(tr("%"));
+	mResizeSbPercent->setMaximum(1000);
+	mResizeSbPercent->setMinimum(0.1);
+
+	mResizeSbPx = new QSpinBox(this);
+	mResizeSbPx->setSuffix(tr(" px"));
+	mResizeSbPx->setMaximum(SHRT_MAX);
+	mResizeSbPx->setMinimum(1);
+
+	mResizeComboProperties = new QComboBox(this);
+	QStringList propertyItems;
+	propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
+	mResizeComboProperties->addItems(propertyItems);
+
+	QWidget* resizeWidget = new QWidget(this);
+	QHBoxLayout* resizeLayout = new QHBoxLayout(resizeWidget);
+	resizeLayout->setContentsMargins(0, 0, 0, 0);
+	resizeLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	resizeLayout->addWidget(mResizeComboMode);
+	resizeLayout->addWidget(mResizeSbPercent);
+	resizeLayout->addWidget(mResizeSbPx);
+	resizeLayout->addWidget(mResizeComboProperties);
+	resizeLayout->addStretch();
+
+	// rotation
 	QLabel* rotateLabel = new QLabel(tr("Orientation"), this);
 	rotateLabel->setObjectName("subTitle");
 
@@ -1708,44 +1623,48 @@ void DkBatchTransformWidget::createLayout() {
 	QLabel* transformLabel = new QLabel(tr("Transformations"), this);
 	transformLabel->setObjectName("subTitle");
 
-	mCbFlipH = new QCheckBox(tr("Flip &Horizontal"));
-	mCbFlipV = new QCheckBox(tr("Flip &Vertical"));
 	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	layout->addWidget(rotateLabel, 0, 0);
-	layout->addWidget(mRbRotate0, 1, 0);
-	layout->addWidget(mRbRotateRight, 2, 0);
-	layout->addWidget(mRbRotateLeft, 3, 0);
-	layout->addWidget(mRbRotate180, 4, 0);
+	layout->addWidget(resizeLabel, 0, 0);
+	layout->addWidget(resizeWidget, 1, 0);
+	layout->addWidget(rotateLabel, 2, 0);
+	layout->addWidget(mRbRotate0, 3, 0);
+	layout->addWidget(mRbRotateRight, 4, 0);
+	layout->addWidget(mRbRotateLeft, 5, 0);
+	layout->addWidget(mRbRotate180, 6, 0);
 
-	layout->addWidget(transformLabel, 5, 0);
-	layout->addWidget(mCbFlipH, 6, 0);
-	layout->addWidget(mCbFlipV, 7, 0);
+	layout->addWidget(transformLabel, 7, 0);
 	layout->addWidget(mCbCropMetadata, 8, 0);
 	layout->setColumnStretch(3, 10);
 
+	connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
+	connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
+	connect(mResizeSbPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
+
 	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
-	connect(mCbFlipV, SIGNAL(clicked()), this, SLOT(updateHeader()));
-	connect(mCbFlipH, SIGNAL(clicked()), this, SLOT(updateHeader()));
 	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
 }
 
 void DkBatchTransformWidget::applyDefault() {
 
 	mRbRotate0->setChecked(true);
-	mCbFlipH->setChecked(false);
-	mCbFlipV->setChecked(false);
 	mCbCropMetadata->setChecked(false);
+
+	mResizeSbPercent->setValue(100.0);
+	mResizeSbPx->setValue(1920);
+	mResizeComboMode->setCurrentIndex(0);
+	mResizeComboProperties->setCurrentIndex(0);
+	modeChanged();	// init gui
 
 	updateHeader();
 }
 
 bool DkBatchTransformWidget::hasUserInput() const {
 	
-	return !mRbRotate0->isChecked() || mCbFlipH->isChecked() || mCbFlipV->isChecked() || mCbCropMetadata->isChecked();
+	return !mRbRotate0->isChecked() || mCbCropMetadata->isChecked() || !(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
 }
 
 bool DkBatchTransformWidget::requiresUserInput() const {
@@ -1760,14 +1679,22 @@ void DkBatchTransformWidget::updateHeader() const {
 	else {
 		
 		QString txt;
-		if (getAngle() != 0)
-			txt += tr("Rotating by: %1").arg(getAngle());
-		if (mCbFlipH->isChecked() || mCbFlipV->isChecked()) {
+
+		if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() != 100.0) {
+			txt += tr("Resize by: %1%").arg(QString::number(mResizeSbPercent->value()));
+		}
+
+		if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
+			txt += tr("Resize %1 by: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
+		}
+
+		if (getAngle() != 0) {
 			if (!txt.isEmpty())
 				txt += " | ";
-			txt += tr("Flipping");
+			txt += tr("Rotating by: %1").arg(getAngle());
 		}
-		if(mCbCropMetadata->isChecked()) {
+
+		if (mCbCropMetadata->isChecked()) {
 			if (!txt.isEmpty())
 				txt += " | ";
 			txt += tr("Crop");
@@ -1776,9 +1703,40 @@ void DkBatchTransformWidget::updateHeader() const {
 	}
 }
 
+void DkBatchTransformWidget::modeChanged() {
+
+	if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
+		mResizeSbPx->hide();
+		mResizeSbPercent->show();
+		mResizeComboProperties->hide();
+		updateHeader();
+	}
+	else {
+		mResizeSbPx->show();
+		mResizeSbPercent->hide();
+		mResizeComboProperties->show();
+		updateHeader();
+	}
+}
+
 void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const {
 
-	batchTransform->setProperties(getAngle(), mCbFlipH->isChecked(), mCbFlipV->isChecked(), mCbCropMetadata->isChecked());
+	if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
+		batchTransform->setProperties(
+			getAngle(), 
+			mCbCropMetadata->isChecked(),
+			(float)mResizeSbPercent->value()/100.0f, 
+			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex());
+	}
+	else {
+		batchTransform->setProperties(
+			getAngle(), 
+			mCbCropMetadata->isChecked(),
+			(float)mResizeSbPx->value(), 
+			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(), 
+			(DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
+	}
+
 }
 
 bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> batchTransform) {
@@ -1798,10 +1756,18 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 	default: errored = true;
 	}
 
-	mCbFlipH->setChecked(batchTransform->horizontalFlip());
-	mCbFlipV->setChecked(batchTransform->verticalFlip());
 	mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
 
+	// resize
+	mResizeComboMode->setCurrentIndex(batchTransform->mode());
+	mResizeComboProperties->setCurrentIndex(batchTransform->prop());
+
+	float sf = batchTransform->scaleFactor();
+	if (batchTransform->mode() == DkBatchTransform::resize_mode_default)
+		mResizeSbPercent->setValue(sf*100.0f);
+	else
+		mResizeSbPx->setValue(qRound(sf));
+	modeChanged();
 	updateHeader();
 
 	return !errored;
@@ -1964,9 +1930,6 @@ void DkBatchWidget::createLayout() {
 	mWidgets[batch_manipulator] = new DkBatchContainer(tr("Adjustments"), tr("inactive"), this);
 	mWidgets[batch_manipulator]->setContentWidget(new DkBatchManipulatorWidget(this));
 
-	mWidgets[batch_resize] = new DkBatchContainer(tr("Resize"), tr("inactive"), this);
-	mWidgets[batch_resize]->setContentWidget(new DkBatchResizeWidget(this));
-
 	mWidgets[batch_transform] = new DkBatchContainer(tr("Transform"), tr("inactive"), this);
 	mWidgets[batch_transform]->setContentWidget(new DkBatchTransformWidget(this));
 
@@ -2081,15 +2044,6 @@ DkBatchOutput* DkBatchWidget::outputWidget() const {
 	DkBatchOutput* w = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget());
 	if (!w)
 		qCritical() << "cannot cast to DkBatchOutput";
-
-	return w;
-}
-
-DkBatchResizeWidget* DkBatchWidget::resizeWidget() const {
-
-	DkBatchResizeWidget* w = dynamic_cast<DkBatchResizeWidget*>(mWidgets[batch_resize]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchResizeWidget";
 
 	return w;
 }
@@ -2264,10 +2218,6 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 	manipulatorWidget()->transferProperties(manipulatorBatch);
 
 	// create processing functions
-	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
-	resizeWidget()->transferProperties(resizeBatch);
-
-	// create processing functions
 	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
 	transformWidget()->transferProperties(transformBatch);
 
@@ -2281,9 +2231,6 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 	if (manipulatorBatch->isActive())
 		processFunctions.append(manipulatorBatch);
-
-	if (resizeBatch->isActive())
-		processFunctions.append(resizeBatch);
 
 	if (transformBatch->isActive())
 		processFunctions.append(transformBatch);
@@ -2490,19 +2437,13 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 			continue;
 		}
 		
-		// apply resize batch settings
-		if (QSharedPointer<DkResizeBatch> rf = qSharedPointerDynamicCast<DkResizeBatch>(cf)) {
-			if (!resizeWidget()->loadProperties(rf)) {
-				warnings++;
-			}
-		}
 		// apply manipulator batch settings
 		else if (QSharedPointer<DkManipulatorBatch> mf = qSharedPointerDynamicCast<DkManipulatorBatch>(cf)) {
 			if (!manipulatorWidget()->loadProperties(mf)) {
 				warnings++;
 			}
 		}
-		// apply resize batch settings
+		// apply transform batch settings
 		else if (QSharedPointer<DkBatchTransform> tf = qSharedPointerDynamicCast<DkBatchTransform>(cf)) {
 			if (!transformWidget()->loadProperties(tf)) {
 				warnings++;
