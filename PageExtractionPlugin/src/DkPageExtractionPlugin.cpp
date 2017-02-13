@@ -28,7 +28,9 @@
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
 
+#include "DkSettings.h"
 #include "DkUtils.h"	// for qInfo compatibility
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -36,6 +38,7 @@
 #include <QUuid>
 #include <QDateTime>
 #include <QDir>
+#include <QSettings>
 
 #include <QXmlStreamReader>
 #pragma warning(pop)		// no warnings from includes - end
@@ -62,9 +65,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	menuNames[id_crop_to_page] = tr("Crop to Page");
 	menuNames[id_crop_to_metadata] = tr("Crop to Metadata");
 	menuNames[id_draw_to_page] = tr("Draw to Page");
-	menuNames[id_draw_to_page_alternative] = tr("Draw to page (alternative method)");
-	menuNames[id_eval_page] = tr("Evaluate Page");
-	menuNames[id_eval_page_alternative] = tr("Evaluate Page (alternative method)");
+	//menuNames[id_eval_page] = tr("Evaluate Page");
 	mMenuNames = menuNames.toList();
 
 	// create menu status tips
@@ -74,13 +75,15 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips[id_crop_to_page] = tr("Finds a page in a document image and then crops the image to that page.");
 	statusTips[id_crop_to_metadata] = tr("Finds a page in a document image and then saves the coordinates to the XMP metadata.");
 	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
-	statusTips[id_draw_to_page_alternative] = tr("Finds a page in a document image and then draws the found document boundaries (alternative method).");
-	statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
-	statusTips[id_eval_page_alternative] = tr("Loads GT and computes the Jaccard index using the alternative method.");
+	//statusTips[id_eval_page] = tr("Loads GT and computes the Jaccard index.");
 	mMenuStatusTips = statusTips.toList();
 
-	QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
-	mResultPath = resPath.absoluteFilePath();
+	//QFileInfo resPath(QDir("dmrz/numerical-results/"), "results-" + QDateTime::currentDateTime().toString("yyyy-MM-dd HH-mm-ss") + ".txt");
+	//mResultPath = resPath.absoluteFilePath();
+
+	// save default settings
+	loadSettings(nmc::DkSettingsManager::instance().qSettings());
+	saveSettings(nmc::DkSettingsManager::instance().qSettings());
 }
 
 /**
@@ -157,15 +160,15 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		return imgC;
 		
 	cv::Mat img = nmc::DkImage::qImage2Mat(imgC->image());
-	bool alternativeMethod = false;
-	if (runID == mRunIDs[id_draw_to_page_alternative] || runID == mRunIDs[id_eval_page_alternative]) {
-		alternativeMethod = true;
-	}
+	bool alternativeMethod = mMethod == m_bhaskar;
+	
 	DkPageSegmentation segM(img, alternativeMethod);
 
 	// run the page segmentation
+	nmc::DkTimer dt;
 	segM.compute();
 	segM.filterDuplicates();
+	qDebug() << "page segmentation takes" << dt;
 
 	// crop image
 	if(runID == mRunIDs[id_crop_to_page]) {
@@ -184,43 +187,59 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 		}
 	}
 	// draw rectangles to the image
-	else if(runID == mRunIDs[id_draw_to_page] || runID == mRunIDs[id_draw_to_page_alternative]) {
+	else if(runID == mRunIDs[id_draw_to_page]) {
 		
 		QImage dImg = imgC->image();
 		segM.draw(dImg);
 		imgC->setImage(dImg, tr("Page Annotated"));
 	}
-	else if (runID == mRunIDs[id_eval_page] || runID == mRunIDs[id_eval_page_alternative]) {
+	//else if (runID == mRunIDs[id_eval_page]) {
 
-		QImage dImg = imgC->image();
+	//	QImage dImg = imgC->image();
 
-		QPolygonF gt = readGT(imgC->filePath());
-		
-		QPen pen(QColor(100, 200, 50));
-		pen.setWidth(10);
-		QPainter p(&dImg);
-		p.setPen(pen);
-		p.drawPolygon(gt);
-		p.end();
+	//	QPolygonF gt = readGT(imgC->filePath());
+	//	
+	//	QPen pen(QColor(100, 200, 50));
+	//	pen.setWidth(10);
+	//	QPainter p(&dImg);
+	//	p.setPen(pen);
+	//	p.drawPolygon(gt);
+	//	p.end();
 
-		segM.draw(dImg);
-		imgC->setImage(dImg, tr("Result vs GT"));
+	//	segM.draw(dImg);
+	//	imgC->setImage(dImg, tr("Result vs GT"));
 
-		double ji = jaccardIndex(imgC->image().size(), gt, segM.getMaxRect().toPolygon());
+	//	double ji = jaccardIndex(imgC->image().size(), gt, segM.getMaxRect().toPolygon());
 
-		QString data = imgC->fileName() + ", " + QString::number(ji) + "\n";
-		qDebug() << data;
+	//	QString data = imgC->fileName() + ", " + QString::number(ji) + "\n";
+	//	qDebug() << data;
 
-		QFile file(mResultPath);
-		file.open(QIODevice::WriteOnly | QIODevice::Append);
-		QTextStream stream(&file);
-		stream << data;
-		qInfo() << "results written to" << mResultPath;
+	//	QFile file(mResultPath);
+	//	file.open(QIODevice::WriteOnly | QIODevice::Append);
+	//	QTextStream stream(&file);
+	//	stream << data;
+	//	qInfo() << "results written to" << mResultPath;
 
-	}
+	//}
 
 	// wrong runID? - do nothing
 	return imgC;
+}
+
+void DkPageExtractionPlugin::loadSettings(QSettings & settings) {
+
+	settings.beginGroup("Page Extraction Plugin");
+	int mIdx = settings.value("Method", mMethod).toInt();
+	if (mIdx >= 0 && mIdx < m_end)
+		mMethod = (MethodIndex)mIdx;
+	settings.endGroup();
+}
+
+void DkPageExtractionPlugin::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup("Page Extraction Plugin");
+	settings.setValue("Method", mMethod);
+	settings.endGroup();
 }
 
 QPolygonF DkPageExtractionPlugin::readGT(const QString& imgPath) const {

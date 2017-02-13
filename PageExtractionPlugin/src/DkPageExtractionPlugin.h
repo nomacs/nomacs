@@ -58,13 +58,21 @@ public:
 		id_crop_to_page,
 		id_crop_to_metadata,
 		id_draw_to_page,
-		id_draw_to_page_alternative,
-		id_eval_page,
-		id_eval_page_alternative,
+		//id_eval_page,
 		// add actions here
 
 		id_end
 	};
+
+	enum MethodIndex {
+		m_thresholds = 0,
+		m_bhaskar,
+
+		m_end
+	};
+
+	void loadSettings(QSettings& settings) override;
+	void saveSettings(QSettings& settings) const override;
 
 protected:
 	QList<QAction*> mActions;
@@ -72,6 +80,8 @@ protected:
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
 	QString mResultPath;
+
+	MethodIndex mMethod = m_thresholds;
 
 	QPolygonF readGT(const QString& imgPath) const;
 	double jaccardIndex(const QSize& imgSize, const QPolygonF& gt, const QPolygonF& computed) const;
