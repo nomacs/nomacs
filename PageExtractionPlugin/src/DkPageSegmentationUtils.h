@@ -454,4 +454,71 @@ protected:
 	void computeMaxCosine();
 };
 
+class PageExtractor {
+	
+public:
+	PageExtractor() {}
+	
+	void findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& rects);
+	
+protected:
+	const int maxLinesHough = 30;
+	const float houghPeakThresholdRel = 0.4f; // minimum accumulator value of hough lines, relative to smaller image dimension
+	const double t_theta = CV_PI / 9; // angle tolerance for parallel lines
+	const float t_l = 0.5f;
+	const float maxGapLengthRel = 0.3f; // maximum gap size in findLineSegments, relative to smaller image dimension
+	const int minLineSegmentLength = 10;
+	const float minRelSideLength = 0.3f; // minimum length of final rectangle sides relative to smaller image dimension
+	const double orthoTol = CV_PI / 9; // orthogonality tolerance
+	const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
+	const int numFinalRects = 3; // number of rectangles to return
+	
+	struct HoughLine {
+		int acc;
+		float rho;
+		float angle;
+	};
+	
+	struct LineSegment {
+		cv::Point2f p1;
+		cv::Point2f p2;
+		float length;
+	};
+	
+	struct ExtendedPeak {
+		ExtendedPeak(const HoughLine& line1, const LineSegment& ls1, const HoughLine& line2, const LineSegment& ls2);
+		//~ExtendedPeak() {}
+		
+		HoughLine line1;
+		HoughLine line2;
+		std::vector<LineSegment> spatialLines;
+		std::pair<bool, cv::Point2f> intersectionPoint;
+		double theta_k;
+		double A_k;
+	};
+	
+	struct IntermediatePeak {
+		IntermediatePeak(const ExtendedPeak& ep1, const ExtendedPeak& ep2) : ep1(ep1), ep2(ep2) {}
+		
+		ExtendedPeak ep1;
+		ExtendedPeak ep2;
+	};
+	
+	struct Rectangle {
+		Rectangle(const IntermediatePeak& ip, const std::vector<cv::Point2f>& corners) : ip(ip), corners(corners) {}
+		
+		IntermediatePeak ip;
+		std::vector<cv::Point2f> corners;
+	};
+	
+	enum class LineFindingMode {Horizontal, Vertical};
+	
+	static double angleDiff(double a, double b);
+	static std::pair<bool, cv::Point2f> findLineIntersection(const LineSegment& ls1, const LineSegment& ls2);
+	static float pointToLineDistance(LineSegment ls, cv::Point2f p);
+	static cv::Mat removeText(cv::Mat gray, float sigma, int selemSize, int threshold = 2);
+	std::vector<HoughLine> houghTransform(cv::Mat bwImg, float rho, float theta, int threshold, int linesMax) const;
+	std::vector<LineSegment> findLineSegments(cv::Mat bwImg, const std::vector<HoughLine>& houghLines, int minLength, int maxGap) const;
+};
+
 };

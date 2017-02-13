@@ -54,12 +54,13 @@ public:
 	virtual void preLoadPlugin() const {};	// is called before batch processing
 	virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> > & batchInfo) const {};	// is called after batch processing
 
-
 	enum {
 		id_crop_to_page,
 		id_crop_to_metadata,
 		id_draw_to_page,
+		id_draw_to_page_alternative,
 		id_eval_page,
+		id_eval_page_alternative,
 		// add actions here
 
 		id_end

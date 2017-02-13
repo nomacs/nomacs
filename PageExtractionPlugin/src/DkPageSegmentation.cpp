@@ -36,7 +36,7 @@ namespace nmp {
 
 // DkSegmentBurger --------------------------------------------------------------------
 // This code is based on OpenCV's rectangle sample (squares.cpp)
-DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */) {
+DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */, bool alternativeMethod /* = false */) : alternativeMethod(alternativeMethod) {
 
 	this->img = colImg;
 }
@@ -77,20 +77,27 @@ QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
 void DkPageSegmentation::compute() {
 
-	cv::Mat imgLab;
-
-	if (scale == 1.0f && 960.0f/img.cols < 0.8f)
-		scale = 960.0f/img.cols;
-
-	cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
-	cv::Mat lImg = findRectangles(imgLab, rects);
-
+	cv::Mat lImg;
+	if (alternativeMethod) {
+		if (scale == 1.0f && img.rows > 700.0f)
+			scale = 700.0f / img.rows;
+			
+		lImg = findRectanglesAlternative(img, rects);
+	} else {
+		cv::Mat imgLab;
+		
+		if (scale == 1.0f && 960.0f/img.cols < 0.8f)
+			scale = 960.0f/img.cols;
+			
+		cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
+		lImg = findRectangles(img, rects);
+	}
 
 	qDebug() << "[DkPageSegmentation] " << rects.size() << " rectangles circles found resize factor: " << scale;
 }
 
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
-
+	
 	cv::Mat tImg, gray;
 
 
@@ -222,6 +229,13 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 	rects = noLargeRects;
 
 	return lImg;
+}
+
+cv::Mat DkPageSegmentation::findRectanglesAlternative(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
+	PageExtractor extractor;
+	extractor.findPage(img, scale, rects);
+
+	return img;
 }
 
 QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingRect & rect, const QColor & bgCol) const {
@@ -392,8 +406,6 @@ void DkPageSegmentation::draw(cv::Mat& img, const std::vector<DkPolyRect>& rects
 		r.draw(img, col);
 	}
 }
-
-
 
 };
 
