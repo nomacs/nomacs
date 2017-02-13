@@ -1107,12 +1107,14 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
 
 	QSharedPointer<QByteArray> ba;
 
-	qDebug() << "saving: " << filePath;
 
+	DkTimer dt;
 	if (saveToBuffer(filePath, img, ba, compression) && ba) {
 
-		if (writeBufferToFile(filePath, ba))
+		if (writeBufferToFile(filePath, ba)) {
+			qDebug() << "saving to" << filePath << "in" << dt;
 			return filePath;
+		}
 	}
 
 	return QString();
