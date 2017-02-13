@@ -463,13 +463,13 @@ public:
 	
 protected:
 	const int maxLinesHough = 30;
-	const int houghPeakThresholdRel = 0.4; // minimum accumulator value of hough lines, relative to smaller image dimension
-	const float t_theta = CV_PI / 9; // angle tolerance for parallel lines
+	const float houghPeakThresholdRel = 0.4f; // minimum accumulator value of hough lines, relative to smaller image dimension
+	const double t_theta = CV_PI / 9; // angle tolerance for parallel lines
 	const float t_l = 0.5f;
-	const float maxGapLengthRel = 0.3; // maximum gap size in findLineSegments, relative to smaller image dimension
-	const float minLineSegmentLength = 10;
-	const float minRelSideLength = 0.3; // minimum length of final rectangle sides relative to smaller image dimension
-	const float orthoTol = CV_PI / 9; // orthogonality tolerance
+	const float maxGapLengthRel = 0.3f; // maximum gap size in findLineSegments, relative to smaller image dimension
+	const int minLineSegmentLength = 10;
+	const float minRelSideLength = 0.3f; // minimum length of final rectangle sides relative to smaller image dimension
+	const double orthoTol = CV_PI / 9; // orthogonality tolerance
 	const float cornerGapTol = 3.0f; // tolerance for line segments that almost form a corner
 	const int numFinalRects = 3; // number of rectangles to return
 	
@@ -493,8 +493,8 @@ protected:
 		HoughLine line2;
 		std::vector<LineSegment> spatialLines;
 		std::pair<bool, cv::Point2f> intersectionPoint;
-		float theta_k;
-		float A_k;
+		double theta_k;
+		double A_k;
 	};
 	
 	struct IntermediatePeak {
@@ -513,7 +513,7 @@ protected:
 	
 	enum class LineFindingMode {Horizontal, Vertical};
 	
-	static float angleDiff(float a, float b);
+	static double angleDiff(double a, double b);
 	static std::pair<bool, cv::Point2f> findLineIntersection(const LineSegment& ls1, const LineSegment& ls2);
 	static float pointToLineDistance(LineSegment ls, cv::Point2f p);
 	static cv::Mat removeText(cv::Mat gray, float sigma, int selemSize, int threshold = 2);

@@ -444,15 +444,15 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	cv::dilate(bw, bw, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
 	
 	cv::Mat lineImg;
-	int accMin = (int) houghPeakThresholdRel * std::min(bw.size().width, bw.size().height);
-	std::vector<HoughLine> lines = houghTransform(bw, 1, CV_PI / 180.0, accMin, maxLinesHough);
+	int accMin = (int)(houghPeakThresholdRel * std::min(bw.size().width, bw.size().height));
+	std::vector<HoughLine> lines = houghTransform(bw, 1, (float)(CV_PI / 180.0), accMin, maxLinesHough);
 	if (lines.empty()) {
 		qDebug() << "no hough lines detected";
 		return;
 	}
 	
 	// find line segments in image
-	int maxGapLength = maxGapLengthRel * smallerSide;
+	int maxGapLength = (int)(maxGapLengthRel * smallerSide);
 	std::vector<LineSegment> lineSegments = findLineSegments(bw, lines, minLineSegmentLength, maxGapLength);
 	if (lineSegments.empty()) {
 		qDebug() << "findLineSegments has not found any line segments, even though hough lines were detected.";
@@ -487,7 +487,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 	for (size_t i = 0; i < EPs.size(); i++) {
 		for (size_t j = i + 1; j < EPs.size(); j++) {
 			// test for orthogonality
-			if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5f)) < orthoTol) {
+			if (abs(angleDiff(EPs[i].theta_k, EPs[j].theta_k) - (CV_PI * 0.5)) < orthoTol) {
 				IPs.push_back(IntermediatePeak {EPs[i], EPs[j]});
 			}
 		}
@@ -565,7 +565,7 @@ void PageExtractor::findPage(cv::Mat img, float scale, std::vector<DkPolyRect>& 
 }
 
 float PageExtractor::pointToLineDistance(LineSegment ls, cv::Point2f p) {
-	return cv::Mat(p - ls.p1).dot(cv::Mat(p - ls.p2)) / std::pow(cv::norm(ls.p2 - ls.p1), 2);
+	return (float)(cv::Mat(p - ls.p1).dot(cv::Mat(p - ls.p2)) / std::pow(cv::norm(ls.p2 - ls.p1), 2));
 }
 
 /**
@@ -586,18 +586,18 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 	int numAngle = cvRound(CV_PI / theta) + 2;
 	int numRho = (width + height) * 2 + 2; // always even
 	cv::Mat accum = cv::Mat::zeros(numRho, numAngle, CV_16U);
-	float tabSin[numAngle - 2];
-	float tabCos[numAngle - 2];
+	std::vector<double> tabSin(numAngle - 2);
+	std::vector<double> tabCos(numAngle - 2);
 	
 	float angle = 0.0f;
 	for (int n = 0; n < numAngle - 2; n++, angle += theta) {
-		tabSin[n] = static_cast<float>(sin(static_cast<double>(angle)));
-		tabCos[n] = static_cast<float>(cos(static_cast<double>(angle)));
+		tabSin[n] = sin(static_cast<double>(angle));
+		tabCos[n] = cos(static_cast<double>(angle));
 	}
 	
 	// fill the accumulator
-	for (size_t i = 0; i < height; i++) {
-		for (size_t j = 0; j < width; j++) {
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
 			if (bwImg.at<unsigned char>(i, j) != 0) {
 				for (int n = 0; n < numAngle - 2; n++) {
 					int r = cvRound((j * tabCos[n] + i * tabSin[n]) / rho) + numRho / 2;
@@ -638,7 +638,7 @@ std::vector<PageExtractor::HoughLine> PageExtractor::houghTransform(cv::Mat bwIm
 /**
  * Returns the shorter distance between angles a and b, which are in the interval [0, pi]
  */
-float PageExtractor::angleDiff(float a, float b) {
+double PageExtractor::angleDiff(double a, double b) {
 	return std::min(std::abs(a - b), static_cast<float>(CV_PI) - std::abs(a - b));
 }
 
@@ -677,16 +677,16 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 		float x;
 		float y;
 		// go through all x or y values and calculate the corresponding coordinate
-		for (size_t i = 0; i < dimRange; i++) {
+		for (int i = 0; i < dimRange; i++) {
 			if (mode == LineFindingMode::Horizontal) {
-				x = i;
-				y = (line.rho - x * cv::cos(line.angle)) / (cv::sin(line.angle));
+				x = (float)i;
+				y = (line.rho - x * cos(line.angle)) / (sin(line.angle));
 				if (notYetInImageRange && y <= bwImg.rows - 1 && y >= 0) {
 					notYetInImageRange = false;
 				}
 			} else {
-				y = i;;
-				x = (line.rho - y * cv::sin(line.angle)) / (cv::cos(line.angle));
+				y = (float)i;;
+				x = (line.rho - y * sin(line.angle)) / (cos(line.angle));
 				if (notYetInImageRange && x <= bwImg.cols - 1 && x >= 0) {
 					notYetInImageRange = false;
 				}
@@ -707,7 +707,7 @@ std::vector<PageExtractor::LineSegment> PageExtractor::findLineSegments(cv::Mat 
 						l.p2 = stopPos;
 					}
 					
-					l.length = cv::norm(l.p1 - l.p2);
+					l.length = (float)cv::norm(l.p1 - l.p2);
 					if (l.length > minLength) {
 						lineSegmentsCurrent.push_back(l);
 					}
@@ -764,14 +764,14 @@ PageExtractor::ExtendedPeak::ExtendedPeak(const HoughLine& line1, const LineSegm
 	// store mean angle
 	if (abs(line1.angle - line2.angle) > CV_PI * 0.5) { // if angle difference is large enough, the angles become closer to each other 
 		// note: lines are always in [0, pi]
-		theta_k = 0.5f * ((std::min(line1.angle, line2.angle) + CV_PI) + std::max(line1.angle, line2.angle));
+		theta_k = 0.5 * ((std::min(line1.angle, line2.angle) + CV_PI) + std::max(line1.angle, line2.angle));
 		if (theta_k > CV_PI) {
 			theta_k -= CV_PI;
 		}
 	} else {
-		theta_k = 0.5f * (line1.angle + line2.angle);
+		theta_k = 0.5 * (line1.angle + line2.angle);
 	}
-	A_k = 0.5f * (line1.acc + line2.acc);
+	A_k = 0.5 * (line1.acc + line2.acc);
 }
 
 /**
@@ -806,18 +806,18 @@ cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int 
 	cv::Mat sobel_h;
 	cv::Mat sobel_v;
 	cv::Mat sobel_angle = cv::Mat::zeros(gray.size(), CV_32F);
-	cv::GaussianBlur(gray, gray, cv::Size(2 * floor(sigma * 3) + 1, 2 * floor(sigma * 3) + 1), sigma);
+	cv::GaussianBlur(gray, gray, cv::Size((int)(2 * floor(sigma * 3) + 1), (int)(2 * floor(sigma * 3) + 1)), sigma);
 	cv::Canny(gray, bw, 0.1 * 255, 0.2 * 255);
 	cv::Sobel(gray, sobel_h, CV_32F, 0, 1, 3);
 	cv::Sobel(gray, sobel_v, CV_32F, 1, 0, 3);
 	
-	for (size_t i = 0; i < sobel_angle.rows; i++) {
-		for (size_t j = 0; j < sobel_angle.cols; j++) {
+	for (int i = 0; i < sobel_angle.rows; i++) {
+		for (int j = 0; j < sobel_angle.cols; j++) {
 			// calculate gradient angle
 			float angle = (atan2(sobel_v.at<float>(i, j), sobel_h.at<float>(i, j)));
 			// shift [-pi, 0] to [pi, 2pi]
 			if (angle < 0.0f) {
-				angle += 2 * CV_PI;
+				angle += (float)(2.0f * CV_PI);
 			}
 			// set 2pi to 0
 			if (angle >= 2 * CV_PI) {
@@ -839,8 +839,8 @@ cv::Mat PageExtractor::removeText(cv::Mat gray, float sigma, int selemSize, int 
 	float rangeEnd;
 	// go through angles in pi/4 steps
 	for (int i = 0; i < 8; i++) {
-		rangeStart = CV_PI / 4 * i;
-		rangeEnd = CV_PI / 4 * (i + 1);
+		rangeStart = (float)(CV_PI / 4.0f * i);
+		rangeEnd = (float)(CV_PI / 4.0f * (i + 1));
 		mask = ((sobel_angle >= rangeStart) & (sobel_angle < rangeEnd)) & mask_factor;
 		E_i[i] = mask & bw;
 		cv::dilate(E_i[i], E_i_ex[i], cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * selemSize, 2 * selemSize)));
