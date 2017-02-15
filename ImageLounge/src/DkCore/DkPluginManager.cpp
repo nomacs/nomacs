@@ -234,8 +234,11 @@ bool DkPluginContainer::load() {
 
 	if (pluginViewPort())
 		mType = type_viewport;
-	else if (batchPlugin())
+	else if (batchPlugin()) {
+		// load the settings
 		mType = type_batch;
+		batchPlugin()->loadSettings(batchPlugin()->settings());
+	}
 	else if (plugin())
 		mType = type_simple;
 	else {
