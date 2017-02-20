@@ -38,10 +38,12 @@
 #include "DkActionManager.h"
 #include "DkImageStorage.h"
 #include "DkManipulatorWidgets.h"
+#include "DkSettingsWidget.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QLabel>
 #include <QListView>
+#include <QTreeView>
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -66,6 +68,7 @@
 #include <QStandardPaths>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QHeaderView>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1263,39 +1266,38 @@ DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 
 void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
 
-	QStringList pluginList;
-	for (int idx = 0; idx < mSelectedPluginList->count(); idx++) {
-		pluginList.append(mSelectedPluginList->item(idx)->text());
-	}
-
+	QStringList pluginList = selectedPlugins();
 	batchPlugin->setProperties(pluginList);
 }
 
 void DkBatchPluginWidget::createLayout() {
 
-	QLabel* loadedLabel = new QLabel("All Plugins");
-	loadedLabel->setObjectName("subTitle");
+	QLabel* listLabel = new QLabel(tr("Select Plugins"));
+	listLabel->setObjectName("subTitle");
 
-	mLoadedPluginList = new DkListWidget(this);
-	mLoadedPluginList->setEmptyText(tr("Sorry, no Plugins found."));
-	mLoadedPluginList->addItems(getPluginActionNames());
+	mModel = new QStandardItemModel(this);
+	addPlugins(mModel);
 
-	QLabel* selectedLabel = new QLabel("Selected Plugins");
-	selectedLabel->setObjectName("subTitle");
+	QTreeView* pluginList = new QTreeView(this);
+	pluginList->setModel(mModel);
+	pluginList->header()->hide();
 
-	mSelectedPluginList = new DkListWidget(this);
-	mSelectedPluginList->setEmptyText(tr("Drag Plugin Actions here."));
+	// settings
+	mSettingsTitle = new QLabel(this);
+	mSettingsTitle->setObjectName("subTitle");
+
+	mSettingsEditor = new DkSettingsWidget(this);
+	mSettingsEditor->hide();
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(loadedLabel, 0, 0);
-	layout->addWidget(mLoadedPluginList, 1, 0);
-	layout->addWidget(selectedLabel, 0, 1);
-	layout->addWidget(mSelectedPluginList, 1, 1);
+	layout->addWidget(listLabel, 0, 0);
+	layout->addWidget(mSettingsTitle, 0, 1);
+	layout->addWidget(pluginList, 1, 0);
+	layout->addWidget(mSettingsEditor, 1, 1);
 
-	// connections
-	connect(mLoadedPluginList, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
-	connect(mSelectedPluginList, SIGNAL(dataDroppedSignal()), this, SLOT(updateHeader()));
+	connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
+	connect(pluginList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&)));
 }
 
 bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin) {
@@ -1305,43 +1307,37 @@ bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlug
 		return false;
 	}
 
-	QStringList appliedPlugins = batchPlugin->pluginList();
-	QStringList loadedPlugins = getPluginActionNames();
-	bool errored = false;
+	QStringList sPlugins = batchPlugin->pluginList();
 
-	for (const QString& plugin : appliedPlugins) {
-		if (loadedPlugins.contains(plugin)) {
-			selectPlugin(plugin);
-		}
-		else {
-			errored = true;
-			qWarning() << "I could not find" << plugin;
+	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+
+		QStandardItem* pItem = mModel->item(pIdx);
+	
+		for (int idx = 0; idx < pItem->rowCount(); idx++) {
+		
+			// see if the plugin is contained in the plugin list
+			QStandardItem* item = mModel->item(idx);
+			QString key = item->data(Qt::UserRole).toString() + " | " + item->text();
+			item->setCheckState(sPlugins.contains(key) ? Qt::Checked : Qt::Unchecked);
 		}
 	}
 
-	return !errored;
+	return true;
 }
 
-void DkBatchPluginWidget::selectPlugin(const QString& actionName, bool select) {
+void DkBatchPluginWidget::itemChanged(QStandardItem* item) {
 
-	if (select) {
-		mSelectedPluginList->addItem(actionName);
-		auto items = mLoadedPluginList->findItems(actionName, Qt::MatchExactly);
-		for (auto i : items)
-			delete i;
-	}
-	else {
-		mLoadedPluginList->addItem(actionName);
-		auto items = mSelectedPluginList->findItems(actionName, Qt::MatchExactly);
-		for (auto i : items)
-			delete i;
-	}
+	if (!item)
+		return;
+
+	if (item->checkState() == Qt::Checked)
+		selectPlugin(item->data(Qt::UserRole).toString());
 
 	updateHeader();
 }
 
 bool DkBatchPluginWidget::hasUserInput() const {
-	return !mSelectedPluginList->isEmpty();
+	return !selectedPlugins().isEmpty();
 }
 
 bool DkBatchPluginWidget::requiresUserInput() const {
@@ -1351,38 +1347,114 @@ bool DkBatchPluginWidget::requiresUserInput() const {
 void DkBatchPluginWidget::applyDefault() {
 
 	QStringList selectedPlugins;
-	
-	for (int idx = 0; idx < mSelectedPluginList->count(); idx++) {
-		selectPlugin(mSelectedPluginList->item(idx)->text(), false);
+
+	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+
+		for (int idx = 0; idx < mModel->item(pIdx)->rowCount(); idx++) {
+			mModel->item(idx)->setCheckState(Qt::Unchecked);
+		}
 	}
 }
 
-QStringList DkBatchPluginWidget::getPluginActionNames() const {
+void DkBatchPluginWidget::selectionChanged(const QItemSelection & selected) {
 
-	QStringList pluginActions;
+	for (auto mIdx : selected.indexes()) {
+
+		QStandardItem* item;
+
+		if (mIdx.parent().isValid()) {
+			item = mModel->item(mIdx.parent().row());
+			item = item->child(mIdx.row());
+		}
+		else
+			item = mModel->item(mIdx.row());
+
+		if (!item)
+			continue;
+
+		selectPlugin(item->data(Qt::UserRole).toString());
+	}
+
+}
+
+void DkBatchPluginWidget::addPlugins(QStandardItemModel* model) const {
+
+	if (!model)
+		return;
+
 	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBatchPlugins();
 
 	for (auto p : plugins) {
 
+		QStandardItem* mPluginItem = new QStandardItem(p->pluginName());
+		mPluginItem->setEditable(false);
+		mPluginItem->setData(p->pluginName(), Qt::UserRole);
+		mModel->appendRow(mPluginItem);
+
 		QList<QAction*> actions = p->plugin()->pluginActions();
 
 		for (const QAction* a : actions) {
-			pluginActions.append(p->pluginName() + " | " + a->text());
+			QStandardItem* item = new QStandardItem(a->icon(), a->text());
+			item->setEditable(false);
+			item->setCheckable(true);
+			item->setData(p->pluginName(), Qt::UserRole);
+			mPluginItem->appendRow(item);
+		}
+	}
+}
+
+void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
+
+	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
+
+	if (!plugin || !plugin->batchPlugin()) {
+		mSettingsEditor->hide();
+		return;
+	}
+
+	DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
+
+	QSettings& s = bPlugin->settings();
+	s.beginGroup(bPlugin->name());
+	if (!s.childKeys().empty() || !s.childGroups().empty()) {
+		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
+		mSettingsEditor->clear();
+		mSettingsEditor->setSettings(s);
+		mSettingsEditor->show();
+	}
+	else {
+		mSettingsTitle->setText("");
+		mSettingsEditor->hide();
+	}
+	s.endGroup();
+}
+
+QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const {
+
+	QStringList selectedPlugins;
+
+	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+
+		QStandardItem* pItem = mModel->item(pIdx);
+		
+		for (int idx = 0; idx < pItem->rowCount(); idx++) {
+			
+			QStandardItem* item = pItem->child(idx);
+			if (!selected || item->checkState() == Qt::Checked)
+				selectedPlugins << item->data(Qt::UserRole).toString() + " | " + item->text();
 		}
 	}
 
-	return pluginActions;
+	return selectedPlugins;
 }
 
 void DkBatchPluginWidget::updateHeader() const {
 	
-	int c = mSelectedPluginList->count();
+	int c = selectedPlugins().size();
 	if (!c)
 		emit newHeaderText(tr("inactive"));
 	else
 		emit newHeaderText(tr("%1 plugins selected").arg(c));
-
-	// TODO: counting is wrong! (if you remove plugins
 }
 #endif
 
@@ -1406,6 +1478,7 @@ void DkBatchManipulatorWidget::createLayout() {
 	for (auto mpl : mManager.manipulators()) {
 
 		QStandardItem * item = new QStandardItem(mpl->action()->icon(), mpl->name());
+		item->setEditable(false);
 		item->setCheckable(true);
 
 		mModel->setItem(idx, item); 

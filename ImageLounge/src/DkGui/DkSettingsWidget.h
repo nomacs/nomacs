@@ -122,6 +122,7 @@ public:
 	void addSettingsGroup(const DkSettingsGroup& group, const QString& parentName = "");
 
 	virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+	void clear();
 
 signals:
 	void settingChanged(const QString& key, const QVariant& value, const QStringList& groups) const;
@@ -139,6 +140,7 @@ public:
 	DkSettingsWidget(QWidget* parent);
 
 	void setSettings(QSettings& settings, const QString& parentName = "");
+	void clear();
 
 public slots:
 	//void focusFilter();

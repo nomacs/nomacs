@@ -55,6 +55,9 @@ void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentNa
 		//mSettingsModel->addSettingsGroup(sg, parentName);
 	//}
 
+	// clear the model
+	//mSettingsModel->removeRows(0, mSettingsModel->rowCount());
+
 	for (const QString& gName : settings.childGroups()) {
 		
 		DkSettingsGroup sg = DkSettingsGroup::fromSettings(gName, settings);
@@ -74,6 +77,10 @@ void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentNa
 	}
 
 	mSettings = &settings;
+}
+
+void DkSettingsWidget::clear() {
+	mSettingsModel->clear();
 }
 
 void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups) {
@@ -438,6 +445,11 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QStri
 
 	parentItem->appendChild(settingsItem);
 	//qDebug() << "menu item has: " << menuItem->childCount();
+}
+
+void DkSettingsModel::clear() {
+
+	mRootItem->clear();
 }
 
 bool DkSettingsModel::removeRows(int row, int count, const QModelIndex & parent) {

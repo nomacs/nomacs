@@ -20,3 +20,4 @@ package.xml
 installer-test
 repository.zip
 /ImageLounge/cmake/*.tmp
+/.gitattributes

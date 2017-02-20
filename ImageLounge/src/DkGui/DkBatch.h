@@ -96,6 +96,7 @@ class DkDirectoryEdit;
 class DkListWidget;
 class DkBatchConfig;
 class DkProgressBar;
+class DkSettingsWidget;
 
 class DkBatchContent {
 
@@ -395,7 +396,8 @@ public:
 	void applyDefault();
 
 public slots:
-	void selectPlugin(const QString& actionName, bool select = true);
+	void itemChanged(QStandardItem * item);
+	void selectionChanged(const QItemSelection &selected);
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -405,11 +407,13 @@ public slots:
 
 protected:
 	void createLayout();
-	QStringList getPluginActionNames() const;
+	void addPlugins(QStandardItemModel* model) const;
+	void selectPlugin(const QString& pluginName);
+	QStringList selectedPlugins(bool selected = true) const;
 
-	DkListWidget* mLoadedPluginList;
-	DkListWidget* mSelectedPluginList;
-
+	QStandardItemModel* mModel = 0;
+	DkSettingsWidget* mSettingsEditor = 0;
+	QLabel* mSettingsTitle = 0;
 };
 #endif
 
