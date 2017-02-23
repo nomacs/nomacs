@@ -68,6 +68,7 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
 
 	mTabMode = (!imgC) ? tab_recent_files : tab_single_image;
 	mTabIdx = idx;
+	mFilePath = getFilePath();
 }
 
 DkTabInfo::DkTabInfo(TabMode mode, int idx, QObject* parent) : QObject(parent) {
@@ -113,6 +114,8 @@ void DkTabInfo::saveSettings(QSettings& settings) const {
 void DkTabInfo::setFilePath(const QString& filePath) {
 
 	mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath)));
+	setMode(tab_single_image);
+	mFilePath = filePath;
 }
 
 void DkTabInfo::setDirPath(const QString& dirPath) {
@@ -123,7 +126,7 @@ void DkTabInfo::setDirPath(const QString& dirPath) {
 
 QString DkTabInfo::getFilePath() const {
 
-	return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : QString();
+	return (mImageLoader->getCurrentImage()) ? mImageLoader->getCurrentImage()->filePath() : mFilePath;
 }
 
 void DkTabInfo::setTabIdx(int tabIdx) {
@@ -142,6 +145,7 @@ void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	
 	if (imgC)
 		mTabMode = tab_single_image;
+	mFilePath = getFilePath();
 }
 
 QSharedPointer<DkImageLoader> DkTabInfo::getImageLoader() const {
@@ -1028,8 +1032,11 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
 	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
 		addTab(filePath);
 	}
-	else
-		mViewport->loadFile(filePath);
+	else {
+		mTabInfos.at(0)->setFilePath(filePath);
+		updateTab(mTabInfos.at(0));
+		currentTabChanged(0);
+	}
 }
 
 void DkCentralWidget::loadDirToTab(const QString& dirPath) {

@@ -110,6 +110,7 @@ protected:
 	QSharedPointer<DkImageLoader> mImageLoader;
 	int mTabIdx = 0;
 	int mTabMode = tab_recent_files;
+	QString mFilePath = "";
 };
 
 class DkViewPort;
