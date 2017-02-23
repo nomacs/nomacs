@@ -266,6 +266,8 @@ void DkCentralWidget::createLayout() {
 
 	mTabbar = new QTabBar(this);
 	mTabbar->setShape(QTabBar::RoundedNorth);
+	mTabbar->setElideMode(Qt::TextElideMode::ElideRight);
+	mTabbar->setUsesScrollButtons(true);
 	mTabbar->setTabsClosable(true);
 	mTabbar->setMovable(true);
 	mTabbar->hide();
