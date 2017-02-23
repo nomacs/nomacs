@@ -700,25 +700,25 @@ void DkCentralWidget::updateTabIdx() {
 }
 
 void DkCentralWidget::nextTab() const {
-
-	if (mTabInfos.size() < 2)
-		return;
-
 	int idx = mTabbar->currentIndex();
 	idx++;
-	idx %= mTabInfos.size();
-	mTabbar->setCurrentIndex(idx);
+	setActiveTab(idx);
 }
 
 void DkCentralWidget::previousTab() const {
+	int idx = mTabbar->currentIndex();
+	idx--;
+	setActiveTab(idx);
+}
 
+void DkCentralWidget::setActiveTab(int idx) const {
 	if (mTabInfos.size() < 2)
 		return;
 
-	int idx = mTabbar->currentIndex();
-	idx--;
 	if (idx < 0)
-		idx = mTabInfos.size()-1;
+		idx = mTabInfos.size() - 1;
+
+	idx %= mTabInfos.size();
 	mTabbar->setCurrentIndex(idx);
 }
 

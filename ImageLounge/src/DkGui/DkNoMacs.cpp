@@ -1271,10 +1271,17 @@ void DkNoMacs::openFile() {
 	if (fileNames.isEmpty())
 		return;
 
+	int count = getTabWidget()->getTabs().count();
+	if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
+		count = 0; 
+		
+
 	for (QString fileName : fileNames) {
 		qDebug() << "os filename: " << fileName;
 		getTabWidget()->loadFileToTab(fileName);
 	}
+
+	getTabWidget()->setActiveTab(count);
 }
 
 void DkNoMacs::saveFileList() {
