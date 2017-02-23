@@ -1262,15 +1262,17 @@ void DkNoMacs::openFile() {
 	openFilters.prepend(tr("All Files (*.*)"));
 
 	// load system default open dialog
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"),
 		getTabWidget()->getCurrentDir(), 
 		openFilters.join(";;"));
 
-	if (fileName.isEmpty())
+	if (fileNames.isEmpty())
 		return;
 
-	qDebug() << "os filename: " << fileName;
-	getTabWidget()->loadFile(fileName);
+	for (QString fileName : fileNames) {
+		qDebug() << "os filename: " << fileName;
+		getTabWidget()->loadFileToTab(fileName);
+	}
 }
 
 void DkNoMacs::openQuickLaunch() {
