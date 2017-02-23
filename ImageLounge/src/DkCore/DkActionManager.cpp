@@ -371,6 +371,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addSeparator();
 	mFileMenu->addAction(mFileActions[menu_file_save]);
 	mFileMenu->addAction(mFileActions[menu_file_save_as]);
+	mFileMenu->addAction(mFileActions[menu_file_save_list]);
 	mFileMenu->addAction(mFileActions[menu_file_save_web]);
 	mFileMenu->addAction(mFileActions[menu_file_rename]);
 	mFileMenu->addSeparator();
@@ -969,6 +970,9 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_save_as] = new QAction(QObject::tr("&Save As"), parent);
 	mFileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
 	mFileActions[menu_file_save_as]->setStatusTip(QObject::tr("Save an image as"));
+
+	mFileActions[menu_file_save_list] = new QAction(QObject::tr("&Save Tabs"), parent);
+	mFileActions[menu_file_save_list]->setStatusTip(QObject::tr("Save a newline seperated list of the filenames of the open tabs"));
 
 	mFileActions[menu_file_save_web] = new QAction(QObject::tr("&Save for Web"), parent);
 	mFileActions[menu_file_save_web]->setStatusTip(QObject::tr("Save an Image for Web Applications"));

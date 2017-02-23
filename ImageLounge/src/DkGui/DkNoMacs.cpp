@@ -374,6 +374,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_open), SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(am.action(DkActionManager::menu_file_open_dir), SIGNAL(triggered()), this, SLOT(openDir()));
 	connect(am.action(DkActionManager::menu_file_quick_launch), SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
+	connect(am.action(DkActionManager::menu_file_save_list), SIGNAL(triggered()), this, SLOT(saveFileList()));
 	connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
 	connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(printDialog()));
@@ -449,6 +450,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 	am.action(DkActionManager::menu_file_save)->setEnabled(enable);
 	am.action(DkActionManager::menu_file_save_as)->setEnabled(enable);
+	am.action(DkActionManager::menu_file_save_list)->setEnabled(enable);
 	am.action(DkActionManager::menu_file_save_web)->setEnabled(enable);
 	am.action(DkActionManager::menu_file_rename)->setEnabled(enable);
 	am.action(DkActionManager::menu_file_print)->setEnabled(enable);
@@ -1273,6 +1275,33 @@ void DkNoMacs::openFile() {
 		qDebug() << "os filename: " << fileName;
 		getTabWidget()->loadFileToTab(fileName);
 	}
+}
+
+void DkNoMacs::saveFileList() {
+
+	if (!viewport())
+		return;
+
+	QStringList saveFilters = DkSettingsManager::param().app().saveFilters;
+	saveFilters.pop_front();
+	saveFilters.prepend(tr("Text file (*.txt)"));
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Tab List"),
+		getTabWidget()->getCurrentDir(),
+		saveFilters.join(";;"));
+
+	if (fileName.isEmpty())
+		return;
+
+	QFile file(fileName);
+	if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+		return;
+
+	for (auto tab : getTabWidget()->getTabs()) {
+		file.write(tab->getFilePath().toUtf8()+"\n");
+	}
+
+	file.close();
 }
 
 void DkNoMacs::openQuickLaunch() {
