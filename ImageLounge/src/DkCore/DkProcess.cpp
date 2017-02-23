@@ -41,6 +41,8 @@
 #include <QWidget>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include <cassert>
+
 namespace nmc {
 
 /// <summary>
