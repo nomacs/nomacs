@@ -167,6 +167,7 @@ public slots:
 	void openDir();
 	void openFile();
 	void openQuickLaunch();
+	void openFileList();
 	void saveFileList();
 	void renameFile();
 	void changeSorting(bool change);

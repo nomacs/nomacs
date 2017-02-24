@@ -115,6 +115,7 @@ public:
 	enum FileMenuActions {
 		menu_file_open,
 		menu_file_open_dir,
+		menu_file_open_list,
 		menu_file_quick_launch,
 		menu_file_app_manager,
 		menu_file_save,

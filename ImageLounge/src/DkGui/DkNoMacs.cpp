@@ -374,6 +374,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_open), SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(am.action(DkActionManager::menu_file_open_dir), SIGNAL(triggered()), this, SLOT(openDir()));
 	connect(am.action(DkActionManager::menu_file_quick_launch), SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
+	connect(am.action(DkActionManager::menu_file_open_list), SIGNAL(triggered()), this, SLOT(openFileList()));
 	connect(am.action(DkActionManager::menu_file_save_list), SIGNAL(triggered()), this, SLOT(saveFileList()));
 	connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
@@ -1282,6 +1283,31 @@ void DkNoMacs::openFile() {
 	}
 
 	getTabWidget()->setActiveTab(count);
+}
+
+void DkNoMacs::openFileList() {
+	QStringList openFilters = DkSettingsManager::param().app().openFilters;
+	openFilters.pop_front();
+	openFilters.prepend(tr("Text file (*.txt)"));
+
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+		getTabWidget()->getCurrentDir(),
+		openFilters.join(";;"));
+
+	if (fileName.isEmpty())
+		return;
+
+	QFile file(fileName);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		return;
+
+	while (!file.atEnd()) {
+		QString line = file.readLine().simplified();
+		if (QFileInfo::exists(line)) {
+			getTabWidget()->loadFileToTab(line);
+		}
+	}
 }
 
 void DkNoMacs::saveFileList() {
