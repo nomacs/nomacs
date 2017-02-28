@@ -1440,7 +1440,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel* model) const {
 		QStandardItem* mPluginItem = new QStandardItem(p->pluginName());
 		mPluginItem->setEditable(false);
 		mPluginItem->setCheckable(false);
-		mPluginItem->setAutoTristate(true);
+		//mPluginItem->setAutoTristate(true);
 		mPluginItem->setData(p->pluginName(), Qt::UserRole);
 		mModel->appendRow(mPluginItem);
 
