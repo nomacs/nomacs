@@ -39,6 +39,7 @@
 #include "DkImageStorage.h"
 #include "DkManipulatorWidgets.h"
 #include "DkSettingsWidget.h"
+#include "DkPluginInterface.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QLabel>
@@ -1147,12 +1148,16 @@ void DkProfileWidget::createLayout() {
 	QPushButton* exportButton = new QPushButton(tr("Export Profile"), this);
 	exportButton->setObjectName("exportButton");
 
+	QPushButton* resetButton = new QPushButton(tr("Apply Default"), this);
+	resetButton->setObjectName("resetButton");
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	layout->addWidget(mProfileCombo);
 	layout->addWidget(saveButton);
 	layout->addWidget(exportButton);
+	layout->addWidget(resetButton);
 
 	updateProfileCombo();
 }
@@ -1167,7 +1172,8 @@ bool DkProfileWidget::requiresUserInput() const {
 }
 
 void DkProfileWidget::applyDefault() {
-	// nothing todo here
+	mProfileCombo->setCurrentIndex(0);
+	emit newHeaderText(tr("inactive"));
 }
 
 void DkProfileWidget::profileSaved(const QString& profileName) {
@@ -1186,13 +1192,14 @@ void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
 	// first is the 'no profile'
 	if (text == mProfileCombo->itemText(0)) {
 		emit applyDefaultSignal();
+		emit newHeaderText(tr("inactive"));
 	}
 	else {
 		QString profilePath = DkBatchProfile::profileNameToPath(text);
 		emit loadProfileSignal(profilePath);
+		emit newHeaderText(text);
 	}
 	
-	emit newHeaderText(text);
 }
 
 void DkProfileWidget::updateProfileCombo() {
@@ -1212,6 +1219,11 @@ void DkProfileWidget::updateProfileCombo() {
 void DkProfileWidget::on_saveButton_clicked() {
 
 	saveProfile();
+}
+
+void DkProfileWidget::on_resetButton_clicked() {
+
+	emit applyDefaultSignal();
 }
 
 void DkProfileWidget::on_exportButton_clicked() {
@@ -1260,11 +1272,32 @@ void DkProfileWidget::saveProfile() {
 // DkBatchPlugin --------------------------------------------------------------------
 DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
+	//mSettings = DkSettingsManager::instance().qSettings();
 	DkPluginManager::instance().loadPlugins();
 	createLayout();
+
+	connect(mSettingsEditor, SIGNAL(changeSettingSignal(const QString&, const QVariant&, const QStringList&)), 
+		this, SLOT(changeSetting(const QString&, const QVariant&, const QStringList&)));
+	connect(mSettingsEditor, SIGNAL(removeSettingSignal(const QString&, const QStringList&)), 
+		this, SLOT(removeSetting(const QString&, const QStringList&)));
+
 }
 
 void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
+
+	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBatchPlugins();
+
+	//// I don't like const casts
+	//// BUT: load settings effectively only opens groups (which is not const)
+	//QSettings& settings = const_cast<QSettings&>(mSettings);
+
+	//for (auto p : plugins) {
+	//
+	//	if (p->batchPlugin()) {
+	//		// the const ca
+	//		p->batchPlugin()->loadSettings(settings);
+	//	}
+	//}
 
 	QStringList pluginList = selectedPlugins();
 	batchPlugin->setProperties(pluginList);
@@ -1276,7 +1309,6 @@ void DkBatchPluginWidget::createLayout() {
 	listLabel->setObjectName("subTitle");
 
 	mModel = new QStandardItemModel(this);
-	addPlugins(mModel);
 
 	QTreeView* pluginList = new QTreeView(this);
 	pluginList->setModel(mModel);
@@ -1288,6 +1320,8 @@ void DkBatchPluginWidget::createLayout() {
 
 	mSettingsEditor = new DkSettingsWidget(this);
 	mSettingsEditor->hide();
+
+	addPlugins(mModel);
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -1307,6 +1341,7 @@ bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlug
 		return false;
 	}
 
+	mModel->blockSignals(true);
 	QStringList sPlugins = batchPlugin->pluginList();
 
 	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
@@ -1316,11 +1351,13 @@ bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlug
 		for (int idx = 0; idx < pItem->rowCount(); idx++) {
 		
 			// see if the plugin is contained in the plugin list
-			QStandardItem* item = mModel->item(idx);
+			QStandardItem* item = pItem->child(idx);
 			QString key = item->data(Qt::UserRole).toString() + " | " + item->text();
 			item->setCheckState(sPlugins.contains(key) ? Qt::Checked : Qt::Unchecked);
 		}
 	}
+	mModel->blockSignals(false);
+	updateHeader();
 
 	return true;
 }
@@ -1346,14 +1383,28 @@ bool DkBatchPluginWidget::requiresUserInput() const {
 
 void DkBatchPluginWidget::applyDefault() {
 
+	mSettings.clear();
+
 	QStringList selectedPlugins;
 
 	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
 
-		for (int idx = 0; idx < mModel->item(pIdx)->rowCount(); idx++) {
-			mModel->item(idx)->setCheckState(Qt::Unchecked);
+		QStandardItem* pItem = mModel->item(pIdx);
+
+		for (int idx = 0; idx < pItem->rowCount(); idx++) {
+			pItem->child(idx)->setCheckState(Qt::Unchecked);
 		}
 	}
+
+	updateHeader();
+}
+
+void DkBatchPluginWidget::setSettingsPath(const QString & settingsPath) {
+	mSettings = QSharedPointer<QSettings>(new QSettings(settingsPath, QSettings::IniFormat));
+	
+	// choose the correct sub-group
+	mSettings->beginGroup("General");
+	mSettings->beginGroup("PluginBatch");
 }
 
 void DkBatchPluginWidget::selectionChanged(const QItemSelection & selected) {
@@ -1388,6 +1439,8 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel* model) const {
 
 		QStandardItem* mPluginItem = new QStandardItem(p->pluginName());
 		mPluginItem->setEditable(false);
+		mPluginItem->setCheckable(false);
+		mPluginItem->setAutoTristate(true);
 		mPluginItem->setData(p->pluginName(), Qt::UserRole);
 		mModel->appendRow(mPluginItem);
 
@@ -1405,6 +1458,7 @@ void DkBatchPluginWidget::addPlugins(QStandardItemModel* model) const {
 
 void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 
+	mCurrentPlugin = 0;	// unset
 	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
 	if (!plugin || !plugin->batchPlugin()) {
@@ -1412,22 +1466,59 @@ void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 		return;
 	}
 
-	DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
+	//// load settings
+	//for (auto p : DkPluginManager::instance().getPlugins()) {
 
-	QSettings& s = bPlugin->settings();
-	s.beginGroup(bPlugin->name());
-	if (!s.childKeys().empty() || !s.childGroups().empty()) {
+	//	auto bp = p->batchPlugin();
+	//	if (bp) {
+	//		bp->loadSettings(bp->settings());
+	//	}
+	//}
+
+	mCurrentPlugin = plugin->batchPlugin();
+
+	QSettings& s = settings();
+	DkSettingsGroup g = DkSettingsGroup::fromSettings(mCurrentPlugin->name(), s);
+
+	if (!g.isEmpty()) {
 		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
 		mSettingsEditor->clear();
-		mSettingsEditor->setSettings(s);
+
+		mSettingsEditor->addSettingsGroup(g);
 		mSettingsEditor->show();
+		mSettingsEditor->expandAll();
 	}
 	else {
 		mSettingsTitle->setText("");
+		mSettingsTitle->hide();
 		mSettingsEditor->hide();
 	}
-	s.endGroup();
 }
+
+void DkBatchPluginWidget::changeSetting(const QString& key, const QVariant& value, const QStringList& groups) const {
+
+	if (!mCurrentPlugin) {
+		qWarning() << "cannot change settings if no plugin is selected";
+		return;
+	}
+
+	QSettings& s = settings();
+	DkSettingsWidget::changeSetting(s, key, value, groups);
+	mCurrentPlugin->loadSettings(s);	// update
+}
+
+void DkBatchPluginWidget::removeSetting(const QString& key, const QStringList& groups) const {
+
+	if (!mCurrentPlugin) {
+		qWarning() << "cannot delete settings if no plugin is selected";
+		return;
+	}
+
+	QSettings& s = settings();
+	DkSettingsWidget::removeSetting(s, key, groups);
+	mCurrentPlugin->loadSettings(s);	// update
+}
+
 
 QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const {
 
@@ -1448,6 +1539,19 @@ QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const {
 	return selectedPlugins;
 }
 
+QSettings& DkBatchPluginWidget::settings() const {
+
+	if (mSettings)
+		return *mSettings;
+
+	if (mCurrentPlugin)
+		return mCurrentPlugin->settings();
+
+	qWarning() << "I need to default the settings...";
+	
+	return DkSettingsManager::instance().qSettings();
+}
+
 void DkBatchPluginWidget::updateHeader() const {
 	
 	int c = selectedPlugins().size();
@@ -1464,7 +1568,6 @@ DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget* parent /* = 0 */, Qt
 	mManager.createManipulators(this);
 	createLayout();
 	addSettingsWidgets(mManager);
-
 }
 
 void DkBatchManipulatorWidget::createLayout() {
@@ -2528,6 +2631,7 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 			if (!pluginWidget()->loadProperties(pf)) {
 				warnings++;
 			}
+			pluginWidget()->setSettingsPath(profilePath);
 		}
 #endif
 		else {

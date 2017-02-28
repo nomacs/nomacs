@@ -1138,7 +1138,7 @@ void TreeItem::setData(const QVariant& value, int column) {
 	if (column < 0 || column >= itemData.size())
 		return;
 
-	qDebug() << "replacing: " << itemData[0] << " with: " << value;
+	//qDebug() << "replacing: " << itemData[0] << " with: " << value;
 	itemData.replace(column, value);
 }
 

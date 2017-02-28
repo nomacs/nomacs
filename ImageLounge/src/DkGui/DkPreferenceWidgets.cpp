@@ -1339,6 +1339,11 @@ void DkEditorPreference::createLayout() {
 
 	layout->addWidget(mSettingsWidget);
 
+	connect(mSettingsWidget, SIGNAL(changeSettingSignal(const QString&, const QVariant&, const QStringList&)), 
+			this, SLOT(changeSetting(const QString&, const QVariant&, const QStringList&)));
+	connect(mSettingsWidget, SIGNAL(removeSettingSignal(const QString&, const QStringList&)), 
+		this, SLOT(removeSetting(const QString&, const QStringList&)));
+
 }
 void DkEditorPreference::paintEvent(QPaintEvent *event) {
 
@@ -1349,6 +1354,16 @@ void DkEditorPreference::paintEvent(QPaintEvent *event) {
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
 	QWidget::paintEvent(event);
+}
+
+void DkEditorPreference::changeSetting(const QString& key, const QVariant& value, const QStringList& groups) const {
+
+	DkSettingsWidget::changeSetting(DkSettingsManager::instance().qSettings(), key, value, groups);
+}
+
+void DkEditorPreference::removeSetting(const QString& key, const QStringList& groups) const {
+	
+	DkSettingsWidget::removeSetting(DkSettingsManager::instance().qSettings(), key, groups);
 }
 
 //// DkDummySettings --------------------------------------------------------------------

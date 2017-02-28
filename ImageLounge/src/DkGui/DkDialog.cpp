@@ -162,30 +162,8 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	versionLabel->setObjectName("DkSplashInfoLabel");
 	versionLabel->setTextFormat(Qt::RichText);
 
-	QString platform = "";
-#ifdef _WIN64
-	platform = " [x64] ";
-#elif defined _WIN32
-	platform = " [x86] ";
-#endif
-
-	QString qtVersion = "Qt " + QString::fromUtf8(qVersion());
-
-	if (!DkSettingsManager::param().isPortable())
-		qDebug() << "nomacs is not portable: " << DkSettingsManager::param().settingsPath();
-
-	versionLabel->setText(
-		QApplication::applicationName() + "<br>" +
-		"Version: " + QApplication::applicationVersion() + platform + "<br>" +
-#ifdef WITH_LIBRAW
-		"RAW support: Yes<br>"
-#else
-		"RAW support: No<br>"
-#endif  		
-		+ qtVersion + "<br>"
-		+ (DkSettingsManager::param().isPortable() ? tr("Portable") : "")
-		);
-
+	versionLabel->setText(versionText());
+	versionLabel->setAlignment(Qt::AlignRight);
 	versionLabel->move(360, 280);
 	versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -228,6 +206,52 @@ void DkSplashScreen::showClose() {
 
 	exitButton->show();
 	showTimer->start();
+}
+
+QString DkSplashScreen::versionText() const {
+	
+	QString vt;
+
+	// print out if the name is changed (e.g. READ build)
+	if (QApplication::applicationName() != "Image Lounge") {
+		vt += QApplication::applicationName() + "<br>";
+	}
+
+	// architecture
+	QString platform = "";
+#ifdef _WIN64
+	platform = " [x64] ";
+#elif defined _WIN32
+	platform = " [x86] ";
+#endif
+
+	// version & build date
+	vt += QApplication::applicationVersion() + platform + "<br>";
+	vt += QString(__DATE__) + "<br>";
+
+	// supplemental info
+	vt += "<p style=\"color: #666; font-size: 7pt; margin: 0; padding: 0;\">";
+
+	// OpenCV
+#ifdef WITH_OPENCV
+	vt += "OpenCV " + QString(CV_VERSION) + "<br>";
+#else
+	vt += "No CV support<br>";
+#endif
+
+	// Qt
+	vt += "Qt " + QString(QT_VERSION_STR) + "<br>";
+
+	// LibRAW
+#ifndef WITH_LIBRAW
+	vt += "No RAW support<br>";
+#endif  	
+
+	// portable
+	vt += (DkSettingsManager::param().isPortable() ? tr("Portable") : "");
+	vt += "</p>";
+	
+	return vt;
 }
 
 // file validator --------------------------------------------------------------------

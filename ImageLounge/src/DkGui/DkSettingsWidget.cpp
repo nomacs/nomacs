@@ -45,80 +45,72 @@ namespace nmc {
 DkSettingsWidget::DkSettingsWidget(QWidget* parent) : QWidget(parent) {
 
 	createLayout();
+
 	QMetaObject::connectSlotsByName(this);
 }
 
 void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentName) {
 
-	//if (parentName.isEmpty()) {
-		//DkSettingsGroup sg = DkSettingsGroup::fromSettings(parentName, settings);
-		//mSettingsModel->addSettingsGroup(sg, parentName);
-	//}
+	DkSettingsGroup sg = DkSettingsGroup::fromSettings(parentName, settings);
+	addSettingsGroup(sg);
+}
 
-	// clear the model
-	//mSettingsModel->removeRows(0, mSettingsModel->rowCount());
-
-	for (const QString& gName : settings.childGroups()) {
-		
-		DkSettingsGroup sg = DkSettingsGroup::fromSettings(gName, settings);
-		mSettingsModel->addSettingsGroup(sg, parentName);
-
-		qDebug() << parentName << ">" << gName;
-
-		settings.beginGroup(gName);
-		setSettings(settings, gName);
-		settings.endGroup();
+void DkSettingsWidget::addSettingsGroup(const DkSettingsGroup & group) {
+	
+	if (group.name().isEmpty()) {
+		for (auto g : group.children())
+			mSettingsModel->addSettingsGroup(g);
 	}
-
-	if (parentName.isEmpty()) {
-
-		// that call is weird!
-		mProxyModel->setSourceModel(mSettingsModel);
-	}
-
-	mSettings = &settings;
+	else
+		mSettingsModel->addSettingsGroup(group);
+	
+	// udpate proxy
+	mProxyModel->setSourceModel(mSettingsModel);
 }
 
 void DkSettingsWidget::clear() {
+	mProxyModel->clear();
 	mSettingsModel->clear();
 }
 
-void DkSettingsWidget::on_SettingsModel_settingChanged(const QString& key, const QVariant& value, const QStringList& groups) {
-
-	if (!mSettings)
-		return;
+void DkSettingsWidget::changeSetting(QSettings& settings, const QString& key, const QVariant& value, const QStringList& groups) {
 
 	QStringList groupsClean = groups;
-	groupsClean.pop_front();
+	groupsClean.pop_front();	// remove default group: settings
 
 	for (const QString& gName : groupsClean) {
-		mSettings->beginGroup(gName);
+		settings.beginGroup(gName);
 	}
 
-	mSettings->setValue(key, value);
+	settings.setValue(key, value);
 	qDebug() << key << ":" << value << "written...";
 
 	for (int idx = 0; idx < groupsClean.size(); idx++)
-		mSettings->endGroup();
+		settings.endGroup();
 }
 
-void DkSettingsWidget::on_SettingsModel_settingRemoved(const QString & key, const QStringList & groups) {
-
-	if (!mSettings)
-		return;
+void DkSettingsWidget::removeSetting(QSettings& settings, const QString & key, const QStringList & groups) {
 
 	QStringList groupsClean = groups;
 	groupsClean.pop_front();
 
 	for (const QString& gName : groupsClean) {
-		mSettings->beginGroup(gName);
+		settings.beginGroup(gName);
 	}
 
-	mSettings->remove(key);
+	settings.remove(key);
 	qDebug() << key << "removed...";
 
 	for (int idx = 0; idx < groupsClean.size(); idx++)
-		mSettings->endGroup();
+		settings.endGroup();
+}
+
+void DkSettingsWidget::on_SettingsModel_settingChanged(const QString & key, const QVariant & value, const QStringList & groups) {
+	emit changeSettingSignal(key, value, groups);
+}
+
+void DkSettingsWidget::on_SettingsModel_settingRemoved(const QString & key, const QStringList & groups) {
+	emit removeSettingSignal(key, groups);
 }
 
 void DkSettingsWidget::on_removeRows_triggered() {
@@ -167,13 +159,22 @@ void DkSettingsWidget::createLayout() {
 	
 }
 
-void DkSettingsWidget::on_Filter_textChanged(const QString& filterText) {
+void DkSettingsWidget::filter(const QString& filterText) {
 
 	if (!filterText.isEmpty())
 		mTreeView->expandAll();
 
 	mProxyModel->setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::FixedString));
 	qDebug() << "filtering: " << filterText;
+}
+
+void DkSettingsWidget::expandAll() {
+	mTreeView->expandAll();
+}
+
+void DkSettingsWidget::on_Filter_textChanged(const QString& filterText) {
+
+	filter(filterText);
 }
 
 // DkSettingsEntry --------------------------------------------------------------------
@@ -225,7 +226,7 @@ DkSettingsGroup::DkSettingsGroup(const QString & name) {
 }
 
 bool DkSettingsGroup::isEmpty() const {
-	return mEntries.empty();
+	return mEntries.empty() && mChildren.empty();
 }
 
 DkSettingsGroup DkSettingsGroup::fromSettings(const QString & groupName, QSettings & settings) {
@@ -236,6 +237,10 @@ DkSettingsGroup DkSettingsGroup::fromSettings(const QString & groupName, QSettin
 	for (const QString& key : settings.allKeys()) {
 		if (!key.contains("/"))	// skip entries from different hierarchies
 			sg.mEntries << DkSettingsEntry::fromSettings(key, settings);
+	}
+
+	for (const QString& gn : settings.childGroups()) {
+		sg.addChild(DkSettingsGroup::fromSettings(gn, settings));
 	}
 
 	settings.endGroup();
@@ -253,6 +258,14 @@ int DkSettingsGroup::size() const {
 
 QVector<DkSettingsEntry> DkSettingsGroup::entries() const {
 	return mEntries;
+}
+
+QVector<DkSettingsGroup> DkSettingsGroup::children() const {
+	return mChildren;
+}
+
+void DkSettingsGroup::addChild(const DkSettingsGroup & group) {
+	mChildren << group;
 }
 
 // DkSettingsProxyModel --------------------------------------------------------------------
@@ -424,6 +437,7 @@ Qt::ItemFlags DkSettingsModel::flags(const QModelIndex& index) const {
 
 void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QString& parentName) {
 
+	beginResetModel();
 	// create root
 	QVector<QVariant> data;
 	data << group.name();
@@ -444,12 +458,20 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QStri
 	}
 
 	parentItem->appendChild(settingsItem);
-	//qDebug() << "menu item has: " << menuItem->childCount();
+
+	for (const DkSettingsGroup& g : group.children()) {
+		addSettingsGroup(g, group.name());
+	}
+	endResetModel();
+
+	qDebug() << "item - child count:" << settingsItem->childCount();
 }
 
 void DkSettingsModel::clear() {
 
+	beginResetModel();
 	mRootItem->clear();
+	endResetModel();
 }
 
 bool DkSettingsModel::removeRows(int row, int count, const QModelIndex & parent) {

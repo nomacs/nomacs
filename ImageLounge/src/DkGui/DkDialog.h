@@ -121,6 +121,8 @@ private:
 	QLabel* imgLabel;
 	QTimer* showTimer;
 	QPushButton* exitButton;
+
+	QString versionText() const;
 };
 
 class DkFileValidator : public QValidator {

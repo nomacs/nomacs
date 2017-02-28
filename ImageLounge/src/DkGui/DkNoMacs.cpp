@@ -1705,7 +1705,6 @@ void DkNoMacs::aboutDialog() {
 void DkNoMacs::openDocumentation() {
 
 	QString url = QString("http://www.nomacs.org/documentation/");
-
 	QDesktopServices::openUrl(QUrl(url));
 }
 

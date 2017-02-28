@@ -80,12 +80,16 @@ public:
 	QString name() const;
 	int size() const;
 	QVector<DkSettingsEntry> entries() const;
+	QVector<DkSettingsGroup> children() const;
+
+	void addChild(const DkSettingsGroup& group);
 
 	static DkSettingsGroup fromSettings(const QString& groupName, QSettings& settings);
 
 protected:
 	QString mGroupName;
 	QVector<DkSettingsEntry> mEntries;
+	QVector<DkSettingsGroup> mChildren;
 };
 
 class DkSettingsProxyModel : public QSortFilterProxyModel {
@@ -140,7 +144,17 @@ public:
 	DkSettingsWidget(QWidget* parent);
 
 	void setSettings(QSettings& settings, const QString& parentName = "");
+	void addSettingsGroup(const DkSettingsGroup& group);
 	void clear();
+	void filter(const QString& filterText);
+	void expandAll();
+
+	static void changeSetting(QSettings& settings, const QString& key, const QVariant& value, const QStringList& groups);
+	static void removeSetting(QSettings& settings, const QString& key, const QStringList& groups);
+
+signals:
+	void changeSettingSignal(const QString& key, const QVariant& value, const QStringList& groups);
+	void removeSettingSignal(const QString& key, const QStringList& groups);
 
 public slots:
 	//void focusFilter();
@@ -156,8 +170,6 @@ protected:
 	DkSettingsProxyModel* mProxyModel;
 	QLineEdit* mSettingsFilter;
 	QTreeView* mTreeView;
-
-	QSettings* mSettings = 0;
 };
 
 

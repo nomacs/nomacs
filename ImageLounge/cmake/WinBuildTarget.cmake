@@ -29,7 +29,7 @@ target_link_libraries(
 	
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 
-if (GLOBAL_READ_BUILD)
+if (ENABLE_READ_BUILD)
 	set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DREAD_TUWIEN")
 endif()
 

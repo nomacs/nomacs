@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 #ifdef READ_TUWIEN
 	QCoreApplication::setOrganizationName("TU Wien");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
-	QCoreApplication::setApplicationName("nomacs - Image Lounge [READ]");
+	QCoreApplication::setApplicationName("nomacs [READ]");
 #else
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");

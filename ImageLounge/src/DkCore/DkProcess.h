@@ -118,7 +118,6 @@ public:
 	virtual bool isActive() const override;
 	virtual QStringList pluginList() const;
 
-
 protected:
 	void loadAllPlugins();
 	void loadPlugin(const QString& pluginString, QSharedPointer<DkPluginContainer>& plugin, QString& runID) const;
@@ -191,8 +190,6 @@ public:
 	virtual bool isActive() const;
 
 	int angle() const;
-	bool horizontalFlip() const;
-	bool verticalFlip() const;
 	bool cropMetatdata() const;
 
 	// resize

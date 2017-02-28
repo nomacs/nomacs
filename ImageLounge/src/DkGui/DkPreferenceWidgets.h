@@ -279,6 +279,10 @@ public:
 signals:
    void infoSignal(const QString& msg) const;
 
+public slots:
+	void changeSetting(const QString& key, const QVariant& value, const QStringList& groups) const;
+	void removeSetting(const QString& key, const QStringList& groups) const;
+
 protected:
 	void createLayout();
 

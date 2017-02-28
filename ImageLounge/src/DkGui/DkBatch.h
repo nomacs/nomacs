@@ -97,6 +97,7 @@ class DkListWidget;
 class DkBatchConfig;
 class DkProgressBar;
 class DkSettingsWidget;
+class DkBatchPluginInterface;
 
 class DkBatchContent {
 
@@ -366,6 +367,7 @@ public slots:
 	void on_profileCombo_currentIndexChanged(const QString& text);
 	void on_saveButton_clicked();
 	void on_exportButton_clicked();
+	void on_resetButton_clicked();
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -394,10 +396,14 @@ public:
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
 	void applyDefault();
+	void setSettingsPath(const QString& settingsPath);
 
 public slots:
 	void itemChanged(QStandardItem * item);
 	void selectionChanged(const QItemSelection &selected);
+
+	void changeSetting(const QString& key, const QVariant& value, const QStringList& parentList) const;
+	void removeSetting(const QString& key, const QStringList& parentList) const;
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -410,10 +416,13 @@ protected:
 	void addPlugins(QStandardItemModel* model) const;
 	void selectPlugin(const QString& pluginName);
 	QStringList selectedPlugins(bool selected = true) const;
+	QSettings& settings() const;
 
 	QStandardItemModel* mModel = 0;
 	DkSettingsWidget* mSettingsEditor = 0;
 	QLabel* mSettingsTitle = 0;
+	QSharedPointer<QSettings> mSettings;
+	DkBatchPluginInterface* mCurrentPlugin = 0;
 };
 #endif
 

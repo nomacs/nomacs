@@ -409,6 +409,10 @@ void DkPluginBatch::saveSettings(QSettings & settings) const {
 	settings.setValue("pluginList", mPluginList.join(";"));
 
 	for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+
+		if (!plugin)
+			continue;
+
 		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
 		assert(bPlugin);
 		bPlugin->saveSettings(settings);
@@ -424,10 +428,17 @@ void DkPluginBatch::loadSettings(QSettings & settings) {
 
 	loadAllPlugins();
 
-	for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+	for (QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+
+		if (!plugin)
+			continue;
+
 		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
-		assert(bPlugin);
-		bPlugin->loadSettings(settings);
+		
+		if (bPlugin) {
+			assert(bPlugin);
+			bPlugin->loadSettings(settings);
+		}
 	}
 
 	settings.endGroup();
