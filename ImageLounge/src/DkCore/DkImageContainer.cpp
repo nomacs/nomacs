@@ -637,10 +637,13 @@ void DkImageContainerT::checkForFileUpdates() {
 	if (mWaitForUpdate == update_pending && mFileInfo.isReadable()) {
 	
 		mWaitForUpdate = update_loading;
+		
+		// do not update edited files
 		if (!isEdited())
 			loadImageThreaded(true);
+		else
+			qInfo() << "I would update now - but the image is edited...";
 	}
-
 }
 
 bool DkImageContainerT::loadImageThreaded(bool force) {
