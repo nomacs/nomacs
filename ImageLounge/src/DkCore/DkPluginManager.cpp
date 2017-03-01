@@ -339,7 +339,7 @@ void DkPluginContainer::loadMetaData(const QJsonValue& val) {
 		else if (key == "Version")
 			mVersion = metaData.value(key).toString();
 		else if (key == "PluginId") {
-			// currently nothing to do here...
+			mId = metaData.value(key).toString();
 		}
 		else
 			qWarning() << "unknown key" << key << "|" << metaData.value(key);
@@ -435,6 +435,10 @@ QString DkPluginContainer::fullDescription() const {
 
 QString DkPluginContainer::tagline() const {
 	return mTagline;
+}
+
+QString DkPluginContainer::id() const {
+	return mId;
 }
 
 QDate DkPluginContainer::dateCreated() const {
@@ -1047,35 +1051,6 @@ QVector<QSharedPointer<DkPluginContainer> >  DkPluginManager::getPlugins() const
 	return mPlugins;
 }
 
-QSharedPointer<DkPluginContainer> DkPluginManager::getPlugin(const QString& id) const {
-
-	for (auto cPlugin : mPlugins) {
-
-		if (cPlugin->plugin() && cPlugin->plugin()->id() == id) {
-			return cPlugin;
-		}
-
-	}
-
-	qWarning() << "could not find plugin for" << id;
-	return QSharedPointer<DkPluginContainer>();
-}
-
-QString DkPluginManager::getPluginFilePath(const QString& id) const {
-
-	QSharedPointer<DkPluginContainer> plugin = getPlugin(id);
-
-	if (plugin)
-		return plugin->pluginPath();
-	else
-		return "";
-}
-
-//QMap<QString, QString> DkPluginManager::getPluginFilePaths() const {
-//
-//	return pluginFiles;
-//}
-
 void DkPluginManager::reload() {
 	clear();
 	loadPlugins();
@@ -1408,7 +1383,7 @@ void DkPluginActionManager::addPluginsToMenu() {
 		}
 		else if (pi) {
 			QAction* a = new QAction(plugin->pluginName(), this);
-			a->setData(pi->id());
+			a->setData(plugin->id());
 			mPluginActions.append(a);
 			mMenu->addAction(a);
 			connect(a, SIGNAL(triggered()), plugin.data(), SLOT(run()));

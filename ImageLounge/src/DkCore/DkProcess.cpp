@@ -942,7 +942,7 @@ void DkBatchProcessing::init() {
 
 void DkBatchConfig::saveSettings(QSettings & settings) const {
 
-	settings.beginGroup("General");
+	settings.beginGroup("General");		// this general group could be removed in future releases
 	settings.setValue("FileList", mFileList.join(";"));
 	settings.setValue("OutputDirPath", mOutputDirPath);
 	settings.setValue("FileNamePattern", mFileNamePattern);

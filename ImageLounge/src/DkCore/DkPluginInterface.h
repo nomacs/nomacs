@@ -71,13 +71,12 @@ public:
 
 	virtual ~DkPluginInterface() {}
 
-    virtual QString id() const = 0;
     virtual QImage image() const = 0;
 
 	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>(); };
 	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>(); };
-	virtual int interfaceType() const {return interface_basic; };
-	virtual bool closesOnImageChange() const {return true; };
+	virtual int interfaceType() const { return interface_basic; };
+	virtual bool closesOnImageChange() const { return true; };
 	
 	
 	/// <summary>

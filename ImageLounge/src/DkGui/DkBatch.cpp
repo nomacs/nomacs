@@ -1476,7 +1476,7 @@ void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 	mCurrentPlugin = plugin->batchPlugin();
 
 	QSettings& s = settings();
-	DkSettingsGroup g = DkSettingsGroup::fromSettings(mCurrentPlugin->name(), s);
+	DkSettingsGroup g = DkSettingsGroup::fromSettings(s, mCurrentPlugin->name());
 
 	if (!g.isEmpty()) {
 		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));

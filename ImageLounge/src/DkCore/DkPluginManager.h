@@ -170,6 +170,7 @@ public:
 	QString description() const;
 	QString fullDescription() const;
 	QString tagline() const;
+	QString id() const;
 	
 	QDate dateCreated() const;
 	QDate dateModified() const;
@@ -197,6 +198,7 @@ protected:
 	QString mDescription;
 	QString mVersion;
 	QString mTagline;
+	QString mId;
 
 	QDate mDateCreated;
 	QDate mDateModified;
@@ -260,12 +262,9 @@ public:
 	void operator=(DkPluginManager const&)		= delete;
 	
 	QVector<QSharedPointer<DkPluginContainer> > getPlugins() const;
-	QSharedPointer<DkPluginContainer> getPlugin(const QString& key) const;
 	QSharedPointer<DkPluginContainer> getPluginByName(const QString& pluginName) const;
 	QSharedPointer<DkPluginContainer> getPluginByPath(const QString& path) const;
 	
-	QString getPluginFilePath(const QString& key) const;
-
 	void reload();
 	void removePlugin(QSharedPointer<DkPluginContainer> plugin);
 	bool deletePlugin(QSharedPointer<DkPluginContainer> plugin);

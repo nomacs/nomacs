@@ -51,7 +51,7 @@ DkSettingsWidget::DkSettingsWidget(QWidget* parent) : QWidget(parent) {
 
 void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentName) {
 
-	DkSettingsGroup sg = DkSettingsGroup::fromSettings(parentName, settings);
+	DkSettingsGroup sg = DkSettingsGroup::fromSettings(settings, parentName);
 	addSettingsGroup(sg);
 }
 
@@ -229,7 +229,7 @@ bool DkSettingsGroup::isEmpty() const {
 	return mEntries.empty() && mChildren.empty();
 }
 
-DkSettingsGroup DkSettingsGroup::fromSettings(const QString & groupName, QSettings & settings) {
+DkSettingsGroup DkSettingsGroup::fromSettings(QSettings & settings, const QString & groupName) {
 
 	DkSettingsGroup sg(groupName);
 	settings.beginGroup(groupName);
@@ -240,7 +240,7 @@ DkSettingsGroup DkSettingsGroup::fromSettings(const QString & groupName, QSettin
 	}
 
 	for (const QString& gn : settings.childGroups()) {
-		sg.addChild(DkSettingsGroup::fromSettings(gn, settings));
+		sg.addChild(DkSettingsGroup::fromSettings(settings, gn));
 	}
 
 	settings.endGroup();

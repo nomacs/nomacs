@@ -53,7 +53,7 @@ class QLineEdit;
 
 namespace nmc {
 
-class DkSettingsEntry {
+class DllCoreExport DkSettingsEntry {
 
 public:
 	DkSettingsEntry(const QString& key = QString(), const QVariant& value = QVariant());
@@ -70,7 +70,7 @@ protected:
 	QVariant mValue;
 };
 
-class DkSettingsGroup {
+class DllCoreExport DkSettingsGroup {
 
 public:
 	DkSettingsGroup(const QString& name = QString());
@@ -84,7 +84,7 @@ public:
 
 	void addChild(const DkSettingsGroup& group);
 
-	static DkSettingsGroup fromSettings(const QString& groupName, QSettings& settings);
+	static DkSettingsGroup fromSettings(QSettings& settings, const QString& groupName = "");
 
 protected:
 	QString mGroupName;
