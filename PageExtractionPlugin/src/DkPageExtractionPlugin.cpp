@@ -121,7 +121,7 @@ QString DkPageExtractionPlugin::version() const {
 }
 
 QString DkPageExtractionPlugin::name() const {
-	return "PageExtraction";
+	return "Page Extraction Plugin";
 }
 
 QList<QAction*> DkPageExtractionPlugin::createActions(QWidget* parent) {
@@ -228,7 +228,7 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 
 void DkPageExtractionPlugin::loadSettings(QSettings & settings) {
 
-	settings.beginGroup("Page Extraction Plugin");
+	settings.beginGroup(name());
 	int mIdx = settings.value("Method", mMethod).toInt();
 	if (mIdx >= 0 && mIdx < m_end)
 		mMethod = (MethodIndex)mIdx;
@@ -237,7 +237,7 @@ void DkPageExtractionPlugin::loadSettings(QSettings & settings) {
 
 void DkPageExtractionPlugin::saveSettings(QSettings & settings) const {
 
-	settings.beginGroup("Page Extraction Plugin");
+	settings.beginGroup(name());
 	settings.setValue("Method", mMethod);
 	settings.endGroup();
 }
