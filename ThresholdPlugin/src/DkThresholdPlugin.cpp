@@ -53,19 +53,13 @@ DkThresholdPlugin::~DkThresholdPlugin() {
 }
 
 /**
-* Returns unique ID for the generated dll
-**/
-QString DkThresholdPlugin::id() const {
-	return PLUGIN_ID;
-};
-
-/**
 * Returns descriptive image
 **/
 QImage DkThresholdPlugin::image() const {
 
    return QImage(":/nomacsPluginThr/img/description.png");
 }
+
 bool DkThresholdPlugin::hideHUD() const {
 	return false;
 }

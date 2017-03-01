@@ -69,20 +69,12 @@ PLUGIN_CLASS_NAME::PLUGIN_CLASS_NAME(QObject* parent) : QObject(parent) {
 	statusTips[ID_ACTION1] = tr("#ACTION_TIPP1");
 	mMenuStatusTips = statusTips.toList();
 }
+
 /**
 *	Destructor
 **/
 PLUGIN_CLASS_NAME::~PLUGIN_CLASS_NAME() {
 }
-
-
-/**
-* Returns unique ID for the generated dll
-**/
-QString PLUGIN_CLASS_NAME::id() const {
-
-	return PLUGIN_ID;
-};
 
 /**
 * Returns descriptive image for every ID

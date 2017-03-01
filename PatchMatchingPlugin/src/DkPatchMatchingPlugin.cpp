@@ -43,17 +43,8 @@ namespace nmp {
 	*	Constructor
 	**/
 	DkPatchMatchingPlugin::DkPatchMatchingPlugin()
-		:mViewport(nullptr)
-	{
+		:mViewport(nullptr) {
 	}
-
-	/**
-	* Returns unique ID for the generated dll
-	**/
-	QString DkPatchMatchingPlugin::id() const {
-		return PLUGIN_ID;
-	};
-
 
 	/**
 	* Returns descriptive image

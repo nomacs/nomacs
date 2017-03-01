@@ -65,7 +65,6 @@ public:
 	DkPaintPlugin();
 	~DkPaintPlugin();
 
-	QString id() const override;
     QImage image() const override;
 	bool hideHUD() const override;
 

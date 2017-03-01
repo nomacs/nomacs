@@ -38,7 +38,6 @@ public:
 	PLUGIN_CLASS_NAME(QObject* parent = 0);
 	~PLUGIN_CLASS_NAME();
 
-	QString id() const override;
 	QImage image() const override;
 
 	QList<QAction*> createActions(QWidget* parent) override;

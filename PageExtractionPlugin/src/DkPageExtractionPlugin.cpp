@@ -92,33 +92,10 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 DkPageExtractionPlugin::~DkPageExtractionPlugin() {
 }
 
-
-/**
-* Returns unique ID for the generated dll
-**/
-QString DkPageExtractionPlugin::id() const {
-
-	return PLUGIN_ID;
-};
-
-
-/**
-* Returns descriptive iamge for every ID
-* @param plugin ID
-**/
 QImage DkPageExtractionPlugin::image() const {
 
 	return QImage(":/PageExtractionPlugin/img/page-extraction.png");
 };
-
-/**
-* Returns plugin version for every ID
-* @param plugin ID
-**/
-QString DkPageExtractionPlugin::version() const {
-
-	return PLUGIN_VERSION;
-}
 
 QString DkPageExtractionPlugin::name() const {
 	return "Page Extraction Plugin";

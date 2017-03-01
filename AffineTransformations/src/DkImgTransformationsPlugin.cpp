@@ -51,20 +51,7 @@ DkImgTransformationsPlugin::DkImgTransformationsPlugin() {
 *	Destructor
 **/
 DkImgTransformationsPlugin::~DkImgTransformationsPlugin() {
-
-	//if (mViewport) {
-	//	mViewport->deleteLater();
-	//	mViewport = 0;
-	//}
 }
-
-/**
-* Returns unique ID for the generated dll
-**/
-QString DkImgTransformationsPlugin::id() const {
-
-	return PLUGIN_ID;
-};
 
 /**
 * Returns descriptive image

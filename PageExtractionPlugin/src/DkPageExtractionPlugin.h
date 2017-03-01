@@ -38,7 +38,6 @@ public:
 	DkPageExtractionPlugin(QObject* parent = 0);
 	~DkPageExtractionPlugin();
 
-	QString id() const override;
 	QImage image() const;
 	QString version() const;
 	QString name() const;

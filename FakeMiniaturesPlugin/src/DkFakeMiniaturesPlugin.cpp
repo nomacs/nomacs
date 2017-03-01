@@ -30,13 +30,6 @@
 namespace nmp {
 
 /**
-* Returns unique ID for the generated dll
-**/
-QString DkFakeMiniaturesPlugin::id() const {
-	return PLUGIN_ID;
-};
-
-/**
 * Returns descriptive iamge for every ID
 * @param plug-in ID
 **/
@@ -52,8 +45,8 @@ QImage DkFakeMiniaturesPlugin::image() const {
 **/
 QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
-	qDebug() << "run id" << runID << "plugin id" << PLUGIN_ID;
-	if (runID == PLUGIN_ID && imgC) {
+	qDebug() << "run id" << runID;
+	if (imgC) {
 		QMainWindow* mainWindow = getMainWindow();
 		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
 		if(mainWindow) 
@@ -61,7 +54,7 @@ QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QS
 		else 
 			fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
-    QImage img = imgC->image();
+		QImage img = imgC->image();
 		fakeMiniaturesDialog->setImage(&img);
 
 		bool done = fakeMiniaturesDialog->exec();
@@ -73,12 +66,6 @@ QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QS
 		fakeMiniaturesDialog->deleteLater();
 
 		imgC->setImage(returnImg, tr("Fake Miniature"));
-	}
-	else if (imgC) {
-		QMessageBox msgBox;
-		msgBox.setText("Wrong GUID!");
-		msgBox.setIcon(QMessageBox::Warning);
-		msgBox.exec();
 	}
 
 	return imgC;

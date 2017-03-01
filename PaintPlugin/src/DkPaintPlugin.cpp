@@ -56,14 +56,6 @@ DkPaintPlugin::~DkPaintPlugin() {
 }
 
 /**
-* Returns unique ID for the generated dll
-**/
-QString DkPaintPlugin::id() const {
-	return PLUGIN_ID;
-};
-
-
-/**
 * Returns descriptive image
 **/
 QImage DkPaintPlugin::image() const {

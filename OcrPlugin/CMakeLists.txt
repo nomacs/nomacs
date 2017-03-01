@@ -10,10 +10,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Utils.cmake")
 
 NMC_POLICY()
 
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
-add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
-
-
 if (NOT BUILDING_MULTIPLE_PLUGINS)
   # prepare plugin
   NMC_PREPARE_PLUGIN()
@@ -37,6 +33,10 @@ file(GLOB PLUGIN_HEADERS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterfac
 file(GLOB PLUGIN_JSON "src/*.json")
 
 NMC_PLUGIN_ID_AND_VERSION()
+
+# uncomment if you want to add the plugin version or id
+# add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
+# add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
 
 set (PLUGIN_RESOURCES
 	src/nomacsPlugin.qrc

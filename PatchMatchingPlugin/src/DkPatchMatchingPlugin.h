@@ -72,7 +72,6 @@ public:
 	DkPatchMatchingPlugin();
 	virtual ~DkPatchMatchingPlugin() = default;
 
-	QString id() const override;
     QImage image() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), 
