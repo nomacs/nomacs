@@ -82,9 +82,9 @@ public:
 	DkSaveInfo(const QString& filePathIn = QString(), const QString& filePathOut = QString());
 
 	enum OverwriteMode {
-		mode_overwrite,
-		mode_skip_existing,
-		mode_do_not_save_output,
+		mode_skip_existing			= 0x00,
+		mode_overwrite				= 0x01,
+		mode_do_not_save_output		= 0x02,
 
 		mode_end
 	};

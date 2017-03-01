@@ -725,7 +725,7 @@ bool DkBatchProcess::process() {
 	}
 
 	// early break
-	if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
+	if (mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) {
 		mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
 		return true;
 	}

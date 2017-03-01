@@ -962,8 +962,6 @@ void DkBatchOutput::parameterChanged() {
 
 void DkBatchOutput::updateFileLabelPreview() {
 
-	qDebug() << "updating file label, example name: " << mExampleName;
-
 	if (mExampleName.isEmpty())
 		return;
 
@@ -974,8 +972,6 @@ void DkBatchOutput::updateFileLabelPreview() {
 }
 
 QString DkBatchOutput::getOutputDirectory() {
-	qDebug() << "ouptut dir: " << QDir(mOutputlineEdit->text()).absolutePath();
-
 	return mOutputlineEdit->text();
 }
 
@@ -1106,12 +1102,14 @@ void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
 
 DkSaveInfo::OverwriteMode DkBatchOutput::overwriteMode() const {
 
-	if (mCbOverwriteExisting->isChecked())
-		return DkSaveInfo::mode_overwrite;
-	else if (mCbDoNotSave->isChecked())
-		return DkSaveInfo::mode_do_not_save_output;
+	DkSaveInfo::OverwriteMode mode = DkSaveInfo::mode_skip_existing;
 
-	return DkSaveInfo::mode_skip_existing;
+	if (mCbOverwriteExisting->isChecked())
+		mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_overwrite);
+	if (mCbDoNotSave->isChecked())
+		mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_do_not_save_output);
+
+	return mode;
 }
 
 bool DkBatchOutput::useInputDir() const {
@@ -1126,7 +1124,6 @@ bool DkBatchOutput::deleteOriginal() const {
 void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 
 	mExampleName = exampleName;
-	qDebug() << "example name: " << exampleName;
 	updateFileLabelPreview();
 }
 
@@ -2319,8 +2316,8 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
 
 		
 		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
-			!(outputWidget()->overwriteMode() == DkSaveInfo::mode_overwrite ||
-			 outputWidget()->overwriteMode() == DkSaveInfo::mode_do_not_save_output)) {
+			!(outputWidget()->overwriteMode() & DkSaveInfo::mode_overwrite ||
+			 outputWidget()->overwriteMode() & DkSaveInfo::mode_do_not_save_output)) {
 			emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
 			//QMessageBox::information(mw, tr("Wrong Configuration"), 
 			//	tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
