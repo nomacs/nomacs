@@ -637,7 +637,8 @@ void DkImageContainerT::checkForFileUpdates() {
 	if (mWaitForUpdate == update_pending && mFileInfo.isReadable()) {
 	
 		mWaitForUpdate = update_loading;
-		loadImageThreaded(true);
+		if (!isEdited())
+			loadImageThreaded(true);
 	}
 
 }
