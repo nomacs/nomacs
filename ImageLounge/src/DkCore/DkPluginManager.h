@@ -66,52 +66,6 @@ enum installedPluginsColumns {
 	ip_column_size,
 };
 
-enum downloadPluginsColumns {
-	dp_column_name,
-	dp_column_version,
-	dp_column_install,
-	dp_column_size,
-};
-
-enum pluginRequestType {
-	request_none,
-	request_xml,
-	request_xml_for_update,
-	request_preview,
-	request_plugin,
-	request_plugin_files_list,
-};
-
-enum xmlUsage {
-	xml_usage_update,
-	xml_usage_download,
-};
-
-struct XmlPluginData {
-	QString id;
-	QString name;
-	QString version;
-	QString decription;
-	QString previewImgUrl;
-	bool isWin64;
-	bool isWin86;
-};
-
-struct QPairFirstComparer {
-	template<typename T1, typename T2>
-	bool operator()(const QPair<T1,T2> & a, const QPair<T1,T2> & b) const {
-		return a.first < b.first;
-	}
-};
-
-struct QPairSecondComparer {
-	template<typename T1, typename T2>
-	bool operator()(const QPair<T1,T2> & a, const QPair<T1,T2> & b) const {
-		return a.second < b.second;
-	}
-};
-
-
 class DkLibrary {
 
 public:
