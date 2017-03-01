@@ -1172,7 +1172,6 @@ bool DkProfileWidget::requiresUserInput() const {
 }
 
 void DkProfileWidget::applyDefault() {
-	mProfileCombo->setCurrentIndex(0);
 	emit newHeaderText(tr("inactive"));
 }
 
@@ -1223,6 +1222,8 @@ void DkProfileWidget::on_saveButton_clicked() {
 
 void DkProfileWidget::on_resetButton_clicked() {
 
+	mProfileCombo->setCurrentIndex(0);
+	emit newHeaderText(tr("inactive"));
 	emit applyDefaultSignal();
 }
 
