@@ -112,8 +112,8 @@ class DllCoreExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
 public:
 	DkTinyPlanetManipulator(QAction* action);
 
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
 
 	void setSize(int size);
 	int size() const;
@@ -135,8 +135,8 @@ class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
 public:
 	DkUnsharpMaskManipulator(QAction* action);
 
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
 
 	void setSigma(int sigma);
 	int sigma() const;
@@ -154,8 +154,8 @@ class DllCoreExport DkRotateManipulator : public DkBaseManipulatorExt {
 public:
 	DkRotateManipulator(QAction* action);
 
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
 
 	void setAngle(int angle);
 	int angle() const;
@@ -164,13 +164,32 @@ private:
 	int mAngle = 0;
 };
 
+class DllCoreExport DkThresholdManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkThresholdManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+
+	void setThreshold(int thr);
+	int threshold() const;
+
+	void setColor(bool col);
+	bool color() const;
+
+private:
+	int mThreshold = 128;
+	bool mColor = false;
+};
+
 class DllCoreExport DkHueManipulator : public DkBaseManipulatorExt {
 
 public:
 	DkHueManipulator(QAction* action);
 
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
 
 	void setHue(int hue);
 	int hue() const;
@@ -192,8 +211,8 @@ class DllCoreExport DkExposureManipulator : public DkBaseManipulatorExt {
 public:
 	DkExposureManipulator(QAction* action);
 
-	QImage apply(const QImage& img) const;
-	QString errorMessage() const;
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
 
 	void setExposure(double exposure);
 	double exposure() const;

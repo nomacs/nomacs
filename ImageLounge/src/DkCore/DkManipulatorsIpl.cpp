@@ -47,34 +47,7 @@ QImage DkGrayScaleManipulator::apply(const QImage& img) const {
 	if (img.isNull())
 		return img;
 
-	QImage imgR;
-
-#ifdef WITH_OPENCV
-
-	cv::Mat cvImg = DkImage::qImage2Mat(img);
-	cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
-
-	std::vector<cv::Mat> imgs;
-	cv::split(cvImg, imgs);
-
-	// get the luminance channel
-	if (!imgs.empty())
-		cvImg = imgs[0];
-
-	// convert it back for the painter
-	cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
-
-	imgR = DkImage::mat2QImage(cvImg);
-#else
-
-	QVector<QRgb> table(256);
-	for(int i=0;i<256;++i)
-		table[i]=qRgb(i,i,i);
-
-	imgR = img.convertToFormat(QImage::Format_Indexed8,table);
-#endif
-
-	return imgR;
+	return DkImage::grayscaleImage(img);
 }
 
 QString DkGrayScaleManipulator::errorMessage() const {
@@ -281,6 +254,45 @@ void DkRotateManipulator::setAngle(int angle) {
 
 int DkRotateManipulator::angle() const {
 	return mAngle;
+}
+
+// Rotate Manipulator --------------------------------------------------------------------
+DkThresholdManipulator::DkThresholdManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkThresholdManipulator::apply(const QImage & img) const {
+	
+	return DkImage::thresholdImage(img, threshold(), color());
+}
+
+QString DkThresholdManipulator::errorMessage() const {
+	return QObject::tr("Cannot threshold image");
+}
+
+void DkThresholdManipulator::setThreshold(int thr) {
+
+	if (thr == mThreshold)
+		return;
+
+	mThreshold = thr;
+	action()->trigger();
+}
+
+int DkThresholdManipulator::threshold() const {
+	return mThreshold;
+}
+
+void DkThresholdManipulator::setColor(bool col) {
+
+	if (col == mColor)
+		return;
+
+	mColor = col;
+	action()->trigger();
+}
+
+bool DkThresholdManipulator::color() const {
+	return mColor;
 }
 
 // DkHueManipulator --------------------------------------------------------------------

@@ -425,6 +425,34 @@ bool DkImage::alphaChannelUsed(const QImage& img) {
 	return false;
 }
 
+QImage DkImage::thresholdImage(const QImage & img, double thr, bool color) {
+
+	if (img.isNull())
+		return img;
+
+	DkTimer dt;
+
+	QImage tImg = color ? img.copy() : grayscaleImage(img);
+
+	// number of bytes per line used
+	int bpl = (tImg.width() * tImg.depth() + 7) / 8;
+	int pad = tImg.bytesPerLine() - bpl;
+
+	uchar* mPtr = tImg.bits();
+
+	for (int rIdx = 0; rIdx < tImg.height(); rIdx++) {
+
+		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+			*mPtr = *mPtr > thr ? 255 : 0;
+		}
+		mPtr += pad;
+	}
+
+	qDebug() << "thresholding takes: " << dt;
+
+	return tImg;
+}
+
 QImage DkImage::rotateImage(const QImage & img, double angle) {
 
 	// compute new image size
@@ -460,6 +488,38 @@ QImage DkImage::rotateImage(const QImage & img, double angle) {
 	p.setRenderHint(QPainter::SmoothPixmapTransform);
 	p.setTransform(trans);
 	p.drawImage(QPoint(), img);
+
+	return imgR;
+}
+
+QImage DkImage::grayscaleImage(const QImage & img) {
+
+	QImage imgR;
+
+#ifdef WITH_OPENCV
+
+	cv::Mat cvImg = DkImage::qImage2Mat(img);
+	cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
+
+	std::vector<cv::Mat> imgs;
+	cv::split(cvImg, imgs);
+
+	// get the luminance channel
+	if (!imgs.empty())
+		cvImg = imgs[0];
+
+	// convert it back for the painter
+	cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
+
+	imgR = DkImage::mat2QImage(cvImg);
+#else
+
+	QVector<QRgb> table(256);
+	for(int i=0;i<256;++i)
+		table[i]=qRgb(i,i,i);
+
+	imgR = img.convertToFormat(QImage::Format_Indexed8,table);
+#endif
 
 	return imgR;
 }

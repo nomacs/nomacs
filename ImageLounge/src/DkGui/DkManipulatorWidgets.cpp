@@ -53,6 +53,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
+	mWidgets << new DkThresholdWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_threshold), this);
 	mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
 	mWidgets << new DkExposureWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_exposure), this);
 
@@ -343,6 +344,43 @@ void DkRotateWidget::createLayout() {
 }
 void DkRotateWidget::on_angleSlider_valueChanged(int val) {
 	manipulator()->setAngle(val);
+}
+
+// DkThresholdWidget --------------------------------------------------------------------
+DkThresholdWidget::DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+QSharedPointer<DkThresholdManipulator> DkThresholdWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkThresholdManipulator>(baseManipulator());
+}
+
+void DkThresholdWidget::on_colBox_toggled(bool checked) {
+	manipulator()->setColor(checked);
+}
+
+void DkThresholdWidget::createLayout() {
+
+	DkSlider* thrSlider = new DkSlider(tr("Threshold"), this);
+	thrSlider->setObjectName("thrSlider");
+	thrSlider->setValue(manipulator()->threshold());
+	thrSlider->setMinimum(0);
+	thrSlider->setMaximum(255);
+	thrSlider->setValue(manipulator()->threshold());
+
+	QCheckBox* colBox = new QCheckBox(tr("Color"), this);
+	colBox->setObjectName("colBox");
+	colBox->setChecked(manipulator()->color());
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(thrSlider);
+	layout->addWidget(colBox);
+}
+void DkThresholdWidget::on_thrSlider_valueChanged(int val) {
+	manipulator()->setThreshold(val);
 }
 
 // DkHueWidget --------------------------------------------------------------------

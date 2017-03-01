@@ -114,6 +114,23 @@ private:
 
 };
 
+class DkThresholdWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkThresholdManipulator> manipulator() const;
+
+public slots:
+	void on_thrSlider_valueChanged(int val);
+	void on_colBox_toggled(bool checked);
+
+private:
+	void createLayout();
+
+};
+
 class DkHueWidget : public DkBaseManipulatorWidget {
 	Q_OBJECT
 

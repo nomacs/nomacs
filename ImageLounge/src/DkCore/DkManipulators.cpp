@@ -128,6 +128,11 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Rotate the image"));
 	mpls[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
+	// rotate
+	action = new QAction(QObject::tr("&Threshold..."), parent);
+	action->setStatusTip(QObject::tr("Threshold the image"));
+	mpls[m_threshold] = QSharedPointer<DkThresholdManipulator>::create(action);
+
 	// hue/saturation
 	action = new QAction(QObject::tr("&Hue/Saturation..."), parent);
 	action->setStatusTip(QObject::tr("Change Hue and Saturation"));

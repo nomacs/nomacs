@@ -125,6 +125,7 @@ public:
 	// extended manipulators
 	enum ManipulatorExtId {
 		m_rotate = m_end,
+		m_threshold,
 		m_hue,
 		m_exposure,
 		m_tiny_planet,
