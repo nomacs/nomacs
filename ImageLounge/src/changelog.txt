@@ -1,8 +1,17 @@
 nomacs 3.6.0
 ============
+- Image adjustments introduced
 - Exposure added
-- New image adjustments
+- Batch
+	- Improved profiles
+	- Image adjustments added
+	- Settings for batch plugins
+- Settings Editor
+- Icons for high DPI displays
 - Crash on exit fixed for Linux with Qt 5.7.1
+- Updates (Windows)
+	- Qt 5.5.1 -> 5.7.0
+	- OpenCV 3.1 -> 3.2
 
 nomacs 3.4.0
 ============
