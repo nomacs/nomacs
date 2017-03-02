@@ -561,6 +561,16 @@ QLabel#DkManipulatorSettingsTitle {
 	margin-bottom: 5pt;
 }
 
+/* profile widget */
+nmc--DkProfileSummaryWidget {
+	background-color: rgba(255, 255, 255, 200);
+}
+
+QLabel#summaryMeta {
+	margin-left: 20px;
+	qproperty-alignment: AlignRight;
+}
+
 QListWidget#profileList {
 	font-size: 14pt;
 	max-width: 400px;

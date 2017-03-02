@@ -1127,6 +1127,98 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 	updateFileLabelPreview();
 }
 
+// DkProfileSummaryWidget --------------------------------------------------------------------
+DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget* parent) : DkWidget(parent) {
+	createLayout();
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkProfileSummaryWidget::setProfile(const QString& profileName, const DkBatchConfig & config) {
+
+	mTitle->setText(tr("Summary: ") + profileName);
+	mNumFiles->setText(QString::number(config.getFileList().size()) + " "  + tr("Files"));
+	mOutputDir->setText(config.getOutputDirPath());
+	
+	QString functions;
+	for (QSharedPointer<DkAbstractBatch> cf : config.getProcessFunctions()) {
+
+		functions += cf->name() + "\n";
+	}
+	mFunctions->setText(functions);
+
+}
+
+void DkProfileSummaryWidget::on_deleteButton_clicked() {
+	emit deleteCurrentProfile();
+}
+
+void DkProfileSummaryWidget::on_updateButton_clicked() {
+	emit updateCurrentProfile();
+}
+
+void DkProfileSummaryWidget::on_exportButton_clicked() {
+	emit exportCurrentProfile();
+}
+
+void DkProfileSummaryWidget::createLayout() {
+
+	mTitle = new QLabel("", this);
+	mTitle->setObjectName("subTitle");
+
+	QLabel* numFilesTitle = new QLabel(tr("Input"), this);
+	numFilesTitle->setObjectName("summaryMeta");
+	mNumFiles = new QLabel(this);
+
+	QLabel* outputDirTitle = new QLabel(tr("Output"), this);
+	outputDirTitle->setObjectName("summaryMeta");
+	mOutputDir = new QLabel(this);
+
+	QLabel* functionsTitle = new QLabel(tr("Functions"), this);
+	functionsTitle->setObjectName("summaryMeta");
+	mFunctions = new QLabel(this);
+
+	QWidget* sw = new QWidget(this);
+	QGridLayout* summaryLayout = new QGridLayout(sw);
+	summaryLayout->setContentsMargins(0, 0, 0, 0);
+	summaryLayout->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+	summaryLayout->addWidget(mTitle, 1, 1, 1, 3);
+	summaryLayout->addWidget(numFilesTitle, 2, 1);
+	summaryLayout->addWidget(mNumFiles, 2, 2);
+	summaryLayout->addWidget(outputDirTitle, 3, 1);
+	summaryLayout->addWidget(mOutputDir, 3, 2);
+	summaryLayout->addWidget(functionsTitle, 4, 1);
+	summaryLayout->addWidget(mFunctions, 4, 2);
+
+	QPushButton* updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
+	updateButton->setObjectName("updateButton");
+	//updateButton->setFlat(true);
+	updateButton->setToolTip(tr("Update"));
+
+	QPushButton* deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
+	deleteButton->setObjectName("deleteButton");
+	//deleteButton->setFlat(true);
+	deleteButton->setToolTip(tr("Delete"));
+
+	QPushButton* exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
+	exportButton->setObjectName("exportButton");
+	//exportButton->setFlat(true);
+	exportButton->setToolTip(tr("Export"));
+
+	QWidget* bw = new QWidget(this);
+	QHBoxLayout* bLayout = new QHBoxLayout(bw);
+	bLayout->setContentsMargins(0, 0, 0, 0);
+	bLayout->setAlignment(Qt::AlignRight);
+	bLayout->addWidget(updateButton);
+	bLayout->addWidget(exportButton);
+	bLayout->addWidget(deleteButton);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(sw);
+	layout->addWidget(bw);
+}
+
+
 // DkProfileWidget --------------------------------------------------------------------
 DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
@@ -1139,29 +1231,39 @@ void DkProfileWidget::createLayout() {
 	mProfileList = new QListWidget(this);
 	mProfileList->setObjectName("profileList");
 
-	QPushButton* saveButton = new QPushButton(tr("Save Profile"), this);
-	saveButton->setObjectName("saveButton");
+	mSummary = new DkProfileSummaryWidget(this);
 
-	QPushButton* exportButton = new QPushButton(tr("Export Profile"), this);
-	exportButton->setObjectName("exportButton");
+	// buttons
+	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
+	saveButton->setObjectName("saveButton");
 
 	QPushButton* resetButton = new QPushButton(tr("Apply Default"), this);
 	resetButton->setObjectName("resetButton");
+
+	QWidget* buttonWidget = new QWidget(this);
+	QHBoxLayout* bLayout = new QHBoxLayout(buttonWidget);
+	bLayout->setContentsMargins(0, 0, 0, 0);
+	bLayout->setAlignment(Qt::AlignLeft);
+	bLayout->addWidget(saveButton);
+	bLayout->addWidget(resetButton);
 
 	QWidget* descWidget = new QWidget(this);
 	QVBoxLayout* descLayout = new QVBoxLayout(descWidget);
 	descLayout->setContentsMargins(0, 0, 0, 0);
 	descLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	descLayout->addWidget(saveButton);
-	descLayout->addWidget(exportButton);
-	descLayout->addWidget(resetButton);
+	descLayout->addWidget(mSummary);
+	descLayout->addWidget(buttonWidget);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(mProfileList);
 	layout->addWidget(descWidget);
 
-	updateProfileCombo();
+	updateProfileList();
+
+	connect(mSummary, SIGNAL(updateCurrentProfile()), this, SLOT(updateCurrentProfile()));
+	connect(mSummary, SIGNAL(deleteCurrentProfile()), this, SLOT(deleteCurrentProfile()));
+	connect(mSummary, SIGNAL(exportCurrentProfile()), this, SLOT(exportCurrentProfile()));
 }
 
 
@@ -1179,7 +1281,7 @@ void DkProfileWidget::applyDefault() {
 
 void DkProfileWidget::profileSaved(const QString& profileName) {
 
-	updateProfileCombo();
+	updateProfileList();
 
 	QList<QListWidgetItem*> items = mProfileList->findItems(profileName, Qt::MatchExactly);
 	
@@ -1189,21 +1291,10 @@ void DkProfileWidget::profileSaved(const QString& profileName) {
 
 void DkProfileWidget::on_profileList_itemSelectionChanged() {
 
-	emit newHeaderText(tr("inactive"));
-
-	if (mProfileList->selectedItems().isEmpty())
-		emit applyDefaultSignal();
-
-	for (auto pItem : mProfileList->selectedItems()) {
-
-		if (pItem->isSelected()) {
-			updateDescription(pItem->text());
-		}
-	}
-
+	changeProfile(currentProfile());
 }
 
-void DkProfileWidget::updateProfileCombo() {
+void DkProfileWidget::updateProfileList() {
 
 	mProfileList->clear();
 
@@ -1217,21 +1308,43 @@ void DkProfileWidget::updateProfileCombo() {
 	}
 }
 
-void DkProfileWidget::updateDescription(const QString & profileName) {
+void DkProfileWidget::changeProfile(const QString & profileName) {
 	
+	// is the default profile selected?
+	if (profileName.isEmpty() || mProfileList->count() > 0 && mProfileList->item(0)->text() == profileName) {
+		loadDefaultProfile();
+		return;
+	}
+
 	QString profilePath = DkBatchProfile::profileNameToPath(profileName);
-	
+	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
+	mSummary->setProfile(profileName, bc);
+	mSummary->show();
+
 	emit loadProfileSignal(profilePath);
 	emit newHeaderText(profileName);
 }
 
+void DkProfileWidget::loadDefaultProfile() {
+
+	// select default profile
+	if (mProfileList->count() > 0)
+		mProfileList->item(0)->setSelected(true);
+
+	mSummary->hide();
+	emit newHeaderText(tr("inactive"));
+	emit applyDefaultSignal();
+}
+
 QString DkProfileWidget::currentProfile() const {
 	
+	QString profileName;
+
 	for (auto pItem : mProfileList->selectedItems()) {
-		return pItem->text();
+		profileName = pItem->text();
 	}
 
-	return "";
+	return profileName;
 }
 
 void DkProfileWidget::on_saveButton_clicked() {
@@ -1241,18 +1354,40 @@ void DkProfileWidget::on_saveButton_clicked() {
 
 void DkProfileWidget::on_resetButton_clicked() {
 
-	for (auto pItem : mProfileList->selectedItems())
-		pItem->setSelected(false);
-	
-	emit newHeaderText(tr("inactive"));
-	emit applyDefaultSignal();
+	loadDefaultProfile();
 }
 
-void DkProfileWidget::on_exportButton_clicked() {
+void DkProfileWidget::updateCurrentProfile() {
+	emit saveProfileSignal(DkBatchProfile::profileNameToPath(currentProfile()));
+}
+
+void DkProfileWidget::deleteCurrentProfile() {
+
+	QFile profile(DkBatchProfile::profileNameToPath(currentProfile()));
+	
+	if (!profile.remove()) {
+		QMessageBox::critical(
+			this, 
+			tr("Deleting Profile"), 
+			tr("Sorry, I cannot delete %1").arg(currentProfile()), 
+			QMessageBox::Ok);
+		return;
+	}
+
+	updateProfileList();
+	loadDefaultProfile();
+}
+
+void DkProfileWidget::exportCurrentProfile() {
+
+	QString expPath =
+		QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+		QDir::separator() + currentProfile() +
+		"." + DkBatchProfile::extension();
 
 	QString sPath = QFileDialog::getSaveFileName(this, 
 		tr("Export Batch Profile"), 
-		QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
+		expPath,
 		tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()));
 
 	emit saveProfileSignal(sPath);
@@ -1485,18 +1620,11 @@ void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
 	if (!plugin || !plugin->batchPlugin()) {
+		mSettingsTitle->setText("");
+		mSettingsTitle->hide();
 		mSettingsEditor->hide();
 		return;
 	}
-
-	//// load settings
-	//for (auto p : DkPluginManager::instance().getPlugins()) {
-
-	//	auto bp = p->batchPlugin();
-	//	if (bp) {
-	//		bp->loadSettings(bp->settings());
-	//	}
-	//}
 
 	mCurrentPlugin = plugin->batchPlugin();
 
@@ -1505,11 +1633,12 @@ void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 
 	if (!g.isEmpty()) {
 		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
-		mSettingsEditor->clear();
+		mSettingsTitle->show();
 
+		mSettingsEditor->clear();
 		mSettingsEditor->addSettingsGroup(g);
-		mSettingsEditor->show();
 		mSettingsEditor->expandAll();
+		mSettingsEditor->show();
 	}
 	else {
 		mSettingsTitle->setText("");
@@ -1646,6 +1775,7 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager
 	mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
+	mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);
 	mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
 	mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
 	
@@ -2635,7 +2765,6 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 			qWarning() << "processing function is NULL - ignoring";
 			continue;
 		}
-		
 		// apply manipulator batch settings
 		else if (QSharedPointer<DkManipulatorBatch> mf = qSharedPointerDynamicCast<DkManipulatorBatch>(cf)) {
 			if (!manipulatorWidget()->loadProperties(mf)) {

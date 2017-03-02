@@ -351,6 +351,33 @@ private:
 
 };
 
+class DkProfileSummaryWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkProfileSummaryWidget(QWidget* parent = 0);
+
+	void setProfile(const QString& name, const DkBatchConfig& config);
+
+public slots:
+	void on_deleteButton_clicked();
+	void on_updateButton_clicked();
+	void on_exportButton_clicked();
+
+signals:
+	void deleteCurrentProfile() const;
+	void updateCurrentProfile() const;
+	void exportCurrentProfile() const;
+
+protected:
+	void createLayout();
+
+	QLabel* mTitle = 0;
+	QLabel* mNumFiles = 0;
+	QLabel* mOutputDir = 0;
+	QLabel* mFunctions = 0;
+};
+
 class DkProfileWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
@@ -366,8 +393,11 @@ public:
 public slots:
 	void on_profileList_itemSelectionChanged();
 	void on_saveButton_clicked();
-	void on_exportButton_clicked();
 	void on_resetButton_clicked();
+
+	void updateCurrentProfile();
+	void deleteCurrentProfile();
+	void exportCurrentProfile();
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -378,11 +408,13 @@ signals:
 protected:
 	void createLayout();
 	void saveProfile();
-	void updateProfileCombo();
-	void updateDescription(const QString& profileName);
+	void updateProfileList();
+	void changeProfile(const QString& profileName);
 	QString currentProfile() const;
+	void loadDefaultProfile();
 
-	QListWidget* mProfileList;
+	QListWidget* mProfileList = 0;
+	DkProfileSummaryWidget* mSummary = 0;
 };
 
 

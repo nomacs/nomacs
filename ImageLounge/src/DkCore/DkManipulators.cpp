@@ -129,7 +129,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	mpls[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
 	// rotate
-	action = new QAction(QObject::tr("&Threshold..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/threshold.svg", size), QObject::tr("&Threshold..."), parent);
 	action->setStatusTip(QObject::tr("Threshold the image"));
 	mpls[m_threshold] = QSharedPointer<DkThresholdManipulator>::create(action);
 
