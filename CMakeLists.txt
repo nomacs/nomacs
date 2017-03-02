@@ -22,7 +22,6 @@ else()
     message(STATUS "Info: The Nikon Plugin cannot be built with x64 compiler configuration")
 endif()
 OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
-OPTION (ENABLE_THRESHOLD "Compile Threshold plugin" ON)
 OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
 OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
@@ -45,21 +44,13 @@ IF (ENABLE_NIKON)
   add_subdirectory(NikonPlugin)
 ENDIF(ENABLE_NIKON)
 
-
 IF (ENABLE_TRANSFORM)
     add_subdirectory(AffineTransformations)
 ENDIF(ENABLE_TRANSFORM)
 
-
-IF (ENABLE_THRESHOLD)
-    add_subdirectory(ThresholdPlugin)
-ENDIF(ENABLE_THRESHOLD)
-
-
 IF (ENABLE_PAINT)
     add_subdirectory(PaintPlugin)
 ENDIF(ENABLE_PAINT)
-
 
 IF (ENABLE_DOC)
     add_subdirectory(DocAnalysisPlugin)
