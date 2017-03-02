@@ -1749,18 +1749,30 @@ void DkBatchManipulatorWidget::createLayout() {
 
 	QWidget* settingsWidget = new QWidget(this);
 	mSettingsLayout = new QVBoxLayout(settingsWidget);
+	mSettingsLayout->setContentsMargins(0, 0, 0, 0);
 	mSettingsLayout->setAlignment(Qt::AlignTop);
 
+	mPreviewLabel = new QLabel(this);
+	mPreviewLabel->setAlignment(Qt::AlignHCenter);
+	mPreviewLabel->hide();
+
+	QWidget* rightWidget = new QWidget(this);
+	QVBoxLayout* rLayout = new QVBoxLayout(rightWidget);
+	rLayout->setContentsMargins(0, 0, 0, 0);
+	rLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+	rLayout->addWidget(settingsWidget);
+	rLayout->addWidget(mPreviewLabel);
+
 	QGridLayout* layout = new QGridLayout(this);
+	//layout->setAlignment(Qt::AlignHCenter);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(listLabel, 0, 0);
-	layout->addWidget(mSettingsTitle, 0, 1);
-	layout->addWidget(manipulatorList, 1, 0);
-	layout->addWidget(settingsWidget, 1, 1);
+	layout->addWidget(listLabel,		0, 0);
+	layout->addWidget(mSettingsTitle,	0, 1);
+	layout->addWidget(manipulatorList,	1, 0);
+	layout->addWidget(rightWidget,		1, 1);
 	
 	connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
 	connect(manipulatorList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&)));
-
 }
 
 void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager) {
@@ -1781,6 +1793,10 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager
 	
 	for (QWidget* w : mMplWidgets)
 		mSettingsLayout->addWidget(w);
+
+	for (QAction* a : manager.actions())
+		connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
+
 }
 
 bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators) {
@@ -1830,6 +1846,12 @@ void DkBatchManipulatorWidget::applyDefault() {
 	}
 }
 
+void DkBatchManipulatorWidget::setExampleFile(const QString & filePath) {
+	
+	mPreviewPath = filePath;
+	mPreview = QImage();
+}
+
 void DkBatchManipulatorWidget::selectionChanged(const QItemSelection & selected) {
 
 	for (auto mIdx : selected.indexes()) {
@@ -1861,6 +1883,40 @@ void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulato
 
 	if (!mplExt)
 		mSettingsTitle->hide();
+
+	// load the preview
+	if (!mPreviewPath.isEmpty() && mPreview.isNull()) {
+		DkBasicLoader bl;
+		if (bl.loadGeneral(mPreviewPath)) {
+			QImage img = bl.image();
+
+			if (img.height() > img.width())
+				img = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+			else
+				img = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+
+			mPreview = img;
+		}
+		else
+			qInfo() << "could not load" << mPreviewPath << "for preview...";
+	}
+
+	// update preview
+	if (!mPreview.isNull()) {
+		mPreviewLabel->setPixmap(QPixmap::fromImage(mpl->apply(mPreview)));
+		mPreviewLabel->show();
+	}
+	else
+		mPreviewLabel->hide();
+}
+
+void DkBatchManipulatorWidget::selectManipulator() {
+
+	QAction* action = dynamic_cast<QAction*>(QObject::sender());
+	QSharedPointer<DkBaseManipulator> mpl = mManager.manipulator(action);
+
+	if (mpl)
+		selectManipulator(mpl);
 }
 
 void DkBatchManipulatorWidget::itemChanged(QStandardItem * item) {
@@ -2824,6 +2880,7 @@ void DkBatchWidget::widgetChanged() {
 			cFileInfo = QFileInfo(url.toLocalFile());
 
 		outputWidget()->setExampleFilename(cFileInfo.fileName());
+		manipulatorWidget()->setExampleFile(cFileInfo.filePath());
 		mButtonWidget->playButton()->setEnabled(true);
 	}
 }

@@ -471,11 +471,13 @@ public:
 	bool hasUserInput() const;
 	bool requiresUserInput() const;
 	void applyDefault();
+	void setExampleFile(const QString& filePath);
 
 public slots:
 	void itemChanged(QStandardItem * item);
 	void selectionChanged(const QItemSelection &selected);
 	void selectManipulator(QSharedPointer<DkBaseManipulator> mpl);
+	void selectManipulator();
 
 signals:
 	void newHeaderText(const QString& txt) const;
@@ -493,6 +495,10 @@ protected:
 	QVector<QWidget*> mMplWidgets;
 	QVBoxLayout* mSettingsLayout = 0;
 	QLabel* mSettingsTitle = 0;
+	QLabel* mPreviewLabel = 0;
+	QString mPreviewPath;
+	QImage mPreview;
+	int mMaxPreview = 300;
 };
 
 class DkBatchTransformWidget : public QWidget, public DkBatchContent {
