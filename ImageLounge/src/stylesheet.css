@@ -560,3 +560,8 @@ QLabel#DkManipulatorSettingsTitle {
 	color: #fff;
 	margin-bottom: 5pt;
 }
+
+QListWidget#profileList {
+	font-size: 14pt;
+	max-width: 400px;
+}

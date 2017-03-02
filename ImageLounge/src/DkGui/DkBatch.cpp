@@ -1136,8 +1136,8 @@ DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(p
 
 void DkProfileWidget::createLayout() {
 
-	mProfileCombo = new QComboBox(this);
-	mProfileCombo->setObjectName("profileCombo");
+	mProfileList = new QListWidget(this);
+	mProfileList->setObjectName("profileList");
 
 	QPushButton* saveButton = new QPushButton(tr("Save Profile"), this);
 	saveButton->setObjectName("saveButton");
@@ -1148,13 +1148,18 @@ void DkProfileWidget::createLayout() {
 	QPushButton* resetButton = new QPushButton(tr("Apply Default"), this);
 	resetButton->setObjectName("resetButton");
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
+	QWidget* descWidget = new QWidget(this);
+	QVBoxLayout* descLayout = new QVBoxLayout(descWidget);
+	descLayout->setContentsMargins(0, 0, 0, 0);
+	descLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	descLayout->addWidget(saveButton);
+	descLayout->addWidget(exportButton);
+	descLayout->addWidget(resetButton);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	layout->addWidget(mProfileCombo);
-	layout->addWidget(saveButton);
-	layout->addWidget(exportButton);
-	layout->addWidget(resetButton);
+	layout->addWidget(mProfileList);
+	layout->addWidget(descWidget);
 
 	updateProfileCombo();
 }
@@ -1176,40 +1181,57 @@ void DkProfileWidget::profileSaved(const QString& profileName) {
 
 	updateProfileCombo();
 
-	int idx = mProfileCombo->findText(profileName);
-	qDebug() << "profile index: " << idx;
-
-	if (idx >= 0)
-		mProfileCombo->setCurrentIndex(idx);
+	QList<QListWidgetItem*> items = mProfileList->findItems(profileName, Qt::MatchExactly);
+	
+	for (auto i : items)
+		i->setSelected(true);
 }
 
-void DkProfileWidget::on_profileCombo_currentIndexChanged(const QString& text) {
+void DkProfileWidget::on_profileList_itemSelectionChanged() {
 
-	// first is the 'no profile'
-	if (text == mProfileCombo->itemText(0)) {
+	emit newHeaderText(tr("inactive"));
+
+	if (mProfileList->selectedItems().isEmpty())
 		emit applyDefaultSignal();
-		emit newHeaderText(tr("inactive"));
+
+	for (auto pItem : mProfileList->selectedItems()) {
+
+		if (pItem->isSelected()) {
+			updateDescription(pItem->text());
+		}
 	}
-	else {
-		QString profilePath = DkBatchProfile::profileNameToPath(text);
-		emit loadProfileSignal(profilePath);
-		emit newHeaderText(text);
-	}
-	
+
 }
 
 void DkProfileWidget::updateProfileCombo() {
 
-	mProfileCombo->clear();
+	mProfileList->clear();
 
 	DkBatchProfile bp;
 	QStringList pn = bp.profileNames();
 
-	mProfileCombo->addItem(tr("<no profile selected>"));
+	mProfileList->addItem(tr("Default"));
 
 	for (const QString& p : pn) {
-		mProfileCombo->addItem(p);
+		mProfileList->addItem(p);
 	}
+}
+
+void DkProfileWidget::updateDescription(const QString & profileName) {
+	
+	QString profilePath = DkBatchProfile::profileNameToPath(profileName);
+	
+	emit loadProfileSignal(profilePath);
+	emit newHeaderText(profileName);
+}
+
+QString DkProfileWidget::currentProfile() const {
+	
+	for (auto pItem : mProfileList->selectedItems()) {
+		return pItem->text();
+	}
+
+	return "";
 }
 
 void DkProfileWidget::on_saveButton_clicked() {
@@ -1219,7 +1241,9 @@ void DkProfileWidget::on_saveButton_clicked() {
 
 void DkProfileWidget::on_resetButton_clicked() {
 
-	mProfileCombo->setCurrentIndex(0);
+	for (auto pItem : mProfileList->selectedItems())
+		pItem->setSelected(false);
+	
 	emit newHeaderText(tr("inactive"));
 	emit applyDefaultSignal();
 }
@@ -1237,8 +1261,8 @@ void DkProfileWidget::on_exportButton_clicked() {
 void DkProfileWidget::saveProfile() {
 
 	// default mode is overwrite (UI is asking anyway)
-	QString cn = mProfileCombo->currentText();
-	QString dName = cn.isEmpty() || cn == mProfileCombo->itemText(0) ? "Profile 1" : mProfileCombo->currentText();
+	QString cn = currentProfile();
+	QString dName = cn.isEmpty() || cn == mProfileList->item(0)->text() ? "Profile 1" : cn;
 
 	bool ok;
 	QString text = QInputDialog::getText(this, tr("Profile Name"),
@@ -1248,8 +1272,8 @@ void DkProfileWidget::saveProfile() {
 	if (!ok || text.isEmpty())
 		return;	// user canceled
 
-				// is the profile name unique?
-	if (mProfileCombo->findText(text) != -1) {
+	// is the profile name unique?
+	if (!mProfileList->findItems(text, Qt::MatchExactly).isEmpty()) {
 
 		QMessageBox::StandardButton button = QMessageBox::information(
 			this, 

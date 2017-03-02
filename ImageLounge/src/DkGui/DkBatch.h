@@ -364,7 +364,7 @@ public:
 	void profileSaved(const QString& profileName);
 
 public slots:
-	void on_profileCombo_currentIndexChanged(const QString& text);
+	void on_profileList_itemSelectionChanged();
 	void on_saveButton_clicked();
 	void on_exportButton_clicked();
 	void on_resetButton_clicked();
@@ -379,8 +379,10 @@ protected:
 	void createLayout();
 	void saveProfile();
 	void updateProfileCombo();
+	void updateDescription(const QString& profileName);
+	QString currentProfile() const;
 
-	QComboBox* mProfileCombo;
+	QListWidget* mProfileList;
 };
 
 
