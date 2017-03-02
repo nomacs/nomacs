@@ -1298,6 +1298,10 @@ void DkNoMacs::openFileList() {
 	if (fileName.isEmpty())
 		return;
 
+	int count = getTabWidget()->getTabs().count();
+	if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
+		count = 0;
+
 	QFile file(fileName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
@@ -1308,6 +1312,8 @@ void DkNoMacs::openFileList() {
 			getTabWidget()->loadFileToTab(line);
 		}
 	}
+
+	getTabWidget()->setActiveTab(count);
 }
 
 void DkNoMacs::saveFileList() {
