@@ -1418,6 +1418,7 @@ void DkBatchPluginWidget::applyDefault() {
 		}
 	}
 
+	selectPlugin("");
 	updateHeader();
 }
 
