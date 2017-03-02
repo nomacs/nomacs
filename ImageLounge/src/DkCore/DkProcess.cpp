@@ -1183,6 +1183,8 @@ QStringList DkBatchProfile::index(const QString & profileDir) const {
 	QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
 
 	qDebug() << "I have found these profiles: " << profiles;
+	if (profiles.empty())
+		qInfo() << "no profiles found in" << profileDir;
 
 	return profiles;
 }
