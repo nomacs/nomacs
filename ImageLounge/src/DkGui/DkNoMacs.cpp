@@ -1333,7 +1333,7 @@ void DkNoMacs::saveFileList() {
 		return;
 
 	QFile file(fileName);
-	if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+	if (!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate))
 		return;
 
 	for (auto tab : getTabWidget()->getTabs()) {
