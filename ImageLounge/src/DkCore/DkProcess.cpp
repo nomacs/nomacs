@@ -416,8 +416,12 @@ void DkPluginBatch::saveSettings(QSettings & settings) const {
 			continue;
 
 		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
-		assert(bPlugin);
-		bPlugin->saveSettings(settings);
+		
+		if (bPlugin) {
+			bPlugin->saveSettings(settings);
+		}
+		else
+			qWarning() << "Illegal plugin detected: " << plugin->pluginName();
 	}
 
 	settings.endGroup();
