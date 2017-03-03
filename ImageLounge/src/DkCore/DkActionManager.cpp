@@ -363,6 +363,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 
 	mFileMenu->addAction(mFileActions[menu_file_open]);
 	mFileMenu->addAction(mFileActions[menu_file_open_dir]);
+	mFileMenu->addAction(mFileActions[menu_file_open_list]);
 
 	// add open with menu
 	mFileMenu->addMenu(openWithMenu());
@@ -371,6 +372,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addSeparator();
 	mFileMenu->addAction(mFileActions[menu_file_save]);
 	mFileMenu->addAction(mFileActions[menu_file_save_as]);
+	mFileMenu->addAction(mFileActions[menu_file_save_list]);
 	mFileMenu->addAction(mFileActions[menu_file_save_web]);
 	mFileMenu->addAction(mFileActions[menu_file_rename]);
 	mFileMenu->addSeparator();
@@ -942,6 +944,9 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_open_dir]->setShortcut(QKeySequence(shortcut_open_dir));
 	mFileActions[menu_file_open_dir]->setStatusTip(QObject::tr("Open a directory and load its first image"));
 
+	mFileActions[menu_file_open_list] = new QAction(QObject::tr("&Open Tabs"), parent);
+	mFileActions[menu_file_open_list]->setStatusTip(QObject::tr("Open a texfile containing a list of filepaths, and open tabs for them"));
+
 	mFileActions[menu_file_quick_launch] = new QAction(QObject::tr("&Quick Launch"), parent);
 	mFileActions[menu_file_quick_launch]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 #ifdef Q_OS_WIN
@@ -969,6 +974,9 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_save_as] = new QAction(QObject::tr("&Save As"), parent);
 	mFileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
 	mFileActions[menu_file_save_as]->setStatusTip(QObject::tr("Save an image as"));
+
+	mFileActions[menu_file_save_list] = new QAction(QObject::tr("&Save Tabs"), parent);
+	mFileActions[menu_file_save_list]->setStatusTip(QObject::tr("Save a newline seperated list of the filenames of the open tabs"));
 
 	mFileActions[menu_file_save_web] = new QAction(QObject::tr("&Save for Web"), parent);
 	mFileActions[menu_file_save_web]->setStatusTip(QObject::tr("Save an Image for Web Applications"));
