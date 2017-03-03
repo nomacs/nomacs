@@ -110,6 +110,7 @@ protected:
 	QSharedPointer<DkImageLoader> mImageLoader;
 	int mTabIdx = 0;
 	int mTabMode = tab_recent_files;
+	QString mFilePath = "";
 };
 
 class DkViewPort;
@@ -156,6 +157,7 @@ public slots:
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
+	void setActiveTab(int idx) const;
 	void showThumbView(bool show = true);
 	void showViewPort(bool show = true);
 	void showRecentFiles(bool show = true);
