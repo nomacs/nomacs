@@ -213,6 +213,7 @@ public:
 		QStringList recentFiles;
 		QStringList recentFolders;
 		bool logRecentFiles;
+		bool checkOpenDuplicates;
 		bool useTmpPath;
 		bool askToSaveDeletedFiles;
 		QString tmpPath;

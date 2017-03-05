@@ -1276,13 +1276,37 @@ void DkNoMacs::openFile() {
 	if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
 		count = 0; 
 		
-
+	QSet<QString> duplicates;
 	for (QString fileName : fileNames) {
-		qDebug() << "os filename: " << fileName;
-		getTabWidget()->loadFileToTab(fileName);
+		bool dup = false;
+
+		if (DkSettingsManager::param().global().checkOpenDuplicates) { // Should we check for duplicates?
+			for (auto tab : getTabWidget()->getTabs()) {
+				if (tab->getFilePath().compare(fileName) == 0) {
+					duplicates.insert(tab->getFilePath());
+					dup = true;
+					break;
+				}
+			}
+		}
+
+		if (!dup) {
+			qDebug() << "os filename: " << fileName;
+			getTabWidget()->loadFileToTab(fileName);
+		}
+	}
+	if (duplicates.count() > 0) { // Show messagebox if at least one duplicate was found
+		QMessageBox dupbox(this);
+		QString duptext = "The following duplicates were not added:\n";
+		for (auto dup : duplicates) {
+			duptext.append(dup + "\n");
+		}
+		dupbox.setText(duptext);
+		dupbox.exec();
 	}
 
-	getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
+	if(fileNames.count() > duplicates.count()) // Only set the active tab if there is actually something added
+		getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList() {
