@@ -673,15 +673,9 @@ void DkCentralWidget::removeTab(int tabIdx) {
 			bw->close();
 	}
 
-	for (int idx = 0; idx < mTabInfos.size(); idx++) {
-		
-		if (mTabInfos.at(idx)->getTabIdx() == tabIdx) {
-			mTabInfos.remove(idx);
-			mTabbar->removeTab(tabIdx);
-		}
-	}
-
 	updateTabIdx();
+	mTabInfos.remove(tabIdx);
+	mTabbar->removeTab(tabIdx);
 
 	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
 		addTab();
