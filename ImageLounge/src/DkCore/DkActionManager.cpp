@@ -455,8 +455,13 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 
 	mViewMenu->addAction(mViewActions[menu_view_new_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_close_tab]);
+	mViewMenu->addAction(mViewActions[menu_view_close_all_tabs]);
+	mViewMenu->addSeparator();
+	mViewMenu->addAction(mViewActions[menu_view_first_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_previous_tab]);
+	mViewMenu->addAction(mViewActions[menu_view_goto_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_next_tab]);
+	mViewMenu->addAction(mViewActions[menu_view_last_tab]);
 	mViewMenu->addSeparator();
 
 	mViewMenu->addAction(mViewActions[menu_view_reset]);
@@ -1287,13 +1292,25 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_close_tab]->setShortcut(QKeySequence(shortcut_close_tab));
 	mViewActions[menu_view_close_tab]->setStatusTip(QObject::tr("Close current tab"));
 
+	mViewActions[menu_view_close_all_tabs] = new QAction(QObject::tr("&Close All Tabs"), parent);
+	mViewActions[menu_view_close_all_tabs]->setStatusTip(QObject::tr("Close all open tabs"));
+
+	mViewActions[menu_view_first_tab] = new QAction(QObject::tr("F&irst Tab"), parent);
+	mViewActions[menu_view_first_tab]->setStatusTip(QObject::tr("Switch to first tab"));
+
 	mViewActions[menu_view_previous_tab] = new QAction(QObject::tr("&Previous Tab"), parent);
 	mViewActions[menu_view_previous_tab]->setShortcut(QKeySequence(shortcut_previous_tab));
 	mViewActions[menu_view_previous_tab]->setStatusTip(QObject::tr("Switch to previous tab"));
 
+	mViewActions[menu_view_goto_tab] = new QAction(QObject::tr("&Go to Tab"), parent);
+	mViewActions[menu_view_goto_tab]->setStatusTip(QObject::tr("Go to tab by index"));
+
 	mViewActions[menu_view_next_tab] = new QAction(QObject::tr("&Next Tab"), parent);
 	mViewActions[menu_view_next_tab]->setShortcut(QKeySequence(shortcut_next_tab));
 	mViewActions[menu_view_next_tab]->setStatusTip(QObject::tr("Switch to next tab"));
+
+	mViewActions[menu_view_last_tab] = new QAction(QObject::tr("La&st Tab"), parent);
+	mViewActions[menu_view_last_tab]->setStatusTip(QObject::tr("Switch to last tab"));
 
 	mViewActions[menu_view_opacity_change] = new QAction(QObject::tr("&Change Opacity"), parent);
 	mViewActions[menu_view_opacity_change]->setShortcut(QKeySequence(shortcut_opacity_change));

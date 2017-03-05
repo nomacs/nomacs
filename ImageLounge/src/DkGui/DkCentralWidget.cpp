@@ -54,6 +54,7 @@
 #include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QStandardPaths>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -250,8 +251,23 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
 	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
 	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+	connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() {
+		int count = getTabs().count();
+		for (int i = 0; i < count; i++) {
+			removeTab();
+		}
+	});
+	connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() { setActiveTab(0); });
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
+	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
+		bool ok = false;
+		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), 0, 0, getTabs().count()-1, 1, &ok);
+
+		if (ok)
+			setActiveTab(idx); //TODO: Start from 1 instead of 0? (Would have to change Go To in file menu too...)
+	});
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
+	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 }
@@ -646,11 +662,6 @@ void DkCentralWidget::openPreferences() {
 
 void DkCentralWidget::removeTab(int tabIdx) {
 
-	if (mTabInfos.size() <= 1) {
-		qDebug() << "This tab is the last man standing - I will not destroy it!";
-		return;
-	}
-
 	if (tabIdx == -1)
 		tabIdx = mTabbar->currentIndex();
 
@@ -671,6 +682,11 @@ void DkCentralWidget::removeTab(int tabIdx) {
 	}
 
 	updateTabIdx();
+
+	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
+		addTab();
+		return;
+	}
 
 	if (mTabInfos.size() <= 1)
 		mTabbar->hide();
