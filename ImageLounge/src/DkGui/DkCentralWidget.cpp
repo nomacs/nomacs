@@ -256,10 +256,10 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
 	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
 		bool ok = false;
-		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), 0, 0, getTabs().count()-1, 1, &ok);
+		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), 1, 1, getTabs().count(), 1, &ok);
 
 		if (ok)
-			setActiveTab(idx); //TODO: Start from 1 instead of 0? (Would have to change Go To in file menu too...)
+			setActiveTab(idx-1);
 	});
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
 	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });

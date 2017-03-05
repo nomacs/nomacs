@@ -1558,10 +1558,10 @@ void DkNoMacs::goTo() {
 	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
 	
 	bool ok = false;
-	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
+	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 1, 1, loader->numFiles(), 1, &ok);
 
 	if (ok)
-		loader->loadFileAt(fileIdx);
+		loader->loadFileAt(fileIdx-1);
 
 }
 
@@ -2159,7 +2159,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 
 	// TODO: rename!
 	if (getTabWidget()->getTabs().count() > 1) {
-		title.append(QString::number(getTabWidget()->getActiveTab()) + "/" + QString::number(getTabWidget()->getTabs().count()-1) + " - ");
+		title.append(QString::number(getTabWidget()->getActiveTab()+1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
 	}
 
 	QFileInfo fInfo = filePath;
