@@ -638,6 +638,11 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	mContextMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mContextMenu->addSeparator();
 
+	mContextMenu->addAction(mViewActions[menu_view_first_tab]);
+	mContextMenu->addAction(mViewActions[menu_view_goto_tab]);
+	mContextMenu->addAction(mViewActions[menu_view_last_tab]);
+	mContextMenu->addSeparator();
+
 	QMenu* panelMenu = mContextMenu->addMenu(QObject::tr("&Panels"));
 	panelMenu->addAction(mPanelActions[menu_panel_explorer]);
 	panelMenu->addAction(mPanelActions[menu_panel_metadata_dock]);
