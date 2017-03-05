@@ -113,6 +113,9 @@ public:
 	void operator=(DkActionManager const&)		= delete;
 
 	enum FileMenuActions {
+		menu_file_new_tab,
+		menu_file_close_tab,
+		menu_file_close_all_tabs,
 		menu_file_open,
 		menu_file_open_dir,
 		menu_file_open_list,
@@ -215,9 +218,6 @@ public:
 		menu_view_anti_aliasing,
 		menu_view_tp_pattern,
 		menu_view_frameless,
-		menu_view_new_tab,
-		menu_view_close_tab,
-		menu_view_close_all_tabs,
 		menu_view_first_tab,
 		menu_view_previous_tab,
 		menu_view_goto_tab,

@@ -361,6 +361,11 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 
 	mFileMenu = new QMenu(QObject::tr("&File"), parent);
 
+	mFileMenu->addAction(mFileActions[menu_file_new_tab]);
+	mFileMenu->addAction(mFileActions[menu_file_close_tab]);
+	mFileMenu->addAction(mFileActions[menu_file_close_all_tabs]);
+	mFileMenu->addSeparator();
+
 	mFileMenu->addAction(mFileActions[menu_file_open]);
 	mFileMenu->addAction(mFileActions[menu_file_open_dir]);
 	mFileMenu->addAction(mFileActions[menu_file_open_list]);
@@ -453,10 +458,6 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 	mViewMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mViewMenu->addSeparator();
 
-	mViewMenu->addAction(mViewActions[menu_view_new_tab]);
-	mViewMenu->addAction(mViewActions[menu_view_close_tab]);
-	mViewMenu->addAction(mViewActions[menu_view_close_all_tabs]);
-	mViewMenu->addSeparator();
 	mViewMenu->addAction(mViewActions[menu_view_first_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_previous_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_goto_tab]);
@@ -946,6 +947,17 @@ void DkActionManager::createActions(QWidget* parent) {
 	// file actions
 	mFileActions.resize(menu_file_end);
 
+	mFileActions[menu_file_new_tab] = new QAction(QObject::tr("New &Tab"), parent);
+	mFileActions[menu_file_new_tab]->setShortcut(QKeySequence(shortcut_new_tab));
+	mFileActions[menu_file_new_tab]->setStatusTip(QObject::tr("Open a new tab"));
+
+	mFileActions[menu_file_close_tab] = new QAction(QObject::tr("&Close Tab"), parent);
+	mFileActions[menu_file_close_tab]->setShortcut(QKeySequence(shortcut_close_tab));
+	mFileActions[menu_file_close_tab]->setStatusTip(QObject::tr("Close current tab"));
+
+	mFileActions[menu_file_close_all_tabs] = new QAction(QObject::tr("&Close All Tabs"), parent);
+	mFileActions[menu_file_close_all_tabs]->setStatusTip(QObject::tr("Close all open tabs"));
+
 	mFileActions[menu_file_open] = new QAction(mFileIcons[icon_file_open], QObject::tr("&Open"), parent);
 	mFileActions[menu_file_open]->setShortcuts(QKeySequence::Open);
 	mFileActions[menu_file_open]->setStatusTip(QObject::tr("Open an image"));
@@ -1288,17 +1300,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_frameless]->setStatusTip(QObject::tr("shows a frameless window"));
 	mViewActions[menu_view_frameless]->setCheckable(true);
 	mViewActions[menu_view_frameless]->setChecked(false);
-
-	mViewActions[menu_view_new_tab] = new QAction(QObject::tr("New &Tab"), parent);
-	mViewActions[menu_view_new_tab]->setShortcut(QKeySequence(shortcut_new_tab));
-	mViewActions[menu_view_new_tab]->setStatusTip(QObject::tr("Open a new tab"));
-
-	mViewActions[menu_view_close_tab] = new QAction(QObject::tr("&Close Tab"), parent);
-	mViewActions[menu_view_close_tab]->setShortcut(QKeySequence(shortcut_close_tab));
-	mViewActions[menu_view_close_tab]->setStatusTip(QObject::tr("Close current tab"));
-
-	mViewActions[menu_view_close_all_tabs] = new QAction(QObject::tr("&Close All Tabs"), parent);
-	mViewActions[menu_view_close_all_tabs]->setStatusTip(QObject::tr("Close all open tabs"));
 
 	mViewActions[menu_view_first_tab] = new QAction(QObject::tr("F&irst Tab"), parent);
 	mViewActions[menu_view_first_tab]->setStatusTip(QObject::tr("Switch to first tab"));
