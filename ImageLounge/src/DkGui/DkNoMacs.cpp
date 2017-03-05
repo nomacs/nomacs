@@ -2155,10 +2155,15 @@ void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
 
 void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool edited, const QString& attr) {
 
+	QString title;
+
 	// TODO: rename!
+	if (getTabWidget()->getTabs().count() > 1) {
+		title.append(QString::number(getTabWidget()->getActiveTab()) + "/" + QString::number(getTabWidget()->getTabs().count()-1) + " - ");
+	}
 
 	QFileInfo fInfo = filePath;
-	QString title = QFileInfo(filePath).fileName();
+	title.append(QFileInfo(filePath).fileName());
 	title = title.remove(".lnk");
 	
 	if (title.isEmpty()) {

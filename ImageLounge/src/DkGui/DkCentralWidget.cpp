@@ -251,12 +251,7 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
 	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
 	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
-	connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() {
-		int count = getTabs().count();
-		for (int i = 0; i < count; i++) {
-			removeTab();
-		}
-	});
+	connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() { clearAllTabs(); });
 	connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() { setActiveTab(0); });
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
 	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
@@ -687,12 +682,10 @@ void DkCentralWidget::removeTab(int tabIdx) {
 }
 
 void DkCentralWidget::clearAllTabs() {
-	
-	// the last tab will never be destroyed (it results in real issues!) - do you need that??
-	for (int idx = 0; idx < mTabInfos.size(); idx++)
-		mTabbar->removeTab(mTabInfos.at(idx)->getTabIdx());
-	
-	//mTabbar->hide();
+
+	int count = getTabs().count();
+	for (int idx = 0; idx < count; idx++)
+		removeTab();
 }
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo) {
@@ -730,6 +723,10 @@ void DkCentralWidget::setActiveTab(int idx) const {
 
 	idx %= mTabInfos.size();
 	mTabbar->setCurrentIndex(idx);
+}
+
+int DkCentralWidget::getActiveTab() {
+	return mTabbar->currentIndex();
 }
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
