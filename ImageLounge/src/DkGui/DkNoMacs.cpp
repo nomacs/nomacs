@@ -1272,7 +1272,7 @@ void DkNoMacs::openFile() {
 	if (fileNames.isEmpty())
 		return;
 
-	int count = getTabWidget()->getTabs().count();
+	int count = getTabWidget()->getTabs().count(); // Save current count of tabs for setting tab position later
 	if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
 		count = 0; 
 		
@@ -1282,13 +1282,13 @@ void DkNoMacs::openFile() {
 		getTabWidget()->loadFileToTab(fileName);
 	}
 
-	getTabWidget()->setActiveTab(count);
+	getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList() {
-	QStringList openFilters = DkSettingsManager::param().app().openFilters;
-	openFilters.pop_front();
-	openFilters.prepend(tr("Text file (*.txt)"));
+	QStringList openFilters;
+	openFilters.append(tr("Text file (*.txt)"));
+	openFilters.append(tr("All files (*.*)"));
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
@@ -1321,9 +1321,9 @@ void DkNoMacs::saveFileList() {
 	if (!viewport())
 		return;
 
-	QStringList saveFilters = DkSettingsManager::param().app().saveFilters;
-	saveFilters.pop_front();
-	saveFilters.prepend(tr("Text file (*.txt)"));
+	QStringList saveFilters;
+	saveFilters.append(tr("Text file (*.txt)"));
+	saveFilters.append(tr("All files (*.*)"));
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Tab List"),
 		getTabWidget()->getCurrentDir(),
