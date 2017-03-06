@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <functional>
 #include <math.h>
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -490,6 +491,17 @@ private:
 	TreeItem *parentItem = 0;
 
 	void parentList(QStringList& parentKeys) const;
+};
+
+class DllCoreExport TabMiddleMouseCloser : public QObject {
+	Q_OBJECT
+
+public:
+	TabMiddleMouseCloser(std::function<void(int)> callback) : callback(callback) {};
+
+protected:
+	std::function<void(int)> callback;
+	bool eventFilter(QObject *obj, QEvent *event);
 };
 
 };

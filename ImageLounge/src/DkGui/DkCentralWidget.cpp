@@ -281,6 +281,7 @@ void DkCentralWidget::createLayout() {
 	mTabbar->setUsesScrollButtons(true);
 	mTabbar->setTabsClosable(true);
 	mTabbar->setMovable(true);
+	mTabbar->installEventFilter(new TabMiddleMouseCloser([this](int idx) { removeTab(idx); }));
 	mTabbar->hide();
 	//addTab(QFileInfo());
 
@@ -668,9 +669,9 @@ void DkCentralWidget::removeTab(int tabIdx) {
 			bw->close();
 	}
 
-	updateTabIdx();
 	mTabInfos.remove(tabIdx);
 	mTabbar->removeTab(tabIdx);
+	updateTabIdx();
 
 	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
 		addTab();
