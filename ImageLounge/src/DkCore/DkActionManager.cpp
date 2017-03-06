@@ -368,7 +368,8 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 
 	mFileMenu->addAction(mFileActions[menu_file_open]);
 	mFileMenu->addAction(mFileActions[menu_file_open_dir]);
-	mFileMenu->addAction(mFileActions[menu_file_open_list]);
+	if (DkSettingsManager::param().global().extendedTabs)
+		mFileMenu->addAction(mFileActions[menu_file_open_list]);
 
 	// add open with menu
 	mFileMenu->addMenu(openWithMenu());
@@ -377,7 +378,8 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addSeparator();
 	mFileMenu->addAction(mFileActions[menu_file_save]);
 	mFileMenu->addAction(mFileActions[menu_file_save_as]);
-	mFileMenu->addAction(mFileActions[menu_file_save_list]);
+	if (DkSettingsManager::param().global().extendedTabs)
+		mFileMenu->addAction(mFileActions[menu_file_save_list]);
 	mFileMenu->addAction(mFileActions[menu_file_save_web]);
 	mFileMenu->addAction(mFileActions[menu_file_rename]);
 	mFileMenu->addSeparator();
@@ -458,11 +460,14 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 	mViewMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mViewMenu->addSeparator();
 
-	mViewMenu->addAction(mViewActions[menu_view_first_tab]);
+	if (DkSettingsManager::param().global().extendedTabs)
+		mViewMenu->addAction(mViewActions[menu_view_first_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_previous_tab]);
-	mViewMenu->addAction(mViewActions[menu_view_goto_tab]);
+	if (DkSettingsManager::param().global().extendedTabs)
+		mViewMenu->addAction(mViewActions[menu_view_goto_tab]);
 	mViewMenu->addAction(mViewActions[menu_view_next_tab]);
-	mViewMenu->addAction(mViewActions[menu_view_last_tab]);
+	if (DkSettingsManager::param().global().extendedTabs)
+		mViewMenu->addAction(mViewActions[menu_view_last_tab]);
 	mViewMenu->addSeparator();
 
 	mViewMenu->addAction(mViewActions[menu_view_reset]);
@@ -639,10 +644,12 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	mContextMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mContextMenu->addSeparator();
 
-	mContextMenu->addAction(mViewActions[menu_view_first_tab]);
-	mContextMenu->addAction(mViewActions[menu_view_goto_tab]);
-	mContextMenu->addAction(mViewActions[menu_view_last_tab]);
-	mContextMenu->addSeparator();
+	if (DkSettingsManager::param().global().extendedTabs) {
+		mContextMenu->addAction(mViewActions[menu_view_first_tab]);
+		mContextMenu->addAction(mViewActions[menu_view_goto_tab]);
+		mContextMenu->addAction(mViewActions[menu_view_last_tab]);
+		mContextMenu->addSeparator();
+	}
 
 	QMenu* panelMenu = mContextMenu->addMenu(QObject::tr("&Panels"));
 	panelMenu->addAction(mPanelActions[menu_panel_explorer]);

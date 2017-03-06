@@ -214,6 +214,7 @@ public:
 		QStringList recentFolders;
 		bool logRecentFiles;
 		bool checkOpenDuplicates;
+		bool extendedTabs;
 		bool useTmpPath;
 		bool askToSaveDeletedFiles;
 		QString tmpPath;

@@ -256,7 +256,7 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
 	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
 		bool ok = false;
-		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), 1, 1, getTabs().count(), 1, &ok);
+		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), getActiveTab()+1, 1, getTabs().count(), 1, &ok);
 
 		if (ok)
 			setActiveTab(idx-1);

@@ -1295,14 +1295,12 @@ void DkNoMacs::openFile() {
 			getTabWidget()->loadFileToTab(fileName);
 		}
 	}
-	if (duplicates.count() > 0) { // Show messagebox if at least one duplicate was found
-		QMessageBox dupbox(this);
-		QString duptext = "The following duplicates were not added:\n";
+	if (duplicates.count() > 0) { // Show message if at least one duplicate was found
+		QString duptext = tr("The following duplicates were not added:");
 		for (auto dup : duplicates) {
-			duptext.append(dup + "\n");
+			duptext.append("\n" + dup);
 		}
-		dupbox.setText(duptext);
-		dupbox.exec();
+		getTabWidget()->getViewPort()->getController()->setInfo(duptext);
 	}
 
 	if(fileNames.count() > duplicates.count()) // Only set the active tab if there is actually something added
@@ -2157,9 +2155,8 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 
 	QString title;
 
-	// TODO: rename!
-	if (getTabWidget()->getTabs().count() > 1) {
-		title.append(QString::number(getTabWidget()->getActiveTab()+1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
+	if (DkSettingsManager::param().global().extendedTabs && (getTabWidget()->getTabs().count() > 1)) {
+		title.append(QString::number(getTabWidget()->getActiveTab() + 1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
 	}
 
 	QFileInfo fInfo = filePath;
