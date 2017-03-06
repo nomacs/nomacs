@@ -355,7 +355,6 @@ void createPluginsPath() {
 	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
 #endif // Q_OS_WIN
 
-
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
