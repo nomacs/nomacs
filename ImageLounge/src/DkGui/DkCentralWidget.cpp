@@ -674,6 +674,7 @@ void DkCentralWidget::removeTab(int tabIdx) {
 
 	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
 		addTab();
+		imageUpdatedSignal(mTabInfos.at(0)->getImage());
 		return;
 	}
 

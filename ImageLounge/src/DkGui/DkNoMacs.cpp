@@ -2166,7 +2166,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	title.append(QFileInfo(filePath).fileName());
 	title = title.remove(".lnk");
 	
-	if (title.isEmpty()) {
+	if (filePath.isEmpty()) {
 		title = "nomacs - Image Lounge";
 		if (DkSettingsManager::param().app().privateMode) 
 			title.append(tr(" [Private Mode]"));
@@ -2182,7 +2182,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 
 	if (!size.isEmpty())
 		attributes.sprintf(" - %i x %i", size.width(), size.height());
-	if (size.isEmpty() && viewport())
+	if (size.isEmpty() && viewport() && !viewport()->getImageSize().isEmpty())
 		attributes.sprintf(" - %i x %i", viewport()->getImage().width(), viewport()->getImage().height());
 	if (DkSettingsManager::param().app().privateMode) 
 		attributes.append(tr(" [Private Mode]"));
