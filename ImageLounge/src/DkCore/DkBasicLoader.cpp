@@ -88,13 +88,14 @@
 #undef uint64
 #undef int64
 //#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
-#endif
-
 #else
+
 #ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
 #endif
+#endif
+
 #endif
 
 #pragma warning(pop)
