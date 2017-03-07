@@ -90,13 +90,16 @@
 //#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #else
 
+
+#endif //#ifdef WITH_LIBTIFF
+
+#endif //#ifdef WITH_OPENCV
+
 #ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
-#endif
-#endif
+#endif //#ifdef Q_OS_WIN
 
-#endif
 
 #pragma warning(pop)
 
