@@ -298,7 +298,7 @@ DkSettingsModel::DkSettingsModel(QObject* parent) : QAbstractItemModel(parent) {
 }
 
 DkSettingsModel::~DkSettingsModel() {
-	delete mRootItem;
+	delete mRootItem;	// crash detected
 }
 
 QModelIndex DkSettingsModel::index(int row, int column, const QModelIndex &parent) const {
