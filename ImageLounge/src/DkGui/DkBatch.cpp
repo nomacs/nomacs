@@ -1088,8 +1088,8 @@ void DkBatchOutput::applyDefault() {
 void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
 
 	DkSaveInfo si = config.saveInfo();
-	mCbOverwriteExisting->setChecked(si.mode() == DkSaveInfo::mode_overwrite);
-	mCbDoNotSave->setChecked(si.mode() == DkSaveInfo::mode_do_not_save_output);
+	mCbOverwriteExisting->setChecked((si.mode() & DkSaveInfo::mode_overwrite) != 0);
+	mCbDoNotSave->setChecked((si.mode() & DkSaveInfo::mode_do_not_save_output) != 0);
 	mCbDeleteOriginal->setChecked(si.isDeleteOriginal());
 	mCbUseInput->setChecked(si.isInputDirOutputDir());
 	mOutputlineEdit->setText(config.getOutputDirPath());
