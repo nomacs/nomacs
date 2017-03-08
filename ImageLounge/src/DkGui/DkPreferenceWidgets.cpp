@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 #include "DkBasicWidgets.h"
 #include "DkSettingsWidget.h"
+#include "DkActionManager.h"
+#include "DkNoMacs.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -359,6 +361,16 @@ void DkGeneralPreference::createLayout() {
 	cbLogRecentFiles->setToolTip(tr("If checked, recent files will be saved."));
 	cbLogRecentFiles->setChecked(DkSettingsManager::param().global().logRecentFiles);
 
+	QCheckBox* cbCheckOpenDuplicates = new QCheckBox(tr("Check for Duplicates on Open"), this);
+	cbCheckOpenDuplicates->setObjectName("checkOpenDuplicates");
+	cbCheckOpenDuplicates->setToolTip(tr("If any files are opened which are already open in a tab, don't open them again."));
+	cbCheckOpenDuplicates->setChecked(DkSettingsManager::param().global().checkOpenDuplicates);
+
+	QCheckBox* cbExtendedTabs = new QCheckBox(tr("Show extra options related to tabs"), this);
+	cbExtendedTabs->setObjectName("extendedTabs");
+	cbExtendedTabs->setToolTip(tr("Enables the \"Go to Tab\", \"First Tab\", and \"Last Tab\" options in the View menu, and the \"Open Tabs\" and \"Save Tabs\" options in the File menu."));
+	cbExtendedTabs->setChecked(DkSettingsManager::param().global().extendedTabs);
+
 	QCheckBox* cbLoopImages = new QCheckBox(tr("Loop Images"), this);
 	cbLoopImages->setObjectName("loopImages");
 	cbLoopImages->setToolTip(tr("Start with the first image in a folder after showing the last."));
@@ -407,6 +419,8 @@ void DkGeneralPreference::createLayout() {
 	DkGroupWidget* generalGroup = new DkGroupWidget(tr("General"), this);
 	generalGroup->addWidget(cbRecentFiles);
 	generalGroup->addWidget(cbLogRecentFiles);
+	generalGroup->addWidget(cbCheckOpenDuplicates);
+	generalGroup->addWidget(cbExtendedTabs);
 	generalGroup->addWidget(cbLoopImages);
 	generalGroup->addWidget(cbZoomOnWheel);
 	generalGroup->addWidget(cbHorZoomSkips);
@@ -478,6 +492,20 @@ void DkGeneralPreference::on_logRecentFiles_toggled(bool checked) const {
 
 	if (DkSettingsManager::param().global().logRecentFiles != checked)
 		DkSettingsManager::param().global().logRecentFiles = checked;
+}
+
+void DkGeneralPreference::on_checkOpenDuplicates_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().global().checkOpenDuplicates != checked)
+		DkSettingsManager::param().global().checkOpenDuplicates = checked;
+}
+
+void DkGeneralPreference::on_extendedTabs_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().global().extendedTabs != checked) {
+		DkSettingsManager::param().global().extendedTabs = checked;
+		showRestartLabel();
+	}
 }
 
 void DkGeneralPreference::on_closeOnEsc_toggled(bool checked) const {
@@ -557,7 +585,7 @@ void DkGeneralPreference::on_defaultSettings_clicked() {
 	
 	if (answer == QMessageBox::Yes) {
 		DkSettingsManager::param().setToDefaultSettings();
-		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+		showRestartLabel();
 		qDebug() << "answer is: " << answer << "flushing all settings...";
 	}
 
@@ -577,7 +605,7 @@ void DkGeneralPreference::on_importSettings_clicked() {
 
 	DkSettingsManager::importSettings(filePath);
 
-	emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	showRestartLabel();
 }
 
 void DkGeneralPreference::on_exportSettings_clicked() {
@@ -605,7 +633,7 @@ void DkGeneralPreference::on_languageCombo_currentIndexChanged(int index) const 
 
 		if (DkSettingsManager::param().global().language != language) {
 			DkSettingsManager::param().global().language = language;
-			emit infoSignal(tr("Please Restart nomacs to apply changes"));
+			showRestartLabel();
 		}
 	}
 }

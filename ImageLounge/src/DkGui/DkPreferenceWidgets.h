@@ -142,6 +142,8 @@ public:
 public slots:
 	void on_showRecentFiles_toggled(bool checked) const;
 	void on_logRecentFiles_toggled(bool checked) const;
+	void on_checkOpenDuplicates_toggled(bool checked) const;
+	void on_extendedTabs_toggled(bool checked) const;
 	void on_closeOnEsc_toggled(bool checked) const;
 	void on_zoomOnWheel_toggled(bool checked) const;
 	void on_horZoomSkips_toggled(bool checked) const;

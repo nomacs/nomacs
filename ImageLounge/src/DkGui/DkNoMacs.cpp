@@ -1272,23 +1272,45 @@ void DkNoMacs::openFile() {
 	if (fileNames.isEmpty())
 		return;
 
-	int count = getTabWidget()->getTabs().count();
+	int count = getTabWidget()->getTabs().count(); // Save current count of tabs for setting tab position later
 	if (getTabWidget()->getTabs().at(0)->getMode() == DkTabInfo::tab_empty)
 		count = 0; 
 		
-
+	QSet<QString> duplicates;
 	for (QString fileName : fileNames) {
-		qDebug() << "os filename: " << fileName;
-		getTabWidget()->loadFileToTab(fileName);
+		bool dup = false;
+
+		if (DkSettingsManager::param().global().checkOpenDuplicates) { // Should we check for duplicates?
+			for (auto tab : getTabWidget()->getTabs()) {
+				if (tab->getFilePath().compare(fileName) == 0) {
+					duplicates.insert(tab->getFilePath());
+					dup = true;
+					break;
+				}
+			}
+		}
+
+		if (!dup) {
+			qDebug() << "os filename: " << fileName;
+			getTabWidget()->loadFileToTab(fileName);
+		}
+	}
+	if (duplicates.count() > 0) { // Show message if at least one duplicate was found
+		QString duptext = tr("The following duplicates were not added:");
+		for (auto dup : duplicates) {
+			duptext.append("\n" + dup);
+		}
+		getTabWidget()->getViewPort()->getController()->setInfo(duptext);
 	}
 
-	getTabWidget()->setActiveTab(count);
+	if(fileNames.count() > duplicates.count()) // Only set the active tab if there is actually something added
+		getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList() {
-	QStringList openFilters = DkSettingsManager::param().app().openFilters;
-	openFilters.pop_front();
-	openFilters.prepend(tr("Text file (*.txt)"));
+	QStringList openFilters;
+	openFilters.append(tr("Text file (*.txt)"));
+	openFilters.append(tr("All files (*.*)"));
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
@@ -1321,9 +1343,9 @@ void DkNoMacs::saveFileList() {
 	if (!viewport())
 		return;
 
-	QStringList saveFilters = DkSettingsManager::param().app().saveFilters;
-	saveFilters.pop_front();
-	saveFilters.prepend(tr("Text file (*.txt)"));
+	QStringList saveFilters;
+	saveFilters.append(tr("Text file (*.txt)"));
+	saveFilters.append(tr("All files (*.*)"));
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Tab List"),
 		getTabWidget()->getCurrentDir(),
@@ -1534,10 +1556,10 @@ void DkNoMacs::goTo() {
 	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
 	
 	bool ok = false;
-	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
+	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 1, 1, loader->numFiles(), 1, &ok);
 
 	if (ok)
-		loader->loadFileAt(fileIdx);
+		loader->loadFileAt(fileIdx-1);
 
 }
 
@@ -2131,13 +2153,17 @@ void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
 
 void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool edited, const QString& attr) {
 
-	// TODO: rename!
+	QString title;
+
+	if (DkSettingsManager::param().global().extendedTabs && (getTabWidget()->getTabs().count() > 1)) {
+		title.append(QString::number(getTabWidget()->getActiveTab() + 1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
+	}
 
 	QFileInfo fInfo = filePath;
-	QString title = QFileInfo(filePath).fileName();
+	title.append(QFileInfo(filePath).fileName());
 	title = title.remove(".lnk");
 	
-	if (title.isEmpty()) {
+	if (filePath.isEmpty()) {
 		title = "nomacs - Image Lounge";
 		if (DkSettingsManager::param().app().privateMode) 
 			title.append(tr(" [Private Mode]"));
@@ -2153,7 +2179,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 
 	if (!size.isEmpty())
 		attributes.sprintf(" - %i x %i", size.width(), size.height());
-	if (size.isEmpty() && viewport())
+	if (size.isEmpty() && viewport() && !viewport()->getImageSize().isEmpty())
 		attributes.sprintf(" - %i x %i", viewport()->getImage().width(), viewport()->getImage().height());
 	if (DkSettingsManager::param().app().privateMode) 
 		attributes.append(tr(" [Private Mode]"));

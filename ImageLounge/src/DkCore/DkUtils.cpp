@@ -56,6 +56,7 @@
 #include <QStandardPaths>
 #include <QApplication>
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -1181,5 +1182,22 @@ void TreeItem::setParent(TreeItem* parent) {
 	parentItem = parent;
 }
 
+
+bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
+	if (event->type() == QEvent::MouseButtonRelease) {
+		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+		if (mouseEvent->button() == Qt::MidButton) {
+			auto tabbar = static_cast<QTabBar *>(obj);
+			for (int i = 0; i < tabbar->count(); i++) {
+				QRect tabrect = tabbar->tabRect(i);
+				if (tabrect.contains(mouseEvent->pos()))
+					callback(i);
+			}
+			return true;
+		}	
+	}
+
+	return QObject::eventFilter(obj, event);
+}
 
 }

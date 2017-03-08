@@ -350,7 +350,8 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	settings.beginGroup("GlobalSettings");
 
 	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
-	//global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
+	global_p.checkOpenDuplicates = settings.value("checkOpenDuplicates", global_p.checkOpenDuplicates).toBool();
+	global_p.extendedTabs = settings.value("extendedTabs", global_p.extendedTabs).toBool();
 
 	global_p.loop = settings.value("loop", global_p.loop).toBool();
 	global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
@@ -554,8 +555,10 @@ void DkSettings::save(QSettings& settings, bool force) {
 
 	if (force ||global_p.skipImgs != global_d.skipImgs)
 		settings.setValue("skipImgs",global_p.skipImgs);
-	//if (force ||global_p.numFiles != global_d.numFiles)
-	//	settings.setValue("numFiles",global_p.numFiles);
+	if (force ||global_p.checkOpenDuplicates != global_d.checkOpenDuplicates)
+		settings.setValue("checkOpenDuplicates",global_p.checkOpenDuplicates);
+	if (force ||global_p.extendedTabs != global_d.extendedTabs)
+		settings.setValue("extendedTabs", global_p.extendedTabs);
 	if (force ||global_p.loop != global_d.loop)
 		settings.setValue("loop",global_p.loop);
 	if (force ||global_p.scanSubFolders != global_d.scanSubFolders)
@@ -784,6 +787,8 @@ void DkSettings::setToDefaultSettings() {
 
 	global_p.skipImgs = 10;
 	global_p.numFiles = 50;
+	global_p.checkOpenDuplicates = true;
+	global_p.extendedTabs = false;
 	global_p.loop = true;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();

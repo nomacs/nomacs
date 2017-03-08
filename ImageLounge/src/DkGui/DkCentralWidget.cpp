@@ -54,6 +54,7 @@
 #include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QStandardPaths>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -247,11 +248,21 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	setAcceptDrops(true);
 
 	DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::menu_file_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
+	connect(am.action(DkActionManager::menu_file_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+	connect(am.action(DkActionManager::menu_file_close_all_tabs), &QAction::triggered, this, [this]() { clearAllTabs(); });
 	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
-	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
-	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+	connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() { setActiveTab(0); });
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
+	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
+		bool ok = false;
+		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), getActiveTab()+1, 1, getTabs().count(), 1, &ok);
+
+		if (ok)
+			setActiveTab(idx-1);
+	});
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
+	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 }
@@ -270,6 +281,7 @@ void DkCentralWidget::createLayout() {
 	mTabbar->setUsesScrollButtons(true);
 	mTabbar->setTabsClosable(true);
 	mTabbar->setMovable(true);
+	mTabbar->installEventFilter(new TabMiddleMouseCloser([this](int idx) { removeTab(idx); }));
 	mTabbar->hide();
 	//addTab(QFileInfo());
 
@@ -646,11 +658,6 @@ void DkCentralWidget::openPreferences() {
 
 void DkCentralWidget::removeTab(int tabIdx) {
 
-	if (mTabInfos.size() <= 1) {
-		qDebug() << "This tab is the last man standing - I will not destroy it!";
-		return;
-	}
-
 	if (tabIdx == -1)
 		tabIdx = mTabbar->currentIndex();
 
@@ -662,27 +669,25 @@ void DkCentralWidget::removeTab(int tabIdx) {
 			bw->close();
 	}
 
-	for (int idx = 0; idx < mTabInfos.size(); idx++) {
-		
-		if (mTabInfos.at(idx)->getTabIdx() == tabIdx) {
-			mTabInfos.remove(idx);
-			mTabbar->removeTab(tabIdx);
-		}
-	}
-
+	mTabInfos.remove(tabIdx);
+	mTabbar->removeTab(tabIdx);
 	updateTabIdx();
+
+	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
+		addTab();
+		imageUpdatedSignal(mTabInfos.at(0)->getImage());
+		return;
+	}
 
 	if (mTabInfos.size() <= 1)
 		mTabbar->hide();
 }
 
 void DkCentralWidget::clearAllTabs() {
-	
-	// the last tab will never be destroyed (it results in real issues!) - do you need that??
-	for (int idx = 0; idx < mTabInfos.size(); idx++)
-		mTabbar->removeTab(mTabInfos.at(idx)->getTabIdx());
-	
-	//mTabbar->hide();
+
+	int count = getTabs().count();
+	for (int idx = 0; idx < count; idx++)
+		removeTab();
 }
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo) {
@@ -720,6 +725,10 @@ void DkCentralWidget::setActiveTab(int idx) const {
 
 	idx %= mTabInfos.size();
 	mTabbar->setCurrentIndex(idx);
+}
+
+int DkCentralWidget::getActiveTab() {
+	return mTabbar->currentIndex();
 }
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {

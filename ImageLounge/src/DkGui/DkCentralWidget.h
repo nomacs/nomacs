@@ -130,6 +130,8 @@ public:
 	QString getCurrentDir() const;
 
 	void clearAllTabs();
+	void setActiveTab(int idx) const;
+	int getActiveTab();
 	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
 	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
 	void loadSettings();
@@ -157,7 +159,6 @@ public slots:
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
-	void setActiveTab(int idx) const;
 	void showThumbView(bool show = true);
 	void showViewPort(bool show = true);
 	void showRecentFiles(bool show = true);
