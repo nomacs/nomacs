@@ -1090,7 +1090,7 @@ void DkPluginManager::clear() {
 	mPlugins.clear();
 }
 
-//Loads enabled plugins when the menu is first hit
+//Loads enabled plugins (i.e. when the menu is first hit)
 void DkPluginManager::loadPlugins() {
 
 	// do not load twice
@@ -1265,6 +1265,28 @@ bool DkPluginManager::isBlackListed(const QString & pluginPath) const {
 
 QStringList DkPluginManager::blackList() {
 	return QStringList() << "opencv";
+}
+
+void DkPluginManager::createPluginsPath() {
+
+#ifdef WITH_PLUGINS
+	// initialize plugin paths -----------------------------------------
+#ifdef Q_OS_WIN
+	QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#else
+	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
+#endif // Q_OS_WIN
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettingsManager::param().global().pluginsDir = pluginsDir.absolutePath();
+	qInfo() << "plugins dir set to: " << nmc::DkSettingsManager::param().global().pluginsDir;
+
+	QCoreApplication::addLibraryPath(nmc::DkSettingsManager::param().global().pluginsDir);
+	QCoreApplication::addLibraryPath("./imageformats");
+
+#endif // WITH_PLUGINS
 }
 
 // DkPluginActionManager --------------------------------------------------------------------

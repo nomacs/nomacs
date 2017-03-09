@@ -184,6 +184,8 @@ public:
 	QVector<QAction*> pluginActions() const;
 	QVector<QMenu*> pluginSubMenus() const;
 
+	static void createPluginsPath();
+
 public slots:
 	//void runLoadedPlugin();
 	void runPluginFromShortcut();
@@ -238,6 +240,7 @@ public:
 
 	bool isBlackListed(const QString& pluginPath) const;
 	static QStringList blackList();
+	static void createPluginsPath();
 
 private:
 	DkPluginManager();

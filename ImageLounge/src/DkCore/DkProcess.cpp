@@ -33,6 +33,7 @@
 #include "DkSettings.h"
 #include "DkMath.h"
 #include "DkManipulators.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFuture>
@@ -563,6 +564,10 @@ void DkPluginBatch::loadAllPlugins() {
 	if (mPlugins.size() == mPluginList.size())
 		return;
 
+	// manager cares that they are not loaded twice
+	// we need to load them here for CMD inputs
+	DkPluginManager::instance().loadPlugins();
+
 	QString runId;
 
 	for (const QString& cPluginString : mPluginList) {
@@ -593,7 +598,7 @@ void DkPluginBatch::loadAllPlugins() {
 
 void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPluginContainer> & plugin, QString& runID) const {
 
-	QString uiSeparator = " | ";	// TODO: make a nice define
+	QString uiSeparator = " | ";
 
 	QStringList ids = pluginString.split(uiSeparator);
 
@@ -652,7 +657,8 @@ bool DkBatchProcess::compute() {
 	QFileInfo fInfoOut(mSaveInfo.outputFilePath());
 
 	// check errors
-	if (fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing) {
+	if ((mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) == 0 && // do not save is not set
+		(fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing)) {
 		mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mSaveInfo.outputFilePath()));
 		mFailure++;
 		return mFailure == 0;
@@ -669,13 +675,16 @@ bool DkBatchProcess::compute() {
 		return mFailure == 0;
 	}
 	
-	// do the work
-	if (mProcessFunctions.empty() && mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && fInfoIn.suffix() == fInfoOut.suffix()) {	// rename?
+	// rename operation?
+	if (mProcessFunctions.empty() && 
+		mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && 
+		fInfoIn.suffix() == fInfoOut.suffix()) {
 		if (!renameFile())
 			mFailure++;
 		return mFailure == 0;
 	}
-	else if (mProcessFunctions.empty() && fInfoIn.suffix() == fInfoOut.suffix()) {	// copy?
+	// copy operation?
+	else if (mProcessFunctions.empty() && fInfoIn.suffix() == fInfoOut.suffix()) {
 		if (!copyFile())
 			mFailure++;
 		else
@@ -684,6 +693,7 @@ bool DkBatchProcess::compute() {
 		return mFailure == 0;
 	}
 
+	// do the work
 	process();
 
 	return mFailure == 0;
@@ -1022,6 +1032,45 @@ void DkBatchProcessing::postLoad() {
 		fun->postLoad(batchInfo);
 	}
 }
+
+void DkBatchProcessing::computeBatch(const QString& settingsPath, const QString& logPath) {
+
+	DkTimer dt;
+	DkBatchConfig bc = DkBatchProfile::loadProfile(settingsPath);
+
+	// guarantee that the output path exists
+	if (!QDir().mkpath(bc.getOutputDirPath())) {
+		qCritical() << "Could not create:" << bc.getOutputDirPath();
+		return;
+	}
+
+	QSharedPointer<nmc::DkBatchProcessing> process(new nmc::DkBatchProcessing());
+	process->setBatchConfig(bc);
+	process->compute();
+
+	process->waitForFinished();	// block
+
+	qInfo() << "batch finished with" << process->getNumFailures() << "errors in" << dt;
+
+	if (!logPath.isEmpty()) {
+
+		QFileInfo fi(logPath);
+
+		QDir().mkpath(fi.absolutePath());
+
+		QFile file(logPath);
+		if (!file.open(QIODevice::WriteOnly))
+			qWarning() << "Sorry, I could not write to" << logPath;
+		else {
+			QStringList log = process->getLog();
+			QTextStream s(&file);
+			for (const QString& line : log)
+				s << line << '\n';
+			qInfo() << "log written to: " << logPath;
+		}
+	}
+}
+
 
 QStringList DkBatchProcessing::getLog() const {
 

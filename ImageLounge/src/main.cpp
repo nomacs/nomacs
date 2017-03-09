@@ -62,6 +62,7 @@
 #include "DkPong.h"
 #include "DkUtils.h"
 #include "DkProcess.h"
+#include "DkPluginManager.h"
 
 #include "DkDependencyResolver.h"
 
@@ -71,9 +72,6 @@
 #ifdef Q_OS_WIN
 #include <shlobj.h>
 #endif
-
-void createPluginsPath();
-void computeBatch(const QString& settingsPath, const QString& logPath = QString());
 
 #ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
@@ -158,9 +156,9 @@ int main(int argc, char *argv[]) {
 	parser.process(a);
 	// CMD parser --------------------------------------------------------------------
 
-	createPluginsPath();
+	nmc::DkPluginManager::createPluginsPath();
 
-	// load to tabs
+	// compute batch process
 	if (!parser.value(batchOpt).isEmpty()) {
 		
 		QString logPath;
@@ -168,7 +166,8 @@ int main(int argc, char *argv[]) {
 			logPath = parser.value(batchLogOpt);
 
 		QString batchSettingsPath = parser.value(batchOpt);
-		computeBatch(batchSettingsPath, logPath);
+		nmc::DkBatchProcessing::computeBatch(batchSettingsPath, logPath);
+		
 		return 0;
 	}
 
@@ -229,11 +228,11 @@ int main(int argc, char *argv[]) {
 
 	// initialize nomacs
 	if (mode == nmc::DkSettingsManager::param().mode_frameless) {
-		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
+		w = new nmc::DkNoMacsFrameless();
 		qDebug() << "this is the frameless nomacs...";
 	}
 	else if (mode == nmc::DkSettingsManager::param().mode_contrast) {
-		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
+		w = new nmc::DkNoMacsContrast();
 		qDebug() << "this is the contrast nomacs...";
 	}
 	else if (parser.isSet(pongOpt)) {
@@ -242,7 +241,7 @@ int main(int argc, char *argv[]) {
 		return rVal;
 	}
 	else
-		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
+		w = new nmc::DkNoMacsIpl();
 
 	if (w)
 		w->onWindowLoaded();
@@ -308,63 +307,4 @@ int main(int argc, char *argv[]) {
 		delete pw;
 
 	return rVal;
-}
-
-void computeBatch(const QString& settingsPath, const QString& logPath) {
-	
-	nmc::DkBatchConfig bc = nmc::DkBatchProfile::loadProfile(settingsPath);
-
-	// guarantee that the output path exists
-	if (!QDir().mkpath(bc.getOutputDirPath())) {
-		qCritical() << "Could not create:" << bc.getOutputDirPath();
-		return;
-	}
-
-	QSharedPointer<nmc::DkBatchProcessing> process(new nmc::DkBatchProcessing());
-	process->setBatchConfig(bc);
-	process->compute();
-
-	process->waitForFinished();	// block
-
-	if (!logPath.isEmpty()) {
-		
-		QFileInfo fi(logPath);
-		
-		QDir().mkpath(fi.absolutePath());
-
-		QFile file(logPath);
-		if (!file.open(QIODevice::WriteOnly))
-			qWarning() << "Sorry, I could not write to" << logPath;
-		else {
-			QStringList log = process->getLog();
-			QTextStream s(&file);
-			for (const QString& line : log)
-				s << line << '\n';
-			qInfo() << "log written to: " << logPath;
-		}
-	}
-}
-
-void createPluginsPath() {
-
-#ifdef WITH_PLUGINS
-	// initialize plugin paths -----------------------------------------
-#ifdef Q_OS_WIN
-	QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
-#else
-	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
-#endif // Q_OS_WIN
-
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettingsManager::param().global().pluginsDir = pluginsDir.absolutePath();
-	qDebug() << "plugins dir set to: " << nmc::DkSettingsManager::param().global().pluginsDir;
-
-	QCoreApplication::addLibraryPath(nmc::DkSettingsManager::param().global().pluginsDir);
-
-	QCoreApplication::addLibraryPath("./imageformats");
-
-#endif // WITH_PLUGINS
-
 }

@@ -315,6 +315,8 @@ public:
 
 	void postLoad();
 
+	static void computeBatch(const QString& settingsPath, const QString& logPath);
+
 public slots:
 	// user interaction
 	void cancel();

@@ -3,6 +3,6 @@
 	<DisplayName>nomacs [x64]</DisplayName>
 	<Description>nomacs for x64 systems.</Description>
 	<Version>3.5.0</Version>
-	<ReleaseDate>2017-03-03</ReleaseDate>
+	<ReleaseDate>2017-03-02</ReleaseDate>
 	<Default>true</Default>
 </Package>
