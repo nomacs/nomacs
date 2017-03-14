@@ -88,8 +88,6 @@
 #undef uint64
 #undef int64
 //#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
-#else
-
 
 #endif //#ifdef WITH_LIBTIFF
 
