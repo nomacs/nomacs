@@ -73,6 +73,9 @@
 #include <shlobj.h>
 #endif
 
+// defines
+void installTranslations(QApplication& app);
+
 #ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
@@ -94,21 +97,16 @@ int main(int argc, char *argv[]) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif
-	QApplication a(argc, (char**)argv);
+	QApplication app(argc, (char**)argv);
 
 	// init settings
 	nmc::DkSettingsManager::instance().init();
-
 	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettingsManager::param().app().appMode).toInt();
 
-	//if (!nmc::DkSettingsManager::param().app().openFilters.empty())
-	//	qInfoClean() << "supported image extensions: " << nmc::DkSettingsManager::param().app().openFilters[0];
-
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;
-
-	//parser.setApplicationDescription("Test helper");
+	
 	parser.addHelpOption();
 	parser.addVersionOption();
 	parser.addPositionalArgument("image", QObject::tr("An input image."));
@@ -153,7 +151,7 @@ int main(int argc, char *argv[]) {
 		QObject::tr("settings-path.nfo"));
 	parser.addOption(importSettingsOpt);
 
-	parser.process(a);
+	parser.process(app);
 	// CMD parser --------------------------------------------------------------------
 
 	nmc::DkPluginManager::createPluginsPath();
@@ -178,30 +176,11 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	//// DEBUG --------------------------------------------------------------------
-	//nmc::DkDependencyWalker dw("C:/VSProjects/READ/nomacs/build2015-x64/Debug/plugins/writerIdentificationPlugin.dll");
-	//if (!dw.findDependencies())
-	//	qWarning() << "could not find dependencies for" << dw.filePath();
-
-	//qDebug() << "all dependencies:" << dw.dependencies();
-	//qDebug() << "filtered dependencies:" << dw.filteredDependencies();
-
-	//return 0;
-	//// DEBUG --------------------------------------------------------------------
+	//install translations
+	installTranslations(app);
 
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
-
-	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-	
-	QTranslator translator;
-	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
-	a.installTranslator(&translator);
-	
-	QTranslator translatorQt;
-	nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
-	a.installTranslator(&translatorQt);
 
 	// show pink icons if nomacs is in private mode
 	if(parser.isSet(privateOpt)) {
@@ -210,7 +189,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (parser.isSet(modeOpt)) {
-		QString pm = parser.value(modeOpt);// .trimmed();
+		QString pm = parser.value(modeOpt);
 
 		if (pm == "default")
 			mode = nmc::DkSettingsManager::param().mode_default;
@@ -237,7 +216,7 @@ int main(int argc, char *argv[]) {
 	}
 	else if (parser.isSet(pongOpt)) {
 		pw = new nmc::DkPong();
-		int rVal = a.exec();
+		int rVal = app.exec();
 		return rVal;
 	}
 	else
@@ -249,14 +228,16 @@ int main(int argc, char *argv[]) {
 	qInfo() << "Initialization takes: " << dt;
 
 	if (!parser.positionalArguments().empty()) {
-		w->loadFile(QFileInfo(parser.positionalArguments()[0]).absoluteFilePath());	// update folder + be silent
-		qDebug() << "loading: " << parser.positionalArguments()[0];
+		QString filePath = parser.positionalArguments()[0].trimmed();
+
+		if (!filePath.isEmpty())
+			w->loadFile(QFileInfo(filePath).absoluteFilePath());	// update folder + be silent
 	}
-	else {
-		bool showRecent = nmc::DkSettingsManager::param().app().showRecentFiles;
-		showRecent &= nmc::DkSettingsManager::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
-		w->showRecentFiles(showRecent);
-	}
+	//else {
+	//	bool showRecent = nmc::DkSettingsManager::param().app().showRecentFiles;
+	//	showRecent &= nmc::DkSettingsManager::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
+	//	w->showRecentFiles(showRecent);
+	//}
 
 	// load directory preview
 	if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
@@ -286,14 +267,14 @@ int main(int argc, char *argv[]) {
 
 #ifdef Q_WS_MAC
 	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
-	a.installEventFilter(osxEventFilter);
+	app.installEventFilter(osxEventFilter);
 	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
 		w, SLOT(loadFile(const QFileInfo&)));
 #endif
 
 	int rVal = -1;
 	try {
-		rVal = a.exec();
+		rVal = app.exec();
 	}
 	catch (const std::bad_alloc&) {
 		
@@ -307,4 +288,19 @@ int main(int argc, char *argv[]) {
 		delete pw;
 
 	return rVal;
+}
+
+void installTranslations(QApplication& app) {
+
+	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
+	QString translationName = "nomacs_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+	QString translationNameQt = "qt_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+
+	QTranslator translator;
+	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
+	app.installTranslator(&translator);
+
+	QTranslator translatorQt;
+	nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
+	app.installTranslator(&translatorQt);
 }
