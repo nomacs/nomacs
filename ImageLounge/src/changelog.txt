@@ -6,6 +6,7 @@ nomacs 3.6.0
 	- Improved profiles
 	- Image adjustments added
 	- Settings for batch plugins
+- Extended tab functions (thanks to @cornytrace)
 - Settings Editor
 - Icons for high DPI displays
 - Crash on exit fixed for Linux with Qt 5.7.1

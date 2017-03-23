@@ -397,8 +397,6 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addAction(mFileActions[menu_file_prev]);
 	mFileMenu->addAction(mFileActions[menu_file_next]);
 	mFileMenu->addSeparator();
-	mFileMenu->addAction(mFileActions[menu_file_train_format]);
-	mFileMenu->addSeparator();
 	mFileMenu->addAction(mFileActions[menu_file_new_instance]);
 	mFileMenu->addAction(mFileActions[menu_file_private_instance]);
 	mFileMenu->addAction(mFileActions[menu_file_exit]);
@@ -571,7 +569,7 @@ QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
 QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 
 	mToolsMenu = new QMenu(QObject::tr("&Tools"), parent);
-
+	
 #ifdef WITH_LIBTIFF
 	mToolsMenu->addAction(mToolsActions[menu_tools_export_tiff]);
 #endif
@@ -587,6 +585,7 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 #endif
 	mToolsMenu->addAction(mToolsActions[menu_tools_batch]);
 	mToolsMenu->addAction(mToolsActions[menu_tools_thumbs]);
+	mToolsMenu->addAction(mToolsActions[menu_tools_train_format]);
 
 	return mToolsMenu;
 }
@@ -1035,9 +1034,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
 	mFileActions[menu_file_prev]->setStatusTip(QObject::tr("Load previous file"));
 
-	mFileActions[menu_file_train_format] = new QAction(QObject::tr("Add Image Format"), parent);
-	mFileActions[menu_file_train_format]->setStatusTip(QObject::tr("Add a new image format to nomacs"));
-
 	mFileActions[menu_file_new_instance] = new QAction(QObject::tr("St&art New Instance"), parent);
 	mFileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
 	mFileActions[menu_file_new_instance]->setStatusTip(QObject::tr("Open file in new instance"));
@@ -1394,6 +1390,9 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mToolsActions[menu_tools_wallpaper] = new QAction(QObject::tr("&Wallpaper"), parent);
 	mToolsActions[menu_tools_wallpaper]->setStatusTip(QObject::tr("set the current image as wallpaper"));
+
+	mToolsActions[menu_tools_train_format] = new QAction(QObject::tr("Add Image Format"), parent);
+	mToolsActions[menu_tools_train_format]->setStatusTip(QObject::tr("Add a new image format to nomacs"));
 
 	// help menu
 	mHelpActions.resize(menu_help_end);

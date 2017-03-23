@@ -134,7 +134,6 @@ public:
 		menu_file_reload,
 		menu_file_next,
 		menu_file_prev,
-		menu_file_train_format,
 		menu_file_new_instance,
 		menu_file_private_instance,
 		menu_file_exit,
@@ -182,6 +181,7 @@ public:
 		menu_tools_mosaic,
 		menu_tools_batch,
 		menu_tools_wallpaper,
+		menu_tools_train_format,
 
 		menu_tools_end,
 	};
