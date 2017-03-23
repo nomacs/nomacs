@@ -66,13 +66,6 @@ DkNikonPlugin::~DkNikonPlugin() {
 }
 
 /**
-* Returns unique ID for the generated dll
-**/
-QString DkNikonPlugin::id() const {
-	return PLUGIN_ID;
-};
-
-/**
 * Returns descriptive image
 **/
 QImage DkNikonPlugin::image() const {
