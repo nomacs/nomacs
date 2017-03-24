@@ -193,9 +193,6 @@ public slots:
 	void aboutDialog();
 	void openDocumentation();
 	void bugReport();
-	void featureRequest();
-	//void errorDialog(QString msg, QString title = "Error");
-	//void errorDialog(const QString& msg);
 	void loadRecursion();
 	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
 	void setWindowTitle(const QString& filePath, const QSize& size = QSize(), bool edited = false, const QString& attr = QString());

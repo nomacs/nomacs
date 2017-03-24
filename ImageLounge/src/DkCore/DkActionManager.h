@@ -267,7 +267,6 @@ public:
 		menu_help_update,
 		menu_help_update_translation,
 		menu_help_bug,
-		menu_help_feature,
 		menu_help_documentation,
 		menu_help_about,
 

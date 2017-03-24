@@ -620,8 +620,6 @@ QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 	mHelpMenu->addAction(mHelpActions[menu_help_update_translation]);
 	mHelpMenu->addSeparator();
 	mHelpMenu->addAction(mHelpActions[menu_help_bug]);
-	mHelpMenu->addAction(mHelpActions[menu_help_feature]);
-	mHelpMenu->addSeparator();
 	mHelpMenu->addAction(mHelpActions[menu_help_documentation]);
 	mHelpMenu->addAction(mHelpActions[menu_help_about]);
 
@@ -1405,9 +1403,6 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mHelpActions[menu_help_bug] = new QAction(QObject::tr("&Report a Bug"), parent);
 	mHelpActions[menu_help_bug]->setStatusTip(QObject::tr("Report a Bug"));
-
-	mHelpActions[menu_help_feature] = new QAction(QObject::tr("&Feature Request"), parent);
-	mHelpActions[menu_help_feature]->setStatusTip(QObject::tr("Feature Request"));
 
 	mHelpActions[menu_help_update] = new QAction(QObject::tr("&Check for Updates"), parent);
 	mHelpActions[menu_help_update]->setStatusTip(QObject::tr("check for updates"));

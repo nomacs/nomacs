@@ -435,7 +435,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_help_about), SIGNAL(triggered()), this, SLOT(aboutDialog()));
 	connect(am.action(DkActionManager::menu_help_documentation), SIGNAL(triggered()), this, SLOT(openDocumentation()));
 	connect(am.action(DkActionManager::menu_help_bug), SIGNAL(triggered()), this, SLOT(bugReport()));
-	connect(am.action(DkActionManager::menu_help_feature), SIGNAL(triggered()), this, SLOT(featureRequest()));
 	connect(am.action(DkActionManager::menu_help_update), SIGNAL(triggered()), this, SLOT(checkForUpdate()));
 	connect(am.action(DkActionManager::menu_help_update_translation), SIGNAL(triggered()), this, SLOT(updateTranslations()));
 
@@ -1802,54 +1801,7 @@ void DkNoMacs::openDocumentation() {
 
 void DkNoMacs::bugReport() {
 
-	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
-		% QString("issues/new?issue[tracker_id]=1&issue[custom_field_values][1]=")
-		% QApplication::applicationVersion();
-
-	url += "&issue[custom_field_values][4]=";
-#if defined Q_OS_WIN &&	_MSC_VER == 1600
-	url += "Windows XP";
-#elif defined Q_OS_WIN && _WIN64
-	url += "Windows Vista/7/8 64bit";
-#elif defined Q_OS_WIN && _WIN32
-	url += "Windows Vista/7/8 32bit";
-#elif defined Q_OS_LINUX && __x86_64__
-	url += "Linux 64bit";
-#elif defined Q_OS_LINUX && __i386__
-	url += "Linux 32bit";
-#elif defined Q_OS_MAC
-	url += "Mac OS";
-#else
-	url += "";
-#endif
-
-	
-	QDesktopServices::openUrl(QUrl(url));
-}
-
-void DkNoMacs::featureRequest() {
-	
-	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
-		% QString("issues/new?issue[tracker_id]=2&issue[custom_field_values][1]=")
-		% QApplication::applicationVersion();
-
-	url += "&issue[custom_field_values][4]=";
-#if defined Q_OS_WIN && _MSC_VER == 1600
-	url += "Windows Vista/XP";
-#elif defined Q_OS_WIN && _WIN64
-	url += "Windows 7/8/10 64bit";
-#elif defined Q_OS_WIN && _WIN32
-	url += "Windows 7/8/10 32bit";
-#elif defined Q_OS_LINUX && __x86_64__
-	url += "Linux 64bit";
-#elif defined Q_OS_LINUX && __i386__
-	url += "Linux 32bit";
-#elif defined Q_OS_MAC
-	url += "Mac OS";
-#else
-	url += "";
-#endif
-
+	QString url = "https://github.com/nomacs/nomacs/issues/new";
 	QDesktopServices::openUrl(QUrl(url));
 }
 
@@ -2371,51 +2323,6 @@ void DkNoMacs::restartWithTranslationUpdate() {
 	connect(mTranslationUpdater, SIGNAL(downloadFinished()), this, SLOT(restart()));
 	updateTranslations();
 }
-
-//void DkNoMacs::errorDialog(const QString& msg) {
-//	dialog(msg, this, tr("Error"));
-//}
-
-//void DkNoMacs::errorDialog(QString msg, QString title) {
-//
-//	dialog(msg, this, title);
-//}
-
-//int DkNoMacs::dialog(QString msg, QWidget* parent, QString title) {
-//
-//	if (!parent) {
-//		QWidgetList w = QApplication::topLevelWidgets();
-//
-//		for (int idx = 0; idx < w.size(); idx++) {
-//
-//			if (w[idx]->objectName().contains(QString("DkNoMacs"))) {
-//				parent = w[idx];
-//				break;
-//			}
-//		}
-//	}
-//
-//	QMessageBox errorDialog(parent);
-//	errorDialog.setWindowTitle(title);
-//	errorDialog.setIcon(QMessageBox::Critical);
-//	errorDialog.setText(msg);
-//	errorDialog.show();
-//
-//	return errorDialog.exec();
-//
-//}
-
-//int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
-//
-//	QMessageBox errorDialog(parent);
-//	errorDialog.setWindowTitle(title);
-//	errorDialog.setIcon(QMessageBox::Question);
-//	errorDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//	errorDialog.setText(msg);
-//	errorDialog.show();
-//
-//	return errorDialog.exec();
-//}
 
 void DkNoMacs::openPluginManager() {
 #ifdef WITH_PLUGINS
