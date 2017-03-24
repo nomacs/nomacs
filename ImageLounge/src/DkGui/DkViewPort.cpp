@@ -169,6 +169,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 DkViewPort::~DkViewPort() {
 
+	mController->closePlugin(false, true);
+
 	mManipulatorWatcher.cancel();
 	mManipulatorWatcher.blockSignals(true);
 }
