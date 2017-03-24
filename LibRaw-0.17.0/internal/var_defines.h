@@ -1,12 +1,12 @@
 /* -*- C++ -*-
  * File: var_defines.h
- * Copyright 2008-2015 LibRaw LLC (info@libraw.org)
+ * Copyright 2008-2016 LibRaw LLC (info@libraw.org)
  * Created: Sat Mar  8, 2008
  *
  * LibRaw redefinitions of dcraw internal variables
 
 LibRaw is free software; you can redistribute it and/or modify
-it under the terms of the one of three licenses as you choose:
+it under the terms of the one of two licenses as you choose:
 
 1. GNU LESSER GENERAL PUBLIC LICENSE version 2.1
    (See file LICENSE.LGPL provided in LibRaw distribution archive for details).
@@ -14,8 +14,6 @@ it under the terms of the one of three licenses as you choose:
 2. COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
    (See file LICENSE.CDDL provided in LibRaw distribution archive for details).
 
-3. LibRaw Software License 27032010
-   (See file LICENSE.LibRaw.pdf provided in LibRaw distribution archive for details).
  */
 
 #ifndef VAR_DEFINES_H

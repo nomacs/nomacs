@@ -93,7 +93,7 @@ object/demosaic_packs.o: internal/demosaic_packs.cpp
 object/dcraw_fileio.o: internal/dcraw_fileio.cpp
 	g++ -c ${LCMS_DEF} ${CFLAGS} -o object/dcraw_fileio.o internal/dcraw_fileio.cpp
 
-object/libraw_cxx.o: src/libraw_cxx.cpp
+object/libraw_cxx.o: src/libraw_cxx.cpp src/libraw_fuji_compressed.cpp
 	g++ -c ${LCMS_DEF} ${CFLAGS} -o object/libraw_cxx.o src/libraw_cxx.cpp
 
 object/libraw_datastream.o: src/libraw_datastream.cpp
@@ -107,7 +107,7 @@ object/dcraw_half.o: samples/dcraw_half.c
 
 lib/libraw.a: ${DCRAW_LIB_OBJECTS}
 	-del lib\\libraw.a
-	rm -f lib/libraw.a
+	-rm -f lib/libraw.a
 	ar crv lib/libraw.a ${DCRAW_LIB_OBJECTS}
 	ranlib lib/libraw.a	
 
@@ -116,4 +116,4 @@ lib/libraw.a: ${DCRAW_LIB_OBJECTS}
 clean:
 	-del bin\\*.dSYM
 	-del lib\\lib*.a bin\\*.exe object\\*o 
-	rm -f lib/lib*.a bin/*.exe object/*o 
+	-rm -f lib/lib*.a bin/*.exe object/*o 

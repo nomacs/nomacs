@@ -7,18 +7,17 @@ LIBRAW_RELEASE_VER = @LIBRAW_RELEASE_VERSION@
 
 # Headers
 nobase_include_HEADERS = 	libraw/libraw.h \
-							libraw/libraw_alloc.h \
-							libraw/libraw_const.h \
-							libraw/libraw_datastream.h \
-							libraw/libraw_internal.h \
-							libraw/libraw_types.h \
-							libraw/libraw_version.h
+				libraw/libraw_alloc.h \
+				libraw/libraw_const.h \
+				libraw/libraw_datastream.h \
+				libraw/libraw_internal.h \
+				libraw/libraw_types.h \
+				libraw/libraw_version.h
 
 # Docs
 doc_DATA =	COPYRIGHT \
 			LICENSE.CDDL \
 			LICENSE.LGPL \
-			LICENSE.LibRaw.pdf \
 			Changelog.txt
 
 # pkg-config .pc files
@@ -34,7 +33,7 @@ lib_libraw_a_SOURCES = internal/dcraw_common.cpp \
 				 internal/demosaic_packs.cpp \
 				 src/libraw_cxx.cpp \
 				 src/libraw_datastream.cpp \
-				 src/libraw_c_api.cpp
+				 src/libraw_c_api.cpp 
 
 lib_libraw_r_a_CXXFLAGS = -pthread -w
 lib_libraw_r_a_CFLAGS = -pthread -w
@@ -48,15 +47,15 @@ lib_libraw_r_la_LDFLAGS = -no-undefined -version-info $(LIBRAW_SHLIB_VER)
 # Sample binaries
 if EXAMPLES
 bin_PROGRAMS =	bin/raw-identify \
-				bin/unprocessed_raw \
-				bin/4channels \
-				bin/simple_dcraw \
-				bin/mem_image \
-				bin/dcraw_half \
-				bin/half_mt \
-				bin/multirender_test \
-				bin/postprocessing_benchmark \
-				bin/dcraw_emu
+		bin/unprocessed_raw \
+		bin/4channels \
+		bin/simple_dcraw \
+		bin/mem_image \
+		bin/dcraw_half \
+		bin/half_mt \
+		bin/multirender_test \
+		bin/postprocessing_benchmark \
+		bin/dcraw_emu
 endif
 
 bin_raw_identify_SOURCES = samples/raw-identify.cpp

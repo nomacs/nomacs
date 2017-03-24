@@ -8,9 +8,10 @@ DEFINES+=USE_JPEG
 ## RawSpeed section
 DEFINES+=USE_RAWSPEED
 INCLUDEPATH+=../../RawSpeed/
+win32:INCLUDEPATH+= $$TJDIR/include
 win32:INCLUDEPATH+=d:/Qt/local/include d:/Qt/local/include/libxml2
-win32:LIBS+=-lrawspeed -Ld:/Qt/local/lib/$$SUFF -llibxml2 -ljpeg
-
+win32:LIBS+=-L$$TJDIR/lib$$TJSUFF/$$SUFF  -ljpeg 
+win32:LIBS+=-lrawspeed -Ld:/Qt/local/lib/$$SUFF -llibxml2
 
 HEADERS=../libraw/libraw.h \
 	 ../libraw/libraw_alloc.h \
