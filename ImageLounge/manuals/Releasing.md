@@ -22,6 +22,7 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 - zip the repository folder & name it `repository.zip`
 - upload the repository folder to http://download.nomacs.org/htdocs/repository
 - upload `nomacs-setup.exe`
+- upload `nomacs-setup-offline.exe`
 - upload `repository.zip`
 
 ### nomacs portable
