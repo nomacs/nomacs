@@ -516,7 +516,7 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 
 }
 
-bool DkControlWidget::closePlugin(bool askForSaving) {
+bool DkControlWidget::closePlugin(bool askForSaving, bool force) {
 #ifdef WITH_PLUGINS
 
 	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getRunningPlugin();
@@ -531,38 +531,41 @@ bool DkControlWidget::closePlugin(bool askForSaving) {
 
 	// this is that complicated because we do not want plugins to have threaded containers - this could get weird
 	QSharedPointer<DkImageContainerT> pluginImage;
-	
-	if (mViewport->imageContainer()) {
+
+	if (!force) {
 		
-		bool applyChanges = true;
+		if (mViewport->imageContainer()) {
 
-		if (askForSaving) {
+			bool applyChanges = true;
 
-			DkMessageBox* msgBox = new DkMessageBox(
-				QMessageBox::Question, 
-				tr("Closing Plugin"), 
-				tr("Apply plugin changes?"), 
-				QMessageBox::Yes | QMessageBox::No, 
-				this);
-			msgBox->setDefaultButton(QMessageBox::Yes);
-			msgBox->setObjectName("SavePluginChanges");
+			if (askForSaving) {
 
-			int answer = msgBox->exec();
-			applyChanges = (answer == QMessageBox::Accepted || answer == QMessageBox::Yes);
-		}	
+				DkMessageBox* msgBox = new DkMessageBox(
+					QMessageBox::Question,
+					tr("Closing Plugin"),
+					tr("Apply plugin changes?"),
+					QMessageBox::Yes | QMessageBox::No,
+					this);
+				msgBox->setDefaultButton(QMessageBox::Yes);
+				msgBox->setObjectName("SavePluginChanges");
 
-		if (applyChanges)
-			pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));
+				int answer = msgBox->exec();
+				applyChanges = (answer == QMessageBox::Accepted || answer == QMessageBox::Yes);
+			}
+
+			if (applyChanges)
+				pluginImage = DkImageContainerT::fromImageContainer(vPlugin->runPlugin("", mViewport->imageContainer()));
+		}
+		else
+			qDebug() << "[DkControlWidget] I cannot close a plugin if the image container is NULL";
 	}
-	else
-		qDebug() << "[DkControlWidget] I cannot close a plugin if the image container is NULL";
 
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 
 	setPluginWidget(vPlugin, true);	// handles deletion
 	plugin->setActive(false);		// handles states
 
-	if (pluginImage) {
+	if (!force && pluginImage) {
 		mViewport->setEditedImage(pluginImage);
 		return false;
 	}
