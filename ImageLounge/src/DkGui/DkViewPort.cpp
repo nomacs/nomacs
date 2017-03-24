@@ -1481,7 +1481,7 @@ void DkViewPort::toggleLena(bool fullscreen) {
 
 	if (mLoader) {
 		if (fullscreen)
-			mLoader->load(":/nomacs/img/lena-full.jpg");
+			mLoader->load(":/nomacs/img/we.jpg");
 		else
 			mLoader->load(":/nomacs/img/lena.jpg");
 	}
