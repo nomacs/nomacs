@@ -293,8 +293,10 @@ int main(int argc, char *argv[]) {
 void installTranslations(QApplication& app) {
 
 	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
-	QString translationName = "nomacs_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-	QString translationNameQt = "qt_" + settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+	QString translationName = "nomacs_" + 
+		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+	QString translationNameQt = "qt_" + 
+		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
 
 	QTranslator translator;
 	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);

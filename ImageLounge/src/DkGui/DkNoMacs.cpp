@@ -380,7 +380,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
 	connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(printDialog()));
 	connect(am.action(DkActionManager::menu_file_show_recent), SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));	
-	connect(am.action(DkActionManager::menu_file_train_format), SIGNAL(triggered()), this, SLOT(trainFormat()));
 	connect(am.action(DkActionManager::menu_file_new_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
 	connect(am.action(DkActionManager::menu_file_private_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
 	connect(am.action(DkActionManager::menu_file_find), SIGNAL(triggered()), this, SLOT(find()));
@@ -424,6 +423,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_tools_export_tiff), SIGNAL(triggered()), this, SLOT(exportTiff()));
 	connect(am.action(DkActionManager::menu_tools_extract_archive), SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 	connect(am.action(DkActionManager::menu_tools_mosaic), SIGNAL(triggered()), this, SLOT(computeMosaic()));
+	connect(am.action(DkActionManager::menu_tools_train_format), SIGNAL(triggered()), this, SLOT(trainFormat()));
 
 	connect(am.action(DkActionManager::sc_test_img), SIGNAL(triggered()), vp, SLOT(loadLena()));
 	connect(am.action(DkActionManager::sc_test_rec), SIGNAL(triggered()), this, SLOT(loadRecursion()));

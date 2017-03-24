@@ -27,7 +27,7 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 ### nomacs portable
 - copy the packages/nomacs.x64/data/nomacs.x64 folder to projects/nomacs/releases and name it `nomacs-3.x.x`
 - copy all files from portable-files to this new folder
-- copy the `src/settings.css` to this folder and name it `nomacs.qss`
+- copy the `src/settings.css` to this folder and name it `nomacs.css`
 - zip the `nomacs-3.x.x folder`
 - back-up the installer folder to the release folder
 - upload the `nomacs-3.x.x.zip` to http://download.nomacs.org/htdocs/portable
