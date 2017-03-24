@@ -101,33 +101,33 @@ if(ENABLE_RAW)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling RAW. You have to enable ENABLE_OPENCV")
 	endif()
 
-	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.17.0/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
+	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.18.2/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
 	if (MSVC14)
 		if(CMAKE_CL_64)
-			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/x64")
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.18.2/build2015/bin/x64")
 		else()
-			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2015/bin/Win32")
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.18.2/build2015/bin/Win32")
 		endif()
 	else()
 		if(CMAKE_CL_64)
-			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/x64")
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.18.2/build2012/bin/x64")
 		else()
-			set(LIBRAW_SEARCH_PATH "../LibRaw-0.17.0/build2012/bin/Win32")
+			set(LIBRAW_SEARCH_PATH "../LibRaw-0.18.2/build2012/bin/Win32")
 		endif()
 	endif()
 
-	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
+	find_path(LIBRAW_BUILD_PATH NAMES "Release/libraw.lib" "Release/libraw.dll" "Debug/libraw.lib" "Debug/libraw.dll"
 								PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
-	if(EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND
-		EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
-			set(LIBRAW_LIBRARIES optimized ${LIBRAW_BUILD_PATH}/release/libraw.lib debug ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
+	if(EXISTS ${LIBRAW_BUILD_PATH}/Release/libraw.lib AND
+		EXISTS ${LIBRAW_BUILD_PATH}/Debug/libraw.lib)
+			set(LIBRAW_LIBRARIES optimized ${LIBRAW_BUILD_PATH}/Release/libraw.lib debug ${LIBRAW_BUILD_PATH}/Debug/libraw.lib)
 
 			set(LIBRAW_FOUND true)
 			add_definitions(-DWITH_LIBRAW)
 
 	else()
-			message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/libraw.dll and debug/libraw.lib")
+			message(WARNING "libraw build directory not found. I was searching for these files: Release/libraw.dll, Release/libraw.lib, Debug/libraw.dll and Debug/libraw.lib")
 	endif()
 endif(ENABLE_RAW)
 
