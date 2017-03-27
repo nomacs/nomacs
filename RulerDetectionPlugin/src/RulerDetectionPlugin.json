@@ -1,0 +1,11 @@
+{
+    "PluginName" 	: "Ruler Detection",
+	"Tagline" 		: "Calculate dpi via ruler detection.",
+	"Description"	: "This plugin detects a given ruler-template in an image, extracts and calculates the dpi, and saves the dpi in the image-meta-info.",
+	"AuthorName" 	: "Pascal Plank",
+	"Company"		: "TU Wien",
+	"DateCreated" 	: "2017-03-09",
+	"DateModified"	: "2017-03-17",
+	"PluginId"		: "cebaef197b8e4f72b2138f7fcacab203",
+	"Version"		: "0.1.0"
+}
