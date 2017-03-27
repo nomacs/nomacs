@@ -79,7 +79,6 @@ public:
 	DkNikonPlugin();
 	~DkNikonPlugin();
 
-	QString id() const override;
     QImage image() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
