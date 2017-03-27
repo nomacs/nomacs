@@ -77,21 +77,6 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_CORE_DLL_E
 set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_NAME}d)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
 
-# target_link_libraries(
-	# ${DLL_CORE_NAME} 
-	# ${QT_QTCORE_LIBRARY} 
-	# ${QT_QTGUI_LIBRARY} 
-	# ${QT_QTSVG_LIBRARY} 
-	# ${QT_QTNETWORK_LIBRARY} 
-	# ${QT_QTMAIN_LIBRARY} 
-	# ${EXIV2_LIBRARIES} 
-	# ${LIBRAW_LIBRARIES} 
-	# ${OpenCV_LIBS} 
-	# ${TIFF_LIBRARIES} 
-	# ${QUAZIP_DEPENDENCY}
-	# )
-	# # ${VERSION_LIB} 
-
 # make RelWithDebInfo link against release instead of debug opencv dlls
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
