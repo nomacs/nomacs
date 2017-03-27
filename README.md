@@ -11,9 +11,11 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 - `LibRaw` (>= 0.17) _optional_
 
 ### Compile LibRaw
-- only needed if ENABLE_RAW is checked_
-- open LibRaw-0.xx.0/LibRaw-nomacs-2015.sln
-- build LibRaw (Debug & Release)
+- only needed if ENABLE_RAW is checked
+- checkout https://github.com/nomacs/LibRaw
+- switch to 0.XX-stable branch
+- follow the build instructions
+- in the nomacs CMake, set `libraw_DIR` to that build path
 
 ### Compile nomacs
 1. Open CMake GUI
@@ -27,7 +29,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 9. Compile the Solution
 
 ### If anything did not work
-- check if you have setup opencv (otherwise uncheck ENABLE_RAW)
+- check if you have setup opencv (otherwise uncheck ENABLE_OPENCV)
 - check if your Qt is set correctly (otherwise set the path to `qt_install_dir/qtbase/bin/qmake.exe`)
 - check if your builds proceeded correctly
 
@@ -58,7 +60,7 @@ You will now have a binary (~/nomacs/nomacs), which you can test (or use directl
 ``` console
 sudo make install
 ```
-note that you have to execute 
+note that you have to execute
 ``` console
 sudo ldconfig
 ```

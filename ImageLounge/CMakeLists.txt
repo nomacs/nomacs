@@ -17,7 +17,7 @@ project(nomacs)
 
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
-set(NOMACS_VERSION_MINOR 6)
+set(NOMACS_VERSION_MINOR 7)
 set(NOMACS_VERSION_PATCH 0)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
@@ -185,3 +185,37 @@ if(UNIX AND ENABLE_PLUGINS)
 		message(WARNING "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them")
 	endif()
 endif()
+
+# status
+MESSAGE(STATUS "")
+MESSAGE(STATUS "----------------------------------------------------------------------------------")
+MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <http://www.nomacs.org>")
+MESSAGE(STATUS "")
+
+option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
+option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
+
+IF(OPENCV_FOUND)
+    MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. NO")
+ENDIF()
+
+IF(LIBRAW_FOUND)
+    MESSAGE(STATUS " nomacs will be compiled with LIBRAW support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with LIBRAW support .................. NO")
+ENDIF()
+
+IF(ENABLE_TIFF)
+    MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... NO")
+ENDIF()
+
+IF(ENABLE_PLUGINS)
+    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
+ENDIF()
+MESSAGE(STATUS "----------------------------------------------------------------------------------")
