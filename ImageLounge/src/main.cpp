@@ -73,9 +73,6 @@
 #include <shlobj.h>
 #endif
 
-// defines
-void installTranslations(QApplication& app);
-
 #ifdef Q_OS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
@@ -177,7 +174,18 @@ int main(int argc, char *argv[]) {
 	}
 
 	//install translations
-	installTranslations(app);
+	QString translationName = "nomacs_" + 
+		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+	QString translationNameQt = "qt_" + 
+		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
+
+	QTranslator translator;
+	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
+	app.installTranslator(&translator);
+
+	QTranslator translatorQt;
+	nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
+	app.installTranslator(&translatorQt);
 
 	nmc::DkNoMacs* w = 0;
 	nmc::DkPong* pw = 0;	// pong
@@ -288,21 +296,4 @@ int main(int argc, char *argv[]) {
 		delete pw;
 
 	return rVal;
-}
-
-void installTranslations(QApplication& app) {
-
-	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
-	QString translationName = "nomacs_" + 
-		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-	QString translationNameQt = "qt_" + 
-		settings.value("GlobalSettings/language", nmc::DkSettingsManager::param().global().language).toString() + ".qm";
-
-	QTranslator translator;
-	nmc::DkSettingsManager::param().loadTranslation(translationName, translator);
-	app.installTranslator(&translator);
-
-	QTranslator translatorQt;
-	nmc::DkSettingsManager::param().loadTranslation(translationNameQt, translatorQt);
-	app.installTranslator(&translatorQt);
 }

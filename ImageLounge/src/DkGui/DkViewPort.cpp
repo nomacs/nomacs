@@ -169,6 +169,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 DkViewPort::~DkViewPort() {
 
+	mController->closePlugin(false, true);
+
 	mManipulatorWatcher.cancel();
 	mManipulatorWatcher.blockSignals(true);
 }
@@ -1479,7 +1481,7 @@ void DkViewPort::toggleLena(bool fullscreen) {
 
 	if (mLoader) {
 		if (fullscreen)
-			mLoader->load(":/nomacs/img/lena-full.jpg");
+			mLoader->load(":/nomacs/img/we.jpg");
 		else
 			mLoader->load(":/nomacs/img/lena.jpg");
 	}

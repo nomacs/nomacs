@@ -138,7 +138,7 @@ public slots:
 	void showScroller(bool visible);
 	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
-	bool closePlugin(bool askForSaving);
+	bool closePlugin(bool askForSaving, bool force = false);
 	bool applyPluginChanges(bool askForSaving);
 
 	void updateImage(QSharedPointer<DkImageContainerT> imgC);
