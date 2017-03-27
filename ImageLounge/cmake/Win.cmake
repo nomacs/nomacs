@@ -22,15 +22,15 @@ if (MSVC11)
 		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/Win32/" )
 	endif()
 
-elseif (MSVC14)
+elseif (MSVC14)	# visual studio 2017 will hit this too
 	# use precompiled code if msvc 14 is found
 	if(CMAKE_CL_64)
 		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/x64/" )
 	else()
 		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/Win32/" )
 	endif()
-
 else ()
+	message(STATUS "unknown visual studio when searching for exiv2 dlls")
 	# search for exiv2
 	if(CMAKE_CL_64)
 		SET(EXIV_SEARCH_PATH "../exiv2-0.24/msvc2012-nomacs/exiv2lib/x64/" )
@@ -39,11 +39,10 @@ else ()
 	endif()
 endif ()
 
-
 find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/libexiv2.lib"
-									"ReleaseDLL/libexiv2.dll"
-									"DebugDLL/libexiv2d.lib"
-									"DebugDLL/libexiv2d.dll"
+								"ReleaseDLL/libexiv2.dll"
+								"DebugDLL/libexiv2d.lib"
+								"DebugDLL/libexiv2d.dll"
 				PATHS ${EXIV_SEARCH_PATH}
 				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 
