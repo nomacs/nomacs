@@ -33,18 +33,17 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 
-#include "opencv2/xfeatures2d/nonfree.hpp"
-#include "opencv2\opencv.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>		// SURF
+#include <opencv2/calib3d/calib3d.hpp>			// homography
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "persistence1d.h"
 
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
- // TODO: this include is nessesary for saving the dpi as metadata via the called loader, but it causes an include error:
- // fatal error C1083 : Cannot open include file : 'exiv2/xmpsidecar.hpp' : No such file or directory
-//#include "DkMetaData.h"
+#include "DkMetaData.h"	// needs ${EXIV2_INCLUDE_DIRS} in cmake
 
-#pragma warning(pop)		// no warnings from includes - end
 
 
 namespace nmc {
@@ -224,11 +223,13 @@ QSharedPointer<nmc::DkImageContainer> RulerDetectionPlugin::handleRulerDetection
 	// Get image
 	cv::Mat img = nmc::DkImage::qImage2Mat(imgC->image());
 
-	// TODO: load with nomacs --> creates HeapCorruption if uses as pointer on heap, or Stack corruption as normal var
-	// nmc::DkImageContainer* img_template_orig = new nmc::DkImageContainer(templatepath);
-	// cv::Mat img_template = nmc::DkImage::qImage2Mat(img_template_orig->image());
+	// use DkBasicLoader in case you just need the image
+	nmc::DkBasicLoader loader;
+	cv::Mat img_template;
 
-	cv::Mat img_template = cv::imread(templatepath.toStdString());
+	if (loader.loadGeneral(templatepath))
+		img_template = nmc::DkImage::qImage2Mat(loader.image());
+
 	if (!img_template.data) {
 		qWarning() << "[RULER DETECTION] Invalid templatefile -> change settings\n" << templatepath;
 		QMainWindow* mainWindow = getMainWindow();
@@ -237,11 +238,10 @@ QSharedPointer<nmc::DkImageContainer> RulerDetectionPlugin::handleRulerDetection
 	}
 
 	int dpi = calculateDPI(img, img_template);
-
 	qDebug() << "DPI: " << dpi;
 
 	// TODO: uncomment after checking problem with includes: cannot include header to metadata, because it misses some header file itself
-	// imgC->getLoader()->getMetaData()->setResolution(QVector2D(dpi, dpi));
+	imgC->getLoader()->getMetaData()->setResolution(QVector2D(dpi, dpi));
 	imgC->saveMetaData();
 
 	
@@ -333,7 +333,7 @@ cv::RotatedRect RulerDetectionPlugin::locateTemplate(cv::Mat img, cv::Mat templ)
 	// Find good matches, i.e. whose distance is less than 3*min_dist
 	std::vector< cv::DMatch > good_matches;
 	for (int i = 0; i < descriptors_object.rows; i++) {
-		if (matches[i].distance < 3 * min_dist) {
+		if (matches[i].distance <= 3 * min_dist) {
 			good_matches.push_back(matches[i]);
 		}
 	}
@@ -348,6 +348,7 @@ cv::RotatedRect RulerDetectionPlugin::locateTemplate(cv::Mat img, cv::Mat templ)
 	}
 
 	qDebug() << "--- Calculate homography from best matches with RANSAC...";
+	// TODO [diem]: CV_ERROR is raised if obj or scene are empty
 	cv::Mat H = cv::findHomography(obj, scene, CV_RANSAC);
 
 	// Get the corners from the ruler to be detected

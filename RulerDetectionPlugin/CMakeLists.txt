@@ -17,12 +17,14 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
   # find the Qt
   NMC_FINDQT()
 
-  # OpenCV
-  NMC_FIND_OPENCV()
 endif()
+
+# OpenCV - we need additional packages
+NMC_FIND_OPENCV(xfeatures2d calib3d tracking)
 
 include_directories (
 	${QT_INCLUDES}
+	${EXIV2_INCLUDE_DIRS}	# added since we make use of exiv2
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${NOMACS_INCLUDE_DIRECTORY}
