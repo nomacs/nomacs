@@ -1126,7 +1126,6 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
 }
 
-//void DkNoMacs::showEditDock(bool show, bool saveSettings) {
 void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!mMetaDataDock) {
@@ -1146,7 +1145,6 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 }
 
 void DkNoMacs::showEditDock(bool show, bool saveSettings) {
-//void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!mEditDock) {
 
