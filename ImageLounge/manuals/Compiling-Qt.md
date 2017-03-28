@@ -23,16 +23,15 @@ configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre 
 ```
 ```bat
 REM Visual Studio 2017
-configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre -qt-freetype -opengl dynamic -qt-sql-sqlite -no-dbus -strip -plugin-sql-sqlite -make libs -nomake tools -nomake examples -nomake tests -platform win32-msvc2017
+configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre -qt-freetype -opengl dynamic -no-dbus -strip -plugin-sql-sqlite -make libs -nomake tools -nomake examples -nomake tests -platform win32-msvc2017
 ```
+
 
 - after it's finished run ``nmake``
 - now it's time to have a cup of coffee
 
-[Edit]
-- Clean Qt5 configuration
-
-### To get a really clean tree, use:
+### Clean Qt5 configuration
+To get a really clean tree, use:
 
 - without git: ``nmake -distclean``
 - with git:
@@ -59,7 +58,7 @@ Short version of the first link:
 C:\Qt\qt-everywhere-opensource-src-4.8.5-x86-native-gestures>configure -debug-and-release -opensource -shared -no-qt3support -no-webkit -no-script -nomake examples -nomake demos -platform win32-msvc2012 -no-native-gestures
 ````
 
-Explanation:
+### Explanation
 - ``-opensource``: install open source edition of Qt.
 - ``-shared``: makes the Qt libraries shared (dll).
 - ``-no-qt3support``: sorry my retro friends, don’t like old code.
