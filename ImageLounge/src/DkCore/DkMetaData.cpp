@@ -283,6 +283,9 @@ DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const {
 
 	QString orStr = getNativeExifValue("Exif.Image.Orientation");
 
+	if (orStr.isEmpty())
+		return or_not_set;
+
 	bool ok = false;
 	int orientation = orStr.toInt(&ok);
 	
