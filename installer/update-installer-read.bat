@@ -11,7 +11,7 @@ REM update repo
 C:\Qt\QtIFW2.0.3\bin\repogen.exe -p ./packages --update repository
 
 REM create offline installer
-REM C:\Qt\QtIFW2.0.3\bin\binarycreator.exe -c config-beta\config.xml -p packages -r config/resources.qrc nomacs-setup-beta
+C:\Qt\QtIFW2.0.3\bin\binarycreator.exe -c config-read\config.xml -p packages -r config/resources.qrc cvl-read-setup-offline
 
 REM use for final online installer
 C:\Qt\QtIFW2.0.3\bin\binarycreator.exe -n -c config-read\config.xml -p packages -r config/resources.qrc cvl-read-setup
