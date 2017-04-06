@@ -60,6 +60,7 @@ class QSlider;
 class QGridLayout;
 class QVBoxLayout;
 class QSvgRenderer;
+class QSettings;
 
 namespace nmc {
 
@@ -985,6 +986,7 @@ protected:
 
 	virtual void init();
 	void createLayout();
+	virtual QSettings& settings() const;
 	QStringList loadProfileStrings() const;
 	QString loadDefaultProfileString() const;
 

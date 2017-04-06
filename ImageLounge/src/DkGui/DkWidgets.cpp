@@ -2986,13 +2986,18 @@ void DkGenericProfileWidget::createLayout() {
 	layout->addWidget(mDeleteButton);
 }
 
+QSettings& DkGenericProfileWidget::settings() const {
+
+	return DkSettingsManager::instance().qSettings();
+}
+
 QStringList DkGenericProfileWidget::loadProfileStrings() const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	QSettings& s = settings();
 
-	settings.beginGroup(mSettingsGroup);
-	QStringList modelStrings = settings.childGroups();
-	settings.endGroup();
+	s.beginGroup(mSettingsGroup);
+	QStringList modelStrings = s.childGroups();
+	s.endGroup();
 
 	qDebug() << "profile settings of group: " << mSettingsGroup;
 
@@ -3003,13 +3008,13 @@ void DkGenericProfileWidget::deleteCurrentSetting() {
 
 	QString modelName = mProfileList->currentText();
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	QSettings& s = settings();
 
-	settings.beginGroup(mSettingsGroup);
-	settings.beginGroup(modelName);
-	settings.remove("");	// remove all group entries
-	settings.endGroup();
-	settings.endGroup();
+	s.beginGroup(mSettingsGroup);
+	s.beginGroup(modelName);
+	s.remove("");	// remove all group entries
+	s.endGroup();
+	s.endGroup();
 
 	// update list
 	mProfileList->removeItem(mProfileList->currentIndex());
@@ -3074,18 +3079,18 @@ void DkGenericProfileWidget::activate(bool active) {
 
 void DkGenericProfileWidget::setDefaultModel() const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
-	settings.beginGroup(mSettingsGroup);
-	settings.setValue("DefaultProfileString", mProfileList->currentText());
-	settings.endGroup();
+	QSettings& s = settings();
+	s.beginGroup(mSettingsGroup);
+	s.setValue("DefaultProfileString", mProfileList->currentText());
+	s.endGroup();
 }
 
 QString DkGenericProfileWidget::loadDefaultProfileString() const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
-	settings.beginGroup(mSettingsGroup);
-	QString defaultString = settings.value("DefaultProfileString", "").toString();
-	settings.endGroup();
+	QSettings& s = settings();
+	s.beginGroup(mSettingsGroup);
+	QString defaultString = s.value("DefaultProfileString", "").toString();
+	s.endGroup();
 
 	return defaultString;
 }
