@@ -34,3 +34,6 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 - upload the `nomacs-3.x.x.zip` to http://download.nomacs.org/htdocs/portable
 - update the index.html accordingly
 - update http://download.nomacs.org/htdocs/versions/index.html
+
+## READ release
+- Update Version Number in ReadFramework (in CMakeLists.txt and rdf.rc)
