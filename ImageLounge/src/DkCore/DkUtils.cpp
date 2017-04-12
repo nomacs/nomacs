@@ -58,6 +58,8 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <qmath.h>
+
+#include <QSystemSemaphore>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -1198,6 +1200,54 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 	}
 
 	return QObject::eventFilter(obj, event);
+}
+
+// DkRunGuard --------------------------------------------------------------------
+DkRunGuard::DkRunGuard() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	{
+		// this fixes unix issues if the first instance crashes
+		// see here for details: https://habrahabr.ru/post/173281/
+		QSharedMemory fix(mSharedMemKey);
+		fix.attach();
+	}
+
+	lock.release();
+}
+
+DkRunGuard::~DkRunGuard() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	if (mSharedMem.isAttached())
+		mSharedMem.detach();
+
+	lock.release();
+}
+
+/// <summary>
+/// Checks if this instance is the first running.
+/// If it's the first instance, a shared memory block is created.
+/// </summary>
+/// <returns>true if this is the first instance</returns>
+bool DkRunGuard::tryRunning() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	// check if we can attach to the shared memory
+	// if not: we are the first
+	bool attached = mSharedMem.attach();
+	if (!attached)
+		mSharedMem.create(sizeof(quint64));
+
+	lock.release();
+
+	return !attached;
 }
 
 }
