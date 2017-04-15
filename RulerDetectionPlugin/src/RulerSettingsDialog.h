@@ -50,24 +50,23 @@ namespace nmc {
 		~RulerSettingsDialog();
 
 		// Layout items
-		QWidget* centralWidget;
 		QVBoxLayout *verticalLayout;
+		QHBoxLayout *horizontalLayout;
+		QLabel *chooseImg_label;
+		QPushButton *chooseImg_btn;
 		QHBoxLayout *horizontalLayout_2;
-		QLabel *label;
-		QPushButton *pushButton_chooseTemplate;
+		QLabel *tickDist_label;
+		QComboBox *tickDist_cb;
 		QHBoxLayout *horizontalLayout_3;
-		QLabel *label_2;
-		QComboBox *comboBox_tickDistance;
+		QLabel *refPoints_label;
+		QComboBox *refPoints_cb;
 		QHBoxLayout *horizontalLayout_4;
-		QLabel *label_3;
-		QComboBox *comboBox_referencePoints;
+		QLabel *hessianThres_label;
+		QSpinBox *hessianThres_sb;
 		QHBoxLayout *horizontalLayout_5;
-		QLabel *label_4;
-		QSpinBox *spinBox_HessianThreshold;
-		QHBoxLayout *horizontalLayout_6;
-		QPushButton *pushButton_Help;
-		QPushButton *pushButton_OK;
-		QPushButton *pushButton_Cancel;
+		QPushButton *help_btn;
+		QPushButton *OK_btn;
+		QPushButton *cancel_btn;
 
 		bool isOkClicked();
 		QString getTemplatePath();
