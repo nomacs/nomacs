@@ -1,3 +1,4 @@
+#include "DkUtils.h"
 /*******************************************************************************************************
  DkUtils.cpp
  Created on:	09.03.2010
@@ -279,6 +280,53 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
 
 	// we're good to go with a string compare here...
 	return QString::compare(s1, s2, cs) < 0;
+}
+
+/// <summary>
+/// Resolves symbolic links.
+/// </summary>
+/// <param name="filePath">The file path of the (potential) sym link.</param>
+/// <returns>If the file is no link, its path is returned.</returns>
+QString DkUtils::resolveSymLink(const QString & filePath) {
+	
+	QString rFilePath = filePath;
+
+	QFileInfo fInfo(filePath);
+
+	if (fInfo.isSymLink()) {
+		rFilePath = fInfo.symLinkTarget();
+	}
+	// check if files < 1 kb contain a link
+	else if (fInfo.size() < 1000) {
+
+		QFile file(filePath);
+
+		// silently ignore not readable files here
+		if (file.open(QIODevice::ReadOnly)) {
+
+			QTextStream txt(&file);
+
+			while (!txt.atEnd()) {
+
+				// is there an absolute path?
+				QString cl = txt.readLine();
+				QFileInfo fi(cl);
+				if (fi.exists()) {
+					rFilePath = fi.absoluteFilePath();
+					break;
+				}
+
+				// is there a relative path?
+				fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
+				if (fi.exists()) {
+					rFilePath = fi.absoluteFilePath();
+					break;
+				}
+			}
+		}
+	}
+
+	return rFilePath;
 }
 
 QString DkUtils::getLongestNumber(const QString& str, int startIdx) {

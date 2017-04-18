@@ -153,15 +153,8 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	DkTimer dt;
 	bool imgLoaded = false;
 	
-	QFileInfo fInfo(filePath);
-
-	if (fInfo.isSymLink())
-		mFile = fInfo.symLinkTarget();
-	else
-		mFile = filePath;
-	
-
-	fInfo = QFileInfo(mFile);	// resolved lnk
+	mFile = DkUtils::resolveSymLink(filePath);
+	QFileInfo fInfo(mFile);	// resolved lnk
 	QString newSuffix = fInfo.suffix();
 
 	release();
@@ -268,14 +261,13 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		imgLoaded = img.loadFromData(lba);
 		
 		if (imgLoaded) mLoader = qt_loader;
-	}  
+	} 
 
 	// this loader is a bit buggy -> be carefull
 	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 		
 		imgLoaded = loadRohFile(mFile, img, ba);
 		if (imgLoaded) mLoader = roh_loader;
-
 	} 
 
 	// this loader is for OpenCV cascade training files
@@ -283,14 +275,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 		imgLoaded = loadOpenCVVecFile(mFile, img, ba);
 		if (imgLoaded) mLoader = roh_loader;
-
 	} 
-
-	//if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
-
-	//	// load hdr here...
-	//	if (imgLoaded) loader = hdr_loader;
-	//} 
 
 	// tiff things
 	if (imgLoaded && !mPageIdxDirty)

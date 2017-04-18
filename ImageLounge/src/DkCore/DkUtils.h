@@ -146,6 +146,8 @@ public:
 
 	static bool naturalCompare(const QString& s1, const QString& s2, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 
+	static QString resolveSymLink(const QString& filePath);
+
 	static QString getLongestNumber(const QString& str, int startIdx = 0);
 
 	static void addLanguages(QComboBox* langCombo, QStringList& languages);
