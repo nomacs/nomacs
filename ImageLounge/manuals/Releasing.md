@@ -40,3 +40,4 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 - update-installer.bat: Check also path of Qt installer
 - update-installer.bat: Check TU-code-signng.p12 path
 - for code signing add /p pwd
+- upload the repository folder to \\hermes\ftp\staff\read
