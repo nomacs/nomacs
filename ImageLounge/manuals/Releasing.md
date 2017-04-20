@@ -12,7 +12,7 @@
   - nomacs-plugins x86
 - Run _INSTALL -> Project Only -> `Build only INSTALL`_ for every solution
 
-Now all dll's & exe should be up-to-date. Do not forget to update the install/package/data folders if you changed/updated a library (e.g. Qt).
+Now all dll's & exe should be up-to-date. Do not forget to update the installer/packages/nomacs.xx/data folders if you changed/updated a library (e.g. Qt).
 Open `update-installer.bat` in an editor and ucomment this line (updates all versions in the `package.xml` files):
 
 ```REM cscript /nologo ./package-incrementer-batch.vbs ./packages package.xml package-incrementer.vbs```
@@ -37,3 +37,6 @@ Open `update-installer.bat` in an editor and ucomment this line (updates all ver
 
 ## READ release
 - Update Version Number in ReadFramework (in CMakeLists.txt and rdf.rc)
+- update-installer.bat: Check also path of Qt installer
+- update-installer.bat: Check TU-code-signng.p12 path
+- for code signing add /p pwd
