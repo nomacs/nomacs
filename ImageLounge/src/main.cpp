@@ -101,6 +101,15 @@ int main(int argc, char *argv[]) {
 	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettingsManager::param().app().appMode).toInt();
 
+	// uncomment this for the single instance feature...
+	//// check for single instance
+	//nmc::DkRunGuard guard;
+	//
+	//if (!guard.tryRunning()) {
+	//	qDebug() << "nomacs is already running - quitting...";
+	//	return 0;
+	//}
+
 	// CMD parser --------------------------------------------------------------------
 	QCommandLineParser parser;
 	

@@ -975,8 +975,6 @@ QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QString& 
 
 QString DkImageContainerT::saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
 
-	qDebug() << "saveImage in T: " << filePath;
-
 	return DkImageContainer::saveImageIntern(filePath, loader, saveImg, compression);
 }
 

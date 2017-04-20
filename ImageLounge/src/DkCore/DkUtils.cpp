@@ -1,3 +1,4 @@
+#include "DkUtils.h"
 /*******************************************************************************************************
  DkUtils.cpp
  Created on:	09.03.2010
@@ -58,6 +59,8 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <qmath.h>
+
+#include <QSystemSemaphore>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -277,6 +280,53 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
 
 	// we're good to go with a string compare here...
 	return QString::compare(s1, s2, cs) < 0;
+}
+
+/// <summary>
+/// Resolves symbolic links.
+/// </summary>
+/// <param name="filePath">The file path of the (potential) sym link.</param>
+/// <returns>If the file is no link, its path is returned.</returns>
+QString DkUtils::resolveSymLink(const QString & filePath) {
+	
+	QString rFilePath = filePath;
+
+	QFileInfo fInfo(filePath);
+
+	if (fInfo.isSymLink()) {
+		rFilePath = fInfo.symLinkTarget();
+	}
+	// check if files < 1 kb contain a link
+	else if (fInfo.size() < 1000) {
+
+		QFile file(filePath);
+
+		// silently ignore not readable files here
+		if (file.open(QIODevice::ReadOnly)) {
+
+			QTextStream txt(&file);
+
+			while (!txt.atEnd()) {
+
+				// is there an absolute path?
+				QString cl = txt.readLine();
+				QFileInfo fi(cl);
+				if (fi.exists()) {
+					rFilePath = fi.absoluteFilePath();
+					break;
+				}
+
+				// is there a relative path?
+				fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
+				if (fi.exists()) {
+					rFilePath = fi.absoluteFilePath();
+					break;
+				}
+			}
+		}
+	}
+
+	return rFilePath;
 }
 
 QString DkUtils::getLongestNumber(const QString& str, int startIdx) {
@@ -1182,7 +1232,6 @@ void TreeItem::setParent(TreeItem* parent) {
 	parentItem = parent;
 }
 
-
 bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::MouseButtonRelease) {
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
@@ -1198,6 +1247,54 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 	}
 
 	return QObject::eventFilter(obj, event);
+}
+
+// DkRunGuard --------------------------------------------------------------------
+DkRunGuard::DkRunGuard() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	{
+		// this fixes unix issues if the first instance crashes
+		// see here for details: https://habrahabr.ru/post/173281/
+		QSharedMemory fix(mSharedMemKey);
+		fix.attach();
+	}
+
+	lock.release();
+}
+
+DkRunGuard::~DkRunGuard() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	if (mSharedMem.isAttached())
+		mSharedMem.detach();
+
+	lock.release();
+}
+
+/// <summary>
+/// Checks if this instance is the first running.
+/// If it's the first instance, a shared memory block is created.
+/// </summary>
+/// <returns>true if this is the first instance</returns>
+bool DkRunGuard::tryRunning() {
+
+	QSystemSemaphore lock(mLockKey, 1);
+	lock.acquire();
+
+	// check if we can attach to the shared memory
+	// if not: we are the first
+	bool attached = mSharedMem.attach();
+	if (!attached)
+		mSharedMem.create(sizeof(quint64));
+
+	lock.release();
+
+	return !attached;
 }
 
 }

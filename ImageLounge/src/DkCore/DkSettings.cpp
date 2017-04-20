@@ -89,7 +89,6 @@ void DkSettings::init() {
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 }
 
-
 double DkSettings::dPIScaleFactor(QWidget *widget) const {
     
 	double dpi = 96.0;
@@ -330,7 +329,8 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
 	app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
-	
+	app_p.defaultJpgQuality = settings.value("defaultJpgQuality", app_p.defaultJpgQuality).toInt();
+
 	QStringList tmpFileFilters = app_p.fileFilters;
 	QStringList tmpContainerFilters = app_p.containerRawFilters.split(" ");
 	for (int idx = 0; idx < tmpContainerFilters.size(); idx++) {
@@ -534,10 +534,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showHistoryDock", app_p.showHistoryDock);
 	if (force ||app_p.advancedSettings != app_d.advancedSettings)
 		settings.setValue("advancedSettings", app_p.advancedSettings);
-	//if (force ||app_p.appMode != app_d.appMode)
-		settings.setValue("appMode", app_p.appMode);
-	//if (force ||app_p.currentAppMode != app_d.currentAppMode)
-		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (force ||app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
 	if (force ||app_p.showRecentFiles != app_d.showRecentFiles)
@@ -548,6 +544,11 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("browseFilters", app_p.browseFilters);
 	if (force ||app_p.registerFilters != app_d.registerFilters)
 		settings.setValue("registerFilters", app_p.registerFilters);
+
+	// always save (user setting)
+	settings.setValue("defaultJpgQuality", app_p.defaultJpgQuality);
+	settings.setValue("appMode", app_p.appMode);
+	settings.setValue("currentAppMode", app_p.currentAppMode);
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -784,6 +785,7 @@ void DkSettings::setToDefaultSettings() {
 
 	app_p.appMode = 0;
 	app_p.privateMode = false;
+	app_p.defaultJpgQuality = 97;
 
 	global_p.skipImgs = 10;
 	global_p.numFiles = 50;

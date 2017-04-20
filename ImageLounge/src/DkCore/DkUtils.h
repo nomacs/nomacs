@@ -34,6 +34,8 @@
 #include <QFileInfo>
 #include <QVector>
 #include <QDebug>
+
+#include <QSharedMemory>
 #pragma warning(pop)		// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// dll interface missing
@@ -143,6 +145,8 @@ public:
 	static bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
 
 	static bool naturalCompare(const QString& s1, const QString& s2, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+
+	static QString resolveSymLink(const QString& filePath);
 
 	static QString getLongestNumber(const QString& str, int startIdx = 0);
 
@@ -458,6 +462,22 @@ protected:
 	QString mFileName;
 	QString mPattern;
 	int mCIdx;
+};
+
+// from: http://stackoverflow.com/questions/5006547/qt-best-practice-for-a-single-instance-app-protection
+class DllCoreExport DkRunGuard {
+
+public:
+	DkRunGuard();
+	~DkRunGuard();
+
+	bool tryRunning();
+
+private:
+	QString mSharedMemKey = "nomacs | run guard shared memory";
+	QString mLockKey = "nomacs | run guard semaphore";
+	
+	QSharedMemory mSharedMem = mSharedMemKey;
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
