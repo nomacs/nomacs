@@ -124,7 +124,7 @@ void DkCompressDialog::loadSettings() {
 	settings.beginGroup(objectName());
 
 	mBgCol = settings.value("bgCompressionColor" + QString::number(mDialogMode), QColor(255,255,255).rgba()).toInt();
-	int compression = settings.value("Compression" + QString::number(mDialogMode), 80).toInt();
+	int compression = settings.value("Compression" + QString::number(mDialogMode), DkSettingsManager::instance().settings().app().defaultJpgQuality).toInt();
 
 	mSlider->setValue(compression);
 	mColChooser->setColor(mBgCol);
