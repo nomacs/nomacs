@@ -1109,8 +1109,12 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
 
 bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) {
 
-	if (!ba) 
+	bool bufferCreated = false;
+
+	if (!ba) {
 		ba = QSharedPointer<QByteArray>(new QByteArray());
+		bufferCreated = true;
+	}
 
 	bool saved = false;
 
@@ -1148,6 +1152,10 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 			imgWriter->setCompression(compression);
 			imgWriter->setQuality(compression);
 		}
+		if (compression == -1 && imgWriter->format() == "jpg") {
+			imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
+		}
+
 #if QT_VERSION >= 0x050500
 		imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
 		imgWriter->setProgressiveScanWrite(true);
@@ -1158,13 +1166,18 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 
 	if (saved && mMetaData) {
 		
-		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData())
-			mMetaData->readMetaData(filePath, ba);
+		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData()) {
+			
+			if (!bufferCreated)
+				mMetaData->readMetaData(filePath, ba);
+			else
+				// if we created the buffere here - force loading metadata from the file
+				mMetaData->readMetaData(filePath);
+		}
 
 		if (mMetaData->isLoaded()) {
 			try {
 				mMetaData->updateImageMetaData(img);
-				//mMetaData->printMetaData();	// debug
 				mMetaData->saveMetaData(ba, true);
 			} 
 			catch (...) {

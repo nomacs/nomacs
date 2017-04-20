@@ -161,6 +161,9 @@ public:
 		bool advancedSettings;
 		bool closeOnEsc;
 		bool maximizedMode;
+
+		int defaultJpgQuality;
+
 		QStringList browseFilters;
 		QStringList registerFilters;
 
@@ -365,7 +368,6 @@ public:
 	// singleton
 	DkSettingsManager(DkSettingsManager const&)		= delete;
 	void operator=(DkSettingsManager const&)		= delete;
-
 
 	static DkSettings& param();		// convenience
 	QSettings& qSettings();

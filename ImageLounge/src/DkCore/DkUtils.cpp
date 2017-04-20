@@ -1232,7 +1232,6 @@ void TreeItem::setParent(TreeItem* parent) {
 	parentItem = parent;
 }
 
-
 bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::MouseButtonRelease) {
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
