@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
     <Name>nomacs - Image Lounge</Name>
-    <Version>3.6.0</Version>
+    <Version>3.6.1</Version>
     <Title>nomacs</Title>
     <Publisher>nomacs</Publisher>
     <StartMenuDir>nomacs - Image Lounge</StartMenuDir>

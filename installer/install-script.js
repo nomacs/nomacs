@@ -32,6 +32,8 @@ function Controller()
 
   	// Choose a target dir -----------------------------------------------------
   	installer.setValue("TargetDir", "C:/temp/nomacs");
+	
+	// gui.setSilent(true);
 }
 
 // start installation - here the repo is checked

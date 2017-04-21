@@ -10,13 +10,13 @@
 	<InstallerApplicationIcon>nomacs</InstallerApplicationIcon>
 	<AllowSpaceInPath>true</AllowSpaceInPath>
 
- 	<RemoteRepositories>
-		 <Repository>
-				 <Url>http://download.nomacs.org/beta-repository/</Url>
-				 <Enabled>1</Enabled>
-				 <Username></Username>
-				 <Password></Password>
-				 <DisplayName>nomacs - Image Lounge</DisplayName>
-		 </Repository>
-	</RemoteRepositories>
+ 	<!-- <RemoteRepositories> -->
+		 <!-- <Repository> -->
+				 <!-- <Url>http://download.nomacs.org/beta-repository/</Url> -->
+				 <!-- <Enabled>1</Enabled> -->
+				 <!-- <Username></Username> -->
+				 <!-- <Password></Password> -->
+				 <!-- <DisplayName>nomacs - Image Lounge</DisplayName> -->
+		 <!-- </Repository> -->
+	<!-- </RemoteRepositories> -->
 </Installer>
