@@ -338,8 +338,6 @@ void DkUpdater::checkForUpdates() {
 
 	qDebug() << "checking for updates";
 	connect(&mAccessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
-	QNetworkRequest request = QNetworkRequest(url);
-	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	mReply = mAccessManagerVersion.get(QNetworkRequest(url));
 	connect(mReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
 }
@@ -524,15 +522,11 @@ void DkTranslationUpdater::checkForUpdates() {
 
 	QUrl url ("http://www.nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
-	QNetworkRequest request = QNetworkRequest(url);
-	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	mReply = mAccessManager.get(QNetworkRequest(url));
 	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
 	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
-	request = QNetworkRequest(url);
-	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	mReplyQt = mAccessManager.get(QNetworkRequest(url));
 	connect(mReplyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
 }
