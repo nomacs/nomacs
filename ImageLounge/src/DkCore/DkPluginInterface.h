@@ -154,8 +154,10 @@ public:
 	// and you want the user to be able to e.g. scroll thumbs while your plugin is active
 	virtual bool hideHUD() const { return true; };
 
+	virtual bool createViewPort(QWidget* parent) = 0;
 	virtual DkPluginViewPort* getViewPort() = 0;
-	virtual void deleteViewPort() = 0;
+
+	virtual void setVisible(bool visible) = 0;
 };
 
 class DllCoreExport DkPluginViewPort : public QWidget {
@@ -219,4 +221,4 @@ protected:
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.6")
 Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.6")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.6")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.7")

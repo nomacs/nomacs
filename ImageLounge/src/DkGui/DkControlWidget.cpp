@@ -562,7 +562,7 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force) {
 
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 
-	setPluginWidget(vPlugin, true);	// handles deletion
+	setPluginWidget(vPlugin, true);
 	plugin->setActive(false);		// handles states
 
 	if (!force && pluginImage) {
@@ -598,8 +598,10 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 
 	mPluginViewport = pluginWidget->getViewPort();
 
-	if (!mPluginViewport) 
+	if (!mPluginViewport) {
+		qDebug() << "cannot set plugin widget since the viewport is NULL" << pluginWidget;
 		return;
+	}
 
 	if (!removeWidget) {
 		mPluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
@@ -620,11 +622,9 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 	else if (pluginWidget->hideHUD())
 		showWidgetsSettings();
 
-
 	mViewport->setPaintWidget(dynamic_cast<QWidget*>(mPluginViewport), removeWidget);
-	
+
 	if (removeWidget) {
-		pluginWidget->deleteViewPort();
 		mPluginViewport = 0;
 	}
 }

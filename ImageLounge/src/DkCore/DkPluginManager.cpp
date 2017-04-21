@@ -188,7 +188,19 @@ bool operator<(const QSharedPointer<DkPluginContainer>& l, const QSharedPointer<
 }
 
 void DkPluginContainer::setActive(bool active) {
+	
 	mActive = active;
+
+	DkPluginInterface* p = plugin();
+	if (p && p->interfaceType() == DkPluginInterface::interface_viewport) {
+
+		DkViewPortInterface* vPlugin = pluginViewPort();
+
+		if (!vPlugin)
+			return;
+
+		vPlugin->setVisible(false);
+	}
 }
 
 bool DkPluginContainer::isActive() const {
@@ -362,8 +374,18 @@ void DkPluginContainer::run() {
 		DkViewPortInterface* vPlugin = pluginViewPort();
 		mActive = true;
 
-		if(!vPlugin || !vPlugin->getViewPort())
+		if(!vPlugin)
 			return;
+
+		if (!vPlugin->getViewPort())
+			vPlugin->createViewPort(vPlugin->getMainWindow());
+
+		if (!vPlugin->getViewPort()) {
+			qWarning() << "NULL viewport detected in" << mPluginName;
+			return;
+		}
+		
+		vPlugin->setVisible(true);
 
 		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
 		emit runPlugin(vPlugin, false);
