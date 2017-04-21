@@ -109,6 +109,7 @@ void DkManipulatorWidget::createLayout() {
 	mTitleLabel = new QLabel(this);
 	mTitleLabel->setObjectName("DkManipulatorSettingsTitle");
 	mPreview = new QLabel(this);
+	mPreview->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
 	// undo
 	QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cc.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
@@ -124,7 +125,7 @@ void DkManipulatorWidget::createLayout() {
 	redoButton->setFlat(true);
 	redoButton->setIconSize(QSize(32, 32));
 	redoButton->setObjectName("DkRestartButton");
-	redoButton->setStatusTip(tr("Undo"));
+	redoButton->setStatusTip(tr("Redo"));
 	connect(redoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
 
 	QWidget* buttonWidget = new QWidget(this);
@@ -135,7 +136,7 @@ void DkManipulatorWidget::createLayout() {
 
 	QWidget* mplWidget = new QWidget(this);
 	QVBoxLayout* mplLayout = new QVBoxLayout(mplWidget);
-	mplLayout->setAlignment(Qt::AlignTop);
+	mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 	
 	mplLayout->addWidget(mTitleLabel);
 	for (QWidget* w : mWidgets) 

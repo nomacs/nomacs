@@ -1363,13 +1363,10 @@ QMimeData * DkViewPort::createMime() const {
 	else if (!getImage().isNull())
 		mimeData->setImageData(getImage());
 
-	mimeData->setText(mLoader->filePath());
 	return mimeData;
 }
 
 void DkViewPort::copyImageBuffer() {
-
-	qDebug() << "copying...";
 
 	if (getImage().isNull())
 		return;
