@@ -1250,7 +1250,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 }
 
 // DkRunGuard --------------------------------------------------------------------
-DkRunGuard::DkRunGuard() {
+DkRunGuard::DkRunGuard() : mSharedMem(mSharedMemKey) {
 
 	QSystemSemaphore lock(mLockKey, 1);
 	lock.acquire();

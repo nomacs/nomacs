@@ -477,7 +477,7 @@ private:
 	QString mSharedMemKey = "nomacs | run guard shared memory";
 	QString mLockKey = "nomacs | run guard semaphore";
 	
-	QSharedMemory mSharedMem = mSharedMemKey;
+	QSharedMemory mSharedMem; /* gcc cannot deal with this: = mSharedMemKey;*/
 
 	Q_DISABLE_COPY(DkRunGuard)
 };

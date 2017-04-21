@@ -464,7 +464,7 @@ void DkSettingsModel::addSettingsGroup(const DkSettingsGroup& group, const QStri
 	}
 	endResetModel();
 
-	qDebug() << "item - child count:" << settingsItem->childCount();
+	//qDebug() << "item - child count:" << settingsItem->childCount();
 }
 
 void DkSettingsModel::clear() {
