@@ -478,6 +478,8 @@ private:
 	QString mLockKey = "nomacs | run guard semaphore";
 	
 	QSharedMemory mSharedMem = mSharedMemKey;
+
+	Q_DISABLE_COPY(DkRunGuard)
 };
 
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
