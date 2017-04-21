@@ -157,6 +157,8 @@ public slots:
 	void toggleFullScreen();
 	void enterFullScreen();
 	void exitFullScreen();
+	void toggleDocks(bool hide);
+	void restoreDocks();
 	void showExplorer(bool show, bool saveSettings = true);
 	void showMetaDataDock(bool show, bool saveSettings = true);
 	void showEditDock(bool show, bool saveSettings = true);

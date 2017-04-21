@@ -407,6 +407,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_edit_image), SIGNAL(toggled(bool)), this, SLOT(showEditDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_history), SIGNAL(toggled(bool)), this, SLOT(showHistoryDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
+	connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleDocks(bool)));
 
 	connect(am.action(DkActionManager::menu_view_fit_frame), SIGNAL(triggered()), this, SLOT(fitFrame()));
 	connect(am.action(DkActionManager::menu_view_fullscreen), SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
@@ -798,10 +799,7 @@ void DkNoMacs::enterFullScreen() {
 	DkStatusBarManager::instance().statusbar()->hide();
 	getTabWidget()->showTabs(false);
 
-	showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
-	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
-	showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
-	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
+	restoreDocks();
 
 	DkSettingsManager::param().app().maximizedMode = isMaximized();
 	setWindowState(Qt::WindowFullScreen);
@@ -825,10 +823,8 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettingsManager::param().app().showToolBar) mToolbar->show();
 		if (DkSettingsManager::param().app().showStatusBar) DkStatusBarManager::instance().statusbar()->show();
 		if (DkSettingsManager::param().app().showMovieToolBar) mMovieToolbar->show();
-		showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
-		showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
-		showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
-		showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
+
+		restoreDocks();
 
 		if(DkSettingsManager::param().app().maximizedMode) 
 			setWindowState(Qt::WindowMaximized);
@@ -843,6 +839,26 @@ void DkNoMacs::exitFullScreen() {
 
 	if (viewport())
 		viewport()->setFullScreen(false);
+}
+
+void DkNoMacs::toggleDocks(bool hide) {
+
+	if (hide) {
+		showExplorer(false, false);
+		showMetaDataDock(false, false);
+		showEditDock(false, false);
+		showHistoryDock(false, false);
+	}
+	else
+		restoreDocks();
+}
+
+void DkNoMacs::restoreDocks() {
+
+	showExplorer(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer), false);
+	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
+	showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
+	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
 }
 
 void DkNoMacs::setFrameless(bool) {

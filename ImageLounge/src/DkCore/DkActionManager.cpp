@@ -546,7 +546,7 @@ QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
 	toolsMenu->addAction(mPanelActions[menu_panel_toolbar]);
 	toolsMenu->addAction(mPanelActions[menu_panel_statusbar]);
 	toolsMenu->addAction(mPanelActions[menu_panel_transfertoolbar]);
-	
+
 	mPanelMenu->addAction(mPanelActions[menu_panel_explorer]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_metadata_dock]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_history]);
@@ -562,6 +562,9 @@ QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
 	mPanelMenu->addAction(mPanelActions[menu_panel_info]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_histogram]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_comment]);
+
+	mPanelMenu->addSeparator();
+	mPanelMenu->addAction(mPanelActions[menu_panel_toggle]);
 
 	return mPanelMenu;
 }
@@ -649,6 +652,7 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 	}
 
 	QMenu* panelMenu = mContextMenu->addMenu(QObject::tr("&Panels"));
+	panelMenu->addAction(mPanelActions[menu_panel_toggle]);
 	panelMenu->addAction(mPanelActions[menu_panel_explorer]);
 	panelMenu->addAction(mPanelActions[menu_panel_metadata_dock]);
 	panelMenu->addAction(mPanelActions[menu_panel_preview]);
@@ -1205,6 +1209,11 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_player]->setStatusTip(QObject::tr("Shows the Slide Show Player"));
 	mPanelActions[menu_panel_player]->setCheckable(true);
 
+	mPanelActions[menu_panel_toggle] = new QAction(QObject::tr("&Hide All Panels"), parent);
+	mPanelActions[menu_panel_toggle]->setShortcut(QKeySequence(shortcut_toggle_panels));
+	mPanelActions[menu_panel_toggle]->setStatusTip(QObject::tr("Hide all panels"));
+	mPanelActions[menu_panel_toggle]->setCheckable(true);
+
 	mPanelActions[menu_panel_explorer] = new QAction(QObject::tr("File &Explorer"), parent);
 	mPanelActions[menu_panel_explorer]->setShortcut(QKeySequence(shortcut_show_explorer));
 	mPanelActions[menu_panel_explorer]->setStatusTip(QObject::tr("Show File Explorer"));
@@ -1226,7 +1235,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_thumbview]->setCheckable(true);
 
 	mPanelActions[menu_panel_scroller] = new QAction(QObject::tr("&Folder Scrollbar"), parent);
-	mPanelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
 	mPanelActions[menu_panel_scroller]->setStatusTip(QObject::tr("Show Folder Scrollbar"));
 	mPanelActions[menu_panel_scroller]->setCheckable(true);
 

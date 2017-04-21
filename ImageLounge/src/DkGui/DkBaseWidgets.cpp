@@ -88,7 +88,7 @@ void DkWidget::paintEvent(QPaintEvent *event) {
 }
 
 void DkWidget::registerAction(QAction* action) {
-	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	mAction = action;
 }
 
 void DkWidget::block(bool blocked) {
@@ -154,7 +154,12 @@ void DkWidget::setVisible(bool visible, bool saveSetting) {
 		mOpacityEffect->setOpacity(100);
 
 	QWidget::setVisible(visible);
-	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+	
+	if (mAction) {
+		mAction->blockSignals(true);
+		mAction->setChecked(visible);
+		mAction->blockSignals(false);
+	}
 
 	if (saveSetting && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
 		mDisplaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, true);
@@ -403,7 +408,8 @@ void DkFadeLabel::block(bool blocked) {
 }
 
 void DkFadeLabel::registerAction(QAction* action) {
-	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+
+	mAction = action;
 }
 
 void DkFadeLabel::setDisplaySettings(QBitArray* displayBits) {
@@ -456,7 +462,12 @@ void DkFadeLabel::setVisible(bool visible, bool saveSettings) {
 	if (visible && !isVisible() && !showing)
 		opacityEffect->setOpacity(100);
 
-	emit visibleSignal(visible);
+	if (mAction) {
+		mAction->blockSignals(true);
+		mAction->setChecked(visible);
+		mAction->blockSignals(false);
+	}
+
 	DkLabel::setVisible(visible);
 
 	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
@@ -510,7 +521,8 @@ DkDockWidget::~DkDockWidget() {
 }
 
 void DkDockWidget::registerAction(QAction* action) {
-	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	
+	mAction = action;
 }
 
 void DkDockWidget::setDisplaySettings(QBitArray* displayBits) {
@@ -538,7 +550,13 @@ bool DkDockWidget::testDisplaySettings(const QBitArray& displaySettingsBits) {
 void DkDockWidget::setVisible(bool visible, bool saveSetting) {
 
 	QDockWidget::setVisible(visible);
-	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+	
+	if (mAction) {
+
+		mAction->blockSignals(true);
+		mAction->setChecked(visible);
+		mAction->blockSignals(false);
+	}
 
 	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
 		displaySettingsBits->setBit(DkSettingsManager::param().app().currentAppMode, visible);

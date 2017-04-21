@@ -187,6 +187,8 @@ public:
 	};
 
 	enum PanelMenuActions {
+		menu_panel_toggle,
+		
 		menu_panel_menu,
 		menu_panel_toolbar,
 		menu_panel_statusbar,
@@ -356,7 +358,6 @@ public:
 		shortcut_esc			= Qt::Key_Escape,
 
 		// file
-		shortcut_show_scroller	= Qt::Key_F,
 		shortcut_open_preview	= Qt::Key_T,
 		shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
 		shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
@@ -416,6 +417,7 @@ public:
 		shortcut_anti_aliasing	= Qt::Key_A,
 		shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 		shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
+		shortcut_toggle_panels	= Qt::Key_F,
 
 		// edit
 		shortcut_edit_image		= Qt::Key_D,

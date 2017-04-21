@@ -320,6 +320,7 @@ void DkControlWidget::connectWidgets() {
 	connect(am.action(DkActionManager::menu_panel_info), SIGNAL(toggled(bool)), this, SLOT(showFileInfo(bool)));
 	connect(am.action(DkActionManager::menu_panel_histogram), SIGNAL(toggled(bool)), this, SLOT(showHistogram(bool)));
 	connect(am.action(DkActionManager::menu_panel_comment), SIGNAL(toggled(bool)), this, SLOT(showCommentWidget(bool)));
+	connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleHUD(bool)));
 }
 
 void DkControlWidget::update() {
@@ -343,6 +344,10 @@ void DkControlWidget::showWidgetsSettings() {
 		return;
 	}
 
+	// do not show if hide panels is checked
+	if (DkActionManager::instance().action(DkActionManager::menu_panel_toggle)->isChecked())
+		return;
+
 	//qDebug() << "current app mode: " << DkSettingsManager::param().app().currentAppMode;
 
 	showOverview(mZoomWidget->getCurrentDisplaySetting());
@@ -353,6 +358,14 @@ void DkControlWidget::showWidgetsSettings() {
 	showHistogram(mHistogram->getCurrentDisplaySetting());
 	showCommentWidget(mCommentWidget->getCurrentDisplaySetting());
 	showScroller(mFolderScroll->getCurrentDisplaySetting());
+}
+
+void DkControlWidget::toggleHUD(bool hide) {
+	
+	if (hide)
+		setWidgetsVisible(false, false);
+	else	
+		showWidgetsSettings();
 }
 
 void DkControlWidget::setWidgetsVisible(bool visible, bool saveSettings) {

@@ -122,6 +122,7 @@ public:
 	void settingsChanged();
 
 public slots:
+	void toggleHUD(bool hide);
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
 	void showFileInfo(bool visible);

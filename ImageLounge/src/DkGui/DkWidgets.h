@@ -226,7 +226,7 @@ class DkPlayer : public DkWidget {
 
 public:
 	enum {
-		play_action,	// if more actions are to be assigned
+		play_action = 0,	// if more actions are to be assigned
 	};
 
 	DkPlayer(QWidget* parent = 0);

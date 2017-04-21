@@ -76,9 +76,6 @@ public:
 		pos_end,
 	};
 
-signals:
-	void visibleSignal(bool visible);
-
 public slots:
 	virtual void show(bool saveSetting = true);
 	virtual void hide(bool saveSetting = true);
@@ -96,6 +93,7 @@ protected:
 
 	QGraphicsOpacityEffect* mOpacityEffect;
 	QBitArray* mDisplaySettingsBits;
+	QAction* mAction = 0;
 
 	// functions
 	void init();
@@ -192,9 +190,6 @@ public:
 	void setDisplaySettings(QBitArray* displayBits);
 	bool getCurrentDisplaySetting();
 
-signals:
-	void visibleSignal(bool visible);
-
 public slots:
 	virtual void show(bool saveSetting = true);
 	virtual void hide(bool saveSetting = true);
@@ -209,6 +204,8 @@ protected:
 	bool hiding;
 	bool showing;
 	QBitArray* displaySettingsBits;
+
+	QAction* mAction = 0;
 
 	QGraphicsOpacityEffect *opacityEffect;
 
@@ -233,14 +230,11 @@ public:
 public slots:
 	virtual void setVisible(bool visible, bool saveSetting = true);
 
-signals:
-	void visibleSignal(bool visible);
-
 protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 	QBitArray* displaySettingsBits;
-
+	QAction* mAction = 0;
 };
 
 class DllCoreExport DkResizableScrollArea : public QScrollArea {
