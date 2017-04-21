@@ -89,23 +89,24 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(cons
 	return imgC;
 };
 
+bool DkImgTransformationsPlugin::createViewPort(QWidget * parent) {
+
+	mViewport = new DkImgTransformationsViewPort();
+
+	return true;
+}
+
 /**
 * returns ImgTransformationsViewPort
 **/
 nmc::DkPluginViewPort* DkImgTransformationsPlugin::getViewPort() {
-
-	if (!mViewport)
-		mViewport = new DkImgTransformationsViewPort();
 	
 	return mViewport;
 }
 
-void DkImgTransformationsPlugin::deleteViewPort() {
+void DkImgTransformationsPlugin::setVisible(bool visible) {
 
-	if (mViewport) {
-		mViewport->deleteLater();
-		mViewport = 0;
-	}
+	mViewport->setVisible(visible);
 }
 
 /*-----------------------------------DkImgTransformationsViewPort ---------------------------------------------*/

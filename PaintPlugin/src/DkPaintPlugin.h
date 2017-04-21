@@ -69,14 +69,15 @@ public:
 	bool hideHUD() const override;
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
-	nmc::DkPluginViewPort* getViewPort();
-	void deleteViewPort();
+	nmc::DkPluginViewPort* getViewPort() override;
+	bool createViewPort(QWidget* parent) override;
+	
+	void setVisible(bool visible) override;
+
+	DkPaintViewPort* getPaintViewPort();
 
 protected:
 	nmc::DkPluginViewPort* viewport;
-
-protected slots:
-	void viewportDestroyed();
 };
 
 class DkPaintViewPort : public nmc::DkPluginViewPort {
@@ -90,6 +91,7 @@ public:
 	QPen getPen() const;
 	bool isCanceled();
 	QImage getPaintedImage();
+	void clear();
 
 public slots:
 	void setBrush(const QBrush& brush);

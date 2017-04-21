@@ -96,28 +96,29 @@ QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &ru
 * returns paintViewPort
 **/
 nmc::DkPluginViewPort* DkPaintPlugin::getViewPort() {
-
-	if (!viewport) {
-		viewport = new DkPaintViewPort();
-		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
-	}
 	return viewport;
 }
 
-/**
-* sets the viewport pointer to NULL after the viewport is destroyed
-**/
-void DkPaintPlugin::viewportDestroyed() {
-
-	viewport = 0;
+DkPaintViewPort * DkPaintPlugin::getPaintViewPort() {
+	return dynamic_cast<DkPaintViewPort*>(viewport);
 }
 
-void DkPaintPlugin::deleteViewPort() {
+bool DkPaintPlugin::createViewPort(QWidget * parent) {
+	
+	viewport = new DkPaintViewPort(parent);
+	
+	return true;
+}
 
-	if (viewport) {
-		viewport->deleteLater();
-		viewport = 0;
-	}
+void DkPaintPlugin::setVisible(bool visible) {
+
+	if (!viewport)
+		return;
+
+	viewport->setVisible(visible);
+	if (!visible)
+		getPaintViewPort()->clear();
+	
 }
 
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
@@ -340,6 +341,11 @@ QImage DkPaintViewPort::getPaintedImage() {
 	return QImage();
 }
 
+void DkPaintViewPort::clear() {
+	paths.clear();
+	pathsPen.clear();
+}
+
 void DkPaintViewPort::setBrush(const QBrush& brush) {
 	this->brush = brush;
 }
@@ -361,8 +367,10 @@ void DkPaintViewPort::setPenColor(QColor color) {
 void DkPaintViewPort::setPanning(bool checked) {
 
 	this->panning = checked;
-	if(checked) defaultCursor = Qt::OpenHandCursor;
-	else defaultCursor = Qt::CrossCursor;
+	if(checked) 
+		defaultCursor = Qt::OpenHandCursor;
+	else 
+		defaultCursor = Qt::CrossCursor;
 	setCursor(defaultCursor);
 }
 

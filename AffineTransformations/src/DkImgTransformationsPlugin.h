@@ -77,7 +77,7 @@ enum {
 class DkImgTransformationsPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/3.3" FILE "DkAffineTransformationsPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/3.4" FILE "DkAffineTransformationsPlugin.json")
 
 public:
 
@@ -88,8 +88,11 @@ public:
 	bool hideHUD() const override;
 
     QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+	
+	bool createViewPort(QWidget* parent) override;
 	nmc::DkPluginViewPort* getViewPort() override;
-	void deleteViewPort();
+	
+	void setVisible(bool visible) override;
 
 protected:
 	nmc::DkPluginViewPort* mViewport = 0;
