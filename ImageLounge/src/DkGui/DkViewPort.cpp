@@ -338,9 +338,16 @@ void DkViewPort::setImage(QImage newImg) {
 	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
 
 	// status info
-	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
-	DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()), DkStatusBar::status_format_info);
-	DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x " + QString::number(newImg.height()), DkStatusBar::status_dimension_info);
+	if (!newImg.isNull()) {
+		DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
+		DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()), DkStatusBar::status_format_info);
+		DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x " + QString::number(newImg.height()), DkStatusBar::status_dimension_info);
+	}
+	else {
+		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_zoom_info);
+		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_format_info);
+		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_dimension_info);
+	}
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {

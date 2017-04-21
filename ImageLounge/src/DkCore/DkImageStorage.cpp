@@ -934,7 +934,7 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 
 	// normalize brightness/saturation
 	int brightnessN = qRound(brightness / 100.0 * 255.0);
-	int satN = qRound(sat / 100.0 * 255.0);
+	double satN = sat / 100.0 + 1.0;
 
 	cv::Mat hsvImg = DkImage::qImage2Mat(src);
 	
@@ -964,8 +964,7 @@ QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightne
 			iPtr[cIdx + 2] = (unsigned char)v;
 
 			// adopt saturation
-			float m = qMin(v, 255-v)/255.0f;
-			int s = qRound(iPtr[cIdx + 1] + (satN * m));
+			int s = qRound(iPtr[cIdx + 1] * satN);
 			if (s < 0)		s = 0;
 			if (s > 255) 	s = 255;
 			iPtr[cIdx + 1] = (unsigned char)s;

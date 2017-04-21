@@ -70,9 +70,7 @@ void DkStatusBar::setMessage(const QString& msg, StatusLabel which) {
 
 	mLabels[which]->setVisible(!msg.isEmpty());
 	mLabels[which]->setText(msg);
-
 }
-
 
 // DkStatusBarManager --------------------------------------------------------------------
 DkStatusBarManager::DkStatusBarManager() {
