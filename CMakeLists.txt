@@ -29,7 +29,7 @@ OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
 OPTION (ENABLE_PATCHMATCHING "Compile Patch Matching Plugin" OFF)
 OPTION (ENABLE_IMAGESTITCHING "Compile Image Stitching Plugin" OFF)
-OPTION (ENABLE_RULERDETECTION "Compile Ruler Detection Plugin" ON)
+OPTION (ENABLE_RULERDETECTION "Compile Ruler Detection Plugin" OFF)	# needs xfeatures2d (opencv-contrib)
 
 NMC_PREPARE_PLUGIN()
 NMC_FINDQT()
