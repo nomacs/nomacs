@@ -244,45 +244,5 @@ class DllCoreExport DkLANConnection : public DkConnection {
 		bool mIAmServer = true;
 };
 
-
-class DllCoreExport DkRCConnection : public DkLANConnection {
-	Q_OBJECT
-
-	public:
-		DkRCConnection(QObject* parent = 0);
-		
-	signals:
-		void connectionNewPermission(DkConnection*, bool) const;
-		void connectionNewRCType(DkConnection*, int) const ;
-
-	public slots:
-		void sendAskForPermission();
-		void sendPermission();
-		void sendRCType(int type);
-
-	protected slots:
-		virtual void processReadyRead();
-		
-
-	protected:
-		virtual void readGreetingMessage();
-		virtual bool readProtocolHeader();
-		virtual void processData();
-		virtual void readWhileBytesAvailable();
-		virtual bool allowedToSynchronize();
-
-		enum RemoteControlDataType {
-			newPermission = 11,
-			newAskPermission,
-			newRcType,
-			Undefined
-		};
-
-		RemoteControlDataType currentRemoteControlDataType;
-
-	private:
-
-};
-
 };
 

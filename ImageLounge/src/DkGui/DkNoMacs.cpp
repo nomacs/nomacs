@@ -2381,21 +2381,6 @@ DkNoMacsSync::~DkNoMacsSync() {
 		mLocalClient = 0;
 	}
 
-	if (mRcClient) {
-
-		if (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_remote_control)
-			mRcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
-
-		emit stopSynchronizeWithSignal();
-
-		mRcClient->quit();
-		mRcClient->wait();
-
-		delete mRcClient;
-		mRcClient = 0;
-
-	}
-
 }
 
 void DkNoMacsSync::initLanClient() {
@@ -2409,19 +2394,9 @@ void DkNoMacsSync::initLanClient() {
 		delete mLanClient;
 	}
 
-
-	// remote control server
-	if (mRcClient) {
-		mRcClient->quit();
-		mRcClient->wait();
-
-		delete mRcClient;
-	}
-
 	if (!DkSettingsManager::param().sync().enableNetworkSync) {
 
 		mLanClient = 0;
-		mRcClient = 0;
 
 		DkActionManager::instance().lanMenu()->setEnabled(false);
 		DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
@@ -2442,26 +2417,8 @@ void DkNoMacsSync::initLanClient() {
 	lanMenu->addTcpAction(DkActionManager::instance().action(DkActionManager::menu_lan_image));	// well this is a bit nasty... we only add it here to have correct enable/disable behavior...
 	lanMenu->setEnabled(true);
 	lanMenu->enableActions(false, false);
-
-	mRcClient = new DkRCManagerThread(this);
-	mRcClient->setObjectName("rcClient");
-	
-	mRcClient->start();
 	
 	connect(this, SIGNAL(startTCPServerSignal(bool)), mLanClient, SLOT(startServer(bool)));
-	connect(this, SIGNAL(startRCServerSignal(bool)), mRcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
-
-	if (!DkSettingsManager::param().sync().syncWhiteList.empty()) {
-		qDebug() << "whitelist not empty .... starting server";
-
-		// TODO: currently blocking : )
-		emit startRCServerSignal(true);
-		//rcClient->startServer(true);
-	}
-	else 
-		qDebug() << "whitelist empty!!";
-
-
 
 	qDebug() << "start server takes: " << dt;
 }
@@ -2589,14 +2546,7 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
-void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
-
-	if (syncMode == DkSettingsManager::param().sync().syncMode || !mRcClient)
-		return;
-
-	// turn off everything
-	if (syncMode == DkSettings::sync_mode_default)
-		mRcClient->sendGoodByeToAll();
+void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
 
 	DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setChecked(false);
 	DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setChecked(false);
@@ -2606,9 +2556,7 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 		return;
 	}
 
-	// if we do not connect with the white list, the signal came from the rc client
-	// so we can easily assume that we are connected
-	bool connected = (connectWithWhiteList) ? connectWhiteList(syncMode, DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default) : true;
+	bool connected = DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default;
 
 	if (!connected) {
 		DkSettingsManager::param().sync().syncMode = DkSettings::sync_mode_default;
@@ -2633,61 +2581,17 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
 void DkNoMacsSync::tcpRemoteControl(bool start) {
 
-	if (!mRcClient)
-		return;
-
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default, true);
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default);
 }
 
 void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 
-	if (!mRcClient)
-		return;
-
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default, true);
-
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default);
 }
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
 
 	DkSettingsManager::param().sync().syncActions = connect;
-}
-
-bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
-
-	if (!mRcClient)
-		return false;
-
-	bool couldConnect = false;
-
-	QList<DkPeer*> peers = mRcClient->getPeerList();
-	qDebug() << "number of peers in list:" << peers.size();
-
-	// TODO: add gui if idx != 1
-	if (connect && !peers.isEmpty()) {
-		DkPeer* peer = peers[0];
-
-		emit synchronizeRemoteControl(peer->peerId);
-		
-		if (mode == DkSettings::sync_mode_remote_control)
-			mRcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
-		else
-			mRcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
-
-		couldConnect = true;
-	}
-	else if (!connect) {
-
-		if (mode == DkSettings::sync_mode_remote_control)
-			mRcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
-		else
-			mRcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
-
-		emit stopSynchronizeWithSignal();
-		couldConnect = true;
-	}
-
-	return couldConnect;
 }
 
 void DkNoMacsSync::newClientConnected(bool connected, bool local) {
@@ -2727,8 +2631,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	mLocalClient->start();
 
 	mLanClient = 0;
-	mRcClient = 0;
-
 
 	init();
 	setAcceptDrops(true);
@@ -2898,7 +2800,6 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacsSync(parent, flags) {
 
-
 		setObjectName("DkNoMacsContrast");
 
 		// init members
@@ -2913,7 +2814,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		mLocalClient->start();
 
 		mLanClient = 0;
-		mRcClient = 0;
 
 		init();
 

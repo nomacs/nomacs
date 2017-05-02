@@ -525,15 +525,6 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 	emit updateConnectionSignal(mPeerList.getActivePeers());
 
-	// ignore synchronized clients of other connection
-
-	// add to last seen for whitelisting
-	DkPeer* syncedPeer = mPeerList.getPeerById(connection->getPeerId());
-	if (!syncedPeer)
-		return;
-	DkSettingsManager::param().sync().recentSyncNames << syncedPeer->clientName;
-	DkSettingsManager::param().sync().recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
-	qDebug() << "added " << syncedPeer->clientName << " to recently seen list";
 }
 
 void DkLANClientManager::connectionStopSynchronized(DkConnection* connection) {
@@ -816,130 +807,6 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 	connect(connection, SIGNAL(connectionUpcomingImage(DkConnection*, const QString&)), this, SLOT(connectionReceivedUpcomingImage(DkConnection*, const QString&)));
 	connect(connection, SIGNAL(connectionSwitchServer(DkConnection*, const QHostAddress&, quint16)), this, SLOT(connectionReceivedSwitchServer(DkConnection*, const QHostAddress&, quint16)));
 }
-
-// DkRemoteControllClientManager --------------------------------------------------------------------
-DkRCClientManager::DkRCClientManager(const QString& title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, rc_udp_port, rc_udp_port) {
-	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
-}
-
-QList<DkPeer*> DkRCClientManager::getPeerList() {
-	QList<DkPeer*> list;
-	foreach(DkPeer* peer, mPeerList.getPeerList()) {
-		
-		if (peer && permissionList.value(peer->peerId) && peer->connection->connectionCreated)
-			list.push_back(peer);
-	}
-	return list;
-}
-
-void DkRCClientManager::synchronizeWith(quint16 peerId) {
-	//qDebug() << "DkCRemoteControllientManager::synchronizeWith  peerId:" << peerId;
-
-	mPeerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
-
-	qDebug() << "DkRCClientManager: peer list:" << __FILE__ << __FUNCTION__;
-	qDebug() << "--------- peerList -------";
-	mPeerList.print();
-	qDebug() << "--------- peerList end----";
-
-	DkPeer* peer = mPeerList.getPeerById(peerId);
-	if (!peer || peer->connection == 0) {
-		qDebug() << "TcpClient: synchronizeWith: connection is null";
-		return;
-	}
-
-	//qDebug() << "synchronizing with: " << peerId;
-	connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
-	emit sendSynchronizeMessage();
-	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
-
-	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
-}
-
-void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) {
-	DkPeer* peer = mPeerList.getPeerById(connection->getPeerId());
-	if (!peer)
-		return;
-
-	//qDebug() << "Connection synchronized with:" << connection->getPeerPort();
-	mPeerList.setSynchronized(connection->getPeerId(), true);
-	mPeerList.setShowInMenu(connection->getPeerId(), true);
-	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
-	emit updateConnectionSignal(mPeerList.getActivePeers());
-
-	// ignore synchronized clients of other connection
-
-	// add to last seen for whitelisting
-	DkSettingsManager::param().sync().recentSyncNames << peer->clientName;
-	DkSettingsManager::param().sync().recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
-
-}
-
-
-
-void DkRCClientManager::connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* dkconnection) {
-	//DkLANClientManager::connectionReadyForUse(peerServerPort, title, dkconnection);
-	//peerList.print();
-	//DkPeer peer = peerList.getPeerByAddress(dkconnection->peerAddress(), peerServerPort);
-	//permissionList.insert(peer.peerId, false);
-
-	DkRCConnection* connection = dynamic_cast<DkRCConnection*>(dkconnection); // TODO???? darf ich das
-	//qDebug() << "connection ready for use" << connection->peerPort() << " with title:" << title << " peerServerPort:" << peerServerPort << "  showInMenu: " << connection->getShowInMenu();
-
-	mNewPeerId++;
-	DkPeer* peer = new DkPeer(connection->peerPort(), mNewPeerId, connection->peerAddress(), peerServerPort, title, connection, false, connection->getClientName(), connection->getShowInMenu(), this);
-	connection->setPeerId(mNewPeerId);
-	mPeerList.addPeer(peer); 
-
-	//qDebug() << "peerList:";
-	//peerList.print();
-
-	//if (!server->isListening())
-		connection->sendAskForPermission(); // TODO: do i have to ask for permission?
-}
-
-void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, bool allowedToConnect) {
-	permissionList.insert(connection->getPeerId(), allowedToConnect);
-}
-
-void DkRCClientManager::connectionReceivedRCType(DkConnection*, int mode) {
-	qDebug() << "connection received new remote control mode: " << mode;
-	emit(connectedReceivedNewMode(mode));
-}
-
-void DkRCClientManager::connectionReceivedGoodBye(DkConnection* connection) {
-	emit connectedReceivedNewMode(DkSettings::sync_mode_default);
-	DkClientManager::connectionReceivedGoodBye(connection);
-}
-
-DkRCConnection* DkRCClientManager::createConnection() {
-	DkRCConnection* connection = new DkRCConnection();
-	connectConnection(connection);
-	return connection;
-}
-
-void DkRCClientManager::connectConnection(DkConnection* connection) {
-	DkLANClientManager::connectConnection(connection);
-	connect(connection, SIGNAL(connectionNewPermission(DkConnection*, bool)), this, SLOT(connectionReceivedPermission(DkConnection*, bool)));
-	connect(connection, SIGNAL(connectionNewRCType(DkConnection*, int)), this, SLOT(connectionReceivedRCType(DkConnection*, int)));
-}
-
-void DkRCClientManager::sendNewMode(int mode) {
-	
-	//qDebug() << "sending new image";
-	QList<DkPeer*> synchronizedPeers = mPeerList.getSynchronizedPeers();
-	foreach (DkPeer* peer , synchronizedPeers) {
-		
-		if (!peer)
-			continue;
-		
-		DkRCConnection* connection = dynamic_cast<DkRCConnection*>(peer->connection);
-		connect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
-		emit sendNewModeMessage(mode);
-		disconnect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
-	}
-}
-
 
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
@@ -1453,33 +1320,6 @@ void DkLanManagerThread::createClient(const QString& title) {
 		delete clientManager;
 
 	clientManager = new DkLANClientManager(title);
-}
-
-// DkRCManagerThread --------------------------------------------------------------------
-DkRCManagerThread::DkRCManagerThread(DkNoMacs* parent) : DkLanManagerThread(parent) {
-	clientManager = 0;
-}
-
-void DkRCManagerThread::createClient(const QString& title) {
-	if (clientManager)
-		delete clientManager;
-
-	clientManager = new DkRCClientManager(title);
-
-}
-
-void DkRCManagerThread::connectClient() {
-	// not sure if we need something here
-
-	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
-	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
-	connect(clientManager, SIGNAL(connectedReceivedNewMode(int)), parent, SLOT(tcpChangeSyncMode(int)));
-
-	DkLanManagerThread::connectClient();
-}
-
-void DkRCManagerThread::sendNewMode(int mode) {
-	newModeSignal(mode);
 }
 
 }

@@ -260,36 +260,6 @@ class DkLANClientManager : public DkClientManager {
 
 };
 
-class DkRCClientManager : public DkLANClientManager {
-	Q_OBJECT
-	public:
-		DkRCClientManager(const QString& title, QObject* parent = 0);
-		QList<DkPeer*> getPeerList();
-
-	public slots:
-		//void sendAskForPermission(); // todo: muss das ein slot sein?
-		virtual void synchronizeWith(quint16 peerId);
-		virtual void sendNewMode(int mode);
-
-signals:
-		void sendNewModeMessage(int mode);
-		void connectedReceivedNewMode(int mode);
-
-	protected:
-		void connectConnection(DkConnection* connection);
-
-	private slots:
-		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
-		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
-		void connectionReceivedRCType(DkConnection* connection, int type);
-		virtual void connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* connection);
-		virtual void connectionReceivedGoodBye(DkConnection* connection);
-
-	private:
-		virtual DkRCConnection* createConnection();
-		QHash<quint16, bool> permissionList;
-};
-
 class DkLocalTcpServer : public QTcpServer {
 	Q_OBJECT;
 	public:
@@ -450,27 +420,6 @@ public slots:
 		// re-send
 		emit startServerSignal(start);
 	};
-
-
-protected:
-	void createClient(const QString& title);
-
-
-
-};
-
-class DkRCManagerThread : public DkLanManagerThread {
-	Q_OBJECT
-
-public:
-	DkRCManagerThread(DkNoMacs* parent);
-	void connectClient();
-
-public slots:
-	void sendNewMode(int mode);
-
-signals:
-	void newModeSignal(int mode);
 
 protected:
 	void createClient(const QString& title);

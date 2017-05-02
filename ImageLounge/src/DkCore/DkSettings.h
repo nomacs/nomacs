@@ -52,8 +52,6 @@ class QTranslator;
 
 namespace nmc {
 
-class DkWhiteListViewModel;
-
 class DllCoreExport DkFileFilterHandling {
 
 public:
@@ -259,9 +257,6 @@ public:
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
 		bool switchModifier;
-		QStringList recentSyncNames;
-		QStringList syncWhiteList;
-		QHash<QString, QVariant> recentLastSeen;
 		int syncMode;
 		bool syncActions;
 	};

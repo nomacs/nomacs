@@ -444,9 +444,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
 	//sync_p.syncMode = settings.value("syncMode", sync_p.syncMode).toInt();
 	sync_p.syncActions = settings.value("syncActions", sync_p.syncActions).toBool();
-	sync_p.recentSyncNames = settings.value("recentSyncNames", sync_p.recentSyncNames).toStringList();
-	sync_p.syncWhiteList = settings.value("syncWhiteList", sync_p.syncWhiteList).toStringList();
-	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
@@ -712,12 +709,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 	//	settings.setValue("syncMode", sync_p.syncMode);
 	if (force ||sync_p.syncActions != sync_d.syncActions)
 		settings.setValue("syncActions", sync_p.syncActions);
-	if (force ||sync_p.recentSyncNames != sync_d.recentSyncNames)
-		settings.setValue("recentSyncNames", sync_p.recentSyncNames);
-	if (force ||sync_p.syncWhiteList != sync_d.syncWhiteList)
-		settings.setValue("syncWhiteList", sync_p.syncWhiteList);
-	if (force ||sync_p.recentLastSeen != sync_d.recentLastSeen)
-		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------

@@ -82,7 +82,6 @@ class DkInstallUpdater;
 class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
-class DkRCManagerThread;
 class DkTransferToolBar;
 class DkPluginManagerDialog;
 class DkThumbsSaver;
@@ -344,7 +343,7 @@ signals:
 
 public slots:
 	void tcpConnectAll();
-	void tcpChangeSyncMode(int syncMode, bool connectWithWhiteList = false);
+	void tcpChangeSyncMode(int syncMode);
 	void tcpRemoteControl(bool start);
 	void tcpRemoteDisplay(bool start);
 	void tcpAutoConnect(bool connect);
@@ -363,7 +362,6 @@ protected:
 
 	// functions
 	void initLanClient();
-	bool connectWhiteList(int mode, bool connect = true);
 
 	// gui
 	virtual void createActions();
@@ -372,7 +370,6 @@ protected:
 	// network layer
 	DkLocalManagerThread* mLocalClient = 0;
 	DkLanManagerThread* mLanClient = 0;
-	DkRCManagerThread* mRcClient = 0;
 
 };
 
