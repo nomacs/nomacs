@@ -745,7 +745,7 @@ void DkBatchOutput::createLayout() {
 
 	// overwrite existing
 	mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
-	mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only usefull if plugins save sidecar files - so be careful!"));
+	mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files - so be careful!"));
 	connect(mCbDoNotSave, SIGNAL(clicked()), this, SIGNAL(changed()));
 
 	// Use Input Folder
