@@ -310,6 +310,10 @@ QString DkUtils::resolveSymLink(const QString & filePath) {
 
 				// is there an absolute path?
 				QString cl = txt.readLine();
+
+				if (cl.isEmpty())
+					continue;
+
 				QFileInfo fi(cl);
 				if (fi.exists()) {
 					rFilePath = fi.absoluteFilePath();
@@ -318,7 +322,7 @@ QString DkUtils::resolveSymLink(const QString & filePath) {
 
 				// is there a relative path?
 				fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
-				if (fi.exists()) {
+				if (fi.exists() & fi.isFile()) {
 					rFilePath = fi.absoluteFilePath();
 					break;
 				}
@@ -1245,6 +1249,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event) {
 			return true;
 		}	
 	}
+
 
 	return QObject::eventFilter(obj, event);
 }
