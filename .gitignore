@@ -21,3 +21,9 @@ installer-test
 repository.zip
 /ImageLounge/cmake/*.tmp
 /.gitattributes
+/installer-wix/nomacs/.*
+/installer-wix/nomacs
+/installer-wix/img/banner-thanks.psd
+/installer-wix/*.wixobj
+/installer-wix/nomacs-setup.msi
+/installer-wix/*.wixpdb
