@@ -2105,7 +2105,7 @@ DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	
 	setObjectName("DkHistogram");
 	setMinimumWidth(265);
-	setMinimumHeight(130);
+	setMinimumHeight(142);
 	setCursor(Qt::ArrowCursor);
 }
 
@@ -2118,13 +2118,17 @@ DkHistogram::~DkHistogram() {
 void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
-	//painter.setPen(QColor(200, 200, 200));
 	painter.fillRect(1, 1, width(), height(), mBgCol);
-	//painter.drawRect(1, 1, width(), height());
 
-	int margin = 5;
-	int binHeight = height() - margin * 2;
+	const int margin = 5;
+	const int TEXT_SIZE = 12 + 1;  //FIXME just guessed
+	const int NUM_TEXT_LINES = 2;
+	const int textHeight = NUM_TEXT_LINES * TEXT_SIZE + margin + 5;
 
+	int binHeight = height() - margin * 2 - textHeight;
+	int binBottom = height() - margin - textHeight;
+
+	//draw Histogram
 	if(mIsPainted && mMaxValue > 0){
 		
 		for(int x = 0; x < 256; x++){
@@ -2137,16 +2141,47 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 
 			painter.setCompositionMode(QPainter::CompositionMode_Clear);
 			painter.setPen(Qt::black);
-			painter.drawLine(QPoint(x + margin, height() - margin), QPoint(x + margin, height()-margin - maxLineHeight));
+			painter.drawLine(QPoint(x + margin, binBottom), QPoint(x + margin, binBottom - maxLineHeight));
 
 			painter.setCompositionMode(QPainter::CompositionMode_Screen);
 			painter.setPen(Qt::red);
-			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-rLineHeight));
+			painter.drawLine(QPoint(x+margin, binBottom), QPoint(x+margin, binBottom - rLineHeight));
 			painter.setPen(Qt::green);
-			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-gLineHeight));
+			painter.drawLine(QPoint(x+margin, binBottom), QPoint(x+margin, binBottom - gLineHeight));
 			painter.setPen(Qt::blue);
-			painter.drawLine(QPoint(x+margin, height()-margin), QPoint(x+margin, height()-margin-bLineHeight));
+			painter.drawLine(QPoint(x+margin, binBottom), QPoint(x+margin, binBottom - bLineHeight));
 		}
+	}
+
+	//draw histogram text
+	double activeRatio = (double)mNumNonZeroPixels / (double)mNumPixels;
+	double megaPixels = (double)mNumPixels * 10.0e-7;
+	painter.setPen(QColor(180, 180, 180));
+
+	QString histText1("Pixels: %1 MPix: %2");
+	painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE),
+					 histText1.arg(mNumPixels, 10, 10, QChar(' '))
+							  .arg(megaPixels, 10, 'f', -1,  QChar(' '))
+							  .arg(100.0 * activeRatio, 5, 'f', 3, QChar(' ')));
+	if (mMinBinValue < 256) {
+		//gray image statistics
+		QString histText2("Min: %1 Max: %2 Value Count: %3");
+		painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
+						 histText2.arg(mMinBinValue, 5, 10, QChar(' '))
+								  .arg(mMaxBinValue, 5, 10, QChar(' '))
+								  .arg(mNumDistinctValues, 5, 10, QChar(' ')));
+	}else{
+		//color image statistics
+		double blackPct = 100.0 * (double)mNumZeroPixels / (double)mNumPixels;
+		double whitePct = 100.0 * (double)mNumSaturatedPixels / (double)mNumPixels;
+		double goodPct = 100.0 * (double)(mNumPixels - mNumZeroPixels - mNumSaturatedPixels) / (double)mNumPixels;
+
+		QString histText2("Black: %1 Good: %3 White: %2");
+		painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
+						 histText2.arg(blackPct, 5, 'f', 2, QChar(' '))
+								  .arg(whitePct, 5, 'f', 2, QChar(' '))
+								  .arg(goodPct, 5, 'f', 2, QChar(' ')));
+
 	}
 }
 
@@ -2163,17 +2198,22 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 
 	DkTimer dt;
 
-#ifdef WITH_OPENCV
-	
-	int histValues[3][256];
+	//clear histogram values
+	mNumNonZeroPixels = 0;
+	mNumZeroPixels = 0;
+	mNumSaturatedPixels = 0;
+	mMaxBinValue = -1;
+	mMinBinValue = 256;
+	mMaxValue = 0;
+	mNumPixels = imgQt.width() * imgQt.height();
 
 	for (int idx = 0; idx < 256; idx++) {
-		histValues[0][idx] = 0;
-		histValues[1][idx] = 0;
-		histValues[2][idx] = 0;
+		mHist[0][idx] = 0;
+		mHist[1][idx] = 0;
+		mHist[2][idx] = 0;
 	}
-	
 
+	// count pixel- and total values, for
 	// 8 bit images
 	if (imgQt.depth() == 8) {
 
@@ -2185,9 +2225,14 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 
 			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
 
-				histValues[0][*pixel]++;
-				histValues[1][*pixel]++;
-				histValues[2][*pixel]++;
+				mHist[0][*pixel]++;
+				mHist[1][*pixel]++;
+				mHist[2][*pixel]++;
+
+				if (*pixel) mNumNonZeroPixels++;
+				if (*pixel == 255) mNumSaturatedPixels++;
+				if (*pixel < mMinBinValue) mMinBinValue = *pixel;
+				if (*pixel > mMaxBinValue) mMaxBinValue = *pixel;
 			}
 		}
 	}
@@ -2200,13 +2245,13 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 		for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
 
 			const unsigned char* pixel = imgQt.constScanLine(rIdx);
-
 			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++) {
 
 				// If I understood the api correctly, the first bits are 0 if we have 24bpp & < 8 bits per channel
-				histValues[0][*pixel]++; pixel++;
-				histValues[1][*pixel]++; pixel++;
-				histValues[2][*pixel]++; pixel++;
+				mHist[0][*pixel]++; pixel++;
+				mHist[1][*pixel]++; pixel++;
+				mHist[2][*pixel]++; pixel++;
+
 			}
 		}
 	}
@@ -2218,36 +2263,47 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 			const QRgb* pixel = (QRgb*)(imgQt.constScanLine(rIdx));
 	
 			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
+				size_t pixR = static_cast<size_t>(qRed(*pixel));
+				size_t pixG = static_cast<size_t>(qGreen(*pixel));
+				size_t pixB = static_cast<size_t>(qBlue(*pixel));
 
-				histValues[0][qRed(*pixel)]++;
-				histValues[1][qGreen(*pixel)]++;
-				histValues[2][qBlue(*pixel)]++;
+				mHist[0][pixR]++;
+				mHist[1][pixG]++;
+				mHist[2][pixB]++;
+
+				if (pixR == 0 && pixG == 0 && pixB == 0) {
+					mNumZeroPixels++;
+				}
+
+				if (pixR || pixG || pixB) {
+					mNumNonZeroPixels++;
+				}
+
+				if (pixR == 255 && pixG == 255 && pixB == 255) {
+					mNumSaturatedPixels++;
+				}
 			}
 		}
 	}
 
-	int maxHistValue = 0;
+	// determine extreme values from the histogram
+	mNumDistinctValues = 0;
 
-	for (int idx = 0; idx < 256; idx++) {
-		
-		if (histValues[0][idx] > maxHistValue)
-			maxHistValue = histValues[0][idx];
-		if (histValues[1][idx] > maxHistValue)
-			maxHistValue = histValues[1][idx];
-		if (histValues[2][idx] > maxHistValue)
-			maxHistValue = histValues[2][idx];
-	}
+    for (int idx = 0; idx < 256; idx++) {
+        if (mHist[0][idx] > mMaxValue)
+            mMaxValue = mHist[0][idx];
+        if (mHist[1][idx] > mMaxValue)
+            mMaxValue = mHist[1][idx];
+        if (mHist[2][idx] > mMaxValue)
+            mMaxValue = mHist[2][idx];
 
-	setMaxHistogramValue(maxHistValue);
-	updateHistogramValues(histValues);
+        if (mHist[0][idx] || mHist[1][idx] || mHist[2][idx]){
+            mNumDistinctValues++;
+        }
+    }
+
 	setPainted(true);
-
-#else
-	setPainted(false);
-#endif
-	
 	qDebug() << "drawing the histogram took me: " << dt;
-
 	update();
 }
 

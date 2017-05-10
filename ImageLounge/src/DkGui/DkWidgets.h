@@ -680,11 +680,19 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 private:
-	int mHist[3][256];
-	int mMaxValue = 20;
+	int mHist[3][256];          /// 3 channels 256 bin. channels duplicated when gray
+	int mNumPixels = 0;         /// image pixel count
+	int mNumDistinctValues = 0; /// number of distinct values
+	int mNumZeroPixels = 0;     /// pixels with zero value
+	int mNumNonZeroPixels = 0;  /// pixels with non-zero value
+	int mNumSaturatedPixels = 0;    /// pixels saturating RGB 8bit
+	int mNumValues = 0;         /// number of distinct histogram values
+	int mMinBinValue = 256;     /// (gray-only) minimum intensity value
+	int mMaxBinValue = -1;      /// (gray-only) maximum intensity value
+	int mMaxValue = 20;         /// maximum count over all bins
 	bool mIsPainted = false;
 	float mScaleFactor = 1;
-				
+
 };
 
 class DkFileInfo {
