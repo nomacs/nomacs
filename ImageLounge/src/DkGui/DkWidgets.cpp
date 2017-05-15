@@ -2107,9 +2107,11 @@ DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
 	setMinimumWidth(265);
 	setMinimumHeight(142);
 	setCursor(Qt::ArrowCursor);
+	loadSettings();
 }
 
 DkHistogram::~DkHistogram() {
+    saveSettings();
 }
 
 /**
@@ -2120,10 +2122,17 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 	QPainter painter(this);
 	painter.fillRect(1, 1, width(), height(), mBgCol);
 
+	int numTextLines;
+	if (mDisplayMode == DisplayMode::histogram_mode_simple) {
+		numTextLines = 0;
+	} else {
+		// histogram_mode_extended has 2 lines of text
+		numTextLines = 2;
+	}
+
 	const int margin = 5;
 	const int TEXT_SIZE = 12 + 1;  //FIXME just guessed
-	const int NUM_TEXT_LINES = 2;
-	const int textHeight = NUM_TEXT_LINES * TEXT_SIZE + margin + 5;
+	const int textHeight = numTextLines * TEXT_SIZE + margin + 5;
 
 	int binHeight = height() - margin * 2 - textHeight;
 	int binBottom = height() - margin - textHeight;
@@ -2153,36 +2162,56 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 		}
 	}
 
-	//draw histogram text
-	double activeRatio = (double)mNumNonZeroPixels / (double)mNumPixels;
-	double megaPixels = (double)mNumPixels * 10.0e-7;
-	painter.setPen(QColor(180, 180, 180));
+    if(mDisplayMode == DisplayMode::histogram_mode_extended) {
+        //draw histogram text
+        double activeRatio = (double)mNumNonZeroPixels / (double)mNumPixels;
+        double megaPixels = (double)mNumPixels * 10.0e-7;
+        painter.setPen(QColor(180, 180, 180));
 
-	QString histText1("Pixels: %1 MPix: %2");
-	painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE),
-					 histText1.arg(mNumPixels, 10, 10, QChar(' '))
-							  .arg(megaPixels, 10, 'f', -1,  QChar(' '))
-							  .arg(100.0 * activeRatio, 5, 'f', 3, QChar(' ')));
-	if (mMinBinValue < 256) {
-		//gray image statistics
-		QString histText2("Min: %1 Max: %2 Value Count: %3");
-		painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
-						 histText2.arg(mMinBinValue, 5, 10, QChar(' '))
-								  .arg(mMaxBinValue, 5, 10, QChar(' '))
-								  .arg(mNumDistinctValues, 5, 10, QChar(' ')));
+        QString histText1("Pixels: %1 MPix: %2");
+        painter.drawText(QPoint(margin, height() - 2 * TEXT_SIZE),
+                         histText1.arg(mNumPixels, 10, 10, QChar(' '))
+                                  .arg(megaPixels, 10, 'f', -1,  QChar(' ')));
+
+        if (mMinBinValue < 256) {
+            //gray image statistics
+            QString histText2("Min: %1 Max: %2 Value Count: %3");
+            painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
+                             histText2.arg(mMinBinValue, 5, 10, QChar(' '))
+                                      .arg(mMaxBinValue, 5, 10, QChar(' '))
+                                      .arg(mNumDistinctValues, 5, 10, QChar(' ')));
+        }else{
+            //color image statistics
+            double blackPct = 100.0 * (double)mNumZeroPixels / (double)mNumPixels;
+            double whitePct = 100.0 * (double)mNumSaturatedPixels / (double)mNumPixels;
+            double goodPct = 100.0 * (double)(mNumPixels - mNumZeroPixels - mNumSaturatedPixels) / (double)mNumPixels;
+
+            QString histText2("Black: %1 Good: %3 White: %2");
+            painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
+                             histText2.arg(blackPct, 5, 'f', 2, QChar(' '))
+                                      .arg(whitePct, 5, 'f', 2, QChar(' '))
+                                      .arg(goodPct, 5, 'f', 2, QChar(' ')));
+
+        }
+    }
+}
+
+void DkHistogram::loadSettings()
+{
+	int styleSetting = DkSettingsManager::param().display().histogramStyle;
+	DisplayMode maybeMode = static_cast<DisplayMode>(styleSetting);
+	if(maybeMode == DisplayMode::histogram_mode_simple ||
+	   maybeMode == DisplayMode::histogram_mode_extended){
+
+		mDisplayMode = maybeMode;
 	}else{
-		//color image statistics
-		double blackPct = 100.0 * (double)mNumZeroPixels / (double)mNumPixels;
-		double whitePct = 100.0 * (double)mNumSaturatedPixels / (double)mNumPixels;
-		double goodPct = 100.0 * (double)(mNumPixels - mNumZeroPixels - mNumSaturatedPixels) / (double)mNumPixels;
-
-		QString histText2("Black: %1 Good: %3 White: %2");
-		painter.drawText(QPoint(margin, height() - 1 * TEXT_SIZE),
-						 histText2.arg(blackPct, 5, 'f', 2, QChar(' '))
-								  .arg(whitePct, 5, 'f', 2, QChar(' '))
-								  .arg(goodPct, 5, 'f', 2, QChar(' ')));
-
+		mDisplayMode = DisplayMode::histogram_mode_simple;
 	}
+}
+
+void DkHistogram::saveSettings()
+{
+	//done in DkPreferencesWidget
 }
 
 /**

@@ -201,6 +201,8 @@ public:
 		TransitionMode transition;
 		bool alwaysAnimate;
 		float animationDuration;
+
+		int histogramStyle;
 	};
 
 	struct Global {

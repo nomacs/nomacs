@@ -780,6 +780,18 @@ void DkDisplayPreference::createLayout() {
 	DkGroupWidget* showCropGroup = new DkGroupWidget(tr("Show Metadata Cropping"), this);
 	showCropGroup->addWidget(showCrop);
 
+	// histogram
+	QComboBox* histogramStyleCombo = new QComboBox(this);
+	histogramStyleCombo->setObjectName("histogramStyleCombo");
+	histogramStyleCombo->setToolTip(tr("Choose your preferred histogram style"));
+	histogramStyleCombo->addItem(tr("Show only the Histogram"), (int)DkHistogram::DisplayMode::histogram_mode_simple);
+	histogramStyleCombo->addItem(tr("Show Histogram and image statistics"), (int)DkHistogram::DisplayMode::histogram_mode_extended);
+	histogramStyleCombo->setCurrentIndex(DkSettingsManager::param().display().histogramStyle);
+	histogramStyleCombo->setMinimumHeight(2);
+
+	DkGroupWidget* histogramGroup = new DkGroupWidget(tr("Histogram"), this);
+	histogramGroup->addWidget(histogramStyleCombo);
+
 	// left column
 	QWidget* leftWidget = new QWidget(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
@@ -794,6 +806,7 @@ void DkDisplayPreference::createLayout() {
 	QWidget* rightWidget = new QWidget(this);
 	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
 	rightLayout->setAlignment(Qt::AlignTop);
+	rightLayout->addWidget(histogramGroup);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setAlignment(Qt::AlignLeft);
@@ -870,6 +883,12 @@ void DkDisplayPreference::on_showCrop_toggled(bool checked) const {
 	if (DkSettingsManager::param().display().showCrop != checked)
 		DkSettingsManager::param().display().showCrop = checked;
 
+}
+
+void DkDisplayPreference::on_histogramStyleCombo_currentIndexChanged(int styleIdx) const
+{
+	if (DkSettingsManager::param().display().histogramStyle != styleIdx)
+		DkSettingsManager::param().display().histogramStyle = styleIdx;
 }
 
 

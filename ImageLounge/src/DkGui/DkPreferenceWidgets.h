@@ -191,6 +191,7 @@ public slots:
 	void on_transition_currentIndexChanged(int index) const;
 	void on_alwaysAnimate_toggled(bool checked) const;
 	void on_showCrop_toggled(bool checked) const;
+	void on_histogramStyleCombo_currentIndexChanged(int styleIdx) const;
 
 signals:
 	void infoSignal(const QString& msg) const;

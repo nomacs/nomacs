@@ -665,6 +665,13 @@ class DkHistogram : public DkWidget {
 	Q_OBJECT
 	
 public:
+	enum class DisplayMode {
+		histogram_mode_simple = 0,      /// shows just the histogram
+		histogram_mode_extended = 1,    /// shows histogram and data
+		histogram_mode_end = 2,
+	};
+
+
 	DkHistogram(QWidget *parent);
 	~DkHistogram();
 	void drawHistogram(QImage img);
@@ -679,6 +686,9 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
+	void loadSettings();
+	void saveSettings();
+
 private:
 	int mHist[3][256];          /// 3 channels 256 bin. channels duplicated when gray
 	int mNumPixels = 0;         /// image pixel count
@@ -692,7 +702,7 @@ private:
 	int mMaxValue = 20;         /// maximum count over all bins
 	bool mIsPainted = false;
 	float mScaleFactor = 1;
-
+	DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
 };
 
 class DkFileInfo {
