@@ -957,6 +957,21 @@ QString DkUtils::resolveFraction(const QString& frac) {
 	return result;
 }
 
+QList<QUrl> DkUtils::findUrlsInTextNewline(QString text){
+    QList<QUrl> urls;
+    QStringList lines = text.split(QRegExp("\n|\r\n|\r"));
+    for(QUrl maybeUrl: QUrl::fromStringList(lines)){
+        if(maybeUrl.isValid()){
+            if(maybeUrl.isRelative()){
+                maybeUrl.setScheme("file");
+            }
+            urls.append(maybeUrl);
+        }
+    }
+    return urls;
+}
+
+
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
 std::wstring DkUtils::qStringToStdWString(const QString &str) {
 #ifdef _MSC_VER
