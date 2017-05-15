@@ -1069,8 +1069,9 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
 		addTab();
 	}
-	
-	mTabInfos.at(mTabbar->currentIndex())->setDirPath(dirPath);
+	int currentTabIdx = mTabbar->currentIndex();
+
+	mTabInfos.at(currentTabIdx)->setDirPath(dirPath);
 	showThumbView();
 }
 
