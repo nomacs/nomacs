@@ -589,19 +589,22 @@ QFileInfo DkUtils::urlToLocalFile(const QUrl& url) {
  * @return bool true if the file format is supported.
  **/
 bool DkUtils::isValid(const QFileInfo& fileInfo) {
+    bool fileIsValid = false;
 
-	printf("accepting file...\n");
 
 	QFileInfo fInfo = fileInfo;
 	if (fInfo.isSymLink())
 		fInfo = fileInfo.symLinkTarget();
 
-	if (!fInfo.exists())
-		return false;
-
-	QString fileName = fInfo.fileName();
-
-	return hasValidSuffix(fileName);
+    if (!fInfo.exists()) {
+        fileIsValid = false;
+    } else{
+        QString fileName = fInfo.fileName();
+        fileIsValid = hasValidSuffix(fileName);
+    }
+    QString resultText(fileIsValid?"valid":"invalid");
+    qDebug() << QString("file %1 is %2").arg(fileInfo.filePath()).arg(resultText);
+    return fileIsValid;
 }
 
 bool DkUtils::isSavable(const QString & fileName) {
@@ -956,6 +959,21 @@ QString DkUtils::resolveFraction(const QString& frac) {
 
 	return result;
 }
+
+QList<QUrl> DkUtils::findUrlsInTextNewline(QString text){
+    QList<QUrl> urls;
+    QStringList lines = text.split(QRegExp("\n|\r\n|\r"));
+    for(QUrl maybeUrl: QUrl::fromStringList(lines)){
+        if(maybeUrl.isValid()){
+            if(maybeUrl.isRelative()){
+                maybeUrl.setScheme("file");
+            }
+            urls.append(maybeUrl);
+        }
+    }
+    return urls;
+}
+
 
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
 std::wstring DkUtils::qStringToStdWString(const QString &str) {

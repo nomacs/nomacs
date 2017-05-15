@@ -992,35 +992,10 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 
 	printf("[DkCentralWidget] drag enter event\n");
 
-	//if (event->source() == this)
-	//	return;
-
-	if (event->mimeData()->hasUrls()) {
-		QUrl url = event->mimeData()->urls().at(0);
-
-		QList<QUrl> urls = event->mimeData()->urls();
-
-		for (int idx = 0; idx < urls.size(); idx++)
-			qDebug() << "url: " << urls.at(idx);
-
-		url = url.toLocalFile();
-
-		// TODO: check if we accept appropriately (network drives that are not mounted)
-		QFileInfo file = QFileInfo(url.toString());
-
-		// just accept image files
-		if (DkUtils::isValid(file))
-			event->acceptProposedAction();
-		else if (file.isDir())
-			event->acceptProposedAction();
-		else if (event->mimeData()->urls().at(0).isValid() && DkUtils::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
-			event->acceptProposedAction();
-
-	}
-	if (event->mimeData()->hasImage()) {
+	if (event->mimeData()->hasUrls() ||
+		event->mimeData()->hasImage()) {
 		event->acceptProposedAction();
 	}
-
 	QWidget::dragEnterEvent(event);
 }
 
@@ -1040,14 +1015,28 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
-	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
-		addTab(filePath);
-	}
-	else {
-		mTabInfos.at(0)->setFilePath(filePath);
-		updateTab(mTabInfos.at(0));
-		currentTabChanged(0);
-	}
+    if (mTabInfos.size() == 0){
+        // this is the first one: open a new tab
+        addTab(filePath);
+    }else{
+        // we already have some opened tabs.
+        int currentTabIdx = mTabbar->currentIndex();
+        int currentTabMode = mTabInfos[currentTabIdx]->getMode();
+
+        if (currentTabMode == DkTabInfo::tab_thumb_preview ||
+            currentTabMode == DkTabInfo::tab_recent_files ||
+            currentTabMode == DkTabInfo::tab_empty) {
+
+            // reuse the currently open tab.
+            mTabInfos.at(currentTabIdx)->setFilePath(filePath);
+            updateTab(mTabInfos.at(currentTabIdx));
+            currentTabChanged(currentTabIdx);
+
+        }else{
+            // no tab to reuse. open create a new tab
+            addTab(filePath);
+        }
+    }
 }
 
 void DkCentralWidget::loadDirToTab(const QString& dirPath) {
@@ -1055,9 +1044,58 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
 		addTab();
 	}
-	
-	mTabInfos.at(mTabbar->currentIndex())->setDirPath(dirPath);
+	int currentTabIdx = mTabbar->currentIndex();
+
+	mTabInfos.at(currentTabIdx)->setDirPath(dirPath);
 	showThumbView();
+}
+
+/** loadUrl() loads a single valid url
+ *  @param loadInTab: if true, replace the currently active image, so it exists.
+ */
+void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab){
+    Q_ASSERT(url.isValid());
+
+    Q_UNUSED(loadInTab);
+    Q_ASSERT(loadInTab == true);
+    // TODO decide cases where we just load over the current image
+
+    if(url.isLocalFile()){
+        QFileInfo file(url.toLocalFile());
+
+        if (DkUtils::isValid(file)){
+            // load a local file
+            loadFileToTab(url.toLocalFile());
+        }else if(file.isDir()){
+            // load a directory in thmbnail view
+            loadDirToTab(file.filePath());
+        }
+    }else{
+       //load a remote url
+        qDebug() << "unhandled remote url: " << url.toDisplayString();
+
+        //BUG: loading an url WILL replace the current tab.
+        mTabInfos[mTabbar->currentIndex()]->getImageLoader()->downloadFile(url);
+    }
+}
+
+/** loadUrls() loads a list of valid urls.
+ * @param maxUrlsToLoad determines the maximum
+ */
+void DkCentralWidget::loadUrls(const QList<QUrl> urls, int maxUrlsToLoad)
+{
+    if(urls.size() == 0)
+        return;
+
+    if(urls.size() > maxUrlsToLoad){
+        QString urlsWarning(tr("Too many urls to load. Loading only the first %1"));
+        qDebug() << urlsWarning.arg(urls.size());
+    }
+
+    for (int idx = 0; idx < urls.size() && idx < maxUrlsToLoad; idx++) {
+        QUrl url = urls[idx];
+        loadUrl(url);
+    }
 }
 
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
@@ -1112,88 +1150,99 @@ void DkCentralWidget::dropEvent(QDropEvent *event) {
 		mViewport->getController()->setInfo(tr("Sorry, I could not drop the content."));
 }
 
+
 bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
-	if (!mimeData)
-		return false;
+    if (!mimeData)
+        return false;
 
-	if ((mimeData->hasUrls() && mimeData->urls().size() > 0) || mimeData->hasText()) {
-		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
+    QStringList mimeFmts = mimeData->formats();
+    qDebug() << "loading mime data with formats: " << mimeFmts;
 
-		// try manual conversion first, this fixes the DSC#josef.jpg problems (url fragments)
-		QString fString = url.toString();
-		fString = fString.replace("file:///", "");
+    if (mimeData->hasImage()) {
+        // we got an image buffer
 
-		QFileInfo file = QFileInfo(fString);
-		if (!file.exists()) {	// try an alternative conversion
-			file = QFileInfo(url.toLocalFile());
-			fString = url.toLocalFile();
-		}
-		
-		QList<QUrl> urls = mimeData->urls();
+        QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
+        mViewport->loadImage(dropImg);
+        return true;
+    }
 
-		// merge OpenCV vec files if multiple vec files are dropped
-		if (urls.size() > 1 && file.suffix() == "vec") {
+    // parse mime data. get a non-empty list of urls. url is the first.
+    QList<QUrl> urls;
+    QUrl url;
 
-			QStringList vecFiles;
+    if(mimeData->formats().contains("text/plain")){
+        //we got text data. maybe it is a list of urls
+        urls = DkUtils::findUrlsInTextNewline(mimeData->text());
+    } else if(mimeFmts.contains("text/uri-list")) {
+        //we got a list of uris
+        //mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
+        for(QUrl u: mimeData->urls()){
+            if(u.isValid())
+                urls.append(u);
+        }
+    }else {
+        //
+        qDebug() << "no handled Mime types found in drop: " << mimeData->formats();
+        return false;
+    }
 
-			for (int idx = 0; idx < urls.size(); idx++)
-				vecFiles.append(urls.at(idx).toLocalFile());
+    if(urls.size() == 0){
+        return false;
+    }
+    url = urls.at(0);
 
-			// ask user for filename
-			QString sPath(QFileDialog::getSaveFileName(this, tr("Save File"),
-				QFileInfo(vecFiles.first()).absolutePath(), "Cascade Training File (*.vec)"));
+    // At this point we have a non empty list of valid urls we can load
+    qDebug() << urls.size() << " files dropped:";
+    for(QUrl url: urls){
+        QString fname = url.toLocalFile();
+        QFileInfo file(fname);
+        qDebug() << QString("url [%1]: %2 %3")
+                        .arg(url.isLocalFile()?QString("local"):QString("remote"))
+                        .arg(url.toDisplayString())
+                        .arg(url.isLocalFile()?url.toLocalFile():QString(""));
+        Q_ASSERT(url.isValid());
+    }
 
-			DkBasicLoader loader;
-			int numFiles = loader.mergeVecFiles(vecFiles, sPath);
+    // Pass urls to the appropriate loading function
+    QFileInfo file(url.toLocalFile());
+    QString fString = file.filePath();
 
-			if (numFiles) {
-				loadFile(sPath);
-				mViewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
-				return true;
-			}
-
-			return false;
-		}
-		else
-			qDebug() << urls.size() << file.suffix() << " files dropped";
-
-		if (!mTabInfos.empty() && mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview) {
-			// TODO: this event won't be called if the thumbs view is visible
-
-			// >DIR: TODO [19.2.2015 markus]
-			//QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
-			//mViewport->getImageLoader()->loadDir(newDir);
-		}
-		else {
-			// just accept image files
-			if (DkUtils::isValid(file) || file.isDir())
-				loadFile(fString);
-			else if (url.isValid() && !mTabInfos.empty()) {
-				mTabInfos[mTabbar->currentIndex()]->getImageLoader()->downloadFile(url);
-			}
-			else
-				return false;
-		}
-
-		for (int idx = 1; idx < urls.size() && idx < 20; idx++) {
-
-			QFileInfo fi = DkUtils::urlToLocalFile(urls[idx]);
-
-			if (DkUtils::isValid(fi))
-				addTab(urls[idx].toLocalFile());
-		}
-
-		return true;
-	}
-	else if (mimeData->hasImage()) {
-
-		QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
-		mViewport->loadImage(dropImg);
-		return true;
-	}
-
-	return false;
+    if (urls.size() > 1 && file.suffix() == "vec") {
+        // assume multiple OpenCV vec files where dropped.
+        return loadCascadeTrainingFiles(urls);
+    }else{
+        // load urls generically
+        loadUrls(urls);
+        return true;
+    }
+    return false;
 }
 
+
+/** load a number of Cascade Trainig files */
+bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls) {
+    QStringList vecFiles;
+
+    if (urls.size() > 1 && urls.at(0).toLocalFile().endsWith("vec")) {
+
+        for (int idx = 0; idx < urls.size(); idx++)
+            vecFiles.append(urls.at(idx).toLocalFile());
+
+        // ask user for filename
+        QString sPath(QFileDialog::getSaveFileName(this, tr("Save File"),
+            QFileInfo(vecFiles.first()).absolutePath(), "Cascade Training File (*.vec)"));
+
+        DkBasicLoader loader;
+        int numFiles = loader.mergeVecFiles(vecFiles, sPath);
+
+        if (numFiles) {
+            loadFile(sPath);
+            mViewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
+            return true;
+        }
+    }
+    return false;
 }
+
+} // namespace nmc

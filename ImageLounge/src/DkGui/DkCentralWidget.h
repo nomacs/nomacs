@@ -169,6 +169,8 @@ public slots:
 	void loadDir(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
+	void loadUrl(const QUrl urls, bool loadInTab = true);
+	void loadUrls(const QList<QUrl> urls, const int maxUrlsToLoad = 20);
 	void openBatch(const QStringList& selectedFiles = QStringList());
 	void showBatch(bool show = true);
 	void openPreferences();
@@ -193,6 +195,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	bool loadFromMime(const QMimeData* mimeData);
+	bool loadCascadeTrainingFiles(QList<QUrl> urls);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 	DkPreferenceWidget* createPreferences();
 	DkThumbScrollWidget* createThumbScrollWidget();
