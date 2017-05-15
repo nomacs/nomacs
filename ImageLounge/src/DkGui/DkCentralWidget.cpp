@@ -1040,14 +1040,28 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
-	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
-		addTab(filePath);
-	}
-	else {
-		mTabInfos.at(0)->setFilePath(filePath);
-		updateTab(mTabInfos.at(0));
-		currentTabChanged(0);
-	}
+    if (mTabInfos.size() == 0){
+        // this is the first one: open a new tab
+        addTab(filePath);
+    }else{
+        // we already have some opened tabs.
+        int currentTabIdx = mTabbar->currentIndex();
+        int currentTabMode = mTabInfos[currentTabIdx]->getMode();
+
+        if (currentTabMode == DkTabInfo::tab_thumb_preview ||
+            currentTabMode == DkTabInfo::tab_recent_files ||
+            currentTabMode == DkTabInfo::tab_empty) {
+
+            // reuse the currently open tab.
+            mTabInfos.at(currentTabIdx)->setFilePath(filePath);
+            updateTab(mTabInfos.at(currentTabIdx));
+            currentTabChanged(currentTabIdx);
+
+        }else{
+            // no tab to reuse. open create a new tab
+            addTab(filePath);
+        }
+    }
 }
 
 void DkCentralWidget::loadDirToTab(const QString& dirPath) {
