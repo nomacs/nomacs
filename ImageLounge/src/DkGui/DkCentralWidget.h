@@ -169,6 +169,8 @@ public slots:
 	void loadDir(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
+	void loadUrl(const QUrl urls, bool loadInTab = true);
+	void loadUrls(const QList<QUrl> urls, const int maxUrlsToLoad = 20);
 	void openBatch(const QStringList& selectedFiles = QStringList());
 	void showBatch(bool show = true);
 	void openPreferences();

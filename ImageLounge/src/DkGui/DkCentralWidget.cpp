@@ -1060,6 +1060,54 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 	showThumbView();
 }
 
+/** loadUrl() loads a single valid url
+ *  @param loadInTab: if true, replace the currently active image, so it exists.
+ */
+void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab){
+    Q_ASSERT(url.isValid());
+
+    Q_UNUSED(loadInTab);
+    Q_ASSERT(loadInTab == true);
+    // TODO decide cases where we just load over the current image
+
+    if(url.isLocalFile()){
+        QFileInfo file(url.toLocalFile());
+
+        if (DkUtils::isValid(file)){
+            // load a local file
+            loadFileToTab(url.toLocalFile());
+        }else if(file.isDir()){
+            // load a directory in thmbnail view
+            loadDirToTab(file.filePath());
+        }
+    }else{
+       //load a remote url
+        qDebug() << "unhandled remote url: " << url.toDisplayString();
+
+        //BUG: loading an url WILL replace the current tab.
+        mTabInfos[mTabbar->currentIndex()]->getImageLoader()->downloadFile(url);
+    }
+}
+
+/** loadUrls() loads a list of valid urls.
+ * @param maxUrlsToLoad determines the maximum
+ */
+void DkCentralWidget::loadUrls(const QList<QUrl> urls, int maxUrlsToLoad)
+{
+    if(urls.size() == 0)
+        return;
+
+    if(urls.size() > maxUrlsToLoad){
+        QString urlsWarning(tr("Too many urls to load. Loading only the first %1"));
+        qDebug() << urlsWarning.arg(urls.size());
+    }
+
+    for (int idx = 0; idx < urls.size() && idx < maxUrlsToLoad; idx++) {
+        QUrl url = urls[idx];
+        loadUrl(url);
+    }
+}
+
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
 
 	// switch to tab if already opened
