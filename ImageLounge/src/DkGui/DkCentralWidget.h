@@ -193,6 +193,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	bool loadFromMime(const QMimeData* mimeData);
+	bool loadCascadeTrainingFiles(QList<QUrl> urls);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 	DkPreferenceWidget* createPreferences();
 	DkThumbScrollWidget* createThumbScrollWidget();

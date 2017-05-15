@@ -1196,4 +1196,30 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 	return false;
 }
 
+
+/** load a number of Cascade Trainig files */
+bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls) {
+    QStringList vecFiles;
+
+    if (urls.size() > 1 && urls.at(0).toLocalFile().endsWith("vec")) {
+
+        for (int idx = 0; idx < urls.size(); idx++)
+            vecFiles.append(urls.at(idx).toLocalFile());
+
+        // ask user for filename
+        QString sPath(QFileDialog::getSaveFileName(this, tr("Save File"),
+            QFileInfo(vecFiles.first()).absolutePath(), "Cascade Training File (*.vec)"));
+
+        DkBasicLoader loader;
+        int numFiles = loader.mergeVecFiles(vecFiles, sPath);
+
+        if (numFiles) {
+            loadFile(sPath);
+            mViewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
+            return true;
+        }
+    }
+    return false;
 }
+
+} // namespace nmc
