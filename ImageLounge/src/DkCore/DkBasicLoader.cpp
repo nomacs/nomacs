@@ -569,15 +569,20 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 			type = type & 255;
 
 			//define bayer pattern
-			if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
-			//												                                                                  GB GB GB
-			else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
-			else if (type == 225) cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
-			else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
+			if (type == 180) 
+				cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
+																//													GB GB GB
+			else if (type == 30) 
+				cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
+			else if (type == 225) 
+				cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
+			else if (type == 75) 
+				cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
 			else {
 				qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
 				return false;
 			}
+
 		}
 		else {
 
@@ -590,7 +595,6 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 				float *ptrR = rawCh[0].ptr<float>(row);
 				float *ptrG = rawCh[1].ptr<float>(row);
 				float *ptrB = rawCh[2].ptr<float>(row);
-				//float *ptrE = rawCh[3].ptr<float>(row);
 
 				for (unsigned int col = 0; col < cols; col++) {
 
@@ -619,9 +623,21 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 
 		// 3.. 4., 5.: apply white balance, color correction and gamma 
 
+		// local functions
+		struct lf {
+			static unsigned short clip(int v) {
+				v = v > 0 ? v : 0;
+				v = v < USHRT_MAX ? v : USHRT_MAX;
+
+				return (unsigned short)v;
+			};
+		};
+
 		// get color correction matrix
 		float colorCorrMat[3][4] = {};
-		for (int i = 0; i < 3; i++) for (int j = 0; j < 4; j++) colorCorrMat[i][j] = iProcessor.imgdata.color.rgb_cam[i][j];
+		for (int i = 0; i < 3; i++) 
+			for (int j = 0; j < 4; j++) 
+				colorCorrMat[i][j] = iProcessor.imgdata.color.rgb_cam[i][j];
 
 		// get camera white balance multipliers
 		float mulWhite[4];
@@ -630,11 +646,16 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 		mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
 		mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
 
+		if (mulWhite[3] == 0)
+			mulWhite[3] = mulWhite[1];
+
+		int cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
+
 		//read gamma value and create gamma table
 		float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
-		float gammaTable[65536];
+		unsigned short gammaTable[65536];
 		for (int i = 0; i < 65536; i++) {
-			gammaTable[i] = (float)(1.099f*pow((float)i / 65535.0f, gamma) - 0.099f);
+			gammaTable[i] = lf::clip(qRound((1.099*std::pow((double)i / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
 		}
 
 		// normalize white balance multipliers
@@ -655,9 +676,6 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 		mulWhite[1] /= maxW;
 		mulWhite[2] /= maxW;
 		mulWhite[3] /= maxW;
-
-		if (mulWhite[3] == 0)
-			mulWhite[3] = mulWhite[1];
 
 		//apply corrections
 		std::vector<cv::Mat> corrCh;
@@ -686,19 +704,32 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 				//int corrB = tempB;
 
 				//clipping
-				ptrR[col] = (corrR > 65535) ? 65535 : (corrR < 0) ? 0 : (unsigned short)corrR;
-				ptrG[col] = (corrG > 65535) ? 65535 : (corrG < 0) ? 0 : (unsigned short)corrG;
-				ptrB[col] = (corrB > 65535) ? 65535 : (corrB < 0) ? 0 : (unsigned short)corrB;
+				ptrR[col] = lf::clip(corrR);
+				ptrG[col] = lf::clip(corrG);
+				ptrB[col] = lf::clip(corrB);
 
 				//apply gamma correction
-				ptrR[col] = ptrR[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrR[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0f) :
-					(unsigned short)(gammaTable[ptrR[col]] * 255);
-				//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f);
-				ptrG[col] = ptrG[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrG[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0f) :
-					(unsigned short)(gammaTable[ptrG[col]] * 255);
-				ptrB[col] = ptrB[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrB[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0f) :
-					(unsigned short)(gammaTable[ptrB[col]] * 255);
+				const unsigned short maxLin = 1180;	// 0.018 * SHRT_MAX
+				ptrR[col] = ptrR[col] <= maxLin ? (unsigned short)qRound(ptrR[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
+					gammaTable[ptrR[col]];
+				ptrG[col] = ptrG[col] <= maxLin ? (unsigned short)qRound(ptrG[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
+					gammaTable[ptrG[col]];
+				ptrB[col] = ptrB[col] <= maxLin ? (unsigned short)qRound(ptrB[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
+					gammaTable[ptrB[col]];
+
+				// clean-up the saturated channel
+				// TODO: reduce saturation for very bright pixels (has a better effect that this)
+				// good test image: RAW_RICOH_GR2.DNG
+				int sCnt = (int)(ptrR[col] == 255) + (int)(ptrG[col] == 255) + (int)(ptrB[col] == 255);
+								
+				if (sCnt == 2) {
+					ptrR[col] = 255;
+					ptrG[col] = 255;
+					ptrB[col] = 255;
+				}
+
 			}
+
 		}
 
 		merge(corrCh, rgbImg);
