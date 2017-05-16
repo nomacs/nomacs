@@ -1053,7 +1053,7 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 /** loadUrl() loads a single valid url
  *  @param loadInTab: if true, replace the currently active image, so it exists.
  */
-void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab){
+void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab) {
     Q_ASSERT(url.isValid());
 
     Q_UNUSED(loadInTab);
@@ -1082,8 +1082,7 @@ void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab){
 /** loadUrls() loads a list of valid urls.
  * @param maxUrlsToLoad determines the maximum
  */
-void DkCentralWidget::loadUrls(const QList<QUrl> urls, int maxUrlsToLoad)
-{
+void DkCentralWidget::loadUrls(const QList<QUrl> urls, int maxUrlsToLoad) {
     if(urls.size() == 0)
         return;
 
@@ -1169,19 +1168,20 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
     // parse mime data. get a non-empty list of urls. url is the first.
     QList<QUrl> urls;
-    QUrl url;
 
-    if(mimeData->formats().contains("text/plain")){
+	if (mimeFmts.contains("text/uri-list")) {
+		//we got a list of uris
+		//mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
+		for (QUrl u : mimeData->urls()) {
+			if (u.isValid())
+				urls.append(u);
+		}
+	}
+    else if(mimeData->formats().contains("text/plain")) {
         //we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
-    } else if(mimeFmts.contains("text/uri-list")) {
-        //we got a list of uris
-        //mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
-        for(QUrl u: mimeData->urls()){
-            if(u.isValid())
-                urls.append(u);
-        }
-    }else {
+    }
+    else {
         //
         qDebug() << "no handled Mime types found in drop: " << mimeData->formats();
         return false;
@@ -1190,28 +1190,28 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
     if(urls.size() == 0){
         return false;
     }
-    url = urls.at(0);
 
+#ifdef _DEBUG
     // At this point we have a non empty list of valid urls we can load
     qDebug() << urls.size() << " files dropped:";
-    for(QUrl url: urls){
+    for (const QUrl& url: urls) {
         QString fname = url.toLocalFile();
         QFileInfo file(fname);
         qDebug() << QString("url [%1]: %2 %3")
-                        .arg(url.isLocalFile()?QString("local"):QString("remote"))
+                        .arg(url.isLocalFile() ? QString("local") : QString("remote"))
                         .arg(url.toDisplayString())
-                        .arg(url.isLocalFile()?url.toLocalFile():QString(""));
+                        .arg(url.isLocalFile() ? url.toLocalFile() : QString(""));
         Q_ASSERT(url.isValid());
     }
+#endif
 
     // Pass urls to the appropriate loading function
-    QFileInfo file(url.toLocalFile());
-    QString fString = file.filePath();
+    QFileInfo file(urls[0].toLocalFile());
 
     if (urls.size() > 1 && file.suffix() == "vec") {
         // assume multiple OpenCV vec files where dropped.
         return loadCascadeTrainingFiles(urls);
-    }else{
+    } else {
         // load urls generically
         loadUrls(urls);
         return true;
