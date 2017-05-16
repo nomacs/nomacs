@@ -674,27 +674,30 @@ public:
 
 	DkHistogram(QWidget *parent);
 	~DkHistogram();
+
 	void drawHistogram(QImage img);
 	void clearHistogram();
 	void setMaxHistogramValue(int maxValue);
 	void updateHistogramValues(int histValues[][256]);
 	void setPainted(bool isPainted);
 
+public slots:
+	void on_toggleStats_triggered(bool show);
+
 protected:
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void paintEvent(QPaintEvent* event);
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 
 	void loadSettings();
-	void saveSettings();
 
 private:
 	int mHist[3][256];          /// 3 channels 256 bin. channels duplicated when gray
 	int mNumPixels = 0;         /// image pixel count
 	int mNumDistinctValues = 0; /// number of distinct values
 	int mNumZeroPixels = 0;     /// pixels with zero value
-	int mNumNonZeroPixels = 0;  /// pixels with non-zero value
 	int mNumSaturatedPixels = 0;    /// pixels saturating RGB 8bit
 	int mNumValues = 0;         /// number of distinct histogram values
 	int mMinBinValue = 256;     /// (gray-only) minimum intensity value
@@ -703,6 +706,8 @@ private:
 	bool mIsPainted = false;
 	float mScaleFactor = 1;
 	DisplayMode mDisplayMode = DisplayMode::histogram_mode_simple; /// determins shown histogram type
+
+	QMenu* mContextMenu = 0;
 };
 
 class DkFileInfo {
