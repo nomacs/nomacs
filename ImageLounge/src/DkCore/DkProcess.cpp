@@ -255,8 +255,6 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 		rotationMatrix.rotate((double)mAngle);
 		tmpImg = tmpImg.transformed(rotationMatrix);
 	}
-	else
-		tmpImg = img;
 
 	// logs
 	if (!tmpImg.isNull()) {
