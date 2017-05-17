@@ -27,3 +27,4 @@ repository.zip
 /installer-wix/*.wixobj
 /installer-wix/nomacs-setup.msi
 /installer-wix/*.wixpdb
+/installer-wix/HarvestedFiles.wxs

@@ -384,420 +384,18 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QImage& img, QSharedPoi
  **/ 
 bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, bool fast) const {
 	
-	bool imgLoaded = false;
-
 	DkTimer dt;
+	DkRawLoader rawLoader(filePath, mMetaData);
+	rawLoader.setLoadFast(fast);
 
-	try {
+	bool success = rawLoader.load(ba);
 
-		// try to get preview image from exiv2
-		if (mMetaData) {
-			if (fast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-				DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
-
-				mMetaData->readMetaData(filePath, ba);
-
-				int minWidth = 0;
-
-#ifdef WITH_LIBRAW	// if nomacs has libraw - we can still hope for a fallback -> otherwise try whatever we have here
-				if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
-					minWidth = 1920;
-#endif
-				img = mMetaData->getPreviewImage(minWidth);
-
-				if (!img.isNull()) {
-					//setEditImage(img, tr("Original Image"));
-					qDebug() << "[RAW] loaded with exiv2";
-					return true;
-				}
-			}
-		}
-#ifdef WITH_LIBRAW
-
-		LibRaw iProcessor;
-		QImage image;
-
-		int error = LIBRAW_DATA_ERROR;
-
-		//use iprocessor from libraw to read the data
-		// OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
-		if (QFileInfo(filePath).suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
-			error = iProcessor.open_file(filePath.toStdString().c_str());
-		}
-		else {
-			// the buffer check is because:
-			// libraw has an error when loading buffers if the first 4 bytes encode as 'RIFF'
-			// and no data follows at all
-			if (ba->isEmpty() || ba->size() < 100)
-				return false;
-
-			error = iProcessor.open_buffer((void*)ba->constData(), ba->size());
-		}
-
-		if (error != LIBRAW_SUCCESS)
-			return false;
-
-		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
-		//iProcessor.imgdata.params.use_camera_wb = 1;
-		//// (-a) Use automatic white balance obtained after averaging over the entire image
-		//iProcessor.imgdata.params.use_auto_wb = 1;
-		//// (-q 3) Adaptive homogeneity-directed de-mosaicing algorithm (AHD)
-		//iProcessor.imgdata.params.user_qual = 3;
-		//iProcessor.imgdata.params.output_tiff = 1;
-		////iProcessor.imgdata.params.four_color_rgb = 1;
-		////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
-		//// RAW data filtration mode during data unpacking and post-processing
-		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
-		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
-		// TODO: check actual screen resolution
-		qDebug() << "max thumb size: " << tM;
-
-		if (fast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-			(DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
-
-			// crashes here if image is broken
-			int err = iProcessor.unpack_thumb();
-			char* tPtr = iProcessor.imgdata.thumbnail.thumb;
-
-			if (!err && tPtr) {
-
-				img.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
-
-				if (!img.isNull()) {
-					imgLoaded = true;
-					//setEditImage(img, tr("Original Image"));
-					qDebug() << "[RAW] I loaded the RAW's thumbnail";
-
-					return imgLoaded;
-				}
-				else
-					qDebug() << "qt could not load the thumb";
-			}
-			else
-				qDebug() << "error unpacking the thumb...";
-		}
-
-		qDebug() << "[RAW] loading full raw file";
-
-
-		//unpack the data
-		error = iProcessor.unpack();
-		if (std::strcmp(iProcessor.version(), "0.13.5") != 0)	// fixes a bug specific to libraw 13 - version call is UNTESTED
-			iProcessor.raw2image();
-
-		if (error != LIBRAW_SUCCESS)
-			return false;
-
-		//iProcessor.dcraw_process();
-		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
-
-		unsigned short cols = iProcessor.imgdata.sizes.width,//.raw_width,
-			rows = iProcessor.imgdata.sizes.height;//.raw_height;
-
-		cv::Mat rawMat, rgbImg;
-
-		// modifications sequence for changing from raw to rgb:
-		// 1. normalize according to black point and dynamic range
-		// 2. demosaic
-		// 3. white balance
-		// 4. color correction
-		// 5. gamma correction
-
-		//GENERAL TODO
-		//check if the corrections (black, white point gamma correction) are done in the correct order
-		//check if the specific corrections are different regarding different camera models
-		//find out some general specifications of the most important raw formats
-
-		//qDebug() << "----------------";
-		//qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
-		//qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
-		//qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
-		//qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
-
-		//debug outputs of the exif data read by libraw
-		//qDebug() << "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
-		//	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
-		//	iProcessor.imgdata.color.cam_mul[3]);
-		//qDebug() << "black: %i\n", iProcessor.imgdata.color.black);
-		//qDebug() << "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
-		//	iProcessor.imgdata.params.adjust_maximum_thr);
-		//qDebug() << "gamma: %.3f %.3f %.3f %.3f %.3f %.3f\n",
-		//	iProcessor.imgdata.params.gamm[0],
-		//	iProcessor.imgdata.params.gamm[1],
-		//	iProcessor.imgdata.params.gamm[2],
-		//	iProcessor.imgdata.params.gamm[3],
-		//	iProcessor.imgdata.params.gamm[4],
-		//	iProcessor.imgdata.params.gamm[5]);
-
-		//qDebug() << "----------------";
-
-		if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) {
-			qWarning() << "Wrong Bayer Pattern (not RGBG)\n";
-			return false;
-		}
-
-		// 1. read raw image and normalize it according to dynamic range and black point
-
-		//dynamic range is defined by maximum - black
-		float dynamicRange = (float)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);	// iProcessor.imgdata.color.channel_maximum[0]-iProcessor.imgdata.color.black;	// dynamic range
-
-		if (iProcessor.imgdata.idata.filters) {
-
-			rawMat = cv::Mat(rows, cols, CV_32FC1);
-
-			for (uint row = 0; row < rows; row++) {
-				float *ptrRaw = rawMat.ptr<float>(row);
-
-				for (uint col = 0; col < cols; col++) {
-
-					int colorIdx = iProcessor.COLOR(row, col);
-					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row)+col][colorIdx]);
-
-					//correct the image values according the black point defined by the camera
-					ptrRaw[col] -= iProcessor.imgdata.color.black;
-					//normalize according the dynamic range
-					ptrRaw[col] /= dynamicRange;
-					ptrRaw[col] *= 65535;  // for conversion to 16U
-				}
-			}
-
-			// 2. demosaic raw image
-			rawMat.convertTo(rawMat, CV_16U);
-
-			//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
-			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
-			type = type & 255;
-
-			//define bayer pattern
-			if (type == 180) 
-				cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
-																//													GB GB GB
-			else if (type == 30) 
-				cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
-			else if (type == 225) 
-				cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
-			else if (type == 75) 
-				cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
-			else {
-				qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
-				return false;
-			}
-
-		}
-		else {
-
-			rawMat = cv::Mat(rows, cols, CV_32FC3);
-			rawMat.setTo(0);
-			std::vector<cv::Mat> rawCh;
-			split(rawMat, rawCh);
-
-			for (unsigned int row = 0; row < rows; row++) {
-				float *ptrR = rawCh[0].ptr<float>(row);
-				float *ptrG = rawCh[1].ptr<float>(row);
-				float *ptrB = rawCh[2].ptr<float>(row);
-
-				for (unsigned int col = 0; col < cols; col++) {
-
-					ptrR[col] = (float)(iProcessor.imgdata.image[cols*(row)+col][0]);
-					ptrR[col] -= iProcessor.imgdata.color.black;
-					ptrR[col] /= dynamicRange;
-					ptrR[col] *= 65535;  // for conversion to 16U
-
-					ptrG[col] = (float)(iProcessor.imgdata.image[cols*(row)+col][1]);
-					ptrG[col] -= iProcessor.imgdata.color.black;
-					ptrG[col] /= dynamicRange;
-					ptrG[col] *= 65535;  // for conversion to 16U
-
-					ptrB[col] = (float)(iProcessor.imgdata.image[cols*(row)+col][2]);
-					ptrB[col] -= iProcessor.imgdata.color.black;
-					ptrB[col] /= dynamicRange;
-					ptrB[col] *= 65535;  // for conversion to 16U
-
-				}
-			}
-			merge(rawCh, rgbImg);
-			rgbImg.convertTo(rgbImg, CV_16U);
-		}
-
-		rawMat.release();
-
-		// 3.. 4., 5.: apply white balance, color correction and gamma 
-
-		// local functions
-		struct lf {
-			static unsigned short clip(int v) {
-				v = v > 0 ? v : 0;
-				v = v < USHRT_MAX ? v : USHRT_MAX;
-
-				return (unsigned short)v;
-			};
-		};
-
-		// get color correction matrix
-		float colorCorrMat[3][4] = {};
-		for (int i = 0; i < 3; i++) 
-			for (int j = 0; j < 4; j++) 
-				colorCorrMat[i][j] = iProcessor.imgdata.color.rgb_cam[i][j];
-
-		// get camera white balance multipliers
-		float mulWhite[4];
-		mulWhite[0] = iProcessor.imgdata.color.cam_mul[0];
-		mulWhite[1] = iProcessor.imgdata.color.cam_mul[1];
-		mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
-		mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
-
-		if (mulWhite[3] == 0)
-			mulWhite[3] = mulWhite[1];
-
-		// OK this is an instance of reverse engineering:
-		// we found out that the values of (at least) the PhaseOne's achromatic back have to be doubled
-		// our images are no close to what their software (Capture One does) - only the gamma correction
-		// seems to be slightly different... -> now we can load compressed IIQs that are not supported by PS : )
-		double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
-
-		//read gamma value and create gamma table	
-		float gamma = (float)iProcessor.imgdata.params.gamm[0];
-		unsigned short gammaTable[65536];
-		for (int i = 0; i < 65536; i++) {
-			gammaTable[i] = lf::clip(qRound((1.099*std::pow((double)i / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
-		}
-
-		// normalize white balance multipliers
-		float w = (mulWhite[0] + mulWhite[1] + mulWhite[2] + mulWhite[3]) / 4.0f;
-		float maxW = 1.0f;//mulWhite[0];
-
-		//clipping according the camera model
-		//if w > 2.0 maxW is 256, otherwise 512
-		//tested empirically
-		//check if it can be defined by some metadata settings?
-		if (w > 2.0f)
-			maxW = 256.0f;
-		if (w > 2.0f && QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive) == 0)
-			maxW = 512.0f;	// some cameras would even need ~800 - why?
-
-		//normalize white point
-		mulWhite[0] /= maxW;
-		mulWhite[1] /= maxW;
-		mulWhite[2] /= maxW;
-		mulWhite[3] /= maxW;
-
-		//apply corrections
-		std::vector<cv::Mat> corrCh;
-		split(rgbImg, corrCh);
-
-		for (uint row = 0; row < rows; row++)
-		{
-			unsigned short *ptrR = corrCh[0].ptr<unsigned short>(row);
-			unsigned short *ptrG = corrCh[1].ptr<unsigned short>(row);
-			unsigned short *ptrB = corrCh[2].ptr<unsigned short>(row);
-
-			for (uint col = 0; col < cols; col++)
-			{
-				//apply white balance correction
-				int tempR = qRound(ptrR[col] * mulWhite[0]);
-				int tempG = qRound(ptrG[col] * mulWhite[1]);
-				int tempB = qRound(ptrB[col] * mulWhite[2]);
-
-				//apply color correction					
-				int corrR = qRound(colorCorrMat[0][0] * tempR + colorCorrMat[0][1] * tempG + colorCorrMat[0][2] * tempB);
-				int corrG = qRound(colorCorrMat[1][0] * tempR + colorCorrMat[1][1] * tempG + colorCorrMat[1][2] * tempB);
-				int corrB = qRound(colorCorrMat[2][0] * tempR + colorCorrMat[2][1] * tempG + colorCorrMat[2][2] * tempB);
-				// without color correction: change above three lines to the bottom ones
-				//int corrR = tempR;
-				//int corrG = tempG;
-				//int corrB = tempB;
-
-				//clipping
-				ptrR[col] = lf::clip(corrR);
-				ptrG[col] = lf::clip(corrG);
-				ptrB[col] = lf::clip(corrB);
-
-				//apply gamma correction
-				const unsigned short maxLin = 1180;	// 0.018 * SHRT_MAX
-				ptrR[col] = ptrR[col] <= maxLin ? (unsigned short)qRound(ptrR[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
-					gammaTable[ptrR[col]];
-				ptrG[col] = ptrG[col] <= maxLin ? (unsigned short)qRound(ptrG[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
-					gammaTable[ptrG[col]];
-				ptrB[col] = ptrB[col] <= maxLin ? (unsigned short)qRound(ptrB[col] * (float)iProcessor.imgdata.params.gamm[1] / 257.0) :
-					gammaTable[ptrB[col]];
-
-				// clean-up the saturated channel
-				// TODO: reduce saturation for very bright pixels (has a better effect that this)
-				// good test image: RAW_RICOH_GR2.DNG
-				int sCnt = (int)(ptrR[col] == 255) + (int)(ptrG[col] == 255) + (int)(ptrB[col] == 255);
-								
-				if (sCnt == 2) {
-					ptrR[col] = 255;
-					ptrG[col] = 255;
-					ptrB[col] = 255;
-				}
-
-			}
-
-		}
-
-		merge(corrCh, rgbImg);
-		rgbImg.convertTo(rgbImg, CV_8U);
-
-		// filter color noise withe a median filter
-		if (DkSettingsManager::param().resources().filterRawImages) {
-
-			float isoSpeed = iProcessor.imgdata.other.iso_speed;
-
-			if (isoSpeed > 0) {
-
-				int winSize;
-				if (isoSpeed > 6400) winSize = 13;
-				else if (isoSpeed >= 3200) winSize = 11;
-				else if (isoSpeed >= 2500) winSize = 9;
-				else if (isoSpeed >= 400) winSize = 7;
-				else winSize = 5;
-
-				DkTimer dMed;
-
-				cvtColor(rgbImg, rgbImg, CV_RGB2YCrCb);
-				split(rgbImg, corrCh);
-
-				cv::medianBlur(corrCh[1], corrCh[1], winSize);
-				cv::medianBlur(corrCh[2], corrCh[2], winSize);
-
-				merge(corrCh, rgbImg);
-				cvtColor(rgbImg, rgbImg, CV_YCrCb2RGB);
-
-				qDebug() << "median blurred in: " << dMed << ", winSize: " << winSize;
-			}
-			else
-				qDebug() << "median filter: unrecognizable ISO speed";
-
-		}
-
-		//check the pixel aspect ratio of the raw image
-		if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
-			cv::resize(rgbImg, rawMat, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
-			rgbImg = rawMat;
-		}
-
-		//create the final image
-		image = QImage(rgbImg.data, (int)rgbImg.cols, (int)rgbImg.rows, (int)rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
-		img = image.copy();
-		imgLoaded = true;
-
-		iProcessor.recycle();
-
-#else
-		qDebug() << "Not compiled using OpenCV - could not load any RAW image";
-#endif
-	}
-	catch (...) {
-		qWarning() << "Exception caught during RAW loading...";
+	if (success) {
+		img = rawLoader.image();
+		qDebug() << "[RAW] image loaded in" << dt;
 	}
 
-	if (imgLoaded) {
-		qDebug() << "[RAW] image loaded from RAW in: " << dt;
-		//setEditImage(img, tr("Original Image"));
-	}
-
-	return imgLoaded;
+	return success;
 }
 
 #ifdef Q_OS_WIN
@@ -1817,6 +1415,513 @@ QString DkZipContainer::getEncodedFilePath() const {
 QString DkZipContainer::zipMarker() {
 
 	return mZipMarker;
+}
+
+#endif
+
+// DkRawLoader --------------------------------------------------------------------
+DkRawLoader::DkRawLoader(const QString & filePath, const QSharedPointer<DkMetaDataT>& metaData) {
+	mFilePath = filePath;
+	mMetaData = metaData;
+}
+
+bool DkRawLoader::isEmpty() const {
+	return mFilePath.isEmpty();
+}
+
+void DkRawLoader::setLoadFast(bool fast) {
+	mLoadFast = fast;
+}
+
+bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
+
+	DkTimer dt;
+
+	// try fetching the preview
+	if (mLoadFast) {
+
+		if (loadPreview(ba))
+			return true;
+	}
+
+#ifdef WITH_LIBRAW
+	
+	try {
+
+		// open the buffer
+		LibRaw iProcessor;
+
+		if (!openBuffer(ba, iProcessor)) {
+			qDebug() << "could not open buffer for" << mFilePath;
+			return false;
+		}
+
+		// check camera models for specific hacks
+		detectSpecialCamera(iProcessor);
+
+		// try loading RAW preview
+		if (mLoadFast) {
+			mImg = loadPreviewRaw(iProcessor);
+
+			// are we done already?
+			if (!mImg.isNull())
+				return true;
+		}
+
+		//unpack the data
+		int error = iProcessor.unpack();
+		if (std::strcmp(iProcessor.version(), "0.13.5") != 0)	// fixes a bug specific to libraw 13 - version call is UNTESTED
+			iProcessor.raw2image();
+
+		if (error != LIBRAW_SUCCESS)
+			return false;
+
+
+		// demosaic image
+		cv::Mat rawMat;
+
+		if (iProcessor.imgdata.idata.filters)
+			rawMat = demosaic(iProcessor);
+		else
+			rawMat = prepareImg(iProcessor);
+
+		qDebug().noquote() << "after demosaicing" << QString::fromStdString(DkUtils::getMatInfo(rawMat));
+		
+		// color correction + white balance
+		if (mIsChromatic) {
+			whiteBalance(iProcessor, rawMat);
+		}
+		
+		// gamma correction
+		gammaCorrection(iProcessor, rawMat);
+
+		// reduce color noise
+		if (DkSettingsManager::param().resources().filterRawImages && mIsChromatic)
+			reduceColorNoise(iProcessor, rawMat);
+
+		mImg = raw2Img(iProcessor, rawMat);
+		
+		qDebug() << "img size" << mImg.size();
+		qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
+
+		iProcessor.recycle();
+		rawMat.release();
+	}
+	catch (...) {
+		qDebug() << "[RAW] error during processing...";
+		return false;
+	}
+
+	qInfo() << "[RAW] loaded in " << dt;
+
+#endif
+
+	return !mImg.isNull();
+}
+
+QImage DkRawLoader::image() const {
+	return mImg;
+}
+
+bool DkRawLoader::loadPreview(const QSharedPointer<QByteArray>& ba) {
+
+	try {
+
+		// try to get preview image from exiv2
+		if (mMetaData) {
+			if (mLoadFast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+				DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
+
+				mMetaData->readMetaData(mFilePath, ba);
+
+				int minWidth = 0;
+
+#ifdef WITH_LIBRAW	// if nomacs has libraw - we can still hope for a fallback -> otherwise try whatever we have here
+				if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
+					minWidth = 1920;
+#endif
+				mImg = mMetaData->getPreviewImage(minWidth);
+
+				if (!mImg.isNull()) {
+					qDebug() << "[RAW] loaded with exiv2";
+					return true;
+				}
+			}
+		}
+	}
+	catch (...) {
+		qWarning() << "Exception caught during fetching RAW from thumbnail...";
+	}
+
+	return false;
+}
+
+
+#ifdef WITH_LIBRAW
+
+// here are some hints from earlier days...
+//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
+//iProcessor.imgdata.params.use_camera_wb = 1;
+//// (-a) Use automatic white balance obtained after averaging over the entire image
+//iProcessor.imgdata.params.use_auto_wb = 1;
+//// (-q 3) Adaptive homogeneity-directed de-mosaicing algorithm (AHD)
+//iProcessor.imgdata.params.user_qual = 3;
+//iProcessor.imgdata.params.output_tiff = 1;
+////iProcessor.imgdata.params.four_color_rgb = 1;
+////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
+//// RAW data filtration mode during data unpacking and post-processing
+//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
+
+
+QImage DkRawLoader::loadPreviewRaw(LibRaw & iProcessor) const {
+	
+	int tW = iProcessor.imgdata.thumbnail.twidth;
+
+	if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+		(DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tW >= 1920)) {
+
+		// crashes here if image is broken
+		int err = iProcessor.unpack_thumb();
+		char* tPtr = iProcessor.imgdata.thumbnail.thumb;
+
+		if (!err && tPtr) {
+
+			QImage img;
+			img.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
+
+			// we're good to go
+			if (!img.isNull()) {
+				qDebug() << "[RAW] I loaded the RAW's thumbnail";
+				return img;
+			}
+			else
+				qDebug() << "RAW could not load the thumb";
+		}
+		else
+			qDebug() << "error unpacking the thumb...";
+	}
+
+	// default: return nothing
+	return QImage();
+}
+
+bool DkRawLoader::openBuffer(const QSharedPointer<QByteArray>& ba, LibRaw& iProcessor) const {
+
+	int error = LIBRAW_DATA_ERROR;
+
+	QFileInfo fi(mFilePath);
+
+	//use iprocessor from libraw to read the data
+	// OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
+	if (fi.suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
+		error = iProcessor.open_file(mFilePath.toStdString().c_str());
+	}
+	else {
+		// the buffer check is because:
+		// libraw has an error when loading buffers if the first 4 bytes encode as 'RIFF'
+		// and no data follows at all
+		if (ba->isEmpty() || ba->size() < 100)
+			return false;
+
+		error = iProcessor.open_buffer((void*)ba->constData(), ba->size());
+	}
+
+	return (error == LIBRAW_SUCCESS);
+}
+
+void DkRawLoader::detectSpecialCamera(LibRaw & iProcessor) {
+
+	if (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic")
+		mIsChromatic = false;
+	
+	if (QString(iProcessor.imgdata.idata.model).contains("IQ260"))
+		mCamType = camera_iiq;
+	else if (QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive))
+		mCamType = camera_canon;
+
+	// add your camera flag (for hacks) here
+}
+
+cv::Mat DkRawLoader::demosaic(LibRaw & iProcessor) const {
+
+	cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC1);
+	double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+
+	// normalize all image values
+	for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
+		unsigned short *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
+
+		for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
+
+			int colIdx = iProcessor.COLOR(rIdx, cIdx);
+			double val = (double)(iProcessor.imgdata.image[(rawMat.cols*rIdx) + cIdx][colIdx]);
+			
+			// normalize the value w.r.t the black point defined
+			val = (val - iProcessor.imgdata.color.black) / dynamicRange;
+			ptrRaw[cIdx] = clip<unsigned short>(val * USHRT_MAX);  // for conversion to 16U
+		}
+	}
+
+	// no demosaicing
+	if (mIsChromatic) {
+
+		unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+		type = type & 255;
+
+		cv::Mat rgbImg;
+
+		//define bayer pattern
+		if (type == 180) {
+			cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);		//bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
+															//													GB GB GB
+		}
+		else if (type == 30) {
+			cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
+		}
+		else if (type == 225) {
+			cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
+		}
+		else if (type == 75) {
+			cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
+		}
+		else {
+			qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
+			return cv::Mat();
+		}
+
+		rawMat = rgbImg;
+	}
+
+	// 16U (1 or 3 channeled) Mat
+	return rawMat;
+}
+
+cv::Mat DkRawLoader::prepareImg(LibRaw & iProcessor) const {
+
+	cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
+	double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+
+	// normalization function
+	auto normalize = [&](double val) { 
+	
+		val = (val - iProcessor.imgdata.color.black) / dynamicRange;
+		return clip<unsigned short>(val * USHRT_MAX);
+	};
+
+	for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
+		unsigned short *ptrI = rawMat.ptr<unsigned short>(rIdx);
+
+		for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
+
+			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][0]);
+			ptrI++;
+			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][1]);
+			ptrI++;
+			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][2]);
+			ptrI++;
+		}
+	}
+
+	return rawMat;
+}
+
+cv::Mat DkRawLoader::colorMap(const LibRaw & iProcessor) const {
+
+	// get color correction matrix
+	cv::Mat ccm(3, 3, CV_32FC1);
+
+	for (int rIdx = 0; rIdx < ccm.rows; rIdx++) {
+		
+		float* cPtr = ccm.ptr<float>(rIdx);
+		
+		for (int cIdx = 0; cIdx < ccm.cols; cIdx++) {
+			cPtr[cIdx] = iProcessor.imgdata.color.rgb_cam[rIdx][cIdx];
+		}
+	}
+
+	// 3 x 3 32FC1 color multiplier
+	return ccm;
+}
+
+cv::Mat DkRawLoader::whiteMultipliers(const LibRaw & iProcessor) const {
+	
+	// get camera white balance multipliers
+	cv::Mat wm(1, 4, CV_32FC1);
+	
+	float* wmp = wm.ptr<float>();
+
+	for (int idx = 0; idx < wm.cols; idx++)
+		wmp[idx] = iProcessor.imgdata.color.cam_mul[idx];
+
+	if (wmp[3] == 0)
+		wmp[3] = wmp[1];	// take green (usually its RGBG)
+
+	// normalize white balance multipliers
+	float w = (float)cv::sum(wm)[0] / 4.0f;
+	float maxW = 1.0f;
+
+	//clipping according the camera model
+	//if w > 2.0 maxW is 256, otherwise 512
+	//tested empirically
+	//check if it can be defined by some metadata settings?
+	if (w > 2.0f)
+		maxW = 255.0f;
+	if (w > 2.0f && mCamType == camera_canon)
+		maxW = 511.0f;	// some cameras would even need ~800 - why?
+
+	//normalize white point
+	wm /= maxW;
+
+	// 1 x 4 32FC1 white balance vector
+	return wm;
+}
+
+cv::Mat DkRawLoader::gammaTable(const LibRaw & iProcessor) const {
+	
+	// OK this is an instance of reverse engineering:
+	// we found out that the values of (at least) the PhaseOne's achromatic back have to be doubled
+	// our images are no close to what their software (Capture One does) - only the gamma correction
+	// seems to be slightly different... -> now we can load compressed IIQs that are not supported by PS : )
+	double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
+
+	//read gamma value and create gamma table	
+	double gamma = (double)iProcessor.imgdata.params.gamm[0];
+	
+	cv::Mat gmt(1, USHRT_MAX, CV_16UC1);
+	unsigned short* gmtp = gmt.ptr<unsigned short>();
+	
+	for (int idx = 0; idx < gmt.cols; idx++) {
+		gmtp[idx] = clip<unsigned short>(qRound((1.099*std::pow((double)idx / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
+	}
+
+	// a 1 x 65535 U16 gamma table
+	return gmt;
+}
+
+void DkRawLoader::whiteBalance(const LibRaw & iProcessor, cv::Mat & img) const {
+
+	// white balance must not be empty at this point
+	cv::Mat wb = whiteMultipliers(iProcessor);
+	const float* wbp = wb.ptr<float>();
+	assert(wb.cols == 4);
+
+	// white balance must not be empty at this point
+	cv::Mat cm = colorMap(iProcessor);
+	assert(cm.rows == 3 && cm.cols == 3);
+
+	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+		
+		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+		
+		cv::Mat px(3, 1, CV_32FC1);
+		float* pxp = px.ptr<float>();
+
+		for (int cIdx = 0; cIdx < img.cols; cIdx++) {
+			
+			//apply white balance correction
+			pxp[0] = *ptr		* wbp[0];
+			pxp[1] = *(ptr+1)	* wbp[1];
+			pxp[2] = *(ptr+2)	* wbp[2];
+
+			px = cm * px;
+
+			// clip & save color corrected values
+			*ptr = clip<unsigned short>(pxp[0]);
+			ptr++;
+			*ptr = clip<unsigned short>(pxp[1]);
+			ptr++;
+			*ptr = clip<unsigned short>(pxp[2]);
+			ptr++;
+		}
+	}
+}
+
+void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const {
+
+	// white balance must not be empty at this point
+	cv::Mat gt = gammaTable(iProcessor);
+	const unsigned short* gammaLookup = gt.ptr<unsigned short>();
+	assert(gt.cols == USHRT_MAX);
+	
+	qDebug().noquote() << "before gamma" << QString::fromStdString(DkUtils::getMatInfo(img));
+
+	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+
+		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+
+		for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
+
+			//apply gamma correction
+			const unsigned short maxLin = 5;	// 0.018 * 255
+			
+			// values close to 0 are treated linear
+			if (ptr[cIdx] <= 5)	// 0.018 * 255
+				ptr[cIdx] = (unsigned short)qRound(ptr[cIdx] * (double)iProcessor.imgdata.params.gamm[1] / 255.0);
+			else
+				ptr[cIdx] = gammaLookup[ptr[cIdx]];
+		}
+	}
+
+	qDebug().noquote() << "after gamma" << QString::fromStdString(DkUtils::getMatInfo(img));
+
+}
+
+void DkRawLoader::reduceColorNoise(const LibRaw & iProcessor, cv::Mat & img) const {
+
+	// filter color noise with a median filter
+	float isoSpeed = iProcessor.imgdata.other.iso_speed;
+
+	if (isoSpeed > 0) {
+
+		DkTimer dt;
+
+		int winSize;
+		if (isoSpeed > 6400) 
+			winSize = 13;
+		else if (isoSpeed >= 3200) 
+			winSize = 11;
+		else if (isoSpeed >= 2500) 
+			winSize = 9;
+		else if (isoSpeed >= 400) 
+			winSize = 7;
+		else 
+			winSize = 5;
+
+		DkTimer dMed;
+		
+		cv::cvtColor(img, img, CV_RGB2YCrCb);
+
+		std::vector<cv::Mat> imgCh;
+		cv::split(img, imgCh);
+		assert(imgCh.size() == 3);
+
+		cv::medianBlur(imgCh[1], imgCh[1], winSize);
+		cv::medianBlur(imgCh[2], imgCh[2], winSize);
+
+		cv::merge(imgCh, img);
+		cv::cvtColor(img, img, CV_YCrCb2RGB);
+		qDebug() << "median blur takes:" << dt;
+	}
+
+}
+
+QImage DkRawLoader::raw2Img(const LibRaw & iProcessor, cv::Mat & img) const {
+	
+	//check the pixel aspect ratio of the raw image
+	if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f)
+		cv::resize(img, img, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
+	
+	qDebug().noquote() << "raw img before conversion" << QString::fromStdString(DkUtils::getMatInfo(img));
+
+	// revert back to 8-bit image
+	img.convertTo(img, CV_8U);
+
+	// TODO: for now - fix this!
+	if (img.channels() == 1)
+		cv::cvtColor(img, img, CV_GRAY2RGB);
+
+
+	return DkImage::mat2QImage(img);
 }
 
 #endif

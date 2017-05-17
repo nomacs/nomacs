@@ -64,6 +64,7 @@
 
 // Qt defines
 class QNetworkReply;
+class LibRaw;
 
 namespace nmc {
 
@@ -109,6 +110,76 @@ protected:
 	QImage mImg;
 	QString mEditName;
 
+};
+
+class DllCoreExport DkRawLoader {
+
+public:
+	DkRawLoader(const QString& filePath, const QSharedPointer<DkMetaDataT>& metaData);
+
+	bool isEmpty() const;
+	void setLoadFast(bool fast);
+
+	bool load(const QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+
+	QImage image() const;
+
+protected:
+	QString mFilePath;
+	QSharedPointer<DkMetaDataT> mMetaData;
+
+	QImage mImg;
+
+	enum Cam {
+		camera_unknown = 0,
+		camera_iiq,
+		camera_canon,
+
+		camera_end
+	};
+
+	bool mLoadFast = false;
+	bool mIsChromatic = true;
+	Cam mCamType = camera_unknown;
+
+	bool loadPreview(const QSharedPointer<QByteArray>& ba);
+
+#ifdef WITH_LIBRAW
+	cv::Mat mColorMat;
+	cv::Mat mGammaTable;
+	
+	QImage loadPreviewRaw(LibRaw& iProcessor) const;
+	bool openBuffer(const QSharedPointer<QByteArray>& ba, LibRaw& iProcessor) const;
+	void detectSpecialCamera(LibRaw& iProcessor);
+
+	cv::Mat demosaic(LibRaw& iProcessor) const;
+	cv::Mat prepareImg(LibRaw& iProcessor) const;
+
+	cv::Mat colorMap(const LibRaw& iProcessor) const;
+	cv::Mat whiteMultipliers(const LibRaw& iProcessor) const;
+	cv::Mat gammaTable(const LibRaw& iProcessor) const;
+
+	void whiteBalance(const LibRaw& iProcessor, cv::Mat& img) const;
+
+	void gammaCorrection(const LibRaw& iProcessor, cv::Mat& img) const;
+
+	void reduceColorNoise(const LibRaw& iProcessor, cv::Mat& img) const;
+
+	QImage raw2Img(const LibRaw& iProcessor, cv::Mat& img) const;
+
+	template <typename num>
+	num clip(double val) const {
+
+		int vr = qRound(val);
+
+		if (vr > std::numeric_limits<num>::max())
+			vr = std::numeric_limits<num>::max();
+		if (vr < 0)
+			vr = 0;
+
+		return static_cast<num>(vr);
+	}
+#endif
 };
 
 /**
