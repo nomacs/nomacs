@@ -150,12 +150,11 @@ protected:
 	
 	QImage loadPreviewRaw(LibRaw& iProcessor) const;
 	bool openBuffer(const QSharedPointer<QByteArray>& ba, LibRaw& iProcessor) const;
-	void detectSpecialCamera(LibRaw& iProcessor);
+	void detectSpecialCamera(const LibRaw& iProcessor);
 
 	cv::Mat demosaic(LibRaw& iProcessor) const;
-	cv::Mat prepareImg(LibRaw& iProcessor) const;
+	cv::Mat prepareImg(const LibRaw& iProcessor) const;
 
-	cv::Mat colorMap(const LibRaw& iProcessor) const;
 	cv::Mat whiteMultipliers(const LibRaw& iProcessor) const;
 	cv::Mat gammaTable(const LibRaw& iProcessor) const;
 
@@ -172,8 +171,10 @@ protected:
 
 		int vr = qRound(val);
 
+		// trust me I'm an engineer @ -2
+		// with -2 we do not get pink in oversaturated areas
 		if (vr > std::numeric_limits<num>::max())
-			vr = std::numeric_limits<num>::max();
+			vr = std::numeric_limits<num>::max()-2;
 		if (vr < 0)
 			vr = 0;
 

@@ -384,16 +384,13 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QImage& img, QSharedPoi
  **/ 
 bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, bool fast) const {
 	
-	DkTimer dt;
 	DkRawLoader rawLoader(filePath, mMetaData);
 	rawLoader.setLoadFast(fast);
 
 	bool success = rawLoader.load(ba);
 
-	if (success) {
+	if (success)
 		img = rawLoader.image();
-		qDebug() << "[RAW] image loaded in" << dt;
-	}
 
 	return success;
 }
@@ -1485,8 +1482,6 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 		else
 			rawMat = prepareImg(iProcessor);
 
-		qDebug().noquote() << "after demosaicing" << QString::fromStdString(DkUtils::getMatInfo(rawMat));
-		
 		// color correction + white balance
 		if (mIsChromatic) {
 			whiteBalance(iProcessor, rawMat);
@@ -1629,7 +1624,7 @@ bool DkRawLoader::openBuffer(const QSharedPointer<QByteArray>& ba, LibRaw& iProc
 	return (error == LIBRAW_SUCCESS);
 }
 
-void DkRawLoader::detectSpecialCamera(LibRaw & iProcessor) {
+void DkRawLoader::detectSpecialCamera(const LibRaw & iProcessor) {
 
 	if (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic")
 		mIsChromatic = false;
@@ -1696,7 +1691,7 @@ cv::Mat DkRawLoader::demosaic(LibRaw & iProcessor) const {
 	return rawMat;
 }
 
-cv::Mat DkRawLoader::prepareImg(LibRaw & iProcessor) const {
+cv::Mat DkRawLoader::prepareImg(const LibRaw & iProcessor) const {
 
 	cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
 	double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
@@ -1723,24 +1718,6 @@ cv::Mat DkRawLoader::prepareImg(LibRaw & iProcessor) const {
 	}
 
 	return rawMat;
-}
-
-cv::Mat DkRawLoader::colorMap(const LibRaw & iProcessor) const {
-
-	// get color correction matrix
-	cv::Mat ccm(3, 3, CV_32FC1);
-
-	for (int rIdx = 0; rIdx < ccm.rows; rIdx++) {
-		
-		float* cPtr = ccm.ptr<float>(rIdx);
-		
-		for (int cIdx = 0; cIdx < ccm.cols; cIdx++) {
-			cPtr[cIdx] = iProcessor.imgdata.color.rgb_cam[rIdx][cIdx];
-		}
-	}
-
-	// 3 x 3 32FC1 color multiplier
-	return ccm;
 }
 
 cv::Mat DkRawLoader::whiteMultipliers(const LibRaw & iProcessor) const {
@@ -1805,32 +1782,34 @@ void DkRawLoader::whiteBalance(const LibRaw & iProcessor, cv::Mat & img) const {
 	const float* wbp = wb.ptr<float>();
 	assert(wb.cols == 4);
 
-	// white balance must not be empty at this point
-	cv::Mat cm = colorMap(iProcessor);
-	assert(cm.rows == 3 && cm.cols == 3);
-
 	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
 		
 		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
 		
-		cv::Mat px(3, 1, CV_32FC1);
-		float* pxp = px.ptr<float>();
-
 		for (int cIdx = 0; cIdx < img.cols; cIdx++) {
 			
 			//apply white balance correction
-			pxp[0] = *ptr		* wbp[0];
-			pxp[1] = *(ptr+1)	* wbp[1];
-			pxp[2] = *(ptr+2)	* wbp[2];
+			unsigned short r = clip<unsigned short>(*ptr		* wbp[0]);
+			unsigned short g = clip<unsigned short>(*(ptr+1)	* wbp[1]);
+			unsigned short b = clip<unsigned short>(*(ptr+2)	* wbp[2]);
 
-			px = cm * px;
+			//apply color correction					
+			int cr = qRound(iProcessor.imgdata.color.rgb_cam[0][0] * r + 
+							iProcessor.imgdata.color.rgb_cam[0][1] * g + 
+							iProcessor.imgdata.color.rgb_cam[0][2] * b);
+			int cg = qRound(iProcessor.imgdata.color.rgb_cam[1][0] * r + 
+							iProcessor.imgdata.color.rgb_cam[1][1] * g + 
+							iProcessor.imgdata.color.rgb_cam[1][2] * b);
+			int cb = qRound(iProcessor.imgdata.color.rgb_cam[2][0] * r + 
+							iProcessor.imgdata.color.rgb_cam[2][1] * g + 
+							iProcessor.imgdata.color.rgb_cam[2][2] * b);
 
 			// clip & save color corrected values
-			*ptr = clip<unsigned short>(pxp[0]);
+			*ptr = clip<unsigned short>(cr);
 			ptr++;
-			*ptr = clip<unsigned short>(pxp[1]);
+			*ptr = clip<unsigned short>(cg);
 			ptr++;
-			*ptr = clip<unsigned short>(pxp[2]);
+			*ptr = clip<unsigned short>(cb);
 			ptr++;
 		}
 	}
@@ -1843,8 +1822,6 @@ void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const
 	const unsigned short* gammaLookup = gt.ptr<unsigned short>();
 	assert(gt.cols == USHRT_MAX);
 	
-	qDebug().noquote() << "before gamma" << QString::fromStdString(DkUtils::getMatInfo(img));
-
 	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
 
 		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
@@ -1853,7 +1830,7 @@ void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const
 
 			//apply gamma correction
 			const unsigned short maxLin = 5;	// 0.018 * 255
-			
+
 			// values close to 0 are treated linear
 			if (ptr[cIdx] <= 5)	// 0.018 * 255
 				ptr[cIdx] = (unsigned short)qRound(ptr[cIdx] * (double)iProcessor.imgdata.params.gamm[1] / 255.0);
@@ -1861,8 +1838,6 @@ void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const
 				ptr[cIdx] = gammaLookup[ptr[cIdx]];
 		}
 	}
-
-	qDebug().noquote() << "after gamma" << QString::fromStdString(DkUtils::getMatInfo(img));
 
 }
 
@@ -1911,8 +1886,6 @@ QImage DkRawLoader::raw2Img(const LibRaw & iProcessor, cv::Mat & img) const {
 	if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f)
 		cv::resize(img, img, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
 	
-	qDebug().noquote() << "raw img before conversion" << QString::fromStdString(DkUtils::getMatInfo(img));
-
 	// revert back to 8-bit image
 	img.convertTo(img, CV_8U);
 
