@@ -649,10 +649,14 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 		if (mulWhite[3] == 0)
 			mulWhite[3] = mulWhite[1];
 
-		int cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
+		// OK this is an instance of reverse engineering:
+		// we found out that the values of (at least) the PhaseOne's achromatic back have to be doubled
+		// our images are no close to what their software (Capture One does) - only the gamma correction
+		// seems to be slightly different... -> now we can load compressed IIQs that are not supported by PS : )
+		double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
 
-		//read gamma value and create gamma table
-		float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
+		//read gamma value and create gamma table	
+		float gamma = (float)iProcessor.imgdata.params.gamm[0];
 		unsigned short gammaTable[65536];
 		for (int i = 0; i < 65536; i++) {
 			gammaTable[i] = lf::clip(qRound((1.099*std::pow((double)i / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
