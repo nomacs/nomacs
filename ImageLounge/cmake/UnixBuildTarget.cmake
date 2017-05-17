@@ -29,6 +29,7 @@ target_link_libraries(
 
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 set_target_properties(${BINARY_NAME} PROPERTIES IMPORTED_IMPLIB "")
+set_target_properties(${BINARY_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # add core
 add_library(
