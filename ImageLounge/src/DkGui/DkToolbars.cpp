@@ -52,6 +52,7 @@
 #include <QHBoxLayout>
 #include <QLayout>
 #include <QIcon>
+#include <QDir>
 #include <QAction>
 #include <QTranslator>
 #include <QDoubleSpinBox>
@@ -280,6 +281,104 @@ void DkGradient::setGradient(const QLinearGradient& gradient) {
 	update();
 	emit gradientChanged();
 
+}
+
+static bool readColormapPoint(QXmlStreamReader* xmlReader, double& point , QColor& colorAtPoint){
+    while(!xmlReader->atEnd() && !xmlReader->hasError()) {
+        QXmlStreamReader::TokenType token = xmlReader->readNext();
+        // Read next element
+        if(token == QXmlStreamReader::StartElement) {
+            QString elementName(xmlReader->name().toString());
+            if(elementName == "Point"){
+                bool elemOk;
+                qreal r,g,b;
+
+                point = xmlReader->attributes().value("x").toDouble(&elemOk);
+                r = xmlReader->attributes().value("r").toDouble(&elemOk);
+                g = xmlReader->attributes().value("g").toDouble(&elemOk);
+                b = xmlReader->attributes().value("b").toDouble(&elemOk);
+                colorAtPoint.setRgbF(r, g, b);
+            }else{
+                return false;
+            }
+        }
+        if(token == QXmlStreamReader::EndElement) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** loadColormap loads colormaps from resources.
+ *  NOTE: This function is unfit to reliably load anything but the included
+ *        colormaps in well-known format.
+ * @param colormapName filename of a colormap file within resources
+ * @param cmap gradient to load colormap to
+ * @returns true if the colormap was loaded successfully, false otherwise
+ */
+bool DkGradient::loadColormap(const QString colormapName, QLinearGradient& cmap)
+{
+    QString cmapResourceName(":/nomacs/cmap/%1.xml");
+    QFile *xmlFile = new QFile(cmapResourceName.arg(colormapName));
+    bool foundMap = false;
+    DkTimer dt;
+
+    // load colormap by name from packaged resources
+    if (!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << QString("failed to load colormap %s: not found").arg(colormapName);
+        return false;
+    }
+    QXmlStreamReader *xmlReader = new QXmlStreamReader(xmlFile);
+
+    //Parse the XML until we find the first "ColorMap"
+    while(!foundMap && !xmlReader->atEnd() && !xmlReader->hasError()) {
+            QXmlStreamReader::TokenType token = xmlReader->readNext();
+
+            if(token == QXmlStreamReader::StartDocument) {
+                    continue;
+            }
+
+            if(token == QXmlStreamReader::StartElement) {
+                QString elementName(xmlReader->name().toString());
+                if (elementName == "ColorMap") {
+
+                    // we found our colormap
+                    bool pointOk = false;
+                    double pos;
+                    QColor color;
+
+                    do{
+                        pointOk = readColormapPoint(xmlReader, pos, color);
+                        cmap.setColorAt(pos, color);
+                        //qDebug() << "step: " << pos << "\t" << "R:" << color.red() << "G:" << color.green() << "B:" << color.blue();
+                    }while(pointOk);
+
+                    qDebug() << "loaded colormap '" << colormapName << "' in " << dt;
+                    foundMap = true;
+                }
+            }
+    }
+
+    xmlReader->clear();
+    xmlFile->close();
+
+    return foundMap;
+}
+
+/**
+ * @brief packagedColormaps returns a list of colormaps within the resources
+ * @return a list of available colormap names
+ */
+static QVector<QString> packagedColormaps (){
+    QVector<QString> cmapList;
+
+    // use colormap resource name as colormap name
+    QDir cmapsInResources(":/nomacs/cmap/");
+    for(QString resourceName: cmapsInResources.entryList()){
+        //file consume extension
+        cmapList.append(resourceName.remove(resourceName.size() - 4 , 4));
+    }
+    return cmapList;
 }
 
 QLinearGradient DkGradient::getGradient() {

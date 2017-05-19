@@ -119,6 +119,8 @@ public:
 	void reset();
 	QLinearGradient getGradient();
 	void setGradient(const QLinearGradient& gradient);
+	static bool loadColormap(const QString colormapName, QLinearGradient& cmap);
+	static QVector<QString> packagedColormaps();
 
 signals:
 	void gradientChanged() const;
