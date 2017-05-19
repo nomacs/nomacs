@@ -16,6 +16,7 @@ endif(COMMAND cmake_policy)
 project(nomacs)
 
 # needed for soname
+
 set(NOMACS_VERSION_MAJOR 3)
 set(NOMACS_VERSION_MINOR 7)
 set(NOMACS_VERSION_PATCH 0)
@@ -27,7 +28,20 @@ else()
 	SET(NMC_ARCHITECTURE "x86")
 endif()
 
-add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
+if(NOMACS_BUILD_TAG)
+    #we've been passed a version tag, use that
+    set(NOMACS_VCSVERSION "(build: ${NOMACS_BUILD_TAG})")
+    set(NOMACS_FULL_VERSION "${NOMACS_FULL_VERSION} ${NOMACS_VCSVERSION}")
+else()
+    include(cmake/GitVersionString.cmake)
+    get_git_version_string()
+    if(NOMACS_VCSVERSION)
+        #we have git, add the current description
+        set(NOMACS_FULL_VERSION "${NOMACS_FULL_VERSION} ${NOMACS_VCSVERSION}")
+    endif()
+endif()
+
+add_definitions(-DNOMACS_VERSION="${NOMACS_FULL_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -189,7 +203,7 @@ endif()
 # status
 MESSAGE(STATUS "")
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
-MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <http://www.nomacs.org>")
+MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_FULL_VERSION} - <http://www.nomacs.org>")
 MESSAGE(STATUS "")
 
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
