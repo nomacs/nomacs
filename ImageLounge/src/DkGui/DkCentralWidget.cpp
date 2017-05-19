@@ -1029,16 +1029,17 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
-    if (mTabInfos.size() == 0){
+    if (mTabInfos.size() > 1){
         // this is the first one: open a new tab
         addTab(filePath);
     }else{
         // we already have some opened tabs.
         int currentTabIdx = mTabbar->currentIndex();
-        int currentTabMode = mTabInfos[currentTabIdx]->getMode();
+        enum DkTabInfo::TabMode currentTabMode = mTabInfos[currentTabIdx]->getMode();
 
         if (currentTabMode == DkTabInfo::tab_thumb_preview ||
             currentTabMode == DkTabInfo::tab_recent_files ||
+            currentTabMode == DkTabInfo::tab_single_image ||
             currentTabMode == DkTabInfo::tab_empty) {
 
             // reuse the currently open tab.
@@ -1053,15 +1054,36 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
     }
 }
 
-void DkCentralWidget::loadDirToTab(const QString& dirPath) {
+/**
+ * @brief loadDirToTab loads a directory path into the current tab.
+ * @param dirPath the directory to load
+ */
+void DkCentralWidget::loadDirToTab(const QFileInfo& dirPath) {
 
-	if (mTabInfos.size() > 1 || (!mTabInfos.empty() && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty)) {
-		addTab();
-	}
-	int currentTabIdx = mTabbar->currentIndex();
+    if (mTabInfos.size() > 1 ||
+        (!mTabInfos.empty()
+         && mTabInfos.at(0)->getMode() != DkTabInfo::tab_empty
+         && mTabInfos.at(0)->getMode() != DkTabInfo::tab_recent_files
+         && mTabInfos.at(0)->getMode() != DkTabInfo::tab_single_image
+         && mTabInfos.at(0)->getMode() != DkTabInfo::tab_thumb_preview)) {
 
-	mTabInfos.at(currentTabIdx)->setDirPath(dirPath);
-	showThumbView();
+        addTab();
+    }
+
+    QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
+
+	if(dirPath.isDir()) {
+		//try to load the dir
+		bool dirIsLoaded = targetTab->setDirPath(dirPath);
+
+        if(dirIsLoaded){
+            //show the directory in overview mode
+            targetTab->setMode(DkTabInfo::tab_thumb_preview);
+            showThumbView();
+            return;
+        }
+    }
+    mViewport->getController()->setInfo(tr("I could not load \"%1\"").arg(dirPath.canonicalFilePath()));
 }
 
 /** loadUrl() loads a single valid url
@@ -1070,26 +1092,37 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab) {
     Q_ASSERT(url.isValid());
 
+    // TODO decide cases where we just load over the current image
     Q_UNUSED(loadInTab);
     Q_ASSERT(loadInTab == true);
-    // TODO decide cases where we just load over the current image
+
+    QFileInfo file(url.toLocalFile());
+    auto display = [&](QString msg){
+        mViewport->getController()->setInfo(msg.arg(msg));
+    };
+
 
     if(url.isLocalFile()){
-        QFileInfo file(url.toLocalFile());
-
-        if (DkUtils::isValid(file)){
-            // load a local file
-            loadFileToTab(url.toLocalFile());
-        }else if(file.isDir()){
-            // load a directory in thmbnail view
-            loadDirToTab(file.filePath());
+        if(file.exists()){
+            if (file.isFile()) {
+                // load a local file
+                if ( DkUtils::isValid(file)) {
+                    loadFileToTab(url.toLocalFile());
+                } else {
+                    display(tr("Unable to load file \"%1\"").arg(file.canonicalPath()));
+                }
+            } else if(file.isDir()){
+                // load a directory as thmbnail view
+                loadDirToTab(file.filePath());
+            }
+        }else{
+            display(tr("\"%1\" does not exist").arg(file.canonicalPath()));
         }
     }else{
        //load a remote url
-        qDebug() << "unhandled remote url: " << url.toDisplayString();
-
-        //BUG: loading an url WILL replace the current tab.
-        mTabInfos[mTabbar->currentIndex()]->getImageLoader()->downloadFile(url);
+        QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
+        display(tr("downloading \"%1\"").arg(url.toDisplayString()));
+        targetTab->getImageLoader()->downloadFile(url);
     }
 }
 
