@@ -95,5 +95,15 @@
         <file>img/plugin-banner.svg</file>
         <file>img/player-stop.svg</file>
         <file>img/warning.svg</file>
+        <file>cmap/inferno.xml</file>
+        <file>cmap/magma.xml</file>
+        <file>cmap/plasma.xml</file>
+        <file>cmap/viridis.xml</file>
+        <file>cmap/accent.xml</file>
+        <file>cmap/blues.xml</file>
+        <file>cmap/BuPn.xml</file>
+        <file>cmap/gist_rainbow.xml</file>
+        <file>cmap/hot.xml</file>
+        <file>cmap/oranges.xml</file>
     </qresource>
 </RCC>
