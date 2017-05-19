@@ -93,7 +93,13 @@ bool DkTabInfo::operator ==(const DkTabInfo& o) const {
 void DkTabInfo::loadSettings(const QSettings& settings) {
 
 	QString file = settings.value("tabFileInfo", "").toString();
-	mTabMode = settings.value("tabMode", tab_single_image).toInt();
+	int tabSetting = settings.value("tabMode", tab_single_image).toInt();
+
+	if(tabSetting < TabMode::tab_end){
+		mTabMode = static_cast<enum TabMode>(tabSetting);
+	}else{
+		mTabMode = tab_single_image;
+	}
 
 	if (QFileInfo(file).exists())
 		mImageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
@@ -119,10 +125,17 @@ void DkTabInfo::setFilePath(const QString& filePath) {
 	mFilePath = filePath;
 }
 
-void DkTabInfo::setDirPath(const QString& dirPath) {
-	
-	mImageLoader->loadDir(dirPath);
-	setMode(tab_thumb_preview);
+bool DkTabInfo::setDirPath(const QFileInfo& dirPath) {
+	if(!dirPath.isDir())
+		return false;
+
+	bool dirIsLoaded = mImageLoader->loadDir(dirPath.canonicalFilePath());
+	if(dirIsLoaded) {
+		setMode(tab_thumb_preview);
+		return true;
+	}
+
+	return false;
 }
 
 QString DkTabInfo::getFilePath() const {
@@ -228,14 +241,15 @@ QString DkTabInfo::getTabText() const {
 	return tabText;
 }
 
-int DkTabInfo::getMode() const {
+enum DkTabInfo::TabMode DkTabInfo::getMode() const {
 
 	return mTabMode;
 }
 
 void DkTabInfo::setMode(int mode) {
 
-	mTabMode = mode;
+	if(mode < TabMode::tab_end)
+		mTabMode = static_cast<enum TabMode>(mode);
 }
 
 // DkCenteralWidget --------------------------------------------------------------------
