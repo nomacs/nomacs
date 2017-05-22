@@ -31,6 +31,9 @@
 #include "DkUtils.h"
 #include "DkImageStorage.h"
 #include "DkQuickAccess.h"
+#include "DkTimer.h"
+#include "DkNoMacs.h"
+#include "DkViewPort.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
@@ -59,9 +62,9 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QCompleter>
-//#include <QStringListModel>
 #include <QStandardItemModel>
 #include <QAbstractItemView>
+#include <QXmlStreamReader>
 
 #include <QGridLayout>
 #include <QGraphicsOpacityEffect>
@@ -217,10 +220,9 @@ void DkColorSlider::mouseDoubleClickEvent(QMouseEvent*) {
 DkGradient::DkGradient(QWidget *parent) 
 	: QWidget(parent){
 
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
-
+	this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 	this->setMinimumWidth(100);
-	this->setMaximumWidth(600);
+	//this->setMaximumWidth(600);
 
 	this->setFixedHeight(40);
 
@@ -234,6 +236,7 @@ DkGradient::DkGradient(QWidget *parent)
 	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
 	
 	mSliders = QVector<DkColorSlider*>();
+
 	init();
 
 };
@@ -250,14 +253,23 @@ void DkGradient::init() {
 	
 	updateGradient();
 
-
 };
 
-void DkGradient::clearAllSliders() {
+void DkGradient::hideSliders() {
+	for (DkColorSlider* slider: mSliders){
+		slider->setHidden(true);
+	}
+}
 
-	for (int i = 0; i < mSliders.size(); i++) {
-		DkColorSlider* slider = mSliders.at(i);
-		delete slider;
+void DkGradient::showSliders() {
+	for (DkColorSlider* slider: mSliders){
+		if(slider) slider->setHidden(false);
+	}
+}
+
+void DkGradient::clearAllSliders() {
+	for (DkColorSlider* slider: mSliders){
+		if(slider) delete slider;
 	}
 
 	mSliders.clear();
@@ -505,10 +517,8 @@ void DkGradient::mousePressEvent(QMouseEvent *event) {
 void DkGradient::updateGradient() {
 
 	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
-
-	for (int i = 0; i < mSliders.size(); i++) 
-		mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
-
+    for (int i = 0; i < mSliders.size(); i++)
+        mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
 
 }
 
@@ -625,7 +635,7 @@ void DkGradient::activateSlider(DkColorSlider *sender) {
 };
 
 //
-DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
+DkTransferToolBar::DkTransferToolBar(DkNoMacs * parent)
 	: QToolBar(tr("Pseudo Color Toolbar"), parent) {
 
 	loadSettings();
@@ -640,6 +650,14 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	this->addSeparator();
 	//this->addWidget(new QLabel(tr("Active channel:")));
 
+
+	mFalseColorModeComboBox = new QComboBox(this);
+	mFalseColorModeComboBox->setStatusTip(tr("Selects the Pseudo Color Mode"));
+	mFalseColorModeComboBox->addItem(tr("Color"), (int)FalseColorMode::user_gradient);
+	mFalseColorModeComboBox->addItem(tr("Colormap"), (int)FalseColorMode::colormap);
+	this->addWidget(mFalseColorModeComboBox);
+	connect(mFalseColorModeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectFalseColorMode(int)));
+
 	mChannelComboBox = new QComboBox(this);
 	mChannelComboBox->setStatusTip(tr("Changes the displayed color channel"));
 	this->addWidget(mChannelComboBox);
@@ -651,9 +669,10 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 
 	mHistoryCombo->addAction(delGradientAction);
 	mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
+	mHistoryCombo->setMinimumWidth(64);
 
-	updateGradientHistory();
-	connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
+	loadGradientHistory();
+	connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(selectGradient(int)));
 	connect(mHistoryCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
 
 	this->addWidget(mHistoryCombo);
@@ -668,26 +687,40 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	mEffect->setOpacity(1);
 	mGradient->setGraphicsEffect(mEffect);
 
-	// Disable the entire transfer toolbar:
-	//enableTF(Qt::Unchecked);
-
 	// Initialize the combo box for color images:
-	mImageMode = mode_uninitialized;
-	applyImageMode(mode_rgb);
+	DkViewPort* viewport = parent->viewport();
+	enum QImage::Format viewportFmt = viewport->getImage().format(); //TODO get correct image mode
+	QList<int> grayFormats = {
+	    QImage::Format_Indexed8, QImage::Format_Mono, QImage::Format_MonoLSB,
+#if QT_VERSION >= 0x050500
+	    QImage::Format_Grayscale8, QImage::Format_Alpha8,
+#endif
+	};
+	QList<int> colorFormats = {QImage::Format_ARGB32,  QImage::Format_RGB32};
+
+	// Adjust available input channels  to viewport content
+	if(grayFormats.contains(viewportFmt)) {
+		mImageMode = mode_gray;
+	} else if(colorFormats.contains(viewportFmt)) {
+		mImageMode = mode_rgb;
+	} else {
+		mImageMode = mode_uninitialized;
+	}
+	setImageMode(mode_rgb);
+
+	// setup toolbar default state
+	mFalseColorMode = FalseColorMode::user_gradient;
+	applyFalseColorMode(mFalseColorMode);
 
 	enableToolBar(false);
-	mEnableTFCheckBox->setEnabled(true);	
+	mEnableTFCheckBox->setEnabled(true);
 
 	connect(mEnableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
 	connect(mGradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 
 	// needed for initialization
 	connect(this, SIGNAL(gradientChanged()), mGradient, SIGNAL(gradientChanged()));
-
-	if (!mOldGradients.empty())
-		mGradient->setGradient(mOldGradients.first());
-
-};
+}
 
 DkTransferToolBar::~DkTransferToolBar() {
 };
@@ -745,8 +778,11 @@ void DkTransferToolBar::saveSettings() {
 		}
 		settings.endArray();
 	}
-
 	settings.endArray();
+
+	settings.setValue("last_active_colormap_index", (int)mLastColorMapIndex);
+	settings.setValue("last_active_custom_color_index", (int)mLastCustomGradientIndex);
+
 	settings.endGroup();
 }
 
@@ -756,7 +792,6 @@ void DkTransferToolBar::loadSettings() {
 	settings.beginGroup("Pseudo Color");
 
 	int gSize = settings.beginReadArray("oldGradients");
-
 	for (int idx = 0; idx < gSize; idx++) {
 		settings.setArrayIndex(idx);
 
@@ -778,8 +813,12 @@ void DkTransferToolBar::loadSettings() {
 		g.setStops(stops);
 		mOldGradients.append(g);
 	}
-
 	settings.endArray();
+
+
+	mLastColorMapIndex = settings.value("last_active_colormap_index").toInt();
+	mLastCustomGradientIndex = settings.value("last_active_custom_color_index").toInt();
+
 	settings.endGroup();
 }
 
@@ -815,50 +854,76 @@ void DkTransferToolBar::insertSlider(qreal pos) {
 
 };
 
-void DkTransferToolBar::setImageMode(int mode) {
+void DkTransferToolBar::setImageMode(int newImageMode) {
 
-	qDebug() << "and I received...";
-	applyImageMode(mode);
-
-};
-
-void DkTransferToolBar::applyImageMode(int mode) {
-
-	// At first check if the right mode is already set. If so, don't do nothing.
-
-	if (mode == mImageMode)
+	if (newImageMode == mImageMode)
 		return;
 
-	//if (mImageMode != mode_invalid_format) {
-	//	enableToolBar(true);
-	//	emit channelChanged(0);
-	//}
-
-	mImageMode = mode;
-	mEnableTFCheckBox->setEnabled(mImageMode != mode_invalid_format);	
-
-	if (mImageMode == mode_invalid_format) {
+	qDebug() << "applying image mode: " << newImageMode;
+	if (newImageMode == mode_invalid_format ||
+		newImageMode == mode_uninitialized) {
 		enableToolBar(false);
 		return;
 	}
 
-	disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
-	mChannelComboBox->clear();
+    disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 
-	if (mode == mode_gray) {
-		mChannelComboBox->addItem(tr("Gray"));
+	mChannelComboBox->clear();
+	if (newImageMode == mode_gray) {
+		mChannelComboBox->addItem(tr("Value"));
 	}
-	else if (mode == mode_rgb) {
+	else if (newImageMode == mode_rgb) {
 		mChannelComboBox->addItem(tr("RGB"));
 		mChannelComboBox->addItem(tr("Red"));
 		mChannelComboBox->addItem(tr("Green"));
 		mChannelComboBox->addItem(tr("Blue"));
+    }
+    mChannelComboBox->setCurrentIndex(0);
+
+    connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+    mChannelComboBox->setVisible(true);
+    enableToolBar(true);
+};
+
+/**
+ * @brief DkTransferToolBar::applyFalseColorMode
+ * @param newMode
+ */
+void DkTransferToolBar::applyFalseColorMode(FalseColorMode newMode) {
+
+	if (newMode == mFalseColorMode)
+		return;
+
+	qDebug() << "applying falsecolor mode: " << (int)newMode;
+
+	if(mFalseColorMode == FalseColorMode::colormap){
+		mLastColorMapIndex = mActiveGradientIndex;
+	}
+	if(mFalseColorMode == FalseColorMode::user_gradient){
+		mLastCustomGradientIndex = mActiveGradientIndex;
 	}
 
-	mChannelComboBox->setCurrentIndex(0);
+	if (newMode == FalseColorMode::colormap ) {
+		mFalseColorMode = newMode;
+        mFalseColorModeComboBox->setVisible(true);
+        mHistoryCombo->setMinimumWidth(200);
+        mChannelComboBox->setVisible(true);
+        loadColormaps();
+    }
+    else if (newMode == FalseColorMode::user_gradient) {
+        mFalseColorMode = newMode;
+        mFalseColorModeComboBox->setVisible(true);
+        mHistoryCombo->setMinimumWidth(64);
+        mChannelComboBox->setVisible(true);
+        loadGradientHistory();
+    }
+    else if (newMode == FalseColorMode::disabled) {
+        mFalseColorMode = newMode;
+        mFalseColorModeComboBox->setVisible(false);
+        mChannelComboBox->setVisible(false);
+    }
 
-	connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
-
+    emit selectGradient(mActiveGradientIndex);
 };
 
 void DkTransferToolBar::pickColor(bool enabled) {
@@ -934,34 +999,112 @@ void DkTransferToolBar::paintEvent(QPaintEvent* event) {
 
 }
 
-void DkTransferToolBar::updateGradientHistory() {
+void DkTransferToolBar::loadGradientHistory() {
 
+	//clear toolbar content
+	mCurGradients.clear();
 	mHistoryCombo->clear();
-	mHistoryCombo->setIconSize(QSize(50,10));
+	mHistoryCombo->setIconSize(QSize(64,10));
 
+	//load gradients from settings, compute thumbnails
+	qDebug() << "loading " << mOldGradients.size() << "color gradients";
 	for (int idx = 0; idx < mOldGradients.size(); idx++) {
 
-		QPixmap cg(50, 10);
-		QLinearGradient g(QPoint(0,0), QPoint(50, 0));
+		QPixmap cg(64, 10);
+		QLinearGradient g(QPoint(0,0), QPoint(64, 0));
 		g.setStops(mOldGradients[idx].stops());
 		QPainter p(&cg);
 		p.fillRect(cg.rect(), g);
 		mHistoryCombo->addItem(cg, tr(""));
+		mCurGradients.append(g);
+	}
+
+    // restore last active gradient
+    if(mLastCustomGradientIndex >= 0 &&
+       mLastCustomGradientIndex < mCurGradients.size()){
+        mActiveGradientIndex = mLastCustomGradientIndex;
+    }else{
+        mLastCustomGradientIndex = 0;
+        mActiveGradientIndex = 0;
+    }
+}
+
+void DkTransferToolBar::loadColormaps() {
+
+	// clear toolbar content
+	mCurGradients.clear();
+	mHistoryCombo->clear();
+	mHistoryCombo->setIconSize(QSize(64,10));
+
+	// load available colormaps. compute thumbnails
+	QVector<QString> cmapList = packagedColormaps();
+	for (QString cmapName: cmapList) {
+
+		bool cmapOk;
+		QLinearGradient cmap(QPoint(0,0), QPoint(64, 0));
+		cmapOk = DkGradient::loadColormap(cmapName, cmap);
+
+		if(cmapOk) {
+			QPixmap cg(64, 10);
+			QPainter p(&cg);
+			p.fillRect(cg.rect(), cmap);
+
+			mHistoryCombo->addItem(cg.scaled(64, 10), cmapName);
+			mCurGradients.append(cmap);
+		}
+	}
+
+	// restore last active color map
+	if(mLastColorMapIndex >= 0 &&
+	   mLastColorMapIndex < mCurGradients.size()){
+		mActiveGradientIndex = mLastColorMapIndex;
+	}else{
+		mLastColorMapIndex = 0;
+		mActiveGradientIndex = 0;
 	}
 }
 
-void DkTransferToolBar::switchGradient(int idx) {
 
-	if (idx >= 0 && idx < mOldGradients.size()) {
-		mGradient->setGradient(mOldGradients[idx]);
+void DkTransferToolBar::selectGradient(int idx) {
+
+	if (idx < 0 || idx >= mCurGradients.size()){
+		return;
 	}
 
+	if (mFalseColorMode == FalseColorMode::user_gradient) {
+
+		mLastColorMapIndex = idx;
+		mGradient->setGradient(mCurGradients[idx]);
+
+	}else if(mFalseColorMode == FalseColorMode::colormap) {
+
+		mLastCustomGradientIndex = idx;
+		mGradient->setGradient(mCurGradients[idx]);
+		mGradient->hideSliders();
+	}
+}
+
+void DkTransferToolBar::selectFalseColorMode(int idx)
+{
+	if(idx != (int)FalseColorMode::user_gradient &&
+	   idx != (int)FalseColorMode::colormap) {
+		return;
+	}
+
+    bool idxOk;
+    FalseColorMode newMode;
+
+    newMode = static_cast<FalseColorMode>(mFalseColorModeComboBox->itemData(idx).toInt(&idxOk));
+
+    if(idxOk){
+        applyFalseColorMode(newMode);
+    }
 }
 
 void DkTransferToolBar::saveGradient() {
 	
 	mOldGradients.prepend(mGradient->getGradient());
-	updateGradientHistory();
+	loadGradientHistory();
 	saveSettings();
 }
 
@@ -1280,4 +1423,4 @@ void DkCropToolBar::on_panAction_toggled(bool checked) {
 	emit panSignal(checked);
 }
 
-}
+} // namespace nmc

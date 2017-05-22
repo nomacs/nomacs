@@ -33,6 +33,8 @@
 #include <QObject>
 #include <QCompleter>
 #pragma warning(pop)		// no warnings from includes - end
+#include <cstdint>
+#include "DkNoMacs.h"
 
 // Qt defines
 class QCheckBox;
@@ -122,6 +124,8 @@ public:
 	static bool loadColormap(const QString colormapName, QLinearGradient& cmap);
 	static QVector<QString> packagedColormaps();
 
+	void hideSliders();
+	void showSliders();
 signals:
 	void gradientChanged() const;
 		
@@ -139,8 +143,8 @@ protected:
 		
 private:
 	void init();
-	void addSlider(qreal pos, QColor color);
 	void clearAllSliders();
+	void addSlider(qreal pos, QColor color);
 	void updateGradient();
 	qreal getNormedPos(int pos);
 	int getAbsolutePos(qreal pos);
@@ -154,6 +158,7 @@ private:
 
 	DkColorSlider *mActiveSlider = 0;
 	bool mIsActiveSliderExisting = false;
+	bool mShowSliders = true;
 };
 
 enum toolBarIcons {
@@ -177,13 +182,20 @@ enum imageModes {
 	mode_rgb,
 };
 
+enum class FalseColorMode {
+	user_gradient = 0,  /// colorize using predefined colormaps
+	colormap,           /// colorize with user supplied curves
+	disabled,           /// disable the falsecolor toolbar
+};
+
 class DkTransferToolBar : public QToolBar {
 	Q_OBJECT
 
 public:
-	DkTransferToolBar(QWidget *parent);
+	DkTransferToolBar(DkNoMacs *parent);
 	~DkTransferToolBar();
-		
+
+	FalseColorMode pseudoColorMode() { return mFalseColorMode; }
 
 signals:
 	void pickColorRequest(bool enabled) const;
@@ -196,28 +208,30 @@ signals:
 public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	void insertSlider(qreal pos);
-	void setImageMode(int mode);
 	void saveGradient();
 	void deleteGradientMenu(QPoint pos);
 	void deleteGradient();
 	void resetGradient();
+	void setImageMode(int mode);
 
 protected slots:
 	void applyTF();
 	void pickColor(bool enabled);
 	void changeChannel(int index);
 	void enableTFCheckBoxClicked(int state);
-	void switchGradient(int idx);
+	void selectGradient(int idx);
+	void selectFalseColorMode(int idx);
 
 protected:
 	virtual void resizeEvent ( QResizeEvent * event );
 	void loadSettings();
 	void saveSettings();
-	void updateGradientHistory();
+	void loadGradientHistory();
+	void loadColormaps();
+	void applyFalseColorMode(FalseColorMode newMode);
 
 private:
 	void createIcons();
-	void applyImageMode(int mode);
 	void enableToolBar(bool enable);
 	
 	QCheckBox *mEnableTFCheckBox = 0;
@@ -227,15 +241,21 @@ private:
 
 	QVector<QAction *> mToolBarActions;
 	QVector<QIcon> mToolBarIcons;
-		
+
 	DkGradient *mGradient = 0;
 	QComboBox *mChannelComboBox = 0;
+	QComboBox *mFalseColorModeComboBox = 0;
 
 	QComboBox* mHistoryCombo = 0;
+	QVector<QLinearGradient> mCurGradients;
 	QVector<QLinearGradient> mOldGradients;
+	size_t mActiveGradientIndex;
+	size_t mLastColorMapIndex;
+	size_t mLastCustomGradientIndex;
 
 	QGraphicsOpacityEffect *mEffect = 0;
 	int mImageMode = mode_uninitialized;
+	FalseColorMode mFalseColorMode = FalseColorMode::user_gradient;
 
 };
 
@@ -250,7 +270,6 @@ public:
 		cancel_icon,
 		invert_icon,
 		info_icon,
-
 		icons_end,
 
 	};
