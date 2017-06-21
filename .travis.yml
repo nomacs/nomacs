@@ -43,7 +43,7 @@ script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
   # Codecov
-  - ./get_code_cov
+  - ../get_code_cov
   - codecov
   
 after_success:
