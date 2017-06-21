@@ -11,6 +11,10 @@ compiler:
 sudo: required
 dist: trusty
 
+before_install:
+  # Codecov
+  - sudo pip install codecov
+
 before_script:
   # OSX dependencies
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
@@ -29,6 +33,8 @@ before_script:
   # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt55tools qt55svg qt55base libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi # old libs for using qt 5.5 above
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/"; fi
+  # Codecov
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo pip install codecov; fi
 
   - mkdir build
   - cd build
@@ -36,4 +42,10 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
+  # Codecov
+  - ./get_code_cov
+  - codecov
   
+after_success:
+  # Codecov
+  - bash <(curl -s https://codecov.io/bash)

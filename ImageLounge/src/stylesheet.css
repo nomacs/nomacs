@@ -374,10 +374,6 @@ QWidget#memoryGradient {
 }
  
 /* preferences */
-daf--DkPreferenceWidget {
-	border: 1px solid #ccc;
-}
-
 QScrollArea#DkPreferenceTabs,
 QWidget#DkPreferenceTabs,
 QWidget#DkBatchTabs {
