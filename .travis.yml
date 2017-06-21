@@ -16,6 +16,11 @@ before_install:
   # Codecov
   - sudo pip install codecov
 
+install:
+  # Codecov
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90; fi
+
+  
 before_script:
   # OSX dependencies
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
