@@ -52,7 +52,6 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
-  - codecov
   
 after_success:
   # Creating report
