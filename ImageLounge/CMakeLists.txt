@@ -24,7 +24,7 @@ set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
 
 # Codecov
 if(CMAKE_COMPILER_IS_GNUCXX)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CodeCoverage.cmake)
+    include("cmake/Utils.cmake")
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
 
