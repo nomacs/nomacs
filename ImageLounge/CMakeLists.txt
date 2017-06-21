@@ -195,7 +195,7 @@ MESSAGE(STATUS "")
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 
-IF(OPENCV_FOUND)
+IF(OpenCV_FOUND)
     MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. NO")
