@@ -1,4 +1,8 @@
 language: c++
+sudo: required
+dist: trusty
+# advise from travis (for the 14.04 update)
+group: edge
 
 os:
   - linux
@@ -7,9 +11,6 @@ os:
 compiler:
   - gcc
   - clang
-
-sudo: required
-dist: trusty
 
 before_install:
   # Codecov
@@ -42,10 +43,17 @@ before_script:
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
   - make -j8
-  # Codecov
-  - ../get_code_cov
   - codecov
   
 after_success:
-  # Codecov
-  - bash <(curl -s https://codecov.io/bash)
+  # Creating report
+  - cd ${TRAVIS_BUILD_DIR}
+  - lcov --directory . --capture --output-file coverage.info # capture coverage info
+  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+  - lcov --list coverage.info #debug info
+  # upload report to Codecov
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    
+notifications:
+  email:
+    - diemmarkus@gmail.com
