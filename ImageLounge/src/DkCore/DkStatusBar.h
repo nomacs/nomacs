@@ -96,4 +96,4 @@ private:
 	DkStatusBar* mStatusBar = 0;
 };
 
-};
+}

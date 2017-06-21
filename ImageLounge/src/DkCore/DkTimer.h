@@ -75,4 +75,4 @@ protected:
 	QTime mTimer;
 };
 
-};
+}

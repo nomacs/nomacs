@@ -226,4 +226,4 @@ protected:
 	virtual void createShortcuts();
 };
 
-};
+}

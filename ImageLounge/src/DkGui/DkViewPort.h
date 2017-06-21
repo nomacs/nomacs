@@ -342,4 +342,4 @@ private:
 	void drawImageHistogram();
 };
 
-};
+}

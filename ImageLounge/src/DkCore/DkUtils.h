@@ -530,4 +530,4 @@ protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 };
 
-};
+}

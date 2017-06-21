@@ -128,4 +128,4 @@ protected:
 	QImage mNewImg;
 };
 
-};
+}

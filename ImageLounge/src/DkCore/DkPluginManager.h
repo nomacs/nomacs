@@ -398,6 +398,4 @@ private:
 	void updateImage();
 };
 
-};
-
-
+}

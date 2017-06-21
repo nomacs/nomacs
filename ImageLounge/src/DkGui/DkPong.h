@@ -227,5 +227,4 @@ protected:
 	DkPongPort* mViewport;
 };
 
-
-};
+}

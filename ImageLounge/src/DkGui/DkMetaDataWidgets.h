@@ -245,4 +245,4 @@ protected:
 	QString mOldText;
 };
 
-};
+}

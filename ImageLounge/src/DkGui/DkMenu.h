@@ -171,4 +171,4 @@ protected:
 	DkManagerThread* mClientThread = 0;
 	bool mNoClientsFound = false;
 };
-};
+}

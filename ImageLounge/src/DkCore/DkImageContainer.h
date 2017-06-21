@@ -231,4 +231,4 @@ protected:
 	QTimer mFileUpdateTimer;
 };
 
-};
+}

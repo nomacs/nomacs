@@ -276,4 +276,4 @@ private:
 	void loadThumbs();
 };
 
-};
+}

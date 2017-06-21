@@ -216,7 +216,7 @@ protected:
 	QTransform* mImgMatrix = 0;
 };
 
-};
+}
 
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.6")

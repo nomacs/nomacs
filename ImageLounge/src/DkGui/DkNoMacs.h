@@ -417,4 +417,4 @@ protected:
 	DkTransferToolBar* mTransferToolBar = 0;
 
 };
-};
+}

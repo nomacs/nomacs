@@ -380,4 +380,4 @@ private:
 	DkSettings* mParams = 0;
 };
 
-};
+}

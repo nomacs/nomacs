@@ -311,5 +311,4 @@ protected:
 	QVector<QIcon> mIcons;		// needed for colorizing
 };
 
-
-};
+}

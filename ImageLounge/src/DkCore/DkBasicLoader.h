@@ -402,4 +402,4 @@ private:
 	QUrl mUrl;
 };
 
-};
+}

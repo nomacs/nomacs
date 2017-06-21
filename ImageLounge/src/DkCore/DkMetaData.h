@@ -200,4 +200,4 @@ protected:
 	QMap<int, QString> mFlashModes;
 };
 
-};
+}

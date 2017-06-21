@@ -172,4 +172,4 @@ protected:
 	bool mStop = true;
 };
 
-};
+}

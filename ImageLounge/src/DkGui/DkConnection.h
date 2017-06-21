@@ -244,5 +244,5 @@ class DllCoreExport DkLANConnection : public DkConnection {
 		bool mIAmServer = true;
 };
 
-};
+}
 

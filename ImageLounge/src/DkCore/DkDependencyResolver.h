@@ -71,4 +71,4 @@ protected:
 	bool isStopCharacter(const char& val) const;
 };
 
-};
+}
