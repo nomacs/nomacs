@@ -477,6 +477,7 @@ void DkLocalConnection::processData() {
 		break;
 	default:
 		// do nothing
+		break;
 	}
 	
 	DkConnection::processData();

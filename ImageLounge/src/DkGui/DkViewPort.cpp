@@ -287,7 +287,7 @@ void DkViewPort::setImage(QImage newImg) {
 	//qDebug() << "new image (mViewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 	//qDebug() << "keep zoom is always: " << (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep);
 
-	if ((!DkSettingsManager::param().slideShow().moveSpeed && (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_never_keep) ||
+	if (((!DkSettingsManager::param().slideShow().moveSpeed && DkSettingsManager::param().display().keepZoom == DkSettings::zoom_never_keep) ||
 		(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
 		mOldImgRect.isEmpty()) {
 		

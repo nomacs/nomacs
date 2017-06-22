@@ -387,7 +387,7 @@ public:
 		int rounded = qRound(number * pow(10,n));
 
 		return stringify(rounded/pow(10,n));
-	};
+	}
 
 	static bool isValid(const QFileInfo& fileInfo);
 	static bool isSavable(const QString& fileName);

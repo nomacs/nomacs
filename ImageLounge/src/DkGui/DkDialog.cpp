@@ -2129,10 +2129,11 @@ void DkPrintPreviewDialog::setImage(const QImage& img, float dpi) {
 }
 
 void DkPrintPreviewDialog::scaleImage() {
+
 	QRectF rect = mPrinter->pageRect();
 	qreal scaleFactor;
-	QSizeF paperSize = mPrinter->paperSize(QPrinter::Inch);
-	QRectF pageRectInch = mPrinter->pageRect(QPrinter::Inch);
+	//QSizeF paperSize = mPrinter->paperSize(QPrinter::Inch);
+	//QRectF pageRectInch = mPrinter->pageRect(QPrinter::Inch);
 
 	// scale image to fit on paper
 	if (rect.width()/mImg.width() < rect.height()/mImg.height()) {
@@ -3993,7 +3994,7 @@ void DkArchiveExtractionDialog::setCurrentFile(const QString& filePath, bool isZ
 		mArchivePathEdit->setText(mFilePath);
 		loadArchive();
 	}
-};
+}
 
 void DkArchiveExtractionDialog::textChanged(const QString& text) {
 	
