@@ -1828,9 +1828,6 @@ void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const
 
 		for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
 
-			//apply gamma correction
-			const unsigned short maxLin = 5;	// 0.018 * 255
-
 			// values close to 0 are treated linear
 			if (ptr[cIdx] <= 5)	// 0.018 * 255
 				ptr[cIdx] = (unsigned short)qRound(ptr[cIdx] * (double)iProcessor.imgdata.params.gamm[1] / 255.0);

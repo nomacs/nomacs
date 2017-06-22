@@ -336,7 +336,7 @@ bool QPsdHandler::read(QImage *image)
     if (input.status() != QDataStream::Ok)
         return false;
 
-    if (imageData.size() != channels * totalBytesPerChannel)
+    if ((quint64)imageData.size() != channels * totalBytesPerChannel)
         return false;
 
     /* NOTE: this section was made for verification.

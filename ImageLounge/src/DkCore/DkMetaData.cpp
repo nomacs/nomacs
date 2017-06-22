@@ -1096,14 +1096,13 @@ void DkMetaDataT::setRating(int r) {
 	if (mExifState == not_loaded || mExifState == no_data || getRating() == r)
 		return;
 
-	unsigned short percentRating = 0;
 	std::string sRating, sRatingPercent;
 
-	if (r == 5)  { percentRating = 99; sRating = "5"; sRatingPercent = "99";}
-	else if (r==4) { percentRating = 75; sRating = "4"; sRatingPercent = "75";}
-	else if (r==3) { percentRating = 50; sRating = "3"; sRatingPercent = "50";}
-	else if (r==2) { percentRating = 25; sRating = "2"; sRatingPercent = "25";}
-	else if (r==1) {percentRating = 1; sRating = "1"; sRatingPercent = "1";}
+	if (r == 5)  {		sRating = "5"; sRatingPercent = "99";}
+	else if (r==4) {	sRating = "4"; sRatingPercent = "75";}
+	else if (r==3) {	sRating = "3"; sRatingPercent = "50";}
+	else if (r==2) {	sRating = "2"; sRatingPercent = "25";}
+	else if (r==1) {	sRating = "1"; sRatingPercent = "1";}
 	else {r=0;}
 
 	Exiv2::ExifData &exifData = mExifImg->exifData();		//Exif.Image.Rating  - short
@@ -1239,7 +1238,6 @@ void DkMetaDataT::printMetaData() const {
 
 	qDebug() << "IPTC------------------------------------------------------------------";
 
-	Exiv2::IptcData::iterator endI2 = iptcData.end();
 	QStringList iptcKeys = getIptcKeys();
 
 	for (int idx = 0; idx < iptcKeys.size(); idx++)

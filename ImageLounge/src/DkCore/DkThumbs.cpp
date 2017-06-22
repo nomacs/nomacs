@@ -169,7 +169,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 
 	if (forceLoad != force_exif_thumb && 
 			(thumb.isNull() || 
-			thumb.width() < tS && thumb.height() < tS || 
+			(thumb.width() < tS && thumb.height()) < tS || 
 			forceLoad == force_full_thumb || 
 			forceLoad == force_save_thumb)) { // braces
 		
@@ -180,8 +180,6 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 			imgH = tmpW;
 			qDebug() << "EXIF size is flipped...";
 		}
-
-		QSize initialSize = imageReader->size();
 
 		imageReader->setScaledSize(QSize(imgW, imgH));
 		thumb = imageReader->read();

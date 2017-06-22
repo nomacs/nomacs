@@ -419,8 +419,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 #endif
 		qDebug() << "[Qt] pinching...";
 	}
-	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
-
+	else if (/*QGesture *pan = */event->gesture(Qt::PanGesture)) {
 		qDebug() << "panning...";
 	}
 	else
