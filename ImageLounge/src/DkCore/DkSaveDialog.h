@@ -52,7 +52,7 @@ namespace nmc {
 // nomacs defines
 class DkSlider;
 class DkColorChooser;
-class DllCoreExport DkBaseViewPort;
+class DkBaseViewPort;
 
 class DllCoreExport DkTifDialog : public QDialog {
 	Q_OBJECT

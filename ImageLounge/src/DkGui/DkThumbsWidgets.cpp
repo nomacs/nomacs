@@ -359,8 +359,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x()) ||
 			(orientation == Qt::Vertical && worldMatrix.dy() < 0 && imgWorldRect.top() < leftGradient.finalStop().y());
-		bool isRightGradient = orientation == Qt::Horizontal && imgWorldRect.right() > rightGradient.start().x() ||
-			orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y();
+		bool isRightGradient = (orientation == Qt::Horizontal && imgWorldRect.right() > rightGradient.start().x()) ||
+			(orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y());
 		// show that there are more images...
 		if (isLeftGradient && !img.isNull())
 			drawFadeOut(leftGradient, imgWorldRect, &img);
@@ -737,7 +737,7 @@ void DkFilePreview::newPosition() {
 	}
 
 	// don't apply twice
-	if (windowPosition == pos || pos == pos_dock_hor && windowPosition == pos_dock_ver)
+	if (windowPosition == pos || (pos == pos_dock_hor && windowPosition == pos_dock_ver))
 		return;
 
 	windowPosition = pos;

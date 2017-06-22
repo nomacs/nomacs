@@ -1226,7 +1226,6 @@ void DkMetaDataT::printMetaData() const {
 	if (mExifState != loaded && mExifState != dirty)
 		return;
 
-	Exiv2::IptcData &iptcData = mExifImg->iptcData();
 	Exiv2::XmpData &xmpData = mExifImg->xmpData();
 
 	qDebug() << "Exif------------------------------------------------------------------";
