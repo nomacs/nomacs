@@ -337,12 +337,19 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			newFileRect = imgWorldRect;
 
 		// is the current image within the canvas?
-		if (orientation == Qt::Horizontal && imgWorldRect.right() < 0 || orientation == Qt::Vertical && imgWorldRect.bottom() < 0)
+		if ((orientation == Qt::Horizontal && imgWorldRect.right() < 0) ||
+			(orientation == Qt::Vertical && imgWorldRect.bottom() < 0)) {
 			continue;
-		if ((orientation == Qt::Horizontal && imgWorldRect.left() > width() || orientation == Qt::Vertical && imgWorldRect.top() > height()) && scrollToCurrentImage) 
+		}
+
+		if (((orientation == Qt::Horizontal && imgWorldRect.left() > width()) ||
+			(orientation == Qt::Vertical && imgWorldRect.top() > height())) && scrollToCurrentImage) {
 			continue;
-		else if (orientation == Qt::Horizontal && imgWorldRect.left() > width() || orientation == Qt::Vertical && imgWorldRect.top() > height())
+		}
+		else if ((orientation == Qt::Horizontal && imgWorldRect.left() > width()) ||
+			(orientation == Qt::Vertical && imgWorldRect.top() > height())) {
 			break;
+		}
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
 			DkSettingsManager::param().resources().numThumbsLoading < DkSettingsManager::param().resources().maxThumbsLoading) {
@@ -470,8 +477,8 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	QWidget* pw = qobject_cast<QWidget*>(parent());
 
 	if (event->size() == event->oldSize() && 
-		(orientation == Qt::Horizontal && pw && this->width() == pw->width()  ||
-		orientation == Qt::Vertical && pw && this->height() == pw->height())) {
+		((orientation == Qt::Horizontal && pw && this->width() == pw->width())  ||
+		(orientation == Qt::Vertical && pw && this->height() == pw->height()))) {
 	
 			qDebug() << "parent size: " << pw->height();
 			return;
@@ -545,7 +552,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 	bool left = pdx < ndx;
 	float dx = (left) ? (float)pdx : (float)ndx;
 
-	if (dx < borderTrigger && (mouseDir < 0 && left || mouseDir > 0 && !left)) {
+	if (dx < borderTrigger && ((mouseDir < 0 && left) || (mouseDir > 0 && !left))) {
 		dx = std::exp((borderTrigger - dx)/borderTrigger*3);
 		currentDx = (left) ? dx : -dx;
 
@@ -781,7 +788,7 @@ void DkFilePreview::moveImages() {
 	float bufferPos		= orientation == Qt::Horizontal ? (float)bufferDim.right() : (float)bufferDim.bottom();
 
 	// do not scroll out of the thumbs
-	if (translation >= limit*0.5 && currentDx > 0 || translation <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0)
+	if ((translation >= limit*0.5 && currentDx > 0) || (translation <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0))
 		return;
 
 	// set the last step to match the center of the screen...	(nicer if user scrolls very fast)

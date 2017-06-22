@@ -330,7 +330,7 @@ DkRotatingRect DkRotatingRect::fromExifRect(const QRectF& rect, const QSize& siz
 	DkVector ul = rt.topLeft()-rt.center();
 	ul.rotate(-a);
 
-	QSizeF s(abs(ul.x * 2.0f), abs(ul.y * 2.0f));
+	QSizeF s(std::abs(ul.x * 2.0f), std::abs(ul.y * 2.0f));
 	
 	QRectF rts(QPoint(), s);
 	rts.moveCenter(rt.center());

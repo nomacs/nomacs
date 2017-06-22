@@ -1311,7 +1311,7 @@ void DkProfileWidget::updateProfileList() {
 void DkProfileWidget::changeProfile(const QString & profileName) {
 	
 	// is the default profile selected?
-	if (profileName.isEmpty() || mProfileList->count() > 0 && mProfileList->item(0)->text() == profileName) {
+	if (profileName.isEmpty() || (mProfileList->count() > 0 && mProfileList->item(0)->text() == profileName)) {
 		loadDefaultProfile();
 		return;
 	}

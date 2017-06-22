@@ -576,7 +576,7 @@ bool DkBall::move(DkPongPlayer& player1, DkPongPlayer& player2) {
 	DkVector dir = mDirection;
 
 	// collision detection top & bottom
-	if (mRect.top() <= mS->field().top() && dir.y < 0 || mRect.bottom() >= mS->field().bottom() && dir.y > 0) {
+	if ((mRect.top() <= mS->field().top() && dir.y < 0) || (mRect.bottom() >= mS->field().bottom() && dir.y > 0)) {
 		dir.rotate(dir.angle()*2);
 		//qDebug() << "collision...";
 	}

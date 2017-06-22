@@ -28,3 +28,4 @@ repository.zip
 /installer-wix/nomacs-setup.msi
 /installer-wix/*.wixpdb
 /installer-wix/HarvestedFiles.wxs
+/notes.md

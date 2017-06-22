@@ -475,6 +475,8 @@ void DkLocalConnection::processData() {
 	case Quit:
 		emit connectionQuitReceived();
 		break;
+	default:
+		// do nothing
 	}
 	
 	DkConnection::processData();
