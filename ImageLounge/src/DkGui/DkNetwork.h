@@ -52,7 +52,7 @@ class DkLANTcpServer;
 class DkLANUdpSocket;
 
 class DkPeer : public QObject{
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
 	//DkPeer(QObject* parent = 0);
@@ -117,7 +117,7 @@ private:
 };
 
 class DkClientManager : public QThread {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		DkClientManager(const QString& title, QObject* parent = 0);
 		~DkClientManager();
@@ -183,7 +183,7 @@ class DkClientManager : public QThread {
 };
 
 class DkLocalClientManager : public DkClientManager {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		DkLocalClientManager(const QString& title, QObject* parent = 0);
 		QList<DkPeer*> getPeerList();
@@ -216,7 +216,7 @@ class DkLocalClientManager : public DkClientManager {
 
 
 class DkLANClientManager : public DkClientManager {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		DkLANClientManager(const QString& title, QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 		virtual ~DkLANClientManager(); 
@@ -261,7 +261,7 @@ class DkLANClientManager : public DkClientManager {
 };
 
 class DkLocalTcpServer : public QTcpServer {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		DkLocalTcpServer(QObject* parent = 0);
 
@@ -278,7 +278,7 @@ class DkLocalTcpServer : public QTcpServer {
 };
 
 class DkLANTcpServer : public QTcpServer {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 
@@ -303,7 +303,7 @@ class DkLANTcpServer : public QTcpServer {
 };
 
 class DkLANUdpSocket : public QUdpSocket {
-	Q_OBJECT;
+	Q_OBJECT
 
 	public:
 		DkLANUdpSocket(quint16 startPort = lan_udp_port_start, quint16 endPort = lan_udp_port_end, QObject* parent = 0);
