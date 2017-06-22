@@ -80,7 +80,7 @@ DkClientManager::~DkClientManager() {
 	
 	// save settings
 	sendGoodByeToAll();	// does nothing...
-};
+}
 
 
 void DkClientManager::connectionReadyForUse(quint16 peerServerPort, const QString& title, DkConnection* connection) {
@@ -1043,7 +1043,7 @@ void DkPeer::setSynchronized(bool flag) {
 	hasChangedRecently = true;
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
 	timer->start(4000);
-};
+}
 
 bool DkPeer::operator==(const DkPeer& peer) const {
 

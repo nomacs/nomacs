@@ -442,7 +442,7 @@ void DkBasicLoader::setImage(const QImage & img, const QString & editName, const
 
 	mFile = file;
 	setEditImage(img, editName);
-};
+}
 
 void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 

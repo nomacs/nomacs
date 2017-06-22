@@ -60,7 +60,7 @@ static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
 
 class DllCoreExport DkConnection : public QTcpSocket {
-	Q_OBJECT;
+	Q_OBJECT
 
 	public:
 		DkConnection(QObject* parent=0);
@@ -155,7 +155,7 @@ class DllCoreExport DkConnection : public QTcpSocket {
 };
 
 class DllCoreExport DkLocalConnection : public DkConnection {
-	Q_OBJECT;
+	Q_OBJECT
 
 	public:
 		DkLocalConnection(QObject* parent=0);
@@ -188,7 +188,7 @@ class DllCoreExport DkLocalConnection : public DkConnection {
 };
 
 class DllCoreExport DkLANConnection : public DkConnection {
-	Q_OBJECT;
+	Q_OBJECT
 
 	public:
 		DkLANConnection(QObject* parent = 0) ;

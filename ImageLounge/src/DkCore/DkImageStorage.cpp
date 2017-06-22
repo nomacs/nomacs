@@ -1446,7 +1446,7 @@ QImage DkImage::createThumb(const QImage& image) {
 	//qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
 
 	return thumb;
-};
+}
 
 bool DkImage::addToImage(QImage& img, unsigned char val) {
 
@@ -1481,7 +1481,7 @@ bool DkImage::addToImage(QImage& img, unsigned char val) {
 	}
 
 	return done;
-};
+}
 
 QColor DkImage::getMeanColor(const QImage& img) {
 

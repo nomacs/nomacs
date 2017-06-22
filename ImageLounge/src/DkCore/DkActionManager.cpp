@@ -344,7 +344,7 @@ void DkAppManager::openTriggered() const {
 // DkActionManager --------------------------------------------------------------------
 DkActionManager::DkActionManager() {
 	init();
-};
+}
 
 DkActionManager::~DkActionManager() {
 

@@ -124,7 +124,7 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 
 	show();
 
-};
+}
 
 void DkColorSlider::paintEvent(QPaintEvent*) {
 
@@ -169,24 +169,22 @@ void DkColorSlider::setActive(bool isActive) {
 }
 
 DkColorSlider::~DkColorSlider() {
-};
+}
 
 QColor DkColorSlider::getColor() {
 
 	return mColor;
-};
+}
 
 qreal DkColorSlider::getNormedPos() {
 
 	return mNormedPos;
-
-};
+}
 
 void DkColorSlider::setNormedPos(qreal pos) {
 
 	mNormedPos = pos;
-
-};
+}
 
 
 void DkColorSlider::mousePressEvent(QMouseEvent *event) {
@@ -235,10 +233,10 @@ DkGradient::DkGradient(QWidget *parent)
 	mSliders = QVector<DkColorSlider*>();
 	init();
 
-};
+}
 
 DkGradient::~DkGradient() {
-};
+}
 
 void DkGradient::init() {
 
@@ -250,7 +248,7 @@ void DkGradient::init() {
 	updateGradient();
 
 
-};
+}
 
 void DkGradient::clearAllSliders() {
 
@@ -409,16 +407,13 @@ void DkGradient::updateGradient() {
 
 	for (int i = 0; i < mSliders.size(); i++) 
 		mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
-
-
+	
 }
 
 QGradientStops DkGradient::getGradientStops() {
 
 	return mGradient.stops();
-
-};
-
+}
 
 void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
 
@@ -491,15 +486,12 @@ void DkGradient::paintEvent(QPaintEvent*) {
 	
 	painter.fillRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight, mGradient);
 	painter.drawRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight);
-};
+}
 
 
+void DkGradient::mouseReleaseEvent(QMouseEvent *) {
 
-void DkGradient::mouseReleaseEvent(QMouseEvent *event) {
-	
-	
-	QPointF enterPos = event->pos();
-
+	// unused
 }
 
 void DkGradient::changeColor(DkColorSlider*) {
@@ -523,7 +515,7 @@ void DkGradient::activateSlider(DkColorSlider *sender) {
 
 	update();
 
-};
+}
 
 //
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
@@ -588,10 +580,10 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	if (!mOldGradients.empty())
 		mGradient->setGradient(mOldGradients.first());
 
-};
+}
 
 DkTransferToolBar::~DkTransferToolBar() {
-};
+}
 
 
 void DkTransferToolBar::createIcons() {
@@ -708,20 +700,20 @@ void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
 
 	mGradient->resize(event->size().width() - mGradient->x(), 40);
 
-};
+}
 
 void DkTransferToolBar::insertSlider(qreal pos) {
 
 	mGradient->insertSlider(pos);
 
-};
+}
 
 void DkTransferToolBar::setImageMode(int mode) {
 
 	qDebug() << "and I received...";
 	applyImageMode(mode);
 
-};
+}
 
 void DkTransferToolBar::applyImageMode(int mode) {
 
@@ -760,12 +752,12 @@ void DkTransferToolBar::applyImageMode(int mode) {
 
 	connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 
-};
+}
 
 void DkTransferToolBar::pickColor(bool enabled) {
 
 	emit pickColorRequest(enabled);
-};
+}
 
 void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
 
@@ -805,19 +797,16 @@ void DkTransferToolBar::enableToolBar(bool enable) {
 
 }
 
-
 void DkTransferToolBar::applyTF() {
 
 	QGradientStops stops = mGradient->getGradientStops();
 
 	emit colorTableChanged(stops);
-
-};
+}
 
 void DkTransferToolBar::changeChannel(int index) {
 
 	emit channelChanged(index);
-
 }
 
 void DkTransferToolBar::resetGradient() {

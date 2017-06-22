@@ -702,7 +702,7 @@ QDateTime DkUtils::convertDate(const QString& date, const QFileInfo& file) {
 		dateCreated = file.created();
 
 	return dateCreated;
-};
+}
 
 QString DkUtils::convertDateString(const QString& date, const QFileInfo& file) {
 

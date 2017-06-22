@@ -532,7 +532,7 @@ QString DkPluginContainer::actionNameToRunId(const QString & actionName) const {
 **********************************************************************************/
 DkPluginManagerDialog::DkPluginManagerDialog(QWidget* parent) : QDialog(parent) {
 	init();
-};
+}
 
 DkPluginManagerDialog::~DkPluginManagerDialog() {}
 
@@ -1481,36 +1481,6 @@ void DkPluginActionManager::runPluginFromShortcut() {
 		}
 }
 
-//void DkPluginActionManager::runLoadedPlugin() {
-//
-//	QAction* action = qobject_cast<QAction*>(sender());
-//
-//	if (!action)
-//		return;
-//
-//	emit applyPluginChanges(true);
-//	QApplication::sendPostedEvents();
-//
-//	QString id = action->data().toString();
-//
-//	DkPluginInterface* cPlugin = DkPluginManager::instance().runPlugin(id);
-//
-//	if (cPlugin && cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
-//
-//		DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
-//
-//		if(!vPlugin || !vPlugin->getViewPort())
-//			return;
-//
-//		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
-//
-//		emit runPlugin(vPlugin, false);
-//	}
-//	else if (cPlugin && cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
-//		emit runPlugin(cPlugin, id);
-//	}
-//}
-
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const {
 
 	QSettings& settings = DkSettingsManager::instance().qSettings();
@@ -1521,5 +1491,4 @@ void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const 
 	settings.endGroup();
 }
 
-
-};
+}

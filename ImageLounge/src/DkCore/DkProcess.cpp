@@ -892,7 +892,7 @@ DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QString& outputD
 	mOutputDirPath = outputDir;
 	mFileNamePattern = fileNamePattern;
 	
-};
+}
 
 bool DkBatchConfig::isOk() const {
 

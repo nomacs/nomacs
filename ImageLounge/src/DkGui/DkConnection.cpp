@@ -140,7 +140,7 @@ void DkConnection::sendNewFileMessage(qint16 op, const QString& filename) {
 	QByteArray data = "NEWFILE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
-};
+}
 
 void DkConnection::sendNewGoodbyeMessage() {
 	//qDebug() << "sending good bye to " << peerName() << ":" << this->peerPort();
@@ -471,13 +471,9 @@ void DkLocalConnection::processReadyRead() {
 }
 
 void DkLocalConnection::processData() {
-	switch (mCurrentLocalDataType) {
-	case Quit:
+	
+	if (mCurrentLocalDataType == Quit) {
 		emit connectionQuitReceived();
-		break;
-	default:
-		// do nothing
-		break;
 	}
 	
 	DkConnection::processData();
@@ -571,10 +567,10 @@ void DkLANConnection::sendNewUpcomingImageMessage(const QString& imageTitle) {
 	QByteArray data = "UPCOMINGIMAGE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
-};
-
+}
 
 void DkLANConnection::sendNewImageMessage(const QImage& image, const QString& imageTitle) {
+
 	if (!mAllowImage)
 		return;
 
@@ -615,7 +611,7 @@ void DkLANConnection::sendNewImageMessage(const QImage& image, const QString& im
 		qDebug() << msg;
 		emit connectionShowStatusMessage(this, msg);
 	}
-};
+}
 
 void DkLANConnection::sendSwitchServerMessage(const QHostAddress& address, quint16 port) {
 	//qDebug() << "sending switch server message";

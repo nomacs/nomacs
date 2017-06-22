@@ -56,7 +56,7 @@ DkThumbNail::DkThumbNail(const QString& filePath, const QImage& img) {
 	mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dPIScaleFactor());
 	mMinThumbSize = DkSettingsManager::param().effectiveThumbSize();
 	mImgExists = true;
-};
+}
 
 DkThumbNail::~DkThumbNail() {}
 

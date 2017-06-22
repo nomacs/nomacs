@@ -99,7 +99,7 @@ protected:
 };
 
 class DllCoreExport DkUpdater : public QObject {
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
 	bool silent;
@@ -136,7 +136,7 @@ protected:
 };
 
 class DllCoreExport DkTranslationUpdater : public QObject {
-	Q_OBJECT;
+	Q_OBJECT
 
 public:
 	DkTranslationUpdater(bool silent = false, QObject* parent = 0);

@@ -1923,15 +1923,15 @@ QString DkImageLoader::getSavePath() const {
 bool DkImageLoader::hasImage() const {
 		
 	return mCurrentImage && mCurrentImage->hasImage();
-};
+}
 
 bool DkImageLoader::isEdited() const {
 	return mCurrentImage && mCurrentImage->isEdited();
-};
+}
 
 int DkImageLoader::numFiles() const {
 	return mImages.size();
-};
+}
 
 void DkImageLoader::undo() {
 
@@ -1959,7 +1959,7 @@ QImage DkImageLoader::getImage() {
 		return QImage();
 
 	return mCurrentImage->image();
-};
+}
 
 bool DkImageLoader::dirtyTiff() {
 

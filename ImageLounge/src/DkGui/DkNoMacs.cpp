@@ -1093,7 +1093,7 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 		
 		//this->setActiveWindow();
 	}
-};
+}
 
 void DkNoMacs::tcpSendWindowRect() {
 
@@ -1104,8 +1104,7 @@ void DkNoMacs::tcpSendWindowRect() {
 	tcpSetWindowRect(this->frameGeometry(), !mOverlaid, mOverlaid);
 
 	emit sendPositionSignal(frameGeometry(), mOverlaid);
-
-};
+}
 
 void DkNoMacs::tcpSendArrange() {
 	

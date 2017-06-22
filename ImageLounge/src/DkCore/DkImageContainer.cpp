@@ -1024,4 +1024,4 @@ void DkImageContainerT::setHistoryIndex(int idx) {
 }
 
 
-};
+}

@@ -112,7 +112,7 @@ bool DkWidget::getCurrentDisplaySetting() {
 	}
 
 	return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
-};
+}
 
 bool DkWidget::isHiding() const {
 	return mHiding;
