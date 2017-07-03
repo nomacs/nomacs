@@ -23,7 +23,8 @@ configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre 
 ```
 ```bat
 REM Visual Studio 2017
-configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake tools -nomake examples -nomake tests -skip qtwebengine  -platform win32-msvc```
+configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake tools -nomake examples -nomake tests -skip qtwebengine  -platform win32-msvc
+```
 
 
 - after it's finished run ``nmake``
