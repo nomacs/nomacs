@@ -22,6 +22,13 @@ if (MSVC11)
 		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/Win32/" )
 	endif()
 
+elseif (${CMAKE_VS_PLATFORM_TOOLSET} STREQUAL "v141")	# visual studio 2017 -> visual studio 2015 has v140
+	# use precompiled code if msvc 14 is found
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2017-precompiled/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2017-precompiled/Win32/" )
+	endif()
 elseif (MSVC14)	# visual studio 2017 will hit this too
 	# use precompiled code if msvc 14 is found
 	if(CMAKE_CL_64)
@@ -131,9 +138,9 @@ if(ENABLE_TIFF)
 
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
-	else(NOT EXISTS ${TIFF_CONFIG_DIR})
+	elseif(NOT EXISTS ${TIFF_CONFIG_DIR})
 		message(FATAL_ERROR "TIFF_CONFIG_DIR dir not found. Needs path which contains Release/libtiff.lib and debug/libtiffd.lib (usually in the OpenCV_Build_Directory/libs). Note: tif_config.h is only available if you have compiled OpenCV on yourself. If you want to use the precompiled version you have to disable TIFF")
-	else(NOT EXISTS ${TIFF_INCLUDE_DIR})
+	elseif(NOT EXISTS ${TIFF_INCLUDE_DIR})
 		message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 	endif()
 endif(ENABLE_TIFF)

@@ -46,7 +46,7 @@ target_link_libraries(
 	${VERSION_LIB} 			# needed for registering the curren version
 	${LIBRAW_LIBRARIES} 	# RAW support (optional)
 	${OpenCV_LIBS} 			# image manipulation support (optional)
-	${TIFF_LIBRARIES} 		# multip page tiff support (optional)
+	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
 	${QUAZIP_DEPENDENCY}	# ZIP support (optional)
 	)
 # ${VERSION_LIB} 
