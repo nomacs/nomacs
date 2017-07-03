@@ -17,7 +17,12 @@ macro(NMC_FINDQT)
 	 set(QT_ROOT ${QT_QMAKE_PATH}/)
 	 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5)
 	 	 
-	 find_package(Qt5 REQUIRED  Core Widgets Network LinguistTools PrintSupport Concurrent Gui Svg WinExtras)
+	 find_package(Qt5 REQUIRED  Core Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
+	 
+	if (MSVC)
+		find_package(Qt5 REQUIRED WinExtras)
+	endif()
+	 
 	 if (NOT Qt5_FOUND)
 		message(FATAL_ERROR "Qt5Widgets not found. Check your QT_QMAKE_EXECUTABLE path and set it to the correct location")
 	 endif()
