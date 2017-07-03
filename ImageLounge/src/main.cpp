@@ -158,6 +158,7 @@ int main(int argc, char *argv[]) {
 	parser.addOption(importSettingsOpt);
 
 	parser.process(app);
+	
 	// CMD parser --------------------------------------------------------------------
 
 	nmc::DkPluginManager::createPluginsPath();
