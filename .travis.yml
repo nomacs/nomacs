@@ -1,4 +1,6 @@
 language: c++
+sudo: required
+dist: trusty
 
 os:
   - linux
@@ -8,8 +10,12 @@ compiler:
   - gcc
   - clang
 
-sudo: required
-dist: trusty
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - lcov
 
 before_script:
   # OSX dependencies
@@ -18,7 +24,6 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install exiv2; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
-  #- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install quazip; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install -v opencv3 --with-contrib --without-eigen --without-opencl --without-openexr --without-python --without-tests; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew ln opencv3 --force; fi
@@ -26,7 +31,6 @@ before_script:
   # Linux dependencies
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-add-repository -y ppa:beineri/opt-qt551-trusty; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
-  # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/ -DENABLE_IMAGESTITCHING=off"; fi
   
