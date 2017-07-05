@@ -18,7 +18,7 @@ project(nomacs)
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
 set(NOMACS_VERSION_MINOR 7)
-set(NOMACS_VERSION_PATCH 0)
+set(NOMACS_VERSION_PATCH 1)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
 
@@ -179,7 +179,6 @@ else()
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
-NMC_GENERATE_PACKAGE_XML()
 NMC_INSTALL()
 
 #debug for printing out all variables

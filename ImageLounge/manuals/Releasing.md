@@ -12,18 +12,12 @@
   - nomacs-plugins x86
 - Run _INSTALL -> Project Only -> `Build only INSTALL`_ for every solution
 
-Now all dll's & exe should be up-to-date. Do not forget to update the installer/packages/nomacs.xx/data folders if you changed/updated a library (e.g. Qt).
-Open `update-installer.bat` in an editor and ucomment this line (updates all versions in the `package.xml` files):
-
-```REM cscript /nologo ./package-incrementer-batch.vbs ./packages package.xml package-incrementer.vbs```
-
-- clean plugin folders in nomacs.x64 and nomacs.x86
-- double-click `update-installer.bat`
-- zip the repository folder & name it `repository.zip`
-- upload the repository folder to http://download.nomacs.org/htdocs/repository
+- clean plugin folders in nomacs.x64 and nomacs.x86 (i.e. remove OpenCV dlls)
+- increment installer version number in `nomacs-setup.wxs`: <?define ProductVersion = "3.7.5"?>
+- double-click `make-installer.bat`
+- check if the newly created installer `noamcs-setup.msi` is signed
+- upload `nomacs-setup.msi` to http://download.nomacs.org/htdocs/
 - upload `nomacs-setup.exe`
-- upload `nomacs-setup-offline.exe`
-- upload `repository.zip`
 
 ### nomacs portable
 - copy the packages/nomacs.x64/data/nomacs.x64 folder to projects/nomacs/releases and name it `nomacs-3.x.x`

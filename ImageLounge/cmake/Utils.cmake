@@ -31,35 +31,16 @@ macro(NMC_FINDQT)
 endmacro(NMC_FINDQT)
 
 macro(NMC_INSTALL)
-	SET(NOMACS_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/../installer CACHE PATH "Path to the installer directory")
+	set(NOMACS_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/../installer-wix/ CACHE PATH "Path to the installer directory")
 
 	if (MSVC)
-		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/packages/${PROJECT_NAME}.${NMC_ARCHITECTURE})
-		set(DATA_PACKAGE_DIR ${PACKAGE_DIR}/data/nomacs-${NMC_ARCHITECTURE})
-		install(TARGETS ${PROJECT_NAME} ${DLL_CORE_NAME} RUNTIME DESTINATION ${DATA_PACKAGE_DIR} CONFIGURATIONS Release)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml DESTINATION ${PACKAGE_DIR}/meta CONFIGURATIONS Release)
+		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/${PROJECT_NAME}.${NMC_ARCHITECTURE})
+		install(TARGETS ${PROJECT_NAME} ${DLL_CORE_NAME} RUNTIME DESTINATION ${PACKAGE_DIR} CONFIGURATIONS Release)
 
 		if (NOT GLOBAL_READ_BUILD)
-			install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Release/ DESTINATION ${DATA_PACKAGE_DIR})
+			install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Release/ DESTINATION ${PACKAGE_DIR})
 		endif()
 		
 	endif (MSVC)
 
 endmacro(NMC_INSTALL)
-
-macro(NMC_GENERATE_PACKAGE_XML)
-
-	string(TIMESTAMP CURRENT_DATE "%Y-%m-%d")	
-	
-	set(XML_CONTENT "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	set(XML_CONTENT "${XML_CONTENT}<Package>\n")
-	set(XML_CONTENT "${XML_CONTENT}\t<DisplayName>${PROJECT_NAME} [${NMC_ARCHITECTURE}]</DisplayName>\n")
-	set(XML_CONTENT "${XML_CONTENT}\t<Description>nomacs for ${NMC_ARCHITECTURE} systems.</Description>\n")
-	set(XML_CONTENT "${XML_CONTENT}\t<Version>${NOMACS_FULL_VERSION}</Version>\n")
-	set(XML_CONTENT "${XML_CONTENT}\t<ReleaseDate>${CURRENT_DATE}</ReleaseDate>\n")
-	set(XML_CONTENT "${XML_CONTENT}\t<Default>true</Default>\n")
-	set(XML_CONTENT "${XML_CONTENT}</Package>\n")
-	
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${XML_CONTENT})
-	
-endmacro(NMC_GENERATE_PACKAGE_XML)

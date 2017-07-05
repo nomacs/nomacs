@@ -44,6 +44,14 @@ further reading: http://qt-project.org/wiki/Building_Qt_5_from_Git#0647f0776aed2
 If today is March 2017 and you try to compile Qt 5.8 with Visual Studio 2017
 you might need to patch the qalgorithms.h file, see [6].
 
+### Build Image Formats
+Some image formats like jp2 are not maintained and therefore not built with Qt anymore. Therefore we need to manually build them
+- Install `Qt Creator`
+- Open `QT_DIR\qtimageformats\src\plugins\imageformats\jp2\jp2.pro` with QtCreator
+- Hit `Build All` (a few warnings might appear)
+- The dll's are now in QT_DIR\qtimageformats\plugins\imageformats so running CMake again will copy them to nomacs
+- We add JP2 and MNG
+
 ## Qt 4.xx
 Compile QT with Visual Studio, see also [2], [3].
 

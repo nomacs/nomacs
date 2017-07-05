@@ -133,7 +133,6 @@ if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
 	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.nfo "")
 endif()
 
-
 # copy translation files after each build
 add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 foreach(QM ${NOMACS_QM})
