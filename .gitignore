@@ -31,3 +31,4 @@ repository.zip
 /notes.md
 /x64
 /nomacsCore.dir
+/installer-wix/*.msi

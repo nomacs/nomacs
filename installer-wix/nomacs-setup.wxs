@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
-<?define ProductVersion = "3.7.6"?>
+<?define ProductVersion = "3.7.7"?>
+
+<!-- default nomacs -->
 <?define ProductUpgradeCode = "08a898f6-d3c5-4869-9d27-91be685c9ae7"?>
+<?define ShortcutName = "nomacs - Image Lounge [Beta]"?>
+<?define ProductName = "nomacs"?>
+ 
+ <!-- read build -->
+ <!-- <?define ProductUpgradeCode = "2f3d74d3-96f5-4ced-84a7-ead195c6a8c1"?>
+<?define ShortcutName = "ReadFramework"?>
+<?define ProductName = "ReadFramework"?>
+ -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
 	<Product Id="*" UpgradeCode="$(var.ProductUpgradeCode)" 
@@ -31,7 +41,7 @@
 
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLDIR" Name="nomacs">
+				<Directory Id="INSTALLDIR" Name="$(var.ProductName)">
 					<Directory Id="BIN_DIR_REF" Name="bin">
 						<!-- anything else you might put here...-->
 					</Directory>
@@ -42,11 +52,11 @@
 			</Directory>
 
 			<Directory Id="ProgramMenuFolder">
-				<Directory Id="ProgramMenuSubfolder" Name="nomacs">
+				<Directory Id="ProgramMenuSubfolder" Name="$(var.ProductName)">
 					<Component Id="ApplicationShortcuts" Guid="d1b04897-fc62-4a40-8a80-b739f337a50d">
-						<Shortcut Id="ApplicationShortcut1" Name="nomacs - Image Lounge [Beta]" Description="Your image viewer" 
+						<Shortcut Id="ApplicationShortcut1" Name="$(var.ShortcutName)" Description="Your image viewer" 
                             Target="[INSTALLDIR]\bin\nomacs.exe" WorkingDirectory="INSTALLDIR"/>
-						<RegistryValue Root="HKCU" Key="Software\nomacs\Image Lounge" 
+						<RegistryValue Root="HKCU" Key="Software\$(var.ProductVersion)\Image Lounge" 
                             Name="installed" Type="integer" Value="1" KeyPath="yes"/>
 						<RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
 					</Component>
