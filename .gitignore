@@ -29,3 +29,5 @@ repository.zip
 /installer-wix/*.wixpdb
 /installer-wix/HarvestedFiles.wxs
 /notes.md
+/x64
+/nomacsCore.dir
