@@ -1495,7 +1495,7 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 			reduceColorNoise(iProcessor, rawMat);
 
 		mImg = raw2Img(iProcessor, rawMat);
-		
+
 		qDebug() << "img size" << mImg.size();
 		qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
 
@@ -1861,6 +1861,9 @@ void DkRawLoader::reduceColorNoise(const LibRaw & iProcessor, cv::Mat & img) con
 
 		DkTimer dMed;
 		
+		// revert back to 8-bit image
+		img.convertTo(img, CV_8U);
+
 		cv::cvtColor(img, img, CV_RGB2YCrCb);
 
 		std::vector<cv::Mat> imgCh;
