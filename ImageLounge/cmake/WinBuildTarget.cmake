@@ -85,42 +85,44 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL R
 
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
-file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}}/../plugins/imageformats/*.dll")
+file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}/../plugins/imageformats/*.dll")
 file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
 
-file(GLOB QT_EXTRA_IMAGE_FORMATS "${QT_QMAKE_PATH}}/../../qtimageformats/plugins/imageformats/*.dll")
+file(GLOB QT_EXTRA_IMAGE_FORMATS "${QT_QMAKE_PATH}/../../qtimageformats/plugins/imageformats/*.dll")
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
 
 # Platforms
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/platforms/)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/platforms/qwindowsd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/platforms/)
+file(COPY ${QT_QMAKE_PATH}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/platforms/)
+file(COPY ${QT_QMAKE_PATH}/../plugins/platforms/qwindows.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/platforms/)
+file(COPY ${QT_QMAKE_PATH}/../plugins/platforms/qwindowsd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/platforms/)
 
 # PrintSupport
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/printsupport)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
-file(COPY ${QT_QMAKE_PATH}}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
+file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/printsupport)
+file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
+file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
 
-# WinExtras
-file(COPY ${QT_QMAKE_PATH}}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${QT_QMAKE_PATH}}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-file(COPY ${QT_QMAKE_PATH}}/../../qtwinextras/bin/Qt5WinExtrasd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
+	# WinExtras
 
-# SVG support
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/bin/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+	file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+	file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtrasd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats)
-file(COPY ${QT_QMAKE_PATH}}/../../qtsvg/plugins/imageformats/qsvgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
+	# SVG support
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats)
+	file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
+endif()
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo)
