@@ -48,6 +48,7 @@ option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
+option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 
@@ -165,8 +166,9 @@ file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
 QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 
-## FIXME: qt5_add_translation won't work with Qt 5.9 
-# QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+if (${ENABLE_TRANSLATIONS})
+	QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+endif()
 
 if(MSVC)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/WinBuildTarget.cmake)
