@@ -44,6 +44,10 @@ further reading: http://qt-project.org/wiki/Building_Qt_5_from_Git#0647f0776aed2
 If today is March 2017 and you try to compile Qt 5.8 with Visual Studio 2017
 you might need to patch the qalgorithms.h file, see [6].
 
+### Qt > 5.9 and translations
+if you use Qt > 5.9 it is possible, that Visual Studio is unable to compile the translations and thus erroring. Check if you can execute the lrelease.exe in [QtPath]/qttools/bin . 
+It may be, that Qt5Core.dll and Qt5Xml.dll is needed, than copy these file in the directory and everything should run fine
+
 ### Build Image Formats
 Some image formats like jp2 are not maintained and therefore not built with Qt anymore. Therefore we need to manually build them
 - Install `Qt Creator`
