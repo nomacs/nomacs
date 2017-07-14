@@ -2181,23 +2181,28 @@ DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkWidget(parent) {
 void DkBatchButtonsWidget::createLayout() {
 
 	// play - pause button
+	QSize s(32, 32);
 	QIcon icon;
-	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/player-play.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::Off);
-	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/player-stop.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
+	QPixmap pm(DkImage::loadIcon(":/nomacs/img/player-play.svg", QColor(255, 255, 255), s));
+	icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
+	pm = DkImage::loadIcon(":/nomacs/img/player-stop.svg", QColor(255, 255, 255), s);
+	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
 
 	mPlayButton = new QPushButton(icon, "", this);
-	mPlayButton->setIconSize(QSize(100, 50));
+	mPlayButton->setIconSize(pm.size());
 	mPlayButton->setCheckable(true);
 	mPlayButton->setFlat(true);
 	mPlayButton->setShortcut(Qt::ALT + Qt::Key_Return);
 	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
 	icon = QIcon();
-	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
-	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(100, 100, 100)), QIcon::Disabled, QIcon::On);
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(255, 255, 255), s));
+	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(100, 100 , 100), s));
+	icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
 
 	mLogButton = new QPushButton(icon, "", this);
-	mLogButton->setIconSize(QSize(100, 50));
+	mLogButton->setIconSize(pm.size());
 	mLogButton->setFlat(true);
 	mLogButton->setEnabled(false);
 	

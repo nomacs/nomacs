@@ -1136,10 +1136,17 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size) {
 	return icon;
 }
 
-QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col) {
+QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col, const QSize& size) {
 
-	int s = DkSettingsManager::param().effectiveIconSize();
-	QPixmap icon = loadFromSvg(filePath, QSize(s, s));
+
+	QSize is = size;
+
+	if (is.isNull()) {
+		int s = DkSettingsManager::param().effectiveIconSize();
+		is = QSize(s, s);
+	}
+
+	QPixmap icon = loadFromSvg(filePath, is);
 	icon = colorizePixmap(icon, col);
 
 	return icon;
