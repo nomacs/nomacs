@@ -208,9 +208,6 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	if (mImgStorage.getImage().isNull())
 		return;
 
-	//factor/=5;//-0.1 <-> 0.1
-	//factor+=1;//0.9 <-> 1.1
-
 	//limit zoom out ---
 	if (mWorldMatrix.m11()*factor < mMinZoom && factor < 1)
 		return;
@@ -244,7 +241,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	if (center.x() == -1 || center.y() == -1)
 		center = mImgViewRect.center();
 
-	//inverse the transform
+	//invert the transform
 	int a, b;
 	mWorldMatrix.inverted().map(qRound(center.x()), qRound(center.y()), &a, &b);
 

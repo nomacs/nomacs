@@ -172,14 +172,15 @@ configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsCo
 set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
 set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
 
-GET_FILENAME_COMPONENT(VS_PATH ${CMAKE_LINKER} PATH)
+# CMAKE_MAKE_PROGRAM works for VS 2017 too
+get_filename_component(VS_PATH ${CMAKE_MAKE_PROGRAM} PATH)
 if(CMAKE_CL_64)
-	SET(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
+	set(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
 else()
-	SET(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
+	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
-SET(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-SET(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 

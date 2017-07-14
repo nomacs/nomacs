@@ -1053,24 +1053,30 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 /** loadUrl() loads a single valid url
  *  @param loadInTab: if true, replace the currently active image, so it exists.
  */
-void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab) {
+void DkCentralWidget::loadUrl(const QUrl& url, bool loadInTab) {
     Q_ASSERT(url.isValid());
 
     Q_UNUSED(loadInTab);
     Q_ASSERT(loadInTab == true);
     // TODO decide cases where we just load over the current image
 
-    if(url.isLocalFile()){
-        QFileInfo file(url.toLocalFile());
+	QFileInfo fi(url.toString());
 
-        if (DkUtils::isValid(file)){
+	if (!fi.exists())
+		fi = QFileInfo(url.toLocalFile());
+
+    if (fi.exists() || url.isLocalFile()) {
+
+        if (DkUtils::isValid(fi)) {
             // load a local file
-            loadFileToTab(url.toLocalFile());
-        }else if(file.isDir()){
-            // load a directory in thmbnail view
-            loadDirToTab(file.filePath());
+            loadFileToTab(fi.filePath());
         }
-    }else{
+		else if(fi.isDir()) {
+            // load a directory in thmbnail view
+            loadDirToTab(fi.filePath());
+        }
+    }
+	else {
        //load a remote url
         qDebug() << "unhandled remote url: " << url.toDisplayString();
 
@@ -1082,8 +1088,9 @@ void DkCentralWidget::loadUrl(const QUrl url, bool loadInTab) {
 /** loadUrls() loads a list of valid urls.
  * @param maxUrlsToLoad determines the maximum
  */
-void DkCentralWidget::loadUrls(const QList<QUrl> urls, int maxUrlsToLoad) {
-    if(urls.size() == 0)
+void DkCentralWidget::loadUrls(const QList<QUrl>& urls, int maxUrlsToLoad) {
+    
+	if(urls.size() == 0)
         return;
 
     if(urls.size() > maxUrlsToLoad){
