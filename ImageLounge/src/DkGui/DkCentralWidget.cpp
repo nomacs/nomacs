@@ -125,11 +125,13 @@ void DkTabInfo::setFilePath(const QString& filePath) {
 	mFilePath = filePath;
 }
 
-bool DkTabInfo::setDirPath(const QFileInfo& dirPath) {
-	if(!dirPath.isDir())
+bool DkTabInfo::setDirPath(const QString& dirPath) {
+	
+	QFileInfo di(dirPath);
+	if(!di.isDir())
 		return false;
 
-	bool dirIsLoaded = mImageLoader->loadDir(dirPath.canonicalFilePath());
+	bool dirIsLoaded = mImageLoader->loadDir(dirPath);
 	if(dirIsLoaded) {
 		setMode(tab_thumb_preview);
 		return true;
@@ -1032,7 +1034,8 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
     if (mTabInfos.size() > 1){
         // this is the first one: open a new tab
         addTab(filePath);
-    }else{
+    }
+	else {
         // we already have some opened tabs.
         int currentTabIdx = mTabbar->currentIndex();
         enum DkTabInfo::TabMode currentTabMode = mTabInfos[currentTabIdx]->getMode();
@@ -1042,12 +1045,14 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
             currentTabMode == DkTabInfo::tab_single_image ||
             currentTabMode == DkTabInfo::tab_empty) {
 
-            // reuse the currently open tab.
-            mTabInfos.at(currentTabIdx)->setFilePath(filePath);
-            updateTab(mTabInfos.at(currentTabIdx));
-            currentTabChanged(currentTabIdx);
+			loadFile(filePath);
+            //// reuse the currently open tab.
+            //mTabInfos.at(currentTabIdx)->setFilePath(filePath);
+            //updateTab(mTabInfos.at(currentTabIdx));
+            //currentTabChanged(currentTabIdx);
 
-        }else{
+        }
+		else {
             // no tab to reuse. open create a new tab
             addTab(filePath);
         }
@@ -1058,7 +1063,7 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
  * @brief loadDirToTab loads a directory path into the current tab.
  * @param dirPath the directory to load
  */
-void DkCentralWidget::loadDirToTab(const QFileInfo& dirPath) {
+void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 
     if (mTabInfos.size() > 1 ||
         (!mTabInfos.empty()
@@ -1071,8 +1076,9 @@ void DkCentralWidget::loadDirToTab(const QFileInfo& dirPath) {
     }
 
     QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
+	QFileInfo di(dirPath);
 
-	if(dirPath.isDir()) {
+	if(di.isDir()) {
 		//try to load the dir
 		bool dirIsLoaded = targetTab->setDirPath(dirPath);
 
@@ -1083,7 +1089,7 @@ void DkCentralWidget::loadDirToTab(const QFileInfo& dirPath) {
             return;
         }
     }
-    mViewport->getController()->setInfo(tr("I could not load \"%1\"").arg(dirPath.canonicalFilePath()));
+    mViewport->getController()->setInfo(tr("I could not load \"%1\"").arg(dirPath));
 }
 
 /** loadUrl() loads a single valid url
@@ -1096,27 +1102,34 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool loadInTab) {
     Q_UNUSED(loadInTab);
     Q_ASSERT(loadInTab == true);
 
-    QFileInfo file(url.toLocalFile());
+	// url.toString fixes windows "C:/" vs "C:\"
+    QFileInfo fi(url.toString());
+
+	if (!fi.exists()) {
+		fi = QFileInfo(url.toLocalFile());
+	}
+
     auto display = [&](QString msg){
         mViewport->getController()->setInfo(msg.arg(msg));
     };
 
-
-    if(url.isLocalFile()){
-        if(file.exists()){
-            if (file.isFile()) {
-                // load a local file
-                if ( DkUtils::isValid(file)) {
-                    loadFileToTab(url.toLocalFile());
-                } else {
-                    display(tr("Unable to load file \"%1\"").arg(file.canonicalPath()));
-                }
-            } else if(file.isDir()){
-                // load a directory as thmbnail view
-                loadDirToTab(file.filePath());
+    if (fi.exists()) {
+        
+		if (fi.isFile()) {
+            // load a local file
+            if (DkUtils::isValid(fi)) {
+                loadFileToTab(fi.filePath());
+            } 
+			else {
+                display(tr("Unable to load file \"%1\"").arg(fi.canonicalPath()));
             }
-        }else{
-            display(tr("\"%1\" does not exist").arg(file.canonicalPath()));
+        } 
+		else if(fi.isDir()) {
+            // load a directory as thmbnail view
+            loadDirToTab(fi.filePath());
+        }
+		else {
+            display(tr("\"%1\" cannot be loaded").arg(fi.canonicalPath()));
         }
     }
 	else {

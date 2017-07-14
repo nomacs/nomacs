@@ -2182,8 +2182,8 @@ void DkBatchButtonsWidget::createLayout() {
 
 	// play - pause button
 	QIcon icon;
-	icon.addPixmap(QIcon(":/nomacs/img/player-play.svg").pixmap(100), QIcon::Normal, QIcon::Off);
-	icon.addPixmap(QIcon(":/nomacs/img/player-stop.svg").pixmap(100), QIcon::Normal, QIcon::On);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/player-play.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::Off);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/player-stop.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
 
 	mPlayButton = new QPushButton(icon, "", this);
 	mPlayButton->setIconSize(QSize(100, 50));
@@ -2193,9 +2193,8 @@ void DkBatchButtonsWidget::createLayout() {
 	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
 	icon = QIcon();
-	QPixmap pm = QIcon(":/nomacs/img/batch-processing.svg").pixmap(100);
-	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
-	icon.addPixmap(DkImage::colorizePixmap(pm, QColor(100, 100, 100)), QIcon::Disabled, QIcon::On);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(255, 255, 255)), QIcon::Normal, QIcon::On);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(100, 100, 100)), QIcon::Disabled, QIcon::On);
 
 	mLogButton = new QPushButton(icon, "", this);
 	mLogButton->setIconSize(QSize(100, 50));
@@ -2250,9 +2249,9 @@ void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
 
 	QPixmap pm;
 	switch (mode) {
-	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
-	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24); break;
-	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(24); break;
+	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);	break;
+	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);	break;
+	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(24);		break;
 	}
 	pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
 	mIcon->setPixmap(pm);
