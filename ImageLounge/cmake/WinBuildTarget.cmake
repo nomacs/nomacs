@@ -125,12 +125,6 @@ if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
 endif()
 
 # create settings file for portable version while working
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo)
-	file(WRITE ${CMAKE_BINARY_DIR}/RelWithDebInfo/settings.nfo "")
-endif()
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/MinSizeRel/settings.nfo)
-	file(WRITE ${CMAKE_BINARY_DIR}/MinSizeRel/settings.nfo "")
-endif()
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.nfo)
 	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.nfo "")
 endif()
