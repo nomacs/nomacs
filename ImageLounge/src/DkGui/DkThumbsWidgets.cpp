@@ -303,7 +303,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 				img = thumb->getImage();
 		}
 
-		if (img.width() > max_thumb_size * DkSettingsManager::param().dPIScaleFactor())
+		if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
 			qDebug() << thumb->getFilePath() << "size:" << img.size();
 
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();

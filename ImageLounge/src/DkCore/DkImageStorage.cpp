@@ -1122,7 +1122,7 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size) {
 	if (filePath.isEmpty())
 		return QPixmap();
 
-	QSize s = size * DkSettingsManager::param().dPIScaleFactor();
+	QSize s = size * DkSettingsManager::param().dpiScaleFactor();
 	if (size.isEmpty()) {
 		int eis = DkSettingsManager::param().effectiveIconSize();
 		s = QSize(eis, eis);
@@ -1427,7 +1427,7 @@ QImage DkImage::createThumb(const QImage& image) {
 	if (image.isNull())
 		return image;
 
-	int maxThumbSize = (int)(max_thumb_size * DkSettingsManager::param().dPIScaleFactor());
+	int maxThumbSize = (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
 	int imgW = image.width();
 	int imgH = image.height();
 

@@ -53,7 +53,7 @@ namespace nmc {
 DkThumbNail::DkThumbNail(const QString& filePath, const QImage& img) {
 	mImg = DkImage::createThumb(img);
 	mFile = filePath;
-	mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dPIScaleFactor());
+	mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
 	mMinThumbSize = DkSettingsManager::param().effectiveThumbSize();
 	mImgExists = true;
 }

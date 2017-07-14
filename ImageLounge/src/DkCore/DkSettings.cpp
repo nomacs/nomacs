@@ -89,7 +89,7 @@ void DkSettings::init() {
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 }
 
-double DkSettings::dPIScaleFactor(QWidget *widget) const {
+double DkSettings::dpiScaleFactor(QWidget *widget) const {
     
 	double dpi = 96.0;
     if (widget) {
@@ -106,15 +106,15 @@ double DkSettings::dPIScaleFactor(QWidget *widget) const {
 }
 
 int DkSettings::effectiveIconSize(QWidget *widget) const {
-    return qRound(display_p.iconSize * dPIScaleFactor(widget));
+    return qRound(display_p.iconSize * dpiScaleFactor(widget));
 }
 
 int DkSettings::effectiveThumbSize(QWidget *widget) const {
-    return qRound(display_p.thumbSize * dPIScaleFactor(widget));
+    return qRound(display_p.thumbSize * dpiScaleFactor(widget));
 }
 
 int DkSettings::effectiveThumbPreviewSize(QWidget *widget) const {
-    return qRound(display_p.thumbPreviewSize * dPIScaleFactor(widget));
+    return qRound(display_p.thumbPreviewSize * dpiScaleFactor(widget));
 }
 
 QStringList DkSettings::translatedCamData() const {
