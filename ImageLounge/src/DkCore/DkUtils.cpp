@@ -59,6 +59,7 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <qmath.h>
+#include <QMimeDatabase>
 
 #include <QSystemSemaphore>
 #pragma warning(pop)		// no warnings from includes - end
@@ -583,27 +584,59 @@ QFileInfo DkUtils::urlToLocalFile(const QUrl& url) {
 }
 
 /**
- * Returns if a file is supported by nomacs or not.
- * Note: this function only checks for a valid extension.
+ * @brief isValidByContent identifies a file by file content.
+ * @param file is an existing file.
+ * @return true, if file exists and has content we support, false otherwise.
+ */
+bool isValidByContent(const QFileInfo& file) {
+
+    if(!file.exists()) return false;
+    if(!file.isFile()) return false;
+
+    QMimeDatabase mimeDb;
+    QMimeType fileMimeType = mimeDb.mimeTypeForFile(file, QMimeDatabase::MatchContent);
+
+    for(QString sfx: fileMimeType.suffixes()) {
+        QString tryFilename = file.fileName() + QString(".") + sfx;
+
+        if(DkUtils::hasValidSuffix(tryFilename)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief: return if a file is supported by nomacs or not.
  * @param fileInfo the file info of the file to be validated.
  * @return bool true if the file format is supported.
  **/
 bool DkUtils::isValid(const QFileInfo& fileInfo) {
-    bool fileIsValid = false;
-
 
 	QFileInfo fInfo = fileInfo;
+	QString fileName = fInfo.fileName();
+
 	if (fInfo.isSymLink())
 		fInfo = fileInfo.symLinkTarget();
 
+	bool fileIsValid = false;
+	auto printDebug = [&](QString msg){
+		QString validText = fileIsValid?"is valid":"is invalid";
+		qDebug() << QString("file %1 %2 %3").arg(fileName).arg(validText).arg(msg);
+	};
+
     if (!fInfo.exists()) {
         fileIsValid = false;
-    } else{
-        QString fileName = fInfo.fileName();
-        fileIsValid = hasValidSuffix(fileName);
+        printDebug("doesn't exist");
+
+    } else if(hasValidSuffix(fInfo.fileName()))  {
+        fileIsValid = true;
+        printDebug("is has no valid extension.");
+
+    } else if(isValidByContent(fInfo))  {
+        fileIsValid = true;
+        printDebug("detected by mime");
     }
-    QString resultText(fileIsValid?"valid":"invalid");
-    qDebug() << QString("file %1 is %2").arg(fileInfo.filePath()).arg(resultText);
     return fileIsValid;
 }
 
