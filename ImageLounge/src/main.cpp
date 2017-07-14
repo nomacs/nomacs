@@ -160,7 +160,6 @@ int main(int argc, char *argv[]) {
 	parser.process(app);
 	
 	// CMD parser --------------------------------------------------------------------
-
 	nmc::DkPluginManager::createPluginsPath();
 
 	// compute batch process

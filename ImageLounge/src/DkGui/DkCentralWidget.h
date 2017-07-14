@@ -84,7 +84,7 @@ public:
 
 	QString getFilePath() const;
 	void setFilePath(const QString& filePath);
-	void setDirPath(const QString& dirPath);
+	bool setDirPath(const QFileInfo &dirPath);
 
 	QSharedPointer<DkImageContainerT> getImage() const;
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -103,13 +103,13 @@ public:
 	QIcon getIcon();
 	QString getTabText() const;
 
-	int getMode() const;
+	TabMode getMode() const;
 	void setMode(int mode);
 
 protected:
 	QSharedPointer<DkImageLoader> mImageLoader;
 	int mTabIdx = 0;
-	int mTabMode = tab_recent_files;
+	enum TabMode mTabMode = tab_recent_files;
 	QString mFilePath = "";
 };
 
@@ -168,7 +168,7 @@ public slots:
 	void loadFile(const QString& filePath);
 	void loadDir(const QString& filePath);
 	void loadFileToTab(const QString& filePath);
-	void loadDirToTab(const QString& dirPath);
+	void loadDirToTab(const QFileInfo &dirPath);
 	void loadUrl(const QUrl& urls, bool loadInTab = true);
 	void loadUrls(const QList<QUrl>& urls, const int maxUrlsToLoad = 20);
 	void openBatch(const QStringList& selectedFiles = QStringList());
