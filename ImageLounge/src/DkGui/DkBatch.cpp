@@ -2183,9 +2183,9 @@ void DkBatchButtonsWidget::createLayout() {
 	// play - pause button
 	QSize s(32, 32);
 	QIcon icon;
-	QPixmap pm(DkImage::loadIcon(":/nomacs/img/player-play.svg", QColor(255, 255, 255), s));
+	QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", QColor(255, 255, 255), s));
 	icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
-	pm = DkImage::loadIcon(":/nomacs/img/player-stop.svg", QColor(255, 255, 255), s);
+	pm = DkImage::loadIcon(":/nomacs/img/stop.svg", QColor(255, 255, 255), s);
 	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
 
 	mPlayButton = new QPushButton(icon, "", this);

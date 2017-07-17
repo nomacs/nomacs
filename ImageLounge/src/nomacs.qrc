@@ -89,5 +89,7 @@
         <file>img/plugin-banner.svg</file>
         <file>img/player-stop.svg</file>
         <file>img/warning.svg</file>
+		<file>img/play.svg</file>
+		<file>img/stop.svg</file>
     </qresource>
 </RCC>
