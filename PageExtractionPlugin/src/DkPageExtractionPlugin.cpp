@@ -82,8 +82,9 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	//mResultPath = resPath.absoluteFilePath();
 
 	// save default settings
-	loadSettings(nmc::DkSettingsManager::instance().qSettings());
-	saveSettings(nmc::DkSettingsManager::instance().qSettings());
+	nmc::DefaultSettings settings;
+	loadSettings(settings);
+	saveSettings(settings);
 }
 
 /**

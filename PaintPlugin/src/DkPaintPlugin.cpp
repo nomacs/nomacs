@@ -147,7 +147,7 @@ DkPaintViewPort::~DkPaintViewPort() {
 
 void DkPaintViewPort::saveSettings() const {
 
-	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
+	nmc::DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 	settings.setValue("penColor", pen.color().rgba());
@@ -158,7 +158,7 @@ void DkPaintViewPort::saveSettings() const {
 
 void DkPaintViewPort::loadSettings() {
 
-	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
+	nmc::DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
