@@ -561,7 +561,7 @@ void DkExplorer::closeEvent(QCloseEvent* event) {
 
 void DkExplorer::writeSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
@@ -577,7 +577,7 @@ void DkExplorer::writeSettings() {
 
 void DkExplorer::readSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
@@ -3030,8 +3030,9 @@ void DkProgressBar::animatePoint(double& xVal) {
 }
 
 // DkGenericProfileWidget --------------------------------------------------------------------
-DkGenericProfileWidget::DkGenericProfileWidget(const QString& name, QWidget* parent) : DkNamedWidget(name, parent) {
+DkGenericProfileWidget::DkGenericProfileWidget(const QString& name, QWidget* parent, const QString& settingsPath) : DkNamedWidget(name, parent) {
 
+	mSettingsPath = settingsPath.isEmpty() ? DkSettingsManager::param().settingsPath() : settingsPath;
 }
 
 DkGenericProfileWidget::~DkGenericProfileWidget() {
@@ -3091,14 +3092,9 @@ void DkGenericProfileWidget::createLayout() {
 	layout->addWidget(mDeleteButton);
 }
 
-QSettings& DkGenericProfileWidget::settings() const {
-
-	return DkSettingsManager::instance().qSettings();
-}
-
 QStringList DkGenericProfileWidget::loadProfileStrings() const {
 
-	QSettings& s = settings();
+	QSettings s(mSettingsPath, QSettings::IniFormat);
 
 	s.beginGroup(mSettingsGroup);
 	QStringList modelStrings = s.childGroups();
@@ -3113,7 +3109,7 @@ void DkGenericProfileWidget::deleteCurrentSetting() {
 
 	QString modelName = mProfileList->currentText();
 
-	QSettings& s = settings();
+	QSettings s(mSettingsPath, QSettings::IniFormat);
 
 	s.beginGroup(mSettingsGroup);
 	s.beginGroup(modelName);
@@ -3184,7 +3180,7 @@ void DkGenericProfileWidget::activate(bool active) {
 
 void DkGenericProfileWidget::setDefaultModel() const {
 
-	QSettings& s = settings();
+	QSettings s(mSettingsPath, QSettings::IniFormat);
 	s.beginGroup(mSettingsGroup);
 	s.setValue("DefaultProfileString", mProfileList->currentText());
 	s.endGroup();
@@ -3192,7 +3188,7 @@ void DkGenericProfileWidget::setDefaultModel() const {
 
 QString DkGenericProfileWidget::loadDefaultProfileString() const {
 
-	QSettings& s = settings();
+	QSettings s(mSettingsPath, QSettings::IniFormat);
 	s.beginGroup(mSettingsGroup);
 	QString defaultString = s.value("DefaultProfileString", "").toString();
 	s.endGroup();

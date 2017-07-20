@@ -226,7 +226,7 @@ void DkNoMacs::init() {
 		if (!QFileInfo(nmc::DkSettingsManager::param().global().setupPath).exists() || QFile::remove(nmc::DkSettingsManager::param().global().setupPath)) {
 			nmc::DkSettingsManager::param().global().setupPath = "";
 			nmc::DkSettingsManager::param().global().setupVersion = "";
-			nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+			nmc::DkSettingsManager::param().save();
 		}
 	}
 #endif // Q_WS_WIN
@@ -618,7 +618,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	//showNormal();
 
 	if (mSaveSettings) {
-		QSettings& settings = DkSettingsManager::instance().qSettings();
+		DefaultSettings settings;
 		settings.setValue("geometryNomacs", geometry());
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
@@ -627,10 +627,12 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 			settings.setValue(mExplorer->objectName(), QMainWindow::dockWidgetArea(mExplorer));
 		if (mMetaDataDock)
 			settings.setValue(mMetaDataDock->objectName(), QMainWindow::dockWidgetArea(mMetaDataDock));
+		if (mEditDock)
+			settings.setValue(mEditDock->objectName(), QMainWindow::dockWidgetArea(mEditDock));
 		if (mThumbsDock)
 			settings.setValue(mThumbsDock->objectName(), QMainWindow::dockWidgetArea(mThumbsDock));
 
-		nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+		nmc::DkSettingsManager::param().save();
 	}
 
 	QMainWindow::closeEvent(event);
@@ -763,7 +765,7 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 void DkNoMacs::readSettings() {
 	
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 
 #ifdef Q_WS_WIN
 	// fixes #392 - starting maximized on 2nd screen - tested on win8 only
@@ -877,7 +879,7 @@ void DkNoMacs::setFrameless(bool) {
 	if (getTabWidget()->getCurrentImage())
 		args.append(getTabWidget()->getCurrentImage()->filePath());
 	
-	nmc::DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	nmc::DkSettingsManager::param().save();
 	
 	bool started = mProcess.startDetached(exe, args);
 
@@ -1207,7 +1209,7 @@ void DkNoMacs::showThumbsDock(bool show) {
 		if (mThumbsDock) {
 
 			//DkSettingsManager::param().display().thumbDockSize = qMin(thumbsDock->width(), thumbsDock->height());
-			QSettings& settings = DkSettingsManager::instance().qSettings();
+			DefaultSettings settings;
 			settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(mThumbsDock));
 
 			mThumbsDock->hide();
@@ -1820,7 +1822,7 @@ void DkNoMacs::bugReport() {
 
 void DkNoMacs::cleanSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.clear();
 
 	readSettings();
@@ -1909,7 +1911,7 @@ void DkNoMacs::showRecentFiles(bool show) {
 
 void DkNoMacs::onWindowLoaded() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	bool firstTime = settings.value("AppSettings/firstTime.nomacs.3", true).toBool();
 
 	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showExplorer))
@@ -2237,7 +2239,7 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 	}
 
 	DkSettingsManager::param().sync().updateDialogShown = true;
-	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	DkSettingsManager::param().save();
 	
 	if (!mUpdateDialog) {
 		mUpdateDialog = new DkUpdateDialog(this);
@@ -2787,7 +2789,7 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 	// do not save the window size
 	if (mSaveSettings)
-		DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+		DkSettingsManager::param().save();
 
 	mSaveSettings = false;
 

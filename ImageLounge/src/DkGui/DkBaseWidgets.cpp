@@ -572,7 +572,7 @@ void DkDockWidget::closeEvent(QCloseEvent* event) {
 
 Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const {
 	
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	Qt::DockWidgetArea location = (Qt::DockWidgetArea)settings.value(objectName(), defaultArea).toInt();
 
 	return location;

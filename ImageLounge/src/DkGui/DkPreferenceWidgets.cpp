@@ -1049,7 +1049,7 @@ DkFileAssociationsPreference::~DkFileAssociationsPreference() {
 	if (mSaveSettings) {
 		writeSettings();
 		mSaveSettings = false;
-		DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+		DkSettingsManager::param().save();
 	}
 }
 
@@ -1350,7 +1350,7 @@ void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 	QWidget::paintEvent(event);
 }
 
-// DkDummySettings --------------------------------------------------------------------
+// DkEditorPreference --------------------------------------------------------------------
 DkEditorPreference::DkEditorPreference(QWidget* parent) : QWidget(parent) {
 
 	createLayout();
@@ -1360,7 +1360,7 @@ DkEditorPreference::DkEditorPreference(QWidget* parent) : QWidget(parent) {
 void DkEditorPreference::createLayout() {
 
 	mSettingsWidget = new DkSettingsWidget(this);
-	mSettingsWidget->setSettings(DkSettingsManager::instance().qSettings());
+	mSettingsWidget->setSettingsPath(DkSettingsManager::param().settingsPath());
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setAlignment(Qt::AlignLeft);
@@ -1386,12 +1386,14 @@ void DkEditorPreference::paintEvent(QPaintEvent *event) {
 
 void DkEditorPreference::changeSetting(const QString& key, const QVariant& value, const QStringList& groups) const {
 
-	DkSettingsWidget::changeSetting(DkSettingsManager::instance().qSettings(), key, value, groups);
+	DefaultSettings settings;
+	DkSettingsWidget::changeSetting(settings, key, value, groups);
 }
 
 void DkEditorPreference::removeSetting(const QString& key, const QStringList& groups) const {
 	
-	DkSettingsWidget::removeSetting(DkSettingsManager::instance().qSettings(), key, groups);
+	DefaultSettings settings;
+	DkSettingsWidget::removeSetting(settings, key, groups);
 }
 
 //// DkDummySettings --------------------------------------------------------------------

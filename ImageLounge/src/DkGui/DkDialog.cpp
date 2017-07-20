@@ -417,7 +417,7 @@ void DkTrainDialog::accept() {
 		QString tag = name + " (*." + acceptedFileInfo.suffix() + ")";
 
 		// load user filters
-		QSettings& settings = DkSettingsManager::instance().qSettings();
+		DefaultSettings settings;
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
@@ -811,7 +811,7 @@ void DkResizeDialog::accept() {
 
 void DkResizeDialog::saveSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	settings.setValue("ResampleMethod", mResampleBox->currentIndex());
@@ -834,7 +834,7 @@ void DkResizeDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	mResampleBox->setCurrentIndex(settings.value("ResampleMethod", ipl_cubic).toInt());
@@ -1834,7 +1834,7 @@ void DkShortcutsModel::clearDuplicateInfo() const {
 
 void DkShortcutsModel::resetActions() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("CustomShortcuts");
 
 	for (int pIdx = 0; pIdx < mActions.size(); pIdx++) {
@@ -1858,7 +1858,7 @@ void DkShortcutsModel::saveActions() const {
 	if (!mRootItem)
 		return;
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("CustomShortcuts");
 
 	// loop all menu entries
@@ -1981,7 +1981,7 @@ void DkShortcutsDialog::defaultButtonClicked() {
 
 	if (mModel) mModel->resetActions();
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.remove("CustomShortcuts");
 
 	QDialog::reject();

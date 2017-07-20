@@ -143,7 +143,7 @@ class DllCoreExport DkSettingsWidget : public QWidget {
 public:
 	DkSettingsWidget(QWidget* parent);
 
-	void setSettings(QSettings& settings, const QString& parentName = "");
+	void setSettingsPath(const QString& settings, const QString& parentName = "");
 	void addSettingsGroup(const DkSettingsGroup& group);
 	void clear();
 	void filter(const QString& filterText);

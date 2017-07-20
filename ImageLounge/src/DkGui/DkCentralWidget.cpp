@@ -356,7 +356,7 @@ void DkCentralWidget::createLayout() {
 
 void DkCentralWidget::saveSettings(bool saveTabs) const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 	settings.remove("Tabs");
@@ -380,7 +380,7 @@ void DkCentralWidget::loadSettings() {
 
 	QVector<QSharedPointer<DkTabInfo> > tabInfos;
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 
@@ -947,7 +947,7 @@ int DkCentralWidget::currentViewMode() const {
 void DkCentralWidget::restart() const {
 
 	// safe settings first - since the intention of a restart is often a global settings change
-	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	DkSettingsManager::param().save();
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;

@@ -49,7 +49,9 @@ DkSettingsWidget::DkSettingsWidget(QWidget* parent) : QWidget(parent) {
 	QMetaObject::connectSlotsByName(this);
 }
 
-void DkSettingsWidget::setSettings(QSettings & settings, const QString& parentName) {
+void DkSettingsWidget::setSettingsPath(const QString & settingsPath, const QString& parentName) {
+
+	QSettings settings(settingsPath, QSettings::IniFormat);
 
 	DkSettingsGroup sg = DkSettingsGroup::fromSettings(settings, parentName);
 	addSettingsGroup(sg);

@@ -249,7 +249,7 @@ bool DkPluginContainer::load() {
 	else if (batchPlugin()) {
 		// load the settings
 		mType = type_batch;
-		batchPlugin()->loadSettings(batchPlugin()->settings());
+		batchPlugin()->loadSettings();
 	}
 	else if (plugin())
 		mType = type_simple;
@@ -1330,7 +1330,7 @@ DkPluginActionManager::DkPluginActionManager(QObject* parent) : QObject(parent) 
 
 void DkPluginActionManager::assignCustomPluginShortcuts() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("CustomPluginShortcuts");
 	QStringList psKeys = settings.allKeys();
 	settings.endGroup();
@@ -1483,7 +1483,7 @@ void DkPluginActionManager::runPluginFromShortcut() {
 
 void DkPluginActionManager::savePluginActions(QVector<QAction *> actions) const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("CustomPluginShortcuts");
 	settings.remove("");
 	for (int i = 0; i < actions.size(); i++)

@@ -211,6 +211,7 @@ void DkManipulatorWidget::selectManipulator() {
 // DkMainpulatorDoc --------------------------------------------------------------------
 DkEditDock::DkEditDock(const QString& title, QWidget* parent, Qt::WindowFlags flags) : DkDockWidget(title, parent, flags) {
 
+	setObjectName("DkEditDock");
 	createLayout();
 }
 

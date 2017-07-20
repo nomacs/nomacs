@@ -154,7 +154,7 @@ void DkInstallUpdater::checkForUpdates(bool silent) {
 	mSilent = silent;
 
 	DkSettingsManager::param().sync().lastUpdateCheck = QDate::currentDate();
-	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	DkSettingsManager::param().save();
 
 	QUrl url ("http://download.nomacs.org/repository/Updates.xml");
 
@@ -309,7 +309,7 @@ DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 void DkUpdater::checkForUpdates() {
 
 	DkSettingsManager::param().sync().lastUpdateCheck = QDate::currentDate();
-	DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+	DkSettingsManager::param().save();
 
 #ifdef Q_OS_WIN
 	QUrl url ("http://www.nomacs.org/version_win_stable");
@@ -468,7 +468,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		DkSettingsManager::param().global().setupVersion = mSetupVersion;
 		DkSettingsManager::param().global().setupPath = absoluteFilePath;
-		DkSettingsManager::param().save(DkSettingsManager::instance().qSettings());
+		DkSettingsManager::param().save();
 
 		emit downloadFinished(absoluteFilePath);
 	}

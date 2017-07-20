@@ -69,7 +69,7 @@ DkMessageBox::DkMessageBox(QWidget* parent /* = 0 */) : QDialog(parent) {
 DkMessageBox::~DkMessageBox() {
 	
 	// save settings
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("DkDialog");
 	settings.setValue(objectName(), !showAgain->isChecked());
 	settings.endGroup();
@@ -153,7 +153,7 @@ int DkMessageBox::exec() {
 
 	QString objName = objectName();
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("DkDialog");
 	bool show = settings.value(objName, true).toBool();
 	int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();

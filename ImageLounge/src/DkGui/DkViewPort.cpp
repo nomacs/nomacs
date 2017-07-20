@@ -680,7 +680,7 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 	DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
 	if (bPlugin)
-		bPlugin->loadSettings(bPlugin->settings());
+		bPlugin->loadSettings();
 
 	QSharedPointer<DkImageContainerT> result = DkImageContainerT::fromImageContainer(plugin->plugin()->runPlugin(key, imageContainer()));
 	if (result) 

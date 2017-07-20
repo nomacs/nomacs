@@ -52,6 +52,12 @@ class QTranslator;
 
 namespace nmc {
 
+class DllCoreExport DefaultSettings : public QSettings {
+
+public:
+	DefaultSettings();
+};
+
 class DllCoreExport DkFileFilterHandling {
 
 public:
@@ -312,7 +318,9 @@ public:
 	void loadTranslation(const QString& fileName, QTranslator& translator);
 	QStringList getTranslationDirs();
 
+	void load();
 	void load(QSettings& settings, bool defaults = false);
+	void save();
 	void save(QSettings& settings, bool force = false);
 	void setToDefaultSettings();
 	void setNumThreads(int numThreads);
@@ -354,6 +362,8 @@ protected:
 	Resources resources_d;
 
 	void init();
+
+	QString mSettingsPath;
 };
 
 class DllCoreExport DkSettingsManager {
@@ -367,7 +377,7 @@ public:
 	void operator=(DkSettingsManager const&)		= delete;
 
 	static DkSettings& param();		// convenience
-	QSettings& qSettings();
+	//QSettings& qSettings();
 	DkSettings& settings();			// rename
 	void init();
 
@@ -376,7 +386,7 @@ public:
 private:
 	DkSettingsManager();
 
-	QSettings* mSettings = 0;
+	//QSettings* mSettings = 0;
 	DkSettings* mParams = 0;
 };
 

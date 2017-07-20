@@ -1628,8 +1628,8 @@ void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
 
 	mCurrentPlugin = plugin->batchPlugin();
 
-	QSettings& s = settings();
-	DkSettingsGroup g = DkSettingsGroup::fromSettings(s, mCurrentPlugin->name());
+	QSharedPointer<QSettings> s = settings();
+	DkSettingsGroup g = DkSettingsGroup::fromSettings(*s, mCurrentPlugin->name());
 
 	if (!g.isEmpty()) {
 		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
@@ -1654,9 +1654,9 @@ void DkBatchPluginWidget::changeSetting(const QString& key, const QVariant& valu
 		return;
 	}
 
-	QSettings& s = settings();
-	DkSettingsWidget::changeSetting(s, key, value, groups);
-	mCurrentPlugin->loadSettings(s);	// update
+	QSharedPointer<QSettings> s = settings();
+	DkSettingsWidget::changeSetting(*s, key, value, groups);
+	mCurrentPlugin->loadSettings(*s);	// update
 }
 
 void DkBatchPluginWidget::removeSetting(const QString& key, const QStringList& groups) const {
@@ -1666,9 +1666,9 @@ void DkBatchPluginWidget::removeSetting(const QString& key, const QStringList& g
 		return;
 	}
 
-	QSettings& s = settings();
-	DkSettingsWidget::removeSetting(s, key, groups);
-	mCurrentPlugin->loadSettings(s);	// update
+	QSharedPointer<QSettings> s = settings();
+	DkSettingsWidget::removeSetting(*s, key, groups);
+	mCurrentPlugin->loadSettings(*s);	// update
 }
 
 
@@ -1691,17 +1691,16 @@ QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const {
 	return selectedPlugins;
 }
 
-QSettings& DkBatchPluginWidget::settings() const {
+QSharedPointer<QSettings> DkBatchPluginWidget::settings() const {
 
 	if (mSettings)
-		return *mSettings;
+		return mSettings;
 
 	if (mCurrentPlugin)
-		return mCurrentPlugin->settings();
+		return QSharedPointer<QSettings>(new QSettings(mCurrentPlugin->settingsFilePath(), QSettings::IniFormat));
 
-	qWarning() << "I need to default the settings...";
-	
-	return DkSettingsManager::instance().qSettings();
+	qWarning() << "DkBatchPluginWidget: I need to default the settings...";
+	return QSharedPointer<QSettings>(new DefaultSettings());
 }
 
 void DkBatchPluginWidget::updateHeader() const {

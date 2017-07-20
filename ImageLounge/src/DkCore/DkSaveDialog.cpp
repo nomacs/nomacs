@@ -106,7 +106,7 @@ DkCompressDialog::~DkCompressDialog() {
 
 void DkCompressDialog::saveSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	settings.setValue("Compression" + QString::number(mDialogMode), getCompression());
 	
@@ -120,7 +120,7 @@ void DkCompressDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	mBgCol = settings.value("bgCompressionColor" + QString::number(mDialogMode), QColor(255,255,255).rgba()).toInt();

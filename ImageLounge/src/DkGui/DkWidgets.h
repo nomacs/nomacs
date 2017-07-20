@@ -993,10 +993,10 @@ class DllCoreExport DkGenericProfileWidget : public DkNamedWidget {
 	Q_OBJECT
 
 public:
-	DkGenericProfileWidget(const QString& name, QWidget* parent);
+	DkGenericProfileWidget(const QString& name, QWidget* parent, const QString& settingsPath = "");
 	virtual ~DkGenericProfileWidget();
 
-	public slots:
+public slots:
 	void saveSettings() const;
 	virtual void saveSettings(const QString& name) const;
 	virtual void loadSettings(const QString& name) = 0;
@@ -1009,7 +1009,6 @@ protected:
 
 	virtual void init();
 	void createLayout();
-	virtual QSettings& settings() const;
 	QStringList loadProfileStrings() const;
 	QString loadDefaultProfileString() const;
 
@@ -1019,6 +1018,7 @@ protected:
 	bool mEmpty = true;
 
 	QString mSettingsGroup = "ILLEGAL_GENERIC_GROUP";
+	QString mSettingsPath;
 };
 
 

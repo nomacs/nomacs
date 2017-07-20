@@ -169,7 +169,7 @@ void DkFilePreview::initOrientations() {
 
 void DkFilePreview::loadSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	windowPosition = settings.value("windowPosition", windowPosition).toInt();
 	settings.endGroup();
@@ -178,7 +178,7 @@ void DkFilePreview::loadSettings() {
 
 void DkFilePreview::saveSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	settings.setValue("windowPosition", windowPosition);
 	settings.endGroup();

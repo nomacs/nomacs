@@ -55,6 +55,8 @@ namespace nmc {
 
 DkSettings::DkSettings() {
 
+	// cache settings path
+	mSettingsPath = settingsPath();
 	init();
 }
 
@@ -211,7 +213,7 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters.append("Rohkost (*.roh)");
 
 	// load user filters
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	app_p.openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 
 	for (int idx = 0; idx < app_p.openFilters.size(); idx++) {
@@ -276,6 +278,11 @@ QStringList DkSettings::getTranslationDirs() {
 		translationDirs.append(p.absolutePath());
 
 	return translationDirs;
+}
+
+void DkSettings::load() {
+	DefaultSettings s;
+	load(s);
 }
 
 void DkSettings::load(QSettings& settings, bool defaults) {
@@ -486,6 +493,11 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 		meta_d = meta_p;
 		resources_d = resources_p;
 	}
+}
+
+void DkSettings::save() {
+	DefaultSettings s;
+	save(s);
 }
 
 void DkSettings::save(QSettings& settings, bool force) {
@@ -891,14 +903,24 @@ void DkSettings::setNumThreads(int numThreads) {
 }
 
 bool DkSettings::isPortable() {
-
-	QFileInfo settingsFile(settingsPath());
-	return settingsFile.isFile() && settingsFile.exists();
+	
+	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.nfo");
+	return fi.absoluteFilePath() == settingsPath();
 }
 
 QString DkSettings::settingsPath() const {
 
-	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo").absoluteFilePath();
+	if (!mSettingsPath.isEmpty())
+		return mSettingsPath;
+
+	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.nfo");
+
+	if (fi.exists())
+		return fi.absoluteFilePath();
+
+	fi = QFileInfo(DkUtils::getAppDataPath(), "settings.ini");
+
+	return fi.absoluteFilePath();
 }
 
 DkSettings::App & DkSettings::app() {
@@ -932,7 +954,6 @@ DkSettings::Resources & DkSettings::resources() {
 DkSettingsManager::DkSettingsManager() {
 	
 	mParams = new DkSettings();
-	mSettings = mParams->isPortable() ? new QSettings(mParams->settingsPath(), QSettings::IniFormat) : new QSettings();
 }
 
 DkSettingsManager& DkSettingsManager::instance() { 
@@ -941,11 +962,6 @@ DkSettingsManager& DkSettingsManager::instance() {
 }
 
 DkSettingsManager::~DkSettingsManager() {
-
-	if (mSettings) {
-		delete mSettings;
-		mSettings = 0;
-	}
 
 	if (mParams) {
 		delete mParams;
@@ -957,10 +973,6 @@ DkSettings& DkSettingsManager::param() {
 	return instance().settings();
 }
 
-QSettings& DkSettingsManager::qSettings() {
-	return *mSettings;
-}
-
 DkSettings& DkSettingsManager::settings() {
 	return *mParams;
 }
@@ -969,7 +981,7 @@ void DkSettingsManager::init() {
 	
 	// init settings
 	param().initFileFilters();
-	QSettings& settings = qSettings();
+	DefaultSettings settings;
 
 	param().load(settings, true);	// load defaults
 
@@ -992,7 +1004,7 @@ void DkSettingsManager::importSettings(const QString & settingsPath) {
 
 	QSettings settings(settingsPath, QSettings::IniFormat);
 	param().load(settings);
-	param().save(DkSettingsManager::instance().qSettings());
+	param().save();
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
@@ -1243,5 +1255,8 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 #endif
 
 }
+
+// -------------------------------------------------------------------- DefaultSettings
+DefaultSettings::DefaultSettings() : QSettings(DkSettingsManager::instance().param().settingsPath(), QSettings::IniFormat) {}
 
 }

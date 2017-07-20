@@ -87,7 +87,7 @@ DkAppManager::~DkAppManager() {
 
 void DkAppManager::saveSettings() const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("DkAppManager");
 	// clear it first
 	settings.remove("Apps");
@@ -106,7 +106,7 @@ void DkAppManager::saveSettings() const {
 
 void DkAppManager::loadSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("DkAppManager");
 
 	int size = settings.beginReadArray("Apps");
@@ -1598,7 +1598,7 @@ QVector<QAction*> DkActionManager::allActions() const {
 
 void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("CustomShortcuts");
 
 	for (QAction* a : actions) {

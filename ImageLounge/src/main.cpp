@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 
 	// init settings
 	nmc::DkSettingsManager::instance().init();
-	QSettings& settings = nmc::DkSettingsManager::instance().qSettings();
+	nmc::DefaultSettings settings;
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettingsManager::param().app().appMode).toInt();
 
 	// uncomment this for the single instance feature...

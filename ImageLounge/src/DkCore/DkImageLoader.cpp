@@ -1311,7 +1311,7 @@ void DkImageLoader::updateHistory() {
 	QFileInfo file = mCurrentImage->filePath();
 
 	// sync with other instances
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("GlobalSettings");
 	DkSettingsManager::param().global().recentFolders = settings.value("recentFolders", DkSettingsManager::param().global().recentFolders).toStringList();
 	DkSettingsManager::param().global().recentFiles = settings.value("recentFiles", DkSettingsManager::param().global().recentFiles).toStringList();

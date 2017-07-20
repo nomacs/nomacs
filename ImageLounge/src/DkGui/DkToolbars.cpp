@@ -620,7 +620,7 @@ void DkTransferToolBar::createIcons() {
 
 void DkTransferToolBar::saveSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("Pseudo Color");
 
 	settings.beginWriteArray("oldGradients", mOldGradients.size());
@@ -645,7 +645,7 @@ void DkTransferToolBar::saveSettings() {
 
 void DkTransferToolBar::loadSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("Pseudo Color");
 
 	int gSize = settings.beginReadArray("oldGradients");
@@ -880,7 +880,7 @@ DkCropToolBar::~DkCropToolBar() {
 
 void DkCropToolBar::loadSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("Crop");
 
 	mHorValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
@@ -894,7 +894,7 @@ void DkCropToolBar::loadSettings() {
 
 void DkCropToolBar::saveSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup("Crop");
 
 	settings.setValue("AspectRatioHorizontal", mHorValBox->value());

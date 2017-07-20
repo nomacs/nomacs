@@ -338,7 +338,7 @@ DkMetaDataDock::~DkMetaDataDock() {
 
 void DkMetaDataDock::writeSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	
 	for (int idx = 0; idx < mModel->columnCount(QModelIndex()); idx++) {
@@ -355,7 +355,7 @@ void DkMetaDataDock::writeSettings() {
 
 void DkMetaDataDock::readSettings() {
 	
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	for (int idx = 0; idx < mModel->columnCount(QModelIndex()); idx++) {
@@ -760,7 +760,7 @@ void DkMetaDataHUD::createActions() {
 
 void DkMetaDataHUD::loadSettings() {
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 	QStringList keyVals = settings.value("keyValues", QStringList()).toStringList();
@@ -777,7 +777,7 @@ void DkMetaDataHUD::saveSettings() const {
 	if (mKeyValues.isEmpty())
 		return;
 
-	QSettings& settings = DkSettingsManager::instance().qSettings();
+	DefaultSettings settings;
 
 	settings.beginGroup(objectName());
 	settings.setValue("keyValues", mKeyValues);

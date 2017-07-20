@@ -450,7 +450,7 @@ protected:
 	void addPlugins(QStandardItemModel* model) const;
 	void selectPlugin(const QString& pluginName);
 	QStringList selectedPlugins(bool selected = true) const;
-	QSettings& settings() const;
+	QSharedPointer<QSettings> settings() const;
 
 	QStandardItemModel* mModel = 0;
 	DkSettingsWidget* mSettingsEditor = 0;
