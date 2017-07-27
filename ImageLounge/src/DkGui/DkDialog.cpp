@@ -227,7 +227,11 @@ QString DkSplashScreen::versionText() const {
 
 	// version & build date
 	vt += QApplication::applicationVersion() + platform + "<br>";
+	
+// reproducable builds for linux (see #139)
+#ifdef Q_OS_WIN
 	vt += QString(__DATE__) + "<br>";
+#endif
 
 	// supplemental info
 	vt += "<p style=\"color: #666; font-size: 7pt; margin: 0; padding: 0;\">";
