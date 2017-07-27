@@ -6,7 +6,7 @@ BugReportURL: http://www.nomacs.org/redmine/issues/364
 SentUpstream: 2014-09-22
 -->
 
-<application>
+<component>
   <id type="desktop">nomacs.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <summary>View and edit images</summary>
@@ -24,4 +24,4 @@ SentUpstream: 2014-09-22
   <screenshots>
     <screenshot type="default">https://raw.githubusercontent.com/hughsie/fedora-appstream/master/screenshots-extra/nomacs/a.png</screenshot>
   </screenshots>
-</application>
+</component>
