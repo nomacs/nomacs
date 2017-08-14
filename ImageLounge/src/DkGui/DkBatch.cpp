@@ -2069,7 +2069,7 @@ void DkBatchTransformWidget::updateHeader() const {
 		}
 
 		if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
-			txt += tr("Resize %1 by: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
+			txt += tr("Resize %1 to: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
 		}
 
 		if (getAngle() != 0) {
