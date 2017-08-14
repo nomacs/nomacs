@@ -1633,9 +1633,9 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude");
 			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef");
 			//example url
-			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
+			//http://maps.google.com/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
 
-			gpsInfo = "http://maps.google.at/maps?q=";
+			gpsInfo = "http://maps.google.com/maps?q=";
 
 			QString latStr = convertGpsCoordinates(Lat).join("+");
 			QString lonStr = convertGpsCoordinates(Lon).join("+");
