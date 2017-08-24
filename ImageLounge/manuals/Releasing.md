@@ -12,6 +12,7 @@
   - nomacs-plugins x86
 - Run _INSTALL -> Project Only -> `Build only INSTALL`_ for every solution
 
+- you need the WiX toolset [1]
 - clean plugin folders in nomacs.x64 and nomacs.x86 (i.e. remove OpenCV dlls)
 - increment installer version number in `nomacs-setup.wxs`: <?define ProductVersion = "3.7.5"?>
 - double-click `make-installer.bat`
@@ -31,7 +32,16 @@
 
 ## READ release
 - Update Version Number in ReadFramework (in CMakeLists.txt and rdf.rc)
-- update-installer.bat: Check also path of Qt installer
-- update-installer.bat: Check TU-code-signng.p12 path
+- Update version number in json for updated module in ReadModule
+
+### Nomacs:
+- make-installer.bat rename `nomacs-setup.msi` to `ReadFramework.msi`
+- nomacs-setup.wxs comment default nomacs, uncomment read build
+- nomacs-setup.wxs update ProductVersion
+
+- make-installer.bat: Check TU-code-signng.p12 path
 - for code signing add /p pwd
 - upload the repository folder to \\hermes\ftp\staff\read
+
+## Links
+[1] http://wixtoolset.org/releases/
