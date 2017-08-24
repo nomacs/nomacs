@@ -203,21 +203,24 @@ DkSettingsEntry DkSettingsEntry::fromSettings(const QString & key, const QSettin
 
 	// int settings
 	bool ok = false;
-	int iVal = settings.value(key, -1).toInt(&ok);
+
+	// double settings?
+	double dVal = settings.value(key, -1.0).toDouble(&ok);
+
+	// we first cast to double & check if the number is rational
+	// if it is not, we pass it to the int cast
+	if (ok && (double)qRound(dVal) != dVal) {
+		se.setValue(dVal);
+		return se;
+	}
+
+	int iVal = settings.value(key, -1).toString().toInt(&ok); //double is ok e.g. 1.3 -> iVal=1
 
 	if (ok) {
 		se.setValue(iVal);
 		return se;
 	}
 	
-	// double settings?
-	double dVal = settings.value(key, -1.0).toDouble(&ok);
-
-	if (ok) {
-		se.setValue(dVal);
-		return se;
-	}
-
 	se.setValue(settings.value(key));
 	return se;
 }
