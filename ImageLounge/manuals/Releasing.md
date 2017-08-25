@@ -43,5 +43,9 @@
 - for code signing add /p pwd
 - upload the repository folder to \\hermes\ftp\staff\read
 
+- alternative version: use signtool sign /n "Technische Universität Wien"  /t http://timestamp.digicert.com .\ReadFramework.msi
+- encoding must be Central European OEM852
+- save certificate in certificate store
+
 ## Links
 [1] http://wixtoolset.org/releases/
