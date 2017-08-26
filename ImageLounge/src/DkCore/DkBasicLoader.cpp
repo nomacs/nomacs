@@ -1457,7 +1457,7 @@ bool DkHDRLoader::load()
 bool DkHDRLoader::loadOCV()
 {
 	if (!mFilePath.right(4).compare(".hdr") || !mFilePath.right(4).compare(".exr"))
-		hdr = cv::imread(mFilePath.toStdString(), cv::IMREAD_UNCHANGED);
+		hdr = cv::imread(mFilePath.toLocal8Bit().constData(), cv::IMREAD_UNCHANGED); //.toLocal8Bit().constData()
 	else
 		return false;
 	if (!hdr.data)
