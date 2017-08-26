@@ -81,7 +81,7 @@ unset(OpenCV_DIR)
 # unset(OpenCV_DIR CACHE) # maa that always set it to default!
 
 if(ENABLE_OPENCV)
-	find_package(OpenCV REQUIRED core imgproc)
+	find_package(OpenCV REQUIRED core imgproc imgcodecs photo)
 
 	SET(OpenCV_LIBRARY_DIRS ${OpenCV_LIBRARY_DIRS} ${OpenCV_LIB_DIR_DBG} ${OpenCV_LIB_DIR_OPT} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_DBG} ${OpenCV_DIR}/lib/${OpenCV_LIB_DIR_OPT})
 	if(NOT OpenCV_FOUND)

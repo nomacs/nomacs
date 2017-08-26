@@ -40,7 +40,7 @@ if(ENABLE_OPENCV)
 	endif(PKG_CONFIG_FOUND)
 
 	if(OpenCV_LIBS STREQUAL "")
-		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+		find_package(OpenCV 2.1.0 REQUIRED core imgproc imgcodecs photo)
 	endif(OpenCV_LIBS STREQUAL "")
 
 	if(NOT OpenCV_FOUND)
