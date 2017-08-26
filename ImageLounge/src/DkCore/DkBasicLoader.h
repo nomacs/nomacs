@@ -49,7 +49,8 @@
 #endif
 
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/photo.hpp>
 #endif
 
 #ifndef DllCoreExport
@@ -180,6 +181,28 @@ protected:
 
 		return static_cast<num>(vr);
 	}
+#endif
+};
+
+class DllCoreExport DkHDRLoader
+{
+public:
+	DkHDRLoader(const QString& filePath);
+
+	bool load();
+	QImage image() const
+	{
+		return mImg;
+	}
+
+protected:
+	QImage mImg;
+	const QString mFilePath;
+#ifdef WITH_OPENCV
+	cv::Mat hdr;
+
+	bool loadOCV();
+	void convertToImg();
 #endif
 };
 
@@ -359,6 +382,7 @@ public slots:
 protected:
 	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 	bool loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false) const;
+	bool loadHDRFile(const QString& filePath, QImage& img) const;
 	void indexPages(const QString& filePath);
 	void convert32BitOrder(void *buffer, int width);
 

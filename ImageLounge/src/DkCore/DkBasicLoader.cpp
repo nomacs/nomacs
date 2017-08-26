@@ -250,6 +250,14 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		imgLoaded = loadRawFile(mFile, img, ba, fast);
 		if (imgLoaded) mLoader = raw_loader;
 	}
+	
+	//HDRI loader
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()))
+	{
+		imgLoaded = loadHDRFile(mFile, img);
+		if (imgLoaded)
+			mLoader = hdr_loader;
+	}
 
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
@@ -391,6 +399,17 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 
 	if (success)
 		img = rawLoader.image();
+
+	return success;
+}
+
+bool DkBasicLoader::loadHDRFile(const QString& filePath, QImage& img) const
+{
+	DkHDRLoader hdrLoader(filePath);
+	bool success = hdrLoader.load();
+
+	if (success)
+		img = hdrLoader.image();
 
 	return success;
 }
@@ -1414,6 +1433,51 @@ QString DkZipContainer::zipMarker() {
 	return mZipMarker;
 }
 
+#endif
+
+//DkHDRLoader ---------------------------------------------------------------------
+DkHDRLoader::DkHDRLoader(const QString & filePath) : mFilePath(filePath)
+{  }
+
+bool DkHDRLoader::load()
+{
+#ifdef  WITH_OPENCV
+	if (loadOCV())
+		convertToImg();
+	else
+		return false;
+
+	return true;
+#else
+	return false;
+#endif
+}
+
+#ifdef WITH_OPENCV
+bool DkHDRLoader::loadOCV()
+{
+	if (!mFilePath.right(4).compare(".hdr") || !mFilePath.right(4).compare(".exr"))
+		hdr = cv::imread(mFilePath.toStdString(), cv::IMREAD_UNCHANGED);
+	else
+		return false;
+	if (!hdr.data)
+		return false;
+
+	return true;
+}
+
+void DkHDRLoader::convertToImg()
+{
+	cv::Mat ldr;
+	cv::Ptr<cv::TonemapReinhard> tm = cv::createTonemapReinhard(2.2f, -1.f, 0.2f);
+
+	tm->process(hdr, ldr);
+	ldr *= 255;
+	ldr.convertTo(ldr, CV_8U);
+	cv::cvtColor(ldr, ldr, CV_BGR2RGB);
+	mImg = DkImage::mat2QImage(ldr);
+	hdr.release();
+}
 #endif
 
 // DkRawLoader --------------------------------------------------------------------

@@ -188,6 +188,12 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters += app_p.rawFilters;
 #endif
 
+#ifdef WITH_OPENCV
+	//hdr format
+	app_p.openFilters.append("High Dynamic Range (*.hdr)");
+	app_p.openFilters.append("High Dynamic Range (*.exr)");
+#endif
+
 	// stereo formats
 	app_p.openFilters.append("JPEG Stereo (*.jps)");
 	app_p.openFilters.append("PNG Stereo (*.pns)");
