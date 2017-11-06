@@ -29,6 +29,7 @@ configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -n
 
 - after it's finished run ``nmake``
 - now it's time to have a cup of coffee
+- having compiled and a cup of coffee type ``nmake install``
 
 ### Clean Qt5 configuration
 To get a really clean tree, use:

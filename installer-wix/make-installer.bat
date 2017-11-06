@@ -12,10 +12,10 @@ REM create meta object
 candle.exe -arch %ARCH% nomacs-setup.wxs nomacs-ui.wxs HarvestedFiles.wxs
 
 REM make setup (should take a few seconds)
-light.exe -ext WixUIExtension nomacs-setup.wixobj nomacs-ui.wixobj HarvestedFiles.wixobj -b ./nomacs.%ARCH% -out nomacs-setup.msi
+light.exe -ext WixUIExtension nomacs-setup.wixobj nomacs-ui.wixobj HarvestedFiles.wixobj -b ./nomacs.%ARCH% -out nomacs-setup-%ARCH%.msi
 
 REM sign the setup
-signtool sign /f "..\..\TU-code-signing.p12"  /t http://timestamp.digicert.com .\nomacs-setup.msi
+signtool sign /f "..\..\TU-code-signing.p12"  /t http://timestamp.digicert.com .\nomacs-setup-%ARCH%.msi
 
 REM clean up
 del *.wixobj

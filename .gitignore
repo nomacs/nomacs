@@ -23,6 +23,7 @@ repository.zip
 /.gitattributes
 /installer-wix/nomacs/.*
 /installer-wix/nomacs.x64/*
+/installer-wix/nomacs.x86/*
 /installer-wix/img/banner-thanks.psd
 /installer-wix/*.wixobj
 /installer-wix/nomacs-setup.msi
@@ -32,3 +33,4 @@ repository.zip
 /x64
 /nomacsCore.dir
 /installer-wix/*.msi
+
