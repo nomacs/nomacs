@@ -162,6 +162,7 @@ int main(int argc, char *argv[]) {
 	// CMD parser --------------------------------------------------------------------
 	nmc::DkPluginManager::createPluginsPath();
 
+	
 	// compute batch process
 	if (!parser.value(batchOpt).isEmpty()) {
 		
