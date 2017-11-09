@@ -21,16 +21,16 @@ installer-test
 repository.zip
 /ImageLounge/cmake/*.tmp
 /.gitattributes
-/installer-wix/nomacs/.*
-/installer-wix/nomacs.x64/*
-/installer-wix/nomacs.x86/*
-/installer-wix/img/banner-thanks.psd
-/installer-wix/*.wixobj
-/installer-wix/nomacs-setup.msi
-/installer-wix/*.wixpdb
-/installer-wix/HarvestedFiles.wxs
+/installer/nomacs/.*
+/installer/nomacs.x64/*
+/installer/nomacs.x86/*
+/installer/img/banner-thanks.psd
+/installer/*.wixobj
+/installer/nomacs-setup.msi
+/installer/*.wixpdb
+/installer/HarvestedFiles.wxs
 /notes.md
 /x64
 /nomacsCore.dir
-/installer-wix/*.msi
+/installer/*.msi
 

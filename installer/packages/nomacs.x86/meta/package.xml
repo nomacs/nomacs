@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Package>
-	<DisplayName>nomacs [x86]</DisplayName>
-	<Description>nomacs for x86 systems.</Description>
-	<Version>3.6.2</Version>
-	<ReleaseDate>2017-03-24</ReleaseDate>
-	<Default>true</Default>
-</Package>
