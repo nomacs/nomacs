@@ -65,6 +65,14 @@ DkNikonPlugin::~DkNikonPlugin() {
 	}
 }
 
+void DkNikonPlugin::setVisible(bool visible) {
+
+	if (!viewport)
+		return;
+
+	viewport->setVisible(visible);
+}
+
 /**
 * Returns descriptive image
 **/
@@ -94,15 +102,9 @@ QSharedPointer<nmc::DkImageContainer> DkNikonPlugin::runPlugin(const QString &ru
 	return image;
 };
 
-/**
-* returns paintViewPort
-**/
-nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
+bool DkNikonPlugin::createViewPort(QWidget * parent) {
 
-	if (!viewport) {
-		// >DIR: dummy viewport [4.7.2014 markus]
-		viewport = new DkNikonViewPort();
-	}
+	viewport = new DkNikonViewPort(parent);
 
 	if (!maidFacade) {
 		QMainWindow* mainWindow = getMainWindow();
@@ -110,8 +112,8 @@ nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 		maidFacade = new MaidFacade(mainWindow);
 
 		if (maidFacade->init()) {
-			
-			
+
+
 			if (!camControls) {
 
 				// get last location
@@ -119,7 +121,7 @@ nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 				int dockLocation = settings.value("camControlsLocation", Qt::RightDockWidgetArea).toInt();
 
 				camControls = new DkCamControls(maidFacade, tr("Camera Controls"));
-			
+
 				if (mainWindow)
 					mainWindow->addDockWidget((Qt::DockWidgetArea)dockLocation, camControls);
 
@@ -128,9 +130,10 @@ nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 				connect(camControls, SIGNAL(closeSignal()), getViewPort(), SIGNAL(closePlugin()));
 			}
 
-			camControls->setVisible(true);		
+			camControls->setVisible(true);
 
-		} else {
+		}
+		else {
 			QMessageBox warningDialog(mainWindow);
 			warningDialog.setWindowTitle(tr("MAID Library could not be opened"));
 			warningDialog.setText(tr("The MAID library could not be opened. Camera controls will be disabled."));
@@ -143,6 +146,14 @@ nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 			return 0;
 		}
 	}
+
+	return true;
+}
+
+/**
+* returns paintViewPort
+**/
+nmc::DkPluginViewPort* DkNikonPlugin::getViewPort() {
 
 	return viewport;
 }
