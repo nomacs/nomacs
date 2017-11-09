@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<?define ProductVersion = "3.7.11"?>
+<?define ProductVersion = "3.8.0"?>
 
 <!-- default nomacs -->
 <?define ProductUpgradeCode = "08a898f6-d3c5-4869-9d27-91be685c9ae7"?>
-<?define ShortcutName = "nomacs - Image Lounge [Beta]"?>
+<?define ShortcutName = "nomacs - Image Lounge"?>
 <?define ProductName = "nomacs"?>
  
  <!-- read build -->

@@ -20,3 +20,4 @@ signtool sign /f "..\..\TU-code-signing.p12"  /t http://timestamp.digicert.com .
 REM clean up
 del *.wixobj
 del *.wixpdb
+del HarvestedFiles.wxs
