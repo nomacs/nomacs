@@ -2199,13 +2199,14 @@ void DkNoMacs::checkForUpdate(bool silent) {
 
 		DkTimer dt;
 
-		if (!DkSettingsManager::param().isPortable()) {
-			
-			if (!mInstallUpdater)
-				mInstallUpdater = new DkInstallUpdater(this);
-			mInstallUpdater->checkForUpdates(silent);
-		}
-		else {
+		// fall back to our old-school updater
+		//if (!DkSettingsManager::param().isPortable()) {
+		//	
+		//	if (!mInstallUpdater)
+		//		mInstallUpdater = new DkInstallUpdater(this);
+		//	mInstallUpdater->checkForUpdates(silent);
+		//}
+		//else {
 
 			if (!mUpdater) {
 				mUpdater = new DkUpdater(this);
@@ -2214,7 +2215,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 			}
 			mUpdater->silent = silent;
 			mUpdater->checkForUpdates();
-		}
+		//}
 		qDebug() << "checking for updates takes: " << dt;
 	}
 #endif // !#ifndef Q_OS_LINUX

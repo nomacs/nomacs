@@ -312,13 +312,13 @@ void DkUpdater::checkForUpdates() {
 	DkSettingsManager::param().save();
 
 #ifdef Q_OS_WIN
-	QUrl url ("http://www.nomacs.org/version_win_stable");
+	QUrl url ("http://www.nomacs.org/version/version_win_stable");
 #elif defined Q_OS_LINUX
-	QUrl url ("http://www.nomacs.org/version_linux");
+	QUrl url ("http://www.nomacs.org/version/version_linux");
 #elif defined Q_OS_MAC
-	QUrl url ("http://www.nomacs.org/version_mac_stable");
+	QUrl url ("http://www.nomacs.org/version/version_mac_stable");
 #else
-	QUrl url ("http://www.nomacs.org/version");
+	QUrl url ("http://www.nomacs.org/version/version");
 #endif
 
 	// the proxy settings take > 2 sec on Win7
@@ -520,12 +520,12 @@ void DkTranslationUpdater::checkForUpdates() {
 		mAccessManager.setProxy(listOfProxies[0]);
 	}
 
-	QUrl url ("http://www.nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language + ".qm");
+	QUrl url ("http://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	mReply = mAccessManager.get(QNetworkRequest(url));
 	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
-	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
+	url=QUrl("http://nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
 	qDebug() << "checking for new translations at " << url;
 	mReplyQt = mAccessManager.get(QNetworkRequest(url));
 	connect(mReplyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
@@ -623,6 +623,7 @@ void DkTranslationUpdater::updateDownloadProgress(qint64 received, qint64 total)
 		return;
 
 	QDateTime lastModifiedRemote = mReply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
+
 	QString translationName = "nomacs_"+ DkSettingsManager::param().global().language + ".qm";
 	qDebug() << "isRemoteFileNewer:" << isRemoteFileNewer(lastModifiedRemote, translationName);
 	if (!isRemoteFileNewer(lastModifiedRemote, translationName)) {

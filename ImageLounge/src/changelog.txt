@@ -8,6 +8,13 @@ nomacs 3.8.0
 - Batch resizing fixed
 - Minor bug fixes
 
+- Drag & Drop fixed
+- Batch resize fixed
+- GPS link fixed
+- Translation downloader fixed
+
+
+
 nomacs 3.6.1
 ============
 - translations fixed

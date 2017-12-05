@@ -11,7 +11,6 @@
   - nomacs-plugins x64
   - nomacs-plugins x86
 - Run _INSTALL -> Project Only -> `Build only INSTALL`_ for every solution
-
 - you need the WiX toolset [1]
 - clean plugin folders in nomacs.x64 and nomacs.x86 (i.e. remove OpenCV dlls)
 - increment installer version number in `nomacs-setup.wxs`: <?define ProductVersion = "3.7.5"?>

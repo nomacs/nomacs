@@ -19,16 +19,16 @@ perl init-repository
 - open a `Native Tools Command Prompt` from Visuas Studio, dir to `qtbase` and type:
 ```bat
 REM Visual Studio 2015
-configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre -qt-freetype -opengl dynamic -qt-sql-sqlite -no-dbus -strip -plugin-sql-sqlite -make libs -nomake tools -nomake examples -nomake tests -platform win32-msvc2015
+configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre -qt-freetype -opengl dynamic -no-dbus -strip -plugin-sql-sqlite -make libs -nomake tools -nomake examples -nomake tests -platform win32-msvc2015 -prefix build
 ```
 ```bat
 REM Visual Studio 2017
-configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake tools -nomake examples -nomake tests -skip qtwebengine  -platform win32-msvc
+configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake tools -nomake examples -nomake tests -skip qtwebengine  -platform win32-msvc -prefix build
 ```
-
 
 - after it's finished run ``nmake``
 - now it's time to have a cup of coffee
+- having compiled and a cup of coffee type ``nmake install``
 
 ### Clean Qt5 configuration
 To get a really clean tree, use:

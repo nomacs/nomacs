@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Package>
-	<DisplayName>nomacs [x64]</DisplayName>
-	<Description>nomacs for x64 systems.</Description>
-	<Version>3.7.0</Version>
-	<ReleaseDate>2017-04-03</ReleaseDate>
-	<Default>true</Default>
-</Package>

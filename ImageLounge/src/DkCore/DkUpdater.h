@@ -78,6 +78,7 @@ protected:
 	QVector<DkPackage> parse(QXmlStreamReader& reader) const;
 };
 
+// deprecated since msi installer...
 class DllCoreExport DkInstallUpdater : public QObject {
 	Q_OBJECT
 
