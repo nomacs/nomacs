@@ -3,7 +3,10 @@ nomacs 3.8.0
 - Full PhaseOne Support (Monochrome)
 - RAW loader optimized (less RAM & speed-up)
 - RAW loading improved (pink pixels reduced)
-- New MSI installer (Windows)
+- MSI installer
+- Drag&Drop fixes
+- Batch resizing fixed
+- Minor bug fixes
 
 - Drag & Drop fixed
 - Batch resize fixed
