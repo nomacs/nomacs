@@ -31,7 +31,7 @@ macro(NMC_FINDQT)
 endmacro(NMC_FINDQT)
 
 macro(NMC_INSTALL)
-	set(NOMACS_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/../installer-wix/ CACHE PATH "Path to the installer directory")
+	set(NOMACS_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/../installer/ CACHE PATH "Path to the installer directory")
 
 	if (MSVC)
 		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/${PROJECT_NAME}.${NMC_ARCHITECTURE})
