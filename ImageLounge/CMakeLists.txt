@@ -22,12 +22,6 @@ set(NOMACS_VERSION_PATCH 0)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
 
-# Codecov
-if(CMAKE_COMPILER_IS_GNUCXX)
-    include("cmake/CodeCoverage.cmake")
-    setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
-endif()
-
 if(CMAKE_CL_64)
 	SET(NMC_ARCHITECTURE "x64")
 else()
@@ -51,6 +45,13 @@ option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
+option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
+
+# Codecov
+if( ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
+    include("cmake/CodeCoverage.cmake")
+    setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
+endif()
 
 if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
@@ -98,7 +99,7 @@ elseif(NOT MSVC)
 	message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
 	# Codecov
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -pthread -g -O0 -fprofile-arcs -ftest-coverage")
 endif()
