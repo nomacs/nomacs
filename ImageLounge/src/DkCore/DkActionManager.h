@@ -372,6 +372,7 @@ public:
 		shortcut_rename			= Qt::Key_F2,
 		shortcut_goto			= Qt::CTRL + Qt::Key_G,
 		shortcut_extract		= Qt::CTRL + Qt::Key_E,
+		shortcut_reload			= Qt::Key_F5,
 
 		shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 		shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,

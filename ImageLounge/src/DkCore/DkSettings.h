@@ -190,6 +190,11 @@ public:
 		QColor bgColorFrameless;
 		QColor hudFgdColor;
 		QColor iconColor;
+
+		// theme colors
+		QColor themeFgdColor;
+		QColor themeBgdColor;
+
 		bool defaultBackgroundColor;
 		bool defaultIconColor;
 		int thumbSize;

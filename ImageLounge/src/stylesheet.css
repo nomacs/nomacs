@@ -1,3 +1,9 @@
+/* DEBUG */
+/*
+ QWidget {
+	background-color: QColor(0,0,0,20); border: 1px solid #000000;
+} */
+
 /* batch */
 nmc--DkBatchInput QTextEdit {
 	border: none;
@@ -130,7 +136,7 @@ QToolButton#DkThumbToolButton::menu-indicator {
 
 
 QLabel#statusBarLabel {
-	color: #555555;
+	color: #555;
 }
 
 /* 
@@ -162,19 +168,9 @@ QGraphicsView#DkBaseViewPort {
 	background-color: BACKGROUND_COLOR;
 } 
 
-/* DEBUG */
-/* QWidget {
-	background-color: QColor(0,0,0,20); border: 1px solid #000000;
-}
-*/
-
  /* Batch Widgets */
  QLabel#DkBatchTitle {
 	font-size: 16px;
-}
-
-QLabel#DkFileSelection{
-	border-radius: 5px; border: 1px solid #AAAAAA;
 }
 
 /* Dialogs */
@@ -188,21 +184,20 @@ QLabel#DkSplashInfoLabel {
 }
 
 QPushButton#cancelButtonSplash {
-	font-size: 15px; font: bold; color: rgba(0,0,0,200)
+	font-size: 15px; 
+	font: bold; 
+	color: rgba(0,0,0,200);
 }
 
 QLabel#DkDecentInfo {
 	color: #666;
 }
 
-QLabel#DkDecentInfo[warning="true"] {
-	color: #9f1d1d;
-}
-
 QLineEdit#DkWarningEdit {
 	color: #000;
 }
 
+QLabel#DkDecentInfo[warning="true"],
 QLineEdit#DkWarningEdit[error="true"] {
 	color: #9f1d1d;
 }
@@ -251,11 +246,6 @@ nmc--DkRecentFilesWidget[imageLoaded="true"] QLabel#DkFileLabel:hover {
 }
 
 /* HUD Widgets */
-QLabel#DkCommentWidget{
-	color: #f00;
-	background-color: HUD_BACKGROUND_COLOR;
-}
-
 QSlider#slZoom::groove:horizontal {
     height: 5px;
     border: 1px solid HUD_FOREGROUND_COLOR;
@@ -367,11 +357,6 @@ QPushButton#removeFileButton {
 QPushButton#removeFileButton:hover {
 	background-color: rgba(255,255,255,.4);
 }
-
-/* Settings */
-QWidget#memoryGradient {
-	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);
-}
  
 /* preferences */
 QScrollArea#DkPreferenceTabs,
@@ -442,6 +427,7 @@ QWidget#DkPreferenceWidget {
 }
 
 QLabel#subTitle {
+	font: light "Segoe UI";
 	margin-top: 10px;
 	font-size: 14pt;
 	color: #666;
@@ -570,4 +556,8 @@ QLabel#summaryMeta {
 QListWidget#profileList {
 	font-size: 14pt;
 	max-width: 400px;
+}
+
+nmc--DkMetaDataSelection QScrollArea QWidget {
+	background-color: #fff;
 }

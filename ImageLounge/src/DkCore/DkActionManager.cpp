@@ -1023,7 +1023,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mFileActions[menu_file_reload] = new QAction(QObject::tr("&Reload File"), parent);
 	mFileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	mFileActions[menu_file_reload]->setShortcuts(QKeySequence::Refresh);
+	mFileActions[menu_file_reload]->setShortcut(QKeySequence(shortcut_reload));
 	mFileActions[menu_file_reload]->setStatusTip(QObject::tr("Reload File"));
 
 	mFileActions[menu_file_next] = new QAction(mFileIcons[icon_file_next], QObject::tr("Ne&xt File"), parent);

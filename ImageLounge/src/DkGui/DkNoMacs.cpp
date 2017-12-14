@@ -319,6 +319,31 @@ void DkNoMacs::loadStyleSheet() {
 
 		QString cssString = file.readAll();
 
+		// add theme
+		QFileInfo tfi(QCoreApplication::applicationDirPath(), "dark-theme.css");
+		QFile theme(tfi.absoluteFilePath());
+
+		if (theme.open(QFile::ReadOnly)) {
+			QString ts = theme.readAll();
+			ts = parseColors(ts);
+
+			cssString += ts;
+
+			QPalette p = palette();
+			p.setColor(QPalette::Window, DkSettingsManager::param().display().themeBgdColor);
+			p.setColor(QPalette::WindowText, DkSettingsManager::param().display().themeFgdColor);
+			p.setColor(QPalette::Button, QColor(0,0,0));
+			p.setColor(QPalette::ButtonText, DkSettingsManager::param().display().themeFgdColor);
+
+
+			p.setColor(QPalette::Base, DkSettingsManager::param().display().themeBgdColor);
+			qApp->setPalette(p);
+
+			qInfo() << "theme loaded from" << tfi.fileName();
+		}
+		else
+			qInfo() << "could not load theme from" << tfi.absoluteFilePath();
+
 		QColor hc = DkSettingsManager::param().display().highlightColor;
 		hc.setAlpha(150);
 
@@ -328,6 +353,7 @@ void DkNoMacs::loadStyleSheet() {
 		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
 		cssString.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
 		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
+		cssString.replace("FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().themeFgdColor));
 		cssString.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
 
 		qApp->setStyleSheet(cssString);
@@ -336,6 +362,64 @@ void DkNoMacs::loadStyleSheet() {
 		qInfo() << "CSS loaded from: " << cssInfo.absoluteFilePath();
 		//qDebug() << "style: \n" << cssString;
 	}
+}
+
+QString DkNoMacs::parseColors(const QString & styleSheet) const {
+
+	QStringList cs = styleSheet.split("--nomacs-color-def");
+
+	if (cs.size() == 3) {
+
+		// we expect something like this:
+		/* overload color settings of nomacs */
+		//	--nomacs-color-def
+		//		HIGHLIGHT_COLOR:	#ff0;
+		//		WINDOW_COLOR:		#333;
+		//	--nomacs-color-def
+		QStringList cols = cs[1].split(";");
+
+		for (auto str : cols) {
+
+			str = str.simplified();
+			
+			// igonre blanks
+			if (str.isEmpty())
+				continue;
+
+			QStringList kv = str.split(":");
+
+			if (kv.size() != 2) {
+				qWarning() << "could not parse color from" << str;
+				qWarning() << "I expected a line like this: HUD_BACKGROUND_COLOR: #f00;";
+				continue;
+			}
+
+			QString cc = kv[1].simplified();
+
+			if (kv[0] == "HIGHLIGHT_COLOR")
+				DkSettingsManager::param().display().highlightColor.setNamedColor(cc);
+			else if (kv[0] == "HUD_BACKGROUND_COLOR")
+				DkSettingsManager::param().display().hudBgColor.setNamedColor(cc);
+			else if (kv[0] == "HUD_FOREGROUND_COLOR")
+				DkSettingsManager::param().display().hudFgdColor.setNamedColor(cc);
+			else if (kv[0] == "BACKGROUND_COLOR") {
+				DkSettingsManager::param().display().bgColor.setNamedColor(cc);
+				DkSettingsManager::param().display().themeBgdColor.setNamedColor(cc);
+			}
+			else if (kv[0] == "FOREGROUND_COLOR")
+				DkSettingsManager::param().display().themeFgdColor.setNamedColor(cc);
+			else if (kv[0] == "ICON_COLOR") {
+				DkSettingsManager::param().display().iconColor.setNamedColor(cc);
+				DkSettingsManager::param().display().defaultIconColor = false;
+			}
+			else
+				qWarning() << "could not parse color:" << str;
+		}
+
+		return cs[0] + cs[2];
+	}
+
+	return styleSheet;
 }
 
 void DkNoMacs::createMenu() {

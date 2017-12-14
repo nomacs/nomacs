@@ -197,6 +197,8 @@ protected:
 	bool loadFromMime(const QMimeData* mimeData);
 	bool loadCascadeTrainingFiles(QList<QUrl> urls);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
+	void paintEvent(QPaintEvent* ev) override;
+
 	DkPreferenceWidget* createPreferences();
 	DkThumbScrollWidget* createThumbScrollWidget();
 

@@ -314,6 +314,7 @@ protected:
 	virtual void init();
 	
 	void loadStyleSheet();
+	QString parseColors(const QString& styleSheet) const;
 	virtual void createToolbar();
 	virtual void createActions();
 	virtual void createMenu();

@@ -1,0 +1,167 @@
+
+/* overload color settings of nomacs */
+--nomacs-color-def
+HIGHLIGHT_COLOR: #49c9ed;
+HUD_BACKGROUND_COLOR: #aa333333;
+HUD_FOREGROUND_COLOR: #aaa;
+ICON_COLOR: #ddd;
+
+FOREGROUND_COLOR: #ddd;
+BACKGROUND_COLOR: #333;
+--nomacs-color-def
+
+/* general styles */
+QPushButton {
+	background-color: BACKGROUND_COLOR;
+	border: 1px solid #666;
+	padding: 2px 10px;
+}
+
+QPushButton:flat {
+    border: none; /* no border for a flat push button */
+}
+
+QLineEdit {
+   background: BACKGROUND_COLOR;
+	border: 1px solid #666;
+	selection-background-color: HIGHLIGHT_COLOR;
+}
+
+/* header view */
+QHeaderView,
+QHeaderView::section {
+   background: BACKGROUND_COLOR;
+}
+
+QHeaderView::section {
+   background: BACKGROUND_COLOR;
+	padding: 2px;
+	border: none;
+}
+
+QTreeView,
+QTableView,
+QListView {
+	border: 1px solid #444;
+}
+
+QComboBox QAbstractItemView {
+	color: FOREGROUND_COLOR;
+	padding: 5px;
+}
+
+QTreeView::item,
+QTableView::item,
+QListView::item {
+	color: FOREGROUND_COLOR;
+}
+
+QComboBox {
+	border: 1px solid #444;
+}
+QComboBox::drop-down {
+	background-color: #ccc;
+	border-radius: 8px;
+}
+
+QComboBox,
+QDoubleSpinBox,
+QSpinBox {
+	color: FOREGROUND_COLOR;
+	background: BACKGROUND_COLOR;
+}
+
+QToolBar {
+	border-bottom: 1px solid #444;
+}
+
+QScrollArea {
+	border: none;
+}
+
+nmc--DkMetaDataSelection QScrollArea QWidget {
+	background: #444;
+}
+
+QLabel#DkMetadataValueLabel {
+	color: #ddd;
+}
+
+QMenu,
+QMenuBar,
+QTabBar::tab {
+    background: BACKGROUND_COLOR;
+}
+
+QPushButton:hover,
+QToolButton:hover,
+QMenuBar::item:selected,
+QMenu::item:selected,
+QTreeView::item:hover,
+QListView::item:hover,
+QTabBar::tab:selected {
+    background: #666;
+}
+
+QScrollBar:vertical {border: 1px solid #ddd; background: rgba(0,0,0,0); width: 11px; margin: 0 0 0 0;}
+QScrollBar::handle:vertical {	background: #ddd; min-height: 0px;}
+QScrollBar::add-line:vertical {height: 0px;}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {	background: rgba(0,0,0,0); width: 1px;}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+
+QScrollBar:horizontal {border: 1px solid #ddd; background: rgba(0,0,0,0); height: 11px; margin: 0 0 0 0;}
+QScrollBar::handle:horizontal {background: #ddd; min-width: 0px;}
+QScrollBar::add-line:horizontal {width: 0px;}
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}
+
+QLabel#batchContentTitle,
+QDockWidget {
+	color: #fff;
+}
+
+QLabel#batchContentInfo,
+QLabel#statusBarLabel,
+QPushButton#infoButton,
+QListView#resultListView[empty="true"] {
+	color: #ccc; 
+}
+
+QListWidget#historyList::item:disabled {
+	color: #aaa;
+}
+
+nmc--DkGroupWidget {
+	color: #f00;
+}
+
+QLabel#subTitle,
+nmc--DkGroupWidget QCheckBox,
+nmc--DkGroupWidget QRadioButton,
+nmc--DkGroupWidget QLineEdit,
+nmc--DkGroupWidget QLabel {
+	color: #ccc;
+}
+
+
+/* todos */
+QLabel#DkDecentInfo {
+	color: #fff;
+}
+
+QLineEdit#DkWarningEdit {
+	color: #fff;
+}
+
+QLabel#DkDecentInfo[warning="true"],
+QLineEdit#DkWarningEdit[error="true"] {
+	color: #ce5a5a;
+}
+
+nmc--DkFolderScrollBar {
+	border: 1px solid #444;
+}
+
+nmc--DkCentralWidget {
+	border: 1px solid #444;
+}

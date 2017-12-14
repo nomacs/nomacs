@@ -544,7 +544,7 @@ void DkMetaDataSelection::createLayout() {
 	scrollArea->setMinimumSize(QSize(200, 200));
 	scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	scrollArea->setBackgroundRole(QPalette::Light);
+	//scrollArea->setBackgroundRole(QPalette::Light);
 	scrollArea->setWidget(lWidget);
 
 	mCbCheckAll = new QCheckBox(tr("Check All"), this);
