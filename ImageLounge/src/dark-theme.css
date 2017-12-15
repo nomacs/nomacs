@@ -14,15 +14,29 @@ BACKGROUND_COLOR: #333;
 QPushButton {
 	background-color: BACKGROUND_COLOR;
 	border: 1px solid #666;
-	padding: 2px 10px;
+	padding: 4px 20px;
 }
-
+ 
 QPushButton:flat {
     border: none; /* no border for a flat push button */
 }
 
+nmc--DkBatchTabButton {
+	min-width: 250px;
+	padding: 10px 20px;
+	padding-bottom: 30px;
+}
+
+QPushButton#DkTabEntryWidget:checked,
+nmc--DkBatchTabButton:checked {
+	background-color: rgba(0, 0, 0, 80);
+	border: none;	/* clear border styles first */
+	border-left: 4px solid HIGHLIGHT_COLOR;
+}
+
 QLineEdit {
-   background: BACKGROUND_COLOR;
+	background: BACKGROUND_COLOR;
+	color: FOREGROUND_COLOR;
 	border: 1px solid #666;
 	selection-background-color: HIGHLIGHT_COLOR;
 }
@@ -30,15 +44,16 @@ QLineEdit {
 /* header view */
 QHeaderView,
 QHeaderView::section {
-   background: BACKGROUND_COLOR;
+	background: BACKGROUND_COLOR;
 }
 
 QHeaderView::section {
-   background: BACKGROUND_COLOR;
+	background: BACKGROUND_COLOR;
 	padding: 2px;
 	border: none;
 }
 
+QTextEdit,
 QTreeView,
 QTableView,
 QListView {
@@ -50,6 +65,9 @@ QComboBox QAbstractItemView {
 	padding: 5px;
 }
 
+QListView#resultListView,
+QTextEdit,
+QAbstractItemView,
 QTreeView::item,
 QTableView::item,
 QListView::item {
@@ -87,6 +105,7 @@ QLabel#DkMetadataValueLabel {
 	color: #ddd;
 }
 
+QToolBar,
 QMenu,
 QMenuBar,
 QTabBar::tab {
@@ -143,6 +162,10 @@ nmc--DkGroupWidget QLabel {
 	color: #ccc;
 }
 
+/* profile widget */
+nmc--DkProfileSummaryWidget {
+	background-color: #444;
+}
 
 /* todos */
 QLabel#DkDecentInfo {
