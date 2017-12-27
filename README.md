@@ -76,6 +76,12 @@ Install required dependencies:
 $ brew install qt5 exiv2 opencv libraw quazip
 ```
 
+Link `qmake` binary into `/usr/local/bin`:
+
+```
+$ ln -s /usr/local/opt/qt5/bin/qmake /usr/local/bin/
+```
+
 Go to the `nomacs` directory and run cmake to get the Makefiles
 
 ```
