@@ -15,6 +15,7 @@ add_executable(
 	${NOMACS_EXE_SOURCES} ${NOMACS_EXE_HEADERS} 
 	${NOMACS_QM} ${NOMACS_RC} ${CHANGLOG_FILE}
 	)
+	
 # define that changelog should not be compiled
 set_source_files_properties(${CHANGLOG_FILE} PROPERTIES HEADER_FILE_ONLY TRUE)
 target_link_libraries(
@@ -43,11 +44,11 @@ add_library(
 target_link_libraries(
 	${DLL_CORE_NAME}
 	${EXIV2_LIBRARIES} 		# metadata support
-	${VERSION_LIB} 			# needed for registering the curren version
-	${LIBRAW_LIBRARIES} 	# RAW support (optional)
+	${VERSION_LIB} 				# needed for registering the curren version
+	${LIBRAW_LIBRARIES} 		# RAW support (optional)
 	${OpenCV_LIBS} 			# image manipulation support (optional)
 	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
-	${QUAZIP_DEPENDENCY}	# ZIP support (optional)
+	${QUAZIP_DEPENDENCY}# ZIP support (optional)
 	)
 # ${VERSION_LIB} 
 
@@ -157,7 +158,7 @@ if (ENABLE_INCREMENTER)
 endif()
 
 # set properties for Visual Studio Projects
-add_definitions(/Zc:wchar_t-)
+add_definitions(/Zc:wchar_t)
 set(CMAKE_CXX_FLAGS_DEBUG "/W4 /EHsc ${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "/W4 /O2 /EHsc -DDK_INSTALL -DQT_NO_DEBUG_OUTPUT ${CMAKE_CXX_FLAGS_RELEASE}")
 

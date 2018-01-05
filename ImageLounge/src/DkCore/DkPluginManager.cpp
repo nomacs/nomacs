@@ -618,17 +618,17 @@ void DkPluginTableWidget::createLayout() {
 	mFilterEdit->setPlaceholderText(tr("Search plugins"));
 	connect(mFilterEdit, SIGNAL(textChanged(QString)), this, SLOT(filterTextChanged()));
 
-	QPushButton* updateButton = new QPushButton(tr("Add or Remove Plugins"), this);
-	updateButton->setObjectName("updateButton");
-	if (DkSettingsManager::param().isPortable())
-		updateButton->hide();
+	//QPushButton* updateButton = new QPushButton(tr("Add or Remove Plugins"), this);
+	//updateButton->setObjectName("updateButton");
+	//if (DkSettingsManager::param().isPortable())
+	//	updateButton->hide();
 
 	QWidget* searchWidget = new QWidget(this);
 	QHBoxLayout* sLayout = new QHBoxLayout(searchWidget);
 	sLayout->setContentsMargins(0, 0, 0, 0);
 	sLayout->addWidget(mFilterEdit);
 	//sLayout->addStretch();
-	sLayout->addWidget(updateButton);
+	//sLayout->addWidget(updateButton);
 
 	// main table
     mTableView = new QTableView(this);
@@ -678,10 +678,11 @@ void DkPluginTableWidget::createLayout() {
 	layout->addWidget(descWidget);
 }
 
-void DkPluginTableWidget::on_updateButton_clicked() {
-
-	DkInstallUpdater::updateNomacs("--manage-packages");
-}
+//void DkPluginTableWidget::on_updateButton_clicked() {
+//
+//	// TODO!
+//	//DkInstallUpdater::updateNomacs("--manage-packages");
+//}
 
 void DkPluginTableWidget::reloadPlugins() {
 

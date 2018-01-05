@@ -61,20 +61,13 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 
 	try {
 		if (!ba || ba->isEmpty()) {
-#ifdef EXV_UNICODE_PATH
-#if QT_VERSION < 0x050000
-			// it was crashing here - if the thumbnail is fetched in the constructor of a label
-			// seems that the QFileInfo was corrupted?!
-			std::wstring strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdWString() : filePath.toStdWString();
-			mExifImg = Exiv2::ImageFactory::open(strFilePath);
-#else
-			std::wstring strFilePath = (fileInfo.isSymLink()) ? (wchar_t*)fileInfo.symLinkTarget().utf16() : (wchar_t*)mFilePath.utf16();
-			mExifImg = Exiv2::ImageFactory::open(strFilePath);
-#endif
-#else
+
+			// we used to have a few ugly lines here, just to get unicode files loaded
+			// since we load 99% through the buffer & we cannot use /Zc:wchar_t- (as of Qt5.10)
+			// I removed these lines - so if we don't have the buffer, we can only load the metadata
+			// of files that use std::string literals in their path
 			std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
 			mExifImg = Exiv2::ImageFactory::open(strFilePath);
-#endif
 		}
 		else {
 			Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba->constData(), ba->size()));
@@ -1374,13 +1367,9 @@ Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString& filePath) const {
 	}
 	if (!xmpImg.get()) {
 
-#ifdef EXV_UNICODE_PATH
-		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
-		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.utf16());
-#else
+		// We can only load sidecar files whose paths use std::string literals (no unicode here)
 		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:	
 		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
-#endif
 
 		xmpImg->setMetadata(*mExifImg);
 		xmpImg->writeMetadata();	// we need that to add xmp afterwards - but why?

@@ -78,27 +78,6 @@ protected:
 	QVector<DkPackage> parse(QXmlStreamReader& reader) const;
 };
 
-// deprecated since msi installer...
-class DllCoreExport DkInstallUpdater : public QObject {
-	Q_OBJECT
-
-public:
-	DkInstallUpdater(QObject* parent = 0);
-
-	void checkForUpdates(bool silent = true);
-
-	static bool updateNomacs(const QString& cmd = "");
-
-	public slots:
-	void replyFinished(QNetworkReply* reply);
-
-protected:
-
-	QNetworkAccessManager* mManager = 0;
-	bool mSilent = true;
-
-};
-
 class DllCoreExport DkUpdater : public QObject {
 	Q_OBJECT
 

@@ -301,7 +301,7 @@ private:
 
 protected slots:
 	void filterTextChanged();
-	void on_updateButton_clicked();
+	//void on_updateButton_clicked();
 };
 
 // model for the table in the installed plug-ins tab 

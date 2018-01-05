@@ -209,14 +209,13 @@ double DkMemory::getFreeMemory() {
 
 bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
-	//return true;
 }
 
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #if QT_VERSION < 0x050000
 	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
 #else
-	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+	return wCompLogic(qStringToStdWString(lhs), qStringToStdWString(rhs));
 #endif
 }
 
