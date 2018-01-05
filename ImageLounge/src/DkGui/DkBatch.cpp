@@ -96,11 +96,13 @@ QString DkBatchTabButton::info() const {
 
 void DkBatchTabButton::paintEvent(QPaintEvent *event) {
 
+	QPushButton::paintEvent(event);
+
 	// fixes stylesheets which are not applied to custom widgets
 	QStyleOption opt;
 	opt.init(this);
 	QPainter p(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+	//style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
 	QFont f;
 	f.setPointSize(9);
@@ -116,7 +118,6 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event) {
 
 	p.drawText(QPoint(25, 50), mInfo);
 
-	QPushButton::paintEvent(event);
 }
 
 // DkBatchContainer --------------------------------------------------------------------

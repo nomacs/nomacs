@@ -93,6 +93,7 @@ namespace nmc {
 void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
 
 #if QT_VERSION >= 0x050500
+	// this might cause a crash (if qDebug() is used in a destructor)
 	if (!DkSettingsManager::param().app().useLogFile)
 		return;	// should not be called anyhow
 
