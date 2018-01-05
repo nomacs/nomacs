@@ -387,7 +387,7 @@ void DkPluginContainer::run() {
 		
 		vPlugin->setVisible(true);
 
-		connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
+		connect(vPlugin->getViewPort(), SIGNAL(showToolBar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolBar(QToolBar*, bool)));
 		emit runPlugin(vPlugin, false);
 	}
 	else if ((p && p->interfaceType() == DkPluginInterface::interface_basic) || p->interfaceType() == DkPluginInterface::interface_batch) {

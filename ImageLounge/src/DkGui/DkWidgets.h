@@ -627,7 +627,7 @@ public slots:
 
 signals:
 	void cancelSignal();
-	void showToolbar(QToolBar* toolbar, bool show);
+	void showToolBar(QToolBar* toolbar, bool show);
 
 protected:
 	void createToolbar();

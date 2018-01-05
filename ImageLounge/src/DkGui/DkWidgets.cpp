@@ -2045,7 +2045,7 @@ void DkCropWidget::setVisible(bool visible) {
 	if (visible && !cropToolbar)
 		createToolbar();
 
-	emit showToolbar(cropToolbar, visible);
+	emit showToolBar(cropToolbar, visible);
 	DkEditableRect::setVisible(visible);
 }
 

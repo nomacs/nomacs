@@ -202,7 +202,7 @@ void DkNoMacs::init() {
 	installEventFilter(this);
 
 	showMenuBar(DkSettingsManager::param().app().showMenuBar);
-	showToolbar(DkSettingsManager::param().app().showToolBar);
+	showToolBar(DkSettingsManager::param().app().showToolBar);
 	showStatusBar(DkSettingsManager::param().app().showStatusBar);
 
 	// connects that are needed in all viewers
@@ -212,7 +212,7 @@ void DkNoMacs::init() {
 	// connections to the image loader
 	connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 
-	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolBar(QToolBar*, bool)), this, SLOT(showToolBar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
 
@@ -483,7 +483,7 @@ void DkNoMacs::createActions() {
 	//connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openSettings()));
 
 	connect(am.action(DkActionManager::menu_panel_menu), SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
-	connect(am.action(DkActionManager::menu_panel_toolbar), SIGNAL(toggled(bool)), this, SLOT(showToolbar(bool)));
+	connect(am.action(DkActionManager::menu_panel_toolbar), SIGNAL(toggled(bool)), this, SLOT(showToolBar(bool)));
 	connect(am.action(DkActionManager::menu_panel_statusbar), SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
 	connect(am.action(DkActionManager::menu_panel_transfertoolbar), SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 	connect(am.action(DkActionManager::menu_panel_explorer), SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
@@ -934,9 +934,14 @@ void DkNoMacs::toggleDocks(bool hide) {
 		showMetaDataDock(false, false);
 		showEditDock(false, false);
 		showHistoryDock(false, false);
+		showStatusBar(false, false);
+		showToolBar(false, false);
 	}
-	else
+	else {
 		restoreDocks();
+		showStatusBar(DkSettingsManager::param().app().showStatusBar, false);
+		showToolBar(DkSettingsManager::param().app().showToolBar, false);
+	}
 }
 
 void DkNoMacs::restoreDocks() {
@@ -945,6 +950,7 @@ void DkNoMacs::restoreDocks() {
 	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
 	showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
 	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
+
 }
 
 void DkNoMacs::setFrameless(bool) {
@@ -2087,7 +2093,7 @@ void DkNoMacs::showMenuBar(bool show) {
 		mMenu->hide();
 }
 
-void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
+void DkNoMacs::showToolBar(QToolBar* toolbar, bool show) {
 
 	if (!toolbar)
 		return;
@@ -2124,15 +2130,16 @@ void DkNoMacs::showToolbarsTemporarily(bool show) {
 	}
 }
 
-void DkNoMacs::showToolbar(bool show) {
+void DkNoMacs::showToolBar(bool show, bool permanent) {
 
-	DkSettingsManager::param().app().showToolBar = show;
+	if (DkStatusBarManager::instance().statusbar()->isVisible() == show)
+		return;
+
+	if (permanent)
+		DkSettingsManager::param().app().showToolBar = show;
 	DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
 	
-	if (DkSettingsManager::param().app().showToolBar)
-		mToolbar->show();
-	else
-		mToolbar->hide();
+	mToolbar->setVisible(show);
 }
 
 void DkNoMacs::showStatusBar(bool show, bool permanent) {
@@ -2265,7 +2272,7 @@ void DkNoMacs::settingsChanged() {
 	
 	if (!isFullScreen()) {
 		showMenuBar(DkSettingsManager::param().app().showMenuBar);
-		showToolbar(DkSettingsManager::param().app().showToolBar);
+		showToolBar(DkSettingsManager::param().app().showToolBar);
 		showStatusBar(DkSettingsManager::param().app().showStatusBar);
 	}
 }

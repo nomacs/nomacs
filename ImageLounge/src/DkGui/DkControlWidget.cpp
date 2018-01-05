@@ -573,7 +573,7 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force) {
 			qDebug() << "[DkControlWidget] I cannot close a plugin if the image container is NULL";
 	}
 
-	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolbar(QToolBar*, bool)));
+	disconnect(vPlugin->getViewPort(), SIGNAL(showToolBar(QToolBar*, bool)), vPlugin->getMainWindow(), SLOT(showToolBar(QToolBar*, bool)));
 
 	setPluginWidget(vPlugin, true);
 	plugin->setActive(false);		// handles states

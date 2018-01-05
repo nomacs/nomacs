@@ -187,8 +187,8 @@ public slots:
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbarsTemporarily(bool show);
-	void showToolbar(bool show);
-	void showToolbar(QToolBar* toolbar, bool show);
+	void showToolBar(bool show, bool permanent = true);
+	void showToolBar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
 	void openFileWith(QAction* action);
 	void aboutDialog();

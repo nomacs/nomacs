@@ -196,7 +196,7 @@ public:
 
 signals:
 	void closePlugin(bool askForSaving = false) const;
-	void showToolbar(QToolBar* toolbar, bool show) const;
+	void showToolBar(QToolBar* toolbar, bool show) const;
 	void loadFile(const QString& filePath) const;
 	void loadImage(const QImage& image) const;
 	void showInfo(const QString& msg) const;
