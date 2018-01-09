@@ -848,7 +848,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showCrop = false;
 	display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
 	display_p.tpPattern = false;
-	display_p.themeName = "default.css";
+	display_p.themeName = "Light Theme.css";
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
@@ -1354,6 +1354,24 @@ void DkThemeManager::applyTheme() const {
 	cs += cssString;
 
 	qApp->setStyleSheet(cs);
+}
+
+QString DkThemeManager::cleanThemeName(const QString & theme) const {
+	
+	QString t = theme;
+	t.replace(".css", "");
+	
+	return t;
+}
+
+QStringList DkThemeManager::cleanThemeNames(const QStringList & themes) const {
+
+	QStringList ctn;
+
+	for (const QString& t : themes)
+		ctn << cleanThemeName(t);
+
+	return ctn;
 }
 
 QString DkThemeManager::parseColors(const QString & styleSheet) const {

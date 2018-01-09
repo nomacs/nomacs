@@ -286,12 +286,12 @@ void DkGeneralPreference::createLayout() {
 
 	// Theme
 	DkThemeManager tm;
-	QStringList themes = tm.getAvailableThemes();
+	QStringList themes = tm.cleanThemeNames(tm.getAvailableThemes());
 
 	QComboBox* themeBox = new QComboBox(this);
 	themeBox->setObjectName("themeBox");
 	themeBox->addItems(themes);
-	themeBox->setCurrentText(tm.getCurrentThemeName());
+	themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
 	connect(themeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showRestartLabel()));
 
 	// color settings
@@ -496,10 +496,12 @@ void DkGeneralPreference::on_iconColor_resetClicked() const {
 
 void DkGeneralPreference::on_themeBox_currentIndexChanged(const QString& text) const {
 
-	if (DkSettingsManager::param().display().themeName != text) {
-		DkSettingsManager::param().display().themeName = text;
+	QString tn = text + ".css";
+
+	if (DkSettingsManager::param().display().themeName != tn) {
+		DkSettingsManager::param().display().themeName = tn;
 		DkThemeManager tm;
-		tm.loadTheme(text);
+		tm.loadTheme(tn);
 	}
 }
 

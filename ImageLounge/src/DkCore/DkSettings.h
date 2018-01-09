@@ -92,6 +92,9 @@ public:
 	QString loadStylesheet() const;
 	void applyTheme() const;
 
+	QString cleanThemeName(const QString& theme) const;
+	QStringList cleanThemeNames(const QStringList& themes) const;
+
 protected:
 	QString parseColors(const QString & styleSheet) const;
 	QString replaceColors(const QString & cssString) const;
