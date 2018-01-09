@@ -1266,10 +1266,10 @@ DefaultSettings::DefaultSettings() : QSettings(DkSettingsManager::instance().par
 // -------------------------------------------------------------------- DkThemeManager 
 QStringList DkThemeManager::getAvailableThemes() const {
 	
-	QDir themeDir(themeDir());
-	themeDir.setNameFilters(QStringList() << "*.css");
+	QDir td(themeDir());
+	td.setNameFilters(QStringList() << "*.css");
 
-	QStringList themes = themeDir.entryList(QDir::Files, QDir::Name);
+	QStringList themes = td.entryList(QDir::Files, QDir::Name);
 
 	return themes;
 }
