@@ -740,7 +740,8 @@ void DkImgTransformationsViewPort::setVisible(bool visible) {
 	}
 
 
-	if (imgTransformationsToolbar) emit showToolbar(imgTransformationsToolbar, visible);
+	if (imgTransformationsToolbar) 
+		emit showToolBar(imgTransformationsToolbar, visible);
 
 	setMode(defaultMode);
 	DkPluginViewPort::setVisible(visible);

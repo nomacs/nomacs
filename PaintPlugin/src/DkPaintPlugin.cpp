@@ -401,7 +401,7 @@ bool DkPaintViewPort::isCanceled() {
 void DkPaintViewPort::setVisible(bool visible) {
 
 	if (paintToolbar)
-		emit showToolbar(paintToolbar, visible);
+		emit showToolBar(paintToolbar, visible);
 
 	DkPluginViewPort::setVisible(visible);
 }
