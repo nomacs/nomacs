@@ -511,7 +511,7 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	// add preference widget ------------------------------
 	DkActionManager& am = DkActionManager::instance();
 	DkPreferenceWidget* pw = new DkPreferenceWidget(this);
-	connect(pw, SIGNAL(restartSignal()), this, SLOT(restart()));
+	connect(pw, SIGNAL(restartSignal()), this, SLOT(restart()), Qt::UniqueConnection);
 
 	// add actions
 	pw->addActions(am.fileActions().toList());
@@ -856,7 +856,7 @@ void DkCentralWidget::showPreferences(bool show) {
 		if (!mWidgets[preference_widget]) {
 			mWidgets[preference_widget] = createPreferences();
 			mViewLayout->insertWidget(preference_widget, mWidgets[preference_widget]);
-			connect(mWidgets[preference_widget], SIGNAL(restartSignal()), this, SLOT(restart()));
+			connect(mWidgets[preference_widget], SIGNAL(restartSignal()), this, SLOT(restart()), Qt::UniqueConnection);
 		}
 		
 		switchWidget(mWidgets[preference_widget]);

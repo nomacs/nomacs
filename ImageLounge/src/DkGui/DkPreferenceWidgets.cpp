@@ -284,6 +284,16 @@ DkGeneralPreference::DkGeneralPreference(QWidget* parent) : QWidget(parent) {
 
 void DkGeneralPreference::createLayout() {
 
+	// Theme
+	DkThemeManager tm;
+	QStringList themes = tm.getAvailableThemes();
+
+	QComboBox* themeBox = new QComboBox(this);
+	themeBox->setObjectName("themeBox");
+	themeBox->addItems(themes);
+	themeBox->setCurrentText(tm.getCurrentThemeName());
+	connect(themeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showRestartLabel()));
+
 	// color settings
 	DkColorChooser* highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
 	highlightColorChooser->setObjectName("highlightColor");
@@ -317,6 +327,7 @@ void DkGeneralPreference::createLayout() {
 	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
 	DkGroupWidget* colorGroup = new DkGroupWidget(tr("Color Settings"), this);
+	colorGroup->addWidget(themeBox);
 	colorGroup->addWidget(highlightColorChooser);
 	colorGroup->addWidget(iconColorChooser);
 	colorGroup->addWidget(bgColorChooser);
@@ -481,6 +492,15 @@ void DkGeneralPreference::on_iconColor_accepted() const {
 
 void DkGeneralPreference::on_iconColor_resetClicked() const {
 	DkSettingsManager::param().display().defaultIconColor = true;
+}
+
+void DkGeneralPreference::on_themeBox_currentIndexChanged(const QString& text) const {
+
+	if (DkSettingsManager::param().display().themeName != text) {
+		DkSettingsManager::param().display().themeName = text;
+		DkThemeManager tm;
+		tm.loadTheme(text);
+	}
 }
 
 void DkGeneralPreference::on_showRecentFiles_toggled(bool checked) const {

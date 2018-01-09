@@ -77,6 +77,26 @@ protected:
 	QStringList getExtensions(const QString& filter, QString& friendlyName) const;
 };
 
+class DllCoreExport DkThemeManager {
+
+public:
+	DkThemeManager() {};
+
+	QStringList getAvailableThemes() const;
+	QString getCurrentThemeName() const;
+	QString themeDir() const;
+
+	void setCurrentTheme(const QString& themeName) const;
+	QString loadTheme(const QString& themeName) const;
+	
+	QString loadStylesheet() const;
+	void applyTheme() const;
+
+protected:
+	QString parseColors(const QString & styleSheet) const;
+	QString replaceColors(const QString & cssString) const;
+};
+
 class DllCoreExport DkSettings {
 
 public:
@@ -184,6 +204,7 @@ public:
 		bool zoomToFit;
 		bool invertZoom;
 		bool tpPattern;
+		QString themeName;
 		QColor highlightColor;
 		QColor hudBgColor;
 		QColor bgColor;

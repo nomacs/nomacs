@@ -160,7 +160,6 @@ ENDIF(NOT ENABLE_PLUGINS)
 
 
 set(NOMACS_FORMS src/nomacs.ui)
-
 set(NOMACS_RESOURCES src/nomacs.qrc)
 
 file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")

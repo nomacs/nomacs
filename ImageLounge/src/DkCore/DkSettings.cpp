@@ -404,6 +404,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
 	display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
+	display_p.themeName = settings.value("themeName", display_p.themeName).toString();
 	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
@@ -649,6 +650,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("histogramStyle", display_p.histogramStyle);
 	if (force ||display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
+	if (force || display_p.themeName != display_d.themeName)
+		settings.setValue("themeName", display_p.themeName);
 	if (force ||display_p.toolbarGradient != display_d.toolbarGradient)
 		settings.setValue("toolbarGradient", display_p.toolbarGradient);
 	if (force ||display_p.showBorder != display_d.showBorder)
@@ -845,6 +848,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showCrop = false;
 	display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
 	display_p.tpPattern = false;
+	display_p.themeName = "default.css";
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
@@ -1258,5 +1262,176 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 
 // -------------------------------------------------------------------- DefaultSettings
 DefaultSettings::DefaultSettings() : QSettings(DkSettingsManager::instance().param().settingsPath(), QSettings::IniFormat) {}
+
+// -------------------------------------------------------------------- DkThemeManager 
+QStringList DkThemeManager::getAvailableThemes() const {
+	
+	QDir themeDir(themeDir());
+	themeDir.setNameFilters(QStringList() << "*.css");
+
+	QStringList themes = themeDir.entryList(QDir::Files, QDir::Name);
+
+	return themes;
+}
+
+QString DkThemeManager::getCurrentThemeName() const {
+	return DkSettingsManager::param().display().themeName;
+}
+
+QString DkThemeManager::themeDir() const {
+
+	QDir themeDir(QCoreApplication::applicationDirPath() + "/themes");
+	return themeDir.absolutePath();
+}
+
+void DkThemeManager::setCurrentTheme(const QString & themeName) const {
+	DkSettingsManager::param().display().themeName = themeName;
+}
+
+QString DkThemeManager::loadTheme(const QString & themeName) const {
+
+	QString cssString;
+	QFileInfo tfi(themeDir(), themeName);
+	QFile theme(tfi.absoluteFilePath());
+
+	if (theme.open(QFile::ReadOnly)) {
+
+		QString ts = theme.readAll();
+		cssString = parseColors(ts);
+		cssString = cssString.trimmed();
+
+		qInfo() << "theme loaded from" << tfi.fileName();
+	}
+	else
+		qInfo() << "could not load theme from" << tfi.absoluteFilePath();
+
+	return cssString;
+}
+
+QString DkThemeManager::loadStylesheet() const {
+
+	QString cssString;
+
+	QFileInfo cssInfo(":/nomacs/stylesheet.css");
+	QFile file(cssInfo.absoluteFilePath());
+
+	if (file.open(QFile::ReadOnly)) {
+
+		cssString = file.readAll();
+		cssString = replaceColors(cssString);
+
+		qInfo() << "CSS loaded from: " << cssInfo.absoluteFilePath();
+	}
+	
+	file.close();
+
+	return cssString;
+}
+
+void DkThemeManager::applyTheme() const {
+
+	// add theme
+	QString cssString = loadTheme(getCurrentThemeName());
+
+	// NOTE: it is important, that default.css does not contain
+	// any line of code except for the color definitions
+	// otherwise, we change the default palette here...
+	if (!cssString.isEmpty()) {
+
+		cssString = replaceColors(cssString);
+
+		QPalette p = qApp->palette();
+		p.setColor(QPalette::Window, DkSettingsManager::param().display().themeBgdColor);
+		p.setColor(QPalette::WindowText, DkSettingsManager::param().display().themeFgdColor);
+		p.setColor(QPalette::Button, QColor(0, 0, 0));
+		p.setColor(QPalette::ButtonText, DkSettingsManager::param().display().themeFgdColor);
+
+		p.setColor(QPalette::Base, DkSettingsManager::param().display().themeBgdColor);
+		qApp->setPalette(p);
+	}
+
+	QString cs = loadStylesheet();
+	cs += cssString;
+
+	qApp->setStyleSheet(cs);
+}
+
+QString DkThemeManager::parseColors(const QString & styleSheet) const {
+
+	QStringList cs = styleSheet.split("--nomacs-color-def");
+
+	if (cs.size() == 3) {
+
+		// we expect something like this:
+		/* overload color settings of nomacs */
+		//	--nomacs-color-def
+		//		HIGHLIGHT_COLOR:	#ff0;
+		//		WINDOW_COLOR:		#333;
+		//	--nomacs-color-def
+		QStringList cols = cs[1].split(";");
+
+		for (auto str : cols) {
+
+			str = str.simplified();
+
+			// igonre blanks
+			if (str.isEmpty())
+				continue;
+
+			QStringList kv = str.split(":");
+
+			if (kv.size() != 2) {
+				qWarning() << "could not parse color from" << str;
+				qWarning() << "I expected a line like this: HUD_BACKGROUND_COLOR: #f00;";
+				continue;
+			}
+
+			QString cc = kv[1].simplified();
+
+			if (kv[0] == "HIGHLIGHT_COLOR")
+				DkSettingsManager::param().display().highlightColor.setNamedColor(cc);
+			else if (kv[0] == "HUD_BACKGROUND_COLOR")
+				DkSettingsManager::param().display().hudBgColor.setNamedColor(cc);
+			else if (kv[0] == "HUD_FOREGROUND_COLOR")
+				DkSettingsManager::param().display().hudFgdColor.setNamedColor(cc);
+			else if (kv[0] == "BACKGROUND_COLOR") {
+				DkSettingsManager::param().display().bgColor.setNamedColor(cc);
+				DkSettingsManager::param().display().themeBgdColor.setNamedColor(cc);
+			}
+			else if (kv[0] == "FOREGROUND_COLOR")
+				DkSettingsManager::param().display().themeFgdColor.setNamedColor(cc);
+			else if (kv[0] == "ICON_COLOR") {
+				DkSettingsManager::param().display().iconColor.setNamedColor(cc);
+				DkSettingsManager::param().display().defaultIconColor = false;
+			}
+			else
+				qWarning() << "could not parse color:" << str;
+		}
+
+		return cs[0] + cs[2];
+	}
+
+	return styleSheet;
+}
+
+QString DkThemeManager::replaceColors(const QString & cssString) const {
+	
+	QString cs = cssString;
+
+	QColor hc = DkSettingsManager::param().display().highlightColor;
+	hc.setAlpha(150);
+
+	// replace color placeholders
+	cs.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().highlightColor));
+	cs.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
+	cs.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudBgColor));
+	cs.replace("HUD_FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor));
+	cs.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().bgColor));
+	cs.replace("FOREGROUND_COLOR", DkUtils::colorToString(DkSettingsManager::param().display().themeFgdColor));
+	cs.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
+	
+	return cs;
+}
+
 
 }
