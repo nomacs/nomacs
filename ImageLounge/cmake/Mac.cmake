@@ -104,7 +104,6 @@ unset(QUAZIP_LIBRARIES CACHE)
 
 unset(QUAZIP_HEADERS CACHE)
 unset(QUAZIP_SOURCES CACHE)
-unset(QUAZIP_MOCS CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
@@ -123,9 +122,7 @@ if(ENABLE_QUAZIP)
 
 		file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c" "3rdparty/quazip-0.7/quazip/*.cpp")
 		file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
-		file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
 
-		QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
 		add_definitions(-DWITH_QUAZIP)
 	endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
@@ -134,5 +131,3 @@ endif(ENABLE_QUAZIP)
 # add libqpsd
 file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
 file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
-file(GLOB LIBQPSD_MOCS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
-QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
