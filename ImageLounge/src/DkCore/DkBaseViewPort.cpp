@@ -568,8 +568,19 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 	}
 	else if (mMovie && mMovie->isValid())
 		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
-	else
-		painter.drawImage(mImgViewRect, imgQt, imgQt.rect());
+	else {
+
+		// if we have the exact level cached: render it directly
+		QRect ir = mWorldMatrix.mapRect(mImgViewRect).toRect();
+
+		if (ir.size() == imgQt.size()) {
+			painter.setWorldMatrixEnabled(false);
+			painter.drawImage(ir, imgQt, imgQt.rect());
+			painter.setWorldMatrixEnabled(true);
+		}
+		else
+			painter.drawImage(mImgViewRect, imgQt, imgQt.rect());
+	}
 
 	painter.setOpacity(oldOp);
 

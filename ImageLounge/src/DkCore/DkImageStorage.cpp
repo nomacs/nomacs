@@ -1585,10 +1585,11 @@ QImage DkImageStorage::getImage(float factor) {
 		return mImg;
 
 	// check if we have an image similar to that requested
-	for (int idx = 0; idx < mImgs.size(); idx++) {
+	for (const QImage& img : mImgs) {
 
-		if ((float)mImgs.at(idx).height()/mImg.height() >= factor)
-			return mImgs.at(idx);
+		if ((double)img.height() / mImg.height() >= (double)factor-1e-3) {
+			return img;
+		}
 	}
 
 	// if the image does not exist - create it
@@ -1612,21 +1613,34 @@ void DkImageStorage::computeImage() {
 	mBusy = true;
 	QImage resizedImg = mImg;
 	
+	// TODO: use the 'user defined' zoomLookup as soon as we have one
+	QVector<double> zl;
+	zl << 0.75 << 0.5 << 0.33 << 0.25 << 0.1 << 0.05 << 0.001 << 0.0005 << 0.00001;
 
-	// down sample the image until it is twice times full HD
-	QSize iSize = mImg.size();
-	while (iSize.width() > 2*1920 && iSize.height() > 2*1920)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
-		iSize *= 0.5;
+	// fast down sampling until the image is twice times full HD
+	for (double czl : zl) {
+	
+		QSize cs = mImg.size()*czl;
 
-	// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
-	if (qMax(iSize.width(), iSize.height()) < 20000)
-		resizedImg = resizedImg.scaled(iSize, Qt::KeepAspectRatio, Qt::FastTransformation);
+		if (qMin(cs.width(), cs.height()) > 2 * 1920)
+			continue;
+		
+		// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
+		if (qMax(cs.width(), cs.height()) < 20000) {
+			resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+			break;
+		}
+	}
+
 
 	// it would be pretty strange if we needed more than 30 sub-images
-	for (int idx = 0; idx < 30; idx++) {
+	for (double czl : zl) {
 
-		QSize s = resizedImg.size();
-		s *= 0.5;
+		QSize s = mImg.size() * czl;
+
+		// wait until we get into resonable sizes
+		if (s.width() > resizedImg.width())
+			continue;
 
 		if (s.width() < 32 || s.height() < 32)
 			break;
