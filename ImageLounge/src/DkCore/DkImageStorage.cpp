@@ -1639,7 +1639,7 @@ void DkImageStorage::computeImage() {
 		QSize s = mImg.size() * czl;
 
 		// wait until we get into resonable sizes
-		if (s.width() > resizedImg.width())
+		if (s.width() >= resizedImg.width())
 			continue;
 
 		if (s.width() < 32 || s.height() < 32)
