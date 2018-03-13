@@ -33,7 +33,8 @@
         <true/>
         <key>NSHumanReadableCopyright</key>
         <string>${MACOSX_BUNDLE_COPYRIGHT}</string>
-
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
 
         <key>CFBundleDocumentTypes</key>
         <array>
