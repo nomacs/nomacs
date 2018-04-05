@@ -274,6 +274,10 @@ QLabel#commentTitleLabel {
 	font-weight: light;
 }
 
+nmc--DkCommentWidget {
+	background-color: HUD_BACKGROUND_COLOR;
+}
+
 nmc--DkCommentWidget > nmc--DkCommentTextEdit {
 	border: 0; 
 	padding-top: 10px; 
