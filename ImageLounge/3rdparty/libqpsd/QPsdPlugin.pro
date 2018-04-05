@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
 
 
 CONFIG += plugin
@@ -21,14 +21,16 @@ TEMPLATE = lib
 DESTDIR = $$[QT_INSTALL_PLUGINS]/imageformats
 
 SOURCES += qpsdplugin.cpp \
-    qpsdhandler.cpp
+    qpsdhandler.cpp \
+    qpsdhandler_p.cpp
 
 HEADERS += qpsdplugin.h \
     qpsdhandler.h
 OTHER_FILES += \
     QPsdPlugin.json \
     LICENSE.LGPL \
-    README.md
+    README.md \
+    CHANGELOG.md
 
 unix:!symbian {
     maemo5 {
