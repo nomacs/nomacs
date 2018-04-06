@@ -67,6 +67,11 @@ sudo ldconfig
 ```
 on your own after a successfully install
 
+### For Package Maintainers
+- Set `ENABLE_TRANSLATIONS` to `true` (default: `false`)
+- Build all officially supported [plugins](https://github.com/nomacs/nomacs-plugins/)
+
+
 ## Build nomacs (OSX)
 Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
 
