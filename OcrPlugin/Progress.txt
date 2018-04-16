@@ -1,7 +1,0 @@
-7.10. 	Pull and compile Nomacs + dependencies
-8.10. 	Compiling Qt5, takes aaaages, manual compilation with msvc2015x86 failed
-		Found a working compilation script, check DownloadQt.bat
-9.10.	Setting up OcrPlugin, from SIMPLE_PLUGIN
-14.10.  Flip Image Example, integrate tesseract
-10.10.  Prepare buildscripts
-11.10.  some more work on the buildscripts q.q

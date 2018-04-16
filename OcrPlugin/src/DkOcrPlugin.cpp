@@ -42,10 +42,13 @@
   *******************************************************************************************************/
 
 #include <iostream>
+#include <fstream>
+
 //#include <QLibrary>
 #include "DkOcr.h"
+#include "DkSettings.h"
 #include <DkBaseViewPort.h>
-#include <DkLoader/DkImageContainer.h>
+//#include <DkLoader/DkImageContainer.h>
 
 namespace nmc {
 
@@ -53,14 +56,66 @@ namespace nmc {
 	*	Constructor
 	**/
 	DkOcrPlugin::DkOcrPlugin(QObject* parent) : QObject(parent) {
+		
+		/*DefaultSettings s;
+		s.beginGroup(name());
+		s.endGroup();*/
+
+		qDebug() << "DkOcrPlugin ctor";
+
+		// create run IDs
+		QVector<QString> runIds;
+		runIds.resize(id_end);
+		runIds[ACTION_TESTRUN] = "OCR_PLUGIN_TEST_RUN";
+		mRunIDs = runIds.toList();
+
+		// create menu actions
+		QVector<QString> menuNames;
+		menuNames.resize(id_end);
+
+		menuNames[ACTION_TESTRUN] = tr("Testrun");
+		mMenuNames = menuNames.toList();
+
+		// create menu status tips
+		QVector<QString> statusTips;
+		statusTips.resize(id_end);
+
+		statusTips[ACTION_TESTRUN] = tr("#ACTION_TIPP2");
+		mMenuStatusTips = statusTips.toList();
 
 
+
+
+		// save default settings
+		nmc::DefaultSettings settings;
+		loadSettings(settings);
+		saveSettings(settings);
+	}
+
+	void DkOcrPlugin::preLoadPlugin() const
+	{
+		qDebug() << "preLoadPlugin";
+	}
+
+	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const
+	{
 		// Create Settings Toolbar
 
+		/**/
+
+		qDebug() << "postLoadPlugin:";
+		for (auto bi : batchInfo)
+		{
+			qDebug() << "filePath: " << bi->filePath();
+		}
+	}
+
+	void DkOcrPlugin::createUi()
+	{
 		QMainWindow* mainWindow = getMainWindow();
 		mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
 		mainWindow->addDockWidget(Qt::RightDockWidgetArea, mDockWidgetSettings);
-		
+
 		te_resultText = new QTextEdit();
 		//te_resultText->minimumHeight(100);
 
@@ -84,7 +139,7 @@ namespace nmc {
 		connect(btn_sendtoeditor, &QPushButton::pressed, [&]()
 		{
 			qDebug("open in editor pressed");
-			QString filename = GetRandomString()+".txt";
+			QString filename = GetRandomString() + ".txt";
 			auto saveloc = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + filename;
 			qDebug("temp file location %s", saveloc);
 
@@ -100,7 +155,7 @@ namespace nmc {
 			outStream << te_resultText->toPlainText();
 			outputFile.close();
 
-			QDesktopServices::openUrl(QUrl("file:///"+saveloc));
+			QDesktopServices::openUrl(QUrl("file:///" + saveloc));
 		});
 
 		QVBoxLayout* layout = new QVBoxLayout();
@@ -114,7 +169,7 @@ namespace nmc {
 
 		auto api = new Ocr::TesseractApi();
 		api->initialize({});
-		
+
 		auto* langlist = buildLanguageList(api->getAvailableLanguages());
 		connect(langlist, &QListWidget::itemChanged, [&](QListWidgetItem* item) {
 			qInfo() << "selection changed";
@@ -122,7 +177,7 @@ namespace nmc {
 			std::vector<std::string> langs;
 			for (int i = 0; i < langlist->count(); ++i) {
 				auto* items = langlist->item(i);
-				if(items->checkState() == Qt::Checked) {
+				if (items->checkState() == Qt::Checked) {
 					langs.push_back(items->text().toStdString());
 				}
 			}
@@ -135,50 +190,55 @@ namespace nmc {
 		layout->addLayout(languagelist_layout);
 
 
-		mDockWidgetSettings->setLayout(layout);
+		//mDockWidgetSettings->setLayout(layout);
 		QGroupBox* widget = new QGroupBox();
 		widget->setLayout(layout);
-		mDockWidgetSettings->setWidget(widget);
+		//mDockWidgetSettings->setWidget(widget);
 
-		// create run IDs
-		QVector<QString> runIds;
-		runIds.resize(id_end);
-		runIds[ACTION_TESTRUN] = "OCR_PLUGIN_TEST_RUN";
-		mRunIDs = runIds.toList();
-
-		// create menu actions
-		QVector<QString> menuNames;
-		menuNames.resize(id_end);
-
-		menuNames[ACTION_TESTRUN] = tr("Testrun");
-		mMenuNames = menuNames.toList();
-
-		// create menu status tips
-		QVector<QString> statusTips;
-		statusTips.resize(id_end);
-
-		statusTips[ACTION_TESTRUN] = tr("#ACTION_TIPP2");
-		mMenuStatusTips = statusTips.toList();
+		
 
 
-		//		
+			//		
 
 			/*QLibrary libTesseract("E:/dev/tesseract/build_x86/bin/Debug/tesseract305d.dll");
 			libTesseract.load();
 			if(!libTesseract.isLoaded())
 			{
-				std::cout << "could not load lib Tesseract" << std::endl;
-				exit(1);
+			std::cout << "could not load lib Tesseract" << std::endl;
+			exit(1);
 			}
 
 			QLibrary libLept("E:/dev/tesseract/build_x86/bin/Debug/liblept171.dll");
 			libLept.load();
 			if (!libLept.isLoaded())
 			{
-				std::cout << "could not load lib lib Leptonica" << std::endl;
-				exit(1);
+			std::cout << "could not load lib lib Leptonica" << std::endl;
+			exit(1);
 			}*/
 	}
+
+	QString DkOcrPlugin::name() const
+	{
+		return "DkOcrPlugin";
+	}
+
+	/*bool DkOcrPlugin::createViewPort(QWidget* parent)
+	{
+		mViewport = new DkPluginViewPort(parent);
+		return true;
+	}
+
+	DkPluginViewPort* DkOcrPlugin::getViewPort()
+	{
+		return mViewport;
+	}
+
+	void DkOcrPlugin::setVisible(bool visible)
+	{
+		if (mViewport)
+			mViewport->setVisible(visible);
+	}*/
+
 	/**
 	*	Destructor
 	**/
@@ -200,26 +260,20 @@ namespace nmc {
 		return languagelist_widget;
 	}
 
-	/**
-	* Returns unique ID for the generated dll
-	**/
-	QString DkOcrPlugin::id() const {
-
-		return PLUGIN_ID;
-	};
-
 	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
+
+		//createUi();
 
 		if (mActions.empty()) {			
 			
-			auto* ca = new QAction(mMenuNames[ACTION_TESTRUN], this);
+			QAction* ca = new QAction(mMenuNames[ACTION_TESTRUN], parent);
 			ca->setObjectName(mMenuNames[ACTION_TESTRUN]);
 			ca->setStatusTip(mMenuStatusTips[ACTION_TESTRUN]);
 			ca->setData(mRunIDs[ACTION_TESTRUN]);	// runID needed for calling function runPlugin()
 			mActions.append(ca);
 
 			// additional action
-			mActions.append(mDockWidgetSettings->toggleViewAction());
+			//mActions.append(mDockWidgetSettings->toggleViewAction());
 		}
 
 		return mActions;
@@ -229,8 +283,29 @@ namespace nmc {
 		return mActions;
 	}
 
-	QSharedPointer<nmc::DkImageContainer> DkOcrPlugin::runPlugin(const QString& runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+	QSharedPointer<nmc::DkImageContainer> DkOcrPlugin::runPlugin(
+		const QString & runID,
+		QSharedPointer<DkImageContainer> imgC,
+		const DkSaveInfo& saveInfo,
+		QSharedPointer<DkBatchInfo>& batchInfo) const
 	{
+
+		qDebug() << "runPlugin";
+
+		auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
+
+		auto api = new Ocr::TesseractApi();
+		api->initialize({});
+		auto text = api->runOcr(imgC->image());
+
+		std::ofstream oFile(txtOutputPath.toStdString());
+		oFile << text.toStdString();
+		oFile.close();
+
+
+		/*QMainWindow* mainWindow = getMainWindow();
+		QDockWidget* mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
+
 		if (runID == mRunIDs[ACTION_TESTRUN]) {
 
 			qInfo("testrun action");
@@ -244,7 +319,7 @@ namespace nmc {
 			imgC->setImage(img, "OCR Image");
 		}
 
-		// wrong runID? - do nothing
+		// wrong runID? - do nothing*/
 		return imgC;
 	}
 

@@ -5,8 +5,11 @@
 
 #include <vector>
 
-#include <ccutil.h> //GenericVector
+#include "genericvector.h"
+#include "strngs.h"
 #include <QtWidgets/QMessageBox>
+#include <QCoreApplication>
+#include <tesseract/baseapi.h>
 
 Ocr::TesseractApi::TesseractApi() {
 	api = nullptr;
@@ -46,9 +49,11 @@ void Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 
 	//api->GetAvailableLanguagesAsVector()
 
-	QString languagePath = (QDir::currentPath() + "/plugins");
+	QString languagePath = (QCoreApplication::applicationDirPath() + "/plugins/tessdata");
+	std::string languagePath_cstr = languagePath.toStdString();
+	const char* language_cstr = langConcat.c_str();
 
-	if (api->Init(languagePath.toStdString().c_str(), langConcat.c_str())) {
+	if (api->Init(languagePath_cstr.c_str(), language_cstr, tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
 		QMessageBox messageBox;
 		messageBox.critical(0, "Error", QString("Could not load language files from: ") + languagePath + " (https://github.com/tesseract-ocr/tessdata)");
 		messageBox.setFixedSize(500, 200);

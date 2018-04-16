@@ -32,11 +32,12 @@
 
 namespace nmc {
 
-class DkOcrPlugin : public QObject, nmc::DkPluginInterface {
+class DkOcrPlugin : public QObject, nmc::DkBatchPluginInterface/*, nmc::DkViewPortInterface*/ {
 
 private:
 	Q_OBJECT
-	Q_INTERFACES(nmc::DkPluginInterface)
+	Q_INTERFACES(nmc::DkBatchPluginInterface)
+	//Q_INTERFACES(nmc::DkViewPortInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkOcrPlugin/0.1" FILE "DkOcrPlugin.json")
 
 public:
@@ -45,12 +46,15 @@ public:
 	~DkOcrPlugin();
 
 	QImage image() const override;
-	QString id() const override;
+	QString name() const override;
+	//QString id() const;
 	
-	QList<QAction*> pluginActions() const override;
 	QList<QAction*> createActions(QWidget*) override;
+	QList<QAction*> pluginActions() const override;
 
 	QListWidget* buildLanguageList(const QList<QString>& langList) const;
+
+	
 
 	// DIEM: I think this should solve the sub-menu: 	
 	// getMainWindow() call if you need a (or the) parent
@@ -58,7 +62,26 @@ public:
 	// virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
 	
 	//QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
-	QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const override;
+
+	// DkBatchPluginInterface
+	void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> >& batchInfo) const override;
+	void preLoadPlugin() const override;
+
+	// DkViewPortInterface
+	/*bool createViewPort(QWidget* parent) override;
+	DkPluginViewPort* getViewPort() override;
+	void setVisible(bool visible) override;*/
+
+	/*QSharedPointer<DkImageContainer> runPlugin(
+		const QString &runID = QString(),
+		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()
+	) const override;*/
+
+	QSharedPointer<DkImageContainer> runPlugin(
+		const QString & runID,
+		QSharedPointer<DkImageContainer> imgC,
+		const DkSaveInfo& saveInfo,
+		QSharedPointer<DkBatchInfo>& batchInfo) const override;
 
 	enum {
 		ACTION_TESTRUN,
@@ -79,6 +102,10 @@ protected:
 	QTextEdit* te_resultText;
 
 	QString GetRandomString() const;
+	DkPluginViewPort* mViewport;
+
+private:
+	void createUi();
 };
 
 };

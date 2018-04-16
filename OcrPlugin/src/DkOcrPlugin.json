@@ -1,9 +1,9 @@
 {
-    "PluginName" 	: "Ocr4Nomacs",
+    "PluginName" 	: "DkOcrPlugin",
 	"AuthorName" 	: "Dominik Schörkhuber",
-	"Company"		: "",
+	"Company"		: "Vienna University of Technology",
 	"DateCreated" 	: "2016-10-08",
-	"DateModified"	: "2016-11-23",
+	"DateModified"	: "2018-04-16",
 	"Description"	: "Optical Character Recognition",
 	"Tagline" 		: "Bla Blub nothing",
 	"PluginId"		: "ad970ef36cc24737afd2b53ad015ff0d",
