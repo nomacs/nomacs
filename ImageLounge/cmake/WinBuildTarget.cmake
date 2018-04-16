@@ -62,8 +62,8 @@ add_dependencies(
 target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 target_include_directories(${DLL_CORE_NAME} 	PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 
-qt5_use_modules(${BINARY_NAME} 		Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
-qt5_use_modules(${DLL_CORE_NAME} 	Widgets Gui Network LinguistTools PrintSupport Concurrent Svg WinExtras)
+target_link_libraries(${BINARY_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg Qt5::WinExtras)
+target_link_libraries(${DLL_CORE_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg Qt5::WinExtras)
 
 # set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp ${CMAKE_BINARY_DIR}/moc_.cpp")

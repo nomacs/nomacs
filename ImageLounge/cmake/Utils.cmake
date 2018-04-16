@@ -17,10 +17,10 @@ macro(NMC_FINDQT)
 	 set(QT_ROOT ${QT_QMAKE_PATH}/)
 	 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5)
 	 	 
-	 find_package(Qt5 REQUIRED  Core Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
+	 find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED COMPONENTS Core Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
 	 
 	if (MSVC)
-		find_package(Qt5 REQUIRED WinExtras)
+		find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED WinExtras)
 	endif()
 	 
 	 if (NOT Qt5_FOUND)
