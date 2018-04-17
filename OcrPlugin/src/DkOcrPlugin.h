@@ -66,6 +66,8 @@ public:
 	// DkBatchPluginInterface
 	void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> >& batchInfo) const override;
 	void preLoadPlugin() const override;
+	void loadSettings(QSettings & settings) override;
+	void saveSettings(QSettings & settings) const override;
 
 	// DkViewPortInterface
 	/*bool createViewPort(QWidget* parent) override;
