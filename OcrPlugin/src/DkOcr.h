@@ -15,7 +15,7 @@ namespace Ocr {
 	public:
 		TesseractApi();
 		~TesseractApi();
-		void initialize(const std::vector<std::string>& languages); // initialize api
+		bool initialize(const std::vector<std::string>& languages); // initialize api
 		QString runOcr(QImage& image);
 		QList<QString> getAvailableLanguages();
 	};

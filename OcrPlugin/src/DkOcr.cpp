@@ -22,7 +22,7 @@ Ocr::TesseractApi::~TesseractApi() {
 	}
 }
 
-void Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
+bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 
 	if (api) {
 		api->End();
@@ -57,6 +57,7 @@ void Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 		QMessageBox messageBox;
 		messageBox.critical(0, "Error", QString("Could not load language files from: ") + languagePath + " (https://github.com/tesseract-ocr/tessdata)");
 		messageBox.setFixedSize(500, 200);
+		return false;
 	}
 
 	GenericVector<STRING> languages;
@@ -67,6 +68,8 @@ void Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 		QString str(string.string());
 		availableLanguages.push_back(str);
 	}
+
+	return false;
 }
 
 QString	Ocr::TesseractApi::runOcr(QImage& image) {
