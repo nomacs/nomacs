@@ -19,3 +19,4 @@ d.txt
 /.project
 CMakeUser.cmake
 ext
+*.traineddata

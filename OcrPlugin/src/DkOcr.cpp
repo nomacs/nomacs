@@ -69,7 +69,7 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 		availableLanguages.push_back(str);
 	}
 
-	return false;
+	return true;
 }
 
 QString	Ocr::TesseractApi::runOcr(QImage& image) {
