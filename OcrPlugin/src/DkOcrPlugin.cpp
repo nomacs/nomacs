@@ -83,22 +83,29 @@ namespace nmc {
 		statusTips[ACTION_TESTRUN] = tr("#ACTION_TIPP2");
 		mMenuStatusTips = statusTips.toList();
 
-
-
-
 		// save default settings
 		nmc::DefaultSettings settings;
-		loadSettings(settings);
 		saveSettings(settings);
+		loadSettings(settings);
 	}
 
-	void DkOcrPlugin::preLoadPlugin() const
-	{
+	void DkOcrPlugin::loadSettings(QSettings & settings) {
+		settings.beginGroup(name());
+		int mIdx = settings.value("Test", 1).toInt();
+		settings.endGroup();
+	}
+
+	void DkOcrPlugin::saveSettings(QSettings & settings) const {
+		settings.beginGroup(name());
+		settings.setValue("Test", 1);
+		settings.endGroup();
+	}
+
+	void DkOcrPlugin::preLoadPlugin() const {
 		qDebug() << "preLoadPlugin";
 	}
 
-	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const
-	{
+	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const {
 		// Create Settings Toolbar
 
 		/**/
