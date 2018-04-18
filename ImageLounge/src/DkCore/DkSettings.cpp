@@ -401,6 +401,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
+	display_p.highQualityAntiAliasing = settings.value("highQualityAntiAliasing", display_p.highQualityAntiAliasing).toBool();
 	display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
 	display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
@@ -644,6 +645,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 	//	settings.setValue("saveThumb", display_p.saveThumb);
 	if (force ||display_p.antiAliasing != display_d.antiAliasing)
 		settings.setValue("antiAliasing", display_p.antiAliasing);
+	if (force || display_p.highQualityAntiAliasing != display_d.highQualityAntiAliasing)
+		settings.setValue("highQualityAntiAliasing", display_p.highQualityAntiAliasing);
 	if (force ||display_p.showCrop != display_d.showCrop)
 		settings.setValue("showCrop", display_p.showCrop);
 	if (force ||display_p.histogramStyle != display_d.histogramStyle)
@@ -845,6 +848,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.iconSize = 16;
 	display_p.thumbPreviewSize = 64;
 	display_p.antiAliasing = true;
+	display_p.highQualityAntiAliasing = false;
 	display_p.showCrop = false;
 	display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
 	display_p.tpPattern = false;

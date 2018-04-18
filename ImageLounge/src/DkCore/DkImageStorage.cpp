@@ -1634,17 +1634,18 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 	DkTimer dt;
 	QImage resizedImg = src;
 
-	QSize cs = src.size();
+	if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
+		QSize cs = src.size();
 
-	// fast down sampling until the image is twice times full HD
-	while (qMin(cs.width(), cs.height()) > 2 * 4000) {
+		// fast down sampling until the image is twice times full HD
+		while (qMin(cs.width(), cs.height()) > 2 * 4000) {
+			cs *= 0.5;
+		}
 
-		cs *= 0.5;
-	}
-
-	// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
-	if (cs != mImg.size()) {
-		resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+		// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
+		if (cs != mImg.size()) {
+			resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+		}
 	}
 
 	QSize s = mImg.size() * scale;

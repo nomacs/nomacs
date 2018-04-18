@@ -188,6 +188,7 @@ public slots:
 	void on_displayTimeBox_valueChanged(double value) const;
 	void on_keepZoom_buttonClicked(int buttonId) const;
 	void on_invertZoom_toggled(bool checked) const;
+	void on_hQAntiAliasing_toggled(bool checked) const;
 	void on_zoomToFit_toggled(bool checked) const;
 	void on_transition_currentIndexChanged(int index) const;
 	void on_alwaysAnimate_toggled(bool checked) const;

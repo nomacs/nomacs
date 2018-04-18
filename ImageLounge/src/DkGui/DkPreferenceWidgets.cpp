@@ -687,6 +687,12 @@ void DkDisplayPreference::createLayout() {
 	invertZoom->setToolTip(tr("If checked, the mouse wheel behaviour is inverted while zooming."));
 	invertZoom->setChecked(DkSettingsManager::param().display().invertZoom);
 
+	// zoom settings
+	QCheckBox* hQAntiAliasing = new QCheckBox(tr("Display Images with High Quality Anti Aliasing"), this);
+	hQAntiAliasing->setObjectName("hQAntiAliasing");
+	hQAntiAliasing->setToolTip(tr("NOTE: if checked, nomacs might be slow while zooming."));
+	hQAntiAliasing->setChecked(DkSettingsManager::param().display().highQualityAntiAliasing);
+
 	QLabel* interpolationLabel = new QLabel(tr("Show pixels if zoom level is above"), this);
 
 	QSpinBox* sbInterpolation = new QSpinBox(this);
@@ -699,6 +705,7 @@ void DkDisplayPreference::createLayout() {
 
 	DkGroupWidget* zoomGroup = new DkGroupWidget(tr("Zoom"), this);
 	zoomGroup->addWidget(invertZoom);
+	zoomGroup->addWidget(hQAntiAliasing);
 	zoomGroup->addWidget(interpolationLabel);
 	zoomGroup->addWidget(sbInterpolation);
 
@@ -865,6 +872,12 @@ void DkDisplayPreference::on_invertZoom_toggled(bool checked) const {
 
 	if (DkSettingsManager::param().display().invertZoom != checked)
 		DkSettingsManager::param().display().invertZoom = checked;
+}
+
+void DkDisplayPreference::on_hQAntiAliasing_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().display().highQualityAntiAliasing != checked)
+		DkSettingsManager::param().display().highQualityAntiAliasing = checked;
 }
 
 void DkDisplayPreference::on_zoomToFit_toggled(bool checked) const {
