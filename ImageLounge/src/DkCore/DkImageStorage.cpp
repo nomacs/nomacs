@@ -34,12 +34,13 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
-#include <QThread>
+#include <QtConcurrentRun>
 #include <QPixmap>
 #include <QPainter>
 #include <QBitmap>
 #include <qmath.h>
 #include <QSvgRenderer>
+#include <QTimer>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -1546,17 +1547,28 @@ QColor DkImage::getMeanColor(const QImage& img) {
 DkImageStorage::DkImageStorage(const QImage& img) {
 	mImg = img;
 
-	mComputeThread = new QThread;
-	mComputeThread->start();
-	moveToThread(mComputeThread);
+	mWaitTimer = new QTimer(this);
+	mWaitTimer->setSingleShot(true);
+	mWaitTimer->setInterval(100);
+	
+	init();
 
-	connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), this, SLOT(antiAliasingChanged(bool)));
+	connect(mWaitTimer, SIGNAL(timeout()), this, SLOT(compute()), Qt::UniqueConnection);
+	connect(&mFutureWatcher, SIGNAL(finished()), this, SLOT(imageComputed()), Qt::UniqueConnection);
+	connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), this, SLOT(antiAliasingChanged(bool)), Qt::UniqueConnection);
+}
+
+void DkImageStorage::init() {
+
+	mComputeState = l_not_computed;
+	mScaledImg = QImage();
+	mWaitTimer->stop();
+	mScale = 1.0;
 }
 
 void DkImageStorage::setImage(const QImage& img) {
 
-	mStop = true;
-	mImgs.clear();	// is it save (if the thread is still working?)
+	init();
 	mImg = img;
 }
 
@@ -1564,10 +1576,8 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
 	DkSettingsManager::param().display().antiAliasing = antiAliasing;
 
-	if (!antiAliasing) {
-		mStop = true;
-		mImgs.clear();
-	}
+	if (!antiAliasing)
+		init();
 
 	emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
 	emit imageUpdated();
@@ -1579,100 +1589,90 @@ QImage DkImageStorage::getImageConst() const {
 	return mImg;
 }
 
-QImage DkImageStorage::getImage(float factor) {
+QImage DkImageStorage::getImage(double scale) {
 
-	if (factor >= 0.5f || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing)
+	if (scale >= 1.0 || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing)
 		return mImg;
 
-	// check if we have an image similar to that requested
-	for (const QImage& img : mImgs) {
+	QSize s = mImg.size() * scale;
 
-		if ((double)img.height() / mImg.height() >= (double)factor-1e-3) {
-			return img;
-		}
-	}
+	if (s == mScaledImg.size())
+		return mScaledImg;
 
-	// if the image does not exist - create it
-	if (!mBusy && mImgs.empty() && /*img.colorTable().isEmpty() &&*/ mImg.width() > 32 && mImg.height() > 32) {
-		mStop = false;
-		// nobody is busy so start working
-		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
+	if (mComputeState != l_computing) {
+		// trigger a new computation
+		init();
+		mScale = scale;
+		mWaitTimer->start();
 	}
 
 	// currently no alternative is available
 	return mImg;
 }
 
-void DkImageStorage::computeImage() {
+void DkImageStorage::compute() {
 
-	// obviously, computeImage gets called multiple times in some wired cases...
-	if (!mImgs.empty())
+	if (mComputeState == l_computed) {
+		emit imageUpdated();
+		qDebug() << "image is up-to-date in DkImageStorage::compute...";
+		return;
+	}
+
+	if (mComputeState == l_computing)	// don't compute twice
 		return;
 
-	DkTimer dt;
-	mBusy = true;
-	QImage resizedImg = mImg;
-	
-	// TODO: use the 'user defined' zoomLookup as soon as we have one
-	QVector<double> zl;
-	zl << 0.75 << 0.5 << 0.33 << 0.25 << 0.1 << 0.05 << 0.001 << 0.0005 << 0.00001;
+	mComputeState = l_computing;
 
-	// fast down sampling until the image is twice times full HD
-	for (double czl : zl) {
-	
-		QSize cs = mImg.size()*czl;
-
-		if (qMin(cs.width(), cs.height()) > 2 * 1920)
-			continue;
-		
-		// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
-		if (qMax(cs.width(), cs.height()) < 20000) {
-			resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
-			break;
-		}
-	}
-
-
-	// it would be pretty strange if we needed more than 30 sub-images
-	for (double czl : zl) {
-
-		QSize s = mImg.size() * czl;
-
-		// wait until we get into resonable sizes
-		if (s.width() >= resizedImg.width())
-			continue;
-
-		if (s.width() < 32 || s.height() < 32)
-			break;
-
-#ifdef WITH_OPENCV
-		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
-		cv::Mat tmp;
-		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-		resizedImg = DkImage::mat2QImage(tmp);
-#else
-		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-#endif
-
-		// new image assigned?
-		if (mStop)
-			break;
-
-		mMutex.lock();
-		mImgs.push_front(resizedImg);
-		mMutex.unlock();
-	}
-
-	mBusy = false;
-
-	// tell my caller I did something
-	emit imageUpdated();
-
-	qDebug() << "pyramid computation took me: " << dt << " layers: " << mImgs.size();
-
-	if (mImgs.size() > 6)
-		qDebug() << "layer size > 6: " << mImg.size();
-
+	mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mScale));
 }
 
+QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
+	
+	if (scale >= 1.0)
+		return src;
+
+	DkTimer dt;
+	QImage resizedImg = src;
+
+	QSize cs = src.size();
+
+	// fast down sampling until the image is twice times full HD
+	while (qMin(cs.width(), cs.height()) > 2 * 4000) {
+
+		cs *= 0.5;
+	}
+
+	// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
+	if (cs != mImg.size()) {
+		resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+	}
+
+	QSize s = mImg.size() * scale;
+
+#ifdef WITH_OPENCV
+	cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
+	cv::Mat tmp;
+	cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+	resizedImg = DkImage::mat2QImage(tmp);
+#else
+	resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#endif
+	qDebug() << "anti-aliasing takes" << dt;
+
+	return resizedImg;
+}
+
+void DkImageStorage::imageComputed() {
+
+	mScaledImg = mFutureWatcher.result();
+
+	mComputeState = (mScaledImg.isNull()) ? l_empty : l_computed;
+
+	if (mComputeState == l_computed)
+		emit imageUpdated();
+	else
+		qWarning() << "could not compute scale factor" << mScale;
+
+	qDebug() << "image computed...";
+}
 }

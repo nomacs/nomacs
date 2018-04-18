@@ -29,10 +29,10 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QImage>
-#include <QMutex>
 #include <QVector>
 #include <QObject>
 #include <QColor>
+#include <QFutureWatcher>
 
 // opencv
 #ifdef WITH_OPENCV
@@ -62,6 +62,7 @@ class QPixmap;
 class QString;
 class QSize;
 class QColor;
+class QTimer;
 
 namespace nmc {
 
@@ -147,16 +148,27 @@ class DllCoreExport DkImageStorage : public QObject {
 public:
 	DkImageStorage(const QImage& img = QImage());
 
-	void setImage(const QImage& img);
-	QImage getImageConst() const;
-	QImage getImage(float factor = 1.0f);
+	enum ComputeState {
+		l_not_computed,
+		l_computing,
+		l_computed,
+		l_empty,
+
+		l_end
+	};
+
 	bool hasImage() const {
 		return !mImg.isNull();
 	}
 
+	void setImage(const QImage& img);
+	QImage getImageConst() const;
+	QImage getImage(double scale = 1.0);
+	
 public slots:
-	void computeImage();
 	void antiAliasingChanged(bool antiAliasing);
+	void imageComputed();
+	void compute();
 
 signals:
 	void imageUpdated() const;
@@ -164,12 +176,54 @@ signals:
 
 protected:
 	QImage mImg;
-	QVector<QImage> mImgs;
+	QImage mScaledImg;
+	double mScale = 1.0;
 
-	QMutex mMutex;
-	QThread* mComputeThread = 0;
-	bool mBusy = false;
-	bool mStop = true;
+	QTimer* mWaitTimer = 0;
+	QFutureWatcher<QImage> mFutureWatcher;
+
+	ComputeState mComputeState = l_not_computed;
+
+	QImage computeIntern(const QImage& src, double scale);
+	void init();
+
 };
+//
+//class DllCoreExport DkImageStorage : public QObject {
+//	Q_OBJECT
+//
+//public:
+//	DkImageStorage(const QImage& img = QImage());
+//
+//	void setImage(const QImage& img);
+//	QImage getImageConst() const;
+//	QImage getImage(float factor = 1.0f);
+//	bool hasImage() const {
+//		return !mImg.isNull();
+//	}
+//
+//public slots:
+//	void antiAliasingChanged(bool antiAliasing);
+//	void computeImage(double scale);
+//
+//signals:
+//	void imageUpdated() const;
+//	void infoSignal(const QString& msg) const;
+//
+//protected:
+//	QImage mImg;
+//	QVector<QImage> mImgs;
+//
+//	QMutex mMutex;
+//	QThread* mComputeThread = 0;
+//	bool mBusy = false;
+//	bool mStop = true;
+//
+//	QTimer* mWaitTimer = 0;
+//
+//	void compute();
+//
+//	double mScaling = 1.0;
+//};
 
 }
