@@ -1358,8 +1358,10 @@ QMimeData * DkViewPort::createMime() const {
 
 	QMimeData* mimeData = new QMimeData;
 
-	if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited())
+	if (QFileInfo(mLoader->filePath()).exists() && !mLoader->isEdited()) {
 		mimeData->setUrls(urls);
+		mimeData->setText(fileUrl.toLocalFile());
+	}
 	else if (!getImage().isNull())
 		mimeData->setImageData(getImage());
 

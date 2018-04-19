@@ -1210,7 +1210,7 @@ void DkCentralWidget::pasteImage() {
 
 void DkCentralWidget::dropEvent(QDropEvent *event) {
 
-	if (event->source() == this) {
+	if (event->source() == this || event->source() == mViewport) {
 		event->accept();
 		return;
 	}
