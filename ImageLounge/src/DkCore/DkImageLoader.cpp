@@ -1533,7 +1533,7 @@ bool DkImageLoader::hasMovie() const {
 		return false;
 
 	QString newSuffix = QFileInfo(mCurrentImage->filePath()).suffix();
-	return newSuffix.contains(QRegExp("(gif|mng)", Qt::CaseInsensitive)) != 0;
+	return newSuffix.contains(QRegExp("(gif|mng|webp)", Qt::CaseInsensitive)) != 0;
 
 }
 

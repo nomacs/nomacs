@@ -1,6 +1,7 @@
 nomacs 3.10.0
 ============
 - anti-aliasing improved
+- animiated WebP support
 - PSD lib updated
 - new translations: Bosnian, Croation, and Serbian
 
