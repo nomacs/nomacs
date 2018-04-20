@@ -29,6 +29,8 @@
 #include "DkUtils.h"
 #include "DkMath.h"
 #include "DkSettings.h"
+#include "DkNoMacs.h"
+#include "DkViewPort.h"
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
@@ -530,6 +532,15 @@ QWidget * DkUtils::getMainWindow() {
 	}
 
 	return win;
+}
+
+void DkUtils::showViewportMessage(const QString & msg) {
+
+	DkNoMacs* nmc = dynamic_cast<DkNoMacs*>(getMainWindow());
+
+	if (nmc && nmc->viewport())
+		nmc->viewport()->infoSignal(msg);
+
 }
 
 void DkUtils::mSleep(int ms) {

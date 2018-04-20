@@ -304,7 +304,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	mController->getPlayer()->startTimer();
 	mController->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
-	mController->stopLabels();
+	//mController->stopLabels();
 
 	mOldImgRect = mImgRect;
 	

@@ -810,7 +810,7 @@ void DkNoMacs::exitFullScreen() {
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
 
-		update();	// if no resize is triggered, the mViewport won't change its color
+		update();	// if no resize is triggered, the viewport won't change its color
 	}
 
 	if (viewport())
@@ -904,7 +904,7 @@ void DkNoMacs::fitFrame() {
 
 	setGeometry(newGeometry);
 
-	// reset mViewport if we did not clip -> compensates round-off errors
+	// reset viewport if we did not clip -> compensates round-off errors
 	if (screenRect.contains(nmRect.toRect()))
 		viewport()->resetView();
 
@@ -2653,7 +2653,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		init();
 		
 		setAcceptDrops(true);
-		setMouseTracking (true);	//receive mouse event everytime
+		setMouseTracking(true);	//receive mouse event everytime
 
 		// in frameless, you cannot control if menu is visible...
 		DkActionManager& am = DkActionManager::instance();
@@ -2721,11 +2721,16 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 
 	qDebug() << "set up geometry: " << screenRects;
 
+	QRect mg = mDesktop->screenGeometry();
+	mg.moveTopLeft(-screenRects.topLeft());
+
+	
+	qDebug() << "main geometry:" << mDesktop->screenGeometry();
+
+	setGeometry(screenRects);
 
 	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
-	vp->setMainGeometry(mDesktop->screenGeometry());
-	
-	setGeometry(screenRects);
+	vp->setMainGeometry(mg);
 
 
 	//vp->setMainGeometry(mDesktop->screenGeometry());

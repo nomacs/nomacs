@@ -89,7 +89,6 @@ public:
 	virtual QSharedPointer<DkImageContainer> runPlugin(
 		const QString &runID = QString(), 
 		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
-
 	
 	QMainWindow* getMainWindow() const {
 
@@ -105,7 +104,8 @@ public:
 		}
 
 		return win;
-	}
+	};
+
 };
 
 class DkBatchPluginInterface : public DkPluginInterface {
@@ -139,7 +139,6 @@ public:
 	virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
 
 	virtual QString name() const = 0;	// is needed for settings
-	//virtual QSettings& settings() const { return DkSettingsManager::instance().qSettings();  };	// default: load nomacs settings
 	virtual QString settingsFilePath() const { return DkSettingsManager::param().settingsPath(); };
 	
 	void loadSettings(const QString& settingsPath = "") {
