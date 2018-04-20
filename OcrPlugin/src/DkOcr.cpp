@@ -1,4 +1,5 @@
 #include "DkOcr.h"
+#include "DkUtils.h"
 
 #include <QtGui/QPainter>
 #include <QDir>
@@ -54,9 +55,10 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 	const char* language_cstr = langConcat.c_str();
 
 	if (api->Init(languagePath_cstr.c_str(), language_cstr, tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
-		QMessageBox messageBox;
-		messageBox.critical(0, "Error", QString("Could not load language files from: ") + languagePath + " (https://github.com/tesseract-ocr/tessdata)");
-		messageBox.setFixedSize(500, 200);
+
+		nmc::DkUtils::showViewportMessage(
+			QObject::tr("Could not load language files from: %1 (https://github.com/tesseract-ocr/tessdata)").arg(languagePath));
+
 		return false;
 	}
 

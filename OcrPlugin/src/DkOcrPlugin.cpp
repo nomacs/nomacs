@@ -23,6 +23,7 @@
  *******************************************************************************************************/
 
 #include "DkOcrPlugin.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -327,6 +328,10 @@ namespace nmc {
 			std::ofstream oFile(txtOutputPath.toStdString());
 			oFile << text.toStdString();
 			oFile.close();
+
+			nmc::DkUtils::showViewportMessage(
+				QObject::tr("Text saved to %1").arg(QFileInfo(txtOutputPath).fileName()));
+
 		}
 		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
 
@@ -336,6 +341,9 @@ namespace nmc {
 
 			QClipboard *p_Clipboard = QApplication::clipboard();
 			p_Clipboard->setText(text);
+
+			nmc::DkUtils::showViewportMessage(
+				QObject::tr("Text copied to clipboard..."));
 		}
 
 
