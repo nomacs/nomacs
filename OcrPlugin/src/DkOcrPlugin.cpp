@@ -310,13 +310,18 @@ namespace nmc {
 		QSharedPointer<DkBatchInfo>& batchInfo) const
 	{
 
+		if (!imgC)
+			return imgC;
+
 		qDebug() << "runPlugin";
 
 		if (runID == mRunIDs[ACTION_IMG2TXT]) {
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
-			api->initialize({});
+		if (!api->initialize({}))
+			return imgC;
+
 			auto text = api->runOcr(imgC->image());
 
 			std::ofstream oFile(txtOutputPath.toStdString());
