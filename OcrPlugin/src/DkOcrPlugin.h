@@ -86,7 +86,8 @@ public:
 		QSharedPointer<DkBatchInfo>& batchInfo) const override;
 
 	enum {
-		ACTION_TESTRUN,
+		ACTION_IMG2TXT,
+		ACTION_IMG2CLIP,
 
 		// add actions here
 

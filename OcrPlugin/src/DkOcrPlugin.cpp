@@ -66,27 +66,34 @@ namespace nmc {
 		// create run IDs
 		QVector<QString> runIds;
 		runIds.resize(id_end);
-		runIds[ACTION_TESTRUN] = "OCR_PLUGIN_TEST_RUN";
+		runIds[ACTION_IMG2TXT] = "OCR_PLUGIN_IMG2TXT";
+		runIds[ACTION_IMG2CLIP] = "OCR_PLUGIN_IMG2CLIP";
 		mRunIDs = runIds.toList();
 
 		// create menu actions
 		QVector<QString> menuNames;
 		menuNames.resize(id_end);
 
-		menuNames[ACTION_TESTRUN] = tr("Testrun");
+		menuNames[ACTION_IMG2TXT] = tr("Text to file");
+		menuNames[ACTION_IMG2CLIP] = tr("Text to clipboard");
 		mMenuNames = menuNames.toList();
 
 		// create menu status tips
 		QVector<QString> statusTips;
 		statusTips.resize(id_end);
 
-		statusTips[ACTION_TESTRUN] = tr("#ACTION_TIPP2");
+		statusTips[ACTION_IMG2TXT] = tr("dontknow1");
+		statusTips[ACTION_IMG2CLIP] = tr("dontknow2");
 		mMenuStatusTips = statusTips.toList();
 
 		// save default settings
 		nmc::DefaultSettings settings;
-		saveSettings(settings);
 		loadSettings(settings);
+
+
+		//msettings.value("OcrEngineMode", "OEM_TESSERACT_ONLY").toString();
+		saveSettings(settings);
+		
 	}
 
 	void DkOcrPlugin::loadSettings(QSettings & settings) {
@@ -133,7 +140,7 @@ namespace nmc {
 		connect(btn_runocr, &QPushButton::pressed, [&]()
 		{
 			qDebug("run ocr pressed");
-			mActions[ACTION_TESTRUN]->trigger();
+			mActions[ACTION_IMG2TXT]->trigger();
 		});
 
 		connect(btn_copytoclipboard, &QPushButton::pressed, [&]()
@@ -273,10 +280,16 @@ namespace nmc {
 
 		if (mActions.empty()) {			
 			
-			QAction* ca = new QAction(mMenuNames[ACTION_TESTRUN], parent);
-			ca->setObjectName(mMenuNames[ACTION_TESTRUN]);
-			ca->setStatusTip(mMenuStatusTips[ACTION_TESTRUN]);
-			ca->setData(mRunIDs[ACTION_TESTRUN]);	// runID needed for calling function runPlugin()
+			QAction* ca = new QAction(mMenuNames[ACTION_IMG2TXT], parent);
+			ca->setObjectName(mMenuNames[ACTION_IMG2TXT]);
+			ca->setStatusTip(mMenuStatusTips[ACTION_IMG2TXT]);
+			ca->setData(mRunIDs[ACTION_IMG2TXT]);	// runID needed for calling function runPlugin()
+			mActions.append(ca);
+
+			ca = new QAction(mMenuNames[ACTION_IMG2CLIP], parent);
+			ca->setObjectName(mMenuNames[ACTION_IMG2CLIP]);
+			ca->setStatusTip(mMenuStatusTips[ACTION_IMG2CLIP]);
+			ca->setData(mRunIDs[ACTION_IMG2CLIP]);	// runID needed for calling function runPlugin()
 			mActions.append(ca);
 
 			// additional action
@@ -299,15 +312,26 @@ namespace nmc {
 
 		qDebug() << "runPlugin";
 
-		auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
+		if (runID == mRunIDs[ACTION_IMG2TXT]) {
+			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
-		auto api = new Ocr::TesseractApi();
-		api->initialize({});
-		auto text = api->runOcr(imgC->image());
+			auto api = new Ocr::TesseractApi();
+			api->initialize({});
+			auto text = api->runOcr(imgC->image());
 
-		std::ofstream oFile(txtOutputPath.toStdString());
-		oFile << text.toStdString();
-		oFile.close();
+			std::ofstream oFile(txtOutputPath.toStdString());
+			oFile << text.toStdString();
+			oFile.close();
+		}
+		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
+
+			auto api = new Ocr::TesseractApi();
+			api->initialize({});
+			auto text = api->runOcr(imgC->image());
+
+			QClipboard *p_Clipboard = QApplication::clipboard();
+			p_Clipboard->setText(text);
+		}
 
 
 		/*QMainWindow* mainWindow = getMainWindow();
