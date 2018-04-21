@@ -38,7 +38,7 @@ eng.traineddata is currently in the nomacs-plugins repository and is copied duri
 ~~Download `eng.traineddata` from `https://github.com/tesseract-ocr/tessdata/tree/3.04.00` and place it into `plugins\tessdata`
 
 #### Tesseract Configuration Files
-To load a Tesseract config file place it into `plugins\tessdata\configs` and set the value `Tesseract Configuration` in the Nomacs settings editor to the respective filename.
+To load a Tesseract config file place it into `plugins\tessdata\configs` and set the value `Tesseract Configuration` in the Nomacs settings editor to the respective filename. Example configurations can be found [here](https://github.com/tesseract-ocr/tesseract/tree/master/tessdata/configs).
 
 ![settingsedtiortesseractconfig](https://i.imgur.com/BEU9sGP.png)
 
