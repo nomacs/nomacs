@@ -48,6 +48,7 @@
 #include "DkOcr.h"
 #include "DkSettings.h"
 #include <DkBaseViewPort.h>
+#include <DkUtils.h>
 //#include <DkLoader/DkImageContainer.h>
 
 namespace nmc {
@@ -327,6 +328,8 @@ namespace nmc {
 			std::ofstream oFile(txtOutputPath.toStdString());
 			oFile << text.toStdString();
 			oFile.close();
+
+			DkUtils::showViewportMessage(QString("Text saved to ") + txtOutputPath);
 		}
 		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
 
@@ -336,6 +339,8 @@ namespace nmc {
 
 			QClipboard *p_Clipboard = QApplication::clipboard();
 			p_Clipboard->setText(text);
+
+			DkUtils::showViewportMessage("Text copied to Clipboard");
 		}
 
 
