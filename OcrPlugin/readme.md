@@ -34,8 +34,9 @@ Set Nomacs_DIR, set OpenCV_DIR as usual.
 - set ENABLE_OCR=ON
 
 #### Language Files
-eng.traineddata is currently in the nomacs-plugins repository and is copied during compilation to the /plugins/tessdata directory. 
-~~Download `eng.traineddata` from `https://github.com/tesseract-ocr/tessdata/tree/3.04.00` and place it into `plugins\tessdata`
+Before the first run training data for the optical character system must be downloaded for the languages you are targetting. Once the plugin is loaded go to the menu bar "Plugins" => "DkOcrPlugin" => "Language Settings". Additional languages can be downloaded conveniently in this interface. Only languages selected with the checkboxes on the right are used while performing character recognition.
+
+![languagedownload](https://i.imgur.com/Zlsg3Nv.png)
 
 #### Tesseract Configuration Files
 To load a Tesseract config file place it into `plugins\tessdata\configs` and set the value `Tesseract Configuration` in the Nomacs settings editor to the respective filename. Example configurations can be found [here](https://github.com/tesseract-ocr/tesseract/tree/master/tessdata/configs).
