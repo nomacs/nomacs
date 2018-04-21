@@ -14,6 +14,8 @@
 
 Ocr::TesseractApi::TesseractApi() {
 	api = nullptr;
+
+	mTessdataPath = (QCoreApplication::applicationDirPath() + "/plugins/tessdata");
 }
 
 Ocr::TesseractApi::~TesseractApi() {
@@ -23,7 +25,7 @@ Ocr::TesseractApi::~TesseractApi() {
 	}
 }
 
-bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
+bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll, const QString& config) {
 
 	if (api) {
 		api->End();
@@ -50,17 +52,19 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 
 	//api->GetAvailableLanguagesAsVector()
 
-	QString languagePath = (QCoreApplication::applicationDirPath() + "/plugins/tessdata");
-	std::string languagePath_cstr = languagePath.toStdString();
+	std::string languagePath_cstr = mTessdataPath.toStdString();
 	const char* language_cstr = langConcat.c_str();
 
 	if (api->Init(languagePath_cstr.c_str(), language_cstr, tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
 
 		nmc::DkUtils::showViewportMessage(
-			QObject::tr("Could not load language files from: %1 (https://github.com/tesseract-ocr/tessdata)").arg(languagePath));
+			QObject::tr("Could not load language files from: %1 (https://github.com/tesseract-ocr/tessdata)").arg(mTessdataPath));
 
 		return false;
 	}
+
+	if (config != "")
+		readConfigFile(mTessdataPath + "/configs/" + config);
 
 	GenericVector<STRING> languages;
 	api->GetAvailableLanguagesAsVector(&languages);
@@ -74,12 +78,16 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll) {
 	return true;
 }
 
+void Ocr::TesseractApi::readConfigFile(const QFileInfo& configFilePath) {
+	api->ReadConfigFile(configFilePath.absoluteFilePath().toStdString().c_str());
+}
+
 QString	Ocr::TesseractApi::runOcr(QImage& image) {
 	api->SetImage(image.bits(), image.width(), image.height(), image.bytesPerLine() / image.width(), image.bytesPerLine());
 	char* rectext = api->GetUTF8Text();
 	qDebug("text: %s", rectext);
 
-	QVector<QRect> rects;
+	/*QVector<QRect> rects;
 	tesseract::PageIterator *iter = api->AnalyseLayout();
 	while (iter->Next(tesseract::RIL_WORD)) {
 		int left, top, right, bottom;
@@ -98,7 +106,7 @@ QString	Ocr::TesseractApi::runOcr(QImage& image) {
 	painter.setPen(penHLines);
 
 	painter.drawRects(rects);
-	image = px.toImage();
+	image = px.toImage();*/
 
 	auto text = QString(rectext);
 	delete[] rectext;
@@ -126,7 +134,7 @@ QString Ocr::testOcr(QImage& image)
 	char* rectext = api->GetUTF8Text();
 	qDebug("text: %s", rectext);
 
-	QVector<QRect> rects;
+	/*QVector<QRect> rects;
 	tesseract::PageIterator *iter = api->AnalyseLayout();
 	while (iter->Next(tesseract::RIL_WORD)) {
 		int left, top, right, bottom;
@@ -146,7 +154,7 @@ QString Ocr::testOcr(QImage& image)
 
 	painter.drawRects(rects);
 	image = px.toImage();
-
+	*/
 	auto text = QString(rectext);
 
 	api->End();

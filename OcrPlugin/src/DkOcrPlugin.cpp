@@ -86,13 +86,13 @@ namespace nmc {
 	void DkOcrPlugin::loadSettings(QSettings & settings) {
 		settings.beginGroup(name());
 		int mIdx = settings.value("Test", 1).toInt();
-		mTessConfigFile = settings.value("Tesseract Configuration", 1).toString();
+		mTessConfigFile = settings.value("Tesseract Configuration", "").toString();
 		settings.endGroup();
 	}
 
 	void DkOcrPlugin::saveSettings(QSettings & settings) const {
 		settings.beginGroup(name());
-		settings.setValue("Tesseract Configuration", "default");
+		settings.setValue("Tesseract Configuration", mTessConfigFile);
 		settings.endGroup();
 	}
 
@@ -168,7 +168,7 @@ namespace nmc {
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
-			if (!api->initialize({}))
+			if (!api->initialize({}, mTessConfigFile))
 				return imgC;
 
 			auto text = api->runOcr(imgC->image());
@@ -184,7 +184,7 @@ namespace nmc {
 		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
 
 			auto api = new Ocr::TesseractApi();
-			api->initialize({});
+			api->initialize({}, mTessConfigFile);
 			auto text = api->runOcr(imgC->image());
 
 			QClipboard *p_Clipboard = QApplication::clipboard();

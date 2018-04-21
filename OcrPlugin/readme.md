@@ -37,6 +37,11 @@ Set Nomacs_DIR, set OpenCV_DIR as usual.
 eng.traineddata is currently in the nomacs-plugins repository and is copied during compilation to the /plugins/tessdata directory. 
 ~~Download `eng.traineddata` from `https://github.com/tesseract-ocr/tessdata/tree/3.04.00` and place it into `plugins\tessdata`
 
+#### Tesseract Configuration Files
+To load a Tesseract config file place it into `plugins\tessdata\configs` and set the value `Tesseract Configuration` in the Nomacs settings editor to the respective filename.
+
+![settingsedtiortesseractconfig](https://i.imgur.com/BEU9sGP.png)
+
 
 ### Problems and Notes
 
@@ -47,3 +52,5 @@ OR
 dont have spaces in your installation paths! (same for tesseract)
 
 link ws2_32.lib manually
+
+libpng is required for the LSTM, if it is not present Tesseract will trigger undefined behaviour -> make a PR for Tesseract
