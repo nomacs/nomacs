@@ -22,8 +22,12 @@
 
  *******************************************************************************************************/
 
+#include <fstream>
+
 #include "DkOcrPlugin.h"
 #include "DkUtils.h"
+#include "DkOcr.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
@@ -41,13 +45,6 @@
   * #ACTION_NAME1		- your action name (e.g. Flip Horizotally - user friendly!)
   * #ACTION_TIPP1		- your action status tip (e.g. Flips an image horizontally - user friendly!)
   *******************************************************************************************************/
-
-#include <iostream>
-#include <fstream>
-
-//#include <QLibrary>
-#include "DkOcr.h"
-#include "DkSettings.h"
 
 namespace nmc {
 	DkOcrPlugin::DkOcrPlugin(QObject* parent) : QObject(parent) {
@@ -89,12 +86,13 @@ namespace nmc {
 	void DkOcrPlugin::loadSettings(QSettings & settings) {
 		settings.beginGroup(name());
 		int mIdx = settings.value("Test", 1).toInt();
+		mTessConfigFile = settings.value("Tesseract Configuration", 1).toString();
 		settings.endGroup();
 	}
 
 	void DkOcrPlugin::saveSettings(QSettings & settings) const {
 		settings.beginGroup(name());
-		settings.setValue("Test", 1);
+		settings.setValue("Tesseract Configuration", "default");
 		settings.endGroup();
 	}
 
@@ -103,11 +101,11 @@ namespace nmc {
 	}
 
 	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const {
-		qDebug() << "postLoadPlugin:";
+		/*qDebug() << "postLoadPlugin:";
 		for (auto bi : batchInfo)
 		{
 			qDebug() << "filePath: " << bi->filePath();
-		}
+		}*/
 	}
 
 	QString DkOcrPlugin::name() const {
@@ -117,7 +115,7 @@ namespace nmc {
 	DkOcrPlugin::~DkOcrPlugin() {
 	}
 
-	QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const {
+	/*QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const {
 		auto* languagelist_widget = new QListWidget();
 
 		for (const QString lang : langList)
@@ -129,7 +127,7 @@ namespace nmc {
 		}
 
 		return languagelist_widget;
-	}
+	}*/
 
 	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
 

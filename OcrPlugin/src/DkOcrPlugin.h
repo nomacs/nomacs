@@ -40,44 +40,27 @@ private:
 	//Q_INTERFACES(nmc::DkViewPortInterface)
 	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkOcrPlugin/0.1" FILE "DkOcrPlugin.json")
 
+	QString mTessConfigFile;
+
 public:
 
-	DkOcrPlugin(QObject* parent = 0);
+	DkOcrPlugin(QObject* parent = nullptr);
 	~DkOcrPlugin();
-
-	QImage image() const override;
-	QString name() const override;
-	//QString id() const;
-	
-	QList<QAction*> createActions(QWidget*) override;
-	QList<QAction*> pluginActions() const override;
-
-	QListWidget* buildLanguageList(const QList<QString>& langList) const;
-
-	
 
 	// DIEM: I think this should solve the sub-menu: 	
 	// getMainWindow() call if you need a (or the) parent
 	// virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>();};
 	// virtual QList<QAction*> pluginActions()	const { return QList<QAction*>();};
 	
-	//QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
-
 	// DkBatchPluginInterface
+	QList<QAction*> createActions(QWidget*) override;
+	QList<QAction*> pluginActions() const override;
+	QImage image() const override;
+	QString name() const override;
 	void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> >& batchInfo) const override;
 	void preLoadPlugin() const override;
 	void loadSettings(QSettings & settings) override;
 	void saveSettings(QSettings & settings) const override;
-
-	// DkViewPortInterface
-	/*bool createViewPort(QWidget* parent) override;
-	DkPluginViewPort* getViewPort() override;
-	void setVisible(bool visible) override;*/
-
-	/*QSharedPointer<DkImageContainer> runPlugin(
-		const QString &runID = QString(),
-		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()
-	) const override;*/
 
 	QSharedPointer<DkImageContainer> runPlugin(
 		const QString & runID,
@@ -88,14 +71,10 @@ public:
 	enum {
 		ACTION_IMG2TXT,
 		ACTION_IMG2CLIP,
-
-		// add actions here
-
 		id_end
 	};
 
 protected:
-
 	QList<QAction*> mActions;
 	QStringList mRunIDs;
 	QStringList mMenuNames;
@@ -104,11 +83,7 @@ protected:
 	QDockWidget* mDockWidgetSettings;
 	QTextEdit* te_resultText;
 
-	QString GetRandomString() const;
 	DkPluginViewPort* mViewport;
-
-private:
-	void createUi();
 };
 
 };
