@@ -10,7 +10,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QNetworkReply>
-#include "downloadmanager.h"
 #include <QPushButton>
 #include <QHeaderView>
 #include "QDownloadButton.h"
