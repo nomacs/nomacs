@@ -71,19 +71,24 @@ public:
 	enum {
 		ACTION_IMG2TXT,
 		ACTION_IMG2CLIP,
+		ACTION_LANGUAGEDIALOG,
 		id_end
 	};
+
+private slots:
+	void languageSelectionChanged_(QStringList selectedLangs);
 
 protected:
 	QList<QAction*> mActions;
 	QStringList mRunIDs;
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
+	QStringList mSelectedLanguages;
+	
 
-	QDockWidget* mDockWidgetSettings;
-	QTextEdit* te_resultText;
-
-	DkPluginViewPort* mViewport;
+	//QDockWidget* mDockWidgetSettings;
+	//QTextEdit* te_resultText;
+	//DkPluginViewPort* mViewport;
 };
 
 };

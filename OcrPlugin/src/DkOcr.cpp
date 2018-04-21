@@ -25,7 +25,7 @@ Ocr::TesseractApi::~TesseractApi() {
 	}
 }
 
-bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll, const QString& config) {
+bool Ocr::TesseractApi::initialize(const QStringList& ll, const QString& config) {
 
 	if (api) {
 		api->End();
@@ -35,27 +35,14 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll, const QSt
 	if(!api)
 		api = new tesseract::TessBaseAPI();
 
-	std::string langConcat;
-	if (ll.size() > 0) // concat languages
-	{
-		auto iter = ll.begin();
-		langConcat = *iter;
-
-		for (; iter != ll.end(); ++iter) {
-			langConcat += "+" + *iter;
-		}
-	}
-	else
-	{
-		langConcat = "eng"; // default
-	}
-
 	//api->GetAvailableLanguagesAsVector()
 
 	std::string languagePath_cstr = mTessdataPath.toStdString();
-	const char* language_cstr = langConcat.c_str();
+	std::string language_cstr = ll.join("+").toStdString();
 
-	if (api->Init(languagePath_cstr.c_str(), language_cstr, tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
+	qDebug() << "Using Languages: " << ll.join("+");
+
+	if (api->Init(languagePath_cstr.c_str(), language_cstr.c_str(), tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
 
 		nmc::DkUtils::showViewportMessage(
 			QObject::tr("Could not load language files from: %1 (https://github.com/tesseract-ocr/tessdata)").arg(mTessdataPath));
@@ -76,6 +63,21 @@ bool Ocr::TesseractApi::initialize(const std::vector<std::string>& ll, const QSt
 	}
 
 	return true;
+}
+
+void Ocr::TesseractApi::getAvailableLanguages(QList<QString>& qlanguages)
+{
+	auto* api = new tesseract::TessBaseAPI();
+	api->Init(NULL, mTessdataPath.toStdString().c_str());
+	
+	GenericVector<STRING> languages;
+	api->GetAvailableLanguagesAsVector(&languages);
+
+	for (int index = 0; index < languages.size(); ++index) {
+		STRING& string = languages[index];
+		QString str(string.string());
+		qlanguages.push_back(str);
+	}
 }
 
 void Ocr::TesseractApi::readConfigFile(const QFileInfo& configFilePath) {

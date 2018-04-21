@@ -32,8 +32,9 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
+#include "TesseractSettingsDialog.h"
 
- /*******************************************************************************************************
+/*******************************************************************************************************
   * DkOcrPlugin     	- enter the plugin class name (e.g. DkPageExtractionPlugin)
   * Dominik Schoerkhuber- your name/pseudonym whatever
   * 21.10.2016			- today...
@@ -55,6 +56,7 @@ namespace nmc {
 		runIds.resize(id_end);
 		runIds[ACTION_IMG2TXT] = "OCR_PLUGIN_IMG2TXT";
 		runIds[ACTION_IMG2CLIP] = "OCR_PLUGIN_IMG2CLIP";
+		runIds[ACTION_LANGUAGEDIALOG] = "OCR_PLUGIN_LANGUAGESETTINGS";
 		mRunIDs = runIds.toList();
 
 		// create menu actions
@@ -63,6 +65,7 @@ namespace nmc {
 
 		menuNames[ACTION_IMG2TXT] = tr("Text to file");
 		menuNames[ACTION_IMG2CLIP] = tr("Text to clipboard");
+		menuNames[ACTION_LANGUAGEDIALOG] = tr("Language Settings");
 		mMenuNames = menuNames.toList();
 
 		// create menu status tips
@@ -71,28 +74,27 @@ namespace nmc {
 
 		statusTips[ACTION_IMG2TXT] = tr("dontknow1");
 		statusTips[ACTION_IMG2CLIP] = tr("dontknow2");
+		statusTips[ACTION_LANGUAGEDIALOG] = tr("dontknow3");
 		mMenuStatusTips = statusTips.toList();
 
 		// save default settings
 		nmc::DefaultSettings settings;
 		loadSettings(settings);
-
-
-		//msettings.value("OcrEngineMode", "OEM_TESSERACT_ONLY").toString();
 		saveSettings(settings);
-		
 	}
 
 	void DkOcrPlugin::loadSettings(QSettings & settings) {
 		settings.beginGroup(name());
 		int mIdx = settings.value("Test", 1).toInt();
 		mTessConfigFile = settings.value("Tesseract Configuration", "").toString();
+		mSelectedLanguages = settings.value("Selected Languages", "").toStringList();
 		settings.endGroup();
 	}
 
 	void DkOcrPlugin::saveSettings(QSettings & settings) const {
 		settings.beginGroup(name());
 		settings.setValue("Tesseract Configuration", mTessConfigFile);
+		settings.setValue("Selected Languages", mSelectedLanguages);
 		settings.endGroup();
 	}
 
@@ -144,6 +146,12 @@ namespace nmc {
 			ca->setStatusTip(mMenuStatusTips[ACTION_IMG2CLIP]);
 			ca->setData(mRunIDs[ACTION_IMG2CLIP]);
 			mActions.append(ca);
+
+			ca = new QAction(mMenuNames[ACTION_LANGUAGEDIALOG], parent);
+			ca->setObjectName(mMenuNames[ACTION_LANGUAGEDIALOG]);
+			ca->setStatusTip(mMenuStatusTips[ACTION_LANGUAGEDIALOG]);
+			ca->setData(mRunIDs[ACTION_LANGUAGEDIALOG]);
+			mActions.append(ca);
 		}
 
 		return mActions;
@@ -168,7 +176,7 @@ namespace nmc {
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
-			if (!api->initialize({}, mTessConfigFile))
+			if (!api->initialize(mSelectedLanguages, mTessConfigFile))
 				return imgC;
 
 			auto text = api->runOcr(imgC->image());
@@ -184,7 +192,7 @@ namespace nmc {
 		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
 
 			auto api = new Ocr::TesseractApi();
-			api->initialize({}, mTessConfigFile);
+			api->initialize(mSelectedLanguages, mTessConfigFile);
 			auto text = api->runOcr(imgC->image());
 
 			QClipboard *p_Clipboard = QApplication::clipboard();
@@ -193,8 +201,27 @@ namespace nmc {
 			nmc::DkUtils::showViewportMessage(
 				QObject::tr("Text copied to clipboard..."));
 		}
+		else if (runID == mRunIDs[ACTION_LANGUAGEDIALOG]) {
+
+			auto* dialog = new TesseractSettingsDialog(getMainWindow(), mSelectedLanguages);
+			dialog->init();
+			dialog->show();
+			dialog->setModal(true);
+			dialog->raise();
+			dialog->activateWindow();
+
+			auto p = mSelectedLanguages;
+			connect(dialog, &TesseractSettingsDialog::closeSignal, this, &DkOcrPlugin::languageSelectionChanged_);
+		}
 
 		return imgC;
+	}
+
+	void DkOcrPlugin::languageSelectionChanged_(QStringList langs)
+	{
+		mSelectedLanguages = langs;
+		nmc::DefaultSettings settings;
+		saveSettings(settings);
 	}
 
 	QImage DkOcrPlugin::image() const {
