@@ -48,21 +48,9 @@
 //#include <QLibrary>
 #include "DkOcr.h"
 #include "DkSettings.h"
-#include <DkBaseViewPort.h>
-#include <DkUtils.h>
-//#include <DkLoader/DkImageContainer.h>
 
 namespace nmc {
-
-	/**
-	*	Constructor
-	**/
 	DkOcrPlugin::DkOcrPlugin(QObject* parent) : QObject(parent) {
-		
-		/*DefaultSettings s;
-		s.beginGroup(name());
-		s.endGroup();*/
-
 		qDebug() << "DkOcrPlugin ctor";
 
 		// create run IDs
@@ -115,10 +103,6 @@ namespace nmc {
 	}
 
 	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const {
-		// Create Settings Toolbar
-
-		/**/
-
 		qDebug() << "postLoadPlugin:";
 		for (auto bi : batchInfo)
 		{
@@ -126,143 +110,14 @@ namespace nmc {
 		}
 	}
 
-	void DkOcrPlugin::createUi()
-	{
-		QMainWindow* mainWindow = getMainWindow();
-		mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
-		mainWindow->addDockWidget(Qt::RightDockWidgetArea, mDockWidgetSettings);
-
-		te_resultText = new QTextEdit();
-		//te_resultText->minimumHeight(100);
-
-		QPushButton* btn_runocr = new QPushButton(tr("Run Ocr"));
-		QPushButton* btn_copytoclipboard = new QPushButton(tr("Copy to Clipboard"));
-		QPushButton* btn_sendtoeditor = new QPushButton(tr("Open in Editor"));
-
-		connect(btn_runocr, &QPushButton::pressed, [&]()
-		{
-			qDebug("run ocr pressed");
-			mActions[ACTION_IMG2TXT]->trigger();
-		});
-
-		connect(btn_copytoclipboard, &QPushButton::pressed, [&]()
-		{
-			qDebug("copy to clip pressed");
-
-			QApplication::clipboard()->setText(te_resultText->toPlainText());
-		});
-
-		connect(btn_sendtoeditor, &QPushButton::pressed, [&]()
-		{
-			qDebug("open in editor pressed");
-			QString filename = GetRandomString() + ".txt";
-			auto saveloc = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + filename;
-			qDebug("temp file location %s", saveloc);
-
-			QFile outputFile(saveloc);
-			outputFile.open(QIODevice::WriteOnly);
-
-			if (!outputFile.isOpen()) {
-				qDebug() << "Error, unable to open" << saveloc;
-				return;
-			}
-
-			QTextStream outStream(&outputFile);
-			outStream << te_resultText->toPlainText();
-			outputFile.close();
-
-			QDesktopServices::openUrl(QUrl("file:///" + saveloc));
-		});
-
-		QVBoxLayout* layout = new QVBoxLayout();
-		layout->addWidget(te_resultText);
-
-		QHBoxLayout* btn_layout = new QHBoxLayout();
-		btn_layout->addWidget(btn_runocr);
-		btn_layout->addWidget(btn_copytoclipboard);
-		btn_layout->addWidget(btn_sendtoeditor);
-		layout->addLayout(btn_layout);
-
-		auto api = new Ocr::TesseractApi();
-		api->initialize({});
-
-		auto* langlist = buildLanguageList(api->getAvailableLanguages());
-		connect(langlist, &QListWidget::itemChanged, [&](QListWidgetItem* item) {
-			qInfo() << "selection changed";
-
-			std::vector<std::string> langs;
-			for (int i = 0; i < langlist->count(); ++i) {
-				auto* items = langlist->item(i);
-				if (items->checkState() == Qt::Checked) {
-					langs.push_back(items->text().toStdString());
-				}
-			}
-
-			//api->initialize(langs);
-		});
-
-		auto* languagelist_layout = new QHBoxLayout();
-		languagelist_layout->addWidget(langlist);
-		layout->addLayout(languagelist_layout);
-
-
-		//mDockWidgetSettings->setLayout(layout);
-		QGroupBox* widget = new QGroupBox();
-		widget->setLayout(layout);
-		//mDockWidgetSettings->setWidget(widget);
-
-		
-
-
-			//		
-
-			/*QLibrary libTesseract("E:/dev/tesseract/build_x86/bin/Debug/tesseract305d.dll");
-			libTesseract.load();
-			if(!libTesseract.isLoaded())
-			{
-			std::cout << "could not load lib Tesseract" << std::endl;
-			exit(1);
-			}
-
-			QLibrary libLept("E:/dev/tesseract/build_x86/bin/Debug/liblept171.dll");
-			libLept.load();
-			if (!libLept.isLoaded())
-			{
-			std::cout << "could not load lib lib Leptonica" << std::endl;
-			exit(1);
-			}*/
-	}
-
-	QString DkOcrPlugin::name() const
-	{
+	QString DkOcrPlugin::name() const {
 		return "DkOcrPlugin";
 	}
 
-	/*bool DkOcrPlugin::createViewPort(QWidget* parent)
-	{
-		mViewport = new DkPluginViewPort(parent);
-		return true;
-	}
-
-	DkPluginViewPort* DkOcrPlugin::getViewPort()
-	{
-		return mViewport;
-	}
-
-	void DkOcrPlugin::setVisible(bool visible)
-	{
-		if (mViewport)
-			mViewport->setVisible(visible);
-	}*/
-
-	/**
-	*	Destructor
-	**/
 	DkOcrPlugin::~DkOcrPlugin() {
 	}
 
-	QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const
-	{
+	QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const {
 		auto* languagelist_widget = new QListWidget();
 
 		for (const QString lang : langList)
@@ -278,24 +133,19 @@ namespace nmc {
 
 	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
 
-		//createUi();
-
 		if (mActions.empty()) {			
 			
 			QAction* ca = new QAction(mMenuNames[ACTION_IMG2TXT], parent);
 			ca->setObjectName(mMenuNames[ACTION_IMG2TXT]);
 			ca->setStatusTip(mMenuStatusTips[ACTION_IMG2TXT]);
-			ca->setData(mRunIDs[ACTION_IMG2TXT]);	// runID needed for calling function runPlugin()
+			ca->setData(mRunIDs[ACTION_IMG2TXT]);
 			mActions.append(ca);
 
 			ca = new QAction(mMenuNames[ACTION_IMG2CLIP], parent);
 			ca->setObjectName(mMenuNames[ACTION_IMG2CLIP]);
 			ca->setStatusTip(mMenuStatusTips[ACTION_IMG2CLIP]);
-			ca->setData(mRunIDs[ACTION_IMG2CLIP]);	// runID needed for calling function runPlugin()
+			ca->setData(mRunIDs[ACTION_IMG2CLIP]);
 			mActions.append(ca);
-
-			// additional action
-			//mActions.append(mDockWidgetSettings->toggleViewAction());
 		}
 
 		return mActions;
@@ -309,8 +159,7 @@ namespace nmc {
 		const QString & runID,
 		QSharedPointer<DkImageContainer> imgC,
 		const DkSaveInfo& saveInfo,
-		QSharedPointer<DkBatchInfo>& batchInfo) const
-	{
+		QSharedPointer<DkBatchInfo>& batchInfo) const {
 
 		if (!imgC)
 			return imgC;
@@ -321,8 +170,8 @@ namespace nmc {
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
-		if (!api->initialize({}))
-			return imgC;
+			if (!api->initialize({}))
+				return imgC;
 
 			auto text = api->runOcr(imgC->image());
 
@@ -347,44 +196,11 @@ namespace nmc {
 				QObject::tr("Text copied to clipboard..."));
 		}
 
-
-		/*QMainWindow* mainWindow = getMainWindow();
-		QDockWidget* mDockWidgetSettings = new QDockWidget(tr("Ocr Plugin Settings"), mainWindow);
-
-		if (runID == mRunIDs[ACTION_TESTRUN]) {
-
-			qInfo("testrun action");
-
-			auto img = imgC->image();
-
-			auto api = new Ocr::TesseractApi();
-			api->initialize({ "eng" });
-			auto text = api->runOcr(img);
-			te_resultText->setText(text);
-			imgC->setImage(img, "OCR Image");
-		}
-
-		// wrong runID? - do nothing*/
 		return imgC;
-	}
-
-	QString DkOcrPlugin::GetRandomString() const
-	{
-		const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
-		const int randomStringLength = 12; // assuming you want random strings of 12 characters
-
-		QString randomString;
-		for (int i = 0; i<randomStringLength; ++i)
-		{
-			int index = qrand() % possibleCharacters.length();
-			QChar nextChar = possibleCharacters.at(index);
-			randomString.append(nextChar);
-		}
-		return randomString;
 	}
 
 	QImage DkOcrPlugin::image() const {
 
-		return QImage(":/nomacsPluginPaint/img/description.png");
+		return QImage(":/OcrPlugin/img/description.png");
 	}
 }
