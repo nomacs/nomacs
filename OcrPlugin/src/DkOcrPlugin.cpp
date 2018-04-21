@@ -167,12 +167,16 @@ namespace nmc {
 		const DkSaveInfo& saveInfo,
 		QSharedPointer<DkBatchInfo>& batchInfo) const {
 
-		if (!imgC)
-			return imgC;
 
 		qDebug() << "runPlugin";
 
 		if (runID == mRunIDs[ACTION_IMG2TXT]) {
+
+			if (!imgC) {
+				nmc::DkUtils::showViewportMessage(QObject::tr("No Image Loaded"));
+				return imgC;
+			}
+
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
@@ -191,6 +195,11 @@ namespace nmc {
 		}
 		else if (runID == mRunIDs[ACTION_IMG2CLIP]) {
 
+			if (!imgC) {
+				nmc::DkUtils::showViewportMessage(QObject::tr("No Image Loaded"));
+				return imgC;
+			}
+
 			auto api = new Ocr::TesseractApi();
 			api->initialize(mSelectedLanguages, mTessConfigFile);
 			auto text = api->runOcr(imgC->image());
@@ -204,16 +213,16 @@ namespace nmc {
 		else if (runID == mRunIDs[ACTION_LANGUAGEDIALOG]) {
 
 			auto* dialog = new TesseractSettingsDialog(getMainWindow(), mSelectedLanguages);
+			connect(dialog, &TesseractSettingsDialog::closeSignal, this, &DkOcrPlugin::languageSelectionChanged_);
+
 			dialog->init();
 			dialog->setModal(true);
 			dialog->setWindowModality(Qt::WindowModality::ApplicationModal);
 			dialog->raise();
 			dialog->activateWindow();
 			dialog->setFixedHeight(getMainWindow()->height());
+			dialog->setMinimumWidth(400);
 			dialog->exec();
-
-			auto p = mSelectedLanguages;
-			connect(dialog, &TesseractSettingsDialog::closeSignal, this, &DkOcrPlugin::languageSelectionChanged_);
 		}
 
 		return imgC;

@@ -4,8 +4,6 @@ PROJECT(ocrPlugin)
 #include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 #link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 
-
-
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG")
 
 IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
@@ -73,6 +71,7 @@ message(${Tesseract_INCLUDE_DIRS})
 
 ## leptonica
 find_package(Leptonica REQUIRED CONFIG)
+include_directories(${Leptonica_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Leptonica_LIBRARIES} ws2_32.lib) 
 # ws2_32.lib is required for tesseract when linked statically
 
@@ -82,7 +81,7 @@ set(DLL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 # make plugins/tessdata directory
 # add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/tessdata/eng.traineddata ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
+# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/tessdata/eng.traineddata ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
 # add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${DLL_DIR}/deu.traineddata ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/tessdata)
 
 NMC_CREATE_TARGETS()
