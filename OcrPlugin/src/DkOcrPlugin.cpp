@@ -205,10 +205,12 @@ namespace nmc {
 
 			auto* dialog = new TesseractSettingsDialog(getMainWindow(), mSelectedLanguages);
 			dialog->init();
-			dialog->show();
 			dialog->setModal(true);
+			dialog->setWindowModality(Qt::WindowModality::ApplicationModal);
 			dialog->raise();
 			dialog->activateWindow();
+			dialog->setFixedHeight(getMainWindow()->height());
+			dialog->exec();
 
 			auto p = mSelectedLanguages;
 			connect(dialog, &TesseractSettingsDialog::closeSignal, this, &DkOcrPlugin::languageSelectionChanged_);
