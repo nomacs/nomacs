@@ -121,6 +121,8 @@ if(ENABLE_QUAZIP)
 endif(ENABLE_QUAZIP)
 
 # add libqpsd
+if (ENABLE_PSD)
+	add_definitions(-DWITH_LIBQPSD)
 IF(USE_SYSTEM_LIBQPSD)
 	find_package(qpsd REQUIRED)
 	if(NOT QPSD_FOUND)
@@ -130,3 +132,4 @@ ELSE()
 	file(GLOB LIBQPSD_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.cpp")
 	file(GLOB LIBQPSD_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd/*.h")
 ENDIF(USE_SYSTEM_LIBQPSD)
+endif (ENABLE_PSD)

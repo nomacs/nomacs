@@ -226,12 +226,14 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		if (imgLoaded) mLoader = qt_loader;
 	}
 
+#ifdef WITH_LIBQPSD
 	// PSD loader
 	if (!imgLoaded) {
 
 		imgLoaded = loadPSDFile(mFile, img, ba);
 		if (imgLoaded) mLoader = psd_loader;
 	}
+#endif
 
 #if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
 	// WEBP loader
@@ -396,6 +398,7 @@ bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPoi
 }
 
 #ifdef Q_OS_WIN
+#ifdef WITH_LIBQPSD
 bool DkBasicLoader::loadPSDFile(const QString&, QImage&, QSharedPointer<QByteArray>) const {
 #else
 bool DkBasicLoader::loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
@@ -437,6 +440,7 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QImage& img, QSharedPoi
 #endif // !Q_OS_WIN
 	return false;
 }
+#endif
 
 void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {
 

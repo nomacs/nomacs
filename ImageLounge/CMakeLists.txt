@@ -54,6 +54,7 @@ if( ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     include("cmake/CodeCoverage.cmake")
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
+option(ENABLE_PSD "Compile with support for PSD files" ON)
 
 if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
@@ -148,8 +149,13 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	# ${ZLIB_INCLUDE_DIRS}
+)
+
+if (ENABLE_PSD)
+include_directories (
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 )
+endif (ENABLE_PSD)
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
