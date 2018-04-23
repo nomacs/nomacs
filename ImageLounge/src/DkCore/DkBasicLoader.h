@@ -38,7 +38,9 @@
 //#include "DkImageStorage.h"
 
 #ifndef Q_OS_WIN
+#ifdef WITH_LIBQPSD
 #include "qpsdhandler.h"
+#endif
 #endif
 
 // opencv

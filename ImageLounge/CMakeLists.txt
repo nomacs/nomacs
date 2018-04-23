@@ -51,6 +51,7 @@ option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
+option(ENABLE_PSD "Compile with support for PSD files" ON)
 
 if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
@@ -145,8 +146,13 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	# ${ZLIB_INCLUDE_DIRS}
+)
+
+if (ENABLE_PSD)
+include_directories (
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 )
+endif (ENABLE_PSD)
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
