@@ -10,8 +10,7 @@ QDownloadButton::QDownloadButton(QWidget * parent) : QWidget(parent) {
 
 }
 
-void QDownloadButton::init(const QUrl& url, const QString& file)
-{
+void QDownloadButton::init(const QUrl& url, const QString& file) {
 	setUrl(url);
 	setFile(file);
 
@@ -39,8 +38,7 @@ void QDownloadButton::setFile(const QString& file) {
 	mOutputfile = new QFile(file);
 }
 
-void QDownloadButton::startDownload()
-{
+void QDownloadButton::startDownload() {
 	qDebug() << "start Download";
 
 	//mLayout->removeWidget(mBtn);
@@ -68,8 +66,7 @@ void QDownloadButton::startDownload()
 	mLayout->update();
 }
 
-void QDownloadButton::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
+void QDownloadButton::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) {
 	qDebug() << bytesReceived << " " << bytesTotal;
 
 	double speed = bytesReceived * 1000.0 / downloadTime.elapsed();
@@ -92,8 +89,7 @@ void QDownloadButton::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 	//qApp->processEvents();
 }
 
-void QDownloadButton::downloadFinished()
-{
+void QDownloadButton::downloadFinished() {
 	if (mReply->error())
 		qDebug() << mReply->errorString();
 
@@ -103,14 +99,12 @@ void QDownloadButton::downloadFinished()
 	emit downloadFinishedSignal();
 }
 
-void QDownloadButton::downloadReadyRead()
-{
+void QDownloadButton::downloadReadyRead() {
 	qDebug() << "finished";
 	mOutputfile->write(mReply->readAll());
 }
 
-QDownloadButton::~QDownloadButton()
-{
+QDownloadButton::~QDownloadButton() {
 	/*delete mOutputfile;
 	delete mProgressbar;
 	delete mBtn;

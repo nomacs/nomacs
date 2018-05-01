@@ -145,23 +145,19 @@ TesseractSettingsDialog::TesseractSettingsDialog(QWidget * parent, const QString
 	
 }
 
-void TesseractSettingsDialog::init()
-{
+void TesseractSettingsDialog::init() {
 	
 }
 
-void TesseractSettingsDialog::test()
-{
+void TesseractSettingsDialog::test() {
 	qDebug() << "test";
 }
 
-void TesseractSettingsDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
+void TesseractSettingsDialog::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) {
 	qDebug() << bytesReceived << " " << bytesTotal;
 }
 
-void TesseractSettingsDialog::downloadFinished()
-{
+void TesseractSettingsDialog::downloadFinished() {
 	if (reply->error())
 		qDebug() << reply->errorString();
 
@@ -171,18 +167,15 @@ void TesseractSettingsDialog::downloadFinished()
 	qDebug() << "finished";
 }
 
-void TesseractSettingsDialog::downloadReadyRead()
-{
+void TesseractSettingsDialog::downloadReadyRead() {
 	qDebug() << "finished";
 }
 
-void TesseractSettingsDialog::sslErrorOccured(QNetworkReply*, QList<QSslError>)
-{
+void TesseractSettingsDialog::sslErrorOccured(QNetworkReply*, QList<QSslError>) {
 	qDebug() << "sslerrors";
 }
 
-void TesseractSettingsDialog::closeEvent(QCloseEvent *event)
-{
+void TesseractSettingsDialog::closeEvent(QCloseEvent *event) {
 	QStringList selectedLanguages;
 
 	auto* model = mLangTable->model();

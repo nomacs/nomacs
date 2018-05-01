@@ -103,11 +103,6 @@ namespace nmc {
 	}
 
 	void DkOcrPlugin::postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>>& batchInfo) const {
-		/*qDebug() << "postLoadPlugin:";
-		for (auto bi : batchInfo)
-		{
-			qDebug() << "filePath: " << bi->filePath();
-		}*/
 	}
 
 	QString DkOcrPlugin::name() const {
@@ -116,20 +111,6 @@ namespace nmc {
 
 	DkOcrPlugin::~DkOcrPlugin() {
 	}
-
-	/*QListWidget* DkOcrPlugin::buildLanguageList(const QList<QString>& langList) const {
-		auto* languagelist_widget = new QListWidget();
-
-		for (const QString lang : langList)
-		{
-			QListWidgetItem* langListItem = new QListWidgetItem(lang);
-			langListItem->setFlags(langListItem->flags() | Qt::ItemIsUserCheckable); // set checkable flag
-			langListItem->setCheckState(Qt::Unchecked); // AND initialize check state
-			languagelist_widget->addItem(langListItem);
-		}
-
-		return languagelist_widget;
-	}*/
 
 	QList<QAction*> DkOcrPlugin::createActions(QWidget* parent)  {
 
@@ -228,8 +209,7 @@ namespace nmc {
 		return imgC;
 	}
 
-	void DkOcrPlugin::languageSelectionChanged_(QStringList langs)
-	{
+	void DkOcrPlugin::languageSelectionChanged_(QStringList langs) {
 		mSelectedLanguages = langs;
 		nmc::DefaultSettings settings;
 		saveSettings(settings);

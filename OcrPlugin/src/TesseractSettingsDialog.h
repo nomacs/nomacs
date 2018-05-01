@@ -5,8 +5,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtWidgets/QTableWidget>
 
-class TesseractSettingsDialog : public QDialog
-{
+class TesseractSettingsDialog : public QDialog {
 	Q_OBJECT
 
 public:

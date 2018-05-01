@@ -8,8 +8,7 @@
 
 class QFile;
 
-class QDownloadButton : public QWidget
-{
+class QDownloadButton : public QWidget {
 	Q_OBJECT
 
 public:
