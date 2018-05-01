@@ -76,6 +76,8 @@ TesseractSettingsDialog::TesseractSettingsDialog(QWidget * parent, const QString
 	mLangTable->horizontalHeader()->hide();
 	mLangTable->verticalHeader()->hide();
 	mLangTable->setSelectionMode(QTableWidget::SelectionMode::NoSelection);
+	for (int c = 0; c < mLangTable->horizontalHeader()->count(); ++c) // columns should stretch over the full table width
+		mLangTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
 
 	{
 		int i = 0;
