@@ -65,8 +65,7 @@ bool Ocr::TesseractApi::initialize(const QStringList& ll, const QString& config)
 	return true;
 }
 
-void Ocr::TesseractApi::getAvailableLanguages(QList<QString>& qlanguages)
-{
+void Ocr::TesseractApi::getAvailableLanguages(QList<QString>& qlanguages) {
 	auto* api = new tesseract::TessBaseAPI();
 	api->Init(NULL, mTessdataPath.toStdString().c_str());
 	
@@ -116,13 +115,11 @@ QString	Ocr::TesseractApi::runOcr(QImage& image) {
 	return text;
 }
 
-QList<QString> Ocr::TesseractApi::getAvailableLanguages()
-{
+QList<QString> Ocr::TesseractApi::getAvailableLanguages() {
 	return availableLanguages;
 }
 
-QString Ocr::testOcr(QImage& image)
-{
+QString Ocr::testOcr(QImage& image) {
 	tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
 	// Initialize tesseract-ocr with English, without specifying tessdata path
 

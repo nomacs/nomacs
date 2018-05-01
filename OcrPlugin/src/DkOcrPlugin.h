@@ -25,7 +25,6 @@
 #pragma once
 
 #include "DkPluginInterface.h"
-#include "DkOcrToolbar.h"
 
 #include <QDockWidget>
 #include <QtWidgets>
