@@ -12,6 +12,22 @@
 #include <QCoreApplication>
 #include <tesseract/baseapi.h>
 
+namespace {
+	tesseract::OcrEngineMode engineMode_str2enum(const QString& mode) {
+		if(mode == "OEM_TESSERACT_ONLY") {
+			return tesseract::OcrEngineMode::OEM_TESSERACT_ONLY;
+		} else if (mode == "OEM_DEFAULT") {
+			return tesseract::OcrEngineMode::OEM_DEFAULT;
+		} else if (mode == "OEM_LSTM_ONLY") {
+			return tesseract::OcrEngineMode::OEM_LSTM_ONLY;
+		} else if (mode == "OEM_TESSERACT_LSTM_COMBINED") {
+			return tesseract::OcrEngineMode::OEM_TESSERACT_LSTM_COMBINED;
+		}
+
+		return tesseract::OcrEngineMode::OEM_DEFAULT;
+	}
+}
+
 Ocr::TesseractApi::TesseractApi() {
 	api = nullptr;
 
@@ -25,7 +41,7 @@ Ocr::TesseractApi::~TesseractApi() {
 	}
 }
 
-bool Ocr::TesseractApi::initialize(const QStringList& ll, const QString& config) {
+bool Ocr::TesseractApi::initialize(const QString& mode, const QStringList& ll, const QString& config) {
 
 	if (api) {
 		api->End();
@@ -41,8 +57,9 @@ bool Ocr::TesseractApi::initialize(const QStringList& ll, const QString& config)
 	std::string language_cstr = ll.join("+").toStdString();
 
 	qDebug() << "Using Languages: " << ll.join("+");
+	qDebug() << "Using Mode: " << mode << " " << ::engineMode_str2enum(mode);
 
-	if (api->Init(languagePath_cstr.c_str(), language_cstr.c_str(), tesseract::OcrEngineMode::OEM_TESSERACT_ONLY)) {
+	if (api->Init(languagePath_cstr.c_str(), language_cstr.c_str(), ::engineMode_str2enum(mode))) {
 
 		nmc::DkUtils::showViewportMessage(
 			QObject::tr("Could not load language files from: %1 (https://github.com/tesseract-ocr/tessdata)").arg(mTessdataPath));

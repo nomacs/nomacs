@@ -83,7 +83,7 @@ protected:
 	QStringList mMenuNames;
 	QStringList mMenuStatusTips;
 	QStringList mSelectedLanguages;
-	
+	QString mTesseractMode;
 
 	//QDockWidget* mDockWidgetSettings;
 	//QTextEdit* te_resultText;

@@ -43,6 +43,12 @@ To load a Tesseract config file place it into `plugins\tessdata\configs` and set
 
 ![settingsedtiortesseractconfig](https://i.imgur.com/BEU9sGP.png)
 
+#### Tesseract Engine Modes
+Engine modes can be set in the plugin settings according to the names used in the respective enum. 
+* OEM_TESSERACT_ONLY
+* OEM_LSTM_ONLY
+* OEM_TESSERACT_LSTM_COMBINED
+* OEM_DEFAULT
 
 ### Problems and Notes
 

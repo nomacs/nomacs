@@ -88,6 +88,7 @@ namespace nmc {
 		int mIdx = settings.value("Test", 1).toInt();
 		mTessConfigFile = settings.value("Tesseract Configuration", "").toString();
 		mSelectedLanguages = settings.value("Selected Languages", "").toStringList();
+		mTesseractMode = settings.value("Tesseract Engine Mode", "OEM_DEFAULT").toString();
 		settings.endGroup();
 	}
 
@@ -95,6 +96,7 @@ namespace nmc {
 		settings.beginGroup(name());
 		settings.setValue("Tesseract Configuration", mTessConfigFile);
 		settings.setValue("Selected Languages", mSelectedLanguages);
+		settings.setValue("Tesseract Engine Mode", mTesseractMode);
 		settings.endGroup();
 	}
 
@@ -161,7 +163,7 @@ namespace nmc {
 			auto txtOutputPath = saveInfo.outputFilePath() + ".txt";
 
 			auto api = new Ocr::TesseractApi();
-			if (!api->initialize(mSelectedLanguages, mTessConfigFile))
+			if (!api->initialize(mTesseractMode, mSelectedLanguages, mTessConfigFile))
 				return imgC;
 
 			auto text = api->runOcr(imgC->image());
@@ -182,7 +184,7 @@ namespace nmc {
 			}
 
 			auto api = new Ocr::TesseractApi();
-			api->initialize(mSelectedLanguages, mTessConfigFile);
+			api->initialize(mTesseractMode, mSelectedLanguages, mTessConfigFile);
 			auto text = api->runOcr(imgC->image());
 
 			QClipboard *p_Clipboard = QApplication::clipboard();
