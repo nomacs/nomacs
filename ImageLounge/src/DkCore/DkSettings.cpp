@@ -1013,6 +1013,32 @@ void DkSettingsManager::importSettings(const QString & settingsPath) {
 	QSettings settings(settingsPath, QSettings::IniFormat);
 	param().load(settings);
 	param().save();
+
+	qInfo() << "settings imported...";
+}
+
+void DkFileFilterHandling::registerFileAssociations() {
+
+	DkFileFilterHandling fh;
+
+	// register file associations
+	QStringList rFilters = DkSettingsManager::param().app().openFilters;
+
+	// do not register containers such as *.pptx *.zip
+	for (const QString& filter : DkSettingsManager::param().app().containerFilters)
+		rFilters.removeAll(filter);
+
+	for (const QString& filter : rFilters) {
+
+		// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
+		if (!filter.contains("ico")) {
+			fh.registerFileType(filter, QObject::tr("Image"), true);
+			qInfo() << "registering" << filter;
+		}
+	}
+
+	qInfo() << "files registered...";
+
 }
 
 void DkFileFilterHandling::registerNomacs(bool showDefaultApps) {
@@ -1116,7 +1142,7 @@ QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& 
 		settings.endGroup();
 		settings.endGroup();
 
-		qDebug() << nomacsKey << " written";
+		//qDebug() << nomacsKey << " written";
 	}
 	else
 		settings.remove(nomacsKey);
@@ -1129,7 +1155,7 @@ QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& 
 
 QString DkFileFilterHandling::getIconID(const QString& ext) const {
 
-	qDebug() << "ID: " << ext;
+	//qDebug() << "ID: " << ext;
 	if (ext.contains(".jpg") || ext.contains(".jpeg")) {
 		return "1";
 	}
@@ -1184,7 +1210,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	// register the extension
 	for (int idx = 0; idx < extList.size(); idx++) {
 
-		qDebug() << "registering: " << extList.at(idx);
+		//qDebug() << "registering: " << extList.at(idx);
 
 		registerExtension(extList.at(idx), progKey, add);
 		registerDefaultApp(extList.at(idx), progKey, add);
@@ -1233,7 +1259,7 @@ void DkFileFilterHandling::registerDefaultApp(const QString& ext, const QString&
 	if (add) {
 		settings.beginGroup("SupportedTypes");
 		settings.setValue(ext, "");
-		qDebug() << ext << "registered...";
+		//qDebug() << ext << "registered...";
 	}
 	else
 		settings.remove(ext);
@@ -1256,7 +1282,7 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 
 		settings.beginGroup("OpenWithProgids");
 		settings.setValue("nomacs" + ext + ".3","");
-		qDebug() << "default app set";
+		//qDebug() << "default app set";
 	}
 	else
 		settings.setValue("Default", "");

@@ -3885,22 +3885,8 @@ void DkWelcomeDialog::accept() {
 
 	DkFileFilterHandling fh;
 
-	// register file associations
-	if (mRegisterFilesCheckBox->isChecked()) {
-
-		QStringList rFilters = DkSettingsManager::param().app().openFilters;
-		
-		for (const QString& filter : DkSettingsManager::param().app().containerFilters)
-			rFilters.removeAll(filter);
-
-		for (const QString& filter : rFilters) {
-
-			// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
-			if (!filter.contains("ico"))	
-				fh.registerFileType(filter, tr("Image"), true);
-		}
-	}
-	
+	if (mRegisterFilesCheckBox->isChecked())
+		DkFileFilterHandling::registerFileAssociations();
 	fh.registerNomacs(mSetAsDefaultCheckBox->isChecked());	// register nomacs again - to be save
 
 	// change language

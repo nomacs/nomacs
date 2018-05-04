@@ -156,6 +156,9 @@ int main(int argc, char *argv[]) {
 		QObject::tr("Imports the settings from <settings-path.nfo> and saves them."),
 		QObject::tr("settings-path.nfo"));
 	parser.addOption(importSettingsOpt);
+	
+	QCommandLineOption registerFilesOpt(QStringList() << "register-files", QObject::tr("Register file associations (Windows only)."));
+	parser.addOption(registerFilesOpt);
 
 	parser.process(app);
 	
@@ -176,12 +179,24 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
+	bool noUI = false;
+
 	// apply default settings
 	if (!parser.value(importSettingsOpt).isEmpty()) {
 		QString settingsPath = parser.value(importSettingsOpt);
 		nmc::DkSettingsManager::importSettings(settingsPath);
-		return 0;
+		noUI = true;
 	}
+
+	// apply default settings
+	if (parser.isSet(registerFilesOpt)) {
+		
+		nmc::DkFileFilterHandling::registerFileAssociations();
+		noUI = true;
+	}
+
+	if (noUI)
+		return 0;
 
 	//install translations
 	QString translationName = "nomacs_" + 
