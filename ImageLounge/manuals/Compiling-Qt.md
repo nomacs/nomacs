@@ -8,14 +8,9 @@ advantages:
 So here is a short guide how we build Qt for nomacs.
 
 ## Compile Qt 5.xx on Windows
-here are the official qt5 compile instructions [4]. First get the source code from [5].
+here are the official qt5 compile instructions [4]. First get the source code (google qt everywhere).
 
 - ``python`` has to be in the system path
-- open a ``cmd`` and dir to the ``Qt5`` folder. Type:
-````
-perl init-repository
-````
-- if it is complaining about git, add your ``git/bin`` and ``git/cmd`` folders to the environment variables.
 - open a `Native Tools Command Prompt` from Visuas Studio, dir to `qtbase` and type:
 ```bat
 REM Visual Studio 2015
@@ -32,17 +27,7 @@ configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -n
 
 ### Clean Qt5 configuration
 To get a really clean tree, use:
-
 - without git: ``nmake -distclean``
-- with git:
-````
-git submodule foreach --recursive "git clean -dfx"
-````
-since ``make confclean`` no longer works from the top-level of the repo.
-further reading: http://qt-project.org/wiki/Building_Qt_5_from_Git#0647f0776aed243f58bfec4dd81de863
-
-If today is March 2017 and you try to compile Qt 5.8 with Visual Studio 2017
-you might need to patch the qalgorithms.h file, see [6].
 
 ### Qt > 5.9 and translations
 if you use Qt > 5.9 it is possible, that Visual Studio is unable to compile the translations and thus erroring. Check if you can execute the lrelease.exe in [QtPath]/qttools/bin . 
@@ -89,9 +74,8 @@ C:\Qt\qt-everywhere-opensource-src-4.8.5-x86-native-gestures>configure -debug-an
 - rerun the nomacs ``CMake`` with the qt path
 
 ## Links
-[1] https://www.qt.io/download/
-[2] http://thomasstockx.blogspot.com/2011/03/qt-472-in-visual-studio-2010.html
-[3] http://www.holoborodko.com/pavel/2011/02/01/how-to-compile-qt-4-7-with-visual-studio-2010/
-[4] http://qt-project.org/wiki/Building_Qt_5_from_Git
-[5] https://git.gitorious.org/qt/qt5.git
-[6] https://codereview.qt-project.org/#/c/177743/7/src/corelib/tools/qalgorithms.h
+[1] https://www.qt.io/download/  
+[2] http://thomasstockx.blogspot.com/2011/03/qt-472-in-visual-studio-2010.html  
+[3] http://www.holoborodko.com/pavel/2011/02/01/how-to-compile-qt-4-7-with-visual-studio-2010/  
+[4] http://qt-project.org/wiki/Building_Qt_5_from_Git  
+[6] https://codereview.qt-project.org/#/c/177743/7/src/corelib/tools/qalgorithms.h  
