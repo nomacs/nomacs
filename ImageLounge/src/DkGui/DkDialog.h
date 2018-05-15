@@ -526,6 +526,7 @@ public:
 
 	void setImage(const QImage& img);
 	void addImage(const QImage& img);
+	void fitImages();
 
 public slots:
 	void paintForPrinting();
@@ -543,7 +544,6 @@ signals:
 protected:
 	virtual void wheelEvent(QWheelEvent *event) override;
 	virtual void paintEvent(QPaintEvent *event) override;
-	void fitImages();
 
 private:
 	QPrinter* mPrinter;

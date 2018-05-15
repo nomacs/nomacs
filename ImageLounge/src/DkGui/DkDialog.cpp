@@ -2315,12 +2315,17 @@ void DkPrintPreviewDialog::pageSetup() {
 
 void DkPrintPreviewDialog::print() {
 
+	QRect pr = mPrinter->pageRect();
+
 	QPrintDialog* pDialog = new QPrintDialog(mPrinter, this);
 	
 	if (pDialog->exec() == QDialog::Accepted) {
-		//mPreview->print();
+
+		// if the page rect is changed - we have to newly fit the images...
+		if (pr != mPrinter->pageRect())
+			mPreview->fitImages();
+
 		mPreview->paintForPrinting();
-		qDebug() << "printing...";
 		close();
 	}
 }
@@ -2429,7 +2434,6 @@ void DkPrintPreviewWidget::changeDpi(int value) {
 
 void DkPrintPreviewWidget::paintPreview(QPrinter* printer) {
 
-	DkTimer dt;
 	QPainter painter(printer);
 
 	for (auto pi : mPrintImages) {
@@ -2443,12 +2447,19 @@ void DkPrintPreviewWidget::paintPreview(QPrinter* printer) {
 
 void DkPrintPreviewWidget::paintForPrinting() {
 
+	int to = mPrinter->toPage() ? mPrinter->toPage() : mPrintImages.size();
+
 	QPainter painter(mPrinter);
 
-	for (auto pi : mPrintImages)
-		pi->draw(painter, true);
-}
+	for (int idx = mPrinter->fromPage(); idx <= to && idx < mPrintImages.size(); idx++) {
 
+		mPrintImages[idx]->draw(painter, true);
+
+		if (idx+1 < to)
+			mPrinter->newPage();
+		
+	}
+}
 
 
 // DkOpacityDialog --------------------------------------------------------------------
