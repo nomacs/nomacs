@@ -494,52 +494,60 @@ protected:
 	QPushButton* cancelButton;
 };
 
+class DkPrintImage {
+
+public:
+	DkPrintImage(const QImage& img = QImage(), QPrinter* printer = 0);
+
+	QImage image() const;
+	void draw(QPainter& p, bool highQuality = false);
+
+	void fit();
+	void center();
+	void scale(double sf);
+
+	double dpi();
+
+private:
+	void center(QTransform & t) const;
+
+	QImage mImg;
+	QPrinter* mPrinter;
+
+	QTransform mTransform;
+};
+
 
 class DkPrintPreviewWidget : public QPrintPreviewWidget {
 	Q_OBJECT
+
 public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
+	void setImage(const QImage& img);
+
+public slots:
+	void paintForPrinting();
+	void paintPreview(QPrinter *printer);
+	void changeDpi(int value);
+	void centerImage();
+
+	void setLandscapeOrientation();
+	void setPortraitOrientation();
+
 signals:
 	void zoomChanged() const;
+	void dpiChanged(int dpi);
 
 protected:
 	virtual void wheelEvent(QWheelEvent *event) override;
 	virtual void paintEvent(QPaintEvent *event) override;
+	void fitImages();
 
 private:
 	QPrinter* mPrinter;
-
+	QVector<QSharedPointer<DkPrintImage> > mPrintImages;
 };
-
-class DkPrintPreviewValidator : public QDoubleValidator {
-	
-public:
-	DkPrintPreviewValidator(const QString& suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
-	State validate(QString &input, int &pos) const {
-		bool replaceSuffix = false;
-		if (input.endsWith(suffix)) {
-			input = input.left(input.length() - suffix.length());
-			replaceSuffix = true;
-		}
-		State state = QDoubleValidator::validate(input, pos);
-		if (replaceSuffix)
-			input += suffix;
-		const int num_size = 4+suffix.length();
-		if (state == Intermediate) {
-			int i = input.indexOf(QLocale::system().decimalPoint());
-			if ((i == -1 && input.size() > num_size)
-				|| (i != -1 && i > num_size))
-				return Invalid;
-		}
-
-		return state;			
-	}
-private:
-	QString suffix;
-};
-
-
 
 class DkPrintPreviewDialog : public QMainWindow {
 	Q_OBJECT
@@ -558,8 +566,11 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(const QImage& img, double dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	void setImage(const QImage& img, double dpi);
+	DkPrintPreviewDialog(const QImage& img, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	
+	void setImage(const QImage& img);
+	//void addImage(const QImage& img);
+
 	void init();
 
 public slots:
@@ -570,28 +581,18 @@ protected:
 	void createIcons();
 
 private slots:
-	void paintRequested(QPrinter* printer);
 	void zoomIn();
 	void zoomOut();
-	void dpiFactorChanged();
 	void updateDpiFactor(qreal dpi);
 	void pageSetup();
 	void print();
-	void centerImage();
 
-	void setPortrait();
-	void setLandscape();
 	void zoom(int scale);
 	void previewFitWidth();
 	void previewFitPage();
 
 
 private:
-	void scaleImage();
-	void center(QTransform& t) const;
-		
-	QImage mImg;
-
 	QSpinBox* mZoomFactor = 0;
 	QSpinBox* mDpiBox = 0;
 
@@ -599,11 +600,6 @@ private:
 	QPrinter* mPrinter = 0;
 
 	QVector<QIcon> mIcons;
-
-	QTransform mImgTransform;
-
-	double mDpi = 150;
-	double mOrigDpi = 150;
 };
 
 class DkOpacityDialog : public QDialog {

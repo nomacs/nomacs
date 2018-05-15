@@ -1744,18 +1744,14 @@ void DkNoMacs::printDialog() {
 
 	QPrinter printer;
 
-	QVector2D res(150,150);
 	QSharedPointer<DkImageContainerT> imgC = getTabWidget()->getCurrentImage();
 	
-	if (imgC)
-		res = imgC->getMetaData()->getResolution();
-
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = viewport()->getImage();
 	if (!mPrintPreviewDialog)
-		mPrintPreviewDialog = new DkPrintPreviewDialog(img, (float)res.x(), 0, this);
+		mPrintPreviewDialog = new DkPrintPreviewDialog(img, 0, this);
 	else
-		mPrintPreviewDialog->setImage(img, (float)res.x());
+		mPrintPreviewDialog->setImage(img);
 
 	mPrintPreviewDialog->show();
 	mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
