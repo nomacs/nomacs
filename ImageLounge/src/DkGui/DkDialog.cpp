@@ -2105,26 +2105,27 @@ void DkUpdateDialog::okButtonClicked() {
 
 // DkPrintPreviewDialog --------------------------------------------------------------------
 
-DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, float dpi, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
+DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, double dpi, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
 		: QMainWindow(parent, flags) {
 	
+	setWindowTitle(tr("Print Preview"));
+
 	mImg = img;
 	mPrinter = printer;
 	mDpi = dpi;
 	mOrigDpi = dpi;
-	mPrintDialog = 0;
-	mImgTransform = QTransform();
+	
+	QMetaObject::connectSlotsByName(this);
+
 	init();
-	setWindowTitle(tr("Print Preview"));
+
 	if (!img.isNull() && img.width() > img.height()) 
 		mPreview->setLandscapeOrientation();
 
 	scaleImage();
-	qInfo() << "DkPrintPreviewDialog constructor: pageSize: " << mPrinter->pageSize();
-	qInfo() << "DkPrintPreviewDialog constructor: pageRect: " << mPrinter->pageRect(QPrinter::Millimeter);
 }
 
-void DkPrintPreviewDialog::setImage(const QImage& img, float dpi) {
+void DkPrintPreviewDialog::setImage(const QImage& img, double dpi) {
 	
 	mImg = img;
 	mDpi = dpi;
@@ -2135,9 +2136,7 @@ void DkPrintPreviewDialog::setImage(const QImage& img, float dpi) {
 void DkPrintPreviewDialog::scaleImage() {
 
 	QRectF rect = mPrinter->pageRect();
-	qreal scaleFactor;
-	//QSizeF paperSize = mPrinter->paperSize(QPrinter::Inch);
-	//QRectF pageRectInch = mPrinter->pageRect(QPrinter::Inch);
+	double scaleFactor = 0;
 
 	// scale image to fit on paper
 	if (rect.width()/mImg.width() < rect.height()/mImg.height()) {
@@ -2146,9 +2145,9 @@ void DkPrintPreviewDialog::scaleImage() {
 		scaleFactor = rect.height()/(mImg.height()+FLT_EPSILON);
 	}
 
-	float inchW = (float)mPrinter->pageRect(QPrinter::Inch).width();
-	float pxW = (float)mPrinter->pageRect().width();
-	mDpi = (pxW/inchW)/(float)scaleFactor;
+	double inchW = mPrinter->pageRect(QPrinter::Inch).width();
+	double pxW = mPrinter->pageRect().width();
+	mDpi = (pxW/inchW)/scaleFactor;
 
 	// use at least 150 dpi 
 	if (mDpi < 150 && scaleFactor > 1) {
@@ -2157,10 +2156,10 @@ void DkPrintPreviewDialog::scaleImage() {
 		qDebug() << "new scale Factor:" << scaleFactor;
 	}
 
-
+	mImgTransform.reset();
 	mImgTransform.scale(scaleFactor, scaleFactor);
 
-	mDpiFactor->lineEdit()->setText(QString().sprintf("%.0f", mDpi)+mDpiEditorSuffix);
+	updateDpiFactor(mDpi);
 	centerImage();
 	updateZoomFactor();
 }
@@ -2186,11 +2185,10 @@ void DkPrintPreviewDialog::init() {
 	connect(mPreview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
 	
 	createIcons();
-	setupActions();
 	createLayout();
+	
 	setMinimumHeight(600);
 	setMinimumWidth(800);
-
 }
 
 void DkPrintPreviewDialog::createIcons() {
@@ -2208,270 +2206,214 @@ void DkPrintPreviewDialog::createIcons() {
 	mIcons[print_printer]	= DkImage::loadIcon(":/nomacs/img/printer.svg");
 }
 
-void DkPrintPreviewDialog::setupActions() {
-
-	mFitGroup = new QActionGroup(this);
-
-	mFitWidthAction = mFitGroup->addAction(mIcons[print_fit_width], tr("Fit Width"));
-	mFitPageAction = mFitGroup->addAction(mIcons[print_fit_page], tr("Fit Page"));
-	mFitWidthAction->setObjectName(QLatin1String("fitWidthAction"));
-	mFitPageAction->setObjectName(QLatin1String("fitPageAction"));
-	mFitWidthAction->setCheckable(true);
-	mFitPageAction->setCheckable(true);
-	QObject::connect(mFitGroup, SIGNAL(triggered(QAction*)), this, SLOT(fitImage(QAction*)));
-
-	// Zoom
-	mZoomGroup = new QActionGroup(this);
-
-	mZoomInAction = mZoomGroup->addAction(mIcons[print_zoom_in], tr("Zoom in"));
-	mZoomInAction->setShortcut(Qt::Key_Plus);
-	mZoomOutAction = mZoomGroup->addAction(mIcons[print_zoom_out], tr("Zoom out"));
-	mZoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
-
-	// Portrait/Landscape
-	mOrientationGroup = new QActionGroup(this);
-	mPortraitAction = mOrientationGroup->addAction(mIcons[print_portrait], tr("Portrait"));
-	mLandscapeAction = mOrientationGroup->addAction(mIcons[print_landscape], tr("Landscape"));
-	mPortraitAction->setCheckable(true);
-	mLandscapeAction->setCheckable(true);
-	QObject::connect(mPortraitAction, SIGNAL(triggered(bool)), mPreview, SLOT(setPortraitOrientation()));
-	QObject::connect(mPortraitAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
-	QObject::connect(mLandscapeAction, SIGNAL(triggered(bool)), mPreview, SLOT(setLandscapeOrientation()));
-	QObject::connect(mLandscapeAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
-
-
-	// Print
-	mPrinterGroup = new QActionGroup(this);
-	mPrintAction = mPrinterGroup->addAction(mIcons[print_printer], tr("Print"));
-	mPageSetupAction = mPrinterGroup->addAction(mIcons[print_setup], tr("Page setup"));
-	QObject::connect(mPrintAction, SIGNAL(triggered(bool)), this, SLOT(print()));
-	QObject::connect(mPageSetupAction, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
-
-	mDpiGroup = new QActionGroup(this);
-	mResetDpiAction = mDpiGroup->addAction(mIcons[print_reset_dpi], tr("Reset dpi"));
-	//setIcon(resetDpiAction, QLatin1String("fit-width"));
-	QObject::connect(mResetDpiAction, SIGNAL(triggered(bool)), this, SLOT(resetDpi()));
-
-}
-
 void DkPrintPreviewDialog::createLayout() {
 	
-	mZoomFactor = new QComboBox(this);
-	mZoomFactor->setEditable(true);
-	mZoomFactor->setMinimumContentsLength(7);
-	mZoomFactor->setInsertPolicy(QComboBox::NoInsert);
-	QLineEdit *zoomEditor = new QLineEdit(this);
-	zoomEditor->setValidator(new DkPrintPreviewValidator("%", 1,1000, 1, zoomEditor));
-	mZoomFactor->setLineEdit(zoomEditor);
-	static const short factorsX2[] = { 25, 50, 100, 200, 250, 300, 400, 800, 1600 };
-	for (int i = 0; i < int(sizeof(factorsX2) / sizeof(factorsX2[0])); ++i)
-		mZoomFactor->addItem(QString::number(factorsX2[i] / 2.0)+"%");
-	QObject::connect(mZoomFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(zoomFactorChanged()));
-	QObject::connect(mZoomFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(zoomFactorChanged()));
+	QAction* fitWidth = new QAction(mIcons[print_fit_width], tr("Fit Width"), this);
+	QAction* fitPage = new QAction(mIcons[print_fit_page], tr("Fit Page"), this);
 
+	// Zoom
+	mZoomFactor = new QSpinBox(this);
+	mZoomFactor->setMinimum(1);
+	mZoomFactor->setMaximum(5000);
+	mZoomFactor->setSingleStep(10);
+	mZoomFactor->setSuffix("%");
+
+	QAction* zoomIn = new QAction(mIcons[print_zoom_in], tr("Zoom in"), this);
+	zoomIn->setShortcut(Qt::Key_Plus);
+
+	QAction* zoomOut = new QAction(mIcons[print_zoom_out], tr("Zoom out"), this);
+	zoomOut->setShortcut(Qt::Key_Minus);
+	
 	QString zoomTip = tr("keep ALT key pressed to zoom with the mouse wheel");
 	mZoomFactor->setToolTip(zoomTip);
-	zoomEditor->setToolTip(zoomTip);
-	mZoomOutAction->setToolTip(zoomTip);
-	mZoomInAction->setToolTip(zoomTip);
+	zoomIn->setToolTip(zoomTip);
+	zoomOut->setToolTip(zoomTip);
 
-	// dpi selection
-	mDpiFactor = new QComboBox;
-	mDpiFactor->setEditable(true);
-	mDpiFactor->setMinimumContentsLength(5);
-	mDpiFactor->setInsertPolicy(QComboBox::NoInsert);
+	mDpiBox = new QSpinBox(this);
+	mDpiBox->setSuffix(" dpi");
+	mDpiBox->setMinimum(10);
+	mDpiBox->setMaximum(9999);
+	mDpiBox->setSingleStep(100);
 
-	QLineEdit* dpiEditor = new QLineEdit;
-	mDpiEditorSuffix = " dpi";
-	dpiEditor->setValidator(new DkPrintPreviewValidator(mDpiEditorSuffix, 1,1000, 1, zoomEditor));
-	mDpiFactor->setLineEdit(dpiEditor);
-	static const short dpiFactors[] = {72, 150, 300, 600};
-	for (int i = 0; i < int(sizeof(dpiFactors) / sizeof(dpiFactors[0])); i++)
-		mDpiFactor->addItem(QString::number(dpiFactors[i])+mDpiEditorSuffix);
-	QObject::connect(mDpiFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(dpiFactorChanged()));
-	QObject::connect(mDpiFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(dpiFactorChanged()));
+	// Portrait/Landscape
+	QAction* prt = new QAction(mIcons[print_portrait], tr("Portrait"), this);
+	prt->setObjectName("portrait");
 
+	QAction* lsc = new QAction(mIcons[print_landscape], tr("Landscape"), this);
+	lsc->setObjectName("landscape");
+
+	// Print
+	QAction* pageSetup = new QAction(mIcons[print_setup], tr("Page setup"), this);
+	QAction* printAction = new QAction(mIcons[print_printer], tr("Print"), this);
+
+	// create toolbar
 	QToolBar *toolbar = new QToolBar(tr("Print Preview"), this);
-	toolbar->addAction(mFitWidthAction);
-	toolbar->addAction(mFitPageAction);
-	toolbar->addSeparator();
+	
+	toolbar->addAction(fitWidth);
+	toolbar->addAction(fitPage);
+	
 	toolbar->addWidget(mZoomFactor);
-	toolbar->addAction(mZoomInAction);
-	toolbar->addAction(mZoomOutAction);
+	toolbar->addAction(zoomIn);
+	toolbar->addAction(zoomOut);
+	
+	toolbar->addWidget(mDpiBox);
+	
+	toolbar->addAction(prt);
+	toolbar->addAction(lsc);
+	
 	toolbar->addSeparator();
-	toolbar->addWidget(mDpiFactor);
-	toolbar->addAction(mResetDpiAction);
-	toolbar->addSeparator();
-	toolbar->addAction(mPortraitAction);
-	toolbar->addAction(mLandscapeAction);
-	toolbar->addSeparator();
-	//toolbar->addAction(firstPageAction);
-	//toolbar->addAction(prevPageAction);
-	//toolbar->addSeparator();
-	toolbar->addAction(mPageSetupAction);
-	toolbar->addAction(mPrintAction);
+	toolbar->addAction(pageSetup);
+	toolbar->addAction(printAction);
 
 	if (DkSettingsManager::param().display().toolbarGradient)
 		toolbar->setObjectName("toolbarWithGradient");
 
 	toolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
+	addToolBar(toolbar);
+	setCentralWidget(mPreview);
+
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
-	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(mZoomInAction));
-	QToolButton *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(mZoomOutAction));
+	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomIn));
 	zoomInButton->setAutoRepeat(true);
 	zoomInButton->setAutoRepeatInterval(200);
 	zoomInButton->setAutoRepeatDelay(200);
+
+	QToolButton *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomOut));
 	zoomOutButton->setAutoRepeat(true);
 	zoomOutButton->setAutoRepeatInterval(200);
 	zoomOutButton->setAutoRepeatDelay(200);
-	QObject::connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-	QObject::connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
 
+	connect(mZoomFactor, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
+	connect(mDpiBox, SIGNAL(valueChanged(int)), this, SLOT(dpiFactorChanged()));
+	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
+	connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
 
-	this->addToolBar(toolbar);
+	connect(lsc, SIGNAL(triggered()), this, SLOT(setLandscape()));
+	connect(prt, SIGNAL(triggered()), this, SLOT(setPortrait()));
+	connect(fitWidth, SIGNAL(triggered()), this, SLOT(previewFitWidth()));
+	connect(fitPage, SIGNAL(triggered()), this, SLOT(previewFitPage()));
 
-	this->setCentralWidget(mPreview);
-}
-
-void DkPrintPreviewDialog::setIcon(QAction* action, const QLatin1String &name) {
-	
-	// deprecated?? (didn't find a call here)
-	QLatin1String imagePrefix(":/trolltech/dialogs/qprintpreviewdialog/images/");
-	QIcon icon;
-	icon.addFile(imagePrefix + name + QLatin1String("-24.png"), QSize(24, 24));
-	icon.addFile(imagePrefix + name + QLatin1String("-32.png"), QSize(32, 32));
-	action->setIcon(icon);
+	connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
+	connect(pageSetup, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
 }
 
 void DkPrintPreviewDialog::paintRequested(QPrinter* printer) {
 	
+	DkTimer dt;
+
+	//QPainter painter(printer);
+	//
+	//QRect r = mImg.rect();
+	//r = mImgTransform.mapRect(r);
+
+	//QImage imgQt = DkImage::resizeImage(mImg, QSize(), mImgTransform.m11(), CV_INTER_AREA, false);
+	//painter.drawImage(r, imgQt, imgQt.rect());
+
+	//painter.end();
+
 	QPainter painter(printer);
-	QRect rect = painter.viewport();
-	QSize size = mImg.size();
-	painter.setWorldTransform(mImgTransform);
-	painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-	painter.setWindow(mImg.rect());
-	painter.drawImage(0, 0, mImg);
+
+	QRectF r = mImg.rect();
+	r = mImgTransform.mapRect(r);
+
+	//QImage imgQt = DkImage::resizeImage(mImg, QSize(), mImgTransform.m11(), CV_INTER_AREA, false);
+	painter.setRenderHints(QPainter::SmoothPixmapTransform);
+	painter.drawImage(r, mImg, mImg.rect());
 
 	painter.end();
 
+	qDebug() << "painted in" << dt;
 }
 
-void DkPrintPreviewDialog::fitImage(QAction* action) {
-	setFitting(true);
-	if (action == mFitPageAction)
-		mPreview->fitInView();
-	else
-		mPreview->fitToWidth();
-	updateZoomFactor();
-	qDebug() << "fitting image...";
-}
+void DkPrintPreviewDialog::center(QTransform & t) const {
 
-bool DkPrintPreviewDialog::isFitting() {
-	return (mFitGroup->isExclusive() && (mFitWidthAction->isChecked() || mFitPageAction->isChecked()));
+	QRectF transRect = t.mapRect(mImg.rect());
+	qreal xtrans = 0, ytrans = 0;
+	xtrans = ((mPrinter->pageRect().width() - transRect.width()) / 2);
+	ytrans = (mPrinter->pageRect().height() - transRect.height()) / 2;
+
+	t.translate(-t.dx() / (t.m11() + DBL_EPSILON), -t.dy() / (t.m22() + DBL_EPSILON)); // reset old transformation
+	t.translate(xtrans / (t.m11() + DBL_EPSILON), ytrans / (t.m22() + DBL_EPSILON));
 }
 
 void DkPrintPreviewDialog::centerImage() {
-	
-	QRect imgRect = mImg.rect();
-	QRectF transRect = mImgTransform.mapRect(imgRect);
-	qreal xtrans = 0, ytrans = 0;
-	xtrans = ((mPrinter->pageRect().width() - transRect.width())/2);
-	ytrans = (mPrinter->pageRect().height() - transRect.height())/2;
 
-	mImgTransform.translate(-mImgTransform.dx()/(mImgTransform.m11()+DBL_EPSILON), -mImgTransform.dy()/(mImgTransform.m22()+DBL_EPSILON)); // reset old transformation
-
-	mImgTransform.translate(xtrans/(mImgTransform.m11()+DBL_EPSILON), ytrans/(mImgTransform.m22()+DBL_EPSILON));
+	center(mImgTransform);
 	mPreview->updatePreview();
 }
 
-void DkPrintPreviewDialog::setFitting(bool on) {
-	
-	if (isFitting() == on)
-		return;
-	mFitGroup->setExclusive(on);
-	if (on) {
-		QAction* action = mFitWidthAction->isChecked() ? mFitWidthAction : mFitPageAction;
-		action->setChecked(true);
-		if (mFitGroup->checkedAction() != action) {
-			// work around exclusitivity problem
-			mFitGroup->removeAction(action);
-			mFitGroup->addAction(action);
-		}
-	} else {
-		mFitWidthAction->setChecked(false);
-		mFitPageAction->setChecked(false);
-	}
+void DkPrintPreviewDialog::setPortrait() {
+	mPreview->setPortraitOrientation();
+	scaleImage();
+	previewFitPage();
+}
+
+void DkPrintPreviewDialog::setLandscape() {
+	mPreview->setLandscapeOrientation();
+	scaleImage();
+	previewFitPage();
 }
 
 void DkPrintPreviewDialog::zoomIn() {
-	setFitting(false);
 	mPreview->zoomIn();
 	updateZoomFactor();
 }
 
 void DkPrintPreviewDialog::zoomOut() {
-	setFitting(false);
 	mPreview->zoomOut();
 	updateZoomFactor();
 }
 
-void DkPrintPreviewDialog::zoomFactorChanged() {
-	QString text = mZoomFactor->lineEdit()->text();
-	bool ok;
-	qreal factor = text.remove(QLatin1Char('%')).toFloat(&ok);
-	factor = qMax(qreal(1.0), qMin(qreal(1000.0), factor));
-	if (ok) {
-		mPreview->setZoomFactor(factor/100.0);
-		mZoomFactor->setEditText(QString::fromLatin1("%1%").arg(factor));
-		setFitting(false);
-		updateZoomFactor();
-	}
+void DkPrintPreviewDialog::zoom(int scale) {
+	
+	mPreview->setZoomFactor(scale/100.0);
 	updateZoomFactor();
 }
 
+void DkPrintPreviewDialog::previewFitWidth() {
+
+	mPreview->fitToWidth();
+}
+
+void DkPrintPreviewDialog::previewFitPage() {
+
+	mPreview->fitInView();
+}
+
 void DkPrintPreviewDialog::updateZoomFactor() {
-	mZoomFactor->lineEdit()->setText(QString().sprintf("%.1f%%", mPreview->zoomFactor()*100));
+	
+	mZoomFactor->setValue(qRound(mPreview->zoomFactor() * 100));
 }
 
 void DkPrintPreviewDialog::dpiFactorChanged() {
-	
-	QString text = mDpiFactor->lineEdit()->text();
-	bool ok;
-	qreal factor = text.remove(mDpiEditorSuffix).toFloat(&ok);
-	if (ok) {
-		mImgTransform.reset();
 
-		float inchW = (float)mPrinter->pageRect(QPrinter::Inch).width();
-		float pxW = (float)mPrinter->pageRect().width();
-		float scaleFactor = (float)((pxW/inchW)/factor);
+	double inchW = mPrinter->pageRect(QPrinter::Inch).width();
+	int pxW = mPrinter->pageRect().width();
+	double scaleFactor = ((double)pxW/inchW)/mDpiBox->value();
 
-		mImgTransform.scale(scaleFactor, scaleFactor);
+	mImgTransform.reset();
+	mImgTransform.scale(scaleFactor, scaleFactor);
 
-	}
 	centerImage();
-	mPreview->updatePreview();
 }
 
 void DkPrintPreviewDialog::updateDpiFactor(qreal dpi) {
-	mDpiFactor->lineEdit()->setText(QString().sprintf("%.0f", dpi)+mDpiEditorSuffix);
-}
-
-void DkPrintPreviewDialog::resetDpi() {
-	updateDpiFactor(mOrigDpi);
-	dpiFactorChanged();
+	
+	mDpiBox->setValue(qRound(dpi));
 }
 
 void DkPrintPreviewDialog::pageSetup() {
+	
 	QPageSetupDialog pageSetup(mPrinter, this);
+	
 	if (pageSetup.exec() == QDialog::Accepted) {
+		
 		// update possible orientation changes
 		if (mPreview->orientation() == QPrinter::Portrait) {
-			mPortraitAction->setChecked(true);
 			mPreview->setPortraitOrientation();
-		}else {
-			mLandscapeAction->setChecked(true);
+		}
+		else {
 			mPreview->setLandscapeOrientation();
 		}
 		centerImage();
@@ -2479,10 +2421,11 @@ void DkPrintPreviewDialog::pageSetup() {
 }
 
 void DkPrintPreviewDialog::print() {
-	if (!mPrintDialog)
-		mPrintDialog = new QPrintDialog(mPrinter, this);
-	if (mPrintDialog->exec() == QDialog::Accepted) {
-		centerImage();
+	
+	QPrintDialog* pDialog = new QPrintDialog(mPrinter, this);
+	
+	if (pDialog->exec() == QDialog::Accepted) {
+		//centerImage();
 		mPreview->print();
 		close();
 	}
@@ -2490,13 +2433,16 @@ void DkPrintPreviewDialog::print() {
 
 // DkPrintPreviewWidget --------------------------------------------------------------------
 DkPrintPreviewWidget::DkPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags) {
-	// do nothing atm - bis zum bankomat
+	mPrinter = printer;
 }
 
-//void DkPrintPreviewWidget::paintEvent(QPaintEvent * event) {
-//	qDebug() << "paintEvent";
-//	QPrintPreviewWidget::paintEvent(event);
-//}
+void DkPrintPreviewWidget::paintEvent(QPaintEvent * event) {
+	
+	qDebug() << "paintEvent";
+
+	// TODO: can we get a better anti-aliasing here?
+	QPrintPreviewWidget::paintEvent(event);
+}
 
 void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event) {
 

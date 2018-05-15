@@ -102,7 +102,7 @@ public:
 	static QString getBufferSize(const QImage& img);
 	static QString getBufferSize(const QSize& imgSize, const int depth);
 	static float getBufferSizeFloat(const QSize& imgSize, const int depth);
-	static QImage resizeImage(const QImage& img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic, bool correctGamma = true);
+	static QImage resizeImage(const QImage& img, const QSize& newSize, double factor = 1.0, int interpolation = ipl_cubic, bool correctGamma = true);
 
 	template <typename numFmt>
 	static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);

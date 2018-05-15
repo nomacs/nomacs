@@ -315,15 +315,15 @@ float DkImage::getBufferSizeFloat(const QSize& imgSize, const int depth) {
  * @param interpolation the interpolation method
  * @return QImage the resized image
  **/ 
-QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float factor /* = 1.0f */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */) {
+QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, double factor /* = 1.0 */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */) {
 
 	QSize nSize = newSize;
 
 	// nothing to do
-	if (img.size() == nSize && factor == 1.0f)
+	if (img.size() == nSize && factor == 1.0)
 		return img;
 
-	if (factor != 1.0f)
+	if (factor != 1.0)
 		nSize = QSize(qRound(img.width()*factor), qRound(img.height()*factor));
 
 	if (nSize.width() < 1 || nSize.height() < 1) {
@@ -384,7 +384,6 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float facto
 		return qImg;
 
 	} catch (std::exception se) {
-
 		return QImage();
 	}
 

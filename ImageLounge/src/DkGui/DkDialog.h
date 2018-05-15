@@ -504,8 +504,11 @@ signals:
 	void zoomChanged() const;
 
 protected:
-	virtual void wheelEvent(QWheelEvent *event);		
+	virtual void wheelEvent(QWheelEvent *event) override;
+	virtual void paintEvent(QPaintEvent *event) override;
 
+private:
+	QPrinter* mPrinter;
 
 };
 
@@ -555,73 +558,52 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(const QImage& img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	void setImage(const QImage& img, float dpi);
+	DkPrintPreviewDialog(const QImage& img, double dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	void setImage(const QImage& img, double dpi);
 	void init();
 
 public slots:
 	void updateZoomFactor();
 
 protected:
-	void setupActions();
 	void createLayout();
-	void setIcon(QAction* action, const QLatin1String &name);
 	void createIcons();
 
 private slots:
 	void paintRequested(QPrinter* printer);
-	void fitImage(QAction* action);
 	void zoomIn();
 	void zoomOut();
-	void zoomFactorChanged();
 	void dpiFactorChanged();
 	void updateDpiFactor(qreal dpi);
-	void resetDpi();
 	void pageSetup();
 	void print();
 	void centerImage();
 
+	void setPortrait();
+	void setLandscape();
+	void zoom(int scale);
+	void previewFitWidth();
+	void previewFitPage();
+
+
 private:
-	void setFitting(bool on);
 	void scaleImage();
-	bool isFitting();
+	void center(QTransform& t) const;
 		
 	QImage mImg;
 
-	QActionGroup* mFitGroup = 0;
-	QAction* mFitWidthAction = 0;
-	QAction* mFitPageAction = 0;
-	
-	QActionGroup* mZoomGroup = 0;
-	QAction* mZoomInAction = 0;
-	QAction* mZoomOutAction = 0;
-
-	QActionGroup* mOrientationGroup = 0;
-	QAction* mPortraitAction = 0;
-	QAction* mLandscapeAction = 0;
-
-	QActionGroup* mPrinterGroup = 0;
-	QAction* mPrintAction = 0;
-	QAction* mPageSetupAction = 0;
-
-	QActionGroup* mDpiGroup = 0;
-	QAction* mResetDpiAction = 0;
-
-	QComboBox* mZoomFactor = 0;
-	QComboBox* mDpiFactor = 0;
-	QString mDpiEditorSuffix;
-
+	QSpinBox* mZoomFactor = 0;
+	QSpinBox* mDpiBox = 0;
 
 	DkPrintPreviewWidget* mPreview = 0;
 	QPrinter* mPrinter = 0;
-	QPrintDialog* mPrintDialog = 0;
 
 	QVector<QIcon> mIcons;
 
 	QTransform mImgTransform;
 
-	float mDpi = 150;
-	float mOrigDpi = 150;
+	double mDpi = 150;
+	double mOrigDpi = 150;
 };
 
 class DkOpacityDialog : public QDialog {
