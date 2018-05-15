@@ -305,6 +305,7 @@ public:
 		preview_delete,
 		preview_filter,
 		preview_batch,
+		preview_print,
 
 		actions_end
 	};

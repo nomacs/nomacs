@@ -1512,6 +1512,10 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPreviewActions[preview_batch]->setToolTip(QObject::tr("Adds selected files to batch processing."));
 	mPreviewActions[preview_batch]->setShortcut(QKeySequence(Qt::Key_B));
 
+	mPreviewActions[preview_print] = new QAction(DkImage::loadIcon(":/nomacs/img/printer.svg"), QObject::tr("&Batch Print"), parent);
+	mPreviewActions[preview_print]->setToolTip(QObject::tr("Prints selected files."));
+	mPreviewActions[preview_print]->setShortcut(QKeySequence::Print);
+
 	// hidden actions
 	mHiddenActions.resize(sc_end);
 

@@ -1,9 +1,12 @@
 nomacs 3.10.0
 ============
 - anti-aliasing improved
+- printing improved
+- print multiple pages from thumbnail preview
 - animiated WebP support
 - PSD lib updated
 - new translations: Bosnian, Croation, and Serbian
+
 
 nomacs 3.8.0
 ============

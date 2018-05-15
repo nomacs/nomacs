@@ -37,6 +37,9 @@
 #include "DkMessageBox.h"
 #include "DkStatusBar.h"
 
+#include "DkBasicLoader.h"
+#include "DkDialog.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>
 #include <QAction>
@@ -1890,6 +1893,7 @@ void DkThumbScrollWidget::createToolbar() {
 	mToolbar->addAction(am.action(DkActionManager::preview_delete));
 	mToolbar->addSeparator();
 	mToolbar->addAction(am.action(DkActionManager::preview_batch));
+	mToolbar->addAction(am.action(DkActionManager::preview_print));
 
 	// add sorting
 	QString menuTitle = tr("&Sort");
@@ -1946,6 +1950,32 @@ void DkThumbScrollWidget::batchProcessFiles() const {
 	emit batchProcessFilesSignal(fileList);
 }
 
+void DkThumbScrollWidget::batchPrint() const {
+
+	QStringList fileList = mThumbsScene->getSelectedFiles();
+
+	QVector<QImage> imgs;
+	DkBasicLoader bl;
+
+	for (const QString& f : fileList) {
+
+		bl.loadGeneral(f);
+
+		if (!bl.image().isNull())
+			imgs << bl.image();
+
+	}
+
+	DkPrintPreviewDialog* printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
+
+	for (const QImage& img : imgs) {
+		printPreviewDialog->addImage(img);
+	}
+
+	printPreviewDialog->show();
+	//mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
+}
+
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
 
 	mThumbsScene->updateThumbs(thumbs);
@@ -1992,6 +2022,7 @@ void DkThumbScrollWidget::connectToActions(bool activate) {
 		connect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
 		connect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
 		connect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+		connect(am.action(DkActionManager::preview_print), SIGNAL(triggered()), this, SLOT(batchPrint()));
 
 		connect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
 		connect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
@@ -2009,6 +2040,7 @@ void DkThumbScrollWidget::connectToActions(bool activate) {
 		disconnect(am.action(DkActionManager::preview_paste), SIGNAL(triggered()), mThumbsScene, SLOT(pasteImages()));
 		disconnect(am.action(DkActionManager::preview_rename), SIGNAL(triggered()), mThumbsScene, SLOT(renameSelected()));
 		disconnect(am.action(DkActionManager::preview_batch), SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+		disconnect(am.action(DkActionManager::preview_print), SIGNAL(triggered()), this, SLOT(batchPrint()));
 
 		disconnect(mFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
 		disconnect(mView, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));

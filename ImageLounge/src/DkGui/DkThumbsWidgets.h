@@ -319,6 +319,7 @@ public slots:
 	void enableSelectionActions();
 	void setFilterFocus() const;
 	void batchProcessFiles() const;
+	void batchPrint() const;
 
 signals:
 	void updateDirSignal(const QString& dir);
