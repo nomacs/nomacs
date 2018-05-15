@@ -1749,9 +1749,20 @@ void DkNoMacs::printDialog() {
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = viewport()->getImage();
 	if (!mPrintPreviewDialog)
-		mPrintPreviewDialog = new DkPrintPreviewDialog(img, 0, this);
-	else
-		mPrintPreviewDialog->setImage(img);
+		mPrintPreviewDialog = new DkPrintPreviewDialog(this);
+		
+	mPrintPreviewDialog->setImage(img);
+
+	// load all pages of tiffs
+	if (imgC->getLoader()->getNumPages() > 1) {
+
+		auto l = imgC->getLoader();
+
+		for (int idx = 1; idx < l->getNumPages(); idx++) {
+			l->loadPageAt(idx+1);
+			mPrintPreviewDialog->addImage(l->image());
+		}
+	}
 
 	mPrintPreviewDialog->show();
 	mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong

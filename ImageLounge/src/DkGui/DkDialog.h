@@ -525,6 +525,7 @@ public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void setImage(const QImage& img);
+	void addImage(const QImage& img);
 
 public slots:
 	void paintForPrinting();
@@ -566,10 +567,10 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(const QImage& img, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPrintPreviewDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	
 	void setImage(const QImage& img);
-	//void addImage(const QImage& img);
+	void addImage(const QImage& img);
 
 	void init();
 

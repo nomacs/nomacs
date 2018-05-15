@@ -2104,25 +2104,27 @@ void DkUpdateDialog::okButtonClicked() {
 }
 
 // DkPrintPreviewDialog --------------------------------------------------------------------
-DkPrintPreviewDialog::DkPrintPreviewDialog(const QImage& img, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
+DkPrintPreviewDialog::DkPrintPreviewDialog(QWidget* parent, Qt::WindowFlags flags) 
 		: QMainWindow(parent, flags) {
 	
 	setWindowTitle(tr("Print Preview"));
 
-	mPrinter = printer;
-	
-	QMetaObject::connectSlotsByName(this);
 	init();
-
-	if (!img.isNull() && img.width() > img.height()) 
-		mPreview->setLandscapeOrientation();
-
-	mPreview->setImage(img);
 }
 
 void DkPrintPreviewDialog::setImage(const QImage& img) {
 
 	mPreview->setImage(img);
+
+	if (!img.isNull() && img.width() > img.height())
+		mPreview->setLandscapeOrientation();
+	else
+		mPreview->setPortraitOrientation();
+}
+
+void DkPrintPreviewDialog::addImage(const QImage& img) {
+
+	mPreview->addImage(img);
 }
 
 void DkPrintPreviewDialog::init() {
@@ -2312,20 +2314,21 @@ void DkPrintPreviewDialog::pageSetup() {
 }
 
 void DkPrintPreviewDialog::print() {
-	
+
 	QPrintDialog* pDialog = new QPrintDialog(mPrinter, this);
 	
 	if (pDialog->exec() == QDialog::Accepted) {
+		//mPreview->print();
 		mPreview->paintForPrinting();
-		mPreview->print();
+		qDebug() << "printing...";
 		close();
 	}
 }
 
 // DkPrintPreviewWidget --------------------------------------------------------------------
 DkPrintPreviewWidget::DkPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags) {
+	
 	mPrinter = printer;
-
 	connect(this, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintPreview(QPrinter*)));
 }
 
@@ -2337,6 +2340,12 @@ void DkPrintPreviewWidget::paintEvent(QPaintEvent * event) {
 
 void DkPrintPreviewWidget::setImage(const QImage & img) {
 
+	mPrintImages.clear();
+	addImage(img);
+}
+
+void DkPrintPreviewWidget::addImage(const QImage & img) {
+
 	if (!mPrinter) {
 		qWarning() << "cannot add images to preview if the printer is empty";
 		return;
@@ -2345,9 +2354,7 @@ void DkPrintPreviewWidget::setImage(const QImage & img) {
 	QSharedPointer<DkPrintImage> pi(new DkPrintImage(img, mPrinter));
 
 	// for now - think of adding multiple images here
-	mPrintImages.clear();
 	mPrintImages << pi;
-
 	fitImages();
 }
 
@@ -2361,7 +2368,6 @@ void DkPrintPreviewWidget::fitImages() {
 	}
 
 	updatePreview();
-
 	emit dpiChanged(qRound(dpi));
 }
 
@@ -2424,11 +2430,14 @@ void DkPrintPreviewWidget::changeDpi(int value) {
 void DkPrintPreviewWidget::paintPreview(QPrinter* printer) {
 
 	DkTimer dt;
-
 	QPainter painter(printer);
 
-	for (auto pi : mPrintImages)
+	for (auto pi : mPrintImages) {
 		pi->draw(painter);
+		
+		if (pi != mPrintImages.last())
+			printer->newPage();
+	}
 
 }
 
