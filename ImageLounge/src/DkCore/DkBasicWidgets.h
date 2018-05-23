@@ -32,6 +32,8 @@
 #include <QWidget>
 #pragma warning(pop)
 
+#pragma warning(disable: 4251)	// TODO: remove
+
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT
@@ -147,6 +149,37 @@ protected:
 	bool mAccepted = false;
 
 	void init();
+
+};
+
+class DllCoreExport DkRectWidget : public QWidget {
+	Q_OBJECT
+
+public:
+	DkRectWidget(const QRect& r = QRect(), QWidget* parent = 0);
+
+	QRect rect() const;
+
+public slots:
+	void setRect(const QRect& r);
+	void updateRect();
+
+signals:
+	void updateRectSignal(const QRect& r) const;
+
+protected:
+	void createLayout();
+
+	enum {
+		crop_x = 0,
+		crop_y,
+		crop_width,
+		crop_height,
+
+		crop_end
+	};
+
+	QVector<QSpinBox*> mSpCropRect;
 
 };
 

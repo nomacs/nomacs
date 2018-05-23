@@ -222,6 +222,40 @@ QPointF DkRotatingRect::getTopLeft() const {
 	return v.toQPointF();
 }
 
+void DkRotatingRect::setSize(const QSizeF & s) {
+
+	QRectF r;
+	r.setSize(s);
+	r.moveCenter(getCenter());
+
+	mRect = r;
+	rotate(-getAngle());
+}
+
+QSize DkRotatingRect::size() const {
+	
+	QPolygonF p = getPoly();
+
+	// default upper left corner is 0
+	DkVector xV = DkVector(mRect[3] - mRect[0]).round();
+	DkVector yV = DkVector(mRect[1] - mRect[0]).round();
+
+	QPointF ul = QPointF(qRound(mRect[0].x()), qRound(mRect[0].y()));
+	QPointF s = QPointF(xV.norm(), yV.norm());
+
+	double angle = xV.angle();
+	angle = DkMath::normAngleRad(angle, -CV_PI, CV_PI);
+
+	// switch width/height for /\ and \/ quadrants
+	if (std::abs(angle) > CV_PI*0.25 && std::abs(angle) < CV_PI*0.75) {
+		double x = s.x();
+		s.setX(s.y());
+		s.setY(x);
+	}
+
+	return QSize(s.x(), s.y());
+}
+
 void DkRotatingRect::setCenter(const QPointF& center) {
 
 	if (mRect.empty())

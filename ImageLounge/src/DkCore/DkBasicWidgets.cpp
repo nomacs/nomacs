@@ -347,4 +347,69 @@ void DkColorChooser::on_colorDialog_accepted() {
 	emit accepted();
 }
 
+DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	setRect(r);
+}
+
+void DkRectWidget::setRect(const QRect & r) {
+
+	mSpCropRect[crop_x]->setValue(r.x());
+	mSpCropRect[crop_y]->setValue(r.y());
+	mSpCropRect[crop_width]->setValue(r.width());
+	mSpCropRect[crop_height]->setValue(r.height());
+}
+
+QRect DkRectWidget::rect() const {
+	return QRect(mSpCropRect[crop_x]->value(),
+		mSpCropRect[crop_y]->value(),
+		mSpCropRect[crop_width]->value(),
+		mSpCropRect[crop_height]->value());
+}
+
+void DkRectWidget::updateRect() {
+
+	emit updateRectSignal(rect());
+}
+
+void DkRectWidget::createLayout() {
+
+	mSpCropRect.resize(crop_end);
+
+	QLabel* lbCropX = new QLabel(tr("x:"));
+	mSpCropRect[crop_x] = new QSpinBox(this);
+	lbCropX->setBuddy(mSpCropRect[crop_x]);
+
+	QLabel* lbCropY = new QLabel(tr("y:"));
+	mSpCropRect[crop_y] = new QSpinBox(this);
+	lbCropY->setBuddy(mSpCropRect[crop_y]);
+
+	QLabel* lbCropWidth = new QLabel(tr("width:"));
+	mSpCropRect[crop_width] = new QSpinBox(this);
+	lbCropWidth->setBuddy(mSpCropRect[crop_width]);
+
+	QLabel* lbCropHeight = new QLabel(tr("height:"));
+	mSpCropRect[crop_height] = new QSpinBox(this);
+	lbCropHeight->setBuddy(mSpCropRect[crop_height]);
+
+	for (QSpinBox* sp : mSpCropRect) {
+		sp->setSuffix(tr(" px"));
+		sp->setMinimum(0);
+		sp->setMaximum(100000);
+		connect(sp, SIGNAL(valueChanged(int)), this, SLOT(updateRect()));
+	}
+
+	QHBoxLayout* cropLayout = new QHBoxLayout(this);
+	cropLayout->setMargin(0);
+	cropLayout->addWidget(lbCropX);
+	cropLayout->addWidget(mSpCropRect[crop_x]);
+	cropLayout->addWidget(lbCropY);
+	cropLayout->addWidget(mSpCropRect[crop_y]);
+	cropLayout->addWidget(lbCropWidth);
+	cropLayout->addWidget(mSpCropRect[crop_width]);
+	cropLayout->addWidget(lbCropHeight);
+	cropLayout->addWidget(mSpCropRect[crop_height]);
+}
+
 }

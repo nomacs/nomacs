@@ -51,6 +51,7 @@ class DkTransferToolBar;
 class DkVector;
 class DkQuickAccess;
 class DkQuickAccessEdit;
+class DkRectWidget;
 
 class DkMainToolBar : public QToolBar {
 	Q_OBJECT
@@ -264,6 +265,7 @@ public:
 
 public slots:
 	void setAspectRatio(const QPointF& aRatio);
+	void setRect(const QRect& r);
 	void on_cropAction_triggered();
 	void on_cancelAction_triggered();
 	void on_swapAction_triggered();
@@ -289,6 +291,7 @@ signals:
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
 	void showInfo(bool show);
+	void updateRectSignal(const QRect& r);
 
 protected:
 	void createLayout();
@@ -307,6 +310,7 @@ protected:
 	QAction* mPanAction = 0;
 	QAction* mInfoAction = 0;
 	QCheckBox* mCbMeta = 0;
+	DkRectWidget* mCropRect = 0;
 
 	QVector<QIcon> mIcons;		// needed for colorizing
 };

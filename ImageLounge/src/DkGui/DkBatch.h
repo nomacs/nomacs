@@ -98,6 +98,7 @@ class DkBatchConfig;
 class DkProgressBar;
 class DkSettingsWidget;
 class DkBatchPluginInterface;
+class DkRectWidget;
 
 class DkBatchContent {
 
@@ -525,15 +526,6 @@ protected:
 	int getAngle() const;
 	QRect cropRect() const;
 
-	enum {
-		crop_x = 0,
-		crop_y,
-		crop_width,
-		crop_height,
-
-		crop_end
-	};
-
 	QButtonGroup* mRotateGroup = 0;
 	QRadioButton* mRbRotate0 = 0;
 	QRadioButton* mRbRotateLeft = 0;
@@ -543,7 +535,7 @@ protected:
 	QCheckBox* mCbCropMetadata = 0;
 
 	QCheckBox* mCbCropRectangle = 0;
-	QVector<QSpinBox*> mSpCropRect;
+	DkRectWidget* mCropRectWidget = 0;
 
 	QComboBox* mResizeComboMode;
 	QComboBox* mResizeComboProperties;

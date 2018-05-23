@@ -31,6 +31,7 @@
 #include "DkUtils.h"
 #include "DkImageStorage.h"
 #include "DkQuickAccess.h"
+#include "DkBasicWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
@@ -1014,6 +1015,9 @@ void DkCropToolBar::createLayout() {
 	mCbMeta = new QCheckBox(tr("Crop to Metadata"), this);
 	mCbMeta->setChecked(false);
 
+	mCropRect = new DkRectWidget(QRect(), this);
+	mCropRect->setObjectName("cropRect");
+
 	addAction(cropAction);
 	addAction(mPanAction);
 	addAction(cancelAction);
@@ -1030,6 +1034,11 @@ void DkCropToolBar::createLayout() {
 	addAction(mInvertAction);
 	addAction(mInfoAction);
 	addWidget(mCbMeta);
+	addSeparator();
+	addWidget(mCropRect);
+
+	connect(mCropRect, SIGNAL(updateRectSignal(const QRect&)), this, SIGNAL(updateRectSignal(const QRect&)));
+
 }
 
 void DkCropToolBar::setVisible(bool visible) {
@@ -1051,6 +1060,10 @@ void DkCropToolBar::setAspectRatio(const QPointF& aRatio) {
 
 	mHorValBox->setValue(aRatio.x());
 	mVerValBox->setValue(aRatio.y());
+}
+
+void DkCropToolBar::setRect(const QRect & r) {
+	mCropRect->setRect(r);
 }
 
 void DkCropToolBar::on_cropAction_triggered() {

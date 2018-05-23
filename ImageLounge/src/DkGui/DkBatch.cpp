@@ -40,6 +40,7 @@
 #include "DkManipulatorWidgets.h"
 #include "DkSettingsWidget.h"
 #include "DkPluginInterface.h"
+#include "DkBasicWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QLabel>
@@ -2011,41 +2012,7 @@ void DkBatchTransformWidget::createLayout() {
 
 	// crop rectangle
 	mCbCropRectangle = new QCheckBox(tr("&Crop Rectangle"));
-
-	mSpCropRect.resize(crop_end);
-
-	QLabel* lbCropX = new QLabel(tr("x:"));
-	mSpCropRect[crop_x] = new QSpinBox(this);
-	lbCropX->setBuddy(mSpCropRect[crop_x]);
-
-	QLabel* lbCropY = new QLabel(tr("y:"));
-	mSpCropRect[crop_y] = new QSpinBox(this);
-	lbCropY->setBuddy(mSpCropRect[crop_y]);
-
-	QLabel* lbCropWidth = new QLabel(tr("width:"));
-	mSpCropRect[crop_width] = new QSpinBox(this);
-	lbCropWidth->setBuddy(mSpCropRect[crop_width]);
-
-	QLabel* lbCropHeight = new QLabel(tr("height:"));
-	mSpCropRect[crop_height] = new QSpinBox(this);
-	lbCropHeight->setBuddy(mSpCropRect[crop_height]);
-
-	for (QSpinBox* sp : mSpCropRect) {
-		sp->setSuffix(tr(" px"));
-		sp->setMinimum(0);
-		sp->setMaximum(100000);
-	}
-
-	QWidget* cropWidget = new QWidget(this);
-	QHBoxLayout* cropLayout = new QHBoxLayout(cropWidget);
-	cropLayout->addWidget(lbCropX);
-	cropLayout->addWidget(mSpCropRect[crop_x]);
-	cropLayout->addWidget(lbCropY);
-	cropLayout->addWidget(mSpCropRect[crop_y]);
-	cropLayout->addWidget(lbCropWidth);
-	cropLayout->addWidget(mSpCropRect[crop_width]);
-	cropLayout->addWidget(lbCropHeight);
-	cropLayout->addWidget(mSpCropRect[crop_height]);
+	mCropRectWidget = new DkRectWidget(QRect(), this);
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
@@ -2063,7 +2030,7 @@ void DkBatchTransformWidget::createLayout() {
 	layout->setColumnStretch(3, 10);
 	layout->addWidget(mCbCropRectangle, 9, 0);
 	layout->setColumnStretch(3, 10);
-	layout->addWidget(cropWidget, 10, 0);
+	layout->addWidget(mCropRectWidget, 10, 0);
 
 	connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
 	connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
@@ -2079,8 +2046,7 @@ void DkBatchTransformWidget::applyDefault() {
 	mRbRotate0->setChecked(true);
 	mCbCropMetadata->setChecked(false);
 	mCbCropRectangle->setChecked(false);
-	for (QSpinBox* sp : mSpCropRect)
-		sp->setValue(0);
+	mCropRectWidget->setRect(QRect());
 
 	mResizeSbPercent->setValue(100.0);
 	mResizeSbPx->setValue(1920);
@@ -2196,12 +2162,7 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 	mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
 
 	mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
-
-	QRect cr = batchTransform->cropRectangle();
-	mSpCropRect[crop_x]->setValue(cr.x());
-	mSpCropRect[crop_y]->setValue(cr.y());
-	mSpCropRect[crop_width]->setValue(cr.width());
-	mSpCropRect[crop_height]->setValue(cr.height());
+	mCropRectWidget->setRect(batchTransform->cropRectangle());
 
 	// resize
 	mResizeComboMode->setCurrentIndex(batchTransform->mode());
@@ -2233,7 +2194,7 @@ int DkBatchTransformWidget::getAngle() const {
 }
 
 QRect DkBatchTransformWidget::cropRect() const {
-	return QRect(mSpCropRect[crop_x]->value(), mSpCropRect[crop_y]->value(), mSpCropRect[crop_width]->value(), mSpCropRect[crop_height]->value());
+	return mCropRectWidget->rect();
 }
 
 // Batch Buttons --------------------------------------------------------------------

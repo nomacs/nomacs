@@ -1700,6 +1700,15 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	QWidget::paintEvent(event);
 }
 
+QRect DkEditableRect::rect() const {
+	
+	QRect r;
+	r.setTopLeft(mRect.getCenter().toPoint());
+	r.setSize(mRect.size());
+
+	return r;
+}
+
 void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintMode) {
 
 	if (p.isEmpty() || paintMode == no_guide)
@@ -1938,6 +1947,7 @@ void DkEditableRect::applyTransform() {
 	mTtform.reset();
 	update();
 
+	emit updateRectSignal(rect());
 }
 
 void DkEditableRect::keyPressEvent(QKeyEvent *event) {
@@ -1974,6 +1984,14 @@ void DkEditableRect::setShadingHint(bool) {
 
 void DkEditableRect::setShowInfo(bool showInfo) {
 	this->mShowInfo = showInfo;
+}
+
+void DkEditableRect::setRect(const QRect & rect) {
+	
+	mRect.setCenter(rect.topLeft());
+	mRect.setSize(rect.size());
+
+	update();
 }
 
 void DkEditableRect::setAngle(double angle, bool apply) {
@@ -2024,6 +2042,8 @@ void DkCropWidget::createToolbar() {
 
 	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
+	connect(cropToolbar, SIGNAL(updateRectSignal(const QRect&)), this, SLOT(setRect(const QRect&)));
+
 	connect(cropToolbar, SIGNAL(cropSignal(bool)), this, SLOT(crop(bool)));
 	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(cancelSignal()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
@@ -2034,6 +2054,7 @@ void DkCropWidget::createToolbar() {
 	connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
+	connect(this, SIGNAL(updateRectSignal(const QRect&)), cropToolbar, SLOT(setRect(const QRect&)));
 
 	cropToolbar->loadSettings();	// need to this manually after connecting the slots
 
