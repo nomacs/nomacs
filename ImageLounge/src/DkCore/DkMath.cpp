@@ -212,6 +212,16 @@ QPointF DkRotatingRect::getCenter() const {
 	return ((c2-c1)*0.5f + c1).toQPointF();
 }
 
+QPointF DkRotatingRect::getTopLeft() const {
+	
+	DkVector v = mRect[0];
+	v = v.minVec(mRect[1]);
+	v = v.minVec(mRect[2]);
+	v = v.minVec(mRect[3]);
+	
+	return v.toQPointF();
+}
+
 void DkRotatingRect::setCenter(const QPointF& center) {
 
 	if (mRect.empty())

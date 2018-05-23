@@ -1875,15 +1875,32 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 
+		// show coordinates
+		QString info;
+		QPoint tl;
+
+		if (sAngle == 0.0f || fabs(sAngle) == 90.0f) {
+			tl = mRect.getTopLeft().toPoint();
+			info += "x: ";
+		}
+		else {
+			tl = mRect.getCenter().toPoint();
+			info += "center x: ";
+		}
+		info += QString::number(tl.x()) + ", y: ";
+		info += QString::number(tl.y()) + " | ";
+		info += QString::number(width) + " x ";
+		info += QString::number(height) + " px | ";
+		info += QString::number(sAngle) + dk_degree_str;
+
 		if (mShowInfo) {
+
 			QToolTip::showText(event->globalPos(),
-				QString::number(width) + " x " +
-				QString::number(height) + " px\n" +
-				QString::number(sAngle) + dk_degree_str,
+				info,
 				this);
 		}
 
-		DkStatusBarManager::instance().setMessage(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);
+		DkStatusBarManager::instance().setMessage(info);
 	}
 
 	//QWidget::mouseMoveEvent(event);
@@ -1933,13 +1950,11 @@ void DkEditableRect::keyPressEvent(QKeyEvent *event) {
 
 void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
-	qDebug() << "key pressed rect";
 	QWidget::keyPressEvent(event);
 }
 
 void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */) {
 
-	qDebug() << "painting mode: " << paintMode;
 	this->mPaintMode = paintMode;
 	update();
 }

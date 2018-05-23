@@ -885,7 +885,7 @@ void DkCropToolBar::loadSettings() {
 
 	mHorValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
 	mVerValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
-	mGuideBox->setCurrentIndex(settings.value("guides", 0).toInt());
+	mGuideBox->setCurrentIndex(settings.value("guides", 1).toInt());
 	mInvertAction->setChecked(settings.value("inverted", false).toBool());
 	mInfoAction->setChecked(settings.value("info", true).toBool());
 	mCbMeta->setChecked(settings.value("cropToMetadata", false).toBool());
@@ -1000,7 +1000,6 @@ void DkCropToolBar::createLayout() {
 	mGuideBox->setObjectName("guideBox");
 	mGuideBox->setToolTip(tr("Show Guides in the Preview"));
 	mGuideBox->setStatusTip(mGuideBox->toolTip());
-	mGuideBox->setCurrentIndex(1);
 
 	mInvertAction = new QAction(mIcons[invert_icon], tr("Invert Crop Tool Color"), this);
 	mInvertAction->setObjectName("invertAction");

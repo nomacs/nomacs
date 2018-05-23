@@ -860,6 +860,7 @@ public:
 	void setPoly(QPolygonF &poly);
 	QPolygonF getClosedPoly();
 	QPointF getCenter() const;
+	QPointF getTopLeft() const;
 	void setCenter(const QPointF& center);
 	double getAngle() const;
 	float getAngleDeg() const;

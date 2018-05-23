@@ -900,14 +900,6 @@ QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, con
 	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f)
 		return src;
 
-	QImage srcC = src;
-	if (src.depth() == QImage::Format_Grayscale8 || src.depth() == QImage::Format_Indexed8 || QImage::Format_ARGB8565_Premultiplied) {
-		srcC = src.convertToFormat(QImage::Format_ARGB32);
-		qDebug() << "converting image to ARGB before cropping...";
-	}
-	else
-		qDebug() << "src depth:" << src.depth();
-
 	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
 	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
 
@@ -922,7 +914,7 @@ QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, con
 	if (minD > FLT_EPSILON)
 		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
-	painter.drawImage(QRect(QPoint(), srcC.size()), srcC, QRect(QPoint(), srcC.size()));
+	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
 	painter.end();
 
 	return img;
