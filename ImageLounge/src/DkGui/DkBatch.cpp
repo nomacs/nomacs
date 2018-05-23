@@ -1267,7 +1267,6 @@ void DkProfileWidget::createLayout() {
 	connect(mSummary, SIGNAL(exportCurrentProfile()), this, SLOT(exportCurrentProfile()));
 }
 
-
 bool DkProfileWidget::hasUserInput() const {
 	return false;
 }
@@ -2010,6 +2009,44 @@ void DkBatchTransformWidget::createLayout() {
 
 	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
+	// crop rectangle
+	mCbCropRectangle = new QCheckBox(tr("&Crop Rectangle"));
+
+	mSpCropRect.resize(crop_end);
+
+	QLabel* lbCropX = new QLabel(tr("x:"));
+	mSpCropRect[crop_x] = new QSpinBox(this);
+	lbCropX->setBuddy(mSpCropRect[crop_x]);
+
+	QLabel* lbCropY = new QLabel(tr("y:"));
+	mSpCropRect[crop_y] = new QSpinBox(this);
+	lbCropY->setBuddy(mSpCropRect[crop_y]);
+
+	QLabel* lbCropWidth = new QLabel(tr("width:"));
+	mSpCropRect[crop_width] = new QSpinBox(this);
+	lbCropWidth->setBuddy(mSpCropRect[crop_width]);
+
+	QLabel* lbCropHeight = new QLabel(tr("height:"));
+	mSpCropRect[crop_height] = new QSpinBox(this);
+	lbCropHeight->setBuddy(mSpCropRect[crop_height]);
+
+	for (QSpinBox* sp : mSpCropRect) {
+		sp->setSuffix(tr(" px"));
+		sp->setMinimum(0);
+		sp->setMaximum(100000);
+	}
+
+	QWidget* cropWidget = new QWidget(this);
+	QHBoxLayout* cropLayout = new QHBoxLayout(cropWidget);
+	cropLayout->addWidget(lbCropX);
+	cropLayout->addWidget(mSpCropRect[crop_x]);
+	cropLayout->addWidget(lbCropY);
+	cropLayout->addWidget(mSpCropRect[crop_y]);
+	cropLayout->addWidget(lbCropWidth);
+	cropLayout->addWidget(mSpCropRect[crop_width]);
+	cropLayout->addWidget(lbCropHeight);
+	cropLayout->addWidget(mSpCropRect[crop_height]);
+
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
 	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -2024,6 +2061,9 @@ void DkBatchTransformWidget::createLayout() {
 	layout->addWidget(transformLabel, 7, 0);
 	layout->addWidget(mCbCropMetadata, 8, 0);
 	layout->setColumnStretch(3, 10);
+	layout->addWidget(mCbCropRectangle, 9, 0);
+	layout->setColumnStretch(3, 10);
+	layout->addWidget(cropWidget, 10, 0);
 
 	connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
 	connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
@@ -2031,12 +2071,16 @@ void DkBatchTransformWidget::createLayout() {
 
 	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
 	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
+	connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(updateHeader()));
 }
 
 void DkBatchTransformWidget::applyDefault() {
 
 	mRbRotate0->setChecked(true);
 	mCbCropMetadata->setChecked(false);
+	mCbCropRectangle->setChecked(false);
+	for (QSpinBox* sp : mSpCropRect)
+		sp->setValue(0);
 
 	mResizeSbPercent->setValue(100.0);
 	mResizeSbPx->setValue(1920);
@@ -2049,7 +2093,11 @@ void DkBatchTransformWidget::applyDefault() {
 
 bool DkBatchTransformWidget::hasUserInput() const {
 	
-	return !mRbRotate0->isChecked() || mCbCropMetadata->isChecked() || !(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
+	return 
+		!mRbRotate0->isChecked() || 
+		mCbCropMetadata->isChecked() || 
+		mCbCropRectangle->isChecked() ||
+		!(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
 }
 
 bool DkBatchTransformWidget::requiresUserInput() const {
@@ -2079,11 +2127,12 @@ void DkBatchTransformWidget::updateHeader() const {
 			txt += tr("Rotating by: %1").arg(getAngle());
 		}
 
-		if (mCbCropMetadata->isChecked()) {
+		if (mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()) {
 			if (!txt.isEmpty())
 				txt += " | ";
 			txt += tr("Crop");
 		}
+
 		emit newHeaderText(txt);
 	}
 }
@@ -2110,6 +2159,7 @@ void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform>
 		batchTransform->setProperties(
 			getAngle(), 
 			mCbCropMetadata->isChecked(),
+			mCbCropRectangle->isChecked() ? cropRect() : QRect(),
 			(float)mResizeSbPercent->value()/100.0f, 
 			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex());
 	}
@@ -2117,6 +2167,7 @@ void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform>
 		batchTransform->setProperties(
 			getAngle(), 
 			mCbCropMetadata->isChecked(),
+			mCbCropRectangle->isChecked() ? cropRect() : QRect(),
 			(float)mResizeSbPx->value(), 
 			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(), 
 			(DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
@@ -2141,7 +2192,16 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 	default: errored = true;
 	}
 
+	// crop
 	mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
+
+	mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
+
+	QRect cr = batchTransform->cropRectangle();
+	mSpCropRect[crop_x]->setValue(cr.x());
+	mSpCropRect[crop_y]->setValue(cr.y());
+	mSpCropRect[crop_width]->setValue(cr.width());
+	mSpCropRect[crop_height]->setValue(cr.height());
 
 	// resize
 	mResizeComboMode->setCurrentIndex(batchTransform->mode());
@@ -2170,6 +2230,10 @@ int DkBatchTransformWidget::getAngle() const {
 		return 180;
 
 	return 0;
+}
+
+QRect DkBatchTransformWidget::cropRect() const {
+	return QRect(mSpCropRect[crop_x]->value(), mSpCropRect[crop_y]->value(), mSpCropRect[crop_width]->value(), mSpCropRect[crop_height]->value());
 }
 
 // Batch Buttons --------------------------------------------------------------------

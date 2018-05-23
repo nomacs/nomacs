@@ -178,6 +178,7 @@ public:
 	virtual void setProperties(
 		int angle, 
 		bool cropFromMetadata,
+		QRect cropRect,
 		float scaleFactor, 
 		const ResizeMode& mode = resize_mode_default, 
 		const ResizeProperty& prop = resize_prop_default, 
@@ -191,6 +192,8 @@ public:
 
 	int angle() const;
 	bool cropMetatdata() const;
+	bool cropFromRectangle() const;
+	QRect cropRectangle() const;
 
 	// resize
 	ResizeMode mode() const;
@@ -202,6 +205,8 @@ public:
 protected:
 	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
 	bool isResizeActive() const;
+	QString rectToString(const QRect& r) const;
+	QRect stringToRect(const QString& s) const;
 
 	int mAngle = 0;
 	bool mCropFromMetadata = false;
@@ -211,7 +216,8 @@ protected:
 	float mResizeScaleFactor = 1.0f;
 	int mResizeIplMethod = 0;
 	bool mResizeCorrectGamma = false;
-
+	
+	QRect mCropRect;
 };
 
 class DllCoreExport DkBatchProcess {

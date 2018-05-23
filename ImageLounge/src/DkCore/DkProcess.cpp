@@ -129,6 +129,7 @@ QString DkBatchTransform::name() const {
 void DkBatchTransform::setProperties(		
 	int angle, 
 	bool cropFromMetadata,
+	QRect cropRect,
 	float scaleFactor, 
 	const ResizeMode& mode /*= resize_mode_default*/, 
 	const ResizeProperty& prop /*= resize_prop_default*/, 
@@ -137,6 +138,7 @@ void DkBatchTransform::setProperties(
 	
 	mAngle = angle;
 	mCropFromMetadata = cropFromMetadata;
+	mCropRect = cropRect;
 
 	mResizeScaleFactor = scaleFactor;
 	mResizeMode = mode;
@@ -150,6 +152,7 @@ void DkBatchTransform::saveSettings(QSettings & settings) const {
 	settings.beginGroup(settingsName());
 	settings.setValue("Angle", mAngle);
 	settings.setValue("CropFromMetadata", mCropFromMetadata);
+	settings.setValue("CropRectangle", rectToString(mCropRect));
 
 	// resize
 	settings.setValue("ScaleFactor", mResizeScaleFactor);
@@ -166,6 +169,7 @@ void DkBatchTransform::loadSettings(QSettings & settings) {
 	settings.beginGroup(settingsName());
 	mAngle = settings.value("Angle", mAngle).toInt();
 	mCropFromMetadata = settings.value("CropFromMetadata", mCropFromMetadata).toBool();
+	mCropRect = stringToRect(settings.value("CropRectangle", mCropRect).toString());
 
 	mResizeScaleFactor	= settings.value("ScaleFactor", mResizeScaleFactor).toFloat();
 	mResizeMode			= (ResizeMode)settings.value("Mode", mResizeMode).toInt();
@@ -186,9 +190,45 @@ bool DkBatchTransform::isResizeActive() const {
 	return false;
 }
 
+QString DkBatchTransform::rectToString(const QRect & r) const {
+	
+	QString str;
+	str += QString::number(r.x()) + ",";
+	str += QString::number(r.y()) + ",";
+	str += QString::number(r.width()) + ",";
+	str += QString::number(r.height());
+	
+	return str;
+}
+
+QRect DkBatchTransform::stringToRect(const QString & s) const {
+	
+	QStringList sl = s.split(",");
+
+	if (sl.size() != 4) {
+		qWarning() << "could not parse rect from" << s;
+		return QRect();
+	}
+	
+	QRect rect;
+
+	bool okX, okY, okW, okH = false;
+	rect.setX(sl[0].toInt(&okX));
+	rect.setY(sl[1].toInt(&okY));
+	rect.setWidth(sl[2].toInt(&okW));
+	rect.setHeight(sl[3].toInt(&okH));
+
+	if (!okX || !okY || !okW || !okH) {
+		qWarning() << "could not parse rect from" << s;
+		return QRect();
+	}
+	
+	return rect;
+}
+
 bool DkBatchTransform::isActive() const {
 
-	return mAngle != 0 || mCropFromMetadata || isResizeActive();
+	return mAngle != 0 || mCropFromMetadata || cropFromRectangle() || isResizeActive();
 }
 
 int DkBatchTransform::angle() const {
@@ -197,6 +237,14 @@ int DkBatchTransform::angle() const {
 
 bool DkBatchTransform::cropMetatdata() const {
 	return mCropFromMetadata;
+}
+
+bool DkBatchTransform::cropFromRectangle() const {
+	return !mCropRect.isEmpty();
+}
+
+QRect DkBatchTransform::cropRectangle() const {
+	return mCropRect;
 }
 
 DkBatchTransform::ResizeMode DkBatchTransform::mode() const {
@@ -254,6 +302,12 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)mAngle);
 		tmpImg = tmpImg.transformed(rotationMatrix);
+	}
+
+	// crop from rectangle
+	if (cropFromRectangle()) {
+		QRect r = mCropRect.intersected(container->image().rect());
+		tmpImg = tmpImg.copy(r);
 	}
 
 	// logs

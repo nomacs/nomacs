@@ -523,6 +523,16 @@ signals:
 protected:
 	void createLayout();
 	int getAngle() const;
+	QRect cropRect() const;
+
+	enum {
+		crop_x = 0,
+		crop_y,
+		crop_width,
+		crop_height,
+
+		crop_end
+	};
 
 	QButtonGroup* mRotateGroup = 0;
 	QRadioButton* mRbRotate0 = 0;
@@ -531,6 +541,9 @@ protected:
 	QRadioButton* mRbRotate180 = 0;
 
 	QCheckBox* mCbCropMetadata = 0;
+
+	QCheckBox* mCbCropRectangle = 0;
+	QVector<QSpinBox*> mSpCropRect;
 
 	QComboBox* mResizeComboMode;
 	QComboBox* mResizeComboProperties;
