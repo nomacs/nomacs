@@ -1291,7 +1291,12 @@ void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& pr
 }
 
 // -------------------------------------------------------------------- DefaultSettings
+#ifdef Q_OS_WIN
+// read the settings from a file on Windows
 DefaultSettings::DefaultSettings() : QSettings(DkSettingsManager::instance().param().settingsPath(), QSettings::IniFormat) {}
+#else
+DefaultSettings::DefaultSettings() : QSettings() {}
+#endif
 
 // -------------------------------------------------------------------- DkThemeManager 
 QStringList DkThemeManager::getAvailableThemes() const {
