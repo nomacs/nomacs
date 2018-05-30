@@ -273,6 +273,7 @@ protected:
 	DkMainToolBar* mToolbar = 0;
 	DkQuickAccessEdit* mQuickAccessEdit = 0;
 	QToolBar* mMovieToolbar = 0;
+	Qt::ToolBarArea mMovieToolbarArea = Qt::NoToolBarArea;
 	DkQuickAccess* mQuickAccess = 0;
 
 	// file dialog
