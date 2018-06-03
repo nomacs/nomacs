@@ -66,8 +66,8 @@ add_dependencies(
 	${QUAZIP_DEPENDENCY} 
 	${LIBQPSD_LIBRARY}) 
 
-qt5_use_modules(${BINARY_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg)
-qt5_use_modules(${DLL_CORE_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg)
+target_link_libraries(${BINARY_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg)
+target_link_libraries(${DLL_CORE_NAME} Qt5::Widgets Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Concurrent Qt5::Svg)
 
 # core flags
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
