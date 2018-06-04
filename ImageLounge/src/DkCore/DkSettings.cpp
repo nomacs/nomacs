@@ -394,6 +394,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
+	qDebug() << "new bgColor:" << display_p.bgColor;
 
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
@@ -629,8 +630,10 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
 	if (force ||display_p.hudFgdColor != display_d.hudFgdColor)
 		settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
-	if (force ||display_p.bgColor != display_d.bgColor)
+	if (force || display_p.bgColor != display_d.bgColor) {
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
+		qDebug() << "saving bg color: " << display_p.bgColor;;
+	}
 	if (force ||display_p.iconColor != display_d.iconColor)
 		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (force ||display_p.bgColorFrameless != display_d.bgColorFrameless)
@@ -1448,7 +1451,8 @@ QString DkThemeManager::parseColors(const QString & styleSheet) const {
 			else if (kv[0] == "HUD_FOREGROUND_COLOR")
 				DkSettingsManager::param().display().hudFgdColor.setNamedColor(cc);
 			else if (kv[0] == "BACKGROUND_COLOR") {
-				DkSettingsManager::param().display().bgColor.setNamedColor(cc);
+				if (DkSettingsManager::param().display().defaultBackgroundColor)
+					DkSettingsManager::param().display().bgColor.setNamedColor(cc);
 				DkSettingsManager::param().display().themeBgdColor.setNamedColor(cc);
 			}
 			else if (kv[0] == "FOREGROUND_COLOR")

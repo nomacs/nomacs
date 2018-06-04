@@ -498,11 +498,21 @@ void DkNoMacs::enableMovieActions(bool enable) {
 
 	am.action(DkActionManager::menu_view_movie_pause)->setChecked(false);
 	
+	// set movie toolbar into current toolbar
+	if (mMovieToolbarArea == Qt::NoToolBarArea)
+		mMovieToolbarArea = QMainWindow::toolBarArea(mToolbar);
+
 	if (enable)
-		addToolBar(mMovieToolbar);
-	else
+		addToolBar(mMovieToolbarArea, mMovieToolbar);
+	else {
+		// remember if the user changed it
+		Qt::ToolBarArea nta = QMainWindow::toolBarArea(mMovieToolbar);
+
+		if (nta != Qt::NoToolBarArea)
+			mMovieToolbarArea = QMainWindow::toolBarArea(mMovieToolbar);
 		removeToolBar(mMovieToolbar);
-	
+	}
+
 	if (mToolbar->isVisible())
 		mMovieToolbar->setVisible(enable);
 }
@@ -1998,7 +2008,7 @@ void DkNoMacs::showToolBar(QToolBar* toolbar, bool show) {
 	showToolbarsTemporarily(!show);
 
 	if (show) {
-		addToolBar(toolBarArea(this->mToolbar), toolbar);
+		addToolBar(toolBarArea(mToolbar), toolbar);
 	}
 	else
 		removeToolBar(toolbar);
