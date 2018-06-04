@@ -12,17 +12,13 @@ if(COMMAND cmake_policy)
   ENDIF()
 endif(COMMAND cmake_policy)
 
-
-
 file(GLOB LIBQPSD_SOURCES "*.cpp")
 file(GLOB LIBQPSD_HEADERS "*.h")
 
 SET(CMAKE_DEBUG_POSTFIX "d")
 
 add_library(${PROJECT_NAME} SHARED ${LIBQPSD_SOURCES})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
-
-qt5_use_modules(${PROJECT_NAME} Gui)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Gui)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)

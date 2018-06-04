@@ -72,7 +72,7 @@
 
 #ifdef WITH_LIBTIFF
 #ifdef Q_OS_WIN
-#include "tif_config.h"	
+#include <tif_config.h>
 #endif
 
 //#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
@@ -82,7 +82,8 @@
 #define int64 int64_hack_
 //#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 
-#include "tiffio.h"
+#include <tiffio.h>
+//#include <tiffio.hxx>		// this is needed if you want to load tiffs from the buffer
 
 //#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #undef uint64
@@ -224,6 +225,14 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
 		if (imgLoaded) mLoader = qt_loader;
+	}
+
+	// OpenCV Tiff loader
+	if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadTIFFile(mFile, img, ba);
+		
+		if (imgLoaded)	mLoader = tif_loader;
 	}
 
 	// PSD loader
@@ -435,6 +444,61 @@ bool DkBasicLoader::loadPSDFile(const QString& filePath, QImage& img, QSharedPoi
 	}
 
 #endif // !Q_OS_WIN
+	return false;
+}
+
+#ifndef WITH_LIBTIFF
+bool DkBasicLoader::loadTIFFile(const QString&, QImage&, QSharedPointer<QByteArray>) const {
+#else
+bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
+
+	bool success = false;
+
+	// first turn off nasty warning/error dialogs - (we do the GUI : )
+	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+	oldWarningHandler = TIFFSetWarningHandler(NULL);
+	oldErrorHandler = TIFFSetErrorHandler(NULL);
+
+	DkTimer dt;
+
+	TIFF* tiff = 0;
+	
+	//if (!ba.isNull()) {
+	//	// use an istream to read from memory
+	//	TIFF* mem_TIFF = TIFFStreamOpen("MemTIFF", &is);
+	//}
+	
+	if (!tiff)
+		tiff = TIFFOpen(filePath.toLatin1(), "r");
+
+	if (!tiff)
+		return success;
+
+	uint32 width = 0;
+	uint32 height = 0;
+
+	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
+
+	// init the qImage
+	img = QImage(width, height, QImage::Format_ARGB32);
+
+	const int stopOnError = 1;
+	success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+
+	if (success) {
+		for (uint32 y = 0; y<height; ++y)
+			convert32BitOrder(img.scanLine(y), width);
+	}
+
+	TIFFClose(tiff);
+
+	TIFFSetWarningHandler(oldWarningHandler);
+	TIFFSetWarningHandler(oldErrorHandler);
+
+	return success;
+
+#endif // !WITH_LIBTIFF
 	return false;
 }
 
@@ -707,7 +771,7 @@ void DkBasicLoader::resetPageIdx() {
 	mPageIdx = 1;
 }
 
-void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
+void DkBasicLoader::convert32BitOrder(void *buffer, int width) const {
 
 #ifdef WITH_LIBTIFF
 	// code from Qt QTiffHandler

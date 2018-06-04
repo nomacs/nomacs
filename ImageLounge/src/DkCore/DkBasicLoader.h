@@ -49,7 +49,6 @@
 #endif
 
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #endif
 
 #ifndef DllCoreExport
@@ -206,6 +205,7 @@ public:
 		raw_loader,
 		roh_loader,
 		hdr_loader,
+		tif_loader,
 	};
 
 	DkBasicLoader(int mode = mode_default);
@@ -341,6 +341,7 @@ public:
 #endif
 
 	bool loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+	bool loadTIFFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;
@@ -360,7 +361,7 @@ protected:
 	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 	bool loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false) const;
 	void indexPages(const QString& filePath);
-	void convert32BitOrder(void *buffer, int width);
+	void convert32BitOrder(void *buffer, int width) const;
 
 	int mLoader;
 	bool mTraining;

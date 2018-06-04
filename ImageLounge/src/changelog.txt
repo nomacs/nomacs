@@ -4,6 +4,7 @@ nomacs 3.10.0
 - printing improved
 - print multiple pages from thumbnail preview
 - animiated WebP support
+- JPG compressed TIFFs supported
 - batch cropping added
 - PSD lib updated
 - new translations: Bosnian, Croation, and Serbian

@@ -121,7 +121,7 @@ unset(TIFF_BUILD_PATH CACHE)
 unset(TIFF_CONFIG_DIR CACHE)
 unset(TIFF_INCLUDE_DIR CACHE)
 	
-if(ENABLE_TIFF)
+if (ENABLE_TIFF)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
 	endif(NOT OpenCV_FOUND)
@@ -134,7 +134,8 @@ if(ENABLE_TIFF)
 
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
 	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
-    set(TIFF_LIBRARIES optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib" debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib")
+    set(TIFF_LIBRARIES 	optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib" optimized "${TIFF_BUILD_PATH}/Release/libjpeg-turbo.lib;" 
+								debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" debug "${TIFF_BUILD_PATH}/Debug/libjpeg-turbod.lib")
 
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
@@ -143,7 +144,8 @@ if(ENABLE_TIFF)
 	elseif(NOT EXISTS ${TIFF_INCLUDE_DIR})
 		message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 	endif()
-endif(ENABLE_TIFF)
+
+endif (ENABLE_TIFF)
 
 # these variables need to be set before adding subdirectory with projects
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})

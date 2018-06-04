@@ -50,7 +50,6 @@ target_link_libraries(
 	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
 	${QUAZIP_DEPENDENCY}# ZIP support (optional)
 	)
-# ${VERSION_LIB} 
 
 add_dependencies(
 	${BINARY_NAME} 

@@ -253,7 +253,7 @@ QSize DkRotatingRect::size() const {
 		s.setY(x);
 	}
 
-	return QSize(s.x(), s.y());
+	return QSize(qRound(s.x()), qRound(s.y()));
 }
 
 void DkRotatingRect::setCenter(const QPointF& center) {
