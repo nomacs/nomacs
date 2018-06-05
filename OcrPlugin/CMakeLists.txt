@@ -67,12 +67,13 @@ target_link_libraries(
 find_package(Tesseract REQUIRED)
 include_directories(${Tesseract_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Tesseract_LIBRARIES})
-message(${Tesseract_INCLUDE_DIRS})
 
 ## leptonica
 find_package(Leptonica REQUIRED CONFIG)
 include_directories(${Leptonica_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Leptonica_LIBRARIES} ws2_32.lib) 
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Gui Qt5::Network)
+
 # ws2_32.lib is required for tesseract when linked statically
 
 #message(${Tesseract_LIBRARIES})
@@ -88,6 +89,3 @@ NMC_CREATE_TARGETS()
 # NMC_CREATE_TARGETS(${DLL_DIR}/lept174d.dll ${DLL_DIR}/tesseract305d.dll ${DLL_DIR}/eng.traineddata)
 NMC_GENERATE_USER_FILE()
 NMC_GENERATE_PACKAGE_XML(${PLUGIN_JSON})
-
-qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-

@@ -5,6 +5,7 @@
 #include <QtWidgets/qprogressbar.h>
 #include <QtNetwork/QNetworkReply>
 #include <QFile>
+#include <QTime>
 
 class QFile;
 

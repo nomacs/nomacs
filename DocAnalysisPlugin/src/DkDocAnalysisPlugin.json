@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Daniel Fischl",
 	"Company"		: "Computer Vision Lab",
 	"DateCreated" 	: "2014-10-01",
-	"DateModified"	: "2016-04-28",
+	"DateModified"	: "2018-06-05",
 	"Description"	: "Tools to analyze images of documents, like text line detection, region cutting, distance measurement.",
 	"Tagline" 		: "Tools for analyzing ancient manuscripts.",
 	"PluginId"		: "5232a9d4459e431fb9b686365e693a30",

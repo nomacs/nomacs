@@ -45,7 +45,7 @@ void QDownloadButton::startDownload() {
 	//mLayout->takeAt(0);
 	mBtn->setVisible(false);
 
-	mProgressbar = new QProgressBar();
+	mProgressbar = new QProgressBar(this);
 	mProgressbar->setTextVisible(false);
 	//mProgressbar->setFormat("test");
 	mLayout->addWidget(mProgressbar);
@@ -67,7 +67,13 @@ void QDownloadButton::startDownload() {
 }
 
 void QDownloadButton::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) {
-	qDebug() << bytesReceived << " " << bytesTotal;
+	
+	if (!bytesTotal) {
+		qWarning() << "total bytes is zero...";
+		return;
+	}
+	
+	qDebug() << "bytes received/total" << bytesReceived << " " << bytesTotal;
 
 	double speed = bytesReceived * 1000.0 / downloadTime.elapsed();
 	QString unit;

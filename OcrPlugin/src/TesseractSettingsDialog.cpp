@@ -15,6 +15,7 @@
 #include "QDownloadButton.h"
 #include <QCheckBox>
 #include <complex>
+#include <QDebug>
 
 /*namespace
 {
@@ -160,6 +161,7 @@ void TesseractSettingsDialog::downloadProgress(qint64 bytesReceived, qint64 byte
 }
 
 void TesseractSettingsDialog::downloadFinished() {
+
 	if (reply->error())
 		qDebug() << reply->errorString();
 
