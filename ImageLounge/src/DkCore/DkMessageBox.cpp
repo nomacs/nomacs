@@ -198,9 +198,6 @@ void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QStri
 void DkMessageBox::buttonClicked(QAbstractButton* button) {
 
 	int ret = buttonBox->standardButton(button);
-
-	//if (ret == QMessageBox::stand)
-	qDebug() << "return code: " << ret;
 	done(ret); // does not trigger closeEvent
 }
 

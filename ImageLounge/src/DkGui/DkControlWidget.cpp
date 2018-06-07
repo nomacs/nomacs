@@ -296,7 +296,7 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(mCropWidget, SIGNAL(cropImageSignal(const DkRotatingRect&, const QColor&, bool)), mViewport, SLOT(cropImage(const DkRotatingRect&, const QColor&, bool)));
-	connect(mCropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
+	connect(mCropWidget, SIGNAL(hideSignal()), this, SLOT(hideCrop()));
 
 	// comment widget
 	connect(mCommentWidget, SIGNAL(showInfoSignal(const QString&)), this, SLOT(setInfo(const QString&)));

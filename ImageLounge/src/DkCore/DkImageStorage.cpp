@@ -1655,7 +1655,6 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 #else
 	resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
-	qDebug() << "anti-aliasing takes" << dt;
 
 	return resizedImg;
 }
@@ -1670,7 +1669,5 @@ void DkImageStorage::imageComputed() {
 		emit imageUpdated();
 	else
 		qWarning() << "could not compute scale factor" << mScale;
-
-	qDebug() << "image computed...";
 }
 }

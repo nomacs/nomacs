@@ -629,7 +629,7 @@ public slots:
 	virtual void setVisible(bool visible);
 
 signals:
-	void cancelSignal();
+	void hideSignal();
 	void showToolBar(QToolBar* toolbar, bool show);
 
 protected:

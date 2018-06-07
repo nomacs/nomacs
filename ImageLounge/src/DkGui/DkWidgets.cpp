@@ -2045,7 +2045,7 @@ void DkCropWidget::createToolbar() {
 	connect(cropToolbar, SIGNAL(updateRectSignal(const QRect&)), this, SLOT(setRect(const QRect&)));
 
 	connect(cropToolbar, SIGNAL(cropSignal(bool)), this, SLOT(crop(bool)));
-	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(cancelSignal()));
+	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(hideSignal()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
@@ -2074,6 +2074,7 @@ void DkCropWidget::crop(bool cropToMetadata) {
 
 	setVisible(false);
 	setWindowOpacity(0);
+	emit hideSignal();
 }
 
 void DkCropWidget::setVisible(bool visible) {

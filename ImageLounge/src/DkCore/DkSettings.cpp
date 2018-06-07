@@ -630,10 +630,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("bgColorWidgetRGBA", display_p.hudBgColor.rgba());
 	if (force ||display_p.hudFgdColor != display_d.hudFgdColor)
 		settings.setValue("fontColorRGBA", display_p.hudFgdColor.rgba());
-	if (force || display_p.bgColor != display_d.bgColor) {
+	if (force || display_p.bgColor != display_d.bgColor)
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
-		qDebug() << "saving bg color: " << display_p.bgColor;;
-	}
 	if (force ||display_p.iconColor != display_d.iconColor)
 		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (force ||display_p.bgColorFrameless != display_d.bgColorFrameless)
