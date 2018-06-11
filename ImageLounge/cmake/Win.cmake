@@ -106,7 +106,6 @@ if(ENABLE_RAW)
 
 	# we need our CMAKE (https://github.com/nomacs/LibRaw) to add LibRaw like this
 	find_package(libraw)
-
 	if(LIBRAW_FOUND)
 		add_definitions(-DWITH_LIBRAW)
 	else()
@@ -131,11 +130,20 @@ if (ENABLE_TIFF)
 
 	find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" "${OpenCV_DIR}/3rdparty/lib" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
-
+	
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
 	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
-    set(TIFF_LIBRARIES 	optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib" optimized "${TIFF_BUILD_PATH}/Release/libjpeg-turbo.lib;" 
-								debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" debug "${TIFF_BUILD_PATH}/Debug/libjpeg-turbod.lib")
+    set(TIFF_LIBRARIES 	optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib"
+								debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib")
+
+	if (NOT ${OpenCV_VERSION} LESS "3.4.0")
+		set(TIFF_LIBRARIES 	optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib" optimized "${TIFF_BUILD_PATH}/Release/libjpeg-turbo.lib;" 
+									debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" debug "${TIFF_BUILD_PATH}/Debug/libjpeg-turbod.lib")
+		
+	else ()
+		# TODO: remove - just for flo
+		message("OpenCV Version is 3.3 or older: ${OpenCV_VERSION}")
+	endif ()
 
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
