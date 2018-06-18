@@ -105,8 +105,8 @@ bool QPsdHandler::read(QImage *image)
 
     input >> compression;
 
-    quint64 totalBytesPerChannel = width * height * depth / 8;
-    quint64 size = channels * totalBytesPerChannel;
+    quint64 totalBytesPerChannel = (quint64)width * height * depth / 8;
+    quint64 size = (quint64)channels * totalBytesPerChannel;
     QByteArray imageData;
 
     switch (compression) {

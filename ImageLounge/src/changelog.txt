@@ -8,7 +8,9 @@ nomacs 3.10.0
 - batch cropping added
 - PSD lib updated
 - new translations: Bosnian, Croation, and Serbian
-
+- Updates (Windows)
+	- Qt 5.9.3 -> 5.11.0
+	- OpenCV 3.3.1 -> 3.4.1
 
 nomacs 3.8.0
 ============
