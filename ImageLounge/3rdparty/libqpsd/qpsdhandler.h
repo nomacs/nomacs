@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <QVariant>
 #include <qmath.h>
 
+class QBufferHandler;
+
 class QPsdHandler : public QImageIOHandler
 {
 public:
@@ -44,6 +46,25 @@ public:
     QVariant option(ImageOption option) const;
     //void setOption(ImageOption option, const QVariant &value);
     bool supportsOption(ImageOption option) const;
+
+	enum Compression {
+		RAW = 0,
+		RLE = 1,
+		ZIP_WITHOUT_PREDICTION = 2,
+		ZIP_WITH_PREDICTION = 3
+	};
+
+	enum ColorMode {
+		BITMAP = 0,
+		GRAYSCALE = 1,
+		INDEXED = 2,
+		RGB = 3,
+		CMYK = 4,
+		MULTICHANNEL = 7,
+		DUOTONE = 8,
+		LAB = 9,
+	};
+
 private:
     bool isValidSignature(quint32 signature);
     bool isValidVersion(quint16 version);
@@ -51,62 +72,67 @@ private:
     bool isValidWidthOrHeight(quint16 version, quint32 value);
     bool isSupportedDepth(quint16 depth);
     bool isSupportedColorMode(quint16 colorMode);
-    QByteArray readColorData(QDataStream& input);
-    void skipImageResources(QDataStream& input);
-    void skipLayerAndMaskSection(QDataStream& input);
-    enum Compression {
-        RAW = 0,
-        RLE = 1,
-        ZIP_WITHOUT_PREDICTION = 2,
-        ZIP_WITH_PREDICTION = 3
-    };
-    QByteArray readImageData(QDataStream& input, Compression compression, quint64 size=0);
-    enum ColorMode {
-        BITMAP = 0,
-        GRAYSCALE = 1,
-        INDEXED = 2,
-        RGB = 3,
-        CMYK = 4,
-        MULTICHANNEL = 7,
-        DUOTONE = 8,
-        LAB = 9,
-    };
-    QImage processBitmap(QByteArray& imageData, quint32 width, quint32 height);
-    QImage processGrayscale8(QByteArray& imageData, quint32 width, quint32 height);
-    QImage processGrayscale8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                     quint64 totalBytesPerChannel);
-    QImage processGrayscale16(QByteArray& imageData, quint32 width, quint32 height);
-    QImage processGrayscale16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                       quint64 totalBytesPerChannel);
-    QImage processIndexed(QByteArray& colorData, QByteArray& imageData, quint32 width,
-                          quint32 height);
-    QImage processRGB8(QByteArray& imageData, quint32 width, quint32 height,
-                       quint64 totalBytesPerChannel);
-    QImage processRGB16(QByteArray& imageData, quint32 width, quint32 height,
-                        quint64 totalBytesPerChannel);
-    QImage processRGB8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                quint64 totalBytesPerChannel);
-    QImage processRGB16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel);
-    QImage processCMY8(QByteArray& imageData, quint32 width, quint32 height,
-                       quint64 totalBytesPerChannel);
-    QImage processCMYK8(QByteArray& imageData, quint32 width, quint32 height,
-                        quint64 totalBytesPerChannel);
-    QImage processCMYK8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel);
-    QImage processCMYK16(QByteArray& imageData, quint32 width, quint32 height,
-                         quint64 totalBytesPerChannel);
-    QImage processCMYK16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                  quint64 totalBytesPerChannel);
-    QImage processDuotone(QByteArray& imageData, quint32 width, quint32 height);
-    QImage processLAB8(QByteArray& imageData, quint32 width, quint32 height,
-                       quint64 totalBytesPerChannel);
-    QImage processLAB8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                quint64 totalBytesPerChannel);
-    QImage processLAB16(QByteArray& imageData, quint32 width, quint32 height,
-                        quint64 totalBytesPerChannel);
-    QImage processLAB16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel);
+	QByteArray readColorData(QDataStream& input);
+	void skipImageResources(QDataStream& input);
+	void skipLayerAndMaskSection(QDataStream& input);
+
+	QByteArray readImageData(QDataStream& input, Compression compression, quint64 size=0);
+
+	QImage processBitmap(const QBufferHandler& bh);
+    QImage processGrayscale8(const QBufferHandler& bh);
+    QImage processGrayscale8WithAlpha(const QBufferHandler& bh);
+    QImage processGrayscale16(const QBufferHandler& bh);
+    QImage processGrayscale16WithAlpha(const QBufferHandler& bh);
+    QImage processIndexed(QByteArray& colorData, const QBufferHandler& bh);
+    QImage processRGB8(const QBufferHandler& bh);
+    QImage processRGB16(const QBufferHandler& bh);
+    QImage processRGB8WithAlpha(const QBufferHandler& bh);
+    QImage processRGB16WithAlpha(const QBufferHandler& bh);
+    QImage processCMY8(const QBufferHandler& bh);
+    QImage processCMYK8(const QBufferHandler& bh);
+    QImage processCMYK8WithAlpha(const QBufferHandler& bh);
+    QImage processCMYK16(const QBufferHandler& bh);
+    QImage processCMYK16WithAlpha(const QBufferHandler& bh);
+    QImage processDuotone(const QBufferHandler& bh);
+    QImage processLAB8(const QBufferHandler& bh);
+    QImage processLAB8WithAlpha(const QBufferHandler& bh);
+    QImage processLAB16(const QBufferHandler& bh);
+    QImage processLAB16WithAlpha(const QBufferHandler& bh);
+};
+
+class QBufferHandler {
+
+public:
+	QBufferHandler(const QSharedPointer<QDataStream>& stream = QSharedPointer<QDataStream>());
+
+	QDataStream* stream() const;
+
+	bool singleLoad() const;
+
+	quint64 streamSize() const;
+	quint64 totalBytesPerChannel() const;
+
+	QString toString() const;
+
+	int chunkSize() const;
+	int numRowsPerChunk() const;
+
+	void readChannel(quint8* chPtr) const;
+
+	quint32 signature = 0;
+	quint32 height = 0;
+	quint32 width = 0;
+
+	quint16 version = 0;
+	quint16 channels = 0;
+	quint16 depth = 0;
+	QPsdHandler::ColorMode colorMode = QPsdHandler::BITMAP;
+	QPsdHandler::Compression compression = QPsdHandler::RAW;
+
+private:
+	QSharedPointer<QDataStream> mStream;
+
+	quint64 mStreamSize = 0;
 };
 
 #endif // QPSDHANDLER_H

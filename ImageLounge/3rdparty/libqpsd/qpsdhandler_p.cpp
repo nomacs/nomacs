@@ -215,50 +215,50 @@ bool QPsdHandler::isSupportedColorMode(quint16 colorMode)
 }
 
 /**
- * @brief QPsdHandler::getColorData Extracts the color data from the input stream.
- * @param input QDataStream.
- * @return bool.
- */
-QByteArray QPsdHandler::readColorData(QDataStream &input)
+* @brief QPsdHandler::getColorData Extracts the color data from the input stream.
+* @param input QDataStream.
+* @return bool.
+*/
+QByteArray QPsdHandler::readColorData(QDataStream &input) 
 {
-    quint32 length;
-    QByteArray colorData;
-    input >> length;
-    if (length != 0) {
-        colorData.resize(length);
-        input.readRawData(colorData.data(), length);
-    }
-    return colorData;
+	quint32 length;
+	QByteArray colorData;
+	input >> length;
+	if (length != 0) {
+		colorData.resize(length);
+		input.readRawData(colorData.data(), length);
+	}
+	return colorData;
 }
 
 /**
- * @brief QPsdHandler::skipImageResources Skips the image resources section.
- * @param input QDataStream.
- */
-void QPsdHandler::skipImageResources(QDataStream &input)
+* @brief QPsdHandler::skipImageResources Skips the image resources section.
+* @param input QDataStream.
+*/
+void QPsdHandler::skipImageResources(QDataStream &input) 
 {
-    quint32 length;
-    input >> length;
-    input.skipRawData(length);
+	quint32 length;
+	input >> length;
+	input.skipRawData(length);
 }
 
 /**
- * @brief QPsdHandler::skipLayerAndMaskSection Skips the layer and mask section.
- *      The size of Layer and Mask Section is stored in 4 bytes for PSD files
- *      and 8 bytes for PSB files.
- * @param input QDataStream.
- */
+* @brief QPsdHandler::skipLayerAndMaskSection Skips the layer and mask section.
+*      The size of Layer and Mask Section is stored in 4 bytes for PSD files
+*      and 8 bytes for PSB files.
+* @param input QDataStream.
+*/
 void QPsdHandler::skipLayerAndMaskSection(QDataStream &input)
 {
-    if (format() == "psd") {
-        quint32 layerAndMaskInfoLength;
-        input >> layerAndMaskInfoLength;
-        input.skipRawData(layerAndMaskInfoLength);
-    } else if (format() == "psb") {
-        quint64 layerAndMaskInfoLength;
-        input >> layerAndMaskInfoLength;
-        input.skipRawData(layerAndMaskInfoLength);
-    }
+	if (format() == "psd") {
+		quint32 layerAndMaskInfoLength;
+		input >> layerAndMaskInfoLength;
+		input.skipRawData(layerAndMaskInfoLength);
+	} else if (format() == "psb") {
+		quint64 layerAndMaskInfoLength;
+		input >> layerAndMaskInfoLength;
+		input.skipRawData(layerAndMaskInfoLength);
+	}
 }
 
 QByteArray QPsdHandler::readImageData(QDataStream &input,
@@ -312,111 +312,208 @@ QByteArray QPsdHandler::readImageData(QDataStream &input,
  * @param height quint32.
  * @return QImage.
  */
-QImage QPsdHandler::processBitmap(QByteArray& imageData, quint32 width, quint32 height)
+QImage QPsdHandler::processBitmap(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "Bitmap";
 #endif
-    QString head = QString("P4\n%1 %2\n").arg(width).arg(height);
+    
+	QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+	QString head = QString("P4\n%1 %2\n").arg(bh.width).arg(bh.height);
     QByteArray buffer(head.toUtf8());
     buffer.append(imageData);
+
     return QImage::fromData(buffer);
 }
 
-QImage QPsdHandler::processGrayscale8(QByteArray& imageData, quint32 width, quint32 height)
+QImage QPsdHandler::processGrayscale8(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit Grayscale";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data = (quint8*)imageData.constData();
+
+	quint8 *dataM = 0;
+	quint8 *data = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+	}
+	// image size is > 2GB
+	else {
+
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+	}
+
+
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = qRgb(*data, *data, *data);
             ++p; ++data;
         }
     }
+
+	if (dataM) delete[] dataM;
+
     return result;
 }
 
-QImage QPsdHandler::processGrayscale8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                               quint64 totalBytesPerChannel)
+QImage QPsdHandler::processGrayscale8WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit Grayscale with Alpha";
 #endif
-    QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *data = (quint8*)imageData.constData();
-    quint8 *alpha = data + totalBytesPerChannel;
+
+	quint8 *dataM = 0, *alphaM = 0;
+	quint8 *data = 0, *alpha = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+		alpha = data + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha = alphaM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = qRgba(*data, *data, *data, *alpha);
             ++p; ++data; ++alpha;
         }
     }
+
+	if (dataM)	delete[] dataM;
+	if (alphaM)	delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processGrayscale16(QByteArray& imageData, quint32 width, quint32 height)
+QImage QPsdHandler::processGrayscale16(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit Grayscale";
 #endif
+
+	quint8 *dataM = 0;
+	quint8 *data = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+	}
+	// image size is > 2GB
+	else {
+
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+	}
+
     const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
     quint16 data16;
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data8 = (quint8*)imageData.constData();
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
-            data16 = ((*data8 << 8) + *(data8 + 1)) * scale;
+            data16 = ((*data << 8) + *(data + 1)) * scale;
             *p = qRgb(data16, data16, data16);
-            ++p; data8 += 2;
+            ++p; data += 2;
         }
     }
+
+	if (dataM)	delete[] dataM;
+
     return result;
 }
 
-QImage QPsdHandler::processGrayscale16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                                quint64 totalBytesPerChannel)
+QImage QPsdHandler::processGrayscale16WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit Grayscale with Alpha";
 #endif
+	quint8 *dataM = 0, *alphaM = 0;
+	quint8 *data = 0, *alpha = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+		alpha = data + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha = alphaM;
+	}
+
     const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
     quint16 data16, alpha16;
-    QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *data8 = (quint8*)imageData.constData();
-    quint8 *alpha8 = data8 + totalBytesPerChannel;
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
-            data16 = ((*data8 << 8) + *(data8 + 1)) * scale;
-            alpha16 = ((*alpha8 << 8) + *(alpha8 + 1)) * scale;
+            data16 = ((*data << 8) + *(data + 1)) * scale;
+            alpha16 = ((*alpha << 8) + *(alpha + 1)) * scale;
             *p = qRgba(data16, data16, data16, alpha16);
-            ++p; data8 += 2; alpha8 += 2;
+            ++p; data += 2; alpha += 2;
         }
     }
+
+	if (dataM)	delete[] dataM;
+	if (alphaM)	delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processIndexed(QByteArray& colorData, QByteArray& imageData, quint32 width,
-                                   quint32 height)
+QImage QPsdHandler::processIndexed(QByteArray& colorData, const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "Indexed";
 #endif
-    QImage result(width, height, QImage::Format_Indexed8);
+
+	quint8 *dataM = 0;
+	quint8 *data = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+	}
+	// image size is > 2GB
+	else {
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_Indexed8);
     int indexCount = colorData.size() / 3;
     quint8 *red = (quint8*)colorData.constData();
     quint8 *green = red + indexCount;
@@ -425,80 +522,165 @@ QImage QPsdHandler::processIndexed(QByteArray& colorData, QByteArray& imageData,
         result.setColor(i, qRgb(*red, *green, *blue));
         ++red; ++green; ++blue;
     }
-    quint8 *data = (quint8*)imageData.constData();
-    for (quint32 i = 0; i < height; ++i) {
-        for (quint32 j = 0; j < width; ++j) {
+    for (quint32 i = 0; i < bh.height; ++i) {
+        for (quint32 j = 0; j < bh.width; ++j) {
             result.setPixel(j, i, *data);
             ++data;
         }
     }
+
+	if (dataM)	delete[] dataM;
     return result;
 }
 
-QImage QPsdHandler::processRGB8(QByteArray& imageData, quint32 width, quint32 height,
-                                quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB8(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit RGB";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *red = (quint8*)imageData.constData();
-    quint8 *green = red + totalBytesPerChannel;
-    quint8 *blue = green + totalBytesPerChannel;
-    QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
-        p = (QRgb *)result.scanLine(y);
-        end = p + width;
-        while (p < end) {
-            *p = qRgb(*red, *green, *blue);
-            ++p; ++red; ++green; ++blue;
-        }
-    }
+
+	quint8 *redM = 0, *greenM = 0, *blueM = 0;
+	quint8 *red = 0, *green = 0, *blue = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		red = (quint8*)ba.constData();
+		green = red + bh.totalBytesPerChannel();
+		blue = green + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		redM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(redM);
+		red = redM;
+
+		greenM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(greenM);
+		green = greenM;
+
+		blueM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(blueM);
+		blue = blueM;
+	}
+
+	QImage result(bh.width, bh.height, QImage::Format_RGB32);
+	QRgb *p, *end;
+
+	for (quint32 y = 0; y < bh.height; ++y) {
+		p = (QRgb *)result.scanLine(y);
+		end = p + bh.width;
+		while (p < end) {
+			*p = qRgb(*red, *green, *blue);
+			++p; ++red; ++green; ++blue;
+		}
+	}
+
+	if (redM)	delete[] redM;
+	if (greenM)	delete[] greenM;
+	if (blueM)	delete[] blueM;
+
     return result;
 }
 
-QImage QPsdHandler::processRGB16(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB16(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit RGB";
 #endif
-    const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
-    QImage result(width, height, QImage::Format_RGB32);
+    
+	quint8 *redM = 0, *greenM = 0, *blueM = 0;
+	quint8 *red = 0, *green = 0, *blue = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		red = (quint8*)ba.constData();
+		green = red + bh.totalBytesPerChannel();
+		blue = green + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		redM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(redM);
+		red = redM;
+
+		greenM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(greenM);
+		green = greenM;
+
+		blueM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(blueM);
+		blue = blueM;
+	}
+
+	const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     quint16 red16, blue16, green16;
-    quint8 *red8 = (quint8*)imageData.constData();
-    quint8 *green8 = red8 + totalBytesPerChannel;
-    quint8 *blue8 = green8 + totalBytesPerChannel;
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
-            red16 = ((*red8 << 8) + *(red8 + 1)) * scale;
-            green16 = ((*green8 << 8) + *(green8 + 1)) * scale;
-            blue16 = ((*blue8 << 8) + *(blue8 + 1)) * scale;
+            red16 = ((*red << 8) + *(red + 1)) * scale;
+            green16 = ((*green << 8) + *(green + 1)) * scale;
+            blue16 = ((*blue << 8) + *(blue + 1)) * scale;
             *p = qRgb(red16, green16, blue16);
-            ++p;  red8 += 2; green8 += 2; blue8 += 2;
+            ++p;  red += 2; green += 2; blue += 2;
         }
     }
+
+	if (redM)	delete[] redM;
+	if (greenM)	delete[] greenM;
+	if (blueM)	delete[] blueM;
+
     return result;
 }
 
-QImage QPsdHandler::processRGB8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                         quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB8WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit RGB with Alpha";
 #endif
-	QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *red = (quint8*)imageData.constData();
-    quint8 *green = red + totalBytesPerChannel;
-    quint8 *blue = green + totalBytesPerChannel;
-    quint8 *alpha = blue + totalBytesPerChannel;
+
+	quint8 *redM = 0, *greenM = 0, *blueM = 0, *alphaM = 0;
+	quint8 *red = 0, *green = 0, *blue = 0, *alpha = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		red = (quint8*)ba.constData();
+		green = red + bh.totalBytesPerChannel();
+		blue = green + bh.totalBytesPerChannel();
+		alpha = blue + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		redM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(redM);
+		red = redM;
+
+		greenM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(greenM);
+		green = greenM;
+
+		blueM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(blueM);
+		blue = blueM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha = alphaM;
+	}
+
+	QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             // Fix for blending image with white
             if(*alpha != 0) {
@@ -518,27 +700,60 @@ QImage QPsdHandler::processRGB8WithAlpha(QByteArray& imageData, quint32 width, q
             ++p; ++red; ++green; ++blue; ++alpha;
         }
     }
+
+	if (redM)	delete[] redM;
+	if (greenM)	delete[] greenM;
+	if (blueM)	delete[] blueM;
+	if (alphaM)	delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processRGB16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                          quint64 totalBytesPerChannel)
+QImage QPsdHandler::processRGB16WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit RGB with Alpha";
 #endif
+	
+	quint8 *redM = 0, *greenM = 0, *blueM = 0, *alphaM = 0;
+	quint8 *red8 = 0, *green8 = 0, *blue8 = 0, *alpha8 = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		red8 = (quint8*)ba.constData();
+		green8 = red8 + bh.totalBytesPerChannel();
+		blue8 = green8 + bh.totalBytesPerChannel();
+		alpha8 = blue8 + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		redM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(redM);
+		red8 = redM;
+
+		greenM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(greenM);
+		green8 = greenM;
+
+		blueM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(blueM);
+		blue8 = blueM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha8 = alphaM;
+	}
+
 //    FIXME: blending image with white (see QPsdHandler::processRGB8WithAlpha)
     const qreal scale = (qPow(2, 8) - 1) / (qPow(2, 16) - 1);
-    QImage result(width, height, QImage::Format_ARGB32);
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     quint16 red16, blue16, green16, alpha16;
-    quint8 *red8 = (quint8*)imageData.constData();
-    quint8 *green8 = red8 + totalBytesPerChannel;
-    quint8 *blue8 = green8 + totalBytesPerChannel;
-    quint8 *alpha8 = blue8 + totalBytesPerChannel;
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             red16 = ((*red8 << 8) + *(red8 + 1)) * scale;
             green16 = ((*green8 << 8) + *(green8 + 1)) * scale;
@@ -548,96 +763,228 @@ QImage QPsdHandler::processRGB16WithAlpha(QByteArray& imageData, quint32 width, 
             ++p;  red8 += 2; green8 += 2; blue8 += 2; alpha8 += 2;
         }
     }
+
+	if (redM)	delete[] redM;
+	if (greenM)	delete[] greenM;
+	if (blueM)	delete[] blueM;
+	if (alphaM)	delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processCMY8(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMY8(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit CMY";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *cyan = (quint8*)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
+
+	quint8 *cyanM = 0, *magentaM = 0, *yellowM = 0;
+	quint8 *cyan = 0, *magenta = 0, *yellow = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		cyan = (quint8*)ba.constData();
+		magenta = cyan + bh.totalBytesPerChannel();
+		yellow = magenta + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		cyanM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(cyanM);
+		cyan = cyanM;
+
+		magentaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(magentaM);
+		magenta = magentaM;
+
+		yellowM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(yellowM);
+		yellow = yellowM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta, 255 - *yellow, 0).rgba();
             ++p; ++cyan; ++magenta; ++yellow;;
         }
     }
+
+	if (cyanM)		delete[] cyanM;
+	if (magentaM)	delete[] magentaM;
+	if (yellowM)	delete[] yellowM;
+
     return result;
 }
 
-QImage QPsdHandler::processCMYK8(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK8(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit CMYK";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *cyan = (quint8*)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
-    quint8 *key = yellow + totalBytesPerChannel;
+
+	quint8 *cyanM = 0, *magentaM = 0, *yellowM = 0, *keyM = 0;
+	quint8 *cyan = 0, *magenta = 0, *yellow = 0, *key = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		cyan = (quint8*)ba.constData();
+		magenta = cyan + bh.totalBytesPerChannel();
+		yellow = magenta + bh.totalBytesPerChannel();
+		key = yellow + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		cyanM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(cyanM);
+		cyan = cyanM;
+
+		magentaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(magentaM);
+		magenta = magentaM;
+
+		yellowM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(yellowM);
+		yellow = yellowM;
+
+		keyM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(keyM);
+		key = keyM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta, 255 - *yellow, 255 - *key).rgba();
             ++p; ++cyan; ++magenta; ++yellow; ++key;
         }
     }
+
+	if (cyanM)		delete[] cyanM;
+	if (magentaM)	delete[] magentaM;
+	if (yellowM)	delete[] yellowM;
+	if (keyM)		delete[] keyM;
+
     return result;
 }
 
-QImage QPsdHandler::processCMYK8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                          quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK8WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit CMYK with Alpha";
 #endif
-    QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *cyan = (quint8*)imageData.constData();
-    quint8 *magenta = cyan + totalBytesPerChannel;
-    quint8 *yellow = magenta + totalBytesPerChannel;
-    quint8 *key = yellow + totalBytesPerChannel;
-    quint8 *alpha = key + totalBytesPerChannel;
+
+	quint8 *cyanM = 0, *magentaM = 0, *yellowM = 0, *keyM = 0, *alphaM = 0;
+	quint8 *cyan = 0, *magenta = 0, *yellow = 0, *key = 0, *alpha = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		cyan = (quint8*)ba.constData();
+		magenta = cyan + bh.totalBytesPerChannel();
+		yellow = magenta + bh.totalBytesPerChannel();
+		key = yellow + bh.totalBytesPerChannel();
+		alpha = key + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		cyanM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(cyanM);
+		cyan = cyanM;
+
+		magentaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(magentaM);
+		magenta = magentaM;
+
+		yellowM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(yellowM);
+		yellow = yellowM;
+
+		keyM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(keyM);
+		key = keyM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha = alphaM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta, 255 - *yellow, 255 - *key,
                                   *alpha).rgba();
             ++p; ++alpha; ++cyan; ++magenta; ++yellow; ++key;
         }
     }
+
+	if (cyanM)		delete[] cyanM;
+	if (magentaM)	delete[] magentaM;
+	if (yellowM)	delete[] yellowM;
+	if (keyM)		delete[] keyM;
+	if (alphaM)		delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processCMYK16(QByteArray& imageData, quint32 width, quint32 height,
-                                  quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK16(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit CMYK";
 #endif
+
+	quint8 *cyanM = 0, *magentaM = 0, *yellowM = 0, *keyM = 0;
+	quint8 *cyan8 = 0, *magenta8 = 0, *yellow8 = 0, *key8 = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		cyan8 = (quint8*)ba.constData();
+		magenta8 = cyan8 + bh.totalBytesPerChannel();
+		yellow8 = magenta8 + bh.totalBytesPerChannel();
+		key8 = yellow8 + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		cyanM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(cyanM);
+		cyan8 = cyanM;
+
+		magentaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(magentaM);
+		magenta8 = magentaM;
+
+		yellowM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(yellowM);
+		yellow8 = yellowM;
+
+		keyM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(keyM);
+		key8 = keyM;
+	}
+
     const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
-    QImage result(width, height, QImage::Format_RGB32);
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     quint16 cyan16, magenta16, yellow16, key16;
-    quint8 *cyan8 = (quint8*)imageData.constData();
-    quint8 *magenta8 = cyan8 + totalBytesPerChannel;
-    quint8 *yellow8 = magenta8 + totalBytesPerChannel;
-    quint8 *key8 = yellow8 + totalBytesPerChannel;
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             cyan16 = ((*cyan8 << 8) + *(cyan8 + 1)) * scale;
             magenta16 = ((*magenta8 << 8) + *(magenta8 + 1)) * scale;
@@ -650,27 +997,64 @@ QImage QPsdHandler::processCMYK16(QByteArray& imageData, quint32 width, quint32 
             ++p;  cyan8 += 2; magenta8 += 2; yellow8 += 2; key8 += 2;
         }
     }
+
+	if (cyanM)		delete[] cyanM;
+	if (magentaM)	delete[] magentaM;
+	if (yellowM)	delete[] yellowM;
+	if (keyM)		delete[] keyM;
+
     return result;
 }
 
-QImage QPsdHandler::processCMYK16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                           quint64 totalBytesPerChannel)
+QImage QPsdHandler::processCMYK16WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit CMYK with Alpha";
 #endif
+
+	quint8 *cyanM = 0, *magentaM = 0, *yellowM = 0, *keyM = 0, *alphaM = 0;
+	quint8 *cyan8 = 0, *magenta8 = 0, *yellow8 = 0, *key8 = 0, *alpha8 = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		cyan8 = (quint8*)ba.constData();
+		magenta8 = cyan8 + bh.totalBytesPerChannel();
+		yellow8 = magenta8 + bh.totalBytesPerChannel();
+		key8 = yellow8 + bh.totalBytesPerChannel();
+		alpha8 = key8 + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		cyanM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(cyanM);
+		cyan8 = cyanM;
+
+		magentaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(magentaM);
+		magenta8 = magentaM;
+
+		yellowM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(yellowM);
+		yellow8 = yellowM;
+
+		keyM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(keyM);
+		key8 = keyM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha8 = alphaM;
+	}
+
     const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
-    QImage result(width, height, QImage::Format_ARGB32);
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     quint16 cyan16, magenta16, yellow16, key16, alpha16;
-    quint8 *cyan8 = (quint8*)imageData.constData();
-    quint8 *magenta8 = cyan8 + totalBytesPerChannel;
-    quint8 *yellow8 = magenta8 + totalBytesPerChannel;
-    quint8 *key8 = yellow8 + totalBytesPerChannel;
-    quint8 *alpha8 = key8 + totalBytesPerChannel;
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             cyan16 = ((*cyan8 << 8) + *(cyan8 + 1)) * scale;
             magenta16 = ((*magenta8 << 8) + *(magenta8 + 1)) * scale;
@@ -685,89 +1069,197 @@ QImage QPsdHandler::processCMYK16WithAlpha(QByteArray& imageData, quint32 width,
             ++p;  cyan8 += 2; magenta8 += 2; yellow8 += 2; key8 += 2, alpha8 += 2;
         }
     }
+
+	if (cyanM)		delete[] cyanM;
+	if (magentaM)	delete[] magentaM;
+	if (yellowM)	delete[] yellowM;
+	if (keyM)		delete[] keyM;
+	if (alphaM)		delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processDuotone(QByteArray& imageData, quint32 width, quint32 height)
+QImage QPsdHandler::processDuotone(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "Duotone";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *data = (quint8*)imageData.constData();
+
+	quint8 *dataM = 0;
+	quint8 *data = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray imageData = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+		data = (quint8*)imageData.constData();
+	}
+	// image size is > 2GB
+	else {
+
+		dataM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(dataM);
+		data = dataM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = qRgb(*data, *data, *data);
             ++p; ++data;
         }
     }
+
+	if (dataM)	delete[] dataM;
+
     return result;
 }
 
-QImage QPsdHandler::processLAB8(QByteArray& imageData, quint32 width, quint32 height,
-                                quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB8(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit LAB";
 #endif
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *lightness = (quint8*)imageData.constData();
-    quint8 *a = lightness + totalBytesPerChannel;
-    quint8 *b = a + totalBytesPerChannel;
+
+	quint8 *lightnessM = 0, *aM = 0, *bM = 0;
+	quint8 *lightness = 0, *a = 0, *b = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		lightness = (quint8*)ba.constData();
+		a = lightness + bh.totalBytesPerChannel();
+		b = a + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		lightnessM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(lightnessM);
+		lightness = lightnessM;
+
+		aM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(aM);
+		a = aM;
+
+		bM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(bM);
+		b = bM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = labToRgb(*lightness, *a, *b);
             ++p; ++lightness; ++a; ++b;
         }
     }
+
+	if (lightnessM)	delete[] lightnessM;
+	if (aM)			delete[] aM;
+	if (bM)			delete[] bM;
+
     return result;
 }
 
-QImage QPsdHandler::processLAB8WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                         quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB8WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit LAB with Alpha";
 #endif
-    QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *lightness = (quint8*)imageData.constData();
-    quint8 *a = lightness + totalBytesPerChannel;
-    quint8 *b = a + totalBytesPerChannel;
-    quint8 *alpha = b + totalBytesPerChannel;
+	quint8 *lightnessM = 0, *aM = 0, *bM = 0, *alphaM = 0;
+	quint8 *lightness = 0, *a = 0, *b = 0, *alpha = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		lightness = (quint8*)ba.constData();
+		a = lightness + bh.totalBytesPerChannel();
+		b = a + bh.totalBytesPerChannel();
+		alpha = b + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		lightnessM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(lightnessM);
+		lightness = lightnessM;
+
+		aM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(aM);
+		a = aM;
+
+		bM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(bM);
+		b = bM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha = alphaM;
+	}
+
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             *p = labToRgb(*lightness, *a, *b, *alpha);
             ++p; ++alpha; ++lightness; ++a; ++b;
         }
     }
+
+	if (lightnessM)	delete[] lightnessM;
+	if (aM)			delete[] aM;
+	if (bM)			delete[] bM;
+	if (alphaM)		delete[] alphaM;
+
     return result;
 }
 
-QImage QPsdHandler::processLAB16(QByteArray& imageData, quint32 width, quint32 height,
-                                 quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB16(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "16-bit LAB";
 #endif
+	
+	quint8 *lightnessM = 0, *aM = 0, *bM = 0;
+	quint8 *lightness8 = 0, *a8 = 0, *b8 = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		lightness8 = (quint8*)ba.constData();
+		a8 = lightness8 + bh.totalBytesPerChannel();
+		b8 = a8 + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		lightnessM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(lightnessM);
+		lightness8 = lightnessM;
+
+		aM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(aM);
+		a8 = aM;
+
+		bM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(bM);
+		b8 = bM;
+	}
+
     const qreal scale = (qPow(2, 8) - 1 ) / (qPow(2, 16) - 1);
     quint16 lightness16, a16, b16;
-    QImage result(width, height, QImage::Format_RGB32);
-    quint8 *lightness8 = (quint8*)imageData.constData();
-    quint8 *a8 = lightness8 + totalBytesPerChannel;
-    quint8 *b8 = a8 + totalBytesPerChannel;
+    QImage result(bh.width, bh.height, QImage::Format_RGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             lightness16 = ((*lightness8 << 8) + *(lightness8 + 1)) * scale;
             a16 = ((*a8 << 8) + *(a8 + 1)) * scale;
@@ -776,26 +1268,58 @@ QImage QPsdHandler::processLAB16(QByteArray& imageData, quint32 width, quint32 h
             ++p; lightness8 += 2; a8 += 2; b8 += 2;
         }
     }
+
+	if (lightnessM)	delete[] lightnessM;
+	if (aM)			delete[] aM;
+	if (bM)			delete[] bM;
+
     return result;
 }
 
-QImage QPsdHandler::processLAB16WithAlpha(QByteArray& imageData, quint32 width, quint32 height,
-                                          quint64 totalBytesPerChannel)
+QImage QPsdHandler::processLAB16WithAlpha(const QBufferHandler& bh)
 {
 #ifdef QT_DEBUG
     qDebug() << "8-bit LAB with Alpha";
 #endif
+
+	quint8 *lightnessM = 0, *aM = 0, *bM = 0, *alphaM = 0;
+	quint8 *lightness8 = 0, *a8 = 0, *b8 = 0, *alpha8 = 0;
+
+	if (bh.singleLoad()) {
+		QByteArray ba = readImageData(*bh.stream(), bh.compression, bh.streamSize());
+
+		lightness8 = (quint8*)ba.constData();
+		a8 = lightness8 + bh.totalBytesPerChannel();
+		b8 = a8 + bh.totalBytesPerChannel();
+		alpha8 = b8 + bh.totalBytesPerChannel();
+	}
+	// image size is > 2GB
+	else {
+
+		lightnessM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(lightnessM);
+		lightness8 = lightnessM;
+
+		aM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(aM);
+		a8 = aM;
+
+		bM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(bM);
+		b8 = bM;
+
+		alphaM = new quint8[bh.totalBytesPerChannel()];
+		bh.readChannel(alphaM);
+		alpha8 = alphaM;
+	}
+
     const qreal scale = (qPow(2, 8) - 1 ) / (qPow(2, 16) - 1);
     quint16 lightness16, a16, b16, alpha16;
-    QImage result(width, height, QImage::Format_ARGB32);
-    quint8 *lightness8 = (quint8*)imageData.constData();
-    quint8 *a8 = lightness8 + totalBytesPerChannel;
-    quint8 *b8 = a8 + totalBytesPerChannel;
-    quint8 *alpha8 = b8 + totalBytesPerChannel;
+    QImage result(bh.width, bh.height, QImage::Format_ARGB32);
     QRgb  *p, *end;
-    for (quint32 y = 0; y < height; ++y) {
+    for (quint32 y = 0; y < bh.height; ++y) {
         p = (QRgb *)result.scanLine(y);
-        end = p + width;
+        end = p + bh.width;
         while (p < end) {
             lightness16 = ((*lightness8 << 8) + *(lightness8 + 1)) * scale;
             a16 = ((*a8 << 8) + *(a8 + 1)) * scale;
@@ -805,5 +1329,11 @@ QImage QPsdHandler::processLAB16WithAlpha(QByteArray& imageData, quint32 width, 
             ++p; lightness8 += 2; a8 += 2; b8 += 2; alpha8 += 2;
         }
     }
+
+	if (lightnessM)	delete[] lightnessM;
+	if (aM)			delete[] aM;
+	if (bM)			delete[] bM;
+	if (alphaM)		delete[] alphaM;
+
     return result;
 }
