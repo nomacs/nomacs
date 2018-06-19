@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
 	parser.addOption(batchLogOpt);
 
 	QCommandLineOption importSettingsOpt(QStringList() << "import-settings",
-		QObject::tr("Imports the settings from <settings-path.nfo> and saves them."),
-		QObject::tr("settings-path.nfo"));
+		QObject::tr("Imports the settings from <settings-path.ini> and saves them."),
+		QObject::tr("settings-path.ini"));
 	parser.addOption(importSettingsOpt);
 	
 	QCommandLineOption registerFilesOpt(QStringList() << "register-files", QObject::tr("Register file associations (Windows only)."));

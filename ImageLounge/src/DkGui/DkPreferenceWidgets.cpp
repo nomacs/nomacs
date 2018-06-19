@@ -620,7 +620,7 @@ void DkGeneralPreference::on_importSettings_clicked() {
 		DkUtils::getMainWindow(), 
 		tr("Import Settings"),
 		QDir::homePath(), 
-		"Nomacs Settings (*.nfo)");
+		"Nomacs Settings (*.ini)");
 
 	// user canceled?
 	if (filePath.isEmpty())
@@ -637,7 +637,7 @@ void DkGeneralPreference::on_exportSettings_clicked() {
 		DkUtils::getMainWindow(), 
 		tr("Export Settings"),
 		QDir::homePath(), 
-		"Nomacs Settings (*.nfo)");
+		"Nomacs Settings (*.ini)");
 
 	// user canceled?
 	if (filePath.isEmpty())

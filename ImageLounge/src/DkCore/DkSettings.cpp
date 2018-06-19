@@ -913,7 +913,7 @@ void DkSettings::setNumThreads(int numThreads) {
 
 bool DkSettings::isPortable() {
 	
-	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.nfo");
+	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.ini");
 	return fi.absoluteFilePath() == settingsPath();
 }
 
@@ -922,7 +922,7 @@ QString DkSettings::settingsPath() const {
 	if (!mSettingsPath.isEmpty())
 		return mSettingsPath;
 
-	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.nfo");
+	QFileInfo fi(QCoreApplication::applicationDirPath(), "settings.ini");
 
 	if (fi.exists())
 		return fi.absoluteFilePath();
