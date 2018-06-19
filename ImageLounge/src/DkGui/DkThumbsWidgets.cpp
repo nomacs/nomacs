@@ -244,10 +244,10 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	//qDebug() << "size: " << size();
 
 	QPainter painter(this);
-	painter.setBackground(mBgCol);
+	painter.setBackground(DkSettingsManager::param().display().hudBgColor);
 
 	painter.setPen(Qt::NoPen);
-	painter.setBrush(mBgCol);
+	painter.setBrush(DkSettingsManager::param().display().hudBgColor);
 	
 	if (windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 		QRect r = QRect(QPoint(), this->size());
@@ -306,8 +306,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 				img = thumb->getImage();
 		}
 
-		if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
-			qDebug() << thumb->getFilePath() << "size:" << img.size();
+		//if (img.width() > max_thumb_size * DkSettingsManager::param().dpiScaleFactor())
+		//	qDebug() << thumb->getFilePath() << "size:" << img.size();
 
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
 		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(DkSettingsManager::param().effectiveThumbSize(this), DkSettingsManager::param().effectiveThumbSize(this)));

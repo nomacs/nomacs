@@ -565,3 +565,8 @@ QListWidget#profileList {
 nmc--DkMetaDataSelection QScrollArea QWidget {
 	background-color: #fff;
 }
+
+QLabel#DkLabelBg {
+	color: HUD_FOREGROUND_COLOR;
+	background-color: HUD_BACKGROUND_COLOR;
+}

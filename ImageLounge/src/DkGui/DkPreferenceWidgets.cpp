@@ -294,13 +294,7 @@ void DkGeneralPreference::createLayout() {
 	themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
 	connect(themeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showRestartLabel()));
 
-	// color settings
-	DkColorChooser* highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
-	highlightColorChooser->setObjectName("highlightColor");
-	highlightColorChooser->setColor(&DkSettingsManager::param().display().highlightColor);
-	connect(highlightColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
-
-	DkColorChooser* iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
+	DkColorChooser* iconColorChooser = new DkColorChooser(QColor(50, 50, 50, 255), tr("Icon Color"), this);
 	iconColorChooser->setObjectName("iconColor");
 	iconColorChooser->setColor(&DkSettingsManager::param().display().iconColor);
 	connect(iconColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
@@ -315,25 +309,11 @@ void DkGeneralPreference::createLayout() {
 	fullscreenColorChooser->setColor(&DkSettingsManager::param().slideShow().backgroundColor);
 	connect(fullscreenColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
-	DkColorChooser* fgdHUDColorChooser = new DkColorChooser(QColor(255, 255, 255, 255), tr("HUD Foreground Color"), this);
-	fgdHUDColorChooser->setObjectName("fgdHUDColor");
-	fgdHUDColorChooser->setColor(&DkSettingsManager::param().display().hudFgdColor);
-	connect(fgdHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
-
-	DkColorChooser* bgHUDColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("HUD Background Color"), this);
-	bgHUDColorChooser->setObjectName("bgHUDColor");
-	bgHUDColorChooser->setColor((DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
-		&DkSettingsManager::param().display().bgColorFrameless : &DkSettingsManager::param().display().hudBgColor);
-	connect(bgHUDColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
-
 	DkGroupWidget* colorGroup = new DkGroupWidget(tr("Color Settings"), this);
 	colorGroup->addWidget(themeBox);
-	colorGroup->addWidget(highlightColorChooser);
 	colorGroup->addWidget(iconColorChooser);
 	colorGroup->addWidget(bgColorChooser);
 	colorGroup->addWidget(fullscreenColorChooser);
-	colorGroup->addWidget(fgdHUDColorChooser);
-	colorGroup->addWidget(bgHUDColorChooser);
 
 	// default pushbutton
 	QPushButton* defaultSettings = new QPushButton(tr("Reset All Settings"));
@@ -471,7 +451,6 @@ void DkGeneralPreference::createLayout() {
 	contentLayout->setAlignment(Qt::AlignLeft);
 	contentLayout->addWidget(leftColumn);
 	contentLayout->addWidget(cbWidget);
-
 }
 
 void DkGeneralPreference::showRestartLabel() const {

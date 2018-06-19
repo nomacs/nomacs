@@ -56,10 +56,6 @@ void DkWidget::init() {
 
 	setMouseTracking(true);
 
-	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
-		DkSettingsManager::param().display().bgColorFrameless :
-	DkSettingsManager::param().display().hudBgColor;
-
 	mShowing = false;
 	mHiding = false;
 	mBlocked = false;
@@ -214,10 +210,6 @@ QString DkNamedWidget::name() const {
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
-	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
-		DkSettingsManager::param().display().bgColorFrameless :
-	DkSettingsManager::param().display().hudBgColor;
-
 	setMouseTracking(true);
 	mParent = parent;
 	mText = text;
@@ -354,27 +346,8 @@ void DkLabel::setTextToLabel() {
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 
-	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
-		DkSettingsManager::param().display().bgColorFrameless :
-	DkSettingsManager::param().display().hudBgColor;
-
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
-
 	setObjectName("DkLabelBg");
-	updateStyleSheet();
-
-	mMargin = QPoint(7,2);
-	setMargin(mMargin);
-}
-
-void DkLabelBg::updateStyleSheet() {
-
-	QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + mTextCol.name() + "; padding: " + 
-		QString::number(mMargin.y()) + "px " +
-		QString::number(mMargin.x()) + "px " +
-		QString::number(mMargin.y()) + "px " +
-		QString::number(mMargin.x()) + "px; " +
-		"background-color: " + DkUtils::colorToString(mBgCol) + ";}");	// background
 }
 
 // DkFadeLabel --------------------------------------------------------------------
@@ -383,10 +356,6 @@ DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent,
 }
 
 void DkFadeLabel::init() {
-
-	mBgCol = (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless) ?
-		DkSettingsManager::param().display().bgColorFrameless :
-	DkSettingsManager::param().display().hudBgColor;
 
 	showing = false;
 	hiding = false;

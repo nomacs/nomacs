@@ -394,8 +394,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.hudFgdColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.hudFgdColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
-	qDebug() << "new bgColor:" << display_p.bgColor;
-
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
 	display_p.iconSize = settings.value("iconSize", display_p.iconSize).toInt();
@@ -1336,7 +1334,7 @@ QString DkThemeManager::loadTheme(const QString & themeName) const {
 		cssString = parseColors(ts);
 		cssString = cssString.trimmed();
 
-		qInfo() << "theme loaded from" << tfi.fileName();
+		qInfo() << "theme loaded from" << tfi.absoluteFilePath();
 	}
 	else
 		qInfo() << "could not load theme from" << tfi.absoluteFilePath();
@@ -1456,8 +1454,8 @@ QString DkThemeManager::parseColors(const QString & styleSheet) const {
 			else if (kv[0] == "FOREGROUND_COLOR")
 				DkSettingsManager::param().display().themeFgdColor.setNamedColor(cc);
 			else if (kv[0] == "ICON_COLOR") {
-				DkSettingsManager::param().display().iconColor.setNamedColor(cc);
-				DkSettingsManager::param().display().defaultIconColor = false;
+				if (DkSettingsManager::param().display().defaultIconColor)
+					DkSettingsManager::param().display().iconColor.setNamedColor(cc);
 			}
 			else
 				qWarning() << "could not parse color:" << str;

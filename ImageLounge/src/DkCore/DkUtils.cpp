@@ -503,7 +503,7 @@ QString DkUtils::getAppDataPath() {
 	QString appPath;
 
 #if QT_VERSION >= 0x050000
-	appPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+	appPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #else
 	appPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif

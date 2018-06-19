@@ -86,7 +86,6 @@ public slots:
 
 protected:
 
-	QColor mBgCol;
 	bool mBlocked;
 	bool mHiding;
 	bool mShowing;
@@ -149,7 +148,6 @@ protected:
 	int mFixedWidth;
 	QPoint mMargin;
 	bool mBlocked;
-	QColor mBgCol;
 
 	// functions
 	virtual void init();
@@ -169,8 +167,6 @@ public:
 	DkLabelBg(QWidget* parent = 0, const QString& text = QString());
 	virtual ~DkLabelBg() {};
 
-protected:
-	virtual void updateStyleSheet();
 };
 
 /**

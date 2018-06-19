@@ -1128,8 +1128,7 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size) {
 
 	QPixmap icon = loadFromSvg(filePath, s);
 	
-	if (!DkSettingsManager::param().display().defaultIconColor || DkSettingsManager::param().app().privateMode)
-		icon = colorizePixmap(icon, DkSettingsManager::param().display().iconColor);
+	icon = colorizePixmap(icon, DkSettingsManager::param().display().iconColor);
 
 	return icon;
 }

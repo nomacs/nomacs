@@ -1105,7 +1105,7 @@ QVector<QAction*> DkRatingLabelBg::getActions() const {
 void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
-	painter.fillRect(QRect(QPoint(), this->size()), mBgCol);
+	painter.fillRect(QRect(QPoint(), this->size()), DkSettingsManager::param().display().hudBgColor);
 	painter.end();
 
 	DkRatingLabel::paintEvent(event);
@@ -2155,7 +2155,7 @@ DkHistogram::~DkHistogram() {
 void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
-	painter.fillRect(1, 1, width(), height(), mBgCol);
+	painter.fillRect(1, 1, width(), height(), DkSettingsManager::param().display().hudBgColor);
 
 	int numTextLines;
 	if (mDisplayMode == DisplayMode::histogram_mode_simple) {
