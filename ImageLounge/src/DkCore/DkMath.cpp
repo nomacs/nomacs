@@ -41,10 +41,10 @@ DkRotatingRect::DkRotatingRect(QRectF rect) {
 	if (rect.isEmpty()) {
 
 		for (int idx = 0; idx < 4; idx++)
-			this->mRect.push_back(QPointF());
+			mRect.push_back(QPointF());
 	}
 	else
-		this->mRect = rect;
+		mRect = rect;
 
 }
 
@@ -197,7 +197,7 @@ QPolygonF DkRotatingRect::getClosedPoly() {
 
 	QPolygonF closedPoly = mRect;
 	closedPoly.push_back(closedPoly[0]);
-
+	
 	return closedPoly;
 }
 
@@ -229,6 +229,10 @@ void DkRotatingRect::setSize(const QSizeF & s) {
 	r.moveCenter(getCenter());
 
 	mRect = r;
+	
+	// assigning a QRectF to a QPolygonF results in a closed polygon - but we want it to be open so remove the last point
+	mRect.pop_back();
+
 	rotate(-getAngle());
 }
 

@@ -1465,7 +1465,6 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 		
 		QPointF pt = initialPos+event->globalPos()-posGrab;
 		emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
-		qDebug() << "accepted false...";
 	}
 
 	QWidget::mouseMoveEvent(event);
@@ -1507,9 +1506,6 @@ DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFl
 void DkEditableRect::reset() {
 
 	mRect = QRectF();
-	//for (int idx = 0; idx < ctrlPoints.size(); idx++)
-	//	ctrlPoints[idx]->reset();
-
 }
 
 QPointF DkEditableRect::map(const QPointF &pos) {
@@ -1652,14 +1648,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setPen(mPen);
 	painter.setBrush(mBrush);
 	painter.drawPath(path);
-
-	//for (int idx = 0; idx < p.size()-1; idx++) {
-	//	
-	//	QPointF c = p[idx];
-	//	painter.setBrush(QColor(255, 255, 255));
-	//	painter.setPen(QColor(255, 255, 255));
-	//	painter.drawText(c+QPointF(10,10), QString::number(idx));
-	//}
 
 	drawGuide(&painter, p, mPaintMode);
 	
