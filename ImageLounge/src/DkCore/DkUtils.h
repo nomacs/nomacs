@@ -160,6 +160,8 @@ public:
 
 	static QString getAppDataPath();
 
+	static QString getTranslationPath();
+
 	static QWidget* getMainWindow();
 
 	static void showViewportMessage(const QString& msg);

@@ -502,19 +502,42 @@ QString DkUtils::getAppDataPath() {
 
 	QString appPath;
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+	// this gives us a roaming profile on windows
 	appPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#elif QT_VERSION >= 0x050000
+	appPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+
+	// make our own folder - AppDataLocation already does this...
+	appPath += QDir::separator() + QCoreApplication::organizationName();
 #else
 	appPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#endif
-
 	// make our own folder
 	appPath += QDir::separator() + QCoreApplication::organizationName();
+#endif
+
 	
 	if (!QDir().mkpath(appPath))
 		qWarning() << "I could not create" << appPath;
 
 	return appPath;
+}
+
+QString DkUtils::getTranslationPath() {
+
+	QString trPath;
+
+	if (DkSettingsManager::param().isPortable())
+		trPath = QCoreApplication::applicationDirPath();
+	else
+		trPath = DkUtils::getAppDataPath();
+
+	trPath += QDir::separator() + QString("translations");
+
+	if (!QDir().mkpath(trPath))
+		qWarning() << "I could not create" << trPath;
+
+	return trPath;
 }
 
 QWidget * DkUtils::getMainWindow() {

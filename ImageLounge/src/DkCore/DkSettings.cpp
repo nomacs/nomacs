@@ -257,27 +257,18 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 }
 
 QStringList DkSettings::getTranslationDirs() {
-	QStringList translationDirs;
 	
-#ifdef  Q_OS_WIN
-	if (!isPortable())
-		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
-#endif	
-#if QT_VERSION >= 0x050000
-	translationDirs.append(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
-#else
-	translationDirs.append(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
-#endif
-	
-	QDir p((qApp->applicationDirPath()));
-	translationDirs.append(p.absolutePath());
-	if (p.cd("translations"))
-		translationDirs.append(p.absolutePath());
-	p = QDir(qApp->applicationDirPath());
-	if (p.cd("../share/nomacs/translations/"))
-		translationDirs.append(p.absolutePath());
+	QStringList trDirs;
+	trDirs << DkUtils::getTranslationPath();
+	trDirs << qApp->applicationDirPath();
+	trDirs << qApp->applicationDirPath() + QDir::separator() + "translations";
 
-	return translationDirs;
+	// still needed?
+	QDir d = QDir(qApp->applicationDirPath());
+	if (d.cd("../share/nomacs/translations/"))
+		trDirs << d.absolutePath();
+
+	return trDirs;
 }
 
 void DkSettings::load() {

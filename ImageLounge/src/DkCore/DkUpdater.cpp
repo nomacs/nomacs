@@ -401,24 +401,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 
-
-#ifdef  Q_OS_WIN
-	QDir storageLocation;
-	if (DkSettingsManager::param().isPortable()) {
-		storageLocation = QDir(QCoreApplication::applicationDirPath());
-		storageLocation.cd("translations");
-	}
-	else
-		storageLocation = QDir(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
-#else
-#if QT_VERSION >= 0x050000
-	QDir storageLocation(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
-#else
-	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
-#endif
-
-#endif //  Q_OS_WIN
-
+	QDir storageLocation = DkUtils::getTranslationPath();
 	QString translationName = qtTranslation ? "qt_"+ DkSettingsManager::param().global().language + ".qm" : "nomacs_"+ DkSettingsManager::param().global().language + ".qm";
 
 	if (isRemoteFileNewer(lastModifiedRemote, translationName)) {
@@ -436,12 +419,12 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 		QString absoluteFilePath = storageLocation.absolutePath() + "/" + basename + extension;
 		if (QFile::exists(absoluteFilePath)) {
-			qDebug() << "File already exists - overwriting";
+			qInfo() << "File already exists - overwriting";
 		}
 
 		QFile file(absoluteFilePath);
 		if (!file.open(QIODevice::WriteOnly)) {
-			qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
+			qWarning()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
 			return;
 		}
 
@@ -509,29 +492,14 @@ void DkTranslationUpdater::updateDownloadProgressQt(qint64 received, qint64 tota
 }
 
 bool DkTranslationUpdater::isRemoteFileNewer(QDateTime lastModifiedRemote, const QString& localTranslationName) {
+	
 	if (!lastModifiedRemote.isValid())
 		return false;
 
-#ifdef  Q_OS_WIN
-	QDir storageLocation;
-	if (DkSettingsManager::param().isPortable()) {
-		storageLocation = QDir(QCoreApplication::applicationDirPath());
-		storageLocation.cd("translations");
-	}
-	else
-		storageLocation = QDir(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
-#else
-#if QT_VERSION >= 0x050000
-	QDir storageLocation(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
-#else
-	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
-#endif
-
-#endif //  Q_OS_WIN
-	QFile userTranslation(storageLocation.absoluteFilePath(localTranslationName));
-	//qDebug() << "local: " << QFileInfo(userTranslation).lastModified()  << "  remote: " << lastModifiedRemote << " bool: " << (QFileInfo(userTranslation).lastModified() < lastModifiedRemote);
-	//qDebug() << "userTranslation exists:" << userTranslation.exists();
-	return !userTranslation.exists() || (QFileInfo(userTranslation).lastModified() < lastModifiedRemote);
+	QString trPath = DkUtils::getTranslationPath();
+	QFileInfo trFile(trPath, localTranslationName);
+	
+	return !trFile.exists() || (QFileInfo(trFile).lastModified() < lastModifiedRemote);
 }
 
 void DkTranslationUpdater::cancelUpdate() {
