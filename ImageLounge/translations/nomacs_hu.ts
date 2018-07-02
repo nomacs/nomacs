@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="bs" sourcelanguage="en">
+<TS version="2.1" language="hu" sourcelanguage="en">
   <context>
     <name>QObject</name>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="181"/>
       <source>&amp;Photoshop</source>
-      <translation>%Photoshop</translation>
+      <translation>&amp;Photoshop</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="192"/>
@@ -26,60 +26,60 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="224"/>
       <source>&amp;Explorer</source>
-      <translation>&amp;Explorer</translation>
+      <translation>&amp;Intéző</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="362"/>
       <source>&amp;File</source>
-      <translation>&amp;Fajl</translation>
+      <translation>&amp;Fájl</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="410"/>
       <source>&amp;Open With</source>
-      <translation>&amp;Otvori pomoću</translation>
+      <translation>Megnyitás k&amp;ülső programmal</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="441"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ortiraj</translation>
+      <translation>&amp;Rendezés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="455"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="670"/>
       <source>&amp;View</source>
-      <translation>&amp;Pogled</translation>
+      <translation>Nézet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="504"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="676"/>
       <source>&amp;Edit</source>
-      <translation>&amp;Uredi</translation>
+      <translation>S&amp;zerkesztés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="542"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="654"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Paneli</translation>
+      <translation>&amp;Panelek</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="544"/>
       <source>Tool&amp;bars</source>
-      <translation>&amp;Trake</translation>
+      <translation>&amp;Eszköztárak</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="574"/>
       <source>&amp;Tools</source>
-      <translation>&amp;Alati</translation>
+      <translation>&amp;Eszközök</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2453"/>
       <source>&amp;Synchronize</source>
-      <translation>&amp;Sinhronizuj</translation>
+      <translation>&amp;Szinkronizálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2459"/>
       <source>&amp;LAN Synchronize</source>
-      <translation>&amp;LAN sinhronizacija</translation>
+      <translation>&amp;LAN szinkronizálás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="618"/>
@@ -89,278 +89,278 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="969"/>
       <source>&amp;Open</source>
-      <translation>&amp;Otvori</translation>
+      <translation>&amp;Megnyitás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="971"/>
       <source>Open an image</source>
-      <translation>Otvori sliku</translation>
+      <translation>Kép megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="973"/>
       <source>Open &amp;Directory</source>
-      <translation>Otvori &amp;direktorij</translation>
+      <translation>&amp;Mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="975"/>
       <source>Open a directory and load its first image</source>
-      <translation>Otvori direktorij i učitaj prvu sliku</translation>
+      <translation>Mappa megnyitása és az első kép betöltése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="980"/>
       <source>&amp;Quick Launch</source>
-      <translation>&amp;Brzo otvori</translation>
+      <translation>&amp;Gyors Indítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="987"/>
       <source>&amp;Manage Applications</source>
-      <translation>&amp;Upravljaj aplikacijama</translation>
+      <translation>Alkalmazások &amp;kezelése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="988"/>
       <source>Manage Applications which are Automatically Opened</source>
-      <translation>Upravljaj aplikacijama koje se automatski otvaraju</translation>
+      <translation>Automatikusan megnyíló alkalmazások kezelése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="991"/>
       <source>Re&amp;name</source>
-      <translation>Preime&amp;nuj</translation>
+      <translation>Átne&amp;vezés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="994"/>
       <source>Rename an image</source>
-      <translation>Preimenuj sliku</translation>
+      <translation>Kép átnevezése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="996"/>
       <source>&amp;Go To</source>
-      <translation>&amp;Idi do</translation>
+      <translation>@Ugrás indexhez</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="998"/>
       <source>Go To an image</source>
-      <translation>Idi do slike</translation>
+      <translation>Ugrás képhez</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1000"/>
       <source>&amp;Save</source>
-      <translation>&amp;Sačuvaj</translation>
+      <translation>&amp;Mentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1002"/>
       <source>Save an image</source>
-      <translation>Snimi sliku</translation>
+      <translation>Kép mentése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1004"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Snimi kao</translation>
+      <translation>Mentés másként</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1006"/>
       <source>Save an image as</source>
-      <translation>Snimi sliku kao</translation>
+      <translation>Kép mentése másként</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1011"/>
       <source>&amp;Save for Web</source>
-      <translation>Sni&amp;mi za Web</translation>
+      <translation>Mentés &amp;a webre</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1012"/>
       <source>Save an Image for Web Applications</source>
-      <translation>Snimi sliku za web aplikaciju</translation>
+      <translation>Kép mentése webes alkalmazásokhoz</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1014"/>
       <source>&amp;Print</source>
-      <translation>&amp;Štampaj</translation>
+      <translation>N&amp;yomtatás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1016"/>
       <source>Print an image</source>
-      <translation>Štampaj sliku</translation>
+      <translation>Kép nyomtatása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1024"/>
       <source>&amp;Reload File</source>
-      <translation>&amp;Ponovo učitaj fajl</translation>
+      <translation>Frissíté&amp;s</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1027"/>
       <source>Reload File</source>
-      <translation>Ponovo učitaj fajl</translation>
+      <translation>Frissítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1029"/>
       <source>Ne&amp;xt File</source>
-      <translation>Slj&amp;edeći fajl</translation>
+      <translation>&amp;Következő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1032"/>
       <source>Load next image</source>
-      <translation>Učicaj sljedeću sliku</translation>
+      <translation>Következő kép betöltése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1034"/>
       <source>Pre&amp;vious File</source>
-      <translation>Pret&amp;hodni fajl</translation>
+      <translation>&amp;Előző</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1400"/>
       <source>Add Image Format</source>
-      <translation>Dodaj format slike</translation>
+      <translation>Kép formátum hozzáadása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1401"/>
       <source>Add a new image format to nomacs</source>
-      <translation>Dodaj novi format slika u nomacs</translation>
+      <translation>Új kép formátum hozzáadása a nomacs-hoz</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1039"/>
       <source>St&amp;art New Instance</source>
-      <translation>Po&amp;čni novu instancu</translation>
+      <translation>Új &amp;ablak nyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1037"/>
       <source>Load previous file</source>
-      <translation>Učitaj prethodni fajl</translation>
+      <translation>Előző fájl betöltése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1018"/>
       <source>&amp;Recent Files</source>
-      <translation>&amp;Nedavni fajlovi</translation>
+      <translation>Legutóbbi fá&amp;jlok</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1022"/>
       <source>Show Recent Files</source>
-      <translation>Prikaži nedavne fajlove</translation>
+      <translation>Legutóbbi fájlok megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1041"/>
       <source>Open file in new instance</source>
-      <translation>Otvori fajl u novoj instanci</translation>
+      <translation>Fájl megnyitása új ablakban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1043"/>
       <source>St&amp;art Private Instance</source>
-      <translation>Pokreni privatnu ins&amp;tancu</translation>
+      <translation>Új privát &amp;ablak nyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1045"/>
       <source>Open private instance</source>
-      <translation>Otvori privatnu instancu</translation>
+      <translation>Privát ablak megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1047"/>
       <source>&amp;Find &amp;&amp; Filter</source>
-      <translation>&amp;Pronađi &amp;&amp; filtriraj</translation>
+      <translation>&amp;Keresés &amp;&amp; Szűrés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1049"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1379"/>
       <source>Find an image</source>
-      <translation>Pronađi sliku</translation>
+      <translation>Kép keresése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1051"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation>Skeniraj fasciklu rekurziv&amp;no</translation>
+      <translation>Mappa átnézése rekurzívan</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1052"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation>Prođi kroz fasciklu i pod fascikle</translation>
+      <translation>Mappa és al-mappa léptetése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1056"/>
       <source>&amp;Exit</source>
-      <translation>&amp;Napusti</translation>
+      <translation>&amp;Kilépés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1057"/>
       <source>Exit</source>
-      <translation>Napusti</translation>
+      <translation>Kilépés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1062"/>
       <source>by &amp;Filename</source>
-      <translation>po &amp;imenu fajla</translation>
+      <translation>&amp;fájlnév szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1064"/>
       <source>Sort by Filename</source>
-      <translation>Sortiraj po imenu fajla</translation>
+      <translation>Rendezés fájlnév szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1068"/>
       <source>by Date &amp;Created</source>
-      <translation>po datumu &amp;kreiranja</translation>
+      <translation>&amp;létrehozás dátuma szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1070"/>
       <source>Sort by Date Created</source>
-      <translation>Sortiraju po datumu kreiranja</translation>
+      <translation>Rendezés létrehozás dátuma szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1074"/>
       <source>by Date Modified</source>
-      <translation>po datumu izmjene</translation>
+      <translation>&amp;módosítás dátuma szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1076"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sortiraj po datumu posljednje izmjene</translation>
+      <translation>Rendezés utolsó módosítás dátuma szerint</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1080"/>
       <source>Random</source>
-      <translation>Nasumično</translation>
+      <translation>Véletlenszerű</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1082"/>
       <source>Sort in Random Order</source>
-      <translation>Sortiraj nasumično</translation>
+      <translation>Rendezés véletlenszerű sorrendben</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1086"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Uzlazno</translation>
+      <translation>&amp;növekvő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1088"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sortiraj uzlazno</translation>
+      <translation>Rendezés növekvő sorrendben</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1092"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Silazno</translation>
+      <translation>&amp;csökkenő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1094"/>
       <source>Sort in Descending Order</source>
-      <translation>Sortiraj silazno</translation>
+      <translation>Rendezés csökkenő sorrendben</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1101"/>
       <source>9&amp;0%1 Clockwise</source>
-      <translation>9&amp;0%1 u smjeru kazaljke na satu</translation>
+      <translation>9&amp;0%1 jobbra</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1104"/>
       <source>rotate the image 90%1 clockwise</source>
-      <translation>rotiraj sliku 90%1 u smjeru kazaljke na satu</translation>
+      <translation>kép forgatása 90%1-al jobbra</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1106"/>
       <source>&amp;90%1 Counter Clockwise</source>
-      <translation>&amp;90%1 suprotno kazaljci na satu</translation>
+      <translation>&amp;90%1 balra</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1109"/>
       <source>rotate the image 90%1 counter clockwise</source>
-      <translation>rotiraj sliku 90%1 suprotno kazaljci na satu</translation>
+      <translation>kép forgatása 90%1-al balra</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1111"/>
@@ -370,140 +370,140 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1112"/>
       <source>rotate the image by 180%1</source>
-      <translation>rotiraj sliku 180%1</translation>
+      <translation>kép forgatása 180%1-al</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1114"/>
       <source>&amp;Undo</source>
-      <translation>&amp;Opozovi</translation>
+      <translation>&amp;Visszavonás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1117"/>
       <source>Undo Last Action</source>
-      <translation>Poništi zadnju radnju</translation>
+      <translation>Utolsó művelet visszavonása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1119"/>
       <source>&amp;Redo</source>
-      <translation>&amp;Ponovi</translation>
+      <translation>&amp;Ismét</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1122"/>
       <source>Redo Last Action</source>
-      <translation>Ponovi zadnju radnju</translation>
+      <translation>Utolsó művelet visszaállítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1124"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1502"/>
       <source>&amp;Copy</source>
-      <translation>&amp;Kopiraj</translation>
+      <translation>&amp;Másolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1127"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1132"/>
       <source>copy image</source>
-      <translation>kopiraj sliku</translation>
+      <translation>kép másolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1129"/>
       <source>Copy &amp;Buffer</source>
-      <translation>Kopiraj &amp;pufer</translation>
+      <translation>&amp;Puffer másolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1134"/>
       <source>Copy Co&amp;lor</source>
-      <translation>Kopiraj bo&amp;ju</translation>
+      <translation>&amp;Szín másolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1137"/>
       <source>copy pixel color value as HEX</source>
-      <translation>kopiraj vrijednost boja piksela kao HEX</translation>
+      <translation>pixel szín másolása HEX értékként</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1142"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1505"/>
       <source>&amp;Paste</source>
-      <translation>&amp;Nalijepi</translation>
+      <translation>&amp;Beillesztés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1145"/>
       <source>paste image</source>
-      <translation>nalijepi sliku</translation>
+      <translation>kép beillesztése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1167"/>
       <source>R&amp;esize Image</source>
-      <translation>Pr&amp;omijeni veličinu slike</translation>
+      <translation>Kép &amp;átméretezése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1170"/>
       <source>resize the current image</source>
-      <translation>promijeni veličinu trenutne slike</translation>
+      <translation>aktuális kép átméretezése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1172"/>
       <source>Cr&amp;op Image</source>
-      <translation>I&amp;sjeci sliku</translation>
+      <translation>Kép &amp;vágása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1175"/>
       <source>cut the current image</source>
-      <translation>isjeci trenutnu sliku</translation>
+      <translation>aktuális kép kivágása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="101"/>
       <source>Flip &amp;Horizontal</source>
-      <translation>Prevrni &amp;vodoravno</translation>
+      <translation>&amp;Vízszintes tükrözés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="102"/>
       <source>Flip Image Horizontally</source>
-      <translation>Prevrni sliku vodoravno</translation>
+      <translation>Vízszintes tükrözés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="106"/>
       <source>Flip &amp;Vertical</source>
-      <translation>Prevrni &amp;uspravno</translation>
+      <translation>&amp;Függőleges tükrözés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="107"/>
       <source>Flip Image Vertically</source>
-      <translation>Prevrni sliku uspravno</translation>
+      <translation>Függőleges tükrözés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="95"/>
       <source>Nor&amp;malize Image</source>
-      <translation>Norm&amp;alizuj sliku</translation>
+      <translation>Kép &amp;normalizálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="97"/>
       <source>Normalize the Image</source>
-      <translation>Normalizira sliku</translation>
+      <translation>Kép normalizálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="89"/>
       <source>&amp;Auto Adjust</source>
-      <translation>&amp;Automatsko podešavanje</translation>
+      <translation>&amp;Automatikus igazítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="84"/>
       <source>&amp;Grayscale</source>
-      <translation type="unfinished">&amp;Grayscale</translation>
+      <translation>&amp;Szürkeárnyalat</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="91"/>
       <source>Auto Adjust Image Contrast and Color Balance</source>
-      <translation>Automatski podešava kontrast i balans boja slike</translation>
+      <translation>Kép kontraszt és színegyensúly automatikus igazítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="111"/>
       <source>&amp;Invert Image</source>
-      <translation>&amp;Obrni sliku</translation>
+      <translation>Kép &amp;invertálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="112"/>
       <source>Invert the Image</source>
-      <translation>Obrni sliku</translation>
+      <translation>Kép invertálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="117"/>
@@ -518,7 +518,7 @@
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="122"/>
       <source>&amp;Sharpen...</source>
-      <translation type="unfinished">&amp;Sharpen...</translation>
+      <translation>&amp;Élesítés...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="123"/>
@@ -528,17 +528,17 @@
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Rotate...</source>
-      <translation type="unfinished">&amp;Rotate...</translation>
+      <translation>&amp;Forgatás...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Rotate the image</source>
-      <translation type="unfinished">Rotate the image</translation>
+      <translation>Kép forgatása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="132"/>
       <source>&amp;Threshold...</source>
-      <translation type="unfinished">&amp;Threshold...</translation>
+      <translation>&amp;Küszöbszint...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="133"/>
@@ -548,12 +548,12 @@
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation type="unfinished">&amp;Hue/Saturation...</translation>
+      <translation>&amp;Árnyalat-Telítettség...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Change Hue and Saturation</source>
-      <translation type="unfinished">Change Hue and Saturation</translation>
+      <translation>Árnyalat és telítettség változtatása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -568,33 +568,33 @@
     <message>
       <location filename="../src/DkCore/DkManipulators.cpp" line="85"/>
       <source>Convert to Grayscale</source>
-      <translation>Konvertuje u crno-bijelo</translation>
+      <translation>Szürkeárnyalatra konvertálás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1147"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1499"/>
       <source>&amp;Delete</source>
-      <translation>&amp;Ukloni</translation>
+      <translation>&amp;Törlés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1150"/>
       <source>delete current fileInfo</source>
-      <translation>izbriši informacije trenutnog fajla</translation>
+      <translation>jelenlegi fájlinformáció törlése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1397"/>
       <source>&amp;Wallpaper</source>
-      <translation>Po&amp;zadinska slika</translation>
+      <translation>&amp;Háttérkép</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1398"/>
       <source>set the current image as wallpaper</source>
-      <translation>postavi trenutnu sliku kao pozadinu</translation>
+      <translation>jelenlegi kép beállítása háttérképként</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1152"/>
       <source>&amp;Keyboard Shortcuts</source>
-      <translation>&amp;Prečice tastature</translation>
+      <translation>&amp;Billentyűparancsok</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="526"/>
@@ -604,12 +604,12 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="966"/>
       <source>&amp;Close All Tabs</source>
-      <translation type="unfinished">&amp;Close All Tabs</translation>
+      <translation>&amp;Összes fül bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="967"/>
       <source>Close all open tabs</source>
-      <translation type="unfinished">Close all open tabs</translation>
+      <translation>Összes nyitott fül bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="977"/>
@@ -634,17 +634,17 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1154"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation>omogućava prilagođavanje prečica na tastaturi</translation>
+      <translation>billentyűparancsok testreszabása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>&amp;Settings</source>
-      <translation>&amp;Postavke</translation>
+      <translation>&amp;Beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1158"/>
       <source>settings</source>
-      <translation>postavke</translation>
+      <translation>beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1161"/>
@@ -659,62 +659,62 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1181"/>
       <source>&amp;Menu</source>
-      <translation>&amp;Meni</translation>
+      <translation>&amp;Menü</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1182"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Skriva meni i pokazuje ga opet na ALT</translation>
+      <translation>Menü elrejtése és ALT megnyomásával újra megjelenítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1185"/>
       <source>Tool&amp;bar</source>
-      <translation>Alatna tra&amp;ka</translation>
+      <translation>&amp;Eszköztár</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1187"/>
       <source>Show Toolbar</source>
-      <translation>Prikaži alatnu traku</translation>
+      <translation>Eszköztár megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1190"/>
       <source>&amp;Statusbar</source>
-      <translation>&amp;Statusna traka</translation>
+      <translation>&amp;Állapotsor</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1192"/>
       <source>Show Statusbar</source>
-      <translation>Prikaži statusnu traku</translation>
+      <translation>Állapotsor megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1195"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Pseudo-bojna funkcija</translation>
+      <translation>&amp;Pszeudoszín funkció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1197"/>
       <source>Show Pseudocolor Function</source>
-      <translation>Prikaži funkciju pseudo-boja</translation>
+      <translation>Pszeudoszín funkció megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1201"/>
       <source>O&amp;verview</source>
-      <translation>P&amp;regled</translation>
+      <translation>&amp;Áttekintés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1203"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Prikaže zumirani pregled</translation>
+      <translation>Nagyítási áttekintés megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1207"/>
       <source>Pla&amp;yer</source>
-      <translation>Ple&amp;jer</translation>
+      <translation>&amp;Lejátszó</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1209"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Prikazuje slajdšou plejer</translation>
+      <translation>Diavetítő megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1212"/>
@@ -729,213 +729,213 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1217"/>
       <source>File &amp;Explorer</source>
-      <translation>Pregledač &amp;fajlova</translation>
+      <translation>&amp;Intéző</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1219"/>
       <source>Show File Explorer</source>
-      <translation>Prikaži pregledač fajlova</translation>
+      <translation>Intéző megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1222"/>
       <source>Metadata &amp;Info</source>
-      <translation>Meta &amp;podaci</translation>
+      <translation>Metaadat &amp;információ</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1224"/>
       <source>Show Metadata Info</source>
-      <translation>Prikaži meta podatke</translation>
+      <translation>Metaadat információ megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1227"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Sličice</translation>
+      <translation>&amp;Bélyegképek</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1229"/>
       <source>Show Thumbnails</source>
-      <translation>Prikaži sličice</translation>
+      <translation>Bélyegképek megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1232"/>
       <source>&amp;Thumbnail Preview</source>
-      <translation>&amp;Pregled sličica</translation>
+      <translation>&amp;Bélyegkép előnézet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>Show Thumbnails Preview</source>
-      <translation>Prikaži pregled sličica</translation>
+      <translation>Bélyegkép előnézet megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1237"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Klizač fascikle</translation>
+      <translation>&amp;Mappa görgetősáv</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1238"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Prikaži klizač fascikle</translation>
+      <translation>Mappa görgetősáv megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1241"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Meta podaci</translation>
+      <translation>&amp;Metaadat</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1243"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Prikaže panel sa meta podacima</translation>
+      <translation>Metaadat panel megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1246"/>
       <source>File &amp;Info</source>
-      <translation>Informacije o &amp;fajlu</translation>
+      <translation>Fájl&amp;információ</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1248"/>
       <source>Shows the Info Panel</source>
-      <translation>Prikaže panel sa informacijama</translation>
+      <translation>Információ panel megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1251"/>
       <source>&amp;Histogram</source>
-      <translation>%Histogram</translation>
+      <translation>&amp;Hisztogram</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1253"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Prikaže panel sa histogramom</translation>
+      <translation>Hisztogram panel megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1256"/>
       <source>Image &amp;Notes</source>
-      <translation>Napomene &amp;o slici</translation>
+      <translation>Kép &amp;jegyzetek</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1258"/>
       <source>Shows Image Notes</source>
-      <translation>Prikaže napomene o slici</translation>
+      <translation>Kép jegyzetek megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1261"/>
       <source>Edit &amp;History</source>
-      <translation>Uredi &amp;historiju</translation>
+      <translation>Szerkesztési &amp;előzmények</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1262"/>
       <source>Shows the edit history</source>
-      <translation>Prikazuje prošla uređivanja</translation>
+      <translation>Szerkesztési napló megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1268"/>
       <source>&amp;Fit Window</source>
-      <translation>&amp;Prilagodi prozor</translation>
+      <translation>&amp;Ablak igazítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1270"/>
       <source>Fit window to the image</source>
-      <translation>Prilagođava prozor slici</translation>
+      <translation>Ablak igazítása a képhez</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1275"/>
       <source>Fu&amp;ll Screen</source>
-      <translation>&amp;Cijeli ekran</translation>
+      <translation>&amp;Teljes képernyő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1277"/>
       <source>Full Screen</source>
-      <translation>Cijeli ekran</translation>
+      <translation>Teljes képernyő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1279"/>
       <source>&amp;Zoom to Fit</source>
-      <translation>&amp;Zumiraj da odgovara</translation>
+      <translation>&amp;Mérethez igazítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1281"/>
       <source>Shows the initial view (no zooming)</source>
-      <translation>Prikaže početni pogled (bez zumiranja)</translation>
+      <translation>Kezdeti nézet megjelenítése (nincs nagyítás)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1283"/>
       <source>Show &amp;100%</source>
-      <translation>Prikaži &amp;100%</translation>
+      <translation>&amp;100%-os nézet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1285"/>
       <source>Shows the image at 100%</source>
-      <translation>Prikaže sliku pri punoj veličini</translation>
+      <translation>Kép megjelenítése 100%-ban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1287"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1482"/>
       <source>Zoom &amp;In</source>
-      <translation>Uveć&amp;aj</translation>
+      <translation>&amp;Nagyítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1289"/>
       <source>zoom in</source>
-      <translation>uvećaj</translation>
+      <translation>nagyítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1291"/>
       <source>&amp;Zoom Out</source>
-      <translation>&amp;Umanji</translation>
+      <translation>&amp;Kicsinyítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1293"/>
       <source>zoom out</source>
-      <translation>umanji</translation>
+      <translation>kicsinyítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1295"/>
       <source>&amp;Anti Aliasing</source>
-      <translation>&amp;Omekšavanje</translation>
+      <translation>&amp;Élsimítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1297"/>
       <source>if checked images are smoother</source>
-      <translation>ako je označeno, slike imaju blaže ivice</translation>
+      <translation>ha be van jelölve, a képek simábbak</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1301"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>Mus&amp;tra za proznirno</translation>
+      <translation>&amp;Átláthatósági minta</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1303"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>ako je označeno, mustra će biti prikazana za providne objekte</translation>
+      <translation>ha be van jelölve, az átlátszó objektumok mintát jelenítenek meg</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1307"/>
       <source>&amp;Frameless</source>
-      <translation>&amp;Bez okvira</translation>
+      <translation>&amp;Keret nélküli</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1309"/>
       <source>shows a frameless window</source>
-      <translation>prikazuje prozor bez okvira</translation>
+      <translation>keret nélküli ablakot mutat</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="958"/>
       <source>New &amp;Tab</source>
-      <translation>Nova &amp;kartica</translation>
+      <translation>Új &amp;lap</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="960"/>
       <source>Open a new tab</source>
-      <translation>Otvori novu karticu</translation>
+      <translation>Új lap nyitása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="962"/>
       <source>&amp;Close Tab</source>
-      <translation>&amp;Zatvori karticu</translation>
+      <translation>Lap &amp;bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="964"/>
       <source>Close current tab</source>
-      <translation>Zatvori trenutnu karticu</translation>
+      <translation>Aktuális lap bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1313"/>
@@ -950,12 +950,12 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1316"/>
       <source>&amp;Previous Tab</source>
-      <translation>&amp;Prethodna kartica</translation>
+      <translation>&amp;Előző lap</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1318"/>
       <source>Switch to previous tab</source>
-      <translation>Prebaci na prethodnu karticu</translation>
+      <translation>Előző lapra váltás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1320"/>
@@ -970,12 +970,12 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1323"/>
       <source>&amp;Next Tab</source>
-      <translation>&amp;Sljedeća kartica</translation>
+      <translation>&amp;Következő lap</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1325"/>
       <source>Switch to next tab</source>
-      <translation>Prebaci na sljedeću karticu</translation>
+      <translation>Következő lapra váltás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1327"/>
@@ -990,330 +990,330 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1330"/>
       <source>&amp;Change Opacity</source>
-      <translation>&amp;Izmjeni providnost</translation>
+      <translation>Opacitás &amp;módosítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1332"/>
       <source>change the window opacity</source>
-      <translation>promijeni providnost prozora</translation>
+      <translation>ablak opacitásának módosítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1334"/>
       <source>Opacity &amp;Up</source>
-      <translation>Smanji &amp;providnost</translation>
+      <translation>Opacitás &amp;fel</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1336"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1340"/>
       <source>changes the window opacity</source>
-      <translation>mijenja providnost prozora</translation>
+      <translation>ablak opacitásának módosítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1338"/>
       <source>Opacity &amp;Down</source>
-      <translation>Uvećaj &amp;providnost</translation>
+      <translation>Opacitás &amp;le</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1342"/>
       <source>To&amp;ggle Opacity</source>
-      <translation>&amp;Izmjeni providnost</translation>
+      <translation>Opacitás ki-/bekapcsolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1344"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1430"/>
       <source>toggle the window opacity</source>
-      <translation>izmjeni providnost prozora</translation>
+      <translation>ablak opacitásának ki-/bekapcsolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1346"/>
       <source>Lock &amp;Window</source>
-      <translation>Zaključaj &amp;prozor</translation>
+      <translation>Ablak &amp;zárolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1348"/>
       <source>lock the window</source>
-      <translation>zaključaj prozor</translation>
+      <translation>ablak zárolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1352"/>
       <source>&amp;Toggle Slideshow</source>
-      <translation>&amp;Uključu slajdšou prikaz</translation>
+      <translation>Diavetítés ki-/bekapcsolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1353"/>
       <source>Start/Pause the slideshow</source>
-      <translation>Pokreni/pauziraj slajdšou</translation>
+      <translation>Diavetítés indítás/megállítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1356"/>
       <source>&amp;Pause Movie</source>
-      <translation>&amp;Pauziraj video</translation>
+      <translation>&amp;Szünet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1357"/>
       <source>pause the current movie</source>
-      <translation>pauzira trenutni video</translation>
+      <translation>aktuális film megállítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1361"/>
       <source>P&amp;revious Frame</source>
-      <translation>P&amp;retnodni frejm</translation>
+      <translation>&amp;Előző képkocka</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1362"/>
       <source>show previous frame</source>
-      <translation>prikaže prethodni frejm</translation>
+      <translation>előző képkocka megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1364"/>
       <source>&amp;Next Frame</source>
-      <translation>&amp;Sljedeći frejm</translation>
+      <translation>&amp;Következő képkocka</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1365"/>
       <source>show next frame</source>
-      <translation>prikaže sljedeću slikicu</translation>
+      <translation>következő képkocka megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1367"/>
       <source>Show G&amp;PS Coordinates</source>
-      <translation>Prikaži G&amp;PS koordinate</translation>
+      <translation>&amp;GPS koordináta megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1368"/>
       <source>shows the GPS coordinates</source>
-      <translation>prikaže GPS koordinate</translation>
+      <translation>GPS koordináta megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1374"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation>Izračunaj &amp;sličice</translation>
+      <translation>&amp;Bélyegképek kiszámítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1375"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation>stvara sličice za sve slike u trenutnoj fascikli</translation>
+      <translation>jelenlegi mappa bélyegképei kiszámítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1378"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1496"/>
       <source>&amp;Filter</source>
-      <translation>&amp;Filter</translation>
+      <translation>&amp;Szűrés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1383"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Eksportuj višestrani &amp;TIFF</translation>
+      <translation>Többoldalas &amp;TIFF exportálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1384"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Eksportuje TIFF stranice u više tiff fajlova</translation>
+      <translation>TIFF oldalak exportálása több tiff fájlba</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1386"/>
       <source>Extract From Archive</source>
-      <translation>Raspakuj iz arhive</translation>
+      <translation>Kiolvasás archívumból</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1387"/>
       <source>Extract images from an archive (%1)</source>
-      <translation>Raspakuje slike iz arhive (%1)</translation>
+      <translation>Képek kiolvasása archívumból (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1390"/>
       <source>&amp;Mosaic Image</source>
-      <translation>&amp;Mozaik slika</translation>
+      <translation>&amp;Mozaik kép</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1391"/>
       <source>Create a Mosaic Image</source>
-      <translation>Pravi mozaik sliku</translation>
+      <translation>Mozaik kép készítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1393"/>
       <source>Batch Processing</source>
-      <translation>Grupno podešavanje</translation>
+      <translation>Kötegelt feldolgozás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1394"/>
       <source>Apply actions to multiple images</source>
-      <translation>Prihvati radnje na više slika</translation>
+      <translation>Műveletek végrehajtása több képen</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1405"/>
       <source>&amp;About Nomacs</source>
-      <translation>&amp;O programu Nomacs</translation>
+      <translation>&amp;Nomacs-ról</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1407"/>
       <source>about</source>
-      <translation>o programu</translation>
+      <translation>névjegy</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1409"/>
       <source>&amp;Documentation</source>
-      <translation>&amp;Dokumentacija</translation>
+      <translation>&amp;Dokumentáció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1410"/>
       <source>Online Documentation</source>
-      <translation>Internet dokumentacija</translation>
+      <translation>Online dokumentáció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1412"/>
       <source>&amp;Report a Bug</source>
-      <translation>&amp;Prijavi grešku</translation>
+      <translation>&amp;Hibabejelentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1413"/>
       <source>Report a Bug</source>
-      <translation>Prijavi grešku</translation>
+      <translation>Hibabejelentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1415"/>
       <source>&amp;Check for Updates</source>
-      <translation>&amp;Provjeri ažuriranje</translation>
+      <translation>&amp;Frissítések keresése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1416"/>
       <source>check for updates</source>
-      <translation>provjeri ažuriranje</translation>
+      <translation>frissítések keresése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1418"/>
       <source>&amp;Update Translation</source>
-      <translation>&amp;Ažuriraj prevod</translation>
+      <translation>&amp;Fordítás frissítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1419"/>
       <source>Checks for a new version of the translations of the current language</source>
-      <translation>Provjerava da li postoji nova verzija prevoda za trenutni jezik</translation>
+      <translation>Jelenlegi nyelv fordításának frissítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1423"/>
       <source>Synchronize &amp;View</source>
-      <translation>Sinhroniziraj &amp;pregled</translation>
+      <translation>&amp;Nézet szinkronizálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1425"/>
       <source>synchronize the current view</source>
-      <translation>sinhronizuj trenutni pregled</translation>
+      <translation>aktuális nézet szinkronizálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1428"/>
       <source>&amp;Window Overlay</source>
-      <translation>&amp;Preklapanje prozora</translation>
+      <translation>&amp;Ablak átfedés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1433"/>
       <source>Arrange Instances</source>
-      <translation>Aranžiraj instance</translation>
+      <translation>Ablakok elrendezése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1435"/>
       <source>arrange connected instances</source>
-      <translation>aranžira povezane instance</translation>
+      <translation>összekapcsolt ablakok elrendezése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1438"/>
       <source>Connect &amp;All</source>
-      <translation>Poveži &amp;sve</translation>
+      <translation>&amp;Minden összekapcsolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1441"/>
       <source>connect all instances</source>
-      <translation>povezuje sve instance</translation>
+      <translation>minden ablak összekapcsolása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1443"/>
       <source>&amp;Sync All Actions</source>
-      <translation>&amp;Sinhronizuj sve radnje</translation>
+      <translation>Minden művelet &amp;szinkronizálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1444"/>
       <source>Transmit All Signals Automatically.</source>
-      <translation>Šalji sve signale automatski.</translation>
+      <translation>Minden jel automatikus továbbítása.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1448"/>
       <source>&amp;Remote Control</source>
-      <translation>&amp;Daljinski</translation>
+      <translation>&amp;Távirányítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1450"/>
       <source>Automatically Receive Images From Your Remote Instance.</source>
-      <translation>Automatski primaj slike sa udaljene instance.</translation>
+      <translation>Automatikusan fogadjon képeket a távoli kapcsolattól.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1453"/>
       <source>Remote &amp;Display</source>
-      <translation>Udaljeni &amp;ekran</translation>
+      <translation>Távoli &amp;kijelző</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1454"/>
       <source>Automatically Send Images to a Remote Instance.</source>
-      <translation>Automatski šalji slike na udaljenu instancu.</translation>
+      <translation>Automatikusan küldjön képeket a távoli kapcsolatnak.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1460"/>
       <source>Start &amp;Server</source>
-      <translation>Pokreni &amp;server</translation>
+      <translation>&amp;Szerver indítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1465"/>
       <source>Send &amp;Image</source>
-      <translation>Pošalji &amp;sliku</translation>
+      <translation>&amp;Kép küldése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1468"/>
       <source>Sends the current image to all clients.</source>
-      <translation>Šalje trenutnu sliku svim klijentima.</translation>
+      <translation>Jelenlegi kép küldése minden kliensnek.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1472"/>
       <source>&amp;Plugin Manager</source>
-      <translation>Upravljač &amp;priključaka</translation>
+      <translation>&amp;Bővítmény kezelő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1473"/>
       <source>manage installed plugins and download new ones</source>
-      <translation>upravljaj instaliranim priključcima i preuzmi nove</translation>
+      <translation>telepített bővítmények kezelése és újak letöltése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1478"/>
       <source>Select &amp;All</source>
-      <translation>Izaberi &amp;sve</translation>
+      <translation>&amp;Minden kijelölése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1485"/>
       <source>Zoom &amp;Out</source>
-      <translation>Uma&amp;nji</translation>
+      <translation>&amp;Kicsinyítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1488"/>
       <source>Display &amp;Squares</source>
-      <translation>Prikaz &amp;kvadrata</translation>
+      <translation>&amp;Négyzetek megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1492"/>
       <source>Show &amp;Filename</source>
-      <translation>Prikaži &amp;ime fajla</translation>
+      <translation>&amp;Fájlnév megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1508"/>
       <source>&amp;Rename</source>
-      <translation>&amp;Preimenuj</translation>
+      <translation>&amp;Átnevezés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1511"/>
       <source>&amp;Batch Process</source>
-      <translation>&amp;Grupna obrada</translation>
+      <translation>&amp;Kötegelt feldolgozás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1512"/>
       <source>Adds selected files to batch processing.</source>
-      <translation>Dodaje izabrane fajlove za grupnu obradu.</translation>
+      <translation>Kijelölt fájlok hozzáadása a kötegelt feldolgozáshoz.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1515"/>
@@ -1328,149 +1328,149 @@
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1531"/>
       <source>Start pong</source>
-      <translation>Pokreni pong</translation>
+      <translation>Pong indítása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1534"/>
       <source>First File</source>
-      <translation>Prvi fajl</translation>
+      <translation>Első fájl</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1535"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1551"/>
       <source>Jump to first file</source>
-      <translation>Skoči na posljedni fajl</translation>
+      <translation>Ugrás az első fájlhoz</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1538"/>
       <source>Last File</source>
-      <translation>Posljedni fajl</translation>
+      <translation>Utolsó fájl</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1539"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1555"/>
       <source>Jump to the end of the current folder</source>
-      <translation>Skoči na kraj trenutne fascikle</translation>
+      <translation>Ugrás a jelenlegi mappa végére</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1542"/>
       <source>Skip Previous Images</source>
-      <translation>Preskoči prethodne slike</translation>
+      <translation>Előző képek kihagyása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1543"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1559"/>
       <source>Jumps 10 images before the current image</source>
-      <translation>Preskače 10 slika prije trenutne slike</translation>
+      <translation>10 kép átugrása a jelenlegi kép előtt</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1546"/>
       <source>Skip Next Images</source>
-      <translation>Preskoči sljedeće slike</translation>
+      <translation>Következő képek kihagyása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1547"/>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Jumps 10 images after the current image</source>
-      <translation>Preskače 10 slika poslje trenutne slike</translation>
+      <translation>10 kép átugrása a jelenlegi kép után</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1550"/>
       <source>First File Sync</source>
-      <translation>Sinhronizuj prvi fajl</translation>
+      <translation>Első fájl szinkronban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1554"/>
       <source>Last File Sync</source>
-      <translation>Sinhronizuj posljedni fajl</translation>
+      <translation>Utolsó fájl szinkronban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1558"/>
       <source>Skip Previous Images Sync</source>
-      <translation>Preskoči sinhronizaciju pretnodne slike</translation>
+      <translation>Előző képek kihagyása szinkronban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1562"/>
       <source>Skip Next Images Sync</source>
-      <translation>Preskoči sinhronizaciju sljedeće slike</translation>
+      <translation>Következő képek kihagyása szinkronban</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1566"/>
       <source>Delete File Silent</source>
-      <translation>Izbriši tiho fajl</translation>
+      <translation>Fájl törlése figyelmeztetés nélkül</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Deletes a file without warning</source>
-      <translation>Briše fajl bez upozorenja</translation>
+      <translation>Fájl törlése figyelmeztetés nélkül</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="403"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="882"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation>&lt;podaci preveliki za prikaz&gt;</translation>
+      <translation>&lt;data too large to display&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="518"/>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="798"/>
       <source>Filename</source>
-      <translation>Ime fajla</translation>
+      <translation>Fájlnév</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="521"/>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="799"/>
       <source>Path</source>
-      <translation>Putanja</translation>
+      <translation>Elérési út</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="525"/>
       <source>Target</source>
-      <translation>Meta</translation>
+      <translation>Cél</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="529"/>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="800"/>
       <source>Size</source>
-      <translation>Veličina</translation>
+      <translation>Méret</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="533"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="536"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="539"/>
       <source>Date</source>
-      <translation>Datum</translation>
+      <translation>Dátum</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="533"/>
       <source>Created</source>
-      <translation>Kreirano</translation>
+      <translation>Létrehozva</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="536"/>
       <source>Last Modified</source>
-      <translation>Posljednja izmjena</translation>
+      <translation>Utoljára módosítva</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="539"/>
       <source>Last Read</source>
-      <translation>Posljednje pregledano</translation>
+      <translation>Utoljára olvasva</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="543"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="556"/>
       <source>Owner</source>
-      <translation>Vlasnik</translation>
+      <translation>Tulajdonos</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="547"/>
       <source>OwnerID</source>
-      <translation>Vlasnički ID</translation>
+      <translation>Tulajdonos azonosító</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="551"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="570"/>
       <source>Group</source>
-      <translation>Grupa</translation>
+      <translation>Csoport</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="556"/>
@@ -1478,280 +1478,280 @@
       <location filename="../src/DkCore/DkMetaData.cpp" line="570"/>
       <location filename="../src/DkCore/DkMetaData.cpp" line="577"/>
       <source>Permissions</source>
-      <translation>Dozvole</translation>
+      <translation>Engedélyek</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="563"/>
       <source>User</source>
-      <translation>Korisnik</translation>
+      <translation>Felhasználó</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="577"/>
       <source>Other</source>
-      <translation>Drugo</translation>
+      <translation>Egyéb</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="587"/>
       <source>File</source>
-      <translation>Fajl</translation>
+      <translation>Fájl</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1472"/>
       <source>not defined</source>
-      <translation>nije definisano</translation>
+      <translation>nem meghatározott</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1473"/>
       <source>manual</source>
-      <translation>ručno</translation>
+      <translation>kézikönyv</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1474"/>
       <source>normal</source>
-      <translation>normalno</translation>
+      <translation>normál</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1475"/>
       <source>aperture priority</source>
-      <translation>prioritet otvora</translation>
+      <translation>nyílás prioritás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1476"/>
       <source>shutter priority</source>
-      <translation>prioritet zatvarača</translation>
+      <translation>záridő prioritás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1477"/>
       <source>program creative</source>
-      <translation>kreativni program</translation>
+      <translation>kreatív program</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1478"/>
       <source>high-speed program</source>
-      <translation>program za visoku brzinu</translation>
+      <translation>nagy sebességű program</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1479"/>
       <source>portrait mode</source>
-      <translation>portret</translation>
+      <translation>álló mód</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1480"/>
       <source>landscape mode</source>
-      <translation>pejzaž</translation>
+      <translation>fekvő mód</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1483"/>
       <source>No Flash</source>
-      <translation>Bez blica</translation>
+      <translation>Nincs vaku</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1484"/>
       <source>Fired</source>
-      <translation>Aktivirano</translation>
+      <translation>Villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1485"/>
       <source>Fired, Return not detected</source>
-      <translation>Aktivirano, povratak nije detektovan</translation>
+      <translation>Villant, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1486"/>
       <source>Fired, Return detected</source>
-      <translation>Aktivirano, povratak detektovan</translation>
+      <translation>Villant, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1487"/>
       <source>On, Did not fire</source>
-      <translation>Uključeno, nije aktivirano</translation>
+      <translation>Bekapcsolva, nem villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1488"/>
       <source>On, Fired</source>
-      <translation>Uključeno, aktivirano</translation>
+      <translation>Bekapcsolva, villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1489"/>
       <source>On, Return not detected</source>
-      <translation>Uključeno, povratak nije detektovan</translation>
+      <translation>Bekapcsolva, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1490"/>
       <source>On, Return detected</source>
-      <translation>Uključeno, povratak detektovan</translation>
+      <translation>Bekapcsolva, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1491"/>
       <source>Off, Did not fire</source>
-      <translation>Isključeno, nije aktivirano</translation>
+      <translation>Kikapcsolva, nem villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1492"/>
       <source>Off, Did not fire, Return not detected</source>
-      <translation>Isključeno, nije aktivirano, povratak nije detektovan</translation>
+      <translation>Kikapcsolva, nem villant, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1493"/>
       <source>Auto, Did not fire</source>
-      <translation>Automatski, nije aktivirano</translation>
+      <translation>Automata, nem villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1494"/>
       <source>Auto, Fired</source>
-      <translation>Automatski, aktivirano</translation>
+      <translation>Automata, villant</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1495"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation>Automatski, aktivirano, povratak nije detektovan</translation>
+      <translation>Automata, villant, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Auto, Fired, Return detected</source>
-      <translation>Automatski, aktivirano, povratak detektovan</translation>
+      <translation>Automata, villant, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>No flash function</source>
-      <translation>Blic isključen</translation>
+      <translation>Nincs vaku funkció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1498"/>
       <source>Off, No flash function</source>
-      <translation>Isključeno, bez blica</translation>
+      <translation>Kikapcsolva, nincs vaku funkció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1499"/>
       <source>Fired, Red-eye reduction</source>
-      <translation>Aktivirano, redukcija crvenih očiju</translation>
+      <translation>Villant, vörösszem-hatás csökkentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1500"/>
       <source>Fired, Red-eye reduction, Return not detected</source>
-      <translation>Aktivirano, redukcija crvenih očiju, povratak nije detektovan</translation>
+      <translation>Villant, vörösszem-hatás csökkentés, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1501"/>
       <source>Fired, Red-eye reduction, Return detected</source>
-      <translation>Aktivirano, redukcija crvenih očiju, povratak detektovan</translation>
+      <translation>Villant, vörösszem-hatás csökkentés, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1502"/>
       <source>On, Red-eye reduction</source>
-      <translation>Uključeno, redukcija crvenih očiju</translation>
+      <translation>Bekapcsolva, vörösszem-hatás csökkentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation>Uključeno, redukcija crvenih očiju, povratak nije detektovan</translation>
+      <translation>Bekapcsolva, vörösszem-hatás csökkentés, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>On, Red-eye reduction, Return detected</source>
-      <translation>Uključeno, redukcija crvenih očiju, povratak detektovan</translation>
+      <translation>Bekapcsolva, vörösszem-hatás csökkentés, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1505"/>
       <source>Off, Red-eye reduction</source>
-      <translation>Isključeno, redukcija crvenih očiju</translation>
+      <translation>Kikapcsolva, vörösszem-hatás csökkentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>Auto, Did not fire, Red-eye reduction</source>
-      <translation>Automatski, nije aktivirano, redukcija crvenih očiju</translation>
+      <translation>Automata, nem villant, vörösszem-hatás csökkentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Auto, Fired, Red-eye reduction</source>
-      <translation>Automatski, aktivirano, redukcija crvenih očiju</translation>
+      <translation>Automata, villant, vörösszem-hatás csökkentés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1508"/>
       <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-      <translation>Automatski, aktivirano, redukcija crvenih očiju, povratak nije detektovan</translation>
+      <translation>Automata, villant, vörösszem-hatás csökkentés, visszatérés nem érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Auto, Fired, Red-eye reduction, Return detected</source>
-      <translation>Automatski, aktivirano, redukcija crvenih očiju, povratak detektovan</translation>
+      <translation>Automata, villant, vörösszem-hatás csökkentés, visszatérés érzékelve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="221"/>
       <source>New Tab</source>
-      <translation>Nova kartica</translation>
+      <translation>Új lap</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="224"/>
       <source>Thumbnail Preview</source>
-      <translation>Pregled sličica</translation>
+      <translation>Bélyegkép előnézet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="226"/>
       <source>Settings</source>
-      <translation>Postavke</translation>
+      <translation>Beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="228"/>
       <source>Batch</source>
-      <translation>Hrpa</translation>
+      <translation>Köteg</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="322"/>
       <source>%1 image resized, scale factor: %2%</source>
-      <translation>%1 promijenjena veličina slike, faktor skaliranja: %2%</translation>
+      <translation>%1 kép átméretezve, arány értéke: %2%</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="324"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation>%1 promijenjena veličina slike, nova veličina %2 px</translation>
+      <translation>%1 kép átméretezve, új oldal: %2 px</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="364"/>
       <source>%1 I need to increase the image, but the option is set to decrease only -&gt; skipping.</source>
-      <translation>%1 Trebam povećati sliku, ali dozvoljeno je samo smanjivanje prema postavkama-&gt; preskočeno.</translation>
+      <translation>%1 növelni kell a képet, de csak csökkentés van beállítva -&gt; kihagyás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="368"/>
       <source>%1 I need to decrease the image, but the option is set to increase only -&gt; skipping.</source>
-      <translation>%1 Trebam smanjiti sliku, ali dozvoljeno je samo uvećavanje prema postavkama -&gt; preskočeno.</translation>
+      <translation>%1 csökkenteni kell a képet, de csak növelés van beállítva -&gt; kihagyás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="372"/>
       <source>%1 image size matches scale factor -&gt; skipping.</source>
-      <translation>%1 veličina slike odgovara faktoru skaliranja -&gt; preskočeno.</translation>
+      <translation>%1 kép mérete megegyezik az arány értékével -&gt; kihagyás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="126"/>
       <source>[Transform Batch]</source>
-      <translation>[Grupna transformacija]</translation>
+      <translation>[Átalakítás köteg]</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="274"/>
       <location filename="../src/DkCore/DkProcess.cpp" line="413"/>
       <location filename="../src/DkCore/DkProcess.cpp" line="542"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation>%1 neaktivan -&gt; preskočeno</translation>
+      <translation>%1 inaktív -&gt; kihagyás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="319"/>
       <source>%1 image transformed.</source>
-      <translation>%1 slike transformisane.</translation>
+      <translation>%1 kép átalakítva.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="331"/>
       <source>%1 error, could not transform image.</source>
-      <translation>%1 greška, ne mogu transformisati sliku.</translation>
+      <translation>%1 hiba, nem sikerült átalakítani a képet.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="427"/>
       <location filename="../src/DkCore/DkProcess.cpp" line="581"/>
       <source>%1 Cannot apply %2.</source>
-      <translation>%1 ne mogu primjeniti %2.</translation>
+      <translation>%1 nem lehet végrehajtani %2</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="80"/>
       <source>Batch Action</source>
-      <translation>Serijska akcija</translation>
+      <translation>Kötegelt művelet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="316"/>
@@ -1761,7 +1761,7 @@
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="327"/>
       <source>%1 image transformed and cropped.</source>
-      <translation>%1 slika transformisana i izrezana.</translation>
+      <translation>%1 kép átalakítva és vágva.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="424"/>
@@ -1781,73 +1781,73 @@
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="573"/>
       <source>%1 Cannot cast batch plugin %2.</source>
-      <translation>%1 ne mogu odraditi serijski priključak %2.</translation>
+      <translation>%1 Nem lehet végrehajtani a kötegelt bővítményt %2.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="584"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation>%1 nedozvoljeno sučelje za priključak: %2</translation>
+      <translation>%1 illegális bővítmény interfész: %2</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="587"/>
       <source>%1 Cannot apply plugin because it is NULL.</source>
-      <translation>%1 ne mogu prihvatiti priključaka jer je NULL.</translation>
+      <translation>%1 Nem lehet alkalmazni a bővítményt, mivel az értéke NULL.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="591"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation>%1 greška, ne mogu primjeniti priključke.</translation>
+      <translation>%1 hiba, nem lehet alkalmazni a bővítményeket.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="595"/>
       <source>%1 plugins applied.</source>
-      <translation>%1 priključaka primjenjeno.</translation>
+      <translation>%1 bővítmények alkalmazva.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="601"/>
       <source>[Plugin Batch]</source>
-      <translation>[Grupni dodaci]</translation>
+      <translation>[Bővítmény köteg]</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="714"/>
       <source>%1 already exists -&gt; skipping (check 'overwrite' if you want to overwrite the file)</source>
-      <translation>%1 već postoji -&gt; preskočeno (označite 'pisati preko' ako želite da pišete preko fajla)</translation>
+      <translation>%1 már létezik -&gt; kihagyás (használja a 'felülírás' opciót ha szeretné felülírni a fájlt)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="719"/>
       <source>Error: input file does not exist</source>
-      <translation>Greška: ulazni fajl ne postoji</translation>
+      <translation>Hiba: a bemeneti fájl nem létezik</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="720"/>
       <location filename="../src/DkCore/DkProcess.cpp" line="852"/>
       <source>Input: %1</source>
-      <translation>Ulaz: %1</translation>
+      <translation>Bemenet: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="725"/>
       <source>Skipping: nothing to do here.</source>
-      <translation>Preskočeno: bez posla ovdje.</translation>
+      <translation>Kihagyás: nincs mit végrehajtani.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="761"/>
       <source>processing %1</source>
-      <translation>obrađujem %1</translation>
+      <translation>feldolgozás %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="766"/>
       <source>Error while loading...</source>
-      <translation>Greška pri učitavanju...</translation>
+      <translation>Hiba betöltés közben...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="774"/>
       <source>Error: cannot process a NULL function.</source>
-      <translation>Greška: ne mogu obraditi NULL funkciju.</translation>
+      <translation>Hiba: nem lehet feldolgozni egy NULL funkciót.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="780"/>
       <source>%1 failed</source>
-      <translation>%1 neuspijelo</translation>
+      <translation>%1 nem sikerült</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="795"/>
@@ -1857,27 +1857,27 @@
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="800"/>
       <source>%1 saved...</source>
-      <translation>%1 sačuvano...</translation>
+      <translation>%1 elmentve...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="803"/>
       <source>Could not save: %1</source>
-      <translation>Nije moguće sačuvati: %1</translation>
+      <translation>Nem lehet menteni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="818"/>
       <source>Error: could not rename file, the target file exists already.</source>
-      <translation>Greška: ne mogu preimenovati fajl, željeni fajl već postoji.</translation>
+      <translation>Hiba: nem lehet átnevezni a fájlt, a célfájl már létezik.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="826"/>
       <source>Error: could not rename file</source>
-      <translation>Greška: ne mogu preimenovati fajl</translation>
+      <translation>Hiba: nem lehet átnevezni a fájlt</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="831"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation>Preimenovanje: %1 -&gt; %2</translation>
+      <translation>Átnevezés: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="841"/>
@@ -1887,132 +1887,132 @@
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="851"/>
       <source>Error: could not copy file</source>
-      <translation>Greška: ne mogu kopirati fajl</translation>
+      <translation>Hiba: nem lehet másolni a fájlt</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="853"/>
       <source>Output: %1</source>
-      <translation>Izlaz: %1</translation>
+      <translation>Kimenet: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="858"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation>Kopiram: %1 -&gt; %2</translation>
+      <translation>Másolás: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="871"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation>Greška: rezervna kopija (%1)  fajla već postoji</translation>
+      <translation>Hiba: biztonsági mentés (%1) fájl már létezik</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="879"/>
       <source>Error: could not rename existing file to %1</source>
-      <translation>Greška: ne mogu preimenovati postojeći fajl u %1</translation>
+      <translation>Hiba: nem lehet átnevezni a létező fájlt %1 névre</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="897"/>
       <source>Error: could not delete existing file</source>
-      <translation>Greška: ne mogu izbrisati postojeći fajl</translation>
+      <translation>Hiba: nem lehet törölni a létező fájlt</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="908"/>
       <source>Ui - a lot of things went wrong sorry, your original file can be found here: %1</source>
-      <translation>Uj - izvinjavamo se za više grešaka koje su se dogodile, vaš originalni fajl možete naći ovdje: %1</translation>
+      <translation>UI - Sajnálom, sok hiba történt, az eredeti fájl itt található: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="913"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation>Nije moguće sačuvati na %1 pa je originalni fajl vraćen.</translation>
+      <translation>Nem lehet menteni a fájlt %1 célra, eredeti fájl visszaállítva.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="929"/>
       <source>%1 deleted.</source>
-      <translation>%1 izbrisan.</translation>
+      <translation>%1 törölve.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="932"/>
       <source>I could not delete %1</source>
-      <translation>Nije moguće izbrisati %1</translation>
+      <translation>Nem lehet törölni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="937"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation>Nije izbrisan origininal jer je otkrivena %1 greška(e).</translation>
+      <translation>Nem lehet törölni az eredetit, mert %1 hibá(ka)t észlelt.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="1025"/>
       <source>Image</source>
-      <translation>Slika</translation>
+      <translation>Kép</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="1047"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-      <translation>nomacs - Salon slika je lagani pregledač slika.</translation>
+      <translation>nomacs - Image Lounge egy egyszerű képnézegető.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.h" line="88"/>
       <source>Player 1</source>
-      <translation>Igrač 1</translation>
+      <translation>Játékos 1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.h" line="89"/>
       <source>Player 2</source>
-      <translation>Igrač 2</translation>
+      <translation>Játékos 2</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.h" line="99"/>
       <source>Anonymous</source>
-      <translation>Anonimac</translation>
+      <translation>Névtelen</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="118"/>
       <source>An input image.</source>
-      <translation>Ulazna slika.</translation>
+      <translation>Bemeneti kép.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="121"/>
       <source>Start in fullscreen.</source>
-      <translation>Pokreni preko cijelog ekrana.</translation>
+      <translation>Indítás teljes képernyőn.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="124"/>
       <source>Start Pong.</source>
-      <translation>Pokreni Pong.</translation>
+      <translation>Pong indítása.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="127"/>
       <source>Start in private mode.</source>
-      <translation>Pokreni u privatnom načinu rada.</translation>
+      <translation>Privát módban indítás.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="131"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation>Postavlja način prikaza &lt;mode&gt;.</translation>
+      <translation>Nézet beállítása &lt;mode&gt; módra.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="132"/>
       <source>default | frameless | pseudocolor</source>
-      <translation>zadani | bez okvira | pseudoboja</translation>
+      <translation>alapértelmezett | keret nélküli | pszeudoszín</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="136"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation>Učitava sve fajlova u &lt;directory&gt;.</translation>
+      <translation>Egy &lt;directory&gt; összes fájljainak betöltése.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="137"/>
       <source>directory</source>
-      <translation>direktorij</translation>
+      <translation>könyvtár</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="141"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation>Učitava &lt;images&gt; u kartice.</translation>
+      <translation>&lt;images&gt; betöltése lapokra.</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="142"/>
       <source>images</source>
-      <translation>slike</translation>
+      <translation>képek</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="146"/>
@@ -2052,7 +2052,7 @@
     <message>
       <location filename="../src/main.cpp" line="314"/>
       <source>Critical Error</source>
-      <translation type="unfinished">Critical Error</translation>
+      <translation>Kritikus hiba</translation>
     </message>
     <message>
       <location filename="../src/main.cpp" line="315"/>
@@ -2062,89 +2062,89 @@
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="806"/>
       <source>Binary</source>
-      <translation>Binarno</translation>
+      <translation>Bináris</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="807"/>
       <source>Indexed 8-bit</source>
-      <translation>Indeksirani 8-bit</translation>
+      <translation>Indexelt 8-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="813"/>
       <source>RGB 32-bit</source>
-      <translation>RGB 32-bita</translation>
+      <translation>RGB 32-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="819"/>
       <source>ARGB 32-bit</source>
-      <translation>ARGB 32-bita</translation>
+      <translation>ARGB 32-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="822"/>
       <source>RGB 16-bit</source>
-      <translation>RGB 16-bita</translation>
+      <translation>RGB 16-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="825"/>
       <source>ARGB 24-bit</source>
-      <translation>ARGB 24-bita</translation>
+      <translation>ARGB 24-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="827"/>
       <source>RGB 24-bit</source>
-      <translation>RGB 24-bita</translation>
+      <translation>RGB 24-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="828"/>
       <source>ARGB 16-bit</source>
-      <translation>ARGB 16-bita</translation>
+      <translation>ARGB 16-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="831"/>
       <source>BGR 32-bit</source>
-      <translation>BGR 32-bita</translation>
+      <translation>BGR 32-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="832"/>
       <source>ABGR 32-bit</source>
-      <translation>ABGR 32-bita</translation>
+      <translation>ABGR 32-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="833"/>
       <source>Grayscale 8-bit</source>
-      <translation>Crno-bijelo 8-bita</translation>
+      <translation>Szürkeárnyalat 8-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUtils.cpp" line="834"/>
       <source>Alpha 8-bit</source>
-      <translation>Alfa 8-bita</translation>
+      <translation>Alpha 8-bit</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="141"/>
       <source>Cropped</source>
-      <translation>Izrezano</translation>
+      <translation>Vágott</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="1101"/>
       <source>Plugin Manager</source>
-      <translation>Upravljač priključaka</translation>
+      <translation>Bővítmény kezelő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="1102"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation>Ne mogu izbrisati dll!
-Molim restartujte nomacs i pokušajte ponovo.</translation>
+      <translation>A DLL-t nem lehet törölni!
+Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="1276"/>
       <source>Close plugin</source>
-      <translation>Ugasi priključak</translation>
+      <translation>Bővítmény bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="1278"/>
       <source>Please close the currently opened plugin.</source>
-      <translation>Molim zatvorite trenutno otvoreni priključak.</translation>
+      <translation>Kérem zárja be a jelenleg megnyitott bővítményt.</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
@@ -2213,22 +2213,22 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1523"/>
       <source>Show test image</source>
-      <translation>Prikazuje test sliku</translation>
+      <translation>Teszt kép megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1526"/>
       <source>All Images</source>
-      <translation>Sve slike</translation>
+      <translation>Összes kép</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1527"/>
       <source>Generates all images in the world</source>
-      <translation>Generiše sve slike na svijetu</translation>
+      <translation>A világ összes képének generálása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkActionManager.cpp" line="1530"/>
       <source>Pong</source>
-      <translation>Ping</translation>
+      <translation>Pong</translation>
     </message>
   </context>
   <context>
@@ -2236,109 +2236,108 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1220"/>
       <source>Always Load JPG if Embedded</source>
-      <translation>Uvijek učitaj JPG ako je ugrađen</translation>
+      <translation>Mindig töltse be a beágyazott JPG-ket</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1221"/>
       <source>Load JPG if it Fits the Screen Resolution</source>
-      <translation>Učitaj JPG ako odgovara rezoluciji ekrana</translation>
+      <translation>JPG betöltése, ha illeszkedik a képernyő felbontásához</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1222"/>
       <source>Always Load RAW Data</source>
-      <translation>Uvijek učitaj RAW podatke</translation>
+      <translation>Mindig töltse be a RAW adatot</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1233"/>
       <source>Apply Noise Filtering to RAW Images</source>
-      <translation>Prihvati filtriranje šuma na RAW slikama</translation>
+      <translation>Alkalmazzon zajszűrést a RAW képeken</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1235"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
-      <translation>Ako je čekirano, filter šuma smanjuje šum boja</translation>
+      <translation>ha be van jelölve, zajszűrőt alkalmaz ami csökkenti a színzajt</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1238"/>
       <source>RAW Loader Settings</source>
-      <translation>Postavke RAW čitača</translation>
+      <translation>RAW betöltési beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1246"/>
       <source>Ask to Save Deleted Files</source>
-      <translation>Pitaj da spasi obrisane fajlove</translation>
+      <translation>Kérdezzen rá a törölt fájlok mentésére</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1248"/>
       <source>If checked, nomacs asked to save files which were deleted by other applications</source>
-      <translation>Ako je označeno, nomacs pita da spasi fajlove koji su izbrisani od strane drugih aplikacija</translation>
+      <translation>ha be van jelölve, nomacs megkérdezi a más alkalmazások által törölt fájlok mentését</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1251"/>
       <source>Ignore Exif Orientation when Loading</source>
-      <translation>Ignoriši EXIF orijentaciju priliko učitavanja</translation>
+      <translation>Exif orientáció figyelmen kívül hagyása betöltéskor</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1253"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation>Ako je označeno, slike NEĆE biti rotirane prema EXIF orijentaciji</translation>
+      <translation>ha be van jelölve, a képek nem lesznek elforgatva az Exif orientációjukhoz viszonyítva</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1256"/>
       <source>Save Exif Orientation</source>
-      <translation>Snimi EXIF orijentaciju</translation>
+      <translation>Exif orientáció mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1258"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-      <translation>Ako je označeno, orijentacija se snima u EXIF umjesto da se obrće slika
-</translation>
+      <translation>ha be van jelölve, az orientáció a Exifbe lesz írva a kép mátrix elforgatása helyett</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1259"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
-      <translation>NAPOMENA: ovo dozvoljava rotaciju JPG slika bez gubitka podataka.</translation>
+      <translation>Megjegyzés: ez JPGk elforgatását teszi lehetővé információ vesztés nélkül.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1262"/>
       <source>File Loading/Saving</source>
-      <translation>Učitavanje/snimanje fajla</translation>
+      <translation>Fájl betöltés/mentés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1270"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation>Izaberi broj dretvi u bazenu dretvi</translation>
+      <translation>Válassza ki a szálkészletben található szálak számát</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1275"/>
       <source>Number of Threads</source>
-      <translation>Broj dretvi</translation>
+      <translation>Szálak száma</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1279"/>
       <source>Use Log File</source>
-      <translation>Koristi log fajl</translation>
+      <translation>Naplófájl használata</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1281"/>
       <source>If checked, a log file will be created.</source>
-      <translation>Ako je označeno, log fajl će biti kreiran.</translation>
+      <translation>ha be van jelölve, egy naplófájl készül.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1284"/>
       <source>Open Log</source>
-      <translation>Otvori log</translation>
+      <translation>Naplófájl megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1292"/>
       <source>Logging</source>
-      <translation>Logiranje</translation>
+      <translation>Naplózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1338"/>
       <source>Please Restart nomacs to apply changes</source>
-      <translation>Molimo restartujte nomacs da bi prihvatili promjene</translation>
+      <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
   </context>
   <context>
@@ -2346,42 +2345,42 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="464"/>
       <source>Manage Applications</source>
-      <translation>Upravljanje aplikacijama</translation>
+      <translation>Alkalmazások kezelése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="487"/>
       <source>&amp;Run</source>
-      <translation>&amp;Pokreni</translation>
+      <translation>&amp;Futtatás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="490"/>
       <source>&amp;Add</source>
-      <translation>&amp;Dodaj</translation>
+      <translation>&amp;Hozzáadás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="493"/>
       <source>&amp;Delete</source>
-      <translation>&amp;Ukloni</translation>
+      <translation>&amp;Törlés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="499"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="500"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="532"/>
       <source>Executable Files (*.exe);;</source>
-      <translation>Izvršni fajlovi (*.exe);;</translation>
+      <translation>Fájlok futtatása (*.exe);;</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="540"/>
       <source>Open Application</source>
-      <translation>Otvori aplikaciju</translation>
+      <translation>Alkalmazás megnyitása</translation>
     </message>
   </context>
   <context>
@@ -2389,84 +2388,84 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3856"/>
       <source>Extract images from an archive</source>
-      <translation>Raspakuj slike iz arhive</translation>
+      <translation>Képek kiolvasása archívumból</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3865"/>
       <source>Archive (%1)</source>
-      <translation>Arhiva (%1)</translation>
+      <translation>Achíválás (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3872"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="3881"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Pregledaj</translation>
+      <translation>&amp;Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3876"/>
       <source>Extract to</source>
-      <translation>Raspakuj u</translation>
+      <translation>Kiolvasás célja</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3889"/>
       <source>Remove Subfolders</source>
-      <translation>Ukloni podfascikle</translation>
+      <translation>Almappák eltávolítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3895"/>
       <source>&amp;Extract</source>
-      <translation>&amp;Raspakuj</translation>
+      <translation>&amp;Kiolvasás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3897"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="4118"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3976"/>
       <source>Open Archive</source>
-      <translation>Otvori arhivu</translation>
+      <translation>Archívum megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3977"/>
       <source>Archives (%1)</source>
-      <translation>Arhive (%1)</translation>
+      <translation>Archívumok (%1)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3988"/>
       <source>Open Directory</source>
-      <translation>Otvori fasciklu</translation>
+      <translation>Mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4022"/>
       <source>Not a valid archive.</source>
-      <translation>Neispravna arhiva.</translation>
+      <translation>Nem érvényes archívum.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4051"/>
       <source>Number of images: </source>
-      <translation>Broj slika:</translation>
+      <translation>Képek száma: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4053"/>
       <source>The archive does not contain any images.</source>
-      <translation>Arhiva ne sadrži nijednu sliku.</translation>
+      <translation>Az archívum nem tartalmaz képeket.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4078"/>
       <source>The images could not be extracted!</source>
-      <translation>Slike nije moguće raspakovati!</translation>
+      <translation>A képeket nem lehet kiolvasni!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4120"/>
       <source>Extracting files...</source>
-      <translation>Raspakivam fajlove...</translation>
+      <translation>Fájlok kibontása...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4129"/>
       <source>Extracting file %1 of %2</source>
-      <translation>Raspakivam fajl %1 od %2</translation>
+      <translation>Fájl kibontása %1/%2</translation>
     </message>
   </context>
   <context>
@@ -2475,12 +2474,12 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
       <location filename="../src/DkCore/DkBasicLoader.cpp" line="310"/>
       <location filename="../src/DkCore/DkBasicLoader.cpp" line="742"/>
       <source>Original Image</source>
-      <translation>Originalna slika</translation>
+      <translation>Eredeti kép</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkBasicLoader.cpp" line="888"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Izvini, nije moguće sačuvati: %1</translation>
+      <translation>Sajnálom, nem lehet elmenteni: %1</translation>
     </message>
   </context>
   <context>
@@ -2496,12 +2495,12 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="340"/>
       <source>File Explorer</source>
-      <translation>Pregledač fajlova</translation>
+      <translation>Intéző</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="352"/>
       <source>Thumbnails</source>
-      <translation>Sličice</translation>
+      <translation>Bélyegképek</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="353"/>
@@ -2511,7 +2510,7 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="403"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="467"/>
@@ -2545,7 +2544,7 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1942"/>
       <source>inactive</source>
-      <translation>neaktivno</translation>
+      <translation>inaktív</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1944"/>
@@ -2558,29 +2557,29 @@ Molim restartujte nomacs i pokušajte ponovo.</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="734"/>
       <source>Output Directory</source>
-      <translation>Izlazna fascikla</translation>
+      <translation>Kimeneti mappa</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="737"/>
       <source>Browse</source>
-      <translation>Pregledaj</translation>
+      <translation>Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="739"/>
       <source>Select a Directory</source>
-      <translation>Izaberi fasciklu</translation>
+      <translation>Mappa kiválasztása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="744"/>
       <source>Overwrite Existing Files</source>
-      <translation>Piši preko postojećih fajlova</translation>
+      <translation>Létező fájl felülírása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="745"/>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-      <translation>Ako je označeno, piše preko postojećih fajlova.
-Ova postavka može uništiti vaše slike - budite pažljivi!</translation>
+      <translation>Ha be van jelölve, a meglévő fájlok felülíródnak.
+Ez a beállítás elronthatja a képeket - ezért legyen óvatos!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="749"/>
@@ -2597,39 +2596,39 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="754"/>
       <source>Use Input Folder</source>
-      <translation>Koristi ulaznu fasciklu</translation>
+      <translation>Bemeneti mappa használata</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="755"/>
       <source>If checked, the batch is applied to the input folder - so be careful!</source>
-      <translation>Ako je označeno, izmjene se pišu u ulaznu fasciklu - budite oprezni!</translation>
+      <translation>ha be van jelölve, a köteg alkalmazva lesz a bemeneti mappára - ezért legyen óvatos!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="759"/>
       <source>Delete Input Files</source>
-      <translation>Izbriši ulazne fajlove</translation>
+      <translation>Bemeneti fájlok törlése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="760"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation>Ako je označeno, originalni fajl će biti izbrisan ako je koonverzija uspešna.
-Budite oprezni!</translation>
+      <translation>ha be van jelölve, az eredeti fájl törölve lesz a sikeres konvertálás után.
+Legyen óvatos!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="778"/>
       <source>Filename</source>
-      <translation>Ime fajla</translation>
+      <translation>Fájlnév</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="799"/>
       <source>Keep Extension</source>
-      <translation>Zadrži ekstenziju</translation>
+      <translation>Kiterjesztés megtartása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="800"/>
       <source>Convert To</source>
-      <translation>Konvertuj u</translation>
+      <translation>Konvertálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="809"/>
@@ -2639,7 +2638,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="823"/>
       <source>Preview</source>
-      <translation>Pred-pregled</translation>
+      <translation>Előnézet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="826"/>
@@ -2654,7 +2653,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="864"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
   </context>
   <context>
@@ -2672,12 +2671,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1711"/>
       <source>inactive</source>
-      <translation>neaktivno</translation>
+      <translation>inaktív</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1713"/>
       <source>%1 plugins selected</source>
-      <translation>%1 priključaka izabrano</translation>
+      <translation>%1 bővítmények kiválasztva</translation>
     </message>
   </context>
   <context>
@@ -2685,12 +2684,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="1203"/>
       <source>[OK]</source>
-      <translation>[U REDU]</translation>
+      <translation>[OK]</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkProcess.cpp" line="1205"/>
       <source>[FAIL]</source>
-      <translation>[GREŠKA]</translation>
+      <translation>[FAIL]</translation>
     </message>
   </context>
   <context>
@@ -2698,7 +2697,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1958"/>
       <source>Resize</source>
-      <translation>Promijeni veličinu</translation>
+      <translation>Átméretezés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1963"/>
@@ -2753,22 +2752,22 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1992"/>
       <source>Orientation</source>
-      <translation>Orijentacija</translation>
+      <translation>Orientáció</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1995"/>
       <source>Do &amp;Not Rotate</source>
-      <translation>Ne &amp;rotiraj</translation>
+      <translation>&amp;Ne forgassa</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1997"/>
       <source>90%1 Counter Clockwise</source>
-      <translation>90%1 suprotno kazaljci na satu</translation>
+      <translation>90%1 balra</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1998"/>
       <source>90%1 Clockwise</source>
-      <translation>90%1 u smjeru kazaljke na satu</translation>
+      <translation>90%1 jobbra</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1999"/>
@@ -2783,7 +2782,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2011"/>
       <source>&amp;Crop from Metadata</source>
-      <translation>&amp;Izreži sa metapodataka</translation>
+      <translation>Metaadatból &amp;vágás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2014"/>
@@ -2793,7 +2792,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2077"/>
       <source>inactive</source>
-      <translation>neaktivno</translation>
+      <translation>inaktív</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2083"/>
@@ -2808,12 +2807,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2093"/>
       <source>Rotating by: %1</source>
-      <translation>Rotiraj: %1</translation>
+      <translation>Forgatás: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2099"/>
       <source>Crop</source>
-      <translation>Izreži</translation>
+      <translation>Vágás</translation>
     </message>
   </context>
   <context>
@@ -2821,17 +2820,17 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2313"/>
       <source>next</source>
-      <translation>sljedeće</translation>
+      <translation>következő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2318"/>
       <source>previous</source>
-      <translation>prethodno</translation>
+      <translation>előző</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2339"/>
       <source>no files selected</source>
-      <translation>nijedan fajl odabran</translation>
+      <translation>nincs fájl kijelölve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2344"/>
@@ -2839,7 +2838,7 @@ Budite oprezni!</translation>
       <location filename="../src/DkGui/DkBatch.cpp" line="2351"/>
       <location filename="../src/DkGui/DkBatch.cpp" line="2359"/>
       <source>inactive</source>
-      <translation>neaktivno</translation>
+      <translation>inaktív</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2344"/>
@@ -2849,54 +2848,54 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2347"/>
       <source>Transform</source>
-      <translation>Transformisati</translation>
+      <translation>Átalakítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2351"/>
       <source>Plugins</source>
-      <translation>Priključci</translation>
+      <translation>Bővítmények</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2355"/>
       <source>Output</source>
-      <translation>Izlaz</translation>
+      <translation>Kimenet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2355"/>
       <source>not set</source>
-      <translation>nije postavljeno</translation>
+      <translation>nincs beállítva</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2540"/>
       <source>Please select files for processing.</source>
-      <translation>Molimo izaberite fajlove za obradu.</translation>
+      <translation>Kérem válasszon kii fájlt a feldolgozáshoz.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2547"/>
       <source>I am missing a widget.</source>
-      <translation>Nedostaje vidžet.</translation>
+      <translation>Hiányzik egy modul.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2561"/>
       <source>Please check 'Overwrite Existing Files' or choose a different output directory.</source>
-      <translation>Molimo označite 'pisati preko postojećih fajlova' ili izaberite drugu izlaznu fasciklu.</translation>
+      <translation>Kérem jelölje be a 'Létező fájlok felülírása' opciót vagy válasszon másik kimeneti mappát.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2582"/>
       <source>Create Output Directory</source>
-      <translation>Kreiraj izlaznu fasciklu</translation>
+      <translation>Kimeneti mappa létrehozása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2583"/>
       <source>Should I create:
 %1</source>
-      <translation>Da li da kreiram:
+      <translation>Létrehozzam:
 %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2600"/>
       <source>Please select an output directory.</source>
-      <translation>Molimo izaberite izlaznu fasciklu.</translation>
+      <translation>Kérem válasszon egy kimeneti mappát.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2747"/>
@@ -2916,12 +2915,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2817"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2605"/>
       <source>Sorry, I cannot create %1.</source>
-      <translation>Izvini, ne mogu kreirati %1.</translation>
+      <translation>Sajnálom, nem lehet létrehozni: %1.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2339"/>
@@ -2936,12 +2935,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2610"/>
       <source>Sorry, I cannot find files to process.</source>
-      <translation>Izvini, ne mogu pronaći fajlove za obradu.</translation>
+      <translation>Sajnálom, nem találok fájlokat a feldolgozáshoz.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2615"/>
       <source>Sorry, the file pattern is empty.</source>
-      <translation>Izvini, mustra za fajlove je prazna.</translation>
+      <translation>Sajnálom, a fájl sablon üres.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2625"/>
@@ -2956,7 +2955,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2721"/>
       <source>%1/%2 files processed... %3 failed.</source>
-      <translation>%1/%2 fajlova obrađeno... %3 nije uspijelo.</translation>
+      <translation>%1/%2 fájl feldolgozva... %3 sikertelen.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="2817"/>
@@ -2991,27 +2990,27 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="532"/>
       <source>General</source>
-      <translation>Opšte</translation>
+      <translation>Általános</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="538"/>
       <source>Display</source>
-      <translation>Ekran</translation>
+      <translation>Kijelző</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="544"/>
       <source>File</source>
-      <translation>Fajl</translation>
+      <translation>Fájl</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="550"/>
       <source>File Associations</source>
-      <translation>Fajl asocijacije</translation>
+      <translation>Fájltársítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="556"/>
       <source>Advanced</source>
-      <translation>Napredno</translation>
+      <translation>Speciális</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="562"/>
@@ -3046,17 +3045,17 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="1219"/>
       <source>Sorry, I could not drop the content.</source>
-      <translation>Izvini, ne mogu odbaciti sadržaj.</translation>
+      <translation>Sajnálom, nem tudtam elvetni a tartalmat.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="1303"/>
       <source>Save File</source>
-      <translation>Sačuvaj fajl</translation>
+      <translation>Fájl mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkCentralWidget.cpp" line="1311"/>
       <source>%1 vec files merged</source>
-      <translation>%1 fajlova je spojeno</translation>
+      <translation>%1 vec fájl egyesítve</translation>
     </message>
   </context>
   <context>
@@ -3064,7 +3063,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkCore/DkBasicWidgets.cpp" line="283"/>
       <source>Reset</source>
-      <translation>Resetuj</translation>
+      <translation>Visszaállítás</translation>
     </message>
   </context>
   <context>
@@ -3072,7 +3071,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="113"/>
       <source>Drag the slider downwards for elimination</source>
-      <translation>Povuci klizač nadole za eliminaciju</translation>
+      <translation>Húzza a csúszkát lefelé a megszüntetéshez</translation>
     </message>
   </context>
   <context>
@@ -3080,7 +3079,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1144"/>
       <source>Click here to add notes</source>
-      <translation>Klikni ovdje za dodavanje napomena</translation>
+      <translation>Kattintson ide a jegyzetek hozzáadásához</translation>
     </message>
   </context>
   <context>
@@ -3088,27 +3087,27 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1163"/>
       <source>NOTES</source>
-      <translation>NAPOMENE</translation>
+      <translation>JEGYZETEK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1177"/>
       <source>Enter your notes here. They will be saved to the image metadata.</source>
-      <translation>Unesi napomene ovdje. Biti će snimljene među podatke slike.</translation>
+      <translation>Írja ide a jegyzeteit. El lesznek mentve a kép metaadatába.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1183"/>
       <source>Save Note (CTRL + ENTER)</source>
-      <translation>Sačuvaj napomenu (CTRL + ENTER)</translation>
+      <translation>Jegyzetek mentése (CTRL + ENTER)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1190"/>
       <source>Discard Changes (ESC)</source>
-      <translation>Odbaci promjene (ESC)</translation>
+      <translation>Módosítások elvetése (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1231"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation>Izvini, ne mogu sačuvati komentare za ovaj format slike.</translation>
+      <translation>Sajnálom, nem tudom elmenteni a megjegyzéseket ehhez a képformátumhoz.</translation>
     </message>
   </context>
   <context>
@@ -3116,87 +3115,87 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="180"/>
       <source>Original</source>
-      <translation>Originalna</translation>
+      <translation>Eredeti</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="182"/>
       <source>New</source>
-      <translation>Nova</translation>
+      <translation>Új</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="208"/>
       <source>Medium (1024 x 786)</source>
-      <translation>Srednja (1024 × 768)</translation>
+      <translation>Közepes (1024 x 786)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="214"/>
       <source>Image Quality</source>
-      <translation>Kvalitet slike</translation>
+      <translation>Képminőség</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="220"/>
       <source>Lossless Compression</source>
-      <translation>Kompresija bez gubitka</translation>
+      <translation>Veszteségmentes tömörítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="227"/>
       <source>Background Color</source>
-      <translation>Boja pozadine</translation>
+      <translation>Háttérszín</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="259"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="256"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="142"/>
       <source>JPG Settings</source>
-      <translation>JPG postavke</translation>
+      <translation>JPG-beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="144"/>
       <source>J2K Settings</source>
-      <translation>J2k postavke</translation>
+      <translation>J2K beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="153"/>
       <source>WebP Settings</source>
-      <translation>WebP postavke</translation>
+      <translation>WebP beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="166"/>
       <source>Save for Web</source>
-      <translation>Snimi za web</translation>
+      <translation>Mentés a webre</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="207"/>
       <source>Small  (800 x 600)</source>
-      <translation>Mala  (800 × 600)</translation>
+      <translation>Kicsi (800 x 600)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="209"/>
       <source>Large  (1920 x 1080)</source>
-      <translation>Velika  (1920 × 1080)</translation>
+      <translation>Nagy (1920 x 1080)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="210"/>
       <source>Original Size</source>
-      <translation>Originalna veličina</translation>
+      <translation>Eredeti méret</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="377"/>
       <source>File Size: --</source>
-      <translation>Veličina fajla: --</translation>
+      <translation>Fájlméret: ~</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="394"/>
       <source>File Size: ~%1</source>
-      <translation>Veličina fajla: ~%1</translation>
+      <translation>Fájlméret: ~%1</translation>
     </message>
   </context>
   <context>
@@ -3204,12 +3203,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkControlWidget.cpp" line="558"/>
       <source>Closing Plugin</source>
-      <translation>Zatvaram priključak</translation>
+      <translation>Bővítmény bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkControlWidget.cpp" line="559"/>
       <source>Apply plugin changes?</source>
-      <translation>Prihvati promjena priključka?</translation>
+      <translation>Bővítmény változások alkalmazása?</translation>
     </message>
   </context>
   <context>
@@ -3217,87 +3216,87 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="939"/>
       <source>Crop (ENTER)</source>
-      <translation>Isjeci (ENTER)</translation>
+      <translation>Vágás (ENTER)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="943"/>
       <source>Cancel (ESC)</source>
-      <translation>Otkaži (ESC)</translation>
+      <translation>Mégse (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="947"/>
       <source>Pan</source>
-      <translation>Švenk</translation>
+      <translation>Mozgatás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="955"/>
       <source>User Defined</source>
-      <translation>Korisnički definisano</translation>
+      <translation>Felhasználó által definiált</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="956"/>
       <source>No Aspect Ratio</source>
-      <translation>Bez razmjera</translation>
+      <translation>Nincs képarány</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="964"/>
       <source>Horizontal Constraint</source>
-      <translation>Horizontalno ograničenje</translation>
+      <translation>Vízszintes korlátozás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="967"/>
       <source>Swap</source>
-      <translation>Razmjena</translation>
+      <translation>Csere</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="969"/>
       <source>Swap Dimensions</source>
-      <translation>Dimenzije razmjene</translation>
+      <translation>Dimenzió csere</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="975"/>
       <source>Vertical Constraint</source>
-      <translation>Vertikalno ograničenje</translation>
+      <translation>Függőleges korlátozás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="989"/>
       <source>Background Color</source>
-      <translation>Boja pozadine</translation>
+      <translation>Háttérszín</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="998"/>
       <source>Guides</source>
-      <translation>Vodiči</translation>
+      <translation>Vezetővonalak</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="998"/>
       <source>Rule of Thirds</source>
-      <translation>Pravilo trećine</translation>
+      <translation>Harmadok szabálya</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="998"/>
       <source>Grid</source>
-      <translation>Mreža</translation>
+      <translation>Rács</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="1002"/>
       <source>Show Guides in the Preview</source>
-      <translation>Prikaži vodiče u pregledu</translation>
+      <translation>Vezetővonalak megjelenítése az előnézetben</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="1005"/>
       <source>Invert Crop Tool Color</source>
-      <translation>Obrni boju alata za isjecanje</translation>
+      <translation>Vágó eszköz színének invertálása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="1010"/>
       <source>Show Info</source>
-      <translation>Prikaži informacije</translation>
+      <translation>Információ megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="1015"/>
       <source>Crop to Metadata</source>
-      <translation>Izreži do metapodataka</translation>
+      <translation>Metaadathoz vágás</translation>
     </message>
   </context>
   <context>
@@ -3305,7 +3304,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="2031"/>
       <source>Crop Toolbar</source>
-      <translation>Alatna traka za isjecanje</translation>
+      <translation>Vágó eszköztár</translation>
     </message>
   </context>
   <context>
@@ -3313,7 +3312,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="994"/>
       <source>No metadata available!</source>
-      <translation>Metapodaci nedostupni!</translation>
+      <translation>Nincs elérhető metaadat!</translation>
     </message>
   </context>
   <context>
@@ -3321,12 +3320,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4179"/>
       <source>Preview</source>
-      <translation>Pred-pregled</translation>
+      <translation>Előnézet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="4194"/>
       <source>Shortcuts</source>
-      <translation>Prečice</translation>
+      <translation>Gyorsbillentyűk</translation>
     </message>
   </context>
   <context>
@@ -3339,7 +3338,7 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="2884"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
   </context>
   <context>
@@ -3347,12 +3346,12 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="664"/>
       <source>Invert mouse wheel behaviour for zooming</source>
-      <translation>Obrni ponašanje kolutića miša kod zumiranja</translation>
+      <translation>Egér görgő nagyítási viselkedésének invertálása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="666"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation>Ako je označeno, kolutić miša se ponaša obrnuto tokom zumiranja.</translation>
+      <translation>ha be van jelölve, az egér görgő viselkedése invertálva lesz nagyításkor.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
@@ -3367,132 +3366,132 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="675"/>
       <source>Show pixels if zoom level is above</source>
-      <translation>Prikaži piksele ako je nivo zuma iznad</translation>
+      <translation>Képpontok megjelenítése, ha a nagyítási szint nagyobb</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="679"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation>nomacs neće interpolirati slike ako je nivo zuma veći.</translation>
+      <translation>nomacs nem interpolál, ha a nagyítási szint nagyobb.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
       <source>Zoom</source>
-      <translation>Zum</translation>
+      <translation>Nagyítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="694"/>
       <source>Always keep zoom</source>
-      <translation>Uvijek zadrži zum</translation>
+      <translation>Nagyítás megtartása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="695"/>
       <source>Keep zoom if the size is the same</source>
-      <translation>Zadrži zum ako je veličina ista</translation>
+      <translation>Tartsa meg a nagyítást, ha a méret azonos</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="696"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation>Ako je označeno, nivo zuma se jedino zadrži ako učitana slika ima istu veličinu kao i prethodna.</translation>
+      <translation>na be van jelölve, a nagyítási szint akkor lesz megtartva, ha a betöltött kép szintje azonos az előzővel.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
       <source>Never keep zoom</source>
-      <translation>Nikada ne zadržavaj zum</translation>
+      <translation>Nagyítás elvetése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>Always zoom to fit</source>
-      <translation>Uvijek zumiraj da slika stane</translation>
+      <translation>Mindig mérethez igazít</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="712"/>
       <source>When Displaying New Images</source>
-      <translation>Prilikom prikazivanja nove slike</translation>
+      <translation>Új képek megjelenítésekor</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="721"/>
       <source>Define the icon size in pixel.</source>
-      <translation>Definiši veličinu ikona u pikselima.</translation>
+      <translation>Határozza meg az ikon méretét pixelben.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="727"/>
       <source>Icon Size</source>
-      <translation>Veličina ikona</translation>
+      <translation>Ikon méret</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>Image Transition</source>
-      <translation>Prelaz između slika</translation>
+      <translation>Kép átmenet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="735"/>
       <source>Choose a transition when loading a new image</source>
-      <translation>Izaberi prelaz pri učitavanju slika</translation>
+      <translation>Válasszon egy átmenetet egy új kép betöltésekor</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="739"/>
       <source>Unknown Transition</source>
-      <translation>Nepoznat prelaz</translation>
+      <translation>Ismeretlen átmenet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="742"/>
       <source>Appear</source>
-      <translation>Pojavljivanje</translation>
+      <translation>Megjelenés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="743"/>
       <source>Swipe</source>
-      <translation>Potegnuti</translation>
+      <translation>Lapozás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="744"/>
       <source>Fade</source>
-      <translation>Uvenuti</translation>
+      <translation>Áttűnés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="753"/>
       <source>Define the image transition speed.</source>
-      <translation>Definiši brzinu prelaza slika.</translation>
+      <translation>Adja meg a kép áttűnési sebességet.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="760"/>
       <source>Always Animate Image Loading</source>
-      <translation>Uvijek animiraj učitavanje slika</translation>
+      <translation>Mindig animálja a kép betöltést</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="762"/>
       <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-      <translation>Ako nije označeno, učitavanje je jedino animirano ako je nomacs preko cijelog ekrana</translation>
+      <translation>ha nincs bejelölve, nomacs csak akkor animálja a betöltést ha teljesképernyős</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="765"/>
       <source>Display Time</source>
-      <translation>Vrijeme prikaza</translation>
+      <translation>Megjelenítési idő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="769"/>
       <source>Define the time an image is displayed.</source>
-      <translation>Definiše vrijeme koliko se slika prikazuje.</translation>
+      <translation>Adja meg a kép megjelenésének idejét.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="776"/>
       <source>Slideshow</source>
-      <translation>Slajdšou</translation>
+      <translation>Diavetítés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="785"/>
       <source>Show crop rectangle</source>
-      <translation>Prikaži kvadrat za rezanje</translation>
+      <translation>Vágó terület mutatása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="789"/>
       <source>Show Metadata Cropping</source>
-      <translation>Prikaži rezanje metapodataka</translation>
+      <translation>Metaadat vágás megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="839"/>
       <source>Please Restart nomacs to apply changes</source>
-      <translation>Molimo restartujte nomacs da bi prihvatili promjene</translation>
+      <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
   </context>
   <context>
@@ -3500,17 +3499,17 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="484"/>
       <source>Editable</source>
-      <translation>Moguće izmjeniti</translation>
+      <translation>Szerkeszthető</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="490"/>
       <source>Open Selected Image</source>
-      <translation>Otvori odabranu sliku</translation>
+      <translation>Kijelölt kép megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="500"/>
       <source>Adjust Columns</source>
-      <translation>Namjesti kolumne</translation>
+      <translation>Oszlopok beállítása</translation>
     </message>
   </context>
   <context>
@@ -3518,83 +3517,83 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2496"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Eksportuj višestrani TIFF</translation>
+      <translation>Többoldalas TIFF exportálása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2542"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Višestrani TIFF:</translation>
+      <translation>Többoldalas TIFF:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2545"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="2554"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Pregledaj</translation>
+      <translation>&amp;Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2548"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>Bez učitanog višestranog TIFF</translation>
+      <translation>Nincs többoldalas TIFF betöltve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2551"/>
       <source>Save Folder:</source>
-      <translation>Sačuvaj u fasciklu:</translation>
+      <translation>Mentési mappa:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2557"/>
       <source>Specify a Save Folder</source>
-      <translation>Odredi fasciklu za sačuvanje</translation>
+      <translation>Adjon meg egy mentési mappát</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2560"/>
       <source>Filename:</source>
-      <translation>Ime fajla:</translation>
+      <translation>Fájlnév:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2571"/>
       <source>Export Pages</source>
-      <translation>Eksportuj stranice</translation>
+      <translation>Oldalak exportálása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2578"/>
       <source>Overwrite</source>
-      <translation>Piši preko</translation>
+      <translation>Felülírás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2610"/>
       <source>&amp;Export</source>
-      <translation>&amp;Eksportuj</translation>
+      <translation>&amp;Exportálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2611"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2628"/>
       <source>Open TIFF</source>
-      <translation>Otvori TIFF</translation>
+      <translation>TIFF megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2639"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2726"/>
       <source>%1 exists, skipping...</source>
-      <translation>%1 postoji, preskočeno...</translation>
+      <translation>%1 létezik, kihagyás...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2739"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Izvini, nije moguće sačuvati: %1</translation>
+      <translation>Sajnálom, nem lehet elmenteni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2731"/>
       <source>Sorry, I could not load page: %1</source>
-      <translation>Izvini, ne mogu učitati stranicu: %1</translation>
+      <translation>Sajnálom, nem lehet betölteni az oldalt: %1</translation>
     </message>
   </context>
   <context>
@@ -3620,32 +3619,32 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1079"/>
       <source>Filter</source>
-      <translation>Filter</translation>
+      <translation>Szűrés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1080"/>
       <source>Browse</source>
-      <translation>Pregledaj</translation>
+      <translation>Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1081"/>
       <source>Register</source>
-      <translation>Registruj</translation>
+      <translation>Regisztrálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1093"/>
       <source>Set as Default Viewer</source>
-      <translation>Postavi kao po&amp;drazumijevani pregledač slika</translation>
+      <translation>Beállítás alapértelmezett megjelenítőként</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1111"/>
       <source>Please Restart nomacs to apply changes</source>
-      <translation>Molimo restartujte nomacs da bi prihvatili promjene</translation>
+      <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="1184"/>
       <source>Image</source>
-      <translation>Slika</translation>
+      <translation>Kép</translation>
     </message>
   </context>
   <context>
@@ -3653,14 +3652,14 @@ Budite oprezni!</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1152"/>
       <source>Info Box</source>
-      <translation>Info kutija</translation>
+      <translation>Információs doboz</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1153"/>
       <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-      <translation>Sva polja su trenutno skrivena.
-Da li ih želite povratiti?</translation>
+      <translation>Jelenleg minden információs mező rejtett.
+Szeretné újra megjeleníteni?</translation>
     </message>
   </context>
   <context>
@@ -3668,17 +3667,17 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="914"/>
       <source>Screenshots are automatically saved to this folder</source>
-      <translation>Snimke ekrana se automatski snimaju u ovaj direktorij</translation>
+      <translation>Képernyőképek automatikus mentése ebbe a mappába</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="916"/>
       <source>Use Temporary Folder</source>
-      <translation>Koristi privremeni direktorij</translation>
+      <translation>Ideiglenes mappa használata</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="934"/>
       <source>Maximal Cache Size</source>
-      <translation>Maksimalna veličina keša</translation>
+      <translation>Gyorsítótár maximális mérete</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="931"/>
@@ -3693,37 +3692,37 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="951"/>
       <source>History Size</source>
-      <translation>Veličina historije</translation>
+      <translation>Előzmény méret</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="958"/>
       <source>Skip Images</source>
-      <translation>Preskoči slike</translation>
+      <translation>Képek átugrása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="959"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation>Slike su preskočene dok se ne pusti Next dugme</translation>
+      <translation>Képek át lesznek ugorva a Következő gomb elengedéséig</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="960"/>
       <source>Wait for Images to be Loaded</source>
-      <translation>Sačekaj da slike budu učitane</translation>
+      <translation>Várjon a képek betöltésére</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="961"/>
       <source>The next image is loaded after the current image is shown.</source>
-      <translation>Sljedeća slika se učita nakon što se prikaže trenutna.</translation>
+      <translation>A következő kép a jelenlegi kép megjelenése után kezd betöltődni.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="972"/>
       <source>Image Loading Policy</source>
-      <translation>Postavke učitavanja slika</translation>
+      <translation>Kép betöltési szabályzat</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="984"/>
       <source>Number of Skipped Images on PgUp/PgDown</source>
-      <translation>Broj preskočenih slika na PgUp/PgDown</translation>
+      <translation>PgUp/PgDown megnyomására kihagyott képek száma</translation>
     </message>
   </context>
   <context>
@@ -3731,77 +3730,77 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="194"/>
       <source>Show Left</source>
-      <translation>Prikaži lijevo</translation>
+      <translation>Bal</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="195"/>
       <source>Shows the Thumbnail Bar on the Left</source>
-      <translation>Prikazuje traku sličica lijevo</translation>
+      <translation>Bélyegkép sáv megjelenítése bal oldalt</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="198"/>
       <source>Show Top</source>
-      <translation>Prikaži gore</translation>
+      <translation>Fent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="199"/>
       <source>Shows the Thumbnail Bar at the Top</source>
-      <translation>Prikazuje traku sličica na vrhu</translation>
+      <translation>Bélyegkép sáv megjelenítése fent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="202"/>
       <source>Show Right</source>
-      <translation>Prikaži desno</translation>
+      <translation>Jobb</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="203"/>
       <source>Shows the Thumbnail Bar on the Right</source>
-      <translation>Prikazuje traku sličica desno</translation>
+      <translation>Bélyegkép sáv megjelenítése jobb oldalt</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="206"/>
       <source>Show Bottom</source>
-      <translation>Prikaži dole</translation>
+      <translation>Lent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="207"/>
       <source>Shows the Thumbnail Bar at the Bottom</source>
-      <translation>Prikazuje traku sličica na dnu</translation>
+      <translation>Bélyegkép sáv megjelenítése lent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="210"/>
       <source>Undock</source>
-      <translation>Odvoji</translation>
+      <translation>Leválasztás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="211"/>
       <source>Undock the thumbnails</source>
-      <translation>Odvoji sličice</translation>
+      <translation>Bélyegképek leválasztása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="214"/>
       <source>File Preview Menu</source>
-      <translation>Meni pregleda fajla</translation>
+      <translation>Fájl előnézet menü</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="588"/>
       <source>Name: </source>
-      <translation>Ime: </translation>
+      <translation>Név: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="589"/>
       <source>Size: </source>
-      <translation>Veličina: </translation>
+      <translation>Méret: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="590"/>
       <source>Created: </source>
-      <translation>Kreirano:</translation>
+      <translation>Készítette: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="607"/>
       <source>CTRL+Zoom resizes the thumbnails</source>
-      <translation>CTRL + zum mijenja veličinu sličica</translation>
+      <translation>CTRL + nagyítás átméretezi a bélyegképeket</translation>
     </message>
   </context>
   <context>
@@ -3809,57 +3808,57 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="535"/>
       <source>Current Filename</source>
-      <translation>Trenutno ime fajla</translation>
+      <translation>Jelenlegi fájlnév</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="536"/>
       <source>Text</source>
-      <translation>Tekst</translation>
+      <translation>Szöveg</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="537"/>
       <source>Number</source>
-      <translation>Broj</translation>
+      <translation>Szám</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="543"/>
       <source>Keep Case</source>
-      <translation>Zadrži velika i mala slova</translation>
+      <translation>Kis-/Nagybetűk megtartása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="544"/>
       <source>To lowercase</source>
-      <translation>U mala slova</translation>
+      <translation>Kisbetűssé</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="545"/>
       <source>To UPPERCASE</source>
-      <translation>U VELIKA SLOVA</translation>
+      <translation>Nagybetűssé</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="556"/>
       <source>1 digit</source>
-      <translation>1 cifra</translation>
+      <translation>1 számjegy</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="557"/>
       <source>2 digits</source>
-      <translation>2 cifre</translation>
+      <translation>2 számjegy</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="558"/>
       <source>3 digits</source>
-      <translation>3 cifre</translation>
+      <translation>3 számjegy</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="559"/>
       <source>4 digits</source>
-      <translation>4 cifre</translation>
+      <translation>4 számjegy</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="560"/>
       <source>5 digits</source>
-      <translation>5 cifara</translation>
+      <translation>5 számjegy</translation>
     </message>
   </context>
   <context>
@@ -3867,25 +3866,26 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3754"/>
       <source>Overwrite Existing Thumbnails</source>
-      <translation>Piši preko postojećih sličica</translation>
+      <translation>Létező bélyegképek felülírása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3759"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3760"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3777"/>
       <source>Compute thumbnails for all images in:
  %1
 </source>
-      <translation>Izračunaj sličice za sve slike u:
- %1</translation>
+      <translation>Itt található összes kép bélyegképének kiszámítása:
+%1
+</translation>
     </message>
   </context>
   <context>
@@ -3893,28 +3893,28 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="297"/>
       <source>Icon Color</source>
-      <translation>Boja ikona</translation>
+      <translation>Ikon szín</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="302"/>
       <source>Background Color</source>
-      <translation>Boja pozadine</translation>
+      <translation>Háttérszín</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="307"/>
       <source>Fullscreen Color</source>
-      <translation>Boja celog ekrana</translation>
+      <translation>Teljes képernyő szín</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="312"/>
       <source>Color Settings</source>
-      <translation>Postavke boja</translation>
+      <translation>Színbeállítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="319"/>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="586"/>
       <source>Reset All Settings</source>
-      <translation>Povrati sve postavke</translation>
+      <translation>Beállítások visszaállítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="323"/>
@@ -3929,27 +3929,27 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="331"/>
       <source>Default Settings</source>
-      <translation>Podrazumijevane postavke</translation>
+      <translation>Alapértelmezett beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="346"/>
       <source>Show Recent Files on Start-Up</source>
-      <translation>Prikaži nedavne fajlove pri pokretanju</translation>
+      <translation>Legutóbb használt fájlok megjelenítése indításkor</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="348"/>
       <source>Show the History Panel on Start-Up</source>
-      <translation>Prikaži panel za povijest pri pokretanju</translation>
+      <translation>Előzmény panel megjelenítése indításkor</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="351"/>
       <source>Log Recent Files</source>
-      <translation>Bilježi nedavne slike</translation>
+      <translation>Legutóbbi fájlok naplózása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="353"/>
       <source>If checked, recent files will be saved.</source>
-      <translation>Ako je označeno, nedavni fajlovi će biti snimljeni.</translation>
+      <translation>ha be van jelölve, a legutóbbi fájlok el lesznek mentve.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
@@ -3974,22 +3974,22 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="366"/>
       <source>Loop Images</source>
-      <translation>Prikazuj u petlji</translation>
+      <translation>Képek ismétlése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="368"/>
       <source>Start with the first image in a folder after showing the last.</source>
-      <translation>Prikaži prvu sliku u direktoriju nakon prikaza posljednje.</translation>
+      <translation>Kezdjen a mappában található első képpel az utolsó kép megjelenítése után.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="371"/>
       <source>Mouse Wheel Zooms</source>
-      <translation>Zumiraj točkićem miša</translation>
+      <translation>Egér görgő nagyítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="373"/>
       <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-      <translation>Ako je označeno, točkić na mišu zumira. Inače se koristi za promjenu slika.</translation>
+      <translation>Ha be van jelölve, az egér görgő nagyít - egyébként a képek között vált.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="376"/>
@@ -4004,92 +4004,92 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="381"/>
       <source>Double Click Opens Fullscreen</source>
-      <translation>Dupli klik otvora preko cijelog ekrana</translation>
+      <translation>Dupla kattintás teljes képernyőt nyit</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="383"/>
       <source>If checked, a double click on the canvas opens the fullscreen mode.</source>
-      <translation>Ako je označeno, dupli klik na sliku otvara prikaz preko cijelog ekrana.</translation>
+      <translation>Ha be van jelölve. dupla kattintás a képen teljes képernyős módba vált.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="386"/>
       <source>Show Background Image</source>
-      <translation>Prikaži pozadinsku sliku</translation>
+      <translation>Háttérkép megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="388"/>
       <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-      <translation>Ako je označeno, nomacs logo će biti prikazan u donjem desnom uglu.</translation>
+      <translation>Ha be van jelölve, a nomacs logó a jobb alsó sarokban látható.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="391"/>
       <source>Switch CTRL with ALT</source>
-      <translation>Zamjeni CTRL i ALT</translation>
+      <translation>CTRL megcserélése az ALT billentyűvel</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="393"/>
       <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-      <translation>Ako je označeno, CTRL + miš je zamijenjeno sa ALT + miš.</translation>
+      <translation>Ha be van jelölve, CTRL + egér fel lesz cserélve ALT + egérre.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="396"/>
       <source>Enable LAN Sync</source>
-      <translation>Omogući LAN sinhronizaciju</translation>
+      <translation>LAN szinkronizálás engedélyezése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="398"/>
       <source>If checked, syncing in your LAN is enabled.</source>
-      <translation>Ako je označeno, LAN sinhronizacija je omogućena.</translation>
+      <translation>Ha be van jelölve, szinkronizálás a helyi hálózaton engedélyezve lesz.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="401"/>
       <source>Close on ESC</source>
-      <translation>Zatvori na ESC</translation>
+      <translation>ESC-re bezár</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="403"/>
       <source>Close nomacs if ESC is pressed.</source>
-      <translation>Zatvori nomacs pri pritisku ESC dugmeta.</translation>
+      <translation>Nomacs bezárása ESC billentyű megnyomására.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="406"/>
       <source>Check For Updates</source>
-      <translation>Provjeri ažuriranja</translation>
+      <translation>Frissítések keresése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="408"/>
       <source>Check for updates on start-up.</source>
-      <translation>Provjerava da li postoje ažuriranja pri pokretanju.</translation>
+      <translation>Frissítések ellenőrzése indításkor.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="411"/>
       <source>General</source>
-      <translation>Opšte</translation>
+      <translation>Általános</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
       <source>Choose your preferred language.</source>
-      <translation>Izaberi jezik.</translation>
+      <translation>Válassza ki a kívánt nyelvet.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="434"/>
       <source>Info on how to translate nomacs.</source>
-      <translation>Informacije za prevod nomacsa.</translation>
+      <translation>Nomacs lefordításához szükséges információ.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="437"/>
       <source>Language</source>
-      <translation>Jezik</translation>
+      <translation>Nyelv</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="457"/>
       <source>Please Restart nomacs to apply changes</source>
-      <translation>Molimo restartujte nomacs da bi prihvatili promjene</translation>
+      <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="586"/>
       <source>This will reset all personal settings!</source>
-      <translation>Ovo će izbrisati sve lične postavke!</translation>
+      <translation>Ez visszaállítja az összes személyes beállítást!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="600"/>
@@ -4146,7 +4146,7 @@ Da li ih želite povratiti?</translation>
       <location filename="../src/DkCore/DkUtils.cpp" line="411"/>
       <source>English</source>
       <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-      <translation>bosanski</translation>
+      <translation>Magyar</translation>
     </message>
   </context>
   <context>
@@ -4172,7 +4172,7 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="410"/>
       <source>Saturation</source>
-      <translation>Zasićenje</translation>
+      <translation>Telítettség</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkManipulatorWidgets.cpp" line="417"/>
@@ -4185,12 +4185,12 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="671"/>
       <source>Sorry, the file: %1 does not exist... </source>
-      <translation>Izvini, fajl: %1 ne postoji... </translation>
+      <translation>Sajnálom, a fájl: %1 nem létezik... </translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="678"/>
       <source>Sorry, you are not allowed to read: %1</source>
-      <translation>Izvini, nije vam dozvoljeno da čitanje: %1</translation>
+      <translation>Sajnálom, nincs engedélye olvasni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="796"/>
@@ -4200,31 +4200,32 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="804"/>
       <source>Sorry, I could not load: %1</source>
-      <translation>Izvini, nije moguće učitati: %1</translation>
+      <translation>Sajnálom, nem lehet betölteni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="847"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation>Izvini, nije moguće preuzeti:
-%1</translation>
+      <translation>Sajnálom, nem lehet letölteni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="913"/>
       <source>I can't save an empty file, sorry...
 </source>
-      <translation>Ne mogu sačuvati prazan fajl, izvini...</translation>
+      <translation>Sajnálom, nem lehet elmenteni üres fájlt...
+</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="918"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>Izvini, fascikla: %1  ne postoji</translation>
+      <translation>Sajnálom, a mappa: %1 nem létezik
+</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageContainer.cpp" line="923"/>
       <source>Sorry, I can't write to the file: %1</source>
-      <translation>Izvini, ne mogu pisati u fajl: %1</translation>
+      <translation>Sajnálom, nem lehet írni a fájlhoz: %1</translation>
     </message>
   </context>
   <context>
@@ -4232,84 +4233,82 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="857"/>
       <source>sorry, %1 does not exist anymore...</source>
-      <translation>izvini, %1 ne postoji više...</translation>
+      <translation>Sajnálom, %1 már nem létezik...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="561"/>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="623"/>
       <source>You have reached the beginning</source>
-      <translation>Stigli ste na početak</translation>
+      <translation>Elérte a kezdetet</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="567"/>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="628"/>
       <source>You have reached the end</source>
-      <translation>Stigli ste na kraj</translation>
+      <translation>Elérte a véget</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="739"/>
       <source>Save Image</source>
-      <translation>Sačuvaj sliku</translation>
+      <translation>Kép mentése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="740"/>
       <source>Do you want to save changes to:
 %1</source>
-      <translation>Da li želite da sačuvate promjene u:
-%1</translation>
+      <translation>Szeretné menteni a módosításokat: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="953"/>
       <source>%1 of %2</source>
-      <translation>%1 od %2</translation>
+      <translation>%1/%2</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1051"/>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1129"/>
       <source>Save File %1</source>
-      <translation>Snimi fajl %1</translation>
+      <translation>Fájl mentése %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1116"/>
       <source>Overwrite File</source>
-      <translation>Piši preko fajla</translation>
+      <translation>Fájl felülírása</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1117"/>
       <source>Do you want to overwrite:
 %1?</source>
-      <translation>Da li želite pisati preko:
-%1?</translation>
+      <translation>Szeretné felülírni: %1?</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1245"/>
       <source>Sorry, I cannot save an empty image...</source>
-      <translation>Izvini, ne mogu snimiti praznu sliku...</translation>
+      <translation>Sajnálom, nem lehet elmenteni egy üres képet...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1428"/>
       <source>Rotated</source>
-      <translation>Rotirano</translation>
+      <translation>Elforgatott</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1692"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1000"/>
       <source>Save Directory</source>
-      <translation>Sačuvaj fasciklu</translation>
+      <translation>Mappa mentése</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1374"/>
       <source>%1 deleted...</source>
-      <translation>%1 izbrisano...</translation>
+      <translation>%1 törölve...</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="1378"/>
       <source>Sorry, I could not delete: %1</source>
-      <translation>Izvini, ne mogu izbrisati: %1</translation>
+      <translation>Sajnálom, nem lehet törölni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="196"/>
@@ -4317,8 +4316,7 @@ Da li ih želite povratiti?</translation>
       <location filename="../src/DkCore/DkImageLoader.cpp" line="268"/>
       <source>%1 
  does not contain any image</source>
-      <translation>%1 
- ne sadrži nijednu sliku</translation>
+      <translation>%1 nem tartalmaz képeket</translation>
     </message>
   </context>
   <context>
@@ -4326,12 +4324,12 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkImageStorage.cpp" line="1578"/>
       <source>Anti Aliasing Enabled</source>
-      <translation>Uključen anti-alias</translation>
+      <translation>Élsimítás engedélyezve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkImageStorage.cpp" line="1578"/>
       <source>Anti Aliasing Disabled</source>
-      <translation>Isključen anti-alias</translation>
+      <translation>Élsimítás letiltva</translation>
     </message>
   </context>
   <context>
@@ -4339,22 +4337,22 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="783"/>
       <source>Uninstall</source>
-      <translation>Deinstaliraj</translation>
+      <translation>Eltávolítás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="796"/>
       <source>Name</source>
-      <translation>Ime</translation>
+      <translation>Név</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="798"/>
       <source>Version</source>
-      <translation>Verzija</translation>
+      <translation>Verzió</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="800"/>
       <source>Uninstall plugin</source>
-      <translation>Deinstaliraj priključak</translation>
+      <translation>Bővítmény eltávolítása</translation>
     </message>
   </context>
   <context>
@@ -4362,7 +4360,7 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.h" line="972"/>
       <source>Drag Items Here</source>
-      <translation>Prenesi stvari ovdje</translation>
+      <translation>Húzzon ide elemeket</translation>
     </message>
   </context>
   <context>
@@ -4383,12 +4381,12 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkMessageBox.cpp" line="66"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkMessageBox.cpp" line="100"/>
       <source>Remember my choice</source>
-      <translation>Zapamti moj izbor</translation>
+      <translation>Emlékezzen a döntésemre</translation>
     </message>
   </context>
   <context>
@@ -4396,27 +4394,27 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="65"/>
       <source>Image Size</source>
-      <translation>Veličina slike</translation>
+      <translation>Képméret</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="66"/>
       <source>Orientation</source>
-      <translation>Orijentacija</translation>
+      <translation>Orientáció</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="67"/>
       <source>Make</source>
-      <translation>Marka</translation>
+      <translation>Márka</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="68"/>
       <source>Model</source>
-      <translation>Model</translation>
+      <translation>Típus</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="69"/>
       <source>Aperture Value</source>
-      <translation>Otvor blende</translation>
+      <translation>Nyílás érték</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="70"/>
@@ -4426,97 +4424,97 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="71"/>
       <source>Flash</source>
-      <translation>Blic</translation>
+      <translation>Vaku</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="72"/>
       <source>Focal Length</source>
-      <translation>Fokusna dužina</translation>
+      <translation>Fókusztávolság</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="73"/>
       <source>Exposure Mode</source>
-      <translation>Režim ekspozicije</translation>
+      <translation>Exponálási mód</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="74"/>
       <source>Exposure Time</source>
-      <translation>Vrijeme ekspozicije</translation>
+      <translation>Exponálási idő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="77"/>
       <source>Rating</source>
-      <translation>Ocjena</translation>
+      <translation>Értékelés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="78"/>
       <source>User Comment</source>
-      <translation>Korisnički komentar</translation>
+      <translation>Felhasználói megjegyzés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="79"/>
       <source>Date Time</source>
-      <translation>Datum i vrijeme</translation>
+      <translation>Dátum idő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="80"/>
       <source>Date Time Original</source>
-      <translation>Datum i vrijeme originala</translation>
+      <translation>Dátum idő eredeti</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="81"/>
       <source>Image Description</source>
-      <translation>Opis slike</translation>
+      <translation>Kép leírás</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="82"/>
       <source>Creator</source>
-      <translation>Kreator</translation>
+      <translation>Készítő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="83"/>
       <source>Creator Title</source>
-      <translation>Naslov kreatora</translation>
+      <translation>Készítő cím</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="84"/>
       <source>City</source>
-      <translation>Grad</translation>
+      <translation>Város</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="85"/>
       <source>Country</source>
-      <translation>Država</translation>
+      <translation>Ország</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="86"/>
       <source>Headline</source>
-      <translation>Naslov</translation>
+      <translation>Főcím</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="87"/>
       <source>Caption</source>
-      <translation>Natpis</translation>
+      <translation>Felirat</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="88"/>
       <source>Copyright</source>
-      <translation>Autorska prava</translation>
+      <translation>Szerzői jog</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="89"/>
       <source>Keywords</source>
-      <translation>Ključne rječi</translation>
+      <translation>Kulcsszavak</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="90"/>
       <source>Path</source>
-      <translation>Putanja</translation>
+      <translation>Elérési út</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSettings.cpp" line="91"/>
       <source>File Size</source>
-      <translation>Veličina fajla</translation>
+      <translation>Fájlméret</translation>
     </message>
   </context>
   <context>
@@ -4524,7 +4522,7 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="389"/>
       <source>Thumbnail</source>
-      <translation>Sličica</translation>
+      <translation>Bélyegkép</translation>
     </message>
   </context>
   <context>
@@ -4532,98 +4530,98 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="683"/>
       <source>Image Information</source>
-      <translation>Informacije o slici</translation>
+      <translation>Kép információ</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="730"/>
       <source>Change Entries</source>
-      <translation>Izmjeni upise</translation>
+      <translation>Változási bejegyzések</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="731"/>
       <source>You can customize the entries displayed here.</source>
-      <translation>Ovdje možete prilagoditi prikazane upise.</translation>
+      <translation>Testreszabhatja az itt megjelenített bejegyzéseket.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="734"/>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1114"/>
       <source>Number of Columns</source>
-      <translation>Broj kolona</translation>
+      <translation>Oszlopok száma</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="735"/>
       <source>Select the desired number of columns.</source>
-      <translation>Izaberite željeni broj kolona.</translation>
+      <translation>Válassza ki az oszlopok számát.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="738"/>
       <source>Set to Default</source>
-      <translation>Vrati na standardne postavke</translation>
+      <translation>Alapértelmezett</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="739"/>
       <source>Reset the metadata panel.</source>
-      <translation>Resetuj panel o informacijama.</translation>
+      <translation>Metaadat panel visszaállítása.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="743"/>
       <source>Show Left</source>
-      <translation>Prikaži lijevo</translation>
+      <translation>Bal</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="744"/>
       <source>Shows the Metadata on the Left</source>
-      <translation>Prikazuje informacije lijevo</translation>
+      <translation>Metaadat mutatása a bal oldalon</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="747"/>
       <source>Show Top</source>
-      <translation>Prikaži gore</translation>
+      <translation>Fent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="748"/>
       <source>Shows the Metadata at the Top</source>
-      <translation>Prikazuje informacije na vrhu</translation>
+      <translation>Metaadat mutatása fent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="751"/>
       <source>Show Right</source>
-      <translation>Prikaži desno</translation>
+      <translation>Jobb</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="752"/>
       <source>Shows the Metadata on the Right</source>
-      <translation>Prikazuje informacije desno</translation>
+      <translation>Metaadat mutatása a jobb oldalon</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="755"/>
       <source>Show Bottom</source>
-      <translation>Prikaži dole</translation>
+      <translation>Lent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="756"/>
       <source>Shows the Metadata at the Bottom</source>
-      <translation>Prikazuje informacije na dnu</translation>
+      <translation>Metaadat mutatása lent</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1031"/>
       <source>Metadata Menu</source>
-      <translation>Meni sa informacijama</translation>
+      <translation>Metaadat menü</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1093"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1094"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="1114"/>
       <source>Number of columns (-1 is default)</source>
-      <translation>Broj kolona (obično -1)</translation>
+      <translation>Oszlopok száma (-1 alapértelmezett)</translation>
     </message>
   </context>
   <context>
@@ -4631,17 +4629,17 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
       <source>Key</source>
-      <translation>Ključ</translation>
+      <translation>Kulcs</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="64"/>
       <source>Value</source>
-      <translation>Vrijednost</translation>
+      <translation>Érték</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="145"/>
       <source>Data.</source>
-      <translation>Podaci.</translation>
+      <translation>Adat.</translation>
     </message>
   </context>
   <context>
@@ -4649,7 +4647,7 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkMetaDataWidgets.cpp" line="550"/>
       <source>Check All</source>
-      <translation>Provjeri sve</translation>
+      <translation>Összes megjelölése</translation>
     </message>
   </context>
   <context>
@@ -4657,174 +4655,174 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2802"/>
       <source>Create Mosaic Image</source>
-      <translation>Kreiraj mozaik</translation>
+      <translation>Mozaik kép készítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2865"/>
       <source>Darken</source>
-      <translation>Tamnije</translation>
+      <translation>Sötétítés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2866"/>
       <source>Lighten</source>
-      <translation>Svijetlije</translation>
+      <translation>Világosítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2867"/>
       <source>Saturation</source>
-      <translation>Zasićenje</translation>
+      <translation>Telítettség</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2875"/>
       <source>Mosaic Image:</source>
-      <translation>Mozaik:</translation>
+      <translation>Mozaik kép:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2878"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="2888"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Pregledaj</translation>
+      <translation>&amp;Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2880"/>
       <source>Choose which image to mosaic.</source>
-      <translation>Izaberi sliku za stvaranja mozaika.</translation>
+      <translation>Válassza ki a mozaikosítandó képet.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2882"/>
       <source>No Image loaded</source>
-      <translation>Slike nisu učitane</translation>
+      <translation>Nincs kép betöltve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>Image Database:</source>
-      <translation>Baza sa slikama:</translation>
+      <translation>Kép adatbázis:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2890"/>
       <source>Specify the root folder of the image database.</source>
-      <translation>Izaberi izvorni direktorij za bazu slika.</translation>
+      <translation>Adja meg a kép adatbázis gyökérmappáját.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2892"/>
       <source>Specify an Image Database</source>
-      <translation>Izaberite bazu podataka sa slikama</translation>
+      <translation>Adjon meg egy kép adatbázist</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2895"/>
       <source>Resolution:</source>
-      <translation>Rezolucija:</translation>
+      <translation>Felbontás:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2899"/>
       <source>Pixel Width</source>
-      <translation>Širina piksela</translation>
+      <translation>Képpont szélesség</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2904"/>
       <source>Pixel Height</source>
-      <translation>Visina piksela</translation>
+      <translation>Képpont magasság</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2911"/>
       <source>Patches:</source>
-      <translation>Zakrpe:</translation>
+      <translation>Foltok:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2915"/>
       <source>Number of Horizontal Patches</source>
-      <translation>Broj horizontalnih zakrpa</translation>
+      <translation>Vízszintes foltok száma</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2920"/>
       <source>Number of Vertical Patches</source>
-      <translation>Broj vertikalnih zakrpa</translation>
+      <translation>Függőleges foltok száma</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2925"/>
       <source>If this label turns red, the computation might be slower.</source>
-      <translation>Ako pocrveni, proračun može biti sporiji.</translation>
+      <translation>Ha ez a címke pirosra vált, a számítás lassabb lehet.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2928"/>
       <source>Filters:</source>
-      <translation>Filteri:</translation>
+      <translation>Szűrők:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2933"/>
       <source>You can split multiple ignore words with ;</source>
-      <translation>Možete izabrati više rječi za zanemarivanje pomoću ;</translation>
+      <translation>Kihagyott szavak elválasztása ; használatával.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2937"/>
       <source>All Images</source>
-      <translation>Sve slike</translation>
+      <translation>Összes kép</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2986"/>
       <source>&amp;Save</source>
-      <translation>&amp;Sačuvaj</translation>
+      <translation>&amp;Mentés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2987"/>
       <source>&amp;Generate</source>
-      <translation>&amp;Generiši</translation>
+      <translation>&amp;Generálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2988"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3008"/>
       <source>Open TIFF</source>
-      <translation>Otvori TIFF</translation>
+      <translation>TIFF megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3018"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3039"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="3051"/>
       <source>%1 x %2 cm @150 dpi</source>
-      <translation>%1 × %2 cm @150-dpi</translation>
+      <translation>%1 x %2 cm 150 dpi-vel</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3096"/>
       <source>Patch Resolution: %1 px</source>
-      <translation>Zakrpi rezoluciju: %1 px</translation>
+      <translation>Folt felbontás: %1 px</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3294"/>
       <source>Filling empty areas...</source>
-      <translation>Popunjava prazna područja...</translation>
+      <translation>Üres területek kitöltése...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3298"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
-      <translation>Potrebno koristiti neke slike dva puta - da li je baza slika premala?</translation>
+      <translation>Néhány képet kétszer kell használnom - talán túl kicsi az adatbázis?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3303"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>Izvini, izgleda da ne mogu kreirati Vaš mozaik sa ovom bazom.</translation>
+      <translation>Sajnálom, nem tudom létrehozni a mozaikot ezzel az adatbázissal.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3427"/>
       <source>Something is seriously wrong, I could not load: %1</source>
-      <translation>Nešto je pošlo po zlu, ne mogu učitati: %1</translation>
+      <translation>Valamilyen komoly hiba történt, nem lehet betölteni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3674"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3674"/>
       <source>Sorry, I could not mix the image...</source>
-      <translation>Izvini, ne mogu spojiti sliku...</translation>
+      <translation>Sajnálom, nem tudtam összekeverni a képet...</translation>
     </message>
   </context>
   <context>
@@ -4832,12 +4830,12 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="328"/>
       <source>&amp;Sync</source>
-      <translation>&amp;Sinhronizacija</translation>
+      <translation>&amp;Szinkronizálás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="287"/>
       <source>Movie Toolbar</source>
-      <translation>Alatna traka za video</translation>
+      <translation>Film eszköztár</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="239"/>
@@ -4847,68 +4845,68 @@ Da li ih želite povratiti?</translation>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="332"/>
       <source>Pl&amp;ugins</source>
-      <translation>P&amp;riključci</translation>
+      <translation>@Bővítmények</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="572"/>
       <source>Quit nomacs</source>
-      <translation>Napusti nomacs</translation>
+      <translation>nomacs bezárása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="573"/>
       <source>Do you want nomacs to save your tabs?</source>
-      <translation>Da li želite da nomacs sačuva kartice?</translation>
+      <translation>Szeretné elmenteni a nyitott lapokat?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="575"/>
       <source>&amp;Save and Quit</source>
-      <translation>&amp;Sačuvaj i napusti</translation>
+      <translation>&amp;Mentés és kilépés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="576"/>
       <source>&amp;Quit</source>
-      <translation>&amp;Napusti</translation>
+      <translation>&amp;Kilépés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="933"/>
       <source>Recursive Folder Scan is Now Enabled</source>
-      <translation>Rekurzivno skeniranje fascikli je sad uključeno</translation>
+      <translation>Rekurzív mappa átnézés engedélyezve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="935"/>
       <source>Recursive Folder Scan is Now Disabled</source>
-      <translation>Rekurzivno skeniranje fascikli je sad isključeno</translation>
+      <translation>Rekurzív mappa átnézés letiltva</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="944"/>
       <source>Change Opacity</source>
-      <translation>Promjeni providnost</translation>
+      <translation>Opacitás módosítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1019"/>
       <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press CTRL+SHIFT+ALT+B</source>
-      <translation>Prozor zaključan
-Za otključavanje: pritisnite (Alt+Tab),
-pa onda CTRL+SHIFT+ALT+B</translation>
+      <translation>Ablak zárolva
+Feloldáshoz: hozza fókuszba (ALT+Tab),
+majd nyomjon CTRL+SHIFT+ALT+B-t</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1022"/>
       <source>You should first reduce opacity
  before working through the window.</source>
-      <translation>Prvo treba da smanjite providnost
- prije rada kroz prozor.</translation>
+      <translation>Csökkentse először a opacitást
+ mielőtt az ablakon dolgozna.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1112"/>
       <source>File Explorer</source>
-      <translation>Pregledač fajlova</translation>
+      <translation>Intéző</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1140"/>
       <source>Meta Data Info</source>
-      <translation>Meta podaci</translation>
+      <translation>Metaadat információ</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1158"/>
@@ -4918,28 +4916,28 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1176"/>
       <source>History</source>
-      <translation>Historija</translation>
+      <translation>Előzmények</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1214"/>
       <source>Thumbnails</source>
-      <translation>Sličice</translation>
+      <translation>Bélyegképek</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1251"/>
       <source>Open an Image Directory</source>
-      <translation>Otvori fasciklu sa slikama</translation>
+      <translation>Kép mappa megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1269"/>
       <source>All Files (*.*)</source>
-      <translation>Svi fajlovi (*.*)</translation>
+      <translation>Minden fájl (*. *)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1272"/>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1320"/>
       <source>Open Image</source>
-      <translation>Otvori sliku</translation>
+      <translation>Kép megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1303"/>
@@ -4967,57 +4965,58 @@ pa onda CTRL+SHIFT+ALT+B</translation>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1425"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>Izvini, fascikla: %1  ne postoji</translation>
+      <translation>Sajnálom, a mappa: %1 nem létezik
+</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1438"/>
       <source>Rename:</source>
-      <translation>Preimenuj:</translation>
+      <translation>Átnevezés:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1453"/>
       <source>Question</source>
-      <translation>Pitanje</translation>
+      <translation>Kérdés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1468"/>
       <source>Sorry, I can't delete: %1</source>
-      <translation>Izvini, ne mogu izbrisati: %1</translation>
+      <translation>Sajnálom, nem lehet törölni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1483"/>
       <source>Sorry, I can't rename: %1</source>
-      <translation>Izvini, ne mogu preimenovati: %1</translation>
+      <translation>Sajnálom, nem lehet átnevezni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1563"/>
       <source>Go To Image</source>
-      <translation>Idi na sliku</translation>
+      <translation>Ugrás képhez</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1563"/>
       <source>Image Index:</source>
-      <translation>Indeks slike:</translation>
+      <translation>Kép index:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1646"/>
       <source>Resize</source>
-      <translation>Promijeni veličinu</translation>
+      <translation>Átméretezés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1670"/>
       <source>Shall I move %1 to trash?</source>
-      <translation>Da li da prebacim %1 u otpad?</translation>
+      <translation>%1 mozgatása a szemetesbe?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1672"/>
       <source>Do you want to permanently delete %1?</source>
-      <translation>Da li želite trajno da izbrišete %1?</translation>
+      <translation>Szeretné végleg törölni %1?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1677"/>
       <source>Delete File</source>
-      <translation>Izbriši fajl</translation>
+      <translation>Fájl törlése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1717"/>
@@ -5027,70 +5026,70 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1737"/>
       <source>Sorry, I could not create a wallpaper...</source>
-      <translation>Izvini, ne mogu napraviti pozadinu...</translation>
+      <translation>Sajnálom, nem tudtam létrehozni háttérképet...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1788"/>
       <source>Save Thumbnails</source>
-      <translation>Sačuvaj sličice</translation>
+      <translation>Bélyegképek mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2134"/>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2150"/>
       <source> [Private Mode]</source>
-      <translation>[Privatni režim]</translation>
+      <translation> [Privát mód]</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2236"/>
       <source>Already downloading update</source>
-      <translation>Već preuzimam ažuriranje</translation>
+      <translation>Frissítések már töltődnek</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2263"/>
       <source>Downloading update...</source>
-      <translation>Preuzimam ažuriranje...</translation>
+      <translation>Frissítések letöltése...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2263"/>
       <source>Cancel Update</source>
-      <translation>Otkaži ažuriranje</translation>
+      <translation>Frissítés leállítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2297"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation>Nemoguće instalirati novu verziju&lt;br&gt;</translation>
+      <translation>Új verzió telepítése sikertelen&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2298"/>
       <source>You can download the new version from our web page</source>
-      <translation>Možete preuzeti novu verziju sa naše internet stranice</translation>
+      <translation>Letöltheti az újabb verziót a weboldalunkról</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1737"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1429"/>
       <source>Sorry, I can't write to the fileInfo: %1</source>
-      <translation>Izvini, ne mogu pisati u fajl: %1</translation>
+      <translation>Sajnálom, nem lehet írni a fájlinformációba: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="1454"/>
       <source>The fileInfo: %1  already exists.
  Do you want to replace it?</source>
-      <translation>Fajl: %1 već postoji.
- Da li želite da ga zamjenite?</translation>
+      <translation>A fájlinformáció: %1 már létezik.
+ Le szeretné cserélni?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2312"/>
       <source>Downloading new translations...</source>
-      <translation>Preuzimam nove prevode...</translation>
+      <translation>Új fordítások letöltése...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2312"/>
       <source>Cancel</source>
-      <translation>Otkaži</translation>
+      <translation>Mégse</translation>
     </message>
   </context>
   <context>
@@ -5098,7 +5097,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkNoMacs.cpp" line="2563"/>
       <source>Sorry, I could not find any clients.</source>
-      <translation>Izvini, ne mogu pronaći klijente.</translation>
+      <translation>Sajnálom, nem találhatóak kliensek.</translation>
     </message>
   </context>
   <context>
@@ -5106,17 +5105,17 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2475"/>
       <source>Window Opacity</source>
-      <translation>Providnost prozora</translation>
+      <translation>Ablak opacitás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2480"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2481"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
   </context>
   <context>
@@ -5124,22 +5123,22 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1263"/>
       <source>Show previous image</source>
-      <translation>Prikaži prethodnu sliku</translation>
+      <translation>Előző kép megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1275"/>
       <source>Play/Pause</source>
-      <translation>Pusti/Pauziraj</translation>
+      <translation>Lejátszás/szünet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1287"/>
       <source>Show next image</source>
-      <translation>Prikaži sljedeću sliku</translation>
+      <translation>Következő kép megjelenítése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1330"/>
       <source>play</source>
-      <translation>pusti</translation>
+      <translation>lejátszás</translation>
     </message>
   </context>
   <context>
@@ -5147,22 +5146,22 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="435"/>
       <source>Author:</source>
-      <translation>Autor:</translation>
+      <translation>Szerző:</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="436"/>
       <source>Company:</source>
-      <translation>Kompanija:</translation>
+      <translation>Vállalat:</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="437"/>
       <source>Created:</source>
-      <translation>Kreirano:</translation>
+      <translation>Létrehozva:</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="438"/>
       <source>Last Modified:</source>
-      <translation>Posljednja izmjena:</translation>
+      <translation>Utoljára módosítva:</translation>
     </message>
   </context>
   <context>
@@ -5170,12 +5169,12 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="547"/>
       <source>Plugin Manager</source>
-      <translation>Upravljač priključaka</translation>
+      <translation>Bővítmény kezelő</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="559"/>
       <source>&amp;Close</source>
-      <translation>&amp;Zatvori</translation>
+      <translation>&amp;Bezárás</translation>
     </message>
   </context>
   <context>
@@ -5183,7 +5182,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkCore/DkPluginManager.cpp" line="618"/>
       <source>Search plugins</source>
-      <translation>Pretraži priključke</translation>
+      <translation>Bővítmények keresése</translation>
     </message>
   </context>
   <context>
@@ -5191,22 +5190,22 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkPong.cpp" line="336"/>
       <source>PAUSED</source>
-      <translation>PAUZIRANO</translation>
+      <translation>FELFÜGGESZTVE</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation>Pritisni &lt;SPACE&gt; za početak.</translation>
+      <translation>Indításához nyomjon &lt;SPACE&gt;-t.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.cpp" line="485"/>
       <source>%1 won!</source>
-      <translation>%1 je pobijedio!</translation>
+      <translation>%1 nyert!</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation>Pritisni &lt;SPACE&gt; za novu igru</translation>
+      <translation>Új játék indításához nyomjon &lt;SPACE&gt;-t</translation>
     </message>
   </context>
   <context>
@@ -5214,17 +5213,17 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="70"/>
       <source>next</source>
-      <translation>sljedeće</translation>
+      <translation>következő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="75"/>
       <source>previous</source>
-      <translation>prethodno</translation>
+      <translation>előző</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkPreferenceWidgets.cpp" line="95"/>
       <source>Restart nomacs</source>
-      <translation>Ponovo pokreni nomacs</translation>
+      <translation>Nomacs újraindítása</translation>
     </message>
   </context>
   <context>
@@ -5232,53 +5231,53 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2174"/>
       <source>Fit Width</source>
-      <translation>Prilagodi širinu</translation>
+      <translation>Szélességhez igazítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2175"/>
       <source>Fit Page</source>
-      <translation>Prilagodi stranici</translation>
+      <translation>Oldalhoz igazítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2184"/>
       <source>Zoom in</source>
-      <translation>Uvećaj</translation>
+      <translation>Nagyítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2187"/>
       <source>Zoom out</source>
-      <translation>Smanji</translation>
+      <translation>Kicsinyítés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2202"/>
       <source>Portrait</source>
-      <translation>Portret</translation>
+      <translation>Álló</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2205"/>
       <source>Landscape</source>
-      <translation>Pejzaž</translation>
+      <translation>Fekvő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2210"/>
       <source>Print</source>
-      <translation>Štampaj</translation>
+      <translation>Nyomtatás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2209"/>
       <source>Page setup</source>
-      <translation>Podešavanje stranice</translation>
+      <translation>Oldalbeállítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2190"/>
       <source>keep ALT key pressed to zoom with the mouse wheel</source>
-      <translation>držite ALT dugme pritisnuto za uvećavanje pomoću miša</translation>
+      <translation>tartsa nyomva az ALT billentyűt az egér görgővel nagyításhoz</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2110"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="2213"/>
       <source>Print Preview</source>
-      <translation>Pregled prije štampanja</translation>
+      <translation>Nyomtatási kép</translation>
     </message>
   </context>
   <context>
@@ -5301,7 +5300,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1175"/>
       <source>Output</source>
-      <translation>Izlaz</translation>
+      <translation>Kimenet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1179"/>
@@ -5316,7 +5315,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1203"/>
       <source>Delete</source>
-      <translation>Izbriši</translation>
+      <translation>Törlés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1208"/>
@@ -5340,7 +5339,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
       <location filename="../src/DkGui/DkBatch.cpp" line="1280"/>
       <location filename="../src/DkGui/DkBatch.cpp" line="1336"/>
       <source>inactive</source>
-      <translation>neaktivno</translation>
+      <translation>inaktív</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkBatch.cpp" line="1305"/>
@@ -5393,7 +5392,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkQuickAccess.cpp" line="141"/>
       <source>Quick Launch (%1)</source>
-      <translation>Brzo pokreni (%1)</translation>
+      <translation>Gyors indítás (%1)</translation>
     </message>
   </context>
   <context>
@@ -5401,27 +5400,27 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1023"/>
       <source>one star</source>
-      <translation>jedna zvijezda</translation>
+      <translation>egy csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1027"/>
       <source>two stars</source>
-      <translation>svije zvijezde</translation>
+      <translation>két csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1031"/>
       <source>three star</source>
-      <translation>tri zvijezde</translation>
+      <translation>három csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1035"/>
       <source>four star</source>
-      <translation>četiri zvijezde</translation>
+      <translation>négy csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1039"/>
       <source>five star</source>
-      <translation>pet zvijezda</translation>
+      <translation>öt csillag</translation>
     </message>
   </context>
   <context>
@@ -5429,32 +5428,32 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1060"/>
       <source>no rating</source>
-      <translation>bez ocjene</translation>
+      <translation>nincs értékelés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1064"/>
       <source>one star</source>
-      <translation>jedna zvijezda</translation>
+      <translation>egy csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1068"/>
       <source>two stars</source>
-      <translation>svije zvijezde</translation>
+      <translation>két csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1072"/>
       <source>three stars</source>
-      <translation>tri zvijezde</translation>
+      <translation>három csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1076"/>
       <source>four stars</source>
-      <translation>četiri zvijezde</translation>
+      <translation>négy csillag</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="1080"/>
       <source>five stars</source>
-      <translation>pet zvijezda</translation>
+      <translation>öt csillag</translation>
     </message>
   </context>
   <context>
@@ -5490,99 +5489,99 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="884"/>
       <source>Resize Image</source>
-      <translation>Promjeni veličinu slike</translation>
+      <translation>Kép átméretezése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="903"/>
       <source>Original</source>
-      <translation>Originalna</translation>
+      <translation>Eredeti</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="905"/>
       <source>New</source>
-      <translation>Nova</translation>
+      <translation>Új</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="934"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="971"/>
       <source>Width: </source>
-      <translation>Širina: </translation>
+      <translation>Szélesség: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="947"/>
       <location filename="../src/DkGui/DkDialog.cpp" line="986"/>
       <source>Height: </source>
-      <translation>Visina: </translation>
+      <translation>Magasság: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1012"/>
       <source>Resolution: </source>
-      <translation>Rezolucija: </translation>
+      <translation>Felbontás: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1021"/>
       <source>pixel/inch</source>
-      <translation>piksel/inč</translation>
+      <translation>képpont/hüvelyk</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1022"/>
       <source>pixel/cm</source>
-      <translation>piksel/cm</translation>
+      <translation>képpont/cm</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1033"/>
       <source>Resample Image:</source>
-      <translation>Izmjeni uzorak:</translation>
+      <translation>Kép újramintavételezése:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1040"/>
       <source>Nearest Neighbor</source>
-      <translation>Najbliži susjed</translation>
+      <translation>Legközelebbi szomszéd</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1041"/>
       <source>Area (best for downscaling)</source>
-      <translation>Oblast (najbolje za smanjivanje)</translation>
+      <translation>Terület (legjobb a leméretezéshez)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1042"/>
       <source>Linear</source>
-      <translation>Linearno</translation>
+      <translation>Lineáris</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1043"/>
       <source>Bicubic (4x4 pixel interpolation)</source>
-      <translation>Bikubično (4×4 pikselna interpolacija)</translation>
+      <translation>Kettős köbös (4x4 pixeles interpoláció)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1044"/>
       <source>Lanczos (8x8 pixel interpolation)</source>
-      <translation>Lanczos (8×8 pikselna interpolacija)</translation>
+      <translation>Lánczos (8x8 pixel interpoláció)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1053"/>
       <source>Gamma Correction</source>
-      <translation>Korekcija game</translation>
+      <translation>Gamma korrekció</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1064"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1065"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1452"/>
       <source>Sorry, but the image size %1 x %2 is illegal.</source>
-      <translation>Izvini, ali veličina slike %1 × %2 je nedozvoljena.</translation>
+      <translation>Sajnálom, de a %1 x %2 képméret tilos.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1464"/>
       <source>Sorry, the image is too large: %1</source>
-      <translation>Izvini, slika je prevelika: %1</translation>
+      <translation>Sajnálom, a kép túl nagy: %1</translation>
     </message>
   </context>
   <context>
@@ -5598,22 +5597,22 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="622"/>
       <source>Find &amp; Filter</source>
-      <translation>Pronađi i filtriraj</translation>
+      <translation>Keresés &amp; Szűrés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="624"/>
       <source>Load All</source>
-      <translation>Učitaj sve</translation>
+      <translation>Összes betöltése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="648"/>
       <source>F&amp;ind</source>
-      <translation>Pr&amp;onađi</translation>
+      <translation>&amp;Keresés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="643"/>
       <source>&amp;Filter</source>
-      <translation>&amp;Filter</translation>
+      <translation>&amp;Szűrés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="632"/>
@@ -5623,7 +5622,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="690"/>
       <source>No Matching Items</source>
-      <translation>Nema stavki koje se poklapaju</translation>
+      <translation>Nincs egyező elem</translation>
     </message>
   </context>
   <context>
@@ -5631,12 +5630,12 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkSettingsWidget.cpp" line="299"/>
       <source>Settings</source>
-      <translation>Postavke</translation>
+      <translation>Beállítások</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkSettingsWidget.cpp" line="299"/>
       <source>Value</source>
-      <translation>Vrijednost</translation>
+      <translation>Érték</translation>
     </message>
   </context>
   <context>
@@ -5649,7 +5648,7 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkSettingsWidget.cpp" line="157"/>
       <source>Delete</source>
-      <translation>Izbriši</translation>
+      <translation>Törlés</translation>
     </message>
   </context>
   <context>
@@ -5657,27 +5656,27 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1908"/>
       <source>Keyboard Shortcuts</source>
-      <translation>Prečice tastature</translation>
+      <translation>Gyorsbillentyűk</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1944"/>
       <source>Set to &amp;Default</source>
-      <translation>&amp;Podesi kao standardne</translation>
+      <translation>&amp;Alapértelmezett</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1945"/>
       <source>Removes All Custom Shortcuts</source>
-      <translation>Uklanja sve prilagođene prečice</translation>
+      <translation>Összes egyéni gyorsbillentyű eltávolítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1958"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1959"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
   </context>
   <context>
@@ -5685,26 +5684,26 @@ pa onda CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1613"/>
       <source>Name</source>
-      <translation>Ime</translation>
+      <translation>Név</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1613"/>
       <source>Shortcut</source>
-      <translation>Prečica</translation>
+      <translation>Billentyűkombináció</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1819"/>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-      <translation>%1 već koristi %2 &gt; %3
-Pritisni ESC za opoziv promijena</translation>
+      <translation>%1 már használatban van: %2 &gt; %3
+Nyomjon ESC-et a változások visszavonásához</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="1825"/>
       <source>%1 already used by %2
 Press ESC to undo changes</source>
-      <translation>%1 već koristi %2
-Pritisni ESC za opoziv promijena</translation>
+      <translation>%1 már használatban van: %2
+Nyomjon ESC-et a változások visszavonásához</translation>
     </message>
   </context>
   <context>
@@ -5712,17 +5711,17 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="126"/>
       <source>CLOSE</source>
-      <translation>ZATVORI</translation>
+      <translation>BEZÁRÁS</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="130"/>
       <source>Close (ESC)</source>
-      <translation>Zatvori (ESC)</translation>
+      <translation>Bezárás (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="255"/>
       <source>Portable</source>
-      <translation>Prenosivo</translation>
+      <translation>Hordozható</translation>
     </message>
   </context>
   <context>
@@ -5730,7 +5729,7 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkCore/DkStatusBar.cpp" line="56"/>
       <source>CTRL activates the crosshair cursor</source>
-      <translation>CTRL aktivira krstić kursor</translation>
+      <translation>CTRL aktiválja a célkereszt kurzort</translation>
     </message>
   </context>
   <context>
@@ -5738,7 +5737,7 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkMenu.cpp" line="227"/>
       <source>no clients found</source>
-      <translation>klijenti nisu pronađeni</translation>
+      <translation>nem találhatóak kliensek</translation>
     </message>
   </context>
   <context>
@@ -5746,44 +5745,43 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2005"/>
       <source>Text Editor</source>
-      <translation>Tekstualni editor</translation>
+      <translation>Szöveg szerkesztő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2015"/>
       <source>&amp;Save</source>
-      <translation>&amp;Sačuvaj</translation>
+      <translation>&amp;Mentés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2016"/>
       <source>&amp;Close</source>
-      <translation>&amp;Zatvori</translation>
+      <translation>&amp;Bezárás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2040"/>
       <source>Text File (*.txt)</source>
-      <translation>Tekstualni fajl (*.txt)</translation>
+      <translation>Szövegfájlok (*.txt)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2040"/>
       <source>All Files (*.*)</source>
-      <translation>Svi fajlovi (*.*)</translation>
+      <translation>Minden fájl (*. *)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2043"/>
       <source>Save Text File</source>
-      <translation>Sačuvaj tekstualni fajl</translation>
+      <translation>Szöveges fájl mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2056"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2056"/>
       <source>Could not save: %1
 %2</source>
-      <translation>Ne mogu sačuvati: %1
-%2</translation>
+      <translation>Nem lehet menteni: %1 %2</translation>
     </message>
   </context>
   <context>
@@ -5804,17 +5802,17 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="910"/>
       <source>Name: </source>
-      <translation>Ime: </translation>
+      <translation>Név: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="911"/>
       <source>Size: </source>
-      <translation>Veličina: </translation>
+      <translation>Méret: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="912"/>
       <source>Created: </source>
-      <translation>Kreirano:</translation>
+      <translation>Készítette: </translation>
     </message>
   </context>
   <context>
@@ -5834,49 +5832,48 @@ Pritisni ESC za opoziv promijena</translation>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1463"/>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1509"/>
       <source>Error</source>
-      <translation>Greška</translation>
+      <translation>Hiba</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1412"/>
       <source>Sorry, I cannot copy %1 to %2</source>
-      <translation>Izvini, ne mogu kopirati %1 u %2</translation>
+      <translation>Sajnálom, nem lehet másolni %1 &gt; %2</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1433"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation>Da li da pomjerim %1 fajl(ova) u otpad?</translation>
+      <translation>%1 fájl(ok) mozgatása a szemetesbe?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1435"/>
       <source>Are you sure you want to permanently delete %1 file(s)?</source>
-      <translation>Da li ste sigurni da želite trajno obrisati %1 fajl(a)?</translation>
+      <translation>Biztosan szeretne véglegesen törli %1 fájlt?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1440"/>
       <source>Delete File</source>
-      <translation>Izbriši fajl</translation>
+      <translation>Fájl törlése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1464"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation>Izvini, ne mogu izbrisati:
-%1</translation>
+      <translation>Sajnálom, nem lehet törölni: %1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1491"/>
       <source>Rename File(s)</source>
-      <translation>Preimenuj fajl(ove)</translation>
+      <translation>Fájl(ok) átnevezése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1492"/>
       <source>New Filename:</source>
-      <translation>Novo ime fajla:</translation>
+      <translation>Új fájlnév:</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1510"/>
       <source>Sorry, I cannot rename: %1 to %2</source>
-      <translation>Izvini, ne mogu preimenovati: %1 u %2</translation>
+      <translation>Sajnálom, nem lehet átnevezni: %1 &gt; %2</translation>
     </message>
   </context>
   <context>
@@ -5884,22 +5881,22 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1899"/>
       <source>&amp;Sort</source>
-      <translation>&amp;Sortiraj</translation>
+      <translation>&amp;Rendezés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1875"/>
       <source>Thumb Preview Toolbar</source>
-      <translation>Traka za pregled sličica</translation>
+      <translation>Bélyegkép előnézet eszköztár</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1919"/>
       <source>Filter Files (Ctrl + F)</source>
-      <translation>Filtriraj fajlove (Ctrl + F)</translation>
+      <translation>Fájlok szűrése (Ctrl + F)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkThumbsWidgets.cpp" line="1932"/>
       <source>Thumb</source>
-      <translation>Sličica</translation>
+      <translation>Bélyegkép</translation>
     </message>
   </context>
   <context>
@@ -5907,7 +5904,7 @@ Pritisni ESC za opoziv promijena</translation>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="295"/>
       <source>Cancel</source>
-      <translation>Otkaži</translation>
+      <translation>Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="294"/>
@@ -5915,12 +5912,13 @@ Pritisni ESC za opoziv promijena</translation>
 Creating thumbnails...
 </source>
       <translation>
-Kreiram sličice...</translation>
+Bélyegképek készítése...
+</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkWidgets.cpp" line="299"/>
       <source>Thumbnails</source>
-      <translation>Sličice</translation>
+      <translation>Bélyegképek</translation>
     </message>
   </context>
   <context>
@@ -5928,27 +5926,27 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="65"/>
       <source>TIF compression</source>
-      <translation>TIF kompresija</translation>
+      <translation>TIF tömörítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="68"/>
       <source>&amp;no compression</source>
-      <translation>&amp;bez kompresije</translation>
+      <translation>&amp;nincs tömörítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="69"/>
       <source>&amp;LZW compression (lossless)</source>
-      <translation>&amp;LZW kompresija (bez gubitka)</translation>
+      <translation>&amp;LZW tömörítés (veszteségmentes)</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="79"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkSaveDialog.cpp" line="80"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
   </context>
   <context>
@@ -5974,57 +5972,57 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="284"/>
       <source>Add New Image Format</source>
-      <translation>Dodaj novi format slike</translation>
+      <translation>Új kép formátum hozzáadása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="293"/>
       <source>Load New Image Format</source>
-      <translation>Učitaj novi format slike</translation>
+      <translation>Új kép formátum betöltése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="300"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Pregledaj</translation>
+      <translation>&amp;Tallózás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="313"/>
       <source>&amp;Add</source>
-      <translation>&amp;Dodaj</translation>
+      <translation>&amp;Hozzáadás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="315"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="347"/>
       <source>Open Image</source>
-      <translation>Otvori sliku</translation>
+      <translation>Kép megnyitása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="348"/>
       <source>All Files (*.*)</source>
-      <translation>Svi fajlovi (*.*)</translation>
+      <translation>Minden fájl (*. *)</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="394"/>
       <source>Sorry, currently we don't support: *.%1 files</source>
-      <translation>Izvini, trenutno ne podržavamo: *.%1 fajlove</translation>
+      <translation>Sajnálom, jelenleg nem támogatott: *.%1</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="399"/>
       <source>*.%1 is already supported.</source>
-      <translation>*.%1 je već podržan.</translation>
+      <translation>*.%1 már támogatott.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="403"/>
       <source>*.%1 is supported.</source>
-      <translation>*.%1 je podržan.</translation>
+      <translation>*.%1 támogatott.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="420"/>
       <source>Please name the new format:</source>
-      <translation>Molimo imenujte novi format:</translation>
+      <translation>Adjon nevet az új formátumnak:</translation>
     </message>
   </context>
   <context>
@@ -6032,67 +6030,67 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="528"/>
       <source>Enable</source>
-      <translation>Uključi</translation>
+      <translation>Engedélyezés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="603"/>
       <source>Resets the Pseudo Color function</source>
-      <translation>Resetuj funkciju pseudo-boja</translation>
+      <translation>Pszeudoszín funkció visszaállítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="777"/>
       <source>Disables the Pseudo Color function</source>
-      <translation>Isključuje funkciju pseudo-boja</translation>
+      <translation>Pszeudoszín funkció letiltása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="538"/>
       <source>Changes the displayed color channel</source>
-      <translation>Mijenja prikazani kanal boja</translation>
+      <translation>Megváltoztatja a megjelenített szín csatornát</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="523"/>
       <source>Pseudo Color Toolbar</source>
-      <translation>Traka za pseudo-boje</translation>
+      <translation>Pszeudoszín eszköztár</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="543"/>
       <source>Delete</source>
-      <translation>Izbriši</translation>
+      <translation>Törlés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="558"/>
       <source>Click into the field for a new slider</source>
-      <translation>Klikni u polje za novi klizač</translation>
+      <translation>Kattintson a mezőbe egy új csúszka készítéséhez</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="602"/>
       <source>Reset</source>
-      <translation>Resetuj</translation>
+      <translation>Visszaállítás</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="608"/>
       <source>Select Color</source>
-      <translation>Izaberi boju</translation>
+      <translation>Szín kiválasztása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="609"/>
       <source>Adds a slider at the selected color value</source>
-      <translation>Dodaje slajder za izabranu boju</translation>
+      <translation>Hozzáad egy csúszkát a kijelölt szín értékéhez</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="614"/>
       <source>Save Gradient</source>
-      <translation>Sačuvaj prelaz</translation>
+      <translation>Színátmenet mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="615"/>
       <source>Saves the current Gradient</source>
-      <translation>Sačuva trenutni prelaz</translation>
+      <translation>Jelenlegi színátmenete mentése</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="743"/>
       <source>Gray</source>
-      <translation>Siva</translation>
+      <translation>Szürke</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="746"/>
@@ -6102,23 +6100,23 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="747"/>
       <source>Red</source>
-      <translation>Crvena</translation>
+      <translation>Piros</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="748"/>
       <source>Green</source>
-      <translation>Zelena</translation>
+      <translation>Zöld</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="749"/>
       <source>Blue</source>
-      <translation>Plava</translation>
+      <translation>Kék</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkToolbars.cpp" line="529"/>
       <location filename="../src/DkGui/DkToolbars.cpp" line="779"/>
       <source>Enables the Pseudo Color function</source>
-      <translation>Uključuje traku sa funckijom za pseudo-boje</translation>
+      <translation>Pszeudoszín funkció engedélyezése</translation>
     </message>
   </context>
   <context>
@@ -6126,7 +6124,7 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="398"/>
       <source>Unable to download translation</source>
-      <translation>Nemoguće preuzimanje prevoda</translation>
+      <translation>A fordítás letöltése sikertelen</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="398"/>
@@ -6134,22 +6132,22 @@ Kreiram sličice...</translation>
       <location filename="../src/DkCore/DkUpdater.cpp" line="437"/>
       <location filename="../src/DkCore/DkUpdater.cpp" line="442"/>
       <source>update</source>
-      <translation>ažuriranje</translation>
+      <translation>frissítés</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="415"/>
       <source>Unable to update translation</source>
-      <translation>Nemoguće ažurirati prevod</translation>
+      <translation>A fordítás frissítése sikertelen</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="437"/>
       <source>Translation updated</source>
-      <translation>Prevod ažuriran</translation>
+      <translation>Fordítás frissítve</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="442"/>
       <source>No newer translations found</source>
-      <translation>Nisu pronađeni novi prevodi</translation>
+      <translation>Nem találhatóak új fordítások</translation>
     </message>
   </context>
   <context>
@@ -6170,17 +6168,17 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2079"/>
       <source>nomacs updater</source>
-      <translation>nomacs ažuriranje</translation>
+      <translation>nomacs frissítő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2087"/>
       <source>Install Now</source>
-      <translation>Instaliraj sada</translation>
+      <translation>Telepítés</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="2088"/>
       <source>Cancel</source>
-      <translation>Otkaži</translation>
+      <translation>Mégse</translation>
     </message>
   </context>
   <context>
@@ -6188,7 +6186,7 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="240"/>
       <source>sorry, I could not check for newer versions</source>
-      <translation>izvini, ne mogu provjeriti za nove verzije</translation>
+      <translation>Sajnálom, nem lehet újabb verziót keresni</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="240"/>
@@ -6197,42 +6195,42 @@ Kreiram sličice...</translation>
       <location filename="../src/DkCore/DkUpdater.cpp" line="271"/>
       <location filename="../src/DkCore/DkUpdater.cpp" line="341"/>
       <source>updates</source>
-      <translation>ažuriranja</translation>
+      <translation>frissítések</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="252"/>
       <source>A new version</source>
-      <translation>Nova verzija</translation>
+      <translation>Egy új verzió</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="252"/>
       <source>is available</source>
-      <translation>je dostupna</translation>
+      <translation>elérhető</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="253"/>
       <source>Do you want to download and install it now?</source>
-      <translation>Da li je želite preuzeti i instalirati?</translation>
+      <translation>Szeretné letölteni és telepíteni most?</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="254"/>
       <source>For more information see </source>
-      <translation>Za više informacija pogledajte</translation>
+      <translation>További információ </translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="271"/>
       <source>sorry, unable to download the new version</source>
-      <translation>izvini, nemoguće preuzimanje nove verzije</translation>
+      <translation>Sajnálom, nem lehet letölteni az új verziót</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="341"/>
       <source>Unable to connect to server ... please try again later</source>
-      <translation>Nemoguće spajanje na server ... molimo pokušajte kasnije</translation>
+      <translation>Nem lehet csatlakozni a kiszolgálóhoz ... kérem próbálja újra később</translation>
     </message>
     <message>
       <location filename="../src/DkCore/DkUpdater.cpp" line="263"/>
       <source>nomacs is up-to-date</source>
-      <translation>nomacs je ažuran</translation>
+      <translation>A nomacs naprakész</translation>
     </message>
   </context>
   <context>
@@ -6240,17 +6238,17 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="238"/>
       <source>Original Image</source>
-      <translation>Originalna slika</translation>
+      <translation>Eredeti kép</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="651"/>
       <source>connected with: </source>
-      <translation>povezan sa: </translation>
+      <translation>csatlakoztatva: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="655"/>
       <source>disconnected with: </source>
-      <translation>nepovezan sa: </translation>
+      <translation>szétkapcsolva: </translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="739"/>
@@ -6260,12 +6258,12 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1416"/>
       <source>Transparency Pattern Enabled</source>
-      <translation>Providnost uključena</translation>
+      <translation>Átláthatósági minta engedélyezve</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1416"/>
       <source>Transparency Pattern Disabled</source>
-      <translation>Providnost isključena</translation>
+      <translation>Átláthatósági minta letiltva</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1457"/>
@@ -6275,28 +6273,28 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1457"/>
       <source>A remarkable woman</source>
-      <translation>Izuzetna žena</translation>
+      <translation>Egy figyelemre méltó nő</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1467"/>
       <source>you cannot cancel this</source>
-      <translation>ne možete otkazati ovo</translation>
+      <translation>nem lehet megszakítani</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1475"/>
       <source>did you understand the brainteaser?</source>
-      <translation>razumijete li slagalicu?</translation>
+      <translation>megértette a fejtörőt?</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1477"/>
       <source>%1 is wrong...</source>
-      <translation>%1 je pogrešno...</translation>
+      <translation>%1 hibás...</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1518"/>
       <location filename="../src/DkGui/DkViewPort.cpp" line="1544"/>
       <source>Attempted to set NULL image</source>
-      <translation>Pokušaj da se postavi NULL slika</translation>
+      <translation>Megkísérelt NULL képet beállítani</translation>
     </message>
   </context>
   <context>
@@ -6304,7 +6302,7 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkViewPort.cpp" line="2076"/>
       <source>Press F10 to exit Frameless view</source>
-      <translation>Pritisni F10 za izlaz iz pregleda bez okvira</translation>
+      <translation>Nyomjon F10-et a keret nélküli nézetből kilépéshez</translation>
     </message>
   </context>
   <context>
@@ -6312,32 +6310,32 @@ Kreiram sličice...</translation>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3783"/>
       <source>Welcome</source>
-      <translation>Dobrodošli</translation>
+      <translation>Üdvözlet</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3792"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
-      <translation>Dobrodošli u nomacs, molimo izaberite željeni jezik.</translation>
+      <translation>Üdvözli a nomacs, válassza ki a kívánt nyelvet.</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3797"/>
       <source>&amp;Register File Associations</source>
-      <translation>Prijavi asocijacije za fajlove</translation>
+      <translation>&amp;Fájltársítások beállítása</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3800"/>
       <source>Set As &amp;Default Viewer</source>
-      <translation>Postavi kao po&amp;drazumijevani pregledač slika</translation>
+      <translation>Beállítás &amp;alapértelmezett megjelenítőként</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3805"/>
       <source>&amp;OK</source>
-      <translation>&amp;U redu</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <location filename="../src/DkGui/DkDialog.cpp" line="3806"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Otkaži</translation>
+      <translation>&amp;Mégse</translation>
     </message>
   </context>
 </TS>
