@@ -438,6 +438,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	sync_p.allowFile = settings.value("allowFile", sync_p.allowFile).toBool();
 	sync_p.allowImage = settings.value("allowImage", sync_p.allowImage).toBool();;
 	sync_p.checkForUpdates = settings.value("checkForUpdates", sync_p.checkForUpdates).toBool();
+	sync_p.disableUpdateInteraction = settings.value("disableUpdateInteraction", sync_p.disableUpdateInteraction).toBool();
 	sync_p.updateDialogShown = settings.value("updateDialogShown", sync_p.updateDialogShown).toBool();
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
@@ -706,8 +707,10 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("allowFile", sync_p.allowFile);
 	if (force ||sync_p.allowImage != sync_d.allowImage)
 		settings.setValue("allowImage", sync_p.allowImage);
-	if (force ||sync_p.checkForUpdates != sync_d.checkForUpdates)
+	//if (force ||sync_p.checkForUpdates != sync_d.checkForUpdates)
 		settings.setValue("checkForUpdates", sync_p.checkForUpdates);
+	//if (force || sync_p.disableUpdateInteraction != sync_d.disableUpdateInteraction)
+		settings.setValue("disableUpdateInteraction", sync_p.disableUpdateInteraction);
 	if (force ||sync_p.updateDialogShown != sync_d.updateDialogShown)
 		settings.setValue("updateDialogShown", sync_p.updateDialogShown);
 	if (force ||sync_p.lastUpdateCheck != sync_d.lastUpdateCheck)
@@ -870,6 +873,7 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.allowFile = true;
 	sync_p.allowImage = true;
 	sync_p.checkForUpdates = !isPortable();	// installed version should only check for updates by default
+	sync_p.disableUpdateInteraction = isPortable();	// installed version should only check for updates by default
 	sync_p.updateDialogShown = false;
 	sync_p.lastUpdateCheck = QDate(1970 , 1, 1);
 	sync_p.syncAbsoluteTransform = true;

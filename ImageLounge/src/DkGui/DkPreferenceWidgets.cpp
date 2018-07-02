@@ -407,6 +407,7 @@ void DkGeneralPreference::createLayout() {
 	cbCheckForUpdates->setObjectName("checkForUpdates");
 	cbCheckForUpdates->setToolTip(tr("Check for updates on start-up."));
 	cbCheckForUpdates->setChecked(DkSettingsManager::param().sync().checkForUpdates);
+	cbCheckForUpdates->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
 	DkGroupWidget* generalGroup = new DkGroupWidget(tr("General"), this);
 	generalGroup->addWidget(cbRecentFiles);

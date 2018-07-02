@@ -294,6 +294,7 @@ public:
 		bool allowImage;
 		bool checkForUpdates;
 		bool updateDialogShown;
+		bool disableUpdateInteraction;
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
 		bool switchModifier;
