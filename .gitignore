@@ -6,6 +6,7 @@
 *.filters
 *.htm
 *.aps
+*.msi
 release
 debug
 _UpgradeReport_Files

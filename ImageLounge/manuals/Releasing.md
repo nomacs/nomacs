@@ -1,6 +1,7 @@
 # Releasing 🍸
 
 ## Windows
+
 - Update Version Number (in `CMakeLists.txt` *and* `nomacs.rc`)
 - Update translations
 - Tag commit - Title: version (e.g. 3.2)
@@ -17,12 +18,11 @@
 - double-click `make-installer.bat`
 - check if the newly created installer `noamcs-setup.msi` is signed
 - upload `nomacs-setup.msi` to http://download.nomacs.org/htdocs/
-- upload `nomacs-setup.exe`
 
 ### nomacs portable
-- copy the packages/nomacs.x64/data/nomacs.x64 folder to projects/nomacs/releases and name it `nomacs-3.x.x`
+
+- copy the installer/nomacs.x64/ folder to projects/nomacs/releases and name it `nomacs-3.x.x`
 - copy all files from portable-files to this new folder
-- copy the `src/settings.css` to this folder and name it `nomacs.css`
 - zip the `nomacs-3.x.x folder`
 - back-up the installer folder to the release folder
 - upload the `nomacs-3.x.x.zip` to http://download.nomacs.org/htdocs/portable
@@ -30,10 +30,12 @@
 - update http://download.nomacs.org/htdocs/versions/index.html
 
 ## READ release
+
 - Update Version Number in ReadFramework (in CMakeLists.txt and rdf.rc)
 - Update version number in json for updated module in ReadModule
 
-### Nomacs:
+### nomacs
+
 - make-installer.bat rename `nomacs-setup.msi` to `ReadFramework.msi`
 - nomacs-setup.wxs comment default nomacs, uncomment read build
 - nomacs-setup.wxs update ProductVersion

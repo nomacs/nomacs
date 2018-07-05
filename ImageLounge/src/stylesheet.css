@@ -569,4 +569,5 @@ nmc--DkMetaDataSelection QScrollArea QWidget {
 QLabel#DkLabelBg {
 	color: HUD_FOREGROUND_COLOR;
 	background-color: HUD_BACKGROUND_COLOR;
+	padding: 5px;
 }
