@@ -1414,9 +1414,11 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mHelpActions[menu_help_update] = new QAction(QObject::tr("&Check for Updates"), parent);
 	mHelpActions[menu_help_update]->setStatusTip(QObject::tr("check for updates"));
+	mHelpActions[menu_help_update]->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
 	mHelpActions[menu_help_update_translation] = new QAction(QObject::tr("&Update Translation"), parent);
 	mHelpActions[menu_help_update_translation]->setStatusTip(QObject::tr("Checks for a new version of the translations of the current language"));
+	mHelpActions[menu_help_update_translation]->setDisabled(DkSettingsManager::param().sync().disableUpdateInteraction);
 
 	// sync actions
 	mSyncActions.resize(menu_sync_end);

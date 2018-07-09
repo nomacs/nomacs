@@ -86,7 +86,7 @@ public:
 
 	DkUpdater(QObject* parent = 0);
 
-	public slots:
+public slots:
 	void checkForUpdates();
 	void replyFinished(QNetworkReply*);
 	void replyError(QNetworkReply::NetworkError);
@@ -122,7 +122,7 @@ public:
 	DkTranslationUpdater(bool silent = false, QObject* parent = 0);
 	bool silent;
 
-	public slots:
+public slots:
 	virtual void checkForUpdates();
 	virtual void replyFinished(QNetworkReply*);
 	void updateDownloadProgress(qint64 received, qint64 total);

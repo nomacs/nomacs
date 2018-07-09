@@ -155,6 +155,15 @@ DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 
 void DkUpdater::checkForUpdates() {
 
+	if (DkSettingsManager::param().sync().disableUpdateInteraction) {
+		QMessageBox::critical(
+			DkUtils::getMainWindow(), 
+			tr("Updates Disabled"), 
+			tr("nomacs updates are disabled.\nPlease contact your system administrator for further information."), 
+			QMessageBox::Ok);
+		return;
+	}
+
 	DkSettingsManager::param().sync().lastUpdateCheck = QDate::currentDate();
 	DkSettingsManager::param().save();
 
@@ -352,6 +361,15 @@ DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject* parent) : QObje
 }
 
 void DkTranslationUpdater::checkForUpdates() {
+
+	if (DkSettingsManager::param().sync().disableUpdateInteraction) {
+		QMessageBox::critical(
+			DkUtils::getMainWindow(),
+			tr("Updates Disabled"),
+			tr("nomacs updates are disabled.\nPlease contact your system administrator for further information."),
+			QMessageBox::Ok);
+		return;
+	}
 
 	mTotal = -1;
 	mTotalQt = -1;
