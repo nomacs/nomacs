@@ -272,17 +272,19 @@ QStringList DkSettings::getTranslationDirs() {
 }
 
 void DkSettings::load() {
+
 	DefaultSettings s;
 	load(s);
 }
 
 void DkSettings::load(QSettings& settings, bool defaults) {
 
+	applyDefaultsFromFile();	// copies entries from "default.ini" to the user settings file
 	setToDefaultSettings();
 	qInfoClean() << "loading settings from: " << settings.fileName();
 
 	settings.beginGroup("AppSettings");
-	
+
 	app_p.showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
 	app_p.showToolBar = settings.value("showToolBar", app_p.showToolBar).toBool();
 	app_p.showStatusBar = settings.value("showStatusBar", app_p.showStatusBar).toBool();
@@ -757,7 +759,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 	meta_d = meta_p;
 	resources_d = resources_p;
 
-	qDebug() << "settings saved";
+	qDebug() << "settings saved to" << settingsPath();
 }
 
 void DkSettings::setToDefaultSettings() {
@@ -895,6 +897,43 @@ void DkSettings::setToDefaultSettings() {
 	qDebug() << "ok... default settings are set";
 }
 
+void DkSettings::applyDefaultsFromFile() {
+
+	DefaultSettings ds;
+
+	if (ds.value("firstTime", true).toBool()) {
+
+		QString dsf = getDefaultSettingsFile();
+		if (!QFileInfo(dsf).exists()) {
+			qInfo() << "I could not find the default settings file: " << dsf;
+		}
+
+		QSettings defaultSettings(dsf, QSettings::IniFormat);
+		copySettings(defaultSettings, ds);
+
+		ds.setValue("firstTime", false);
+
+		qInfo() << "defaults loaded from" << dsf;
+	}
+}
+
+void DkSettings::copySettings(const QSettings & src, QSettings & dst) const {
+
+	// copy default settings
+	if (src.allKeys().count() > 0) {
+		QStringList keys = src.allKeys();
+
+		for (const QString& key : keys) {
+			dst.setValue(key, src.value(key));
+		}
+	}
+}
+
+QString DkSettings::getDefaultSettingsFile() const {
+
+	return QFileInfo(QCoreApplication::applicationDirPath(), "default.ini").absoluteFilePath();
+}
+
 void DkSettings::setNumThreads(int numThreads) {
 
 	if (numThreads != global_p.numThreads) {
@@ -1011,6 +1050,7 @@ void DkSettingsManager::importSettings(const QString & settingsPath) {
 	qInfo() << "settings imported...";
 }
 
+// -------------------------------------------------------------------- DkFileFilterHandling 
 void DkFileFilterHandling::registerFileAssociations() {
 
 	DkFileFilterHandling fh;

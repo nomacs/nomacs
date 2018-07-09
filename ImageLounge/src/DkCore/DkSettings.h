@@ -396,6 +396,10 @@ protected:
 
 	void init();
 
+	void applyDefaultsFromFile();
+	void copySettings(const QSettings& src, QSettings& dst) const;
+	QString getDefaultSettingsFile() const;
+
 	QString mSettingsPath;
 };
 

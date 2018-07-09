@@ -107,6 +107,11 @@ file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DES
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
 
+# add default settings file
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
+
 if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
 
 	# # WinExtras
