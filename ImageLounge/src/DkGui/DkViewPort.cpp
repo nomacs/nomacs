@@ -929,7 +929,7 @@ void DkViewPort::loadMovie() {
 
 	// check if it truely a movie (we need this for we don't know if webp is actually animated)
 	QSharedPointer<QMovie> m(new QMovie(mLoader->filePath()));
-	if (m->frameCount() <= 1)
+	if (m->frameCount() == 1)
 		return;
 
 	mMovie = m;
