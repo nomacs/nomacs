@@ -1322,7 +1322,7 @@ int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveF
 
 // FileDownloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
-	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QNetworkProxyQuery npq(QUrl("https://nomacs.org"));
 	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
 		mWebCtrl.setProxy(listOfProxies[0]);

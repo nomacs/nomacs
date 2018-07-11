@@ -81,11 +81,11 @@ int main(int argc, char *argv[]) {
 
 #ifdef READ_TUWIEN
 	QCoreApplication::setOrganizationName("TU Wien");
-	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
+	QCoreApplication::setOrganizationDomain("https://nomacs.org");
 	QCoreApplication::setApplicationName("nomacs [READ]");
 #else
 	QCoreApplication::setOrganizationName("nomacs");
-	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
+	QCoreApplication::setOrganizationDomain("https://nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 #endif
 	

@@ -21,7 +21,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  related links:
- [1] http://www.nomacs.org/
+ [1] https://nomacs.org/
  [2] https://github.com/nomacs/
  [3] http://download.nomacs.org
  *******************************************************************************************************/

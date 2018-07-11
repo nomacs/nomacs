@@ -21,7 +21,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  related links:
- [1] http://www.nomacs.org/
+ [1] https://nomacs.org/
  [2] https://github.com/nomacs/
  [3] http://download.nomacs.org
  *******************************************************************************************************/
@@ -168,13 +168,13 @@ void DkUpdater::checkForUpdates() {
 	DkSettingsManager::param().save();
 
 #ifdef Q_OS_WIN
-	QUrl url ("http://www.nomacs.org/version/version_win_stable");
+	QUrl url ("http://nomacs.org/version/version_win_stable");
 #elif defined Q_OS_LINUX
-	QUrl url ("http://www.nomacs.org/version/version_linux");
+	QUrl url ("http://nomacs.org/version/version_linux");
 #elif defined Q_OS_MAC
-	QUrl url ("http://www.nomacs.org/version/version_mac_stable");
+	QUrl url ("http://nomacs.org/version/version_mac_stable");
 #else
-	QUrl url ("http://www.nomacs.org/version/version");
+	QUrl url ("http://nomacs.org/version/version");
 #endif
 
 	// the proxy settings take > 2 sec on Win7
@@ -246,7 +246,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			qDebug() << "sorry, I could not parse the version number...";
 
 			if (!silent)
-				emit showUpdaterMessage(tr("sorry, I could not check for newer versions"), tr("updates"));
+				emit showUpdaterMessage(tr("sorry, I could not check for newer versions"), tr("Updates"));
 
 			return;
 		}
@@ -260,7 +260,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 			QString msg = tr("A new version") + " (" + sl[0] + ") " + tr("is available");
 			msg = msg + "<br>" + tr("Do you want to download and install it now?");
-			msg = msg + "<br>" + tr("For more information see ") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>";
+			msg = msg + "<br>" + tr("For more information see ") + " <a href=\"https://nomacs.org\">https://nomacs.org</a>";
 			mNomacsSetupUrl = url;
 			mSetupVersion = version;
 			qDebug() << "nomacs setup url:" << mNomacsSetupUrl;

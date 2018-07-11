@@ -139,7 +139,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 		"Stefan fiel Spa&szlig; w&auml;hrend<br>" 
 		"Markus rockt... <br><br>" 
 
-		"<a href=\"http://www.nomacs.org\">www.nomacs.org</a><br>"
+		"<a href=\"https://nomacs.org\">https://nomacs.org</a><br>"
 		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
 		"This program is licensed under GNU General Public License v3<br>"

@@ -1807,7 +1807,7 @@ void DkNoMacs::aboutDialog() {
 
 void DkNoMacs::openDocumentation() {
 
-	QString url = QString("http://www.nomacs.org/documentation/");
+	QString url = QString("https://nomacs.org/documentation/");
 	QDesktopServices::openUrl(QUrl(url));
 }
 
@@ -2296,7 +2296,7 @@ void DkNoMacs::startSetup(QString filePath) {
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
 		QString msg = tr("Unable to install new version<br>") +
 			tr("You can download the new version from our web page") +
-			"<br><a href=\"http://www.nomacs.org/download/\">www.nomacs.org</a><br>";
+			"<br><a href=\"https://nomacs.org/download/\">www.nomacs.org</a><br>";
 		showUpdaterMessage(msg, "update");
 	}
 }

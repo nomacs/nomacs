@@ -431,7 +431,7 @@ void DkGeneralPreference::createLayout() {
 	DkUtils::addLanguages(languageCombo, mLanguages);
 	languageCombo->setCurrentIndex(mLanguages.indexOf(DkSettingsManager::param().global().language));
 
-	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
+	QLabel* translateLabel = new QLabel("<a href=\"https://nomacs.org/how-to-translate-nomacs/\">How-to translate nomacs</a>", this);
 	translateLabel->setToolTip(tr("Info on how to translate nomacs."));
 	translateLabel->setOpenExternalLinks(true);
 

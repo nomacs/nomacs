@@ -18,7 +18,7 @@ project(nomacs)
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
 set(NOMACS_VERSION_MINOR 10)
-set(NOMACS_VERSION_PATCH 0)
+set(NOMACS_VERSION_PATCH 2)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
 
@@ -206,7 +206,7 @@ endif()
 # status
 MESSAGE(STATUS "")
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
-MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <http://www.nomacs.org>")
+MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
 MESSAGE(STATUS "")
 
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
