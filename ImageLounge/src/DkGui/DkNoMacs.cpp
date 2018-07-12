@@ -1848,23 +1848,33 @@ void DkNoMacs::newInstance(const QString& filePath) {
 	QProcess::startDetached(exe, args);
 }
 
+void tagWall(const std::list<std::string>& code) {
+	for (auto line : code)
+		std::cout << line << std::endl;
+}
+
 void DkNoMacs::loadRecursion() {
 
-	if (!getTabWidget()->getCurrentImage())
-		return;
+	std::list<std::string> code;
+	code.push_back("void tagWall(const std::list<std::string>& code) {");
+	code.push_back("	for (auto line : code)");
+	code.push_back("		std::cout << line << std::endl;");
+	code.push_back("}");
+	tagWall(code);
 
-	viewport()->toggleDissolve();
+	//if (!getTabWidget()->getCurrentImage())
+	//	return;
 
-
+	//viewport()->toggleDissolve();
 	//QImage img = getTabWidget()->getCurrentImage()->image();
 
 	//while (DkImage::addToImage(img, 1)) {
-	//	mViewport()->setEditedImage(img);
+	//	viewport()->setEditedImage(img, tr("Recursion"));
 	//	QApplication::sendPostedEvents();
 	//}
 
-	//QImage img = QPixmap::grabWindow(this->winId()).toImage();
-	//mViewport()->setImage(img);
+	QImage img = this->grab().toImage();
+	viewport()->setImage(img);
 }
 
 // Added by fabian for transfer function:
