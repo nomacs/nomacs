@@ -222,7 +222,6 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			mac = values[1];
 	}
 
-
 #if _MSC_VER == 1600
 	url = XPx86;	// for WinXP packages
 #elif defined _WIN64
@@ -253,7 +252,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 		if (nVersion[0].toInt() > cVersion[0].toInt()  ||	// major release
 		   (nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
-			nVersion[1].toInt() > cVersion[1].toInt())  ||	// minor release
+			nVersion[1].toInt() > cVersion[1].toInt()) ||	// minor release
 		   (nVersion[0].toInt() == cVersion[0].toInt() &&	// major release
 			nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
 			nVersion[2].toInt() >  cVersion[2].toInt())) {	// minor-minor release
@@ -299,7 +298,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 	if (!mUpdateAborted) {
 		QString basename = "nomacs-setup";
-		QString extension = ".exe";
+		QString extension = ".msi";
 		QString absoluteFilePath = QDir::tempPath() + "/" + basename + extension;
 		if (QFile::exists(absoluteFilePath)) {
 			qDebug() << "File already exists - searching for new name";
