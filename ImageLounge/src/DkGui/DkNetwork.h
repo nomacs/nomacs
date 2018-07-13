@@ -261,7 +261,6 @@ public:
 	};
 
 signals:
-	void clientInitializedSignal();
 	void syncWithSignal(quint16);
 	void stopSyncWithSignal(quint16);
 	void goodByeToAllSignal();

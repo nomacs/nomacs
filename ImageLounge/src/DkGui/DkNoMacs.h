@@ -336,7 +336,6 @@ public:
 	void syncWith(qint16 port);
 	
 signals:
-	void clientInitializedSignal();
 	void startRCServerSignal(bool start);
 
 public slots:

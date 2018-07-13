@@ -637,7 +637,6 @@ void DkManagerThread::connectClient() {
 	// however, the issues we get is some nasty includes here...
 	DkViewPort* vp = parent->viewport();
 
-	connect(this, SIGNAL(clientInitializedSignal()), parent, SLOT(clientInitialized()));
 	connect(this, SIGNAL(syncWithSignal(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	connect(this, SIGNAL(stopSyncWithSignal(quint16)), clientManager, SLOT(stopSynchronizeWith(quint16)));
 
@@ -668,7 +667,6 @@ void DkManagerThread::run() {
 
 	if (parent) title = parent->windowTitle();
 	clientManager->sendTitle(title);	// if title is added before title slot is connected...
-	emit clientInitializedSignal();
 
 	exec();
 
