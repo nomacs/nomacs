@@ -232,10 +232,6 @@ public:
 
 	void setTimeToDisplay(int ms = 1000);
 
-	QVector<QAction*> getActions() {
-		return actions;
-	};
-
 signals:
 	void nextSignal();
 	void previousSignal();
@@ -264,8 +260,6 @@ protected:
 	QPushButton* nextButton;
 	QPushButton* playButton;
 	QWidget* container;
-
-	QVector<QAction*> actions;
 };
 
 class DkFolderScrollBar : public QSlider {

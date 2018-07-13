@@ -1255,7 +1255,7 @@ void DkPlayer::createLayout() {
 	playButton->setFlat(true);
 	playButton->setCheckable(true);
 	playButton->setChecked(false);
-	playButton->addAction(actions[play_action]);
+	playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
 	connect(playButton, SIGNAL(clicked(bool)), this, SLOT(play(bool)));
 
 	nextButton = new QPushButton(QIcon(":/nomacs/img/player-next.svg"), "",  this);
@@ -1304,9 +1304,6 @@ void DkPlayer::init() {
 	hideTimer->setSingleShot(true);
 	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
 
-	actions.resize(1);
-	actions[play_action] = new QAction(tr("play"), this);
-	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
 	connect(DkActionManager::instance().action(DkActionManager::menu_view_slideshow), SIGNAL(triggered()), this, SLOT(togglePlay()));
 }
 

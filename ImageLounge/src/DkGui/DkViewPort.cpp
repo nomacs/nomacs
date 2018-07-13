@@ -1397,15 +1397,11 @@ void DkViewPort::animateFade() {
 
 	mAnimationValue += (float)speed;
 
-	qDebug() << "fade opacity: " << mAnimationValue << "speed" << speed << "elapsed: " << mAnimationTime.elapsed();
-
 	if (mAnimationValue <= 0) {
 		mAnimationBuffer = QImage();
 		mAnimationTimer->stop();
 		mAnimationValue = 0;
 	}
-
-	qDebug() << "new opacity: " << mAnimationValue;
 
 	update();
 }

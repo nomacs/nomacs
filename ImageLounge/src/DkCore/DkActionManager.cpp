@@ -1551,6 +1551,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mHiddenActions[sc_star_rating_5]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
 	mHiddenActions[sc_star_rating_5]->setShortcut(QKeySequence(shortcut_star_rating_5));
 
+
 	mManipulators.createManipulators(parent);
 
 	assignCustomShortcuts(allActions());

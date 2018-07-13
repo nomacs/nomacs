@@ -64,8 +64,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	mMetaDataInfo = new DkMetaDataHUD(this);
 	mZoomWidget = new DkZoomWidget(this);
 	mPlayer = new DkPlayer(this);
-	mPlayer->setMaximumHeight(110);
-	addActions(mPlayer->getActions().toList());
+	mPlayer->setMaximumHeight(90);
 
 	mFolderScroll = new DkFolderScrollBar(this);
 
@@ -103,9 +102,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 			w->setMouseTracking(true);
 		}
 	}
-
-	addActions(DkActionManager::instance().hiddenActions().toList());
-
 }
 
 void DkControlWidget::init() {
