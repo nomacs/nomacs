@@ -609,7 +609,12 @@ DkOverview::DkOverview(QWidget* parent) : QLabel(parent) {
 
 void DkOverview::paintEvent(QPaintEvent *event) {
 
-	if (mImg.isNull() || !mImgMatrix || !mWorldMatrix)
+	if (mImgT.isNull()) {
+		mImgT = resizedImg(mImg);
+		mImg = QImage();	// free-up space
+	}
+
+	if (!mImgMatrix || !mWorldMatrix)
 		return;
 
 	QPainter painter(this);
@@ -622,7 +627,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
-		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImg.size()));
+		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImgSize));
 
 		// now render the current view
 		QRectF viewRect = mViewPortRect;
@@ -642,7 +647,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		painter.setPen(QColor(200, 200, 200));
 		//painter.drawRect(overviewRect);
 		painter.setOpacity(0.8f);
-		painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
+		painter.drawImage(overviewImgRect, mImgT, QRect(0, 0, mImgT.width(), mImgT.height()));
 
 		QColor col = DkSettingsManager::param().display().highlightColor;
 		col.setAlpha(255);
@@ -710,48 +715,39 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 
 }
 
-void DkOverview::resizeEvent(QResizeEvent* event) {
-
-	QWidget::resizeEvent(event);
-}
-
 QRectF DkOverview::getImageRect() const {
 	
 	QRectF imgRect = QRectF(QPoint(), size());			// get the overview rect
 
-	if ((float)imgT.width()/imgT.height() < (float)imgRect.width()/imgRect.height())
-		imgRect.setWidth(width() * (float)height()/(float)imgT.height());
+	if ((float)mImgT.width()/mImgT.height() < (float)imgRect.width()/imgRect.height())
+		imgRect.setWidth(width() * (float)height()/(float)mImgT.height());
 	else
-		imgRect.setHeight(height() * (float)width()/(float)imgT.width());
-
-	//imgRect = imgRect.toRect();	// force round
+		imgRect.setHeight(height() * (float)width()/(float)mImgT.width());
 
 	return imgRect;
 }
 
-void DkOverview::resizeImg() {
+QImage DkOverview::resizedImg(const QImage& src) {
 
-	if (mImg.isNull())
-		return;
+	if (src.isNull())
+		return QImage();
 
-	//QRectF overviewRect = getImageRect();
 	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
 	
 	// is the overviewImgMatrix empty?
 	if (overviewImgMatrix.isIdentity())
-		return;
+		return src;
 	
-	//if (overviewRect.width() <= 1|| overviewRect.height() <= 1)
-	//	return;
-
 	// fast downscaling
-	imgT = mImg.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
-	imgT = imgT.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	QImage sImg = src.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
+	sImg = sImg.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	return sImg;
 }
 
 QTransform DkOverview::getScaledImageMatrix() {
 
-	if (mImg.isNull())
+	if (mImgT.isNull() && mImg.isNull())
 		return QTransform();
 
 	int lm, tm, rm, bm;
@@ -763,7 +759,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 		return QTransform();
 
 	// the image resizes as we zoom
-	QRectF imgRect = QRectF(QPoint(lm, tm), mImg.size());
+	QRectF imgRect = QRectF(QPoint(lm, tm), mImgSize);
 	float ratioImg = (float)(imgRect.width()/imgRect.height());
 	float ratioWin = (float)(iSize.width())/(float)(iSize.height());
 

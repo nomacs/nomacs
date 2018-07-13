@@ -405,9 +405,8 @@ public:
 
 	void setImage(const QImage& img) {
 		mImg = img;
-
-		if (isVisible())
-			resizeImg();
+		mImgSize = img.size();
+		mImgT = QImage();
 	};
 
 	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix){
@@ -419,21 +418,14 @@ public:
 		mViewPortRect = viewPortRect;	
 	};
 
-	void setVisible(bool visible) {
-
-		if (visible)
-			resizeImg();
-
-		QWidget::setVisible(visible);
-	};
-
 signals:
 	void moveViewSignal(const QPointF& dxy) const;
 	void sendTransformSignal() const;
 
 protected:
 	QImage mImg;
-	QImage imgT;
+	QImage mImgT;
+	QSize mImgSize;
 	QTransform* mScaledImgMatrix;
 	QTransform* mWorldMatrix;
 	QTransform* mImgMatrix;
@@ -441,12 +433,11 @@ protected:
 	QPointF mPosGrab;
 	QPointF mEnterPos;
 
-	void resizeImg();
+	QImage resizedImg(const QImage& src);
 	void paintEvent(QPaintEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
-	void resizeEvent(QResizeEvent* event);
 	QRectF getImageRect() const;
 	QTransform getScaledImageMatrix();
 };

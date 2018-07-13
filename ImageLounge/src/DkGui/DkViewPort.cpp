@@ -283,9 +283,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit enableNoImageSignal(!newImg.isNull());
 
-	//qDebug() << "new image (mViewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
-	//qDebug() << "keep zoom is always: " << (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep);
-
 	if (((!DkSettingsManager::param().slideShow().moveSpeed && DkSettingsManager::param().display().keepZoom == DkSettings::zoom_never_keep) ||
 		(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
 		mOldImgRect.isEmpty()) {
@@ -302,8 +299,8 @@ void DkViewPort::setImage(QImage newImg) {
 	}
 
 	mController->getPlayer()->startTimer();
+	
 	mController->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
-	//mController->stopLabels();
 
 	mOldImgRect = mImgRect;
 	
@@ -1884,11 +1881,6 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 }
 
 DkViewPortFrameless::~DkViewPortFrameless() {
-}
-
-void DkViewPortFrameless::setImage(QImage newImg) {
-
-	DkViewPort::setImage(newImg);
 }
 
 void DkViewPortFrameless::zoom(float factor, QPointF center) {

@@ -274,7 +274,6 @@ public:
 	};
 
 public slots:
-	virtual void setImage(QImage newImg);
 	virtual void resetView();
 	virtual void moveView(QPointF);
 
