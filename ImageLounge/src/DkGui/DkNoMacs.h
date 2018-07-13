@@ -81,7 +81,6 @@ class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
 class DkLocalManagerThread;
-class DkLanManagerThread;
 class DkTransferToolBar;
 class DkPluginManagerDialog;
 class DkThumbsSaver;
@@ -339,18 +338,10 @@ public:
 signals:
 	void clientInitializedSignal();
 	void startRCServerSignal(bool start);
-	void startTCPServerSignal(bool start);
 
 public slots:
 	void tcpConnectAll();
-	void tcpChangeSyncMode(int syncMode);
-	void tcpRemoteControl(bool start);
-	void tcpRemoteDisplay(bool start);
 	void tcpAutoConnect(bool connect);
-	void settingsChanged();
-	void clientInitialized();
-	void newClientConnected(bool connected, bool local);
-	void startTCPServer(bool start);
 	virtual void enableNoImageActions(bool enable = true);
 
 protected:
@@ -360,17 +351,12 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 
-	// functions
-	void initLanClient();
-
 	// gui
 	virtual void createActions();
 	virtual void createMenu();
 
 	// network layer
 	DkLocalManagerThread* mLocalClient = 0;
-	DkLanManagerThread* mLanClient = 0;
-
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {

@@ -593,20 +593,13 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	return mToolsMenu;
 }
 
-void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMenu* lanMenu) {
+void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu) {
 
 	mSyncMenu = syncMenu;
 	mLocalMenu = localMenu;
-	mLanMenu = lanMenu;
 
 	mSyncMenu->addMenu(localMenu);
-	mSyncMenu->addMenu(lanMenu);
 
-	mSyncMenu->addAction(mSyncActions[menu_sync_remote_control]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_remote_display]);
-	mSyncMenu->addAction(mLanActions[menu_lan_image]);
-	mSyncMenu->addSeparator();
-	
 	mSyncMenu->addAction(mSyncActions[menu_sync]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
@@ -732,10 +725,6 @@ QAction* DkActionManager::action(SyncMenuActions action) const {
 	return mSyncActions[action];
 }
 
-QAction* DkActionManager::action(LanMenuActions action) const {
-	return mLanActions[action];
-}
-
 QAction* DkActionManager::action(HelpMenuActions action) const {
 	return mHelpActions[action];
 }
@@ -794,10 +783,6 @@ QVector<QAction*> DkActionManager::panelActions() const {
 
 QVector<QAction*> DkActionManager::syncActions() const {
 	return mSyncActions;
-}
-
-QVector<QAction*> DkActionManager::lanActions() const {
-	return mLanActions;
 }
 
 QVector<QAction*> DkActionManager::helpActions() const {
@@ -876,10 +861,6 @@ DkTcpMenu* DkActionManager::localMenu() const {
 	return mLocalMenu;
 }
 
-DkTcpMenu* DkActionManager::lanMenu() const {
-	return mLanMenu;
-}
-
 DkManipulatorManager DkActionManager::manipulatorManager() const {
 	return mManipulators;
 }
@@ -894,7 +875,6 @@ void DkActionManager::createMenus(QWidget* parent) {
 	createManipulatorMenu(parent);
 	createToolsMenu(parent);
 	createPanelMenu(parent);
-	//createPluginMenu(parent);
 	createHelpMenu(parent);
 	createContextMenu(parent);
 }
@@ -1447,28 +1427,6 @@ void DkActionManager::createActions(QWidget* parent) {
 	mSyncActions[menu_sync_all_actions]->setCheckable(true);
 	mSyncActions[menu_sync_all_actions]->setChecked(DkSettingsManager::param().sync().syncActions);
 
-	mSyncActions[menu_sync_remote_control] = new QAction(QObject::tr("&Remote Control"), parent);
-	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
-	mSyncActions[menu_sync_remote_control]->setStatusTip(QObject::tr("Automatically Receive Images From Your Remote Instance."));
-	mSyncActions[menu_sync_remote_control]->setCheckable(true);
-
-	mSyncActions[menu_sync_remote_display] = new QAction(QObject::tr("Remote &Display"), parent);
-	mSyncActions[menu_sync_remote_display]->setStatusTip(QObject::tr("Automatically Send Images to a Remote Instance."));
-	mSyncActions[menu_sync_remote_display]->setCheckable(true);
-
-	mLanActions.resize(menu_lan_end);
-
-	// start server action
-	mLanActions[menu_lan_server] = new QAction(QObject::tr("Start &Server"), parent);
-	mLanActions[menu_lan_server]->setObjectName("serverAction");
-	mLanActions[menu_lan_server]->setCheckable(true);
-	mLanActions[menu_lan_server]->setChecked(false);
-
-	mLanActions[menu_lan_image] = new QAction(QObject::tr("Send &Image"), parent);
-	mLanActions[menu_lan_image]->setObjectName("sendImageAction");
-	mLanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
-	mLanActions[menu_lan_image]->setToolTip(QObject::tr("Sends the current image to all clients."));
-
 	// plugin actions
 	mPluginActions.resize(menu_plugins_end);
 	mPluginActions[menu_plugin_manager] = new QAction(QObject::tr("&Plugin Manager"), parent);
@@ -1593,7 +1551,6 @@ QVector<QAction*> DkActionManager::allActions() const {
 	all += panelActions();
 	all += syncActions();
 	all += pluginActions();
-	all += lanActions();
 	all += helpActions();
 	all += previewActions();
 

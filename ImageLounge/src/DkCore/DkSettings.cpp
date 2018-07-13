@@ -250,7 +250,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			//qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}
@@ -434,11 +434,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	// Synchronize Settings --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
-	sync_p.enableNetworkSync= settings.value("enableNetworkSync", sync_p.enableNetworkSync).toBool();
-	sync_p.allowTransformation = settings.value("allowTransformation", sync_p.allowTransformation).toBool();
-	sync_p.allowPosition = settings.value("allowPosition", sync_p.allowPosition).toBool();
-	sync_p.allowFile = settings.value("allowFile", sync_p.allowFile).toBool();
-	sync_p.allowImage = settings.value("allowImage", sync_p.allowImage).toBool();;
 	sync_p.checkForUpdates = settings.value("checkForUpdates", sync_p.checkForUpdates).toBool();
 	sync_p.disableUpdateInteraction = settings.value("disableUpdateInteraction", sync_p.disableUpdateInteraction).toBool();
 	sync_p.updateDialogShown = settings.value("updateDialogShown", sync_p.updateDialogShown).toBool();
@@ -699,16 +694,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 	// Sync Settings --------------------------------------------------------------------
 	settings.beginGroup("SynchronizeSettings");
 
-	if (force ||sync_p.enableNetworkSync != sync_d.enableNetworkSync)
-		settings.setValue("enableNetworkSync", sync_p.enableNetworkSync);
-	if (force ||sync_p.allowTransformation != sync_d.allowTransformation)
-		settings.setValue("allowTransformation", sync_p.allowTransformation);
-	if (force ||sync_p.allowPosition != sync_d.allowPosition)
-		settings.setValue("allowPosition", sync_p.allowPosition);
-	if (force ||sync_p.allowFile != sync_d.allowFile)
-		settings.setValue("allowFile", sync_p.allowFile);
-	if (force ||sync_p.allowImage != sync_d.allowImage)
-		settings.setValue("allowImage", sync_p.allowImage);
 	//if (force ||sync_p.checkForUpdates != sync_d.checkForUpdates)
 		settings.setValue("checkForUpdates", sync_p.checkForUpdates);
 	//if (force || sync_p.disableUpdateInteraction != sync_d.disableUpdateInteraction)
@@ -869,11 +854,6 @@ void DkSettings::setToDefaultSettings() {
 	meta_p.saveExifOrientation = true;
 	meta_p.ignoreExifOrientation = false;
 
-	sync_p.enableNetworkSync = false;
-	sync_p.allowTransformation = true;
-	sync_p.allowPosition = true;
-	sync_p.allowFile = true;
-	sync_p.allowImage = true;
 	sync_p.checkForUpdates = !isPortable();	// installed version should only check for updates by default
 	sync_p.disableUpdateInteraction = isPortable();	// installed version should only check for updates by default
 	sync_p.updateDialogShown = false;

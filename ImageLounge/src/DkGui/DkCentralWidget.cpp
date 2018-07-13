@@ -522,7 +522,6 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addActions(am.panelActions().toList());
 	pw->addActions(am.syncActions().toList());
 	pw->addActions(am.pluginActions().toList());
-	pw->addActions(am.lanActions().toList());
 	pw->addActions(am.helpActions().toList());
 	pw->addActions(am.hiddenActions().toList());
 
@@ -584,7 +583,6 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 	thumbScrollWidget->addActions(am.panelActions().toList());
 	thumbScrollWidget->addActions(am.syncActions().toList());
 	thumbScrollWidget->addActions(am.pluginActions().toList());
-	thumbScrollWidget->addActions(am.lanActions().toList());
 	thumbScrollWidget->addActions(am.helpActions().toList());
 	thumbScrollWidget->addActions(am.hiddenActions().toList());
 

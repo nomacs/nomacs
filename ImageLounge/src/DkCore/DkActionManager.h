@@ -246,9 +246,6 @@ public:
 		menu_sync_connect_all,
 		menu_sync_all_actions,
 
-		menu_sync_remote_control,
-		menu_sync_remote_display,
-
 		menu_sync_end,	// nothing beyond this point
 	};
 
@@ -256,13 +253,6 @@ public:
 		menu_plugin_manager,
 
 		menu_plugins_end,	// nothing beyond this point
-	};
-
-	enum LanMenuActions {
-		menu_lan_server,
-		menu_lan_image,
-
-		menu_lan_end,
 	};
 
 	enum HelpMenuActions{
@@ -380,6 +370,14 @@ public:
 		shortcut_skip_prev_sync	= Qt::ALT + Qt::Key_Left,
 		shortcut_skip_next_sync	= Qt::ALT + Qt::Key_Right,
 
+		// TODO: add here...
+		//shortcut_rating_0		= Qt::Key_0,
+		//shortcut_rating_1		= Qt::Key_1,
+		//shortcut_rating_2		= Qt::Key_2,
+		//shortcut_rating_3		= Qt::Key_3,
+		//shortcut_rating_4		= Qt::Key_4, 
+		//shortcut_rating_5		= Qt::Key_5,
+
 		// view
 		shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
 		shortcut_close_tab		= Qt::CTRL + Qt::Key_W,
@@ -464,19 +462,17 @@ public:
 	QMenu* manipulatorMenu() const;
 	QMenu* toolsMenu() const;
 	QMenu* panelMenu() const;
-	//QMenu* pluginMenu() const;
 	QMenu* helpMenu() const;
 	QMenu* contextMenu() const;
 	QMenu* syncMenu() const;
 	DkTcpMenu* localMenu() const;
-	DkTcpMenu* lanMenu() const;
 
 	DkManipulatorManager manipulatorManager() const;
 
 	void createActions(QWidget* parent);
 	void createMenus(QWidget* parent);
 	
-	void addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu, DkTcpMenu* lanMenu);
+	void addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu);
 
 	QAction* action(FileMenuActions action) const;
 	QAction* action(SortMenuActions action) const;
@@ -486,7 +482,6 @@ public:
 	QAction* action(PanelMenuActions action) const;
 	QAction* action(SyncMenuActions action) const;
 	QAction* action(PluginMenuActions action) const;
-	QAction* action(LanMenuActions action) const;
 	QAction* action(HelpMenuActions action) const;
 	QAction* action(HiddenActions action) const;
 	QAction* action(PreviewActions action) const;
@@ -504,7 +499,6 @@ public:
 	QVector<QAction *> panelActions() const;
 	QVector<QAction *> syncActions() const;
 	QVector<QAction *> pluginActions() const;
-	QVector<QAction *> lanActions() const;
 	QVector<QAction *> helpActions() const;
 	QVector<QAction *> previewActions() const;
 	QVector<QAction *> manipulatorActions() const;
@@ -531,7 +525,6 @@ protected:
 	QMenu* createManipulatorMenu(QWidget* parent);
 	QMenu* createToolsMenu(QWidget* parent);
 	QMenu* createPanelMenu(QWidget* parent);
-	//QMenu* createPluginMenu(QWidget* parent);
 	QMenu* createHelpMenu(QWidget* parent);
 	QMenu* createContextMenu(QWidget* parent);
 
@@ -545,8 +538,6 @@ protected:
 	QVector<QAction *> mViewActions;
 	QVector<QAction *> mSyncActions;
 	QVector<QAction *> mPluginActions;
-	//QVector<QAction *> mPluginDummyActions;
-	QVector<QAction *> mLanActions;
 	QVector<QAction *> mHelpActions;
 	QVector<QAction *> mPreviewActions;
 
@@ -563,14 +554,12 @@ protected:
 	QMenu* mManipulatorMenu = 0;
 	QMenu* mToolsMenu = 0;
 	QMenu* mPanelMenu = 0;
-	//QMenu* mPluginMenu = 0;
 	QMenu* mHelpMenu = 0;
 	QMenu* mContextMenu = 0;
 	
 	// sync
 	QMenu* mSyncMenu = 0;
 	DkTcpMenu* mLocalMenu = 0;
-	DkTcpMenu* mLanMenu = 0;
 
 	// icons
 	QVector<QIcon> mFileIcons;

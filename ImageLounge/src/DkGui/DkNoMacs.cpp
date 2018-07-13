@@ -2393,55 +2393,13 @@ DkNoMacsSync::~DkNoMacsSync() {
 
 }
 
-void DkNoMacsSync::initLanClient() {
-
-	DkTimer dt;
-	if (mLanClient) {
-
-		mLanClient->quit();
-		mLanClient->wait();
-
-		delete mLanClient;
-	}
-
-	if (!DkSettingsManager::param().sync().enableNetworkSync) {
-
-		mLanClient = 0;
-
-		DkActionManager::instance().lanMenu()->setEnabled(false);
-		DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setEnabled(false);
-		DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setEnabled(false);
-		return;
-	}
-
-	DkTcpMenu* lanMenu = DkActionManager::instance().lanMenu();
-	lanMenu->clear();
-
-	// start lan client/server
-	mLanClient = new DkLanManagerThread(this);
-	mLanClient->setObjectName("lanClient");
-	mLanClient->start();
-
-	lanMenu->setClientManager(mLanClient);
-	lanMenu->addTcpAction(DkActionManager::instance().action(DkActionManager::menu_lan_server));
-	lanMenu->addTcpAction(DkActionManager::instance().action(DkActionManager::menu_lan_image));	// well this is a bit nasty... we only add it here to have correct enable/disable behavior...
-	lanMenu->setEnabled(true);
-	lanMenu->enableActions(false, false);
-	
-	connect(this, SIGNAL(startTCPServerSignal(bool)), mLanClient, SLOT(startServer(bool)));
-
-	qDebug() << "start server takes: " << dt;
-}
-
 void DkNoMacsSync::createActions() {
 
 	DkNoMacs::createActions();
 
 	DkActionManager& am = DkActionManager::instance();
-	connect(am.action(DkActionManager::menu_lan_server), SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
 	
 	// TODO: move to viewport
-	connect(am.action(DkActionManager::menu_lan_image), SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 	connect(am.action(DkActionManager::menu_sync), SIGNAL(triggered()), viewport(), SLOT(tcpForceSynchronize()));
 
 	// sync menu
@@ -2449,26 +2407,20 @@ void DkNoMacsSync::createActions() {
 	connect(am.action(DkActionManager::menu_sync_arrange), SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 	connect(am.action(DkActionManager::menu_sync_connect_all), SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 	connect(am.action(DkActionManager::menu_sync_all_actions), SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
-	connect(am.action(DkActionManager::menu_sync_remote_control), SIGNAL(triggered(bool)), this, SLOT(tcpRemoteControl(bool)));
-	connect(am.action(DkActionManager::menu_sync_remote_display), SIGNAL(triggered(bool)), this, SLOT(tcpRemoteDisplay(bool)));
 }
 
 void DkNoMacsSync::createMenu() {
 
 	DkNoMacs::createMenu();
-
 	DkActionManager& am = DkActionManager::instance();
-	
 	// local host menu
 	DkTcpMenu* localMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, mLocalClient);
 	localMenu->showNoClientsFound(true);
 	// add connect all action
 	localMenu->addTcpAction(am.action(DkActionManager::menu_sync_connect_all));
-	
-	// LAN menu
-	DkTcpMenu* lanMenu = new DkTcpMenu(QObject::tr("&LAN Synchronize"), mSyncMenu, mLanClient);	// TODO: replace
 
-	am.addSyncMenu(mSyncMenu, localMenu, lanMenu);
+	am.addSyncMenu(mSyncMenu, localMenu);
+
 }
 
 // mouse events
@@ -2556,75 +2508,9 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
-void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
-
-	DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setChecked(false);
-	DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setChecked(false);
-
-	if (syncMode == DkSettings::sync_mode_default) {
-		DkSettingsManager::param().sync().syncMode = syncMode;
-		return;
-	}
-
-	bool connected = DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default;
-
-	if (!connected) {
-		DkSettingsManager::param().sync().syncMode = DkSettings::sync_mode_default;
-		viewport()->getController()->setInfo(tr("Sorry, I could not find any clients."));
-		return;
-	}
-
-	// turn on the new mode
-	switch(syncMode) {
-		case DkSettings::sync_mode_remote_control: 
-			DkActionManager::instance().action(DkActionManager::menu_sync_remote_control)->setChecked(true);	
-			break;
-		case DkSettings::sync_mode_remote_display: 
-			DkActionManager::instance().action(DkActionManager::menu_sync_remote_display)->setChecked(true);
-			break;
-	//default:
-	}
-
-	DkSettingsManager::param().sync().syncMode = syncMode;
-}
-
-
-void DkNoMacsSync::tcpRemoteControl(bool start) {
-
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default);
-}
-
-void DkNoMacsSync::tcpRemoteDisplay(bool start) {
-
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default);
-}
-
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
 
 	DkSettingsManager::param().sync().syncActions = connect;
-}
-
-void DkNoMacsSync::newClientConnected(bool connected, bool local) {
-
-	DkActionManager::instance().lanMenu()->enableActions(connected, local);
-	
-	DkNoMacs::newClientConnected(connected, local);
-}
-
-void DkNoMacsSync::startTCPServer(bool start) {
-	
-	emit startTCPServerSignal(start);
-}
-
-void DkNoMacsSync::settingsChanged() {
-	initLanClient();
-
-	DkNoMacs::settingsChanged();
-}
-
-void DkNoMacsSync::clientInitialized() {
-	
-	emit clientInitializedSignal();
 }
 
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
@@ -2640,8 +2526,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	mLocalClient->setObjectName("localClient");
 	mLocalClient->start();
 
-	mLanClient = 0;
-
 	init();
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
@@ -2652,10 +2536,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	DkSettingsManager::param().app().appMode = 0;
-	initLanClient();
-	//emit sendTitleSignal(windowTitle());
-	qInfo() << "LAN client created in: " << dt;
-	// show it...
+	// show what we got...
 	show();
 	DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 }
@@ -2828,8 +2709,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		mLocalClient->setObjectName("localClient");
 		mLocalClient->start();
 
-		mLanClient = 0;
-
 		init();
 
 		createTransferToolbar();
@@ -2839,8 +2718,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		// sync signals
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
-		
-		initLanClient();
 		emit sendTitleSignal(windowTitle());
 
 		DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;

@@ -287,11 +287,6 @@ public:
 		float moveSpeed;
 	};
 	struct Sync {
-		bool enableNetworkSync;
-		bool allowTransformation;
-		bool allowPosition;
-		bool allowFile;
-		bool allowImage;
 		bool checkForUpdates;
 		bool updateDialogShown;
 		bool disableUpdateInteraction;

@@ -114,7 +114,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	addActions(am.panelActions().toList());
 	addActions(am.syncActions().toList());
 	addActions(am.pluginActions().toList());
-	addActions(am.lanActions().toList());
 	addActions(am.helpActions().toList());
 	addActions(am.hiddenActions().toList());
 

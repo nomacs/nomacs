@@ -393,11 +393,6 @@ void DkGeneralPreference::createLayout() {
 	cbSwitchModifier->setToolTip(tr("If checked, CTRL + Mouse is switched with ALT + Mouse."));
 	cbSwitchModifier->setChecked(DkSettingsManager::param().sync().switchModifier);
 
-	QCheckBox* cbEnableNetworkSync = new QCheckBox(tr("Enable LAN Sync"), this);
-	cbEnableNetworkSync->setObjectName("networkSync");
-	cbEnableNetworkSync->setToolTip(tr("If checked, syncing in your LAN is enabled."));
-	cbEnableNetworkSync->setChecked(DkSettingsManager::param().sync().enableNetworkSync);
-
 	QCheckBox* cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), this);
 	cbCloseOnEsc->setObjectName("closeOnEsc");
 	cbCloseOnEsc->setToolTip(tr("Close nomacs if ESC is pressed."));
@@ -419,7 +414,6 @@ void DkGeneralPreference::createLayout() {
 	generalGroup->addWidget(cbHorZoomSkips);
 	generalGroup->addWidget(cbDoubleClickForFullscreen);
 	generalGroup->addWidget(cbSwitchModifier);
-	generalGroup->addWidget(cbEnableNetworkSync);
 	generalGroup->addWidget(cbCloseOnEsc);
 	generalGroup->addWidget(cbCheckForUpdates);
 	generalGroup->addWidget(cbShowBgImage);
@@ -574,12 +568,6 @@ void DkGeneralPreference::on_loopImages_toggled(bool checked) const {
 
 	if (DkSettingsManager::param().global().loop != checked)
 		DkSettingsManager::param().global().loop = checked;
-}
-
-void DkGeneralPreference::on_networkSync_toggled(bool checked) const {
-
-	if (DkSettingsManager::param().sync().enableNetworkSync != checked)
-		DkSettingsManager::param().sync().enableNetworkSync = checked;
 }
 
 void DkGeneralPreference::on_defaultSettings_clicked() {
