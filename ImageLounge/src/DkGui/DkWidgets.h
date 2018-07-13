@@ -182,10 +182,8 @@ public:
 	~DkRatingLabelBg();
 
 	void changeRating(int newRating);
-	QVector<QAction*> getActions() const;
 
 protected:
-	QVector<QAction*> mActions;
 	QTimer* mHideTimer;
 	int mTimeToDisplay = 4000;
 	
@@ -925,6 +923,8 @@ class DkDelayedMessage : public DkDelayedInfo {
 public:
 	DkDelayedMessage(const QString& msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
 		mMsg = msg;
+	}
+	DkDelayedMessage(QObject* parent = 0) : DkDelayedInfo(0, parent) {
 	}
 
 	~DkDelayedMessage() {}

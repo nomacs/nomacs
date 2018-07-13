@@ -1054,38 +1054,20 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags fl
 	// we want a margin
 	mLayout->setContentsMargins(10,4,10,4);
 	mLayout->setSpacing(4);
-	
-	mActions.resize(6);
 
-	mActions[rating_0] = new QAction(tr("no rating"), this);
-	mActions[rating_0]->setShortcut(Qt::Key_0);
-	connect(mActions[rating_0], SIGNAL(triggered()), this, SLOT(rating0()));
+	DkActionManager& am = DkActionManager::instance();
 
-	mActions[rating_1] = new QAction(tr("one star"), this);
-	mActions[rating_1]->setShortcut(Qt::Key_1);
-	connect(mActions[rating_1], SIGNAL(triggered()), this, SLOT(rating1()));
-
-	mActions[rating_2] = new QAction(tr("two stars"), this);
-	mActions[rating_2]->setShortcut(Qt::Key_2);
-	connect(mActions[rating_2], SIGNAL(triggered()), this, SLOT(rating2()));
-
-	mActions[rating_3] = new QAction(tr("three stars"), this);
-	mActions[rating_3]->setShortcut(Qt::Key_3);
-	connect(mActions[rating_3], SIGNAL(triggered()), this, SLOT(rating3()));
-
-	mActions[rating_4] = new QAction(tr("four stars"), this);
-	mActions[rating_4]->setShortcut(Qt::Key_4);
-	connect(mActions[rating_4], SIGNAL(triggered()), this, SLOT(rating4()));
-
-	mActions[rating_5] = new QAction(tr("five stars"), this);
-	mActions[rating_5]->setShortcut(Qt::Key_5);
-	connect(mActions[rating_5], SIGNAL(triggered()), this, SLOT(rating5()));
-
-	mStars[rating_1]->addAction(mActions[rating_1]);
-	mStars[rating_2]->addAction(mActions[rating_2]);
-	mStars[rating_3]->addAction(mActions[rating_3]);
-	mStars[rating_4]->addAction(mActions[rating_4]);
-	mStars[rating_5]->addAction(mActions[rating_5]);
+	connect(am.action(DkActionManager::sc_star_rating_0), SIGNAL(triggered()), this, SLOT(rating0()));
+	mStars[rating_1]->addAction(am.action(DkActionManager::sc_star_rating_1));
+	connect(am.action(DkActionManager::sc_star_rating_1), SIGNAL(triggered()), this, SLOT(rating1()));
+	mStars[rating_2]->addAction(am.action(DkActionManager::sc_star_rating_2));
+	connect(am.action(DkActionManager::sc_star_rating_2), SIGNAL(triggered()), this, SLOT(rating2()));
+	mStars[rating_3]->addAction(am.action(DkActionManager::sc_star_rating_3));
+	connect(am.action(DkActionManager::sc_star_rating_3), SIGNAL(triggered()), this, SLOT(rating3()));
+	mStars[rating_4]->addAction(am.action(DkActionManager::sc_star_rating_4));
+	connect(am.action(DkActionManager::sc_star_rating_4), SIGNAL(triggered()), this, SLOT(rating4()));
+	mStars[rating_5]->addAction(am.action(DkActionManager::sc_star_rating_5));
+	connect(am.action(DkActionManager::sc_star_rating_5), SIGNAL(triggered()), this, SLOT(rating5()));
 	
 	connect(mHideTimer, SIGNAL(timeout()), this, SLOT(hide()));
 }
@@ -1096,10 +1078,6 @@ void DkRatingLabelBg::changeRating(int newRating) {
 	DkRatingLabel::changeRating(newRating);
 	show();
 	mHideTimer->start();
-}
-
-QVector<QAction*> DkRatingLabelBg::getActions() const {
-	return mActions;
 }
 
 void DkRatingLabelBg::paintEvent(QPaintEvent *event) {

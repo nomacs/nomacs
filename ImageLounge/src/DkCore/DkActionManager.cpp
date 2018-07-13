@@ -1527,6 +1527,30 @@ void DkActionManager::createActions(QWidget* parent) {
 	mHiddenActions[sc_delete_silent]->setStatusTip(QObject::tr("Deletes a file without warning"));
 	mHiddenActions[sc_delete_silent]->setShortcut(QKeySequence(shortcut_delete_silent));
 
+	mHiddenActions[sc_star_rating_0] = new QAction(QObject::tr("Star Rating 0"), parent);
+	mHiddenActions[sc_star_rating_0]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_0]->setShortcut(QKeySequence(shortcut_star_rating_0));
+
+	mHiddenActions[sc_star_rating_1] = new QAction(QObject::tr("Star Rating 1"), parent);
+	mHiddenActions[sc_star_rating_1]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_1]->setShortcut(QKeySequence(shortcut_star_rating_1));
+
+	mHiddenActions[sc_star_rating_2] = new QAction(QObject::tr("Star Rating 2"), parent);
+	mHiddenActions[sc_star_rating_2]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_2]->setShortcut(QKeySequence(shortcut_star_rating_2));
+
+	mHiddenActions[sc_star_rating_3] = new QAction(QObject::tr("Star Rating 3"), parent);
+	mHiddenActions[sc_star_rating_3]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_3]->setShortcut(QKeySequence(shortcut_star_rating_3));
+
+	mHiddenActions[sc_star_rating_4] = new QAction(QObject::tr("Star Rating 4"), parent);
+	mHiddenActions[sc_star_rating_4]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_4]->setShortcut(QKeySequence(shortcut_star_rating_4));
+
+	mHiddenActions[sc_star_rating_5] = new QAction(QObject::tr("Star Rating 5"), parent);
+	mHiddenActions[sc_star_rating_5]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
+	mHiddenActions[sc_star_rating_5]->setShortcut(QKeySequence(shortcut_star_rating_5));
+
 	mManipulators.createManipulators(parent);
 
 	assignCustomShortcuts(allActions());

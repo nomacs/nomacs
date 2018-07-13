@@ -280,6 +280,13 @@ public:
 		sc_last_file_sync,
 		sc_delete_silent,
 
+		sc_star_rating_0,
+		sc_star_rating_1,
+		sc_star_rating_2,
+		sc_star_rating_3,
+		sc_star_rating_4,
+		sc_star_rating_5,
+
 		sc_end,	// nothing beyond this point
 	};
 
@@ -370,13 +377,12 @@ public:
 		shortcut_skip_prev_sync	= Qt::ALT + Qt::Key_Left,
 		shortcut_skip_next_sync	= Qt::ALT + Qt::Key_Right,
 
-		// TODO: add here...
-		//shortcut_rating_0		= Qt::Key_0,
-		//shortcut_rating_1		= Qt::Key_1,
-		//shortcut_rating_2		= Qt::Key_2,
-		//shortcut_rating_3		= Qt::Key_3,
-		//shortcut_rating_4		= Qt::Key_4, 
-		//shortcut_rating_5		= Qt::Key_5,
+		shortcut_star_rating_0	= Qt::Key_0,
+		shortcut_star_rating_1	= Qt::Key_1,
+		shortcut_star_rating_2	= Qt::Key_2,
+		shortcut_star_rating_3	= Qt::Key_3,
+		shortcut_star_rating_4	= Qt::Key_4,
+		shortcut_star_rating_5	= Qt::Key_5,
 
 		// view
 		shortcut_new_tab		= Qt::CTRL + Qt::Key_T,

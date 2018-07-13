@@ -72,11 +72,10 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	// file info - overview
 	mFileInfoLabel = new DkFileInfoLabel(this);
 	mRatingLabel = new DkRatingLabelBg(2, this, flags);
-	addActions(mRatingLabel->getActions().toList());		// register actions
 	mCommentWidget = new DkCommentWidget(this);
 
 	// delayed info
-	mDelayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
+	mDelayedInfo = new DkDelayedMessage(this); // TODO: make a nice constructor
 
 	// info labels
 	mBottomLabel = new DkLabelBg(this, "");
@@ -104,6 +103,9 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 			w->setMouseTracking(true);
 		}
 	}
+
+	addActions(DkActionManager::instance().hiddenActions().toList());
+
 }
 
 void DkControlWidget::init() {
