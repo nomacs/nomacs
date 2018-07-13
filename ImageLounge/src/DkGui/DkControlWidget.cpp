@@ -305,8 +305,10 @@ void DkControlWidget::connectWidgets() {
 	DkActionManager& am = DkActionManager::instance();
 
 	// plugins
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
-	connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
+	if (am.pluginActionManager()) {
+		connect(am.pluginActionManager(), SIGNAL(runPlugin(DkViewPortInterface*, bool)), this, SLOT(setPluginWidget(DkViewPortInterface*, bool)));
+		connect(am.pluginActionManager(), SIGNAL(applyPluginChanges(bool)), this, SLOT(applyPluginChanges(bool)));
+	}
 
 	// actions
 	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered(bool)), this, SLOT(showCrop(bool)));
@@ -528,6 +530,7 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 }
 
 bool DkControlWidget::closePlugin(bool askForSaving, bool force) {
+
 #ifdef WITH_PLUGINS
 
 	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getRunningPlugin();
@@ -583,6 +586,9 @@ bool DkControlWidget::closePlugin(bool askForSaving, bool force) {
 
 	return true;
 #else
+	Q_UNUSED(askForSaving);
+	Q_UNUSED(force);
+
 	return false;
 #endif // WITH_PLUGINS
 }
@@ -601,6 +607,8 @@ bool DkControlWidget::applyPluginChanges(bool askForSaving) {
 
 	return closePlugin(askForSaving);
 #else
+	Q_UNUSED(askForSaving);
+
 	return true;
 #endif // WITH_PLUGINS
 }

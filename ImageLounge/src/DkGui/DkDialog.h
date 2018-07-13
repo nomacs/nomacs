@@ -397,7 +397,6 @@ class DkShortcutsModel : public QAbstractItemModel {
 public:
 	DkShortcutsModel(QObject* parent = 0);
 	~DkShortcutsModel();
-	//DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent = 0);
 
 	QModelIndex index(int row, int column, const QModelIndex &parent) const;
 	QModelIndex parent(const QModelIndex &index) const;

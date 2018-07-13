@@ -1413,8 +1413,11 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 
 	qDebug() << "unsharp mask takes: " << dt;
 	//DkImage::linearToGamma(img);
+#else
+	Q_UNUSED(img);
+	Q_UNUSED(sigma);
+	Q_UNUSED(weight);
 #endif
-
 
 	return true;
 }

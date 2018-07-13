@@ -671,6 +671,8 @@ void DkBasicLoader::indexPages(const QString& filePath) {
 
 	TIFFSetWarningHandler(oldWarningHandler);
 	TIFFSetWarningHandler(oldErrorHandler);
+#else
+	Q_UNUSED(filePath);
 #endif
 
 }
@@ -740,7 +742,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	TIFFSetWarningHandler(oldErrorHandler);
 
 	setEditImage(img, tr("Original Image"));
-
+#else
+	Q_UNUSED(pageIdx);
 #endif
 
 
@@ -784,6 +787,9 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) const {
 			| (p & 0x0000ff00)
 			| ((p & 0x000000ff) << 16);
 	}
+#else
+	Q_UNUSED(buffer);
+	Q_UNUSED(width);
 #endif
 }
 

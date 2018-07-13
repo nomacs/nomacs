@@ -125,7 +125,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 
-	connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginContainer*, const QString&)), this, SLOT(applyPlugin(DkPluginContainer*, const QString&)));
+	if (am.pluginActionManager())
+		connect(am.pluginActionManager(), SIGNAL(runPlugin(DkPluginContainer*, const QString&)), this, SLOT(applyPlugin(DkPluginContainer*, const QString&)));
 
 	// connect
 	connect(am.action(DkActionManager::menu_file_reload), SIGNAL(triggered()), this, SLOT(reloadFile()));
@@ -683,6 +684,9 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 		setEditedImage(result);
 
 	plugin->setActive(false);
+#else
+	Q_UNUSED(plugin);
+	Q_UNUSED(key);
 #endif
 }
 

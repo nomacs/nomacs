@@ -1352,7 +1352,6 @@ void DkPluginActionManager::assignCustomPluginShortcuts() {
 			// assign widget shortcuts to all of them
 			action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 			mPluginDummyActions.append(action);
-			//qDebug() << "new plugin action: " << psKeys.at(i);
 		}
 
 		settings.endGroup();

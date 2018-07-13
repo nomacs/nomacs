@@ -1604,7 +1604,6 @@ QModelIndex DkShortcutsModel::index(int row, int column, const QModelIndex &pare
 
 	TreeItem *childItem = parentItem->child(row);
 
-	//qDebug() << " creating index for: " << childItem->data(0) << " row: " << row;
 	if (childItem)
 		return createIndex(row, column, childItem);
 	else
@@ -1621,8 +1620,6 @@ QModelIndex DkShortcutsModel::parent(const QModelIndex &index) const {
 
 	if (parentItem == mRootItem)
 		return QModelIndex();
-
-	//qDebug() << "creating index for: " << childItem->data(0);
 
 	return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -1647,7 +1644,6 @@ int DkShortcutsModel::columnCount(const QModelIndex& parent) const {
 		return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
 	else
 		return mRootItem->columnCount();
-	//return 2;
 }
 
 QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
@@ -1657,17 +1653,9 @@ QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
 		return QVariant();
 	}
 
-	//if (index.row() > rowCount())
-	//	return QVariant();
-
-	//if (index.column() > columnCount())
-	//	return QVariant();
-
 	if (role == Qt::DisplayRole || role == Qt::EditRole) {
 
 		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-		//qDebug() << "returning: " << item->data(0) << "row: " << index.row();
-
 		return item->data(index.column());
 	}
 
@@ -1706,7 +1694,6 @@ bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, 
 		item->setData(value, index.column());
 	}
 
-	//emit duplicateSignal("");		// TODO: we also have to clear if the user hits ESC
 	emit dataChanged(index, index);
 	return true;
 }
@@ -1715,10 +1702,6 @@ Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
 
 	if (!index.isValid())
 		return Qt::ItemIsEditable;
-
-	//// no editing on root items
-	//if (item->parent() == rootItem)
-	//	return QAbstractTableModel::flags(index);
 
 	Qt::ItemFlags flags;
 
@@ -1758,8 +1741,6 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, const QString& 
 
 	mRootItem->appendChild(menuItem);
 	mActions.append(actions);
-	//qDebug() << "menu item has: " << menuItem->childCount();
-
 }
 
 void DkShortcutsModel::checkDuplicate(const QString& text, void* item) {
@@ -1858,8 +1839,11 @@ void DkShortcutsModel::saveActions() const {
 					continue;
 				}
 
+				QString aT = cActions.at(mIdx)->text();
+				//aT.remove("&");
+
 				cActions.at(mIdx)->setShortcut(ks);		// assign new shortcut
-				settings.setValue(cActions.at(mIdx)->text(), ks.toString());	// note this works as long as you don't change the language!
+				settings.setValue(aT, ks.toString());	// note this works as long as you don't change the language!
 			}
 		}
 	}
@@ -4198,7 +4182,7 @@ void DkPrintImage::draw(QPainter & p, bool highQuality) {
 	QImage img = mImg;
 
 	if (highQuality) 
-		img = DkImage::resizeImage(mImg, QSize(), mTransform.m11(), CV_INTER_AREA, false);
+		img = DkImage::resizeImage(mImg, QSize(), mTransform.m11(), DkImage::ipl_area, false);
 	else
 		p.setRenderHints(QPainter::SmoothPixmapTransform);
 
