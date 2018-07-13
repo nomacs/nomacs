@@ -1571,39 +1571,9 @@ bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
 	else if (event->type() == QEvent::KeyPress) {	// filter keypresses to avoid any dialog action on shortcut edit
 		return true;
 	}
-	//else if (event->type() == QEvent::ShortcutOverride)
-	//	return true;
 
 	return QLineEdit::eventFilter(obj, event);
 }
-
-
-//void DkShortcutEditor::keyPressEvent(QKeyEvent *event) {
-//
-//}
-//
-//void DkShortcutEditor::keyReleaseEvent(QKeyEvent* event) {
-//	
-//	if (event->key() == Qt::Key_Control ||
-//		event->key() == Qt::Key_Shift ||
-//		event->key() == Qt::Key_Alt ||
-//		event->key() == Qt::Key_Meta)
-//		return;
-//
-//	int ksi = event->key();
-//
-//	if (event->modifiers() & Qt::ShiftModifier)
-//		ksi += Qt::SHIFT;
-//	if (event->modifiers() & Qt::AltModifier)
-//		ksi += Qt::ALT;
-//	if (event->modifiers() & Qt::ControlModifier)
-//		ksi += Qt::CTRL;
-//	if (event->modifiers() & Qt::MetaModifier)
-//		ksi += Qt::META;
-//
-//	QKeySequence ks(ksi);
-//	setText(ks.toString());
-//}
 
 // DkShortcutsModel --------------------------------------------------------------------
 DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractItemModel(parent) {
