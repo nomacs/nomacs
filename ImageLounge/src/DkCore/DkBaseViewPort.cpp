@@ -573,7 +573,10 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 		// if we have the exact level cached: render it directly
 		QRect ir = mWorldMatrix.mapRect(mImgViewRect).toRect();
 
-		if (ir.size() == imgQt.size()) {
+		// we actually ask for ir.size() == imgQt.size()
+		// but account for rounding issues with aspect ratio (<= 1)
+		if (qAbs(ir.width() - imgQt.width()) <= 1 &&
+			qAbs(ir.height() - imgQt.height()) <= 1) {
 			painter.setWorldMatrixEnabled(false);
 			painter.drawImage(ir, imgQt, imgQt.rect());
 			painter.setWorldMatrixEnabled(true);
@@ -583,7 +586,6 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 	}
 
 	painter.setOpacity(oldOp);
-
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 
