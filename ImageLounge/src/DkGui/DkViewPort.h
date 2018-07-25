@@ -110,13 +110,9 @@ public:
 	
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
-	// fun
-	void toggleDissolve();
-
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
 	void sendNewFileSignal(qint16 op, QString filename = "") const;
-	void sendImageSignal(QImage img, QString title) const;
 	void newClientConnectedSignal(bool connect, bool local) const;
 	void movieLoadedSignal(bool isMovie) const;
 	void infoSignal(const QString& msg) const;	// needed to forward signals
@@ -140,10 +136,8 @@ public slots:
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
 	void tcpSetWindowRect(QRect rect);
 	void tcpSynchronize(QTransform relativeMatrix = QTransform());
-	void tcpForceSynchronize();
 	void tcpLoadFile(qint16 idx, QString filename);
 	void tcpShowConnections(QList<DkPeer*> peers);
-	void tcpSendImage(bool silent = false);
 	
 	// file actions
 	void loadFile(const QString& filePath);
@@ -166,6 +160,7 @@ public slots:
 	void applyPlugin(DkPluginContainer* plugin, const QString& key);
 
 	// image saving
+	QImage getImage() const override;
 	void saveFile();
 	void saveFileAs(bool silent = false);
 	void saveFileWeb();
@@ -226,9 +221,6 @@ protected:
 	QRectF mFadeImgRect;
 	bool mNextSwipe = true;
 
-	// fun
-	bool mDissolveImage = false;
-	
 	QImage mImgBg;
 
 	QVBoxLayout* mPaintLayout;

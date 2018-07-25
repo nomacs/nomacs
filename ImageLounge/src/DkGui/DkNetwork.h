@@ -66,10 +66,10 @@ public:
 
 	bool operator==(const DkPeer& peer) const;
 
-	bool isActive() {return hasChangedRecently;};
+	bool isActive() const {return hasChangedRecently;};
 	void setSynchronized(bool flag);
-	bool isSynchronized() {return sychronized;};
-	bool isLocal() {
+	bool isSynchronized() const {return sychronized;};
+	bool isLocal() const {
 		return hostAddress == QHostAddress::LocalHost;
 	};
 

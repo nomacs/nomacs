@@ -157,14 +157,18 @@ public:
 		l_end
 	};
 
-	bool hasImage() const {
-		return !mImg.isNull();
-	}
+	bool isEmpty() const {
+		return mImg.isNull();
+	};
+
+	QSize size() const {
+		return mImg.size();
+	};
 
 	void setImage(const QImage& img);
-	QImage getImageConst() const;
-	QImage getImage(double scale = 1.0);
-	
+	QImage imageConst() const;
+	QImage image(double scale = 1.0);
+
 public slots:
 	void antiAliasingChanged(bool antiAliasing);
 	void imageComputed();

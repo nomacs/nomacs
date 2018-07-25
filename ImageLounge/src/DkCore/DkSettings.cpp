@@ -440,7 +440,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
-	//sync_p.syncMode = settings.value("syncMode", sync_p.syncMode).toInt();
 	sync_p.syncActions = settings.value("syncActions", sync_p.syncActions).toBool();
 
 	settings.endGroup();
@@ -706,8 +705,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
 	if (force ||sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
-	//if (force ||sync_p.syncMode != sync_d.syncMode)
-	//	settings.setValue("syncMode", sync_p.syncMode);
 	if (force ||sync_p.syncActions != sync_d.syncActions)
 		settings.setValue("syncActions", sync_p.syncActions);
 
@@ -857,9 +854,8 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.checkForUpdates = !isPortable();	// installed version should only check for updates by default
 	sync_p.disableUpdateInteraction = isPortable();	// installed version should only check for updates by default
 	sync_p.updateDialogShown = false;
-	sync_p.lastUpdateCheck = QDate(1970 , 1, 1);
+	sync_p.lastUpdateCheck = QDate(2018, 7, 14);	// ; )
 	sync_p.syncAbsoluteTransform = true;
-	sync_p.syncMode = DkSettings::sync_mode_default;
 	sync_p.syncActions = false;
 
 	resources_p.cacheMemory = 0;

@@ -205,8 +205,6 @@ void DkTcpMenu::enableActions(bool enable, bool local) {
 
 		if (mTcpActions.at(idx)->objectName() == "serverAction")
 			mTcpActions.at(idx)->setEnabled(!anyConnected);
-		if (mTcpActions.at(idx)->objectName() == "sendImageAction" && DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default)
-			mTcpActions.at(idx)->setEnabled(anyConnected);
 	}
 
 }
@@ -223,7 +221,6 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 
 	// show dummy action
 	if (newPeers.empty() && mNoClientsFound) {
-		qDebug() << "dummy node...\n";
 		QAction* defaultAction = new QAction(tr("no clients found"), this);
 		defaultAction->setEnabled(false);
 		addAction(defaultAction);
@@ -233,16 +230,9 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 	if (!mNoClientsFound || !newPeers.empty()) {
 
 		for (int idx = 0; idx < mTcpActions.size(); idx++) {
-
-			if (mTcpActions.at(idx)->objectName() != "sendImageAction")
-				addAction(mTcpActions.at(idx));
+			addAction(mTcpActions.at(idx));
 		}
 
-		//QList<QAction*>::iterator actionIter = tcpActions.begin();
-		//while (actionIter != tcpActions.end()) {
-		//	addAction(*actionIter);
-		//	actionIter++;
-		//}
 	}
 
 	for (int idx = 0; idx < newPeers.size(); idx++) {

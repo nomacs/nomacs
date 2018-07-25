@@ -205,7 +205,7 @@ void DkBaseViewPort::zoomOut() {
 
 void DkBaseViewPort::zoom(float factor, QPointF center) {
 
-	if (mImgStorage.getImage().isNull())
+	if (mImgStorage.isEmpty())
 		return;
 
 	//limit zoom out ---
@@ -288,7 +288,7 @@ QImage DkBaseViewPort::getImage() const {
 	if (mMovie && mMovie->isValid())
 		return mMovie->currentImage();
 
-	return mImgStorage.getImageConst();
+	return mImgStorage.imageConst();
 }
 
 QSize DkBaseViewPort::getImageSize() const {
@@ -298,7 +298,7 @@ QSize DkBaseViewPort::getImageSize() const {
 		return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
 	}
 
-	return mImgStorage.getImageConst().size();
+	return mImgStorage.size();
 }
 
 QRectF DkBaseViewPort::getImageViewRect() const {
@@ -316,7 +316,7 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	imgR.fill(0);
 
 	QPainter painter(&imgR);
-	painter.drawImage(imgR.rect(), mImgStorage.getImage(), viewRect.toRect());
+	painter.drawImage(imgR.rect(), mImgStorage.image(), viewRect.toRect());
 	painter.end();
 
 	return imgR;
@@ -332,27 +332,19 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
 
-	qDebug() << "painting...";
-	if (mImgStorage.hasImage()) {
+	if (!mImgStorage.isEmpty()) {
 		painter.setWorldTransform(mWorldMatrix);
 
-		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
-		if (!mForceFastRendering && // force?
-			fabs(mImgMatrix.m11()*mWorldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
-			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
-				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-		}
+		// don't interpolate - we have a sophisticated anti-aliasing methods
+		//// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
+		//if (!mForceFastRendering && // force?
+		//	fabs(mImgMatrix.m11()*mWorldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
+		//	mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
+		//		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+		//}
 
 		draw(painter);
-
-		//Now disable matrixWorld for overlay display
-		painter.setWorldMatrixEnabled(false);
-		qDebug() << "&& storage is not empty...";
 	}
-
-	painter.end();
-
-	emit imageUpdated();	// TODO: delay timer is important here!
 
 	// propagate
 	QGraphicsView::paintEvent(event);
@@ -365,14 +357,6 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 		return;
 
 	mViewportRect = QRect(0, 0, event->size().width(), event->size().height());
-
-	qDebug() << "new size: " << event->size();
-	//// do we still need that??
-	//QSize newSize = imgStorage.getImage().size();
-	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
-
-	//newSize = (event->size()-newSize)/2;
-	//move(newSize.width(), newSize.height());
 
 	updateImageMatrix();
 	centerImage();
@@ -545,22 +529,13 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 		painter.setWorldMatrixEnabled(true);
 	}
 
-	QImage imgQt = mImgStorage.getImage((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+	QImage img = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
 	// opacity == 1.0f -> do not show pattern if we crossfade two images
-	if (DkSettingsManager::param().display().tpPattern && imgQt.hasAlphaChannel() && opacity == 1.0f) {
+	if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
+		drawPattern(painter);
 
-		// don't scale the pattern...
-		QTransform scaleIv;
-		scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
-		mPattern.setTransform(scaleIv.inverted());
-
-		painter.setPen(QPen(Qt::NoPen));	// no border
-		painter.setBrush(mPattern);
-		painter.drawRect(mImgViewRect);
-	}
-
-	float oldOp = (float)painter.opacity();
+	double oldOp = painter.opacity();
 	painter.setOpacity(opacity);
 
 	if (mSvg && mSvg->isValid()) {
@@ -575,18 +550,31 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 
 		// we actually ask for ir.size() == imgQt.size()
 		// but account for rounding issues with aspect ratio (<= 1)
-		if (qAbs(ir.width() - imgQt.width()) <= 1 &&
-			qAbs(ir.height() - imgQt.height()) <= 1) {
+		if (qAbs(ir.width() - img.width()) <= 1 &&
+			qAbs(ir.height() - img.height()) <= 1) {
 			painter.setWorldMatrixEnabled(false);
-			painter.drawImage(ir, imgQt, imgQt.rect());
+			painter.drawImage(ir, img, img.rect());
 			painter.setWorldMatrixEnabled(true);
 		}
 		else
-			painter.drawImage(mImgViewRect, imgQt, imgQt.rect());
+			painter.drawImage(mImgViewRect, img, img.rect());
 	}
 
 	painter.setOpacity(oldOp);
-	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
+}
+
+void DkBaseViewPort::drawPattern(QPainter & painter) const {
+
+	QBrush pt = mPattern;
+
+	// don't scale the pattern...
+	QTransform scaleIv;
+	scaleIv.scale(mWorldMatrix.m11(), mWorldMatrix.m22());
+	pt.setTransform(scaleIv.inverted());
+
+	painter.setPen(QPen(Qt::NoPen));	// no border
+	painter.setBrush(pt);
+	painter.drawRect(mImgViewRect);
 }
 
 bool DkBaseViewPort::imageInside() const {
@@ -596,7 +584,7 @@ bool DkBaseViewPort::imageInside() const {
 
 void DkBaseViewPort::updateImageMatrix() {
 
-	if (mImgStorage.getImage().isNull())
+	if (mImgStorage.isEmpty())
 		return;
 
 	QRectF oldImgRect = mImgViewRect;

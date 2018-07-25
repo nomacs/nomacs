@@ -733,7 +733,7 @@ bool DkImageLoader::unloadFile() {
 		return true;
 
 	// if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask the user
-	if (mCurrentImage->isEdited() && (DkSettingsManager::param().sync().syncMode == DkSettings::sync_mode_default)) {
+	if (mCurrentImage->isEdited()) {
 		DkMessageBox* msgBox = new DkMessageBox(
 			QMessageBox::Question, 
 			tr("Save Image"), 
@@ -746,7 +746,6 @@ bool DkImageLoader::unloadFile() {
 
 		int answer = msgBox->exec();
 
-		// TODO: Save As dialog for unsupported files
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
 			
 			if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName()))
@@ -970,10 +969,6 @@ void DkImageLoader::downloadFile(const QUrl& url) {
  * @param img the image (which was in most cases pasted to nomacs)
  **/ 
 QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, const QString& fileExt, bool force, bool threaded) {
-
-	// do not save temp images if we are remote control or remote display
-	if (DkSettingsManager::param().sync().syncMode != DkSettings::sync_mode_default)
-		return QString();
 
 	QFileInfo tmpPath = QFileInfo(DkSettingsManager::param().global().tmpPath + "\\");
 	

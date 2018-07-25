@@ -148,15 +148,6 @@ public:
 		zoom_end,
 	};
 
-	enum syncModes {
-		sync_mode_default = 0,
-		sync_mode_remote_display,
-		sync_mode_remote_control,
-		sync_mode_receiveing_command,
-
-		sync_mode_end,
-	};
-
 	enum TransitionMode {
 		trans_appear,
 		trans_fade,
@@ -293,7 +284,6 @@ public:
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
 		bool switchModifier;
-		int syncMode;
 		bool syncActions;
 	};
 	struct MetaData {

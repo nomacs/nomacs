@@ -132,8 +132,6 @@ public:
 		return &mImgStorage;
 	};
 
-	//virtual QImage getScaledImage(float factor);
-
 #ifdef WITH_OPENCV
 	virtual void setImage(cv::Mat newImg);
 #endif
@@ -147,7 +145,6 @@ public:
 signals:
 	void enableNoImageSignal(bool enable) const;
 	void showStatusBar(bool show, bool permanent) const;
-	void imageUpdated() const;	// this waits ~50 ms before triggering
 	void newImageSignal(QImage* img) const;
 	void keyReleaseSignal(QKeyEvent* event) const;	// make key presses available
 
@@ -167,7 +164,6 @@ public slots:
 	virtual void setBackgroundBrush(const QBrush &brush);
 
 	virtual bool unloadImage(bool fileChange = true);
-
 	virtual void setImage(QImage newImg);
 	
 protected:
@@ -217,6 +213,7 @@ protected:
 
 	// functions
 	virtual void draw(QPainter & painter, double opacity = 1.0);
+	virtual void drawPattern(QPainter & painter) const;
 	virtual void updateImageMatrix();
 	virtual QTransform getScaledImageMatrix() const;
 	virtual QTransform getScaledImageMatrix(const QSize& size) const;

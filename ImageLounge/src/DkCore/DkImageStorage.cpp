@@ -1455,6 +1455,7 @@ QImage DkImage::createThumb(const QImage& image) {
 	return thumb;
 }
 
+// NOTE: this is just for fun (all images in the world : )
 bool DkImage::addToImage(QImage& img, unsigned char val) {
 
 	// number of bytes per line used
@@ -1544,6 +1545,7 @@ QColor DkImage::getMeanColor(const QImage& img) {
 
 // DkImageStorage --------------------------------------------------------------------
 DkImageStorage::DkImageStorage(const QImage& img) {
+
 	mImg = img;
 
 	mWaitTimer = new QTimer(this);
@@ -1583,12 +1585,11 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
 }
 
-QImage DkImageStorage::getImageConst() const {
-	
+QImage DkImageStorage::imageConst() const {
 	return mImg;
 }
 
-QImage DkImageStorage::getImage(double scale) {
+QImage DkImageStorage::image(double scale) {
 
 	if (scale >= 1.0 || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing)
 		return mImg;
