@@ -264,12 +264,13 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	setAcceptDrops(true);
 
 	DkActionManager& am = DkActionManager::instance();
-	connect(am.action(DkActionManager::menu_file_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
-	connect(am.action(DkActionManager::menu_file_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
-	connect(am.action(DkActionManager::menu_file_close_all_tabs), &QAction::triggered, this, [this]() { clearAllTabs(); });
-	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
+	connect(am.action(DkActionManager::menu_view_new_tab), SIGNAL(triggered()), this, SLOT(addTab()));
+	connect(am.action(DkActionManager::menu_view_close_tab), SIGNAL(triggered()), this, SLOT(removeTab()));
+	connect(am.action(DkActionManager::menu_view_close_all_tabs), &QAction::triggered, this, [this]() { clearAllTabs(); });
 	connect(am.action(DkActionManager::menu_view_first_tab), &QAction::triggered, this, [this]() { setActiveTab(0); });
 	connect(am.action(DkActionManager::menu_view_previous_tab), SIGNAL(triggered()), this, SLOT(previousTab()));
+	connect(am.action(DkActionManager::menu_edit_paste), SIGNAL(triggered()), this, SLOT(pasteImage()));
+
 	connect(am.action(DkActionManager::menu_view_goto_tab), &QAction::triggered, this, [this]() {
 		bool ok = false;
 		int idx = QInputDialog::getInt(this, tr("Go to Tab"), tr("Go to tab number: "), getActiveTab()+1, 1, getTabs().count(), 1, &ok);
