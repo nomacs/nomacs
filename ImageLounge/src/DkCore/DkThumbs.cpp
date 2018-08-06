@@ -69,6 +69,7 @@ void DkThumbNail::compute(int forceLoad) {
 	// we do this that complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
 	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize, mMinThumbSize);
+	mImg = DkImage::createThumb(mImg);
 }
 
 /**
@@ -383,7 +384,8 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 
 QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize) {
 
-	return DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize, minThumbSize);
+	QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize, minThumbSize);
+	return DkImage::createThumb(thumb);
 }
 
 void DkThumbNailT::thumbLoaded() {
