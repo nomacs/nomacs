@@ -1,10 +1,13 @@
 # nomacs - Image Lounge 🍸
+
 nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images. nomacs is licensed under the GNU General Public License v3 and available for Windows, Linux, FreeBSD, Mac, and OS/2.
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs.svg?branch=master)](https://travis-ci.org/nomacs/nomacs)
 
 ## Build nomacs (Windows)
+
 ### Compile dependencies
+
 - `Qt` SDK or the compiled sources (>= 5.2.1)
 - `Exiv2` (>= 0.25)
 - `OpenCV` (>= 2.4.6) _optional_
@@ -12,13 +15,15 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 - `Python` (>= 3.6) for build scripts
 
 ### Compile LibRaw
+
 - only needed if ENABLE_RAW is checked
-- checkout https://github.com/nomacs/LibRaw
+- checkout [libraw](https://github.com/nomacs/LibRaw)
 - switch to 0.XX-stable branch
 - follow the build instructions
 - in the nomacs CMake, set `libraw_DIR` to that build path
 
 ### Compile nomacs
+
 1. Open CMake GUI
 2. set your ImageLounge folder to `where is the source code`
 3. choose a build folder
@@ -30,6 +35,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 9. Compile the Solution
 
 ### If anything did not work
+
 - check if you have setup opencv (otherwise uncheck ENABLE_OPENCV)
 - check if your Qt is set correctly (otherwise set the path to `qt_install_dir/qtbase/bin/qmake.exe`)
 - check if your builds proceeded correctly
@@ -41,49 +47,58 @@ Get the required packages:
 ``` console
 sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git build-essential lcov libzip-dev
 ```
+
 Get the nomacs sources from github:
+
 ``` console
 git clone https://github.com/nomacs/nomacs.git
 ```
+
 This will by default place the source into ~/nomacs
 
 Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
+
 ``` console
 cmake .
 ```
 
 Compile nomacs:
+
 ``` console
 make
 ```
 
 You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
+
 ``` console
 sudo make install
 ```
+
 note that you have to execute
+
 ``` console
 sudo ldconfig
 ```
+
 on your own after a successfully install
 
 ### For Package Maintainers
+
 - Set `ENABLE_TRANSLATIONS` to `true` (default: `false`)
 - Build all officially supported [plugins](https://github.com/nomacs/nomacs-plugins/)
 
+## Build nomacs (MacOS)
 
-## Build nomacs (OSX)
-Install [Homebrew](http://brew.sh/) for easier installation of depenedencies.
-
+Install [Homebrew](http://brew.sh/) for easier installation of dependencies.
 Install required dependencies:
 
-```
-$ brew install qt5 exiv2 opencv libraw quazip
+``` console
+$ brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
 Go to the `nomacs` directory and run cmake to get the Makefiles
 
-```
+``` console
 $ mkdir build
 $ cd build
 $ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin ../ImageLounge/.
@@ -91,19 +106,20 @@ $ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin
 
 Run make:
 
-```
+```console
 $ make
 ```
 
 You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
 
-```
+```console
 $ sudo make install
 ```
 
 ## Links
+
 - [nomacs.org](http://nomacs.org)
 - [Bugtracker](http://www.nomacs.org/redmine/projects/nomacs)
 - [GitHub](https://github.com/nomacs)
 
-[![nomacs-icon](http://nomacs.org/startpage/nomacs.svg)](https://nomacs.org)
+[![nomacs-icon](https://nomacs.org/startpage/nomacs.svg)](https://nomacs.org)

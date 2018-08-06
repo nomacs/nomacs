@@ -147,7 +147,6 @@ include_directories (
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
-	# ${ZLIB_INCLUDE_DIRS}
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 )
 
