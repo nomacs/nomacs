@@ -653,25 +653,17 @@ bool DkUtils::isValid(const QFileInfo& fileInfo) {
 	if (fInfo.isSymLink())
 		fInfo = fileInfo.symLinkTarget();
 
-	bool fileIsValid = false;
-	auto printDebug = [&](QString msg){
-		QString validText = fileIsValid?"is valid":"is invalid";
-		qDebug() << QString("file %1 %2 %3").arg(fileName).arg(validText).arg(msg);
-	};
-
     if (!fInfo.exists()) {
-        fileIsValid = false;
-        printDebug("doesn't exist");
-
-    } else if(hasValidSuffix(fInfo.fileName()))  {
-        fileIsValid = true;
-        printDebug("is has no valid extension.");
-
-    } else if(isValidByContent(fInfo))  {
-        fileIsValid = true;
-        printDebug("detected by mime");
+		return false;
+    } 
+	else if (hasValidSuffix(fInfo.fileName()))  {
+		return true;
+    } 
+	else if (isValidByContent(fInfo))  {
+		return true;
     }
-    return fileIsValid;
+
+    return false;
 }
 
 bool DkUtils::isSavable(const QString & fileName) {
@@ -875,6 +867,12 @@ QStringList DkUtils::filterStringList(const QString& query, const QStringList& l
 bool DkUtils::moveToTrash(const QString& filePath) {
 
 	QFileInfo fileInfo(filePath);
+
+	// delete links
+	if (fileInfo.isSymLink()) {
+		QFile fh(filePath);
+		return fh.remove();
+	}
 
 	if (!fileInfo.exists()) {
 		qDebug() << "Sorry, I cannot delete a non-existing file: " << filePath;

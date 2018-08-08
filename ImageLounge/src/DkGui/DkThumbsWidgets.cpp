@@ -1391,7 +1391,7 @@ void DkThumbScene::pasteImages() const {
 	copyImages(QApplication::clipboard()->mimeData());
 }
 
-void DkThumbScene::copyImages(const QMimeData* mimeData) const {
+void DkThumbScene::copyImages(const QMimeData* mimeData, const Qt::DropAction& da) const {
 
 	if (!mimeData || !mimeData->hasUrls() || !mLoader)
 		return;
@@ -1408,14 +1408,46 @@ void DkThumbScene::copyImages(const QMimeData* mimeData) const {
 		if (QFileInfo(newFilePath).exists())
 			continue;
 
-		if (!file.copy(newFilePath)) {
-			int answer = QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot copy %1 to %2")
-				.arg(fileInfo.absoluteFilePath(), newFilePath), QMessageBox::Ok | QMessageBox::Cancel);
+		auto askUser = [&](const QString& aMsg) {
+			int answer = QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot %1 %2")
+				.arg(aMsg, newFilePath), QMessageBox::Ok | QMessageBox::Cancel);
+			
+			return answer == QMessageBox::Cancel;
+		};
 
-			if (answer == QMessageBox::Cancel) {
-				break;
-			}
+		bool userCanceled = false;
+
+		switch (da) {
+		// move files -> a move is actually a rename
+		case Qt::MoveAction: {
+			if (!file.rename(newFilePath))
+				userCanceled = askUser(tr("move"));
+			break;
 		}
+		// create links
+		case Qt::LinkAction: {
+
+#ifdef Q_OS_WIN
+			newFilePath += ".lnk";
+#endif
+
+			if (!file.link(newFilePath)) {
+				userCanceled = askUser(tr("create link"));
+			}
+			break;
+		}
+
+		default: {
+			// our default action is copying (usually done without modifiers)
+			if (!file.copy(newFilePath)) {
+				userCanceled = askUser(tr("copy"));
+			}
+			break;
+		}
+		}
+
+		if (userCanceled)
+			break;
 	}
 
 }
@@ -1655,6 +1687,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
 				drag->setPixmap(pm);
+
 				drag->exec(Qt::CopyAction);
 			}
 		}
@@ -1688,10 +1721,12 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 
+	QGraphicsView::dragEnterEvent(event);
+
 	qDebug() << event->source() << " I am: " << this;
 
 	if (event->source() == this)
-		event->acceptProposedAction();
+		event->accept();
 	else if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
@@ -1705,73 +1740,21 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 			event->acceptProposedAction();
 	}
 
-	//QGraphicsView::dragEnterEvent(event);
 }
 
 void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
-//
-//	qDebug() << event->source() << " I am: " << this;
-//
-//	if (event->source() == this)
-//		event->acceptProposedAction();
-//	else if (event->mimeData()->hasUrls()) {
-//		QUrl url = event->mimeData()->urls().at(0);
-//		url = url.toLocalFile();
-//
-//		QFileInfo file = QFileInfo(url.toString());
-//
-//		// just accept image files
-//		if (DkImageLoader::isValid(file))
-//			event->acceptProposedAction();
-//		else if (file.isDir())
-//			event->acceptProposedAction();
-//	}
-//
-//	//QGraphicsView::dragEnterEvent(event);
-//}
 
-	if (event->source() == this)
-		event->acceptProposedAction();
+	QGraphicsView::dragMoveEvent(event);
+
+	if (event->source() == this) {
+		event->accept();
+		qDebug() << "accepting...";
+	}
 	else if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
-//		QUrl url = event->mimeData()->urls().at(0);
-//		url = url.toLocalFile();
-//
-//		QFileInfo file = QFileInfo(url.toString());
-//
-//		// just accept image files
-//		if (DkImageLoader::isValid(file))
-//			event->acceptProposedAction();
-//		else if (file.isDir())
-//			event->acceptProposedAction();
-//	}
-//
-//	//QGraphicsView::dragMoveEvent(event);
-//}
 
 		QFileInfo file = QFileInfo(url.toString());
-//
-//	if (event->source() == this) {
-//		event->accept();
-//		return;
-//	}
-//
-//	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-//		QUrl url = event->mimeData()->urls().at(0);
-//		qDebug() << "dropping: " << url;
-//		url = url.toLocalFile();
-//
-//		QFileInfo file = QFileInfo(url.toString());
-//		QDir newDir = file.isDir() ? file.absoluteFilePath() : file.absolutePath();
-//
-//		emit updateDirSignal(newDir);
-//	}
-//
-//	QGraphicsView::dropEvent(event);
-//
-//	qDebug() << "drop event...";
-//}
 
 		// just accept image files
 		if (DkUtils::isValid(file))
@@ -1780,7 +1763,6 @@ void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
 			event->acceptProposedAction();
 	}
 
-	//QGraphicsView::dragMoveEvent(event);
 }
 
 void DkThumbsView::dropEvent(QDropEvent *event) {
@@ -1792,23 +1774,22 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
 		
-		if (event->mimeData()->urls().size() > 1) {
-			scene->copyImages(event->mimeData());
-			return;
-		}
-
 		QUrl url = event->mimeData()->urls().at(0);
 		qDebug() << "dropping: " << url;
 		url = url.toLocalFile();
 
 		QFileInfo file = QFileInfo(url.toString());
-		QString newDir = (file.isDir()) ? file.absoluteFilePath() : file.absolutePath();
 
-		emit updateDirSignal(newDir);
+		// if a folder is dropped -> open it
+		if (file.isDir()) {
+			emit updateDirSignal(file.absoluteFilePath());
+		}
+		else {
+			scene->copyImages(event->mimeData(), event->proposedAction());
+		}
 	}
 
 	QGraphicsView::dropEvent(event);
-
 	qDebug() << "drop event...";
 }
 
