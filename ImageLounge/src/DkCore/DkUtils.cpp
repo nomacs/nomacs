@@ -1028,12 +1028,20 @@ QString DkUtils::resolveFraction(const QString& frac) {
 QList<QUrl> DkUtils::findUrlsInTextNewline(QString text){
     QList<QUrl> urls;
     QStringList lines = text.split(QRegExp("\n|\r\n|\r"));
-    for(QUrl maybeUrl: QUrl::fromStringList(lines)){
-        if(maybeUrl.isValid()){
-            if(maybeUrl.isRelative()){
-                maybeUrl.setScheme("file");
+    for (QString fp : lines) {
+        
+		// fixes urls for windows - yes that actually annoys me
+		fp = fp.replace("\\", "/");
+		
+		QUrl url(fp);
+
+		if (url.isValid()) {
+            
+			if (url.isRelative()){
+                url.setScheme("file");
             }
-            urls.append(maybeUrl);
+
+            urls.append(url);
         }
     }
     return urls;
