@@ -27,39 +27,29 @@ This repository contains officially supported plugins for the image viewer [noma
 7. You will find a nomacs-plugins.sln which builds all plugins and dedicated plugin projects in the respective folders (e.g. PaintPlugin/paintPlugin.sln)
 8. Tip: Go to Plugin > Properties > Configuration Properties > Debugging and set the Command to your nomacs path (e.g. C:/nomacs/build2015-x64/Debug/nomacs.exe) to better debug your plugin
 
-## Build nomacs (Ubuntu)
+## Build Plugins (Ubuntu)
 
-Get the required packages:
+Build [nomacs](https://github.com/nomacs/nomacs#build-nomacs-ubuntu)  
 
-``` console
-sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git build-essential
-```
+Since you need to reference the nomacs resources from the nomacs-plugins directory, specify the nomacs paths in  
+nomacs-plugins/CMakeUserSkel.cmake:  
+    - Copy `CMakeUserSkel.cmake` and rename it to `CMakeUser.cmake`  
+    - Set all paths to your own builds of nomacs etc.  
 
-Get the nomacs sources from github:
-
-``` console
-git clone https://github.com/nomacs/nomacs.git
-```
-
-This will by default place the source into ~/nomacs
-
-Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
+In the nomacs-plugins directory run `cmake` to get the Makefiles:
 
 ``` console
 cmake .
 ```
 
-Compile nomacs:
+Compile Plugins:
 
 ``` console
 make
 ```
 
-You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
+This will build all the Plugins set to 'ON' in nomacs-plugins/CMakeLists.txt and create a plugins directory in nomacs/ImageLounge. Running ./nomacs from the nomacs/ImageLounge directory should now list all the built Plugins in the Plugins tab.
 
-``` console
-sudo make install
-```
 
 ## Links
 
