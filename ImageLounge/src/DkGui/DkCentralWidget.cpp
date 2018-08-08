@@ -1105,12 +1105,17 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
 void DkCentralWidget::loadUrl(const QUrl& url, bool loadInTab) {
     Q_ASSERT(url.isValid());
 
-    // TODO decide cases where we just load over the current image
     Q_UNUSED(loadInTab);
     Q_ASSERT(loadInTab == true);
 
+	QString fp = url.toString();
+
+	// allow drops from VSCode (i.e. images in README files)
+	if (fp.startsWith("vscode-resource:/"))
+		fp = fp.remove("vscode-resource:/");
+
 	// url.toString fixes windows "C:/" vs "C:\"
-    QFileInfo fi(url.toString());
+    QFileInfo fi(fp);
 
 	if (!fi.exists()) {
 		fi = QFileInfo(url.toLocalFile());
@@ -1155,10 +1160,8 @@ void DkCentralWidget::loadUrls(const QList<QUrl>& urls, int maxUrlsToLoad) {
 	if(urls.size() == 0)
         return;
 
-    if(urls.size() > maxUrlsToLoad){
-        QString urlsWarning(tr("Too many urls to load. Loading only the first %1"));
-        qDebug() << urlsWarning.arg(urls.size());
-    }
+    if(urls.size() > maxUrlsToLoad)
+		qWarning() << "Too many urls found, I will only load the first" << maxUrlsToLoad;
 
     for (int idx = 0; idx < urls.size() && idx < maxUrlsToLoad; idx++) {
         QUrl url = urls[idx];
@@ -1225,11 +1228,10 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         return false;
 
     QStringList mimeFmts = mimeData->formats();
-    qDebug() << "loading mime data with formats: " << mimeFmts;
-
+    //qDebug().noquote() << "mime formats:" << mimeFmts.join("\n");
+	
     if (mimeData->hasImage()) {
         // we got an image buffer
-
         QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
         mViewport->loadImage(dropImg);
         return true;
@@ -1256,7 +1258,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         return false;
     }
 
-    if(urls.size() == 0){
+    if(urls.size() == 0) {
         return false;
     }
 
