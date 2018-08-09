@@ -907,12 +907,12 @@ void DkFilePreference::createLayout() {
 	tempFolderGroup->addWidget(tLabel);
 
 	// cache size
-	int maxCache = qMax(qRound(DkMemory::getTotalMemory()*0.5), 1024);
-	qInfo() << "Cache size: " << maxCache;
+	int maxRam = qMax(qRound(DkMemory::getTotalMemory()), 1024);
+	qInfo() << "Available RAM: " << maxRam << "MB";
 	QSpinBox* cacheBox = new QSpinBox(this);
 	cacheBox->setObjectName("cacheBox");
 	cacheBox->setMinimum(0);
-	cacheBox->setMaximum(maxCache);
+	cacheBox->setMaximum(maxRam);
 	cacheBox->setSuffix(" MB");
 	cacheBox->setMaximumWidth(200);
 	cacheBox->setValue(qRound(DkSettingsManager::param().resources().cacheMemory));
