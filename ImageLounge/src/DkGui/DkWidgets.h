@@ -343,9 +343,6 @@ class DkFileSystemModel : public QFileSystemModel {
 
 public:
 	DkFileSystemModel(QObject* parent = 0);
-
-protected:
-
 };
 
 class DkSortFileProxyModel : public QSortFilterProxyModel {

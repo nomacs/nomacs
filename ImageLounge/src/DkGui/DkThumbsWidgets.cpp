@@ -1259,10 +1259,14 @@ void DkThumbScene::showFile(const QString& filePath) {
 	if (filePath == QDir::currentPath() || filePath.isEmpty()) {
 		int sf = getSelectedFiles().size();
 
+		QString info;
+
 		if (sf > 1)
-			DkStatusBarManager::instance().setMessage(tr("%1 selected").arg(QString::number(sf)));
+			info = QString::number(sf) + tr(" selected");
 		else
-			DkStatusBarManager::instance().setMessage(tr("%1 images").arg(QString::number(mThumbLabels.size())));
+			info = QString::number(mThumbLabels.size()) + tr(" images");
+
+		DkStatusBarManager::instance().setMessage(tr("%1 | %2").arg(info, currentDir()));
 	}
 	else
 		DkStatusBarManager::instance().setMessage(QFileInfo(filePath).fileName());
@@ -1282,6 +1286,14 @@ void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const {
 		}
 	}
 
+}
+
+QString DkThumbScene::currentDir() const {
+	
+	if (mThumbs.empty() || !mThumbs[0])
+		return "";
+	
+	return mThumbs[0]->fileInfo().absolutePath();
 }
 
 void DkThumbScene::toggleThumbLabels(bool show) {
@@ -1687,8 +1699,8 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
 				drag->setPixmap(pm);
-
-				drag->exec(Qt::CopyAction);
+				
+				drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction, Qt::CopyAction);
 			}
 		}
 	}

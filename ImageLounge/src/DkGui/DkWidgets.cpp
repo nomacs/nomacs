@@ -359,8 +359,6 @@ DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemMod
 	setRootPath(QDir::rootPath());
 	setNameFilters(DkSettingsManager::param().app().fileFilters);
 	setReadOnly(false);
-	//setSupportedDragActions(Qt::CopyAction | Qt::MoveAction);
-
 }
 
 // DkSortFileProxyModel --------------------------------------------------------------------
@@ -433,12 +431,12 @@ void DkExplorer::createLayout() {
 	sortModel = new DkSortFileProxyModel(this);
 	sortModel->setSourceModel(fileModel);
 	sortModel->setSortLocaleAware(true);
-
+	
 	fileTree = new QTreeView(this);
 	fileTree->setSortingEnabled(true);
 	fileTree->setModel(sortModel);
 	fileTree->setDragEnabled(true);
-	//fileTree->setContextMenuPolicy(Qt::CustomContextMenu);
+	fileTree->setAcceptDrops(true);
 
 	// by default descendingOrder is set
 	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
@@ -3234,5 +3232,3 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event) {
 }
 
 }
-
-

@@ -237,6 +237,7 @@ public:
 	int findThumb(DkThumbLabel* thumb) const;
 	bool allThumbsSelected() const;
 	void ensureVisible(QSharedPointer<DkImageContainerT> img) const;
+	QString currentDir() const;
 
 public slots:
 	void updateThumbLabels();
