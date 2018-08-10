@@ -41,6 +41,7 @@
 #include <QtConcurrentRun>
 #include <QTimer>
 #include <QBuffer>
+#include <QThreadPool>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -398,10 +399,10 @@ void DkThumbNailT::thumbLoaded() {
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool() {
 	
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	mPool = new QThreadPool();
 	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount()-2, 1));
-	//qDebug() << "thumbnail thread pool size:" << mPool->maxThreadCount();
-	//qDebug() << "thumbpool stack size:" << mPool->stackSize();
+#endif
 }
 
 DkThumbsThreadPool& DkThumbsThreadPool::instance() {
@@ -411,7 +412,12 @@ DkThumbsThreadPool& DkThumbsThreadPool::instance() {
 }
 
 QThreadPool* DkThumbsThreadPool::pool() {
+	
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	return instance().mPool;
+#else
+	return QThreadPool::globalInstance();
+#endif
 }
 
 

@@ -1387,7 +1387,10 @@ void DkThumbScene::resizeThumbs(float dx) {
 }
 
 void DkThumbScene::cancelLoading() {
+	
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	DkThumbsThreadPool::pool()->clear();
+#endif
 
 	for (auto t : mThumbLabels)
 		t->cancelLoading();

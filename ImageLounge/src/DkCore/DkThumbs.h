@@ -48,6 +48,8 @@
 #endif
 #endif
 
+class QThreadPool;
+
 namespace nmc {
 
 #define max_thumb_size 160
