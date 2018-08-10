@@ -99,8 +99,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	connect(am.action(DkActionManager::sc_pan_up), SIGNAL(triggered()), this, SLOT(panUp()));
 	connect(am.action(DkActionManager::sc_pan_down), SIGNAL(triggered()), this, SLOT(panDown()));
 	
-	connect(verticalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(scrollVertically(int)));
-	connect(horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(scrollHorizontally(int)));
+	connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollVertically(int)));
+	connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollHorizontally(int)));
 
 }
 
