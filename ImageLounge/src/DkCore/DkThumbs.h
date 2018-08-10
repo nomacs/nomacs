@@ -207,73 +207,19 @@ protected:
 	int mForceLoad;
 };
 
-/**
- * This class provides a method for reading thumbnails.
- * If the a thumbnail is provided in the metadata,
- * it can be loaded very fast. Additionally,
- * the thumbnails are loaded in a separate thread (in the 
- * background)
- **/ 
-class DkThumbsLoader : public QThread {
-
-	Q_OBJECT
+class DkThumbsThreadPool {
 
 public:
-	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QFileInfoList files = QFileInfoList());
-	~DkThumbsLoader() {};
+	static DkThumbsThreadPool& instance();
 
-	void run();
-
-	int getFileIdx(const QString& filePath) const;
-	
-	QFileInfoList getFiles() {
-		return mFiles;
-	};
-	QDir getDir() {
-		return mDir;
-	};
-	bool isWorking() {
-		return mSomethingTodo;
-	};
-
-	enum ForceUpdate {
-		not_forced,
-		dir_updated,
-		user_updated,
-	};
-
-	void setForceLoad(bool forceLoad) {
-		mForceLoad = forceLoad;
-	};
-
-signals:
-	void updateSignal();
-	void progressSignal(int percent);
-	void numFilesSignal(int numFiles);
-
-public slots:
-	void setLoadLimits(int start = 0, int end = 20);
-	void loadAll();
-	void stop();
+	static QThreadPool* pool();
 
 private:
-	std::vector<DkThumbNail>* mThumbs;
-	QDir mDir;
-	bool mIsActive;
-	bool mSomethingTodo;
-	int mNumFilesLoaded;
-	QMutex mMutex;
-	int mLoadLimit;
-	int mStartIdx;
-	int mEndIdx;
-	bool mLoadAllThumbs;
-	bool mForceSave;
-	bool mForceLoad;
-	QFileInfoList mFiles;
+	DkThumbsThreadPool();
+	DkThumbsThreadPool(const DkThumbsThreadPool&);
 
-	// functions
-	void init();
-	void loadThumbs();
+	QThreadPool* mPool;
 };
+
 
 }

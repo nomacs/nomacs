@@ -278,7 +278,6 @@ void DkFolderScrollBar::animateOpacityDown() {
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
 	mStop = false;
-	mCLoadIdx = 0;
 	mNumSaved = 0;
 }
 
@@ -288,7 +287,6 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 		return;
 
 	mStop = false;
-	mCLoadIdx = 0;
 	mNumSaved = 0;
 
 	mPd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), 
@@ -333,15 +331,9 @@ void DkThumbsSaver::loadNext() {
 	if (mStop)
 		return;
 
-	int missing = DkSettingsManager::param().resources().maxThumbsLoading-DkSettingsManager::param().resources().numThumbsLoading;
-	int numLoading = mCLoadIdx+missing;
 	int force = (mForceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
-	qDebug() << "missing: " << missing << " num loading: " << numLoading;
-	qDebug() << "loading bounds: " << mCLoadIdx << " - " << numLoading;
-
-	for (int idx = mCLoadIdx; idx < mImages.size() && idx < numLoading; idx++) {
-		mCLoadIdx++;
+	for (int idx = 0; idx < mImages.size(); idx++) {
 		connect(mImages.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
 		mImages.at(idx)->getThumb()->fetchThumb(force);
 	}

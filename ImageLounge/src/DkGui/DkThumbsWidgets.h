@@ -196,6 +196,7 @@ public:
 	void updateSize();
 	void setVisible(bool visible);
 	QPixmap pixmap() const;
+	void cancelLoading();
 
 public slots:
 	void updateLabel();
@@ -241,6 +242,7 @@ public:
 
 public slots:
 	void updateThumbLabels();
+	void cancelLoading();
 	void loadFile(const QString& filePath) const;
 	void increaseThumbs();
 	void decreaseThumbs();

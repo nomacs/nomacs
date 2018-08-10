@@ -331,7 +331,6 @@ protected:
 
 	QFileInfo mCurrentDir;
 	QProgressDialog* mPd = 0;
-	int mCLoadIdx = 0;
 	bool mStop = false;
 	bool mForceSave = false;
 	int mNumSaved = false;

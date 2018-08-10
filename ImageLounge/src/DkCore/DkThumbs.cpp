@@ -351,10 +351,6 @@ DkThumbNailT::DkThumbNailT(const QString& filePath, const QImage& img) : DkThumb
 
 DkThumbNailT::~DkThumbNailT() {
 
-	// DESTRUCTOR: might be hot!
-	if (mFetching && DkSettingsManager::param().resources().numThumbsLoading > 0)
-		DkSettingsManager::param().resources().numThumbsLoading--;
-
 	thumbWatcher.blockSignals(true);
 	thumbWatcher.cancel();
 }
@@ -373,10 +369,8 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	mForceLoad = forceLoad;
 
 	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
-	thumbWatcher.setFuture(QtConcurrent::run(this, 
+	thumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), this, 
 		&nmc::DkThumbNailT::computeCall, mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize));
-
-	DkSettingsManager::param().resources().numThumbsLoading++;
 
 	return true;
 }
@@ -398,208 +392,27 @@ void DkThumbNailT::thumbLoaded() {
 		mImgExists = false;
 
 	mFetching = false;
-	DkSettingsManager::param().resources().numThumbsLoading--;
 	emit thumbLoadedSignal(!mImg.isNull());
 }
 
-/**
- * Default constructor of the thumbnail loader.
- * Note: currently the init calls the getFilteredFileList which might be slow.
- * @param thumbs a pointer to an array holding the thumbnails. while
- * loading, the thumbsloader will add all images to this array. however, the
- * caller must destroy the thumbs vector.
- * @param dir the directory where thumbnails should be loaded from.
- **/ 
-DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QFileInfoList files) {
-
-	mThumbs = thumbs;
-	mDir = dir;
-	mIsActive = true;
-	mFiles = files;
-	init();
-}
-
-/**
- * Initializes the thumbs loader.
- * Note: getFilteredFileList might be slow.
- **/ 
-void DkThumbsLoader::init() {
-
-	// TODO: update!
-	//if (files.empty())
-	//	files = DkImageLoader::getFilteredFileInfoList(dir);
-	mStartIdx = -1;
-	mEndIdx = -1;
-	mSomethingTodo = false;
-	mNumFilesLoaded = 0;
-	mLoadAllThumbs = false;
-	mForceSave = false;
-	mForceLoad = false;
-
-	// here comes hot stuff (for a better update policy)
-	std::vector<DkThumbNail> oldThumbs = *mThumbs;
-	mThumbs->clear();
-
-	DkTimer dt;
-	for (int idx = 0; idx < mFiles.size(); idx++) {
-		QFileInfo cFile = mFiles[idx];
-
-		DkThumbNail cThumb = DkThumbNail(cFile.absoluteFilePath());
-
-		for (unsigned int i = 0; i < oldThumbs.size(); i++) {
-
-			if (cThumb == oldThumbs[i]) {
-				cThumb = oldThumbs[i];
-				break;
-			}
-		}
-
-		mThumbs->push_back(cThumb);
-	}
-
-	qDebug() << "thumb stubs loaded in: " << dt;
-}
-
-/**
- * Returns the file idx of the file specified.
- * @param file the file to be queried.
- * @return int the index of the file.
- **/ 
-int DkThumbsLoader::getFileIdx(const QString& filePath) const {
-
-	if (!QFileInfo(filePath).exists() || !mThumbs)
-		return -1;
-
-	int fileIdx = 0;
-	for ( ; (size_t)fileIdx < mThumbs->size(); fileIdx++) {
-
-		if (mThumbs->at(fileIdx).getFilePath() == filePath)
-			break;
-	}
-
-	if ((size_t)fileIdx == mThumbs->size()) 
-		fileIdx = -1;
-
-	return fileIdx;
-
-}
-
-/**
- * Thread routine.
- * Only loads thumbs if somethingTodo is true.
- **/ 
-void DkThumbsLoader::run() {
-
-	if (!mThumbs)
-		return;
-
-	for (;;) {
-
-		if (mLoadAllThumbs && mNumFilesLoaded >= (int)mThumbs->size()) {
-			qDebug() << "[thumbs] thinks he has finished...";
-			break;
-		}
-
-		mMutex.lock();
-		DkTimer dt;
-		msleep(100);
-
-		//QMutexLocker(&this->mutex);
-		if (!mIsActive) {
-			qDebug() << "thumbs loader stopped...";
-			mMutex.unlock();
-			break;
-		}
-		mMutex.unlock();
-
-		if (mSomethingTodo)
-			loadThumbs();
-	}
-
-}
-
-/**
- * Loads thumbnails from the metadata.
- **/ 
-void DkThumbsLoader::loadThumbs() {
-
-	std::vector<DkThumbNail>::iterator thumbIter = mThumbs->begin()+mStartIdx;
-	qDebug() << "start: " << mStartIdx << " end: " << mEndIdx;
-
-	for (int idx = mStartIdx; idx < mEndIdx; idx++, thumbIter++) {
-
-		mMutex.lock();
-
-		// jump to new start idx
-		if (mStartIdx > idx) {
-			thumbIter = mThumbs->begin()+mStartIdx;
-			idx = mStartIdx;
-		}
-
-		// does somebody want me to stop?
-		if (!mIsActive) {
-			mMutex.unlock();
-			return;
-		}
-		
-		// TODO:  he breaks here! (crash detected++)
-		// at the same time, main thread in DkFilePreview indexDir() -> waiting for our loader after stopping it
-		DkThumbNail* thumb = &(*thumbIter);
-		if (!thumb->hasImage()) {
-			thumb->compute(mForceLoad);
-			if (thumb->hasImage())	// could I load the thumb?
-				emit updateSignal();
-			else {
-				thumb->setImgExists(false);
-				qDebug() << "image does NOT exist...";
-			}
-			
-		}
-		emit numFilesSignal(++mNumFilesLoaded);
-		mMutex.unlock();
-	}
-
-	mSomethingTodo = false;
-}
-
-/**
- * Here you can specify which thumbnails to load.
- * Note: it is not a good idea to load all thumbnails
- * of a folder (might be a lot : )
- * @param start the start index
- * @param end the end index
- **/ 
-void DkThumbsLoader::setLoadLimits(int start, int end) {
-
-	mStartIdx = (start >= 0 && (unsigned int) start < mThumbs->size()) ? start : 0;
-	mEndIdx = (end > 0 && (unsigned int) end < mThumbs->size()) ? end : (int)mThumbs->size();
-}
-
-/**
- * This function is used for batch saving.
- * If this function is called, all thumbs are saved 
- * even if save is not checked in the preferences.
- **/ 
-void DkThumbsLoader::loadAll() {
-
-	if (!mThumbs)
-		return;
-
-	// this function is used for batch saving
-	mLoadAllThumbs = true;
-	mForceSave = true;
-	mSomethingTodo = true;
-	setLoadLimits(0, (int)mThumbs->size());
-}
-
-/**
- * Stops the current loading process.
- * This method allows for stopping the thread without killing it.
- **/ 
-void DkThumbsLoader::stop() {
+// DkThumbsThreadPool --------------------------------------------------------------------
+DkThumbsThreadPool::DkThumbsThreadPool() {
 	
-	mIsActive = false;
-	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
+	mPool = new QThreadPool();
+	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount()-2, 1));
+	//qDebug() << "thumbnail thread pool size:" << mPool->maxThreadCount();
+	//qDebug() << "thumbpool stack size:" << mPool->stackSize();
 }
+
+DkThumbsThreadPool& DkThumbsThreadPool::instance() {
+
+	static DkThumbsThreadPool inst;
+	return inst;
+}
+
+QThreadPool* DkThumbsThreadPool::pool() {
+	return instance().mPool;
+}
+
 
 }

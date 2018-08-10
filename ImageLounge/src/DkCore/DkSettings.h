@@ -300,8 +300,6 @@ public:
 		bool filterDuplicats;
 		int loadRawThumb;
 		QString preferredExtension;
-		int numThumbsLoading;
-		int maxThumbsLoading;
 		bool gammaCorrection;
 	};
 
