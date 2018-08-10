@@ -1252,6 +1252,37 @@ void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool conn
 	}
 }
 
+void DkThumbScene::keyPressEvent(QKeyEvent * event) {
+
+	int idx = selectedThumbIndex((event->key() != Qt::Key_Right && event->key() != Qt::Key_Down));
+
+	if (idx == -1)
+		return;
+
+	if (event->modifiers() != Qt::ShiftModifier)
+		selectThumbs(false);
+
+	switch (event->key()) {
+	case Qt::Key_Left: {
+		selectThumb(qMax(idx - 1, 0));
+		break;
+	}
+	case Qt::Key_Right: {
+		selectThumb(qMin(idx + 1, mThumbLabels.size()-1));
+		break;
+	}
+	case Qt::Key_Up: {
+		selectThumb(qMax(idx - mNumCols, 0));
+		break;
+	}
+	case Qt::Key_Down: {
+		selectThumb(qMin(idx + mNumCols, mThumbLabels.size()-1));
+		break;
+	}
+
+	}
+}
+
 void DkThumbScene::showFile(const QString& filePath) {
 
 	if (filePath == QDir::currentPath() || filePath.isEmpty()) {
@@ -1292,6 +1323,20 @@ QString DkThumbScene::currentDir() const {
 		return "";
 	
 	return mThumbs[0]->fileInfo().absolutePath();
+}
+
+int DkThumbScene::selectedThumbIndex(bool first) {
+	
+	int selIdx = -1;
+	for (int idx = 0; idx < mThumbLabels.size(); idx++) {
+
+		if (first && mThumbLabels[idx]->isSelected())
+			return idx;
+		else if (mThumbLabels[idx]->isSelected())
+			selIdx = idx;
+	}
+	
+	return selIdx;
 }
 
 void DkThumbScene::toggleThumbLabels(bool show) {
@@ -1378,6 +1423,25 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	blockSignals(false);
 	emit selectionChanged();
 	showFile();	// update selection label
+}
+
+void DkThumbScene::selectThumb(int idx, bool select) {
+
+	if (mThumbLabels.empty())
+		return;
+
+	if (idx < 0 || idx >= mThumbLabels.size()) {
+		qWarning() << "index out of bounds in selectThumbs()" << idx;
+		return;
+	}
+
+	blockSignals(true);
+	mThumbLabels[idx]->setSelected(select);
+	blockSignals(false);
+	
+	emit selectionChanged();
+	showFile();	// update selection label
+	ensureVisible(mThumbs[idx]);
 }
 
 void DkThumbScene::copySelected() const {

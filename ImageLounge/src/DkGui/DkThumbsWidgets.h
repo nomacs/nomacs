@@ -233,13 +233,15 @@ public:
 	void updateLayout();
 	QStringList getSelectedFiles() const;
 	QVector<DkThumbLabel*> getSelectedThumbs() const;
+	int selectedThumbIndex(bool first = true);
+
 	void setImageLoader(QSharedPointer<DkImageLoader> loader);
 	void copyImages(const QMimeData* mimeData, const Qt::DropAction& da = Qt::CopyAction) const;
 	int findThumb(DkThumbLabel* thumb) const;
 	bool allThumbsSelected() const;
 	void ensureVisible(QSharedPointer<DkImageContainerT> img) const;
 	QString currentDir() const;
-
+	
 public slots:
 	void updateThumbLabels();
 	void cancelLoading();
@@ -251,6 +253,7 @@ public slots:
 	void resizeThumbs(float dx);
 	void showFile(const QString& filePath = QString());
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
+	void selectThumb(int idx, bool select = true);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void deleteSelected() const;
@@ -265,6 +268,7 @@ signals:
 
 protected:
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
+	void keyPressEvent(QKeyEvent* event) override;
 	
 	int mXOffset = 0;
 	int mNumRows = 0;
