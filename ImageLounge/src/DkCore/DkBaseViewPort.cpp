@@ -87,41 +87,15 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(10, 10);
 
-	createShortcuts();
+	// connect pan actions
+	const DkActionManager& am = DkActionManager::instance();
+	connect(am.action(DkActionManager::sc_pan_left), SIGNAL(triggered()), this, SLOT(shiftLeft()));
+	connect(am.action(DkActionManager::sc_pan_right), SIGNAL(triggered()), this, SLOT(shiftRight()));
+	connect(am.action(DkActionManager::sc_pan_up), SIGNAL(triggered()), this, SLOT(shiftUp()));
+	connect(am.action(DkActionManager::sc_pan_down), SIGNAL(triggered()), this, SLOT(shiftDown()));
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
-}
-
-void DkBaseViewPort::createShortcuts() {
-
-	mShortcuts.resize(sc_end);
-
-	// panning
-	mShortcuts[sc_pan_left] = new QShortcut(shortcut_panning_left, this);
-	connect(mShortcuts[sc_pan_left], SIGNAL(activated()), this, SLOT(shiftLeft()));
-	mShortcuts[sc_pan_right] = new QShortcut(shortcut_panning_right, this);
-	connect(mShortcuts[sc_pan_right], SIGNAL(activated()), this, SLOT(shiftRight()));
-	mShortcuts[sc_pan_up] = new QShortcut(shortcut_panning_up, this);
-	connect(mShortcuts[sc_pan_up], SIGNAL(activated()), this, SLOT(shiftUp()));
-	mShortcuts[sc_pan_down] = new QShortcut(shortcut_panning_down, this);
-	connect(mShortcuts[sc_pan_down], SIGNAL(activated()), this, SLOT(shiftDown()));
-
-	//// zoom
-	//mShortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
-	////connect(mShortcuts[sc_zoom_in], SIGNAL(activated()), this, SLOT(zoomIn()));
-	//mShortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
-	//connect(mShortcuts[sc_zoom_out], SIGNAL(activated()), this, SLOT(zoomOut()));
-	//mShortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
-	//connect(mShortcuts[sc_zoom_in_alt], SIGNAL(activated()), this, SLOT(zoomIn()));
-	//mShortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
-	//connect(mShortcuts[sc_zoom_out_alt], SIGNAL(activated()), this, SLOT(zoomOut()));
-
-	for (int idx = 0; idx < mShortcuts.size(); idx++) {
-		// assign widget shortcuts to all of them
-		mShortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
-	}
-
 }
 
 void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
@@ -156,25 +130,25 @@ void DkBaseViewPort::togglePattern(bool show) {
 
 void DkBaseViewPort::shiftLeft() {
 
-	float delta = 2*width()/(100.0f*(float)mWorldMatrix.m11());
+	float delta = -2*width()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
 void DkBaseViewPort::shiftRight() {
 
-	float delta = -2*width()/(100.0f*(float)mWorldMatrix.m11());
+	float delta = 2*width()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
 void DkBaseViewPort::shiftUp() {
 
-	float delta = 2*height()/(100.0f*(float)mWorldMatrix.m11());
+	float delta = -2*height()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(0,delta));
 }
 
 void DkBaseViewPort::shiftDown() {
 
-	float delta = -2*height()/(100.0f*(float)mWorldMatrix.m11());
+	float delta = 2*height()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(0,delta));
 }
 
@@ -413,14 +387,12 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 
 	// we want to change the behaviour on auto-repeat - so we cannot use QShortcuts here...
-	if (event->key() == shortcut_zoom_in || event->key() == shortcut_zoom_in_alt) {
+	if (event->key() == DkActionManager::shortcut_zoom_in || event->key() == DkActionManager::shortcut_zoom_in_alt) {
 		zoom(event->isAutoRepeat() ? 1.1f : 1.5f);
 	}
-	if (event->key() == shortcut_zoom_out || event->key() == shortcut_zoom_out_alt) {
+	if (event->key() == DkActionManager::shortcut_zoom_out || event->key() == DkActionManager::shortcut_zoom_out_alt) {
 		zoom(event->isAutoRepeat() ? 0.9f : 0.5f);
 	}
-
-	//qDebug() << "keypress event: " << event->key() << "sc" << shortcut_zoom_in;
 
 	QWidget::keyPressEvent(event);
 }

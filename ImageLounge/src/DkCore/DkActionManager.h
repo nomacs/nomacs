@@ -289,6 +289,11 @@ public:
 		sc_star_rating_4,
 		sc_star_rating_5,
 
+		sc_pan_up,
+		sc_pan_down,
+		sc_pan_left,
+		sc_pan_right,
+
 		sc_end,	// nothing beyond this point
 	};
 
@@ -426,6 +431,17 @@ public:
 		shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 		shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
 		shortcut_toggle_panels	= Qt::Key_F,
+
+		// hidden viewport shortcuts
+		shortcut_pan_left	= Qt::CTRL + Qt::Key_Left,
+		shortcut_pan_right	= Qt::CTRL + Qt::Key_Right,
+		shortcut_pan_up		= Qt::CTRL + Qt::Key_Up,
+		shortcut_pan_down	= Qt::CTRL + Qt::Key_Down,
+
+		shortcut_zoom_in		= Qt::Key_Plus,
+		shortcut_zoom_out		= Qt::Key_Minus,
+		shortcut_zoom_in_alt	= Qt::Key_Up,
+		shortcut_zoom_out_alt	= Qt::Key_Down,
 
 		// edit
 		shortcut_edit_image		= Qt::Key_D,

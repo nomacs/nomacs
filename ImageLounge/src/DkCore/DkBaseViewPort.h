@@ -68,33 +68,7 @@ public:
 		
 		swipes_end
 	};
-	
-	enum shortcuts{
-		sc_pan_up,
-		sc_pan_down,
-		sc_pan_left,
-		sc_pan_right,
-		//sc_zoom_in,
-		//sc_zoom_out,
-		//sc_zoom_in_alt,
-		//sc_zoom_out_alt,
-
-		sc_end,
-	};
-
-	enum keys {
-		shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
-		shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
-		shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
-		shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
-
-		shortcut_zoom_in 		= Qt::Key_Plus,
-		shortcut_zoom_out		= Qt::Key_Minus,
-		shortcut_zoom_in_alt	= Qt::Key_Up,
-		shortcut_zoom_out_alt	= Qt::Key_Down,
-
-	};
-	
+		
 	DkBaseViewPort(QWidget *parent = 0);
 	virtual ~DkBaseViewPort();
 
@@ -140,7 +114,6 @@ public:
 	virtual QSize getImageSize() const;
 	virtual QRectF getImageViewRect() const;
 	virtual bool imageInside() const;
-
 
 signals:
 	void enableNoImageSignal(bool enable) const;
@@ -220,7 +193,6 @@ protected:
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
-	virtual void createShortcuts();
 };
 
 }

@@ -1551,6 +1551,21 @@ void DkActionManager::createActions(QWidget* parent) {
 	mHiddenActions[sc_star_rating_5]->setStatusTip(QObject::tr("Star rating which is saved to an image's metadata"));
 	mHiddenActions[sc_star_rating_5]->setShortcut(QKeySequence(shortcut_star_rating_5));
 
+	mHiddenActions[sc_pan_up] = new QAction(QObject::tr("Pan Image Up"), parent);
+	mHiddenActions[sc_pan_up]->setStatusTip(QObject::tr("Pans the image up if zoomed."));
+	mHiddenActions[sc_pan_up]->setShortcut(QKeySequence(shortcut_pan_up));
+
+	mHiddenActions[sc_pan_down] = new QAction(QObject::tr("Pan Image Down"), parent);
+	mHiddenActions[sc_pan_down]->setStatusTip(QObject::tr("Pans the image down if zoomed."));
+	mHiddenActions[sc_pan_down]->setShortcut(QKeySequence(shortcut_pan_down));
+
+	mHiddenActions[sc_pan_left] = new QAction(QObject::tr("Pan Image Left"), parent);
+	mHiddenActions[sc_pan_left]->setStatusTip(QObject::tr("Pans the image left if zoomed."));
+	mHiddenActions[sc_pan_left]->setShortcut(QKeySequence(shortcut_pan_left));
+
+	mHiddenActions[sc_pan_right] = new QAction(QObject::tr("Pan Image Right"), parent);
+	mHiddenActions[sc_pan_right]->setStatusTip(QObject::tr("Pans the image right if zoomed."));
+	mHiddenActions[sc_pan_right]->setShortcut(QKeySequence(shortcut_pan_right));
 
 	mManipulators.createManipulators(parent);
 
