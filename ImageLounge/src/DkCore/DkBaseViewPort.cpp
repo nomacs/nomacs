@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QSvgRenderer>
 #include <QMainWindow>
+#include <QScrollBar>
 
 // gestures
 #include <QSwipeGesture>
@@ -81,6 +82,10 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	else
 		setObjectName("DkBaseViewPort");
 
+	if (!DkSettingsManager::param().display().showScrollBars) {
+		setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	}
 
 	setMouseTracking(true);
 
@@ -89,10 +94,14 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 
 	// connect pan actions
 	const DkActionManager& am = DkActionManager::instance();
-	connect(am.action(DkActionManager::sc_pan_left), SIGNAL(triggered()), this, SLOT(shiftLeft()));
-	connect(am.action(DkActionManager::sc_pan_right), SIGNAL(triggered()), this, SLOT(shiftRight()));
-	connect(am.action(DkActionManager::sc_pan_up), SIGNAL(triggered()), this, SLOT(shiftUp()));
-	connect(am.action(DkActionManager::sc_pan_down), SIGNAL(triggered()), this, SLOT(shiftDown()));
+	connect(am.action(DkActionManager::sc_pan_left), SIGNAL(triggered()), this, SLOT(panLeft()));
+	connect(am.action(DkActionManager::sc_pan_right), SIGNAL(triggered()), this, SLOT(panRight()));
+	connect(am.action(DkActionManager::sc_pan_up), SIGNAL(triggered()), this, SLOT(panUp()));
+	connect(am.action(DkActionManager::sc_pan_down), SIGNAL(triggered()), this, SLOT(panDown()));
+	
+	connect(verticalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(scrollVertically(int)));
+	connect(horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(scrollHorizontally(int)));
+
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
@@ -128,25 +137,25 @@ void DkBaseViewPort::togglePattern(bool show) {
 	update();
 }
 
-void DkBaseViewPort::shiftLeft() {
+void DkBaseViewPort::panLeft() {
 
 	float delta = -2*width()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
-void DkBaseViewPort::shiftRight() {
+void DkBaseViewPort::panRight() {
 
 	float delta = 2*width()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
-void DkBaseViewPort::shiftUp() {
+void DkBaseViewPort::panUp() {
 
 	float delta = -2*height()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(0,delta));
 }
 
-void DkBaseViewPort::shiftDown() {
+void DkBaseViewPort::panDown() {
 
 	float delta = 2*height()/(100.0f*(float)mWorldMatrix.m11());
 	moveView(QPointF(0,delta));
@@ -224,7 +233,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 
 	controlImagePosition();
 	changeCursor();
-
+		
 	update();
 }
 
@@ -322,7 +331,6 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 	// propagate
 	QGraphicsView::paintEvent(event);
-
 }
 
 void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
@@ -459,9 +467,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 			if (cursor().shape() != Qt::ArrowCursor)
 				unsetCursor();
 		}
-
 	}
-
 
 	QWidget::mouseMoveEvent(event);
 }
@@ -579,7 +585,7 @@ void DkBaseViewPort::updateImageMatrix() {
 	// update world matrix
 	if (mWorldMatrix.m11() != 1) {
 
-		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
+		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
 		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
 
@@ -685,6 +691,9 @@ void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 
 	if (imgRectWorld.bottom() < height()-ub && imgRectWorld.height() > height())
 		mWorldMatrix.translate(0, ((height()-ub)-imgRectWorld.bottom())/mWorldMatrix.m11());
+
+	// update scene size (this is needed to make the scroll area work)
+	setSceneRect(getImageViewRect());
 }
 
 void DkBaseViewPort::centerImage() {
@@ -727,6 +736,14 @@ void DkBaseViewPort::changeCursor() {
 void DkBaseViewPort::setBackgroundBrush(const QBrush &brush) {
 
 	QGraphicsView::setBackgroundBrush(brush);
+}
+
+void DkBaseViewPort::scrollHorizontally(int val) {
+	moveView(QPointF(-val / mWorldMatrix.m11(), 0.0f));
+}
+
+void DkBaseViewPort::scrollVertically(int val) {
+	moveView(QPointF(0.0f, -val/mWorldMatrix.m11()));
 }
 
 }

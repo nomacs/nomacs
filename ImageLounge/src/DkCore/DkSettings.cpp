@@ -402,6 +402,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
 	display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
+	display_p.showScrollBars = settings.value("showScrollBars", display_p.showScrollBars).toBool();
 	display_p.animationDuration = settings.value("fadeSec", display_p.animationDuration).toFloat();
 	display_p.alwaysAnimate = settings.value("alwaysAnimate", display_p.alwaysAnimate).toBool();
 	display_p.transition = (TransitionMode)settings.value("transition", display_p.transition).toInt();
@@ -650,6 +651,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("displaySquaredThumbs", display_p.displaySquaredThumbs);
 	if (force ||display_p.showThumbLabel != display_d.showThumbLabel)
 		settings.setValue("showThumbLabel", display_p.showThumbLabel);
+	if (force || display_p.showScrollBars != display_d.showScrollBars)
+		settings.setValue("showScrollBars", display_p.showScrollBars);
 	if (force ||display_p.alwaysAnimate != display_d.alwaysAnimate)
 		settings.setValue("alwaysAnimate", display_p.alwaysAnimate);
 	if (force ||display_p.animationDuration != display_d.animationDuration)
@@ -834,6 +837,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
 	display_p.showThumbLabel = true;
+	display_p.showScrollBars = true;
 	display_p.animationDuration = 0.5f;
 	display_p.alwaysAnimate = false;
 	display_p.transition = trans_swipe;

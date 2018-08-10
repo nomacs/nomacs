@@ -123,10 +123,10 @@ signals:
 
 public slots:
 	virtual void togglePattern(bool show);
-	virtual void shiftLeft();
-	virtual void shiftRight();
-	virtual void shiftUp();
-	virtual void shiftDown();
+	virtual void panLeft();
+	virtual void panRight();
+	virtual void panUp();
+	virtual void panDown();
 	virtual void moveView(const QPointF&);
 	virtual void zoomIn();
 	virtual void zoomOut();
@@ -135,6 +135,8 @@ public slots:
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void stopBlockZooming();
 	virtual void setBackgroundBrush(const QBrush &brush);
+	void scrollVertically(int val);
+	void scrollHorizontally(int val);
 
 	virtual bool unloadImage(bool fileChange = true);
 	virtual void setImage(QImage newImg);
@@ -173,7 +175,7 @@ protected:
 	QPointF mPanControl;	// controls how far we can pan outside an image
 	QPointF mPosGrab;
 	float mMinZoom = 0.01f;
-	float mMaxZoom = 50;
+	float mMaxZoom = 100;
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;

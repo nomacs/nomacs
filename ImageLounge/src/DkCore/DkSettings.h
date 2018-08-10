@@ -226,6 +226,7 @@ public:
 		bool showBorder;
 		bool displaySquaredThumbs;
 		bool showThumbLabel;
+		bool showScrollBars;
 		
 		TransitionMode transition;
 		bool alwaysAnimate;

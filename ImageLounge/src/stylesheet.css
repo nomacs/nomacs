@@ -168,8 +168,8 @@ QGraphicsView#DkBaseViewPort {
 	background-color: BACKGROUND_COLOR;
 } 
 
- /* Batch Widgets */
- QLabel#DkBatchTitle {
+/* Batch Widgets */
+QLabel#DkBatchTitle {
 	font-size: 16px;
 }
 
@@ -200,10 +200,6 @@ QLineEdit#DkWarningEdit {
 QLabel#DkDecentInfo[warning="true"],
 QLineEdit#DkWarningEdit[error="true"] {
 	color: #9f1d1d;
-}
-
-QListView#resultListView {
-
 }
 
 QListView#resultListView[empty="true"] {

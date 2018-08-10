@@ -2514,7 +2514,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 
 	// init members
 	DkViewPort* vp = new DkViewPort(this);
-	vp->setAlignment(Qt::AlignHCenter);
+	//vp->setAlignment(Qt::AlignHCenter);
 
 	DkCentralWidget* cw = new DkCentralWidget(vp, this);
 	setCentralWidget(cw);
@@ -2550,7 +2550,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		// init members
 		DkViewPortFrameless* vp = new DkViewPortFrameless(this);
-		vp->setAlignment(Qt::AlignHCenter);
+		//vp->setAlignment(Qt::AlignHCenter);
 
 		DkCentralWidget* cw = new DkCentralWidget(vp, this);
 		setCentralWidget(cw);
@@ -2697,7 +2697,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		// init members
 		DkViewPortContrast* vp = new DkViewPortContrast(this);
-		vp->setAlignment(Qt::AlignHCenter);
+		//vp->setAlignment(Qt::AlignHCenter);
 
 		DkCentralWidget* cw = new DkCentralWidget(vp, this);
 		setCentralWidget(cw);

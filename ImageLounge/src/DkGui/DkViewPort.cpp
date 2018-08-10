@@ -1106,6 +1106,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	int dist = QPoint(event->pos()-mPosGrab.toPoint()).manhattanLength();
 	
+	// drag & drop action
 	if (event->buttons() == Qt::LeftButton 
 		&& dist > QApplication::startDragDistance()
 		&& imageInside()

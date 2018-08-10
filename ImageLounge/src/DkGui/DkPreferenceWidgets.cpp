@@ -661,6 +661,12 @@ void DkDisplayPreference::createLayout() {
 	hQAntiAliasing->setToolTip(tr("NOTE: if checked, nomacs might be slow while zooming."));
 	hQAntiAliasing->setChecked(DkSettingsManager::param().display().highQualityAntiAliasing);
 
+	// show scollbars
+	QCheckBox* showScrollBars = new QCheckBox(tr("Show Scrollbars when zooming into images"), this);
+	showScrollBars->setObjectName("showScrollBars");
+	showScrollBars->setToolTip(tr("If checked, scrollbars will appear that allow panning with the mouse."));
+	showScrollBars->setChecked(DkSettingsManager::param().display().showScrollBars);
+
 	QLabel* interpolationLabel = new QLabel(tr("Show pixels if zoom level is above"), this);
 
 	QSpinBox* sbInterpolation = new QSpinBox(this);
@@ -674,6 +680,7 @@ void DkDisplayPreference::createLayout() {
 	DkGroupWidget* zoomGroup = new DkGroupWidget(tr("Zoom"), this);
 	zoomGroup->addWidget(invertZoom);
 	zoomGroup->addWidget(hQAntiAliasing);
+	zoomGroup->addWidget(showScrollBars);
 	zoomGroup->addWidget(interpolationLabel);
 	zoomGroup->addWidget(sbInterpolation);
 
@@ -874,6 +881,12 @@ void DkDisplayPreference::on_showCrop_toggled(bool checked) const {
 	if (DkSettingsManager::param().display().showCrop != checked)
 		DkSettingsManager::param().display().showCrop = checked;
 
+}
+
+void DkDisplayPreference::on_showScrollBars_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().display().showScrollBars != checked)
+		DkSettingsManager::param().display().showScrollBars = checked;
 }
 
 void DkDisplayPreference::paintEvent(QPaintEvent *event) {
