@@ -422,7 +422,7 @@ DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
 	return dynamic_cast<DkThumbScrollWidget*>(mWidgets[thumbs_widget]);
 }
 
-//DkRecentFilesWidget2* DkCentralWidget::getRecentFilesWidget() const {
+//DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
 //
 //	return mRecentFilesWidget;
 //}
@@ -575,10 +575,10 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	return pw;
 }
 
-DkRecentFilesWidget2 * DkCentralWidget::createRecentFiles() {
+DkRecentFilesWidget * DkCentralWidget::createRecentFiles() {
 	
 	DkActionManager& am = DkActionManager::instance();
-	DkRecentFilesWidget2* rw = new DkRecentFilesWidget2(this);
+	DkRecentFilesWidget* rw = new DkRecentFilesWidget(this);
 	rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
 	// add actions

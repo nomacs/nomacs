@@ -347,12 +347,12 @@ protected:
 	QLineEdit* mFilterEdit = 0;
 };
 
-class DkRecentDirEntry {
+class DkRecentDir {
 
 public:
-	DkRecentDirEntry(const QStringList& filePaths = QStringList(), bool pinned = false);
+	DkRecentDir(const QStringList& filePaths = QStringList(), bool pinned = false);
 
-	bool operator==(const DkRecentDirEntry& o) const;
+	bool operator==(const DkRecentDir& o) const;
 
 	bool isEmpty() const;
 	bool isPinned() const;
@@ -369,18 +369,18 @@ private:
 	bool mIsPinned = false;
 };
 
-class DkRecentFilesManager {
+class DkRecentDirManager {
 
 public:
-	DkRecentFilesManager();
+	DkRecentDirManager();
 
-	QList<DkRecentDirEntry> recentDirs() const;
+	QList<DkRecentDir> recentDirs() const;
 
 private:
 
-	QList<DkRecentDirEntry> genFileLists(const QStringList& filePaths, bool pinned = false);
+	QList<DkRecentDir> genFileLists(const QStringList& filePaths, bool pinned = false);
 	
-	QList<DkRecentDirEntry> mDirs;
+	QList<DkRecentDir> mDirs;
 };
 
 class DkThumbPreviewLabel : public QLabel {
@@ -402,11 +402,11 @@ protected:
 	int mThumbSize = 100;
 };
 
-class DllCoreExport DkRecentFilesEntry : public DkWidget {
+class DllCoreExport DkRecentDirWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkRecentFilesEntry(const DkRecentDirEntry& rde, QWidget* parent = 0);
+	DkRecentDirWidget(const DkRecentDir& rde, QWidget* parent = 0);
 
 signals:
 	void loadFileSignal(const QString& filePath);
@@ -417,7 +417,7 @@ public slots:
 	void on_remove_clicked();
 
 protected:
-	DkRecentDirEntry mRecentDir;
+	DkRecentDir mRecentDir;
 	QVector<DkThumbLabel> mThumbs;
 	
 	QPushButton* mPin;
@@ -431,11 +431,11 @@ protected:
 
 };
 
-class DllCoreExport DkRecentFilesWidget2 : public DkWidget {
+class DllCoreExport DkRecentFilesWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkRecentFilesWidget2(QWidget* parent = 0);
+	DkRecentFilesWidget(QWidget* parent = 0);
 
 signals:
 	void loadFileSignal(const QString&);
