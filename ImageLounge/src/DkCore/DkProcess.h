@@ -187,8 +187,8 @@ public:
 		);
 
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
-	virtual QString name() const;
-	virtual bool isActive() const;
+	virtual QString name() const override;
+	virtual bool isActive() const override;
 
 	int angle() const;
 	bool cropMetatdata() const;

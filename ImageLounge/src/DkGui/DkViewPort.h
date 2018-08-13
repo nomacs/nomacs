@@ -77,11 +77,11 @@ public:
 	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
 	
-	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1)) override;
 
 	void setFullScreen(bool fullScreen);
 		
-	QTransform getWorldMatrix() { 
+	QTransform getWorldMatrix() override { 
 		return mWorldMatrix;
 	};
 
@@ -151,7 +151,7 @@ public slots:
 	void loadSkipNext10();
 	void loadSkipPrev10();
 	void loadLena();
-	bool unloadImage(bool fileChange = true);
+	bool unloadImage(bool fileChange = true) override;
 	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData);
@@ -180,7 +180,7 @@ public slots:
 	virtual void loadImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setEditedImage(const QImage& newImg, const QString& editName);
 	virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
-	virtual void setImage(QImage newImg);
+	virtual void setImage(QImage newImg) override;
 	virtual void setThumbImage(QImage newImg);
 
 	void settingsChanged();
@@ -191,26 +191,25 @@ public slots:
 	void nextMovieFrame();
 	void previousMovieFrame();
 	void animateFade();
-	virtual void togglePattern(bool show);
+	virtual void togglePattern(bool show) override;
 
 protected:
 	
 	// events
-	virtual void dragLeaveEvent(QDragLeaveEvent *event);
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void wheelEvent(QWheelEvent *event);
-	virtual bool event(QEvent *event);
-	virtual void paintEvent(QPaintEvent* event);
-	//QTransform getSwipeTransform() const;
+	virtual void dragLeaveEvent(QDragLeaveEvent *event) override;
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void wheelEvent(QWheelEvent *event) override;
+	virtual bool event(QEvent *event) override;
+	virtual void paintEvent(QPaintEvent* event) override;
 
 	bool mTestLoaded = false;
 	bool mGestureStarted = false;
 
 	QRectF mOldImgRect;
 
-	QTimer* mRepeatZoomTimer;// = new QTimer(this);
+	QTimer* mRepeatZoomTimer;
 	
 	// fading stuff
 	QTimer* mAnimationTimer;
@@ -277,7 +276,6 @@ protected:
 	virtual void paintEvent(QPaintEvent* event);
 
 	// functions
-	//QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter & painter, double opacity = 1.0);
 	void drawFrame(QPainter & painter);

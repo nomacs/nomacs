@@ -352,8 +352,8 @@ DkThumbNailT::DkThumbNailT(const QString& filePath, const QImage& img) : DkThumb
 
 DkThumbNailT::~DkThumbNailT() {
 
-	thumbWatcher.blockSignals(true);
-	thumbWatcher.cancel();
+	mThumbWatcher.blockSignals(true);
+	mThumbWatcher.cancel();
 }
 
 bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByteArray> ba) {
@@ -369,9 +369,19 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	mFetching = true;
 	mForceLoad = forceLoad;
 
-	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
-	thumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), this, 
-		&nmc::DkThumbNailT::computeCall, mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize));
+	connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+
+	mThumbWatcher.setFuture(QtConcurrent::run(
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+		DkThumbsThreadPool::pool(),		// load thumbnails on their dedicated pool
+#endif
+		this, 
+		&nmc::DkThumbNailT::computeCall, 
+		mFile, 
+		ba, 
+		forceLoad, 
+		mMaxThumbSize, 
+		mMinThumbSize));
 
 	return true;
 }
@@ -385,7 +395,7 @@ QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteAr
 
 void DkThumbNailT::thumbLoaded() {
 	
-	QFuture<QImage> future = thumbWatcher.future();
+	QFuture<QImage> future = mThumbWatcher.future();
 
 	mImg = future.result();
 	

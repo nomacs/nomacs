@@ -132,7 +132,7 @@ public slots:
 	virtual void zoomOut();
 	virtual void resetView();
 	virtual void fullView();
-	virtual void resizeEvent(QResizeEvent* event);
+	virtual void resizeEvent(QResizeEvent* event) override;
 	virtual void stopBlockZooming();
 	virtual void setBackgroundBrush(const QBrush &brush);
 	void scrollVertically(int val);
