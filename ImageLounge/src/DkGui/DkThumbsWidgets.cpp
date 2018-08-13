@@ -60,6 +60,7 @@
 #include <QInputDialog>
 #include <QMimeData>
 #include <QThreadPool>
+#include <QPushButton>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -2148,12 +2149,6 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString& filePath, int thumbSize,
 	setToolTip(fInfo.fileName());
 
 	mThumb->fetchThumb();
-
-	createLayout();
-}
-
-void DkThumbPreviewLabel::createLayout() {
-
 }
 
 void DkThumbPreviewLabel::thumbLoaded() {
@@ -2171,35 +2166,25 @@ void DkThumbPreviewLabel::thumbLoaded() {
 
 void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev) {
 
+	ev->accept();
+
 	emit loadFileSignal(mThumb->getFilePath());
 
+	// don't propagate
 	QLabel::mousePressEvent(ev);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry 
-DkRecentFilesEntry::DkRecentFilesEntry(const QStringList& filePaths, QWidget* parent) : DkWidget(parent) {
+DkRecentFilesEntry::DkRecentFilesEntry(const QStringList& filePaths, bool isPinned, QWidget* parent) : DkWidget(parent) {
 
 	mFilePaths = filePaths;
+	mIsPinned = isPinned;
 
 	while (mFilePaths.size() > 3)
 		mFilePaths.pop_back();
 
 	createLayout();
-}
-
-QString DkRecentFilesEntry::dirName() const {
-	
-	QDir d(dirPath());
-	
-	return d.dirName();
-}
-
-QString DkRecentFilesEntry::dirPath() const {
-
-	if (mFilePaths.empty())
-		return QString("");
-
-	return QFileInfo(mFilePaths[0]).absolutePath();
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkRecentFilesEntry::createLayout() {
@@ -2207,6 +2192,24 @@ void DkRecentFilesEntry::createLayout() {
 	QLabel* dirNameLabel = new QLabel(dirName(), this);
 	dirNameLabel->setAlignment(Qt::AlignBottom);
 	dirNameLabel->setObjectName("recentFilesTitle");
+
+	QIcon pIcon;
+	pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin-checked.svg"), QIcon::Normal, QIcon::On);
+	pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin.svg"), QIcon::Normal, QIcon::Off);
+
+	mPin = new QPushButton(pIcon, "", this);
+	mPin->setToolTip(tr("Pin this directory"));
+	mPin->setObjectName("pin");
+	mPin->setCheckable(true);
+	mPin->setChecked(mIsPinned);
+	mPin->setFlat(true);
+	mPin->hide();
+
+	mRemove = new QPushButton(DkImage::loadIcon(":/nomacs/img/close-tab.svg"), "", this);
+	mRemove->setToolTip(tr("Remove this directory"));
+	mRemove->setObjectName("remove");
+	mRemove->setFlat(true);
+	mRemove->hide();
 
 	QVector<DkThumbPreviewLabel*> tls;
 	for (auto tp : mFilePaths) {
@@ -2222,13 +2225,52 @@ void DkRecentFilesEntry::createLayout() {
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setAlignment(Qt::AlignLeft);
 	layout->addWidget(dirNameLabel, 1, 0, 1, 5);
+	layout->setColumnStretch(6, 1);
+	layout->addWidget(mPin, 1, 7);
+	layout->addWidget(mRemove, 1, 8);
 	layout->addWidget(pathLabel, 2, tls.size());
 
 	for (int idx = 0; idx < tls.size(); idx++)
 		layout->addWidget(tls[idx], 2, idx, Qt::AlignTop);
 
 	show();
+	setCursor(Qt::PointingHandCursor);
+
+	setToolTip(dirPath());
+	setStatusTip(dirPath());
 	//setStyleSheet("background-color: rgba(1,0,0,.1);");
+}
+
+QString DkRecentFilesEntry::dirName() const {
+
+	QDir d(dirPath());
+
+	return d.dirName();
+}
+
+QString DkRecentFilesEntry::dirPath() const {
+
+	if (mFilePaths.empty())
+		return QString("");
+
+	return QFileInfo(mFilePaths[0]).absolutePath();
+}
+
+void DkRecentFilesEntry::on_pin_clicked(bool checked) {
+
+	if (checked) {
+		DkSettingsManager::param().global().pinnedFiles << mFilePaths;
+		qDebug() << "pinning, new list: " << DkSettingsManager::param().global().pinnedFiles;
+	}
+	else {
+		for (const QString& fp : mFilePaths)
+			DkSettingsManager::param().global().pinnedFiles.removeAll(fp);
+	}
+}
+
+void DkRecentFilesEntry::on_remove_clicked() {
+
+	emit removeSignal(mFilePaths);
 }
 
 void DkRecentFilesEntry::mousePressEvent(QMouseEvent * event) {
@@ -2237,55 +2279,71 @@ void DkRecentFilesEntry::mousePressEvent(QMouseEvent * event) {
 }
 
 void DkRecentFilesEntry::mouseReleaseEvent(QMouseEvent * event) {
-
-	if (!mFilePaths.empty())
+	
+	if (event->button() == Qt::LeftButton && !mFilePaths.empty()) {
 		emit loadFileSignal(mFilePaths[0]);
+	}
 
-	qDebug() << "firing...";
 	DkWidget::mouseReleaseEvent(event);
+}
+
+void DkRecentFilesEntry::enterEvent(QEvent * event) {
+
+	mPin->show();
+	mRemove->show();
+
+	DkWidget::enterEvent(event);
+}
+
+void DkRecentFilesEntry::leaveEvent(QEvent * event) {
+
+	mPin->hide();
+	mRemove->hide();
+
+	DkWidget::leaveEvent(event);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry 
 DkRecentFilesWidget2::DkRecentFilesWidget2(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
-	
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void DkRecentFilesWidget2::createLayout() {
 
-	//QVector<QStringList> recentFolders;
-	//QStringList f1;
-	//f1 << "C:/Dropbox/Kamera-Uploads/2018-07-15 13.50.18.jpg";
-	//f1 << "C:/Dropbox/Kamera-Uploads/2018-07-15 13.50.39.jpg";
+	mScrollArea = new QScrollArea(this);
+	QVBoxLayout* sl = new QVBoxLayout(this);
+	sl->addWidget(mScrollArea);
 
-	//QStringList f2;
-	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0687.JPG";
-	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0697.jpg";
-	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0698.jpg";
+	updateList();
+}
 
-	//recentFolders << f1 << f2;
+void DkRecentFilesWidget2::updateList() {
 
-	auto recentFolders = genFileLists(DkSettingsManager::param().global().recentFiles);
+	auto recentFolders = genFileLists(DkSettingsManager::param().global().pinnedFiles);
+	int pinnedFolders = recentFolders.size();
+	recentFolders << genFileLists(DkSettingsManager::param().global().recentFiles);
 
 	QWidget* dummy = new QWidget(this);
 	QVBoxLayout* l = new QVBoxLayout(dummy);
-	//l->setSpacing(0);
 
 	QVector<DkRecentFilesEntry*> recentFiles;
+	int idx = 0;
+
 	for (auto fp : recentFolders) {
-		DkRecentFilesEntry* rf = new DkRecentFilesEntry(fp, this);
+		
+		DkRecentFilesEntry* rf = new DkRecentFilesEntry(fp, idx < pinnedFolders, dummy);
+		rf->setMaximumWidth(500);
 		connect(rf, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		connect(rf, SIGNAL(removeSignal(const QStringList&)), this, SLOT(removeEntry(const QStringList&)));
+		
 		recentFiles << rf;
 		l->addWidget(rf);
+		idx++;
 	}
 
-	QScrollArea* sa = new QScrollArea(this);
-	QVBoxLayout* sl = new QVBoxLayout(this);
-	sl->addWidget(sa);
-
-	sa->setWidget(dummy);
+	mScrollArea->setWidget(dummy);
 }
 
 QList<QStringList> DkRecentFilesWidget2::genFileLists(const QStringList & filePaths) {
@@ -2313,6 +2371,20 @@ QList<QStringList> DkRecentFilesWidget2::genFileLists(const QStringList & filePa
 	}
 	
 	return gPaths.values();
+}
+
+void DkRecentFilesWidget2::removeEntry(const QStringList& filePaths) {
+
+	QStringList& pf = DkSettingsManager::param().global().pinnedFiles;
+	QStringList& rf = DkSettingsManager::param().global().recentFiles;
+
+	// remove from history
+	for (const QString& fp : filePaths) {
+		pf.removeAll(fp);
+		rf.removeAll(fp);
+	}
+
+	updateList();
 }
 
 }

@@ -358,6 +358,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	global_p.lastDir = settings.value("lastDir", global_p.lastDir).toString();
 	global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
 	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
+	global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
 	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
 	global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
 	global_p.useTmpPath = settings.value("useTmpPath", global_p.useTmpPath).toBool();
@@ -572,6 +573,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("recentFolders", global_p.recentFolders);
 	if (force ||global_p.recentFiles != global_d.recentFiles)
 		settings.setValue("recentFiles", global_p.recentFiles);
+	if (force || global_p.pinnedFiles != global_d.pinnedFiles)
+		settings.setValue("pinnedFiles", global_p.pinnedFiles);
 	if (force ||global_p.logRecentFiles != global_d.logRecentFiles)
 		settings.setValue("logRecentFiles", global_p.logRecentFiles);
 	if (force ||global_p.useTmpPath != global_d.useTmpPath)
@@ -788,6 +791,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.lastDir = QString();
 	global_p.lastSaveDir = QString();
 	global_p.recentFiles = QStringList();
+	global_p.pinnedFiles = QStringList();
 	global_p.searchHistory = QStringList();
 	global_p.recentFolders = QStringList();
 	global_p.logRecentFiles = true;

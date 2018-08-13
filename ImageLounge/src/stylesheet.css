@@ -102,7 +102,6 @@ QPushButton#DkRestartButton:pressed {
 	background-color: HIGHLIGHT_LIGHT;
 }
 
-
 /* NoMacs */
 QToolBar#toolBarWithGradient {
 	border: none; 
@@ -594,4 +593,28 @@ QLabel#recentFilesPath {
 	font: "Segoe UI";
 	font-style: italic;
 	color: #666;
+}
+
+QPushButton#pin,
+QPushButton#remove {
+	border: none;
+	padding: 4px;
+}
+
+QPushButton#pin:hover,
+QPushButton#remove:hover {
+	background-color: HIGHLIGHT_LIGHT;
+} 
+
+QPushButton#pin:pressed,
+QPushButton#remove:pressed {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+nmc--DkThumbPreviewLabel {
+	padding: 1px;
+}
+
+nmc--DkThumbPreviewLabel:hover {
+	border: 1px solid HIGHLIGHT_COLOR;
 }

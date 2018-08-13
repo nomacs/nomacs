@@ -60,8 +60,6 @@
     <file>img/printer.svg</file>
     <file>img/print-setup.svg</file>
     <file>img/downloaded.svg</file>
-    <file>img/cancel.svg</file>
-    <file>img/cancel2.svg</file>
     <file>img/swap.svg</file>
     <file>img/pan.svg</file>
     <file>img/pan_checked.svg</file>
@@ -93,5 +91,7 @@
     <file>img/warning.svg</file>
     <file>img/play.svg</file>
     <file>img/stop.svg</file>
+    <file>img/pin.svg</file>
+    <file>img/pin-checked.svg</file>
   </qresource>
 </RCC>

@@ -245,6 +245,7 @@ public:
 		QString lastSaveDir;
 		QStringList recentFiles;
 		QStringList recentFolders;
+		QStringList pinnedFiles;
 		bool logRecentFiles;
 		bool checkOpenDuplicates;
 		bool extendedTabs;

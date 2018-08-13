@@ -123,10 +123,9 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 
 	setFixedSize(imgLabel->size());
 
-	exitButton = new QPushButton(tr("CLOSE"), this);
+	exitButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/close.svg"), "", this);
 	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
-	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QIcon(":/nomacs/img/cancel2.svg").pixmap(DkSettingsManager::param().effectiveIconSize(this)), QColor(0,0,0,200), 1.0f)));
 	exitButton->setToolTip(tr("Close (ESC)"));
 	exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
 	exitButton->move(10, 435);

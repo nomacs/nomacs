@@ -361,7 +361,6 @@ public slots:
 
 protected:
 	void mousePressEvent(QMouseEvent *ev);
-	void createLayout();
 
 	QSharedPointer<DkThumbNailT> mThumb;
 	int mThumbSize = 100;
@@ -371,21 +370,32 @@ class DllCoreExport DkRecentFilesEntry : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkRecentFilesEntry(const QStringList& filePaths, QWidget* parent = 0);
+	DkRecentFilesEntry(const QStringList& filePaths, bool isPinned = false, QWidget* parent = 0);
 
 	QString dirName() const;
 	QString dirPath() const;
 
 signals:
-	void loadFileSignal(const QString&);
+	void loadFileSignal(const QString& filePath);
+	void removeSignal(const QStringList& filePaths);
+
+public slots:
+	void on_pin_clicked(bool checked);
+	void on_remove_clicked();
 
 protected:
 	QStringList mFilePaths;
 	QVector<DkThumbLabel> mThumbs;
+	bool mIsPinned = false;
 	
+	QPushButton* mPin;
+	QPushButton* mRemove;
+
 	void createLayout();
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
+	void enterEvent(QEvent* event) override;
+	void leaveEvent(QEvent* event) override;
 
 };
 
@@ -398,10 +408,16 @@ public:
 signals:
 	void loadFileSignal(const QString&);
 
+public slots:
+	void removeEntry(const QStringList& filePath);
+
 protected:
 	void createLayout();
+	void updateList();
+
 	QList<QStringList> genFileLists(const QStringList& filePaths);
 
+	QScrollArea* mScrollArea;
 };
 
 

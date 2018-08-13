@@ -1,28 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<g>
-	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="13.0605" y1="0.125" x2="13.0605" y2="15.9377">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<path fill="url(#SVGID_1_)" d="M14.616,12.495C15.489,11.214,16,9.667,16,8s-0.511-3.214-1.383-4.496L10.121,8L14.616,12.495z"/>
-	<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="8" y1="0.125" x2="8" y2="15.9376">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<path fill="url(#SVGID_2_)" d="M8,5.879l4.496-4.496C11.214,0.511,9.667,0,8,0S4.786,0.511,3.504,1.383L8,5.879z"/>
-	<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="7.9995" y1="0.125" x2="7.9995" y2="15.9376">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<path fill="url(#SVGID_3_)" d="M8,10.121l-4.496,4.496C4.786,15.489,6.333,16,8,16s3.214-0.511,4.495-1.384L8,10.121z"/>
-	<linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="2.9395" y1="0.125" x2="2.9395" y2="15.9376">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<path fill="url(#SVGID_4_)" d="M1.383,3.504C0.511,4.786,0,6.333,0,8s0.511,3.214,1.383,4.496L5.879,8L1.383,3.504z"/>
-</g>
+	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#666666;}
+</style>
+<ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.309 8.002)" class="st0" cx="8" cy="8" rx="9.9" ry="0.5"/>
+<ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.309 8.002)" class="st0" cx="8" cy="8" rx="0.5" ry="9.9"/>
 </svg>

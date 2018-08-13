@@ -913,7 +913,7 @@ void DkCropToolBar::createIcons() {
 	mIcons.resize(icons_end);
 
 	mIcons[crop_icon] = DkImage::loadIcon(":/nomacs/img/crop.svg");
-	mIcons[cancel_icon] = DkImage::loadIcon(":/nomacs/img/cancel.svg");
+	mIcons[cancel_icon] = DkImage::loadIcon(":/nomacs/img/close.svg");
 	mIcons[pan_icon] = 	DkImage::loadIcon(":/nomacs/img/pan.svg");
 	mIcons[pan_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
 	mIcons[invert_icon] = DkImage::loadIcon(":/nomacs/img/crop-invert.svg");

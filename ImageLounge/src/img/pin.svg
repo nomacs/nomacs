@@ -3,8 +3,7 @@
 <svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#FFFFFF;}
+	.st0{fill:#666666;}
 </style>
-<ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.3138 8.0038)" class="st0" cx="8" cy="8" rx="9.9" ry="0.5"/>
-<ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.3138 8.0038)" class="st0" cx="8" cy="8" rx="0.5" ry="9.9"/>
+<polygon class="st0" points="13,5 13,7 8,7 7,5 6,5 6,8 0,8 0,9 6,9 6,12 7,12 8,10 13,10 13,12 15,12 15,5 "/>
 </svg>

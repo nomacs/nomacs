@@ -1,5 +1,6 @@
 nomacs 3.12.0
 =============
+- recent files panel renewed
 - improved dropping for thumbnail preview (copy/move/link)
 - LAN client removed
 
