@@ -372,7 +372,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 
 	mThumbWatcher.setFuture(QtConcurrent::run(
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
 		DkThumbsThreadPool::pool(),		// load thumbnails on their dedicated pool
 #endif
 		this, 
