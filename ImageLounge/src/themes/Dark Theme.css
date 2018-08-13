@@ -188,3 +188,36 @@ nmc--DkFolderScrollBar {
 nmc--DkCentralWidget {
 	border: 1px solid #444;
 }
+
+/* DkRecentFiles */
+nmc--DkRecentFilesWidget QScrollArea {
+	border: none;
+	background-color: transparent;
+}
+
+nmc--DkRecentDirWidget {
+	background-color: rgba(0, 0, 0, 200);
+	border: 1px solid rgba(0, 0, 0, 255);
+}
+
+nmc--DkRecentDirWidget:hover {
+	background-color: rgba(255, 255, 255, 30);
+	border: 1px solid rgba(255, 255, 255, 60);
+}
+
+QLabel#recentFilesTitle {
+	color: #fff;
+}
+
+QLabel#recentFilesPath {
+	color: #ccc;
+}
+
+QPushButton#pin,
+QPushButton#remove {
+	background-color: transparent;
+}
+
+nmc--DkThumbPreviewLabel:hover {
+	border: 1px solid HIGHLIGHT_COLOR;
+}

@@ -126,7 +126,6 @@ public:
 
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
-	//DkRecentFilesWidget* getRecentFilesWidget() const;
 	QString getCurrentDir() const;
 
 	void clearAllTabs();
@@ -179,7 +178,6 @@ public slots:
 
 protected:
 	DkViewPort* mViewport = 0;
-	//DkRecentFilesWidget* mRecentFilesWidget = 0;
 
 	QTabBar* mTabbar = 0;
 	DkProgressBar* mProgressBar = 0;

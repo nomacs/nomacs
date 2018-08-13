@@ -330,15 +330,6 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(mProgressBar);
 	vbLayout->addWidget(viewWidget);
 
-	//// get the maximum resolution available
-	//QSize recentFilesSize;
-	//for (int idx = 0; idx < QApplication::desktop()->screenCount(); idx++) {
-	//	recentFilesSize = recentFilesSize.expandedTo(QApplication::desktop()->availableGeometry(idx).size());
-	//}
-
-	//mRecentFilesWidget->setFixedSize(recentFilesSize);
-	//mRecentFilesWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
-
 	// connections
 	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(mViewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
@@ -347,9 +338,6 @@ void DkCentralWidget::createLayout() {
 	connect(mTabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(mTabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(mTabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
-
-	//// recent files widget
-	//connect(mRecentFilesWidget, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 
 	connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
 
@@ -422,11 +410,6 @@ DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
 	return dynamic_cast<DkThumbScrollWidget*>(mWidgets[thumbs_widget]);
 }
 
-//DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
-//
-//	return mRecentFilesWidget;
-//}
-
 void DkCentralWidget::currentTabChanged(int idx) {
 
 	if (idx < 0 || idx >= mTabInfos.size())
@@ -471,10 +454,6 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		if (DkSettingsManager::param().app().showRecentFiles)
 			showRecentFiles(true);
 	}
-
-	//qDebug() << "[MARKUS] tab mode: " << mTabInfos.at(idx)->getMode();
-
-	//switchWidget(tabInfos.at(idx)->getMode());
 }
 
 void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
@@ -890,8 +869,6 @@ void DkCentralWidget::showPreferences(bool show) {
 		
 		switchWidget(mWidgets[preference_widget]);
 	}
-	//else
-	//	mRecentFilesWidget->hide();
 }
 
 void DkCentralWidget::showBatch(bool show) {
@@ -954,8 +931,6 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 		mViewLayout->setCurrentWidget(widget);
 	else
 		mViewLayout->setCurrentWidget(mWidgets[viewport_widget]);
-
-	//mRecentFilesWidget->hide();
 
 	if (!mTabInfos.isEmpty()) {
 		
@@ -1085,11 +1060,6 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
             currentTabMode == DkTabInfo::tab_empty) {
 
 			loadFile(filePath);
-            //// reuse the currently open tab.
-            //mTabInfos.at(currentTabIdx)->setFilePath(filePath);
-            //updateTab(mTabInfos.at(currentTabIdx));
-            //currentTabChanged(currentTabIdx);
-
         }
 		else {
             // no tab to reuse. open create a new tab
