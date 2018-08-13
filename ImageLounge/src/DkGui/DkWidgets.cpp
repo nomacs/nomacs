@@ -2605,8 +2605,8 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 void DkRecentFilesWidget::createLayout() {
 
 	filesWidget = new QWidget(this);
-	filesLayout = new QGridLayout(filesWidget);
-	filesLayout->setAlignment(Qt::AlignTop);
+	mFilesLayout = new QGridLayout(filesWidget);
+	mFilesLayout->setAlignment(Qt::AlignTop);
 	//filesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	//folderWidget = new QWidget(this);
@@ -2664,12 +2664,12 @@ void DkRecentFilesWidget::hide(bool saveSettings) {
 void DkRecentFilesWidget::updateFileList() {
 
 	//delete folderLayout;
-	delete filesLayout;
+	delete mFilesLayout;
 	rFileIdx = 0;
 	numActiveLabels = 0;
 
-	filesLayout = new QGridLayout(filesWidget);
-	filesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	mFilesLayout = new QGridLayout(filesWidget);
+	mFilesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
 	//folderLayout = new QVBoxLayout(folderWidget);
 
@@ -2679,8 +2679,8 @@ void DkRecentFilesWidget::updateFileList() {
 	//filesLayout->setSpacing(10);
 	//folderLayout->setSpacing(0);
 
-	for (int idx = 0; idx < fileLabels.size(); idx++) {
-		delete fileLabels.at(idx);
+	for (int idx = 0; idx < mFileLabels.size(); idx++) {
+		delete mFileLabels.at(idx);
 	}
 
 	//for (int idx = 0; idx < folderLabels.size(); idx++) {
@@ -2690,13 +2690,13 @@ void DkRecentFilesWidget::updateFileList() {
 	//filesTitle->hide();
 	//folderTitle->hide();
 
-	fileLabels.clear();
+	mFileLabels.clear();
 	//folderLabels.clear();
-	recentFiles.clear();
+	mRecentFiles.clear();
 	//recentFolders.clear();
 
 	for (const QString& filePath : DkSettingsManager::param().global().recentFiles)
-		recentFiles.append(QFileInfo(filePath));
+		mRecentFiles.append(QFileInfo(filePath));
 	//for (int idx = 0; idx < DkSettingsManager::param().global().recentFolders.size(); idx++)
 	//	recentFolders.append(QFileInfo(DkSettingsManager::param().global().recentFolders.at(idx)));
 
@@ -2708,35 +2708,35 @@ void DkRecentFilesWidget::updateFiles() {
 
 	int columns = 5;//qFloor(width()/(mThumbSize*2.0));
 
-	if (fileLabels.empty()) {
+	if (mFileLabels.empty()) {
 		//filesTitle->show();
 		//filesLayout->setRowStretch(recentFiles.size()+2, 100);
 		//filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
 	}
 
 	// show current
-	if (rFileIdx < fileLabels.size() && fileLabels.at(rFileIdx)->hasFile()) {
-		fileLabels.at(rFileIdx)->show();
-		filesLayout->addWidget(fileLabels.at(rFileIdx), qFloor((float)numActiveLabels/columns)+2, numActiveLabels%columns);
+	if (rFileIdx < mFileLabels.size() && mFileLabels.at(rFileIdx)->hasFile()) {
+		mFileLabels.at(rFileIdx)->show();
+		mFilesLayout->addWidget(mFileLabels.at(rFileIdx), qFloor((float)numActiveLabels/columns)+2, numActiveLabels%columns);
 		numActiveLabels++;
 	}
-	else if (rFileIdx < fileLabels.size()) {
-		fileLabels.at(rFileIdx)->hide();
+	else if (rFileIdx < mFileLabels.size()) {
+		mFileLabels.at(rFileIdx)->hide();
 
 		// remove files which we can't load to keep the list clean...
-		DkSettingsManager::param().global().recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFilePath());		// remove recent files which we could not load...
+		DkSettingsManager::param().global().recentFiles.removeAll(mFileLabels.at(rFileIdx)->getThumb()->getFilePath());		// remove recent files which we could not load...
 	}
 
-	if (!fileLabels.empty())
+	if (!mFileLabels.empty())
 		rFileIdx++;
 
 	// load next
-	if ((rFileIdx/(float)columns*mThumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
-		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx).absoluteFilePath(), mThumbSize, this);
+	if ((rFileIdx/(float)columns*mThumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < mRecentFiles.size()) {
+		DkImageLabel* cLabel = new DkImageLabel(mRecentFiles.at(rFileIdx).absoluteFilePath(), mThumbSize, this);
 		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
 		
-		fileLabels.append(cLabel);
+		mFileLabels.append(cLabel);
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
 		connect(cLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);

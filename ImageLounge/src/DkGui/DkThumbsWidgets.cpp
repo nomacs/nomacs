@@ -2133,4 +2133,186 @@ void DkThumbScrollWidget::enableSelectionActions() {
 	am.action(DkActionManager::preview_select_all)->setChecked(mThumbsScene->allThumbsSelected());
 }
 
+// DkThumbPreviewLabel --------------------------------------------------------------------
+DkThumbPreviewLabel::DkThumbPreviewLabel(const QString& filePath, int thumbSize, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+
+	mThumbSize = thumbSize;
+
+	mThumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
+	connect(mThumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
+
+	setFixedSize(mThumbSize, mThumbSize);
+
+	QFileInfo fInfo(filePath);
+	setStatusTip(fInfo.fileName());
+	setToolTip(fInfo.fileName());
+
+	mThumb->fetchThumb();
+
+	createLayout();
+}
+
+void DkThumbPreviewLabel::createLayout() {
+
+}
+
+void DkThumbPreviewLabel::thumbLoaded() {
+
+	if (mThumb->getImage().isNull()) {
+		qDebug() << QFileInfo(mThumb->getFilePath()).fileName() << " not loaded...";
+		return;
+	}
+
+	QPixmap pm = QPixmap::fromImage(mThumb->getImage());
+	pm = DkImage::makeSquare(pm);
+
+	setPixmap(pm);
+}
+
+void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev) {
+
+	emit loadFileSignal(mThumb->getFilePath());
+
+	QLabel::mousePressEvent(ev);
+}
+
+// -------------------------------------------------------------------- DkRecentFilesEntry 
+DkRecentFilesEntry::DkRecentFilesEntry(const QStringList& filePaths, QWidget* parent) : DkWidget(parent) {
+
+	mFilePaths = filePaths;
+
+	while (mFilePaths.size() > 3)
+		mFilePaths.pop_back();
+
+	createLayout();
+}
+
+QString DkRecentFilesEntry::dirName() const {
+	
+	QDir d(dirPath());
+	
+	return d.dirName();
+}
+
+QString DkRecentFilesEntry::dirPath() const {
+
+	if (mFilePaths.empty())
+		return QString("");
+
+	return QFileInfo(mFilePaths[0]).absolutePath();
+}
+
+void DkRecentFilesEntry::createLayout() {
+
+	QLabel* dirNameLabel = new QLabel(dirName(), this);
+	dirNameLabel->setAlignment(Qt::AlignBottom);
+	dirNameLabel->setObjectName("recentFilesTitle");
+
+	QVector<DkThumbPreviewLabel*> tls;
+	for (auto tp : mFilePaths) {
+		auto tpl = new DkThumbPreviewLabel(tp, 42, this);
+		connect(tpl, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		tls << tpl;
+	}
+
+	QLabel* pathLabel = new QLabel(dirPath(), this);
+	pathLabel->setAlignment(Qt::AlignLeft);
+	pathLabel->setObjectName("recentFilesPath");
+
+	QGridLayout* layout = new QGridLayout(this);
+	layout->setAlignment(Qt::AlignLeft);
+	layout->addWidget(dirNameLabel, 1, 0, 1, 5);
+	layout->addWidget(pathLabel, 2, tls.size());
+
+	for (int idx = 0; idx < tls.size(); idx++)
+		layout->addWidget(tls[idx], 2, idx, Qt::AlignTop);
+
+	show();
+	//setStyleSheet("background-color: rgba(1,0,0,.1);");
+}
+
+void DkRecentFilesEntry::mousePressEvent(QMouseEvent * event) {
+
+	DkWidget::mousePressEvent(event);
+}
+
+void DkRecentFilesEntry::mouseReleaseEvent(QMouseEvent * event) {
+
+	if (!mFilePaths.empty())
+		emit loadFileSignal(mFilePaths[0]);
+
+	qDebug() << "firing...";
+	DkWidget::mouseReleaseEvent(event);
+}
+
+// -------------------------------------------------------------------- DkRecentFilesEntry 
+DkRecentFilesWidget2::DkRecentFilesWidget2(QWidget* parent) : DkWidget(parent) {
+
+	createLayout();
+	
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+}
+
+void DkRecentFilesWidget2::createLayout() {
+
+	//QVector<QStringList> recentFolders;
+	//QStringList f1;
+	//f1 << "C:/Dropbox/Kamera-Uploads/2018-07-15 13.50.18.jpg";
+	//f1 << "C:/Dropbox/Kamera-Uploads/2018-07-15 13.50.39.jpg";
+
+	//QStringList f2;
+	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0687.JPG";
+	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0697.jpg";
+	//f2 << "C:/Dropbox/camera/allgemein/2018/07-18/DSC_0698.jpg";
+
+	//recentFolders << f1 << f2;
+
+	auto recentFolders = genFileLists(DkSettingsManager::param().global().recentFiles);
+
+	QWidget* dummy = new QWidget(this);
+	QVBoxLayout* l = new QVBoxLayout(dummy);
+	//l->setSpacing(0);
+
+	QVector<DkRecentFilesEntry*> recentFiles;
+	for (auto fp : recentFolders) {
+		DkRecentFilesEntry* rf = new DkRecentFilesEntry(fp, this);
+		connect(rf, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		recentFiles << rf;
+		l->addWidget(rf);
+	}
+
+	QScrollArea* sa = new QScrollArea(this);
+	QVBoxLayout* sl = new QVBoxLayout(this);
+	sl->addWidget(sa);
+
+	sa->setWidget(dummy);
+}
+
+QList<QStringList> DkRecentFilesWidget2::genFileLists(const QStringList & filePaths) {
+	
+	QMap<QString, QStringList> gPaths;
+
+	for (const QString& cp : filePaths) {
+
+		// get folder
+		QString dp = QFileInfo(cp).absolutePath();
+
+		auto dir = gPaths.find(dp);
+
+		// ok, create a new entry
+		if (dir == gPaths.end()) {
+			QStringList cpl;
+			cpl << cp;
+			gPaths.insert(dp, cpl);
+		}
+		else {
+			
+			// append the filename
+			dir.value() << cp;
+		}
+	}
+	
+	return gPaths.values();
+}
+
 }

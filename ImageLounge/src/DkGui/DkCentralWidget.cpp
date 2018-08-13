@@ -197,6 +197,8 @@ QIcon DkTabInfo::getIcon() {
 
 	if (mTabMode == tab_thumb_preview)
 		return QIcon(":/nomacs/img/thumbs-view.svg");
+	else if (mTabMode == tab_recent_files)
+		return QIcon(":/nomacs/img/thumbs-view.svg");
 	else if (mTabMode == tab_preferences)
 		return QIcon(":/nomacs/img/settings.svg");
 	else if (mTabMode == tab_batch)
@@ -222,6 +224,8 @@ QString DkTabInfo::getTabText() const {
 
 	if (mTabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
+	else if (mTabMode == tab_recent_files)
+		return QObject::tr("Recent Files");
 	else if (mTabMode == tab_preferences)
 		return QObject::tr("Settings");
 	else if (mTabMode == tab_batch)
@@ -308,6 +312,7 @@ void DkCentralWidget::createLayout() {
 
 	mWidgets.resize(widget_end);
 	mWidgets[viewport_widget] = mViewport;
+	mWidgets[recent_files_widget] = 0;
 	mWidgets[thumbs_widget] = 0;
 	mWidgets[preference_widget] = 0;
 
@@ -325,16 +330,14 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(mProgressBar);
 	vbLayout->addWidget(viewWidget);
 
-	mRecentFilesWidget = new DkRecentFilesWidget(viewWidget);
-	
-	// get the maximum resolution available
-	QSize recentFilesSize;
-	for (int idx = 0; idx < QApplication::desktop()->screenCount(); idx++) {
-		recentFilesSize = recentFilesSize.expandedTo(QApplication::desktop()->availableGeometry(idx).size());
-	}
+	//// get the maximum resolution available
+	//QSize recentFilesSize;
+	//for (int idx = 0; idx < QApplication::desktop()->screenCount(); idx++) {
+	//	recentFilesSize = recentFilesSize.expandedTo(QApplication::desktop()->availableGeometry(idx).size());
+	//}
 
-	mRecentFilesWidget->setFixedSize(recentFilesSize);
-	mRecentFilesWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
+	//mRecentFilesWidget->setFixedSize(recentFilesSize);
+	//mRecentFilesWidget->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
 
 	// connections
 	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
@@ -345,8 +348,8 @@ void DkCentralWidget::createLayout() {
 	connect(mTabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(mTabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 
-	// recent files widget
-	connect(mRecentFilesWidget, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+	//// recent files widget
+	//connect(mRecentFilesWidget, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 
 	connect(this, SIGNAL(imageHasGPSSignal(bool)), DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SLOT(setEnabled(bool)));
 
@@ -419,10 +422,10 @@ DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
 	return dynamic_cast<DkThumbScrollWidget*>(mWidgets[thumbs_widget]);
 }
 
-DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
-
-	return mRecentFilesWidget;
-}
+//DkRecentFilesWidget2* DkCentralWidget::getRecentFilesWidget() const {
+//
+//	return mRecentFilesWidget;
+//}
 
 void DkCentralWidget::currentTabChanged(int idx) {
 
@@ -448,6 +451,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_thumb_preview) {
 		showThumbView();
+	}
+	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
+		showRecentFiles();
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
 		showRecentFiles(false);
@@ -567,6 +573,29 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	// add preference widget ------------------------------
 
 	return pw;
+}
+
+DkRecentFilesWidget2 * DkCentralWidget::createRecentFiles() {
+	
+	DkActionManager& am = DkActionManager::instance();
+	DkRecentFilesWidget2* rw = new DkRecentFilesWidget2(this);
+	rw->registerAction(DkActionManager::instance().action(DkActionManager::menu_file_show_recent));
+
+	// add actions
+	rw->addActions(am.fileActions().toList());
+	rw->addActions(am.viewActions().toList());
+	rw->addActions(am.editActions().toList());
+	rw->addActions(am.sortActions().toList());
+	rw->addActions(am.toolsActions().toList());
+	rw->addActions(am.panelActions().toList());
+	rw->addActions(am.syncActions().toList());
+	rw->addActions(am.pluginActions().toList());
+	rw->addActions(am.helpActions().toList());
+	rw->addActions(am.hiddenActions().toList());
+
+	connect(rw, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+
+	return rw;
 }
 
 DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
@@ -770,8 +799,6 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 		updateTab(tabInfo);
 		switchWidget(tabInfo->getMode());
 	}
-
-	mRecentFilesWidget->hide();
 }
 
 QVector<QSharedPointer<DkTabInfo> > DkCentralWidget::getTabs() const {
@@ -837,14 +864,17 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 void DkCentralWidget::showRecentFiles(bool show) {
 
-	// TODO: fix the missing recent files (e.g. after the thumbnails are loaded once)
-	if (show && currentViewMode() != DkTabInfo::tab_preferences) {
-		mRecentFilesWidget->setCustomStyle(!mViewport->getImage().isNull() || (getThumbScrollWidget() && getThumbScrollWidget()->isVisible()));
-		mRecentFilesWidget->raise();
-		mRecentFilesWidget->show();
+	if (show) {
+
+		// create the preferences...
+		if (!mWidgets[recent_files_widget]) {
+			mWidgets[recent_files_widget] = createRecentFiles();
+			mViewLayout->insertWidget(recent_files_widget, mWidgets[recent_files_widget]);
+		}
+
+		switchWidget(mWidgets[recent_files_widget]);
 	}
-	else
-		mRecentFilesWidget->hide();
+
 }
 
 void DkCentralWidget::showPreferences(bool show) {
@@ -909,10 +939,10 @@ void DkCentralWidget::switchWidget(int widget) {
 		switchWidget(mWidgets[thumbs_widget]);
 	else if (widget == DkTabInfo::tab_preferences)
 		switchWidget(mWidgets[preference_widget]);
+	else if (widget == DkTabInfo::tab_recent_files)
+		switchWidget(mWidgets[recent_files_widget]);
 	else
 		qDebug() << "Sorry, I cannot switch to widget: " << widget;
-
-	//recentFilesWidget->hide();
 }
 
 void DkCentralWidget::switchWidget(QWidget* widget) {
@@ -925,7 +955,7 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 	else
 		mViewLayout->setCurrentWidget(mWidgets[viewport_widget]);
 
-	mRecentFilesWidget->hide();
+	//mRecentFilesWidget->hide();
 
 	if (!mTabInfos.isEmpty()) {
 		
@@ -933,6 +963,8 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 
 		if (widget == mWidgets[thumbs_widget])
 			mode = DkTabInfo::tab_thumb_preview;
+		else if (widget == mWidgets[recent_files_widget])
+			mode = DkTabInfo::tab_recent_files;
 		else if (widget == mWidgets[preference_widget])
 			mode = DkTabInfo::tab_preferences;
 		else if (widget == mWidgets[batch_widget])

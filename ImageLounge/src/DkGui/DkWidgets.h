@@ -753,7 +753,7 @@ protected:
 	QLabel* highLightLabel;
 	QPushButton* removeFileButton;
 	QSharedPointer<DkThumbNailT> thumb;
-	int mThumbSize = 64;
+	int mThumbSize = 100;
 };
 
 class DkRecentFilesWidget : public DkWidget {
@@ -769,34 +769,21 @@ signals:
 
 public slots:
 	void updateFiles();
-	//void updateFolders();
 	virtual void setVisible(bool visible, bool saveSettings = true);
 	virtual void hide(bool saveSettings = true);
-	//void clearFileHistory();
-	//void clearFolderHistory();
 
 protected:
 	void createLayout();
 	void updateFileList();
 
-	QVector<QFileInfo> recentFiles;
-	//QVector<DkFileInfo> recentFolders;
-	//QFutureWatcher<void> fileWatcher;
-	QVector<DkImageLabel*> fileLabels;
-	//QVector<DkFolderLabel*> folderLabels;
+	QVector<QFileInfo> mRecentFiles;
+	QVector<DkImageLabel*> mFileLabels;
 
-	QGridLayout* filesLayout;
-	//QVBoxLayout* folderLayout;
+	QGridLayout* mFilesLayout;
 
 	QWidget* filesWidget;
-	//QWidget* folderWidget;
-
-	//QLabel* folderTitle;
-	//QLabel* filesTitle;
 	QLabel* bgLabel;
-
 	QLabel* clearFiles;
-	//QLabel* clearFolders;
 
 	int rFileIdx;
 	int numActiveLabels;
@@ -810,7 +797,7 @@ public:
 	DkDirectoryEdit(QWidget* parent = 0);
 	DkDirectoryEdit(const QString& content, QWidget* parent = 0);
 		
-	bool existsDirectory() { return existsDirectory(text());};
+	bool existsDirectory() { return existsDirectory(text()); };
 
 signals:
 	bool directoryChanged(const QString& path);

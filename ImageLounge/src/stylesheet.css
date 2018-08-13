@@ -1,6 +1,6 @@
 /* DEBUG */
-/*
- QWidget {
+
+/* QWidget {
 	background-color: QColor(0,0,0,20); border: 1px solid #000000;
 } */
 
@@ -566,4 +566,32 @@ QLabel#DkLabelBg {
 	color: HUD_FOREGROUND_COLOR;
 	background-color: HUD_BACKGROUND_COLOR;
 	padding: 5px;
+}
+
+/* DkRecentFiles */
+nmc--DkRecentFilesWidget2 QScrollArea {
+	border: none;
+}
+
+nmc--DkRecentFilesEntry {
+	background-color: rgba(255, 255, 255, 100);
+	border: 1px solid rgba(255, 255, 255, 150);
+	border-radius: 7px;
+}
+
+nmc--DkRecentFilesEntry::hover {
+	background-color: rgba(255, 255, 255, 150);
+}
+
+QLabel#recentFilesTitle {
+	font: light "Segoe UI";
+	font-size: 16pt;
+	color: #000;
+	font-weight: 100;
+}
+
+QLabel#recentFilesPath {
+	font: "Segoe UI";
+	font-style: italic;
+	color: #666;
 }

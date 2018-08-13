@@ -584,6 +584,9 @@ void DkBasicLoader::setHistoryIndex(int idx) {
 
 void DkBasicLoader::loadFileToBuffer(const QString& fileInfo, QByteArray& ba) const {
 
+	if (!QFileInfo(fileInfo).exists())
+		return;
+
 #ifdef WITH_QUAZIP
 	if (QFileInfo(fileInfo).dir().path().contains(DkZipContainer::zipMarker())) 
 		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(fileInfo), DkZipContainer::decodeImageFile(fileInfo), ba);

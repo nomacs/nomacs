@@ -67,10 +67,10 @@ public:
 	enum TabMode {
 		tab_single_image,
 		tab_thumb_preview,
+		tab_recent_files,
 		tab_preferences,
 		tab_batch,
-		
-		tab_recent_files,
+
 		tab_empty,
 
 		tab_end
@@ -115,7 +115,7 @@ protected:
 
 class DkViewPort;
 class DkThumbScrollWidget;
-class DkRecentFilesWidget;
+class DkRecentFilesWidget2;
 
 class DllCoreExport DkCentralWidget : public QWidget {
 	Q_OBJECT
@@ -126,7 +126,7 @@ public:
 
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
-	DkRecentFilesWidget* getRecentFilesWidget() const;
+	//DkRecentFilesWidget2* getRecentFilesWidget() const;
 	QString getCurrentDir() const;
 
 	void clearAllTabs();
@@ -179,7 +179,7 @@ public slots:
 
 protected:
 	DkViewPort* mViewport = 0;
-	DkRecentFilesWidget* mRecentFilesWidget = 0;
+	//DkRecentFilesWidget2* mRecentFilesWidget = 0;
 
 	QTabBar* mTabbar = 0;
 	DkProgressBar* mProgressBar = 0;
@@ -200,11 +200,13 @@ protected:
 	void paintEvent(QPaintEvent* ev) override;
 
 	DkPreferenceWidget* createPreferences();
+	DkRecentFilesWidget2* createRecentFiles();
 	DkThumbScrollWidget* createThumbScrollWidget();
 
 	enum {
 		viewport_widget,
 		thumbs_widget,
+		recent_files_widget,
 		preference_widget,
 		batch_widget,
 

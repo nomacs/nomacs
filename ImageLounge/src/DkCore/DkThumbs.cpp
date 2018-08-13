@@ -400,6 +400,7 @@ DkThumbsThreadPool::DkThumbsThreadPool() {
 	
 	mPool = new QThreadPool();
 	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount()-2, 1));
+	mPool->setMaxThreadCount(1);	// debugging
 	//qDebug() << "thumbnail thread pool size:" << mPool->maxThreadCount();
 	//qDebug() << "thumbpool stack size:" << mPool->stackSize();
 }

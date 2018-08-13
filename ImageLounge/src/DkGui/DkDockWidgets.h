@@ -67,7 +67,6 @@ protected:
 
 	QSharedPointer<DkImageContainerT> mImg;
 	QListWidget* mHistoryList;
-
-};
+}; 
 
 }

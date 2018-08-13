@@ -179,7 +179,6 @@ private:
 	void drawCurrentImgEffect(QPainter* painter, const QRectF& r);
 	void drawNoImgEffect(QPainter* painter, const QRectF& r);
 	void createContextMenu();
-
 };
 
 class DkThumbLabel : public QGraphicsObject {
@@ -346,6 +345,63 @@ protected:
 	QMenu* mContextMenu = 0;
 	QToolBar* mToolbar = 0;
 	QLineEdit* mFilterEdit = 0;
+};
+
+class DkThumbPreviewLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkThumbPreviewLabel(const QString& filePath, int thumbSize = 100, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+signals:
+	void loadFileSignal(const QString& filePath);
+
+public slots:
+	void thumbLoaded();
+
+protected:
+	void mousePressEvent(QMouseEvent *ev);
+	void createLayout();
+
+	QSharedPointer<DkThumbNailT> mThumb;
+	int mThumbSize = 100;
+};
+
+class DllCoreExport DkRecentFilesEntry : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkRecentFilesEntry(const QStringList& filePaths, QWidget* parent = 0);
+
+	QString dirName() const;
+	QString dirPath() const;
+
+signals:
+	void loadFileSignal(const QString&);
+
+protected:
+	QStringList mFilePaths;
+	QVector<DkThumbLabel> mThumbs;
+	
+	void createLayout();
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+
+};
+
+class DllCoreExport DkRecentFilesWidget2 : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkRecentFilesWidget2(QWidget* parent = 0);
+
+signals:
+	void loadFileSignal(const QString&);
+
+protected:
+	void createLayout();
+	QList<QStringList> genFileLists(const QStringList& filePaths);
+
 };
 
 
