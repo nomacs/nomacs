@@ -41,6 +41,7 @@
 #include <QtConcurrentRun>
 #include <QTimer>
 #include <QBuffer>
+#include <QThreadPool>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -351,8 +352,8 @@ DkThumbNailT::DkThumbNailT(const QString& filePath, const QImage& img) : DkThumb
 
 DkThumbNailT::~DkThumbNailT() {
 
-	thumbWatcher.blockSignals(true);
-	thumbWatcher.cancel();
+	mThumbWatcher.blockSignals(true);
+	mThumbWatcher.cancel();
 }
 
 bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByteArray> ba) {
@@ -368,9 +369,19 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	mFetching = true;
 	mForceLoad = forceLoad;
 
-	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
-	thumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), this, 
-		&nmc::DkThumbNailT::computeCall, mFile, ba, forceLoad, mMaxThumbSize, mMinThumbSize));
+	connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+
+	mThumbWatcher.setFuture(QtConcurrent::run(
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+		DkThumbsThreadPool::pool(),		// load thumbnails on their dedicated pool
+#endif
+		this, 
+		&nmc::DkThumbNailT::computeCall, 
+		mFile, 
+		ba, 
+		forceLoad, 
+		mMaxThumbSize, 
+		mMinThumbSize));
 
 	return true;
 }
@@ -384,7 +395,7 @@ QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteAr
 
 void DkThumbNailT::thumbLoaded() {
 	
-	QFuture<QImage> future = thumbWatcher.future();
+	QFuture<QImage> future = mThumbWatcher.future();
 
 	mImg = future.result();
 	
@@ -398,11 +409,10 @@ void DkThumbNailT::thumbLoaded() {
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool() {
 	
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	mPool = new QThreadPool();
 	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount()-2, 1));
-	mPool->setMaxThreadCount(1);	// debugging
-	//qDebug() << "thumbnail thread pool size:" << mPool->maxThreadCount();
-	//qDebug() << "thumbpool stack size:" << mPool->stackSize();
+#endif
 }
 
 DkThumbsThreadPool& DkThumbsThreadPool::instance() {
@@ -412,7 +422,12 @@ DkThumbsThreadPool& DkThumbsThreadPool::instance() {
 }
 
 QThreadPool* DkThumbsThreadPool::pool() {
+	
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	return instance().mPool;
+#else
+	return QThreadPool::globalInstance();
+#endif
 }
 
 

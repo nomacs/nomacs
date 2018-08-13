@@ -163,7 +163,7 @@ public:
 
 	void fetchFile();
 	void cancel();
-	void clear();
+	void clear() override;
 	void receiveUpdates(QObject* obj, bool connectSignals = true);
 	void downloadFile(const QUrl& url);
 
@@ -173,8 +173,8 @@ public:
 	void saveMetaDataThreaded();
 	bool isFileDownloaded() const;
 
-	virtual QSharedPointer<DkBasicLoader> getLoader();
-	virtual QSharedPointer<DkThumbNailT> getThumb();
+	virtual QSharedPointer<DkBasicLoader> getLoader() override;
+	virtual QSharedPointer<DkThumbNailT> getThumb() override;
 	static QSharedPointer<DkImageContainerT> fromImageContainer(QSharedPointer<DkImageContainer> imgC);
 
 	virtual void undo() override;

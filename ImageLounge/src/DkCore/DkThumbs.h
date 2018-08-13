@@ -48,6 +48,8 @@
 #endif
 #endif
 
+class QThreadPool;
+
 namespace nmc {
 
 #define max_thumb_size 160
@@ -182,7 +184,7 @@ public:
 	 **/ 
 	int hasImage() const {
 		
-		if (thumbWatcher.isRunning())
+		if (mThumbWatcher.isRunning())
 			return loading;
 		else
 			return DkThumbNail::hasImage();
@@ -202,7 +204,7 @@ protected slots:
 protected:
 	QImage computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize);
 
-	QFutureWatcher<QImage> thumbWatcher;
+	QFutureWatcher<QImage> mThumbWatcher;
 	bool mFetching;
 	int mForceLoad;
 };
