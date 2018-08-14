@@ -1046,25 +1046,8 @@ void DkCentralWidget::loadFile(const QString& filePath, bool newTab) {
 		return;
 	}
 
-    if (mTabInfos.size() < 1) {
-        // this is the first one: open a new tab
-        addTab(filePath);
-    }
-	else {
-        // we already have some opened tabs.
-        int currentTabIdx = mTabbar->currentIndex();
-        enum DkTabInfo::TabMode currentTabMode = mTabInfos[currentTabIdx]->getMode();
-
-        if (currentTabMode == DkTabInfo::tab_single_image ||
-            currentTabMode == DkTabInfo::tab_empty) {
-
-			mViewport->loadFile(filePath);
-        }
-		else {
-            // no tab to reuse -> create a new tab
-            addTab(filePath, -1, true);
-        }
-    }
+    // no tab to reuse -> create a new tab
+    addTab(filePath, -1, mTabInfos.size() > 0);
 }
 
 /**
@@ -1100,59 +1083,6 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
     mViewport->getController()->setInfo(tr("I could not load \"%1\"").arg(dirPath));
 }
 
-/** loadUrl() loads a single valid url
- *  @param loadInTab: if true, replace the currently active image, so it exists.
- */
-void DkCentralWidget::loadUrl(const QUrl& url, bool loadInTab) {
-    Q_ASSERT(url.isValid());
-
-    Q_UNUSED(loadInTab);
-    Q_ASSERT(loadInTab == true);
-
-	QString fp = url.toString();
-
-	// allow drops from VSCode (i.e. images in README files)
-	if (fp.startsWith("vscode-resource:/"))
-		fp = fp.remove("vscode-resource:/");
-
-	// url.toString fixes windows "C:/" vs "C:\"
-    QFileInfo fi(fp);
-
-	if (!fi.exists()) {
-		fi = QFileInfo(url.toLocalFile());
-	}
-
-    auto display = [&](QString msg){
-        mViewport->getController()->setInfo(msg.arg(msg));
-    };
-
-    if (fi.exists()) {
-        
-		if (fi.isFile()) {
-            // load a local file
-            if (DkUtils::isValid(fi)) {
-                loadFile(fi.filePath(), true);
-            } 
-			else {
-                display(tr("Unable to load file \"%1\"").arg(fi.canonicalPath()));
-            }
-        } 
-		else if(fi.isDir()) {
-            // load a directory as thmbnail view
-            loadDirToTab(fi.filePath());
-        }
-		else {
-            display(tr("\"%1\" cannot be loaded").arg(fi.canonicalPath()));
-        }
-    }
-	else {
-       //load a remote url
-        QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
-        display(tr("downloading \"%1\"").arg(url.toDisplayString()));
-        targetTab->getImageLoader()->downloadFile(url);
-    }
-}
-
 /** loadUrls() loads a list of valid urls.
  * @param maxUrlsToLoad determines the maximum
  */
@@ -1164,10 +1094,64 @@ void DkCentralWidget::loadUrls(const QList<QUrl>& urls, int maxUrlsToLoad) {
     if(urls.size() > maxUrlsToLoad)
 		qWarning() << "Too many urls found, I will only load the first" << maxUrlsToLoad;
 
-    for (int idx = 0; idx < urls.size() && idx < maxUrlsToLoad; idx++) {
-        QUrl url = urls[idx];
-        loadUrl(url);
-    }
+	if (urls.size() == 1)
+		loadUrl(urls[0], false);
+	else {
+
+		for (const QUrl& url : urls)
+			loadUrl(url, true);
+	}
+}
+
+/** loadUrl() loads a single valid url
+*  @param loadInTab: if true, replace the currently active image, so it exists.
+*/
+void DkCentralWidget::loadUrl(const QUrl& url, bool newTab) {
+	Q_ASSERT(url.isValid());
+
+	QString fp = url.toString();
+
+	// allow drops from VSCode (i.e. images in README files)
+	if (fp.startsWith("vscode-resource:/"))
+		fp = fp.remove("vscode-resource:/");
+
+	// url.toString fixes windows "C:/" vs "C:\"
+	QFileInfo fi(fp);
+
+	if (!fi.exists()) {
+		fi = QFileInfo(url.toLocalFile());
+	}
+
+	auto display = [&](QString msg) {
+		mViewport->getController()->setInfo(msg.arg(msg));
+	};
+
+	if (fi.exists()) {
+
+		if (fi.isFile()) {
+			
+			// load a local file
+			if (DkUtils::isValid(fi)) {
+				loadFile(fi.filePath(), newTab);
+			}
+			else {
+				display(tr("Unable to load file \"%1\"").arg(fi.canonicalPath()));
+			}
+		}
+		else if (fi.isDir()) {
+			// load a directory as thmbnail view
+			loadDirToTab(fi.filePath());
+		}
+		else {
+			display(tr("\"%1\" cannot be loaded").arg(fi.canonicalPath()));
+		}
+	}
+	else {
+		//load a remote url
+		QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
+		display(tr("downloading \"%1\"").arg(url.toDisplayString()));
+		targetTab->getImageLoader()->downloadFile(url);
+	}
 }
 
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
