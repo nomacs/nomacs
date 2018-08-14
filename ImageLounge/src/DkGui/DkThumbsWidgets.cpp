@@ -221,9 +221,6 @@ void DkFilePreview::createContextMenu() {
 
 void DkFilePreview::paintEvent(QPaintEvent*) {
 
-	//if (selected != -1)
-	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
-
 	if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		xOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);
@@ -236,14 +233,7 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 		else
 			setMaximumSize(minHeight, QWIDGETSIZE_MAX);
 
-		//if (fileLabel->height() >= height() && fileLabel->isVisible())
-		//	fileLabel->hide();
-
 	}
-	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
-	//resize(parent->width(), minHeight);
-
-	//qDebug() << "size: " << size();
 
 	QPainter painter(this);
 	painter.setBackground(DkSettingsManager::param().display().hudBgColor);
@@ -1375,9 +1365,7 @@ void DkThumbScene::resizeThumbs(float dx) {
 
 void DkThumbScene::cancelLoading() {
 	
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-	DkThumbsThreadPool::pool()->clear();
-#endif
+	DkThumbsThreadPool::clear();
 
 	for (auto t : mThumbLabels)
 		t->cancelLoading();

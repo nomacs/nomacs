@@ -70,7 +70,6 @@ class DkDelayedMessage;
 class DkFileInfoLabel;
 class DkHistogram;
 class DkLabelBg;
-//class DkAnimationLabel;
 class DkPluginViewPort;
 class DkMetaDataT;
 class DkDelayedInfo;

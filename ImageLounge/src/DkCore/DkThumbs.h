@@ -215,6 +215,7 @@ public:
 	static DkThumbsThreadPool& instance();
 
 	static QThreadPool* pool();
+	static void clear();
 
 private:
 	DkThumbsThreadPool();

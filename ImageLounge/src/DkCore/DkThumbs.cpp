@@ -369,7 +369,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	mFetching = true;
 	mForceLoad = forceLoad;
 
-	connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+	connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
 
 	mThumbWatcher.setFuture(QtConcurrent::run(
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -428,6 +428,14 @@ QThreadPool* DkThumbsThreadPool::pool() {
 #else
 	return QThreadPool::globalInstance();
 #endif
+}
+
+void DkThumbsThreadPool::clear() {
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+	pool()->clear();
+#endif
+
 }
 
 

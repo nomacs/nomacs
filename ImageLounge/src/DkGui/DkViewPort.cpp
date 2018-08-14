@@ -261,6 +261,9 @@ void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img) {
 
 void DkViewPort::setImage(QImage newImg) {
 
+	// calling show here fixes issues with the HUD
+	show();
+
 	DkTimer dt;
 
 	emit movieLoadedSignal(false);

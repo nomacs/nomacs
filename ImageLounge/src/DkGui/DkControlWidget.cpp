@@ -58,8 +58,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	// cropping
 	mCropWidget = new DkCropWidget(QRectF(), this);
 
-	//// thumbnails, metadata
-	//thumbPool = new DkThumbPool(QFileInfo(), this);
+	// thumbnails, metadata
 	mFilePreview = new DkFilePreview(this, flags);
 	mMetaDataInfo = new DkMetaDataHUD(this);
 	mZoomWidget = new DkZoomWidget(this);
