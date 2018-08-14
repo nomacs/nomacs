@@ -840,7 +840,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
-	display_p.showThumbLabel = true;
+	display_p.showThumbLabel = false;
 	display_p.showScrollBars = true;
 	display_p.animationDuration = 0.5f;
 	display_p.alwaysAnimate = false;
