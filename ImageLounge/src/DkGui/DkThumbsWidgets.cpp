@@ -2285,6 +2285,8 @@ void DkRecentFilesWidget::createLayout() {
 	mScrollArea = new QScrollArea(this);
 	QVBoxLayout* sl = new QVBoxLayout(this);
 	sl->addWidget(mScrollArea);
+	mScrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 
 	updateList();
 }

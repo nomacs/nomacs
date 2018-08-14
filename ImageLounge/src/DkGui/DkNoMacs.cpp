@@ -201,9 +201,11 @@ void DkNoMacs::init() {
 	readSettings();
 	installEventFilter(this);
 
-	showMenuBar(DkSettingsManager::param().app().showMenuBar);
-	showToolBar(DkSettingsManager::param().app().showToolBar);
-	showStatusBar(DkSettingsManager::param().app().showStatusBar);
+	if (DkSettingsManager::param().app().appMode != DkSettings::mode_frameless) {
+		showToolBar(DkSettingsManager::param().app().showToolBar);
+		showMenuBar(DkSettingsManager::param().app().showMenuBar);
+		showStatusBar(DkSettingsManager::param().app().showStatusBar);
+	}
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
@@ -761,6 +763,10 @@ void DkNoMacs::readSettings() {
 
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("windowState").toByteArray());
+
+	// restore state makes the toolbar visible - so hide it again...
+	if (DkSettingsManager::param().app().appMode == DkSettings::mode_frameless)
+		mToolbar->hide();
 }
 
 void DkNoMacs::toggleFullScreen() {
