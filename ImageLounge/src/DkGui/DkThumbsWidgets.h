@@ -409,18 +409,27 @@ public:
 
 signals:
 	void loadFileSignal(const QString& filePath, bool newTab);
+	void loadDirSignal(const QString& filePath);
 	void removeSignal();
 
 public slots:
 	void on_pin_clicked(bool checked);
 	void on_remove_clicked();
+	void on_load_dir_clicked();
 
 protected:
 	DkRecentDir mRecentDir;
 	QVector<DkThumbLabel> mThumbs;
 	
-	QPushButton* mPin;
-	QPushButton* mRemove;
+	enum {
+		button_load_dir = 0,
+		button_pin,
+		button_remove,
+
+		button_end
+	};
+
+	QVector<QPushButton*> mButtons;
 
 	void createLayout();
 	void mousePressEvent(QMouseEvent* event) override;
@@ -437,6 +446,7 @@ public:
 
 signals:
 	void loadFileSignal(const QString& filePath, bool newTab);
+	void loadDirSignal(const QString& filePath);
 
 public slots:
 	void entryRemoved();

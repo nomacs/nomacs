@@ -2160,23 +2160,32 @@ void DkRecentDirWidget::createLayout() {
 	dirNameLabel->setAlignment(Qt::AlignBottom);
 	dirNameLabel->setObjectName("recentFilesTitle");
 
+	// create buttons
+	mButtons.resize(button_end);
+
+	mButtons[button_load_dir] = new QPushButton(DkImage::loadIcon(":/nomacs/img/dir.svg"), "", this);
+	mButtons[button_load_dir]->setToolTip(tr("Load the directory"));
+	mButtons[button_load_dir]->setObjectName("load_dir");
+	mButtons[button_load_dir]->setFlat(true);
+	mButtons[button_load_dir]->hide();
+
 	QIcon pIcon;
 	pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin-checked.svg"), QIcon::Normal, QIcon::On);
 	pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin.svg"), QIcon::Normal, QIcon::Off);
 
-	mPin = new QPushButton(pIcon, "", this);
-	mPin->setToolTip(tr("Pin this directory"));
-	mPin->setObjectName("pin");
-	mPin->setCheckable(true);
-	mPin->setChecked(mRecentDir.isPinned());
-	mPin->setFlat(true);
-	mPin->hide();
+	mButtons[button_pin] = new QPushButton(pIcon, "", this);
+	mButtons[button_pin]->setToolTip(tr("Pin this directory"));
+	mButtons[button_pin]->setObjectName("pin");
+	mButtons[button_pin]->setCheckable(true);
+	mButtons[button_pin]->setChecked(mRecentDir.isPinned());
+	mButtons[button_pin]->setFlat(true);
+	mButtons[button_pin]->hide();
 
-	mRemove = new QPushButton(DkImage::loadIcon(":/nomacs/img/close-tab.svg"), "", this);
-	mRemove->setToolTip(tr("Remove this directory"));
-	mRemove->setObjectName("remove");
-	mRemove->setFlat(true);
-	mRemove->hide();
+	mButtons[button_remove] = new QPushButton(DkImage::loadIcon(":/nomacs/img/close-tab.svg"), "", this);
+	mButtons[button_remove]->setToolTip(tr("Remove this directory"));
+	mButtons[button_remove]->setObjectName("remove");
+	mButtons[button_remove]->setFlat(true);
+	mButtons[button_remove]->hide();
 
 	QVector<DkThumbPreviewLabel*> tls;
 	for (auto tp : mRecentDir.filePaths(4)) {
@@ -2191,11 +2200,12 @@ void DkRecentDirWidget::createLayout() {
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setAlignment(Qt::AlignLeft);
-	layout->addWidget(dirNameLabel, 1, 0, 1, 5);
-	layout->setColumnStretch(6, 1);
-	layout->addWidget(mPin, 1, 7);
-	layout->addWidget(mRemove, 1, 8);
-	layout->addWidget(pathLabel, 2, tls.size());
+	layout->addWidget(dirNameLabel, 1, 0, 1, tls.size()+1);
+	layout->setColumnStretch(tls.size()+2, 1);
+	layout->addWidget(mButtons[button_load_dir], 1, tls.size() + 3);
+	layout->addWidget(mButtons[button_pin], 1, tls.size() + 4);
+	layout->addWidget(mButtons[button_remove], 1, tls.size() + 5);
+	layout->addWidget(pathLabel, 2, tls.size(), 1, 6);
 
 	for (int idx = 0; idx < tls.size(); idx++)
 		layout->addWidget(tls[idx], 2, idx, Qt::AlignTop);
@@ -2225,6 +2235,11 @@ void DkRecentDirWidget::on_remove_clicked() {
 	emit removeSignal();
 }
 
+void DkRecentDirWidget::on_load_dir_clicked() {
+
+	emit loadDirSignal(mRecentDir.dirPath());
+}
+
 void DkRecentDirWidget::mousePressEvent(QMouseEvent * event) {
 	
 	if (event->button() == Qt::LeftButton && !mRecentDir.isEmpty()) {
@@ -2236,16 +2251,16 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent * event) {
 
 void DkRecentDirWidget::enterEvent(QEvent * event) {
 
-	mPin->show();
-	mRemove->show();
+	for (auto b : mButtons)
+		b->show();
 
 	DkWidget::enterEvent(event);
 }
 
 void DkRecentDirWidget::leaveEvent(QEvent * event) {
 
-	mPin->hide();
-	mRemove->hide();
+	for (auto b : mButtons)
+		b->hide();
 
 	DkWidget::leaveEvent(event);
 }
@@ -2289,6 +2304,7 @@ void DkRecentFilesWidget::updateList() {
 		DkRecentDirWidget* rf = new DkRecentDirWidget(rd, dummy);
 		rf->setMaximumWidth(500);
 		connect(rf, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
+		connect(rf, SIGNAL(loadDirSignal(const QString&)), this, SIGNAL(loadDirSignal(const QString&)));
 		connect(rf, SIGNAL(removeSignal()), this, SLOT(entryRemoved()));
 		
 		recentFiles << rf;

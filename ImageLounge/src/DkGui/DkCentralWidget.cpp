@@ -572,6 +572,7 @@ DkRecentFilesWidget * DkCentralWidget::createRecentFiles() {
 	rw->addActions(am.hiddenActions().toList());
 
 	connect(rw, SIGNAL(loadFileSignal(const QString&, bool)), this, SLOT(loadFile(const QString&, bool)));
+	connect(rw, SIGNAL(loadDirSignal(const QString&)), this, SLOT(loadDirToTab(const QString&)));
 
 	return rw;
 }
