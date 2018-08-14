@@ -201,7 +201,7 @@ public slots:
 	void updateLabel();
 
 signals:
-	void loadFileSignal(const QString& filePath) const;
+	void loadFileSignal(const QString& filePath, bool newTab) const;
 	void showFileSignal(const QString& filePath = QString()) const;
 
 protected:
@@ -244,7 +244,6 @@ public:
 public slots:
 	void updateThumbLabels();
 	void cancelLoading();
-	void loadFile(const QString& filePath) const;
 	void increaseThumbs();
 	void decreaseThumbs();
 	void toggleSquaredThumbs(bool squares);
@@ -261,7 +260,7 @@ public slots:
 	void renameSelected() const;
 
 signals:
-	void loadFileSignal(const QString& filePath) const;
+	void loadFileSignal(const QString& filePath, bool newTab) const;
 	void statusInfoSignal(const QString& msg, int pos = 0) const;
 	void thumbLoadedSignal() const;
 
@@ -390,7 +389,7 @@ public:
 	DkThumbPreviewLabel(const QString& filePath, int thumbSize = 100, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 signals:
-	void loadFileSignal(const QString& filePath);
+	void loadFileSignal(const QString& filePath, bool newTab);
 
 public slots:
 	void thumbLoaded();
@@ -409,7 +408,7 @@ public:
 	DkRecentDirWidget(const DkRecentDir& rde, QWidget* parent = 0);
 
 signals:
-	void loadFileSignal(const QString& filePath);
+	void loadFileSignal(const QString& filePath, bool newTab);
 	void removeSignal();
 
 public slots:
@@ -425,7 +424,6 @@ protected:
 
 	void createLayout();
 	void mousePressEvent(QMouseEvent* event) override;
-	void mouseReleaseEvent(QMouseEvent* event) override;
 	void enterEvent(QEvent* event) override;
 	void leaveEvent(QEvent* event) override;
 
@@ -438,7 +436,7 @@ public:
 	DkRecentFilesWidget(QWidget* parent = 0);
 
 signals:
-	void loadFileSignal(const QString&);
+	void loadFileSignal(const QString& filePath, bool newTab);
 
 public slots:
 	void entryRemoved();

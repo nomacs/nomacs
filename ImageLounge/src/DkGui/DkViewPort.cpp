@@ -2079,17 +2079,6 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		moveView(dxy/mWorldMatrix.m11());
 	}
 
-	//// scroll thumbs preview
-	//if (filePreview && filePreview->isVisible() && event->mButtons() == Qt::MiddleButton) {
-
-	//	float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
-	//	dx = std::exp(dx);
-	//	if (enterPos.x() - event->pos().x() < 0)
-	//		dx = -dx;
-
-	//	filePreview->setCurrentDx(dx);	// update dx
-	//}
-
 	QGraphicsView::mouseMoveEvent(event);
 }
 

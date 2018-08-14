@@ -637,7 +637,6 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 	currentDx = 0;
 	moveImageTimer->stop();
 	wheelButton->hide();
-	qDebug() << "stopping image timer (mouse release)";
 
 	if (mouseTrace < 20) {
 
@@ -648,7 +647,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 				if (mThumbs.at(idx)->isFromZip()) 
 					emit changeFileSignal(idx - currentFileIdx);
 				else 
-					emit loadFileSignal(mThumbs.at(idx)->filePath());
+					emit loadFileSignal(mThumbs.at(idx)->filePath()/*, event->modifiers() == Qt::ControlModifier*/);
 			}
 		}
 	}
@@ -1017,20 +1016,7 @@ void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 	if (mThumb.isNull())
 		return;
 
-	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
-		QString exe = QApplication::applicationFilePath();
-		QStringList args;
-		args.append(mThumb->getFilePath());
-
-		if (objectName() == "DkNoMacsFrameless")
-			args.append("1");	
-
-		QProcess::startDetached(exe, args);
-	}
-	else {
-		qDebug() << "trying to load: " << mThumb->getFilePath();
-		emit loadFileSignal(mThumb->getFilePath());
-	}
+	emit loadFileSignal(mThumb->getFilePath(), event->modifiers() == Qt::ControlModifier);
 }
 
 void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
@@ -1215,7 +1201,7 @@ void DkThumbScene::updateThumbLabels() {
 
 	for (int idx = 0; idx < mThumbs.size(); idx++) {
 		DkThumbLabel* thumb = new DkThumbLabel(mThumbs.at(idx)->getThumb());
-		connect(thumb, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+		connect(thumb, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
 		connect(thumb, SIGNAL(showFileSignal(const QString&)), this, SLOT(showFile(const QString&)));
 		connect(mThumbs.at(idx).data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(thumbLoadedSignal()));
 
@@ -1395,10 +1381,6 @@ void DkThumbScene::cancelLoading() {
 
 	for (auto t : mThumbLabels)
 		t->cancelLoading();
-}
-
-void DkThumbScene::loadFile(const QString& filePath) const {
-	emit loadFileSignal(filePath);
 }
 
 void DkThumbScene::selectAllThumbs(bool selected) {
@@ -2169,12 +2151,10 @@ void DkThumbPreviewLabel::thumbLoaded() {
 
 void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev) {
 
-	ev->accept();
+	emit loadFileSignal(mThumb->getFilePath(), ev->modifiers() == Qt::ControlModifier);
 
-	emit loadFileSignal(mThumb->getFilePath());
-
-	// don't propagate
-	QLabel::mousePressEvent(ev);
+	// do not propagate
+	//QLabel::mousePressEvent(ev);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry 
@@ -2213,7 +2193,7 @@ void DkRecentDirWidget::createLayout() {
 	QVector<DkThumbPreviewLabel*> tls;
 	for (auto tp : mRecentDir.filePaths(4)) {
 		auto tpl = new DkThumbPreviewLabel(tp, 42, this);
-		connect(tpl, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		connect(tpl, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
 		tls << tpl;
 	}
 
@@ -2258,17 +2238,12 @@ void DkRecentDirWidget::on_remove_clicked() {
 }
 
 void DkRecentDirWidget::mousePressEvent(QMouseEvent * event) {
-
-	DkWidget::mousePressEvent(event);
-}
-
-void DkRecentDirWidget::mouseReleaseEvent(QMouseEvent * event) {
 	
 	if (event->button() == Qt::LeftButton && !mRecentDir.isEmpty()) {
-		emit loadFileSignal(mRecentDir.firstFilePath());
+		emit loadFileSignal(mRecentDir.firstFilePath(), event->modifiers() == Qt::ControlModifier);
 	}
 
-	DkWidget::mouseReleaseEvent(event);
+	DkWidget::mousePressEvent(event);
 }
 
 void DkRecentDirWidget::enterEvent(QEvent * event) {
@@ -2325,7 +2300,7 @@ void DkRecentFilesWidget::updateList() {
 		
 		DkRecentDirWidget* rf = new DkRecentDirWidget(rd, dummy);
 		rf->setMaximumWidth(500);
-		connect(rf, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
+		connect(rf, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
 		connect(rf, SIGNAL(removeSignal()), this, SLOT(entryRemoved()));
 		
 		recentFiles << rf;

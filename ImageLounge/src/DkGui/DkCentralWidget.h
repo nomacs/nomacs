@@ -141,7 +141,6 @@ public:
 	QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
 
 signals:
-	void loadFileSignal(const QString&) const;
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
 	void imageHasGPSSignal(bool) const;
@@ -152,9 +151,9 @@ public slots:
 	void tabCloseRequested(int idx);
 	void tabMoved(int from, int to);
 	void setTabList(QVector<QSharedPointer<DkTabInfo> > tabInfos, int activeIndex = -1);
-	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1);
-	void addTab(const QString& filePath, int idx = -1);
-	void addTab(const QSharedPointer<DkTabInfo> tabInfo);
+	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1, bool background = false);
+	void addTab(const QString& filePath, int idx = -1, bool background = false);
+	void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
@@ -164,9 +163,8 @@ public slots:
 	void showPreferences(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
-	void loadFile(const QString& filePath);
+	void loadFile(const QString& filePath, bool newTab = false);
 	void loadDir(const QString& filePath);
-	void loadFileToTab(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);
 	void loadUrl(const QUrl& urls, bool loadInTab = true);
 	void loadUrls(const QList<QUrl>& urls, const int maxUrlsToLoad = 20);

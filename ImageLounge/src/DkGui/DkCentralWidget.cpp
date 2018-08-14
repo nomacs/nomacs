@@ -192,17 +192,17 @@ QIcon DkTabInfo::getIcon() {
 	
 	QIcon icon;
 
+	if (mTabMode == tab_thumb_preview)
+		return DkImage::loadIcon(":/nomacs/img/thumbs-view.svg");
+	else if (mTabMode == tab_recent_files)
+		return DkImage::loadIcon(":/nomacs/img/thumbs-view.svg");
+	else if (mTabMode == tab_preferences)
+		return DkImage::loadIcon(":/nomacs/img/settings.svg");
+	else if (mTabMode == tab_batch)
+		return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
+
 	if (!mImageLoader->getCurrentImage())
 		return icon;
-
-	if (mTabMode == tab_thumb_preview)
-		return QIcon(":/nomacs/img/thumbs-view.svg");
-	else if (mTabMode == tab_recent_files)
-		return QIcon(":/nomacs/img/thumbs-view.svg");
-	else if (mTabMode == tab_preferences)
-		return QIcon(":/nomacs/img/settings.svg");
-	else if (mTabMode == tab_batch)
-		return QIcon(":/nomacs/img/batch.svg");
 
 	QSharedPointer<DkThumbNailT> thumb = mImageLoader->getCurrentImage()->getThumb();
 
@@ -331,7 +331,6 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(viewWidget);
 
 	// connections
-	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(mViewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
 	connect(mViewport, SIGNAL(showProgress(bool, int)), this, SLOT(showProgress(bool, int)));
 
@@ -572,7 +571,7 @@ DkRecentFilesWidget * DkCentralWidget::createRecentFiles() {
 	rw->addActions(am.helpActions().toList());
 	rw->addActions(am.hiddenActions().toList());
 
-	connect(rw, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+	connect(rw, SIGNAL(loadFileSignal(const QString&, bool)), this, SLOT(loadFile(const QString&, bool)));
 
 	return rw;
 }
@@ -596,7 +595,7 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 	thumbScrollWidget->addActions(am.hiddenActions().toList());
 
 	// thumbnail preview widget
-	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&, bool)), this, SLOT(loadFile(const QString&, bool)));
 	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(openBatch(const QStringList&)));
 
 	return thumbScrollWidget;
@@ -636,26 +635,28 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo> > tabInfos, i
 
 }
 
-void DkCentralWidget::addTab(const QString& filePath, int idx /* = -1 */) {
+void DkCentralWidget::addTab(const QString& filePath, int idx /* = -1 */, bool background) {
 
 	QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
-	addTab(imgC, idx);
+	addTab(imgC, idx, background);
 }
 
-void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, int idx /* = -1 */) {
+void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, int idx /* = -1 */, bool background) {
 
 	if (idx == -1)
 		idx = mTabInfos.size();
 
 	QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo(imgC, idx));
-	addTab(tabInfo);
+	addTab(tabInfo, background);
 }
 
-void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo) {
+void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background) {
 
 	mTabInfos.push_back(tabInfo);
 	mTabbar->addTab(tabInfo->getTabText());
-	mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+	
+	if (!background)
+		mTabbar->setCurrentIndex(tabInfo->getTabIdx());
 
 	if (mTabInfos.size() > 1)
 		mTabbar->show();
@@ -1029,11 +1030,6 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 	QWidget::dragEnterEvent(event);
 }
 
-void DkCentralWidget::loadFile(const QString& filePath) {
-
-	mViewport->loadFile(filePath);
-}
-
 void DkCentralWidget::loadDir(const QString& filePath) {
 
 	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview && getThumbScrollWidget())
@@ -1043,9 +1039,14 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 }
 
 
-void DkCentralWidget::loadFileToTab(const QString& filePath) {
+void DkCentralWidget::loadFile(const QString& filePath, bool newTab) {
 
-    if (mTabInfos.size() > 1){
+	if (!newTab) {
+		mViewport->loadFile(filePath);
+		return;
+	}
+
+    if (mTabInfos.size() < 1) {
         // this is the first one: open a new tab
         addTab(filePath);
     }
@@ -1054,16 +1055,14 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
         int currentTabIdx = mTabbar->currentIndex();
         enum DkTabInfo::TabMode currentTabMode = mTabInfos[currentTabIdx]->getMode();
 
-        if (currentTabMode == DkTabInfo::tab_thumb_preview ||
-            currentTabMode == DkTabInfo::tab_recent_files ||
-            currentTabMode == DkTabInfo::tab_single_image ||
+        if (currentTabMode == DkTabInfo::tab_single_image ||
             currentTabMode == DkTabInfo::tab_empty) {
 
-			loadFile(filePath);
+			mViewport->loadFile(filePath);
         }
 		else {
-            // no tab to reuse. open create a new tab
-            addTab(filePath);
+            // no tab to reuse -> create a new tab
+            addTab(filePath, -1, true);
         }
     }
 }
@@ -1132,7 +1131,7 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool loadInTab) {
 		if (fi.isFile()) {
             // load a local file
             if (DkUtils::isValid(fi)) {
-                loadFileToTab(fi.filePath());
+                loadFile(fi.filePath(), true);
             } 
 			else {
                 display(tr("Unable to load file \"%1\"").arg(fi.canonicalPath()));
@@ -1295,7 +1294,8 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 /** load a number of Cascade Trainig files */
 bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls) {
-    QStringList vecFiles;
+    
+	QStringList vecFiles;
 
     if (urls.size() > 1 && urls.at(0).toLocalFile().endsWith("vec")) {
 

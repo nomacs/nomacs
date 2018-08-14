@@ -1269,11 +1269,11 @@ void DkNoMacs::openFile() {
 	openFilters.prepend(tr("All Files (*.*)"));
 
 	// load system default open dialog
-	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"),
+	QStringList filePaths = QFileDialog::getOpenFileNames(this, tr("Open Image"),
 		getTabWidget()->getCurrentDir(), 
 		openFilters.join(";;"));
 
-	if (fileNames.isEmpty())
+	if (filePaths.isEmpty())
 		return;
 
 	int count = getTabWidget()->getTabs().count(); // Save current count of tabs for setting tab position later
@@ -1281,12 +1281,12 @@ void DkNoMacs::openFile() {
 		count = 0; 
 		
 	QSet<QString> duplicates;
-	for (QString fileName : fileNames) {
+	for (const QString& fp : filePaths) {
 		bool dup = false;
 
 		if (DkSettingsManager::param().global().checkOpenDuplicates) { // Should we check for duplicates?
 			for (auto tab : getTabWidget()->getTabs()) {
-				if (tab->getFilePath().compare(fileName) == 0) {
+				if (tab->getFilePath().compare(fp) == 0) {
 					duplicates.insert(tab->getFilePath());
 					dup = true;
 					break;
@@ -1295,8 +1295,7 @@ void DkNoMacs::openFile() {
 		}
 
 		if (!dup) {
-			qDebug() << "os filename: " << fileName;
-			getTabWidget()->loadFileToTab(fileName);
+			getTabWidget()->loadFile(fp, true);
 		}
 	}
 	if (duplicates.count() > 0) { // Show message if at least one duplicate was found
@@ -1307,11 +1306,12 @@ void DkNoMacs::openFile() {
 		getTabWidget()->getViewPort()->getController()->setInfo(duptext);
 	}
 
-	if(fileNames.count() > duplicates.count()) // Only set the active tab if there is actually something added
+	if(filePaths.count() > duplicates.count()) // Only set the active tab if there is actually something added
 		getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 
 void DkNoMacs::openFileList() {
+	
 	QStringList openFilters;
 	openFilters.append(tr("Text file (*.txt)"));
 	openFilters.append(tr("All files (*.*)"));
@@ -1335,7 +1335,7 @@ void DkNoMacs::openFileList() {
 	while (!file.atEnd()) {
 		QString line = file.readLine().simplified();
 		if (QFileInfo::exists(line)) {
-			getTabWidget()->loadFileToTab(line);
+			getTabWidget()->loadFile(line, true);
 		}
 	}
 
@@ -1412,7 +1412,7 @@ void DkNoMacs::loadFile(const QString& filePath) {
 	if (QFileInfo(filePath).isDir())
 		getTabWidget()->loadDirToTab(filePath);
 	else
-		getTabWidget()->loadFileToTab(filePath);
+		getTabWidget()->loadFile(filePath, true);
 
 }
 
