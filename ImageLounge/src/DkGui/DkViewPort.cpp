@@ -341,11 +341,15 @@ void DkViewPort::setImage(QImage newImg) {
 		DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
 		DkStatusBarManager::instance().setMessage(DkUtils::formatToString(newImg.format()), DkStatusBar::status_format_info);
 		DkStatusBarManager::instance().setMessage(QString::number(newImg.width()) + " x " + QString::number(newImg.height()), DkStatusBar::status_dimension_info);
+
+		if (imageContainer())
+			DkStatusBarManager::instance().setMessage(imageContainer()->fileName(), DkStatusBar::status_file_info);
 	}
 	else {
 		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_zoom_info);
 		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_format_info);
 		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_dimension_info);
+		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_file_info);
 	}
 }
 
