@@ -21,7 +21,7 @@ set_source_files_properties(${CHANGLOG_FILE} PROPERTIES HEADER_FILE_ONLY TRUE)
 target_link_libraries(
 	${BINARY_NAME} 
 	${LIB_CORE_NAME} 
-	${EXIV2_LIBRARIES} 
+	${EXIV2_LIBS} 
 	${LIBRAW_LIBRARIES} 
 	${OpenCV_LIBS} 
 	${TIFF_LIBRARIES} 
@@ -43,7 +43,7 @@ add_library(
 	)
 target_link_libraries(
 	${DLL_CORE_NAME}
-	${EXIV2_LIBRARIES} 		# metadata support
+	${EXIV2_LIBS} 		# metadata support
 	${VERSION_LIB} 				# needed for registering the curren version
 	${LIBRAW_LIBRARIES} 		# RAW support (optional)
 	${OpenCV_LIBS} 			# image manipulation support (optional)
@@ -211,8 +211,10 @@ if(CMAKE_CL_64)
 else()
 	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
-set(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/ReleaseDLL ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-set(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/DebugDLL ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+
+# path hints for the dependency collector
+set(DC_PATHS_RELEASE ${EXIV2_BINARY_DIR} ${EXPAT_BUILD_PATH}/Release ${LIBRAW_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_DEBUG ${EXIV2_BINARY_DIR} ${EXPAT_BUILD_PATH}/Debug ${LIBRAW_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 

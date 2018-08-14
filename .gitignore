@@ -16,7 +16,7 @@ msvc*
 data
 installer/repository
 /.project
-CMakeUser.cmake
+CMakeUserPaths.cmake
 package.xml
 installer-test
 repository.zip

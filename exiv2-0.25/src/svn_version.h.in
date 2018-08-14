@@ -1,3 +1,0 @@
-#ifndef SVN_VERSION
-#define SVN_VERSION @SVN_REVISION@
-#endif

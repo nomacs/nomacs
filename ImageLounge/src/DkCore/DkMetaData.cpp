@@ -181,7 +181,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	// now get the data again
 	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
 
-	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
+	Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
 	if (exifBuf.pData_) {
 		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
 
@@ -1255,7 +1255,7 @@ void DkMetaDataT::printMetaData() const {
 
 	std::string xmpPacket;
 	if (0 != Exiv2::XmpParser::encode(xmpPacket, xmpData)) {
-		throw Exiv2::Error(1, "Failed to serialize XMP data");
+		qCritical() << "Failed to serialize XMP data";
 	}
 	std::cout << xmpPacket << "\n";
 }

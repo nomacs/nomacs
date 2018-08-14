@@ -14,60 +14,8 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 
-if (MSVC11)
-	# use precompiled code if msvc 11 is found
-	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/x64/" )
-	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/Win32/" )
-	endif()
-
-elseif (${CMAKE_VS_PLATFORM_TOOLSET} STREQUAL "v141")	# visual studio 2017 -> visual studio 2015 has v140
-	# use precompiled code if msvc 14 is found
-	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2017-precompiled/x64/" )
-	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2017-precompiled/Win32/" )
-	endif()
-elseif (MSVC14)	# visual studio 2017 will hit this too
-	# use precompiled code if msvc 14 is found
-	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/x64/" )
-	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/Win32/" )
-	endif()
-else ()
-	message(STATUS "unknown visual studio when searching for exiv2 dlls")
-	# search for exiv2
-	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/msvc2012-nomacs/exiv2lib/x64/" )
-	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/msvc2012-nomacs/exiv2lib/Win32/" )
-	endif()
-endif ()
-
-find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/libexiv2.lib"
-								"ReleaseDLL/libexiv2.dll"
-								"DebugDLL/libexiv2d.lib"
-								"DebugDLL/libexiv2d.dll"
-				PATHS ${EXIV_SEARCH_PATH}
-				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
-
-find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp"
-				PATHS "../exiv2-0.25/include"
-				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
-MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
-
-if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
-
-	set(EXIV2_LIBRARIES optimized ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib debug ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
-	set(EXIV2_LIBRARY_DIRS "")
-	set(EXIV2_FOUND true)
-	add_definitions(-DEXV_UNICODE_PATH)
-else()
-	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexiv2.dll, ReleaseDLL/libexiv2.lib, DebugDLL/libexiv2d.dll and DebugDLL/libexiv2d.lib")
-endif()
+# add exiv2
+find_package(exiv2)
 
 # search for opencv
 unset(OpenCV_LIB_DIR_DBG CACHE)

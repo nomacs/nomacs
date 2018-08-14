@@ -9,9 +9,10 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 ### Compile dependencies
 
 - `Qt` SDK or the compiled sources (>= 5.2.1)
-- `Exiv2` (>= 0.25)
-- `OpenCV` (>= 2.4.6) _optional_
-- `LibRaw` (>= 0.17) _optional_
+- [expat](https://github.com/nomacs/expat) (needed for exiv2)
+- [Exiv2](https://github.com/nomacs/exiv2) (>= 0.26)
+- [OpenCV](https://github.com/TUWien/opencv) (>= 3.4) _optional_
+- [LibRaw](https://github.com/nomacs/LibRaw) (>= 0.17) _optional_
 - `Python` (>= 3.6) for build scripts
 
 ### Compile LibRaw
@@ -20,19 +21,19 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 - checkout [libraw](https://github.com/nomacs/LibRaw)
 - switch to 0.XX-stable branch
 - follow the build instructions
-- in the nomacs CMake, set `libraw_DIR` to that build path
+- in the nomacs `CMakeUserPaths.cmake`, add the build path to `${CMAKE_PREFIX_PATH}`
 
 ### Compile nomacs
 
-1. Open CMake GUI
-2. set your ImageLounge folder to `where is the source code`
-3. choose a build folder
-4. Set `QT_QMAKE_EXECUTABLE` by locating the qmake.exe
-5. Set `OpenCV_DIR` to your OpenCV build folder
-6. Hit `Configure`then `Generate`
-7. Open the `nomacs.sln` which is in your new build directory
-8. Right-click the nomacs project and choose `Set as StartUp Project`
-9. Compile the Solution
+- copy `CMakeUserPathsGit.cmake` and rename it to `CMakeUserPaths.cmake`
+- add your library paths to the `${CMAKE_PREFIX_PATH}` in `CMakeUserPaths.cmake`
+- Open CMake GUI
+- set your ImageLounge folder to `where is the source code`
+- choose a build folder (i.e. `build2017-x64`)
+- Hit `Configure`then `Generate`
+- Open the Project
+- Right-click the nomacs project and choose `Set as StartUp Project`
+- Compile the Solution
 
 ### If anything did not work
 
