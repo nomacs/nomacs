@@ -243,6 +243,7 @@ void DkClientManager::sendGoodByeToAll() {
 // DkLocalClientManager --------------------------------------------------------------------
 
 DkLocalClientManager::DkLocalClientManager(const QString& title, QObject* parent ) : DkClientManager(title, parent) {
+
 	server = new DkLocalTcpServer(this);
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	searchForOtherClients();
@@ -274,13 +275,6 @@ void DkLocalClientManager::searchForOtherClients() {
 		//qDebug() << "search For other clients on port:" << i;
 		DkConnection* connection = createConnection();
 		connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
-
-		if (connection->waitForConnected(20)) {
-			//qDebug() << "Connected to " << i ;
-			connection->sendGreetingMessage(mCurrentTitle);		// WTF: who owns DkConnection??
-			mStartUpConnections.append(connection);
-		} else
-			delete connection;
 	}
 	
 }
@@ -405,12 +399,21 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 			count = 0;
 		}
 	}
-
-
 }
 
 void DkLocalClientManager::sendQuitMessageToPeers() {
 	emit sendQuitMessage();
+}
+
+void DkLocalClientManager::connectToNomacs() {
+	
+	DkConnection* c = static_cast<DkConnection*>(QObject::sender());
+	
+	if (c) {
+		c->sendGreetingMessage(mCurrentTitle);
+		mStartUpConnections.append(c);
+	}
+
 }
 
 void DkLocalClientManager::connectionReceivedQuit() {
@@ -427,6 +430,8 @@ DkLocalConnection* DkLocalClientManager::createConnection() {
 	connect(this, SIGNAL(synchronizedPeersListChanged(QList<quint16>)), connection, SLOT(synchronizedPeersListChanged(QList<quint16>)));
 	connect(this, SIGNAL(sendQuitMessage()), connection, SLOT(sendQuitMessage()));
 	connect(connection, SIGNAL(connectionQuitReceived()), this, SLOT(connectionReceivedQuit()));
+	connect(connection, SIGNAL(connected()), this, SLOT(connectToNomacs()));
+
 	return connection;
 
 }

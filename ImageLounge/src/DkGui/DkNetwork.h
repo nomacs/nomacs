@@ -203,6 +203,7 @@ public slots:
 	void synchronizeWith(quint16 peerId);
 	void sendArrangeInstances(bool overlaid);
 	void sendQuitMessageToPeers();
+	void connectToNomacs();
 
 private slots:
 	void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
