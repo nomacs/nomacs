@@ -399,7 +399,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
 	display_p.themeName = settings.value("themeName", display_p.themeName).toString();
-	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
 	display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
@@ -646,8 +645,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("tpPattern", display_p.tpPattern);
 	if (force || display_p.themeName != display_d.themeName)
 		settings.setValue("themeName", display_p.themeName);
-	if (force ||display_p.toolbarGradient != display_d.toolbarGradient)
-		settings.setValue("toolbarGradient", display_p.toolbarGradient);
 	if (force ||display_p.showBorder != display_d.showBorder)
 		settings.setValue("showBorder", display_p.showBorder);
 	if (force ||display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
@@ -837,7 +834,6 @@ void DkSettings::setToDefaultSettings() {
 	display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
 	display_p.tpPattern = false;
 	display_p.themeName = "Light Theme.css";
-	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
 	display_p.showThumbLabel = false;

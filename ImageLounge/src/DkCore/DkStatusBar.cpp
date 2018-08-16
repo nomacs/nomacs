@@ -42,10 +42,7 @@ DkStatusBar::DkStatusBar(QWidget* parent) : QStatusBar(parent) {
 void DkStatusBar::createLayout() {
 
 	mLabels.resize(status_end);
-
 	setObjectName("DkStatusBar");
-	if (DkSettingsManager::param().display().toolbarGradient)
-		setObjectName("statusBarWithGradient");	
 
 	for (int idx = 0; idx < mLabels.size(); idx++) {
 		mLabels[idx] = new QLabel(this);

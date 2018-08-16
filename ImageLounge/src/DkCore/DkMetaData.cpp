@@ -75,8 +75,9 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 		}
 	} 
 	catch (...) {
+		// TODO: check crashes here
 		mExifState = no_data;
-		qDebug() << "[Exiv2] could not open file for exif data";
+		//qDebug() << "[Exiv2] could not open file for exif data";
 		return;
 	}
 	

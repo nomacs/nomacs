@@ -2181,9 +2181,6 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addAction(pageSetup);
 	toolbar->addAction(printAction);
 
-	if (DkSettingsManager::param().display().toolbarGradient)
-		toolbar->setObjectName("toolbarWithGradient");
-
 	toolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
 	addToolBar(toolbar);

@@ -266,8 +266,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		}
 	}
 
-	if (!thumb.isNull())
-		qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
+	//if (!thumb.isNull())
+	//	qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
 
 	return thumb;
 }

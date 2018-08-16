@@ -222,7 +222,6 @@ public:
 		bool showCrop;
 		bool antiAliasing;
 		bool highQualityAntiAliasing;
-		bool toolbarGradient;	// 05.01.2016 - deprecated
 		bool showBorder;
 		bool displaySquaredThumbs;
 		bool showThumbLabel;

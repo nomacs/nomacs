@@ -72,13 +72,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 
 	mPattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
 
-	if (DkSettingsManager::param().display().defaultBackgroundColor) {
-
-		if (DkSettingsManager::param().display().toolbarGradient)
-			setObjectName("DkBaseViewPortGradient");
-		else
-			setObjectName("DkBaseViewPortDefaultColor");		
-	}
+	if (DkSettingsManager::param().display().defaultBackgroundColor)
+		setObjectName("DkBaseViewPortDefaultColor");		
 	else
 		setObjectName("DkBaseViewPort");
 

@@ -243,9 +243,6 @@ void DkNoMacs::createToolbar() {
 
 	mToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	if (DkSettingsManager::param().display().toolbarGradient)
-		mToolbar->setObjectName("toolBarWithGradient");
-
 	DkActionManager& am = DkActionManager::instance();
 
 	mToolbar->addAction(am.action(DkActionManager::menu_file_prev));
@@ -291,10 +288,6 @@ void DkNoMacs::createToolbar() {
 	mMovieToolbar->addAction(am.action(DkActionManager::menu_view_movie_prev));
 	mMovieToolbar->addAction(am.action(DkActionManager::menu_view_movie_pause));
 	mMovieToolbar->addAction(am.action(DkActionManager::menu_view_movie_next));
-
-	if (DkSettingsManager::param().display().toolbarGradient)
-		mMovieToolbar->setObjectName("toolBarWithGradient");
-
 	mMovieToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
 	mToolbar->allActionsAdded();
@@ -2010,9 +2003,10 @@ void DkNoMacs::showMenuBar(bool show) {
 	int tts = (DkSettingsManager::param().app().showMenuBar) ? -1 : 5000;
 	DkActionManager::instance().action(DkActionManager::menu_panel_menu)->setChecked(DkSettingsManager::param().app().showMenuBar);
 	mMenu->setTimeToShow(tts);
-	mMenu->showMenu();
-
-	if (!show)
+	
+	if (show)
+		mMenu->showMenu();
+	else if (!show)
 		mMenu->hide();
 }
 
@@ -2213,23 +2207,13 @@ void DkNoMacs::checkForUpdate(bool silent) {
 
 		DkTimer dt;
 
-		// fall back to our old-school updater
-		//if (!DkSettingsManager::param().isPortable()) {
-		//	
-		//	if (!mInstallUpdater)
-		//		mInstallUpdater = new DkInstallUpdater(this);
-		//	mInstallUpdater->checkForUpdates(silent);
-		//}
-		//else {
-
-			if (!mUpdater) {
-				mUpdater = new DkUpdater(this);
-				connect(mUpdater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-				connect(mUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
-			}
-			mUpdater->silent = silent;
-			mUpdater->checkForUpdates();
-		//}
+		if (!mUpdater) {
+			mUpdater = new DkUpdater(this);
+			connect(mUpdater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+			connect(mUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+		}
+		mUpdater->silent = silent;
+		mUpdater->checkForUpdates();
 		qDebug() << "checking for updates takes: " << dt;
 	}
 #endif // !#ifndef Q_OS_LINUX
@@ -2520,11 +2504,9 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 
 	// init members
 	DkViewPort* vp = new DkViewPort(this);
-	//vp->setAlignment(Qt::AlignHCenter);
 
 	DkCentralWidget* cw = new DkCentralWidget(vp, this);
 	setCentralWidget(cw);
-
 	mLocalClient = new DkLocalManagerThread(this);
 	mLocalClient->setObjectName("localClient");
 	mLocalClient->start();
@@ -2533,14 +2515,10 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
 
-	DkTimer dt;
-		
-	// sync signals
+								// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	DkSettingsManager::param().app().appMode = 0;
-	// show what we got...
-	show();
 	DkSettingsManager::param().app().appMode = DkSettings::mode_default;
 }
 
@@ -2760,9 +2738,6 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect((DkViewPortContrast*)viewport(), SIGNAL(imageModeSet(int)), mTransferToolBar, SLOT(setImageMode(int)));
 
 	mTransferToolBar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
-
-	if (DkSettingsManager::param().display().toolbarGradient)
-		mTransferToolBar->setObjectName("toolBarWithGradient");
 
 }
 }

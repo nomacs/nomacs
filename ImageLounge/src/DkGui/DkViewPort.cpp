@@ -66,10 +66,6 @@ namespace nmc {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
-	//qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
-	//qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<nmc::DkImageContainerT>");
-	//qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
-
 	mRepeatZoomTimer = new QTimer(this);
 	mAnimationTimer = new QTimer(this);
 
@@ -93,7 +89,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	createShortcuts();
 
 	mController = new DkControlWidget(this, flags);
-	//mController->show();
 
 	mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 	connectLoader(mLoader);

@@ -785,28 +785,20 @@ DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 void DkZoomWidget::createLayout() {
 
 	mOverview = new DkOverview(this);
-
+	
 	mSlZoom = new QSlider(Qt::Horizontal, this);
 	mSlZoom->setObjectName("slZoom");
 	mSlZoom->setCursor(Qt::ArrowCursor);
 	mSlZoom->setMinimum(0);	// add a mapping here
 	mSlZoom->setMaximum(100);
 
-	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
-		DkUtils::colorToString(DkSettingsManager::param().display().hudFgdColor) + 
-		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
-		DkUtils::colorToString(DkSettingsManager::param().display().highlightColor) + ";}";
-	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
-	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
-
 	mSbZoom = new QDoubleSpinBox(this);
 	mSbZoom->setObjectName("sbZoom");
-	mSbZoom->setStyleSheet(styleString);
 	mSbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
 	mSbZoom->setSuffix("%");
 	mSbZoom->setDecimals(0);
-	mSbZoom->setMinimum(0.2);
 	mSbZoom->setValue(100);
+	mSbZoom->setMinimum(0.2);
 	mSbZoom->setMaximum(6000);
 
 	QLabel* sliderWidget = new QLabel(this);

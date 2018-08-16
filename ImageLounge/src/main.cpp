@@ -255,6 +255,9 @@ int main(int argc, char *argv[]) {
 	else
 		w = new nmc::DkNoMacsIpl();
 
+	// show what we got...
+	w->show();
+
 	if (w)
 		w->onWindowLoaded();
 

@@ -1858,12 +1858,6 @@ void DkThumbScrollWidget::createToolbar() {
 	mToolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
 	mToolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	qDebug() << mToolbar->styleSheet();
-
-	if (DkSettingsManager::param().display().toolbarGradient) {
-		mToolbar->setObjectName("toolBarWithGradient");
-	}
-
 	DkActionManager& am = DkActionManager::instance();
 	mToolbar->addAction(am.action(DkActionManager::preview_zoom_in));
 	mToolbar->addAction(am.action(DkActionManager::preview_zoom_out));

@@ -11,13 +11,13 @@ BACKGROUND_COLOR: default;
 --nomacs-color-def
 
 nmc--DkRecentFilesWidget QScrollBar:vertical {border: 1px solid rgba(0,0,0,0); background: rgba(0,0,0,0); width: 6px; margin: 0 0 0 0;}
-nmc--DkRecentFilesWidget QScrollBar::handle:vertical {background: #ddd; min-height: 0px;}
+nmc--DkRecentFilesWidget QScrollBar::handle:vertical {background: #666; min-height: 0px;}
 nmc--DkRecentFilesWidget QScrollBar::add-line:vertical {height: 0px;}
 nmc--DkRecentFilesWidget QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {	background: rgba(0,0,0,0); width: 1px;}
 nmc--DkRecentFilesWidget QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 
 nmc--DkRecentFilesWidget QScrollBar:horizontal {border: 1px solid rgba(0,0,0,0); background: rgba(0,0,0,0); height: 6px; margin: 0 0 0 0;}
-nmc--DkRecentFilesWidget QScrollBar::handle:horizontal {background: #ddd; min-width: 0px;}
+nmc--DkRecentFilesWidget QScrollBar::handle:horizontal {background: #666; min-width: 0px;}
 nmc--DkRecentFilesWidget QScrollBar::add-line:horizontal {width: 0px;}
 nmc--DkRecentFilesWidget QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}
 nmc--DkRecentFilesWidget QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}

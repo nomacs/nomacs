@@ -102,18 +102,14 @@ QPushButton#DkRestartButton:pressed {
 	background-color: HIGHLIGHT_LIGHT;
 }
 
-/* NoMacs */
-QToolBar#toolBarWithGradient {
-	border: none; 
-	background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); 
-}
-QToolBar#toolBarWithGradient::separator {
-	background: #656565; width: 1px; height: 1px; margin: 3px;
-}
-
 QToolBar {
 	border-top: none;
 	border-bottom: 1px solid #cdcdcd;
+}
+
+QToolBar#cropToolBar {
+	spacing: 3px; 
+	padding: 3px;
 }
 
 QStatusBar#statusBarWithGradient {
@@ -596,4 +592,13 @@ nmc--DkThumbPreviewLabel {
 
 nmc--DkThumbPreviewLabel:hover {
 	border: 1px solid HIGHLIGHT_COLOR;
+}
+
+QDoubleSpinBox#sbZoom {
+	margin: 0px;
+	padding: 0px; 
+	color: HUD_FOREGROUND_COLOR;
+	background-color: rgba(0,0,0,0); 
+	border: none;
+	selection-background-color: HIGHLIGHT_COLOR;
 }

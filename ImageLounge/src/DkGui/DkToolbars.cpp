@@ -864,13 +864,7 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	QMetaObject::connectSlotsByName(this);
 
 	setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
-
-	if (DkSettingsManager::param().display().toolbarGradient) 
-		setObjectName("toolBarWithGradient");
-	else {
-		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
-		setObjectName("cropToolBar");
-	}
+	setObjectName("cropToolBar");
 }
 
 DkCropToolBar::~DkCropToolBar() {
