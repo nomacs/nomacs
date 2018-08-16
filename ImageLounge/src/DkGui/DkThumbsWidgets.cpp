@@ -2070,9 +2070,10 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString& filePath, int thumbSize,
 	connect(mThumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
 
 	setFixedSize(mThumbSize, mThumbSize);
-
+	setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	setStatusTip(filePath);
+	
 	QFileInfo fInfo(filePath);
-	setStatusTip(fInfo.fileName());
 	setToolTip(fInfo.fileName());
 
 	mThumb->fetchThumb();
@@ -2087,6 +2088,9 @@ void DkThumbPreviewLabel::thumbLoaded() {
 
 	QPixmap pm = QPixmap::fromImage(mThumb->getImage());
 	pm = DkImage::makeSquare(pm);
+	
+	if (pm.width() > width())
+		pm = pm.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	setPixmap(pm);
 }
