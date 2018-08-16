@@ -346,9 +346,10 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			break;
 		}
 
-		if (thumb->hasImage() == DkThumbNail::not_loaded) {
-				thumb->fetchThumb();
-				connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
+		// only fetch thumbs if we are not moving too fast...
+		if (thumb->hasImage() == DkThumbNail::not_loaded && fabs(currentDx) < 40) {
+			thumb->fetchThumb();
+			connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
 		}
 
 		bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x()) ||
