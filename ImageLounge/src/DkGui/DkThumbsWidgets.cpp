@@ -474,8 +474,6 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && 
 		((orientation == Qt::Horizontal && pw && this->width() == pw->width())  ||
 		(orientation == Qt::Vertical && pw && this->height() == pw->height()))) {
-	
-			qDebug() << "parent size: " << pw->height();
 			return;
 	}
 
@@ -825,13 +823,6 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 		}
 	}
 
-	//// don't know why we needed this statement
-	//// however, if we break here, the file preview
-	//// might not update correctly
-	//if (tIdx == currentFileIdx) {
-	//	return;
-	//}
-
 	currentFileIdx = tIdx;
 	if (currentFileIdx >= 0)
 		scrollToCurrentImage = true;
@@ -867,17 +858,8 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	mFetchingThumb = false;
 	mIsHovered = false;
 
-	//imgLabel = new QLabel(this);
-	//imgLabel->setFocusPolicy(Qt::NoFocus);
-	//imgLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-	//imgLabel->setScaledContents(true);
-	//imgLabel->setFixedSize(10,10);
-	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
 	setFlag(ItemIsSelectable, true);
-	//setFlag(ItemIsMovable, true);	// uncomment this - it's fun : )
-
-	//setFlag(QGraphicsItem::ItemIsSelectable, false);
 
 #if QT_VERSION < 0x050000
 	setAcceptsHoverEvents(true);
@@ -960,7 +942,6 @@ void DkThumbLabel::updateLabel() {
 		mIcon.setTransformationMode(Qt::SmoothTransformation);
 		mIcon.setPixmap(pm);
 		mIcon.setFlag(ItemIsSelectable, true);
-		//QFlags<enum> f;
 	}
 	if (pm.isNull())
 		setFlag(ItemIsSelectable, false);	// if we cannot load it -> disable selection
@@ -968,7 +949,7 @@ void DkThumbLabel::updateLabel() {
 	// update label
 	mText.setPos(0, pm.height());
 	mText.setDefaultTextColor(QColor(255,255,255));
-	//text.setTextWidth(icon.boundingRect().width());
+	
 	QFont font;
 	font.setBold(false);
 	font.setPointSize(8);
@@ -1135,7 +1116,6 @@ void DkThumbScene::updateLayout() {
 
 	int tso = psz+mXOffset;
 	setSceneRect(0, 0, mNumCols*tso+mXOffset, mNumRows*tso+mXOffset);
-	//int fileIdx = thumbPool->getCurrentFileIdx();
 
 	DkTimer dt;
 	int cYOffset = mXOffset;
@@ -1167,11 +1147,6 @@ void DkThumbScene::updateLayout() {
 		if (mThumbLabels.at(idx)->isSelected())
 			mThumbLabels.at(idx)->ensureVisible();
 	}
-
-	//update();
-
-	//if (verticalScrollBar()->isVisible())
-	//	verticalScrollBar()->update();
 
 	mFirstLayout = false;
 }
@@ -1324,9 +1299,6 @@ void DkThumbScene::toggleThumbLabels(bool show) {
 	for (int idx = 0; idx < mThumbLabels.size(); idx++)
 		mThumbLabels.at(idx)->updateLabel();
 
-	//// well, that's not too beautiful
-	//if (DkSettingsManager::param().display().displaySquaredThumbs)
-	//	updateLayout();
 }
 
 void DkThumbScene::toggleSquaredThumbs(bool squares) {
@@ -1659,8 +1631,6 @@ DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGr
 	this->scene = scene;
 	connect(scene, SIGNAL(thumbLoadedSignal()), this, SLOT(fetchThumbs()));
 
-	//setDragMode(QGraphicsView::RubberBandDrag);
-
 	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
 	setAcceptDrops(true);
 
@@ -1676,9 +1646,6 @@ void DkThumbsView::wheelEvent(QWheelEvent *event) {
 
 		if (verticalScrollBar()->isVisible()) {
 			verticalScrollBar()->setValue(verticalScrollBar()->value()-event->delta());
-			//fetchThumbs();
-			//scene->update();
-			//scene->invalidate(scene->sceneRect());
 		}
 	}
 
@@ -1761,11 +1728,9 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
 
 	if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
 		scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
-		qDebug() << "selecting... with SHIFT from: " << lastShiftIdx << " to: " << scene->findThumb(itemClicked);
 	}
 	else if (itemClicked != 0) {
 		lastShiftIdx = scene->findThumb(itemClicked);
-		qDebug() << "starting shift: " << lastShiftIdx;
 	}
 	else
 		lastShiftIdx = -1;
@@ -1801,7 +1766,6 @@ void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
 
 	if (event->source() == this) {
 		event->accept();
-		qDebug() << "accepting...";
 	}
 	else if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
@@ -1828,7 +1792,6 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
 		
 		QUrl url = event->mimeData()->urls().at(0);
-		qDebug() << "dropping: " << url;
 		url = url.toLocalFile();
 
 		QFileInfo file = QFileInfo(url.toString());
@@ -1843,7 +1806,6 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 	}
 
 	QGraphicsView::dropEvent(event);
-	qDebug() << "drop event...";
 }
 
 void DkThumbsView::fetchThumbs() {
@@ -1855,7 +1817,7 @@ void DkThumbsView::fetchThumbs() {
 		DkThumbLabel* th = dynamic_cast<DkThumbLabel*>(items.at(idx));
 
 		if (!th) {
-			qDebug() << "not a thumb label...";
+			qWarning() << "could not cast to thumb label...";
 			continue;
 		}
 
@@ -1994,7 +1956,6 @@ void DkThumbScrollWidget::batchPrint() const {
 	}
 
 	printPreviewDialog->show();
-	//mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -2074,7 +2035,6 @@ void DkThumbScrollWidget::connectToActions(bool activate) {
 void DkThumbScrollWidget::setFilterFocus() const {
 
 	mFilterEdit->setFocus(Qt::MouseFocusReason);
-	qDebug() << "focus set...";
 }
 
 void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
@@ -2088,7 +2048,6 @@ void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
 
 void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 
-	//if (!event->isAccepted())
 	mContextMenu->exec(event->globalPos());
 	event->accept();
 
@@ -2216,7 +2175,6 @@ void DkRecentDirWidget::createLayout() {
 
 	setToolTip(mRecentDir.dirPath());
 	setStatusTip(mRecentDir.dirPath());
-	//setStyleSheet("background-color: rgba(1,0,0,.1);");
 }
 
 void DkRecentDirWidget::on_pin_clicked(bool checked) {
@@ -2286,8 +2244,9 @@ void DkRecentFilesWidget::createLayout() {
 	mScrollArea = new QScrollArea(this);
 	QVBoxLayout* sl = new QVBoxLayout(this);
 	sl->addWidget(mScrollArea);
-	mScrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	sl->setContentsMargins(0, 0, 0, 0);
 
+	mScrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
 	updateList();
 }

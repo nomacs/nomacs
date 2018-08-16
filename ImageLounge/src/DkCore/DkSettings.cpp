@@ -1457,24 +1457,31 @@ QString DkThemeManager::parseColors(const QString & styleSheet) const {
 
 			QString cc = kv[1].simplified();
 
-			if (kv[0] == "HIGHLIGHT_COLOR")
+			if (kv[0] == "HIGHLIGHT_COLOR" && cc != "default")
 				DkSettingsManager::param().display().highlightColor.setNamedColor(cc);
-			else if (kv[0] == "HUD_BACKGROUND_COLOR")
+			else if (kv[0] == "HUD_BACKGROUND_COLOR" && cc != "default")
 				DkSettingsManager::param().display().hudBgColor.setNamedColor(cc);
-			else if (kv[0] == "HUD_FOREGROUND_COLOR")
+			else if (kv[0] == "HUD_FOREGROUND_COLOR" && cc != "default")
 				DkSettingsManager::param().display().hudFgdColor.setNamedColor(cc);
 			else if (kv[0] == "BACKGROUND_COLOR") {
+
+				QColor c;
+				c.setNamedColor(cc);
+
+				if (cc == "default")
+					c = QPalette().color(QPalette::Window);
+					
 				if (DkSettingsManager::param().display().defaultBackgroundColor)
-					DkSettingsManager::param().display().bgColor.setNamedColor(cc);
-				DkSettingsManager::param().display().themeBgdColor.setNamedColor(cc);
+						DkSettingsManager::param().display().bgColor = c;
+				DkSettingsManager::param().display().themeBgdColor = c;
 			}
-			else if (kv[0] == "FOREGROUND_COLOR")
+			else if (kv[0] == "FOREGROUND_COLOR" && cc != "default")
 				DkSettingsManager::param().display().themeFgdColor.setNamedColor(cc);
-			else if (kv[0] == "ICON_COLOR") {
+			else if (kv[0] == "ICON_COLOR" && cc != "default") {
 				if (DkSettingsManager::param().display().defaultIconColor)
 					DkSettingsManager::param().display().iconColor.setNamedColor(cc);
 			}
-			else
+			else if (cc != "default")
 				qWarning() << "could not parse color:" << str;
 		}
 
