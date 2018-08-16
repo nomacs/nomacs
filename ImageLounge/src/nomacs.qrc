@@ -93,5 +93,6 @@
     <file>img/stop.svg</file>
     <file>img/pin.svg</file>
     <file>img/pin-checked.svg</file>
+    
   </qresource>
 </RCC>
