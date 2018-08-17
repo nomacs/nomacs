@@ -1346,8 +1346,8 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_movie_next] = new QAction(mViewIcons[icon_view_movie_next], QObject::tr("&Next Frame"), parent);
 	mViewActions[menu_view_movie_next]->setStatusTip(QObject::tr("show next frame"));
 
-	mViewActions[menu_view_gps_map] = new QAction(mViewIcons[icon_view_gps], QObject::tr("Show G&PS Coordinates"), parent);
-	mViewActions[menu_view_gps_map]->setStatusTip(QObject::tr("shows the GPS coordinates"));
+	mViewActions[menu_view_gps_map] = new QAction(mViewIcons[icon_view_gps], QObject::tr("Show Image Location"), parent);
+	mViewActions[menu_view_gps_map]->setStatusTip(QObject::tr("shows where the image was taken in Google maps"));
 	mViewActions[menu_view_gps_map]->setEnabled(false);
 
 	// tools actions

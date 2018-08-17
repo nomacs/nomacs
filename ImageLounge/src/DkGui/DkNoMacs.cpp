@@ -1376,9 +1376,7 @@ void DkNoMacs::openQuickLaunch() {
 		mQuickAccess->addActions(DkActionManager::instance().allActions());
 		
 		connect(mToolbar->getQuickAccess(), SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)));
-		connect(mToolbar->getQuickAccess()->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(execute(const QModelIndex&)));
 		connect(mQuickAccess, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
-		connect(mQuickAccess, SIGNAL(hideEdit()), mToolbar->getQuickAccess(), SLOT(clearAccess()));
 	}
 	
 	mQuickAccess->addDirs(DkSettingsManager::param().global().recentFolders);
@@ -1391,8 +1389,6 @@ void DkNoMacs::openQuickLaunch() {
 		if (!mQuickAccessEdit) {
 			mQuickAccessEdit = new DkQuickAccessEdit(this);
 			connect(mQuickAccessEdit, SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)));
-			connect(mQuickAccessEdit->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(execute(const QModelIndex&)));
-			connect(mQuickAccess, SIGNAL(hideEdit()), mQuickAccessEdit, SLOT(clearAccess()));
 		}
 
 		int right = viewport()->geometry().right();

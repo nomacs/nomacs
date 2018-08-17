@@ -56,12 +56,10 @@ public:
 	QStandardItemModel* getModel() const { return mModel; };
 	
 public slots:
-	void execute(const QModelIndex& index) const;
-	void execute(const QString& cmd) const;
+	bool execute(const QString& cmd) const;
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
-	void hideEdit() const;
 
 protected:
 	QStandardItemModel* mModel = 0;

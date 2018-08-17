@@ -109,36 +109,28 @@ void DkQuickAccess::addItems(const QStringList& itemTexts, const QIcon& icon) {
 	}
 }
 
-void DkQuickAccess::execute(const QModelIndex& index) const {
+bool DkQuickAccess::execute(const QString& cmd) const {
+	
+	qDebug() << "executing" << cmd;
 
-	QString txt = index.data().toString();
-
-	emit hideEdit();
-
-	if (mFilePaths.contains(txt)) {
-		emit loadFileSignal(txt);
-		return;
+	if (QFileInfo(cmd).exists()) {
+		emit loadFileSignal(cmd);
+		return true;
 	}
 
 	for (QAction* a : mActions) {
 
 		QString aKey = a->text().remove("&");
 
-		if (aKey == txt) {
-			
+		if (aKey == cmd) {
+
 			if (a->isEnabled())
 				a->trigger();
-			// TODO: else feedback?
-			return;
+			return true;
 		}
 	}
-}
-
-void DkQuickAccess::execute(const QString& cmd) const {
-
-	if (QFileInfo(cmd).exists()) {
-		emit loadFileSignal(cmd);
-	}
+	
+	return false;
 }
 
 // DkQuickAcessEdit --------------------------------------------------------------------
@@ -172,8 +164,15 @@ void DkQuickAccessEdit::setModel(QStandardItemModel* model) {
 
 void DkQuickAccessEdit::editConfirmed() {
 	
-	// do something usefull if our completer has no idea anymore...
-	if (mCompleter->currentCompletion().isNull())
+	QString fp = text();
+
+	// check if we can directly load what is there (this is nice to load the parent dir of a recent dir)
+	if (QFileInfo(fp).exists())
+		emit executeSignal(text());
+	else if (!mCompleter->currentCompletion().isNull())
+		emit executeSignal(mCompleter->currentCompletion());
+	else
+		// do something usefull if our completer has no idea anymore...
 		emit executeSignal(text());
 
 	clearAccess();
