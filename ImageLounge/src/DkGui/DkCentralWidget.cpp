@@ -499,14 +499,8 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	connect(pw, SIGNAL(restartSignal()), this, SLOT(restart()), Qt::UniqueConnection);
 
 	// add actions
-	pw->addActions(am.fileActions().toList());
 	pw->addActions(am.viewActions().toList());
 	pw->addActions(am.editActions().toList());
-	pw->addActions(am.sortActions().toList());
-	pw->addActions(am.toolsActions().toList());
-	pw->addActions(am.panelActions().toList());
-	pw->addActions(am.syncActions().toList());
-	pw->addActions(am.pluginActions().toList());
 	pw->addActions(am.helpActions().toList());
 	pw->addActions(am.hiddenActions().toList());
 

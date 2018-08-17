@@ -1376,7 +1376,7 @@ QString DkThemeManager::loadStylesheet() const {
 }
 
 void DkThemeManager::applyTheme() const {
-
+	
 	// add theme
 	QString cssString = loadTheme(getCurrentThemeName());
 
@@ -1399,7 +1399,7 @@ void DkThemeManager::applyTheme() const {
 		p.setColor(QPalette::WindowText, dp.themeFgdColor);
 		p.setColor(QPalette::ButtonText, dp.themeFgdColor);
 
-		p.setColor(QPalette::Button, QColor(0, 0, 0));
+		//p.setColor(QPalette::Button, QColor(0, 0, 0));
 
 		qApp->setPalette(p);
 	}

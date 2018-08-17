@@ -1,9 +1,9 @@
 
 /* overload color settings of nomacs */
 --nomacs-color-def
-HIGHLIGHT_COLOR: #49c9ed;
-HUD_BACKGROUND_COLOR: #aa333333;
-HUD_FOREGROUND_COLOR: #aaa;
+HIGHLIGHT_COLOR: #ffcc00;
+HUD_BACKGROUND_COLOR: #aa000000;
+HUD_FOREGROUND_COLOR: #ddd;
 ICON_COLOR: #ddd;
 
 FOREGROUND_COLOR: #ddd;
@@ -213,6 +213,7 @@ QLabel#recentFilesPath {
 	color: #ccc;
 }
 
+QPushButton#load_dir,
 QPushButton#pin,
 QPushButton#remove {
 	background-color: transparent;
