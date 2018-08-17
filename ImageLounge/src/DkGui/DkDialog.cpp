@@ -1491,6 +1491,16 @@ QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 	return scW;
 }
 
+QSize DkShortcutDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
+
+	QSize s = QItemDelegate::sizeHint(option, index);
+
+	if (index.column() == 1)
+		s.setWidth(s.width() + s.height());	// make room for our x
+
+	return s;
+}
+
 void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
 
 	const_cast<DkShortcutDelegate*>(this)->mItem = index.internalPointer();
@@ -1644,7 +1654,6 @@ QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
 	return QVariant();
 }
 
-
 QVariant DkShortcutsModel::headerData(int section, Qt::Orientation orientation, int role) const {
 
 	if (orientation != Qt::Horizontal || role != Qt::DisplayRole) 
@@ -1708,8 +1717,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, const QString& 
 			continue;
 		}
 
-		QString text = actions[idx]->text();
-		text.remove("&");
+		QString text = actions[idx]->text().remove("&");
 
 		QVector<QVariant> actionData;
 		actionData << text << actions[idx]->shortcut();
@@ -1814,8 +1822,7 @@ void DkShortcutsModel::saveActions() const {
 					continue;
 				}
 
-				QString aT = cActions.at(mIdx)->text();
-				//aT.remove("&");
+				QString aT = cActions.at(mIdx)->text().remove("&");
 
 				cActions.at(mIdx)->setShortcut(ks);		// assign new shortcut
 				settings.setValue(aT, ks.toString());	// note this works as long as you don't change the language!
@@ -1895,14 +1902,13 @@ void DkShortcutsDialog::createLayout() {
 	layout->addWidget(mNotificationLabel);
 	//layout->addSpacing()
 	layout->addWidget(buttons);
-	setMinimumSize(350, 350);
+	resize(420, 500);
 }
 
 void DkShortcutsDialog::addActions(const QVector<QAction*>& actions, const QString& name) {
 
 	QString cleanName = name;
-	cleanName.remove("&");
-	mModel->addDataActions(actions, cleanName);
+	mModel->addDataActions(actions, cleanName.remove("&"));
 
 }
 

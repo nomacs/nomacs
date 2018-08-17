@@ -1985,7 +1985,7 @@ void DkViewPortFrameless::drawBackground(QPainter & painter) {
 			painter.drawPixmap(mStartActionsRects[idx], mStartActionsIcons[idx], QRect(QPoint(), mStartActionsIcons[idx].size()));
 		
 		QRectF tmpRect = mStartActionsRects[idx];
-		QString text = mStartActions[idx]->text().replace("&", "");
+		QString text = mStartActions[idx]->text().remove("&");
 		tmpRect.moveTop(tmpRect.bottom()+10);
 		painter.drawText(tmpRect, text);
 	}

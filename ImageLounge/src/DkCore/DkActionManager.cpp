@@ -1613,7 +1613,8 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 			continue;
 		}
 
-		QString val = settings.value(a->text(), "no-shortcut").toString();
+		QString at = a->text().remove("&");
+		QString val = settings.value(at, "no-shortcut").toString();
 
 		if (val != "no-shortcut")
 			a->setShortcut(val);

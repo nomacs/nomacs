@@ -356,6 +356,8 @@ public:
 
 	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
+	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
 signals:
 	void checkDuplicateSignal(const QString& text, void* item);
 	void checkDuplicateSignal(const QKeySequence& keySequence, void* item);

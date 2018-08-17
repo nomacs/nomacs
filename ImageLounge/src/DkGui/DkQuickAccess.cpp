@@ -65,7 +65,7 @@ void DkQuickAccess::addActions(const QVector<QAction*>& actions) {
 		QAction* a = actions[rIdx];
 		QIcon icon = a->icon().isNull() ? DkImage::loadIcon(":/nomacs/img/dummy.svg") : a->icon();
 
-		QString text = a->text().replace("&", "");
+		QString text = a->text().remove("&");
 		QStandardItem* item = new QStandardItem(text);
 		item->setSizeHint(QSize(18, 18));
 		item->setIcon(icon);
@@ -122,7 +122,7 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 
 	for (QAction* a : mActions) {
 
-		QString aKey = a->text().replace("&", "");
+		QString aKey = a->text().remove("&");
 
 		if (aKey == key) {
 			

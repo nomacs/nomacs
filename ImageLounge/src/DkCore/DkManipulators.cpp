@@ -54,7 +54,7 @@ DkBaseManipulator::DkBaseManipulator(QAction * action) {
 
 QString DkBaseManipulator::name() const {
 	QString text = mAction->iconText();
-	return text.replace("&", "");
+	return text.remove("&");
 }
 
 QAction* DkBaseManipulator::action() const {
