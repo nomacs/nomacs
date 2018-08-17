@@ -815,6 +815,23 @@ private:
 	QVector<QSpinBox*> mSizeBox;
 };
 
+class DkChooseMonitorDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkChooseMonitorDialog(QWidget* parent);
+
+	QRect screenRect() const;
+
+private:
+	void createLayout();
+	QVector<QRect> screenRects() const;
+
+	QVector<QRect> mScreenRects;
+	QComboBox* mMonitorBox;
+};
+
+
 #ifdef WITH_QUAZIP
 class DkArchiveExtractionDialog : public QDialog {
 	Q_OBJECT

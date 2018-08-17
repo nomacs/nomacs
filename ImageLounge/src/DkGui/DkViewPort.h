@@ -256,13 +256,6 @@ public:
 	virtual ~DkViewPortFrameless();
 
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
-	virtual void setMainGeometry(const QRect &geometry) {
-		mMainScreen = geometry;
-	};
-
-	virtual QRect getMainGeometry() {
-		return mMainScreen;
-	};
 
 public slots:
 	virtual void resetView();
@@ -272,7 +265,6 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
 
 	// functions
@@ -288,7 +280,6 @@ protected:
 	QVector<QIcon> mStartIcons;
 	QVector<QRectF> mStartActionsRects;
 	QVector<QPixmap> mStartActionsIcons;
-	QRect mMainScreen;	// TODO: let user choose which one to take
 };
 
 class DllCoreExport DkViewPortContrast : public DkViewPort {

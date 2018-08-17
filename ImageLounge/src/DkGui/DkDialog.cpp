@@ -90,6 +90,8 @@
 #include <QMenu>
 #include <QKeySequenceEdit>
 #include <QPrinterInfo>
+#include <QDesktopWidget>
+
 // quazip
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
@@ -4309,6 +4311,59 @@ void DkSvgSizeDialog::on_height_valueChanged(int val) {
 
 QSize DkSvgSizeDialog::size() const {
 	return mSize;
+}
+
+// -------------------------------------------------------------------- DkChooseMonitorDialog 
+DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) {
+
+	mScreenRects = screenRects();
+	createLayout();
+}
+
+void DkChooseMonitorDialog::createLayout() {
+
+	mMonitorBox = new QComboBox(this);
+
+	for (int idx = 0; idx < mScreenRects.size(); idx++) {
+
+		QRect r = mScreenRects[idx];
+		QString ms = tr("Monitor %1 (%2 x %3)").arg(idx+1).arg(r.width()).arg(r.height());
+		mMonitorBox->addItem(DkImage::loadIcon(":/nomacs/img/display-settings.svg"), ms);
+	}
+
+	// buttons
+	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QGridLayout* layout = new QGridLayout(this);
+	layout->addWidget(mMonitorBox, 1, 1);
+	layout->addWidget(buttons, 2, 1);
+}
+
+QVector<QRect> DkChooseMonitorDialog::screenRects() const {
+
+	QVector<QRect> screenRects;
+	QDesktopWidget* dt = QApplication::desktop();
+
+	if (!dt)
+		return screenRects;
+
+	int sc = dt->screenCount();
+
+	for (int idx = 0; idx < sc; idx++) {
+
+		screenRects << dt->availableGeometry(idx);
+	}
+
+	return screenRects;
+}
+
+QRect DkChooseMonitorDialog::screenRect() const {
+	
+	return mScreenRects[mMonitorBox->currentIndex()];
 }
 
 } // close namespace

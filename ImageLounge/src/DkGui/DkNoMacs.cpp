@@ -2555,6 +2555,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		am.action(DkActionManager::menu_view_frameless)->blockSignals(false);
 
 		mDesktop = QApplication::desktop();
+
 		updateScreenSize();
 		show();
         
@@ -2590,37 +2591,22 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 	if (!mDesktop)
 		return;
 
-	//TODO: let user choose which screen
-	int sc = mDesktop->screenCount();
-	QRect screenRects = mDesktop->availableGeometry();
+	QRect screenRect = mDesktop->availableGeometry();
 
-	for (int idx = 0; idx < sc; idx++) {
+	// ask the user which monitor to use
+	if (mDesktop->screenCount() > 0) {
+		DkChooseMonitorDialog* cmd = new DkChooseMonitorDialog(this);
+		int answer = cmd->exec();
 
-		qDebug() << "screens: " << mDesktop->availableGeometry(idx);
-		QRect curScreen = mDesktop->availableGeometry(idx);
-		screenRects.setLeft(qMin(screenRects.left(), curScreen.left()));
-		screenRects.setTop(qMin(screenRects.top(), curScreen.top()));
-		screenRects.setBottom(qMax(screenRects.bottom(), curScreen.bottom()));
-		screenRects.setRight(qMax(screenRects.right(), curScreen.right()));
+		if (answer == QDialog::Accepted) {
+			screenRect = cmd->screenRect();
+		}
 	}
 
-	qDebug() << "set up geometry: " << screenRects;
+	QRect mg = screenRect;
+	mg.moveTopLeft(-screenRect.topLeft());
 
-	QRect mg = mDesktop->screenGeometry();
-	mg.moveTopLeft(-screenRects.topLeft());
-
-	
-	qDebug() << "main geometry:" << mDesktop->screenGeometry();
-
-	setGeometry(screenRects);
-
-	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
-	vp->setMainGeometry(mg);
-
-
-	//vp->setMainGeometry(mDesktop->screenGeometry());
-	//setGeometry(mDesktop->screenGeometry());
-
+	setGeometry(screenRect);
 }
 
 void DkNoMacsFrameless::exitFullScreen() {

@@ -1845,17 +1845,12 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 	if (mImgBg.isNull())
 		mImgBg.load(":/nomacs/img/splash-screen.png");
 
-	mMainScreen = geometry();
-
 	DkActionManager& am = DkActionManager::instance();
 	mStartActions.append(am.action(DkActionManager::menu_file_open));
 	mStartActions.append(am.action(DkActionManager::menu_file_open_dir));
 	
 	mStartIcons.append(am.icon(DkActionManager::icon_file_open_large));
 	mStartIcons.append(am.icon(DkActionManager::icon_file_dir_large));
-
-	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
-	// always set the size to be full screen -> bad for OS that are not able to show transparent frames!!
 }
 
 DkViewPortFrameless::~DkViewPortFrameless() {
@@ -1962,7 +1957,7 @@ void DkViewPortFrameless::drawBackground(QPainter & painter) {
 	painter.setBrush(QColor(127, 144, 144, 200));
 	painter.setPen(QColor(100, 100, 100, 255));
 
-	QRectF initialRect = mMainScreen;
+	QRectF initialRect = rect();
 	QPointF oldCenter = initialRect.center();
 
 	QTransform cT;
@@ -2108,16 +2103,6 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	QGraphicsView::mouseMoveEvent(event);
 }
 
-void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
-
-	DkViewPort::resizeEvent(event);
-
-	// mController should only be on the main screen...
-	QDesktopWidget* dw = QApplication::desktop();
-	mController->setGeometry(dw->screenGeometry());
-	qDebug() << "mController resized to: " << mController->geometry();
-}
-
 void DkViewPortFrameless::moveView(QPointF delta) {
 
 	// if no zoom is present -> the translation is like a move window
@@ -2139,7 +2124,6 @@ void DkViewPortFrameless::controlImagePosition(float, float) {
 }
 
 void DkViewPortFrameless::centerImage() {
-
 }
 
 void DkViewPortFrameless::updateImageMatrix() {
@@ -2156,8 +2140,8 @@ void DkViewPortFrameless::updateImageMatrix() {
 
 	// if the image is smaller or zoom is active: paint the image as is
 	if (!mViewportRect.contains(mImgRect.toRect())) {
-		mImgMatrix = getScaledImageMatrix(mMainScreen.size()*0.9f);
-		QSize shift = mMainScreen.size()*0.1f;
+		mImgMatrix = getScaledImageMatrix(size()*0.9f);
+		QSize shift = size()*0.1f;
 		mImgMatrix.translate(shift.width(), shift.height());
 	}
 	else {
