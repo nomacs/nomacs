@@ -368,27 +368,11 @@ protected slots:
 protected:
 	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
 	void setEditorData(QWidget* editor, const QModelIndex& index) const;
-	void* item;
+	void* mItem;
 	//virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
-};
-
-class DkShortcutEditor : public QLineEdit {
-	Q_OBJECT
-	Q_PROPERTY(QKeySequence shortcut READ shortcut WRITE setShortcut)
-
-public:
-	DkShortcutEditor(QWidget *widget = 0);
-	QKeySequence shortcut() const;
-	void setShortcut(const QKeySequence shortcut);
-
-protected:
-	//void keyPressEvent(QKeyEvent *event);
-	//void keyReleaseEvent(QKeyEvent* event);
-	bool eventFilter(QObject *obj, QEvent *event);
-
-	QKeySequence ks;
-
+	QPixmap mClearPm;
 };
 
 class DkShortcutsModel : public QAbstractItemModel {

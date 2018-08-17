@@ -555,7 +555,6 @@ protected:
 	// actions
 	QVector<QAction *> mFileActions;
 	QVector<QAction *> mSortActions;
-	QVector<QAction *> mOpenWithActions;
 	QVector<QAction *> mEditActions;
 	QVector<QAction *> mToolsActions;
 	QVector<QAction *> mPanelActions;

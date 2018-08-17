@@ -1470,44 +1470,78 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 // DkShortcutDelegate --------------------------------------------------------------------
 DkShortcutDelegate::DkShortcutDelegate(QObject* parent) : QItemDelegate(parent) {
-	item = 0;
+	mItem = 0;
+	mClearPm = DkImage::loadIcon(":/nomacs/img/close.svg");
 }
 
 QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
-	
-	QWidget* w = QItemDelegate::createEditor(parent, option, index);
 
-	if (!w)
-		return w;
+	QWidget* scW = QItemDelegate::createEditor(parent, option, index);
+
+	if (!scW)
+		return scW;
 
 #if QT_VERSION < 0x050000
-	connect(w, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
-	connect(w, SIGNAL(editingFinished()), this, SLOT(textChanged()));
+	connect(scW, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
+	connect(scW, SIGNAL(editingFinished()), this, SLOT(textChanged()));
 #else
-	connect(w, SIGNAL(keySequenceChanged(const QKeySequence&)), this, SLOT(keySequenceChanged(const QKeySequence&)));
+	connect(scW, SIGNAL(keySequenceChanged(const QKeySequence&)), this, SLOT(keySequenceChanged(const QKeySequence&)));
 #endif	
 	
-	return w;
-}
-
-bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
-
-	item = index.internalPointer();
-
-	return QItemDelegate::editorEvent(event, model, option, index);
+	return scW;
 }
 
 void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
 
-	const_cast<DkShortcutDelegate*>(this)->item = index.internalPointer();
+	const_cast<DkShortcutDelegate*>(this)->mItem = index.internalPointer();
 	emit clearDuplicateSignal();
 
 	QItemDelegate::setEditorData(editor, index);
 }
 
+bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
+	
+	// did the user click the x?
+	if (event->type() == QEvent::MouseButtonRelease) {
+
+		QMouseEvent * e = (QMouseEvent *)event;
+		int clickX = e->x();
+		int clickY = e->y();
+
+		QRect r = option.rect;
+		int x = r.left() + r.width() - r.height();
+
+		if (clickX > x && clickX < x + r.height())
+			if (clickY > r.top() && clickY < r.top() + r.height()) {
+				model->setData(index, QKeySequence());
+			}
+	}
+
+	mItem = index.internalPointer();
+
+	return QItemDelegate::editorEvent(event, model, option, index);
+}
+
+void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+
+	// calling before means, that our x is always in front
+	QItemDelegate::paint(painter, option, index);
+
+	TreeItem* ti = static_cast<TreeItem*>(index.internalPointer());
+
+	if (index.column() == 1 && ti && !ti->data(1).toString().isEmpty()) {
+		
+		QRect r = option.rect;//getting the rect of the cell
+		int s = r.height();
+		QRect pmr(r.right()-s, r.top(), s, s);
+		
+		painter->drawPixmap(pmr, mClearPm);
+	}
+ }
+
 #if QT_VERSION < 0x050000
 void DkShortcutDelegate::textChanged(const QString& text) {
-	emit checkDuplicateSignal(text, item);
+	emit checkDuplicateSignal(text, mItem);
 }
 
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence&) {}
@@ -1516,63 +1550,12 @@ void DkShortcutDelegate::keySequenceChanged(const QKeySequence&) {}
 void DkShortcutDelegate::textChanged(const QString&) {}	// dummy since the moccer is to dumb to get #if defs
 
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
-	emit checkDuplicateSignal(keySequence, item);
+	emit checkDuplicateSignal(keySequence, mItem);
 }
 #endif
 
 // fun fact: there are ~10^4500 (binary) images of size 128x128 
-
-// DkShortcutEditor --------------------------------------------------------------------
-DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {
-
-	installEventFilter(this);
-}
-
-QKeySequence DkShortcutEditor::shortcut() const {
-	return QKeySequence(text());
-}
-
-void DkShortcutEditor::setShortcut(const QKeySequence shortcut) {
-	ks = shortcut;
-}
-
-bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
-
-	// TODO: we somehow need to filter events such as ALT+F4 too
-	if (event->type() == QEvent::KeyRelease) {
-		
-		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-		
-		if (keyEvent->key() == Qt::Key_Control ||
-			keyEvent->key() == Qt::Key_Shift ||
-			keyEvent->key() == Qt::Key_Alt ||
-			keyEvent->key() == Qt::Key_Meta)
-			return true;
-
-		int ksi = keyEvent->key();
-
-		if (keyEvent->modifiers() & Qt::ShiftModifier)
-			ksi += Qt::SHIFT;
-		if (keyEvent->modifiers() & Qt::AltModifier)
-			ksi += Qt::ALT;
-		if (keyEvent->modifiers() & Qt::ControlModifier)
-			ksi += Qt::CTRL;
-		if (keyEvent->modifiers() & Qt::MetaModifier)
-			ksi += Qt::META;
-
-		QKeySequence lks(ksi);
-		setText(lks.toString());
-
-		qDebug() << "eating the event...";
-
-		return true;
-	}
-	else if (event->type() == QEvent::KeyPress) {	// filter keypresses to avoid any dialog action on shortcut edit
-		return true;
-	}
-
-	return QLineEdit::eventFilter(obj, event);
-}
+// increase counter if you think this is fascinating: 1
 
 // DkShortcutsModel --------------------------------------------------------------------
 DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractItemModel(parent) {
@@ -1678,15 +1661,12 @@ bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, 
 	if (index.column() == 1) {
 
 		QKeySequence ks = value.value<QKeySequence>();
-		if (index.column() == 1) {
-			TreeItem* duplicate = mRootItem->find(ks, index.column());
-			if (duplicate) duplicate->setData(QKeySequence(), index.column());
-			if (!duplicate) qDebug() << ks << " no duplicate found...";
-		}
-		
+		TreeItem* duplicate = mRootItem->find(ks, index.column());
+		if (duplicate) duplicate->setData(QKeySequence(), index.column());
+		//if (!duplicate) qDebug() << ks << " no duplicate found...";
+
 		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 		item->setData(ks, index.column());
-
 	}
 	else {
 		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
@@ -1826,10 +1806,6 @@ void DkShortcutsModel::saveActions() const {
 
 			TreeItem* cItem = cMenu->child(mIdx);
 			QKeySequence ks = cItem->data(1).value<QKeySequence>();
-
-			// if empty try to restore
-			if (ks.isEmpty() && !mRootItem->find(cActions.at(mIdx)->shortcut(), 1))
-				continue;
 
 			if (cActions.at(mIdx)->shortcut() != ks) {
 
@@ -4114,11 +4090,9 @@ void DkDialogManager::openShortcutsDialog() const {
 
 	DkActionManager& am = DkActionManager::instance();
 
-	QList<QAction* > openWithActionList = am.openWithMenu()->actions();
-
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(DkUtils::getMainWindow());
 	shortcutsDialog->addActions(am.fileActions(), am.fileMenu()->title());
-	shortcutsDialog->addActions(openWithActionList.toVector(), am.openWithMenu()->title());
+	shortcutsDialog->addActions(am.openWithActions(), am.openWithMenu()->title());
 	shortcutsDialog->addActions(am.sortActions(), am.sortMenu()->title());
 	shortcutsDialog->addActions(am.editActions(), am.editMenu()->title());
 	shortcutsDialog->addActions(am.manipulatorActions(), am.manipulatorMenu()->title());
@@ -4157,7 +4131,7 @@ void DkDialogManager::openAppManager() const {
 
 	appManagerDialog->deleteLater();
 
-	DkActionManager::instance().openWithMenu();	// update
+	DkActionManager::instance().updateOpenWithMenu();
 }
 
 // -------------------------------------------------------------------- DkPrintImage 

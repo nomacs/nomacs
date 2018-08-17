@@ -401,24 +401,15 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 
 QMenu * DkActionManager::createOpenWithMenu(QWidget* parent) {
 
-	// TODO: propagate update!
 	mOpenWithMenu = new QMenu(QObject::tr("&Open With"), parent);
 	return updateOpenWithMenu();
 }
 
 QMenu* DkActionManager::updateOpenWithMenu() {
-	//QList<QAction* > oldActions = mOpenWithMenu->findChildren<QAction* >();
-
-	//// remove old actions
-	//for (int idx = 0; idx < oldActions.size(); idx++)
-	//	viewport()->removeAction(oldActions.at(idx));
 	
 	mOpenWithMenu->clear();
 
 	QVector<QAction* > appActions = mAppManager->getActions();
-
-	//for (int idx = 0; idx < appActions.size(); idx++)
-	//	qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
 
 	assignCustomShortcuts(appActions);
 	mOpenWithMenu->addActions(appActions.toList());
@@ -426,7 +417,6 @@ QMenu* DkActionManager::updateOpenWithMenu() {
 	if (!appActions.empty())
 		mOpenWithMenu->addSeparator();
 	mOpenWithMenu->addAction(mFileActions[menu_file_app_manager]);
-	//centralWidget()->addActions(appActions.toList());	// TODO: notify
 
 	return mOpenWithMenu;
 }
@@ -761,7 +751,19 @@ QVector<QAction*> DkActionManager::sortActions() const {
 }
 
 QVector<QAction*> DkActionManager::openWithActions() const {
-	return mOpenWithActions;
+	
+	if (!openWithMenu())
+		return QVector<QAction*>();
+
+	QList<QAction* > openWithActionList = openWithMenu()->actions();
+	QVector<QAction* > owas;
+
+	// the separator creates a NULL action?! - remove it here...
+	for (auto a : openWithActionList)
+		if (!a->text().isNull())
+			owas << a;
+	
+	return owas;
 }
 
 QVector<QAction*> DkActionManager::viewActions() const {

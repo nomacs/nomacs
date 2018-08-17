@@ -112,7 +112,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	addActions(am.helpActions().toList());
 	addActions(am.hiddenActions().toList());
 
-	addActions(am.openWithMenu()->actions());
+	addActions(am.openWithActions().toList());
 #ifdef WITH_PLUGINS
 	addActions(am.pluginActionManager()->pluginDummyActions().toList());
 #endif
