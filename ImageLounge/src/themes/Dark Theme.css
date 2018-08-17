@@ -222,3 +222,7 @@ QPushButton#remove {
 nmc--DkThumbPreviewLabel:hover {
 	border: 1px solid HIGHLIGHT_COLOR;
 }
+
+QMenu::separator {
+	border-top: 1px solid #666;
+}

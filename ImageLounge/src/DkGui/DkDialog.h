@@ -788,6 +788,33 @@ protected:
 	bool mLanguageChanged = false;
 };
 
+class DkSvgSizeDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkSvgSizeDialog(const QSize& size, QWidget* parent);
+
+	QSize size() const;
+
+public slots:
+	void on_width_valueChanged(int val);
+	void on_height_valueChanged(int val);
+
+private:
+	void createLayout();
+
+	enum {
+		b_width,
+		b_height,
+
+		b_end
+	};
+
+	double mARatio = 0;
+	QSize mSize;
+	QVector<QSpinBox*> mSizeBox;
+};
+
 #ifdef WITH_QUAZIP
 class DkArchiveExtractionDialog : public QDialog {
 	Q_OBJECT
@@ -833,7 +860,7 @@ class DkDialogManager : public QObject {
 public:
 	DkDialogManager(QObject* parent = 0);
 
-	public slots:
+public slots:
 	void openShortcutsDialog() const;
 	void openAppManager() const;
 };

@@ -1527,9 +1527,7 @@ bool DkImageLoader::hasMovie() const {
 	if (!mCurrentImage || !mCurrentImage->exists())
 		return false;
 
-	QString newSuffix = QFileInfo(mCurrentImage->filePath()).suffix();
-	return newSuffix.contains(QRegExp("(gif|mng|webp)", Qt::CaseInsensitive)) != 0;
-
+	return mCurrentImage->hasMovie();
 }
 
 bool DkImageLoader::hasSvg() const {
@@ -1537,9 +1535,7 @@ bool DkImageLoader::hasSvg() const {
 	if (!mCurrentImage || !mCurrentImage->exists())
 		return false;
 
-	QString newSuffix = QFileInfo(mCurrentImage->filePath()).suffix();
-	return newSuffix.contains(QRegExp("(svg)", Qt::CaseInsensitive)) != 0;
-
+	return mCurrentImage->hasSvg();
 }
 
 /**

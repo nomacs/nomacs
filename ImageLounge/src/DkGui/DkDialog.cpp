@@ -3886,7 +3886,6 @@ void DkArchiveExtractionDialog::textChanged(const QString& text) {
 		mArchivePathEdit->update();
 	}
 
-
 }
 
 void DkArchiveExtractionDialog::dirTextChanged(const QString& text) {
@@ -4231,6 +4230,85 @@ void DkPrintImage::center(QTransform & t) const {
 
 	t.translate(-t.dx() / (t.m11() + DBL_EPSILON), -t.dy() / (t.m22() + DBL_EPSILON)); // reset old transformation
 	t.translate(xtrans / (t.m11() + DBL_EPSILON), ytrans / (t.m22() + DBL_EPSILON));
+}
+
+// -------------------------------------------------------------------- DkSvgSizeDialog 
+DkSvgSizeDialog::DkSvgSizeDialog(const QSize& size, QWidget* parent) : QDialog(parent) {
+	
+	mSize = size;
+	mARatio = (double)size.width() / size.height();
+	setWindowTitle("Resize SVG");
+	createLayout();
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkSvgSizeDialog::createLayout() {
+
+
+	QLabel* wl = new QLabel(tr("width:"), this);
+
+	mSizeBox.resize(b_end);
+
+	mSizeBox[b_width] = new QSpinBox(this);
+	mSizeBox[b_width]->setObjectName("width");
+
+	QLabel* hl = new QLabel(tr("height:"), this);
+
+	mSizeBox[b_height] = new QSpinBox(this);
+	mSizeBox[b_height]->setObjectName("height");
+
+	for (auto s : mSizeBox) {
+		s->setMinimum(1);
+		s->setMaximum(50000);
+		s->setSuffix(" px");
+	}
+	
+	mSizeBox[b_width]->setValue(mSize.width());
+	mSizeBox[b_height]->setValue(mSize.height());
+
+	// buttons
+	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QGridLayout* layout = new QGridLayout(this);
+	layout->addWidget(wl, 1, 1);
+	layout->addWidget(mSizeBox[b_width], 1, 2);
+	layout->addWidget(hl, 1, 3);
+	layout->addWidget(mSizeBox[b_height], 1, 4);
+	layout->setColumnStretch(0, 1);
+	layout->setColumnStretch(5, 1);
+	layout->setRowStretch(0, 1);
+	layout->setRowStretch(2, 1);
+	layout->addWidget(buttons, 3, 1, 1, 6, Qt::AlignBottom);
+	
+}
+
+void DkSvgSizeDialog::on_width_valueChanged(int val) {
+
+	mSize.setWidth(val);
+	mSize.setHeight(qRound(val/mARatio));
+
+	mSizeBox[b_height]->blockSignals(true);
+	mSizeBox[b_height]->setValue(mSize.height());
+	mSizeBox[b_height]->blockSignals(false);
+}
+
+void DkSvgSizeDialog::on_height_valueChanged(int val) {
+
+	mSize.setWidth(qRound(val * mARatio));
+	mSize.setHeight(val);
+
+	mSizeBox[b_width]->blockSignals(true);
+	mSizeBox[b_width]->setValue(mSize.width());
+	mSizeBox[b_width]->blockSignals(false);
+}
+
+QSize DkSvgSizeDialog::size() const {
+	return mSize;
 }
 
 } // close namespace

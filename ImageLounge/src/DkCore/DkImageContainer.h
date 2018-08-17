@@ -80,6 +80,9 @@ public:
 	QImage imageScaledToWidth(int width);
 
 	bool hasImage() const;
+	bool hasSvg() const;
+	bool hasMovie() const;
+
 	int getLoadState() const;
 	QFileInfo fileInfo() const;
 	QString filePath() const;

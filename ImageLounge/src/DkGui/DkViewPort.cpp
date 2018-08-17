@@ -41,6 +41,7 @@
 #include "DkStatusBar.h"
 #include "DkUtils.h"
 #include "DkBasicLoader.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -92,6 +93,11 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 	connectLoader(mLoader);
+
+	if (DkSettingsManager::param().display().showScrollBars) {
+		setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	}
 
 	mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
 	mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
@@ -687,7 +693,25 @@ void DkViewPort::saveFileAs(bool silent) {
 
 	if (mLoader) {
 		mController->closePlugin(false);
-		mLoader->saveUserFileAs(getImage(), silent);
+		
+		QImage img = getImage();
+
+		if (mLoader->hasSvg() && !mLoader->isEdited()) {
+			
+			DkSvgSizeDialog* sd = new DkSvgSizeDialog(img.size(), DkUtils::getMainWindow());
+			sd->resize(270, 120);
+
+			int answer = sd->exec();
+
+			if (answer == QDialog::Accepted) {
+				
+				img = QImage(sd->size(), QImage::Format_ARGB32);
+				QPainter p(&img);
+				mSvg->render(&p, QRectF(QPointF(), sd->size()));
+			}
+		}
+		
+		mLoader->saveUserFileAs(img, silent);
 	}
 }
 
@@ -2154,40 +2178,6 @@ void DkViewPortFrameless::updateImageMatrix() {
 		mWorldMatrix.translate(dx, dy);
 	}
 }
-
-//QTransform DkViewPortFrameless::getScaledImageMatrix() {
-//
-//	return DkViewPort::getScaledImageMatrix();
-//
-//	//QRectF initialRect = mMainScreen;
-//	//QPointF oldCenter = mImgViewRect.isEmpty() ? initialRect.center() : mImgViewRect.center();
-//	//qDebug() << "initial mRect: " << initialRect;
-//
-//	//QTransform cT;
-//	//cT.scale(800/initialRect.width(), 800/initialRect.width());
-//	//cT.translate(initialRect.center().x(), initialRect.center().y());
-//	//initialRect = cT.mapRect(initialRect);
-//	//initialRect.moveCenter(oldCenter);
-//
-//	//// the image resizes as we zoom
-//	//float ratioImg = (float)(mImgRect.width()/mImgRect.height());
-//	//float ratioWin = (float)(initialRect.width()/initialRect.height());
-//
-//	//QTransform imgMatrix;
-//	//float s;
-//	//if (mImgRect.width() == 0 || mImgRect.height() == 0)
-//	//	s = 1.0f;
-//	//else
-//	//	s = (ratioImg > ratioWin) ? (float)(initialRect.width()/mImgRect.width()) : (float)(initialRect.height()/mImgRect.height());
-//
-//	//imgMatrix.scale(s, s);
-//
-//	//QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-//	//QSizeF sDiff = (initialRect.size() - imgViewRect.size())*0.5f/s;
-//	//imgMatrix.translate(initialRect.left()/s+sDiff.width(), initialRect.top()/s+sDiff.height());
-//
-//	//return imgMatrix;
-//}
 
 // DkViewPortContrast --------------------------------------------------------------------
 DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {

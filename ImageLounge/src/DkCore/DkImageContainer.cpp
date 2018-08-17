@@ -372,6 +372,18 @@ bool DkImageContainer::hasImage() const {
 	return mLoader->hasImage();
 }
 
+bool DkImageContainer::hasMovie() const {
+
+	QString newSuffix = QFileInfo(filePath()).suffix();
+	return newSuffix.contains(QRegExp("(gif|mng|webp)", Qt::CaseInsensitive)) != 0;
+}
+
+bool DkImageContainer::hasSvg() const {
+
+	QString newSuffix = QFileInfo(filePath()).suffix();
+	return newSuffix.contains(QRegExp("(svg)", Qt::CaseInsensitive)) != 0;
+}
+
 int DkImageContainer::getLoadState() const {
 
 	return mLoadState;
