@@ -1380,6 +1380,8 @@ void DkThemeManager::applyTheme() const {
 	// add theme
 	QString cssString = loadTheme(getCurrentThemeName());
 
+	DkSettings::Display& dp = DkSettingsManager::param().display();
+
 	// NOTE: it is important, that default.css does not contain
 	// any line of code except for the color definitions
 	// otherwise, we change the default palette here...
@@ -1388,12 +1390,17 @@ void DkThemeManager::applyTheme() const {
 		cssString = replaceColors(cssString);
 
 		QPalette p = qApp->palette();
-		p.setColor(QPalette::Window, DkSettingsManager::param().display().themeBgdColor);
-		p.setColor(QPalette::WindowText, DkSettingsManager::param().display().themeFgdColor);
-		p.setColor(QPalette::Button, QColor(0, 0, 0));
-		p.setColor(QPalette::ButtonText, DkSettingsManager::param().display().themeFgdColor);
 
-		p.setColor(QPalette::Base, DkSettingsManager::param().display().themeBgdColor);
+		if (dp.themeBgdColor != QPalette().color(QPalette::Window)) {
+			p.setColor(QPalette::Window, dp.themeBgdColor);
+			p.setColor(QPalette::Base, dp.themeBgdColor);
+		}
+
+		p.setColor(QPalette::WindowText, dp.themeFgdColor);
+		p.setColor(QPalette::ButtonText, dp.themeFgdColor);
+
+		p.setColor(QPalette::Button, QColor(0, 0, 0));
+
 		qApp->setPalette(p);
 	}
 
