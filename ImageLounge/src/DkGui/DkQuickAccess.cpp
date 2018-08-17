@@ -109,14 +109,14 @@ void DkQuickAccess::addItems(const QStringList& itemTexts, const QIcon& icon) {
 	}
 }
 
-void DkQuickAccess::fireAction(const QModelIndex& index) const {
+void DkQuickAccess::execute(const QModelIndex& index) const {
 
-	QString key = index.data().toString();
+	QString txt = index.data().toString();
 
 	emit hideEdit();
 
-	if (mFilePaths.contains(key)) {
-		emit loadFileSignal(key);
+	if (mFilePaths.contains(txt)) {
+		emit loadFileSignal(txt);
 		return;
 	}
 
@@ -124,13 +124,20 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 
 		QString aKey = a->text().remove("&");
 
-		if (aKey == key) {
+		if (aKey == txt) {
 			
 			if (a->isEnabled())
 				a->trigger();
 			// TODO: else feedback?
 			return;
 		}
+	}
+}
+
+void DkQuickAccess::execute(const QString& cmd) const {
+
+	if (QFileInfo(cmd).exists()) {
+		emit loadFileSignal(cmd);
 	}
 }
 
@@ -150,6 +157,8 @@ DkQuickAccessEdit::DkQuickAccessEdit(QWidget* parent) : QLineEdit("", parent) {
 #endif
 	mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
 	setCompleter(mCompleter);
+
+	connect(this, SIGNAL(returnPressed()), this, SLOT(editConfirmed()));
 }
 
 void DkQuickAccessEdit::setModel(QStandardItemModel* model) {
@@ -159,6 +168,15 @@ void DkQuickAccessEdit::setModel(QStandardItemModel* model) {
 	show();
 
 	setFocus(Qt::MouseFocusReason);
+}
+
+void DkQuickAccessEdit::editConfirmed() {
+	
+	// do something usefull if our completer has no idea anymore...
+	if (mCompleter->currentCompletion().isNull())
+		emit executeSignal(text());
+
+	clearAccess();
 }
 
 void DkQuickAccessEdit::focusOutEvent(QFocusEvent* ev) {

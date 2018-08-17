@@ -1377,7 +1377,8 @@ void DkNoMacs::openQuickLaunch() {
 		// add all actions
 		mQuickAccess->addActions(DkActionManager::instance().allActions());
 		
-		connect(mToolbar->getQuickAccess()->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(fireAction(const QModelIndex&)));
+		connect(mToolbar->getQuickAccess(), SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)));
+		connect(mToolbar->getQuickAccess()->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(execute(const QModelIndex&)));
 		connect(mQuickAccess, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		connect(mQuickAccess, SIGNAL(hideEdit()), mToolbar->getQuickAccess(), SLOT(clearAccess()));
 	}
@@ -1391,7 +1392,8 @@ void DkNoMacs::openQuickLaunch() {
 		
 		if (!mQuickAccessEdit) {
 			mQuickAccessEdit = new DkQuickAccessEdit(this);
-			connect(mQuickAccessEdit->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(fireAction(const QModelIndex&)));
+			connect(mQuickAccessEdit, SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)));
+			connect(mQuickAccessEdit->completer(), SIGNAL(activated(const QModelIndex&)), mQuickAccess, SLOT(execute(const QModelIndex&)));
 			connect(mQuickAccess, SIGNAL(hideEdit()), mQuickAccessEdit, SLOT(clearAccess()));
 		}
 

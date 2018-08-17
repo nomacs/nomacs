@@ -56,7 +56,8 @@ public:
 	QStandardItemModel* getModel() const { return mModel; };
 	
 public slots:
-	void fireAction(const QModelIndex& index) const;
+	void execute(const QModelIndex& index) const;
+	void execute(const QString& cmd) const;
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
@@ -77,8 +78,12 @@ public:
 
 	void setModel(QStandardItemModel* model);
 
+signals:
+	void executeSignal(const QString& cmd) const;
+
 public slots:
 	void clearAccess();
+	void editConfirmed();
 
 protected:
 	void focusOutEvent(QFocusEvent* ev) override;
