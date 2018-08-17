@@ -1253,9 +1253,7 @@ void DkNoMacs::openDir() {
 	if (dirName.isEmpty())
 		return;
 
-	qDebug() << "loading directory: " << dirName;
-	
-	getTabWidget()->loadFile(dirName);
+	getTabWidget()->loadDirToTab(dirName);
 }
 
 void DkNoMacs::openFile() {
