@@ -263,32 +263,33 @@ int main(int argc, char *argv[]) {
 
 	qInfo() << "Initialization takes: " << dt;
 
+	nmc::DkCentralWidget* cw = w->getTabWidget();
+
 	if (!parser.positionalArguments().empty()) {
 		QString filePath = parser.positionalArguments()[0].trimmed();
 
-		if (!filePath.isEmpty())
+		if (!filePath.isEmpty()) 
 			w->loadFile(QFileInfo(filePath).absoluteFilePath());	// update folder + be silent
 	}
-	//else {
-	//	bool showRecent = nmc::DkSettingsManager::param().app().showRecentFiles;
-	//	showRecent &= nmc::DkSettingsManager::param().app().currentAppMode != nmc::DkSettings::mode_frameless;
-	//	w->showRecentFiles(showRecent);
-	//}
 
 	// load directory preview
 	if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
-		nmc::DkCentralWidget* cw = w->getTabWidget();
 		cw->loadDirToTab(parser.value(sourceDirOpt));
 	}
 
 	// load to tabs
 	if (!parser.value(tabOpt).isEmpty()) {
-		nmc::DkCentralWidget* cw = w->getTabWidget();
-		
 		QStringList tabPaths = parser.values(tabOpt);
 		
 		for (const QString& filePath : tabPaths)
 			cw->addTab(filePath);
+	}
+	
+	// load recent files if there is nothing to display
+	if (!cw->getTabs().isEmpty() && 
+		cw->getTabs()[0]->getMode() == nmc::DkTabInfo::tab_empty &&
+		nmc::DkSettingsManager::param().app().showRecentFiles) {
+		cw->showRecentFiles();
 	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettingsManager::param().app().currentAppMode).toInt();

@@ -163,7 +163,6 @@ public slots:
 	void showHistoryDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
 	void thumbsDockAreaChanged();
-	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
 	void openQuickLaunch();

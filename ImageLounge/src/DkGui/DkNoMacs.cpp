@@ -1904,13 +1904,6 @@ void DkNoMacs::setContrast(bool contrast) {
 	qDebug() << "contrast arguments: " << args;
 }
 
-void DkNoMacs::showRecentFiles(bool show) {
-
-	if (!DkSettingsManager::param().global().recentFiles.empty())
-		getTabWidget()->showRecentFiles(show);
-
-}
-
 void DkNoMacs::onWindowLoaded() {
 
 	DefaultSettings settings;

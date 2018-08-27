@@ -59,7 +59,7 @@ class DkViewPort;
 class DkPreferenceWidget;
 class DkProgressBar;
 
-class DkTabInfo : public QObject {
+class DllCoreExport DkTabInfo : public QObject {
 	Q_OBJECT
 
 public:

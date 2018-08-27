@@ -67,7 +67,8 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
 		deactivate();
 	mImageLoader->setCurrentImage(imgC);
 
-	mTabMode = (!imgC) ? tab_recent_files : tab_single_image;
+	if (imgC)
+		mTabMode = tab_single_image;
 	mTabIdx = idx;
 	mFilePath = getFilePath();
 }
@@ -304,10 +305,8 @@ void DkCentralWidget::createLayout() {
 	mTabbar->setMovable(true);
 	mTabbar->installEventFilter(new TabMiddleMouseCloser([this](int idx) { removeTab(idx); }));
 	mTabbar->hide();
-	//addTab(QFileInfo());
 
 	mProgressBar = new DkProgressBar(this);
-	//mProgressBar->setStyleSheet(mProgressBar->styleSheet() + "QProgressBar{background-color: #fff;}");
 	mProgressBar->hide();
 
 	mWidgets.resize(widget_end);
@@ -422,11 +421,6 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	mTabInfos.at(idx)->activate();
 	QSharedPointer<DkImageContainerT> imgC = mTabInfos.at(idx)->getImage();
 
-	//// TODO: this is a fast fix because we release today
-	//// better solution: check why this state might happen
-	//if (!imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image)
-	//	mTabInfos.at(idx)->setMode(DkTabInfo::tab_recent_files);
-
 	if (imgC && mTabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
 		mTabInfos.at(idx)->getImageLoader()->load(imgC);
 		showViewPort();
@@ -438,20 +432,10 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		showRecentFiles();
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_preferences) {
-		showRecentFiles(false);
 		showPreferences();
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
-		showRecentFiles(false);
 		showBatch();
-	}
-	else {
-		showViewPort();
-		mViewport->unloadImage();
-		mViewport->deactivate();
-
-		if (DkSettingsManager::param().app().showRecentFiles)
-			showRecentFiles(true);
 	}
 }
 
@@ -849,7 +833,10 @@ void DkCentralWidget::showRecentFiles(bool show) {
 
 		switchWidget(mWidgets[recent_files_widget]);
 	}
-
+	else {
+		// toggle back to image
+		showViewPort();
+	}
 }
 
 void DkCentralWidget::showPreferences(bool show) {
