@@ -2467,10 +2467,11 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		mDesktop = QApplication::desktop();
 
-		updateScreenSize();
+		chooseMonitor(false);
 		show();
         
-        connect(mDesktop, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
+        connect(mDesktop, SIGNAL(workAreaResized(int)), this, SLOT(chooseMonitor()));
+		connect(am.action(DkActionManager::menu_view_monitors), SIGNAL(triggered()), this, SLOT(chooseMonitor()));
 
 		setObjectName("DkNoMacsFrameless");
 		showStatusBar(false);	// fix
@@ -2491,7 +2492,7 @@ void DkNoMacsFrameless::createContextMenu() {
 	am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
 }
 
-void DkNoMacsFrameless::updateScreenSize(int) {
+void DkNoMacsFrameless::chooseMonitor(bool force) {
 
 	if (!mDesktop)
 		return;
@@ -2503,9 +2504,13 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 		DkChooseMonitorDialog* cmd = new DkChooseMonitorDialog(this);
 		cmd->setWindowTitle(tr("Choose a Monitor"));
 
-		int answer = cmd->exec();
-
-		if (answer == QDialog::Accepted) {
+		if (force || cmd->showDialog()) {
+			int answer = cmd->exec();
+			if (answer == QDialog::Accepted) {
+				screenRect = cmd->screenRect();
+			}
+		}
+		else {
 			screenRect = cmd->screenRect();
 		}
 	}

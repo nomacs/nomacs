@@ -238,6 +238,8 @@ public:
 		menu_view_movie_next,
 		menu_view_movie_prev,
 
+		menu_view_monitors,	// frameless only
+
 		menu_view_end,	// nothing beyond this point
 	};
 

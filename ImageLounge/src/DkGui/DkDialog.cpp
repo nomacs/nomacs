@@ -4318,6 +4318,8 @@ DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) : QDialog(parent) 
 
 	mScreenRects = screenRects();
 	createLayout();
+	loadSettings();
+	resize(300, 150);
 }
 
 void DkChooseMonitorDialog::createLayout() {
@@ -4331,6 +4333,8 @@ void DkChooseMonitorDialog::createLayout() {
 		mMonitorBox->addItem(DkImage::loadIcon(":/nomacs/img/display-settings.svg"), ms);
 	}
 
+	mCbRemember = new QCheckBox(tr("Remember Monitor Settings"), this);
+
 	// buttons
 	auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
@@ -4339,8 +4343,47 @@ void DkChooseMonitorDialog::createLayout() {
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QGridLayout* layout = new QGridLayout(this);
+	layout->setRowStretch(0, 1);
 	layout->addWidget(mMonitorBox, 1, 1);
-	layout->addWidget(buttons, 2, 1);
+	layout->addWidget(mCbRemember, 2, 1);
+	layout->addWidget(buttons, 3, 1);
+	layout->setRowStretch(4, 1);
+}
+
+void DkChooseMonitorDialog::loadSettings() {
+
+	DefaultSettings settings;
+	settings.beginGroup("MonitorSetup");
+	
+	int mIdx = settings.value("monitorIndex", 0).toInt();
+	mCbRemember->setChecked(!settings.value("showDialog", true).toBool());
+
+	settings.endGroup();
+
+	if (mIdx >= 0 && mIdx < mMonitorBox->count())
+		mMonitorBox->setCurrentIndex(mIdx);
+	else
+		mCbRemember->setChecked(false);	// fall-back if the count is illegal
+}
+
+void DkChooseMonitorDialog::saveSettings() const {
+	
+	DefaultSettings settings;
+
+	settings.beginGroup("MonitorSetup");
+	settings.setValue("monitorIndex", mMonitorBox->currentIndex());
+	settings.setValue("showDialog", !mCbRemember->isChecked());
+	settings.endGroup();
+}
+
+int DkChooseMonitorDialog::exec() {
+
+	int answer = QDialog::exec();
+
+	if (answer == QDialog::Accepted)
+		saveSettings();
+
+	return answer;
 }
 
 QVector<QRect> DkChooseMonitorDialog::screenRects() const {
@@ -4364,6 +4407,10 @@ QVector<QRect> DkChooseMonitorDialog::screenRects() const {
 QRect DkChooseMonitorDialog::screenRect() const {
 	
 	return mScreenRects[mMonitorBox->currentIndex()];
+}
+
+bool DkChooseMonitorDialog::showDialog() const {
+	return !mCbRemember->isChecked();
 }
 
 } // close namespace

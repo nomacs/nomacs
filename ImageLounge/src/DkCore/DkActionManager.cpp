@@ -439,7 +439,7 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 
 	mViewMenu = new QMenu(QObject::tr("&View"), parent);
 
-	mViewMenu->addAction(mViewActions[menu_view_frameless]);	
+	mViewMenu->addAction(mViewActions[menu_view_frameless]);
 	mViewMenu->addAction(mViewActions[menu_view_fullscreen]);
 	mViewMenu->addSeparator();
 
@@ -481,8 +481,13 @@ QMenu* DkActionManager::createViewMenu(QWidget* parent /* = 0 */) {
 	mViewMenu->addAction(mViewActions[menu_view_movie_pause]);
 	mViewMenu->addAction(mViewActions[menu_view_movie_prev]);
 	mViewMenu->addAction(mViewActions[menu_view_movie_next]);
-
 	mViewMenu->addSeparator();
+
+	if (DkSettingsManager::param().app().currentAppMode == DkSettingsManager::param().mode_frameless) {
+		mViewMenu->addAction(mViewActions[menu_view_monitors]);
+		mViewMenu->addSeparator();
+	}
+	
 	mViewMenu->addAction(mViewActions[menu_view_gps_map]);
 
 	return mViewMenu;
@@ -1345,6 +1350,9 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	mViewActions[menu_view_movie_next] = new QAction(mViewIcons[icon_view_movie_next], QObject::tr("&Next Frame"), parent);
 	mViewActions[menu_view_movie_next]->setStatusTip(QObject::tr("show next frame"));
+
+	mViewActions[menu_view_monitors] = new QAction(QObject::tr("Choose &Monitor"), parent);
+	mViewActions[menu_view_monitors]->setStatusTip(QObject::tr("Choose the Monitor to run nomacs"));
 
 	mViewActions[menu_view_gps_map] = new QAction(mViewIcons[icon_view_gps], QObject::tr("Show Image Location"), parent);
 	mViewActions[menu_view_gps_map]->setStatusTip(QObject::tr("shows where the image was taken in Google maps"));

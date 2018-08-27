@@ -374,7 +374,7 @@ public:
 
 public slots:
 	void exitFullScreen();
-	void updateScreenSize(int screen = 0);
+	void chooseMonitor(bool force = true);
 
 protected:
 	void closeEvent(QCloseEvent *event);

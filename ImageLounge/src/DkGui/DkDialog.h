@@ -57,6 +57,7 @@ class QLabel;
 class QComboBox;
 class QCheckBox;
 class QProgressBar;
+class QSettings;
 
 namespace nmc {
 
@@ -822,13 +823,20 @@ public:
 	DkChooseMonitorDialog(QWidget* parent);
 
 	QRect screenRect() const;
+	bool showDialog() const;
+
+public slots:
+	int exec() override;
 
 private:
 	void createLayout();
 	QVector<QRect> screenRects() const;
+	void loadSettings();
+	void saveSettings() const;
 
 	QVector<QRect> mScreenRects;
 	QComboBox* mMonitorBox;
+	QCheckBox* mCbRemember;
 };
 
 
