@@ -181,7 +181,6 @@ public slots:
 	virtual void setEditedImage(const QImage& newImg, const QString& editName);
 	virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setImage(QImage newImg) override;
-	virtual void setThumbImage(QImage newImg);
 
 	void settingsChanged();
 	void pauseMovie(bool paused);

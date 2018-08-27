@@ -249,8 +249,6 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	QRectF oldImgRect = mImgRect;
 	mImgRect = QRectF(QPoint(), getImageSize());
 	
-	emit enableNoImageSignal(!newImg.isNull());
-
 	if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
 		mWorldMatrix.reset();							
 
@@ -403,7 +401,6 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 #ifdef DK_CORE_DLL_EXPORT
 	if (!event->isAutoRepeat())
 		emit keyReleaseSignal(event);	// make key presses available
-	//emit enableNoImageSignal(true);
 #endif
 
 	QWidget::keyReleaseEvent(event);

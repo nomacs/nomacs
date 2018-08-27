@@ -118,14 +118,13 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	mMenu = new DkMenuBar(this, -1);
 
-	DkActionManager::instance().createActions(this);
-	DkActionManager::instance().createMenus(mMenu);
+	DkActionManager& am = DkActionManager::instance();
+	am.createActions(this);
+	am.createMenus(mMenu);
+	am.enableImageActions(false);
 
 	mSaveSettings = true;
 
-	// load settings
-	//DkSettings::load();
-	
 	mOpenDialog = 0;
 	mSaveDialog = 0;
 	mThumbSaver = 0;
@@ -166,7 +165,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	//qDebug() << "3987 ^ 12 + 4365 ^ 12 = " << pow(an + bn, 1/12.0) << "^ 12";
 	//qDebug() << "Sorry Fermat, but the Simpsons are right.";
-
 }
 
 DkNoMacs::~DkNoMacs() {
@@ -190,7 +188,6 @@ void DkNoMacs::init() {
 	createContextMenu();
 	createToolbar();
 	createStatusbar();
-	enableNoImageActions(false);
 
 	// TODO - just for android register me as a gesture recognizer
 	grabGesture(Qt::PanGesture);
@@ -209,7 +206,6 @@ void DkNoMacs::init() {
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
-	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	// connections to the image loader
 	connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
@@ -365,7 +361,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
 	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteFile()));
 	connect(am.action(DkActionManager::menu_tools_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
-	//connect(am.action(DkActionManager::menu_edit_preferences), SIGNAL(triggered()), this, SLOT(openSettings()));
 
 	connect(am.action(DkActionManager::menu_panel_menu), SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
 	connect(am.action(DkActionManager::menu_panel_toolbar), SIGNAL(toggled(bool)), this, SLOT(showToolBar(bool)));
@@ -409,76 +404,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_help_update_translation), SIGNAL(triggered()), this, SLOT(updateTranslations()));
 
 	connect(am.appManager(), SIGNAL(openFileSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
-
-	//// add sort actions to the thumbscene
-	//getTabWidget()->getThumbScrollWidget()->addContextMenuActions(mSortActions, tr("&Sort"));
-}
-
-void DkNoMacs::enableNoImageActions(bool enable) {
-
-	DkActionManager& am = DkActionManager::instance();
-
-	am.action(DkActionManager::menu_file_save)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_save_as)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_save_list)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_save_web)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_rename)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_print)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_reload)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_prev)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_next)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_goto)->setEnabled(enable);
-	am.action(DkActionManager::menu_file_find)->setEnabled(enable);
-
-	am.action(DkActionManager::menu_edit_rotate_cw)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_rotate_ccw)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_rotate_180)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_delete)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_transform)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_crop)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_copy)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_copy_buffer)->setEnabled(enable);
-	am.action(DkActionManager::menu_edit_copy_color)->setEnabled(enable);
-	am.action(DkActionManager::menu_tools_wallpaper)->setEnabled(enable);
-
-	am.action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
-	
-	am.action(DkActionManager::menu_panel_info)->setEnabled(enable);
-#ifdef WITH_OPENCV
-	am.action(DkActionManager::menu_panel_histogram)->setEnabled(enable);
-#else
-	am.action(DkActionManager::menu_panel_histogram)->setEnabled(false);
-#endif
-	am.action(DkActionManager::menu_panel_scroller)->setEnabled(enable);
-	am.action(DkActionManager::menu_panel_comment)->setEnabled(enable);
-	am.action(DkActionManager::menu_panel_preview)->setEnabled(enable);
-	am.action(DkActionManager::menu_panel_exif)->setEnabled(enable);
-	am.action(DkActionManager::menu_panel_overview)->setEnabled(enable);
-	am.action(DkActionManager::menu_panel_player)->setEnabled(enable);
-	
-	am.action(DkActionManager::menu_view_fullscreen)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_reset)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_100)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_fit_frame)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_zoom_in)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_zoom_out)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_tp_pattern)->setEnabled(enable);
-	am.action(DkActionManager::menu_view_anti_aliasing)->setEnabled(enable);
-
-	// hidden actions
-	am.action(DkActionManager::sc_skip_prev)->setEnabled(enable);
-	am.action(DkActionManager::sc_skip_prev_sync)->setEnabled(enable);
-	am.action(DkActionManager::sc_skip_next)->setEnabled(enable);
-	am.action(DkActionManager::sc_skip_next_sync)->setEnabled(enable);
-	am.action(DkActionManager::sc_first_file)->setEnabled(enable);
-	am.action(DkActionManager::sc_first_file_sync)->setEnabled(enable);
-	am.action(DkActionManager::sc_last_file)->setEnabled(enable);
-	am.action(DkActionManager::sc_last_file_sync)->setEnabled(enable);
-
-	// disable open with actions
-	for (QAction* a : DkActionManager::instance().appManager()->getActions())
-		a->setEnabled(enable);
-
 }
 
 void DkNoMacs::enableMovieActions(bool enable) {
@@ -2458,13 +2383,6 @@ void DkNoMacsSync::dropEvent(QDropEvent *event) {
 
 }
 
-void DkNoMacsSync::enableNoImageActions(bool enable /* = true */) {
-
-	DkNoMacs::enableNoImageActions(enable);
-
-	DkActionManager::instance().action(DkActionManager::menu_sync_connect_all)->setEnabled(enable);
-}
-
 qint16 DkNoMacsSync::getServerPort() {
 
 	return (mLocalClient) ? mLocalClient->getServerPort() : 0;
@@ -2556,6 +2474,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		setObjectName("DkNoMacsFrameless");
 		showStatusBar(false);	// fix
+
+		// actions that should always be disabled
+		DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() {
@@ -2568,15 +2489,6 @@ void DkNoMacsFrameless::createContextMenu() {
 	DkActionManager& am = DkActionManager::instance();
 	am.contextMenu()->addSeparator();
 	am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
-}
-
-void DkNoMacsFrameless::enableNoImageActions(bool enable) {
-
-	DkNoMacs::enableNoImageActions(enable);
-
-	// actions that should always be disabled
-	DkActionManager::instance().action(DkActionManager::menu_view_fit_frame)->setEnabled(false);
-
 }
 
 void DkNoMacsFrameless::updateScreenSize(int) {

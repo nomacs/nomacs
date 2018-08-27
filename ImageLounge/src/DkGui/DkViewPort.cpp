@@ -123,7 +123,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	addActions(am.pluginActionManager()->pluginDummyActions().toList());
 #endif
 
-	connect(this, SIGNAL(enableNoImageSignal(bool)), mController, SLOT(imageLoaded(bool)));
 	connect(&mImgStorage, SIGNAL(infoSignal(const QString&)), this, SIGNAL(infoSignal(const QString&)));
 
 	if (am.pluginActionManager())
@@ -286,7 +285,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	mImgRect = QRectF(QPoint(), getImageSize());
 
-	emit enableNoImageSignal(!newImg.isNull());
+	DkActionManager::instance().enableImageActions(!newImg.isNull());
+	mController->imageLoaded(!newImg.isNull());
 
 	if (((!DkSettingsManager::param().slideShow().moveSpeed && 
 		DkSettingsManager::param().display().keepZoom == DkSettings::zoom_never_keep) ||
@@ -352,30 +352,6 @@ void DkViewPort::setImage(QImage newImg) {
 		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_dimension_info);
 		DkStatusBarManager::instance().setMessage("", DkStatusBar::status_file_info);
 	}
-}
-
-void DkViewPort::setThumbImage(QImage newImg) {
-	
-	DkTimer dt;
-	//imgPyramid.clear();
-
-	mImgStorage.setImage(newImg);
-	QRectF oldImgRect = mImgRect;
-	mImgRect = QRectF(0, 0, newImg.width(), newImg.height());
-
-	emit enableNoImageSignal(true);
-
-	if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
-		mWorldMatrix.reset();							
-
-	updateImageMatrix();
-	
-	mController->getOverview()->setImage(newImg);
-	mController->stopLabels();
-
-	update();
-
-	qDebug() << "setting the image took me: " << dt;
 }
 
 void DkViewPort::zoom(float factor, QPointF center) {

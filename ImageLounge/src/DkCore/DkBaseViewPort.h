@@ -116,7 +116,6 @@ public:
 	virtual bool imageInside() const;
 
 signals:
-	void enableNoImageSignal(bool enable) const;
 	void showStatusBar(bool show, bool permanent) const;
 	void newImageSignal(QImage* img) const;
 	void keyReleaseSignal(QKeyEvent* event) const;	// make key presses available

@@ -535,6 +535,8 @@ public:
 
 	void assignCustomShortcuts(QVector<QAction*> actions) const;
 
+	void enableImageActions(bool enable = true) const;
+
 protected:
 	DkActionManager();
 	

@@ -1626,6 +1626,75 @@ void DkActionManager::assignCustomShortcuts(QVector<QAction*> actions) const {
 	settings.endGroup();
 }
 
+void DkActionManager::enableImageActions(bool enable) const {
+	
+	action(DkActionManager::menu_file_save)->setEnabled(enable);
+	action(DkActionManager::menu_file_save_as)->setEnabled(enable);
+	action(DkActionManager::menu_file_save_list)->setEnabled(enable);
+	action(DkActionManager::menu_file_save_web)->setEnabled(enable);
+	action(DkActionManager::menu_file_rename)->setEnabled(enable);
+	action(DkActionManager::menu_file_print)->setEnabled(enable);
+	action(DkActionManager::menu_file_reload)->setEnabled(enable);
+	action(DkActionManager::menu_file_prev)->setEnabled(enable);
+	action(DkActionManager::menu_file_next)->setEnabled(enable);
+	action(DkActionManager::menu_file_goto)->setEnabled(enable);
+	action(DkActionManager::menu_file_find)->setEnabled(enable);
+
+	action(DkActionManager::menu_edit_rotate_cw)->setEnabled(enable);
+	action(DkActionManager::menu_edit_rotate_ccw)->setEnabled(enable);
+	action(DkActionManager::menu_edit_rotate_180)->setEnabled(enable);
+	action(DkActionManager::menu_edit_delete)->setEnabled(enable);
+	action(DkActionManager::menu_edit_transform)->setEnabled(enable);
+	action(DkActionManager::menu_edit_crop)->setEnabled(enable);
+	action(DkActionManager::menu_edit_copy)->setEnabled(enable);
+	action(DkActionManager::menu_edit_copy_buffer)->setEnabled(enable);
+	action(DkActionManager::menu_edit_copy_color)->setEnabled(enable);
+	action(DkActionManager::menu_edit_undo)->setEnabled(enable);
+	action(DkActionManager::menu_edit_redo)->setEnabled(enable);
+
+
+	action(DkActionManager::menu_panel_info)->setEnabled(enable);
+#ifdef WITH_OPENCV
+	action(DkActionManager::menu_panel_histogram)->setEnabled(enable);
+#else
+	action(DkActionManager::menu_panel_histogram)->setEnabled(false);
+#endif
+	action(DkActionManager::menu_panel_scroller)->setEnabled(enable);
+	action(DkActionManager::menu_panel_comment)->setEnabled(enable);
+	action(DkActionManager::menu_panel_preview)->setEnabled(enable);
+	action(DkActionManager::menu_panel_exif)->setEnabled(enable);
+	action(DkActionManager::menu_panel_overview)->setEnabled(enable);
+	action(DkActionManager::menu_panel_player)->setEnabled(enable);
+	action(DkActionManager::menu_panel_thumbview)->setEnabled(enable);
+
+	action(DkActionManager::menu_view_slideshow)->setEnabled(enable);
+	action(DkActionManager::menu_view_fullscreen)->setEnabled(enable);
+	action(DkActionManager::menu_view_reset)->setEnabled(enable);
+	action(DkActionManager::menu_view_100)->setEnabled(enable);
+	action(DkActionManager::menu_view_fit_frame)->setEnabled(enable);
+	action(DkActionManager::menu_view_zoom_in)->setEnabled(enable);
+	action(DkActionManager::menu_view_zoom_out)->setEnabled(enable);
+	action(DkActionManager::menu_view_tp_pattern)->setEnabled(enable);
+	action(DkActionManager::menu_view_anti_aliasing)->setEnabled(enable);
+
+	action(DkActionManager::menu_tools_wallpaper)->setEnabled(enable);
+	action(DkActionManager::menu_tools_thumbs)->setEnabled(enable);
+
+	// hidden actions
+	action(DkActionManager::sc_skip_prev)->setEnabled(enable);
+	action(DkActionManager::sc_skip_prev_sync)->setEnabled(enable);
+	action(DkActionManager::sc_skip_next)->setEnabled(enable);
+	action(DkActionManager::sc_skip_next_sync)->setEnabled(enable);
+	action(DkActionManager::sc_first_file)->setEnabled(enable);
+	action(DkActionManager::sc_first_file_sync)->setEnabled(enable);
+	action(DkActionManager::sc_last_file)->setEnabled(enable);
+	action(DkActionManager::sc_last_file_sync)->setEnabled(enable);
+
+	// disable open with actions
+	for (QAction* a : DkActionManager::instance().appManager()->getActions())
+		a->setEnabled(enable);
+}
+
 // DkGlobalProgress --------------------------------------------------------------------
 DkGlobalProgress::DkGlobalProgress() : showProgress(true) {
 #ifdef Q_OS_WIN

@@ -215,7 +215,6 @@ public slots:
 	void updateProgressTranslations(qint64 received, qint64 total);
 	void startSetup(QString);
 	void updateTranslations();
-	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate(bool silent = false);
 	void setFrameless(bool frameless);
 	void startPong() const;
@@ -340,7 +339,6 @@ signals:
 public slots:
 	void tcpConnectAll();
 	void tcpAutoConnect(bool connect);
-	virtual void enableNoImageActions(bool enable = true);
 
 protected:
 
@@ -375,7 +373,6 @@ public:
 	virtual ~DkNoMacsFrameless();
 
 public slots:
-	virtual void enableNoImageActions(bool enable = true);
 	void exitFullScreen();
 	void updateScreenSize(int screen = 0);
 
