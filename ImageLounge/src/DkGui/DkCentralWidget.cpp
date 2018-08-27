@@ -1118,7 +1118,7 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool newTab) {
 	}
 
 	auto display = [&](QString msg) {
-		mViewport->getController()->setInfo(msg.arg(msg));
+		mViewport->getController()->setInfo(msg);
 	};
 
 	if (fi.exists()) {

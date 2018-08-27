@@ -4314,7 +4314,7 @@ QSize DkSvgSizeDialog::size() const {
 }
 
 // -------------------------------------------------------------------- DkChooseMonitorDialog 
-DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) {
+DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) : QDialog(parent) {
 
 	mScreenRects = screenRects();
 	createLayout();

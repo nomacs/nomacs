@@ -1407,7 +1407,7 @@ void DkNoMacs::loadFile(const QString& filePath) {
 	if (QFileInfo(filePath).isDir())
 		getTabWidget()->loadDirToTab(filePath);
 	else
-		getTabWidget()->loadFile(filePath, true);
+		getTabWidget()->loadFile(filePath, false);
 
 }
 
@@ -2594,8 +2594,10 @@ void DkNoMacsFrameless::updateScreenSize(int) {
 	QRect screenRect = mDesktop->availableGeometry();
 
 	// ask the user which monitor to use
-	if (mDesktop->screenCount() > 0) {
+	if (mDesktop->screenCount() > 1) {
 		DkChooseMonitorDialog* cmd = new DkChooseMonitorDialog(this);
+		cmd->setWindowTitle(tr("Choose a Monitor"));
+
 		int answer = cmd->exec();
 
 		if (answer == QDialog::Accepted) {
