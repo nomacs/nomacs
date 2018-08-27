@@ -226,3 +226,10 @@ nmc--DkThumbPreviewLabel:hover {
 QMenu::separator {
 	border-top: 1px solid #666;
 }
+
+QPushButton#displayButton {
+	border: 1px solid #ddd;
+	background-color: #000;
+	
+	color: #fff;
+}

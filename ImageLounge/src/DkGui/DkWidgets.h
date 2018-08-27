@@ -940,4 +940,31 @@ protected:
 
 };
 
+class DllCoreExport DkDisplayWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkDisplayWidget(QWidget* parent);
+
+	QRect screenRect() const;
+	
+	int count() const;
+
+	int currentIndex() const;
+	void setCurrentIndex(int index);
+
+//public slots:
+//	void changeDisplay();
+
+protected:
+	void resizeEvent(QResizeEvent *event) override;
+
+private:
+	void createLayout();
+	void updateLayout();
+
+	QList<QScreen*> mScreens;
+	QList<QPushButton*> mScreenButtons;
+};
+
 }

@@ -95,6 +95,9 @@
 #include <QSvgRenderer>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QButtonGroup>
+#include <QDesktopWidget>
+#include <QScreen>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -2908,5 +2911,120 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event) {
 
 	QPushButton::paintEvent(event);
 }
+
+// -------------------------------------------------------------------- DkDisplayWidget 
+DkDisplayWidget::DkDisplayWidget(QWidget* parent) : DkWidget(parent) {
+
+	createLayout();
+	updateLayout();
+
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+	setMinimumHeight(100);
+}
+
+QRect DkDisplayWidget::screenRect() const {
+	
+	int idx = currentIndex();
+
+	if (idx >= 0)
+		return mScreens[idx]->availableGeometry();
+
+	return QRect();
+}
+
+int DkDisplayWidget::count() const {
+	
+	return mScreens.size();
+}
+
+int DkDisplayWidget::currentIndex() const {
+	
+	for (int idx = 0; idx < mScreenButtons.size(); idx++) {
+
+		if (mScreenButtons[idx]->isChecked())
+			return idx;
+	}
+	
+	return 0;
+}
+
+void DkDisplayWidget::setCurrentIndex(int index) {
+
+	mScreenButtons[index]->setChecked(true);
+}
+
+void DkDisplayWidget::resizeEvent(QResizeEvent * event) {
+
+	DkWidget::resizeEvent(event);
+	updateLayout();
+}
+
+void DkDisplayWidget::createLayout() {
+
+	mScreens = QGuiApplication::screens();
+
+	QButtonGroup* bg = new QButtonGroup(this);
+
+	for (int idx = 0; idx < mScreens.size(); idx++) {
+
+		QPushButton* sb = new QPushButton(QString::number(idx+1), this);
+		sb->setObjectName("displayButton");
+		sb->setCheckable(true);
+		sb->setFlat(true);
+
+		//connect(sb, SIGNAL(clicked()), this, SLOT(changeDisplay()));
+
+		bg->addButton(sb);
+		mScreenButtons << sb;
+	}
+}
+
+void DkDisplayWidget::updateLayout() {
+
+
+	QRect desktop;
+	for (auto s : mScreens) {
+		desktop = desktop.united(s->geometry());
+	}
+
+	int w = width() - 6;
+	int h = height() - 6;
+
+	QTransform tm;
+	double sx = (double)w / desktop.width();
+	double sy = (double)h / desktop.height();
+	double s = qMin(sx, sy);
+	tm.scale(s, s);
+
+	QRect md = tm.mapRect(desktop);
+	QPoint dxy(qRound((width() - md.width()) * 0.5), qRound((height() - md.height()) * 0.5));
+
+	int myScreen = QApplication::desktop()->screenNumber(this);
+
+	for (int idx = 0; idx < mScreens.size(); idx++) {
+
+		QRect r = mScreens[idx]->geometry();
+		r.moveCenter(r.center()-desktop.topLeft());
+		
+		r = tm.mapRect(r);
+		r.moveCenter(r.center()+dxy);	// center
+
+		if (idx == myScreen)
+			mScreenButtons[idx]->setChecked(true);
+
+		mScreenButtons[idx]->setGeometry(r);
+	}
+}
+
+//void DkDisplayWidget::changeDisplay() {
+//
+//	QRect sr = screenRect();
+//
+//	DkNoMacsFrameless* w = dynamic_cast<DkNoMacsFrameless*>(DkUtils::getMainWindow());
+//
+//	if (w)
+//		w->setGeometry(sr);
+//}
+
 
 }

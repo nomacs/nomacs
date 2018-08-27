@@ -91,6 +91,7 @@
 #include <QKeySequenceEdit>
 #include <QPrinterInfo>
 #include <QDesktopWidget>
+#include <QScreen>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -4316,7 +4317,7 @@ QSize DkSvgSizeDialog::size() const {
 // -------------------------------------------------------------------- DkChooseMonitorDialog 
 DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) : QDialog(parent) {
 
-	mScreenRects = screenRects();
+	mScreens = screens();
 	createLayout();
 	loadSettings();
 	resize(300, 150);
@@ -4324,14 +4325,8 @@ DkChooseMonitorDialog::DkChooseMonitorDialog(QWidget* parent) : QDialog(parent) 
 
 void DkChooseMonitorDialog::createLayout() {
 
-	mMonitorBox = new QComboBox(this);
-
-	for (int idx = 0; idx < mScreenRects.size(); idx++) {
-
-		QRect r = mScreenRects[idx];
-		QString ms = tr("Monitor %1 (%2 x %3)").arg(idx+1).arg(r.width()).arg(r.height());
-		mMonitorBox->addItem(DkImage::loadIcon(":/nomacs/img/display-settings.svg"), ms);
-	}
+	mDisplayWidget = new DkDisplayWidget(this);
+	mDisplayWidget->show();
 
 	mCbRemember = new QCheckBox(tr("Remember Monitor Settings"), this);
 
@@ -4344,7 +4339,7 @@ void DkChooseMonitorDialog::createLayout() {
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setRowStretch(0, 1);
-	layout->addWidget(mMonitorBox, 1, 1);
+	layout->addWidget(mDisplayWidget, 1, 1);
 	layout->addWidget(mCbRemember, 2, 1);
 	layout->addWidget(buttons, 3, 1);
 	layout->setRowStretch(4, 1);
@@ -4360,8 +4355,8 @@ void DkChooseMonitorDialog::loadSettings() {
 
 	settings.endGroup();
 
-	if (mIdx >= 0 && mIdx < mMonitorBox->count())
-		mMonitorBox->setCurrentIndex(mIdx);
+	if (mIdx >= 0 && mIdx < mDisplayWidget->count())
+		mDisplayWidget->setCurrentIndex(mIdx);
 	else
 		mCbRemember->setChecked(false);	// fall-back if the count is illegal
 }
@@ -4371,7 +4366,7 @@ void DkChooseMonitorDialog::saveSettings() const {
 	DefaultSettings settings;
 
 	settings.beginGroup("MonitorSetup");
-	settings.setValue("monitorIndex", mMonitorBox->currentIndex());
+	settings.setValue("monitorIndex", mDisplayWidget->currentIndex());
 	settings.setValue("showDialog", !mCbRemember->isChecked());
 	settings.endGroup();
 }
@@ -4386,27 +4381,14 @@ int DkChooseMonitorDialog::exec() {
 	return answer;
 }
 
-QVector<QRect> DkChooseMonitorDialog::screenRects() const {
+QList<QScreen*> DkChooseMonitorDialog::screens() const {
 
-	QVector<QRect> screenRects;
-	QDesktopWidget* dt = QApplication::desktop();
-
-	if (!dt)
-		return screenRects;
-
-	int sc = dt->screenCount();
-
-	for (int idx = 0; idx < sc; idx++) {
-
-		screenRects << dt->availableGeometry(idx);
-	}
-
-	return screenRects;
+	return QGuiApplication::screens();
 }
 
 QRect DkChooseMonitorDialog::screenRect() const {
 	
-	return mScreenRects[mMonitorBox->currentIndex()];
+	return mDisplayWidget->screenRect();
 }
 
 bool DkChooseMonitorDialog::showDialog() const {

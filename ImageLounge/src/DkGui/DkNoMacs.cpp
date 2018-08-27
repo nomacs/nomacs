@@ -2515,9 +2515,6 @@ void DkNoMacsFrameless::chooseMonitor(bool force) {
 		}
 	}
 
-	QRect mg = screenRect;
-	mg.moveTopLeft(-screenRect.topLeft());
-
 	setGeometry(screenRect);
 }
 

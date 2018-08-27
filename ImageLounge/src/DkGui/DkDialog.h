@@ -68,6 +68,7 @@ class DkSlider;
 class DkButton;
 class DkThumbNail;
 class DkAppManager;
+class DkDisplayWidget;
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
@@ -830,12 +831,12 @@ public slots:
 
 private:
 	void createLayout();
-	QVector<QRect> screenRects() const;
+	QList<QScreen*> screens() const;
 	void loadSettings();
 	void saveSettings() const;
 
-	QVector<QRect> mScreenRects;
-	QComboBox* mMonitorBox;
+	QList<QScreen*> mScreens;
+	DkDisplayWidget* mDisplayWidget;
 	QCheckBox* mCbRemember;
 };
 

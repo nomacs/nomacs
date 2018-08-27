@@ -602,3 +602,21 @@ QDoubleSpinBox#sbZoom {
 	border: none;
 	selection-background-color: HIGHLIGHT_COLOR;
 }
+
+QPushButton#displayButton {
+	border: 1px solid #ddd;
+	background-color: #fff;
+	
+	font: light "Segoe UI";
+	font-size: 16pt;
+	color: #000;
+	font-weight: 100;
+}
+
+QPushButton#displayButton:hover {
+	background-color: HIGHLIGHT_LIGHT;
+}
+
+QPushButton#displayButton:checked {
+	border: 1px solid HIGHLIGHT_COLOR;
+}
