@@ -1160,41 +1160,48 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 
 bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
-	if (mExifState == not_loaded || mExifState == no_data)
-		return false;
-
-	if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&
-		mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
-		return false;
-
-	Exiv2::ExifData &exifData = mExifImg->exifData();
-
 	bool setExifSuccessfull = false;
 
-	if (!exifData.empty() && getExifKeys().contains(key)) {
+	if (mExifState == not_loaded || mExifState == no_data)
+		return false;
+	
+	try {
 
-		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
+		if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&
+			mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
+			return false;
 
-		// TODO: save utf8 strings
-		//QByteArray ba = taginfo.toUtf8();
-		//Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian, Exiv2::TypeId::unsignedByte);
+		Exiv2::ExifData &exifData = mExifImg->exifData();
 
-		//tag.setValue(&val);
-		if (!tag.setValue(taginfo.toStdString())) {
-			mExifState = dirty;
-			setExifSuccessfull = true;
+
+		if (!exifData.empty() && getExifKeys().contains(key)) {
+
+			Exiv2::Exifdatum& tag = exifData[key.toStdString()];
+
+			// TODO: save utf8 strings
+			//QByteArray ba = taginfo.toUtf8();
+			//Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian, Exiv2::TypeId::unsignedByte);
+
+			//tag.setValue(&val);
+			if (!tag.setValue(taginfo.toStdString())) {
+				mExifState = dirty;
+				setExifSuccessfull = true;
+			}
+		}
+		else {
+
+			Exiv2::ExifKey exivKey(key.toStdString());
+			Exiv2::Exifdatum tag(exivKey);
+			if (!tag.setValue(taginfo.toStdString())) {
+				mExifState = dirty;
+				setExifSuccessfull = true;
+			}
+
+			exifData.add(tag);
 		}
 	}
-	else {
-
-		Exiv2::ExifKey exivKey(key.toStdString());
-		Exiv2::Exifdatum tag(exivKey);
-		if (!tag.setValue(taginfo.toStdString())) {
-			mExifState = dirty;
-			setExifSuccessfull = true;
-		}
-
-		exifData.add(tag);
+	catch (...) {
+		setExifSuccessfull = false;
 	}
 
 	return setExifSuccessfull;

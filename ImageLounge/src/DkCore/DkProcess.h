@@ -61,6 +61,7 @@ namespace nmc {
 class DkImageContainer;
 class DkPluginContainer;
 class DkBaseManipulator;
+class DkMetaDataT;
 
 class DllCoreExport DkAbstractBatch {
 
@@ -242,6 +243,7 @@ protected:
 	bool deleteOriginalFile();
 	bool copyFile();
 	bool renameFile();
+	bool updateMetaData(DkMetaDataT* md);
 
 	DkSaveInfo mSaveInfo;
 	int mFailure = 0;

@@ -2814,10 +2814,11 @@ void DkBatchWidget::saveProfile(const QString & profilePath) const {
 	//	return;
 	//}
 
-	if (bc.getProcessFunctions().empty()) {
-		QMessageBox::information(DkUtils::getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
-		return;
-	}
+	// allow saving without functions (i.e. image conversions)
+	//if (bc.getProcessFunctions().empty()) {
+	//	QMessageBox::information(DkUtils::getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
+	//	return;
+	//}
 
 	if (!DkBatchProfile::saveProfile(profilePath, bc)) {
 		QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
@@ -2833,13 +2834,14 @@ void DkBatchWidget::loadProfile(const QString & profilePath) {
 
 	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
 
-	if (bc.getProcessFunctions().empty()) {
-		
-		QMessageBox::critical(DkUtils::getMainWindow(), 
-			tr("Error Loading Profile"), 
-			tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
-		return;
-	}
+	// allow loading without functions (i.e. image conversions)
+	//if (bc.getProcessFunctions().empty()) {
+	//	
+	//	QMessageBox::critical(DkUtils::getMainWindow(), 
+	//		tr("Error Loading Profile"), 
+	//		tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
+	//	return;
+	//}
 
 	applyDefault();
 
