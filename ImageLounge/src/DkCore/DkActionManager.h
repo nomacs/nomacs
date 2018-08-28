@@ -244,7 +244,7 @@ public:
 	};
 
 	enum SyncMenuActions {
-		menu_sync,
+		menu_sync_view,
 		menu_sync_pos,
 		menu_sync_arrange,
 		menu_sync_connect_all,

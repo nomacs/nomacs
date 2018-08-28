@@ -594,7 +594,7 @@ void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu) {
 
 	mSyncMenu->addMenu(localMenu);
 
-	mSyncMenu->addAction(mSyncActions[menu_sync]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_view]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
 	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
@@ -1412,10 +1412,10 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	// sync actions
 	mSyncActions.resize(menu_sync_end);
-	mSyncActions[menu_sync] = new QAction(QObject::tr("Synchronize &View"), parent);
-	mSyncActions[menu_sync]->setShortcut(QKeySequence(shortcut_sync));
-	mSyncActions[menu_sync]->setStatusTip(QObject::tr("synchronize the current view"));
-	mSyncActions[menu_sync]->setEnabled(false);
+	mSyncActions[menu_sync_view] = new QAction(QObject::tr("Synchronize &View"), parent);
+	mSyncActions[menu_sync_view]->setShortcut(QKeySequence(shortcut_sync));
+	mSyncActions[menu_sync_view]->setStatusTip(QObject::tr("synchronize the current view"));
+	mSyncActions[menu_sync_view]->setEnabled(false);
 
 	mSyncActions[menu_sync_pos] = new QAction(QObject::tr("&Window Overlay"), parent);
 	mSyncActions[menu_sync_pos]->setShortcut(QKeySequence(shortcut_tab));
