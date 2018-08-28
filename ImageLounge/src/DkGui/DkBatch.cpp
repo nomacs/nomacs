@@ -806,17 +806,15 @@ void DkBatchOutput::createLayout() {
 	mCbNewExtension->setEnabled(false);
 	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
-	QLabel* compressionLabel = new QLabel(tr("Quality"), this);
-
-	mSbCompression = new QSpinBox(this);
-	mSbCompression->setMinimum(1);
-	mSbCompression->setMaximum(100);
-	mSbCompression->setEnabled(false);
+	mCbCompression = new QComboBox(this);
+	mCbCompression->addItem(tr("High Quality"), 100);
+	mCbCompression->addItem(tr("Medium Quality"), 97);
+	mCbCompression->addItem(tr("Low Quality"), 90);
+	mCbCompression->setEnabled(false);
 
 	extensionLayout->addWidget(mCbExtension);
 	extensionLayout->addWidget(mCbNewExtension);
-	extensionLayout->addWidget(compressionLabel);
-	extensionLayout->addWidget(mSbCompression);
+	extensionLayout->addWidget(mCbCompression);
 	//extensionLayout->addStretch();
 	mFilenameVBLayout->addWidget(extensionWidget);
 	
@@ -946,7 +944,7 @@ void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
 void DkBatchOutput::extensionCBChanged(int index) {
 	
 	mCbNewExtension->setEnabled(index > 0);
-	mSbCompression->setEnabled(index > 0);
+	mCbCompression->setEnabled(index > 0);
 	parameterChanged();
 }
 
@@ -1052,10 +1050,10 @@ void DkBatchOutput::loadFilePattern(const QString & pattern) {
 
 int DkBatchOutput::getCompression() const {
 
-	if (!mSbCompression->isEnabled())
+	if (!mCbCompression->isEnabled())
 		return -1;
 
-	return mSbCompression->value();
+	return mCbCompression->itemData(mCbCompression->currentIndex()).toInt();
 }
 
 void DkBatchOutput::applyDefault() {
@@ -1066,7 +1064,7 @@ void DkBatchOutput::applyDefault() {
 	mCbDoNotSave->setChecked(false);
 	mCbExtension->setCurrentIndex(0);
 	mCbNewExtension->setCurrentIndex(0);
-	mSbCompression->setValue(90);
+	mCbCompression->setCurrentIndex(0);
 	mOutputDirectory = "";
 	mInputDirectory = "";
 	mHUserInput = false;
@@ -1095,7 +1093,15 @@ void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
 	mCbDeleteOriginal->setChecked(si.isDeleteOriginal());
 	mCbUseInput->setChecked(si.isInputDirOutputDir());
 	mOutputlineEdit->setText(config.getOutputDirPath());
-	mSbCompression->setValue(si.compression());
+	
+	int c = si.compression();
+
+	for (int idx = 0; idx < mCbCompression->count(); idx++) {
+		if (mCbCompression->itemData(idx).toInt() == c) {
+			mCbCompression->setCurrentIndex(idx);
+			break;
+		}
+	}
 
 	loadFilePattern(config.getFileNamePattern());
 

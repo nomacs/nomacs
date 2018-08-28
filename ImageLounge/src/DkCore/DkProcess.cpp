@@ -119,7 +119,7 @@ QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& s
 
 // DkTransformBatch --------------------------------------------------------------------
 DkBatchTransform::DkBatchTransform() {
-	mResizeIplMethod = DkImage::ipl_area;	// define here because of included
+	mResizeIplMethod = DkImage::ipl_area;	// define here because of includes
 }
 
 QString DkBatchTransform::name() const {
@@ -795,6 +795,8 @@ bool DkBatchProcess::process() {
 		mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
 		return true;
 	}
+
+	qDebug() << "current compression: " << mSaveInfo.compression();
 
 	if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {
 		mLogStrings.append(QObject::tr("%1 saved...").arg(mSaveInfo.outputFilePath()));

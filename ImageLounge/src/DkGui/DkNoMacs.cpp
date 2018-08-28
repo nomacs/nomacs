@@ -2304,6 +2304,7 @@ void DkNoMacsSync::createActions() {
 	DkActionManager& am = DkActionManager::instance();
 	
 	// sync menu
+	connect(am.action(DkActionManager::menu_sync), SIGNAL(triggered()), viewport(), SLOT(tcpForceSynchronize()));
 	connect(am.action(DkActionManager::menu_sync_pos), SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
 	connect(am.action(DkActionManager::menu_sync_arrange), SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 	connect(am.action(DkActionManager::menu_sync_connect_all), SIGNAL(triggered()), this, SLOT(tcpConnectAll()));

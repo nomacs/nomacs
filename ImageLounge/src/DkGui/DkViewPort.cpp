@@ -582,13 +582,17 @@ void DkViewPort::tcpSetWindowRect(QRect rect) {
 	this->setGeometry(rect);
 }
 
-void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
+void DkViewPort::tcpForceSynchronize() {
+	tcpSynchronize(QTransform(), true);
+}
+
+void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force) {
 	
 	if (!relativeMatrix.isIdentity())
 		emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
 
 	// check if we need a synchronization
-	if ((qApp->keyboardModifiers() == mAltMod ||
+	if ((force || qApp->keyboardModifiers() == mAltMod ||
 		DkSettingsManager::param().sync().syncActions) &&
 		(hasFocus() || mController->hasFocus())) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);

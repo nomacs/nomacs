@@ -135,7 +135,8 @@ public slots:
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
 	void tcpSetWindowRect(QRect rect);
-	void tcpSynchronize(QTransform relativeMatrix = QTransform());
+	void tcpForceSynchronize();
+	void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
 	void tcpLoadFile(qint16 idx, QString filename);
 	void tcpShowConnections(QList<DkPeer*> peers);
 	

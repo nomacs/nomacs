@@ -345,7 +345,7 @@ private:
 
 	QComboBox* mCbExtension = 0;
 	QComboBox* mCbNewExtension = 0;
-	QSpinBox* mSbCompression = 0;
+	QComboBox* mCbCompression = 0;
 	QLabel* mOldFileNameLabel = 0;
 	QLabel* mNewFileNameLabel = 0;
 	QString mExampleName = 0;
