@@ -1195,7 +1195,6 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         return false;
 
     QStringList mimeFmts = mimeData->formats();
-    //qDebug().noquote() << "mime formats:" << mimeFmts.join("\n");
 	
     if (mimeData->hasImage()) {
         // we got an image buffer
