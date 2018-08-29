@@ -87,6 +87,8 @@ DllCoreExport QDebug qWarningClean();
 #define qInfo() qDebug() 
 #endif
 
+#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+
 // fixes Qt's damn no latin1 on tr() policy
 #define dk_degree_str QChar(0x00B0)
 

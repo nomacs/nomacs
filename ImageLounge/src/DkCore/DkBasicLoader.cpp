@@ -196,7 +196,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	QImage img;
 
-	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
+	if (!imgLoaded && ba && !ba->isEmpty()) {
 		imgLoaded = img.loadFromData(*ba.data());
 
 		if (imgLoaded)
@@ -227,7 +227,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		if (imgLoaded) mLoader = qt_loader;
 	}
 
-	// OpenCV Tiff loader
+	// OpenCV Tiff loader - supports jpg compressed tiffs
 	if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
 
 		imgLoaded = loadTIFFile(mFile, img, ba);
@@ -582,30 +582,34 @@ void DkBasicLoader::setHistoryIndex(int idx) {
 	mImageIndex = idx;
 }
 
-void DkBasicLoader::loadFileToBuffer(const QString& fileInfo, QByteArray& ba) const {
+void DkBasicLoader::loadFileToBuffer(const QString& filePath, QByteArray& ba) const {
 
-	if (!QFileInfo(fileInfo).exists())
+	QFileInfo fi(filePath);
+
+	if (!fi.exists())
 		return;
 
 #ifdef WITH_QUAZIP
-	if (QFileInfo(fileInfo).dir().path().contains(DkZipContainer::zipMarker())) 
-		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(fileInfo), DkZipContainer::decodeImageFile(fileInfo), ba);
+	if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
+		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
 #endif
 	
-	QFile file(fileInfo);
+	QFile file(filePath);
 	file.open(QIODevice::ReadOnly);
 
 	ba = file.readAll();
 }
 
-QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString& fileInfo) const {
+QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString& filePath) const {
+
+	QFileInfo fi(filePath);
 
 #ifdef WITH_QUAZIP
-	if (QFileInfo(fileInfo).dir().path().contains(DkZipContainer::zipMarker())) 
-		return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(fileInfo), DkZipContainer::decodeImageFile(fileInfo));
+	if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
+		return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
 #endif
 
-	QFile file(fileInfo);
+	QFile file(filePath);
 	file.open(QIODevice::ReadOnly);
 
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
@@ -925,8 +929,9 @@ void DkBasicLoader::saveMetaData(const QString& filePath, QSharedPointer<QByteAr
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	if (ba->isEmpty() && mMetaData->isDirty())
+	if (ba->isEmpty() && mMetaData->isDirty()) {
 		ba = loadFileToBuffer(filePath);
+	}
 
 	bool saved = false;
 	try {

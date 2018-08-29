@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif
+
 	QApplication app(argc, (char**)argv);
 
 	// init settings
@@ -265,29 +266,35 @@ int main(int argc, char *argv[]) {
 
 	nmc::DkCentralWidget* cw = w->getTabWidget();
 
+	bool loading = false;
+
 	if (!parser.positionalArguments().empty()) {
+
 		QString filePath = parser.positionalArguments()[0].trimmed();
 
-		if (!filePath.isEmpty()) 
+		if (!filePath.isEmpty()) {
 			w->loadFile(QFileInfo(filePath).absoluteFilePath());	// update folder + be silent
+			loading = true;
+		}
 	}
 
 	// load directory preview
 	if (!parser.value(sourceDirOpt).trimmed().isEmpty()) {
 		cw->loadDirToTab(parser.value(sourceDirOpt));
+		loading = true;
 	}
 
 	// load to tabs
 	if (!parser.value(tabOpt).isEmpty()) {
 		QStringList tabPaths = parser.values(tabOpt);
-		
+		loading = true;
+
 		for (const QString& filePath : tabPaths)
 			cw->addTab(filePath);
 	}
 	
 	// load recent files if there is nothing to display
-	if (!cw->getTabs().isEmpty() && 
-		cw->getTabs()[0]->getMode() == nmc::DkTabInfo::tab_empty &&
+	if (!loading &&
 		nmc::DkSettingsManager::param().app().showRecentFiles) {
 		cw->showRecentFiles();
 	}

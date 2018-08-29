@@ -1326,7 +1326,7 @@ void DkNoMacs::openQuickLaunch() {
 
 void DkNoMacs::loadFile(const QString& filePath) {
 
-	if (!viewport())
+	if (!getTabWidget())
 		return;
 
 	if (QFileInfo(filePath).isDir())
