@@ -196,7 +196,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	QImage img;
 
-	if (!imgLoaded && ba && !ba->isEmpty()) {
+	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
 		imgLoaded = img.loadFromData(*ba.data());
 
 		if (imgLoaded)

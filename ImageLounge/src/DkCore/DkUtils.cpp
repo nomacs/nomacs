@@ -318,19 +318,21 @@ QString DkUtils::resolveSymLink(const QString & filePath) {
 					continue;
 
 				QFileInfo fi(cl);
-				if (fi.exists()) {
+				if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
 					rFilePath = fi.absoluteFilePath();
 					break;
 				}
 
 				// is there a relative path?
 				fi = QFileInfo(fInfo.absolutePath() + QDir::separator() + cl);
-				if (fi.exists() & fi.isFile()) {
+				if (fi.exists() && fi.isFile() && DkUtils::hasValidSuffix(fi.fileName())) {
 					rFilePath = fi.absoluteFilePath();
 					break;
 				}
 			}
 		}
+
+		file.close();
 	}
 
 	return rFilePath;
