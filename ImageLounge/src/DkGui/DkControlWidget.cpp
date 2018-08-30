@@ -255,7 +255,6 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	show();
-	//thumbWidget->setVisible(true);
 }
 
 void DkControlWidget::connectWidgets() {
@@ -387,7 +386,7 @@ void DkControlWidget::showPreview(bool visible) {
 	if (visible && !mFilePreview->isVisible())
 		mFilePreview->show();
 	else if (!visible && mFilePreview->isVisible())
-		mFilePreview->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mFilePreview->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showScroller(bool visible) {
@@ -398,7 +397,7 @@ void DkControlWidget::showScroller(bool visible) {
 	if (visible && !mFolderScroll->isVisible())
 		mFolderScroll->show();
 	else if (!visible && mFolderScroll->isVisible())
-		mFolderScroll->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mFolderScroll->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showMetaData(bool visible) {
@@ -411,7 +410,7 @@ void DkControlWidget::showMetaData(bool visible) {
 		qDebug() << "showing metadata...";
 	}
 	else if (!visible && mMetaDataInfo->isVisible())
-		mMetaDataInfo->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mMetaDataInfo->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showFileInfo(bool visible) {
@@ -424,7 +423,7 @@ void DkControlWidget::showFileInfo(bool visible) {
 		mRatingLabel->block(mFileInfoLabel->isVisible());
 	}
 	else if (!visible && mFileInfoLabel->isVisible()) {
-		mFileInfoLabel->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mFileInfoLabel->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 		mRatingLabel->block(false);
 	}
 }
@@ -437,7 +436,7 @@ void DkControlWidget::showPlayer(bool visible) {
 	if (visible)
 		mPlayer->show();
 	else
-		mPlayer->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mPlayer->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::startSlideshow(bool start) {

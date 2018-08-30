@@ -326,6 +326,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	if (tmpShow.size() == app_p.showHistoryDock.size())	
 		app_p.showHistoryDock = tmpShow;
 
+	app_p.hideAllPanels = settings.value("hideAllPanels", app_p.hideAllPanels).toBool();
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
 	app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
@@ -532,6 +533,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showEditDock", app_p.showEditDock);
 	if (force ||app_p.showHistoryDock != app_d.showHistoryDock)
 		settings.setValue("showHistoryDock", app_p.showHistoryDock);
+	if (force || app_p.hideAllPanels != app_d.hideAllPanels)
+		settings.setValue("hideAllPanels", app_p.hideAllPanels);
 	if (force ||app_p.advancedSettings != app_d.advancedSettings)
 		settings.setValue("advancedSettings", app_p.advancedSettings);
 	if (force ||app_p.closeOnEsc != app_d.closeOnEsc)
@@ -766,6 +769,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showHistoryDock = QBitArray(mode_end, false);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
+	app_p.hideAllPanels = false;
 	app_p.showRecentFiles = true;
 	app_p.browseFilters = QStringList();
 	app_p.showMenuBar = true;

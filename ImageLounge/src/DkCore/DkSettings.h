@@ -180,7 +180,7 @@ public:
 		bool privateMode;
 		bool advancedSettings;
 		bool closeOnEsc;
-		bool maximizedMode;
+		bool hideAllPanels;
 
 		int defaultJpgQuality;
 

@@ -228,7 +228,7 @@ void DkNoMacs::init() {
 		}
 	}
 #endif // Q_WS_WIN
-
+	
 	//QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
 }
 
@@ -711,7 +711,7 @@ void DkNoMacs::enterFullScreen() {
 
 	restoreDocks();
 
-	DkSettingsManager::param().app().maximizedMode = isMaximized();
+	mMaximizedMode = isMaximized();
 	setWindowState(Qt::WindowFullScreen);
 	
 	if (viewport())
@@ -736,7 +736,7 @@ void DkNoMacs::exitFullScreen() {
 
 		restoreDocks();
 
-		if(DkSettingsManager::param().app().maximizedMode) 
+		if(mMaximizedMode) 
 			setWindowState(Qt::WindowMaximized);
 		else 
 			setWindowState(Qt::WindowNoState);
@@ -1336,6 +1336,7 @@ void DkNoMacs::loadFile(const QString& filePath) {
 
 }
 
+// TODO: move this
 void DkNoMacs::renameFile() {
 
 	QString filePath = getTabWidget()->getCurrentFilePath();
@@ -1354,7 +1355,7 @@ void DkNoMacs::renameFile() {
 	int dotIdx = fileName.lastIndexOf(".");
 	QString baseName = dotIdx != -1 ? fileName.left(dotIdx) : fileName;
 
-	bool ok;
+	bool ok = false;
 	QString newFileName = QInputDialog::getText(this, baseName, tr("Rename:"), QLineEdit::Normal, baseName, &ok);
 
 	if (ok && !newFileName.isEmpty() && newFileName != baseName) {
@@ -1869,7 +1870,7 @@ void DkNoMacs::onWindowLoaded() {
 	DkGlobalProgress::instance().setProgressBar(button->progress());
 #endif
 
-
+	toggleDocks(DkSettingsManager::param().app().hideAllPanels);
 }
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {

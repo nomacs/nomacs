@@ -1188,6 +1188,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_toggle]->setShortcut(QKeySequence(shortcut_toggle_panels));
 	mPanelActions[menu_panel_toggle]->setStatusTip(QObject::tr("Hide all panels"));
 	mPanelActions[menu_panel_toggle]->setCheckable(true);
+	mPanelActions[menu_panel_toggle]->setChecked(DkSettingsManager::param().app().hideAllPanels);
 
 	mPanelActions[menu_panel_explorer] = new QAction(QObject::tr("File &Explorer"), parent);
 	mPanelActions[menu_panel_explorer]->setShortcut(QKeySequence(shortcut_show_explorer));
@@ -1586,6 +1587,11 @@ void DkActionManager::createActions(QWidget* parent) {
 		a->setToolTip(a->statusTip());
 		a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
+	
+	// trivial connects
+	auto a = action(menu_panel_toggle);
+	QObject::connect(a, &QAction::triggered,
+		[a]() { DkSettingsManager::param().app().hideAllPanels = a->isChecked(); });
 }
 
 QVector<QAction*> DkActionManager::allActions() const {
