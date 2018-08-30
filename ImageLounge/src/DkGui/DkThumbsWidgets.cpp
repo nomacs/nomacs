@@ -676,6 +676,9 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 		}
 		emit changeFileSignal(fc);
 	}
+
+	// accept the event here - so it won't be propagated to the viewport
+	event->accept();
 }
 
 void DkFilePreview::leaveEvent(QEvent*) {
