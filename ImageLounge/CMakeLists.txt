@@ -55,12 +55,12 @@ if( ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
 
-if(APPLE)
+# if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
-	message(STATUS "QuaZip disabled because you are using a mac")
-else()
-	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
-endif()
+	# message(STATUS "QuaZip disabled because you are using a mac")
+# else()
+	# option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+# endif()
 
 if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
 	# set output path when building for READ
