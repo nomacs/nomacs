@@ -106,31 +106,14 @@ endif (ENABLE_TIFF)
 # these variables need to be set before adding subdirectory with projects
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
-#search for quazip
-unset(QUAZIP_SOURCE_DIRECTORY CACHE)
-unset(QUAZIP_INCLUDE_DIRECTORY CACHE)
-unset(QUAZIP_LIBS CACHE)
-unset(QUAZIP_BUILD_DIRECTORY CACHE)
-unset(QUAZIP_DEPENDENCY CACHE)
-unset(QUAZIP_FOUND CACHE)
-
 if(ENABLE_QUAZIP)
-	# QT_ROOT needed by QuaZip cmake
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/quazip-0.7)
-	# add build directory to cmake path - otherwise the QuaZipConfig.cmake is no longer found
-	SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_BINARY_DIR})
-
-	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
-	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
-	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
-	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
 
 	find_package(QuaZip)
 	if(QUAZIP_FOUND)
 		add_definitions(-DWITH_QUAZIP)
 		set(QUAZIP_DEPENDENCY "quazip")
 	else()
-		message(FATAL_ERROR "CMake was unable to find quazip")
+		message(FATAL_ERROR "I could not find QuaZip - you can either disable building with QuaZip or add the path to the CMAKE_PREFIX_PATHS")
 	endif(QUAZIP_FOUND)
 endif(ENABLE_QUAZIP)
 

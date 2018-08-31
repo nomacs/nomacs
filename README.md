@@ -13,6 +13,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 - [Exiv2](https://github.com/nomacs/exiv2) (>= 0.26)
 - [OpenCV](https://github.com/TUWien/opencv) (>= 3.4) _optional_
 - [LibRaw](https://github.com/nomacs/LibRaw) (>= 0.17) _optional_
+- [QuaZip](https://github.com/nomacs/quazip) (>= 0.7.6) _optional_
 - `Python` (>= 3.6) for build scripts
 
 ### Compile LibRaw
