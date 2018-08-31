@@ -996,8 +996,8 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags)
 
 void DkRatingLabel::init() {
 
-	QPixmap starDark = QPixmap(":/nomacs/img/star-dark.png");
-	QPixmap starWhite = QPixmap(":/nomacs/img/star-white.png");
+	QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg");
+	QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg");
 
 	mStars.resize(5);
 	
@@ -1441,7 +1441,7 @@ void DkTransformRect::enterEvent(QEvent*) {
 DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	mRect = rect;
-	mRotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
+	mRotatingCursor = QCursor(DkImage::loadFromSvg(":/nomacs/img/rotating-cursor.svg", QSize(24, 24)));
 	
 	setAttribute(Qt::WA_MouseTracking);
 

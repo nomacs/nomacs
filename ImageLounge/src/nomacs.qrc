@@ -24,12 +24,12 @@
     <file>img/player-pause.svg</file>
     <file>img/player-play.svg</file>
     <file>img/nomacs-bg.svg</file>
-    <file>img/star-dark.png</file>
-    <file>img/star-white.png</file>
+    <file>img/star-off.svg</file>
+    <file>img/star-on.svg</file>
     <file>img/thumbs-view.svg</file>
     <file>img/batch-processing.svg</file>
     <file>img/dir.svg</file>
-    <file>img/rotating-cursor.png</file>
+    <file>img/rotating-cursor.svg</file>
     <file>img/save.svg</file>
     <file>img/export.svg</file>
     <file>img/open.svg</file>

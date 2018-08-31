@@ -12,9 +12,9 @@ BACKGROUND_COLOR: #333;
 
 /* general styles */
 QPushButton {
-	background-color: BACKGROUND_COLOR;
 	border: 1px solid #666;
 	padding: 4px 20px;
+	background-color: transparent;
 }
  
 QPushButton:flat {
@@ -35,7 +35,7 @@ nmc--DkBatchTabButton:checked {
 }
 
 QLineEdit {
-	background: BACKGROUND_COLOR;
+	background: rgba(255, 255, 255, 60);
 	color: FOREGROUND_COLOR;
 	border: 1px solid #666;
 	selection-background-color: HIGHLIGHT_COLOR;
@@ -122,13 +122,13 @@ QTabBar::tab:selected {
     background: #666;
 }
 
-QScrollBar:vertical {border: 1px solid #ddd; background: rgba(0,0,0,0); width: 11px; margin: 0 0 0 0;}
+QScrollBar:vertical {background: rgba(0,0,0,0); width: 11px; margin: 0 0 0 0;}
 QScrollBar::handle:vertical {	background: #ddd; min-height: 0px;}
 QScrollBar::add-line:vertical {height: 0px;}
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {	background: rgba(0,0,0,0); width: 1px;}
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 
-QScrollBar:horizontal {border: 1px solid #ddd; background: rgba(0,0,0,0); height: 11px; margin: 0 0 0 0;}
+QScrollBar:horizontal {background: rgba(0,0,0,0); height: 11px; margin: 0 0 0 0;}
 QScrollBar::handle:horizontal {background: #ddd; min-width: 0px;}
 QScrollBar::add-line:horizontal {width: 0px;}
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}
@@ -211,12 +211,6 @@ QLabel#recentFilesTitle {
 
 QLabel#recentFilesPath {
 	color: #ccc;
-}
-
-QPushButton#load_dir,
-QPushButton#pin,
-QPushButton#remove {
-	background-color: transparent;
 }
 
 nmc--DkThumbPreviewLabel:hover {

@@ -1030,6 +1030,9 @@ void DkNoMacs::tcpSendArrange() {
 
 void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
+	if (!show && !mExplorer)
+		return;
+
 	if (!mExplorer) {
 
 		// get last location
@@ -1059,6 +1062,9 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
 void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
+	if (!show && !mMetaDataDock)
+		return;
+
 	if (!mMetaDataDock) {
 
 		mMetaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
@@ -1076,6 +1082,9 @@ void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 }
 
 void DkNoMacs::showEditDock(bool show, bool saveSettings) {
+
+	if (!show && !mEditDock)
+		return;
 
 	if (!mEditDock) {
 
@@ -1095,6 +1104,9 @@ void DkNoMacs::showEditDock(bool show, bool saveSettings) {
 
 void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 
+	if (!show && !mHistoryDock)
+		return;
+
 	if (!mHistoryDock) {
 
 		mHistoryDock = new DkHistoryDock(tr("History"), this);
@@ -1113,6 +1125,9 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 
 void DkNoMacs::showThumbsDock(bool show) {
 	
+	if (!show && !mThumbsDock)
+		return;
+
 	// nothing todo here
 	if (mThumbsDock && mThumbsDock->isVisible() && show)
 		return;

@@ -342,6 +342,7 @@ nmc--DkBatchTabButton {
 	font-size: 14pt;
 	padding: 10px 20px;
 	text-align: left;
+	border: none;
 }
 
 nmc--DkBatchTabButton {
