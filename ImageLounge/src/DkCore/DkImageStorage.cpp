@@ -1005,6 +1005,26 @@ QImage DkImage::exposure(const QImage & src, double exposure, double offset, dou
 	return imgR;
 }
 
+QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByteArray & beginSignature, const QByteArray & endSignature) {
+	
+	
+	int bIdx = ba.indexOf(beginSignature);
+
+	if (bIdx == -1) {
+		qDebug() << "could not locate" << beginSignature;
+		return QByteArray();
+	}
+
+	int eIdx = ba.indexOf(endSignature, bIdx);
+
+	if (bIdx == -1) {
+		qDebug() << "could not locate" << endSignature;
+		return QByteArray();
+	}
+
+	return ba.mid(bIdx, eIdx+endSignature.size() - bIdx);
+}
+
 #ifdef WITH_OPENCV
 cv::Mat DkImage::exposureMat(const cv::Mat& src, double exposure) {
 

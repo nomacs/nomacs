@@ -1195,13 +1195,44 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         return false;
 
     QStringList mimeFmts = mimeData->formats();
+
+	// try to load an image
+	QImage dropImg;
+
+	// first see if we have MS mime data
+	// since i.e. outlook also add thumbnails, we try to first load the high quality stuff
+	for (const QString& fmt : mimeFmts) {
 	
-    if (mimeData->hasImage()) {
+		//qDebugClean() << "mime format:" << fmt << " " << mimeData->data(fmt).size()/1024.0 << "KB";
+
+		if (fmt.contains("Office Drawing Shape Format")) {
+
+			// try to get rid of all decorations
+			QSharedPointer<QByteArray> ba(new QByteArray(DkImage::extractImageFromDataStream(mimeData->data(fmt))));
+
+			if (!ba->isEmpty()) {
+				DkBasicLoader bl;
+				bl.loadGeneral("", ba);
+
+				dropImg = bl.image();
+
+				if (!dropImg.isNull())
+					qDebug() << "image loaded from MS data";
+				break;
+			}
+		}
+	}
+
+    if (dropImg.isNull() && mimeData->hasImage()) {
         // we got an image buffer
-        QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
-        mViewport->loadImage(dropImg);
-        return true;
+        dropImg = qvariant_cast<QImage>(mimeData->imageData());
+		qInfo() << "Qt image loaded from mime";
     }
+
+	if (!dropImg.isNull()) {
+		mViewport->loadImage(dropImg);
+		return true;
+	}
 
     // parse mime data. get a non-empty list of urls. url is the first.
     QList<QUrl> urls;
@@ -1214,7 +1245,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 				urls.append(u);
 		}
 	}
-    else if(mimeData->formats().contains("text/plain")) {
+    else if (mimeData->formats().contains("text/plain")) {
         //we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }

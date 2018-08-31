@@ -1140,11 +1140,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	//if (event->modifiers() & ctrlMod)
-	//	qDebug() << "CTRL modifier";
-	//if (event->modifiers() & altMod)
-	//	qDebug() << "ALT modifier";
-
 	if ((!DkSettingsManager::param().global().zoomOnWheel && event->modifiers() != mCtrlMod) || 
 		(DkSettingsManager::param().global().zoomOnWheel && (event->modifiers() & mCtrlMod || 
 		(DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
