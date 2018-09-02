@@ -2149,13 +2149,18 @@ void DkRecentDirWidget::createLayout() {
 	mButtons[button_remove]->hide();
 
 	QVector<DkThumbPreviewLabel*> tls;
-	for (auto tp : mRecentDir.filePaths(4)) {
-		auto tpl = new DkThumbPreviewLabel(tp, 42, this);
-		connect(tpl, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
-		tls << tpl;
+
+	// check if the folder exists (in the current context)
+	// this should fix issues with disconnected samba drives on windows
+	if (DkUtils::exists(mRecentDir.firstFilePath(), 10)) {
+
+		for (auto tp : mRecentDir.filePaths(4)) {
+			auto tpl = new DkThumbPreviewLabel(tp, 42, this);
+			connect(tpl, SIGNAL(loadFileSignal(const QString&, bool)), this, SIGNAL(loadFileSignal(const QString&, bool)));
+			tls << tpl;
+		}
 	}
 
-	QLabel* pathLabel = new QLabel(mRecentDir.dirPath(), this);
 	pathLabel->setAlignment(Qt::AlignLeft);
 	pathLabel->setObjectName("recentFilesPath");
 
