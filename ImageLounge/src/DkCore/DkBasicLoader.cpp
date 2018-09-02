@@ -53,7 +53,7 @@
 
 // quazip
 #ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
+#include <quazip5/JlCompress.h>
 #endif
 
 // opencv
