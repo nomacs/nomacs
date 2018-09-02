@@ -2161,6 +2161,7 @@ void DkRecentDirWidget::createLayout() {
 		}
 	}
 
+	QLabel* pathLabel = new QLabel(mRecentDir.dirPath(), this);
 	pathLabel->setAlignment(Qt::AlignLeft);
 	pathLabel->setObjectName("recentFilesPath");
 
