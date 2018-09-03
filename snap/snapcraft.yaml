@@ -1,0 +1,18 @@
+
+  name: nomacs-nightly
+  version: '3.11+git'
+  summary: nomacs is a free, open source image viewer.
+  description: |
+    You can use it for viewing all common image formats 
+    including RAW and psd images. nomacs is licensed 
+    under the GNU General Public License v3 and 
+    available for Windows, Linux, FreeBSD, Mac, and OS/2.
+
+  grade: devel # must be 'stable' to release into candidate/stable channels
+  confinement: devmode # use 'strict' once you have the right plugs and slots
+
+  parts:
+    my-part:
+      # See 'snapcraft plugins'
+      plugin: nil
+  
