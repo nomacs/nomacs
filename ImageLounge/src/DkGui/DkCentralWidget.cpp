@@ -568,7 +568,7 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 	thumbScrollWidget->addActions(am.sortActions().toList());
 	thumbScrollWidget->addActions(am.toolsActions().toList());
 	thumbScrollWidget->addActions(am.panelActions().toList());
-	thumbScrollWidget->addActions(am.syncActions().toList());
+	//thumbScrollWidget->addActions(am.syncActions().toList());
 	thumbScrollWidget->addActions(am.pluginActions().toList());
 	thumbScrollWidget->addActions(am.helpActions().toList());
 	thumbScrollWidget->addActions(am.hiddenActions().toList());

@@ -1215,7 +1215,11 @@ void DkThumbScene::keyPressEvent(QKeyEvent * event) {
 	if (idx == -1)
 		return;
 
-	if (event->modifiers() != Qt::ShiftModifier)
+	if (event->modifiers() != Qt::ShiftModifier && 
+		(event->key() == Qt::Key_Left || 
+		 event->key() == Qt::Key_Right || 
+		 event->key() == Qt::Key_Up || 
+		 event->key() == Qt::Key_Down))
 		selectThumbs(false);
 
 	switch (event->key()) {
