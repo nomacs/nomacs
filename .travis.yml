@@ -30,18 +30,9 @@ before_script:
 
   # Linux dependencies
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
-  # some basic tools
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs cmake ; fi
-  # add Qt
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default; fi
-  # add additional libraries (exiv2, libraw, quazip)
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends libexiv2-dev libraw-dev libtiff-dev libzip-dev libquazip5-dev ; fi
-  # add opencv
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends libopencv-dev libhighgui-dev libcvaux-dev ; fi
-  # configure cmake
-  # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/"; fi
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DENABLE_QUAZIP=ON -DUSE_SYSTEM_QUAZIP=ON"; fi
-  
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libquazip5-dev libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff-dev libzip-dev ; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/ -DUSE_SYSTEM_QUAZIP=ON"; fi
+
   - mkdir build
   - cd build
 
