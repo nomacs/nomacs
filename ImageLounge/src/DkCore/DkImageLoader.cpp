@@ -153,9 +153,10 @@ void DkImageLoader::clearPath() {
 		mCurrentImage->receiveUpdates(this, false);
 		mLastImageLoaded = mCurrentImage;
 		mImages.clear();
-	}
 
-	mCurrentImage.clear();
+		// only clear the current image if it exists
+		mCurrentImage.clear();
+	}
 }
 
 #ifdef WITH_QUAZIP
