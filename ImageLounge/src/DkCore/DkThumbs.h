@@ -52,7 +52,7 @@ class QThreadPool;
 
 namespace nmc {
 
-#define max_thumb_size 160
+#define max_thumb_size 400
 
 /**
  * This class holds thumbnails.
