@@ -110,7 +110,7 @@ if(ENABLE_QUAZIP)
 	if(USE_SYSTEM_QUAZIP)
 		SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-		find_package(QuaZIP REQUIRED)
+		find_package(QuaZip5 REQUIRED)
 		if(NOT QUAZIP_FOUND)
 		message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP")
 	else()

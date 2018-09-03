@@ -43,6 +43,7 @@ option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
 option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
@@ -57,9 +58,7 @@ endif()
 
 # if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
-	# message(STATUS "QuaZip disabled because you are using a mac")
-# else()
-	# option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+	message(STATUS "QuaZip disabled because you are using a mac")
 # endif()
 
 if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
@@ -75,10 +74,6 @@ if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
 		SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
 		SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
 	endif()
-endif()
-
-if (ENABLE_QUAZIP)
-	message(STATUS "QuaZip enabled")
 endif()
 
 # load paths from the user file if exists
@@ -229,9 +224,28 @@ ELSE()
     MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... NO")
 ENDIF()
 
+IF(ENABLE_QUAZIP)
+    MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
+ENDIF()
+
+IF(USE_SYSTEM_QUAZIP)
+    MESSAGE(STATUS " nomacs will use system QuaZip ................................ YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will use system QuaZip ................................ NO")
+ENDIF()
+
+IF(USE_SYSTEM_LIBQPSD)
+    MESSAGE(STATUS " nomacs will use system QPSD .................................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will use system QPSD .................................. NO")
+ENDIF()
+
 IF(ENABLE_PLUGINS)
     MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
 ENDIF()
+
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
