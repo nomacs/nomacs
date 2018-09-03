@@ -43,7 +43,7 @@ option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
 option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
@@ -56,10 +56,10 @@ if( ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
 
-# if(APPLE)
+if(APPLE)
 	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
 	message(STATUS "QuaZip disabled because you are using a mac")
-# endif()
+endif()
 
 if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
 	# set output path when building for READ
@@ -143,7 +143,8 @@ include_directories (
 	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
-	${QUAZIP_INCLUDE_DIRECTORY}
+	${QUAZIP_INCLUDE_DIR}
+	${QUAZIP_ZLIB_INCLUDE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 )
 

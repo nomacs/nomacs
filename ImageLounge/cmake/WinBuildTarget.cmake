@@ -25,7 +25,7 @@ target_link_libraries(
 	${LIBRAW_LIBRARIES} 
 	${OpenCV_LIBS} 
 	${TIFF_LIBRARIES} 
-	${QUAZIP_LIBS}
+	${QUAZIP_LIBRARIES}
 	)
 	
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
@@ -48,7 +48,7 @@ target_link_libraries(
 	${LIBRAW_LIBRARIES} 		# RAW support (optional)
 	${OpenCV_LIBS} 			# image manipulation support (optional)
 	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
-	${QUAZIP_LIBS}				# ZIP support (optional)
+	${QUAZIP_LIBRARIES}		# ZIP support (optional)
 	)
 
 add_dependencies(
