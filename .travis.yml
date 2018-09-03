@@ -27,6 +27,7 @@ before_script:
   # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install -v opencv3 --with-contrib --without-eigen --without-opencl --without-openexr --without-python --without-numpy --without-tests; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew ln opencv3 --force; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DENABLE_QUAZIP=OFF"; fi
 
   # Linux dependencies
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
