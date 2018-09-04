@@ -9,8 +9,8 @@
     available for Windows, Linux, FreeBSD, Mac, and OS/2.
   icon: ./ImageLounge/nomacs.svg
 
-  grade: devel # must be 'stable' to release into candidate/stable channels
-  confinement: devmode # use 'strict' once you have the right plugs and slots
+  grade: stable # must be 'stable' to release into candidate/stable channels
+  confinement: strict # use 'strict' once you have the right plugs and slots
 
   parts:
     nomacs:
