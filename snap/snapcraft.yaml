@@ -15,7 +15,6 @@
   parts:
     nomacs:
       # See 'snapcraft plugins'
-      plugin: python
       stage-packages:
         - libc6
       build-packages:
