@@ -34,4 +34,10 @@ repository.zip
 /x64
 /nomacsCore.dir
 /installer/*.msi
-
+.vscode
+#snaps
+*.snap
+parts/
+prime/
+stage/
+snap/.snapcraft/

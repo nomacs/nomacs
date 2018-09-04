@@ -1,5 +1,5 @@
 
-  name: nomacs-nightly
+  name: nomacs-image-lounge
   version: '3.11+git'
   summary: nomacs is a free, open source image viewer.
   description: |
@@ -7,12 +7,38 @@
     including RAW and psd images. nomacs is licensed 
     under the GNU General Public License v3 and 
     available for Windows, Linux, FreeBSD, Mac, and OS/2.
+  icon: ./ImageLounge/nomacs.svg
 
   grade: devel # must be 'stable' to release into candidate/stable channels
   confinement: devmode # use 'strict' once you have the right plugs and slots
 
   parts:
-    my-part:
+    nomacs:
       # See 'snapcraft plugins'
-      plugin: nil
-  
+      plugin: python
+      stage-packages:
+        - libc6
+      build-packages:
+        - debhelper
+        - cdbs
+        - qt5-qmake
+        - qttools5-dev-tools
+        - qt5-default
+        - qttools5-dev
+        - libqt5svg5-dev
+        - qt5-image-formats-plugins
+        - libexiv2-dev
+        - libraw-dev
+        - libopencv-dev
+        - cmake
+        - libtiff-dev
+        - libquazip-dev
+        - libwebp-dev
+        - git
+        - g++
+        - libzip-dev
+      plugin: cmake
+      configflags: 
+        - ./../../../ImageLounge
+        - -DCMAKE_BUILD_TYPE=Release
+        - -DENABLE_QUAZIP=OFF # fixme        
