@@ -1,6 +1,6 @@
 
   name: nomacs-image-lounge
-  version: '3.11+git'
+  version: 3.11
   summary: nomacs is a free, open source image viewer.
   description: |
     You can use it for viewing all common image formats 
