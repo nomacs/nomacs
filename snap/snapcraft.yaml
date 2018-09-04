@@ -9,8 +9,10 @@
     available for Windows, Linux, FreeBSD, Mac, and OS/2.
   icon: ./ImageLounge/nomacs.svg
 
-  grade: devel # must be 'stable' to release into candidate/stable channels
-  confinement: devmode # use 'strict' once you have the right plugs and slots
+  # grade: devel # must be 'stable' to release into candidate/stable channels
+  # confinement: devmode # use 'strict' once you have the right plugs and slots
+  grade: stable # must be 'stable' to release into candidate/stable channels
+  confinement: strict # use 'strict' once you have the right plugs and slots
 
   apps:
     nomacs:
@@ -20,6 +22,12 @@
     nomacs:
       stage-packages:
         - libc6
+        - libraw-dev
+        - libtbb-dev
+        - libjasper-dev
+        - libexiv2-dev
+        - libqt5printsupport5
+        - libqt5concurrent5
       build-packages:
         - debhelper
         - cdbs
