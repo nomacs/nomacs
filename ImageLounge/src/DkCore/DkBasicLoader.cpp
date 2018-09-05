@@ -1574,9 +1574,8 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 
 		mImg = raw2Img(iProcessor, rawMat);
 
-		qDebug() << "img size" << mImg.size();
-		qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
-
+		//qDebug() << "img size" << mImg.size();
+		//qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
 		iProcessor.recycle();
 		rawMat.release();
 	}

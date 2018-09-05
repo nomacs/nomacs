@@ -686,6 +686,8 @@ void DkViewPort::saveFileAs(bool silent) {
 			if (answer == QDialog::Accepted) {
 				
 				img = QImage(sd->size(), QImage::Format_ARGB32);
+				img.fill(QColor(0, 0, 0, 0));
+
 				QPainter p(&img);
 				mSvg->render(&p, QRectF(QPointF(), sd->size()));
 			}
