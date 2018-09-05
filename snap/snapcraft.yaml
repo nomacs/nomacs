@@ -1,6 +1,6 @@
 
   name: nomacs
-  version: 3.11.2
+  version: 3.11.4
   summary: nomacs is a free, open source image viewer.
   description: |
     You can use it for viewing all common image formats 
@@ -21,12 +21,18 @@
       plugs: [home, network, x11]
 
   parts:
+    # nomacs-plugins:
+    #   plugin: go
+    #   source: ../ImageLounge/plugins
+    #   go-importpath: github.com/nomacs/nomacs-plugins
+
     nomacs:
       plugin: cmake
       source: ./ImageLounge
       configflags: 
         - -DCMAKE_BUILD_TYPE=Release
-        - -DENABLE_QUAZIP=OFF # fixme  
+        - -DENABLE_QUAZIP=ON # fixme  
+        - -DUSE_SYSTEM_QUAZIP=ON
       stage-packages:
         - libc6
         - libraw-dev
@@ -35,10 +41,10 @@
         - libexiv2-dev
         - libqt5printsupport5
         - libqt5concurrent5
-        # - libquazip-dev
+        - libquazip-dev
         # the mistirious rest...
-        # - libatk-adaptor 
-        # - libgail-common
+        - libatk-adaptor 
+        - libgail-common
         # - libxkbcommon0
         # - ttf-ubuntu-font-family
         # - dmz-cursor-theme
@@ -46,9 +52,9 @@
         # - adwaita-icon-theme
         # - gnome-themes-standard
         # - shared-mime-info
-        # - libqt5gui5
+        - libqt5gui5
         # - libgdk-pixbuf2.0-0
-        # - libqt5svg5 # for loading icon themes which are svg
+        - libqt5svg5 # for loading icon themes which are svg
         # - appmenu-qt5
         # - locales-all
       build-packages:
