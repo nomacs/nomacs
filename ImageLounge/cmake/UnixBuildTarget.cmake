@@ -101,7 +101,7 @@ file(GLOB NMC_THEMES "src/themes/*.css")
 
 foreach(CSS ${NMC_THEMES})
 	message(STATUS "${CSS} added...")
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${CSS}\" \"${CMAKE_BINARY_DIR}/themes/\")
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CSS} ${CMAKE_BINARY_DIR}/themes/)
 endforeach()
 
 
