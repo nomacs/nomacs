@@ -1,6 +1,6 @@
 
   name: nomacs
-  version: 3.11.1
+  version: 3.11.2
   summary: nomacs is a free, open source image viewer.
   description: |
     You can use it for viewing all common image formats 
@@ -17,7 +17,7 @@
   apps:
     nomacs:
       command: desktop-launch nomacs
-      desktop: ./ImageLounge/nomacs.desktop
+      desktop: ./../ImageLounge/nomacs.desktop
       plugs: [home, network, x11]
 
   parts:
