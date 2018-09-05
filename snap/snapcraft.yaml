@@ -17,6 +17,7 @@
   apps:
     nomacs:
       command: desktop-launch nomacs
+      desktop: ./ImageLounge/nomacs.desktop
       plugs: [home, network, x11]
 
   parts:
