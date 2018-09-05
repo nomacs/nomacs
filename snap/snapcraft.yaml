@@ -17,6 +17,7 @@
   apps:
     nomacs:
       command: desktop-launch nomacs
+      plugs: [home, network, x11]
 
   parts:
     nomacs:
