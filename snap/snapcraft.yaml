@@ -80,5 +80,4 @@
         - libzip-dev
       after: 
         - desktop-qt5
-        - nomacs-plugins
 
