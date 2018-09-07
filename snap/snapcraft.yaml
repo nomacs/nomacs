@@ -21,15 +21,18 @@
       plugs: [home, network, x11]
 
   parts:
+
+    # add our quazip
+    quazip:
+      source: https://github.com/stachenov/quazip.git
+      plugin: cmake
+      configflags: 
+        - -DCMAKE_BUILD_TYPE=Release
     
     # add all official plugins
     nomacs-plugins:
       source: https://github.com/nomacs/nomacs-plugins.git
       plugin: dump
-      # override-build: |
-      #   # move nomacs-plugins to the dedicated plugins folder
-      #   mkdir -p ../../nomacs/src/src/plugins
-      #   cp -r ../src ../../nomacs/src/src/plugins
 
     # install themes
     nomacs-resources:
@@ -44,8 +47,8 @@
       source: ./ImageLounge
       configflags: 
         - -DCMAKE_BUILD_TYPE=Release
-        - -DENABLE_QUAZIP=OFF # fixme
-        - -DUSE_SYSTEM_QUAZIP=OFF # fixme
+        - -DENABLE_QUAZIP=ON
+        - -DUSE_SYSTEM_QUAZIP=ON
         - -DENABLE_TRANSLATIONS=ON
       stage-packages:
         - libc6
@@ -92,4 +95,6 @@
         - libzip-dev
       after: 
         - desktop-qt5
+        - nomacs-plugins
+        - quazip
 
