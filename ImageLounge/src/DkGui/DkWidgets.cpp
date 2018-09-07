@@ -1820,7 +1820,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		setAngle(angle, false);
 	}
 
-	if (event->buttons() == Qt::LeftButton && mState != moving) {
+	if (event->buttons() == Qt::LeftButton) {
 
 		QPolygonF p = mRect.getPoly();
 
@@ -1833,11 +1833,11 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		QPoint tl;
 
 		if (sAngle == 0.0f || fabs(sAngle) == 90.0f) {
-			tl = mRect.getTopLeft().toPoint();
+			tl = mRtform.map(mRect.getTopLeft()).toPoint();
 			info += "x: ";
 		}
 		else {
-			tl = mRect.getCenter().toPoint();
+			tl = mRtform.map(mRect.getCenter()).toPoint();
 			info += "center x: ";
 		}
 		info += QString::number(tl.x()) + ", y: ";
