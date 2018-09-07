@@ -190,6 +190,13 @@ NMC_INSTALL()
 
 if(UNIX AND ENABLE_PLUGINS)
 
+	if (NOT DEFINED ${PLUGINS_DIR})
+		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+		message(STATUS "setting plugins dir")
+	else ()
+		message(STATUS "${PLUGINS_DIR} is defined")
+	endif()
+
 	if (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 	elseif (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
