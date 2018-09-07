@@ -765,7 +765,7 @@ void DkImgTransformationsToolBar::createIcons() {
 	icons.resize(icons_end);
 
 	icons[apply_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
-	icons[cancel_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/cancel.svg");
+	icons[cancel_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/close.svg");
 	icons[pan_icon]		= nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
 	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
 	icons[scale_icon]	= nmc::DkImage::loadIcon(":/nomacsPluginImgTrans/img/scale.svg");

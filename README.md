@@ -10,9 +10,9 @@ This repository contains officially supported plugins for the image viewer [noma
 
 - CMake
 - IDE (i.e. Visual Studio)
-- nomacs
-- OpenCV
-- Qt
+- [nomacs](https://github.com/nomacs/nomacs)
+- [OpenCV](https://github.com/TUWien/opencv) (>= 3.4) _optional_
+- `Qt` SDK or the compiled sources (>= 5.2.1)
 
 ### Building Plugins (Windows)
 
@@ -21,7 +21,7 @@ This repository contains officially supported plugins for the image viewer [noma
 3. set the plugin repository's root folder containing CMakeLists.txt to `where is the source code`
 4. choose a build folder
 5. Set OpenCV_DIR, QT_MAKE_EXECUTABLE, and nomacs_DIR
-    - Copy `CMakeUserSkel.cmake` and rename it to `CMakeUser.cmake`
+    - Copy `CMakeUserPathsGit.cmake` and rename it to `CMakeUserPaths.cmake`
     - Set all paths to your own builds of nomacs etc.
 6. Hit `Configure` then `Generate`
 7. You will find a nomacs-plugins.sln which builds all plugins and dedicated plugin projects in the respective folders (e.g. PaintPlugin/paintPlugin.sln)
@@ -32,8 +32,8 @@ This repository contains officially supported plugins for the image viewer [noma
 Build [nomacs](https://github.com/nomacs/nomacs#build-nomacs-ubuntu)  
 
 Since you need to reference the nomacs resources from the nomacs-plugins directory, specify the nomacs paths in  
-nomacs-plugins/CMakeUserSkel.cmake:  
-    - Copy `CMakeUserSkel.cmake` and rename it to `CMakeUser.cmake`  
+nomacs-plugins/CMakeUserPaths.cmake:  
+    - Copy `CMakeUserPathsGit.cmake` and rename it to `CMakeUserPaths.cmake`  
     - Set all paths to your own builds of nomacs etc.  
 
 In the nomacs-plugins directory run `cmake` to get the Makefiles:

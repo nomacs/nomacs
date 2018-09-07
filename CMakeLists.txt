@@ -9,9 +9,12 @@ PROJECT(nomacs-plugins)
 # include macros needed
 include("cmake/Utils.cmake")
 
-IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
-    include(${CMAKE_SOURCE_DIR}/CMakeUser.cmake)
-ENDIF()
+# load paths from the user file if exists
+if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+	include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+elseif(MSVC)
+	message(WARNING "Could not find CMakeUserPaths.cmake - please use this file to specify your install directories (see CMakeUserPathsGit.cmake)")
+endif()
 
 NMC_POLICY()
 
