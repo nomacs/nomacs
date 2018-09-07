@@ -1,6 +1,6 @@
 
   name: nomacs
-  version: 3.11.4
+  version: 3.11.5
   summary: nomacs is a free, open source image viewer.
   description: |
     You can use it for viewing all common image formats 
@@ -21,12 +21,24 @@
       plugs: [home, network, x11]
 
   parts:
+    
+    # add all official plugins
+    nomacs-plugins:
+      source: https://github.com/nomacs/nomacs-plugins.git
+      plugin: dump
+      # override-build: |
+      #   # move nomacs-plugins to the dedicated plugins folder
+      #   mkdir -p ../../nomacs/src/src/plugins
+      #   cp -r ../src ../../nomacs/src/src/plugins
+
+    # install themes
     nomacs-resources:
       source: ./ImageLounge/src/themes
       plugin: dump
       organize:
         '*.css': /bin/themes/
         
+    # compile nomacs
     nomacs:
       plugin: cmake
       source: ./ImageLounge

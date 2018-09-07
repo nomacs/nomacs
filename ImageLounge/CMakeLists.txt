@@ -189,12 +189,23 @@ NMC_INSTALL()
 # endforeach()
 
 if(UNIX AND ENABLE_PLUGINS)
-	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
-		SET(NOMACS_FOUND true)
-		SET(NOMACS_VARS_ALREADY_SET true)
-		add_subdirectory(plugins)
+
+	if (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
+	elseif (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
+		# set the snapcraft dir
+		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
+	endif ()
+
+	if(EXISTS "${PLUGINS_DIR}")
+		message(STATUS "using plugin directory: ${PLUGINS_DIR}")
+		set(NOMACS_FOUND true)
+		set(NOMACS_VARS_ALREADY_SET true)
+		add_subdirectory(${PLUGINS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/plugins")
 	else()
+		message(STATUS "I failed to locate plugins in: ${PLUGINS_DIR}")
 		message(WARNING "plugins directory not found, not building plugins. You have to check out the nomacs-plugins git to the 'plugins' folder if you want to build them")
+		SET(ENABLE_PLUGINS OFF)
 	endif()
 endif()
 
