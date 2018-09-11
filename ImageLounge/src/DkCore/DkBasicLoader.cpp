@@ -174,7 +174,9 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 		try {
 			mMetaData->readMetaData(filePath, ba);
-
+			
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+			// this is a workaroung for old Qt5 versions where jpgs with 'illegal' orientation=0 were not loaded
 			if (!DkSettingsManager::param().metaData().ignoreExifOrientation) {
 				DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
 				
@@ -184,6 +186,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 					qWarning() << "deleting illegal EXIV orientation...";
 				}
 			}
+#endif
 		}
 		catch (...) {}	// ignore if we cannot read the metadata
 	}

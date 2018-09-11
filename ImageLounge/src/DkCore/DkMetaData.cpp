@@ -1148,7 +1148,7 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 
 	success &= setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
 	success &= setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
-	success &= setExifValue("Exif.Image.Software", qApp->organizationName() + " - " + qApp->applicationName());
+	success &= setExifValue("Exif.Image.ProcessingSoftware", qApp->organizationName() + " - " + qApp->applicationName() + " " + qApp->applicationVersion());
 
 	// TODO: convert Date Time to Date Time Original and set new Date Time
 

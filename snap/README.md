@@ -39,7 +39,8 @@ Here is a YAML validator: http://nodeca.github.io/js-yaml/
 - ~~Plugins~~
 - ~~image formats (i.e. tif, webp)~~
 - themes (if no default is set)
-- smb
+    - might be related to [this](https://forum.snapcraft.io/t/desktop-improvements-report-and-plans/3510?source_topic_id=496)
+- smb (samba shares, soft link folders?!)
 - desktop icon
 
 as of 05.09.18 17:00
