@@ -1005,24 +1005,32 @@ QImage DkImage::exposure(const QImage & src, double exposure, double offset, dou
 	return imgR;
 }
 
-QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByteArray & beginSignature, const QByteArray & endSignature) {
+QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByteArray & beginSignature, const QByteArray & endSignature, bool debugOutput) {
 	
 	
 	int bIdx = ba.indexOf(beginSignature);
 
 	if (bIdx == -1) {
-		qDebug() << "could not locate" << beginSignature;
+		qDebug() << "[ExtractImage] could not locate" << beginSignature;
 		return QByteArray();
 	}
 
 	int eIdx = ba.indexOf(endSignature, bIdx);
 
-	if (bIdx == -1) {
-		qDebug() << "could not locate" << endSignature;
+	if (eIdx == -1) {
+		qDebug() << "[ExtractImage] could not locate" << endSignature;
 		return QByteArray();
 	}
 
-	return ba.mid(bIdx, eIdx+endSignature.size() - bIdx);
+	QByteArray bac = ba.mid(bIdx, eIdx + endSignature.size() - bIdx);
+
+	if (debugOutput) {
+		qDebug() << "extracting image from stream...";
+		qDebug() << "cropping: [" << bIdx << eIdx << "]";
+		qDebug() << "original size: " << ba.size()/1024.0 << "KB" << "new size: " << bac.size()/1024.0 << "KB" << "difference:" << (ba.size()-bac.size())/1024 << "KB";
+	}
+
+	return bac;
 }
 
 #ifdef WITH_OPENCV

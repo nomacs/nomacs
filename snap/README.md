@@ -32,13 +32,15 @@ nomacs
 
 Here is a YAML validator: http://nodeca.github.io/js-yaml/
 
-## Missing features
+## Missing features and Issues
 
 - ~~Quazip~~
 - ~~themes~~
-- Plugins
-
-## Issues
+- ~~Plugins~~
+- ~~image formats (i.e. tif, webp)~~
+- themes (if no default is set)
+- smb
+- desktop icon
 
 as of 05.09.18 17:00
 
