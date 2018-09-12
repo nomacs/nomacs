@@ -17,6 +17,7 @@ installer/repository
 install
 d.txt
 /.project
+CMakeUserPaths.cmake
 CMakeUser.cmake
 ext
 *.traineddata
