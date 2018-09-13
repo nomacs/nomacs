@@ -559,7 +559,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
 		mImgMatrix = newImgMatrix;
 		updateImageMatrix();
 
-		QPointF imgPos = QPointF(canvasSize.x()*mImgStorage.size().width(), canvasSize.y()*mImgStorage.size().height());
+		QPointF imgPos = QPointF(canvasSize.x()*getImageSize().width(), canvasSize.y()*getImageSize().height());
 
 		// go to screen coordinates
 		imgPos = mImgMatrix.map(imgPos);
@@ -598,7 +598,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = mWorldMatrix.inverted().map(size);
 		size = mImgMatrix.inverted().map(size);
-		size = QPointF(size.x()/(float)mImgStorage.size().width(), size.y()/(float)mImgStorage.size().height());
+		size = QPointF(size.x()/(float)getImageSize().width(), size.y()/(float)getImageSize().height());
 
 		emit sendTransformSignal(mWorldMatrix, mImgMatrix, size);
 	}
@@ -659,7 +659,7 @@ void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {
 
 QImage DkViewPort::getImage() const {
 	
-	if (imageContainer())
+	if (imageContainer() && (!mSvg || !mSvg->isValid()) && (!mMovie || !mMovie->isValid()))
 		return imageContainer()->image();
 	
 	return DkBaseViewPort::getImage();
@@ -1248,7 +1248,7 @@ QPoint DkViewPort::mapToImage(const QPoint& windowPos) const {
 
 	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
 
-	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= mImgStorage.size().width() || xy.y() >= mImgStorage.size().height())
+	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
 		return QPoint(-1,-1);
 
 	return xy;
@@ -1266,13 +1266,13 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	QColor col = getImage().pixel(xy);
 	
-	QString msg = "<font color=#555555>x: " + QString::number(xy.x()) + " y: " + QString::number(xy.y()) + "</font>"
+	QString msg = "x: " + QString::number(xy.x()) + " y: " + QString::number(xy.y()) +
 		" | r: " + QString::number(col.red()) + " g: " + QString::number(col.green()) + " b: " + QString::number(col.blue());
 
 	if (mImgStorage.image().hasAlphaChannel())
 		msg += " a: " + QString::number(col.alpha());
 
-	msg += " | <font color=#555555>" + col.name().toUpper() + "</font>";
+	msg += " | " + col.name().toUpper();
 
 	DkStatusBarManager::instance().setMessage(msg, DkStatusBar::status_pixel_info);
 }
@@ -1287,7 +1287,7 @@ QString DkViewPort::getCurrentPixelHexValue() {
 
 	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
 
-	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= mImgStorage.size().width() || xy.y() >= mImgStorage.size().height())
+	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
 		return QString();
 
 	QColor col = getImage().pixel(xy);
@@ -2373,7 +2373,7 @@ void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event) {
 
 		bool isPointValid = true;
 
-		if (xy.x() < 0 || xy.y() < 0 || xy.x() >= mImgStorage.size().width() || xy.y() >= mImgStorage.size().height())
+		if (xy.x() < 0 || xy.y() < 0 || xy.x() >= getImageSize().width() || xy.y() >= getImageSize().height())
 			isPointValid = false;
 
 		if (isPointValid) {

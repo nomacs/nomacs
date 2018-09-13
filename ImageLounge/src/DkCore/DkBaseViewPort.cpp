@@ -261,6 +261,19 @@ QImage DkBaseViewPort::getImage() const {
 	
 	if (mMovie && mMovie->isValid())
 		return mMovie->currentImage();
+	if (mSvg && mSvg->isValid() && !mImgViewRect.isEmpty()) {
+
+		QImage img(mImgViewRect.size().toSize(), QImage::Format_ARGB32);
+		img.fill(QColor(0, 0, 0, 0));
+
+		QPainter p(&img);
+
+		if (mSvg && mSvg->isValid()) {
+			mSvg->render(&p, mImgViewRect);
+		}
+
+		return img;
+	}
 
 	return mImgStorage.imageConst();
 }
@@ -268,7 +281,7 @@ QImage DkBaseViewPort::getImage() const {
 QSize DkBaseViewPort::getImageSize() const {
 
 	if (mSvg) {
-		qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" << mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
+		//qDebug() << "win: " << size() << "svg:" << mSvg->defaultSize() << "scaled:" << mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
 		return mSvg->defaultSize().scaled(size(), Qt::KeepAspectRatio);
 	}
 
