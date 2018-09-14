@@ -676,6 +676,11 @@ void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 		lb = (float)mPanControl.x(); 
 		ub = (float)mPanControl.y();
 	}
+	// we must not pan further if scrollbars are visible
+	else if (lb == -1 && ub == -1 && DkSettingsManager::instance().param().display().showScrollBars) {
+		lb = 0.0f;
+		ub = 0.0f;
+	}
 	else {
 
 		// default behavior
