@@ -45,6 +45,7 @@ option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+option(ENABLE_HEIF "Heif Support" OFF)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
@@ -134,21 +135,25 @@ file(GLOB GUI_HEADERS "src/DkGui/*.h")
 file(GLOB CORE_SOURCES "src/DkCore/*.cpp")
 file(GLOB CORE_HEADERS "src/DkCore/*.h")
 
+
 # gather information for building
 include_directories (
 	${EXIV2_INCLUDE_DIRS}
 	${LIBRAW_INCLUDE_DIRECTORY}
-	${CMAKE_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
-	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIR}
 	${QUAZIP_ZLIB_INCLUDE_DIR}
+	${HEIF_INCLUDE_DIRS}
+	${CMAKE_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore
+	${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
 )
+
+message(STATUS "HEIF include: ${HEIF_INCLUDE_DIRS}")
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
@@ -251,6 +256,12 @@ IF(ENABLE_QUAZIP)
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
+ENDIF()
+
+IF(ENABLE_HEIF)
+    MESSAGE(STATUS " nomacs will be compiled with Heif support .................... YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with Heif support .................... NO")
 ENDIF()
 
 IF(USE_SYSTEM_QUAZIP)

@@ -117,6 +117,17 @@ if(ENABLE_QUAZIP)
 	endif(QUAZIP_FOUND)
 endif(ENABLE_QUAZIP)
 
+if(ENABLE_HEIF)
+
+	find_package(heif)
+	if(HEIF_FOUND)
+		add_definitions(-DWITH_HEIF)
+		set(HEIF_DEPENDENCY "heif")
+	else()
+		message(FATAL_ERROR "I could not find HEIF - you can either disable building with Heif or add the path to the CMAKE_PREFIX_PATHS")
+	endif(HEIF_FOUND)
+endif(ENABLE_HEIF)
+
 #add libqpsd
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")

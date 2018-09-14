@@ -207,6 +207,7 @@ public:
 		hdr_loader,
 		tif_loader,
 		tga_loader,
+		heif_loader,
 	};
 
 	DkBasicLoader(int mode = mode_default);
@@ -344,6 +345,7 @@ public:
 	bool loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 	bool loadTIFFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
     bool loadDrifFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+	bool loadHEIFFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 
 #ifdef Q_OS_WIN
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;

@@ -56,6 +56,14 @@
 #include <quazip5/JlCompress.h>
 #endif
 
+// heif
+#ifdef WITH_HEIF
+#include "heifreader.h"
+#include "ImageItem.h"
+#include "DescriptiveProperty.h"
+#include "Heif.h"
+#endif
+
 // opencv
 #ifdef WITH_OPENCV
 
@@ -232,6 +240,14 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
 		if (imgLoaded) mLoader = qt_loader;
+	}
+
+	// OpenCV Tiff loader - supports jpg compressed tiffs
+	if (!imgLoaded && newSuffix.contains(QRegExp("(heic)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadHEIFFile(mFile, img, ba);
+
+		if (imgLoaded)	mLoader = heif_loader;
 	}
 
 	// OpenCV Tiff loader - supports jpg compressed tiffs
@@ -745,6 +761,27 @@ bool DkBasicLoader::loadDrifFile(const QString& filePath, QImage& img, QSharedPo
     drifFreeImg(imgBytes);
 
     return success;
+#ifndef WITH_HEIF
+bool DkBasicLoader::loadHEIFFile(const QString&, QImage&, QSharedPointer<QByteArray>) const {
+
+#else
+
+bool DkBasicLoader::loadHEIFFile(const QString & filePath, QImage & img, QSharedPointer<QByteArray> ba) const {
+
+	HEIFPP::Heif heif;
+
+	// TODO: we can also stream it from ba
+	if (heif.load(filePath.toLatin1()) == HEIFPP::Result::OK) {
+
+		HEIFPP::ImageItem* hImg = heif.getMasterImage(0);
+		
+		if (hImg->isMasterImage())
+			qDebug() << "master image found...";
+	}
+
+#endif
+
+	return false;
 }
 
 void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {

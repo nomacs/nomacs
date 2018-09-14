@@ -26,6 +26,7 @@ target_link_libraries(
 	${OpenCV_LIBS} 
 	${TIFF_LIBRARIES} 
 	${QUAZIP_LIBRARIES}
+	${HEIF_LIBS}
 	)
 	
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
@@ -46,9 +47,10 @@ target_link_libraries(
 	${EXIV2_LIBS} 				# metadata support
 	${VERSION_LIB} 				# needed for registering the curren version
 	${LIBRAW_LIBRARIES} 		# RAW support (optional)
-	${OpenCV_LIBS} 			# image manipulation support (optional)
+	${OpenCV_LIBS} 				# image manipulation support (optional)
 	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
-	${QUAZIP_LIBRARIES}		# ZIP support (optional)
+	${QUAZIP_LIBRARIES}			# ZIP support (optional)
+	${HEIF_LIBS}				# HEIF support (optional)
 	)
 
 add_dependencies(
@@ -202,8 +204,24 @@ else()
 endif()
 
 # path hints for the dependency collector
-set(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/src/Release ${EXPAT_BUILD_PATH}/Release ${LIBRAW_BUILD_PATH}/Release ${QUAZIP_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-set(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/src/Debug ${EXPAT_BUILD_PATH}/Debug ${LIBRAW_BUILD_PATH}/Debug ${QUAZIP_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_RELEASE 
+	${EXIV2_BUILD_PATH}/src/Release
+	${EXPAT_BUILD_PATH}/Release 
+	${LIBRAW_BUILD_PATH}/Release 
+	${QUAZIP_BUILD_PATH}/Release 
+	${OpenCV_DIR}/bin/Release 
+	${HEIF_BUILD_PATH}/lib/Release
+	${QT_QMAKE_PATH} 
+	${VS_PATH})
+set(DC_PATHS_DEBUG 
+	${EXIV2_BUILD_PATH}/src/Debug/
+	${EXPAT_BUILD_PATH}/Debug 
+	${LIBRAW_BUILD_PATH}/Debug 
+	${QUAZIP_BUILD_PATH}/Debug 
+	${OpenCV_DIR}/bin/Debug 
+	${HEIF_BUILD_PATH}/lib/Debug/
+	${QT_QMAKE_PATH} 
+	${VS_PATH})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 

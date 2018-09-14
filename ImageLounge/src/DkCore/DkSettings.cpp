@@ -198,7 +198,12 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters.append("Adobe Photoshop (*.psd)");
 	app_p.openFilters.append("Large Document Format (*.psb)");
 
-	// archive formats
+	// HEIF
+#if WITH_HEIF
+	app_p.openFilters.append("High Efficiency Image File Format (*.heic)");
+#endif
+
+	// archive formatsimage
 	app_p.containerFilters.append("ZIP Archive (*.zip)");
 	app_p.containerFilters.append("Microsoft Word Document (*.docx)");
 	app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
