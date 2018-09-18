@@ -11,7 +11,7 @@ heat.exe dir .\nomacs.%ARCH% -o HarvestedFiles.wxs -scom -frag -srd -sreg -gg -c
 REM create meta object
 candle.exe -arch %ARCH% nomacs-setup.wxs nomacs-ui.wxs HarvestedFiles.wxs
 
-REM make setup (should take a few seconds)
+REM make setup (might take a few seconds)
 light.exe -ext WixUIExtension nomacs-setup.wixobj nomacs-ui.wixobj HarvestedFiles.wixobj -b ./nomacs.%ARCH% -out nomacs-setup-%ARCH%.msi
 
 REM sign the setup

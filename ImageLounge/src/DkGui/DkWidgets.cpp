@@ -996,8 +996,8 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags)
 
 void DkRatingLabel::init() {
 
-	QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg");
-	QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg");
+	QIcon starDark = DkImage::loadIcon(":/nomacs/img/star-off.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
+	QIcon starWhite = DkImage::loadIcon(":/nomacs/img/star-on.svg", QSize(), DkSettingsManager::param().display().hudFgdColor);
 
 	mStars.resize(5);
 	
