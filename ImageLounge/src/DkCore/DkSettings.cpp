@@ -319,7 +319,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	tmpShow = settings.value("showMetaDataDock", app_p.showMetaDataDock).toBitArray();
 	if (tmpShow.size() == app_p.showMetaDataDock.size())	
 		app_p.showMetaDataDock = tmpShow;
-	tmpShow = settings.value("showEditDock", app_p.showMetaDataDock).toBitArray();
+	tmpShow = settings.value("showEditDock", app_p.showEditDock).toBitArray();
 	if (tmpShow.size() == app_p.showEditDock.size())	
 		app_p.showEditDock = tmpShow;
 	tmpShow = settings.value("showHistoryDock", app_p.showHistoryDock).toBitArray();
