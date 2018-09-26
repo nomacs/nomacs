@@ -1451,12 +1451,12 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 	return true;
 }
 
-QImage DkImage::createThumb(const QImage& image) {
+QImage DkImage::createThumb(const QImage& image, int maxSize) {
 
 	if (image.isNull())
 		return image;
 
-	int maxThumbSize = (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
+	int maxThumbSize = maxSize == -1 ? (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor()) : maxSize;
 	int imgW = image.width();
 	int imgH = image.height();
 

@@ -124,7 +124,7 @@ public:
 	static QPixmap loadIcon(const QString& filePath = QString(), const QSize& size = QSize(), const QColor& col = QColor());
 	static QPixmap loadIcon(const QString& filePath, const QColor& col, const QSize& size = QSize());
 	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
-	static QImage createThumb(const QImage& img);
+	static QImage createThumb(const QImage& img, const int maxSize = -1);
 	static bool addToImage(QImage& img, unsigned char val = 1);
 	static QColor getMeanColor(const QImage& img);
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);

@@ -179,9 +179,9 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
 
-	// now get the data again
 	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
 
+	// now get the data again
 	Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
 	if (exifBuf.pData_) {
 		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
@@ -926,14 +926,14 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 		// ok, let's try to save the thumbnail...
 		Exiv2::ExifThumb eThumb(exifData);
 
-		QByteArray data;
-		QBuffer buffer(&data);
+		QByteArray ba;
+		QBuffer buffer(&ba);
 		buffer.open(QIODevice::WriteOnly);
 		thumb.save(&buffer, "JPEG");	// here we destroy the alpha channel of thumbnails
 
 		try {
 			// whipe all exif data of the thumbnail
-			Exiv2::MemIo::AutoPtr exifBufferThumb(new Exiv2::MemIo((const byte*)data.constData(), data.size()));
+			Exiv2::MemIo::AutoPtr exifBufferThumb(new Exiv2::MemIo((const byte*)ba.constData(), ba.size()));
 			Exiv2::Image::AutoPtr exifImgThumb = Exiv2::ImageFactory::open(exifBufferThumb);
 
 			if (exifImgThumb.get() != 0 && exifImgThumb->good())
@@ -944,7 +944,7 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 		}
 
 		eThumb.erase();	// erase all thumbnails
-		eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
+		eThumb.setJpegThumbnail((Exiv2::byte *)ba.data(), ba.size());
 
 		mExifImg->setExifData(exifData);
 		mExifState = dirty;
@@ -1153,7 +1153,10 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 	// TODO: convert Date Time to Date Time Original and set new Date Time
 
 	clearOrientation();
-	setThumbnail(DkImage::createThumb(img));
+	
+	// NOTE: exiv crashes for some images (i.e. \exif-crash\0125-results.png)
+	// if the thumbnail's max size is > 200px
+	setThumbnail(DkImage::createThumb(img, 200));
 
 	return success;
 }
