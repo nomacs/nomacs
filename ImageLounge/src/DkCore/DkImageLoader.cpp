@@ -1162,6 +1162,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		jpgDialog->setImage(saveImg);
+		jpgDialog->setMinimumSize(150, 150);
 
 		if (!jpgDialog->exec()) {
 			jpgDialog->deleteLater();

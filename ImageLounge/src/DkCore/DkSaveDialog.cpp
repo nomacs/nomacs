@@ -188,7 +188,7 @@ void DkCompressDialog::createLayout() {
 	//origView->setMinimumSize(20,20);
 	mOrigView->setForceFastRendering(true);
 	mOrigView->setPanControl(QPointF(0.0f, 0.0f));
-	connect(mOrigView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
+	//connect(mOrigView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
 
 	//// maybe we should report this: 
 	//// if a stylesheet (with border) is set, the var
