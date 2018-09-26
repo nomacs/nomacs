@@ -108,7 +108,7 @@ void DkCompressDialog::saveSettings() {
 
 	DefaultSettings settings;
 	settings.beginGroup(objectName());
-	settings.setValue("Compression" + QString::number(mDialogMode), getCompression());
+	settings.setValue("CompressionCombo" + QString::number(mDialogMode), mCompressionCombo->currentIndex());
 	
 	if (mDialogMode != webp_dialog)
 		settings.setValue("bgCompressionColor" + QString::number(mDialogMode), getBackgroundColor().rgba());
@@ -118,18 +118,23 @@ void DkCompressDialog::saveSettings() {
 
 void DkCompressDialog::loadSettings() {
 
-	qDebug() << "loading new settings...";
-
 	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
 	mBgCol = settings.value("bgCompressionColor" + QString::number(mDialogMode), QColor(255,255,255).rgba()).toInt();
-	int compression = settings.value("Compression" + QString::number(mDialogMode), DkSettingsManager::instance().settings().app().defaultJpgQuality).toInt();
+	int cIdx = settings.value("CompressionCombo" + QString::number(mDialogMode), 0).toInt();
 
-	mSlider->setValue(compression);
+	if (cIdx >= 0 && cIdx < mCompressionCombo->count())
+		mCompressionCombo->setCurrentIndex(cIdx);
 	mColChooser->setColor(mBgCol);
 	newBgCol();
 	settings.endGroup();
+}
+
+void DkCompressDialog::resizeEvent(QResizeEvent * ev) {
+
+	drawPreview();
+	QDialog::resizeEvent(ev);
 }
 
 void DkCompressDialog::init() {
@@ -143,20 +148,20 @@ void DkCompressDialog::init() {
 		else
 			setWindowTitle(tr("J2K Settings"));
 
-		mSlider->show();
+		mCompressionCombo->show();
 		mColChooser->show();
 		mCbLossless->hide();
 		mSizeCombo->hide();
-		mSlider->setEnabled(true);
+		mCompressionCombo->setEnabled(true);
 	}
 	else if (mDialogMode == webp_dialog) {
 		setWindowTitle(tr("WebP Settings"));
 		mColChooser->setEnabled(false);
-		mSlider->show();
+		mCompressionCombo->show();
 		mColChooser->show();
 
 #if QT_VERSION < 0x050000
-		cbLossless->show();
+		mCbLossless->show();
 #endif
 		mSizeCombo->hide();
 		losslessCompression(mCbLossless->isChecked());
@@ -166,11 +171,10 @@ void DkCompressDialog::init() {
 		setWindowTitle(tr("Save for Web"));
 
 		mSizeCombo->show();
-		mSlider->hide();
+		mCompressionCombo->hide();
 		mColChooser->hide();
 		mCbLossless->hide();
 	}
-
 	loadSettings();
 
 }
@@ -210,11 +214,17 @@ void DkCompressDialog::createLayout() {
 	mSizeCombo->addItem(tr("Original Size"), -1);
 	connect(mSizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
 
-	// slider
-	mSlider = new DkSlider(tr("Image Quality"), this);
-	mSlider->setValue(80);
-	mSlider->setTickInterval(10);
-	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
+	mCompressionCombo = new QComboBox(this);
+	mCompressionCombo->addItem(tr("High Quality"), 100);
+	mCompressionCombo->addItem(tr("Medium Quality"), 97);
+	mCompressionCombo->addItem(tr("Low Quality"), 90);
+	connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
+
+	//// slider
+	//mSlider = new DkSlider(tr("Image Quality"), this);
+	//mSlider->setValue(80);
+	//mSlider->setTickInterval(10);
+	//connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
 
 	// lossless
 	mCbLossless = new QCheckBox(tr("Lossless Compression"), this);
@@ -225,7 +235,7 @@ void DkCompressDialog::createLayout() {
 
 	// color chooser
 	mColChooser = new DkColorChooser(mBgCol, tr("Background Color"), this);
-	mColChooser->setEnabled(mHasAlpha);
+	mColChooser->setVisible(mHasAlpha);
 	mColChooser->enableAlpha(false);
 	connect(mColChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
 
@@ -237,7 +247,7 @@ void DkCompressDialog::createLayout() {
 
 	QWidget* previewWidget = new QWidget(this);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
-	previewLayout->setAlignment(Qt::AlignHCenter);
+	previewLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 	previewLayout->setColumnStretch(0,1);
 	previewLayout->setColumnStretch(1,1);
 
@@ -245,11 +255,11 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(newLabel, 0, 1);
 	previewLayout->addWidget(mOrigView, 1, 0);
 	previewLayout->addWidget(mPreviewLabel, 1, 1);
-	previewLayout->addWidget(mSlider, 2, 0);
-	previewLayout->addWidget(mColChooser, 2, 1);
+	previewLayout->addWidget(mCompressionCombo, 2, 0);
+	previewLayout->addWidget(mColChooser, 2, 1, 1, 3);
 	previewLayout->addWidget(mCbLossless, 3, 0);
 	previewLayout->addWidget(mSizeCombo, 4, 0);
-	previewLayout->addWidget(mPreviewSizeLabel, 4, 1);
+	previewLayout->addWidget(mPreviewSizeLabel, 5, 1);
 
 	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -289,8 +299,6 @@ void DkCompressDialog::drawPreview() {
 		return;
 
 	QImage origImg = mOrigView->getCurrentImageRegion();
-	qDebug() << "orig img size: " << origImg.size();
-	qDebug() << "min size: " << mOrigView->minimumSize();
 	mNewImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
 	if ((mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) && mHasAlpha)
@@ -309,7 +317,7 @@ void DkCompressDialog::drawPreview() {
 		QByteArray ba;
 		QBuffer buffer(&ba);
 		buffer.open(QIODevice::ReadWrite);
-		mNewImg.save(&buffer, "JPG", mSlider->value());
+		mNewImg.save(&buffer, "JPG", getCompression());
 		mNewImg.loadFromData(ba, "JPG");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 	}
@@ -318,7 +326,7 @@ void DkCompressDialog::drawPreview() {
 		QByteArray ba;
 		QBuffer buffer(&ba);
 		buffer.open(QIODevice::ReadWrite);
-		mNewImg.save(&buffer, "J2K", mSlider->value());
+		mNewImg.save(&buffer, "J2K", getCompression());
 		mNewImg.loadFromData(ba, "J2K");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using j2k...";
@@ -328,19 +336,10 @@ void DkCompressDialog::drawPreview() {
 		QByteArray ba;
 		QBuffer buffer(&ba);
 		buffer.open(QIODevice::ReadWrite);
-		mNewImg.save(&buffer, "WEBP", mSlider->value());
+		mNewImg.save(&buffer, "WEBP", getCompression());
 		mNewImg.loadFromData(ba, "WEBP");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using webp...";
-
-		//// pre-compute the webp compression
-		//DkBasicLoader loader;
-		//QSharedPointer<QByteArray> buffer(new QByteArray());
-		//loader.saveWebPFile(mNewImg, buffer, getCompression(), 0);
-		//qDebug() << "webP buffer size: " << buffer->size();
-		//loader.loadWebPFile(QString(), buffer);
-		//mNewImg = loader.image();
-		//updateFileSizeLabel((float)buffer->size(), origImg.size());
 	}
 	else if (mDialogMode == web_dialog) {
 
@@ -357,8 +356,15 @@ void DkCompressDialog::drawPreview() {
 			mNewImg.loadFromData(ba, "JPG");
 			updateFileSizeLabel((float)ba.size(), origImg.size(), factor);
 		}
-		else
-			updateFileSizeLabel();
+		else {
+			// pre-compute the png compression
+			QByteArray ba;
+			QBuffer buffer(&ba);
+			buffer.open(QIODevice::ReadWrite);
+			mNewImg.save(&buffer, "PNG");
+			mNewImg.loadFromData(ba, "PNG");
+			updateFileSizeLabel((float)ba.size(), origImg.size(), factor);
+		}
 	}
 	else
 		updateFileSizeLabel();
@@ -388,15 +394,12 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize
 	float rawBufferSize = bufferImgSize.width()*bufferImgSize.height()*depth/8.0f;
 	float rawImgSize = factor*(mImg.width()*mImg.height()*depth/8.0f);
 
-	//qDebug() << "I need: " << rawImgSize*bufferSize/rawBufferSize << " bytes because buffer size: " << bufferSize;
-	//qDebug() << "new image: " << newImg.size() << " full image: " << img->size() << " depth: " << depth;
-
 	mPreviewSizeLabel->setText(tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize*bufferSize/rawBufferSize)));
 }
 
 void DkCompressDialog::imageHasAlpha(bool hasAlpha) {
 	mHasAlpha = hasAlpha;
-	mColChooser->setEnabled(hasAlpha);
+	mColChooser->setVisible(hasAlpha);
 }
 
 QColor DkCompressDialog::getBackgroundColor() const {
@@ -407,7 +410,7 @@ int DkCompressDialog::getCompression() {
 
 	int compression = -1;
 	if ((mDialogMode == jpg_dialog || !mCbLossless->isChecked()) && mDialogMode != web_dialog)
-		compression = mSlider->value();
+		compression = mCompressionCombo->itemData(mCompressionCombo->currentIndex()).toInt();
 	else if (mDialogMode == web_dialog)
 		compression = 80;
 
@@ -459,14 +462,14 @@ void DkCompressDialog::setVisible(bool visible) {
 }
 
 void DkCompressDialog::newBgCol() {
+	
 	mBgCol = mColChooser->getColor();
-	qDebug() << "new bg col...";
 	drawPreview();
 }
 
 void DkCompressDialog::losslessCompression(bool lossless) {
 
-	mSlider->setEnabled(!lossless);
+	mCompressionCombo->setEnabled(!lossless);
 	drawPreview();
 }
 

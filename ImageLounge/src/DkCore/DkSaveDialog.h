@@ -111,18 +111,20 @@ protected:
 	void updateSnippets();
 	void saveSettings();
 	void loadSettings();
+	void resizeEvent(QResizeEvent *ev) override;
 
 	int mDialogMode = jpg_dialog;
 	bool mHasAlpha = false;
 	QColor mBgCol = QColor(255, 255, 255);
 
 	QCheckBox* mCbLossless = 0;
-	DkSlider* mSlider = 0;
+	//DkSlider* mSlider = 0;
 	DkColorChooser* mColChooser = 0;
 	QLabel* mPreviewLabel = 0;
 	QLabel* mPreviewSizeLabel = 0;
 	DkBaseViewPort* mOrigView = 0;
 	QComboBox* mSizeCombo = 0;
+	QComboBox* mCompressionCombo = 0;
 
 	QImage mImg;
 	QImage mNewImg;
