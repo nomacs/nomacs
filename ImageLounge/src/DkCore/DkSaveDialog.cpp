@@ -276,6 +276,7 @@ void DkCompressDialog::createLayout() {
 	layout->addWidget(buttons);
 
 	//slider->setFocus(Qt::ActiveWindowFocusReason);
+	mCompressionCombo->setFocus();
 
 }
 
