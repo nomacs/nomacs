@@ -119,6 +119,7 @@ signals:
 	void showStatusBar(bool show, bool permanent) const;
 	void newImageSignal(QImage* img) const;
 	void keyReleaseSignal(QKeyEvent* event) const;	// make key presses available
+	void imageUpdated() const;	// triggers on zoom/pan
 
 public slots:
 	virtual void togglePattern(bool show);

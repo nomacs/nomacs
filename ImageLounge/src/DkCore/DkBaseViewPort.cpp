@@ -702,6 +702,8 @@ void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 
 	// update scene size (this is needed to make the scroll area work)
 	setSceneRect(getImageViewRect());
+
+	emit imageUpdated();
 }
 
 void DkBaseViewPort::centerImage() {
