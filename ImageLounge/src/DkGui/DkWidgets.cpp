@@ -2004,6 +2004,12 @@ void DkCropWidget::createToolbar() {
 
 }
 
+void DkCropWidget::mouseDoubleClickEvent(QMouseEvent * ev) {
+	
+	crop();
+	QWidget::mouseDoubleClickEvent(ev);
+}
+
 DkCropToolBar* DkCropWidget::getToolbar() const {
 	return cropToolbar;
 }

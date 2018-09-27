@@ -613,6 +613,7 @@ signals:
 
 protected:
 	void createToolbar();
+	void mouseDoubleClickEvent(QMouseEvent* ev) override;
 
 	DkCropToolBar* cropToolbar;
 };
