@@ -1358,7 +1358,7 @@ void DkNoMacs::renameFile() {
 	QFileInfo file(filePath);
 
 	if (!file.absoluteDir().exists()) {
-		viewport()->getController()->setInfo(tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath()));
+		viewport()->getController()->setInfo(tr("Sorry, the directory: %1 does not exist\n").arg(file.absolutePath()));
 		return;
 	}
 	if (file.exists() && !file.isWritable()) {
@@ -1417,9 +1417,11 @@ void DkNoMacs::renameFile() {
 		// tell user that deleting went wrong, and stop the renaming
 		if (!renamed)
 			viewport()->getController()->setInfo(tr("Sorry, I can't rename: %1").arg(file.fileName()));
-		else
+		else if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load)
 			getTabWidget()->loadFile(renamedFile.absoluteFilePath());
-		
+		else 
+			viewport()->loadNextFileFast();
+
 	}
 
 }
