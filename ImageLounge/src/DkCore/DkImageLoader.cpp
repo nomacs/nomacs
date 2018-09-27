@@ -1114,7 +1114,6 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 			(QMessageBox::Yes | QMessageBox::No), dialogParent);
 		msg->setObjectName("overwriteDialog");
 
-		//msg->show();
 		answer = msg->exec();
 
 	}
@@ -1181,8 +1180,6 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 			lSaveImg = tmpImg;
 		}
-
-		//	qDebug() << "returned: " << ret;
 	}
 
 	if (selectedFilter.contains("webp")) {
@@ -1268,7 +1265,6 @@ void DkImageLoader::saveFile(const QString& filePath, const QImage& saveImg, con
 	bool saveStarted = (threaded) ? imgC->saveImageThreaded(lFilePath, sImg, compression) : imgC->saveImage(lFilePath, sImg, compression);
 
 	if (!saveStarted) {
-		mDirWatcher->blockSignals(false);
 		imageSaved(QString(), false);
 	}
 	else if (saveStarted && !threaded) {
@@ -1285,12 +1281,17 @@ void DkImageLoader::imageSaved(const QString& filePath, bool saved) {
 	if (!fInfo.exists() || !fInfo.isFile() || !saved)
 		return;
 
-	mFolderUpdated = true;
-	loadDir(mCurrentImage->dirPath());
+	if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab) {
+		emit loadImageToTab(filePath);
+	}
+	else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
+		//mFolderUpdated = true;
+		//loadDir(mCurrentImage->dirPath());
 
-	emit imageLoadedSignal(mCurrentImage, true);
-	emit imageUpdatedSignal(mCurrentImage);
-	qDebug() << "image updated: " << mCurrentImage->fileName();
+		emit imageLoadedSignal(mCurrentImage, true);
+		emit imageUpdatedSignal(mCurrentImage);
+		qDebug() << "image updated: " << mCurrentImage->fileName();
+	}
 }
 
 /**

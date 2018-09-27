@@ -953,8 +953,7 @@ void DkFilePreference::createLayout() {
 	DkGroupWidget* historyGroup = new DkGroupWidget(tr("History Size"), this);
 	historyGroup->addWidget(historyBox);
 	historyGroup->addWidget(hLabel);
-
-
+	
 	// loading policy
 	QVector<QRadioButton*> loadButtons;
 	loadButtons.append(new QRadioButton(tr("Skip Images"), this));
@@ -975,6 +974,28 @@ void DkFilePreference::createLayout() {
 	loadGroup->addWidget(loadButtons[0]);
 	loadGroup->addWidget(loadButtons[1]);
 
+	// save policy
+	QVector<QRadioButton*> saveButtons;
+	saveButtons.append(new QRadioButton(tr("Load Saved Images"), this));
+	saveButtons[0]->setToolTip(tr("After saving, the saved image will be loaded in place"));
+	saveButtons.append(new QRadioButton(tr("Load to Tab"), this));
+	saveButtons[1]->setToolTip(tr("After saving, the saved image will be loaded to a tab."));
+	saveButtons.append(new QRadioButton(tr("Do Nothing"), this));
+	saveButtons[2]->setToolTip(tr("The saved image will not be loaded."));
+
+	// check wrt the current settings
+	saveButtons[DkSettingsManager::param().resources().loadSavedImage]->setChecked(true);
+
+	QButtonGroup* saveButtonGroup = new QButtonGroup(this);
+	saveButtonGroup->setObjectName("saveGroup");
+
+	DkGroupWidget* saveGroup = new DkGroupWidget(tr("Image Saving Policy"), this);
+	
+	for (int idx = 0; idx < saveButtons.size(); idx++) {
+		saveButtonGroup->addButton(saveButtons[idx], idx);
+		saveGroup->addWidget(saveButtons[idx]);
+	}
+
 	// skip images
 	QSpinBox* skipBox = new QSpinBox(this);
 	skipBox->setObjectName("skipBox");
@@ -993,6 +1014,7 @@ void DkFilePreference::createLayout() {
 	leftLayout->addWidget(cacheGroup);
 	leftLayout->addWidget(historyGroup);
 	leftLayout->addWidget(loadGroup);
+	leftLayout->addWidget(saveGroup);
 	leftLayout->addWidget(skipGroup);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
@@ -1015,6 +1037,13 @@ void DkFilePreference::on_loadGroup_buttonClicked(int buttonId) const {
 
 	if (DkSettingsManager::param().resources().waitForLastImg != (buttonId == 1))
 		DkSettingsManager::param().resources().waitForLastImg = (buttonId == 1);
+
+}
+
+void DkFilePreference::on_saveGroup_buttonClicked(int buttonId) const {
+
+	if (DkSettingsManager::param().resources().loadSavedImage != buttonId)
+		DkSettingsManager::param().resources().loadSavedImage = buttonId;
 
 }
 

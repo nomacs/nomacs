@@ -964,12 +964,15 @@ void DkImageContainerT::savingFinished() {
 
 		if (mFileBuffer)
 			mFileBuffer->clear();	// do a complete clear?
-		setFilePath(savePath);
-		mEdited = false;
-		mDownloaded = false;
-		if (mSelected) {
-			loadImageThreaded(true);	// force a reload
-			mFileUpdateTimer.start();
+		
+		if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load) {
+			setFilePath(savePath);
+			mEdited = false;
+			mDownloaded = false;
+			if (mSelected) {
+				loadImageThreaded(true);	// force a reload
+				mFileUpdateTimer.start();
+			}
 		}
 		emit fileSavedSignal(savePath);
 	}

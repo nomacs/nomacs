@@ -163,6 +163,7 @@ public slots:
 	void showPreferences(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
+	void loadFileToTab(const QString& filePath);
 	void loadFile(const QString& filePath, bool newTab = false);
 	void loadDir(const QString& filePath);
 	void loadDirToTab(const QString& dirPath);

@@ -156,6 +156,14 @@ public:
 		trans_end
 	};
 
+	enum LoadSaveMode {
+		ls_load,
+		ls_load_to_tab,
+		ls_do_nothing,
+
+		ls,end
+	};
+
 	struct App {
 		bool showToolBar;
 		bool showMenuBar;
@@ -302,6 +310,7 @@ public:
 		int loadRawThumb;
 		QString preferredExtension;
 		bool gammaCorrection;
+		int loadSavedImage;
 	};
 
 	//enums for checkboxes - divide in camera data and description

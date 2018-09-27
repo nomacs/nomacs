@@ -807,7 +807,6 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
 
 	QSharedPointer<QByteArray> ba;
 
-
 	DkTimer dt;
 	if (saveToBuffer(filePath, img, ba, compression) && ba) {
 

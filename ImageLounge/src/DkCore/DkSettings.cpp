@@ -457,6 +457,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
 	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
 	resources_p.gammaCorrection = settings.value("gammaCorrection", resources_p.gammaCorrection).toBool();
+	resources_p.loadSavedImage = settings.value("loadSavedImage", resources_p.loadSavedImage).toInt();
 
 	if (sync_p.switchModifier) {
 		global_p.altMod = Qt::ControlModifier;
@@ -736,6 +737,9 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("preferredExtension", resources_p.preferredExtension);
 	if (force ||resources_p.gammaCorrection != resources_d.gammaCorrection)
 		settings.setValue("gammaCorrection", resources_p.gammaCorrection);
+	if (force || resources_p.loadSavedImage != resources_d.loadSavedImage)
+		settings.setValue("loadSavedImage", resources_p.loadSavedImage);
+
 	settings.endGroup();
 
 	// keep loaded settings in mind
@@ -874,6 +878,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
 	resources_p.gammaCorrection = true;
+	resources_p.loadSavedImage = ls_load_to_tab;
 	resources_p.waitForLastImg = true;
 
 	qDebug() << "ok... default settings are set";

@@ -188,8 +188,6 @@ void DkCompressDialog::createLayout() {
 
 	// shows the original image
 	mOrigView = new DkBaseViewPort(this);
-	//origView->resize(80, 80);
-	//origView->setMinimumSize(20,20);
 	mOrigView->setForceFastRendering(true);
 	mOrigView->setPanControl(QPointF(0.0f, 0.0f));
 	connect(mOrigView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
@@ -202,9 +200,7 @@ void DkCompressDialog::createLayout() {
 
 	// shows the preview
 	mPreviewLabel = new QLabel(this);
-	//origView->setMinimumSize(20,20);
 	mPreviewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
-	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
 	// size combo for web
 	mSizeCombo = new QComboBox(this);
@@ -220,12 +216,6 @@ void DkCompressDialog::createLayout() {
 	mCompressionCombo->addItem(tr("Low Quality"), 90);
 	connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
 
-	//// slider
-	//mSlider = new DkSlider(tr("Image Quality"), this);
-	//mSlider->setValue(80);
-	//mSlider->setTickInterval(10);
-	//connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
-
 	// lossless
 	mCbLossless = new QCheckBox(tr("Lossless Compression"), this);
 	connect(mCbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
@@ -238,12 +228,6 @@ void DkCompressDialog::createLayout() {
 	mColChooser->setVisible(mHasAlpha);
 	mColChooser->enableAlpha(false);
 	connect(mColChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
-
-	//QWidget* dummy = new QWidget();
-	//QHBoxLayout* dummyLayout = new QHBoxLayout(dummy);
-	//dummyLayout->addWidget(colChooser);
-	//dummyLayout->addStretch();
-	//dummyLayout->addWidget(previewSizeLabel);
 
 	QWidget* previewWidget = new QWidget(this);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
@@ -272,10 +256,8 @@ void DkCompressDialog::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);
-	//layout->addStretch(30);
 	layout->addWidget(buttons);
 
-	//slider->setFocus(Qt::ActiveWindowFocusReason);
 	mCompressionCombo->setFocus();
 
 }
@@ -289,9 +271,6 @@ void DkCompressDialog::updateSnippets() {
 	mOrigView->fullView();
 	mOrigView->zoomConstraints(mOrigView->get100Factor());
 
-	//// fix layout issues - sorry
-	//origView->setFixedWidth(width()*0.5f-30);
-	//previewLabel->setFixedWidth(origView->width());
 }
 
 void DkCompressDialog::drawPreview() {
@@ -426,8 +405,6 @@ float DkCompressDialog::getResizeFactor() {
 
 	if (finalEdge != -1 && minEdge > finalEdge)
 		factor = finalEdge/minEdge;
-
-	qDebug() << "factor: " << factor;
 
 	return factor;
 }

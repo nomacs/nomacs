@@ -215,6 +215,7 @@ public slots:
 	void on_skipBox_valueChanged(int value) const;
 	void on_cacheBox_valueChanged(int value) const;
 	void on_historyBox_valueChanged(int value) const;
+	void on_saveGroup_buttonClicked(int buttonId) const;
 
 signals:
 	void infoSignal(const QString& msg) const;
