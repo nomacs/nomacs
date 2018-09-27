@@ -1121,17 +1121,27 @@ void DkFileAssociationsPreference::createLayout() {
 	filterTableView->resizeRowsToContents();
 	filterTableView->setWordWrap(false);
 
-	QPushButton* openDefault = new QPushButton(tr("Set as Default Viewer"), this);
-	openDefault->setObjectName("openDefault");
-
 	// now the final widgets
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(filterTableView);
 
 #ifdef Q_OS_WIN
-	layout->addWidget(openDefault);
-#else
-	openDefault->hide();
+
+	QPushButton* assocFiles = new QPushButton(tr("Set File Associations"), this);
+	assocFiles->setObjectName("associateFiles");
+
+	QPushButton* openDefault = new QPushButton(tr("Set as Default Viewer"), this);
+	openDefault->setObjectName("openDefault");
+
+	QWidget* bw = new QWidget(this);
+	QHBoxLayout* l = new QHBoxLayout(bw);
+
+	l->setContentsMargins(0, 0, 0, 0);
+	l->addWidget(openDefault);
+	l->addWidget(assocFiles);
+	l->addStretch();
+
+	layout->addWidget(bw);
 #endif
 
 }
@@ -1146,6 +1156,12 @@ void DkFileAssociationsPreference::on_openDefault_clicked() const {
 	
 	DkFileFilterHandling fh;
 	fh.showDefaultSoftware();
+}
+
+void DkFileAssociationsPreference::on_associateFiles_clicked() {
+	
+	mSaveSettings = true;
+	emit infoSignal(tr("Please Restart nomacs to apply changes"));
 }
 
 bool DkFileAssociationsPreference::checkFilter(const QString& cFilter, const QStringList& filters) const {

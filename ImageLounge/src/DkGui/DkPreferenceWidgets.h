@@ -235,6 +235,7 @@ public:
 public slots:
 	void on_fileModel_itemChanged(QStandardItem*);
 	void on_openDefault_clicked() const;
+	void on_associateFiles_clicked();
 
 signals:
    void infoSignal(const QString& msg) const;
