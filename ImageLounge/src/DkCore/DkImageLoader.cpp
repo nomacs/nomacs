@@ -73,6 +73,7 @@
 #include <QPainter>
 #include <qmath.h>
 #include <QtConcurrentRun>
+#include <QStandardPaths>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -979,15 +980,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 	}
 	else if ((!DkSettingsManager::param().global().useTmpPath || !tmpPath.exists())) {
 
-#ifdef Q_OS_WIN
-		
-		// TODO: this path seems to be perfectly ok (you can copy it to windows explorer) - however Qt thinks it does not exist??
-		QString defaultPath = getenv("HOMEPATH");
-		defaultPath = "C:" + defaultPath + "\\My Pictures\\";
-		tmpPath = defaultPath;
-
-		qDebug() << "default path: " << tmpPath.absoluteFilePath();
-#endif
+		tmpPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 
 		if (!tmpPath.isDir()) {
 			// load system default open dialog

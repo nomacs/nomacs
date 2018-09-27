@@ -221,6 +221,10 @@ void DkFilePreview::createContextMenu() {
 
 void DkFilePreview::paintEvent(QPaintEvent*) {
 
+	// render nothing if there are no thumbs
+	if (mThumbs.isEmpty())
+		return;
+
 	if (minHeight != DkSettingsManager::param().effectiveThumbSize(this) + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		xOffset = qCeil(DkSettingsManager::param().effectiveThumbSize(this)*0.1f);

@@ -965,7 +965,7 @@ void DkImageContainerT::savingFinished() {
 		if (mFileBuffer)
 			mFileBuffer->clear();	// do a complete clear?
 		
-		if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load) {
+		if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || !exists()) {
 			setFilePath(savePath);
 			mEdited = false;
 			mDownloaded = false;
