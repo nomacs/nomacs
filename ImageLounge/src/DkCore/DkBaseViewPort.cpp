@@ -100,7 +100,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 DkBaseViewPort::~DkBaseViewPort() {
 }
 
-void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
+void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom) {
 
 	mMinZoom = minZoom;
 	mMaxZoom = maxZoom;
@@ -118,7 +118,7 @@ void DkBaseViewPort::resetView() {
 void DkBaseViewPort::fullView() {
 
 	mWorldMatrix.reset();
-	zoom(1.0f/(float)mImgMatrix.m11());
+	zoom(1.0/mImgMatrix.m11());
 	changeCursor();
 
 	update();
@@ -171,15 +171,15 @@ void DkBaseViewPort::moveView(const QPointF& delta) {
 
 void DkBaseViewPort::zoomIn() {
 
-	zoom(1.5f);
+	zoom(1.5);
 }
 
 void DkBaseViewPort::zoomOut() {
 
-	zoom(0.5f);
+	zoom(0.5);
 }
 
-void DkBaseViewPort::zoom(float factor, QPointF center) {
+void DkBaseViewPort::zoom(double factor, const QPoint& center) {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -213,21 +213,28 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	if (mWorldMatrix.m11()*mImgMatrix.m11() > mMaxZoom && factor > 1)
 		return;
 
+	QPoint pos = center;
+
 	// if no center assigned: zoom in at the image center
-	if (center.x() == -1 || center.y() == -1)
-		center = mImgViewRect.center();
+	if (pos.x() == -1 || pos.y() == -1)
+		pos = mImgViewRect.center().toPoint();
 
-	//invert the transform
-	int a, b;
-	mWorldMatrix.inverted().map(qRound(center.x()), qRound(center.y()), &a, &b);
-
-	mWorldMatrix.translate(a-factor*a, b-factor*b);
-	mWorldMatrix.scale(factor, factor);
+	zoomToPoint(factor, pos, mWorldMatrix);
 
 	controlImagePosition();
 	changeCursor();
 		
 	update();
+}
+
+void DkBaseViewPort::zoomToPoint(double factor, const QPoint & pos, QTransform & matrix) const {
+
+	//inverse the transform
+	int a, b;
+	matrix.inverted().map(pos.x(), pos.y(), &a, &b);
+
+	matrix.translate(a - factor * a, b - factor * b);
+	matrix.scale(factor, factor);
 }
 
 void DkBaseViewPort::stopBlockZooming() {
@@ -378,9 +385,9 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 	else if (QPinchGesture *pinch = static_cast<QPinchGesture*>(event->gesture(Qt::PinchGesture))) {
 
 #if QT_VERSION >= 0x050000
-		float scale = (float)pinch->lastScaleFactor();
+		double scale = pinch->lastScaleFactor();
 
-		if (fabs(scale-1.0f) > FLT_EPSILON) {
+		if (fabs(scale-1.0) > FLT_EPSILON) {
 			zoom(scale, mapFromGlobal(pinch->centerPoint().toPoint()));
 		}
 #endif
@@ -477,11 +484,11 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
-	float factor = (float)-event->delta();
-	if (DkSettingsManager::param().display().invertZoom) factor *= -1.0f;
+	double factor = -event->delta();
+	if (DkSettingsManager::param().display().invertZoom) factor *= -1.0;
 
-	factor /= -1200.0f;
-	factor += 1.0f;
+	factor /= -1200.0;
+	factor += 1.0;
 
 	//qDebug() << "zoom factor..." << factor;
 	zoom(factor, event->pos());

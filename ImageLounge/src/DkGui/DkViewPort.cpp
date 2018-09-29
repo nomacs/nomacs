@@ -288,13 +288,10 @@ void DkViewPort::setImage(QImage newImg) {
 	DkActionManager::instance().enableImageActions(!newImg.isNull());
 	mController->imageLoaded(!newImg.isNull());
 
-	if (((!DkSettingsManager::param().slideShow().moveSpeed && 
-		DkSettingsManager::param().display().keepZoom == DkSettings::zoom_never_keep) ||
-		(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect != mImgRect)) ||
-		mOldImgRect.isEmpty()) {
-		
+	double oldZoom = mWorldMatrix.m11();// *mImgMatrix.m11();
+
+	if (!(DkSettingsManager::param().display().keepZoom == DkSettings::zoom_keep_same_size && mOldImgRect == mImgRect))
 		mWorldMatrix.reset();
-	}
 
 	updateImageMatrix();		
 
@@ -304,8 +301,11 @@ void DkViewPort::setImage(QImage newImg) {
 		centerImage();
 	}
 
+	if (DkSettingsManager::param().display().keepZoom == DkSettings::zoom_always_keep) {
+		zoomToPoint(oldZoom, mImgViewRect.center().toPoint(), mWorldMatrix);
+	}
+
 	mController->getPlayer()->startTimer();
-	
 	mController->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
 
 	mOldImgRect = mImgRect;
@@ -354,7 +354,7 @@ void DkViewPort::setImage(QImage newImg) {
 	}
 }
 
-void DkViewPort::zoom(float factor, QPointF center) {
+void DkViewPort::zoom(double factor, const QPoint& center) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -408,29 +408,26 @@ void DkViewPort::zoom(float factor, QPointF center) {
 
 	bool blackBorder = false;
 
+	QPoint pos = center;
+
 	// if no center assigned: zoom in at the image center
-	if (center.x() == -1 || center.y() == -1)
-		center = mImgViewRect.center();
+	if (pos.x() == -1 || pos.y() == -1)
+		pos = mImgViewRect.center().toPoint();
 	else {
 
 		// if black border - do not zoom to the mouse coordinate
-		if ((float)mImgViewRect.width()*(mWorldMatrix.m11()*factor) < (float)width()) {
-			center.setX(mImgViewRect.center().x());
+		if (mImgViewRect.width()*(mWorldMatrix.m11()*factor) < width()) {
+			pos.setX(qRound(mImgViewRect.center().x()));
 			blackBorder = true;
 		}
-		if (((float)mImgViewRect.height()*mWorldMatrix.m11()*factor) < (float)height()) {
-			center.setY(mImgViewRect.center().y());
+		if ((mImgViewRect.height()*mWorldMatrix.m11()*factor) < height()) {
+			pos.setY(qRound(mImgViewRect.center().y()));
 			blackBorder = true;
 		}
 	}
 
-	//inverse the transform
-	int a, b;
-	mWorldMatrix.inverted().map((int)center.x(), (int)center.y(), &a, &b);
+	zoomToPoint(factor, pos, mWorldMatrix);
 
-	mWorldMatrix.translate(a-factor*a, b-factor*b);
-	mWorldMatrix.scale(factor, factor);
-	
 	controlImagePosition();
 	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schöner
 	showZoom();
@@ -442,7 +439,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	tcpSynchronize();
 
 	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
-	DkStatusBarManager::instance().setMessage(QString::number(qRound((float)(mWorldMatrix.m11()*mImgMatrix.m11() * 100))) + "%", DkStatusBar::status_zoom_info);
+	DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11()*mImgMatrix.m11() * 100)) + "%", DkStatusBar::status_zoom_info);
 }
 
 void DkViewPort::zoomTo(float zoomLevel, const QPoint&) {
@@ -1833,7 +1830,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 DkViewPortFrameless::~DkViewPortFrameless() {
 }
 
-void DkViewPortFrameless::zoom(float factor, QPointF center) {
+void DkViewPortFrameless::zoom(double factor, const QPoint& center) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -1854,22 +1851,18 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 		return;
 
 	QRectF viewRect = mWorldMatrix.mapRect(mImgViewRect);
+	QPoint pos = center;
 
 	// if no center assigned: zoom in at the image center
-	if (center.x() == -1 || center.y() == -1)
-		center = viewRect.center();
+	if (pos.x() == -1 || pos.y() == -1)
+		pos = viewRect.center().toPoint();
 	
-	if (center.x() < viewRect.left())			center.setX(viewRect.left());
-	else if (center.x() > viewRect.right())		center.setX(viewRect.right());
-	if (center.y() < viewRect.top())			center.setY(viewRect.top());
-	else if (center.y() > viewRect.bottom())	center.setY(viewRect.bottom());
+	if (pos.x() < viewRect.left())			pos.setX(qRound(viewRect.left()));
+	else if (pos.x() > viewRect.right())	pos.setX(qRound(viewRect.right()));
+	if (pos.y() < viewRect.top())			pos.setY(qRound(viewRect.top()));
+	else if (pos.y() > viewRect.bottom())	pos.setY(qRound(viewRect.bottom()));
 
-	//inverse the transform
-	int a, b;
-	mWorldMatrix.inverted().map(qRound(center.x()), qRound(center.y()), &a, &b);
-
-	mWorldMatrix.translate(a-factor*a, b-factor*b);
-	mWorldMatrix.scale(factor, factor);
+	zoomToPoint(factor, pos, mWorldMatrix);
 
 	controlImagePosition();
 	showZoom();

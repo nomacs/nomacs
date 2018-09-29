@@ -77,7 +77,7 @@ public:
 	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
 	
-	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1)) override;
+	void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1)) override;
 
 	void setFullScreen(bool fullScreen);
 		
@@ -255,7 +255,7 @@ public:
 	DkViewPortFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortFrameless();
 
-	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	virtual void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1)) override;
 
 public slots:
 	virtual void resetView();

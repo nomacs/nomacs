@@ -72,8 +72,8 @@ public:
 	DkBaseViewPort(QWidget *parent = 0);
 	virtual ~DkBaseViewPort();
 
-	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
-	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	void zoomConstraints(double minZoom = 0.01, double maxZoom = 50.0);
+	virtual void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {
 		mForceFastRendering = fastRendering;
 	};
@@ -174,8 +174,8 @@ protected:
 
 	QPointF mPanControl;	// controls how far we can pan outside an image
 	QPointF mPosGrab;
-	float mMinZoom = 0.01f;
-	float mMaxZoom = 100;
+	double mMinZoom = 0.01;
+	double mMaxZoom = 100;
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;
@@ -195,6 +195,8 @@ protected:
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
+	void zoomToPoint(double factor, const QPoint& pos, QTransform& matrix) const;
+
 };
 
 }
