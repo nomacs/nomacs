@@ -156,6 +156,9 @@ public:
 
 	QSharedPointer<DkColorManipulator> manipulator() const;
 
+public slots:
+	void on_colPicker_colorSelected(const QColor& col);
+
 private:
 	void createLayout();
 };

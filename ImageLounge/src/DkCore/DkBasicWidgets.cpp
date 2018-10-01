@@ -358,8 +358,9 @@ QColor DkColorPane::color() const {
 	return pos2Color(mPos);
 }
 
-void DkColorPane::setHue(double hue) {
-	mColor.setHsvF(hue, mColor.saturationF(), mColor.valueF());
+void DkColorPane::setHue(int hue) {
+	mColor.setHsvF(hue/255.0, mColor.saturationF(), mColor.valueF());
+	update();
 }
 
 double DkColorPane::hue() const {
@@ -370,7 +371,7 @@ void DkColorPane::paintEvent(QPaintEvent * ev) {
 
 	QPainter p(this);
 	p.setPen(Qt::NoPen);
-	p.setRenderHint(QPainter::HighQualityAntialiasing);
+	p.setRenderHint(QPainter::Antialiasing);
 
 	// setup corners (white, pure color, black, black)
 	QColor c00, c01, c11, c10;
@@ -402,7 +403,7 @@ void DkColorPane::paintEvent(QPaintEvent * ev) {
 	QPen pen;
 	pen.setColor(brightness(c) < 0.5 ? Qt::white : Qt::black);
 	p.setPen(pen);
-	QRectF cPick(0, 0, 10, 10);
+	QRectF cPick(0, 0, 11, 11);
 	cPick.moveCenter(mPos);
 	p.drawEllipse(cPick);
 
@@ -464,21 +465,31 @@ double DkColorPane::brightness(const QColor & col) const {
 DkColorPicker::DkColorPicker(QWidget* parent) : QWidget(parent) {
 
 	createLayout();
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkColorPicker::createLayout() {
 
-	DkColorPane* colPane = new DkColorPane(this);
-	colPane->setObjectName("colPane");
-	colPane->setBaseSize(100, 100);
-	colPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+	mColorPane = new DkColorPane(this);
+	mColorPane->setObjectName("mColorPane");
+	mColorPane->setBaseSize(100, 100);
+	mColorPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 
 	QSlider* hueSlider = new QSlider(this);
-	hueSlider->setObjectName("hueSlider");
+	hueSlider->setMaximum(255);
+	hueSlider->setObjectName("cpHueSlider");
 	
 	QHBoxLayout* hb = new QHBoxLayout(this);
-	hb->addWidget(colPane);
+	hb->addWidget(mColorPane);
 	hb->addWidget(hueSlider);
+
+	connect(hueSlider, SIGNAL(valueChanged(int)), mColorPane, SLOT(setHue(int)));
+	connect(mColorPane, SIGNAL(colorSelected(const QColor&)), this, SIGNAL(colorSelected(const QColor&)));
+}
+
+QColor DkColorPicker::color() const {
+
+	return mColorPane->color();
 }
 
 // -------------------------------------------------------------------- DkRectWidget 

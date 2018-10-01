@@ -398,14 +398,27 @@ DkColorWidget::DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, Q
 	QMetaObject::connectSlotsByName(this);
 
 	manipulator->setWidget(this);
+	setMinimumHeight(150);
+}
+
+QSharedPointer<DkColorManipulator> DkColorWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkColorManipulator>(baseManipulator());
 }
 
 void DkColorWidget::createLayout() {
 
 	DkColorPicker* cp = new DkColorPicker(this);
+	cp->setObjectName("colPicker");
 
 	QVBoxLayout* l = new QVBoxLayout(this);
+	l->setContentsMargins(0, 0, 0, 0);
 	l->addWidget(cp);
+
+	manipulator()->setColor(cp->color());
+}
+
+void DkColorWidget::on_colPicker_colorSelected(const QColor& col) {
+	manipulator()->setColor(col);
 }
 
 // DkHueWidget --------------------------------------------------------------------

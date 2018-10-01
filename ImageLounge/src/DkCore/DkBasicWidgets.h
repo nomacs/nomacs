@@ -165,7 +165,7 @@ signals:
 	void colorSelected(const QColor& col) const;
 
 public slots:
-	void setHue(double hue);
+	void setHue(int hue);
 
 protected:
 	void paintEvent(QPaintEvent* ev) override;
@@ -188,13 +188,15 @@ class DllCoreExport DkColorPicker : public QWidget {
 public:
 	DkColorPicker(QWidget* parent = 0);
 
+	QColor color() const;
+
 signals:
-	void colorChanged(const QColor& col);
+	void colorSelected(const QColor& col);
 
 protected:
 	void createLayout();
 
-	QColor mColor;
+	DkColorPane* mColorPane = 0;
 };
 
 class DllCoreExport DkRectWidget : public QWidget {

@@ -410,7 +410,12 @@ QString DkColorManipulator::errorMessage() const {
 }
 
 void DkColorManipulator::setColor(const QColor & col) {
+	
+	if (mColor == col)
+		return;
+	
 	mColor = col;
+	action()->trigger();
 }
 
 QColor DkColorManipulator::color() const {
