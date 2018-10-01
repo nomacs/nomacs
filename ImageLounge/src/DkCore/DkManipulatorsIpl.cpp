@@ -396,4 +396,25 @@ double DkExposureManipulator::gamma() const {
 	return mGamma;
 }
 
+// -------------------------------------------------------------------- DkColorManipulator 
+DkColorManipulator::DkColorManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkColorManipulator::apply(const QImage & img) const {
+	
+	return DkImage::bgColor(img, color());
+}
+
+QString DkColorManipulator::errorMessage() const {
+	return QObject::tr("Cannot draw background color");
+}
+
+void DkColorManipulator::setColor(const QColor & col) {
+	mColor = col;
+}
+
+QColor DkColorManipulator::color() const {
+	return mColor;
+}
+
 }

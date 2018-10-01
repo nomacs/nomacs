@@ -118,6 +118,11 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Create a Tiny Planet"));
 	mpls[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
 
+	// tiny planet
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg", size), QObject::tr("&Background Color..."), parent);
+	action->setStatusTip(QObject::tr("Add a background color"));
+	mpls[m_color] = QSharedPointer<DkColorManipulator>::create(action);
+
 	// unsharp mask
 	action = new QAction(DkImage::loadIcon(":/nomacs/img/sharpen.svg", size), QObject::tr("&Sharpen..."), parent);
 	action->setStatusTip(QObject::tr("Sharpens the image by applying an unsharp mask"));

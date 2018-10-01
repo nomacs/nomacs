@@ -148,6 +148,18 @@ private:
 	void createLayout();
 };
 
+class DkColorWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkColorManipulator> manipulator() const;
+
+private:
+	void createLayout();
+};
+
 class DkExposureWidget : public DkBaseManipulatorWidget {
 	Q_OBJECT
 

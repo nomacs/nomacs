@@ -152,6 +152,51 @@ protected:
 
 };
 
+class DllCoreExport DkColorPane : public QWidget {
+	Q_OBJECT
+
+public:
+	DkColorPane(QWidget* parent = 0);
+
+	QColor color() const;
+	double hue() const;
+
+signals:
+	void colorSelected(const QColor& col) const;
+
+public slots:
+	void setHue(double hue);
+
+protected:
+	void paintEvent(QPaintEvent* ev) override;
+	void mouseMoveEvent(QMouseEvent* me) override;
+	void mouseReleaseEvent(QMouseEvent* me) override;
+	
+	QColor pos2Color(const QPoint& pos) const;
+	QColor ipl(const QColor& c0, const QColor& c1, double alpha) const;
+	void setPos(const QPoint& pos);
+
+	double brightness(const QColor& col) const;
+
+	QColor mColor = QColor(255, 0, 0);
+	QPoint mPos = QPoint(0, 0);
+};
+
+class DllCoreExport DkColorPicker : public QWidget {
+	Q_OBJECT
+
+public:
+	DkColorPicker(QWidget* parent = 0);
+
+signals:
+	void colorChanged(const QColor& col);
+
+protected:
+	void createLayout();
+
+	QColor mColor;
+};
+
 class DllCoreExport DkRectWidget : public QWidget {
 	Q_OBJECT
 

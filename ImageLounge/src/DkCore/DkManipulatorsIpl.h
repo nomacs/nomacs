@@ -130,6 +130,21 @@ private:
 	bool mInverted = false;
 };
 
+class DllCoreExport DkColorManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkColorManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+
+	void setColor(const QColor& col);
+	QColor color() const;
+
+private:
+	QColor mColor = Qt::black;
+};
+
 class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
 
 public:

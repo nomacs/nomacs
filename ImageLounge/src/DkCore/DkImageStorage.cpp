@@ -1005,6 +1005,17 @@ QImage DkImage::exposure(const QImage & src, double exposure, double offset, dou
 	return imgR;
 }
 
+QImage DkImage::bgColor(const QImage & src, const QColor & col) {
+
+	QImage dst(src.size(), QImage::Format_RGB32);
+	dst.fill(col);
+
+	QPainter p(&dst);
+	p.drawImage(QPoint(0, 0), src);
+
+	return dst;
+}
+
 QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByteArray & beginSignature, const QByteArray & endSignature, bool debugOutput) {
 	
 	

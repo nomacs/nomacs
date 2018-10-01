@@ -55,6 +55,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
 	mWidgets << new DkThresholdWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_threshold), this);
 	mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
+	mWidgets << new DkColorWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_color), this);
 	mWidgets << new DkExposureWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_exposure), this);
 
 	setObjectName("DkPreferenceTabs");
@@ -201,6 +202,11 @@ void DkManipulatorWidget::selectManipulator() {
 
 	if (!mplExt) {
 		mTitleLabel->hide();
+		return;
+	}
+
+	if (!mplExt->widget()) {
+		qCritical() << action->text() << "does not have a corresponding UI";
 		return;
 	}
 
@@ -385,6 +391,23 @@ void DkThresholdWidget::on_thrSlider_valueChanged(int val) {
 	manipulator()->setThreshold(val);
 }
 
+// -------------------------------------------------------------------- DkColorWidget 
+DkColorWidget::DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+void DkColorWidget::createLayout() {
+
+	DkColorPicker* cp = new DkColorPicker(this);
+
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->addWidget(cp);
+}
+
 // DkHueWidget --------------------------------------------------------------------
 DkHueWidget::DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
 	createLayout();
@@ -446,7 +469,6 @@ DkExposureWidget::DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipula
 
 	manipulator->setWidget(this);
 }
-
 
 QSharedPointer<DkExposureManipulator> DkExposureWidget::manipulator() const {
 	return qSharedPointerDynamicCast<DkExposureManipulator>(baseManipulator());

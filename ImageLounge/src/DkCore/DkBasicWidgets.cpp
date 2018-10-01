@@ -36,6 +36,8 @@ related links:
 #include <QSlider>
 #include <QPushButton>
 #include <QColorDialog>
+#include <QPainter>
+#include <QMouseEvent>
 #pragma warning(pop)
 
 namespace nmc {
@@ -347,6 +349,139 @@ void DkColorChooser::on_colorDialog_accepted() {
 	emit accepted();
 }
 
+// -------------------------------------------------------------------- DkColorPane 
+DkColorPane::DkColorPane(QWidget* parent) : QWidget(parent) {
+	mColor = QColor(255, 0, 0);
+}
+
+QColor DkColorPane::color() const {
+	return pos2Color(mPos);
+}
+
+void DkColorPane::setHue(double hue) {
+	mColor.setHsvF(hue, mColor.saturationF(), mColor.valueF());
+}
+
+double DkColorPane::hue() const {
+	return mColor.hueF();
+}
+
+void DkColorPane::paintEvent(QPaintEvent * ev) {
+
+	QPainter p(this);
+	p.setPen(Qt::NoPen);
+	p.setRenderHint(QPainter::HighQualityAntialiasing);
+
+	// setup corners (white, pure color, black, black)
+	QColor c00, c01, c11, c10;
+	c00.setHsvF(mColor.hueF(), 0, 1);
+	c01.setHsvF(mColor.hueF(), 1, 1);
+	c10.setHsvF(mColor.hueF(), 0, 0);
+	c11.setHsvF(mColor.hueF(), 1, 0);
+
+	int w = width();
+	int h = height();
+
+	// draw
+	for (int idx = 0; idx < h; idx++) {
+
+		QColor ccs = ipl(c00, c10, (double)idx / h);
+		QColor cce = ipl(c01, c11, (double)idx / h);
+
+		QLinearGradient g(QPoint(0, 0), QPoint(w, 0));
+		g.setColorAt(0, ccs);
+		g.setColorAt(1, cce);
+		
+		QRect r(0, idx, w, 1);
+		p.fillRect(r, g);
+	}
+
+	QColor c = color();
+
+	// draw current selection
+	QPen pen;
+	pen.setColor(brightness(c) < 0.5 ? Qt::white : Qt::black);
+	p.setPen(pen);
+	QRectF cPick(0, 0, 10, 10);
+	cPick.moveCenter(mPos);
+	p.drawEllipse(cPick);
+
+	QWidget::paintEvent(ev);
+}
+
+void DkColorPane::mouseMoveEvent(QMouseEvent * me) {
+
+	setPos(me->pos());
+	QWidget::mouseMoveEvent(me);
+}
+
+void DkColorPane::mouseReleaseEvent(QMouseEvent * me) {
+
+	setPos(me->pos());
+	QWidget::mouseReleaseEvent(me);
+}
+
+QColor DkColorPane::pos2Color(const QPoint & pos) const {
+
+	// setup corners (white, pure color, black, black)
+	QColor c00, c01, c11, c10;
+	c00.setHsvF(mColor.hueF(), 0, 1);
+	c01.setHsvF(mColor.hueF(), 1, 1);
+	c10.setHsvF(mColor.hueF(), 0, 0);
+	c11.setHsvF(mColor.hueF(), 1, 0);
+
+	QColor ccs = ipl(c00, c10, (double)pos.y()/height());
+	QColor cce = ipl(c01, c11, (double)pos.y()/width());
+
+	return ipl(ccs, cce, (double)pos.x()/width());
+}
+
+QColor DkColorPane::ipl(const QColor& c0, const QColor& c1, double alpha) const {
+
+	double r = c0.redF() * (1.0 - alpha) + c1.redF() * alpha;
+	double g = c0.greenF() * (1.0 - alpha) + c1.greenF() * alpha;
+	double b = c0.blueF() * (1.0 - alpha) + c1.blueF() * alpha;
+
+	return QColor::fromRgbF(r, g, b);
+}
+
+void DkColorPane::setPos(const QPoint & pos) {
+	mPos = pos;
+	emit colorSelected(color());
+	update();
+}
+
+double DkColorPane::brightness(const QColor & col) const {
+	
+	return std::sqrt(
+		col.redF() * col.redF() * 0.241 +
+		col.greenF() * col.greenF() * 0.691 +
+		col.blueF() * col.blueF() * 0.068
+		);
+}
+
+// -------------------------------------------------------------------- DkColorPicker 
+DkColorPicker::DkColorPicker(QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+}
+
+void DkColorPicker::createLayout() {
+
+	DkColorPane* colPane = new DkColorPane(this);
+	colPane->setObjectName("colPane");
+	colPane->setBaseSize(100, 100);
+	colPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+
+	QSlider* hueSlider = new QSlider(this);
+	hueSlider->setObjectName("hueSlider");
+	
+	QHBoxLayout* hb = new QHBoxLayout(this);
+	hb->addWidget(colPane);
+	hb->addWidget(hueSlider);
+}
+
+// -------------------------------------------------------------------- DkRectWidget 
 DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : QWidget(parent) {
 
 	createLayout();

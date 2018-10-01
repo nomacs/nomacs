@@ -133,6 +133,7 @@ public:
 	static QImage cropToImage(const QImage& src, const DkRotatingRect& rect, const QColor& fillColor = QColor());
 	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
 	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
+	static QImage bgColor(const QImage& src, const QColor& col);
 	static QByteArray extractImageFromDataStream(const QByteArray& ba, const QByteArray& beginSignature = "‰PNG", const QByteArray& endSignature = "END®B`‚", bool debugOutput = false);
 	
 #ifdef WITH_OPENCV
