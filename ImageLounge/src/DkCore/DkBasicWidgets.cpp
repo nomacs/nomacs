@@ -28,6 +28,8 @@ related links:
 
 #include "DkBasicWidgets.h"
 #include "DkUtils.h"
+#include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QLabel>
@@ -38,6 +40,9 @@ related links:
 #include <QColorDialog>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QMenu>
+#include <QWidgetAction>
+#include <QLineEdit>
 #pragma warning(pop)
 
 namespace nmc {
@@ -349,6 +354,81 @@ void DkColorChooser::on_colorDialog_accepted() {
 	emit accepted();
 }
 
+// -------------------------------------------------------------------- DkColorEdit 
+DkColorEdit::DkColorEdit(const QColor& col, QWidget* parent) : QWidget(parent) {
+	
+	createLayout();
+	setColor(col);
+}
+
+void DkColorEdit::createLayout() {
+
+	mColBoxes.resize(c_end);
+
+	for (int idx = 0; idx < mColBoxes.size(); idx++) {
+		mColBoxes[idx] = new QSpinBox(this);
+		mColBoxes[idx]->setMinimum(0);
+		mColBoxes[idx]->setMaximum(255);
+		connect(mColBoxes[idx], SIGNAL(valueChanged(int)), this, SLOT(colorChanged()));
+	}
+
+	mColBoxes[r]->setPrefix("R:");
+	mColBoxes[g]->setPrefix("G:");
+	mColBoxes[b]->setPrefix("B:");
+
+	mColHash = new QLineEdit(this);
+	connect(mColHash, SIGNAL(textEdited(const QString&)), this, SLOT(hashChanged(const QString&)));
+	connect(mColHash, SIGNAL(editingFinished()), this, SLOT(hashEditFinished()));
+
+	QGridLayout* gl = new QGridLayout(this);
+	gl->addWidget(mColBoxes[r], 1, 1);
+	gl->addWidget(mColBoxes[g], 2, 1);
+	gl->addWidget(mColBoxes[b], 3, 1);
+	gl->addWidget(mColHash, 4, 1);
+}
+
+void DkColorEdit::setColor(const QColor & col) {
+	mColor = col;
+
+	mColBoxes[r]->setValue(col.red());
+	mColBoxes[g]->setValue(col.green());
+	mColBoxes[b]->setValue(col.blue());
+
+	mColHash->setText(mColor.name());
+}
+
+QColor DkColorEdit::color() const {
+	return mColor;
+}
+
+void DkColorEdit::colorChanged() {
+
+	mColor = QColor(mColBoxes[r]->value(), mColBoxes[g]->value(), mColBoxes[b]->value());
+	mColHash->setText(mColor.name());
+
+	emit newColor(mColor);
+}
+
+void DkColorEdit::hashChanged(const QString& name) {
+
+	if (!name.startsWith("#"))
+		mColHash->setText("#" + mColHash->text());
+}
+
+void DkColorEdit::hashEditFinished() {
+
+	QColor nc;
+	nc.setNamedColor(mColHash->text());
+
+	if (nc.isValid()) {
+		setColor(nc);
+		emit newColor(nc);
+	}
+	else
+		mColHash->setText(mColor.name());
+}
+
+
 // -------------------------------------------------------------------- DkColorPane 
 DkColorPane::DkColorPane(QWidget* parent) : QWidget(parent) {
 	mColor = QColor(255, 0, 0);
@@ -359,12 +439,17 @@ QColor DkColorPane::color() const {
 }
 
 void DkColorPane::setHue(int hue) {
-	mColor.setHsvF(hue/255.0, mColor.saturationF(), mColor.valueF());
+	mColor.setHsvF(hue/360.0, mColor.saturationF(), mColor.valueF());
 	update();
 }
 
 double DkColorPane::hue() const {
 	return mColor.hueF();
+}
+
+void DkColorPane::setColor(const QColor & col) {
+	setHue(col.hue());
+	setPos(color2Pos(col));
 }
 
 void DkColorPane::paintEvent(QPaintEvent * ev) {
@@ -412,14 +497,34 @@ void DkColorPane::paintEvent(QPaintEvent * ev) {
 
 void DkColorPane::mouseMoveEvent(QMouseEvent * me) {
 
-	setPos(me->pos());
+	if (me->button() == Qt::LeftButton)
+		setPos(me->pos());
 	QWidget::mouseMoveEvent(me);
+}
+
+void DkColorPane::mousePressEvent(QMouseEvent * me) {
+
+	if (me->button() == Qt::LeftButton)
+		setPos(me->pos());
+	QWidget::mousePressEvent(me);
 }
 
 void DkColorPane::mouseReleaseEvent(QMouseEvent * me) {
 
-	setPos(me->pos());
+	if (me->button() == Qt::LeftButton)
+		setPos(me->pos());
 	QWidget::mouseReleaseEvent(me);
+}
+
+void DkColorPane::resizeEvent(QResizeEvent * re) {
+
+	setPos(mPos);
+	QWidget::resizeEvent(re);
+}
+
+QPoint DkColorPane::color2Pos(const QColor & col) const {
+	
+	return QPoint(qRound(col.saturationF()*width()), qRound((1.0-col.valueF())*height()));
 }
 
 QColor DkColorPane::pos2Color(const QPoint & pos) const {
@@ -432,12 +537,14 @@ QColor DkColorPane::pos2Color(const QPoint & pos) const {
 	c11.setHsvF(mColor.hueF(), 1, 0);
 
 	QColor ccs = ipl(c00, c10, (double)pos.y()/height());
-	QColor cce = ipl(c01, c11, (double)pos.y()/width());
+	QColor cce = ipl(c01, c11, (double)pos.y()/height());
 
 	return ipl(ccs, cce, (double)pos.x()/width());
 }
 
 QColor DkColorPane::ipl(const QColor& c0, const QColor& c1, double alpha) const {
+
+	assert(alpha >= 0 && alpha <= 1.0);
 
 	double r = c0.redF() * (1.0 - alpha) + c1.redF() * alpha;
 	double g = c0.greenF() * (1.0 - alpha) + c1.greenF() * alpha;
@@ -447,7 +554,10 @@ QColor DkColorPane::ipl(const QColor& c0, const QColor& c1, double alpha) const 
 }
 
 void DkColorPane::setPos(const QPoint & pos) {
-	mPos = pos;
+
+	mPos.setX(qMin(qMax(pos.x(), 0), width()));
+	mPos.setY(qMin(qMax(pos.y(), 0), height()));
+
 	emit colorSelected(color());
 	update();
 }
@@ -470,27 +580,81 @@ DkColorPicker::DkColorPicker(QWidget* parent) : QWidget(parent) {
 
 void DkColorPicker::createLayout() {
 
+	int bs = qRound(20 * DkSettingsManager::param().dpiScaleFactor());
+
+	// color pane
 	mColorPane = new DkColorPane(this);
 	mColorPane->setObjectName("mColorPane");
 	mColorPane->setBaseSize(100, 100);
 	mColorPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 
+	// hue slider
 	QSlider* hueSlider = new QSlider(this);
-	hueSlider->setMaximum(255);
 	hueSlider->setObjectName("cpHueSlider");
-	
-	QHBoxLayout* hb = new QHBoxLayout(this);
-	hb->addWidget(mColorPane);
-	hb->addWidget(hueSlider);
+	hueSlider->setMaximum(360);
+	hueSlider->setValue(360);
+	hueSlider->setFixedWidth(bs);
+
+	// current color
+	mColorPreview = new QLabel("", this);
+	mColorPreview->setFixedHeight(bs);
+
+	QPushButton* mMenu = new QPushButton(DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(bs, bs), Qt::white), "", this);
+	mMenu->setObjectName("flatWhite");
+	mMenu->setFlat(true);
+	mMenu->setFixedSize(bs, bs);
+
+	QGridLayout* hb = new QGridLayout(this);
+	hb->setContentsMargins(0, 0, 0, 0);
+	hb->addWidget(mColorPane, 0, 0);
+	hb->addWidget(hueSlider, 0, 1);
+	hb->addWidget(mColorPreview, 1, 0);
+	hb->addWidget(mMenu, 1, 1);
 
 	connect(hueSlider, SIGNAL(valueChanged(int)), mColorPane, SLOT(setHue(int)));
 	connect(mColorPane, SIGNAL(colorSelected(const QColor&)), this, SIGNAL(colorSelected(const QColor&)));
+	connect(mColorPane, SIGNAL(colorSelected(const QColor&)), this, SLOT(setColor(const QColor&)));
+	connect(mMenu, SIGNAL(clicked()), this, SLOT(showMenu()));
+
+	setColor(mColorPane->color());
+}
+
+void DkColorPicker::showMenu(const QPoint & pos) {
+
+	if (!mContextMenu) {
+
+		mContextMenu = new QMenu(this);
+		mColorEdit = new DkColorEdit(color(), this);
+		connect(mColorEdit, SIGNAL(newColor(const QColor&)), this, SLOT(setColor(const QColor&)));
+		connect(mColorEdit, SIGNAL(newColor(const QColor&)), mColorPane, SLOT(setColor(const QColor&)));
+
+		QWidgetAction* a = new QWidgetAction(this);
+		a->setDefaultWidget(mColorEdit);
+		mContextMenu->addAction(a);
+	}
+
+	mColorEdit->setColor(color());
+	mContextMenu->exec(!pos.isNull() ? pos : mapToGlobal(geometry().bottomRight()));
+}
+
+void DkColorPicker::setColor(const QColor& col) {
+
+	mColorPreview->setStyleSheet("background-color: " + DkUtils::colorToString(col));
 }
 
 QColor DkColorPicker::color() const {
 
 	return mColorPane->color();
 }
+
+void DkColorPicker::contextMenuEvent(QContextMenuEvent * cme) {
+
+	showMenu(cme->globalPos());
+
+	// do not propagate
+	//QWidget::contextMenuEvent(cme);
+}
+
 
 // -------------------------------------------------------------------- DkRectWidget 
 DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : QWidget(parent) {

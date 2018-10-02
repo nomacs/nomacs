@@ -142,7 +142,7 @@ public:
 	QColor color() const;
 
 private:
-	QColor mColor = Qt::black;
+	QColor mColor = Qt::white;
 };
 
 class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {

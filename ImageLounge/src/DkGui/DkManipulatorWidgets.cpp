@@ -168,7 +168,7 @@ void DkManipulatorWidget::setImage(QSharedPointer<DkImageContainerT> imgC) {
 
 	if (mImgC) {
 
-		QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), 300));
+		QImage img = mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview));
 		img = scaledPreview(img);
 
 		mPreview->setPixmap(QPixmap::fromImage(img));
@@ -189,7 +189,7 @@ void DkManipulatorWidget::selectManipulator() {
 	// compute preview
 	if (mpl && mImgC) {
 		DkTimer dt;
-		QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), 300)));
+		QImage img = mpl->apply(mImgC->imageScaledToWidth(qMin(mPreview->width(), mMaxPreview)));
 		img = scaledPreview(img);
 
 		if (!img.isNull())
@@ -413,8 +413,6 @@ void DkColorWidget::createLayout() {
 	QVBoxLayout* l = new QVBoxLayout(this);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->addWidget(cp);
-
-	manipulator()->setColor(cp->color());
 }
 
 void DkColorWidget::on_colPicker_colorSelected(const QColor& col) {

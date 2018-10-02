@@ -119,7 +119,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	mpls[m_tiny_planet] = QSharedPointer<DkTinyPlanetManipulator>::create(action);
 
 	// tiny planet
-	action = new QAction(DkImage::loadIcon(":/nomacs/img/tiny-planet.svg", size), QObject::tr("&Background Color..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/bucket.svg", size), QObject::tr("&Background Color..."), parent);
 	action->setStatusTip(QObject::tr("Add a background color"));
 	mpls[m_color] = QSharedPointer<DkColorManipulator>::create(action);
 

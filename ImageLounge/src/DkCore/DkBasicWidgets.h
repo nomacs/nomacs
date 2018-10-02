@@ -51,6 +51,8 @@ class QSpinBox;
 class QDoubleSpinBox;
 class QColorDialog;
 class QPushButton;
+class QMenu;
+class QLineEdit;
 
 namespace nmc {
 
@@ -152,6 +154,39 @@ protected:
 
 };
 
+class DllCoreExport DkColorEdit : public QWidget {
+	Q_OBJECT
+
+public:
+	DkColorEdit(const QColor& col = QColor(), QWidget* parent = 0);
+
+	void setColor(const QColor& col);
+	QColor color() const;
+
+signals:
+	void newColor(const QColor& col);
+
+public slots:
+	void colorChanged();
+	void hashChanged(const QString& name);
+	void hashEditFinished();
+
+protected:
+	void createLayout();
+
+	enum cols {
+		r = 0,
+		g,
+		b,
+
+		c_end
+	};
+
+	QVector<QSpinBox*> mColBoxes;
+	QLineEdit* mColHash;
+	QColor mColor;
+};
+
 class DllCoreExport DkColorPane : public QWidget {
 	Q_OBJECT
 
@@ -166,12 +201,16 @@ signals:
 
 public slots:
 	void setHue(int hue);
+	void setColor(const QColor& col);
 
 protected:
 	void paintEvent(QPaintEvent* ev) override;
 	void mouseMoveEvent(QMouseEvent* me) override;
 	void mouseReleaseEvent(QMouseEvent* me) override;
+	void mousePressEvent(QMouseEvent* me) override;
+	void resizeEvent(QResizeEvent* re) override;
 	
+	QPoint color2Pos(const QColor& col) const;
 	QColor pos2Color(const QPoint& pos) const;
 	QColor ipl(const QColor& c0, const QColor& c1, double alpha) const;
 	void setPos(const QPoint& pos);
@@ -193,10 +232,18 @@ public:
 signals:
 	void colorSelected(const QColor& col);
 
+public slots:
+	void setColor(const QColor& col);
+	void showMenu(const QPoint& pos = QPoint());
+
 protected:
+	void contextMenuEvent(QContextMenuEvent* cme) override;
 	void createLayout();
 
 	DkColorPane* mColorPane = 0;
+	QLabel* mColorPreview = 0;
+	QMenu* mContextMenu = 0;
+	DkColorEdit* mColorEdit = 0;
 };
 
 class DllCoreExport DkRectWidget : public QWidget {

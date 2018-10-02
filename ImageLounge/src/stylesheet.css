@@ -55,6 +55,20 @@ nmc--DkBatchButtonsWidget QPushButton {
 	border: none;
 }
 
+QPushButton#flatWhite {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+QPushButton#flatWhite:hover {
+	background-color: rgba(255,255,255,.2);
+}
+
+QPushButton#flatWhite:pressed {
+	background-color: rgba(255,255,255,.4);
+}
+
 QTabBar::close-button {
     image: url(:/nomacs/img/close-tab.svg);
 }
@@ -448,15 +462,21 @@ nmc--DkDescriptionEdit {
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QLabel,
 nmc--DkBaseManipulatorWidget#darkManipulator QCheckBox,
-nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox {
+nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
+nmc--DkBaseManipulatorWidget#darkManipulator QLineEdit {
 	color: #fff;
 }
 
+nmc--DkBaseManipulatorWidget#darkManipulator QLineEdit,
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox {
 	background: #333;
 	border: none;
 	border-bottom: 1px solid #fff;
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QWidget {
+	background: #333;
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox::up-button,
@@ -507,6 +527,13 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkHueSlider::groove:horizon
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
 }
 
+QLabel#DkManipulatorSettingsTitle {
+	font: thin "Segoe UI";
+	font-size: 14pt;
+	color: #fff;
+	margin-bottom: 5pt;
+}
+
 QSlider#cpHueSlider::groove:vertical {
 	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #ff0000, stop:0.167 #ff00ff, stop:0.333 #0000ff, stop:0.5 #00ffff, stop:0.666 #00ff00, stop:0.833 #ffff00, stop:1 #ff0000);
 }
@@ -516,13 +543,6 @@ QSlider#cpHueSlider::handle:vertical {
 	border-top: 2px solid #333;
 	border-bottom: 2px solid #333;
 	height: 5px;
-}
-
-QLabel#DkManipulatorSettingsTitle {
-	font: thin "Segoe UI";
-	font-size: 14pt;
-	color: #fff;
-	margin-bottom: 5pt;
 }
 
 /* profile widget */

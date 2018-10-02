@@ -201,7 +201,7 @@ private:
 	QSharedPointer<DkImageContainerT> mImgC;
 	QLabel* mPreview = 0;
 	QLabel* mTitleLabel = 0;
-	int mMaxPreview = 300;
+	int mMaxPreview = 150;
 };
 
 class DkEditDock : public DkDockWidget {
@@ -215,9 +215,6 @@ public slots:
 
 protected:
 	void createLayout();
-
-	//void writeSettings();
-	//void readSettings();
 
 	DkManipulatorWidget* mMplWidget = 0;
 
