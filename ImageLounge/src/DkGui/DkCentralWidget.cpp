@@ -1,3 +1,4 @@
+#include "DkCentralWidget.h"
 /*******************************************************************************************************
  DkCentralWidget.cpp
  Created on:	14.11.2014
@@ -965,6 +966,11 @@ void DkCentralWidget::restart() const {
 void DkCentralWidget::showProgress(bool show, int time) {
 
 	mProgressBar->setVisibleTimed(show, time);
+}
+
+void DkCentralWidget::startSlideshow(bool start) const {
+
+	getViewPort()->getController()->startSlideshow(start);
 }
 
 QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {

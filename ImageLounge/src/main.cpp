@@ -122,7 +122,10 @@ int main(int argc, char *argv[]) {
 	QCommandLineOption fullScreenOpt(QStringList() << "f" << "fullscreen", QObject::tr("Start in fullscreen."));
 	parser.addOption(fullScreenOpt);
 
-	QCommandLineOption pongOpt(QStringList() << "x" << "pong", QObject::tr("Start Pong."));
+	QCommandLineOption slideshowOpt(QStringList() << "slideshow", QObject::tr("Start slideshow playback"));
+	parser.addOption(slideshowOpt);
+
+	QCommandLineOption pongOpt(QStringList() << "pong", QObject::tr("Start Pong."));
 	parser.addOption(pongOpt);
 
 	QCommandLineOption privateOpt(QStringList() << "p" << "private", QObject::tr("Start in private mode."));
@@ -307,6 +310,10 @@ int main(int argc, char *argv[]) {
 		parser.isSet(fullScreenOpt)) {
 		w->enterFullScreen();
 		qDebug() << "trying to enter fullscreen...";
+	}
+
+	if (parser.isSet(slideshowOpt)) {
+		cw->startSlideshow();
 	}
 
 #ifdef Q_WS_MAC

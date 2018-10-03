@@ -174,6 +174,7 @@ public slots:
 	void openPreferences();
 	void restart() const;
 	void showProgress(bool show, int time = -1);
+	void startSlideshow(bool start = true) const;
 
 protected:
 	DkViewPort* mViewport = 0;
