@@ -2150,7 +2150,7 @@ void DkRecentDirWidget::createLayout() {
 	mButtons[button_pin]->setFlat(true);
 	mButtons[button_pin]->hide();
 
-	mButtons[button_remove] = new QPushButton(DkImage::loadIcon(":/nomacs/img/close-tab.svg"), "", this);
+	mButtons[button_remove] = new QPushButton(DkImage::loadIcon(":/nomacs/img/close.svg"), "", this);
 	mButtons[button_remove]->setToolTip(tr("Remove this directory"));
 	mButtons[button_remove]->setObjectName("remove");
 	mButtons[button_remove]->setFlat(true);

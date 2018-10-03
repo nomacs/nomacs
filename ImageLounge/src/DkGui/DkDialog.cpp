@@ -940,8 +940,7 @@ void DkResizeDialog::createLayout() {
 	mWPixelSpin->setRange(minPx, maxPx);
 	mWPixelSpin->setDecimals(0);
 
-	mLockButton = new DkButton(QIcon(":/nomacs/img/lock.svg"), QIcon(":/nomacs/img/lock-unlocked.svg"), "lock", this);
-	mLockButton->setFixedSize(QSize(16,16));
+	mLockButton = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"), DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"), "lock", this);
 	mLockButton->setObjectName("lockButton");
 	mLockButton->setCheckable(true);
 	mLockButton->setChecked(true);
@@ -978,9 +977,8 @@ void DkResizeDialog::createLayout() {
 	mWidthSpin->setDecimals(decimals);
 
 
-	mLockButtonDim = new DkButton(QIcon(":/nomacs/img/lock.svg"), QIcon(":/nomacs/img/lock-unlocked.svg"), "lock");
-	//lockButtonDim->setIcon(QIcon(":/nomacs/img/lock.svg"));
-	mLockButtonDim->setFixedSize(QSize(16,16));
+	mLockButtonDim = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"), DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"), "lock");
+	//mLockButtonDim->setFixedSize(QSize(16,16));
 	mLockButtonDim->setObjectName("lockButtonDim");
 	mLockButtonDim->setCheckable(true);
 	mLockButtonDim->setChecked(true);
@@ -2097,10 +2095,10 @@ void DkPrintPreviewDialog::createIcons() {
 	mIcons.resize(print_end);
 
 	mIcons[print_fit_width]	= DkImage::loadIcon(":/nomacs/img/fit-width.svg");
-	mIcons[print_fit_page]	= DkImage::loadIcon(":/nomacs/img/zoomReset.svg");
+	mIcons[print_fit_page]	= DkImage::loadIcon(":/nomacs/img/zoom-reset.svg");
 	mIcons[print_zoom_in]	= DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
 	mIcons[print_zoom_out]	= DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
-	mIcons[print_reset_dpi]	= DkImage::loadIcon(":/nomacs/img/zoom100.svg");
+	mIcons[print_reset_dpi]	= DkImage::loadIcon(":/nomacs/img/zoom-100.svg");
 	mIcons[print_landscape]	= DkImage::loadIcon(":/nomacs/img/landscape.svg");
 	mIcons[print_portrait]	= DkImage::loadIcon(":/nomacs/img/portrait.svg");
 	mIcons[print_setup]		= DkImage::loadIcon(":/nomacs/img/print-setup.svg");

@@ -227,3 +227,11 @@ QPushButton#displayButton {
 	
 	color: #fff;
 }
+
+QTabBar::close-button {
+    image: url(:/nomacs/img/close-white.svg);
+}
+
+QTabBar::close-button:hover {
+	image: url(:/nomacs/img/close-white-hover.svg);
+}

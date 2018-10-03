@@ -70,11 +70,11 @@ QPushButton#flatWhite:pressed {
 }
 
 QTabBar::close-button {
-    image: url(:/nomacs/img/close-tab.svg);
+    image: url(:/nomacs/img/close.svg);
 }
 
 QTabBar::close-button:hover {
-	image: url(:/nomacs/img/close-tab-hover.svg);
+	image: url(:/nomacs/img/close-hover.svg);
 }
 
 QDockWidget {

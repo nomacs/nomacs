@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="6.9995" y1="1.0469" x2="6.9995" y2="18.2095">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<path fill="url(#SVGID_1_)" d="M7,1C3.686,1,1,3.687,1,7s2.686,6,6,6c3.313,0,6-2.687,6-6S10.313,1,7,1z M10,8H8l0,0H6l0,0H4V6h2
-	l0,0h2l0,0h2V8z"/>
-<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="13.165" y1="3.2764" x2="13.165" y2="16.1572">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<path fill="url(#SVGID_2_)" d="M13.158,10.33c-0.647,1.195-1.633,2.181-2.828,2.828L13.172,16L16,13.172L13.158,10.33z"/>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+	.st1{fill:none;stroke:#231F20;stroke-width:10;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<g>
+	<g>
+		<path class="st0" d="M65.5,15.5c27.6,0,50,22.4,50,50s-22.4,50-50,50s-50-22.4-50-50S37.9,15.5,65.5,15.5 M65.5,5.5
+			c-33.1,0-60,26.9-60,60s26.9,60,60,60s60-26.9,60-60S98.6,5.5,65.5,5.5L65.5,5.5z"/>
+	</g>
+	<path class="st0" d="M110.5,117.6l41,41c2,2,5.1,2,7.1,0c2-2,2-5.1,0-7.1l-41-41L110.5,117.6z"/>
+	<line class="st1" x1="95.5" y1="65.5" x2="35.5" y2="65.5"/>
+</g>
 </svg>

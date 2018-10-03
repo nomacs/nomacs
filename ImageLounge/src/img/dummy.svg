@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<rect x="1" y="1" opacity="0.6" fill="#FFFFFF" width="14" height="14"/>
-<polygon fill="#006699" points="0,0 4,0 4,1 1,1 1,4 0,4 "/>
-<polygon fill="#006699" points="0,16 0,12 1,12 1,15 4,15 4,16 "/>
-<polygon fill="#006699" points="16,16 12,16 12,15 15,15 15,12 16,12 "/>
-<polygon fill="#006699" points="16,0 16,4 15,4 15,1 12,1 12,0 "/>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#231F20;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<polyline class="st0" points="45,5 5,5 5,45 "/>
+<polyline class="st0" points="5,115 5,155 45,155 "/>
+<polyline class="st0" points="115,155 155,155 155,115 "/>
+<polyline class="st0" points="155,45 155,5 115,5 "/>
 </svg>

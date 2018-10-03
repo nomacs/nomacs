@@ -909,10 +909,11 @@ void DkActionManager::createIcons() {
 	mFileIcons[icon_file_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
 	mFileIcons[icon_file_filter] = DkImage::loadIcon();
 	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter.svg"), QIcon::Normal, QIcon::On);
-	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/nofilter.svg"), QIcon::Normal, QIcon::Off);
+	mFileIcons[icon_file_filter].addPixmap(DkImage::loadIcon(":/nomacs/img/filter-disabled.svg"), QIcon::Normal, QIcon::Off);
+	mFileIcons[icon_file_find] = DkImage::loadIcon(":/nomacs/img/find.svg");
 
 	mEditIcons.resize(icon_edit_end);
-	mEditIcons[icon_edit_image] = DkImage::loadIcon(":/nomacs/img/manipulation.svg");
+	mEditIcons[icon_edit_image] = DkImage::loadIcon(":/nomacs/img/sliders.svg");
 	mEditIcons[icon_edit_rotate_cw] = DkImage::loadIcon(":/nomacs/img/rotate-cw.svg");
 	mEditIcons[icon_edit_rotate_ccw] = DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
 	mEditIcons[icon_edit_crop] = DkImage::loadIcon(":/nomacs/img/crop.svg");
@@ -923,17 +924,17 @@ void DkActionManager::createIcons() {
 
 	mViewIcons.resize(icon_view_end);
 	mViewIcons[icon_view_fullscreen] = DkImage::loadIcon(":/nomacs/img/fullscreen.svg");
-	mViewIcons[icon_view_reset] = DkImage::loadIcon(":/nomacs/img/zoomReset.svg");
-	mViewIcons[icon_view_100] = DkImage::loadIcon(":/nomacs/img/zoom100.svg");
-	mViewIcons[icon_view_gps] = DkImage::loadIcon(":/nomacs/img/gps-globe.svg");
+	mViewIcons[icon_view_reset] = DkImage::loadIcon(":/nomacs/img/zoom-reset.svg");
+	mViewIcons[icon_view_100] = DkImage::loadIcon(":/nomacs/img/zoom-100.svg");
+	mViewIcons[icon_view_gps] = DkImage::loadIcon(":/nomacs/img/location.svg");
 	mViewIcons[icon_view_zoom_in] = DkImage::loadIcon(":/nomacs/img/zoom-in.svg");
 	mViewIcons[icon_view_zoom_out] = DkImage::loadIcon(":/nomacs/img/zoom-out.svg");
 
-	mViewIcons[icon_view_movie_play] = DkImage::loadIcon();
-	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-play.svg"), QIcon::Normal, QIcon::On);
-	mViewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.svg"), QIcon::Normal, QIcon::Off);
-	mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/movie-prev.svg");
-	mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/movie-next.svg");
+	mViewIcons[icon_view_movie_play] = DkImage::loadIcon(":/nomacs/img/play.svg");
+	mViewIcons[icon_view_movie_play].addPixmap(DkImage::loadIcon(":/nomacs/img/play.svg"), QIcon::Normal, QIcon::On);
+	mViewIcons[icon_view_movie_play].addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg"), QIcon::Normal, QIcon::Off);
+	mViewIcons[icon_view_movie_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
+	mViewIcons[icon_view_movie_next] = DkImage::loadIcon(":/nomacs/img/next.svg");
 }
 
 void DkActionManager::createActions(QWidget* parent) {
@@ -1019,7 +1020,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_private_instance]->setShortcut(QKeySequence(shortcut_private_instance));
 	mFileActions[menu_file_private_instance]->setStatusTip(QObject::tr("Open private instance"));
 
-	mFileActions[menu_file_find] = new QAction(QObject::tr("&Find && Filter"), parent);
+	mFileActions[menu_file_find] = new QAction(mFileIcons[icon_file_find], QObject::tr("&Find && Filter"), parent);
 	mFileActions[menu_file_find]->setShortcut(QKeySequence::Find);
 	mFileActions[menu_file_find]->setStatusTip(QObject::tr("Find an image"));
 

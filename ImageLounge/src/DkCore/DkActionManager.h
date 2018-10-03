@@ -326,6 +326,7 @@ public:
 		icon_file_save,
 		icon_file_print,
 		icon_file_filter,
+		icon_file_find,
 
 		icon_file_end,	// nothing beyond this point
 	};

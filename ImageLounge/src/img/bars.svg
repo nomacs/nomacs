@@ -2,12 +2,7 @@
 <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#4D4D4D;}
-</style>
-<text transform="matrix(1 0 0 1 26 5)"><tspan x="0" y="0" style="font-family:'MyriadPro-Regular'; font-size:1px;">light color: 50%</tspan><tspan x="0" y="1.2" style="font-family:'MyriadPro-Regular'; font-size:1px;">dark color: 30%</tspan><tspan x="0" y="2.4" style="font-family:'MyriadPro-Regular'; font-size:1px;">contour: 1px</tspan><tspan x="0" y="3.6" style="font-family:'MyriadPro-Regular'; font-size:1px;">corner radius: 0,5px</tspan></text>
-<path class="st0" d="M15.5,12h-15C0.2,12,0,12.2,0,12.5v1C0,13.8,0.2,14,0.5,14h15c0.3,0,0.5-0.2,0.5-0.5v-1
-	C16,12.2,15.8,12,15.5,12z"/>
-<path class="st0" d="M15.5,7h-15C0.2,7,0,7.2,0,7.5v1C0,8.8,0.2,9,0.5,9h15C15.8,9,16,8.8,16,8.5v-1C16,7.2,15.8,7,15.5,7z"/>
-<path class="st0" d="M15.5,2h-15C0.2,2,0,2.2,0,2.5v1C0,3.8,0.2,4,0.5,4h15C15.8,4,16,3.8,16,3.5v-1C16,2.2,15.8,2,15.5,2z"/>
+<path d="M15.5,12h-15C0.2,12,0,12.2,0,12.5v1C0,13.8,0.2,14,0.5,14h15c0.3,0,0.5-0.2,0.5-0.5v-1C16,12.2,15.8,12,15.5,12z"/>
+<path d="M15.5,7h-15C0.2,7,0,7.2,0,7.5v1C0,8.8,0.2,9,0.5,9h15C15.8,9,16,8.8,16,8.5v-1C16,7.2,15.8,7,15.5,7z"/>
+<path d="M15.5,2h-15C0.2,2,0,2.2,0,2.5v1C0,3.8,0.2,4,0.5,4h15C15.8,4,16,3.8,16,3.5v-1C16,2.2,15.8,2,15.5,2z"/>
 </svg>

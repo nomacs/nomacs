@@ -1,40 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+</style>
 <g>
-	<g>
-		
-			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="10" y1="15.9658" x2="10" y2="0.1564" gradientTransform="matrix(-1 0 0 -1 16 16)">
-			<stop  offset="0" style="stop-color:#808080"/>
-			<stop  offset="1" style="stop-color:#4D4D4D"/>
-		</linearGradient>
-		<polygon fill="url(#SVGID_1_)" points="9,10 6,10 6,7 3,7 3,13 9,13 		"/>
-	</g>
-	<g>
-		
-			<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="11.5" y1="15.9678" x2="11.5" y2="0.1545" gradientTransform="matrix(-1 0 0 -1 16 16)">
-			<stop  offset="0" style="stop-color:#808080"/>
-			<stop  offset="1" style="stop-color:#4D4D4D"/>
-		</linearGradient>
-		<rect x="3" fill="url(#SVGID_2_)" width="3" height="2"/>
-	</g>
-	<g>
-		
-			<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="0.9995" y1="15.9688" x2="0.9995" y2="0.1555" gradientTransform="matrix(-1 0 0 -1 16 16)">
-			<stop  offset="0" style="stop-color:#808080"/>
-			<stop  offset="1" style="stop-color:#4D4D4D"/>
-		</linearGradient>
-		<rect x="14" y="10" fill="url(#SVGID_3_)" width="2" height="3"/>
-	</g>
+	<path class="st0" d="M160,125c0,2.8-2.2,5-5,5H35c-2.8,0-5-2.2-5-5V5c0-2.8,2.2-5,5-5s5,2.2,5,5v115h115
+		C157.8,120,160,122.2,160,125z"/>
 </g>
 <g>
-	
-		<linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="9.5" y1="15.9678" x2="9.5" y2="0.1563" gradientTransform="matrix(-1 0 0 -1 16 16)">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<polygon fill="url(#SVGID_4_)" points="10,6 10,16 13,16 13,3 0,3 0,6 	"/>
+	<path class="st0" d="M5,30h15v10H5c-2.8,0-5-2.2-5-5C0,32.2,2.2,30,5,30z"/>
+	<path class="st0" d="M130,35v75h-10V40H50V30h75C127.8,30,130,32.2,130,35z"/>
+	<path class="st0" d="M120,140h10v15c0,2.8-2.2,5-5,5s-5-2.2-5-5V140z"/>
 </g>
 </svg>

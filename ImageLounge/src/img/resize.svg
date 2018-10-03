@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="14.5" y1="13.0625" x2="14.5" y2="15.9419">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<polygon fill="url(#SVGID_1_)" points="15,13 15,15 13,15 13,16 15,16 16,16 16,15 16,13 "/>
-<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="6.4995" y1="1.229" x2="6.4995" y2="11.7871">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<path fill="url(#SVGID_2_)" d="M8,8.707V8h0.707L12,11.293V1.5C12,1.224,11.776,1,11.5,1h-10C1.224,1,1,1.224,1,1.5v10
-	C1,11.776,1.224,12,1.5,12h9.793L8,8.707z M7,9H6V7V6h1h2v1H7V9z"/>
-<path fill="#4D4D4D" d="M12,11.293V11.5c0,0.276-0.224,0.5-0.5,0.5h-0.207l2,2H14v-0.707L12,11.293z"/>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+	.st1{fill:none;stroke:#231F20;stroke-width:12.5;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<g>
+	<path class="st0" d="M70,90v60H10V90H70 M73,80H7c-3.9,0-7,3.2-7,7V153c0,3.9,3.2,7,7,7H73c3.9,0,7-3.2,7-7V87
+		C80,83.2,76.8,80,73,80L73,80z"/>
+</g>
+<path class="st0" d="M120,40v40h10V35.7c0-3.1-2.5-5.7-5.7-5.7l0,0H80v10H120"/>
+<line class="st1" x1="75" y1="85" x2="120" y2="40"/>
+<path class="st0" d="M150.4,0H0v60h10V10h140v140h-50v10h60V9.6C160,4.3,155.7,0,150.4,0z"/>
 </svg>

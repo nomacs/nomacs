@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+</style>
 <g>
-	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="7.9995" y1="0.085" x2="7.9995" y2="27.8378">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<polygon fill="url(#SVGID_1_)" points="11,1 11,0 5,0 5,1 3,1 3,2 13,2 13,1 	"/>
-	<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="7.9692" y1="1.063" x2="7.9692" y2="14.9171">
-		<stop  offset="0" style="stop-color:#808080"/>
-		<stop  offset="1" style="stop-color:#4D4D4D"/>
-	</linearGradient>
-	<path fill="url(#SVGID_2_)" d="M2.939,3v0.434V4v9v0.879V14v0.5c0,0.275,0.225,0.5,0.5,0.5H5h5.818H12.5c0.275,0,0.5-0.225,0.5-0.5
-		V14v-1V4V3.434V3H2.939z M4.939,12V5H6v7H4.939z M7,12V5h2v7H7z M11,12h-1V5h1V12z"/>
+	<path class="st0" d="M130,30v120H40V30H130 M131.7,20H38.3c-4.6,0-8.3,3.7-8.3,8.3v123.4c0,4.6,3.7,8.3,8.3,8.3h93.4
+		c4.6,0,8.3-3.7,8.3-8.3V28.3C140,23.7,136.3,20,131.7,20L131.7,20z"/>
+</g>
+<g>
+	<path class="st0" d="M115,120L115,120c-2.8,0-5-2.2-5-5V45c0-2.8,2.2-5,5-5h0c2.8,0,5,2.2,5,5v70C120,117.8,117.8,120,115,120z"/>
+</g>
+<g>
+	<path class="st0" d="M95,120L95,120c-2.8,0-5-2.2-5-5V45c0-2.8,2.2-5,5-5h0c2.8,0,5,2.2,5,5v70C100,117.8,97.8,120,95,120z"/>
+</g>
+<g>
+	<path class="st0" d="M75,120L75,120c-2.8,0-5-2.2-5-5V45c0-2.8,2.2-5,5-5h0c2.8,0,5,2.2,5,5v70C80,117.8,77.8,120,75,120z"/>
+</g>
+<g>
+	<path class="st0" d="M55,120L55,120c-2.8,0-5-2.2-5-5V45c0-2.8,2.2-5,5-5h0c2.8,0,5,2.2,5,5v70C60,117.8,57.8,120,55,120z"/>
+</g>
+<g>
+	<path class="st0" d="M125,0H45c-2.8,0-5,2.2-5,5s2.2,5,5,5h80c2.8,0,5-2.2,5-5S127.8,0,125,0L125,0z"/>
 </g>
 </svg>

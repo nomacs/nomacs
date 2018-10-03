@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:url(#SVGID_1_);}
+	.st0{fill:#231F20;}
 </style>
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="8" y1="1.2915" x2="8" y2="14.7285">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<path class="st0" d="M14.5,1h-13C1.2,1,1,1.2,1,1.5v13C1,14.8,1.2,15,1.5,15h13c0.3,0,0.5-0.2,0.5-0.5v-13C15,1.2,14.8,1,14.5,1z"/>
+<g>
+	<path class="st0" d="M139.4,20c0.3,0,0.6,0.3,0.6,0.6v118.9c0,0.3-0.3,0.6-0.6,0.6H20.6c-0.3,0-0.6-0.3-0.6-0.6V20.6
+		c0-0.3,0.3-0.6,0.6-0.6H139.4 M139.4,10H20.6C14.7,10,10,14.7,10,20.6v118.9c0,5.8,4.7,10.6,10.6,10.6h118.9
+		c5.8,0,10.6-4.7,10.6-10.6V20.6C150,14.7,145.3,10,139.4,10L139.4,10z"/>
+</g>
 </svg>

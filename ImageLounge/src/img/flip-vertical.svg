@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 20.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#4C4C4C;}
-	.st1{fill:none;stroke:#4C4C4C;stroke-miterlimit:10;}
+	.st0{fill:none;stroke:#231F20;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#231F20;stroke-width:10;stroke-linecap:round;stroke-miterlimit:10;}
 </style>
-<polygon class="st0" points="14,1 2,1 8,7 "/>
-<g>
-	<path class="st0" d="M8,10.4l3.6,3.6H4.4L8,10.4 M8,9l-6,6h12L8,9L8,9z"/>
-</g>
-<line class="st1" x1="15" y1="8" x2="1" y2="8"/>
+<polygon class="st0" points="80,100 120,144.5 40,144.5 "/>
+<polygon class="st0" points="80,60 40,15.5 120,15.5 "/>
+<line class="st1" x1="20" y1="75" x2="20" y2="85"/>
+<line class="st1" x1="40" y1="75" x2="40" y2="85"/>
+<line class="st1" x1="60" y1="75" x2="60" y2="85"/>
+<line class="st1" x1="80" y1="75" x2="80" y2="85"/>
+<line class="st1" x1="100" y1="75" x2="100" y2="85"/>
+<line class="st1" x1="120" y1="75" x2="120" y2="85"/>
+<line class="st1" x1="140" y1="75" x2="140" y2="85"/>
 </svg>

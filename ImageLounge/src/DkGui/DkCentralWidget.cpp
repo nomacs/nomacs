@@ -500,7 +500,7 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addTabWidget(tab);
 
 	// display preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display-settings.svg", s), tr("Display"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/display.svg", s), tr("Display"), this);
 	DkDisplayPreference* dp = new DkDisplayPreference(this);
 	tab->setWidget(dp);
 	pw->addTabWidget(tab);
@@ -512,7 +512,7 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs.svg", s), tr("File Associations"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", s), tr("File Associations"), this);
 	DkFileAssociationsPreference* fap = new DkFileAssociationsPreference(this);
 	tab->setWidget(fap);
 	pw->addTabWidget(tab);
@@ -524,7 +524,7 @@ DkPreferenceWidget* DkCentralWidget::createPreferences() {
 	pw->addTabWidget(tab);
 
 	// file association preferences
-	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/manipulation.svg", s), tr("Editor"), this);
+	tab = new DkPreferenceTabWidget(DkImage::loadIcon(":/nomacs/img/sliders.svg", s), tr("Editor"), this);
 	DkEditorPreference* ep = new DkEditorPreference(this);
 	tab->setWidget(ep);
 	pw->addTabWidget(tab);

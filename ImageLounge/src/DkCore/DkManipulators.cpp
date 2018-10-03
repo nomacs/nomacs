@@ -48,7 +48,7 @@ DkBaseManipulator::DkBaseManipulator(QAction * action) {
 	// add default icon
 	if (mAction->icon().isNull()) {
 		QSize size(21, 21);
-		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/manipulation.svg", size));
+		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/sliders.svg", size));
 	}
 }
 

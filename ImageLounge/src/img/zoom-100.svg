@@ -3,12 +3,11 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#231F20;}
+	.st0{fill:none;stroke:#231F20;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:#231F20;}
 </style>
-<g>
-	<path class="st0" d="M140,30v120H50V30H140 M142.7,20H47.3c-4.1,0-7.3,3.3-7.3,7.3v125.3c0,4.1,3.3,7.3,7.3,7.3h95.3
-		c4.1,0,7.3-3.3,7.3-7.3V27.3C150,23.3,146.7,20,142.7,20L142.7,20z"/>
-</g>
-<path class="st0" d="M110,10v10l10,0V7.3c0-4.1-3.3-7.3-7.3-7.3l0,0H17.3C13.3,0,10,3.3,10,7.3v125.3c0,4.1,3.3,7.3,7.3,7.3H40l0-10
-	H20V10H110"/>
+<polyline class="st0" points="55,155 55,5 5,5 "/>
+<polyline class="st0" points="155,155 155,5 105,5 "/>
+<rect x="90" y="100" class="st1" width="10" height="10"/>
+<rect x="90" y="150" class="st1" width="10" height="10"/>
 </svg>

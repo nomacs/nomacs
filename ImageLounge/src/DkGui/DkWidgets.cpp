@@ -1214,23 +1214,24 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 void DkPlayer::createLayout() {
 
 	int height = 50;
+	QSize ih(height-12, height-12);
 
-	previousButton = new QPushButton(QIcon(":/nomacs/img/player-previous.svg"), "", this);
+	previousButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/previous.svg", ih, Qt::white), "", this);
 	//previousButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	previousButton->setIconSize(QSize(2*height, height));
-	previousButton->setMaximumHeight(height);
+	previousButton->setIconSize(ih);
+	previousButton->setMinimumSize(QSize(qRound(1.5*height), height));
 	previousButton->setToolTip(tr("Show previous image"));
 	previousButton->setObjectName("DkPlayerButton");
 	previousButton->setFlat(true);
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
 	QIcon icon;
-	icon.addPixmap(QIcon(":/nomacs/img/player-pause.svg").pixmap(2*height), QIcon::Normal, QIcon::On);
-	icon.addPixmap(QIcon(":/nomacs/img/player-play.svg").pixmap(2*height), QIcon::Normal, QIcon::Off);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/pause.svg", ih, Qt::white), QIcon::Normal, QIcon::On);
+	icon.addPixmap(DkImage::loadIcon(":/nomacs/img/play.svg", ih, Qt::white), QIcon::Normal, QIcon::Off);
 	playButton = new QPushButton(icon, "", this);
 	//playButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	playButton->setIconSize(QSize(2*height, height));
-	playButton->setMaximumHeight(height);
+	playButton->setIconSize(ih);
+	playButton->setMinimumSize(QSize(qRound(1.5*height), height));
 	playButton->setToolTip(tr("Play/Pause"));
 	playButton->setObjectName("DkPlayerButton");
 	playButton->setFlat(true);
@@ -1239,10 +1240,10 @@ void DkPlayer::createLayout() {
 	playButton->addAction(DkActionManager::instance().action(DkActionManager::menu_view_slideshow));
 	connect(playButton, SIGNAL(clicked(bool)), this, SLOT(play(bool)));
 
-	nextButton = new QPushButton(QIcon(":/nomacs/img/player-next.svg"), "",  this);
+	nextButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/next.svg", ih, Qt::white), "",  this);
 	//nextButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	nextButton->setIconSize(QSize(2*height, height));
-	nextButton->setMaximumHeight(height);
+	nextButton->setIconSize(ih);
+	nextButton->setMinimumSize(QSize(qRound(1.5*height), height));
 	nextButton->setToolTip(tr("Show next image"));
 	nextButton->setObjectName("DkPlayerButton");
 	nextButton->setFlat(true);
@@ -1251,7 +1252,7 @@ void DkPlayer::createLayout() {
 	// now add to mLayout
 	container = new QWidget(this);
 	QHBoxLayout* layout = new QHBoxLayout(container);
-	layout->setContentsMargins(0,0,0,0);
+	//layout->setContentsMargins(0,0,0,0);
 	layout->addStretch();
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
