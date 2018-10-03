@@ -708,7 +708,8 @@ void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 		mWorldMatrix.translate(0, ((height()-ub)-imgRectWorld.bottom())/mWorldMatrix.m11());
 
 	// update scene size (this is needed to make the scroll area work)
-	setSceneRect(getImageViewRect());
+	if (DkSettingsManager::instance().param().display().showScrollBars)
+		setSceneRect(getImageViewRect());
 
 	emit imageUpdated();
 }
