@@ -652,3 +652,7 @@ QPushButton#displayButton:hover {
 QPushButton#displayButton:checked {
 	border: 1px solid HIGHLIGHT_COLOR;
 }
+
+QToolBar {
+	background-color: BACKGROUND_COLOR;
+}

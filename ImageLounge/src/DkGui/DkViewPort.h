@@ -117,7 +117,7 @@ signals:
 	void movieLoadedSignal(bool isMovie) const;
 	void infoSignal(const QString& msg) const;	// needed to forward signals
 	void addTabSignal(const QString& filePath) const;
-	void zoomSignal(float zoomLevel) const;
+	void zoomSignal(double zoomLevel) const;
 	void mouseClickSignal(QMouseEvent* event, QPoint imgPos) const;
 	void showProgress(bool show, int time = -1) const;
 
@@ -130,7 +130,7 @@ public slots:
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
 	void toggleResetMatrix();
-	void zoomTo(float zoomLevel, const QPoint& pos = QPoint(-1, -1));
+	void zoomTo(double zoomLevel, const QPoint& pos = QPoint(-1, -1));
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);

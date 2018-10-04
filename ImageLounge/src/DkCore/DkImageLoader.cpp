@@ -1328,7 +1328,7 @@ void DkImageLoader::updateHistory() {
 	}
 
 	rFiles.push_front(file.absoluteFilePath());
-	rFiles.push_front(file.absolutePath());
+	rFolders.push_front(file.absolutePath());
 
 	rFiles.removeDuplicates();
 	rFolders.removeDuplicates();

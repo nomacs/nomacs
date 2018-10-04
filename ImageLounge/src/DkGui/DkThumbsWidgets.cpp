@@ -2403,8 +2403,13 @@ QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList & filePath
 
 	for (const QString& cp : filePaths) {
 
+		QFileInfo fi(cp);
+
+		if (!fi.isFile())
+			continue;
+
 		// get folder
-		QString dp = QFileInfo(cp).absolutePath();
+		QString dp = fi.absolutePath();
 
 		auto dir = gPaths.find(dp);
 

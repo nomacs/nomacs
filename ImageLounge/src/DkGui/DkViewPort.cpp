@@ -335,7 +335,7 @@ void DkViewPort::setImage(QImage newImg) {
 		mController->getHistogram()->drawHistogram(newImg);
 
 	emit newImageSignal(&newImg);
-	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
+	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11()*100);
 
 	// status info
 	if (!newImg.isNull()) {
@@ -438,14 +438,14 @@ void DkViewPort::zoom(double factor, const QPoint& center) {
 
 	tcpSynchronize();
 
-	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
+	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11()*100);
 	DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11()*mImgMatrix.m11() * 100)) + "%", DkStatusBar::status_zoom_info);
 }
 
-void DkViewPort::zoomTo(float zoomLevel, const QPoint&) {
+void DkViewPort::zoomTo(double zoomLevel, const QPoint&) {
 
 	mWorldMatrix.reset();
-	zoom(zoomLevel/(float)mImgMatrix.m11());
+	zoom(zoomLevel/mImgMatrix.m11());
 }
 
 void DkViewPort::resetView() {
@@ -464,18 +464,19 @@ void DkViewPort::zoomToFit() {
 	QSizeF imgSize = getImageSize();
 	QSizeF winSize = size();
 
-	float zoomLevel = (float)qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
+	double zoomLevel = qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
 	zoomTo(zoomLevel);
 }
 
 void DkViewPort::fullView() {
 
-	mWorldMatrix.reset();
-	zoom(1.0f/(float)mImgMatrix.m11());
-	showZoom();
+	
+	QPointF p = mViewportRect.center();
+	zoom(1.0/(mImgMatrix.m11()*mWorldMatrix.m11()), p.toPoint());
+	
+	//showZoom();
 	changeCursor();
 	update();
-	if (this->visibleRegion().isEmpty()) qDebug() << "empty region...";
 }
 
 void DkViewPort::showZoom() {
@@ -1871,7 +1872,7 @@ void DkViewPortFrameless::zoom(double factor, const QPoint& center) {
 	update();
 
 	tcpSynchronize();
-	emit zoomSignal((float)(mWorldMatrix.m11()*mImgMatrix.m11()*100));
+	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11()*100);
 }
 
 void DkViewPortFrameless::resetView() {

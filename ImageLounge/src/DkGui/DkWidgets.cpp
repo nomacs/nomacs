@@ -822,23 +822,23 @@ void DkZoomWidget::createLayout() {
 void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
 	updateZoom((float)zoomLevel);
 	mAutoHide = false;
-	emit zoomSignal((float)zoomLevel/100.0f);
+	emit zoomSignal(zoomLevel/100.0);
 }
 
 void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)mSbZoom->maximum() + 200.0f : zoomLevel*4.0f;
-	if (level < 0.2f) level = 0.2f;
+	double level = (zoomLevel > 50) ? (zoomLevel-50.0)/50.0 * mSbZoom->maximum() + 200.0 : zoomLevel*4.0;
+	if (level < 0.2) level = 0.2;
 	mAutoHide = false;
 	updateZoom(level);
-	emit zoomSignal(level/100.0f);
+	emit zoomSignal(level/100.0);
 }
 
-void DkZoomWidget::updateZoom(float zoomLevel) {
+void DkZoomWidget::updateZoom(double zoomLevel) {
 
 	mSlZoom->blockSignals(true);
 	mSbZoom->blockSignals(true);
 	
-	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/mSbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
+	int slVal = (zoomLevel > 200.0) ? qRound(zoomLevel/mSbZoom->maximum()*50.0 + 50.0) : qRound(zoomLevel*0.25);
 	mSlZoom->setValue(slVal);
 	mSbZoom->setValue(zoomLevel);
 	mSlZoom->blockSignals(false);

@@ -275,8 +275,8 @@ void DkControlWidget::connectWidgets() {
 	connect(mZoomWidget->getOverview(), SIGNAL(sendTransformSignal()), mViewport, SLOT(tcpSynchronize()));
 
 	// zoom widget
-	connect(mZoomWidget, SIGNAL(zoomSignal(float)), mViewport, SLOT(zoomTo(float)));
-	connect(mViewport, SIGNAL(zoomSignal(float)), mZoomWidget, SLOT(updateZoom(float)));
+	connect(mZoomWidget, SIGNAL(zoomSignal(double)), mViewport, SLOT(zoomTo(double)));
+	connect(mViewport, SIGNAL(zoomSignal(double)), mZoomWidget, SLOT(updateZoom(double)));
 
 	// waiting
 	connect(mDelayedInfo, SIGNAL(infoSignal(const QString&, int)), this, SLOT(setInfo(const QString&, int)));

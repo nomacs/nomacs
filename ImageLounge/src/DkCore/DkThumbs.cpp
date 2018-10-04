@@ -361,7 +361,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	if (forceLoad == force_full_thumb || forceLoad == force_save_thumb || forceLoad == save_thumb)
 		mImg = QImage();
 
-	if (!mImg.isNull() || !mImgExists || mFetching)
+	if (!mImg.isNull() || !mImgExists || mFetching || !DkUtils::hasValidSuffix(getFilePath()))
 		return false;
 
 	// we have to do our own bool here
