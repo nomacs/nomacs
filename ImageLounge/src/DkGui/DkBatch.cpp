@@ -349,7 +349,7 @@ void DkBatchInput::createLayout() {
 
 	// tab widget
 	mInputTabs = new QTabWidget(this);
-	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/thumbs-view.svg"), tr("Thumbnails"));
+	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
 	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/batch-processing.svg"), tr("File List"));
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
@@ -2227,9 +2227,9 @@ void DkBatchButtonsWidget::createLayout() {
 	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
 	icon = QIcon();
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(255, 255, 255), s));
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(255, 255, 255), s));
 	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/batch-processing.svg", QColor(100, 100 , 100), s));
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(100, 100 , 100), s));
 	icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
 
 	mLogButton = new QPushButton(icon, "", this);

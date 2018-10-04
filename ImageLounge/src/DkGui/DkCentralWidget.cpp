@@ -195,9 +195,9 @@ QIcon DkTabInfo::getIcon() {
 	QIcon icon;
 
 	if (mTabMode == tab_thumb_preview)
-		return DkImage::loadIcon(":/nomacs/img/thumbs-view.svg");
+		return DkImage::loadIcon(":/nomacs/img/rects.svg");
 	else if (mTabMode == tab_recent_files)
-		return DkImage::loadIcon(":/nomacs/img/thumbs-view.svg");
+		return DkImage::loadIcon(":/nomacs/img/bars.svg");
 	else if (mTabMode == tab_preferences)
 		return DkImage::loadIcon(":/nomacs/img/settings.svg");
 	else if (mTabMode == tab_batch)

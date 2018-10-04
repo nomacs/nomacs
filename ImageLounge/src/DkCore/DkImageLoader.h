@@ -167,7 +167,7 @@ public slots:
 	// new slots
 	void currentImageUpdated() const;
 	void imageLoaded(bool loaded = false);
-	void imageSaved(const QString& file, bool saved = true);
+	void imageSaved(const QString& file, bool saved = true, bool loadToTab = true);
 	void imagesSorted();
 	bool unloadFile();
 	void reloadImage();

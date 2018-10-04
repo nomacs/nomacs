@@ -352,6 +352,7 @@ public:
 	DkRecentDir(const QStringList& filePaths = QStringList(), bool pinned = false);
 
 	bool operator==(const DkRecentDir& o) const;
+	void update(const DkRecentDir& o);
 
 	bool isEmpty() const;
 	bool isPinned() const;

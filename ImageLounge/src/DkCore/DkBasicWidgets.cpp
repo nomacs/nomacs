@@ -497,7 +497,7 @@ void DkColorPane::paintEvent(QPaintEvent * ev) {
 
 void DkColorPane::mouseMoveEvent(QMouseEvent * me) {
 
-	if (me->button() == Qt::LeftButton)
+	if (me->buttons() == Qt::LeftButton)
 		setPos(me->pos());
 	QWidget::mouseMoveEvent(me);
 }
@@ -558,8 +558,8 @@ void DkColorPane::setPos(const QPoint & pos) {
 	mPos.setX(qMin(qMax(pos.x(), 0), width()));
 	mPos.setY(qMin(qMax(pos.y(), 0), height()));
 
-	emit colorSelected(color());
 	update();
+	emit colorSelected(color());
 }
 
 double DkColorPane::brightness(const QColor & col) const {

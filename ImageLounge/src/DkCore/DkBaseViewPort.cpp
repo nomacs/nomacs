@@ -764,4 +764,11 @@ void DkBaseViewPort::scrollVertically(int val) {
 	moveView(QPointF(0.0f, -val/mWorldMatrix.m11()));
 }
 
+// Anna's first text:
+//gcfbxxxxxxxxxxxbxbbbcx
+//tggbeeeeeeeeeeecddddeebljlljlö
+//
+//
+//rr45µ[, mgd     7re µ 8n484welkmsclsdmvcdsm wr., bpodsa0][gb b c
+
 }

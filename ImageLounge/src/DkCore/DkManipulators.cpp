@@ -47,7 +47,7 @@ DkBaseManipulator::DkBaseManipulator(QAction * action) {
 	
 	// add default icon
 	if (mAction->icon().isNull()) {
-		QSize size(21, 21);
+		QSize size(32, 32);
 		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/sliders.svg", size));
 	}
 }
@@ -77,7 +77,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	QVector<QSharedPointer<DkBaseManipulator> > mpls;
 	mpls.resize(m_ext_end);
 
-	QSize size(22, 22);
+	QSize size(32, 32);
 
 	// grayscale
 	QAction* action;
@@ -139,7 +139,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	mpls[m_threshold] = QSharedPointer<DkThresholdManipulator>::create(action);
 
 	// hue/saturation
-	action = new QAction(QObject::tr("&Hue/Saturation..."), parent);
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/sliders.svg", size), QObject::tr("&Hue/Saturation..."), parent);
 	action->setStatusTip(QObject::tr("Change Hue and Saturation"));
 	mpls[m_hue] = QSharedPointer<DkHueManipulator>::create(action);
 

@@ -1,31 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="4px" viewBox="0 0 16 4" enable-background="new 0 0 16 4" xml:space="preserve">
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="2" y1="1.0415" x2="2" y2="2.9611">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<circle fill="url(#SVGID_1_)" cx="2" cy="2" r="1"/>
-<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="5" y1="1.0415" x2="5" y2="2.9611">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<circle fill="url(#SVGID_2_)" cx="5" cy="2" r="1"/>
-<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="7.9995" y1="1.0415" x2="7.9995" y2="2.9611">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<circle fill="url(#SVGID_3_)" cx="8" cy="2" r="1"/>
-<linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="11" y1="1.0415" x2="11" y2="2.9611">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<circle fill="url(#SVGID_4_)" cx="11" cy="2" r="1"/>
-<linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="14" y1="1.0415" x2="14" y2="2.9611">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<circle fill="url(#SVGID_5_)" cx="14" cy="2" r="1"/>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 40" style="enable-background:new 0 0 160 40;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+</style>
+<g>
+	<circle class="st0" cx="20" cy="20" r="10"/>
+	<circle class="st0" cx="50" cy="20" r="10"/>
+	<circle class="st0" cx="80" cy="20" r="10"/>
+	<circle class="st0" cx="110" cy="20" r="10"/>
+	<circle class="st0" cx="140" cy="20" r="10"/>
+</g>
 </svg>

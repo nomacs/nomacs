@@ -21,7 +21,7 @@
     <file>img/nomacs-bg.svg</file>
     <file>img/star-off.svg</file>
     <file>img/star-on.svg</file>
-    <file>img/thumbs-view.svg</file>
+    <file>img/rects.svg</file>
     <file>img/batch-processing.svg</file>
     <file>img/dir.svg</file>
     <file>img/rotating-cursor.svg</file>
@@ -45,13 +45,14 @@
     <file>img/zoom-reset.svg</file>
     <file>img/zoom-in.svg</file>
     <file>img/zoom-out.svg</file>
+    <file>img/fit-width.svg</file>
     <file>img/landscape.svg</file>
     <file>img/portrait.svg</file>
     <file>img/printer.svg</file>
     <file>img/print-setup.svg</file>
     <file>img/swap.svg</file>
     <file>img/pan.svg</file>
-    <file>img/pan_checked.svg</file>
+    <file>img/pan-checked.svg</file>
     <file>img/crop-invert.svg</file>
     <file>img/crop-invert-checked.svg</file>
     <file>img/info.svg</file>

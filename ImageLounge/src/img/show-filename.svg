@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="7.9995" y1="1" x2="7.9995" y2="14.9779">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<rect x="1" y="10" opacity="0.6" fill="url(#SVGID_1_)" width="14" height="5"/>
-<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="7.9995" y1="1" x2="7.9995" y2="14.9692">
-	<stop  offset="0" style="stop-color:#808080"/>
-	<stop  offset="1" style="stop-color:#4D4D4D"/>
-</linearGradient>
-<path fill="url(#SVGID_2_)" d="M1,1.031V15h14V1.031H1z M14,14H2V2h12V14z"/>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+	.st1{fill:none;stroke:#231F20;stroke-width:10;stroke-miterlimit:10;}
+</style>
+<g>
+	<path class="st0" d="M150,10v140H10V10H150 M160,0H0v160h160V0L160,0z"/>
+</g>
+<line class="st1" x1="5" y1="105" x2="155" y2="105"/>
 </svg>

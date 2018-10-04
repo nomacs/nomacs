@@ -186,7 +186,7 @@ public:
 
 signals:
 	void fileLoadedSignal(bool loaded = true) const;
-	void fileSavedSignal(const QString& fileInfo, bool saved = true) const;
+	void fileSavedSignal(const QString& fileInfo, bool saved = true, bool loadToTab = true) const;
 	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
 	void errorDialogSignal(const QString& msg) const;
 	void thumbLoadedSignal(bool loaded = true) const;

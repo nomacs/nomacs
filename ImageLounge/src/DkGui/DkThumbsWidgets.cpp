@@ -2308,6 +2308,14 @@ bool DkRecentDir::operator==(const DkRecentDir& o) const {
 	return dirPath() == o.dirPath();
 }
 
+void DkRecentDir::update(const DkRecentDir & o) {
+
+	for (const QString& cp : o.filePaths())
+		mFilePaths.push_front(cp);
+
+	mFilePaths.removeDuplicates();
+}
+
 QStringList DkRecentDir::filePaths(int max) const {
 
 	if (max <= 0)
@@ -2366,6 +2374,9 @@ void DkRecentDir::remove() const {
 // -------------------------------------------------------------------- DkRecentDirManager 
 DkRecentDirManager::DkRecentDirManager() {
 
+	// update pinned files
+
+
 	mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
 	auto recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
 
@@ -2373,6 +2384,12 @@ DkRecentDirManager::DkRecentDirManager() {
 
 		if (!mDirs.contains(rde))
 			mDirs << rde;
+		else {
+			int idx = mDirs.indexOf(rde);
+			if (idx != -1)
+				mDirs[idx].update(rde);
+		}
+
 	}
 }
 
@@ -2411,6 +2428,5 @@ QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList & filePath
 
 	return rdes;
 }
-
 
 }

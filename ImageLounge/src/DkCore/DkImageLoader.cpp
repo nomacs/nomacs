@@ -1265,7 +1265,7 @@ void DkImageLoader::saveFile(const QString& filePath, const QImage& saveImg, con
 	}
 }
 
-void DkImageLoader::imageSaved(const QString& filePath, bool saved) {
+void DkImageLoader::imageSaved(const QString& filePath, bool saved, bool loadToTab) {
 
 	emit updateSpinnerSignalDelayed(false);
 	mDirWatcher->blockSignals(false);
@@ -1274,7 +1274,7 @@ void DkImageLoader::imageSaved(const QString& filePath, bool saved) {
 	if (!fInfo.exists() || !fInfo.isFile() || !saved)
 		return;
 
-	if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab) {
+	if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load_to_tab && loadToTab) {
 		emit loadImageToTab(filePath);
 	}
 	else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
@@ -1304,13 +1304,12 @@ void DkImageLoader::updateHistory() {
 	// sync with other instances
 	DefaultSettings settings;
 	settings.beginGroup("GlobalSettings");
-	DkSettingsManager::param().global().recentFolders = settings.value("recentFolders", DkSettingsManager::param().global().recentFolders).toStringList();
-	DkSettingsManager::param().global().recentFiles = settings.value("recentFiles", DkSettingsManager::param().global().recentFiles).toStringList();
+	QStringList rFolders = settings.value("recentFolders", DkSettingsManager::param().global().recentFolders).toStringList();
+	QStringList rFiles = settings.value("recentFiles", DkSettingsManager::param().global().recentFiles).toStringList();
+	settings.endGroup();
 
-	DkSettingsManager::param().global().lastDir = file.absolutePath();
-
-	DkSettingsManager::param().global().recentFiles.removeAll(file.absoluteFilePath());
-	DkSettingsManager::param().global().recentFolders.removeAll(file.absolutePath());
+	rFiles.removeAll(file.absoluteFilePath());
+	rFolders.removeAll(file.absolutePath());
 
 	QStringList tmpRecentFiles;
 
@@ -1325,25 +1324,32 @@ void DkImageLoader::updateHistory() {
 
 	// maximum 5 most recent images from the same folder
 	for (int idx = tmpRecentFiles.size()-1; idx > 3; idx--) {
-		DkSettingsManager::param().global().recentFiles.removeAll(tmpRecentFiles.at(idx));
+		rFiles.removeAll(tmpRecentFiles.at(idx));
 	}
 
-	DkSettingsManager::param().global().recentFiles.push_front(file.absoluteFilePath());
-	DkSettingsManager::param().global().recentFolders.push_front(file.absolutePath());
+	rFiles.push_front(file.absoluteFilePath());
+	rFiles.push_front(file.absolutePath());
 
-	DkSettingsManager::param().global().recentFiles.removeDuplicates();
-	DkSettingsManager::param().global().recentFolders.removeDuplicates();
+	rFiles.removeDuplicates();
+	rFolders.removeDuplicates();
 
-	for (int idx = 0; idx < DkSettingsManager::param().global().recentFiles.size()-DkSettingsManager::param().global().numFiles-10; idx++)
-		DkSettingsManager::param().global().recentFiles.pop_back();
+	for (int idx = 0; idx < rFiles.size()-DkSettingsManager::param().global().numFiles-10; idx++)
+		rFiles.pop_back();
 
-	for (int idx = 0; idx < DkSettingsManager::param().global().recentFolders.size()-DkSettingsManager::param().global().numFiles-10; idx++)
-		DkSettingsManager::param().global().recentFolders.pop_back();
+	for (int idx = 0; idx < rFolders.size()-DkSettingsManager::param().global().numFiles-10; idx++)
+		rFolders.pop_back();
 
 	// sync with other instances
-	settings.setValue("recentFolders", DkSettingsManager::param().global().recentFolders);
-	settings.setValue("recentFiles", DkSettingsManager::param().global().recentFiles);
+	settings.beginGroup("GlobalSettings");
+	settings.setValue("recentFolders", rFolders);
+	settings.setValue("recentFiles", rFiles);
 	settings.endGroup();
+
+	// update
+	DkSettingsManager::param().global().lastDir = file.absolutePath();
+	DkSettingsManager::param().global().recentFiles = rFiles;
+	DkSettingsManager::param().global().recentFolders = rFolders;
+
 
 	//DkSettings s = DkSettings();
 	//s.save();

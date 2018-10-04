@@ -881,7 +881,7 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)), Qt::UniqueConnection);
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)), Qt::UniqueConnection);
 		connect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)), Qt::UniqueConnection);
-		connect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)), Qt::UniqueConnection);
+		connect(this, SIGNAL(fileSavedSignal(const QString&, bool, bool)), obj, SLOT(imageSaved(const QString&, bool, bool)), Qt::UniqueConnection);
 		connect(this, SIGNAL(imageUpdatedSignal()), obj, SLOT(currentImageUpdated()), Qt::UniqueConnection);
 		mFileUpdateTimer.start();
 	}
@@ -889,7 +889,7 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		disconnect(this, SIGNAL(showInfoSignal(const QString&, int, int)), obj, SIGNAL(showInfoSignal(const QString&, int, int)));
-		disconnect(this, SIGNAL(fileSavedSignal(const QString&, bool)), obj, SLOT(imageSaved(const QString&, bool)));
+		disconnect(this, SIGNAL(fileSavedSignal(const QString&, bool, bool)), obj, SLOT(imageSaved(const QString&, bool, bool)));
 		disconnect(this, SIGNAL(imageUpdatedSignal()), obj, SLOT(currentImageUpdated()));
 		mFileUpdateTimer.stop();
 	}
@@ -965,7 +965,8 @@ void DkImageContainerT::savingFinished() {
 		if (mFileBuffer)
 			mFileBuffer->clear();	// do a complete clear?
 		
-		if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || !exists()) {
+		if (DkSettingsManager::param().resources().loadSavedImage == DkSettings::ls_load || 
+			filePath().isEmpty() || filePath() == savePath) {
 			setFilePath(savePath);
 			mEdited = false;
 			mDownloaded = false;
@@ -973,8 +974,11 @@ void DkImageContainerT::savingFinished() {
 				loadImageThreaded(true);	// force a reload
 				mFileUpdateTimer.start();
 			}
+
+			emit fileSavedSignal(savePath, true, false);
 		}
-		emit fileSavedSignal(savePath);
+		else
+			emit fileSavedSignal(savePath);
 	}
 }
 
