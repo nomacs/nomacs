@@ -1105,7 +1105,7 @@ QByteArray DkImage::fixSamsungPanorama(QByteArray & ba) {
 	nb.append(ba.left(dataPos));
 	nb.append(QByteArray("\xff\xd9"));
 	nb.append(ba.right(dataPos));
-	qInfo() << "SAMSUNG panorma fix: EOI marker injected";
+	qDebug() << "SAMSUNG panorma fix: EOI marker injected";
 
 	return nb;
 
