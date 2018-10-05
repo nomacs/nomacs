@@ -294,7 +294,7 @@ void DkGeneralPreference::createLayout() {
 	themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
 	connect(themeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(showRestartLabel()));
 
-	DkColorChooser* iconColorChooser = new DkColorChooser(QColor(50, 50, 50, 255), tr("Icon Color"), this);
+	DkColorChooser* iconColorChooser = new DkColorChooser(QColor(51, 51, 51, 255), tr("Icon Color"), this);
 	iconColorChooser->setObjectName("iconColor");
 	iconColorChooser->setColor(&DkSettingsManager::param().display().iconColor);
 	connect(iconColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
@@ -304,7 +304,7 @@ void DkGeneralPreference::createLayout() {
 	bgColorChooser->setColor(&DkSettingsManager::param().display().bgColor);
 	connect(bgColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));
 
-	DkColorChooser* fullscreenColorChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
+	DkColorChooser* fullscreenColorChooser = new DkColorChooser(QColor(51, 51, 51), tr("Fullscreen Color"), this);
 	fullscreenColorChooser->setObjectName("fullscreenColor");
 	fullscreenColorChooser->setColor(&DkSettingsManager::param().slideShow().backgroundColor);
 	connect(fullscreenColorChooser, SIGNAL(accepted()), this, SLOT(showRestartLabel()));

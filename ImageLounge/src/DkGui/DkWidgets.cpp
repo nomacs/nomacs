@@ -2656,7 +2656,7 @@ void DkProgressBar::paintEvent(QPaintEvent *) {
 	p.setPen(Qt::NoPen);
 
 	if (parentWidget() && DkUtils::getMainWindow()->isFullScreen())
-		p.fillRect(QRect(QPoint(), size()), DkSettingsManager::param().slideShow().backgroundColor);
+		p.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
 
 	p.setBrush(DkSettingsManager::param().display().highlightColor);
 

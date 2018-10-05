@@ -72,8 +72,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	// try loading a custom file
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
-	if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage)
-		mImgBg.load(":/nomacs/img/nomacs-bg.svg");
+	if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
+		QColor col = backgroundBrush().color().darker();
+		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
+	}
 
 	mRepeatZoomTimer->setInterval(20);
 	connect(mRepeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
@@ -2238,11 +2240,8 @@ void DkViewPortContrast::draw(QPainter & painter, double opacity) {
 		return;
 	}
 
-	if (DkUtils::getMainWindow()->isFullScreen()) {
-		painter.setWorldMatrixEnabled(false);
-		painter.fillRect(QRect(QPoint(), size()), DkSettingsManager::param().slideShow().backgroundColor);
-		painter.setWorldMatrixEnabled(true);
-	}
+	if (DkUtils::getMainWindow()->isFullScreen())
+		painter.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
 
 	QImage img = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
 
