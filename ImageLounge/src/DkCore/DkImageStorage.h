@@ -135,6 +135,8 @@ public:
 	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
 	static QImage bgColor(const QImage& src, const QColor& col);
 	static QByteArray extractImageFromDataStream(const QByteArray& ba, const QByteArray& beginSignature = "‰PNG", const QByteArray& endSignature = "END®B`‚", bool debugOutput = false);
+	static QByteArray fixSamsungPanorama(QByteArray& ba);
+	static int intFromByteArray(const QByteArray& ba, int pos);
 	
 #ifdef WITH_OPENCV
 	static cv::Mat exposureMat(const cv::Mat& src, double exposure);

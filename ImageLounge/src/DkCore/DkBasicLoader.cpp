@@ -263,17 +263,34 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		if (imgLoaded) mLoader = raw_loader;
 	}
 
+	QByteArray lba;
+
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
 		// TODO: add warning here
-		QByteArray lba;
 		loadFileToBuffer(mFile, lba);
 		imgLoaded = img.loadFromData(lba);
 		
+		if (imgLoaded)
+			qWarning() << "The image seems to have a wrong extension";
+		
 		if (imgLoaded) mLoader = qt_loader;
 	} 
+
+	// add marker to fix broken panorama images from SAMSUNG
+	// see: https://github.com/nomacs/nomacs/issues/254
+	if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive))) {
+
+		// prefer external buffer
+		QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
+
+		if (!baf.isEmpty())
+			imgLoaded = img.loadFromData(baf, suf.toStdString().c_str());
+
+		if (imgLoaded) mLoader = qt_loader;
+	}
 
 	// this loader is a bit buggy -> be carefull
 	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {

@@ -1044,6 +1044,82 @@ QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByt
 	return bac;
 }
 
+QByteArray DkImage::fixSamsungPanorama(QByteArray & ba) {
+
+	// this code is based on python code from bcyrill
+	// see: https://gist.github.com/bcyrill/e59fda6c7ffe23c7c4b08a990804b269
+	// it fixes SAMSUNG panorama images that are not standard conformant by adding an EOI marker to the QByteArray
+	// see also: https://github.com/nomacs/nomacs/issues/254
+
+	if (ba.size() < 8)
+		return QByteArray();
+
+	QByteArray trailer = ba.right(4);
+
+	// is it a samsung panorama jpg?
+	if (trailer != QByteArray("SEFT"))
+		return QByteArray();
+
+	// TODO saveify:
+	int sefhPos = intFromByteArray(ba, ba.size() - 8) + 8;
+	trailer = ba.right(sefhPos);
+
+	// trailer starts with "SEFH"?
+	if (trailer.left(4) != QByteArray("SEFH"))
+		return QByteArray();
+
+	int endPos = ba.size();
+	int dirPos = endPos - sefhPos;
+
+	int count = intFromByteArray(trailer, 8);
+
+	int firstBlock = 0;
+	bool isPano = false;
+
+	for (int idx = 0; idx < count; idx++) {
+
+		int e = 12 + 12 * idx;
+
+		int noff = intFromByteArray(trailer, e + 4);
+		int size = intFromByteArray(trailer, e + 8);
+
+		if (firstBlock < noff)
+			firstBlock = noff;
+
+		QByteArray cdata = ba.mid(dirPos - noff, size);
+
+		int eoff = intFromByteArray(cdata, 4);
+		QString pi = cdata.mid(8, eoff);
+
+		if (pi == "Panorama_Shot_Info")
+			isPano = true;
+	}
+
+	if (!isPano)
+		return QByteArray();
+
+	int dataPos = dirPos - firstBlock;
+
+	// ok, append the missing marker
+	QByteArray nb;
+	nb.append(ba.left(dataPos));
+	nb.append(QByteArray("\xff\xd9"));
+	nb.append(ba.right(dataPos));
+	qInfo() << "SAMSUNG panorma fix: EOI marker injected";
+
+	return nb;
+
+}
+
+int DkImage::intFromByteArray(const QByteArray & ba, int pos) {
+
+	// TODO saveify:
+	QByteArray tmp = ba.mid(pos, 4);
+	const int* val = (const int*)(tmp.constData());
+
+	return *val;
+}
+
 #ifdef WITH_OPENCV
 cv::Mat DkImage::exposureMat(const cv::Mat& src, double exposure) {
 
