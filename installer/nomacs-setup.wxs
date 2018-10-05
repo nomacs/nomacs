@@ -31,7 +31,7 @@
 		<WixVariable Id="WixUIInfoIco" Value=".\img\nomacs-32.bmp" />
 		<WixVariable Id="WixUINewIco" Value=".\img\nomacs-16.bmp" />
 		<WixVariable Id="WixUIUpIco" Value=".\img\nomacs-16.bmp" />
-		
+			
 		<Upgrade Id="$(var.ProductUpgradeCode)">
 			<UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED"/>
 			<UpgradeVersion Minimum="0.0.0" Maximum="$(var.ProductVersion)" IncludeMinimum="yes" IncludeMaximum="no" 

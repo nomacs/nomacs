@@ -217,7 +217,7 @@ public:
 	/**
 	 * Convenience function.
 	 **/
-	bool loadGeneral(const QString& filePath, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QString& filePath, bool loadMetaData = false, bool fast = true);
 
 	/**
 	 * Loads the image for the given file
@@ -225,7 +225,7 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/
-	bool loadGeneral(const QString& filePath, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QString& filePath, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = true);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
