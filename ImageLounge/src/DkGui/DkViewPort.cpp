@@ -145,7 +145,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
 	connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
 
-	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(zoomToFit()));
+	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(resetView()));
 	connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), this, SLOT(fullView()));
 	connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), this, SLOT(zoomIn()));
 	connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -356,7 +356,7 @@ void DkViewPort::setImage(QImage newImg) {
 	}
 }
 
-void DkViewPort::zoom(double factor, const QPoint& center) {
+void DkViewPort::zoom(double factor, const QPointF& center) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -410,20 +410,20 @@ void DkViewPort::zoom(double factor, const QPoint& center) {
 
 	bool blackBorder = false;
 
-	QPoint pos = center;
+	QPointF pos = center;
 
 	// if no center assigned: zoom in at the image center
 	if (pos.x() == -1 || pos.y() == -1)
-		pos = mImgViewRect.center().toPoint();
+		pos = mImgViewRect.center();
 	else {
 
 		// if black border - do not zoom to the mouse coordinate
 		if (mImgViewRect.width()*(mWorldMatrix.m11()*factor) < width()) {
-			pos.setX(qRound(mImgViewRect.center().x()));
+			pos.setX(mImgViewRect.center().x());
 			blackBorder = true;
 		}
 		if ((mImgViewRect.height()*mWorldMatrix.m11()*factor) < height()) {
-			pos.setY(qRound(mImgViewRect.center().y()));
+			pos.setY(mImgViewRect.center().y());
 			blackBorder = true;
 		}
 	}
@@ -444,7 +444,7 @@ void DkViewPort::zoom(double factor, const QPoint& center) {
 	DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11()*mImgMatrix.m11() * 100)) + "%", DkStatusBar::status_zoom_info);
 }
 
-void DkViewPort::zoomTo(double zoomLevel, const QPoint&) {
+void DkViewPort::zoomTo(double zoomLevel) {
 
 	mWorldMatrix.reset();
 	zoom(zoomLevel/mImgMatrix.m11());
@@ -457,21 +457,12 @@ void DkViewPort::resetView() {
 	changeCursor();
 
 	update();
+	controlImagePosition();
 
 	tcpSynchronize();
 }
 
-void DkViewPort::zoomToFit() {
-
-	QSizeF imgSize = getImageSize();
-	QSizeF winSize = size();
-
-	double zoomLevel = qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
-	zoomTo(zoomLevel);
-}
-
 void DkViewPort::fullView() {
-
 	
 	QPointF p = mViewportRect.center();
 	zoom(1.0/(mImgMatrix.m11()*mWorldMatrix.m11()), p.toPoint());
@@ -544,7 +535,7 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.translate(dx, dy);
 	}
 	else if (DkSettingsManager::param().display().zoomToFit)
-		zoomToFit();
+		resetView();
 
 }
 
@@ -1833,7 +1824,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 DkViewPortFrameless::~DkViewPortFrameless() {
 }
 
-void DkViewPortFrameless::zoom(double factor, const QPoint& center) {
+void DkViewPortFrameless::zoom(double factor, const QPointF& center) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -1854,16 +1845,16 @@ void DkViewPortFrameless::zoom(double factor, const QPoint& center) {
 		return;
 
 	QRectF viewRect = mWorldMatrix.mapRect(mImgViewRect);
-	QPoint pos = center;
+	QPointF pos = center;
 
 	// if no center assigned: zoom in at the image center
 	if (pos.x() == -1 || pos.y() == -1)
-		pos = viewRect.center().toPoint();
+		pos = viewRect.center();
 	
-	if (pos.x() < viewRect.left())			pos.setX(qRound(viewRect.left()));
-	else if (pos.x() > viewRect.right())	pos.setX(qRound(viewRect.right()));
-	if (pos.y() < viewRect.top())			pos.setY(qRound(viewRect.top()));
-	else if (pos.y() > viewRect.bottom())	pos.setY(qRound(viewRect.bottom()));
+	if (pos.x() < viewRect.left())			pos.setX(viewRect.left());
+	else if (pos.x() > viewRect.right())	pos.setX(viewRect.right());
+	if (pos.y() < viewRect.top())			pos.setY(viewRect.top());
+	else if (pos.y() > viewRect.bottom())	pos.setY(viewRect.bottom());
 
 	zoomToPoint(factor, pos, mWorldMatrix);
 

@@ -73,7 +73,7 @@ public:
 	virtual ~DkBaseViewPort();
 
 	void zoomConstraints(double minZoom = 0.01, double maxZoom = 50.0);
-	virtual void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1));
+	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {
 		mForceFastRendering = fastRendering;
 	};
@@ -195,7 +195,7 @@ protected:
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
-	void zoomToPoint(double factor, const QPoint& pos, QTransform& matrix) const;
+	void zoomToPoint(double factor, const QPointF& pos, QTransform& matrix) const;
 
 };
 

@@ -179,7 +179,7 @@ void DkBaseViewPort::zoomOut() {
 	zoom(0.5);
 }
 
-void DkBaseViewPort::zoom(double factor, const QPoint& center) {
+void DkBaseViewPort::zoom(double factor, const QPointF& center) {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -213,11 +213,11 @@ void DkBaseViewPort::zoom(double factor, const QPoint& center) {
 	if (mWorldMatrix.m11()*mImgMatrix.m11() > mMaxZoom && factor > 1)
 		return;
 
-	QPoint pos = center;
+	QPointF pos = center;
 
 	// if no center assigned: zoom in at the image center
 	if (pos.x() == -1 || pos.y() == -1)
-		pos = mImgViewRect.center().toPoint();
+		pos = mImgViewRect.center();
 
 	zoomToPoint(factor, pos, mWorldMatrix);
 
@@ -227,10 +227,10 @@ void DkBaseViewPort::zoom(double factor, const QPoint& center) {
 	update();
 }
 
-void DkBaseViewPort::zoomToPoint(double factor, const QPoint & pos, QTransform & matrix) const {
+void DkBaseViewPort::zoomToPoint(double factor, const QPointF & pos, QTransform & matrix) const {
 
 	//inverse the transform
-	int a, b;
+	double a, b;
 	matrix.inverted().map(pos.x(), pos.y(), &a, &b);
 
 	matrix.translate(a - factor * a, b - factor * b);

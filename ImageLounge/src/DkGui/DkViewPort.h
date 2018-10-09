@@ -77,7 +77,7 @@ public:
 	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
 	
-	void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1)) override;
+	void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1)) override;
 
 	void setFullScreen(bool fullScreen);
 		
@@ -126,11 +126,10 @@ public slots:
 	void rotateCCW();
 	void rotate180();
 	void resetView();
-	void zoomToFit();
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
 	void toggleResetMatrix();
-	void zoomTo(double zoomLevel, const QPoint& pos = QPoint(-1, -1));
+	void zoomTo(double zoomLevel);
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
@@ -254,7 +253,7 @@ public:
 	DkViewPortFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortFrameless();
 
-	virtual void zoom(double factor = 0.5, const QPoint& center = QPoint(-1,-1)) override;
+	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1)) override;
 
 public slots:
 	virtual void resetView();
