@@ -1236,14 +1236,14 @@ void DkNoMacs::openFile() {
 		}
 	}
 	if (duplicates.count() > 0) { // Show message if at least one duplicate was found
-		QString duptext = tr("The following duplicates were not added:");
+		QString duptext = tr("The following duplicates were not opened:");
 		for (auto dup : duplicates) {
 			duptext.append("\n" + dup);
 		}
 		getTabWidget()->getViewPort()->getController()->setInfo(duptext);
 	}
 
-	if(filePaths.count() > duplicates.count()) // Only set the active tab if there is actually something added
+	if (filePaths.count() > duplicates.count()) // Only set the active tab if there is actually something added
 		getTabWidget()->setActiveTab(count); // Set first file opened to be the active tab
 }
 

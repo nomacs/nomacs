@@ -791,6 +791,8 @@ void DkImageLoader::activate(bool isActive /* = true */) {
 		blockSignals(false);
 		setCurrentImage(mLastImageLoaded);
 	}
+	else
+		emit updateDirSignal(mImages);
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {

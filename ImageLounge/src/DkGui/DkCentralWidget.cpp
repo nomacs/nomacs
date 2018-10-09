@@ -438,6 +438,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
 		showBatch();
 	}
+
 }
 
 void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
@@ -731,6 +732,7 @@ void DkCentralWidget::previousTab() const {
 }
 
 void DkCentralWidget::setActiveTab(int idx) const {
+	
 	if (mTabInfos.size() < 2)
 		return;
 

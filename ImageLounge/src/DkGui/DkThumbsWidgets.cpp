@@ -839,7 +839,7 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
 
-	this->mThumbs = thumbs;
+	mThumbs = thumbs;
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		if (thumbs.at(idx)->isSelected()) {
