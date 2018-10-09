@@ -206,6 +206,7 @@ public:
 		roh_loader,
 		hdr_loader,
 		tif_loader,
+		tga_loader,
 	};
 
 	DkBasicLoader(int mode = mode_default);
@@ -359,6 +360,7 @@ public slots:
 
 protected:
 	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
+	bool loadTgaFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 	bool loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false) const;
 	void indexPages(const QString& filePath);
 	void convert32BitOrder(void *buffer, int width) const;
@@ -375,6 +377,44 @@ protected:
 	QVector<DkEditImage> mImages;
 	int mMinHistorySize = 2;
 	int mImageIndex = 0;
+};
+
+namespace tga {
+	typedef struct {
+		unsigned char r, g, b, a;
+	} Pixel;
+
+	typedef struct {
+		char  idlength;
+		char  colourmaptype;
+		char  datatypecode;
+		short colourmaporigin;
+		short colourmaplength;
+		char  colourmapdepth;
+		short x_origin;
+		short y_origin;
+		short width;
+		short height;
+		char  bitsperpixel;
+		char  imagedescriptor;
+	} Header;
+
+	class DkTgaLoader {
+
+
+	public:
+		DkTgaLoader(QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+
+		QImage image() const;
+		bool load();
+
+	private:
+		void mergeBytes(Pixel * pixel, unsigned char * p, int bytes) const;
+		bool load(QSharedPointer<QByteArray> ba);
+
+		QImage mImg;
+		QSharedPointer<QByteArray> mBa;
+	};
 };
 
 // file downloader from: http://qt-project.org/wiki/Download_Data_from_URL

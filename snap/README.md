@@ -51,3 +51,7 @@ Gtk-Message: Failed to load module "unity-gtk-module"
 Gtk-Message: Failed to load module "canberra-gtk-module"
 Qt: Session management error: None of the authentication protocols specified are supported
 ```
+
+| bitness | uncompressed | RLE | RGB | RLE RGB |
+|---------|--------------|-----|-----|---------|
+| 16      | ok           | ok | RGB | RLE RGB |

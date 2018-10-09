@@ -263,6 +263,13 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		if (imgLoaded) mLoader = raw_loader;
 	}
 
+	if (!imgLoaded && newSuffix.contains(QRegExp("(tga)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadTgaFile(mFile, img, ba);
+
+		if (imgLoaded) mLoader = tga_loader;		// TODO: add tga loader
+	}
+
 	QByteArray lba;
 
 	// default Qt loader
@@ -402,6 +409,19 @@ bool DkBasicLoader::loadRohFile(const QString& filePath, QImage& img, QSharedPoi
 	//}
 
 	return imgLoaded;
+}
+
+bool nmc::DkBasicLoader::loadTgaFile(const QString & filePath, QImage & img, QSharedPointer<QByteArray> ba) const {
+	
+	if (!ba || ba->isEmpty())
+		ba = loadFileToBuffer(filePath);
+
+	tga::DkTgaLoader tl = tga::DkTgaLoader(ba);
+
+	bool success = tl.load();
+	img = tl.image();
+
+	return success;
 }
 
 /**
@@ -1994,5 +2014,174 @@ QImage DkRawLoader::raw2Img(const LibRaw & iProcessor, cv::Mat & img) const {
 }
 
 #endif
+
+// -------------------------------------------------------------------- DkTgaLoader 
+namespace tga {
+	
+	DkTgaLoader::DkTgaLoader(QSharedPointer<QByteArray> ba) {
+
+		mBa = ba;
+	}
+
+	QImage DkTgaLoader::image() const {
+		return mImg;
+	}
+
+	bool DkTgaLoader::load() {
+		
+		if (!mBa || mBa->isEmpty())
+			return false;
+		
+		return load(mBa);
+	}
+
+	bool DkTgaLoader::load(QSharedPointer<QByteArray> ba) {
+		
+
+		// this code is from: http://www.paulbourke.net/dataformats/tga/
+		// thanks!
+		Header header;
+
+		const char* dataC = ba->data();
+
+		/* Display the header fields */
+		header.idlength = *dataC; dataC++;
+		header.colourmaptype = *dataC; dataC++;
+		header.datatypecode = *dataC; dataC++;
+
+		const short* dataS = (const short*)dataC;
+
+
+		header.colourmaporigin = *dataS; dataS++;
+		header.colourmaplength = *dataS; dataS++;
+		dataC = (const char*)dataS;
+		header.colourmapdepth = *dataC; dataC++;
+		dataS = (const short*)dataC;
+		header.x_origin = *dataS; dataS++;
+		header.y_origin = *dataS; dataS++;
+		header.width = *dataS; dataS++;
+		header.height = *dataS; dataS++;
+		dataC = (const char*)dataS;
+		header.bitsperpixel = *dataC; dataC++;
+		header.imagedescriptor = *dataC; dataC++;
+
+#ifdef _DEBUG
+		qDebug() << "TGA Header ------------------------------";
+		qDebug() << "ID length:         " << (int)header.idlength;
+		qDebug() << "Colourmap type:    " << (int)header.colourmaptype;
+		qDebug() << "Image type:        " << (int)header.datatypecode;
+		qDebug() << "Colour map offset: " << header.colourmaporigin;
+		qDebug() << "Colour map length: " << header.colourmaplength;
+		qDebug() << "Colour map depth:  " << (int)header.colourmapdepth;
+		qDebug() << "X origin:          " << header.x_origin;
+		qDebug() << "Y origin:          " << header.y_origin;
+		qDebug() << "Width:             " << header.width;
+		qDebug() << "Height:            " << header.height;
+		qDebug() << "Bits per pixel:    " << (int)header.bitsperpixel;
+		qDebug() << "Descriptor:        " << (int)header.imagedescriptor;
+#endif
+
+		/* What can we handle */
+		if (header.datatypecode != 2 && header.datatypecode != 10) {
+			qWarning() << "Can only handle image type 2 and 10";
+			return false;
+		}
+		if (header.bitsperpixel != 16 &&
+			header.bitsperpixel != 24 && 
+			header.bitsperpixel != 32) {
+			qWarning() << "Can only handle pixel depths of 16, 24, and 32";
+			return false;
+		}
+		if (header.colourmaptype != 0 && header.colourmaptype != 1) {
+			qWarning() << "Can only handle colour map types of 0 and 1";
+			return false;
+		}
+
+		Pixel *pixels = new Pixel[header.width*header.height * sizeof(Pixel)];
+
+		if (!pixels) {
+			qWarning() << "TGA: could not allocate" << header.width*header.height * sizeof(Pixel)/1024 << "KB";
+			return false;
+		}
+
+		///* Skip over unnecessary stuff */
+		int skipover = header.idlength;
+		skipover += header.colourmaptype * header.colourmaplength;
+		dataC += skipover;
+		
+		/* Read the image */
+		int bytes2read = header.bitsperpixel / 8;	// save?
+		unsigned char p[5];
+		
+		for (int n = 0; n < header.width * header.height;) {
+			
+			if (header.datatypecode == 2) {                     /* Uncompressed */
+				
+				// TODO: out-of-bounds not checked here...
+				for (int bi = 0; bi < bytes2read; bi++, dataC++)
+					p[bi] = *dataC;
+				
+				mergeBytes(&(pixels[n]), p, bytes2read);
+				n++;
+			}
+			else if (header.datatypecode == 10) {             /* Compressed */
+				
+				for (int bi = 0; bi < bytes2read+1; bi++, dataC++)
+					p[bi] = *dataC;
+
+				int j = p[0] & 0x7f;
+				mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
+				n++;
+				if (p[0] & 0x80) {         /* RLE chunk */
+					for (int i = 0; i < j; i++) {
+						mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
+						n++;
+					}
+				}
+				else {                   /* Normal chunk */
+					for (int i = 0; i < j; i++) {
+
+						for (int bi = 0; bi < bytes2read; bi++, dataC++)
+							p[bi] = *dataC;
+
+						mergeBytes(&(pixels[n]), p, bytes2read);
+						n++;
+					}
+				}
+			}
+		}
+
+		mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32);
+		mImg = mImg.copy();
+
+		mImg = mImg.mirrored();
+
+		delete pixels;
+
+		return true;
+	}
+
+	void DkTgaLoader::mergeBytes(Pixel * pixel, unsigned char * p, int bytes) const {
+		
+		if (bytes == 4) {
+			pixel->r = p[0];
+			pixel->g = p[1];
+			pixel->b = p[2];
+			pixel->a = p[3];
+		}
+		else if (bytes == 3) {
+			pixel->r = p[0];
+			pixel->g = p[1];
+			pixel->b = p[2];
+			pixel->a = 255;
+		}
+		else if (bytes == 2) {
+			pixel->r = (p[0] & 0x1f) << 3;
+			pixel->g = ((p[1] & 0x03) << 6) | ((p[0] & 0xe0) >> 2);
+			pixel->b = (p[1] & 0x7c) << 1;
+			pixel->a = 255;// (p[1] & 0x80);
+		}
+	}
+}
 
 }
