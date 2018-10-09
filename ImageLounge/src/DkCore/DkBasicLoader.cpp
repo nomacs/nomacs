@@ -263,6 +263,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		if (imgLoaded) mLoader = raw_loader;
 	}
 
+	// TGA loader
 	if (!imgLoaded && newSuffix.contains(QRegExp("(tga)", Qt::CaseInsensitive))) {
 
 		imgLoaded = loadTgaFile(mFile, img, ba);
@@ -2051,7 +2052,6 @@ namespace tga {
 
 		const short* dataS = (const short*)dataC;
 
-
 		header.colourmaporigin = *dataS; dataS++;
 		header.colourmaplength = *dataS; dataS++;
 		dataC = (const char*)dataS;
@@ -2086,12 +2086,14 @@ namespace tga {
 			qWarning() << "Can only handle image type 2 and 10";
 			return false;
 		}
+		
 		if (header.bitsperpixel != 16 &&
 			header.bitsperpixel != 24 && 
 			header.bitsperpixel != 32) {
 			qWarning() << "Can only handle pixel depths of 16, 24, and 32";
 			return false;
 		}
+
 		if (header.colourmaptype != 0 && header.colourmaptype != 1) {
 			qWarning() << "Can only handle colour map types of 0 and 1";
 			return false;
@@ -2154,7 +2156,9 @@ namespace tga {
 		mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32);
 		mImg = mImg.copy();
 
-		mImg = mImg.mirrored();
+		// I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
+		if (!(header.imagedescriptor & 0x20))
+			mImg = mImg.mirrored();
 
 		delete pixels;
 
