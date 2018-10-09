@@ -19,8 +19,8 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 ### Compile LibRaw
 
 - only needed if ENABLE_RAW is checked
-- checkout [libraw](https://github.com/nomacs/LibRaw)
-- switch to 0.XX-stable branch
+- clone [libraw](https://github.com/nomacs/LibRaw)
+- checkout to the latest `0.XX-stable` branch
 - follow the build instructions
 - in the nomacs `CMakeUserPaths.cmake`, add the build path to `${CMAKE_PREFIX_PATH}`
 
