@@ -494,8 +494,6 @@ void DkBatchInput::parameterChanged() {
 	
 	QString newDirPath = mDirectoryEdit->text();
 		
-	qDebug() << "edit text newDir: " << newDirPath << " mCDir " << mCDirPath;
-
 	if (QDir(newDirPath).exists() && newDirPath != mCDirPath) {
 		setDir(newDirPath);
 		emit changed();
@@ -823,9 +821,11 @@ void DkBatchOutput::createLayout() {
 	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
 	mCbCompression = new QComboBox(this);
-	mCbCompression->addItem(tr("High Quality"), 100);
-	mCbCompression->addItem(tr("Medium Quality"), 97);
-	mCbCompression->addItem(tr("Low Quality"), 90);
+	mCbCompression->addItem(tr("Best Quality"), 100);
+	mCbCompression->addItem(tr("High Quality"), 97);
+	mCbCompression->addItem(tr("Medium Quality"), 90);
+	mCbCompression->addItem(tr("Low Quality"), 80);
+	mCbCompression->setCurrentIndex(1);
 	mCbCompression->setEnabled(false);
 
 	extensionLayout->addWidget(mCbExtension);
@@ -960,7 +960,6 @@ void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
 void DkBatchOutput::extensionCBChanged(int index) {
 	
 	mCbNewExtension->setEnabled(index > 0);
-	mCbCompression->setEnabled(index > 0);
 	parameterChanged();
 }
 
@@ -971,6 +970,10 @@ bool DkBatchOutput::hasUserInput() const {
 }
 
 void DkBatchOutput::parameterChanged() {
+
+	// enable/disable compression combo
+	QString extStr = mCbNewExtension->currentText();
+	mCbCompression->setEnabled(extStr.contains(QRegExp("(jpg|jp2|webp)", Qt::CaseInsensitive)));
 
 	updateFileLabelPreview();
 	emit changed();

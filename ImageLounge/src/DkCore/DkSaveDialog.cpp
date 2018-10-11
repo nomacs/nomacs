@@ -211,9 +211,11 @@ void DkCompressDialog::createLayout() {
 	connect(mSizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
 
 	mCompressionCombo = new QComboBox(this);
-	mCompressionCombo->addItem(tr("High Quality"), 100);
-	mCompressionCombo->addItem(tr("Medium Quality"), 97);
-	mCompressionCombo->addItem(tr("Low Quality"), 90);
+	mCompressionCombo->addItem(tr("Best Quality"), 100);
+	mCompressionCombo->addItem(tr("High Quality"), 97);
+	mCompressionCombo->addItem(tr("Medium Quality"), 90);
+	mCompressionCombo->addItem(tr("Low Quality"), 80);
+	mCompressionCombo->setCurrentIndex(1);
 	connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
 
 	// lossless
