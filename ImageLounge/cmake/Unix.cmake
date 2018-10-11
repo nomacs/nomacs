@@ -57,6 +57,7 @@ if(ENABLE_OPENCV)
 endif(ENABLE_OPENCV)
 
 # search for libraw
+unset(LIBRAW_FOUND CACHE)
 if(ENABLE_RAW)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling RAW. You have to enable ENABLE_OPENCV")

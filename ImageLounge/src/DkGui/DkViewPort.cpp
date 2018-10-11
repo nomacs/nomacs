@@ -1408,10 +1408,10 @@ void DkViewPort::rotate180() {
 void DkViewPort::loadLena() {
 
 	bool ok;
-	QString text = QInputDialog::getText(this, tr("Lena"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
+	QString text = QInputDialog::getText(this, tr("Lenna"), tr("A remarkable woman"), QLineEdit::Normal, 0, &ok);
 
 	// pass phrase
-	if (ok && !text.isEmpty() && text == "lena") {
+	if (ok && !text.isEmpty() && text == "lenna") {
 		mTestLoaded = true;
 		toggleLena(DkUtils::getMainWindow()->isFullScreen());
 	}
@@ -1439,9 +1439,9 @@ void DkViewPort::toggleLena(bool fullscreen) {
 
 	if (mLoader) {
 		if (fullscreen)
-			mLoader->load(":/nomacs/img/we.jpg");
+			mLoader->downloadFile(QUrl("http://www.lenna.org/lena_std.tif"));
 		else
-			mLoader->load(":/nomacs/img/lena.jpg");
+			mLoader->load(":/nomacs/img/we.jpg");
 	}
 }
 
