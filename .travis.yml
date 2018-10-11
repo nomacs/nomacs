@@ -32,12 +32,15 @@ before_script:
   # add libquazip5-dev if dist is > 14.04 (trusty)
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y --no-install-recommends debhelper cdbs qt5-qmake libqt5core5a libqt5widgets5 libqt5network5 libqt5gui5 libqt5printsupport5 libqt5svg5-dev qttools5-dev-tools qttools5-dev qt5-default libexiv2-dev libraw-dev libopencv-dev libhighgui-dev libcvaux-dev cmake libtiff5-dev libzip-dev ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/ -DENABLE_QUAZIP=OFF"; fi
-
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_MINIMAL_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/ -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"; fi
+  
   - mkdir build
   - cd build
 
 script:
   - cmake $CMAKE_ARGS ../ImageLounge/.
+  - make -j8
+  - cmake $CMAKE_MINIMAL_ARGS ../ImageLounge/.
   - make -j8
   
 after_success:
