@@ -750,6 +750,9 @@ bool DkBatchProcess::compute() {
 	// do the work
 	process();
 
+	// delete the original file if the user requested it
+	deleteOriginalFile();
+
 	return mFailure == 0;
 }
 
