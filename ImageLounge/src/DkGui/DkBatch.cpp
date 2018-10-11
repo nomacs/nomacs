@@ -308,6 +308,16 @@ void DkInputTextEdit::clear() {
 	QTextEdit::clear();
 }
 
+QString DkInputTextEdit::firstDirPath() const {
+	
+	QStringList fl = getFileList();
+
+	if (fl.isEmpty())
+		return "";
+	
+	return QFileInfo(fl[0]).absolutePath();
+}
+
 // File Selection --------------------------------------------------------------------
 DkBatchInput::DkBatchInput(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
@@ -470,6 +480,12 @@ void DkBatchInput::selectionChanged() {
 	else
 		msg = tr("%1 Files Selected").arg(getSelectedFiles().size());
 	
+
+	QString d = mInputTextEdit->firstDirPath();
+
+	if (!d.isEmpty() && mCDirPath != d)
+		setDir(d);
+
 	emit newHeaderText(msg);
 	emit changed();
 }

@@ -162,6 +162,7 @@ public:
 	void appendDir(const QString& newDir, bool recursive = false);
 	void insertFromMimeData(const QMimeData *src);
 	void clear();
+	QString firstDirPath() const;
 
 signals:
 	void fileListChangedSignal() const;
