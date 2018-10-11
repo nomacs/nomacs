@@ -44,3 +44,17 @@ macro(NMC_INSTALL)
 	endif (MSVC)
 
 endmacro(NMC_INSTALL)
+
+macro(NMC_COPY_FILES)
+
+# copy all themes
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
+
+file(GLOB NMC_THEMES "src/themes/*.css")
+
+foreach(CSS ${NMC_THEMES})
+	message(STATUS "${CSS} added...")
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${CSS}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
+endforeach()
+
+endmacro(NMC_COPY_FILES)

@@ -162,16 +162,6 @@ foreach(QM ${NOMACS_QM})
 	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 endforeach(QM)
 
-# copy all themes
-add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
-
-file(GLOB NMC_THEMES "src/themes/*.css")
-
-foreach(CSS ${NMC_THEMES})
-	message(STATUS "${CSS} added...")
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${CSS}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/themes/\")
-endforeach()
-
 # add build incrementer command if requested
 if (ENABLE_INCREMENTER)
 	add_custom_command(TARGET ${DLL_CORE_NAME} POST_BUILD COMMAND cscript /nologo ${CMAKE_CURRENT_SOURCE_DIR}/src/incrementer.vbs ${CMAKE_CURRENT_SOURCE_DIR}/src/nomacs.rc)

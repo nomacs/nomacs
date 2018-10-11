@@ -182,6 +182,8 @@ endif()
 
 NMC_INSTALL()
 
+NMC_COPY_FILES()
+
 #debug for printing out all variables
 # get_cmake_property(_variableNames VARIABLES)
 # foreach (_variableName ${_variableNames})
