@@ -31,6 +31,8 @@ related links:
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 
+#include <cassert>
+
 #pragma warning(push, 0)	// no warnings from includes
 #include <QLabel>
 #include <QVBoxLayout>
