@@ -87,6 +87,10 @@ endif()
 #  appdata
 install(FILES nomacs.appdata.xml DESTINATION share/metainfo/)
 
+# themes
+file(GLOB NMC_THEMES "src/themes/*.css")
+install(FILES ${NMC_THEMES} DESTINATION share/nomacs/themes)
+
 # "make dist" target
 string(TOLOWER ${PROJECT_NAME} CPACK_PACKAGE_NAME)
 set(CPACK_PACKAGE_VERSION "${NOMACS_VERSION}")
@@ -97,17 +101,6 @@ set(CPACK_SOURCE_IGNORE_FILES ${CPACK_IGNORE_FILES})
 include(CPack)
 # simulate autotools' "make dist"
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
-
-# copy all themes
-add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_BINARY_DIR}/themes/\")
-
-file(GLOB NMC_THEMES "src/themes/*.css")
-
-foreach(CSS ${NMC_THEMES})
-	message(STATUS "${CSS} added...")
-	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CSS} ${CMAKE_BINARY_DIR}/themes/)
-endforeach()
-
 
 # generate configuration file
 set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
