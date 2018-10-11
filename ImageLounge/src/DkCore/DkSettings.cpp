@@ -261,12 +261,13 @@ QStringList DkSettings::getTranslationDirs() {
 	QStringList trDirs;
 	trDirs << DkUtils::getTranslationPath();
 	trDirs << qApp->applicationDirPath();
-	trDirs << qApp->applicationDirPath() + QDir::separator() + "translations";
+	
+	QStringList rDirs;
+	rDirs << qApp->applicationDirPath();
+	rDirs << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
 
-	// still needed?
-	QDir d = QDir(qApp->applicationDirPath());
-	if (d.cd("../share/nomacs/translations/"))
-		trDirs << d.absolutePath();
+	for (const QString& d : rDirs)
+		trDirs << d + QDir::separator() + "translations";
 
 	return trDirs;
 }
@@ -399,7 +400,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
 	display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
-	display_p.themeName = settings.value("themeName", display_p.themeName).toString();
+	display_p.themeName = settings.value("themeName312", display_p.themeName).toString();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
 	display_p.showThumbLabel = settings.value("showThumbLabel", display_p.showThumbLabel).toBool();
@@ -648,7 +649,7 @@ void DkSettings::save(QSettings& settings, bool force) {
 	if (force ||display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
 	if (force || display_p.themeName != display_d.themeName)
-		settings.setValue("themeName", display_p.themeName);
+		settings.setValue("themeName312", display_p.themeName);
 	if (force ||display_p.showBorder != display_d.showBorder)
 		settings.setValue("showBorder", display_p.showBorder);
 	if (force ||display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
@@ -1336,7 +1337,19 @@ QString DkThemeManager::getCurrentThemeName() const {
 
 QString DkThemeManager::themeDir() const {
 
-	QDir themeDir(QCoreApplication::applicationDirPath() + "/themes");
+	QStringList paths;
+	paths << QCoreApplication::applicationDirPath();
+	paths << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+
+	QDir themeDir;
+
+	for (const QString& p : paths) {
+		themeDir = QDir(p + QDir::separator() + "themes");
+
+		if (themeDir.exists())
+			break;
+	}
+
 	return themeDir.absolutePath();
 }
 

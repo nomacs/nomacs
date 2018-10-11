@@ -77,7 +77,7 @@ install(FILES nomacs.desktop DESTINATION share/applications)
 #  icon
 install(FILES src/img/nomacs.svg DESTINATION share/pixmaps)
 #  translations
-install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
+install(FILES ${NOMACS_QM} DESTINATION "share/nomacs/Image Lounge/translations")
 #  manpage
 if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
     install(FILES Readme/nomacs.1 DESTINATION man/man1)
@@ -89,7 +89,7 @@ install(FILES nomacs.appdata.xml DESTINATION share/metainfo/)
 
 # themes
 file(GLOB NMC_THEMES "src/themes/*.css")
-install(FILES ${NMC_THEMES} DESTINATION share/nomacs/themes)
+install(FILES ${NMC_THEMES} DESTINATION "share/nomacs/Image Lounge/themes")
 
 # "make dist" target
 string(TOLOWER ${PROJECT_NAME} CPACK_PACKAGE_NAME)
