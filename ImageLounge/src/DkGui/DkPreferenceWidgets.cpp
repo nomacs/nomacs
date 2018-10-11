@@ -471,6 +471,7 @@ void DkGeneralPreference::on_iconColor_resetClicked() const {
 void DkGeneralPreference::on_themeBox_currentIndexChanged(const QString& text) const {
 
 	QString tn = text + ".css";
+	tn = tn.replace(" ", "-");
 
 	if (DkSettingsManager::param().display().themeName != tn) {
 		DkSettingsManager::param().display().themeName = tn;
