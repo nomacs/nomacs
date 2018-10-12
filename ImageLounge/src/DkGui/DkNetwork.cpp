@@ -269,14 +269,14 @@ void DkLocalClientManager::synchronizeWithServerPort(quint16 port) {
 
 void DkLocalClientManager::searchForOtherClients() {
 		
-	for (int i = server->startPort; i <= server->endPort; i++) {
+	for (int i = local_tcp_port_start; i <= local_tcp_port_end; i++) {
+		
 		if (i == server->serverPort())
 			continue;
-		//qDebug() << "search For other clients on port:" << i;
+		
 		DkConnection* connection = createConnection();
 		connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
 	}
-	
 }
 
 void DkLocalClientManager::run() {
@@ -422,7 +422,7 @@ void DkLocalClientManager::connectionReceivedQuit() {
 
 DkLocalConnection* DkLocalClientManager::createConnection() {
 
-	//qDebug() << "SERVER server port: " << server->serverPort();
+	// wow - there is no one owning connection (except for QOBJECT)
 	DkLocalConnection* connection = new DkLocalConnection(this);
 	connection->setLocalTcpServerPort(server->serverPort());
 	connection->setTitle(mCurrentTitle);
@@ -439,10 +439,7 @@ DkLocalConnection* DkLocalClientManager::createConnection() {
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
 
-	startPort = local_tcp_port_start;
-	endPort = local_tcp_port_end;
-
-	for (int i = startPort; i < endPort; i++) {
+	for (int i = local_tcp_port_start; i < local_tcp_port_end; i++) {
 		if (listen(QHostAddress::LocalHost, (quint16)i)) {
 			break;
 		}

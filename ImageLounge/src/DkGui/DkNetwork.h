@@ -223,10 +223,6 @@ class DkLocalTcpServer : public QTcpServer {
 public:
 	DkLocalTcpServer(QObject* parent = 0);
 
-	quint16 startPort;
-	quint16 endPort;
-		
-
 signals:
 	void serverReiceivedNewConnection(int DkDescriptor);
 

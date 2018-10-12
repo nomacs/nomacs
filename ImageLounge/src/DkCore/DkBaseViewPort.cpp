@@ -188,11 +188,6 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center) {
 	if (mWorldMatrix.m11()*factor < mMinZoom && factor < 1)
 		return;
 
-	//if (worldMatrix.m11()*factor < 1) {
-	//	resetView();
-	//	return;
-	//}
-
 	// reset view & block if we pass the 'image fit to screen' on zoom out
 	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1) {
 

@@ -20,7 +20,7 @@ addons:
 before_script:
   # OSX dependencies
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install qt5; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_wait brew install qt5; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install exiv2; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install -v opencv3 --with-contrib --without-eigen --without-opencl --without-openexr --without-python --without-numpy --without-tests; fi
