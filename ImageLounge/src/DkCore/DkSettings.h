@@ -33,6 +33,7 @@
 #include <QColor>
 #include <QDate>
 #include <QSharedPointer>
+#include <QVector>
 #pragma warning(pop)	// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -418,6 +419,40 @@ private:
 
 	//QSettings* mSettings = 0;
 	DkSettings* mParams = 0;
+};
+
+class DkZoomConfig {
+
+public:
+	static DkZoomConfig& instance();
+	~DkZoomConfig();
+
+	// singleton
+	DkZoomConfig(DkZoomConfig const&) = delete;
+	void operator=(DkZoomConfig const&) = delete;
+
+	double nextFactor(double currentFactor, double delta) const;
+	QVector<double> defaultLevels() const;
+
+	bool useLevels() const;
+	void setUseLevels(bool useLevels);
+
+	bool setLevels(const QString& levelStr);
+	QString levelsToString() const;
+
+	void setLevelsToDefault();
+
+	static bool checkLevels(const QVector<double>& levels);
+
+private:
+
+	QVector<double> mLevels;
+	bool mUseLevels = true;
+
+	DkZoomConfig();
+	void loadSettings(QSettings& settings);
+	void saveSettings(QSettings& settings) const;
+
 };
 
 }

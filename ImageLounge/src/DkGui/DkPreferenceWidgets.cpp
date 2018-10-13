@@ -678,12 +678,36 @@ void DkDisplayPreference::createLayout() {
 	sbInterpolation->setMaximum(10000);
 	sbInterpolation->setValue(DkSettingsManager::param().display().interpolateZoomLevel);
 
+	// zoom levels
+	DkZoomConfig& zc = DkZoomConfig::instance();
+	QCheckBox* useZoomLevels = new QCheckBox(tr("Use Fixed Zoom Levels"), this);
+	useZoomLevels->setObjectName("useZoomLevels");
+	useZoomLevels->setToolTip(tr("If checked, predefined zoom levels are used when zooming."));
+	useZoomLevels->setChecked(zc.useLevels());
+
+	mZoomLevelsEdit = new QLineEdit(this);
+	mZoomLevelsEdit->setObjectName("zoomLevels");
+	mZoomLevelsEdit->setText(zc.levelsToString());
+
+	QPushButton* zoomLevelsDefaults = new QPushButton(tr("Load Defaults"), this);
+	zoomLevelsDefaults->setObjectName("zoomLevelsDefault");
+
+	mZoomLevels = new QWidget(this);
+
+	QHBoxLayout* zll = new QHBoxLayout(mZoomLevels);
+	zll->addWidget(mZoomLevelsEdit);
+	zll->addWidget(zoomLevelsDefaults);
+	
+	mZoomLevels->setEnabled(zc.useLevels());
+
 	DkGroupWidget* zoomGroup = new DkGroupWidget(tr("Zoom"), this);
 	zoomGroup->addWidget(invertZoom);
 	zoomGroup->addWidget(hQAntiAliasing);
 	zoomGroup->addWidget(showScrollBars);
 	zoomGroup->addWidget(interpolationLabel);
 	zoomGroup->addWidget(sbInterpolation);
+	zoomGroup->addWidget(useZoomLevels);
+	zoomGroup->addWidget(mZoomLevels);
 
 	// keep zoom radio buttons
 	QVector<QRadioButton*> keepZoomButtons;
@@ -806,6 +830,7 @@ void DkDisplayPreference::createLayout() {
 
 	layout->addWidget(leftWidget);
 	layout->addWidget(rightWidget);
+	layout->addStretch();
 }
 
 void DkDisplayPreference::on_interpolationBox_valueChanged(int value) const {
@@ -888,6 +913,27 @@ void DkDisplayPreference::on_showScrollBars_toggled(bool checked) const {
 
 	if (DkSettingsManager::param().display().showScrollBars != checked)
 		DkSettingsManager::param().display().showScrollBars = checked;
+}
+
+void DkDisplayPreference::on_useZoomLevels_toggled(bool checked) const {
+
+	DkZoomConfig::instance().setUseLevels(checked);
+	mZoomLevels->setEnabled(checked);
+
+}
+
+void DkDisplayPreference::on_zoomLevels_editingFinished() const {
+
+	DkZoomConfig& zc = DkZoomConfig::instance();
+	if (!zc.setLevels(mZoomLevelsEdit->text()))
+		mZoomLevelsEdit->setText(zc.levelsToString());
+
+}
+
+void DkDisplayPreference::on_zoomLevelsDefault_clicked() const {
+
+	DkZoomConfig::instance().setLevelsToDefault();
+	mZoomLevelsEdit->setText(DkZoomConfig::instance().levelsToString());
 }
 
 void DkDisplayPreference::paintEvent(QPaintEvent *event) {

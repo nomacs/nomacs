@@ -34,6 +34,7 @@
 #pragma warning(disable: 4251)	// TODO: remove
 
 #include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -49,6 +50,7 @@
 class QGestureEvent;
 class QShortcut;
 class QSvgRenderer;
+class QSettings;
 
 namespace nmc {
 
@@ -74,6 +76,7 @@ public:
 
 	void zoomConstraints(double minZoom = 0.01, double maxZoom = 50.0);
 	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1));
+	virtual void zoomLeveled(double factor = 0.5, const QPointF& center = QPointF(-1, -1));
 	void setForceFastRendering(bool fastRendering = true) {
 		mForceFastRendering = fastRendering;
 	};

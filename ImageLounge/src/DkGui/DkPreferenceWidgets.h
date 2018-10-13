@@ -53,6 +53,7 @@ class QVBoxLayout;
 class QGridLayout;
 class QStandardItem;
 class QStandardItemModel;
+class QLineEdit;
 
 namespace nmc {
 
@@ -193,6 +194,9 @@ public slots:
 	void on_alwaysAnimate_toggled(bool checked) const;
 	void on_showCrop_toggled(bool checked) const;
 	void on_showScrollBars_toggled(bool checked) const;
+	void on_useZoomLevels_toggled(bool checked) const;
+	void on_zoomLevels_editingFinished() const;	
+	void on_zoomLevelsDefault_clicked() const;
 
 signals:
 	void infoSignal(const QString& msg) const;
@@ -200,6 +204,9 @@ signals:
 protected:
 	void createLayout();
 	void paintEvent(QPaintEvent* ev);
+
+	QWidget* mZoomLevels = 0;
+	QLineEdit* mZoomLevelsEdit = 0;
 
 };
 

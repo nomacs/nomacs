@@ -47,6 +47,7 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include <float.h>
+#include <cassert>
 
 namespace nmc {
 	
@@ -171,12 +172,18 @@ void DkBaseViewPort::moveView(const QPointF& delta) {
 
 void DkBaseViewPort::zoomIn() {
 
-	zoom(1.5);
+	zoomLeveled(1.5);
 }
 
 void DkBaseViewPort::zoomOut() {
 
-	zoom(0.5);
+	zoomLeveled(0.5);
+}
+
+void DkBaseViewPort::zoomLeveled(double factor, const QPointF& center) {
+
+	factor = DkZoomConfig::instance().nextFactor(mWorldMatrix.m11()*mImgMatrix.m11(), factor);
+	zoom(factor, center);
 }
 
 void DkBaseViewPort::zoom(double factor, const QPointF& center) {
@@ -486,12 +493,10 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 	factor += 1.0;
 
 	//qDebug() << "zoom factor..." << factor;
-	zoom(factor, event->pos());
+	zoomLeveled(factor, event->pos());
 }
 
 void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
-
-	qDebug() << "mViewport event...";
 
 	// send this event to my parent...
 	QWidget::contextMenuEvent(event);

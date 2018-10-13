@@ -1536,5 +1536,167 @@ QString DkThemeManager::replaceColors(const QString & cssString) const {
 	return cs;
 }
 
+// -------------------------------------------------------------------- DkZoomConfig 
+DkZoomConfig::DkZoomConfig() {
+
+	mLevels = defaultLevels();
+
+	DefaultSettings ds;
+	loadSettings(ds);
+}
+
+DkZoomConfig& DkZoomConfig::instance() {
+	static DkZoomConfig inst;
+	return inst;
+}
+
+DkZoomConfig::~DkZoomConfig() {
+
+	DefaultSettings ds;
+	saveSettings(ds);
+}
+
+double DkZoomConfig::nextFactor(double currentFactor, double delta) const {
+
+	// do nothing?
+	if (!mUseLevels)
+		return delta;
+
+	assert(currentFactor != 0.0);
+
+	if (currentFactor == 0.0)
+		return 1.0;
+
+	if (delta > 1) {
+		for (double l : mLevels) {
+
+			if (currentFactor < l) {
+				return l / currentFactor;
+			}
+		}
+	}
+	else if (delta < 1) {
+
+		for (int idx = mLevels.size() - 1; idx >= 0; idx--) {
+
+			if (currentFactor > mLevels[idx]) {
+				return mLevels[idx] / currentFactor;
+			}
+		}
+	}
+
+	// do nothing
+	return 1.0;
+}
+
+QVector<double> DkZoomConfig::defaultLevels() const {
+
+	QVector<double> levels;
+
+	levels << 0.001;
+	levels << 0.001;
+	levels << 0.01;
+	levels << 0.05;
+	levels << 0.1;
+	levels << 0.125;
+	levels << 0.166;
+	levels << 0.25;
+	levels << 0.333;
+	levels << 0.5;
+	levels << 0.66;
+	levels << 1;
+	levels << 1.5;
+	levels << 2;
+	levels << 3;
+	levels << 4;
+	levels << 5;
+	levels << 6;
+	levels << 7;
+	levels << 8;
+	levels << 12;
+	levels << 16;
+	levels << 32;
+	levels << 64;
+	levels << 128;
+
+	return levels;
+}
+
+bool DkZoomConfig::useLevels() const {
+	return mUseLevels;
+}
+
+void DkZoomConfig::setUseLevels(bool useLevels) {
+	mUseLevels = useLevels;
+}
+
+bool DkZoomConfig::setLevels(const QString & levelStr) {
+
+	QVector<double> levels;
+	QStringList levelList = levelStr.split(",");
+
+	bool ok = false;
+	for (const QString& s : levelList) {
+		levels << s.toDouble(&ok);
+		if (!ok)
+			break;
+	}
+
+	if (ok && checkLevels(levels)) {
+		mLevels = levels;
+		return true;
+	}
+	
+	return false;
+}
+
+QString DkZoomConfig::levelsToString() const {
+	
+	QStringList levelStr;
+	for (double l : mLevels)
+		levelStr << QString::number(l);
+	
+	return levelStr.join(",");
+}
+
+void DkZoomConfig::setLevelsToDefault() {
+
+	mLevels = defaultLevels();
+}
+
+bool DkZoomConfig::checkLevels(const QVector<double>& levels) {
+
+	if (levels.isEmpty())
+		return false;
+
+	double last = 0;
+
+	// levels must be monotonically increasing
+	for (double l : levels) {
+		if (l < last)
+			return false;
+	}
+
+	return true;
+}
+
+void DkZoomConfig::loadSettings(QSettings & settings) {
+
+	settings.beginGroup("zooming");
+	QString levelStr = settings.value("zoomLevels").toString();
+	mUseLevels = settings.value("useLevels").toBool();
+	settings.endGroup();
+
+	if (!setLevels(levelStr))
+		qWarning() << "illegal zoom levels when loading from settings:" << levelStr;
+}
+
+void DkZoomConfig::saveSettings(QSettings & settings) const {
+
+	settings.beginGroup("zooming");
+	settings.setValue("zoomLevels", levelsToString());
+	settings.setValue("useLevels", mUseLevels);
+	settings.endGroup();
+}
 
 }

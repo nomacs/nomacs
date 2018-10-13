@@ -420,7 +420,10 @@ QLabel#subTitle {
 /* preferences widgets */
 QComboBox#languageCombo,
 QSpinBox#numThreads,
-QPushButton#logFolder {
+QPushButton#logFolder,
+nmc--DkDisplayPreference QSpinBox,
+nmc--DkDisplayPreference QDoubleSpinBox,
+nmc--DkDisplayPreference QComboBox {
 	max-width: 200px;
 }
 

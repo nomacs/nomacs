@@ -459,6 +459,7 @@ void DkViewPort::resetView() {
 	update();
 	controlImagePosition();
 
+	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11() * 100);
 	tcpSynchronize();
 }
 
@@ -467,7 +468,7 @@ void DkViewPort::fullView() {
 	QPointF p = mViewportRect.center();
 	zoom(1.0/(mImgMatrix.m11()*mWorldMatrix.m11()), p.toPoint());
 	
-	//showZoom();
+	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11() * 100);
 	changeCursor();
 	update();
 }
