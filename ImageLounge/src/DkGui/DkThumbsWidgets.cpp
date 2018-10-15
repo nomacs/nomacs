@@ -2163,6 +2163,9 @@ void DkRecentDirWidget::createLayout() {
 			tls << tpl;
 		}
 	}
+	else {
+		qInfo() << mRecentDir.firstFilePath() << "does not exist - according to a fast check";
+	}
 
 	QLabel* pathLabel = new QLabel(mRecentDir.dirPath(), this);
 	pathLabel->setAlignment(Qt::AlignLeft);
@@ -2370,8 +2373,6 @@ void DkRecentDir::remove() const {
 DkRecentDirManager::DkRecentDirManager() {
 
 	// update pinned files
-
-
 	mDirs = genFileLists(DkSettingsManager::param().global().pinnedFiles, true);
 	auto recentDirs = genFileLists(DkSettingsManager::param().global().recentFiles);
 
@@ -2400,9 +2401,11 @@ QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList & filePath
 
 		QFileInfo fi(cp);
 
-		if (!fi.isFile())
-			continue;
-
+		// this if is needed if there are errors in our data
+		// however, it incredibly slows down the process if samba mounts are lost
+		//if (!fi.isFile())
+		//	continue;
+		
 		// get folder
 		QString dp = fi.absolutePath();
 
