@@ -30,6 +30,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <iostream>
+#include <cassert>
 
 #include <QImageReader>
 #include <QScreen>
