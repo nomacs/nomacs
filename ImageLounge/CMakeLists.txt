@@ -150,6 +150,7 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
 )
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
