@@ -1,8 +1,5 @@
-#pragma once
-
 /**
 * DRIF - Developers RAW image format
-*
 *
 * MIT License
 * Copyright (c) 2018 Ovidiu Ionescu
