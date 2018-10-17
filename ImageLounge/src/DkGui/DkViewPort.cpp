@@ -145,7 +145,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
 	connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
 
-	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(resetView()));
+	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(zoomToFit()));
 	connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), this, SLOT(fullView()));
 	connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), this, SLOT(zoomIn()));
 	connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -450,6 +450,14 @@ void DkViewPort::zoomTo(double zoomLevel) {
 	zoom(zoomLevel/mImgMatrix.m11());
 }
 
+void DkViewPort::zoomToFit() {
+
+	QSizeF imgSize = getImageSize();
+	QSizeF winSize = size();
+	double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+	zoomTo(zoomLevel);
+}
+
 void DkViewPort::resetView() {
 
 	mWorldMatrix.reset();
@@ -536,7 +544,7 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.translate(dx, dy);
 	}
 	else if (DkSettingsManager::param().display().zoomToFit)
-		resetView();
+		zoomToFit();	// NOTE: this is not the same as resetView!
 
 }
 

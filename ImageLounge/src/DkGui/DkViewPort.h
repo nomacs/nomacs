@@ -126,6 +126,7 @@ public slots:
 	void rotateCCW();
 	void rotate180();
 	void resetView();
+	void zoomToFit();
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
 	void toggleResetMatrix();

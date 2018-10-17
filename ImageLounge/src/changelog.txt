@@ -3,11 +3,14 @@ nomacs 3.12.0
 - recent files panel renewed
 - new theme
 - improved dropping for thumbnail preview (copy/move/link)
+- editable zoom levels
+- Fill transparent background with a color added
 - LAN client removed
 - batch: original filename is added to the metadata 
 - frameless: multi-screen setup improved
 - SVG: resulting image size can be adjusted when converting 
 - RLE compressed TGA support
+- DRIF support
 - bug fixes
 - Updates
 	- quazip 0.7.6
