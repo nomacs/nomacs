@@ -213,6 +213,9 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters.append("OpenCV Haar Training (*.vec)");
 	app_p.openFilters.append("Rohkost (*.roh)");
 
+    // drif images
+    app_p.openFilters.append("Developers Raw Image Format (*.drif)");
+
 	// load user filters
 	DefaultSettings settings;
 	app_p.openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
