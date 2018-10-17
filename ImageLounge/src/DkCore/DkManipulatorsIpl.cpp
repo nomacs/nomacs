@@ -143,6 +143,7 @@ QImage DkTinyPlanetManipulator::apply(const QImage & img) const {
 	DkImage::tinyPlanet(imgR, size(), angle()*DK_DEG2RAD, s, inverted());
 	return imgR;
 #else
+	Q_UNUSED(img);
 	return QImage();	// trigger warning
 #endif
 }

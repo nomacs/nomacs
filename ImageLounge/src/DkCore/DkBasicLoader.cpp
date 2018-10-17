@@ -600,6 +600,7 @@ bool DkBasicLoader::loadDrifFile(const QString& filePath, QImage& img, QSharedPo
 
         success = true;
     }
+#ifdef WITH_OPENCV
     else
     {
         img = QImage((int)w, (int)h, QImage::Format_RGB888);
@@ -722,6 +723,7 @@ bool DkBasicLoader::loadDrifFile(const QString& filePath, QImage& img, QSharedPo
         }
        
     }
+#endif
    
     drifFreeImg(imgBytes);
 
