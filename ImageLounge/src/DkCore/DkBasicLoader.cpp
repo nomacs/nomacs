@@ -569,7 +569,12 @@ uint32_t drif2qtfmt(uint32_t f)
     {
     case DRIF_FMT_RGB888:  return QImage::Format_RGB888;
     case DRIF_FMT_RGBA8888:  return QImage::Format_RGBA8888;
-    case DRIF_FMT_GRAY:  return QImage::Format_Grayscale8;
+
+	// grayscale 8 was added in Qt 5.4
+#if QT_VERSION >= 0x050500
+	case DRIF_FMT_GRAY:  return QImage::Format_Grayscale8;
+#endif
+
     }
 
     return QImage::Format_Invalid;
