@@ -272,7 +272,7 @@ QImage DkBaseViewPort::getImage() const {
 		return mMovie->currentImage();
 	if (mSvg && mSvg->isValid() && !mImgViewRect.isEmpty()) {
 
-		QImage img(mImgViewRect.size().toSize(), QImage::Format_ARGB32);
+		QImage img(mImgViewRect.size().toSize(), QImage::Format_ARGB32_Premultiplied);
 		img.fill(QColor(0, 0, 0, 0));
 
 		QPainter p(&img);
@@ -308,7 +308,7 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	viewRect = mWorldMatrix.inverted().mapRect(viewRect);
 	viewRect = mImgMatrix.inverted().mapRect(viewRect);
 
-	QImage imgR(viewRect.size().toSize(), QImage::Format_ARGB32);
+	QImage imgR(viewRect.size().toSize(), QImage::Format_ARGB32_Premultiplied);
 	imgR.fill(0);
 
 	QPainter painter(&imgR);

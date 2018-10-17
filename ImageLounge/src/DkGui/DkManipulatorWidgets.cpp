@@ -86,7 +86,7 @@ void DkManipulatorWidget::createLayout() {
 		auto mpl = am.manipulatorManager().manipulatorExt((DkManipulatorManager::ManipulatorExtId)idx);
 
 		DkTabEntryWidget* entry = new DkTabEntryWidget(mpl->action()->icon(), mpl->name(), this);
-		connect(entry, SIGNAL(clicked()), mpl->action(), SIGNAL(triggered()), Qt::UniqueConnection);	// TODO: different connection if ManipulatorExt?
+		connect(entry, SIGNAL(clicked()), mpl->action(), SIGNAL(triggered()), Qt::UniqueConnection);
 		
 		aLayout->addWidget(entry);
 		group->addButton(entry);
@@ -138,7 +138,6 @@ void DkManipulatorWidget::createLayout() {
 	QWidget* mplWidget = new QWidget(this);
 	QVBoxLayout* mplLayout = new QVBoxLayout(mplWidget);
 	mplLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
-	
 	mplLayout->addWidget(mTitleLabel);
 	for (QWidget* w : mWidgets) 
 		mplLayout->addWidget(w);

@@ -200,7 +200,7 @@ HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
 	}
 
 	// Copy over the data
-	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32);
+	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied);
 	
 	int bytes_per_line = w * 4;
 	for (int y = 0; y<h; ++y)
@@ -903,7 +903,7 @@ QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, con
 	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
 	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
 
-	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32_Premultiplied);
 	img.fill(fillColor.rgba());
 
 	// render the image into the new coordinate system
@@ -1311,7 +1311,7 @@ cv::Mat DkImage::qImage2Mat(const QImage& img) {
 		//}
 		else {
 			//qDebug() << "image flag: " << img.format();
-			cImg = img.convertToFormat(QImage::Format_ARGB32);
+			cImg = img.convertToFormat(QImage::Format_ARGB32_Premultiplied);
 			mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
 			//qDebug() << "I need to convert the QImage to ARGB32";
 		}
@@ -1352,7 +1352,7 @@ QImage DkImage::mat2QImage(cv::Mat img) {
 		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
 	}
 	if (img.type() == CV_8UC4) {
-		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
+		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32_Premultiplied);
 	}
 
 	qImg = qImg.copy();

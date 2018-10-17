@@ -374,9 +374,9 @@ void DkColorEdit::createLayout() {
 		connect(mColBoxes[idx], SIGNAL(valueChanged(int)), this, SLOT(colorChanged()));
 	}
 
-	mColBoxes[r]->setPrefix("R:");
-	mColBoxes[g]->setPrefix("G:");
-	mColBoxes[b]->setPrefix("B:");
+	mColBoxes[r]->setPrefix("R: ");
+	mColBoxes[g]->setPrefix("G: ");
+	mColBoxes[b]->setPrefix("B: ");
 
 	mColHash = new QLineEdit(this);
 	connect(mColHash, SIGNAL(textEdited(const QString&)), this, SLOT(hashChanged(const QString&)));
@@ -443,6 +443,7 @@ QColor DkColorPane::color() const {
 void DkColorPane::setHue(int hue) {
 	mColor.setHsvF(hue/360.0, mColor.saturationF(), mColor.valueF());
 	update();
+	emit colorSelected(color());
 }
 
 double DkColorPane::hue() const {

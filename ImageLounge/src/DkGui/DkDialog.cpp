@@ -1372,30 +1372,9 @@ void DkResizeDialog::updateSnippets() {
 	if (mImg.isNull() /*|| !isVisible()*/)
 		return;
 
-	//// fix layout issues - sorry
-	//origView->setFixedWidth(width()*0.5f-30);
-	//previewLabel->setFixedWidth(origView->width()-2);
-	//origView->setFixedHeight(width()*0.5f-30);
-	//previewLabel->setFixedHeight(width()*0.5f-30);
-
-
 	mOrigView->setImage(mImg);
 	mOrigView->fullView();
 	mOrigView->zoomConstraints(mOrigView->get100Factor());
-
-	qDebug() << "zoom constraint: " << mOrigView->get100Factor();
-
-	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
-	//s *= 0.5;
-	//origImg = QImage(s, QImage::Format_ARGB32);
-	//origImg.fill(Qt::transparent);
-	//QRect imgRect = QRect(QPoint(img.width()*0.5-origImg.width()*0.5, img.height()*0.5-origImg.height()*0.5), origImg.size());
-
-	//QPainter painter(&origImg);
-	//painter.setBackgroundMode(Qt::TransparentMode);
-	//painter.drawImage(QRect(QPoint(), origImg.size()), img, imgRect;)
-	//painter.end();
-
 }
 
 void DkResizeDialog::drawPreview() {
