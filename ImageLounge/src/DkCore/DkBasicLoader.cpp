@@ -199,6 +199,10 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	QImage img;
 
+    // load drif file
+    if (!imgLoaded && ("drif" == suf || "yuv" == suf || "raw" == suf)) 
+        imgLoaded = loadDrifFile(mFile, img, ba);
+
 	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
 		imgLoaded = img.loadFromData(*ba.data());
 
@@ -541,6 +545,182 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 
 #endif // !WITH_LIBTIFF
 	return false;
+}
+
+#define DRIF_IMAGE_IMPL
+#include "drif_image.h"
+
+bool isQtFmtCompatible(uint32_t f)
+{
+    switch (f)
+    {
+    case DRIF_FMT_RGB888:
+    case DRIF_FMT_RGBA8888:
+    case DRIF_FMT_GRAY:
+        return true;
+    }
+
+    return false;
+}
+
+uint32_t drif2qtfmt(uint32_t f)
+{
+    switch (f)
+    {
+    case DRIF_FMT_RGB888:  return QImage::Format_RGB888;
+    case DRIF_FMT_RGBA8888:  return QImage::Format_RGBA8888;
+    case DRIF_FMT_GRAY:  return QImage::Format_Grayscale8;
+    }
+
+    return QImage::Format_Invalid;
+}
+
+bool DkBasicLoader::loadDrifFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
+
+    bool success = false;
+
+    uint32_t w;
+    uint32_t h;
+    uint32_t f;
+
+    uint8_t* imgBytes = drifLoadImg(filePath.toLatin1(), &w, &h, &f);
+
+    if (!imgBytes)
+        return success;
+    
+    if (isQtFmtCompatible(f))
+    {
+        img = QImage((int)w, (int)h, (QImage::Format)drif2qtfmt(f));
+        memcpy(reinterpret_cast<void*>(img.bits()), imgBytes, drifGetSize(w, h, f));
+
+        success = true;
+    }
+    else
+    {
+        img = QImage((int)w, (int)h, QImage::Format_RGB888);
+
+        switch (f)
+        {
+        case DRIF_FMT_BGR888:
+        {
+            cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC3, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_BGR2RGB);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_RGB888P:
+        case DRIF_FMT_RGBA8888P:
+        {
+            cv::Mat imgMatR = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes);
+            cv::Mat imgMatG = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes + w * h);
+            cv::Mat imgMatB = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes + 2 * w * h);
+            cv::Mat rgbMat  = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            
+            std::vector<cv::Mat> imgMat{ imgMatR, imgMatG, imgMatB };
+            cv::merge(imgMat, rgbMat);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_BGR888P:
+        case DRIF_FMT_BGRA8888P:
+        {
+            cv::Mat imgMatB = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes);
+            cv::Mat imgMatG = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes + w * h);
+            cv::Mat imgMatR = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes + 2 * w * h);
+            cv::Mat rgbMat  = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+
+            std::vector<cv::Mat> imgMat{ imgMatR, imgMatG, imgMatB };
+            cv::merge(imgMat, rgbMat);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_BGRA8888:
+        {
+            cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC4, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_BGR2RGB, 3);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_RGBA8888:
+        {
+            cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC4, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_RGBA2RGB, 3);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_GRAY:
+        {
+            cv::Mat imgMat = cv::Mat((int)h, (int)w, CV_8UC1, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_GRAY2RGB);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_YUV420P:
+        {
+            cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_I420);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_YVU420P:
+        {
+            cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_YV12);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_NV12:
+        {
+            cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_NV12);
+
+            success = true;
+        }
+        break;
+
+        case DRIF_FMT_NV21:
+        {
+            cv::Mat imgMat = cv::Mat((int)h + h / 2, (int)w, CV_8UC1, imgBytes);
+            cv::Mat rgbMat = cv::Mat((int)h, (int)w, CV_8UC3, reinterpret_cast<uint8_t*>(img.bits()));
+            cv::cvtColor(imgMat, rgbMat, CV_YUV2RGB_NV21);
+
+            success = true;
+        }
+        break;
+
+        default:
+            success = false;
+            break;
+        }
+       
+    }
+   
+    drifFreeImg(imgBytes);
+
+    return success;
 }
 
 void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {
