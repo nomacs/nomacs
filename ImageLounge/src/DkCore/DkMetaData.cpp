@@ -1815,21 +1815,28 @@ void DkMetaDataHelper::initialize() {
 
 	DkTimer dt;
 
-	struct XmpLock {
-		CRITICAL_SECTION cs;
-		XmpLock() { InitializeCriticalSection(&cs); }
-		~XmpLock() { DeleteCriticalSection(&cs); }
-		static void LockUnlock(void* pData, bool fLock) {
-			XmpLock* pThis = reinterpret_cast<XmpLock*>(pData);
-			if (pThis) {
-				(fLock) ? EnterCriticalSection(&pThis->cs)
-					: LeaveCriticalSection(&pThis->cs);
-			}
-		}
-	} xmpLock;
+	//struct XmpLock {
+	//	CRITICAL_SECTION cs;
+	//	XmpLock() { InitializeCriticalSection(&cs); }
+	//	~XmpLock() { DeleteCriticalSection(&cs); }
+	//	static void LockUnlock(void* pData, bool fLock) {
+	//		XmpLock* pThis = reinterpret_cast<XmpLock*>(pData);
+	//		if (pThis) {
 
-	Exiv2::XmpParser::initialize(XmpLock::LockUnlock, &xmpLock);
+	//			if (fLock) {
+	//				EnterCriticalSection(&pThis->cs);
+	//				qDebug() << "locking -------------------------";
+	//			}
+	//			else {
+	//				LeaveCriticalSection(&pThis->cs);
+	//				qDebug() << "unlocking ------------------------";
+	//			}
+	//		}
+	//	}
+	//} xmpLock;
 
+	//Exiv2::XmpParser::initialize(XmpLock::LockUnlock, &xmpLock);
+	Exiv2::XmpParser::initialize();
 	qDebug() << "initializing the xmp parser takes" << dt;
 }
 
