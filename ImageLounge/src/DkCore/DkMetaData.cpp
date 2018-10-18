@@ -30,6 +30,7 @@
 #include "DkMath.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>
@@ -97,7 +98,7 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 			return;
 		}
 
-	}catch (...) {
+	} catch (...) {
 		mExifState = no_data;
 		qDebug() << "[Exiv2] could not read metadata (exception)";
 		return;
@@ -1806,6 +1807,30 @@ QStringList DkMetaDataHelper::getAllExposureModes() const {
 QMap<int, QString> DkMetaDataHelper::getAllFlashModes() const {
 
 	return mFlashModes;
+}
+
+// make XmpParser thread-save
+// see http://exiv2.org/doc/classExiv2_1_1XmpParser.html#aea661a7039adb5a748eb7639c8ce9294
+void DkMetaDataHelper::initialize() {
+
+	DkTimer dt;
+
+	struct XmpLock {
+		CRITICAL_SECTION cs;
+		XmpLock() { InitializeCriticalSection(&cs); }
+		~XmpLock() { DeleteCriticalSection(&cs); }
+		static void LockUnlock(void* pData, bool fLock) {
+			XmpLock* pThis = reinterpret_cast<XmpLock*>(pData);
+			if (pThis) {
+				(fLock) ? EnterCriticalSection(&pThis->cs)
+					: LeaveCriticalSection(&pThis->cs);
+			}
+		}
+	} xmpLock;
+
+	Exiv2::XmpParser::initialize(XmpLock::LockUnlock, &xmpLock);
+
+	qDebug() << "initializing the xmp parser takes" << dt;
 }
 
 }

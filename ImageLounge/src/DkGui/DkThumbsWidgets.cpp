@@ -2082,7 +2082,7 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString& filePath, int thumbSize,
 	QFileInfo fInfo(filePath);
 	setToolTip(fInfo.fileName());
 
-	mThumb->fetchThumb();
+	mThumb->fetchThumb(DkThumbNail::force_exif_thumb);
 }
 
 void DkThumbPreviewLabel::thumbLoaded() {

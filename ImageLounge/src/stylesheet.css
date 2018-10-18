@@ -622,6 +622,7 @@ QPushButton#remove:pressed {
 
 nmc--DkThumbPreviewLabel {
 	padding: 1px;
+	background-color: #ddd;
 }
 
 nmc--DkThumbPreviewLabel:hover {

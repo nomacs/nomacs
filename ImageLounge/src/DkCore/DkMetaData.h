@@ -38,10 +38,17 @@
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
+
+// fixes wrong include of winsock2 in exiv2 0.26 (this is fixed in the current exiv2 master)
+#ifdef WIN32
+#define _WINSOCKAPI_
+#endif
+
 #include <exiv2/xmpsidecar.hpp>
 #include <exiv2/image.hpp>
 #include <exiv2/preview.hpp>
 #include <iomanip>
+
 #endif
 #pragma warning(pop)
 
@@ -160,7 +167,6 @@ public:
 	static DkMetaDataHelper& getInstance() {
 
 		static DkMetaDataHelper instance;
-
 		return instance;
 	}
 
@@ -183,6 +189,8 @@ public:
 	QStringList getTranslatedDescTags() const;
 	QStringList getAllExposureModes() const;
 	QMap<int, QString> getAllFlashModes() const;
+
+	static void initialize();
 
 protected:
 	DkMetaDataHelper() { init(); };

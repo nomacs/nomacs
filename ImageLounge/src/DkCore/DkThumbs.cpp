@@ -124,8 +124,6 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	bool exifThumb = !thumb.isNull();
 
 	int orientation = metaData.getOrientationDegree();
-	int imgW = thumb.width();
-	int imgH = thumb.height();
 	int tS = minThumbSize;
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
@@ -133,106 +131,55 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
 	fInfo = lFilePath;
 
-	QImageReader* imageReader = 0;
-	
-	if (!ba || ba->isEmpty())
-		imageReader = new QImageReader(lFilePath);
-	else {
-		QBuffer buffer;
-		buffer.setData(ba->data());
-		buffer.open(QIODevice::ReadOnly);
-		imageReader = new QImageReader(&buffer, fInfo.suffix().toStdString().c_str());
-		buffer.close();
-	}
-
-	if (thumb.isNull() || (thumb.width() < tS && thumb.height() < tS)) {
-
-		imgW = imageReader->size().width();		// crash detected: unhandled exception at 0x66850E9A (msvcr110d.dll) in nomacs.exe: 0xC0000005: Access violation reading location 0x0000C788.
-		imgH = imageReader->size().height();	// locks the file!
-	}
-	
-	if (forceLoad != DkThumbNailT::force_exif_thumb && (imgW > maxThumbSize || imgH > maxThumbSize)) {
-		if (imgW > imgH) {
-			imgH = qRound((float)maxThumbSize / imgW * imgH);
-			imgW = maxThumbSize;
-		} 
-		else if (imgW < imgH) {
-			imgW = qRound((float)maxThumbSize / imgH * imgW);
-			imgH = maxThumbSize;
-		}
-		else {
-			imgW = maxThumbSize;
-			imgH = maxThumbSize;
-		}
-	}
-
 	// diem: do_not_force is the generic load - so also rescale these
 	bool rescale = forceLoad == force_save_thumb || forceLoad == do_not_force;
 
-	if (forceLoad != force_exif_thumb && 
-			(thumb.isNull() || 
-			(thumb.width() < tS && thumb.height() < tS) || 
-			forceLoad == force_full_thumb || 
+	if (forceLoad != force_exif_thumb &&
+		(thumb.isNull() ||
+		(thumb.width() < tS && thumb.height() < tS) ||
+			forceLoad == force_full_thumb ||
 			forceLoad == force_save_thumb)) { // braces
-		
-		// flip size if the image is rotated by 90°
-		if (metaData.isTiff() && abs(orientation) == 90) {
-			int tmpW = imgW;
-			imgW = imgH;
-			imgH = tmpW;
-			qDebug() << "EXIF size is flipped...";
-		}
-
-		imageReader->setScaledSize(QSize(imgW, imgH));
-		thumb = imageReader->read();
 
 		// try to read the image
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
-			
-			if (baZip && !baZip->isEmpty())	{
+
+			if (baZip && !baZip->isEmpty()) {
 				if (loader.loadGeneral(lFilePath, baZip, true, true))
-				thumb = loader.image();
+					thumb = loader.image();
 			}
 			else {
 				if (loader.loadGeneral(lFilePath, ba, true, true))
 					thumb = loader.image();
 			}
 		}
+	}
 
-		// the image is not scaled correctly yet
-		if (rescale && !thumb.isNull() && (imgW == -1 || imgH == -1)) {
-			imgW = thumb.width();
-			imgH = thumb.height();
+	// the image is not scaled correctly yet
+	if (rescale && !thumb.isNull()) {
 
-			if (imgW > maxThumbSize || imgH > maxThumbSize) {
-				if (imgW > imgH) {
-					imgH = qRound((float)maxThumbSize / imgW * imgH);
-					imgW = maxThumbSize;
-				} 
-				else if (imgW < imgH) {
-					imgW = qRound((float)maxThumbSize / imgH * imgW);
-					imgH = maxThumbSize;
-				}
-				else {
-					imgW = maxThumbSize;
-					imgH = maxThumbSize;
-				}
+		int w = thumb.width();
+		int h = thumb.height();
+
+		if (w > maxThumbSize || h > maxThumbSize) {
+			if (w > h) {
+				h = qRound((double)maxThumbSize / w * h);
+				w = maxThumbSize;
+			} 
+			else if (w < h) {
+				w = qRound((double)maxThumbSize / h * w);
+				h = maxThumbSize;
 			}
-
-			thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-			thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			else {
+				w = maxThumbSize;
+				h = maxThumbSize;
+			}
 		}
 
-		// is there a nice solution to do so??
-		imageReader->setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
+		// scale
+		thumb = thumb.scaled(QSize(w*2, h*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+		thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	}
-	else if (rescale) {
-		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	}
-
-	if (imageReader)
-		delete imageReader;
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
@@ -265,7 +212,6 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 			qWarning() << "Sorry, I could not save the metadata";
 		}
 	}
-
 	//if (!thumb.isNull())
 	//	qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
 

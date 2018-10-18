@@ -447,7 +447,7 @@ public:
 private:
 
 	QVector<double> mLevels;
-	bool mUseLevels = true;
+	bool mUseLevels = false;
 
 	DkZoomConfig();
 	void loadSettings(QSettings& settings);

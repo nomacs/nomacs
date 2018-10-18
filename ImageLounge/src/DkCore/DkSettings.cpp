@@ -850,7 +850,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
 	display_p.showThumbLabel = false;
-	display_p.showScrollBars = true;
+	display_p.showScrollBars = false;
 	display_p.animationDuration = 0.5f;
 	display_p.alwaysAnimate = false;
 	display_p.transition = trans_swipe;
@@ -1029,8 +1029,7 @@ void DkSettingsManager::init() {
 
 	qInfo() << "Hi there";
 	qInfoClean() << "my name is " << QApplication::organizationName() << " | " << QApplication::applicationName() 
-		<< " v" << QApplication::applicationVersion() << (nmc::DkSettingsManager::param().isPortable() ? " portable" : " installed");
-
+		<< " v" << QApplication::applicationVersion() << (nmc::DkSettingsManager::param().isPortable() ? " (portable)" : " (installed)");
 }
 
 void DkSettingsManager::importSettings(const QString & settingsPath) {
@@ -1597,7 +1596,7 @@ QVector<double> DkZoomConfig::defaultLevels() const {
 
 	QVector<double> levels;
 
-	levels << 0.001;
+	levels << 0.0001;
 	levels << 0.001;
 	levels << 0.01;
 	levels << 0.05;
