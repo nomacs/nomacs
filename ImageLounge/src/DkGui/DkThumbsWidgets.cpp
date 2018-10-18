@@ -2261,7 +2261,7 @@ void DkRecentFilesWidget::createLayout() {
 
 	mScrollArea->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
-	updateList();
+	//updateList();
 }
 
 void DkRecentFilesWidget::updateList() {

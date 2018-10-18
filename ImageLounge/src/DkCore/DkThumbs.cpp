@@ -132,7 +132,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	fInfo = lFilePath;
 
 	// diem: do_not_force is the generic load - so also rescale these
-	bool rescale = forceLoad == force_save_thumb || forceLoad == do_not_force;
+	bool rescale = forceLoad == do_not_force;
 
 	if (forceLoad != force_exif_thumb &&
 		(thumb.isNull() ||
@@ -199,7 +199,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 				sThumb = sThumb.transformed(rotationMatrix);
 			}
 
-			metaData.setThumbnail(sThumb);
+			metaData.updateImageMetaData(sThumb);
 
 			if (!ba || ba->isEmpty())
 				metaData.saveMetaData(lFilePath);
@@ -357,7 +357,7 @@ DkThumbsThreadPool::DkThumbsThreadPool() {
 	
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 	mPool = new QThreadPool();
-	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount()-2, 1));
+	mPool->setMaxThreadCount(qMax(mPool->maxThreadCount() - 2, 1));
 #endif
 }
 
