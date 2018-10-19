@@ -506,6 +506,10 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 
 	DkTimer dt;
 	TIFF* tiff = 0;
+
+
+#if QT_VERSION >= 0x050500
+
 	std::istringstream is(ba ? ba->toStdString() : "");
 
 	if (ba) 
@@ -524,6 +528,9 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 
 	if (bal)
 		tiff = TIFFStreamOpen("MemTIFF", &isl);
+#else
+	tiff = TIFFOpen(filePath.toLatin1(), "r");
+#endif
 
 	if (!tiff)
 		return success;
@@ -893,6 +900,8 @@ void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QBy
 
 	DkTimer dt;
 	TIFF* tiff = 0;
+
+#if QT_VERSION >= 0x050500
 	std::istringstream is(ba ? ba->toStdString() : "");
 
 	if (ba)
@@ -910,6 +919,10 @@ void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QBy
 
 	if (bal)
 		tiff = TIFFStreamOpen("MemTIFF", &isl);
+#else
+	// read from file
+	tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
+#endif
 
 	if (!tiff) 
 		return;
@@ -969,6 +982,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	DkTimer dt;
 	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
 
+#if QT_VERSION >= 0x050500
+
 	// loading from buffer allows us to load files with non-latin names
 	QSharedPointer<QByteArray> ba;
 	if (!tiff)
@@ -977,6 +992,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	std::istringstream is(ba ? ba->toStdString() : "");
 	if (ba)
 		tiff = TIFFStreamOpen("MemTIFF", &is);
+#endif
 
 	if (!tiff)
 		return imgLoaded;
@@ -990,7 +1006,6 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 		if (!TIFFReadDirectory(tiff))
 			return false;
 	}
-
 	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
 	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
