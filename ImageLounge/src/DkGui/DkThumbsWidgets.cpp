@@ -2088,7 +2088,11 @@ DkThumbPreviewLabel::DkThumbPreviewLabel(const QString& filePath, int thumbSize,
 void DkThumbPreviewLabel::thumbLoaded() {
 
 	if (mThumb->getImage().isNull()) {
-		qDebug() << QFileInfo(mThumb->getFilePath()).fileName() << " not loaded...";
+		setProperty("empty", true);	// apply empty style
+		style()->unpolish(this);
+		style()->polish(this);
+		update();
+
 		return;
 	}
 
@@ -2155,7 +2159,7 @@ void DkRecentDirWidget::createLayout() {
 
 	// check if the folder exists (in the current context)
 	// this should fix issues with disconnected samba drives on windows
-	if (DkUtils::exists(mRecentDir.firstFilePath(), 10)) {
+	if (DkUtils::exists(mRecentDir.firstFilePath(), 30)) {
 
 		for (auto tp : mRecentDir.filePaths(4)) {
 			auto tpl = new DkThumbPreviewLabel(tp, 42, this);

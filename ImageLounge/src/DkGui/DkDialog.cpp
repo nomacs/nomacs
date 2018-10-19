@@ -3226,14 +3226,7 @@ int DkMosaicDialog::computeMosaic(const QString& filter, const QString& suffix, 
 		try {
 
 			DkThumbNail thumb = DkThumbNail(imgPath);
-			thumb.setMinThumbSize(patchResO);
-			//thumb.setRescale(false);
 			thumb.compute();
-
-			if (!thumb.hasImage()) {
-				iDidNothing++;
-				continue;
-			}
 
 			cv::Mat ccTmp(cc.size(), cc.depth());
 		
@@ -3391,7 +3384,8 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 	QImage img;
 
 	// load full image if we have not enough resolution
-	if (qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
+	if (thumb.getImage().isNull() || 
+		qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
 		DkBasicLoader loader;
 		loader.loadGeneral(thumb.getFilePath(), true, true);
 		img = loader.image();

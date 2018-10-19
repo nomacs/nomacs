@@ -134,14 +134,6 @@ public:
 		return mMaxThumbSize;
 	};
 
-	void setMinThumbSize(int minSize) {
-		mMinThumbSize = minSize;
-	};
-
-	int getMinThumbSize() const {
-		return mMinThumbSize;
-	};
-	
 	/**
 	 * Manipulates the file loaded status.
 	 * @param exists a status (loaded | not loaded | exists not)
@@ -159,14 +151,13 @@ public:
 	};
 
 protected:
-	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize);
+	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
 
 	QImage mImg;
 	QString mFile;
 	//int s;
 	bool mImgExists;
 	int mMaxThumbSize;
-	int mMinThumbSize;
 };
 
 class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail {
@@ -202,7 +193,7 @@ protected slots:
 	void thumbLoaded();
 
 protected:
-	QImage computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize);
+	QImage computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
 
 	QFutureWatcher<QImage> mThumbWatcher;
 	bool mFetching;

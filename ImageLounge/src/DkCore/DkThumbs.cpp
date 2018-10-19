@@ -55,7 +55,6 @@ DkThumbNail::DkThumbNail(const QString& filePath, const QImage& img) {
 	mImg = DkImage::createThumb(img);
 	mFile = filePath;
 	mMaxThumbSize = qRound(max_thumb_size * DkSettingsManager::param().dpiScaleFactor());
-	mMinThumbSize = DkSettingsManager::param().effectiveThumbSize();
 	mImgExists = true;
 }
 
@@ -67,9 +66,9 @@ DkThumbNail::~DkThumbNail() {}
  **/ 
 void DkThumbNail::compute(int forceLoad) {
 
-	// we do this that complicated to be thread-safe
+	// this is so complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
-	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize, mMinThumbSize);
+	mImg = computeIntern(mFile, QSharedPointer<QByteArray>(), forceLoad, mMaxThumbSize);
 	mImg = DkImage::createThumb(mImg);
 }
 
@@ -86,7 +85,7 @@ void DkThumbNail::compute(int forceLoad) {
  * could be loaded at all.
  **/ 
 QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<QByteArray> ba, 
-								  int forceLoad, int maxThumbSize, int minThumbSize) {
+								  int forceLoad, int maxThumbSize) {
 	
 	DkTimer dt;
 	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
@@ -118,15 +117,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	}
 	removeBlackBorder(thumb);
 
-	if (thumb.isNull() && forceLoad == force_exif_thumb)
-		return QImage();
-
 	bool exifThumb = !thumb.isNull();
 
-	int orientation = metaData.getOrientationDegree();
-	int tS = minThumbSize;
-
-	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QFileInfo fInfo(filePath);
 	QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
 	fInfo = lFilePath;
@@ -134,26 +126,26 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	// diem: do_not_force is the generic load - so also rescale these
 	bool rescale = forceLoad == do_not_force;
 
-	if (forceLoad != force_exif_thumb &&
+	if ((forceLoad != force_exif_thumb || fInfo.size() < 1e5) &&
 		(thumb.isNull() ||
-		(thumb.width() < tS && thumb.height() < tS) ||
-			forceLoad == force_full_thumb ||
-			forceLoad == force_save_thumb)) { // braces
+		 forceLoad == force_full_thumb ||
+		 forceLoad == force_save_thumb)) { // braces
 
 		// try to read the image
-		if (thumb.isNull()) {
-			DkBasicLoader loader;
+		DkBasicLoader loader;
 
-			if (baZip && !baZip->isEmpty()) {
-				if (loader.loadGeneral(lFilePath, baZip, true, true))
-					thumb = loader.image();
-			}
-			else {
-				if (loader.loadGeneral(lFilePath, ba, true, true))
-					thumb = loader.image();
-			}
+		if (baZip && !baZip->isEmpty()) {
+			if (loader.loadGeneral(lFilePath, baZip, true, true))
+				thumb = loader.image();
+		}
+		else {
+			if (loader.loadGeneral(lFilePath, ba, true, true))
+				thumb = loader.image();
 		}
 	}
+
+	if (thumb.isNull() && forceLoad == force_exif_thumb)
+		return QImage();
 
 	// the image is not scaled correctly yet
 	if (rescale && !thumb.isNull()) {
@@ -180,6 +172,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		thumb = thumb.scaled(QSize(w*2, h*2), Qt::KeepAspectRatio, Qt::FastTransformation);
 		thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	}
+
+	int orientation = metaData.getOrientationDegree();
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
@@ -326,16 +320,15 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 		mFile, 
 		ba, 
 		forceLoad, 
-		mMaxThumbSize, 
-		mMinThumbSize));
+		mMaxThumbSize));
 
 	return true;
 }
 
 
-QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize) {
+QImage DkThumbNailT::computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize) {
 
-	QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize, minThumbSize);
+	QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize);
 	return DkImage::createThumb(thumb);
 }
 
