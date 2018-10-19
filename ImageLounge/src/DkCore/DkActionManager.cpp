@@ -629,6 +629,7 @@ QMenu* DkActionManager::createContextMenu(QWidget* parent) {
 
 	mContextMenu->addAction(mViewActions[menu_view_frameless]);
 	mContextMenu->addAction(mViewActions[menu_view_fullscreen]);
+	mContextMenu->addAction(mPanelActions[menu_panel_menu]);
 	mContextMenu->addSeparator();
 
 	if (DkSettingsManager::param().global().extendedTabs) {
@@ -1154,7 +1155,7 @@ void DkActionManager::createActions(QWidget* parent) {
 
 	// panel actions
 	mPanelActions.resize(menu_panel_end);
-	mPanelActions[menu_panel_menu] = new QAction(QObject::tr("&Menu"), parent);
+	mPanelActions[menu_panel_menu] = new QAction(QObject::tr("Show &Menu"), parent);
 	mPanelActions[menu_panel_menu]->setStatusTip(QObject::tr("Hides the Menu and Shows it Again on ALT"));
 	mPanelActions[menu_panel_menu]->setCheckable(true);
 

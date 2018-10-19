@@ -235,3 +235,7 @@ QTabBar::close-button {
 QTabBar::close-button:hover {
 	image: url(:/nomacs/img/close-white-hover.svg);
 }
+
+nmc--DkThumbPreviewLabel[empty="true"] {
+	background-color: #333;
+}
