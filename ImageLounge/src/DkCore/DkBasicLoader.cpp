@@ -83,7 +83,7 @@
 //#endif // defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 
 #include <tiffio.h>
-//#include <tiffio.hxx>		// this is needed if you want to load tiffs from the buffer
+#include <tiffio.hxx>		// this is needed if you want to load tiffs from the buffer
 
 //#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #undef uint64
@@ -320,7 +320,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	// tiff things
 	if (imgLoaded && !mPageIdxDirty)
-		indexPages(mFile);
+		indexPages(mFile, ba);
 	mPageIdxDirty = false;
 
 	if (imgLoaded && loadMetaData && mMetaData) {
@@ -505,16 +505,25 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 	oldErrorHandler = TIFFSetErrorHandler(NULL);
 
 	DkTimer dt;
-
 	TIFF* tiff = 0;
-	
-	//if (!ba.isNull()) {
-	//	// use an istream to read from memory
-	//	TIFF* mem_TIFF = TIFFStreamOpen("MemTIFF", &is);
-	//}
-	
+	std::istringstream is(ba ? ba->toStdString() : "");
+
+	if (ba) 
+		tiff = TIFFStreamOpen("MemTIFF", &is);
+
+	// fallback to direct loading
 	if (!tiff)
 		tiff = TIFFOpen(filePath.toLatin1(), "r");
+
+	// loading from buffer allows us to load files with non-latin names
+	QSharedPointer<QByteArray> bal;
+	if (!tiff)
+		bal = loadFileToBuffer(filePath);
+
+	std::istringstream isl(bal ? bal->toStdString() : "");
+
+	if (bal)
+		tiff = TIFFStreamOpen("MemTIFF", &isl);
 
 	if (!tiff)
 		return success;
@@ -863,7 +872,7 @@ bool DkBasicLoader::writeBufferToFile(const QString& fileInfo, const QSharedPoin
 	return true;
 }
 
-void DkBasicLoader::indexPages(const QString& filePath) {
+void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QByteArray> ba) {
 
 	// reset counters
 	mNumPages = 1;
@@ -883,7 +892,24 @@ void DkBasicLoader::indexPages(const QString& filePath) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
+	TIFF* tiff = 0;
+	std::istringstream is(ba ? ba->toStdString() : "");
+
+	if (ba)
+		tiff = TIFFStreamOpen("MemTIFF", &is);
+
+	// read from file
+	if (!tiff)
+		tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
+
+	// loading from buffer allows us to load files with non-latin names
+	QSharedPointer<QByteArray> bal;
+	if (!tiff)
+		bal = loadFileToBuffer(filePath);;
+	std::istringstream isl(bal ? bal->toStdString() : "");
+
+	if (bal)
+		tiff = TIFFStreamOpen("MemTIFF", &isl);
 
 	if (!tiff) 
 		return;
@@ -942,7 +968,15 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 
 	DkTimer dt;
 	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
+
+	// loading from buffer allows us to load files with non-latin names
+	QSharedPointer<QByteArray> ba;
+	if (!tiff)
+		ba = loadFileToBuffer(mFile);
 	
+	std::istringstream is(ba ? ba->toStdString() : "");
+	if (ba)
+		tiff = TIFFStreamOpen("MemTIFF", &is);
 
 	if (!tiff)
 		return imgLoaded;
