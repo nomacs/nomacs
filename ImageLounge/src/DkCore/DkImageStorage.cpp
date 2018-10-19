@@ -66,7 +66,7 @@ QImage DkImage::fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h) {
 	bmi.bmiHeader.biCompression = BI_RGB;
 	bmi.bmiHeader.biSizeImage   = w * h * 4;
 
-	QImage image(w, h, QImage::Format_ARGB32_Premultiplied);
+	QImage image(w, h, QImage::Format_ARGB32);
 	if (image.isNull())
 		return image;
 
@@ -200,7 +200,7 @@ HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
 	}
 
 	// Copy over the data
-	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied);
+	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32);
 	
 	int bytes_per_line = w * 4;
 	for (int y = 0; y<h; ++y)
@@ -403,7 +403,7 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, double fact
 	
 bool DkImage::alphaChannelUsed(const QImage& img) {
 
-	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32_Premultiplied)
+	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32)
 		return false;
 
 	// number of used bytes per line
@@ -692,7 +692,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
 		return normImage(img);
 	}
-	else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32_Premultiplied && 
+	else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32 && 
 		img.format() != QImage::Format_RGB32 && img.format() != QImage::Format_RGB888) {
 		qDebug() << "[Auto Adjust] Format not supported: " << img.format();
 		return false;
@@ -903,7 +903,7 @@ QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, con
 	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
 	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
 
-	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32_Premultiplied);
+	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
 	img.fill(fillColor.rgba());
 
 	// render the image into the new coordinate system
@@ -1311,7 +1311,7 @@ cv::Mat DkImage::qImage2Mat(const QImage& img) {
 		//}
 		else {
 			//qDebug() << "image flag: " << img.format();
-			cImg = img.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+			cImg = img.convertToFormat(QImage::Format_ARGB32);
 			mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
 			//qDebug() << "I need to convert the QImage to ARGB32";
 		}
@@ -1352,7 +1352,7 @@ QImage DkImage::mat2QImage(cv::Mat img) {
 		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
 	}
 	if (img.type() == CV_8UC4) {
-		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32_Premultiplied);
+		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
 	}
 
 	qImg = qImg.copy();

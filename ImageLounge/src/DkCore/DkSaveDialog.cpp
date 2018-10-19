@@ -281,7 +281,7 @@ void DkCompressDialog::drawPreview() {
 		return;
 
 	QImage origImg = mOrigView->getCurrentImageRegion();
-	mNewImg = QImage(origImg.size(), QImage::Format_ARGB32_Premultiplied);
+	mNewImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
 	if ((mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) && mHasAlpha)
 		mNewImg.fill(mBgCol.rgb());

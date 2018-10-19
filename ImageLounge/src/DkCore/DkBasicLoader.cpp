@@ -535,7 +535,7 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
 	// init the qImage
-	img = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+	img = QImage(width, height, QImage::Format_ARGB32);
 
 	const int stopOnError = 1;
 	success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
@@ -995,7 +995,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
 	// init the qImage
-	QImage img = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+	QImage img = QImage(width, height, QImage::Format_ARGB32);
 
 	const int stopOnError = 1;
 	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
@@ -1470,7 +1470,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QImage& img, QSha
 	}
 
 	img = DkImage::mat2QImage(allPatches);
-	img = img.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+	img = img.convertToFormat(QImage::Format_ARGB32);
 
 	//setEditImage(img, tr("Original Image"));
 
@@ -2374,7 +2374,7 @@ namespace tga {
 			}
 		}
 
-		mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32_Premultiplied);
+		mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32);
 		mImg = mImg.copy();
 
 		// I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
