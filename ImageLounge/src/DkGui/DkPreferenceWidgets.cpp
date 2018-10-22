@@ -1339,7 +1339,7 @@ void DkAdvancedPreference::createLayout() {
 	// file loading
 	QCheckBox* cbSaveDeleted = new QCheckBox(tr("Ask to Save Deleted Files"), this);
 	cbSaveDeleted->setObjectName("saveDeleted");
-	cbSaveDeleted->setToolTip(tr("If checked, nomacs asked to save files which were deleted by other applications"));
+	cbSaveDeleted->setToolTip(tr("If checked, nomacs asks to save files which were deleted by other applications"));
 	cbSaveDeleted->setChecked(DkSettingsManager::param().global().askToSaveDeletedFiles);
 
 	QCheckBox* cbIgnoreExif = new QCheckBox(tr("Ignore Exif Orientation when Loading"), this);

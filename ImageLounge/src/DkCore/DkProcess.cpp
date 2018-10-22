@@ -363,11 +363,11 @@ bool DkBatchTransform::prepareProperties(const QSize& imgSize, QSize& size, floa
 
 	if (sf > 1.0 && mResizeProperty == resize_prop_decrease_only) {
 
-		logStrings.append(QObject::tr("%1 I need to increase the image, but the option is set to decrease only -> skipping.").arg(name()));
+		logStrings.append(QObject::tr("%1 I need to increase the image size, but the option is set to 'decrease only' -> skipping.").arg(name()));
 		return false;
 	}
 	else if (sf < 1.0f && mResizeProperty == resize_prop_increase_only) {
-		logStrings.append(QObject::tr("%1 I need to decrease the image, but the option is set to increase only -> skipping.").arg(name()));
+		logStrings.append(QObject::tr("%1 I need to decrease the image size, but the option is set to 'increase only' -> skipping.").arg(name()));
 		return false;
 	}
 	else if (sf == 1.0f) {
@@ -957,7 +957,7 @@ bool DkBatchProcess::deleteOrRestoreExisting() {
 		QFile file(mSaveInfo.backupFilePath());
 
 		if (!file.rename(mSaveInfo.outputFilePath())) {
-			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong sorry, your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
+			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong. Your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
 			mLogStrings.append(file.errorString());
 			return false;
 		}

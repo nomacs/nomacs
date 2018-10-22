@@ -1601,7 +1601,6 @@ void DkNoMacs::deleteFile() {
 	viewport()->getController()->applyPluginChanges(true);
 
 	QFileInfo fileInfo = getTabWidget()->getCurrentFilePath();
-
 	QString question;
 
 #if defined(Q_OS_WIN) || defined(W_OS_LINUX)

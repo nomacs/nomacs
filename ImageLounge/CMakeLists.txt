@@ -1,6 +1,7 @@
 
 # check cmake requirements
 cmake_minimum_required(VERSION 2.8)
+
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
 
@@ -17,7 +18,7 @@ project(nomacs)
 
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
-set(NOMACS_VERSION_MINOR 11)
+set(NOMACS_VERSION_MINOR 12)
 set(NOMACS_VERSION_PATCH 0)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})

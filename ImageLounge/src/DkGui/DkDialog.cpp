@@ -2794,12 +2794,12 @@ void DkMosaicDialog::createLayout() {
 	mFileLabel = new QLabel(tr("No Image loaded"), this);
 
 	// save handles
-	QLabel* saveLabel = new QLabel(tr("Image Database:"), this);
+	QLabel* saveLabel = new QLabel(tr("Mosaic Elements Folder:"), this);
 	saveLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
 	QPushButton* dbButton = new QPushButton(tr("&Browse"), this);
 	dbButton->setObjectName("dbButton");
-	dbButton->setToolTip(tr("Specify the root folder of the image database."));
+	dbButton->setToolTip(tr("Specify the root folder of images used for mosaic elements."));
 
 	mFolderLabel = new QLabel(tr("Specify an Image Database"), this);
 
