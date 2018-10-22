@@ -508,7 +508,8 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 	TIFF* tiff = 0;
 
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
+// TODO: currently TIFFStreamOpen can only be linked on Windows?!
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
 
 	std::istringstream is(ba ? ba->toStdString() : "");
 
@@ -901,7 +902,7 @@ void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QBy
 	DkTimer dt;
 	TIFF* tiff = 0;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
 	std::istringstream is(ba ? ba->toStdString() : "");
 
 	if (ba)
@@ -982,7 +983,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	DkTimer dt;
 	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
 
 	// loading from buffer allows us to load files with non-latin names
 	QSharedPointer<QByteArray> ba;
