@@ -77,8 +77,9 @@ public:
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), 
 				QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort() override;
-	void deleteViewPort() override;
+	virtual bool createViewPort(QWidget* parent) override;
 	bool closesOnImageChange() const override;
+	virtual void setVisible(bool visible) override;
 
 protected:
 	DkPatchMatchingViewPort* mViewport;
@@ -100,9 +101,10 @@ public:
 	QByteArray createCurrentJson();
 
 	auto getNearestPolygon(QPointF point);
+	
 
 public slots:
-	void setVisible(bool visible) override;
+	virtual void setVisible(bool visible) override;
 	void updateImageContainer(QSharedPointer<nmc::DkImageContainerT> imgC) override;
 	void setPanning(bool checked);
 	void discardChangesAndClose();
