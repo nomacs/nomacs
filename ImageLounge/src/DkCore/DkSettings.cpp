@@ -492,9 +492,9 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	}
 }
 
-void DkSettings::save() {
+void DkSettings::save(bool force) {
 	DefaultSettings s;
-	save(s);
+	save(s, force);
 }
 
 void DkSettings::save(QSettings& settings, bool force) {
@@ -1036,7 +1036,7 @@ void DkSettingsManager::importSettings(const QString & settingsPath) {
 
 	QSettings settings(settingsPath, QSettings::IniFormat);
 	param().load(settings);
-	param().save();
+	param().save(true);
 
 	qInfo() << "settings imported...";
 }

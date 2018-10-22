@@ -508,7 +508,7 @@ bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPoi
 	TIFF* tiff = 0;
 
 
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
 
 	std::istringstream is(ba ? ba->toStdString() : "");
 
@@ -901,7 +901,7 @@ void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QBy
 	DkTimer dt;
 	TIFF* tiff = 0;
 
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
 	std::istringstream is(ba ? ba->toStdString() : "");
 
 	if (ba)
@@ -982,7 +982,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	DkTimer dt;
 	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
 
-#if QT_VERSION >= 0x050500
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && !defined(Q_OS_MAC)
 
 	// loading from buffer allows us to load files with non-latin names
 	QSharedPointer<QByteArray> ba;
@@ -1110,7 +1110,6 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 		saved = saveWindowsIcon(img, ba);
 	}
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
-
 	else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(img, ba, compression);
 	}

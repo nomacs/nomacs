@@ -157,6 +157,7 @@ public:
 		l_computing,
 		l_computed,
 		l_empty,
+		l_cancelled,
 
 		l_end
 	};
@@ -172,6 +173,7 @@ public:
 	void setImage(const QImage& img);
 	QImage imageConst() const;
 	QImage image(double scale = 1.0);
+	void cancel();
 
 public slots:
 	void antiAliasingChanged(bool antiAliasing);

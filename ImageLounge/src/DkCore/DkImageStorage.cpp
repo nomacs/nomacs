@@ -1687,6 +1687,8 @@ void DkImageStorage::setImage(const QImage& img) {
 
 	init();
 	mImg = img;
+
+	mComputeState = l_cancelled;
 }
 
 void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
@@ -1724,6 +1726,10 @@ QImage DkImageStorage::image(double scale) {
 
 	// currently no alternative is available
 	return mImg;
+}
+
+void DkImageStorage::cancel() {
+	mComputeState = l_cancelled;
 }
 
 void DkImageStorage::compute() {
@@ -1779,6 +1785,11 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 }
 
 void DkImageStorage::imageComputed() {
+
+	if (mComputeState == l_cancelled) {
+		mComputeState = l_not_computed;
+		return;
+	}
 
 	mScaledImg = mFutureWatcher.result();
 

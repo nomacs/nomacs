@@ -347,7 +347,7 @@ public:
 
 	void load();
 	void load(QSettings& settings, bool defaults = false);
-	void save();
+	void save(bool force = false);
 	void save(QSettings& settings, bool force = false);
 	void setToDefaultSettings();
 	void setNumThreads(int numThreads);
