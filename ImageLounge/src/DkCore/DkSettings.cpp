@@ -254,7 +254,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			//qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}
@@ -272,6 +272,8 @@ QStringList DkSettings::getTranslationDirs() {
 
 	for (const QString& d : rDirs)
 		trDirs << d + QDir::separator() + "translations";
+
+	trDirs.removeDuplicates();
 
 	return trDirs;
 }
