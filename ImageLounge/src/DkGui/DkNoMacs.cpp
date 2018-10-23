@@ -1141,7 +1141,7 @@ void DkNoMacs::showLogDock(bool show, bool saveSettings) {
 	}
 
 	mLogDock->setVisible(show, saveSettings);
-	qInfo().noquote() << QStringLiteral("Say \"Hi\" to") << QApplication::applicationName() << QApplication::applicationVersion();
+	qInfoClean() << QStringLiteral("Say \"Hi\" to") << QApplication::applicationName() << QApplication::applicationVersion();
 
 }
 
