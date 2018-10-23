@@ -39,7 +39,7 @@ related links:
 
 namespace nmc {
 
-QSharedPointer<DkMessageQueuer> msgQueuer = 0;
+QSharedPointer<DkMessageQueuer> msgQueuer = QSharedPointer<DkMessageQueuer>();
 
 // -------------------------------------------------------------------- DkLogWidget 
 DkLogWidget::DkLogWidget(QWidget* parent) : QWidget(parent) {
@@ -116,6 +116,7 @@ void DkMessageQueuer::log(QtMsgType type, const QString & msg) {
 
 	QString txt;
 
+#if QT_VERSION >= 0x050500
 	switch (type) {
 	case QtDebugMsg:
 		//return;	// ignore debug messages
@@ -136,6 +137,9 @@ void DkMessageQueuer::log(QtMsgType type, const QString & msg) {
 	default:
 		return;
 	}
+#else
+	txt = msg;
+#endif
 
 	emit message(txt);
 }
