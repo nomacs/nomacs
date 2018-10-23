@@ -158,6 +158,8 @@ public:
 
 	static void initializeDebug();
 
+	static void logToFile(QtMsgType type, const QString &msg);
+
 	static QString getLogFilePath();
 
 	static QString getAppDataPath();

@@ -1406,8 +1406,6 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 	QSize imgSize = mImg.size();
 
-	qDebug() << "new size: " << newSize;
-
 	// nothing to do
 	if (mImg.size() == newSize)
 		return img;
@@ -1416,8 +1414,6 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		// compute relative size
 		float relWidth = (float)newSize.width()/(float)imgSize.width();
 		float relHeight = (float)newSize.height()/(float)imgSize.height();
-
-		qDebug() << "relative size: " << newSize;
 
 		newSize = QSize(qRound(img.width()*relWidth), qRound(img.height()*relHeight));
 	}

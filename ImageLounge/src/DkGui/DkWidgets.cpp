@@ -1140,7 +1140,6 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 	if (mRatingLabel->isVisible())
 		height += mRatingLabel->sizeHint().height();
 
-	qDebug() << "my minimum height: " << height;
 	setMinimumHeight(height);
 	updateWidth();
 }

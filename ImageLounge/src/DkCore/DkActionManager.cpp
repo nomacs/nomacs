@@ -543,11 +543,12 @@ QMenu* DkActionManager::createPanelMenu(QWidget* parent) {
 
 	mPanelMenu->addAction(mPanelActions[menu_panel_explorer]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_metadata_dock]);
+	mPanelMenu->addAction(mPanelActions[menu_panel_exif]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_history]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_preview]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_thumbview]);
 	mPanelMenu->addAction(mPanelActions[menu_panel_scroller]);
-	mPanelMenu->addAction(mPanelActions[menu_panel_exif]);
+	mPanelMenu->addAction(mPanelActions[menu_panel_log]);
 
 	mPanelMenu->addSeparator();
 
@@ -1216,7 +1217,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_scroller]->setStatusTip(QObject::tr("Show Folder Scrollbar"));
 	mPanelActions[menu_panel_scroller]->setCheckable(true);
 
-	mPanelActions[menu_panel_exif] = new QAction(QObject::tr("&Metadata"), parent);
+	mPanelActions[menu_panel_exif] = new QAction(QObject::tr("&Metadata Ribbon"), parent);
 	mPanelActions[menu_panel_exif]->setShortcut(QKeySequence(shortcut_show_exif));
 	mPanelActions[menu_panel_exif]->setStatusTip(QObject::tr("Shows the Metadata Panel"));
 	mPanelActions[menu_panel_exif]->setCheckable(true);
@@ -1240,6 +1241,11 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPanelActions[menu_panel_history]->setStatusTip(QObject::tr("Shows the edit history"));
 	mPanelActions[menu_panel_history]->setShortcut(QKeySequence(shortcut_show_history));
 	mPanelActions[menu_panel_history]->setCheckable(true);
+
+	mPanelActions[menu_panel_log] = new QAction(QObject::tr("Show &Log"), parent);
+	mPanelActions[menu_panel_log]->setStatusTip(QObject::tr("Shows the log window"));
+	mPanelActions[menu_panel_log]->setShortcut(QKeySequence(shortcut_show_log));
+	mPanelActions[menu_panel_log]->setCheckable(true);
 
 	// view actions
 	mViewActions.resize(menu_view_end);

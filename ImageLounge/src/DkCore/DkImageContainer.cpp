@@ -829,7 +829,6 @@ void DkImageContainerT::loadingFinished() {
 	
 	mLoadState = loaded;
 	emit fileLoadedSignal(true);
-	qInfoClean() << filePath() << " loaded";
 }
 
 void DkImageContainerT::downloadFile(const QUrl& url) {

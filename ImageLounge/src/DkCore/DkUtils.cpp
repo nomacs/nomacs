@@ -92,51 +92,6 @@ QDebug qWarningClean() {
 namespace nmc {
 
 
-void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
-
-#if QT_VERSION >= 0x050500
-	// this might cause a crash (if qDebug() is used in a destructor)
-	if (!DkSettingsManager::param().app().useLogFile)
-		return;	// should not be called anyhow
-
-	static QString filePath;
-
-	if (filePath.isEmpty())
-		filePath = DkUtils::getLogFilePath();
-
-	QString txt;
-
-	switch (type) {
-	case QtDebugMsg:
-		return;	// ignore debug messages
-		break;
-	case QtInfoMsg:
-		txt = msg;
-		break;
-	case QtWarningMsg:
-		txt = "[Warning] " + msg;
-		break;
-	case QtCriticalMsg:
-		txt = "[Critical] " + msg;
-		break;
-	case QtFatalMsg:
-		txt = "[FATAL] " + msg;
-		break;
-	default:
-		//txt = "unknown message type: " + QString::number(type) + msg;
-		return;
-	}
-
-	QFile outFile(filePath);
-	outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-
-	QTextStream ts(&outFile);
-	ts << txt << endl;
-#endif
-}
-
-
-
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
 double DkMemory::getTotalMemory() {
 
@@ -478,6 +433,63 @@ void DkUtils::registerFileVersion() {
 	QString version(NOMACS_VERSION);	// default version (we do not know the build)
 #endif
 	QApplication::setApplicationVersion(version);
+}
+
+/// <summary>
+/// Saves log messages to a temporary log file.
+/// Log messages are saved to DkUtils::instance().app().logPath() if
+/// DkUtils::instance().app().useLogFile ist true.
+/// </summary>
+/// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
+/// <param name=""></param>
+/// <param name="msg">The message.</param>
+void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg) {
+
+	if (!DkSettingsManager::param().app().useLogFile)
+		return;
+
+	DkUtils::logToFile(type, msg);
+}
+
+void DkUtils::logToFile(QtMsgType type, const QString &msg) {
+
+#if QT_VERSION >= 0x050500
+
+	static QString filePath;
+
+	if (filePath.isEmpty())
+		filePath = DkUtils::getLogFilePath();
+
+	QString txt;
+
+	switch (type) {
+	case QtDebugMsg:
+		return;	// ignore debug messages
+		break;
+	case QtInfoMsg:
+		txt = msg;
+		break;
+	case QtWarningMsg:
+		txt = "[Warning] " + msg;
+		break;
+	case QtCriticalMsg:
+		txt = "[Critical] " + msg;
+		break;
+	case QtFatalMsg:
+		txt = "[FATAL] " + msg;
+		break;
+	default:
+		//txt = "unknown message type: " + QString::number(type) + msg;
+		return;
+	}
+
+	QFile outFile(filePath);
+	if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append))
+		printf("cannot open %s for logging\n", filePath.toStdString().c_str());
+
+	QTextStream ts(&outFile);
+	ts << txt << endl;
+#endif
 }
 
 void DkUtils::initializeDebug() {

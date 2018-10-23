@@ -286,7 +286,7 @@ bool DkImageLoader::loadDir(const QString& newDirPath, bool scanRecursive) {
 		//else
 			createImages(files, true);
 
-		qInfoClean() << newDirPath << " [" << mImages.size() << "] loaded in " << dt;
+		qInfoClean() << newDirPath << " [" << mImages.size() << "] indexed in " << dt;
 	}
 	//else
 	//	qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
@@ -1708,27 +1708,36 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 	//}
 
 	int cIdx = findFileIdx(imgC->filePath(), mImages);
-	float mem = 0;
+	double mem = 0;
+	double totalMem = 0;
 
 	if (cIdx == -1) {
-		qDebug() << "WARNING: image not found for caching!";
+		qWarning() << "WARNING: image not found for caching!";
 		return;
 	}
 
 	for (int idx = 0; idx < mImages.size(); idx++) {
 
+		auto cImg = mImages.at(idx);
+
 		// clear images if they are edited
-		if (idx != cIdx && mImages.at(idx)->isEdited()) {
-			mImages.at(idx)->clear();
+		if (idx != cIdx && cImg->isEdited()) {
+			cImg->clear();
 			continue;
 		}
 
-		if (idx >= cIdx-1 && idx <= cIdx+DkSettingsManager::param().resources().maxImagesCached)
-			mem += mImages.at(idx)->getMemoryUsage();
-		else {
-			mImages.at(idx)->clear();
+		// do not count the last & the current image
+		if (idx > cIdx && idx <= cIdx+DkSettingsManager::param().resources().maxImagesCached)
+			mem += cImg->getMemoryUsage();
+		else if (abs(cIdx-idx) > 1) {
+			cImg->clear();
+			if (cImg->hasImage())
+				qDebug() << "[Cacher]" << cImg->filePath() << "freed";
+
 			continue;
 		}
+		else
+			totalMem += cImg->getMemoryUsage();
 
 		// ignore the last and current one
 		if (idx == cIdx-1 || idx == cIdx) {
@@ -1736,18 +1745,17 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 		}
 		// fully load the next image
 		else if (idx == cIdx+1 && mem < DkSettingsManager::param().resources().cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
-			mImages.at(idx)->loadImageThreaded();
-			qDebug() << "[Cacher] " << mImages.at(idx)->filePath() << " fully cached...";
+			cImg->loadImageThreaded();
+			qDebug() << "[Cacher] " <<cImg->filePath() << " fully cached...";
 		}
 		else if (idx > cIdx && idx < cIdx+DkSettingsManager::param().resources().maxImagesCached-2 && mem < DkSettingsManager::param().resources().cacheMemory && mImages.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
 			//dt.getIvl();
 			mImages.at(idx)->fetchFile();		// TODO: crash detected here
-			qDebug() << "[Cacher] " << mImages.at(idx)->filePath() << " file fetched...";
+			qDebug() << "[Cacher] " << cImg->filePath() << " file fetched...";
 		}
 	}
 
-	qDebug() << "cache with: " << mem << " MB created in: " << dt;
-
+	qDebug() << "[Cacher] created in" << dt << "(" << mem + totalMem << "MB)";
 }
 
 /**
@@ -1763,6 +1771,9 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords, QStringList keywords, QString folderKeywords) {
 
 	DkTimer dt;
+
+	if (dirPath.isEmpty())
+		return QFileInfoList();
 
 #ifdef Q_OS_WIN
 

@@ -254,7 +254,7 @@ void DkSettings::loadTranslation(const QString& fileName, QTranslator& translato
 	for (int idx = 0; idx < translationDirs.size(); idx++) {
 
 		if (translator.load(fileName, translationDirs[idx])) {
-			qInfoClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			qDebugClean() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
 			break;
 		}
 	}
@@ -332,6 +332,9 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	tmpShow = settings.value("showHistoryDock", app_p.showHistoryDock).toBitArray();
 	if (tmpShow.size() == app_p.showHistoryDock.size())	
 		app_p.showHistoryDock = tmpShow;
+	tmpShow = settings.value("showLogDock", app_p.showLogDock).toBitArray();
+	if (tmpShow.size() == app_p.showLogDock.size())
+		app_p.showLogDock = tmpShow;
 
 	app_p.hideAllPanels = settings.value("hideAllPanels", app_p.hideAllPanels).toBool();
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
@@ -541,6 +544,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("showEditDock", app_p.showEditDock);
 	if (force ||app_p.showHistoryDock != app_d.showHistoryDock)
 		settings.setValue("showHistoryDock", app_p.showHistoryDock);
+	if (force || app_p.showLogDock != app_d.showLogDock)
+		settings.setValue("showLogDock", app_p.showLogDock);
 	if (force || app_p.hideAllPanels != app_d.hideAllPanels)
 		settings.setValue("hideAllPanels", app_p.hideAllPanels);
 	if (force ||app_p.advancedSettings != app_d.advancedSettings)
@@ -778,6 +783,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showMetaDataDock = QBitArray(mode_end, false);
 	app_p.showEditDock = QBitArray(mode_end, false);
 	app_p.showHistoryDock = QBitArray(mode_end, false);
+	app_p.showLogDock = QBitArray(mode_end, false);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
 	app_p.hideAllPanels = false;

@@ -182,6 +182,7 @@ public:
 		QBitArray showMetaDataDock;
 		QBitArray showEditDock;
 		QBitArray showHistoryDock;
+		QBitArray showLogDock;
 		bool showRecentFiles;
 		bool useLogFile;
 		int appMode;

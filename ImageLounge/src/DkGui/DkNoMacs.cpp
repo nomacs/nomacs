@@ -51,6 +51,7 @@
 #include "DkActionManager.h"
 #include "DkStatusBar.h"
 #include "DkDockWidgets.h"
+#include "DkLogWidget.h"
 #include "DkUpdater.h"
 
 #ifdef  WITH_PLUGINS
@@ -370,6 +371,7 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_panel_metadata_dock), SIGNAL(toggled(bool)), this, SLOT(showMetaDataDock(bool)));
 	connect(am.action(DkActionManager::menu_edit_image), SIGNAL(toggled(bool)), this, SLOT(showEditDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_history), SIGNAL(toggled(bool)), this, SLOT(showHistoryDock(bool)));
+	connect(am.action(DkActionManager::menu_panel_log), SIGNAL(toggled(bool)), this, SLOT(showLogDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
 	connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleDocks(bool)));
 
@@ -758,6 +760,7 @@ void DkNoMacs::toggleDocks(bool hide) {
 		showMetaDataDock(false, false);
 		showEditDock(false, false);
 		showHistoryDock(false, false);
+		showLogDock(false, false);
 		showStatusBar(false, false);
 		showToolBar(false, false);
 	}
@@ -774,7 +777,7 @@ void DkNoMacs::restoreDocks() {
 	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showMetaDataDock), false);
 	showEditDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showEditDock), false);
 	showHistoryDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock), false);
-
+	showLogDock(DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showLogDock), false);
 }
 
 void DkNoMacs::setFrameless(bool) {
@@ -1121,6 +1124,25 @@ void DkNoMacs::showHistoryDock(bool show, bool saveSettings) {
 
 	if (show && getTabWidget()->getCurrentImage())
 		mHistoryDock->updateImage(getTabWidget()->getCurrentImage());
+}
+
+void DkNoMacs::showLogDock(bool show, bool saveSettings) {
+
+	if (!show && !mLogDock)
+		return;
+
+	if (!mLogDock) {
+
+		// get last location
+		mLogDock = new DkLogDock(tr("Console"), this);
+		mLogDock->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_log));
+		mLogDock->setDisplaySettings(&DkSettingsManager::param().app().showLogDock);
+		addDockWidget(mLogDock->getDockLocationSettings(Qt::LeftDockWidgetArea), mLogDock);
+	}
+
+	mLogDock->setVisible(show, saveSettings);
+	qInfo().noquote() << QStringLiteral("Say \"Hi\" to") << QApplication::applicationName() << QApplication::applicationVersion();
+
 }
 
 void DkNoMacs::showThumbsDock(bool show) {
@@ -1859,6 +1881,8 @@ void DkNoMacs::onWindowLoaded() {
 		showEditDock(true);
 	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showHistoryDock))
 		showHistoryDock(true);
+	if (DkDockWidget::testDisplaySettings(DkSettingsManager::param().app().showLogDock))
+		showLogDock(true);
 
 	if (firstTime) {
 

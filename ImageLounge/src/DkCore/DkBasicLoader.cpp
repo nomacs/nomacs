@@ -342,9 +342,9 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 		setEditImage(img, tr("Original Image"));
 
 	if (imgLoaded)
-		qInfo() << filePath << "loaded in" << dt;
+		qInfo() << "[Basic Loader]" << filePath << "loaded in" << dt;
 	else
-		qWarning() << "could not load" << filePath;
+		qWarning() << "[Basic Loader] could not load" << filePath;
 
 	return imgLoaded;
 }

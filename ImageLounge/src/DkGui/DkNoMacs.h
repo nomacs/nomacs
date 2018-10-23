@@ -76,6 +76,7 @@ class DkExplorer;
 class DkMetaDataDock;
 class DkEditDock;
 class DkHistoryDock;
+class DkLogDock;
 class DkExportTiffDialog;
 class DkUpdater;
 class DkInstallUpdater;
@@ -161,6 +162,7 @@ public slots:
 	void showMetaDataDock(bool show, bool saveSettings = true);
 	void showEditDock(bool show, bool saveSettings = true);
 	void showHistoryDock(bool show, bool saveSettings = true);
+	void showLogDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
 	void thumbsDockAreaChanged();
 	void openDir();
@@ -290,6 +292,7 @@ protected:
 	DkMetaDataDock* mMetaDataDock = 0;
 	DkEditDock* mEditDock = 0;
 	DkHistoryDock* mHistoryDock = 0;
+	DkLogDock* mLogDock = 0;
 	DkDockWidget* mThumbsDock = 0;
 	DkExportTiffDialog* mExportTiffDialog = 0;
 	DkThumbsSaver* mThumbSaver = 0;

@@ -690,9 +690,7 @@ void DkFilePreview::leaveEvent(QEvent*) {
 	selected = -1;
 	if (!scrollToCurrentImage) {
 		moveImageTimer->stop();
-		qDebug() << "stopping timer (leaveEvent)";
 	}
-	//fileLabel->hide();
 	update();
 }
 

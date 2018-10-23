@@ -349,7 +349,6 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, double fact
 	case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
 	}
 
-
 	try {
 		
 		QImage qImg;
@@ -383,7 +382,8 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, double fact
 
 		return qImg;
 
-	} catch (std::exception se) {
+	} 
+	catch (std::exception se) {
 		return QImage();
 	}
 
@@ -551,8 +551,6 @@ QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal) {
 	// i = px/255
 	// i <= 0.04045 -> i/12.92
 	// i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
-
-	qDebug() << "gamma2Linear: ";
 	QVector<numFmt> gammaTable;
 	double a = 0.055;
 

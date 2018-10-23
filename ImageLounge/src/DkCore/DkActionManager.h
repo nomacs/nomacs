@@ -203,6 +203,7 @@ public:
 		menu_panel_metadata_dock,
 		menu_panel_comment,
 		menu_panel_history,
+		menu_panel_log,
 
 		menu_panel_end,
 	};
@@ -417,6 +418,7 @@ public:
 		shortcut_show_explorer	= Qt::Key_E,
 		shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
 		shortcut_show_history	= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
+		shortcut_show_log		= Qt::CTRL + Qt::ALT + Qt::Key_L,
 		shortcut_view_slideshow	= Qt::Key_Space,
 		shortcut_show_player	= Qt::Key_P,
 		shortcut_show_exif		= Qt::Key_M,
