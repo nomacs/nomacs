@@ -1079,6 +1079,8 @@ void DkResizeDialog::createLayout() {
 	layout->addWidget(buttons, 3, 0, 1, 2, Qt::AlignRight);
 	
 	adjustSize();
+	resize(700, 500);
+
 	//show();
 }
 

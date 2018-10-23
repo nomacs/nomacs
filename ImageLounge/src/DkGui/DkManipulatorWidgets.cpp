@@ -488,8 +488,8 @@ void DkExposureWidget::createLayout() {
 
 	DkDoubleSlider* exposureSlider = new DkDoubleSlider(tr("Exposure"), this);
 	exposureSlider->setObjectName("exposureSlider");
-	exposureSlider->setMinimum(-20.0);
-	exposureSlider->setMaximum(20.0);
+	exposureSlider->setMinimum(-3);
+	exposureSlider->setMaximum(3);
 	exposureSlider->setTickInterval(0.0005);
 	exposureSlider->setValue(manipulator()->exposure());
 
@@ -503,6 +503,7 @@ void DkExposureWidget::createLayout() {
 	DkDoubleSlider* gammaSlider = new DkDoubleSlider(tr("Gamma"), this);
 	gammaSlider->setObjectName("gammaSlider");
 	gammaSlider->setMinimum(0);
+	gammaSlider->setCenterValue(1);
 	gammaSlider->setMaximum(10);
 	gammaSlider->setTickInterval(0.001);
 	gammaSlider->setSliderInverted(true);
@@ -515,7 +516,11 @@ void DkExposureWidget::createLayout() {
 }
 
 void DkExposureWidget::on_exposureSlider_valueChanged(double val) {
-	manipulator()->setExposure(val);
+
+	double tv = val*val;
+	if (val < 0)
+		tv *= -1.0;
+	manipulator()->setExposure(tv);
 }
 
 void DkExposureWidget::on_offsetSlider_valueChanged(double val) {

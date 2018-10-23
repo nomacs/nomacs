@@ -194,6 +194,84 @@ void DkDoubleSlider::createLayout() {
 	connect(mSliderBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
 }
 
+int DkDoubleSlider::map(double val) const {
+	
+	double minv = 0.0, maxv = 0.0;
+
+	if (mCenter != 0.0) {
+		if (val > mCenter) {
+			minv = mCenter;
+			maxv = mSliderBox->maximum();
+		}
+		else {
+			minv = mCenter;
+			maxv = mSliderBox->minimum();
+		}
+	}
+	else {
+		minv = mSliderBox->minimum();
+		maxv = mSliderBox->maximum();
+	}
+
+	// normalize
+	double nVal = (val - minv) / (maxv-minv);
+
+	if (mSliderInverted)
+		nVal = 1.0 - nVal;
+
+	double v = nVal * mSlider->maximum();
+	
+	if (mCenter != 0.0 && mSliderInverted)
+		v -= qRound(mSlider->maximum() / 2.0);
+	else if (mCenter != 0.0)
+		v += qRound(mSlider->maximum() / 2.0);
+
+	return qRound(v);
+}
+
+double DkDoubleSlider::mapInv(int val) const {
+
+	if (mCenter == 0.0) {
+
+		double minv = mSliderBox->minimum();
+		double maxv = mSliderBox->maximum();
+
+		double nVal = val / (double)mSlider->maximum();
+
+		if (mSliderInverted)
+			nVal = 1.0 - nVal;
+
+		return nVal * (maxv - minv) + minv;
+	}
+	else {
+
+		double mc = mSlider->maximum() / 2.0;
+		bool left = val < mc;
+
+		if (mSliderInverted)
+			left = !left;
+
+		double minv, maxv;
+		if (left) {
+			minv = mSliderBox->minimum();
+			maxv = mCenter;
+		}
+		else {
+			maxv = mSliderBox->maximum();
+			minv = mCenter;
+		}
+
+		double nVal = val / (double)mc;
+
+		if (mSliderInverted)
+			nVal = 1.0 - nVal;
+		else
+			nVal -= 1.0;
+
+		return nVal * (maxv - minv) + mCenter;
+	}
+}
+
 QSlider* DkDoubleSlider::getSlider() const {
 	return mSlider;
 }
@@ -204,6 +282,10 @@ void DkDoubleSlider::setMinimum(double minValue) {
 
 void DkDoubleSlider::setMaximum(double maxValue) {
 	mSliderBox->setMaximum(maxValue);
+}
+
+void DkDoubleSlider::setCenterValue(double center) {
+	mCenter = center;
 }
 
 void DkDoubleSlider::setTickInterval(double ticValue) {
@@ -224,16 +306,8 @@ void DkDoubleSlider::setSliderInverted(bool inverted) {
 
 void DkDoubleSlider::setValue(double value) {
 
-	double dr = mSliderBox->maximum() - mSliderBox->minimum();
-	double nVal = (value - mSliderBox->minimum()) / dr;
-
-	if (mSliderInverted)
-		nVal = 1.0 - nVal;
-	
-	int sVal = qRound(nVal * mSlider->maximum());
-
 	mSlider->blockSignals(true);
-	mSlider->setValue(sVal);
+	mSlider->setValue(map(value));
 	mSlider->blockSignals(false);
 
 	mSliderBox->blockSignals(true);
@@ -245,11 +319,7 @@ void DkDoubleSlider::setValue(double value) {
 
 void DkDoubleSlider::setIntValue(int value) {
 
-	double dr = mSliderBox->maximum() - mSliderBox->minimum();
-	double nVal = value / (double)mSlider->maximum();
-	if (mSliderInverted)
-		nVal = 1.0 - nVal;
-	double sVal = nVal * dr + mSliderBox->minimum();
+	double sVal = mapInv(value);
 	
 	mSlider->blockSignals(true);
 	mSlider->setValue(value);

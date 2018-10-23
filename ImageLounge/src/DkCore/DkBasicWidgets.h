@@ -97,6 +97,7 @@ public:
 	QSlider* getSlider() const;
 	void setMinimum(double minValue);
 	void setMaximum(double maxValue);
+	void setCenterValue(double center);
 	void setTickInterval(double ticValue);
 	double value() const;
 	void setFocus(Qt::FocusReason reason);
@@ -112,11 +113,14 @@ signals:
 
 protected:
 	void createLayout();
+	int map(double val) const;
+	double mapInv(int val) const;
 
 	QLabel* mTitleLabel;
 	QSlider* mSlider;
 	QDoubleSpinBox* mSliderBox;
 	bool mSliderInverted = false;
+	double mCenter = 0;
 };
 
 class DllCoreExport DkColorChooser : public QWidget {
