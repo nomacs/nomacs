@@ -60,11 +60,6 @@ QListView {
 	border: 1px solid #444;
 }
 
-QComboBox QAbstractItemView {
-	color: FOREGROUND_COLOR;
-	padding: 5px;
-}
-
 QListView#resultListView,
 QTextEdit,
 QAbstractItemView,
@@ -77,9 +72,26 @@ QListView::item {
 QComboBox {
 	border: 1px solid #444;
 }
+
+QComboBox QListView::item {
+	padding: 2px;
+}
+
+QComboBox QListView::item:selected { 
+	color: BACKGROUND_COLOR;
+	background-color: HIGHLIGHT_COLOR; 
+}
+
 QComboBox::drop-down {
-	background-color: #ccc;
-	border-radius: 8px;
+	image: url(:/nomacs/img/down-white.svg);
+	border: none;
+	width: 16px;
+	height: 16px;
+	background-color: none;
+}
+
+QComboBox::drop-down:hover {
+	background-color: rgba(255, 255, 255, 30);
 }
 
 QComboBox,

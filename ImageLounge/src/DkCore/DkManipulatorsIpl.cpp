@@ -257,6 +257,50 @@ int DkRotateManipulator::angle() const {
 	return mAngle;
 }
 
+// -------------------------------------------------------------------- DkResizeManipulator 
+DkResizeManipulator::DkResizeManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkResizeManipulator::apply(const QImage & img) const {
+
+	if (mScaleFactor == 1.0)
+		return img;
+
+	return DkImage::resizeImage(img, QSize(), mScaleFactor, mInterpolation, mCorrectGamma);
+}
+
+QString DkResizeManipulator::errorMessage() const {
+	return QObject::tr("Cannot resize image");
+}
+
+void DkResizeManipulator::setScaleFactor(double sf) {
+	mScaleFactor = sf;
+	action()->trigger();
+}
+
+double DkResizeManipulator::scaleFactor() const {
+	return mScaleFactor;
+}
+
+void DkResizeManipulator::setInterpolation(int ipl) {
+	mInterpolation = ipl;
+	action()->trigger();
+}
+
+int DkResizeManipulator::interpolation() const {
+	return mInterpolation;
+}
+
+void DkResizeManipulator::setCorrectGamma(bool cg) {
+	mCorrectGamma = cg;
+	action()->trigger();
+}
+
+bool DkResizeManipulator::correctGamma() const {
+	return mCorrectGamma;
+}
+
+
 // Rotate Manipulator --------------------------------------------------------------------
 DkThresholdManipulator::DkThresholdManipulator(QAction * action) : DkBaseManipulatorExt(action) {
 }

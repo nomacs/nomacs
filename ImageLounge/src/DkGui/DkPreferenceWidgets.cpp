@@ -289,6 +289,7 @@ void DkGeneralPreference::createLayout() {
 	QStringList themes = tm.cleanThemeNames(tm.getAvailableThemes());
 
 	QComboBox* themeBox = new QComboBox(this);
+	themeBox->setView(new QListView());
 	themeBox->setObjectName("themeBox");
 	themeBox->addItems(themes);
 	themeBox->setCurrentText(tm.cleanThemeName(tm.getCurrentThemeName()));
@@ -420,6 +421,7 @@ void DkGeneralPreference::createLayout() {
 
 	// language
 	QComboBox* languageCombo = new QComboBox(this);
+	languageCombo->setView(new QListView());	// fix style
 	languageCombo->setObjectName("languageCombo");
 	languageCombo->setToolTip(tr("Choose your preferred language."));
 	DkUtils::addLanguages(languageCombo, mLanguages);
@@ -752,6 +754,7 @@ void DkDisplayPreference::createLayout() {
 	QLabel* fadeImageLabel = new QLabel(tr("Image Transition"), this);
 
 	QComboBox* cbTransition = new QComboBox(this);
+	cbTransition->setView(new QListView());	// fix style
 	cbTransition->setObjectName("transition");
 	cbTransition->setToolTip(tr("Choose a transition when loading a new image"));
 

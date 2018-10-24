@@ -77,7 +77,13 @@ class DllCoreExport DkImage {
 public:
 
 	/**< interpolation mapping OpenCV -> Qt */
-	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
+	enum {
+		ipl_nearest, 
+		ipl_area, 
+		ipl_linear, 
+		ipl_cubic, 
+		ipl_lanczos, 
+		ipl_end};
 
 #ifdef Q_OS_WIN
 	static QImage fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h);

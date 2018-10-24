@@ -746,7 +746,7 @@ void DkViewPort::applyManipulator() {
 
 		auto l = imageContainer()->getLoader();
 		l->setMinHistorySize(3);	// increase the min history size to 3 for correctly popping back
-		if (l->lastEdit().editName() == mplExt->name()) {
+		if (!l->history()->isEmpty() && l->lastEdit().editName() == mplExt->name()) {
 			imageContainer()->undo();
 		}
 		

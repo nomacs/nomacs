@@ -47,7 +47,7 @@ DkBaseManipulator::DkBaseManipulator(QAction * action) {
 	
 	// add default icon
 	if (mAction->icon().isNull()) {
-		QSize size(32, 32);
+		QSize size(22, 22);
 		mAction->setIcon(DkImage::loadIcon(":/nomacs/img/sliders.svg", size));
 	}
 }
@@ -77,7 +77,7 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	QVector<QSharedPointer<DkBaseManipulator> > mpls;
 	mpls.resize(m_ext_end);
 
-	QSize size(32, 32);
+	QSize size(22, 22);
 
 	// grayscale
 	QAction* action;
@@ -133,7 +133,12 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Rotate the image"));
 	mpls[m_rotate] = QSharedPointer<DkRotateManipulator>::create(action);
 
-	// rotate
+	// resize
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/resize.svg", size), QObject::tr("&Resize..."), parent);
+	action->setStatusTip(QObject::tr("Resize the image"));
+	mpls[m_resize] = QSharedPointer<DkResizeManipulator>::create(action);
+
+	// threshold
 	action = new QAction(DkImage::loadIcon(":/nomacs/img/threshold.svg", size), QObject::tr("&Threshold..."), parent);
 	action->setStatusTip(QObject::tr("Threshold the image"));
 	mpls[m_threshold] = QSharedPointer<DkThresholdManipulator>::create(action);

@@ -465,11 +465,13 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QLabel,
 nmc--DkBaseManipulatorWidget#darkManipulator QCheckBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QLineEdit {
 	color: #fff;
 }
 
 nmc--DkBaseManipulatorWidget#darkManipulator QLineEdit,
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QDoubleSpinBox,
 nmc--DkBaseManipulatorWidget#darkManipulator QSpinBox {
 	background: #333;
@@ -527,6 +529,38 @@ nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkSaturationSlider::groove:
 
 nmc--DkBaseManipulatorWidget#darkManipulator QSlider#DkHueSlider::groove:horizontal {
 	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox {
+	font-size: 11pt;
+	min-height: 30px;
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox::drop-down {
+	image: url(:/nomacs/img/down-white.svg);
+	border: none;
+	width: 16px;
+	height: 16px;
+	padding: 5px;
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox::drop-down:hover {
+	background-color: rgba(255, 255, 255, 30);
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView {
+	border: 1px solid #444;
+	font-size: 11pt;
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView::item {
+	color: #fff;
+	padding: 5px;
+}
+
+nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QListView::item:selected { 
+	color: #333;
+	background-color: HIGHLIGHT_COLOR; 
 }
 
 QLabel#DkManipulatorSettingsTitle {

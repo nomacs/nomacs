@@ -41,6 +41,7 @@
 #include <QLabel>
 #include <QButtonGroup>
 #include <QCheckBox>
+#include <QComboBox>
 #pragma warning(pop)
 
 namespace nmc {
@@ -53,6 +54,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
+	mWidgets << new DkResizeWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_resize), this);
 	mWidgets << new DkThresholdWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_threshold), this);
 	mWidgets << new DkHueWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_hue), this);
 	mWidgets << new DkColorWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_color), this);
@@ -333,7 +335,6 @@ DkRotateWidget::DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator,
 	manipulator->setWidget(this);
 }
 
-
 QSharedPointer<DkRotateManipulator> DkRotateWidget::manipulator() const {
 	return qSharedPointerDynamicCast<DkRotateManipulator>(baseManipulator());
 }
@@ -349,8 +350,75 @@ void DkRotateWidget::createLayout() {
 	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
 	sliderLayout->addWidget(angleSlider);
 }
+
 void DkRotateWidget::on_angleSlider_valueChanged(int val) {
 	manipulator()->setAngle(val);
+}
+
+// DkRotateWidget --------------------------------------------------------------------
+DkResizeWidget::DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+
+	// I would have loved setObjectName to be virtual : )
+	connect(this, SIGNAL(objectNameChanged(const QString&)), this, SLOT(onObjectNameChanged(const QString&)));
+}
+
+QSharedPointer<DkResizeManipulator> DkResizeWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkResizeManipulator>(baseManipulator());
+}
+
+void DkResizeWidget::onObjectNameChanged(const QString & name) {
+	
+	if (name == "darkManipulator") {
+		// this is a hack: if we don't do this, nmc--DkBaseManipulatorWidget#darkManipulator QComboBox QAbstractItemView get's applied
+		// I have the feeling, that this is a Qt issue
+		// without this line, all styles are applied to the QComboBox but not to its drop down list (QAbstractItemView)
+		mIplBox->setStyleSheet(mIplBox->styleSheet() + " ");
+	}
+}
+
+void DkResizeWidget::createLayout() {
+
+	DkDoubleSlider* scaleSlider = new DkDoubleSlider(tr("Scale"), this);
+	scaleSlider->setObjectName("scaleFactorSlider");
+	scaleSlider->setMinimum(0.1);
+	scaleSlider->setCenterValue(1.0);
+	scaleSlider->setMaximum(10);
+	scaleSlider->setValue(manipulator()->scaleFactor());
+
+	mIplBox = new QComboBox(this);
+	mIplBox->setObjectName("iplBox");
+	mIplBox->setView(new QListView());	// needed for style
+	mIplBox->addItem(tr("Nearest Neighbor"), DkImage::ipl_nearest);
+	mIplBox->addItem(tr("Area (best for downscaling)"), DkImage::ipl_area);
+	mIplBox->addItem(tr("Linear"), DkImage::ipl_linear);
+	mIplBox->addItem(tr("Bicubic (4x4 interpolatia)"), DkImage::ipl_cubic);
+	mIplBox->addItem(tr("Lanczos (8x8 interpolation)"), DkImage::ipl_lanczos);
+	mIplBox->setCurrentIndex(1);
+
+	QCheckBox* cbGamma = new QCheckBox(tr("Gamma Correction"), this);
+	cbGamma->setObjectName("gammaCorrection");
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->setSpacing(10);
+	sliderLayout->addWidget(scaleSlider);
+	sliderLayout->addWidget(mIplBox);
+	sliderLayout->addWidget(cbGamma);
+}
+
+void DkResizeWidget::on_scaleFactorSlider_valueChanged(double val) {
+	manipulator()->setScaleFactor(val);
+}
+
+void DkResizeWidget::on_iplBox_currentIndexChanged(int idx) {
+	manipulator()->setInterpolation(mIplBox->itemData(idx).toInt());
+}
+
+void DkResizeWidget::on_gammaCorrection_toggled(bool checked) {
+	manipulator()->setCorrectGamma(checked);
 }
 
 // DkThresholdWidget --------------------------------------------------------------------

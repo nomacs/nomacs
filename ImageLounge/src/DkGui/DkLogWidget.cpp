@@ -75,6 +75,7 @@ void DkLogWidget::createLayout() {
 	clearButton->setFixedSize(QSize(32, 32));
 
 	QGridLayout* layout = new QGridLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
 	layout->addWidget(mTextEdit, 1, 1);
 	layout->addWidget(clearButton, 1, 1, Qt::AlignRight | Qt::AlignTop);
 }

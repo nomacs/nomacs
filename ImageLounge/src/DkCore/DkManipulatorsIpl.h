@@ -179,6 +179,29 @@ private:
 	int mAngle = 0;
 };
 
+class DllCoreExport DkResizeManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkResizeManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+
+	void setScaleFactor(double sf);
+	double scaleFactor() const;
+
+	void setInterpolation(int ipl);
+	int interpolation() const;
+
+	void setCorrectGamma(bool ug);
+	bool correctGamma() const;
+
+private:
+	double mScaleFactor = 1.0;
+	int mInterpolation = 1;
+	bool mCorrectGamma = false;
+};
+
 class DllCoreExport DkThresholdManipulator : public DkBaseManipulatorExt {
 
 public:

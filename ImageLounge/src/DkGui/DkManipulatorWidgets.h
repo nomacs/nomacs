@@ -114,6 +114,27 @@ private:
 
 };
 
+class DkResizeWidget : public DkBaseManipulatorWidget {
+	Q_OBJECT
+
+public:
+	DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+
+	QSharedPointer<DkResizeManipulator> manipulator() const;
+
+public slots:
+	void on_scaleFactorSlider_valueChanged(double val);
+	void on_iplBox_currentIndexChanged(int idx);
+	void on_gammaCorrection_toggled(bool checked);
+	void onObjectNameChanged(const QString& name);
+
+private:
+	void createLayout();
+
+	QComboBox* mIplBox;
+
+};
+
 class DkThresholdWidget : public DkBaseManipulatorWidget {
 	Q_OBJECT
 
