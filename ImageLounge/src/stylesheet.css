@@ -4,6 +4,11 @@
 	background-color: QColor(0,0,0,20); border: 1px solid #000000;
 } */
 
+QWidget {
+	font-size: 10pt;
+	font: light "Segoe UI";
+}
+
 /* batch */
 nmc--DkBatchInput QTextEdit {
 	border: none;
@@ -11,7 +16,7 @@ nmc--DkBatchInput QTextEdit {
 
 QLabel#batchContentTitle {
 	text-transform: uppercase;
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
 	color: #333;
@@ -78,7 +83,7 @@ QTabBar::close-button:hover {
 }
 
 QDockWidget {
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	color: #000;
 	border: 1px solid #ccc;
 }
@@ -249,7 +254,6 @@ QLabel#commentTitleLabel {
 	margin: 0; 
 	padding: 0; 
 	font-size: 25px; 
-	font-family: Segoe UI; 
 	font-weight: light;
 }
 
@@ -271,7 +275,6 @@ QLabel#DkMetaDataHUDTitle {
 	color: HUD_FOREGROUND_COLOR; 
 	margin: 0; 
 	font-size: 21px; 
-	font-family: Segoe UI; 
 	font-weight: light;
 }
 
@@ -380,7 +383,7 @@ nmc--DkBatchTabButton:checked {
 QLabel#DkPreferenceTitle {
 	text-transform: uppercase;
 	padding: 10px 20px;
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	font-size: 24pt;
 	font-weight: 100;
 	border-bottom: 1px solid #333;
@@ -388,7 +391,7 @@ QLabel#DkPreferenceTitle {
 }
 
 QPushButton#infoButton {
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
 	color: #666;
@@ -411,7 +414,7 @@ QWidget#DkPreferenceWidget {
 }
 
 QLabel#subTitle {
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	margin-top: 10px;
 	font-size: 14pt;
 	color: #666;
@@ -589,14 +592,13 @@ nmc--DkRecentDirWidget::hover {
 }
 
 QLabel#recentFilesTitle {
-	font: light "Segoe UI";
+	font: thin "Segoe UI";
 	font-size: 16pt;
 	color: #000;
 	font-weight: 100;
 }
 
 QLabel#recentFilesPath {
-	font: "Segoe UI";
 	font-style: italic;
 	color: #666;
 }
