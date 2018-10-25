@@ -56,7 +56,6 @@ class QProgressDialog;
 namespace nmc {
 	
 // nomacs defines
-class DkManagerThread;
 class DkTcpMenu;
 class DkPluginActionManager;
 
@@ -502,8 +501,6 @@ public:
 	void createActions(QWidget* parent);
 	void createMenus(QWidget* parent);
 	
-	void addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu);
-
 	QAction* action(FileMenuActions action) const;
 	QAction* action(SortMenuActions action) const;
 	QAction* action(ViewMenuActions action) const;
@@ -560,6 +557,7 @@ protected:
 	QMenu* createPanelMenu(QWidget* parent);
 	QMenu* createHelpMenu(QWidget* parent);
 	QMenu* createContextMenu(QWidget* parent);
+	QMenu* createSyncMenu(QWidget* parent);
 
 	// actions
 	QVector<QAction *> mFileActions;
@@ -592,7 +590,7 @@ protected:
 	// sync
 	QMenu* mSyncMenu = 0;
 	DkTcpMenu* mLocalMenu = 0;
-
+	   
 	// icons
 	QVector<QIcon> mFileIcons;
 	QVector<QIcon> mEditIcons;

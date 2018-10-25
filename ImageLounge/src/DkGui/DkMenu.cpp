@@ -149,22 +149,13 @@ void DkMenuBar::leaveEvent(QEvent* event) {
 }
 
 // DkTcpMenu --------------------------------------------------------------------
-DkTcpMenu::DkTcpMenu(const QString& title, QWidget* parent, DkManagerThread* clientThread) : QMenu(title, parent) {
-	mClientThread = clientThread;
+DkTcpMenu::DkTcpMenu(const QString& title, QWidget* parent) : QMenu(title, parent) {
 
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
-
-	if (clientThread)
-		connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
+	connect(this, SIGNAL(synchronizeWithSignal(quint16)), DkSyncManager::inst().client(), SLOT(synchronizeWith(quint16)));
 }
 
 DkTcpMenu::~DkTcpMenu() {}
-
-void DkTcpMenu::setClientManager(DkManagerThread* clientThread) {
-	this->mClientThread = clientThread;
-	if (clientThread)
-		connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
-}
 
 void DkTcpMenu::addTcpAction(QAction* tcpAction) {
 	mTcpActions.append(tcpAction);
@@ -210,10 +201,8 @@ void DkTcpMenu::enableActions(bool enable, bool local) {
 
 void DkTcpMenu::updatePeers() {	// find other clients on paint
 
-	if (!mClientThread)
-		return;
-
-	QList<DkPeer*> newPeers = mClientThread->getPeerList();	// TODO: remove old style
+	auto ct = DkSyncManager::inst().client();
+	QList<DkPeer*> newPeers = ct->getPeerList();	// TODO: remove old style
 
 	// just update if the peers have changed...
 	QMenu::clear();
@@ -231,7 +220,6 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 		for (int idx = 0; idx < mTcpActions.size(); idx++) {
 			addAction(mTcpActions.at(idx));
 		}
-
 	}
 
 	for (int idx = 0; idx < newPeers.size(); idx++) {
@@ -244,12 +232,11 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 		if (!mNoClientsFound) 
 			peerEntry->setTcpActions(&mTcpActions);
 
-		connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), mClientThread, SLOT(synchronizeWith(quint16)));
-		connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), mClientThread, SLOT(stopSynchronizeWith(quint16)));
+		connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), ct, SLOT(synchronizeWith(quint16)));
+		connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), ct, SLOT(stopSynchronizeWith(quint16)));
 		connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
 		addAction(peerEntry);
-
 	}
 }
 
@@ -293,7 +280,6 @@ void DkTcpAction::synchronize(bool checked) {
 		emit disableSynchronizeWithSignal(peer->peerId);
 
 	emit enableActions(checked);
-	qDebug() << "emitted a synchronize message...\n";
 }
 
 }

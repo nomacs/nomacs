@@ -114,7 +114,6 @@ public:
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
 	void sendNewFileSignal(qint16 op, QString filename = "") const;
-	void newClientConnectedSignal(bool connect, bool local) const;
 	void movieLoadedSignal(bool isMovie) const;
 	void infoSignal(const QString& msg) const;	// needed to forward signals
 	void addTabSignal(const QString& filePath) const;

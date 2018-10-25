@@ -146,10 +146,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	mArchiveExtractionDialog = 0;
 #endif 
 
-	// start localhost client/server
-	//localClientManager = new DkLocalClientManager(windowTitle());
-	//localClientManger->start();
-
 	mOldGeometry = geometry();
 	mOverlaid = false;
 
@@ -249,7 +245,7 @@ void DkNoMacs::createMenu() {
 
 	// no sync menu in frameless view
 	if (DkSettingsManager::param().app().appMode != DkSettings::mode_frameless)
-		mSyncMenu = mMenu->addMenu(tr("&Sync"));
+		mMenu->addMenu(am.syncMenu());
 
 #ifdef WITH_PLUGINS
 	// plugin menu
@@ -828,7 +824,7 @@ void DkNoMacs::lockWindow(bool lock) {
 #endif
 }
 
-void DkNoMacs::newClientConnected(bool connected, bool) {
+void DkNoMacs::newClientConnected(bool connected) {
 	
 	mOverlaid = false;
 	// add methods if clients are connected
@@ -2032,17 +2028,6 @@ DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags) : DkNoMacs(pa
 }
 
 DkNoMacsSync::~DkNoMacsSync() {
-
-	if (mLocalClient) {
-
-		// terminate local client
-		mLocalClient->quit();
-		mLocalClient->wait();
-
-		delete mLocalClient;
-		mLocalClient = 0;
-	}
-
 }
 
 void DkNoMacsSync::createActions() {
@@ -2054,22 +2039,21 @@ void DkNoMacsSync::createActions() {
 	// sync menu
 	connect(am.action(DkActionManager::menu_sync_pos), SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
 	connect(am.action(DkActionManager::menu_sync_arrange), SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
-	connect(am.action(DkActionManager::menu_sync_connect_all), SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
-	connect(am.action(DkActionManager::menu_sync_all_actions), SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
-}
 
-void DkNoMacsSync::createMenu() {
+	auto cm = DkSyncManager::inst().client();
+	assert(cm);
 
-	DkNoMacs::createMenu();
-	DkActionManager& am = DkActionManager::instance();
-	// local host menu
-	DkTcpMenu* localMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu, mLocalClient);
-	localMenu->showNoClientsFound(true);
-	// add connect all action
-	localMenu->addTcpAction(am.action(DkActionManager::menu_sync_connect_all));
-
-	am.addSyncMenu(mSyncMenu, localMenu);
-
+	// just for local client
+	connect(this, SIGNAL(sendArrangeSignal(bool)), cm, SLOT(sendArrangeInstances(bool)));
+	connect(this, SIGNAL(sendQuitLocalClientsSignal()), cm, SLOT(sendQuitMessageToPeers()));
+	connect(this, SIGNAL(synchronizeWithSignal(quint16)), cm, SLOT(synchronizeWith(quint16)));
+	connect(this, SIGNAL(sendPositionSignal(QRect, bool)), cm, SLOT(sendPosition(QRect, bool)));
+	connect(this, SIGNAL(synchronizeRemoteControl(quint16)), cm, SLOT(synchronizeWith(quint16)));
+	connect(this, SIGNAL(synchronizeWithServerPortSignal(quint16)), cm, SLOT(synchronizeWithServerPort(quint16)));
+	connect(this, SIGNAL(sendTitleSignal(const QString&)), cm, SLOT(sendTitle(const QString&)));
+	
+	connect(cm, SIGNAL(clientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+	connect(cm, SIGNAL(receivedPosition(QRect, bool, bool)), this, SLOT(tcpSetWindowRect(QRect, bool, bool)));
 }
 
 // mouse events
@@ -2083,16 +2067,12 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event) {
 
 			qDebug() << "generating a drag event...";
 
-			QByteArray connectionData;
-			QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
-			dataStream << mLocalClient->getServerPort();
-			qDebug() << "serverport: " << mLocalClient->getServerPort();
+			auto cm = dynamic_cast<DkLocalClientManager*>(DkSyncManager::inst().client());
+			assert(cm);
+			auto md = cm->mimeData();
 
 			QDrag* drag = new QDrag(this);
-			QMimeData* mimeData = new QMimeData;
-			mimeData->setData("network/sync-dir", connectionData);
-
-			drag->setMimeData(mimeData);
+			drag->setMimeData(md);
 			drag->exec(Qt::CopyAction | Qt::MoveAction);
 	}
 	else
@@ -2131,28 +2111,8 @@ void DkNoMacsSync::dropEvent(QDropEvent *event) {
 
 }
 
-qint16 DkNoMacsSync::getServerPort() {
-
-	return (mLocalClient) ? mLocalClient->getServerPort() : 0;
-}
-
 void DkNoMacsSync::syncWith(qint16 port) {
 	emit synchronizeWithServerPortSignal(port);
-}
-
-// slots
-void DkNoMacsSync::tcpConnectAll() {
-
-	QList<DkPeer*> peers = mLocalClient->getPeerList();
-
-	for (int idx = 0; idx < peers.size(); idx++)
-		emit synchronizeWithSignal(peers.at(idx)->peerId);
-
-}
-
-void DkNoMacsSync::tcpAutoConnect(bool connect) {
-
-	DkSettingsManager::param().sync().syncActions = connect;
 }
 
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
@@ -2160,16 +2120,10 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	// init members
 	DkCentralWidget* cw = new DkCentralWidget(this);
 	setCentralWidget(cw);
-	mLocalClient = new DkLocalManagerThread(this);
-	mLocalClient->setObjectName("localClient");
-	mLocalClient->start();
-
+	
 	init();
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
-
-	// TODO:ref sync signals
-	//connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	DkSettingsManager::param().app().appMode = 0;
 	DkSettingsManager::param().app().appMode = DkSettings::mode_default;
@@ -2306,10 +2260,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		DkCentralWidget* cw = new DkCentralWidget(this);
 		setCentralWidget(cw);
 
-		mLocalClient = new DkLocalManagerThread(this);
-		mLocalClient->setObjectName("localClient");
-		mLocalClient->start();
-
 		init();
 
 		DkToolBarManager::inst().createTransferToolBar();
@@ -2317,8 +2267,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
 
-		// TODO:ref sync signals
-		//connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		emit sendTitleSignal(windowTitle());
 
 		DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;

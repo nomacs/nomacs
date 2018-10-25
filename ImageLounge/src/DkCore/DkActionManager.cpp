@@ -590,19 +590,6 @@ QMenu* DkActionManager::createToolsMenu(QWidget* parent /* = 0 */) {
 	return mToolsMenu;
 }
 
-void DkActionManager::addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu) {
-
-	mSyncMenu = syncMenu;
-	mLocalMenu = localMenu;
-
-	mSyncMenu->addMenu(localMenu);
-
-	mSyncMenu->addAction(mSyncActions[menu_sync_view]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
-	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
-}
-
 QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 
 	mHelpMenu = new QMenu(QObject::tr("&?"), parent);
@@ -617,6 +604,26 @@ QMenu* DkActionManager::createHelpMenu(QWidget* parent) {
 	mHelpMenu->addAction(mHelpActions[menu_help_about]);
 
 	return mHelpMenu;
+}
+
+QMenu* DkActionManager::createSyncMenu(QWidget * parent) {
+	
+	mSyncMenu = new QMenu(QObject::tr("&Sync"), parent);
+
+	// local host menu
+	mLocalMenu = new DkTcpMenu(QObject::tr("&Synchronize"), mSyncMenu);
+	mLocalMenu->showNoClientsFound(true);
+	
+	// add connect all action
+	mLocalMenu->addTcpAction(mSyncActions[menu_sync_connect_all]);
+
+	mSyncMenu->addMenu(mLocalMenu);
+	mSyncMenu->addAction(mSyncActions[menu_sync_view]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_pos]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_arrange]);
+	mSyncMenu->addAction(mSyncActions[menu_sync_all_actions]);
+
+	return mSyncMenu;
 }
 
 QMenu* DkActionManager::createContextMenu(QWidget* parent) {
@@ -885,6 +892,7 @@ void DkActionManager::createMenus(QWidget* parent) {
 	createManipulatorMenu(parent);
 	createToolsMenu(parent);
 	createPanelMenu(parent);
+	createSyncMenu(parent);
 	createHelpMenu(parent);
 	createContextMenu(parent);
 }
@@ -1599,17 +1607,17 @@ void DkActionManager::createActions(QWidget* parent) {
 	}
 	
 	// trivial connects
-	auto a = action(menu_panel_toggle);
-	QObject::connect(a, &QAction::triggered,
-		[a]() { DkSettingsManager::param().app().hideAllPanels = a->isChecked(); });
+	QObject::connect(action(menu_panel_toggle), &QAction::triggered,
+		[](bool hide) { DkSettingsManager::param().app().hideAllPanels = hide; });
 
-	a = action(menu_panel_statusbar);
-	QObject::connect(a, &QAction::triggered,
-		[a]() { DkStatusBarManager::instance().show(a->isChecked()); });
+	QObject::connect(action(menu_panel_statusbar), &QAction::triggered,
+		[](bool show) { DkStatusBarManager::instance().show(show); });
 
-	a = action(menu_panel_toolbar);
-	QObject::connect(a, &QAction::triggered,
-		[a]() { DkToolBarManager::inst().showDefaultToolBar(a->isChecked()); });
+	QObject::connect(action(menu_panel_toolbar), &QAction::triggered,
+		[](bool show) { DkToolBarManager::inst().showDefaultToolBar(show); });
+
+	QObject::connect(action(menu_sync_all_actions), &QAction::triggered,
+		[](bool sync) { DkSettingsManager::param().sync().syncActions = sync; });
 
 }
 

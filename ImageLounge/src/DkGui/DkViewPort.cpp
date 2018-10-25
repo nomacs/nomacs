@@ -165,7 +165,14 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	connect(this, &DkViewPort::movieLoadedSignal,
 		[this](bool movie) { DkActionManager::instance().enableMovieActions(movie); });
 
+	// connect sync
+	auto cm = DkSyncManager::inst().client();
 
+	connect(this, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), cm, SLOT(sendTransform(QTransform, QTransform, QPointF)));
+	connect(this, SIGNAL(sendNewFileSignal(qint16, const QString&)), cm, SLOT(sendNewFile(qint16, const QString&)));
+	connect(cm, SIGNAL(receivedNewFile(qint16, const QString&)), this, SLOT(tcpLoadFile(qint16, const QString&)));
+	connect(cm, SIGNAL(updateConnectionSignal(QList<DkPeer*>)), this, SLOT(tcpShowConnections(QList<DkPeer*>)));
+	connect(cm, SIGNAL(receivedTransformation(QTransform, QTransform, QPointF)), this, SLOT(tcpSetTransforms(QTransform, QTransform, QPointF)));
 	
 	for (auto action : am.manipulatorActions())
 		connect(action, SIGNAL(triggered()), this, SLOT(applyManipulator()));
@@ -623,11 +630,9 @@ void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 
 		if (cp->isSynchronized() && newPeers.isEmpty()) {
 			newPeers = tr("connected with: ");
-			emit newClientConnectedSignal(true, cp->isLocal());
 		}
 		else if (newPeers.isEmpty()) {
 			newPeers = tr("disconnected with: ");
-			emit newClientConnectedSignal(false, cp->isLocal());
 		}
 
 		qDebug() << "cp address..." << cp->hostAddress;

@@ -61,7 +61,6 @@ class QShortcut;
 
 namespace nmc {
 
-class DkTcpMenu;
 class DkCompressDialog;
 class DkOpacityDialog;
 class DkUpdateDialog;
@@ -79,7 +78,6 @@ class DkExportTiffDialog;
 class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
-class DkLocalManagerThread;
 class DkPluginManagerDialog;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
@@ -194,7 +192,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	virtual void newClientConnected(bool connected, bool local);
+	void newClientConnected(bool connected);
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);
@@ -311,15 +309,10 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs {
 public:
 	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	~DkNoMacsSync();
-	qint16 getServerPort();
 	void syncWith(qint16 port);
 	
 signals:
 	void startRCServerSignal(bool start);
-
-public slots:
-	void tcpConnectAll();
-	void tcpAutoConnect(bool connect);
 
 protected:
 
@@ -330,10 +323,6 @@ protected:
 
 	// gui
 	virtual void createActions();
-	virtual void createMenu();
-
-	// network layer
-	DkLocalManagerThread* mLocalClient = 0;
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {
