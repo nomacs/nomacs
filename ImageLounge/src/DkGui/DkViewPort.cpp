@@ -42,6 +42,8 @@
 #include "DkUtils.h"
 #include "DkBasicLoader.h"
 #include "DkDialog.h"
+#include "DkMessageBox.h"
+#include "DkToolbars.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -65,7 +67,7 @@
 namespace nmc {
 
 // DkViewPort --------------------------------------------------------------------
-DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
+DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 
 	mRepeatZoomTimer = new QTimer(this);
 	mAnimationTimer = new QTimer(this);
@@ -91,7 +93,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	createShortcuts();
 
-	mController = new DkControlWidget(this, flags);
+	mController = new DkControlWidget(this);
 
 	mLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 	connectLoader(mLoader);
@@ -141,6 +143,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), this, SLOT(rotate180()));
+	connect(am.action(DkActionManager::menu_edit_transform), SIGNAL(triggered()), this, SLOT(resizeImage()));
+	connect(am.action(DkActionManager::menu_edit_delete), SIGNAL(triggered()), this, SLOT(deleteImage()));
 	connect(am.action(DkActionManager::menu_edit_copy), SIGNAL(triggered()), this, SLOT(copyImage()));
 	connect(am.action(DkActionManager::menu_edit_copy_buffer), SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
 	connect(am.action(DkActionManager::menu_edit_copy_color), SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
@@ -153,6 +157,15 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(am.action(DkActionManager::menu_view_movie_pause), SIGNAL(triggered(bool)), this, SLOT(pauseMovie(bool)));
 	connect(am.action(DkActionManager::menu_view_movie_prev), SIGNAL(triggered()), this, SLOT(previousMovieFrame()));
 	connect(am.action(DkActionManager::menu_view_movie_next), SIGNAL(triggered()), this, SLOT(nextMovieFrame()));
+	
+	connect(am.action(DkActionManager::sc_test_img), SIGNAL(triggered()), this, SLOT(loadLena()));
+	connect(am.action(DkActionManager::menu_sync_view), SIGNAL(triggered()), this, SLOT(tcpForceSynchronize()));
+
+	// trivial connects
+	connect(this, &DkViewPort::movieLoadedSignal,
+		[this](bool movie) { DkActionManager::instance().enableMovieActions(movie); });
+
+
 	
 	for (auto action : am.manipulatorActions())
 		connect(action, SIGNAL(triggered()), this, SLOT(applyManipulator()));
@@ -202,7 +215,6 @@ void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 	}
 	
 	mController->raise();
-	
 }
 
 #ifdef WITH_OPENCV
@@ -273,8 +285,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 	if (mManipulatorWatcher.isRunning())
 		mManipulatorWatcher.cancel();
-
-	//imgPyramid.clear();
 
 	mController->getOverview()->setImage(QImage());	// clear overview
 
@@ -665,6 +675,89 @@ QImage DkViewPort::getImage() const {
 	return DkBaseViewPort::getImage();
 }
 
+void DkViewPort::resizeImage() {
+
+	if (!mResizeDialog)
+		mResizeDialog = new DkResizeDialog(this);
+
+	QSharedPointer<DkImageContainerT> imgC = imageContainer();
+	QSharedPointer<DkMetaDataT> metaData;
+
+	if (imgC) {
+		metaData = imgC->getMetaData();
+		QVector2D res = metaData->getResolution();
+		mResizeDialog->setExifDpi((float)res.x());
+	}
+
+	if (!imgC) {
+		qWarning() << "cannot resize empty image...";
+		return;
+	}
+
+	mResizeDialog->setImage(imgC->image());
+
+	if (!mResizeDialog->exec())
+		return;
+
+	if (mResizeDialog->resample()) {
+
+		QImage rImg = mResizeDialog->getResizedImage();
+
+		if (!rImg.isNull()) {
+
+			// this reloads the image -> that's not what we want!
+			if (metaData)
+				metaData->setResolution(QVector2D(mResizeDialog->getExifDpi(), mResizeDialog->getExifDpi()));
+
+			imgC->setImage(rImg, tr("Resize"));
+			setEditedImage(imgC);
+		}
+	}
+	else if (metaData) {
+		// ok, user just wants to change the resolution
+		metaData->setResolution(QVector2D(mResizeDialog->getExifDpi(), mResizeDialog->getExifDpi()));
+		qDebug() << "setting resolution to: " << mResizeDialog->getExifDpi();
+	}
+}
+
+void DkViewPort::deleteImage() {
+
+	auto imgC = imageContainer();
+
+	if (imgC && imgC->hasImage())
+		return;
+
+	getController()->applyPluginChanges(true);
+
+	QFileInfo fileInfo(imgC->filePath());
+	QString question;
+
+#if defined(Q_OS_WIN) || defined(W_OS_LINUX)
+	question = tr("Shall I move %1 to trash?").arg(fileInfo.fileName());
+#else
+	question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());
+#endif
+
+	DkMessageBox* msgBox = new DkMessageBox(
+		QMessageBox::Question,
+		tr("Delete File"),
+		question,
+		(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+		this);
+
+	msgBox->setDefaultButton(QMessageBox::Yes);
+	msgBox->setObjectName("deleteFileDialog");
+
+	int answer = msgBox->exec();
+
+	if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
+		stopMovie();	// movies keep file handles so stop it before we can delete files
+
+		if (!mLoader->deleteFile())
+			loadMovie();	// load the movie again, if we could not delete it
+	}
+}
+
 void DkViewPort::saveFile() {
 	saveFileAs(true);
 }
@@ -992,7 +1085,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	changeCursor();
 
 	mController->getOverview()->setViewPortRect(geometry());
-	
 	mController->resize(width(), height());
 
 	return QGraphicsView::resizeEvent(event);
@@ -1210,6 +1302,8 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 
 void DkViewPort::swipeAction(int swipeGesture) {
 
+	assert(mController);
+
 	switch (swipeGesture) {
 	case next_image:
 		loadNextFileFast();
@@ -1237,6 +1331,7 @@ void DkViewPort::swipeAction(int swipeGesture) {
 
 void DkViewPort::setFullScreen(bool fullScreen) {
 
+	assert(mController);
 	mController->setFullScreen(fullScreen);
 	toggleLena(fullScreen);
 }
@@ -1376,8 +1471,7 @@ void DkViewPort::animateFade() {
 
 void DkViewPort::togglePattern(bool show) {
 
-	mController->setInfo((show) ? tr("Transparency Pattern Enabled") : tr("Transparency Pattern Disabled"));
-
+	emit infoSignal((show) ? tr("Transparency Pattern Enabled") : tr("Transparency Pattern Disabled"));
 	DkBaseViewPort::togglePattern(show);
 }
 
@@ -1387,10 +1481,8 @@ void DkViewPort::rotateCW() {
 	if (!mController->applyPluginChanges(true))
 		return;
 
-
-	if (mLoader != 0)
+	if (mLoader)
 		mLoader->rotateImage(90);
-
 }
 
 void DkViewPort::rotateCCW() {
@@ -1398,7 +1490,7 @@ void DkViewPort::rotateCCW() {
 	if (!mController->applyPluginChanges(true))
 		return;
 
-	if (mLoader != 0)
+	if (mLoader)
 		mLoader->rotateImage(-90);
 
 }
@@ -1408,7 +1500,7 @@ void DkViewPort::rotate180() {
 	if (!mController->applyPluginChanges(true))
 		return;
 
-	if (mLoader != 0)
+	if (mLoader)
 		mLoader->rotateImage(180);
 
 }
@@ -1470,7 +1562,7 @@ void DkViewPort::setEditedImage(const QImage& newImg, const QString& editName) {
 		return;
 
 	if (newImg.isNull()) {
-		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		emit infoSignal(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
 	}
 
@@ -1492,11 +1584,8 @@ void DkViewPort::setEditedImage(const QImage& newImg, const QString& editName) {
 
 void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 
-	//if (!mController->applyPluginChanges(true))		// user wants to first apply the plugin
-	//	return;
-
 	if (!img) {
-		mController->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		emit infoSignal(tr("Attempted to set NULL image"));	// not sure if users understand that
 		return;
 	}
 
@@ -1746,6 +1835,8 @@ void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader) {
 
 void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals) {
 
+	assert(mController);
+
 	if (!loader)
 		return;
 
@@ -1810,7 +1901,7 @@ void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
-DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
+DkViewPortFrameless::DkViewPortFrameless(QWidget *parent) : DkViewPort(parent) {
 	
 #ifdef Q_OS_MAC
 	parent->setAttribute(Qt::WA_MacNoShadow);
@@ -2137,12 +2228,20 @@ void DkViewPortFrameless::updateImageMatrix() {
 }
 
 // DkViewPortContrast --------------------------------------------------------------------
-DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent, flags) {
+DkViewPortContrast::DkViewPortContrast(QWidget *parent) : DkViewPort(parent) {
 
 	mColorTable = QVector<QRgb>(256);
 	for (int i = 0; i < mColorTable.size(); i++) 
 		mColorTable[i] = qRgb(i, i, i);
 
+	// connect
+	auto ttb = DkToolBarManager::inst().transferToolBar();
+	connect(ttb, SIGNAL(colorTableChanged(QGradientStops)), this, SLOT(changeColorTable(QGradientStops)));
+	connect(ttb, SIGNAL(channelChanged(int)),				this, SLOT(changeChannel(int)));
+	connect(ttb, SIGNAL(pickColorRequest(bool)),			this, SLOT(pickColor(bool)));
+	connect(ttb, SIGNAL(tFEnabled(bool)),					this, SLOT(enableTF(bool)));
+	connect(this, SIGNAL(tFSliderAdded(qreal)),				ttb, SLOT(insertSlider(qreal)));
+	connect(this, SIGNAL(imageModeSet(int)),				ttb, SLOT(setImageMode(int)));
 }
 
 DkViewPortContrast::~DkViewPortContrast() {

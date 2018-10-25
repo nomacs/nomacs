@@ -89,7 +89,7 @@ protected:
 	QIcon mIcon;
 };
 
-class DllCoreExport DkPreferenceWidget : public DkWidget {
+class DllCoreExport DkPreferenceWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -117,7 +117,7 @@ protected:
 	QVBoxLayout* mTabLayout = 0;
 };
 
-class DkGroupWidget : public QWidget {
+class DkGroupWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -134,7 +134,7 @@ protected:
 	QVBoxLayout* mContentLayout = 0;
 };
 
-class DkGeneralPreference : public QWidget {
+class DkGeneralPreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -175,7 +175,7 @@ protected:
 	QStringList mLanguages;
 };
 
-class DkDisplayPreference : public QWidget {
+class DkDisplayPreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -210,7 +210,7 @@ protected:
 
 };
 
-class DkFilePreference : public QWidget {
+class DkFilePreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -233,7 +233,7 @@ protected:
 
 };
 
-class DkFileAssociationsPreference : public QWidget {
+class DkFileAssociationsPreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -259,7 +259,7 @@ protected:
 	QStandardItemModel* mModel = 0;
 };
 
-class DkAdvancedPreference : public QWidget {
+class DkAdvancedPreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -283,7 +283,7 @@ protected:
 	void paintEvent(QPaintEvent* ev);
 };
 
-class DkEditorPreference : public QWidget {
+class DkEditorPreference : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -302,22 +302,5 @@ protected:
 	DkSettingsWidget* mSettingsWidget;
 	void paintEvent(QPaintEvent* ev);
 };
-
-//class DkDummyPreference : public QWidget {
-//	Q_OBJECT
-//
-//public:
-//	DkDummyPreference(QWidget* parent = 0);
-//
-//public slots:
-//
-//signals:
-//   void infoSignal(const QString& msg) const;
-//
-//protected:
-//	void createLayout();
-//	void paintEvent(QPaintEvent* ev);
-//
-//};
 
 }

@@ -113,7 +113,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QSlider(Qt::Horizontal, 
 DkFolderScrollBar::~DkFolderScrollBar() {
 }
 
-// DkWidget stuff
+// DkFadeWidget stuff
 void DkFolderScrollBar::registerAction(QAction* action) {
 	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
 }
@@ -202,7 +202,7 @@ void DkFolderScrollBar::init() {
 
 void DkFolderScrollBar::show(bool saveSettings) {
 
-	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
+	// here is a strange problem if you add a DkFadeWidget to another DkFadeWidget -> painters crash
 	if (!mBlocked && !mShowing) {
 		mHiding = false;
 		mShowing = true;
@@ -279,7 +279,7 @@ void DkFolderScrollBar::animateOpacityDown() {
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
-DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
+DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkFadeWidget(parent) {
 	mStop = false;
 	mNumSaved = 0;
 }
@@ -973,7 +973,7 @@ void DkButton::leaveEvent(QEvent*) {
 }
 
 // star label --------------------------------------------------------------------
-DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
+DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags) : DkFadeWidget(parent, flags) {
 
 	setObjectName("DkRatingLabel");
 	mRating = rating;
@@ -1204,7 +1204,7 @@ void DkFileInfoLabel::updateWidth() {
 }
 
 // player --------------------------------------------------------------------
-DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
+DkPlayer::DkPlayer(QWidget* parent) : DkFadeWidget(parent) {
 
 	init();
 	createLayout();
@@ -1350,7 +1350,7 @@ void DkPlayer::show(int ms) {
 
 	bool showPlayer = getCurrentDisplaySetting();
 
-	DkWidget::show();
+	DkFadeWidget::show();
 
 	// automatic showing, don't store it in the display bits
 	if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettingsManager::param().app().currentAppMode) {
@@ -1359,7 +1359,7 @@ void DkPlayer::show(int ms) {
 }
  
 // DkTransformRectangle --------------------------------------------------------------------
-DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	this->parentIdx = idx;
 	this->size = QSize(12, 12);
@@ -1438,7 +1438,7 @@ void DkTransformRect::enterEvent(QEvent*) {
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
-DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
+DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFlags f) : DkFadeWidget(parent, f) {
 
 	mRect = rect;
 	mRotatingCursor = QCursor(DkImage::loadFromSvg(":/nomacs/img/rotating-cursor.svg", QSize(24, 24)));
@@ -1973,7 +1973,7 @@ void DkEditableRect::setVisible(bool visible) {
 		setCursor(Qt::CrossCursor);
 	}
 
-	DkWidget::setVisible(visible);
+	DkFadeWidget::setVisible(visible);
 }
 
 // DkEditableRect --------------------------------------------------------------------
@@ -2088,7 +2088,7 @@ void DkAnimationLabel::paintEvent(QPaintEvent* ev) {
 }
 
 // Image histogram  -------------------------------------------------------------------
-DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
+DkHistogram::DkHistogram(QWidget *parent) : DkFadeWidget(parent){
 	
 	setObjectName("DkHistogram");
 	setMinimumWidth(265);
@@ -2199,7 +2199,7 @@ void DkHistogram::contextMenuEvent(QContextMenuEvent * event) {
 	event->accept();
 
 	// do not pass it on
-	//DkWidget::contextMenuEvent(event);
+	//DkFadeWidget::contextMenuEvent(event);
 }
 
 void DkHistogram::on_toggleStats_triggered(bool show) {
@@ -2385,7 +2385,7 @@ void DkHistogram::mousePressEvent(QMouseEvent *event) {
 
 	// always propagate mouse events
 	if (event->buttons() != Qt::LeftButton)
-		DkWidget::mousePressEvent(event);
+		DkFadeWidget::mousePressEvent(event);
 }
 
 void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
@@ -2400,7 +2400,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 		}
 	}
 	else
-		DkWidget::mouseMoveEvent(event);
+		DkFadeWidget::mouseMoveEvent(event);
 
 }
 
@@ -2410,7 +2410,7 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 	update();
 
 	if (event->buttons() != Qt::LeftButton)
-		DkWidget::mouseReleaseEvent(event);
+		DkFadeWidget::mouseReleaseEvent(event);
 }
 
 // DkFileInfo --------------------------------------------------------------------
@@ -2512,7 +2512,7 @@ bool DkDirectoryEdit::existsDirectory(const QString& path) {
 }
 
 // DkDirectoryChooser --------------------------------------------------------------------
-DkDirectoryChooser::DkDirectoryChooser(const QString& dirPath, QWidget* parent) : QWidget(parent) {
+DkDirectoryChooser::DkDirectoryChooser(const QString& dirPath, QWidget* parent) : DkWidget(parent) {
 	
 	createLayout(dirPath);
 	QMetaObject::connectSlotsByName(this);
@@ -2919,7 +2919,7 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event) {
 }
 
 // -------------------------------------------------------------------- DkDisplayWidget 
-DkDisplayWidget::DkDisplayWidget(QWidget* parent) : DkWidget(parent) {
+DkDisplayWidget::DkDisplayWidget(QWidget* parent) : DkFadeWidget(parent) {
 
 	createLayout();
 	updateLayout();
@@ -2961,7 +2961,7 @@ void DkDisplayWidget::setCurrentIndex(int index) {
 
 void DkDisplayWidget::resizeEvent(QResizeEvent * event) {
 
-	DkWidget::resizeEvent(event);
+	DkFadeWidget::resizeEvent(event);
 	updateLayout();
 }
 

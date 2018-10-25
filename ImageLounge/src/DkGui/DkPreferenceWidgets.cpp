@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace nmc {
 
-DkPreferenceWidget::DkPreferenceWidget(QWidget* parent) : DkWidget(parent) {
+DkPreferenceWidget::DkPreferenceWidget(QWidget* parent) : DkFadeWidget(parent) {
 
 	createLayout();
 
@@ -231,7 +231,7 @@ QIcon DkPreferenceTabWidget::icon() const {
 }
 
 // DkGroupWidget --------------------------------------------------------------------
-DkGroupWidget::DkGroupWidget(const QString& title, QWidget* parent) : QWidget(parent) {
+DkGroupWidget::DkGroupWidget(const QString& title, QWidget* parent) : DkWidget(parent) {
 
 	setObjectName("DkGroupWidget");
 	mTitle = title;
@@ -276,7 +276,7 @@ void DkGroupWidget::paintEvent(QPaintEvent *event) {
 }
 
 // DkGeneralPreference --------------------------------------------------------------------
-DkGeneralPreference::DkGeneralPreference(QWidget* parent) : QWidget(parent) {
+DkGeneralPreference::DkGeneralPreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -644,7 +644,7 @@ void DkGeneralPreference::paintEvent(QPaintEvent *event) {
 }
 
 // DkDisplaySettings --------------------------------------------------------------------
-DkDisplayPreference::DkDisplayPreference(QWidget* parent) : QWidget(parent) {
+DkDisplayPreference::DkDisplayPreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -951,7 +951,7 @@ void DkDisplayPreference::paintEvent(QPaintEvent *event) {
 }
 
 // DkDummySettings --------------------------------------------------------------------
-DkFilePreference::DkFilePreference(QWidget* parent) : QWidget(parent) {
+DkFilePreference::DkFilePreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -1132,7 +1132,7 @@ void DkFilePreference::paintEvent(QPaintEvent *event) {
 }
 
 // DkFileAssocationsSettings --------------------------------------------------------------------
-DkFileAssociationsPreference::DkFileAssociationsPreference(QWidget* parent) : QWidget(parent) {
+DkFileAssociationsPreference::DkFileAssociationsPreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -1303,7 +1303,7 @@ void DkFileAssociationsPreference::paintEvent(QPaintEvent *event) {
 }
 
 // DkAdvancedSettings --------------------------------------------------------------------
-DkAdvancedPreference::DkAdvancedPreference(QWidget* parent) : QWidget(parent) {
+DkAdvancedPreference::DkAdvancedPreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -1462,7 +1462,7 @@ void DkAdvancedPreference::paintEvent(QPaintEvent *event) {
 }
 
 // DkEditorPreference --------------------------------------------------------------------
-DkEditorPreference::DkEditorPreference(QWidget* parent) : QWidget(parent) {
+DkEditorPreference::DkEditorPreference(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);

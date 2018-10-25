@@ -29,6 +29,8 @@
 #include "DkSettings.h"
 #include "DkImageStorage.h"
 #include "DkUtils.h"
+#include "DkStatusBar.h"
+#include "DkToolbars.h"
 
 #include "DkDialog.h"
 #include "DkMenu.h"
@@ -1600,6 +1602,15 @@ void DkActionManager::createActions(QWidget* parent) {
 	auto a = action(menu_panel_toggle);
 	QObject::connect(a, &QAction::triggered,
 		[a]() { DkSettingsManager::param().app().hideAllPanels = a->isChecked(); });
+
+	a = action(menu_panel_statusbar);
+	QObject::connect(a, &QAction::triggered,
+		[a]() { DkStatusBarManager::instance().show(a->isChecked()); });
+
+	a = action(menu_panel_toolbar);
+	QObject::connect(a, &QAction::triggered,
+		[a]() { DkToolBarManager::inst().showDefaultToolBar(a->isChecked()); });
+
 }
 
 QVector<QAction*> DkActionManager::allActions() const {
@@ -1715,6 +1726,19 @@ void DkActionManager::enableImageActions(bool enable) const {
 	// disable open with actions
 	for (QAction* a : DkActionManager::instance().appManager()->getActions())
 		a->setEnabled(enable);
+}
+
+void DkActionManager::enableMovieActions(bool enable) const {
+
+	DkSettingsManager::param().app().showMovieToolBar = enable;
+
+	action(DkActionManager::menu_view_movie_pause)->setEnabled(enable);
+	action(DkActionManager::menu_view_movie_prev)->setEnabled(enable);
+	action(DkActionManager::menu_view_movie_next)->setEnabled(enable);
+
+	action(DkActionManager::menu_view_movie_pause)->setChecked(false);
+
+	DkToolBarManager::inst().showMovieToolBar(enable);
 }
 
 // DkGlobalProgress --------------------------------------------------------------------

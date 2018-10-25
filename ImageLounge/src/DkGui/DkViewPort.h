@@ -69,12 +69,13 @@ class DkRotatingRect;
 class DkPluginInterface;
 class DkPluginContainer;
 class DkBaseManipulator;
+class DkResizeDialog;
 
 class DllCoreExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
-	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkViewPort(QWidget *parent = 0);
 	virtual ~DkViewPort();
 	
 	void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1)) override;
@@ -126,6 +127,8 @@ public slots:
 	void rotateCCW();
 	void rotate180();
 	void resetView();
+	void resizeImage();
+	void deleteImage();
 	void zoomToFit();
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
@@ -221,9 +224,10 @@ protected:
 
 	QImage mImgBg;
 
-	QVBoxLayout* mPaintLayout;
-	DkControlWidget* mController;
-	QSharedPointer<DkImageLoader> mLoader;
+	QVBoxLayout* mPaintLayout = 0;
+	DkControlWidget* mController = 0;
+	QSharedPointer<DkImageLoader> mLoader = 0;
+	DkResizeDialog* mResizeDialog = 0;
 
 	QPoint mCurrentPixelPos;
 	
@@ -251,7 +255,7 @@ class DllCoreExport DkViewPortFrameless : public DkViewPort {
 	Q_OBJECT
 
 public:
-	DkViewPortFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkViewPortFrameless(QWidget *parent = 0);
 	virtual ~DkViewPortFrameless();
 
 	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1)) override;
@@ -285,7 +289,7 @@ class DllCoreExport DkViewPortContrast : public DkViewPort {
 	Q_OBJECT
 
 public:
-	DkViewPortContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkViewPortContrast(QWidget *parent = 0);
 	virtual ~DkViewPortContrast();
 
 signals:

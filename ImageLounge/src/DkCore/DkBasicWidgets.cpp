@@ -50,7 +50,7 @@ related links:
 namespace nmc {
 
 // DkSlider --------------------------------------------------------------------
-DkSlider::DkSlider(QString title, QWidget* parent) : QWidget(parent) {
+DkSlider::DkSlider(QString title, QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 
@@ -151,7 +151,7 @@ void DkSlider::setValue(int value) {
 }
 
 // DkDoubleSlider --------------------------------------------------------------------
-DkDoubleSlider::DkDoubleSlider(const QString& title, QWidget* parent) : QWidget(parent) {
+DkDoubleSlider::DkDoubleSlider(const QString& title, QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 
@@ -333,7 +333,7 @@ void DkDoubleSlider::setIntValue(int value) {
 }
 
 // DkColorChooser ------------------------------------
-DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
+DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->defaultColor = defaultColor;
 	this->mText = text;
@@ -427,7 +427,7 @@ void DkColorChooser::on_colorDialog_accepted() {
 }
 
 // -------------------------------------------------------------------- DkColorEdit 
-DkColorEdit::DkColorEdit(const QColor& col, QWidget* parent) : QWidget(parent) {
+DkColorEdit::DkColorEdit(const QColor& col, QWidget* parent) : DkWidget(parent) {
 	
 	createLayout();
 	setColor(col);
@@ -502,7 +502,7 @@ void DkColorEdit::hashEditFinished() {
 
 
 // -------------------------------------------------------------------- DkColorPane 
-DkColorPane::DkColorPane(QWidget* parent) : QWidget(parent) {
+DkColorPane::DkColorPane(QWidget* parent) : DkWidget(parent) {
 	mColor = QColor(255, 0, 0);
 }
 
@@ -645,7 +645,7 @@ double DkColorPane::brightness(const QColor & col) const {
 }
 
 // -------------------------------------------------------------------- DkColorPicker 
-DkColorPicker::DkColorPicker(QWidget* parent) : QWidget(parent) {
+DkColorPicker::DkColorPicker(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -730,7 +730,7 @@ void DkColorPicker::contextMenuEvent(QContextMenuEvent * cme) {
 
 
 // -------------------------------------------------------------------- DkRectWidget 
-DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : QWidget(parent) {
+DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	setRect(r);

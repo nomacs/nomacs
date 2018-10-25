@@ -100,7 +100,7 @@ protected:
 
 };
 
-class DkRatingLabel : public DkWidget {
+class DkRatingLabel : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -219,7 +219,7 @@ protected:
 	void updateWidth();
 };
 
-class DkPlayer : public DkWidget {
+class DkPlayer : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -311,7 +311,7 @@ protected:
 };
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
-class DkThumbsSaver : public DkWidget {
+class DkThumbsSaver : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -467,7 +467,7 @@ protected:
 	bool mAutoHide = false;
 };
 
-class DkTransformRect : public QWidget {
+class DkTransformRect : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -501,7 +501,7 @@ protected:
 };
 
 
-class DkEditableRect : public DkWidget {
+class DkEditableRect : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -643,7 +643,7 @@ private:
 };
 
 // Image histogram display
-class DkHistogram : public DkWidget {
+class DkHistogram : public DkFadeWidget {
 
 	Q_OBJECT
 	
@@ -749,7 +749,7 @@ private:
 	bool showFolderButton = false;
 };
 
-class DkDirectoryChooser : public QWidget {
+class DkDirectoryChooser : public DkWidget {
 	Q_OBJECT
 public:
 	DkDirectoryChooser(const QString& dirPath = "", QWidget* parent = 0);
@@ -941,7 +941,7 @@ protected:
 
 };
 
-class DllCoreExport DkDisplayWidget : public DkWidget {
+class DllCoreExport DkDisplayWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:

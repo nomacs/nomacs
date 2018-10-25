@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "DkBaseWidgets.h"
+
 #pragma warning(push, 0)	// no warnings from includes
 #include <QWidget>
 #pragma warning(pop)
@@ -58,7 +60,7 @@ namespace nmc {
 
 // nomacs defines
 
-class DllCoreExport DkSlider : public QWidget {
+class DllCoreExport DkSlider : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -88,7 +90,7 @@ protected:
 	QSpinBox* sliderBox;
 };
 
-class DllCoreExport DkDoubleSlider : public QWidget {
+class DllCoreExport DkDoubleSlider : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -123,7 +125,7 @@ protected:
 	double mCenter = 0;
 };
 
-class DllCoreExport DkColorChooser : public QWidget {
+class DllCoreExport DkColorChooser : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -158,7 +160,7 @@ protected:
 
 };
 
-class DllCoreExport DkColorEdit : public QWidget {
+class DllCoreExport DkColorEdit : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -191,7 +193,7 @@ protected:
 	QColor mColor;
 };
 
-class DllCoreExport DkColorPane : public QWidget {
+class DllCoreExport DkColorPane : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -225,7 +227,7 @@ protected:
 	QPoint mPos = QPoint(0, 0);
 };
 
-class DllCoreExport DkColorPicker : public QWidget {
+class DllCoreExport DkColorPicker : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -250,7 +252,7 @@ protected:
 	DkColorEdit* mColorEdit = 0;
 };
 
-class DllCoreExport DkRectWidget : public QWidget {
+class DllCoreExport DkRectWidget : public DkWidget {
 	Q_OBJECT
 
 public:

@@ -168,8 +168,6 @@ public:
 
 	static QWidget* getMainWindow();
 
-	static void showViewportMessage(const QString& msg);
-
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)

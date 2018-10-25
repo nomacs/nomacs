@@ -32,6 +32,7 @@
 #include "DkImageStorage.h"
 #include "DkQuickAccess.h"
 #include "DkBasicWidgets.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
@@ -62,6 +63,7 @@
 //#include <QStringListModel>
 #include <QStandardItemModel>
 #include <QAbstractItemView>
+#include <QMainWindow>
 
 #include <QGridLayout>
 #include <QGraphicsOpacityEffect>
@@ -108,7 +110,7 @@ DkQuickAccessEdit* DkMainToolBar::getQuickAccess() const {
 
 // DkColorSlider:
 DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth) 
-	: QWidget(parent) {
+	: DkWidget(parent) {
 
 	this->setStatusTip(tr("Drag the slider downwards for elimination"));
 	this->mNormedPos = normedPos;
@@ -213,7 +215,7 @@ void DkColorSlider::mouseDoubleClickEvent(QMouseEvent*) {
 }
 
 DkGradient::DkGradient(QWidget *parent) 
-	: QWidget(parent){
+	: DkWidget(parent) {
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 
@@ -1175,5 +1177,201 @@ void DkCropToolBar::on_panAction_toggled(bool checked) {
 
 	emit panSignal(checked);
 }
+
+// -------------------------------------------------------------------- DkToolBarManager 
+DkToolBarManager::DkToolBarManager() {
+}
+
+DkToolBarManager& DkToolBarManager::inst() {
+
+	static DkToolBarManager inst;
+	return inst;
+}
+
+void DkToolBarManager::createDefaultToolBar() {
+	
+	if (mToolBar)
+		return;
+
+	auto nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
+	assert(nomacs);
+
+	mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
+	mToolBar->setObjectName("EditToolBar");
+
+	int is = DkSettingsManager::param().effectiveIconSize(nomacs);
+	mToolBar->setIconSize(QSize(is, is));
+
+	// add actions
+	DkActionManager& am = DkActionManager::instance();
+	mToolBar->addAction(am.action(DkActionManager::menu_file_prev));
+	mToolBar->addAction(am.action(DkActionManager::menu_file_next));
+	mToolBar->addSeparator();
+
+	mToolBar->addAction(am.action(DkActionManager::menu_file_open));
+	mToolBar->addAction(am.action(DkActionManager::menu_file_open_dir));
+	mToolBar->addAction(am.action(DkActionManager::menu_file_save));
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_delete));
+	mToolBar->addAction(am.action(DkActionManager::menu_tools_filter));
+	mToolBar->addSeparator();
+
+	// view
+	mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_in));
+	mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_out));
+	mToolBar->addSeparator();
+
+	// edit
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_copy));
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_paste));
+	mToolBar->addSeparator();
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_ccw));
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_cw));
+	mToolBar->addSeparator();
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_crop));
+	mToolBar->addAction(am.action(DkActionManager::menu_edit_transform));
+	mToolBar->addSeparator();
+
+	// view
+	mToolBar->addAction(am.action(DkActionManager::menu_view_fullscreen));
+	mToolBar->addAction(am.action(DkActionManager::menu_view_reset));
+	mToolBar->addAction(am.action(DkActionManager::menu_view_100));
+	mToolBar->addSeparator();
+
+	mToolBar->addAction(am.action(DkActionManager::menu_view_gps_map));
+	mToolBar->allActionsAdded();
+
+	mMovieToolBar = nomacs->addToolBar(QObject::tr("Movie ToolBar"));
+	mMovieToolBar->setObjectName("movieToolbar");
+	mMovieToolBar->setIconSize(QSize(is, is));
+	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_prev));
+	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_pause));
+	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_next));
+
+	nomacs->addToolBar(mToolBar);
+}
+
+void DkToolBarManager::show(bool show, bool permanent) {
+	showDefaultToolBar(show, permanent);
+	showMovieToolBar(show);
+	showToolBarsTemporarily(show);
+}
+
+void DkToolBarManager::restore() {
+
+	mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
+	mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
+}
+
+void DkToolBarManager::showToolBar(QToolBar* toolbar, bool show) {
+
+	if (!toolbar)
+		return;
+
+	showToolBarsTemporarily(!show);
+	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
+	assert(nomacs);
+
+	if (show) {
+
+		if (!mToolBar)
+			createDefaultToolBar();
+
+		nomacs->addToolBar(nomacs->toolBarArea(mToolBar), toolbar);
+	}
+	else
+		nomacs->removeToolBar(toolbar);
+
+	toolbar->setVisible(show);
+}
+
+void DkToolBarManager::showToolBarsTemporarily(bool show) {
+
+	if (show) {
+
+		for (QToolBar* t : mHiddenToolBars)
+			t->show();
+	}
+	else {
+
+		QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
+		assert(nomacs);
+
+		mHiddenToolBars.clear();
+		QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
+
+		for (QToolBar* t : tbs) {
+
+			if (t->isVisible()) {
+				t->hide();
+				mHiddenToolBars.append(t);
+			}
+		}
+	}
+}
+
+void DkToolBarManager::showDefaultToolBar(bool show, bool permanent) {
+
+	if (!mToolBar)
+		createDefaultToolBar();
+
+	if (mToolBar->isVisible() == show)
+		return;
+
+	if (permanent)
+		DkSettingsManager::param().app().showToolBar = show;
+	DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
+
+	mToolBar->setVisible(show);
+}
+
+void DkToolBarManager::showMovieToolBar(bool show) {
+
+	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
+	assert(nomacs);
+
+	// set movie toolbar into current toolbar
+	if (mMovieToolbarArea == Qt::NoToolBarArea && show)
+		mMovieToolbarArea = nomacs->toolBarArea(mToolBar);
+
+	if (show)
+		nomacs->addToolBar(mMovieToolbarArea, mMovieToolBar);
+	else {
+		// remember if the user changed it
+		Qt::ToolBarArea nta = nomacs->toolBarArea(mMovieToolBar);
+
+		if (nta != Qt::NoToolBarArea && mMovieToolBar->isVisible())
+			mMovieToolbarArea = nomacs->toolBarArea(mMovieToolBar);
+		nomacs->removeToolBar(mMovieToolBar);
+	}
+
+	if (mToolBar->isVisible())
+		mMovieToolBar->setVisible(show);
+}
+
+
+void DkToolBarManager::createTransferToolBar() {
+
+	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
+	assert(nomacs);
+
+	mTransferToolBar = new DkTransferToolBar(nomacs);
+
+	// add this toolbar below all previous toolbars
+	nomacs->addToolBarBreak();
+	nomacs->addToolBar(mTransferToolBar);
+	mTransferToolBar->setObjectName("TransferToolBar");
+
+	int is = DkSettingsManager::param().effectiveIconSize(nomacs);
+	mTransferToolBar->setIconSize(QSize(is, is));
+}
+
+DkMainToolBar * DkToolBarManager::defaultToolBar() const {
+	return mToolBar;
+}
+
+DkTransferToolBar * DkToolBarManager::transferToolBar() const {
+	return mTransferToolBar;
+}
+
 
 }

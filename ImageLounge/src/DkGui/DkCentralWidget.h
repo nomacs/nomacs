@@ -32,6 +32,7 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(disable: 4251)	// TODO: remove
 
@@ -117,11 +118,11 @@ class DkViewPort;
 class DkThumbScrollWidget;
 class DkRecentFilesWidget;
 
-class DllCoreExport DkCentralWidget : public QWidget {
+class DllCoreExport DkCentralWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkCentralWidget(DkViewPort* viewport, QWidget* parent = 0);
+	DkCentralWidget(QWidget* parent = 0);
 	~DkCentralWidget();
 
 	DkViewPort* getViewPort() const;
@@ -139,6 +140,7 @@ public:
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QString getCurrentFilePath() const;
 	QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
+	bool requestClose() const;
 
 signals:
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
@@ -175,10 +177,9 @@ public slots:
 	void restart() const;
 	void showProgress(bool show, int time = -1);
 	void startSlideshow(bool start = true) const;
+	void setInfo(const QString& msg) const;
 
 protected:
-	DkViewPort* mViewport = 0;
-
 	QTabBar* mTabbar = 0;
 	DkProgressBar* mProgressBar = 0;
 	QVector<QSharedPointer<DkTabInfo> > mTabInfos;
@@ -200,6 +201,7 @@ protected:
 	DkPreferenceWidget* createPreferences();
 	DkRecentFilesWidget* createRecentFiles();
 	DkThumbScrollWidget* createThumbScrollWidget();
+	void createViewPort();
 
 	enum {
 		viewport_widget,

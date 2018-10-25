@@ -518,7 +518,7 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 //}
 
 // DkMetaDataSelection --------------------------------------------------------------------
-DkMetaDataSelection::DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent) : QWidget(parent) {
+DkMetaDataSelection::DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent) : DkWidget(parent) {
 
 	setObjectName("DkMetaDataSelection");
 	mMetaData = metaData;
@@ -655,7 +655,7 @@ void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData, QS
 }
 
 // DkMetaDataHUD --------------------------------------------------------------------
-DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
+DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkFadeWidget(parent) {
 
 	setObjectName("DkMetaDataHUD");
 	setCursor(Qt::ArrowCursor);
@@ -1035,13 +1035,13 @@ void DkMetaDataHUD::contextMenuEvent(QContextMenuEvent *event) {
 	mContextMenu->exec(event->globalPos());
 	event->accept();
 
-	//DkWidget::contextMenuEvent(event);
+	//DkFadeWidget::contextMenuEvent(event);
 }
 
 // public slots...
 void DkMetaDataHUD::setVisible(bool visible, bool saveSetting /* = true */) {
 
-	DkWidget::setVisible(visible, saveSetting);
+	DkFadeWidget::setVisible(visible, saveSetting);
 
 	updateMetaData(mMetaData);
 }

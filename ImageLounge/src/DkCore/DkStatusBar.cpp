@@ -28,6 +28,7 @@
 #include "DkStatusBar.h"
 
 #include "DkSettings.h"
+#include "DkActionManager.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QLabel>
@@ -83,6 +84,18 @@ DkStatusBarManager& DkStatusBarManager::instance() {
 
 void DkStatusBarManager::setMessage(const QString& msg, DkStatusBar::StatusLabel which) {
 	mStatusBar->setMessage(msg, which);
+}
+
+void DkStatusBarManager::show(bool show, bool permanent) {
+
+	if (statusbar()->isVisible() == show)
+		return;
+
+	if (permanent)
+		DkSettingsManager::param().app().showStatusBar = show;
+	DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(DkSettingsManager::param().app().showStatusBar);
+
+	statusbar()->setVisible(show);
 }
 
 DkStatusBar* DkStatusBarManager::statusbar() {

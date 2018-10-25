@@ -571,15 +571,6 @@ QWidget * DkUtils::getMainWindow() {
 	return win;
 }
 
-void DkUtils::showViewportMessage(const QString & msg) {
-
-	DkNoMacs* nmc = dynamic_cast<DkNoMacs*>(getMainWindow());
-
-	if (nmc && nmc->viewport())
-		nmc->viewport()->infoSignal(msg);
-
-}
-
 void DkUtils::mSleep(int ms) {
 
 #ifdef Q_OS_WIN

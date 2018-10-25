@@ -52,7 +52,7 @@ namespace nmc {
 
 // nomacs defines
 
-class DkBaseManipulatorWidget : public DkWidget {
+class DkBaseManipulatorWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -202,7 +202,7 @@ private:
 };
 
 // dock --------------------------------------------------------------------
-class DkManipulatorWidget : public DkWidget {
+class DkManipulatorWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:

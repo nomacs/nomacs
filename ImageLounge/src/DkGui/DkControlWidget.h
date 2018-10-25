@@ -28,6 +28,7 @@
 #pragma once
 
 #include "DkImageContainer.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -76,7 +77,7 @@ class DkDelayedInfo;
 class DkOverview;
 class DkViewPortInterface;
 
-class DllCoreExport DkControlWidget : public QWidget {
+class DllCoreExport DkControlWidget : public DkWidget {
 	Q_OBJECT
 
 public:

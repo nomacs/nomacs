@@ -1,4 +1,3 @@
-#include "DkCentralWidget.h"
 /*******************************************************************************************************
  DkCentralWidget.cpp
  Created on:	14.11.2014
@@ -261,12 +260,10 @@ void DkTabInfo::setMode(int mode) {
 }
 
 // DkCenteralWidget --------------------------------------------------------------------
-DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidget(parent) {
+DkCentralWidget::DkCentralWidget(QWidget* parent) : DkWidget(parent) {
 
-	mViewport = viewport;
 	setObjectName("DkCentralWidget");
 	createLayout();
-
 	setAcceptDrops(true);
 
 	DkActionManager& am = DkActionManager::instance();
@@ -311,17 +308,13 @@ void DkCentralWidget::createLayout() {
 	mProgressBar->hide();
 
 	mWidgets.resize(widget_end);
-	mWidgets[viewport_widget] = mViewport;
+	mWidgets[viewport_widget] = 0;
 	mWidgets[recent_files_widget] = 0;
 	mWidgets[thumbs_widget] = 0;
 	mWidgets[preference_widget] = 0;
 
 	QWidget* viewWidget = new QWidget(this);
 	mViewLayout = new QStackedLayout(viewWidget);
-
-	for (QWidget* w : mWidgets)
-		if (w)
-			mViewLayout->addWidget(w);
 
 	QVBoxLayout* vbLayout = new QVBoxLayout(this);
 	vbLayout->setContentsMargins(0,0,0,0);
@@ -331,9 +324,6 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(viewWidget);
 
 	// connections
-	connect(mViewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
-	connect(mViewport, SIGNAL(showProgress(bool, int)), this, SLOT(showProgress(bool, int)));
-
 	connect(mTabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(mTabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(mTabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
@@ -401,7 +391,7 @@ void DkCentralWidget::loadSettings() {
 
 DkViewPort* DkCentralWidget::getViewPort() const {
 
-	return mViewport;
+	return dynamic_cast<DkViewPort*>(mWidgets[viewport_widget]);
 }
 
 DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
@@ -461,14 +451,14 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 	if (!loader)
 		return;
 
-	mViewport->setImageLoader(loader);
+	if (getViewPort())
+		getViewPort()->setImageLoader(loader);
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(showProgress(bool, int)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(loadImageToTab(const QString&)), this, SLOT(loadFileToTab(const QString&)), Qt::UniqueConnection);
-
 }
 
 void DkCentralWidget::paintEvent(QPaintEvent *) {
@@ -582,6 +572,32 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(openBatch(const QStringList&)));
 
 	return thumbScrollWidget;
+}
+
+void DkCentralWidget::createViewPort() {
+
+	if (getViewPort()) {
+		qDebug() << "viewport already created...";
+		return;
+	}
+
+
+	DkViewPort* vp = 0;
+
+	if (parent() && parent()->objectName() == "DkNoMacsFrameless")
+		vp = new DkViewPortFrameless(this);
+	if (parent() && parent()->objectName() == "DkNoMacsContrast")
+		vp = new DkViewPortContrast(this);
+	else
+		vp = new DkViewPort(this);
+	
+	if (mTabbar->currentIndex() != -1)
+		vp->setImageLoader(mTabInfos[mTabbar->currentIndex()]->getImageLoader());
+	connect(vp, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
+	connect(vp, SIGNAL(showProgress(bool, int)), this, SLOT(showProgress(bool, int)));
+
+	mWidgets[viewport_widget] = vp;
+	mViewLayout->insertWidget(viewport_widget, mWidgets[viewport_widget]);
 }
 
 void DkCentralWidget::tabCloseRequested(int idx) {
@@ -817,12 +833,15 @@ void DkCentralWidget::showThumbView(bool show) {
 void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 	if (show) {
+		if (!getViewPort())
+			createViewPort();
+		
 		switchWidget(mWidgets[viewport_widget]);
 		if (getCurrentImage())
-			mViewport->setImage(getCurrentImage()->image());
+			getViewPort()->setImage(getCurrentImage()->image());
 	}
-	else 
-		mViewport->deactivate();
+	else if (getViewPort())
+		getViewPort()->deactivate();
 	
 }
 
@@ -975,6 +994,14 @@ void DkCentralWidget::startSlideshow(bool start) const {
 	getViewPort()->getController()->startSlideshow(start);
 }
 
+void DkCentralWidget::setInfo(const QString & msg) const {
+
+	if (getViewPort())
+		getViewPort()->getController()->setInfo(msg);
+	
+	qInfo() << msg;
+}
+
 QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
 
 	if (mTabInfos.empty())
@@ -997,6 +1024,14 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
 		return QSharedPointer<DkImageLoader>();
 
 	return mTabInfos[mTabbar->currentIndex()]->getImageLoader();
+}
+
+bool DkCentralWidget::requestClose() const {
+	
+	if (getViewPort())
+		return getViewPort()->unloadImage(true);
+	
+	return true;
 }
 
 QString DkCentralWidget::getCurrentDir() const {
@@ -1026,8 +1061,11 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 
 	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview && getThumbScrollWidget())
 		getThumbScrollWidget()->setDir(filePath);
-	else
-		mViewport->loadFile(filePath);
+	else {
+		if (!getViewPort())
+			createViewPort();
+		getViewPort()->loadFile(filePath);
+	}
 }
 
 void DkCentralWidget::loadFileToTab(const QString& filePath) {
@@ -1038,7 +1076,11 @@ void DkCentralWidget::loadFileToTab(const QString& filePath) {
 void DkCentralWidget::loadFile(const QString& filePath, bool newTab) {
 
 	if (!newTab) {
-		mViewport->loadFile(filePath);
+
+		if (!getViewPort())
+			createViewPort();
+
+		getViewPort()->loadFile(filePath);
 		return;
 	}
 
@@ -1076,7 +1118,8 @@ void DkCentralWidget::loadDirToTab(const QString& dirPath) {
             return;
         }
     }
-    mViewport->getController()->setInfo(tr("I could not load \"%1\"").arg(dirPath));
+
+	setInfo(tr("I could not load \"%1\"").arg(dirPath));
 }
 
 /** loadUrls() loads a list of valid urls.
@@ -1119,7 +1162,7 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool newTab) {
 	}
 
 	auto display = [&](QString msg) {
-		mViewport->getController()->setInfo(msg);
+		setInfo(msg);
 	};
 
 	if (fi.exists()) {
@@ -1187,19 +1230,19 @@ void DkCentralWidget::pasteImage() {
 	QClipboard* clipboard = QApplication::clipboard();
 
 	if (!loadFromMime(clipboard->mimeData()))
-		mViewport->getController()->setInfo("Clipboard has no image...");
+		setInfo("Clipboard has no image...");
 
 }
 
 void DkCentralWidget::dropEvent(QDropEvent *event) {
 
-	if (event->source() == this || event->source() == mViewport) {
+	if (event->source() == this || event->source() == getViewPort()) {
 		event->accept();
 		return;
 	}
 
 	if (!loadFromMime(event->mimeData()))
-		mViewport->getController()->setInfo(tr("Sorry, I could not drop the content."));
+		setInfo(tr("Sorry, I could not drop the content."));
 }
 
 
@@ -1244,7 +1287,11 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
     }
 
 	if (!dropImg.isNull()) {
-		mViewport->loadImage(dropImg);
+		
+		if (!getViewPort())
+			createViewPort();
+		
+		getViewPort()->loadImage(dropImg);
 		return true;
 	}
 
@@ -1321,7 +1368,7 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls) {
 
         if (numFiles) {
             loadFile(sPath);
-            mViewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
+			setInfo(tr("%1 vec files merged").arg(numFiles));
             return true;
         }
     }

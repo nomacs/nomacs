@@ -179,7 +179,7 @@ protected:
 	QList<int> mResultList;
 };
 
-class DkBatchInput : public QWidget, public DkBatchContent  {
+class DkBatchInput : public DkWidget, public DkBatchContent  {
 	Q_OBJECT
 
 public:
@@ -242,7 +242,7 @@ private:
 
 };
 
-class DkFilenameWidget : public QWidget {
+class DkFilenameWidget : public DkWidget {
 	Q_OBJECT
 
 public:	
@@ -287,7 +287,7 @@ private:
 	bool hasChanged = false;
 };
 
-class DkBatchOutput : public QWidget, public DkBatchContent {
+class DkBatchOutput : public DkWidget, public DkBatchContent {
 Q_OBJECT
 
 public:
@@ -353,7 +353,7 @@ private:
 
 };
 
-class DkProfileSummaryWidget : public DkWidget {
+class DkProfileSummaryWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -380,7 +380,7 @@ protected:
 	QLabel* mFunctions = 0;
 };
 
-class DkProfileWidget : public QWidget, public DkBatchContent {
+class DkProfileWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
@@ -421,7 +421,7 @@ protected:
 
 
 #ifdef WITH_PLUGINS
-class DkBatchPluginWidget : public QWidget, public DkBatchContent {
+class DkBatchPluginWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
@@ -462,7 +462,7 @@ protected:
 };
 #endif
 
-class DkBatchManipulatorWidget : public QWidget, public DkBatchContent {
+class DkBatchManipulatorWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
@@ -503,7 +503,7 @@ protected:
 	int mMaxPreview = 300;
 };
 
-class DkBatchTransformWidget : public QWidget, public DkBatchContent {
+class DkBatchTransformWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
@@ -545,7 +545,7 @@ protected:
 
 };
 
-class DkBatchButtonsWidget : public DkWidget {
+class DkBatchButtonsWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -566,7 +566,7 @@ protected:
 	QPushButton* mLogButton = 0;
 };
 
-class DkBatchInfoWidget : public DkWidget {
+class DkBatchInfoWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -590,7 +590,7 @@ protected:
 	QLabel* mIcon = 0;
 };
 
-class DkBatchWidget : public DkWidget {
+class DkBatchWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:

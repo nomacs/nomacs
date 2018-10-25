@@ -28,6 +28,7 @@
 #pragma once
 
 #include "DkManipulators.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -541,6 +542,7 @@ public:
 	void assignCustomShortcuts(QVector<QAction*> actions) const;
 
 	void enableImageActions(bool enable = true) const;
+	void enableMovieActions(bool enable = true) const;
 
 protected:
 	DkActionManager();
@@ -603,7 +605,7 @@ protected:
 	QSharedPointer<DkActionManager> inst;
 };
 
-class DllCoreExport DkGlobalProgress : public QWidget {
+class DllCoreExport DkGlobalProgress : public DkWidget {
 	Q_OBJECT
 
 public:

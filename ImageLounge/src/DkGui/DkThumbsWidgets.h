@@ -61,7 +61,7 @@ namespace nmc {
 // nomacs defines
 class DkImageLoader;
 
-class DkFilePreview : public DkWidget {
+class DkFilePreview : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -305,7 +305,7 @@ protected:
 
 };
 
-class DllCoreExport DkThumbScrollWidget : public DkWidget {
+class DllCoreExport DkThumbScrollWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -402,7 +402,7 @@ protected:
 	int mThumbSize = 100;
 };
 
-class DllCoreExport DkRecentDirWidget : public DkWidget {
+class DllCoreExport DkRecentDirWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
@@ -439,7 +439,7 @@ protected:
 
 };
 
-class DllCoreExport DkRecentFilesWidget : public DkWidget {
+class DllCoreExport DkRecentFilesWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
