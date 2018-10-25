@@ -56,8 +56,9 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : Dk
 	setObjectName("DkControlWidget");
 
 	// cropping
+	// TODO: add lazy initialization here
 	mCropWidget = new DkCropWidget(QRectF(), this);
-
+	
 	// thumbnails, metadata
 	mFilePreview = new DkFilePreview(this, flags);
 	mMetaDataInfo = new DkMetaDataHUD(this);

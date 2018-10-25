@@ -201,10 +201,6 @@ void DkNoMacs::init() {
 	// connections to the image loader
 	connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 
-	// TODO:ref
-	//connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolBar(QToolBar*, bool)), this, SLOT(showToolBar(QToolBar*, bool)));
-	//connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
-
 	DkActionManager::instance().enableMovieActions(false);
 
 // clean up nomacs

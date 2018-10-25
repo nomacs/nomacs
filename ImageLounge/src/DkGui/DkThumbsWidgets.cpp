@@ -125,6 +125,9 @@ void DkFilePreview::init() {
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
+
+	QWidget* nomacs = DkUtils::getMainWindow();
+	connect(this, SIGNAL(showThumbsDockSignal(bool)), nomacs, SLOT(showThumbsDock(bool)));
 }
 
 void DkFilePreview::initOrientations() {

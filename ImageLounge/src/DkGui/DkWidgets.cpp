@@ -1999,7 +1999,7 @@ void DkCropWidget::createToolbar() {
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 	connect(this, SIGNAL(updateRectSignal(const QRect&)), cropToolbar, SLOT(setRect(const QRect&)));
-
+	
 	cropToolbar->loadSettings();	// need to this manually after connecting the slots
 
 }
@@ -2032,59 +2032,8 @@ void DkCropWidget::setVisible(bool visible) {
 	if (visible && !cropToolbar)
 		createToolbar();
 
-	emit showToolBar(cropToolbar, visible);
+	DkToolBarManager::inst().showToolBar(cropToolbar, visible);
 	DkEditableRect::setVisible(visible);
-}
-
-
-// DkAnimagionLabel --------------------------------------------------------------------
-DkAnimationLabel::DkAnimationLabel(QString animationPath, QWidget* parent) : DkLabel(parent) {
-
-	init(animationPath, QSize());
-}
-
-DkAnimationLabel::DkAnimationLabel(QString animationPath, QSize size, QWidget* parent) : DkLabel(parent) {
-
-	init(animationPath, size);
-}
-
-DkAnimationLabel::~DkAnimationLabel() {
-}
-
-void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
-	
-	setObjectName("DkAnimationLabel");
-
-	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(animationPath));
-	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
-
-	QSize s = size;
-	if(s.isEmpty())
-		s = mSvg->defaultSize();
-
-	setFixedSize(s);
-	hide();
-}
-
-void DkAnimationLabel::showTimed(int time) {
-	
-	DkLabel::showTimed(time);
-}
-
-
-void DkAnimationLabel::hide() {
-	
-	DkLabel::hide();
-}
-
-void DkAnimationLabel::paintEvent(QPaintEvent* ev) {
-	
-	if (mSvg) {
-		QPainter p(this);
-		mSvg->render(&p, QRect(QPoint(), size()));
-	}
-
-	DkLabel::paintEvent(ev);
 }
 
 // Image histogram  -------------------------------------------------------------------

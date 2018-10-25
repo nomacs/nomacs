@@ -1010,6 +1010,7 @@ void DkCropToolBar::createLayout() {
 
 	mCbMeta = new QCheckBox(tr("Crop to Metadata"), this);
 	mCbMeta->setChecked(false);
+	mCbMeta->hide();	// "disabled" for now (keep it simple)
 
 	mCropRect = new DkRectWidget(QRect(), this);
 	mCropRect->setObjectName("cropRect");
@@ -1034,7 +1035,6 @@ void DkCropToolBar::createLayout() {
 	addWidget(mCropRect);
 
 	connect(mCropRect, SIGNAL(updateRectSignal(const QRect&)), this, SIGNAL(updateRectSignal(const QRect&)));
-
 }
 
 void DkCropToolBar::setVisible(bool visible) {

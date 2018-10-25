@@ -609,37 +609,12 @@ public slots:
 
 signals:
 	void hideSignal();
-	void showToolBar(QToolBar* toolbar, bool show);
 
 protected:
 	void createToolbar();
 	void mouseDoubleClickEvent(QMouseEvent* ev) override;
 
 	DkCropToolBar* cropToolbar;
-};
-
-/**
- * DkAnimationLabel
- * This code is based on: http://www.developer.nokia.com/Community/Wiki/CS001434_-_Creating_a_loading_animation_with_GIF,_QMovie,_and_QLabel
- *
- * Uses animation from the path
- * to display it in a DkLabel.
- */
-class DllCoreExport DkAnimationLabel : public DkLabel {
-
-public:
-	DkAnimationLabel(QString animationPath = QString(), QWidget* parent = 0);
-	DkAnimationLabel(QString animationPath, QSize size, QWidget* parent);
-	virtual ~DkAnimationLabel();
-
-	virtual void showTimed(int time = 3000);
-	virtual void hide();
-
-private:
-	QSharedPointer<QSvgRenderer> mSvg;
-
-	void paintEvent(QPaintEvent* ev);
-	void init(const QString& animationPath, const QSize& size);
 };
 
 // Image histogram display
