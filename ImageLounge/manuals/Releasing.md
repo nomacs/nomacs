@@ -18,6 +18,11 @@
 - double-click `make-installer.bat`
 - check if the newly created installer `noamcs-setup.msi` is signed
 - upload `nomacs-setup.msi` to http://download.nomacs.org/htdocs/
+- if you think you are ready to triger automated updates:
+    - open ssh with nomacs.org
+    - ``cd /var/www/version``
+    - ``sudo vim version_win_stable``
+    - then update the version number
 
 ### nomacs portable
 
