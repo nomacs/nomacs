@@ -1331,7 +1331,6 @@ void DkViewPort::swipeAction(int swipeGesture) {
 	default:
 		break;
 	}
-
 }
 
 void DkViewPort::setFullScreen(bool fullScreen) {
@@ -1339,6 +1338,16 @@ void DkViewPort::setFullScreen(bool fullScreen) {
 	assert(mController);
 	mController->setFullScreen(fullScreen);
 	toggleLena(fullScreen);
+
+	if (fullScreen)
+		QWidget::setWindowState(windowState() ^ Qt::WindowFullScreen);
+	else
+		QWidget::setWindowState(windowState() & ~Qt::WindowFullScreen);
+
+	if (fullScreen)
+		mHideCursorTimer->start();
+	else
+		unsetCursor();
 }
 
 QPoint DkViewPort::mapToImage(const QPoint& windowPos) const {

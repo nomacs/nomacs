@@ -97,6 +97,11 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollVertically(int)));
 	connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollHorizontally(int)));
 
+	mHideCursorTimer = new QTimer(this);
+	mHideCursorTimer->setInterval(1000);
+	connect(mHideCursorTimer, SIGNAL(timeout()), this, SLOT(hideCursor()));
+
+
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
@@ -265,6 +270,12 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	updateImageMatrix();
 	update();
 	emit newImageSignal(&newImg);
+}
+
+void DkBaseViewPort::hideCursor() {
+
+	if (isFullScreen())
+		setCursor(Qt::BlankCursor);
 }
 
 QImage DkBaseViewPort::getImage() const {
@@ -477,9 +488,12 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 			if (!DkSettingsManager::param().app().showStatusBar)
 				DkStatusBarManager::instance().show(false, false);
 
-			if (cursor().shape() != Qt::ArrowCursor)
+			 if (cursor().shape() != Qt::ArrowCursor)
 				unsetCursor();
 		}
+
+		if (isFullScreen())
+			mHideCursorTimer->start(3000);
 	}
 
 	QWidget::mouseMoveEvent(event);

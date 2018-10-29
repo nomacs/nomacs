@@ -96,6 +96,8 @@
 #include <QWinTaskbarButton>
 #endif
 
+#include <assert.h>
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {

@@ -143,6 +143,7 @@ public slots:
 
 	virtual bool unloadImage(bool fileChange = true);
 	virtual void setImage(QImage newImg);
+	void hideCursor();
 	
 protected:
 	virtual bool event(QEvent *event) override;
@@ -174,6 +175,7 @@ protected:
 	QRectF mImgViewRect;
 	QRectF mViewportRect;
 	QRectF mImgRect;
+	QTimer* mHideCursorTimer;
 
 	QPointF mPanControl;	// controls how far we can pan outside an image
 	QPointF mPosGrab;
