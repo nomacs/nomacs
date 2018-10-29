@@ -225,7 +225,7 @@ protected:
 
 	QVBoxLayout* mPaintLayout = 0;
 	DkControlWidget* mController = 0;
-	QSharedPointer<DkImageLoader> mLoader = 0;
+	QSharedPointer<DkImageLoader> mLoader = QSharedPointer<DkImageLoader>();
 	DkResizeDialog* mResizeDialog = 0;
 
 	QPoint mCurrentPixelPos;
