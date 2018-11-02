@@ -333,11 +333,11 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 		// don't interpolate - we have a sophisticated anti-aliasing methods
 		//// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
-		//if (!mForceFastRendering && // force?
-		//	fabs(mImgMatrix.m11()*mWorldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
-		//	mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
-		//		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-		//}
+		if (!mForceFastRendering && // force?
+			mImgMatrix.m11()*mWorldMatrix.m11()-DBL_EPSILON > 1.0 && // @100% ?
+			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
+				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+		}
 
 		draw(painter);
 	}

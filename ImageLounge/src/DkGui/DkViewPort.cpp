@@ -808,6 +808,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 		painter.setWorldTransform(mWorldMatrix);
 
+		//	interpolate between 100% and max interpolate level
+		if (!mForceFastRendering && // force?
+			mImgMatrix.m11()*mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
+			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel / 100.0f) {	// > max zoom level
+			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+		}
+		
 		if (DkSettingsManager::param().display().transition == DkSettings::trans_swipe &&
 			!mAnimationBuffer.isNull()) {
 		
@@ -838,6 +845,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 				painter.setTransform(swipeTransform);
 			}
 
+			qDebug() << "render hints:" << painter.renderHints();
 			painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
 			painter.setOpacity(oldOp);
 		}
