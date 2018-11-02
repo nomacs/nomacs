@@ -52,7 +52,7 @@ option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 
 # Codecov
-if( ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
+if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
     include("cmake/CodeCoverage.cmake")
     setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
 endif()
