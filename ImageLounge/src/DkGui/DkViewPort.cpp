@@ -811,7 +811,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		//	interpolate between 100% and max interpolate level
 		if (!mForceFastRendering && // force?
 			mImgMatrix.m11()*mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
-			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel / 100.0f) {	// > max zoom level
+			mImgMatrix.m11()*mWorldMatrix.m11() <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) {	// > max zoom level
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 		

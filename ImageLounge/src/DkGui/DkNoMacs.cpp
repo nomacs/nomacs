@@ -704,7 +704,7 @@ void DkNoMacs::enterFullScreen() {
 		qDebug() << "illegal state: " << DkSettingsManager::param().app().currentAppMode;
 		DkSettingsManager::param().app().currentAppMode = DkSettings::mode_default;
 	}
-	
+
 	menuBar()->hide();
 	mToolbar->hide();
 	mMovieToolbar->hide();
@@ -713,13 +713,12 @@ void DkNoMacs::enterFullScreen() {
 
 	restoreDocks();
 
-	mMaximizedMode = isMaximized();
-	setWindowState(Qt::WindowFullScreen);
+
+	setWindowState(windowState() ^ Qt::WindowFullScreen);
 	
 	if (viewport())
 		viewport()->setFullScreen(true);
 
-	update();
 }
 
 void DkNoMacs::exitFullScreen() {
@@ -737,12 +736,9 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettingsManager::param().app().showMovieToolBar) mMovieToolbar->show();
 
 		restoreDocks();
+		setWindowState(windowState() ^ Qt::WindowFullScreen);
 
-		if(mMaximizedMode) 
-			setWindowState(Qt::WindowMaximized);
-		else 
-			setWindowState(Qt::WindowNoState);
-		
+
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
 

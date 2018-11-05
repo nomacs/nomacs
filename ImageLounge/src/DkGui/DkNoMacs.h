@@ -325,7 +325,6 @@ protected:
 
 	// plugin functions
 	bool mPluginMenuCreated = false;
-	bool mMaximizedMode = false;
 };
 
 class DllCoreExport DkNoMacsSync : public DkNoMacs {

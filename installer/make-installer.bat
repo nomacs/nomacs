@@ -3,7 +3,7 @@ SET PATH=%PATH%;"C:\Program Files (x86)\WiX Toolset v3.11\bin";"C:\Program Files
 SET ARCH=x64
 
 REM sign nomacs
-signtool sign /f "..\..\TU-code-signing.p12"  /t http://timestamp.digicert.com .\nomacs.%ARCH%\nomacs.exe
+signtool sign /n "Technische Universit„t Wien" /t http://timestamp.digicert.com .\nomacs.%ARCH%\nomacs.exe
 
 REM harvest dlls
 heat.exe dir .\nomacs.%ARCH% -o HarvestedFiles.wxs -scom -frag -srd -sreg -gg -cg ApplicationResources -dr BIN_DIR_REF
@@ -15,7 +15,7 @@ REM make setup (might take a few seconds)
 light.exe -ext WixUIExtension nomacs-setup.wixobj nomacs-ui.wixobj HarvestedFiles.wixobj -b ./nomacs.%ARCH% -out nomacs-setup-%ARCH%.msi
 
 REM sign the setup
-signtool sign /f "..\..\TU-code-signing.p12"  /t http://timestamp.digicert.com .\nomacs-setup-%ARCH%.msi
+signtool sign /n "Technische Universit„t Wien" /t http://timestamp.digicert.com .\nomacs-setup-%ARCH%.msi
 
 REM clean up
 del *.wixobj
