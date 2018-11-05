@@ -29,6 +29,7 @@
 #pragma once
 
 #include "DkUtils.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QWidget>
@@ -137,7 +138,7 @@ protected:
 };
 
 // nomacs defines
-class DllCoreExport DkSettingsWidget : public QWidget {
+class DllCoreExport DkSettingsWidget : public DkWidget {
 	Q_OBJECT
 
 public:

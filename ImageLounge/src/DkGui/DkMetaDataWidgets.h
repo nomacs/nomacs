@@ -105,7 +105,7 @@ protected:
 	QStringList mExpandedNames;
 };
 
-class DkMetaDataSelection : public QWidget {
+class DkMetaDataSelection : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -134,7 +134,7 @@ protected:
 	QGridLayout* mLayout;
 };
 
-class DkMetaDataHUD : public DkWidget {
+class DkMetaDataHUD : public DkFadeWidget {
 	Q_OBJECT
 
 public:

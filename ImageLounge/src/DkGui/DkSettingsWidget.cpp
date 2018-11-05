@@ -42,7 +42,7 @@ namespace nmc {
 
 
 // DkSettingsWidget --------------------------------------------------------------------
-DkSettingsWidget::DkSettingsWidget(QWidget* parent) : QWidget(parent) {
+DkSettingsWidget::DkSettingsWidget(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 

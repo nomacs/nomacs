@@ -49,10 +49,16 @@
 namespace nmc {
 
 DkWidget::DkWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
+
+	qInfo() << "init...";
+}
+
+// -------------------------------------------------------------------- DkFadeWidget
+DkFadeWidget::DkFadeWidget(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 	init();
 }
 
-void DkWidget::init() {
+void DkFadeWidget::init() {
 
 	setMouseTracking(true);
 
@@ -72,7 +78,7 @@ void DkWidget::init() {
 	setVisible(false);
 }
 
-void DkWidget::paintEvent(QPaintEvent *event) {
+void DkFadeWidget::paintEvent(QPaintEvent *event) {
 	
 	// fixes stylesheets which are not applied to custom widgets
 	QStyleOption opt;
@@ -83,20 +89,20 @@ void DkWidget::paintEvent(QPaintEvent *event) {
 	QWidget::paintEvent(event);
 }
 
-void DkWidget::registerAction(QAction* action) {
+void DkFadeWidget::registerAction(QAction* action) {
 	mAction = action;
 }
 
-void DkWidget::block(bool blocked) {
+void DkFadeWidget::block(bool blocked) {
 	mBlocked = blocked;
 	setVisible(false);
 }
 
-void DkWidget::setDisplaySettings(QBitArray* displayBits) {
+void DkFadeWidget::setDisplaySettings(QBitArray* displayBits) {
 	mDisplaySettingsBits = displayBits;
 }
 
-bool DkWidget::getCurrentDisplaySetting() {
+bool DkFadeWidget::getCurrentDisplaySetting() {
 
 
 	if (!mDisplaySettingsBits)
@@ -110,13 +116,13 @@ bool DkWidget::getCurrentDisplaySetting() {
 	return mDisplaySettingsBits->testBit(DkSettingsManager::param().app().currentAppMode);
 }
 
-bool DkWidget::isHiding() const {
+bool DkFadeWidget::isHiding() const {
 	return mHiding;
 }
 
-void DkWidget::show(bool saveSetting) {
+void DkFadeWidget::show(bool saveSetting) {
 
-	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
+	// here is a strange problem if you add a DkFadeWidget to another DkFadeWidget -> painters crash
 	if (!mBlocked && !mShowing) {
 		mHiding = false;
 		mShowing = true;
@@ -125,7 +131,7 @@ void DkWidget::show(bool saveSetting) {
 	}
 }
 
-void DkWidget::hide(bool saveSetting) {
+void DkFadeWidget::hide(bool saveSetting) {
 
 	if (!mHiding) {
 		mHiding = true;
@@ -139,7 +145,7 @@ void DkWidget::hide(bool saveSetting) {
 	}
 }
 
-void DkWidget::setVisible(bool visible, bool saveSetting) {
+void DkFadeWidget::setVisible(bool visible, bool saveSetting) {
 
 	if (mBlocked) {
 		QWidget::setVisible(false);
@@ -163,7 +169,7 @@ void DkWidget::setVisible(bool visible, bool saveSetting) {
 
 }
 
-void DkWidget::animateOpacityUp() {
+void DkFadeWidget::animateOpacityUp() {
 
 	if (!mShowing)
 		return;
@@ -180,7 +186,7 @@ void DkWidget::animateOpacityUp() {
 	mOpacityEffect->setOpacity(mOpacityEffect->opacity()+0.05);
 }
 
-void DkWidget::animateOpacityDown() {
+void DkFadeWidget::animateOpacityDown() {
 
 	if (!mHiding)
 		return;
@@ -199,7 +205,7 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkNamedWidget --------------------------------------------------------------------
-DkNamedWidget::DkNamedWidget(const QString& name, QWidget* parent) : DkWidget(parent) {
+DkNamedWidget::DkNamedWidget(const QString& name, QWidget* parent) : DkFadeWidget(parent) {
 	mName = name;
 }
 

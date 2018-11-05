@@ -53,7 +53,6 @@
 #endif
 
 // Qt defines
-class QGestureEvent;
 class QFileDialog;
 class QProgressDialog;
 class QDesktopWidget;
@@ -62,10 +61,8 @@ class QShortcut;
 
 namespace nmc {
 
-class DkTcpMenu;
 class DkCompressDialog;
 class DkOpacityDialog;
-class DkResizeDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
 class DkTrainDialog;
@@ -81,15 +78,11 @@ class DkExportTiffDialog;
 class DkUpdater;
 class DkInstallUpdater;
 class DkTranslationUpdater;
-class DkLocalManagerThread;
-class DkTransferToolBar;
 class DkPluginManagerDialog;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class DkBatchContainer;
-class DkViewPort;
 class DkCentralWidget;
-class DkMainToolBar;
 class DkDockWidget;
 class DkQuickAccess;
 class DkImageLoader;
@@ -132,23 +125,14 @@ public:
 
 	virtual ~DkNoMacs();
 	
-	virtual DkViewPort* viewport() const;
 	virtual DkCentralWidget* getTabWidget() const;
 	
 	void loadFile(const QString& filePath);
 
-	static void updateAll();
-
 	bool mSaveSettings = true;
 
 signals:
-	void sendTitleSignal(const QString& newTitle) const;
-	void sendPositionSignal(QRect newRect, bool overlaid) const;
 	void sendArrangeSignal(bool overlaid) const;
-	void synchronizeWithSignal(quint16) const;
-	void stopSynchronizeWithSignal() const;
-	void synchronizeWithServerPortSignal(quint16) const;
-	void synchronizeRemoteControl(quint16) const;
 	void closeSignal() const;
 	void sendQuitLocalClientsSignal() const;
 
@@ -176,20 +160,10 @@ public slots:
 	void find(bool filterAction = true);
 	void extractImagesFromArchive();
 	void trainFormat();
-	void resizeImage();
 	void exportTiff();
-	void computeMosaic();
-	void deleteFile();
-	void setWallpaper();
-	void printDialog();
 	void cleanSettings();
 	void newInstance(const QString& filePath = QString());
-	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
-	void showToolbarsTemporarily(bool show);
-	void showToolBar(bool show, bool permanent = true);
-	void showToolBar(QToolBar* toolbar, bool show);
-	void showGpsCoordinates();
 	void openFileWith(QAction* action);
 	void aboutDialog();
 	void openDocumentation();
@@ -208,7 +182,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	virtual void newClientConnected(bool connected, bool local);
+	void newClientConnected(bool connected);
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);
@@ -218,17 +192,15 @@ public slots:
 	void startSetup(QString);
 	void updateTranslations();
 	void checkForUpdate(bool silent = false);
-	void setFrameless(bool frameless);
 	void startPong() const;
 	void fitFrame();
 	void setRecursiveScan(bool recursive);
-	void setContrast(bool contrast);
-	void enableMovieActions(bool enable);
 	void openPluginManager();
 	void clearFileHistory();
 	void clearFolderHistory();
-	//void shareFacebook();
 	void restartWithTranslationUpdate();
+	void restartWithPseudoColor(bool contrast);
+	void restartFrameless(bool frameless);
 
 	// batch actions
 	void computeThumbsBatch();
@@ -254,7 +226,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent* event);
 
-	bool gestureEvent(QGestureEvent *event);
+	//bool gestureEvent(QGestureEvent *event);
 
 	// needed to hide menu
 	bool mOtherKeyPressed = true;
@@ -268,18 +240,14 @@ protected:
 
 	QPoint mMousePos;
 	
-	// toolbar
-	DkMainToolBar* mToolbar = 0;
+	// quick access
 	DkQuickAccessEdit* mQuickAccessEdit = 0;
-	QToolBar* mMovieToolbar = 0;
-	Qt::ToolBarArea mMovieToolbarArea = Qt::NoToolBarArea;
 	DkQuickAccess* mQuickAccess = 0;
 
 	// file dialog
 	QFileDialog* mOpenDialog = 0;
 	QFileDialog* mSaveDialog = 0;
 	DkOpacityDialog* mOpacityDialog = 0;
-	DkResizeDialog* mResizeDialog = 0;
 	DkUpdateDialog* mUpdateDialog = 0;
 	QProgressDialog* mProgressDialog = 0;
 	QProgressDialog* mProgressDialogTranslations = 0;
@@ -298,15 +266,12 @@ protected:
 	DkThumbsSaver* mThumbSaver = 0;
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
-	DkDialogManager* mDialogManager = 0;
 
 	DkInstallUpdater* mInstallUpdater = 0;
 	DkUpdater* mUpdater = 0;
 	DkTranslationUpdater* mTranslationUpdater = 0;	
 
 	QRect mOldGeometry;
-	QList<QToolBar *> mHiddenToolbars;
-
 	QProcess mProcess;
 
 	// functions
@@ -315,11 +280,10 @@ protected:
 	virtual void init();
 	
 	void loadStyleSheet();
-	virtual void createToolbar();
 	virtual void createActions();
 	virtual void createMenu();
 	virtual void createContextMenu();
-	virtual void createStatusbar();
+	virtual void createStatusBar();
 
 	virtual void readSettings();
 
@@ -333,15 +297,9 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs {
 public:
 	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	~DkNoMacsSync();
-	qint16 getServerPort();
-	void syncWith(qint16 port);
 	
 signals:
 	void startRCServerSignal(bool start);
-
-public slots:
-	void tcpConnectAll();
-	void tcpAutoConnect(bool connect);
 
 protected:
 
@@ -352,10 +310,6 @@ protected:
 
 	// gui
 	virtual void createActions();
-	virtual void createMenu();
-
-	// network layer
-	DkLocalManagerThread* mLocalClient = 0;
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {
@@ -376,7 +330,6 @@ public:
 	virtual ~DkNoMacsFrameless();
 
 public slots:
-	void exitFullScreen();
 	void chooseMonitor(bool force = true);
 
 protected:
@@ -394,11 +347,6 @@ public:
 	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	
 	virtual ~DkNoMacsContrast();
-
-protected:
-	void createTransferToolbar();
-
-	DkTransferToolBar* mTransferToolBar = 0;
 
 };
 }

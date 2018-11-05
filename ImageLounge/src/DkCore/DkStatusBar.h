@@ -88,6 +88,7 @@ public:
 	DkStatusBarManager(DkStatusBarManager const&)   = delete;
 	void operator=(DkStatusBarManager const&)		= delete;
 
+	void show(bool show, bool permanent = true);
 	DkStatusBar* statusbar();
 	void setMessage(const QString& msg, DkStatusBar::StatusLabel which = DkStatusBar::status_pixel_info);
 

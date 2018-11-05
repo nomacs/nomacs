@@ -29,6 +29,7 @@
 #include "DkActionManager.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
+#include "DkStatusBar.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QCoreApplication>
@@ -95,6 +96,11 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 	
 	connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollVertically(int)));
 	connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollHorizontally(int)));
+
+	mHideCursorTimer = new QTimer(this);
+	mHideCursorTimer->setInterval(1000);
+	connect(mHideCursorTimer, SIGNAL(timeout()), this, SLOT(hideCursor()));
+
 
 }
 
@@ -264,6 +270,12 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	updateImageMatrix();
 	update();
 	emit newImageSignal(&newImg);
+}
+
+void DkBaseViewPort::hideCursor() {
+
+	if (isFullScreen())
+		setCursor(Qt::BlankCursor);
 }
 
 QImage DkBaseViewPort::getImage() const {
@@ -467,18 +479,21 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		if (event->modifiers() == mCtrlMod && event->modifiers() != mAltMod) {
 			setCursor(Qt::CrossCursor);
-			emit showStatusBar(true, false);
+			DkStatusBarManager::instance().show(true, false);
 		}
 		else if (mWorldMatrix.m11() > 1 && !imageInside())
 			setCursor(Qt::OpenHandCursor);
 		else {
 
 			if (!DkSettingsManager::param().app().showStatusBar)
-				emit showStatusBar(false, false);
+				DkStatusBarManager::instance().show(false, false);
 
-			if (cursor().shape() != Qt::ArrowCursor)
+			 if (cursor().shape() != Qt::ArrowCursor)
 				unsetCursor();
 		}
+
+		if (isFullScreen())
+			mHideCursorTimer->start(3000);
 	}
 
 	QWidget::mouseMoveEvent(event);

@@ -120,7 +120,6 @@ public:
 	virtual bool imageInside() const;
 
 signals:
-	void showStatusBar(bool show, bool permanent) const;
 	void newImageSignal(QImage* img) const;
 	void keyReleaseSignal(QKeyEvent* event) const;	// make key presses available
 	void imageUpdated() const;	// triggers on zoom/pan
@@ -144,6 +143,7 @@ public slots:
 
 	virtual bool unloadImage(bool fileChange = true);
 	virtual void setImage(QImage newImg);
+	void hideCursor();
 	
 protected:
 	virtual bool event(QEvent *event) override;
@@ -175,6 +175,7 @@ protected:
 	QRectF mImgViewRect;
 	QRectF mViewportRect;
 	QRectF mImgRect;
+	QTimer* mHideCursorTimer;
 
 	QPointF mPanControl;	// controls how far we can pan outside an image
 	QPointF mPosGrab;

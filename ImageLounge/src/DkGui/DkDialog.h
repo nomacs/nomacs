@@ -69,6 +69,7 @@ class DkButton;
 class DkThumbNail;
 class DkAppManager;
 class DkDisplayWidget;
+class DkCentralWidget;
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
@@ -537,7 +538,7 @@ private:
 	QVector<QSharedPointer<DkPrintImage> > mPrintImages;
 };
 
-class DkPrintPreviewDialog : public QMainWindow {
+class DkPrintPreviewDialog : public QDialog {
 	Q_OBJECT
 
 public:
@@ -561,9 +562,6 @@ public:
 
 	void init();
 
-public slots:
-	void updateZoomFactor();
-
 protected:
 	void createLayout();
 	void createIcons();
@@ -579,9 +577,7 @@ private slots:
 	void previewFitWidth();
 	void previewFitPage();
 
-
 private:
-	QSpinBox* mZoomFactor = 0;
 	QSpinBox* mDpiBox = 0;
 
 	DkPrintPreviewWidget* mPreview = 0;
@@ -886,9 +882,16 @@ class DkDialogManager : public QObject {
 public:
 	DkDialogManager(QObject* parent = 0);
 
+	void setCentralWidget(DkCentralWidget* cw);
+
 public slots:
 	void openShortcutsDialog() const;
 	void openAppManager() const;
+	void openMosaicDialog() const;
+	void openPrintDialog() const;
+
+private:
+	DkCentralWidget* mCentralWidget = 0;
 };
 
 }

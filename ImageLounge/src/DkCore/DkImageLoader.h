@@ -171,6 +171,7 @@ public slots:
 	void imagesSorted();
 	bool unloadFile();
 	void reloadImage();
+	void showOnMap();
 
 protected:
 	// functions

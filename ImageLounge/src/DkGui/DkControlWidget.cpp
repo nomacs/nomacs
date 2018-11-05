@@ -50,14 +50,15 @@
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------
-DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
+DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	mViewport = parent;
 	setObjectName("DkControlWidget");
 
 	// cropping
+	// TODO: add lazy initialization here
 	mCropWidget = new DkCropWidget(QRectF(), this);
-
+	
 	// thumbnails, metadata
 	mFilePreview = new DkFilePreview(this, flags);
 	mMetaDataInfo = new DkMetaDataHUD(this);
@@ -686,32 +687,32 @@ void DkControlWidget::setInfoDelayed(const QString& msg, bool start, int delayTi
 
 void DkControlWidget::changeMetaDataPosition(int pos) {
 
-	if (pos == DkWidget::pos_west) {
+	if (pos == DkFadeWidget::pos_west) {
 		mHudLayout->addWidget(mMetaDataInfo, top_metadata, left_metadata, bottom_metadata-top_metadata, 1);	
 	}
-	else if (pos == DkWidget::pos_east) {
+	else if (pos == DkFadeWidget::pos_east) {
 		mHudLayout->addWidget(mMetaDataInfo, top_metadata, right_metadata, bottom_metadata-top_metadata, 1);	
 	}
-	else if (pos == DkWidget::pos_north) {
+	else if (pos == DkFadeWidget::pos_north) {
 		mHudLayout->addWidget(mMetaDataInfo, top_metadata, left_metadata, 1, hor_pos_end-2);	
 	}
-	else if (pos == DkWidget::pos_south) {
+	else if (pos == DkFadeWidget::pos_south) {
 		mHudLayout->addWidget(mMetaDataInfo, bottom_metadata, left_metadata, 1, hor_pos_end-2);	
 	}
 }
 
 void DkControlWidget::changeThumbNailPosition(int pos) {
 
-	if (pos == DkWidget::pos_west) {
+	if (pos == DkFadeWidget::pos_west) {
 		mHudLayout->addWidget(mFilePreview, top_thumbs, left_thumbs, ver_pos_end, 1);	
 	}
-	else if (pos == DkWidget::pos_east) {
+	else if (pos == DkFadeWidget::pos_east) {
 		mHudLayout->addWidget(mFilePreview, top_thumbs, right_thumbs, ver_pos_end, 1);	
 	}
-	else if (pos == DkWidget::pos_north) {
+	else if (pos == DkFadeWidget::pos_north) {
 		mHudLayout->addWidget(mFilePreview, top_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
-	else if (pos == DkWidget::pos_south) {
+	else if (pos == DkFadeWidget::pos_south) {
 		mHudLayout->addWidget(mFilePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
 	else 

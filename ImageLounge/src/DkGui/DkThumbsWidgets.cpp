@@ -66,7 +66,7 @@
 namespace nmc {
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkFadeWidget(parent, flags) {
 
 	orientation = Qt::Horizontal;
 	windowPosition = pos_north;
@@ -125,6 +125,9 @@ void DkFilePreview::init() {
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
+
+	QWidget* nomacs = DkUtils::getMainWindow();
+	connect(this, SIGNAL(showThumbsDockSignal(bool)), nomacs, SLOT(showThumbsDock(bool)));
 }
 
 void DkFilePreview::initOrientations() {
@@ -699,7 +702,7 @@ void DkFilePreview::contextMenuEvent(QContextMenuEvent *event) {
 	contextMenu->exec(event->globalPos());
 	event->accept();
 
-	DkWidget::contextMenuEvent(event);
+	DkFadeWidget::contextMenuEvent(event);
 }
 
 void DkFilePreview::newPosition() {
@@ -853,7 +856,7 @@ void DkFilePreview::setVisible(bool visible, bool saveSettings) {
 
 	emit showThumbsDockSignal(visible);
 
-	DkWidget::setVisible(visible, saveSettings);
+	DkFadeWidget::setVisible(visible, saveSettings);
 }
 
 // DkThumbLabel --------------------------------------------------------------------
@@ -1838,7 +1841,7 @@ void DkThumbsView::fetchThumbs() {
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------
-DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkFadeWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
@@ -1949,11 +1952,11 @@ void DkThumbScrollWidget::batchPrint() const {
 
 	DkPrintPreviewDialog* printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
 
-	for (const QImage& img : imgs) {
+	for (const QImage& img : imgs)
 		printPreviewDialog->addImage(img);
-	}
 
-	printPreviewDialog->show();
+	printPreviewDialog->exec();
+	printPreviewDialog->deleteLater();
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -1976,7 +1979,7 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 
 	connectToActions(visible);
 
-	DkWidget::setVisible(visible);
+	DkFadeWidget::setVisible(visible);
 
 	if (visible) {
 		mThumbsScene->updateThumbLabels();
@@ -2040,7 +2043,7 @@ void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
 	if (event->oldSize().width() != event->size().width() && isVisible())
 		mThumbsScene->updateLayout();
 
-	DkWidget::resizeEvent(event);
+	DkFadeWidget::resizeEvent(event);
 
 }
 
@@ -2112,7 +2115,7 @@ void DkThumbPreviewLabel::mousePressEvent(QMouseEvent *ev) {
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry 
-DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir& rde, QWidget* parent) : DkWidget(parent) {
+DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir& rde, QWidget* parent) : DkFadeWidget(parent) {
 
 	mRecentDir = rde;
 
@@ -2220,7 +2223,7 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent * event) {
 		emit loadFileSignal(mRecentDir.firstFilePath(), event->modifiers() == Qt::ControlModifier);
 	}
 
-	DkWidget::mousePressEvent(event);
+	DkFadeWidget::mousePressEvent(event);
 }
 
 void DkRecentDirWidget::enterEvent(QEvent * event) {
@@ -2228,7 +2231,7 @@ void DkRecentDirWidget::enterEvent(QEvent * event) {
 	for (auto b : mButtons)
 		b->show();
 
-	DkWidget::enterEvent(event);
+	DkFadeWidget::enterEvent(event);
 }
 
 void DkRecentDirWidget::leaveEvent(QEvent * event) {
@@ -2236,11 +2239,11 @@ void DkRecentDirWidget::leaveEvent(QEvent * event) {
 	for (auto b : mButtons)
 		b->hide();
 
-	DkWidget::leaveEvent(event);
+	DkFadeWidget::leaveEvent(event);
 }
 
 // -------------------------------------------------------------------- DkRecentFilesEntry 
-DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent) : DkWidget(parent) {
+DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent) : DkFadeWidget(parent) {
 
 	createLayout();
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -2251,7 +2254,7 @@ void DkRecentFilesWidget::setVisible(bool visible) {
 	if (visible)
 		updateList();
 
-	DkWidget::setVisible(visible);
+	DkFadeWidget::setVisible(visible);
 }
 
 void DkRecentFilesWidget::createLayout() {

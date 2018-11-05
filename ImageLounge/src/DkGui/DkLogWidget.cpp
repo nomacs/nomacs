@@ -42,7 +42,7 @@ namespace nmc {
 QSharedPointer<DkMessageQueuer> msgQueuer = QSharedPointer<DkMessageQueuer>();
 
 // -------------------------------------------------------------------- DkLogWidget 
-DkLogWidget::DkLogWidget(QWidget* parent) : QWidget(parent) {
+DkLogWidget::DkLogWidget(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 

@@ -72,7 +72,7 @@ protected:
 	void createLayout();
 };
 
-class DkLogWidget : public QWidget {
+class DkLogWidget : public DkWidget {
 	Q_OBJECT
 
 public:

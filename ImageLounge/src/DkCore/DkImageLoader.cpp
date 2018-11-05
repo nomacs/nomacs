@@ -74,6 +74,7 @@
 #include <qmath.h>
 #include <QtConcurrentRun>
 #include <QStandardPaths>
+#include <QDesktopServices>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -121,6 +122,7 @@ DkImageLoader::DkImageLoader(const QString& filePath) {
 
 	connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
 	connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), SIGNAL(triggered()), this, SLOT(redo()));
+	connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SIGNAL(triggered()), this, SLOT(showOnMap()));
 
 	//saveDir = DkSettingsManager::param().global().lastSaveDir;	// loading save dir is obsolete ?!
 	 
@@ -868,6 +870,18 @@ void DkImageLoader::reloadImage() {
 	setCurrentImage(mCurrentImage);
 	loadDir(mCurrentImage->dirPath());
 	load(mCurrentImage);
+}
+
+void DkImageLoader::showOnMap() {
+
+	QSharedPointer<DkMetaDataT> metaData = getCurrentImage()->getMetaData();
+
+	if (!DkMetaDataHelper::getInstance().hasGPS(metaData)) {
+		emit showInfoSignal(tr("Sorry, I could not find the GPS coordinates..."));
+		return;
+	}
+
+	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));
 }
 
 void DkImageLoader::load(const QString& filePath) {

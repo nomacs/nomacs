@@ -319,7 +319,7 @@ QString DkInputTextEdit::firstDirPath() const {
 }
 
 // File Selection --------------------------------------------------------------------
-DkBatchInput::DkBatchInput(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+DkBatchInput::DkBatchInput(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
 
 	setObjectName("DkBatchInput");
 	createLayout();
@@ -532,7 +532,7 @@ void DkBatchInput::stopProcessing() {
 }
 
 // DkFileNameWdiget --------------------------------------------------------------------
-DkFilenameWidget::DkFilenameWidget(QWidget* parent) : QWidget(parent) {
+DkFilenameWidget::DkFilenameWidget(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	showOnlyFilename();
@@ -736,7 +736,7 @@ bool DkFilenameWidget::setTag(const QString & tag) {
 }
 
 // DkBatchOutput --------------------------------------------------------------------
-DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(parent, f) {
+DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : DkWidget(parent, f) {
 
 	setObjectName("DkBatchOutput");
 	createLayout();
@@ -1155,7 +1155,7 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 }
 
 // DkProfileSummaryWidget --------------------------------------------------------------------
-DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget* parent) : DkWidget(parent) {
+DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget* parent) : DkFadeWidget(parent) {
 	createLayout();
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 	QMetaObject::connectSlotsByName(this);
@@ -1247,7 +1247,7 @@ void DkProfileSummaryWidget::createLayout() {
 
 
 // DkProfileWidget --------------------------------------------------------------------
-DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -1453,7 +1453,7 @@ void DkProfileWidget::saveProfile() {
 
 #ifdef WITH_PLUGINS
 // DkBatchPlugin --------------------------------------------------------------------
-DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
 
 	//mSettings = DkSettingsManager::instance().qSettings();
 	DkPluginManager::instance().loadPlugins();
@@ -1740,7 +1740,7 @@ void DkBatchPluginWidget::updateHeader() const {
 #endif
 
 // DkBatchManipulatorWidget --------------------------------------------------------------------
-DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
 
 	mManager.createManipulators(this);
 	createLayout();
@@ -1815,7 +1815,8 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager
 	mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);
 	mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
 	mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
-	
+	mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
+
 	for (QWidget* w : mMplWidgets)
 		mSettingsLayout->addWidget(w);
 
@@ -1971,7 +1972,7 @@ void DkBatchManipulatorWidget::updateHeader() const {
 }
 
 // DkBatchTransform --------------------------------------------------------------------
-DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
 
 	createLayout();
 	applyDefault();
@@ -2223,7 +2224,7 @@ QRect DkBatchTransformWidget::cropRect() const {
 }
 
 // Batch Buttons --------------------------------------------------------------------
-DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkWidget(parent) {
+DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkFadeWidget(parent) {
 	createLayout();
 	setPaused();
 }
@@ -2278,7 +2279,7 @@ QPushButton * DkBatchButtonsWidget::playButton() {
 }
 
 // DkBatchInfo --------------------------------------------------------------------
-DkBatchInfoWidget::DkBatchInfoWidget(QWidget* parent) : DkWidget(parent) {
+DkBatchInfoWidget::DkBatchInfoWidget(QWidget* parent) : DkFadeWidget(parent) {
 	createLayout();
 }
 
@@ -2315,7 +2316,7 @@ void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
 }
 
 // Batch Widget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkWidget(parent) {
+DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkFadeWidget(parent) {
 	
 	mCurrentDirectory = currentDirectory;
 	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);

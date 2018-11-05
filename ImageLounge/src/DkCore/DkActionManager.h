@@ -28,6 +28,7 @@
 #pragma once
 
 #include "DkManipulators.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -55,7 +56,6 @@ class QProgressDialog;
 namespace nmc {
 	
 // nomacs defines
-class DkManagerThread;
 class DkTcpMenu;
 class DkPluginActionManager;
 
@@ -501,8 +501,6 @@ public:
 	void createActions(QWidget* parent);
 	void createMenus(QWidget* parent);
 	
-	void addSyncMenu(QMenu* syncMenu, DkTcpMenu* localMenu);
-
 	QAction* action(FileMenuActions action) const;
 	QAction* action(SortMenuActions action) const;
 	QAction* action(ViewMenuActions action) const;
@@ -541,6 +539,7 @@ public:
 	void assignCustomShortcuts(QVector<QAction*> actions) const;
 
 	void enableImageActions(bool enable = true) const;
+	void enableMovieActions(bool enable = true) const;
 
 protected:
 	DkActionManager();
@@ -558,6 +557,7 @@ protected:
 	QMenu* createPanelMenu(QWidget* parent);
 	QMenu* createHelpMenu(QWidget* parent);
 	QMenu* createContextMenu(QWidget* parent);
+	QMenu* createSyncMenu(QWidget* parent);
 
 	// actions
 	QVector<QAction *> mFileActions;
@@ -590,7 +590,7 @@ protected:
 	// sync
 	QMenu* mSyncMenu = 0;
 	DkTcpMenu* mLocalMenu = 0;
-
+	   
 	// icons
 	QVector<QIcon> mFileIcons;
 	QVector<QIcon> mEditIcons;
@@ -603,7 +603,7 @@ protected:
 	QSharedPointer<DkActionManager> inst;
 };
 
-class DllCoreExport DkGlobalProgress : public QWidget {
+class DllCoreExport DkGlobalProgress : public DkWidget {
 	Q_OBJECT
 
 public:

@@ -275,7 +275,7 @@ protected:
 };
 
 // widget with all plug-in information
-class DkPluginTableWidget: public QWidget {
+class DkPluginTableWidget: public DkWidget {
 
 Q_OBJECT
 

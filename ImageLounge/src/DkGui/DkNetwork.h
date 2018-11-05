@@ -39,6 +39,8 @@
 
 #include "DkConnection.h"
 
+class QMimeData;
+
 namespace nmc {
 
 // nomacs defines
@@ -118,7 +120,7 @@ private:
 	QMultiHash<quint16, DkPeer*> peerList;
 };
 
-class DkClientManager : public QThread {
+class DkClientManager : public QObject {
 	Q_OBJECT
 	public:
 		DkClientManager(const QString& title, QObject* parent = 0);
@@ -144,7 +146,8 @@ class DkClientManager : public QThread {
 		void sendGoodByeMessage();
 		void synchronizedPeersListChanged(QList<quint16> newList);
 		void updateConnectionSignal(QList<DkPeer*> peers);
-		
+		void clientConnectedSignal(bool);
+
 		void receivedQuit();
 
 	public slots:
@@ -190,8 +193,10 @@ class DkLocalClientManager : public DkClientManager {
 public:
 	DkLocalClientManager(const QString& title, QObject* parent = 0);
 	QList<DkPeer*> getPeerList();
-	quint16 getServerPort();
-	void run();
+	quint16 getServerPort() const;
+
+	QMimeData* mimeData() const;
+	void startServer();
 
 signals:
 	void receivedQuit();
@@ -204,6 +209,7 @@ public slots:
 	void sendArrangeInstances(bool overlaid);
 	void sendQuitMessageToPeers();
 	void connectToNomacs();
+	void connectAll();
 
 private slots:
 	void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
@@ -214,7 +220,7 @@ private:
 	DkLocalConnection* createConnection();
 	void searchForOtherClients();
 
-	DkLocalTcpServer* server;
+	DkLocalTcpServer* mServer;
 };
 
 class DkLocalTcpServer : public QTcpServer {
@@ -226,81 +232,27 @@ public:
 signals:
 	void serverReiceivedNewConnection(int DkDescriptor);
 
-
 protected:
 	void incomingConnection(qintptr socketDescriptor) override;
 };
 
-class DkNoMacs;
-
-class DkManagerThread : public QThread {
-	Q_OBJECT
+class DllCoreExport DkSyncManager {
 
 public:
-	DkManagerThread(DkNoMacs *parent = 0);
-	~DkManagerThread() {
-		
-		if (clientManager) 
-			delete clientManager;
-		clientManager = 0;
-	};
-	
-	virtual void connectClient();
-	void run();
+	static DkSyncManager& inst();
 
-	QList<DkPeer*> getPeerList() {
+	// singleton
+	DkSyncManager(DkSyncManager const&) = delete;
+	void operator=(DkSyncManager const&) = delete;
 
-		if (!clientManager)
-			return QList<DkPeer*>();
+	DkClientManager* client();
 
-		QMutexLocker locker(&mutex);
-		return clientManager->getPeerList();	// critical section
-	};
+private:
+	DkSyncManager();
 
-signals:
-	void syncWithSignal(quint16);
-	void stopSyncWithSignal(quint16);
-	void goodByeToAllSignal();
-
-public slots:
-	void synchronizeWith(quint16 peerId) {
-
-		emit syncWithSignal(peerId);
-	};
-	void stopSynchronizeWith(quint16 peerId) {
-		emit stopSyncWithSignal(peerId);
-	};
-	void sendGoodByeToAll() {
-		emit goodByeToAllSignal();
-	};
-
-	void quit();
-
-protected:
-	virtual void createClient(const QString& title) = 0;
-	
-	DkClientManager* clientManager;
-	DkNoMacs *parent;
-	QMutex mutex;
+	DkLocalClientManager* mClient = 0;
 };
 
-class DkLocalManagerThread : public DkManagerThread {
-	Q_OBJECT
-
-public:
-	DkLocalManagerThread(DkNoMacs* parent);
-	void connectClient();
-
-	qint16 getServerPort() {
-		//TODO: da kann der hund begraben sein...
-		QMutexLocker locker(&mutex);
-		return dynamic_cast<DkLocalClientManager*>(clientManager)->getServerPort();
-	};
-
-protected:
-	void createClient(const QString& title);
-
-};
 
 }
 

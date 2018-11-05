@@ -47,7 +47,7 @@
 namespace nmc {
 
 // DkManipulatorWidget --------------------------------------------------------------------
-DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkWidget(parent) {
+DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkFadeWidget(parent) {
 	
 	// create widgets
 	DkActionManager& am = DkActionManager::instance();
@@ -233,7 +233,7 @@ void DkEditDock::setImage(QSharedPointer<DkImageContainerT> imgC) {
 }
 
 // DkManipulatorWidget --------------------------------------------------------------------
-DkBaseManipulatorWidget::DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkWidget(parent) {
+DkBaseManipulatorWidget::DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkFadeWidget(parent) {
 	mBaseManipulator = manipulator;
 }
 
