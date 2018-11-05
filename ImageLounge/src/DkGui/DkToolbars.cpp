@@ -34,6 +34,8 @@
 #include "DkBasicWidgets.h"
 #include "DkActionManager.h"
 
+#include <assert.h>
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
 #include <QWidget>
