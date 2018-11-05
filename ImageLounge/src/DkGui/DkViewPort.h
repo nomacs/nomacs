@@ -166,6 +166,7 @@ public slots:
 	void saveFile();
 	void saveFileAs(bool silent = false);
 	void saveFileWeb();
+	void setAsWallpaper();
 
 	// copy & paste
 	void copyPixelColorValue();

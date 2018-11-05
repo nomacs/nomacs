@@ -1952,11 +1952,11 @@ void DkThumbScrollWidget::batchPrint() const {
 
 	DkPrintPreviewDialog* printPreviewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
 
-	for (const QImage& img : imgs) {
+	for (const QImage& img : imgs)
 		printPreviewDialog->addImage(img);
-	}
 
-	printPreviewDialog->show();
+	printPreviewDialog->exec();
+	printPreviewDialog->deleteLater();
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {

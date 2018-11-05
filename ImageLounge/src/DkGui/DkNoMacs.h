@@ -132,13 +132,7 @@ public:
 	bool mSaveSettings = true;
 
 signals:
-	void sendTitleSignal(const QString& newTitle) const;
-	void sendPositionSignal(QRect newRect, bool overlaid) const;
 	void sendArrangeSignal(bool overlaid) const;
-	void synchronizeWithSignal(quint16) const;
-	void stopSynchronizeWithSignal() const;
-	void synchronizeWithServerPortSignal(quint16) const;
-	void synchronizeRemoteControl(quint16) const;
 	void closeSignal() const;
 	void sendQuitLocalClientsSignal() const;
 
@@ -167,13 +161,9 @@ public slots:
 	void extractImagesFromArchive();
 	void trainFormat();
 	void exportTiff();
-	void computeMosaic();
-	void setWallpaper();
-	void printDialog();
 	void cleanSettings();
 	void newInstance(const QString& filePath = QString());
 	void showMenuBar(bool show);
-	void showGpsCoordinates();
 	void openFileWith(QAction* action);
 	void aboutDialog();
 	void openDocumentation();
@@ -276,7 +266,6 @@ protected:
 	DkThumbsSaver* mThumbSaver = 0;
 
 	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
-	DkDialogManager* mDialogManager = 0;
 
 	DkInstallUpdater* mInstallUpdater = 0;
 	DkUpdater* mUpdater = 0;
@@ -309,7 +298,6 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs {
 public:
 	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	~DkNoMacsSync();
-	void syncWith(qint16 port);
 	
 signals:
 	void startRCServerSignal(bool start);

@@ -139,6 +139,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	connect(am.action(DkActionManager::menu_file_save), SIGNAL(triggered()), this, SLOT(saveFile()));
 	connect(am.action(DkActionManager::menu_file_save_as), SIGNAL(triggered()), this, SLOT(saveFileAs()));
 	connect(am.action(DkActionManager::menu_file_save_web), SIGNAL(triggered()), this, SLOT(saveFileWeb()));
+	connect(am.action(DkActionManager::menu_tools_wallpaper), SIGNAL(triggered()), this, SLOT(setAsWallpaper()));
 
 	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
@@ -800,6 +801,36 @@ void DkViewPort::saveFileWeb() {
 		mController->closePlugin(false);
 		mLoader->saveFileWeb(getImage());
 	}
+}
+
+void DkViewPort::setAsWallpaper() {
+
+	// based on code from: http://qtwiki.org/Set_windows_background_using_QT
+	auto imgC = imageContainer();
+
+	if (!imgC || !imgC->hasImage()) {
+		qWarning() << "cannot create wallpaper because there is no image loaded...";
+	}
+
+	QImage img = imgC->image();
+	QString tmpPath = mLoader->saveTempFile(img, "wallpaper", ".jpg", true, false);
+
+	// is there a more elegant way to see if saveTempFile returned an empty path
+	if (tmpPath.isEmpty()) {
+		QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not create a wallpaper..."));
+		return;
+	}
+
+#ifdef Q_OS_WIN
+
+	//Read current windows background image path
+	QSettings appSettings("HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);
+	appSettings.setValue("Wallpaper", tmpPath);
+
+	QByteArray ba = tmpPath.toLatin1();
+	SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (void*)ba.data(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+#endif
+	// TODO: add functionality for unix based systems
 }
 
 void DkViewPort::applyManipulator() {

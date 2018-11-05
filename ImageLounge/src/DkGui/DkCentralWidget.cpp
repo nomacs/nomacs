@@ -41,6 +41,7 @@
 #include "DkWidgets.h"
 #include "DkActionManager.h"
 #include "DkPreferenceWidgets.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -285,6 +286,10 @@ DkCentralWidget::DkCentralWidget(QWidget* parent) : DkWidget(parent) {
 	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
+
+	// runs in the background & will be deleted with this widget...
+	DkDialogManager* dm = new DkDialogManager(this);
+	dm->setCentralWidget(this);
 }
 
 DkCentralWidget::~DkCentralWidget() {

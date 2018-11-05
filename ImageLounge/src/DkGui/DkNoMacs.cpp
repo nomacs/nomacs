@@ -150,9 +150,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	mOldGeometry = geometry();
 	mOverlaid = false;
-
-	mDialogManager = new DkDialogManager(this);
-
+	
 	resize(850, 504);
 	setMinimumSize(20, 20);
 
@@ -268,7 +266,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_file_save_list), SIGNAL(triggered()), this, SLOT(saveFileList()));
 	connect(am.action(DkActionManager::menu_file_rename), SIGNAL(triggered()), this, SLOT(renameFile()));
 	connect(am.action(DkActionManager::menu_file_goto), SIGNAL(triggered()), this, SLOT(goTo()));
-	connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(printDialog()));
 	connect(am.action(DkActionManager::menu_file_show_recent), SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));	
 	connect(am.action(DkActionManager::menu_file_new_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
 	connect(am.action(DkActionManager::menu_file_private_instance), SIGNAL(triggered()), this, SLOT(newInstance()));
@@ -282,8 +279,6 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_sort_random), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 	connect(am.action(DkActionManager::menu_sort_ascending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 	connect(am.action(DkActionManager::menu_sort_descending), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
-
-	connect(am.action(DkActionManager::menu_tools_wallpaper), SIGNAL(triggered()), this, SLOT(setWallpaper()));
 
 	connect(am.action(DkActionManager::menu_panel_menu), SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
 	connect(am.action(DkActionManager::menu_panel_explorer), SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
@@ -303,13 +298,11 @@ void DkNoMacs::createActions() {
 	connect(am.action(DkActionManager::menu_view_opacity_down), SIGNAL(triggered()), this, SLOT(opacityDown()));
 	connect(am.action(DkActionManager::menu_view_opacity_an), SIGNAL(triggered()), this, SLOT(animateChangeOpacity()));
 	connect(am.action(DkActionManager::menu_view_lock_window), SIGNAL(triggered(bool)), this, SLOT(lockWindow(bool)));
-	connect(am.action(DkActionManager::menu_view_gps_map), SIGNAL(triggered()), this, SLOT(showGpsCoordinates()));
 	
 	connect(am.action(DkActionManager::menu_tools_thumbs), SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
 	connect(am.action(DkActionManager::menu_tools_filter), SIGNAL(triggered(bool)), this, SLOT(find(bool)));
 	connect(am.action(DkActionManager::menu_tools_export_tiff), SIGNAL(triggered()), this, SLOT(exportTiff()));
 	connect(am.action(DkActionManager::menu_tools_extract_archive), SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
-	connect(am.action(DkActionManager::menu_tools_mosaic), SIGNAL(triggered()), this, SLOT(computeMosaic()));
 	connect(am.action(DkActionManager::menu_tools_train_format), SIGNAL(triggered()), this, SLOT(trainFormat()));
 
 	connect(am.action(DkActionManager::sc_test_rec), SIGNAL(triggered()), this, SLOT(loadRecursion()));
@@ -879,7 +872,10 @@ void DkNoMacs::tcpSendWindowRect() {
 	// change my geometry
 	tcpSetWindowRect(this->frameGeometry(), !mOverlaid, mOverlaid);
 
-	emit sendPositionSignal(frameGeometry(), mOverlaid);
+
+	auto cm = DkSyncManager::inst().client();
+	if (cm)
+		cm->sendPosition(frameGeometry(), mOverlaid);
 }
 
 void DkNoMacs::tcpSendArrange() {
@@ -1305,7 +1301,6 @@ void DkNoMacs::renameFile() {
 			getTabWidget()->getViewPort()->loadNextFileFast();
 
 	}
-
 }
 
 void DkNoMacs::find(bool filterAction) {
@@ -1430,93 +1425,6 @@ void DkNoMacs::exportTiff() {
 	mExportTiffDialog->setFile(getTabWidget()->getCurrentFilePath());
 	mExportTiffDialog->exec();
 #endif
-}
-
-void DkNoMacs::computeMosaic() {
-
-	// TODO:ref move this
-	qWarning() << "compute mosaic is disabled until it is moved...";
-	
-//#ifdef WITH_OPENCV
-//
-//	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
-//
-//	mosaicDialog->setFile(getTabWidget()->getCurrentFilePath());
-//
-//	int response = mosaicDialog->exec();
-//
-//	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
-//		QImage editedImage = mosaicDialog->getImage();
-//		viewport()->setEditedImage(editedImage, tr("Mosaic"));
-//		getTabWidget()->getViewPort()->saveFileAs();
-//	}
-//
-//	mosaicDialog->deleteLater();
-//#endif
-}
-
-void DkNoMacs::setWallpaper() {
-
-	// TODO:ref move this
-	qWarning() << "set wallpaper is disabled until it is moved...";
-
-
-//	// based on code from: http://qtwiki.org/Set_windows_background_using_QT
-//	QImage img = viewport()->getImage();
-//
-//	QImage dImg = img;
-//
-//	QSharedPointer<DkImageLoader> loader = QSharedPointer<DkImageLoader>(new DkImageLoader());
-//	QString tmpPath = loader->saveTempFile(dImg, "wallpaper", ".jpg", true, false);
-//	
-//	// is there a more elegant way to see if saveTempFile returned an empty path
-//	if (tmpPath.isEmpty()) {
-//		QMessageBox::critical(this, tr("Error"), tr("Sorry, I could not create a wallpaper..."));
-//		return;
-//	}
-//
-//#ifdef Q_OS_WIN
-//
-//	//Read current windows background image path
-//	QSettings appSettings( "HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);
-//	appSettings.setValue("Wallpaper", tmpPath);
-//
-//	QByteArray ba = tmpPath.toLatin1();
-//	SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (void*)ba.data(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
-//#endif
-//	// TODO: add functionality for unix based systems
-}
-
-void DkNoMacs::printDialog() {
-
-	// TODO:ref move this
-	qWarning() << "print dialog is disabled until it is moved...";
-
-
-	//QPrinter printer;
-
-	//QSharedPointer<DkImageContainerT> imgC = getTabWidget()->getCurrentImage();
-	//
-	////QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
-	//QImage img = viewport()->getImage();
-	//if (!mPrintPreviewDialog)
-	//	mPrintPreviewDialog = new DkPrintPreviewDialog(this);
-	//	
-	//mPrintPreviewDialog->setImage(img);
-
-	//// load all pages of tiffs
-	//if (imgC->getLoader()->getNumPages() > 1) {
-
-	//	auto l = imgC->getLoader();
-
-	//	for (int idx = 1; idx < l->getNumPages(); idx++) {
-	//		l->loadPageAt(idx+1);
-	//		mPrintPreviewDialog->addImage(l->image());
-	//	}
-	//}
-
-	//mPrintPreviewDialog->show();
-	//mPrintPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
 }
 
 void DkNoMacs::computeThumbsBatch() {
@@ -1755,19 +1663,6 @@ void DkNoMacs::openFileWith(QAction* action) {
 		getTabWidget()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
 }
 
-void DkNoMacs::showGpsCoordinates() {
-
-	// TODO:ref move to current image
-	QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
-
-	if (!DkMetaDataHelper::getInstance().hasGPS(metaData)) {
-		getTabWidget()->setInfo("Sorry, I could not find the GPS coordinates...");
-		return;
-	}
-
-	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));  
-}
-
 void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
 
 	if (!imgC) {
@@ -1814,8 +1709,11 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 
 	QMainWindow::setWindowTitle(title.append(attributes));
 	setWindowFilePath(filePath);
-	emit sendTitleSignal(windowTitle());
 	setWindowModified(edited);
+
+	auto cm = DkSyncManager::inst().client();
+	if (cm)
+		cm->sendTitle(windowTitle());
 
 	// TODO: move!
 	DkStatusBar* bar = DkStatusBarManager::instance().statusbar();
@@ -2044,11 +1942,6 @@ void DkNoMacsSync::createActions() {
 	// just for local client
 	connect(this, SIGNAL(sendArrangeSignal(bool)), cm, SLOT(sendArrangeInstances(bool)));
 	connect(this, SIGNAL(sendQuitLocalClientsSignal()), cm, SLOT(sendQuitMessageToPeers()));
-	connect(this, SIGNAL(synchronizeWithSignal(quint16)), cm, SLOT(synchronizeWith(quint16)));
-	connect(this, SIGNAL(sendPositionSignal(QRect, bool)), cm, SLOT(sendPosition(QRect, bool)));
-	connect(this, SIGNAL(synchronizeRemoteControl(quint16)), cm, SLOT(synchronizeWith(quint16)));
-	connect(this, SIGNAL(synchronizeWithServerPortSignal(quint16)), cm, SLOT(synchronizeWithServerPort(quint16)));
-	connect(this, SIGNAL(sendTitleSignal(const QString&)), cm, SLOT(sendTitle(const QString&)));
 	
 	connect(cm, SIGNAL(clientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
 	connect(cm, SIGNAL(receivedPosition(QRect, bool, bool)), this, SLOT(tcpSetWindowRect(QRect, bool, bool)));
@@ -2101,16 +1994,11 @@ void DkNoMacsSync::dropEvent(QDropEvent *event) {
 		quint16 peerId;
 		dataStream >> peerId;
 
-		emit synchronizeWithServerPortSignal(peerId);
-		qDebug() << "drop server port: " << peerId;
+		auto cm = DkSyncManager::inst().client();
+		cm->synchronizeWithServerPort(peerId);
 	}
 	else
 		QMainWindow::dropEvent(event);
-
-}
-
-void DkNoMacsSync::syncWith(qint16 port) {
-	emit synchronizeWithServerPortSignal(port);
 }
 
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
@@ -2264,8 +2152,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
-
-		emit sendTitleSignal(windowTitle());
 
 		DkSettingsManager::param().app().appMode = DkSettings::mode_contrast;
 		setObjectName("DkNoMacsContrast");

@@ -37,6 +37,8 @@
 #include "DkUtils.h"
 #include "DkActionManager.h"
 #include "DkPluginManager.h"
+#include "DkCentralWidget.h"
+#include "DkViewPort.h"
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
@@ -2018,10 +2020,9 @@ void DkUpdateDialog::okButtonClicked() {
 
 // DkPrintPreviewDialog --------------------------------------------------------------------
 DkPrintPreviewDialog::DkPrintPreviewDialog(QWidget* parent, Qt::WindowFlags flags) 
-		: QMainWindow(parent, flags) {
+		: QDialog(parent, flags) {
 	
 	setWindowTitle(tr("Print Preview"));
-
 	init();
 }
 
@@ -2050,11 +2051,9 @@ void DkPrintPreviewDialog::init() {
 			mPrinter = new QPrinter(QPrinterInfo::defaultPrinter(), QPrinter::HighResolution);
 			
 #else
-		mPrinter = new QPrinter;
+		mPrinter = new QPrinter(QPrinter::HighResolution);
 #endif
 	}
-	qDebug() << "printer is valid: " << mPrinter->isValid();
-	
 	mPreview = new DkPrintPreviewWidget(mPrinter, this);
 
 	createIcons();
@@ -2063,7 +2062,6 @@ void DkPrintPreviewDialog::init() {
 	setMinimumHeight(600);
 	setMinimumWidth(800);
 
-	connect(mPreview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
 	connect(mPreview, SIGNAL(dpiChanged(int)), mDpiBox, SLOT(setValue(int)));
 }
 
@@ -2087,13 +2085,6 @@ void DkPrintPreviewDialog::createLayout() {
 	QAction* fitWidth = new QAction(mIcons[print_fit_width], tr("Fit Width"), this);
 	QAction* fitPage = new QAction(mIcons[print_fit_page], tr("Fit Page"), this);
 
-	// Zoom
-	mZoomFactor = new QSpinBox(this);
-	mZoomFactor->setMinimum(1);
-	mZoomFactor->setMaximum(5000);
-	mZoomFactor->setSingleStep(10);
-	mZoomFactor->setSuffix("%");
-
 	QAction* zoomIn = new QAction(mIcons[print_zoom_in], tr("Zoom in"), this);
 	zoomIn->setShortcut(Qt::Key_Plus);
 
@@ -2101,7 +2092,6 @@ void DkPrintPreviewDialog::createLayout() {
 	zoomOut->setShortcut(Qt::Key_Minus);
 	
 	QString zoomTip = tr("keep ALT key pressed to zoom with the mouse wheel");
-	mZoomFactor->setToolTip(zoomTip);
 	zoomIn->setToolTip(zoomTip);
 	zoomOut->setToolTip(zoomTip);
 
@@ -2128,7 +2118,6 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addAction(fitWidth);
 	toolbar->addAction(fitPage);
 	
-	toolbar->addWidget(mZoomFactor);
 	toolbar->addAction(zoomIn);
 	toolbar->addAction(zoomOut);
 	
@@ -2143,9 +2132,6 @@ void DkPrintPreviewDialog::createLayout() {
 
 	toolbar->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
 
-	addToolBar(toolbar);
-	setCentralWidget(mPreview);
-
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
 	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomIn));
 	zoomInButton->setAutoRepeat(true);
@@ -2157,7 +2143,6 @@ void DkPrintPreviewDialog::createLayout() {
 	zoomOutButton->setAutoRepeatInterval(200);
 	zoomOutButton->setAutoRepeatDelay(200);
 
-	connect(mZoomFactor, SIGNAL(valueChanged(int)), this, SLOT(zoom(int)));
 	connect(mDpiBox, SIGNAL(valueChanged(int)), mPreview, SLOT(changeDpi(int)));
 	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
 	connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
@@ -2169,22 +2154,29 @@ void DkPrintPreviewDialog::createLayout() {
 
 	connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
 	connect(pageSetup, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
+
+
+	QMainWindow* mw = new QMainWindow();
+	mw->addToolBar(toolbar);
+	mw->setCentralWidget(mPreview);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(mw);
+
+	setLayout(layout);
 }
 
 void DkPrintPreviewDialog::zoomIn() {
 	mPreview->zoomIn();
-	updateZoomFactor();
 }
 
 void DkPrintPreviewDialog::zoomOut() {
 	mPreview->zoomOut();
-	updateZoomFactor();
 }
 
 void DkPrintPreviewDialog::zoom(int scale) {
-	
 	mPreview->setZoomFactor(scale/100.0);
-	updateZoomFactor();
 }
 
 void DkPrintPreviewDialog::previewFitWidth() {
@@ -2195,11 +2187,6 @@ void DkPrintPreviewDialog::previewFitWidth() {
 void DkPrintPreviewDialog::previewFitPage() {
 
 	mPreview->fitInView();
-}
-
-void DkPrintPreviewDialog::updateZoomFactor() {
-	
-	mZoomFactor->setValue(qRound(mPreview->zoomFactor() * 100));
 }
 
 void DkPrintPreviewDialog::updateDpiFactor(qreal dpi) {
@@ -4058,9 +4045,12 @@ QStringList DkArchiveExtractionDialog::extractFilesWithProgress(const QString& f
 // DkDialogManager --------------------------------------------------------------------
 DkDialogManager::DkDialogManager(QObject* parent) : QObject(parent) {
 
-	QObject::connect(DkActionManager::instance().action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), this, SLOT(openShortcutsDialog()));
-	QObject::connect(DkActionManager::instance().action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), this, SLOT(openAppManager()));
+	DkActionManager& am = DkActionManager::instance();
 
+	connect(am.action(DkActionManager::menu_edit_shortcuts), SIGNAL(triggered()), this, SLOT(openShortcutsDialog()));
+	connect(am.action(DkActionManager::menu_file_app_manager), SIGNAL(triggered()), this, SLOT(openAppManager()));
+	connect(am.action(DkActionManager::menu_file_print), SIGNAL(triggered()), this, SLOT(openPrintDialog()));
+	connect(am.action(DkActionManager::menu_tools_mosaic), SIGNAL(triggered()), this, SLOT(openMosaicDialog()));
 }
 
 void DkDialogManager::openShortcutsDialog() const {
@@ -4098,6 +4088,10 @@ void DkDialogManager::openShortcutsDialog() const {
 	shortcutsDialog->deleteLater();
 }
 
+void DkDialogManager::setCentralWidget(DkCentralWidget * cw) {
+	mCentralWidget = cw;
+}
+
 void DkDialogManager::openAppManager() const {
 
 	DkActionManager& am = DkActionManager::instance();
@@ -4109,6 +4103,60 @@ void DkDialogManager::openAppManager() const {
 	appManagerDialog->deleteLater();
 
 	DkActionManager::instance().updateOpenWithMenu();
+}
+
+void DkDialogManager::openMosaicDialog() const {
+
+	if (!mCentralWidget) {
+		qWarning() << "cannot compute mosaic if there is no central widget...";
+		return;
+	}
+
+#ifdef WITH_OPENCV
+	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(DkUtils::getMainWindow(), Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+	mosaicDialog->setFile(mCentralWidget->getCurrentFilePath());
+
+	int response = mosaicDialog->exec();
+
+	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
+		QImage editedImage = mosaicDialog->getImage();
+		
+		QSharedPointer<DkImageContainerT> imgC(new DkImageContainerT(""));
+		imgC->setImage(mosaicDialog->getImage(), tr("Mosaic"));
+
+		mCentralWidget->addTab(imgC);
+		DkActionManager::instance().action(DkActionManager::menu_file_save_as)->trigger();
+	}
+
+	mosaicDialog->deleteLater();
+#endif
+}
+
+void DkDialogManager::openPrintDialog() const {
+
+	if (!mCentralWidget) {
+		qWarning() << "cannot open print dialog if there is no central widget...";
+		return;
+	}
+
+	QSharedPointer<DkImageContainerT> imgC = mCentralWidget->getCurrentImage();
+
+	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
+	previewDialog->setImage(imgC->image());
+
+	// load all pages of tiffs
+	if (imgC->getLoader()->getNumPages() > 1) {
+
+		auto l = imgC->getLoader();
+
+		for (int idx = 1; idx < l->getNumPages(); idx++) {
+			l->loadPageAt(idx+1);
+			previewDialog->addImage(l->image());
+		}
+	}
+
+	previewDialog->exec();
+	previewDialog->deleteLater();
 }
 
 // -------------------------------------------------------------------- DkPrintImage 
