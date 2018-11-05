@@ -102,6 +102,7 @@ void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QStr
 // -------------------------------------------------------------------- DkLogDock 
 DkLogDock::DkLogDock(const QString& title, QWidget* parent, Qt::WindowFlags flags) : DkDockWidget(title, parent, flags) {
 	
+	setObjectName("logDock");
 	createLayout();
 }
 
