@@ -44,6 +44,7 @@ QSharedPointer<DkMessageQueuer> msgQueuer = QSharedPointer<DkMessageQueuer>();
 // -------------------------------------------------------------------- DkLogWidget 
 DkLogWidget::DkLogWidget(QWidget* parent) : DkWidget(parent) {
 
+	setObjectName("logWidget");
 	createLayout();
 
 	if (!msgQueuer)
@@ -100,7 +101,7 @@ void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QStr
 
 // -------------------------------------------------------------------- DkLogDock 
 DkLogDock::DkLogDock(const QString& title, QWidget* parent, Qt::WindowFlags flags) : DkDockWidget(title, parent, flags) {
-
+	
 	createLayout();
 }
 
