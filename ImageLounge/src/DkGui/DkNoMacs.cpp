@@ -713,7 +713,8 @@ void DkNoMacs::enterFullScreen() {
 
 	restoreDocks();
 
-
+	// here is an issue with windows that I can't quite fix:
+	// if we send nomacs to fullscreen from an attached window (i.e. split window)
 	setWindowState(windowState() ^ Qt::WindowFullScreen);
 	
 	if (viewport())
