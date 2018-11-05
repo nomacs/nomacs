@@ -64,6 +64,8 @@
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include <assert.h>
+
 namespace nmc {
 
 // DkViewPort --------------------------------------------------------------------
