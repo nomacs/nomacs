@@ -68,7 +68,7 @@ public:
 
 public slots:
 	void buttonClicked(QAbstractButton* button);
-	int exec();
+	int exec() override;
 
 protected:
 

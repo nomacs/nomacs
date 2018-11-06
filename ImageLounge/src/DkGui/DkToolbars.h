@@ -211,7 +211,7 @@ protected slots:
 	void switchGradient(int idx);
 
 protected:
-	virtual void resizeEvent ( QResizeEvent * event );
+	virtual void resizeEvent(QResizeEvent * event) override;
 	void loadSettings();
 	void saveSettings();
 	void updateGradientHistory();

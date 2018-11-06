@@ -199,9 +199,9 @@ public:
 	QStringList getSelectedFilesBatch();
 	DkInputTextEdit* getInputEdit() const;
 
-	virtual bool hasUserInput() const {return mHUserInput;};
-	virtual bool requiresUserInput() const {return mRUserInput;};
-	virtual void applyDefault();
+	virtual bool hasUserInput() const override {return mHUserInput;};
+	virtual bool requiresUserInput() const override {return mRUserInput;};
+	virtual void applyDefault() override;
 
 	void changeTab(int tabIdx) const;
 	void startProcessing();
@@ -293,9 +293,9 @@ Q_OBJECT
 public:
 	DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	virtual bool hasUserInput() const;
-	virtual bool requiresUserInput() const {return mRUserInput;};
-	void applyDefault();
+	virtual bool hasUserInput() const override;
+	virtual bool requiresUserInput() const override {return mRUserInput;};
+	void applyDefault() override;
 	void loadProperties(const DkBatchConfig& config);
 
 	DkSaveInfo::OverwriteMode overwriteMode() const;
@@ -387,9 +387,9 @@ public:
 	DkProfileWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	//void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
-	bool hasUserInput() const;
-	bool requiresUserInput() const;
-	void applyDefault();
+	bool hasUserInput() const override;
+	bool requiresUserInput() const override;
+	void applyDefault() override;
 	void profileSaved(const QString& profileName);
 
 public slots:
@@ -429,9 +429,9 @@ public:
 
 	void transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const;
 	bool loadProperties(QSharedPointer<DkPluginBatch> batchPlugin);
-	bool hasUserInput() const;
-	bool requiresUserInput() const;
-	void applyDefault();
+	bool hasUserInput() const override;
+	bool requiresUserInput() const override;
+	void applyDefault() override;
 	void setSettingsPath(const QString& settingsPath);
 
 public slots:
@@ -470,9 +470,9 @@ public:
 
 	void transferProperties(QSharedPointer<DkManipulatorBatch> batchPlugin) const;
 	bool loadProperties(QSharedPointer<DkManipulatorBatch> batchPlugin);
-	bool hasUserInput() const;
-	bool requiresUserInput() const;
-	void applyDefault();
+	bool hasUserInput() const override;
+	bool requiresUserInput() const override;
+	void applyDefault() override;
 	void setExampleFile(const QString& filePath);
 
 public slots:
@@ -511,9 +511,9 @@ public:
 
 	void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
 	bool loadProperties(QSharedPointer<DkBatchTransform> batchTransform);
-	bool hasUserInput() const;
-	bool requiresUserInput() const;
-	void applyDefault();
+	bool hasUserInput() const override;
+	bool requiresUserInput() const override;
+	void applyDefault() override;
 
 public slots:
 	void updateHeader() const;

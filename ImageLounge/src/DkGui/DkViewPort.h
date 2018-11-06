@@ -277,7 +277,7 @@ protected:
 	void drawFrame(QPainter & painter);
 	virtual void drawBackground(QPainter & painter) override;
 	void controlImagePosition(float lb = -1, float ub = -1) override;
-	virtual void centerImage();
+	virtual void centerImage() override;
 
 	// variables
 	QVector<QAction*> mStartActions;
