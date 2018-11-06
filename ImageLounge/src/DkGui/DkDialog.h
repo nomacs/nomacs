@@ -300,7 +300,7 @@ protected slots:
 
 	void drawPreview();
 
-	void setVisible(bool visible) {
+	void setVisible(bool visible) override {
 		updateSnippets();
 		drawPreview();
 

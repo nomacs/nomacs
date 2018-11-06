@@ -47,7 +47,7 @@
 #pragma warning(disable: 4714)	// Qt's force inline
 #endif
 
-#if defined(__GNUC__) && defined(Q_OS_MAC)
+#if defined(__GNUC__) && defined(Q_OS_MAC) || defined(__clang__)
 #pragma GCC diagnostic ignored "-Winvalid-source-encoding"
 #endif
 

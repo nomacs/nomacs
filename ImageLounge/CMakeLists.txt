@@ -1,16 +1,16 @@
 
 # check cmake requirements
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required (VERSION 3.0)
 
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
 
-	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
-		cmake_policy(SET CMP0020 NEW)	# qt warnings
-	ENDIF()
-	IF(CMAKE_VERSION VERSION_GREATER 2.8.12.9)
-		cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
-	ENDIF()
+	# IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
+	# 	cmake_policy(SET CMP0020 NEW)	# qt warnings
+	# ENDIF()
+	# IF(CMAKE_VERSION VERSION_GREATER 2.8.12.9)
+	# 	cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
+	# ENDIF()
 endif(COMMAND cmake_policy)
 
 ######################## begin of project
@@ -85,12 +85,8 @@ elseif(MSVC)
 endif()
 
 include(CheckCXXCompilerFlag)
-#CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-#if(COMPILER_SUPPORTS_CXX14)
-#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-#else
 if(COMPILER_SUPPORTS_CXX11)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
