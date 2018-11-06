@@ -35,6 +35,10 @@
 //code for metadata crop:
 #include "DkMath.h"
 
+#if defined(__clang__)
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
