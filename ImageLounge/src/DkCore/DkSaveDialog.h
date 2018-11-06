@@ -93,10 +93,10 @@ public:
 	float getResizeFactor();
 	void setImage(const QImage& img);
 	void setDialogMode(int dialogMode);
-	virtual void accept();
+	virtual void accept() override;
 
 public slots:
-	void setVisible(bool visible);
+	void setVisible(bool visible) override;
 
 protected slots:
 	void newBgCol();

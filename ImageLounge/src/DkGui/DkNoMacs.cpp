@@ -1715,7 +1715,7 @@ void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool e
 	// TODO: move!
 	DkStatusBar* bar = DkStatusBarManager::instance().statusbar();
 
-	if ((vp && !vp->getController()->getFileInfoLabel()->isVisible() || 
+	if (((vp && !vp->getController()->getFileInfoLabel()->isVisible()) || 
 		!DkSettingsManager::param().slideShow().display.testBit(DkSettings::display_creation_date)) && getTabWidget()->getCurrentImage()) {
 		
 		// create statusbar info

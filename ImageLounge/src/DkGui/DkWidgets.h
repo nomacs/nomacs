@@ -181,7 +181,7 @@ public:
 	DkRatingLabelBg(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkRatingLabelBg();
 
-	void changeRating(int newRating);
+	void changeRating(int newRating) override;
 
 protected:
 	QTimer* mHideTimer;
@@ -206,7 +206,7 @@ public:
 	DkRatingLabel* getRatingLabel();
 
 public slots:
-	virtual void setVisible(bool visible, bool saveSettings = true);
+	virtual void setVisible(bool visible, bool saveSettings = true) override;
 
 protected:
 	QString mFilePath;
@@ -539,7 +539,7 @@ public:
 		mImgRect = imgRect;
 	};
 
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 
 signals:
 	void cropImageSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0), bool cropToMetaData = false) const;
@@ -605,7 +605,7 @@ public:
 
 public slots:
 	void crop(bool cropToMetadata = false);
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 
 signals:
 	void hideSignal();
@@ -697,7 +697,7 @@ signals:
 	void loadFileSignal(const QString&) const;
 
 protected:
-	void mousePressEvent(QMouseEvent *ev);
+	void mousePressEvent(QMouseEvent *ev) override;
 
 	DkFileInfo fileInfo;
 };
@@ -837,7 +837,7 @@ class DkListWidget : public QListWidget {
 public:
 	DkListWidget(QWidget* parent);
 
-	void startDrag(Qt::DropActions supportedActions);
+	void startDrag(Qt::DropActions supportedActions) override;
 	bool isEmpty() const;
 
 	void setEmptyText(const QString& text);
@@ -863,7 +863,7 @@ public slots:
 	void setVisibleTimed(bool visible, int time = -1);
 
 protected:
-	void paintEvent(QPaintEvent *ev);
+	void paintEvent(QPaintEvent *ev) override;
 	void initPoints();
 	void animatePoint(double& xVal);
 

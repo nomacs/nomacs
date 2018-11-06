@@ -162,7 +162,7 @@ public slots:
 	void textChanged(const QString& text);
 	void loadFile(const QString& filePath = "");
 	void openFile();
-	void accept();
+	void accept() override;
 
 protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;
@@ -191,7 +191,7 @@ public slots:
 	void on_addButton_clicked();
 	void on_deleteButton_clicked();
 	void on_runButton_clicked();
-	virtual void accept();
+	virtual void accept() override;
 
 signals:
 	void openWithSignal(QAction* act);
@@ -230,7 +230,7 @@ public slots:
 	void on_filterButton_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
 	void on_resultListView_clicked(const QModelIndex& modelIndex);
-	virtual void accept();
+	virtual void accept() override;
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
@@ -308,7 +308,7 @@ protected slots:
 	}
 
 public slots:
-	virtual void accept();
+	virtual void accept() override;
 
 protected:
 	QImage mImg;
@@ -357,8 +357,7 @@ class DkShortcutDelegate : public QItemDelegate {
 public:
 	DkShortcutDelegate(QObject* parent = 0);
 
-	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-
+	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 signals:
@@ -371,11 +370,10 @@ protected slots:
 	void keySequenceChanged(const QKeySequence& keySequence);
 
 protected:
-	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
-	void setEditorData(QWidget* editor, const QModelIndex& index) const;
-	void* mItem;
-	//virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
+	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index)  override;
+	void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	void* mItem;
 
 	QPixmap mClearPm;
 };
@@ -610,8 +608,8 @@ public slots:
 	void on_saveButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
 	void setFile(const QString& filePath);
-	void accept();
-	void reject();
+	void accept() override;
+	void reject() override;
 	int exportImages(const QString& saveFilePath, int from, int to, bool overwrite);
 	void processingFinished();
 
@@ -679,7 +677,7 @@ public slots:
 	
 	void setFile(const QString& file);
 	void compute();
-	void reject();
+	void reject() override;
 	int computeMosaic(const QString& filter, const QString& suffix, int from, int to);		// TODO: make const!
 	void mosaicFinished();
 	void postProcessFinished();
@@ -776,7 +774,7 @@ public:
 	bool isLanguageChanged();
 
 public slots:
-	virtual void accept();
+	virtual void accept() override;
 
 protected:
 	void createLayout();
@@ -855,7 +853,7 @@ public slots:
 	void loadArchive(const QString& filePath = "");
 	void openArchive();
 	void openDir();
-	void accept();
+	void accept() override;
 
 protected:
 	void dragEnterEvent(QDragEnterEvent *event) override;

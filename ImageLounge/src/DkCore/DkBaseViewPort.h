@@ -158,7 +158,6 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 
 	virtual bool gestureEvent(QGestureEvent* event);
-	virtual void swipeAction(int) {};
 
 	QVector<QShortcut*> mShortcuts;		// TODO: add to actionManager
 

@@ -2396,7 +2396,7 @@ namespace tga {
 		if (!(header.imagedescriptor & 0x20))
 			mImg = mImg.mirrored();
 
-		delete pixels;
+		delete[] pixels;
 
 		return true;
 	}

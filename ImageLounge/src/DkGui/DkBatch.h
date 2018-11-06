@@ -160,7 +160,7 @@ public:
 
 	QStringList getFileList() const;
 	void appendDir(const QString& newDir, bool recursive = false);
-	void insertFromMimeData(const QMimeData *src);
+	void insertFromMimeData(const QMimeData *src) override;
 	void clear();
 	QString firstDirPath() const;
 
@@ -212,7 +212,7 @@ public slots:
 	void setDir(const QString& dirPath);
 	void browse();
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
-	void setVisible(bool visible);
+	void setVisible(bool visible) override;
 	void parameterChanged();
 	void selectionChanged();
 	void setFileInfo(QFileInfo file);

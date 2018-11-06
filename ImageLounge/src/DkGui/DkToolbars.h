@@ -136,7 +136,7 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent *event) override;
 	virtual void mouseReleaseEvent(QMouseEvent *event) override;
-	virtual void resizeEvent ( QResizeEvent * event ) override;
+	virtual void resizeEvent(QResizeEvent * event) override;
 		
 private:
 	void init();
@@ -281,7 +281,7 @@ public slots:
 	void on_invertAction_toggled(bool checked);
 	void on_infoAction_toggled(bool checked);
 	void angleChanged(double val);
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 
 signals:
 	void panSignal(bool checked);

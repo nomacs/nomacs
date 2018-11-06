@@ -170,7 +170,7 @@ signals:
 
 protected:
 	void createLayout();
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 
 	QStringList mLanguages;
 };
@@ -203,7 +203,7 @@ signals:
 
 protected:
 	void createLayout();
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 
 	QWidget* mZoomLevels = 0;
 	QLineEdit* mZoomLevelsEdit = 0;
@@ -229,7 +229,7 @@ signals:
 
 protected:
 	void createLayout();
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 
 };
 
@@ -249,7 +249,7 @@ signals:
 
 protected:
 	void createLayout();
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 
 	bool checkFilter(const QString& cFilter, const QStringList& filters) const;
 	QList<QStandardItem*> getItems(const QString& filter, bool browse, bool reg);
@@ -280,7 +280,7 @@ signals:
 
 protected:
 	void createLayout();
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 };
 
 class DkEditorPreference : public DkWidget {
@@ -300,7 +300,7 @@ protected:
 	void createLayout();
 
 	DkSettingsWidget* mSettingsWidget;
-	void paintEvent(QPaintEvent* ev);
+	void paintEvent(QPaintEvent* ev) override;
 };
 
 }

@@ -165,7 +165,7 @@ public slots:
 	void changeNumColumns();
 	void setToDefault();
 	void newPosition();
-	virtual void setVisible(bool visible, bool saveSetting = true);
+	virtual void setVisible(bool visible, bool saveSetting = true) override;
 
 signals:
 	void positionChangeSignal(int newPos) const;

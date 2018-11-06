@@ -272,11 +272,11 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 
 	// functions
-	virtual void updateImageMatrix();
-	virtual void draw(QPainter & painter, double opacity = 1.0);
+	virtual void updateImageMatrix() override;
+	virtual void draw(QPainter & painter, double opacity = 1.0) override;
 	void drawFrame(QPainter & painter);
-	virtual void drawBackground(QPainter & painter);
-	void controlImagePosition(float lb = -1, float ub = -1);
+	virtual void drawBackground(QPainter & painter) override;
+	void controlImagePosition(float lb = -1, float ub = -1) override;
 	virtual void centerImage();
 
 	// variables
@@ -304,10 +304,10 @@ public slots:
 	void enableTF(bool enable);
 	QImage getImage() const override;
 
-	virtual void setImage(QImage newImg);
+	virtual void setImage(QImage newImg) override;
 
 protected:
-	virtual void draw(QPainter & painter, double opacity = 1.0);
+	virtual void draw(QPainter & painter, double opacity = 1.0) override;
 	virtual void mousePressEvent(QMouseEvent *event) override;
 	virtual void mouseMoveEvent(QMouseEvent *event) override;
 	virtual void mouseReleaseEvent(QMouseEvent *event) override;

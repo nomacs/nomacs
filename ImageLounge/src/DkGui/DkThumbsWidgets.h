@@ -92,7 +92,7 @@ public:
 		return moveImageTimer;
 	};
 
-	void setVisible(bool visible, bool saveSettings = true);
+	void setVisible(bool visible, bool saveSettings = true) override;
 
 	void setWindowPosition(int position) {
 
@@ -190,8 +190,8 @@ public:
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return mThumb;};
-	QRectF boundingRect() const;
-	QPainterPath shape() const;
+	QRectF boundingRect() const override;
+	QPainterPath shape() const override;
 	void updateSize();
 	void setVisible(bool visible);
 	QPixmap pixmap() const;
@@ -206,7 +206,7 @@ signals:
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
+	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0) override;
 	void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
@@ -318,7 +318,7 @@ public:
 	void clear();
 
 public slots:
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible) override;
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void setDir(const QString& dirPath);
 	void enableSelectionActions();
@@ -396,7 +396,7 @@ public slots:
 	void thumbLoaded();
 
 protected:
-	void mousePressEvent(QMouseEvent *ev);
+	void mousePressEvent(QMouseEvent *ev) override;
 
 	QSharedPointer<DkThumbNailT> mThumb;
 	int mThumbSize = 100;

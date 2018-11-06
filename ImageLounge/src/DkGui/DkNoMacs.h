@@ -309,7 +309,7 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event) override;
 
 	// gui
-	virtual void createActions();
+	virtual void createActions() override;
 };
 
 class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {
@@ -335,7 +335,7 @@ public slots:
 protected:
 	void closeEvent(QCloseEvent *event) override;
 	bool eventFilter(QObject *obj, QEvent *event) override;
-	virtual void createContextMenu();
+	virtual void createContextMenu() override;
 
 	QDesktopWidget* mDesktop = 0;
 };
