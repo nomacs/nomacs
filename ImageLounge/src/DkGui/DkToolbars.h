@@ -97,12 +97,12 @@ signals:
 	void colorChanged(DkColorSlider *slider) const;
 				
 public slots:
-	virtual void paintEvent(QPaintEvent* event);
+	virtual void paintEvent(QPaintEvent* event) override;
 
 protected:
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void mouseDoubleClickEvent(QMouseEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
 	int mSliderWidth = 0, mSliderHeight = 0, mSliderHalfWidth = 0;
@@ -128,16 +128,15 @@ signals:
 	void gradientChanged() const;
 		
 public slots:
-	virtual void paintEvent(QPaintEvent* event);
-	//virtual void setEnabled(bool enabled);
 	void moveSlider(DkColorSlider* sender, int dragDistX, int yPos);
 	void changeColor(DkColorSlider *slider);
 	void activateSlider(DkColorSlider *sender);
 
 protected:
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void resizeEvent ( QResizeEvent * event );
+	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void resizeEvent ( QResizeEvent * event ) override;
 		
 private:
 	void init();
@@ -196,7 +195,7 @@ signals:
 	void gradientChanged() const;
 
 public slots:
-	virtual void paintEvent(QPaintEvent* event);
+	virtual void paintEvent(QPaintEvent* event) override;
 	void insertSlider(qreal pos);
 	void setImageMode(int mode);
 	void saveGradient();

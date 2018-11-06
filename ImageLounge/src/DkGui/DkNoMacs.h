@@ -105,7 +105,7 @@ signals:
 
 protected:
 	/*! Handle QFileOpenEvent for mac here */
-	bool eventFilter(QObject *obj, QEvent *event);
+	bool eventFilter(QObject *obj, QEvent *event) override;
 
 };
 
@@ -209,22 +209,22 @@ public slots:
 protected:
 	
 	// mouse events
-	void mouseDoubleClickEvent(QMouseEvent* event);
-	void mousePressEvent(QMouseEvent* event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+	void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 
 	// mouse events
-	void moveEvent(QMoveEvent *event);
+	void moveEvent(QMoveEvent *event) override;
 
 	// window events
-	void contextMenuEvent(QContextMenuEvent *event);
-	bool eventFilter(QObject *obj, QEvent *event);
-	void resizeEvent(QResizeEvent *event);
-	void closeEvent(QCloseEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event) override;
+	bool eventFilter(QObject *obj, QEvent *event) override;
+	void resizeEvent(QResizeEvent *event) override;
+	void closeEvent(QCloseEvent *event) override;
 
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent* event);
+	void keyPressEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent* event) override;
 
 	//bool gestureEvent(QGestureEvent *event);
 
@@ -304,9 +304,9 @@ signals:
 protected:
 
 	// mouse events
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 
 	// gui
 	virtual void createActions();
@@ -333,8 +333,8 @@ public slots:
 	void chooseMonitor(bool force = true);
 
 protected:
-	void closeEvent(QCloseEvent *event);
-	bool eventFilter(QObject *obj, QEvent *event);
+	void closeEvent(QCloseEvent *event) override;
+	bool eventFilter(QObject *obj, QEvent *event) override;
 	virtual void createContextMenu();
 
 	QDesktopWidget* mDesktop = 0;

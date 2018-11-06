@@ -535,7 +535,7 @@ public:
 
 protected:
 	std::function<void(int)> callback;
-	bool eventFilter(QObject *obj, QEvent *event);
+	bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 }

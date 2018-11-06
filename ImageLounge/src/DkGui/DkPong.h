@@ -181,10 +181,10 @@ public slots:
 	void countDown();
 	
 protected:
-	virtual void paintEvent(QPaintEvent* event);
-	virtual void resizeEvent(QResizeEvent* event);
-	virtual void keyPressEvent(QKeyEvent* event);
-	virtual void keyReleaseEvent(QKeyEvent* event);
+	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void resizeEvent(QResizeEvent* event) override;
+	virtual void keyPressEvent(QKeyEvent* event) override;
+	virtual void keyReleaseEvent(QKeyEvent* event) override;
 
 	void initGame();
 	void togglePause();

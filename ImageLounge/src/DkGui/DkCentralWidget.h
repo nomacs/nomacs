@@ -187,16 +187,17 @@ protected:
 	QVector<QWidget*> mWidgets;
 	QStackedLayout* mViewLayout = 0;
 
+	void dropEvent(QDropEvent *event) override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void paintEvent(QPaintEvent* ev) override;
+
 	void createLayout();
 	void updateTabIdx();
 	void switchWidget(int widget);
 	void switchWidget(QWidget* widget = 0);
-	void dropEvent(QDropEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
 	bool loadFromMime(const QMimeData* mimeData);
 	bool loadCascadeTrainingFiles(QList<QUrl> urls);
 	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
-	void paintEvent(QPaintEvent* ev) override;
 
 	DkPreferenceWidget* createPreferences();
 	DkRecentFilesWidget* createRecentFiles();

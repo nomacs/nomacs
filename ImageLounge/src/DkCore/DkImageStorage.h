@@ -47,6 +47,10 @@
 #pragma warning(disable: 4714)	// Qt's force inline
 #endif
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Winvalid-source-encoding"
+#endif
+
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
 #define DllCoreExport Q_DECL_EXPORT

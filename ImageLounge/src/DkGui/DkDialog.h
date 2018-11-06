@@ -112,9 +112,9 @@ public:
 	~DkSplashScreen() {};
 
 protected:
-	void mouseMoveEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 	void showClose();
 
 private:
@@ -165,8 +165,8 @@ public slots:
 	void accept();
 
 protected:
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event) override;
 
 	void createLayout();
 	void userFeedback(const QString& msg, bool error = false);
@@ -624,8 +624,9 @@ protected:
 	void createLayout();
 	void enableTIFFSave(bool enable);
 	void enableAll(bool enable);
-	void dropEvent(QDropEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
+
+	void dropEvent(QDropEvent *event) override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
 
 	DkBaseViewPort* mViewport;
 	QLabel* mTiffLabel;
@@ -696,12 +697,13 @@ protected:
 	void createLayout();
 	void enableMosaicSave(bool enable);
 	void enableAll(bool enable);
-	void dropEvent(QDropEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
 	QString getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix);
 	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
 	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
-	
+
+	void dropEvent(QDropEvent *event) override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+
 	DkBaseViewPort* mViewport = 0;
 	DkBaseViewPort* mPreview = 0;
 	QLabel* mFileLabel = 0;
@@ -856,8 +858,8 @@ public slots:
 	void accept();
 
 protected:
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event) override;
 
 	void createLayout();
 	void userFeedback(const QString& msg, bool error = false);

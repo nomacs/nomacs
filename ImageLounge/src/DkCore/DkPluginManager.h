@@ -271,7 +271,7 @@ protected:
 
 	void init();
 	void createLayout();
-	void showEvent(QShowEvent *event);
+	void showEvent(QShowEvent *event) override;
 };
 
 // widget with all plug-in information

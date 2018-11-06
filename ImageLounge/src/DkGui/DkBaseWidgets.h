@@ -103,7 +103,7 @@ protected:
 
 	// functions
 	void init();
-	void paintEvent(QPaintEvent *event);
+	void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNamedWidget : public DkFadeWidget {
@@ -158,7 +158,7 @@ protected:
 
 	// functions
 	virtual void init();
-	virtual void paintEvent(QPaintEvent *event);
+	virtual void paintEvent(QPaintEvent *event) override;
 	virtual void draw(QPainter* painter);
 
 	// for my children...
@@ -234,7 +234,7 @@ public slots:
 	virtual void setVisible(bool visible, bool saveSetting = true);
 
 protected:
-	virtual void closeEvent(QCloseEvent* event);
+	virtual void closeEvent(QCloseEvent* event) override;
 
 	QBitArray* displaySettingsBits;
 	QAction* mAction = 0;

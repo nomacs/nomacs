@@ -119,14 +119,14 @@ signals:
 	void showThumbsDockSignal(bool show) const;
 
 protected:
-	void paintEvent(QPaintEvent *event);
-	void resizeEvent(QResizeEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent *event);
-	void leaveEvent(QEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
+	void paintEvent(QPaintEvent *event) override;
+	void resizeEvent(QResizeEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent *event) override;
+	void leaveEvent(QEvent *event) override;
+	void contextMenuEvent(QContextMenuEvent *event) override;
 	void loadSettings();
 	void saveSettings();
 
@@ -205,10 +205,10 @@ signals:
 	void showFileSignal(const QString& filePath = QString()) const;
 
 protected:
-	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
-	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+	void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 	QSharedPointer<DkThumbNailT> mThumb;
 	QGraphicsPixmapItem mIcon;
@@ -291,13 +291,13 @@ public slots:
 	void fetchThumbs();
 
 protected:
-	void wheelEvent(QWheelEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent *event) override;
+	void dragEnterEvent(QDragEnterEvent *event) override;
+	void dropEvent(QDropEvent *event) override;
+	void dragMoveEvent(QDragMoveEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 
 	DkThumbScene* scene;
 	QPointF mousePos;
@@ -334,8 +334,8 @@ signals:
 protected:
 	void createActions();
 	void createToolbar();
-	void resizeEvent(QResizeEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
+	void resizeEvent(QResizeEvent *event) override;
+	void contextMenuEvent(QContextMenuEvent *event) override;
 	void connectToActions(bool activate = true);
 
 	DkThumbScene* mThumbsScene = 0;

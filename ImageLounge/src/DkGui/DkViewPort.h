@@ -97,7 +97,7 @@ public:
 	void setPaintWidget(QWidget* widget, bool removeWidget);
 
 #ifdef WITH_OPENCV
-	void setImage(cv::Mat newImg);
+	void setImage(cv::Mat newImg) override;
 #endif
 
 	// getter
@@ -122,15 +122,16 @@ signals:
 	void showProgress(bool show, int time = -1) const;
 
 public slots:
+	void fullView() override;
+	void resetView() override;
+
 	void rotateCW();
 	void rotateCCW();
 	void rotate180();
-	void resetView();
 	void resizeImage();
 	void deleteImage();
 	void zoomToFit();
-	void fullView();
-	void resizeEvent(QResizeEvent* event);
+	void resizeEvent(QResizeEvent* event) override;
 	void toggleResetMatrix();
 	void zoomTo(double zoomLevel);
 	
@@ -244,7 +245,7 @@ protected:
 
 	void drawPolygon(QPainter & painter, const QPolygon & polygon);
 	virtual void drawBackground(QPainter & painter);
-	virtual void updateImageMatrix();
+	virtual void updateImageMatrix() override;
 	void showZoom();
 	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
@@ -261,14 +262,14 @@ public:
 	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1)) override;
 
 public slots:
-	virtual void resetView();
+	virtual void resetView() override;
 	virtual void moveView(QPointF);
 
 protected:
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void paintEvent(QPaintEvent* event);
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void paintEvent(QPaintEvent* event) override;
 
 	// functions
 	virtual void updateImageMatrix();
@@ -307,10 +308,10 @@ public slots:
 
 protected:
 	virtual void draw(QPainter & painter, double opacity = 1.0);
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void keyPressEvent(QKeyEvent *event) override;
 
 private:
 	QImage mFalseColorImg;

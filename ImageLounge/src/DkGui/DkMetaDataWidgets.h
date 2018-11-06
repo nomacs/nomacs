@@ -179,7 +179,7 @@ protected:
 	QLabel* createKeyLabel(const QString& key);
 	QLabel* createValueLabel(const QString& val);
 
-	void contextMenuEvent(QContextMenuEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event) override;
 
 	// current metadata
 	QSharedPointer<DkMetaDataT> mMetaData;
@@ -211,8 +211,8 @@ signals:
 	void focusLost() const;
 
 protected:
-	void focusOutEvent(QFocusEvent* focusEvent);
-	void paintEvent(QPaintEvent* e);
+	void focusOutEvent(QFocusEvent* focusEvent) override;
+	void paintEvent(QPaintEvent* e) override;
 };
 
 class DkCommentWidget : public DkFadeLabel {

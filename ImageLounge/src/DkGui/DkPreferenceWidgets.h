@@ -127,7 +127,7 @@ public:
 	void addSpace();
 
 protected:
-	void paintEvent(QPaintEvent* event);
+	void paintEvent(QPaintEvent* event) override;
 	void createLayout();
 
 	QString mTitle;

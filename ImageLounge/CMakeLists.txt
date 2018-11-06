@@ -58,7 +58,7 @@ if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(APPLE)
-	option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
+	set(ENABLE_QUAZIP OFF)
 	message(STATUS "QuaZip disabled because you are using a mac")
 endif()
 

@@ -91,11 +91,11 @@ protected:
 	// functions
 	void init();
 
-	void paintEvent(QPaintEvent * event);
-	void focusInEvent(QFocusEvent * event);
-	void focusOutEvent(QFocusEvent * event);
-	void enterEvent(QEvent *event);
-	void leaveEvent(QEvent *event);
+	void paintEvent(QPaintEvent * event) override;
+	void focusInEvent(QFocusEvent * event) override;
+	void focusOutEvent(QFocusEvent * event) override;
+	void enterEvent(QEvent *event) override;
+	void leaveEvent(QEvent *event) override;
 	QPixmap createSelectedEffect(QPixmap* pm);
 
 };
@@ -187,7 +187,7 @@ protected:
 	QTimer* mHideTimer;
 	int mTimeToDisplay = 4000;
 	
-	virtual void paintEvent(QPaintEvent *event);
+	virtual void paintEvent(QPaintEvent *event) override;
 };
 
 class DkFileInfoLabel : public DkFadeLabel {
@@ -294,8 +294,8 @@ signals:
 	void visibleSignal(bool visible) const;
 
 protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 
 	QColor mBgCol;
 	bool mBlocked = false;
@@ -378,8 +378,8 @@ signals:
 	void openDir(const QString& dir) const;
 
 protected:
-	void closeEvent(QCloseEvent *event);
-	void contextMenuEvent(QContextMenuEvent* event);
+	void closeEvent(QCloseEvent *event) override;
+	void contextMenuEvent(QContextMenuEvent* event) override;
 
 	void createLayout();
 	void writeSettings();
@@ -430,10 +430,10 @@ protected:
 	QPointF mEnterPos;
 
 	QImage resizedImg(const QImage& src);
-	void paintEvent(QPaintEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
+	void paintEvent(QPaintEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
 	QRectF getImageRect() const;
 	QTransform getScaledImageMatrix();
 };
@@ -487,10 +487,10 @@ signals:
 
 protected:
 
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void enterEvent(QEvent *event);
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void enterEvent(QEvent *event) override;
 	void init();
 	
 	DkRotatingRect* rect;
@@ -559,13 +559,13 @@ public slots:
 	void setRect(const QRect& rect);
 
 protected:
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent* event);
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
-	void paintEvent(QPaintEvent *event);
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent* event) override;
+	void keyPressEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent *event) override;
+	void paintEvent(QPaintEvent *event) override;
 	QRect rect() const;
 
 	QPointF clipToImage(const QPointF& pos);
@@ -846,8 +846,8 @@ signals:
 	void dataDroppedSignal() const;
 
 protected:
-	void paintEvent(QPaintEvent *event);
-	void dropEvent(QDropEvent *event);
+	void paintEvent(QPaintEvent *event) override;
+	void dropEvent(QDropEvent *event) override;
 
 	QString mEmptyText = tr("Drag Items Here");
 };
@@ -912,7 +912,7 @@ public:
 	DkTabEntryWidget(const QIcon& icon, const QString& text, QWidget* parent);
 
 protected:
-	void paintEvent(QPaintEvent* event);
+	void paintEvent(QPaintEvent* event) override;
 
 };
 

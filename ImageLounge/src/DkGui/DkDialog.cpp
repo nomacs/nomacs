@@ -949,7 +949,7 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* hPixelLabel = new QLabel(tr("Height: "), this);
 	hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	mHPixelSpin = new DkSelectAllDoubleSpinBox();
+	mHPixelSpin = new DkSelectAllDoubleSpinBox(this);
 	mHPixelSpin->setObjectName("hPixelSpin");
 	mHPixelSpin->setRange(minPx, maxPx);
 	mHPixelSpin->setDecimals(0);

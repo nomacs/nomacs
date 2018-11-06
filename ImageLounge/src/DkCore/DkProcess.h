@@ -187,7 +187,7 @@ public:
 		bool correctGamma = false
 		);
 
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
+	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const override;
 	virtual QString name() const override;
 	virtual bool isActive() const override;
 
