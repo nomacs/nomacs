@@ -24,7 +24,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install exiv2; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install libraw; fi
   # manually install gcc to fix opencv3 issues?!
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then rm '/usr/local/include/c++'; fi
+  # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then rm '/usr/local/include/c++'; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install -v opencv3 --without-eigen --without-opencl --without-openexr --without-python --without-numpy --without-tests; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew ln opencv3 --force; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
