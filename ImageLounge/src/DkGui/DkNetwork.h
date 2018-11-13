@@ -68,7 +68,7 @@ public:
 
 	bool operator==(const DkPeer& peer) const;
 
-	bool isActive() const {return hasChangedRecently;};
+	bool isActive() const { return mHasChangedRecently; };
 	void setSynchronized(bool flag);
 	bool isSynchronized() const {return sychronized;};
 	bool isLocal() const {
@@ -87,11 +87,11 @@ public:
 
 signals:
 	void sendGoodByeMessage();
-	private slots:
-	void timerTimeout() {hasChangedRecently = false;};
+private slots:
+	void timerTimeout();
 
 private:
-	bool hasChangedRecently;
+	bool mHasChangedRecently = false;
 	bool sychronized;
 };
 
@@ -145,7 +145,7 @@ class DkClientManager : public QObject {
 		void sendNewUpcomingImageMessage(const QString& imageTitle);
 		void sendGoodByeMessage();
 		void synchronizedPeersListChanged(QList<quint16> newList);
-		void updateConnectionSignal(QList<DkPeer*> peers);
+		void updateConnectionSignal(const QString&);
 		void clientConnectedSignal(bool);
 
 		void receivedQuit();
@@ -179,6 +179,7 @@ class DkClientManager : public QObject {
 		void removeConnection(DkConnection* connection);
 		void connectConnection(DkConnection* connection);
 		virtual DkConnection* createConnection() = 0;
+		QString listConnections(QList<DkPeer*> peers, bool connected);
 
 		DkPeerList mPeerList;
 		QString mCurrentTitle;

@@ -107,17 +107,16 @@ void DkClientManager::removeConnection(DkConnection* connection) {
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 	
 	auto aps = mPeerList.getActivePeers();
-	emit updateConnectionSignal(aps);
 	emit clientConnectedSignal(!aps.isEmpty());
 
 	qDebug() << "connection Disconnected:" << connection->getPeerPort();
 	mPeerList.removePeer(connection->getPeerId());
-
-	//qDebug() << "--------------------";
-	//qDebug() << "current peer list:";
-	//peerList.print();
-	//qDebug() << "--------------------";
-
+	
+	auto p = mPeerList.getPeerById(connection->getPeerId());
+	if (p && p->isSynchronized()) {
+		QString msg = listConnections(aps, false);
+		emit updateConnectionSignal(msg);
+	}
 }
 
 void DkClientManager::connectionSentNewTitle(DkConnection* connection, const QString& newTitle) {
@@ -143,7 +142,8 @@ void DkClientManager::connectionReceivedGoodBye(DkConnection* connection) {
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 
 	auto aps = mPeerList.getActivePeers();
-	emit updateConnectionSignal(aps);
+	QString msg = listConnections(aps, false);
+	emit updateConnectionSignal(msg);
 	emit clientConnectedSignal(!aps.isEmpty());
 }
 
@@ -228,6 +228,34 @@ void DkClientManager::connectConnection(DkConnection* connection) {
 	connect(connection, SIGNAL(connectionShowStatusMessage(DkConnection*, const QString&)), this, SLOT(connectionShowStatusMessage(DkConnection*, const QString&)));
 
 	connection->synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
+}
+
+QString DkClientManager::listConnections(QList<DkPeer*> peers, bool connected) {
+	
+	QString newPeers;
+
+	if (!peers.empty()) {
+		if (connected) {
+			newPeers = tr("connected with: ");
+		}
+		else {
+			newPeers = tr("disconnected with: ");
+		}
+
+		newPeers.append("\n\t");
+	}
+
+	for (const DkPeer* cp : peers) {
+
+		if (!cp->clientName.isEmpty())
+			newPeers.append(cp->clientName);
+		if (!cp->clientName.isEmpty() && !cp->title.isEmpty())
+			newPeers.append(": ");
+		if (!cp->title.isEmpty())
+			newPeers.append(cp->title);
+	}
+
+	return newPeers;
 }
 
 void DkClientManager::sendGoodByeToAll() {
@@ -323,7 +351,10 @@ void DkLocalClientManager::connectionSynchronized(QList<quint16> synchronizedPee
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 
 	auto aps = mPeerList.getActivePeers();
-	emit updateConnectionSignal(aps);
+	
+	QString msg = listConnections(aps, true);
+	emit updateConnectionSignal(msg);
+
 	emit clientConnectedSignal(!aps.isEmpty());
 	
 	for (int i = 0; i < synchronizedPeersOfOtherClient.size(); i++) {
@@ -357,7 +388,9 @@ void DkLocalClientManager::connectionStopSynchronized(DkConnection* connection) 
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 	
 	auto aps = mPeerList.getActivePeers();
-	emit updateConnectionSignal(aps);
+	
+	QString msg = listConnections(aps, false);
+	emit updateConnectionSignal(msg);
 	emit clientConnectedSignal(!aps.isEmpty());
 }
 
@@ -400,7 +433,9 @@ void DkLocalClientManager::stopSynchronizeWith(quint16) {
 	emit synchronizedPeersListChanged(mPeerList.getSynchronizedPeerServerPorts());
 	
 	auto aps = mPeerList.getActivePeers();
-	emit updateConnectionSignal(aps);
+	
+	QString msg = listConnections(aps, false);
+	emit updateConnectionSignal(msg);
 	emit clientConnectedSignal(!aps.isEmpty());
 }
 
@@ -517,7 +552,7 @@ DkPeer::DkPeer(
 	timer->setSingleShot(true);
 	this->clientName = clientName;
 	this->showInMenu = showInMenu;
-	this->hasChangedRecently = false;
+	mHasChangedRecently = false;
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
 }
 
@@ -526,14 +561,19 @@ DkPeer::~DkPeer() {
 
 void DkPeer::setSynchronized(bool flag) {
 	sychronized = flag;
-	hasChangedRecently = true;
+	mHasChangedRecently = true;
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
-	timer->start(4000);
+	timer->start(1000);
 }
 
 bool DkPeer::operator==(const DkPeer& peer) const {
 
 	return localServerPort == peer.localServerPort && sychronized == peer.sychronized && title == peer.title && hostAddress == peer.hostAddress;
+}
+
+void DkPeer::timerTimeout() {
+	mHasChangedRecently = false;
+	qDebug() << "has changed recently was turned off";
 }
 
 // DkPeerList --------------------------------------------------------------------

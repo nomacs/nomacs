@@ -174,7 +174,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	connect(this, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), cm, SLOT(sendTransform(QTransform, QTransform, QPointF)));
 	connect(this, SIGNAL(sendNewFileSignal(qint16, const QString&)), cm, SLOT(sendNewFile(qint16, const QString&)));
 	connect(cm, SIGNAL(receivedNewFile(qint16, const QString&)), this, SLOT(tcpLoadFile(qint16, const QString&)));
-	connect(cm, SIGNAL(updateConnectionSignal(QList<DkPeer*>)), this, SLOT(tcpShowConnections(QList<DkPeer*>)));
+	connect(cm, SIGNAL(updateConnectionSignal(const QString&)), mController, SLOT(setInfo(const QString&)));
 	connect(cm, SIGNAL(receivedTransformation(QTransform, QTransform, QPointF)), this, SLOT(tcpSetTransforms(QTransform, QTransform, QPointF)));
 	
 	for (auto action : am.manipulatorActions())
@@ -622,36 +622,6 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force) {
 
 		emit sendTransformSignal(mWorldMatrix, mImgMatrix, size);
 	}
-}
-
-void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
-
-	// TODO: move to DkNetwork
-	QString newPeers;
-
-	for (const DkPeer* cp : peers) {
-
-		if (cp->isSynchronized() && newPeers.isEmpty()) {
-			newPeers = tr("connected with: ");
-		}
-		else if (newPeers.isEmpty()) {
-			newPeers = tr("disconnected with: ");
-		}
-
-		qDebug() << "cp address..." << cp->hostAddress;
-
-		newPeers.append("\n\t");
-
-		if (!cp->clientName.isEmpty())
-			newPeers.append(cp->clientName);
-		if (!cp->clientName.isEmpty() && !cp->title.isEmpty())
-			newPeers.append(": ");
-		if (!cp->title.isEmpty())
-			newPeers.append(cp->title);
-	}
-
-	mController->setInfo(newPeers);
-	update();
 }
 
 void DkViewPort::applyPlugin(DkPluginContainer* plugin, const QString& key) {

@@ -141,7 +141,6 @@ public slots:
 	void tcpForceSynchronize();
 	void tcpSynchronize(QTransform relativeMatrix = QTransform(), bool force = false);
 	void tcpLoadFile(qint16 idx, QString filename);
-	void tcpShowConnections(QList<DkPeer*> peers);
 	
 	// file actions
 	void loadFile(const QString& filePath);
