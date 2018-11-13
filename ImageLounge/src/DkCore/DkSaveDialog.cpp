@@ -215,6 +215,7 @@ void DkCompressDialog::createLayout() {
 	mCompressionCombo->addItem(tr("High Quality"), 97);
 	mCompressionCombo->addItem(tr("Medium Quality"), 90);
 	mCompressionCombo->addItem(tr("Low Quality"), 80);
+	mCompressionCombo->addItem(tr("Bad Quality"), 60);
 	mCompressionCombo->setCurrentIndex(1);
 	connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
 

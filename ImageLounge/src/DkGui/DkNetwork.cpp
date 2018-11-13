@@ -573,7 +573,6 @@ bool DkPeer::operator==(const DkPeer& peer) const {
 
 void DkPeer::timerTimeout() {
 	mHasChangedRecently = false;
-	qDebug() << "has changed recently was turned off";
 }
 
 // DkPeerList --------------------------------------------------------------------

@@ -825,6 +825,7 @@ void DkBatchOutput::createLayout() {
 	mCbCompression->addItem(tr("High Quality"), 97);
 	mCbCompression->addItem(tr("Medium Quality"), 90);
 	mCbCompression->addItem(tr("Low Quality"), 80);
+	mCbCompression->addItem(tr("Bad Quality"), 60);
 	mCbCompression->setCurrentIndex(1);
 	mCbCompression->setEnabled(false);
 
