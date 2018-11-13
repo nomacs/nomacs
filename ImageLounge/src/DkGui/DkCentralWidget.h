@@ -125,6 +125,7 @@ public:
 	DkCentralWidget(QWidget* parent = 0);
 	~DkCentralWidget();
 
+	bool hasViewPort() const;
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
 	QString getCurrentDir() const;

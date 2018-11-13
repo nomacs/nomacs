@@ -394,6 +394,10 @@ void DkCentralWidget::loadSettings() {
 
 }
 
+bool DkCentralWidget::hasViewPort() const {
+	return mWidgets[viewport_widget] != 0;
+}
+
 DkViewPort* DkCentralWidget::getViewPort() const {
 
 	if (!mWidgets[viewport_widget])
@@ -459,7 +463,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 	if (!loader)
 		return;
 
-	if (getViewPort())
+	if (hasViewPort())
 		getViewPort()->setImageLoader(loader);
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
@@ -584,7 +588,7 @@ DkThumbScrollWidget* DkCentralWidget::createThumbScrollWidget() {
 
 void DkCentralWidget::createViewPort() {
 
-	if (getViewPort()) {
+	if (hasViewPort()) {
 		qDebug() << "viewport already created...";
 		return;
 	}
@@ -840,14 +844,14 @@ void DkCentralWidget::showThumbView(bool show) {
 void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 	if (show) {
-		if (!getViewPort())
+		if (!hasViewPort())
 			createViewPort();
 		
 		switchWidget(mWidgets[viewport_widget]);
 		if (getCurrentImage())
 			getViewPort()->setImage(getCurrentImage()->image());
 	}
-	else if (getViewPort())
+	else if (hasViewPort())
 		getViewPort()->deactivate();
 	
 }
@@ -1003,7 +1007,7 @@ void DkCentralWidget::startSlideshow(bool start) const {
 
 void DkCentralWidget::setInfo(const QString & msg) const {
 
-	if (getViewPort())
+	if (hasViewPort())
 		getViewPort()->getController()->setInfo(msg);
 	
 	qInfo() << msg;
@@ -1035,7 +1039,7 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
 
 bool DkCentralWidget::requestClose() const {
 	
-	if (getViewPort())
+	if (hasViewPort())
 		return getViewPort()->unloadImage(true);
 	
 	return true;
@@ -1069,7 +1073,7 @@ void DkCentralWidget::loadDir(const QString& filePath) {
 	if (mTabInfos[mTabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview && getThumbScrollWidget())
 		getThumbScrollWidget()->setDir(filePath);
 	else {
-		if (!getViewPort())
+		if (!hasViewPort())
 			createViewPort();
 		getViewPort()->loadFile(filePath);
 	}
@@ -1084,7 +1088,7 @@ void DkCentralWidget::loadFile(const QString& filePath, bool newTab) {
 
 	if (!newTab) {
 
-		if (!getViewPort())
+		if (!hasViewPort())
 			createViewPort();
 
 		getViewPort()->loadFile(filePath);
@@ -1243,9 +1247,7 @@ void DkCentralWidget::pasteImage() {
 
 void DkCentralWidget::dropEvent(QDropEvent *event) {
 
-
-	auto vp = getViewPort();
-	if (event->source() == this || (vp && event->source() == vp)) {
+	if (event->source() == this || (hasViewPort() && event->source() == getViewPort())) {
 		event->accept();
 		return;
 	}
@@ -1297,7 +1299,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 	if (!dropImg.isNull()) {
 		
-		if (!getViewPort())
+		if (!hasViewPort())
 			createViewPort();
 		
 		getViewPort()->loadImage(dropImg);
