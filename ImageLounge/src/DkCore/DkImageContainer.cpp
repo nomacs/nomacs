@@ -1042,5 +1042,4 @@ void DkImageContainerT::setHistoryIndex(int idx) {
 	emit imageUpdatedSignal();
 }
 
-
 }

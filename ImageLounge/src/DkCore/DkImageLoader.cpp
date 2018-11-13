@@ -1295,12 +1295,13 @@ void DkImageLoader::imageSaved(const QString& filePath, bool saved, bool loadToT
 		emit loadImageToTab(filePath);
 	}
 	else if (DkSettingsManager::instance().param().resources().loadSavedImage == DkSettings::ls_load) {
-		//mFolderUpdated = true;
-		//loadDir(mCurrentImage->dirPath());
-
 		emit imageLoadedSignal(mCurrentImage, true);
 		emit imageUpdatedSignal(mCurrentImage);
 		qDebug() << "image updated: " << mCurrentImage->fileName();
+	}
+	else {
+		mFolderUpdated = true;
+		loadDir(mCurrentImage->dirPath());
 	}
 }
 
