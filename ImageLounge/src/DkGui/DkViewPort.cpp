@@ -732,7 +732,7 @@ void DkViewPort::deleteImage() {
 
 	auto imgC = imageContainer();
 
-	if (imgC && imgC->hasImage())
+	if (!imgC || !imgC->hasImage())
 		return;
 
 	getController()->applyPluginChanges(true);
@@ -1911,8 +1911,6 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), mController->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
 		connect(mController->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
-
-		connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), loader.data(), SLOT(deleteFile()), Qt::UniqueConnection);
 	}
 	else {
 		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
@@ -1930,9 +1928,6 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 
 		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
-		
-		// not sure if this is elegant?!
-		disconnect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), loader.data(), SLOT(deleteFile()));
 	}
 }
 

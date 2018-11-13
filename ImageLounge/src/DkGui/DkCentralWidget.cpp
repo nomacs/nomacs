@@ -396,6 +396,9 @@ void DkCentralWidget::loadSettings() {
 
 DkViewPort* DkCentralWidget::getViewPort() const {
 
+	if (!mWidgets[viewport_widget])
+		qWarning() << "danger zone: viewport is queried before its initialization";
+
 	return dynamic_cast<DkViewPort*>(mWidgets[viewport_widget]);
 }
 
@@ -585,7 +588,6 @@ void DkCentralWidget::createViewPort() {
 		qDebug() << "viewport already created...";
 		return;
 	}
-
 
 	DkViewPort* vp = 0;
 
@@ -1241,7 +1243,9 @@ void DkCentralWidget::pasteImage() {
 
 void DkCentralWidget::dropEvent(QDropEvent *event) {
 
-	if (event->source() == this || event->source() == getViewPort()) {
+
+	auto vp = getViewPort();
+	if (event->source() == this || (vp && event->source() == vp)) {
 		event->accept();
 		return;
 	}

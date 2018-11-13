@@ -913,7 +913,6 @@ bool DkImageContainerT::saveImageThreaded(const QString& filePath, int compressi
 	return saveImageThreaded(filePath, getLoader()->image(), compression);
 }
 
-
 bool DkImageContainerT::saveImageThreaded(const QString& filePath, const QImage saveImg, int compression /* = -1 */) {
 
 	mSaveImageWatcher.waitForFinished();
