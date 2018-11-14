@@ -347,7 +347,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 		//// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
 		if (!mForceFastRendering && // force?
 			mImgMatrix.m11()*mWorldMatrix.m11()-DBL_EPSILON > 1.0 && // @100% ?
-			mImgMatrix.m11()*mWorldMatrix.m11() <= (float)DkSettingsManager::param().display().interpolateZoomLevel/100.0f) {	// > max zoom level
+			mImgMatrix.m11()*mWorldMatrix.m11() <= DkSettingsManager::param().display().interpolateZoomLevel/100.0) {	// > max zoom level
 				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
@@ -556,11 +556,15 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 		if (qAbs(ir.width() - img.width()) <= 1 &&
 			qAbs(ir.height() - img.height()) <= 1) {
 			painter.setWorldMatrixEnabled(false);
+			painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
 			painter.drawImage(ir, img, img.rect());
 			painter.setWorldMatrixEnabled(true);
 		}
-		else
+		else {
+			if (mImgMatrix.m11()*mWorldMatrix.m11() - DBL_EPSILON < 1.0)
+				painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 			painter.drawImage(mImgViewRect, img, img.rect());
+		}
 	}
 
 	painter.setOpacity(oldOp);
