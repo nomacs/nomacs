@@ -348,13 +348,9 @@ void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 		const QString& fp = f.absoluteFilePath();
 		int oIdx = findFileIdx(fp, oldImages);
 
-		if (	oIdx != -1 &&
-				(f.lastModified().date() != today ||
-				QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())) {
-			mImages.append(oldImages.at(oIdx));
-		}
-		else
-			mImages.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(fp)));
+		// NOTE: we had this here: oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())
+		// however, that did not detect file changes & slowed down the process - so I removed it...
+		mImages << ((oIdx != -1) ? oldImages.at(oIdx) : QSharedPointer<DkImageContainerT >(new DkImageContainerT(fp)));
 	}
 	qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
