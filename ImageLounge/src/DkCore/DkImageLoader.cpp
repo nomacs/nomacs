@@ -341,20 +341,26 @@ void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 	QVector<QSharedPointer<DkImageContainerT > > oldImages = mImages;
 	mImages.clear();
 
-	for (int idx = 0; idx < files.size(); idx++) {
+	QDate today = QDate::currentDate();
 
-		int oIdx = findFileIdx(files.at(idx).absoluteFilePath(), oldImages);
+	for (const QFileInfo& f : files) {
 
-		if (oIdx != -1 && QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == files.at(idx).lastModified())
+		const QString& fp = f.absoluteFilePath();
+		int oIdx = findFileIdx(fp, oldImages);
+
+		if (	oIdx != -1 &&
+				(f.lastModified().date() != today ||
+				QFileInfo(oldImages.at(oIdx)->filePath()).lastModified() == f.lastModified())) {
 			mImages.append(oldImages.at(oIdx));
+		}
 		else
-			mImages.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(files.at(idx).absoluteFilePath())));
+			mImages.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(fp)));
 	}
-	qDebugClean() << "[DkImageLoader] " << mImages.size() << " containers created in " << dt;
+	qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
 	if (sort) {
 		qSort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
-		qDebug() << "[DkImageLoader] after sorting: " << dt;
+		qInfo() << "[DkImageLoader] after sorting: " << dt;
 
 		emit updateDirSignal(mImages);
 
@@ -370,7 +376,6 @@ void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 QVector<QSharedPointer<DkImageContainerT > > DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const {
 
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
-
 	return images;
 }
 
