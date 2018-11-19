@@ -86,8 +86,8 @@ QMenu* DkMenuBar::addMenu(const QIcon& icon, const QString& title) {
 
 void DkMenuBar::showMenu() {
 
-	if (mTimeToShow == -1)
-		return;
+	//if (mTimeToShow == -1)
+	//	return;
 
 	if (isVisible()) {
 		mTimerMenu->stop();
