@@ -28,6 +28,8 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
+
 #include <QColor>
 #include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
