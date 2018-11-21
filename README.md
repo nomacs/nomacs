@@ -1,6 +1,6 @@
 # nomacs - Plugins
 
-This repository contains officially supported plugins for the image viewer [nomacs](https://github.com/nomacs/nomacs).
+This repository contains officially supported plugins for the image viewer [nomacs](https://github.com/nomacs/nomacs). You can find additional (unstable) plugins [here](https://github.com/diemmarkus/nomacs-plugins).
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs-plugins.svg?branch=master)](https://travis-ci.org/nomacs/nomacs-plugins)
 

@@ -26,13 +26,8 @@ else()
 endif()
 OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
 OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
-OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
-OPTION (ENABLE_OCR "Compile Ocr plugin" OFF)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
-OPTION (ENABLE_PATCHMATCHING "Compile Patch Matching Plugin" OFF)
-OPTION (ENABLE_IMAGESTITCHING "Compile Image Stitching Plugin" OFF)
-OPTION (ENABLE_RULERDETECTION "Compile Ruler Detection Plugin" OFF)	# needs xfeatures2d (opencv-contrib)
 
 NMC_PREPARE_PLUGIN()
 NMC_FINDQT()
@@ -44,10 +39,6 @@ IF (ENABLE_FAKE_MINIATURES)
     add_subdirectory(FakeMiniaturesPlugin)
 ENDIF(ENABLE_FAKE_MINIATURES)
 
-IF (ENABLE_NIKON)
-  add_subdirectory(NikonPlugin)
-ENDIF(ENABLE_NIKON)
-
 IF (ENABLE_TRANSFORM)
     add_subdirectory(AffineTransformations)
 ENDIF(ENABLE_TRANSFORM)
@@ -56,50 +47,10 @@ IF (ENABLE_PAINT)
     add_subdirectory(PaintPlugin)
 ENDIF(ENABLE_PAINT)
 
-IF (ENABLE_DOC)
-    add_subdirectory(DocAnalysisPlugin)
-ENDIF(ENABLE_DOC)
-
 IF (ENABLE_PAGE)
     add_subdirectory(PageExtractionPlugin)
 ENDIF(ENABLE_PAGE)
 
-IF (ENABLE_OCR)
-    add_subdirectory(OcrPlugin)
-ENDIF(ENABLE_OCR)
-
 IF (ENABLE_SIMPLE)
     add_subdirectory(SIMPLE_PLUGIN)
 ENDIF(ENABLE_SIMPLE)
-
-IF (ENABLE_INSTAGRAM)
-    add_subdirectory(InstagramFilterPlugin)
-ENDIF(ENABLE_INSTAGRAM)
-
-IF (ENABLE_FILTER)
-    add_subdirectory(FilterPlugin)
-ENDIF(ENABLE_FILTER)
-
-IF (ENABLE_INSTAGRAM_FILTER)
-    add_subdirectory(InstagramLikeFilterPlugin)
-ENDIF(ENABLE_INSTAGRAM_FILTER)
-
-IF (ENABLE_INSTA_LIKE_FILTER)
-    add_subdirectory(InstaLikeFilterPlugin)
-ENDIF(ENABLE_INSTA_LIKE_FILTER)
-
-IF (ENABLE_MARS)
-    add_subdirectory(MarsPlugin)
-ENDIF (ENABLE_MARS)
-
-IF (ENABLE_PATCHMATCHING)
-    add_subdirectory(PatchMatchingPlugin)
-ENDIF (ENABLE_PATCHMATCHING)
-
-IF (ENABLE_IMAGESTITCHING)
-    add_subdirectory(ImageStitchingPlugin)
-ENDIF (ENABLE_IMAGESTITCHING)
-
-IF (ENABLE_RULERDETECTION)
-    add_subdirectory(RulerDetectionPlugin)
-ENDIF (ENABLE_RULERDETECTION)
