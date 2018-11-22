@@ -47,37 +47,33 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 Get the required packages:
 
 ``` console
-sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip-dev libwebp-dev git build-essential lcov libzip-dev
+sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
 ```
 
 Get the nomacs sources from github:
-
 ``` console
 git clone https://github.com/nomacs/nomacs.git
 ```
 
 This will by default place the source into ~/nomacs
-
 Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
-
 ``` console
-cmake .
+mkdir build
+cd build
+cmake -DUSE_SYSTEM_QUAZIP=ON ..
 ```
 
 Compile nomacs:
-
 ``` console
 make
 ```
 
-You will now have a binary (~/nomacs/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
-
+You will now have a binary (~/nomacs/build/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
 ``` console
 sudo make install
 ```
 
 note that you have to execute
-
 ``` console
 sudo ldconfig
 ```
