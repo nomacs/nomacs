@@ -31,6 +31,7 @@
 #include "DkMath.h"
 #include "DkBaseViewPort.h"
 #include "DkUtils.h"
+#include "DkToolbars.h"
 
 #include <QMouseEvent>
 
@@ -740,8 +741,8 @@ void DkImgTransformationsViewPort::setVisible(bool visible) {
 	}
 
 
-	if (imgTransformationsToolbar) 
-		emit showToolBar(imgTransformationsToolbar, visible);
+	if (imgTransformationsToolbar)
+		nmc::DkToolBarManager::inst().showToolBar(imgTransformationsToolbar, visible);
 
 	setMode(defaultMode);
 	DkPluginViewPort::setVisible(visible);

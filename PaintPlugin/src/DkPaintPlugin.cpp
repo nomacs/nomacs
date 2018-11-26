@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkPaintPlugin.h"
+#include "DkToolbars.h"
 
 #include <QDebug>
 #include <QMouseEvent>
@@ -47,12 +48,6 @@ DkPaintPlugin::DkPaintPlugin() {
 **/
 DkPaintPlugin::~DkPaintPlugin() {
 
-	qDebug() << "[PAINT PLUGIN] deleted...";
-
-	if (viewport) {
-		viewport->deleteLater();
-		viewport = 0;
-	}
 }
 
 /**
@@ -131,7 +126,6 @@ DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPlu
 }
 
 DkPaintViewPort::~DkPaintViewPort() {
-	qDebug() << "[PAINT VIEWPORT] deleted...";
 	
 	saveSettings();
 
@@ -401,7 +395,7 @@ bool DkPaintViewPort::isCanceled() {
 void DkPaintViewPort::setVisible(bool visible) {
 
 	if (paintToolbar)
-		emit showToolBar(paintToolbar, visible);
+		nmc::DkToolBarManager::inst().showToolBar(paintToolbar, visible);
 
 	DkPluginViewPort::setVisible(visible);
 }
@@ -430,7 +424,7 @@ void DkPaintToolBar::createIcons() {
 	icons[apply_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/save.svg");
 	icons[cancel_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/close.svg");
 	icons[pan_icon]		= nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
-	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan_checked.svg"), QIcon::Normal, QIcon::On);
+	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan-checked.svg"), QIcon::Normal, QIcon::On);
 	icons[undo_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
 }
 
