@@ -37,7 +37,6 @@
 #include <QString>
 #include <QImage>
 #include <QGraphicsView>
-#include <QToolBar>
 #include <QFileInfo>
 #include <QApplication>
 #include <QMainWindow>
@@ -196,7 +195,6 @@ public:
 
 signals:
 	void closePlugin(bool askForSaving = false) const;
-	void showToolBar(QToolBar* toolbar, bool show) const;
 	void loadFile(const QString& filePath) const;
 	void loadImage(const QImage& image) const;
 	void showInfo(const QString& msg) const;
@@ -235,4 +233,4 @@ protected:
 // Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/3.6")
 Q_DECLARE_INTERFACE(nmc::DkBatchPluginInterface, "com.nomacs.ImageLounge.DkBatchPluginInterface/3.6")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.7")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/3.8")
