@@ -39,7 +39,7 @@ git clone https://github.com/nomacs/nomacs-plugins.git plugins
 ````
 mkdir build
 cd build
-cmake -DENABLE_PLUGINS=ON -DENABLE_QUAZIP=OFF .
+cmake -DENABLE_PLUGINS=ON .
 ````
 - then build the project:
 ````terminal
