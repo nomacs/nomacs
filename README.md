@@ -29,26 +29,24 @@ This repository contains officially supported plugins for the image viewer [noma
 
 ## Build Plugins (Ubuntu)
 
-Build [nomacs](https://github.com/nomacs/nomacs#build-nomacs-ubuntu)  
-
-Since you need to reference the nomacs resources from the nomacs-plugins directory, specify the nomacs paths in  
-nomacs-plugins/CMakeUserPaths.cmake:  
-    - Copy `CMakeUserPathsGit.cmake` and rename it to `CMakeUserPaths.cmake`  
-    - Set all paths to your own builds of nomacs etc.  
-
-In the nomacs-plugins directory run `cmake` to get the Makefiles:
-
-``` console
-cmake .
-```
-
-Compile Plugins:
-
-``` console
+- Clone [nomacs](https://github.com/nomacs/nomacs.git)
+- cd to `nomacs/ImageLounge`
+- clone this [repository](https://github.com/nomacs/nomacs-plugins.git) into `plugins`:
+````terminal
+git clone https://github.com/nomacs/nomacs-plugins.git plugins
+````
+- in `ImageLounge` create a folder `build` and run cmake:
+````
+mkdir build
+cd build
+cmake -DENABLE_PLUGINS=ON -DENABLE_QUAZIP=OFF .
+````
+- then build the project:
+````terminal
 make
-```
+````
 
-This will build all the Plugins set to 'ON' in nomacs-plugins/CMakeLists.txt and create a plugins directory in nomacs/ImageLounge. Running ./nomacs from the nomacs/ImageLounge directory should now list all the built Plugins in the Plugins tab.
+This will build all the Plugins set to 'ON' in nomacs-plugins/CMakeLists.txt. Running ./nomacs from the nomacs/ImageLounge directory should now list all the built Plugins in the Plugins tab.
 
 
 ## Links
