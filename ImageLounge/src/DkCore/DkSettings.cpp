@@ -72,7 +72,8 @@ void DkSettings::init() {
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Flash") <<
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Focal Length") <<
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
-		QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time");
+		QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time") <<
+		QT_TRANSLATE_NOOP("nmc::DkMetaData", "Compression");
 
 	sdescriptionDesc = QStringList() <<
 		QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating") <<

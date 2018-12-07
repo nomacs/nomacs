@@ -31,6 +31,7 @@
 #include <QTextEdit>
 #include <QAbstractTableModel>
 #include <QDockWidget>
+#include <QSortFilterProxyModel>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
@@ -43,6 +44,7 @@ class QPushButton;
 class QGridLayout;
 class QCheckBox;
 class QVBoxLayout;
+class QLineEdit;
 
 namespace nmc {
 
@@ -77,6 +79,18 @@ protected:
 	void createItem(const QString& key, const QString& keyName, const QString& value);
 };
 
+class DkMetaDataProxyModel : public QSortFilterProxyModel {
+	Q_OBJECT
+
+public:
+	DkMetaDataProxyModel(QObject * parent = 0);
+	virtual ~DkMetaDataProxyModel() {}
+
+protected:
+	virtual bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
+
+};
+
 class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
@@ -87,6 +101,7 @@ public:
 public slots:
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
 	void thumbLoaded(bool loaded);
+	void on_filter_textChanged(const QString& filterText);
 
 protected:
 	void createLayout();
@@ -99,6 +114,8 @@ protected:
 
 	QSharedPointer<DkImageContainerT> mImgC;
 	QTreeView* mTreeView = 0;
+	DkMetaDataProxyModel* mProxyModel = 0;
+	QLineEdit* mFilterEdit = 0;
 	DkMetaDataModel* mModel = 0;
 	QLabel* mThumbNailLabel = 0;
 	QSharedPointer<DkThumbNailT> mThumb;

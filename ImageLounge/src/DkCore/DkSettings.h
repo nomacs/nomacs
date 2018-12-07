@@ -315,22 +315,6 @@ public:
 		int loadSavedImage;
 	};
 
-	//enums for checkboxes - divide in camera data and description
-	enum cameraData {
-		camData_size,
-		camData_orientation,
-		camData_make,
-		camData_model,
-		camData_aperture,
-		camData_iso,
-		camData_flash,
-		camData_focal_length,
-		camData_exposure_mode,
-		camData_exposure_time,
-
-		camData_end
-	};
-
 	enum DisplayItems{
 		display_file_name,
 		display_creation_date,

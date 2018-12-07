@@ -321,6 +321,23 @@ Qt::ItemFlags DkMetaDataModel::flags(const QModelIndex& index) const {
 }
 
 
+// DkMetaDataProxyModel --------------------------------------------------------------------
+DkMetaDataProxyModel::DkMetaDataProxyModel(QObject* parent) : QSortFilterProxyModel(parent) {
+}
+
+bool DkMetaDataProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex & sourceParent) const {
+
+	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+
+	TreeItem* t = static_cast<TreeItem*>(index.internalPointer());
+	if (t) {
+		return t->contains(filterRegExp(), -1)/* | t->contains(filterRegExp(), 1)*/;
+	}
+
+	qWarning() << "[DkMetaDataProxyModel] Ich höre gerade, es ist ein bisschen was durcheinander gekommen";
+	return true;
+}
+
 // DkMetaDataDock --------------------------------------------------------------------
 DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : 
 	DkDockWidget(title, parent, flags) {
@@ -329,6 +346,8 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 
 	createLayout();
 	readSettings();
+
+	QMetaObject::connectSlotsByName(this);
 }
 
 DkMetaDataDock::~DkMetaDataDock() {
@@ -374,14 +393,18 @@ void DkMetaDataDock::readSettings() {
 
 void DkMetaDataDock::createLayout() {
 
-	QWidget* widget = new QWidget(this);
-	QVBoxLayout* layout = new QVBoxLayout(widget);
-	layout->setContentsMargins(2, 2, 2, 2);
+	mFilterEdit = new QLineEdit(this);
+	mFilterEdit->setObjectName("filter");
+	mFilterEdit->setPlaceholderText(tr("Filter"));
 
 	// create our beautiful shortcut view
 	mModel = new DkMetaDataModel(this);
+	
+	mProxyModel = new DkMetaDataProxyModel(this);
+	mProxyModel->setSourceModel(mModel);
+
 	mTreeView = new QTreeView(this);
-	mTreeView->setModel(mModel);
+	mTreeView->setModel(mProxyModel);
 	mTreeView->setAlternatingRowColors(true);
 	//mTreeView->setIndentation(8);
 	//mTreeView->setStyleSheet("QTreeView{border: none;}");
@@ -397,31 +420,45 @@ void DkMetaDataDock::createLayout() {
 	thumbLayout->addWidget(mThumbNailLabel);
 	thumbLayout->addStretch();
 
+	QWidget* widget = new QWidget(this);
+	QVBoxLayout* layout = new QVBoxLayout(widget);
+	layout->setContentsMargins(2, 2, 2, 2);
+	layout->addWidget(mFilterEdit);
 	layout->addWidget(mTreeView);
 	layout->addWidget(thumbWidget);
 	setWidget(widget);
 }
 
+void DkMetaDataDock::on_filter_textChanged(const QString& filterText) {
+
+	if (!filterText.isEmpty())
+		mTreeView->expandAll();
+
+	mProxyModel->setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::FixedString));
+}
+
 void DkMetaDataDock::updateEntries() {
 
-	int numRows = mModel->rowCount(QModelIndex());
+	int nr = mProxyModel->rowCount(QModelIndex());
+	for (int idx = 0; idx < nr; idx++)
+		getExpandedItemNames(mProxyModel->index(idx,0,QModelIndex()), mExpandedNames);
 
-	for (int idx = 0; idx < numRows; idx++)
-		getExpandedItemNames(mModel->index(idx,0,QModelIndex()), mExpandedNames);
-
-	mModel->clear();
+	mModel->deleteLater();
 
 	if (!mImgC)
 		return;
 
+	mModel = new DkMetaDataModel(this);
 	mModel->addMetaData(mImgC->getMetaData());
-	
-	mTreeView->setUpdatesEnabled(false);
-	numRows = mModel->rowCount(QModelIndex());
-	for (int idx = 0; idx < numRows; idx++)
-		expandRows(mModel->index(idx, 0, QModelIndex()), mExpandedNames);
-	mTreeView->setUpdatesEnabled(true);
+	mProxyModel->setSourceModel(mModel);
 
+	mTreeView->setUpdatesEnabled(false);
+	nr = mProxyModel->rowCount();
+	for (int idx = 0; idx < nr; idx++)
+		expandRows(mProxyModel->index(idx, 0, QModelIndex()), mExpandedNames);
+
+	mTreeView->setUpdatesEnabled(true);
+	
 	// for values we should adjust the size at least to the currently visible rows...
 	mTreeView->resizeColumnToContents(1);
 	//if (treeView->columnWidth(1) > 1000)
@@ -475,17 +512,17 @@ void DkMetaDataDock::getExpandedItemNames(const QModelIndex& index, QStringList&
 	if (!mTreeView || !index.isValid())
 		return;
 
-	QString entryName = mModel->data(index,Qt::DisplayRole).toString();
+	QString entryName = mProxyModel->data(index,Qt::DisplayRole).toString();
 
 	if (mTreeView->isExpanded(index) && !expandedNames.contains(entryName))
 		expandedNames.append(entryName);
 	else if (!mTreeView->isExpanded(index))
-		expandedNames.removeAll(mModel->data(index,Qt::DisplayRole).toString());
+		expandedNames.removeAll(mProxyModel->data(index,Qt::DisplayRole).toString());
 
-	int rows = mModel->rowCount(index);
+	int rows = mProxyModel->rowCount(index);
 
 	for (int idx = 0; idx < rows; idx++)
-		getExpandedItemNames(mModel->index(idx, 0, index), expandedNames);
+		getExpandedItemNames(mProxyModel->index(idx, 0, index), expandedNames);
 
 }
 
@@ -494,15 +531,15 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 	if (!index.isValid())
 		return;
 
-	if (expandedNames.contains(mModel->data(index).toString())) {
+	if (expandedNames.contains(mProxyModel->data(index).toString())) {
 		mTreeView->setExpanded(index, true);
 	}
 
-	for (int idx = 0; idx < mModel->rowCount(index); idx++) {
+	for (int idx = 0; idx < mProxyModel->rowCount(index); idx++) {
 
 		QModelIndex cIndex = index.child(idx, 0);
 
-		if (expandedNames.contains(mModel->data(cIndex).toString())) {
+		if (expandedNames.contains(mProxyModel->data(cIndex).toString())) {
 			mTreeView->setExpanded(cIndex, true);
 			expandRows(cIndex, expandedNames);
 		}
@@ -544,7 +581,7 @@ void DkMetaDataSelection::createLayout() {
 	scrollArea->setMinimumSize(QSize(200, 200));
 	scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	//scrollArea->setBackgroundRole(QPalette::Light);
+	scrollArea->setBackgroundRole(QPalette::Light);		// TODO: this l
 	scrollArea->setWidget(lWidget);
 
 	mCbCheckAll = new QCheckBox(tr("Check All"), this);
@@ -1083,7 +1120,7 @@ void DkMetaDataHUD::newPosition() {
 void DkMetaDataHUD::changeKeys() {
 
 	QDialog* dialog = new QDialog(this);
-	QVBoxLayout* layout = new QVBoxLayout(dialog);
+	dialog->setWindowTitle(tr("Change Metadata Entries"));
 		
 	DkMetaDataSelection* selWidget = new DkMetaDataSelection(mMetaData, this);
 	selWidget->setSelectedKeys(mKeyValues);
@@ -1095,6 +1132,7 @@ void DkMetaDataHUD::changeKeys() {
 	connect(buttons, SIGNAL(accepted()), dialog, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
 
+	QVBoxLayout* layout = new QVBoxLayout(dialog);
 	layout->addWidget(selWidget);
 	layout->addWidget(buttons);
 

@@ -174,11 +174,29 @@ public:
 		return instance;
 	}
 
+	//enums for checkboxes - divide in camera data and description
+	enum ExifKeys {
+		key_size,
+		key_orientation,
+		key_make,
+		key_model,
+		key_aperture,
+		key_iso,
+		key_flash,
+		key_focal_length,
+		key_exposure_mode,
+		key_exposure_time,
+		key_compression,
+
+		key_end
+	};
+
 	QString getApertureValue(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getFocalLength(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getExposureTime(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getExposureMode(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getCompression(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getGpsAltitude(const QString& val) const;
 	QStringList convertGpsCoordinates(const QString& coordString) const;
@@ -210,6 +228,7 @@ protected:
 
 	QStringList mExposureModes;
 	QMap<int, QString> mFlashModes;
+	QMap<int, QString> mCompressionModes;
 };
 
 }

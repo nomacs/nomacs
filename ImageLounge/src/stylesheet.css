@@ -598,9 +598,9 @@ QListWidget#profileList {
 	max-width: 400px;
 }
 
-nmc--DkMetaDataSelection QScrollArea QWidget {
+/*nmc--DkMetaDataSelection QScrollArea QWidget {
 	background-color: #fff;
-}
+}*/
 
 QLabel#DkLabelBg {
 	color: HUD_FOREGROUND_COLOR;

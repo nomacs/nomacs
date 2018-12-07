@@ -379,7 +379,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else if (idx == selected && r.contains(p))
 			drawSelectedEffect(painter, r);
 
-
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
 	}
 }
@@ -1117,7 +1116,7 @@ void DkThumbScene::updateLayout() {
 		pSize = QSize(views().first()->viewport()->size());
 
     int psz = DkSettingsManager::param().effectiveThumbPreviewSize();
-	mXOffset = qCeil(psz*0.1f);
+	mXOffset = 2;// qCeil(psz*0.1f);
 	mNumCols = qMax(qFloor(((float)pSize.width()-mXOffset)/(psz + mXOffset)), 1);
 	mNumCols = qMin(mThumbLabels.size(), mNumCols);
 	mNumRows = qCeil((float)mThumbLabels.size()/mNumCols);

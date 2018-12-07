@@ -1,3 +1,7 @@
+nomacs 3.14.0
+=============
+- metadata filtering added
+
 nomacs 3.12.0
 =============
 - recent files panel renewed
