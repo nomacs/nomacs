@@ -116,8 +116,7 @@ $ sudo make install
 
 ## Links
 
-- [nomacs.org](http://nomacs.org)
-- [Bugtracker](http://www.nomacs.org/redmine/projects/nomacs)
+- [nomacs.org](https://nomacs.org)
 - [GitHub](https://github.com/nomacs)
 
 [![nomacs-icon](https://nomacs.org/startpage/nomacs.svg)](https://nomacs.org)
