@@ -990,39 +990,42 @@ void DkImageLoader::downloadFile(const QUrl& url) {
  **/ 
 QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, const QString& fileExt, bool force, bool threaded) {
 
-	QFileInfo tmpPath = QFileInfo(DkSettingsManager::param().global().tmpPath + "\\");
-	
-	if (!force && (!DkSettingsManager::param().global().useTmpPath || !tmpPath.exists())) {
-		qDebug() << tmpPath.absolutePath() << "does not exist";
+	QString filePath = DkSettingsManager::param().global().tmpPath;
+	QFileInfo fInfo(filePath + QDir::separator());
+
+	if (!force && (filePath.isEmpty() || !fInfo.exists())) {
+		
+		if (!filePath.isEmpty())
+			qWarning() << filePath << "does not exist";
 		return QString();
 	}
-	else if ((!DkSettingsManager::param().global().useTmpPath || !tmpPath.exists())) {
+	else if (filePath.isEmpty() || !fInfo.exists()) {
 
-		tmpPath = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+		fInfo = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 
-		if (!tmpPath.isDir()) {
+		if (!fInfo.isDir()) {
 			// load system default open dialog
 			QString dirName = QFileDialog::getExistingDirectory(
 				DkUtils::getMainWindow(), 
 				tr("Save Directory"), 
 				getDirPath());
 
-			tmpPath = dirName + "/";
+			fInfo = dirName + QDir::separator();
 
-			if (!tmpPath.exists())
+			if (!fInfo.exists())
 				return QString();
 		}
 	}
 
-	qDebug() << "tmpPath: " << tmpPath.absolutePath();
+	qInfo() << "saving to: " << fInfo.absolutePath();
 	
 	QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
-	QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
+	fInfo = QFileInfo(fInfo.absolutePath(), fileName);
 
-	if (!tmpFile.exists()) {
+	if (!fInfo.exists()) {
 			
-		saveFile(tmpFile.absoluteFilePath(), img, "", -1, threaded);
-		return tmpFile.absoluteFilePath();
+		saveFile(fInfo.absoluteFilePath(), img, "", -1, threaded);
+		return fInfo.absoluteFilePath();
 	}
 
 	return QString();

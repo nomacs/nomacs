@@ -373,7 +373,6 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	global_p.pinnedFiles = settings.value("pinnedFiles", global_p.pinnedFiles).toStringList();
 	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
 	global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
-	global_p.useTmpPath = settings.value("useTmpPath", global_p.useTmpPath).toBool();
 	global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
@@ -593,8 +592,6 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("pinnedFiles", global_p.pinnedFiles);
 	if (force ||global_p.logRecentFiles != global_d.logRecentFiles)
 		settings.setValue("logRecentFiles", global_p.logRecentFiles);
-	if (force ||global_p.useTmpPath != global_d.useTmpPath)
-		settings.setValue("useTmpPath", global_p.useTmpPath);
 	if (force ||global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
 		settings.setValue("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles);
 	if (force ||global_p.tmpPath != global_d.tmpPath)
@@ -814,9 +811,8 @@ void DkSettings::setToDefaultSettings() {
 	global_p.searchHistory = QStringList();
 	global_p.recentFolders = QStringList();
 	global_p.logRecentFiles = true;
-	global_p.useTmpPath = false;
 	global_p.askToSaveDeletedFiles = false;
-	global_p.tmpPath = QString();
+	global_p.tmpPath = "";
 	global_p.language = "en";
 	global_p.setupPath = "";
 	global_p.setupVersion = "";

@@ -258,7 +258,6 @@ public:
 		bool logRecentFiles;
 		bool checkOpenDuplicates;
 		bool extendedTabs;
-		bool useTmpPath;
 		bool askToSaveDeletedFiles;
 		QString tmpPath;
 		QString language;

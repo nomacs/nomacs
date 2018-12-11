@@ -1075,11 +1075,11 @@ void DkFilePreference::createLayout() {
 void DkFilePreference::on_dirChooser_directoryChanged(const QString& dirPath) const {
 
 	bool dirExists = QDir(dirPath).exists();
-	DkSettingsManager::param().global().useTmpPath = dirExists;
 
-	if (DkSettingsManager::param().global().tmpPath != dirPath && dirExists) {
+	if (DkSettingsManager::param().global().tmpPath != dirPath && dirExists)
 		DkSettingsManager::param().global().tmpPath = dirPath;
-	}
+	else if (!dirExists)
+		DkSettingsManager::param().global().tmpPath = "";
 
 }
 
