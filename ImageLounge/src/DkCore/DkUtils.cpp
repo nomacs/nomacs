@@ -906,14 +906,14 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/";    // trash file path contain delete files
 
 	QDir file;
-	file.rename(filePath, trashFilePath + fileInfo.fileName());  // rename(file old path, file trash path)
+	return file.rename(filePath, trashFilePath + fileInfo.fileName());  // rename(file old path, file trash path)
 
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
 #endif
 
-	return false;
+	return false;	// should never be hit
 }
 
 QString DkUtils::readableByte(float bytes) {
