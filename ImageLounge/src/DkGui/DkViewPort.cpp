@@ -710,7 +710,7 @@ void DkViewPort::deleteImage() {
 	QFileInfo fileInfo(imgC->filePath());
 	QString question;
 
-#if defined(Q_OS_WIN) || defined(W_OS_LINUX)
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
 	question = tr("Shall I move %1 to trash?").arg(fileInfo.fileName());
 #else
 	question = tr("Do you want to permanently delete %1?").arg(fileInfo.fileName());

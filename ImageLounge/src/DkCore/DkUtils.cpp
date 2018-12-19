@@ -901,7 +901,7 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 
 	return retVal == 0;		// true if no error code
 
-#elif Q_OS_LINUX
+#elif defined(Q_OS_LINUX)
 
 	QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/";    // trash file path contain delete files
 
