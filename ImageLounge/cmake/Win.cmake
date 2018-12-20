@@ -116,7 +116,3 @@ if(ENABLE_QUAZIP)
 		message(FATAL_ERROR "I could not find QuaZip - you can either disable building with QuaZip or add the path to the CMAKE_PREFIX_PATHS")
 	endif(QUAZIP_FOUND)
 endif(ENABLE_QUAZIP)
-
-#add libqpsd
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd)
-set(LIBQPSD_LIBRARY "qpsd")

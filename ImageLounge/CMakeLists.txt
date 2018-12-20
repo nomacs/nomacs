@@ -142,7 +142,6 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIR}
 	${QUAZIP_ZLIB_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
 )
 
@@ -215,6 +214,7 @@ if(UNIX AND ENABLE_PLUGINS)
 		SET(ENABLE_PLUGINS OFF)
 	endif()
 endif()
+
 
 # status
 MESSAGE(STATUS "")

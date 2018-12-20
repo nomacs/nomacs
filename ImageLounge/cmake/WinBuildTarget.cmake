@@ -54,7 +54,6 @@ target_link_libraries(
 add_dependencies(
 	${BINARY_NAME} 
 	${DLL_CORE_NAME} 
-	${LIBQPSD_LIBRARY}
 	)
 
 target_include_directories(${BINARY_NAME} 		PRIVATE ${OpenCV_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
@@ -93,6 +92,10 @@ file(GLOB QT_EXTRA_IMAGE_FORMATS "${QT_QMAKE_PATH}/../../qtimageformats/plugins/
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats PATTERN *d.dll EXCLUDE)
 file(COPY ${QT_EXTRA_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
+
+# *d.dll would exclude qpsd.dll - so copy this manually...
+file(GLOB QT_PSD_LIB "${QT_QMAKE_PATH}/../plugins/imageformats/qpsd.dll")
+file(COPY ${QT_PSD_LIB} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
 
 # Platforms
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/platforms)
@@ -136,11 +139,6 @@ if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
 	file(COPY ${QT_QMAKE_PATH}/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${QT_QMAKE_PATH}/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
 	file(COPY ${QT_QMAKE_PATH}/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-
-	file(COPY ${QT_QMAKE_PATH}/../plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/imageformats/qsvgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
-
 endif()
 
 if (NOT Qt5Widgets_VERSION VERSION_LESS 5.11.0)
