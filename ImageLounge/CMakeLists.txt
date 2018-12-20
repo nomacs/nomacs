@@ -143,6 +143,7 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${QUAZIP_INCLUDE_DIR}
 	${QUAZIP_ZLIB_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libqpsd	# needed for linux psd hack
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/drif
 )
 
