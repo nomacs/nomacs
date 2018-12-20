@@ -49,6 +49,7 @@ option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
+option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 
 # Codecov
@@ -265,6 +266,12 @@ IF(ENABLE_PLUGINS)
     MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
+ENDIF()
+
+IF(LIBHEIF_FOUND)
+    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................. NO")
 ENDIF()
 
 MESSAGE(STATUS "----------------------------------------------------------------------------------")

@@ -198,9 +198,33 @@ else()
 	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
 
+if (ENABLE_HEIF)
+	find_package(libde265)
+	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+
+	find_package(libheif)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Debug/libheifd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+endif()
+
 # path hints for the dependency collector
-set(DC_PATHS_RELEASE ${EXIV2_BUILD_PATH}/src/Release ${EXPAT_BUILD_PATH}/Release ${LIBRAW_BUILD_PATH}/Release ${QUAZIP_BUILD_PATH}/Release ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-set(DC_PATHS_DEBUG ${EXIV2_BUILD_PATH}/src/Debug ${EXPAT_BUILD_PATH}/Debug ${LIBRAW_BUILD_PATH}/Debug ${QUAZIP_BUILD_PATH}/Debug ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_RELEASE 
+	${EXIV2_BUILD_PATH}/src/Release 
+	${EXPAT_BUILD_PATH}/Release 
+	${LIBRAW_BUILD_PATH}/Release 
+	${QUAZIP_BUILD_PATH}/Release 
+	${OpenCV_DIR}/bin/Release 
+	${QT_QMAKE_PATH} ${VS_PATH})
+set(DC_PATHS_DEBUG 
+	${EXIV2_BUILD_PATH}/src/Debug 
+	${EXPAT_BUILD_PATH}/Debug 
+	${LIBRAW_BUILD_PATH}/Debug 
+	${QUAZIP_BUILD_PATH}/Debug 
+	${OpenCV_DIR}/bin/Debug 
+	${QT_QMAKE_PATH} ${VS_PATH})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 
