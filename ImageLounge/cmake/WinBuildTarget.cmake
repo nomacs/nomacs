@@ -46,9 +46,9 @@ target_link_libraries(
 	${EXIV2_LIBS} 				# metadata support
 	${VERSION_LIB} 				# needed for registering the curren version
 	${LIBRAW_LIBRARIES} 		# RAW support (optional)
-	${OpenCV_LIBS} 			# image manipulation support (optional)
+	${OpenCV_LIBS} 				# image manipulation support (optional)
 	${TIFF_LIBRARIES} 			# multip page tiff support (optional)
-	${QUAZIP_LIBRARIES}		# ZIP support (optional)
+	${QUAZIP_LIBRARIES}			# ZIP support (optional)
 	)
 
 add_dependencies(

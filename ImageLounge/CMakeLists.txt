@@ -217,6 +217,9 @@ if(UNIX AND ENABLE_PLUGINS)
 	endif()
 endif()
 
+# get rid of VSCode warning (when using MSBuild)
+# see: https://stackoverflow.com/questions/36451368/get-rid-of-cmake-warning-manually-specified-variables-were-not-used-by-the-proj/36452112
+set(ignoreMe "${CMAKE_EXPORT_COMPILE_COMMANDS}")
 
 # status
 MESSAGE(STATUS "")
@@ -245,6 +248,24 @@ ELSE()
     MESSAGE(STATUS " nomacs will be compiled with extended TIFF support ........... NO")
 ENDIF()
 
+IF(ENABLE_PLUGINS)
+    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
+ENDIF()
+
+IF(libheif_FOUND)
+    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................... YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................... NO")
+ENDIF()
+
+IF(ENABLE_TRANSLATIONS)
+    MESSAGE(STATUS " nomacs will be compiled with Translations .................... YES")
+ELSE()
+    MESSAGE(STATUS " nomacs will be compiled with Translations .................... NO")
+ENDIF()
+
 IF(ENABLE_QUAZIP)
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
 ELSE()
@@ -261,18 +282,6 @@ IF(USE_SYSTEM_LIBQPSD)
     MESSAGE(STATUS " nomacs will use system QPSD .................................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will use system QPSD .................................. NO")
-ENDIF()
-
-IF(ENABLE_PLUGINS)
-    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with plugin support .................. NO")
-ENDIF()
-
-IF(LIBHEIF_FOUND)
-    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will be compiled with HEIF support .................. NO")
 ENDIF()
 
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
