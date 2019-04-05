@@ -96,6 +96,7 @@ public:
 
 	QString getDirPath() const;
 	QString getSavePath() const;
+	QString getCopyPath() const;
 	void setDir(const QString& dir);
 	void setSaveDir(const QString& dir);
 	
@@ -150,6 +151,7 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileWeb(const QImage& saveImg);
 	void saveUserFileAs(const QImage& saveImg, bool silent);
+	void copyUserFile();
 	void saveFile(const QString& filename, const QImage& saveImg = QImage(), const QString& fileFilter = "", int compression = -1, bool threaded = true);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QString& filePath);
@@ -191,6 +193,7 @@ protected:
 	bool mTimerBlockedUpdate = false;
 	QString mCurrentDir;
 	QString mSaveDir;
+	QString mCopyDir;
 	QFileSystemWatcher* mDirWatcher = 0;
 	QStringList mSubFolders;
 	QVector<QSharedPointer<DkImageContainerT > > mImages;

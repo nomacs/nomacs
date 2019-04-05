@@ -375,6 +375,7 @@ QMenu* DkActionManager::createFileMenu(QWidget* parent /* = 0 */) {
 	mFileMenu->addSeparator();
 	mFileMenu->addAction(mFileActions[menu_file_save]);
 	mFileMenu->addAction(mFileActions[menu_file_save_as]);
+	mFileMenu->addAction(mFileActions[menu_file_save_copy]);
 	if (DkSettingsManager::param().global().extendedTabs)
 		mFileMenu->addAction(mFileActions[menu_file_save_list]);
 	mFileMenu->addAction(mFileActions[menu_file_save_web]);
@@ -989,9 +990,12 @@ void DkActionManager::createActions(QWidget* parent) {
 	mFileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
 	mFileActions[menu_file_save]->setStatusTip(QObject::tr("Save an image"));
 
-	mFileActions[menu_file_save_as] = new QAction(QObject::tr("&Save As"), parent);
+	mFileActions[menu_file_save_as] = new QAction(QObject::tr("S&ave As"), parent);
 	mFileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
 	mFileActions[menu_file_save_as]->setStatusTip(QObject::tr("Save an image as"));
+
+	mFileActions[menu_file_save_copy] = new QAction(QObject::tr("Sa&ve a Copy"), parent);
+	mFileActions[menu_file_save_copy]->setStatusTip(QObject::tr("Copy the Image"));
 
 	mFileActions[menu_file_save_list] = new QAction(QObject::tr("&Save Tabs"), parent);
 	mFileActions[menu_file_save_list]->setStatusTip(QObject::tr("Save a newline separated list of the filenames of the open tabs"));
@@ -1671,6 +1675,7 @@ void DkActionManager::enableImageActions(bool enable) const {
 	
 	action(DkActionManager::menu_file_save)->setEnabled(enable);
 	action(DkActionManager::menu_file_save_as)->setEnabled(enable);
+	action(DkActionManager::menu_file_save_copy)->setEnabled(enable);
 	action(DkActionManager::menu_file_save_list)->setEnabled(enable);
 	action(DkActionManager::menu_file_save_web)->setEnabled(enable);
 	action(DkActionManager::menu_file_rename)->setEnabled(enable);

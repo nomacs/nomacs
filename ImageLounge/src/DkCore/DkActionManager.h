@@ -120,6 +120,7 @@ public:
 		menu_file_app_manager,
 		menu_file_save,
 		menu_file_save_as,
+		menu_file_save_copy,
 		menu_file_save_list,
 		menu_file_save_web,
 		menu_file_rename,

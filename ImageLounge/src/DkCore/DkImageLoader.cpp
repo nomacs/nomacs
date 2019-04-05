@@ -120,7 +120,8 @@ DkImageLoader::DkImageLoader(const QString& filePath) {
 	mDelayedUpdateTimer.setSingleShot(true);
 	connect(&mDelayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
 
-	connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
+    connect(DkActionManager::instance().action(DkActionManager::menu_file_save_copy), SIGNAL(triggered()), this, SLOT(copyUserFile()));
+    connect(DkActionManager::instance().action(DkActionManager::menu_edit_undo), SIGNAL(triggered()), this, SLOT(undo()));
 	connect(DkActionManager::instance().action(DkActionManager::menu_edit_redo), SIGNAL(triggered()), this, SLOT(redo()));
 	connect(DkActionManager::instance().action(DkActionManager::menu_view_gps_map), SIGNAL(triggered()), this, SLOT(showOnMap()));
 	connect(DkActionManager::instance().action(DkActionManager::sc_delete_silent), SIGNAL(triggered()), this, SLOT(deleteFile()), Qt::UniqueConnection);
@@ -1082,6 +1083,58 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	jpgDialog->deleteLater();
 }
 
+void DkImageLoader::copyUserFile() {
+    
+	// the subsequent modals destroy the active window
+    QWidget* dialogParent = DkUtils::getMainWindow();
+	QString saveName;
+
+	auto imgC = getCurrentImage();
+
+    if (hasFile() && imgC) {
+
+        int filterIdx = -1;
+
+		QString extension = imgC->fileInfo().suffix();
+
+		// retrieve the extension name (that's more user friendly)
+		QStringList sF = DkSettingsManager::param().app().openFilters;
+		QRegExp exp = QRegExp("*." + extension + "*", Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+
+		for (int idx = 1; idx < sF.size(); idx++) {
+
+			if (exp.exactMatch(sF.at(idx))) {
+				extension = sF.at(idx);
+				filterIdx = idx;
+				break;
+			}
+		}
+
+		QString saveName = QFileInfo(getCopyPath(), imgC->fileName()).absoluteFilePath();
+
+		saveName = QFileDialog::getSaveFileName(
+			dialogParent,
+			tr("Save File %1").arg(saveName),
+			saveName,
+			extension);
+
+        if (saveName.isEmpty())
+			return;
+
+		qDebug() << fileName() << "->" << saveName;
+
+		if (QFile::copy(imgC->filePath(), saveName)) {
+			mCopyDir = QFileInfo(saveName).absolutePath();
+            qInfo() << fileName() << "copied to" << saveName;
+        }
+		else {
+            emit showInfoSignal(tr("Sorry, I could not copy the image..."));
+        }
+		
+    }
+}
+
 void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 	// the subsequent modals destroy the active window
@@ -1931,6 +1984,17 @@ void DkImageLoader::currentImageUpdated() const {
 }
 
 /**
+ * Returns the directory where files are copied to.
+ * @return QDir the directory where the user copied the last file to.
+ **/
+QString DkImageLoader::getCopyPath() const {
+    if (mCopyDir.isEmpty() || !QDir(mCopyDir).exists())
+        return mCurrentDir;
+    else
+        return mCopyDir;
+}
+
+/**
  * Returns the directory where files are saved to.
  * @return QDir the directory where the user saved the last file to.
  **/ 
@@ -2085,8 +2149,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage& img, con
 
 	return newImg;
 }
-
-
+ 
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img) {
 
 	setCurrentImage(img);
