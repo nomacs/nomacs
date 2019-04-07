@@ -198,8 +198,9 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating);
+	void updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating, const int idx, const int count);
 	void updateTitle(const QString& filePath, const QString& attr);
+	void updateIndex(const int idx, const int count);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -213,6 +214,7 @@ protected:
 
 	QBoxLayout* mLayout;
 	QLabel* mTitleLabel;
+	QLabel* mIndexLabel;
 	QLabel* mDateLabel;
 	DkRatingLabel* mRatingLabel;
 

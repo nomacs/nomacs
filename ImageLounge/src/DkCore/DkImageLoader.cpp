@@ -851,8 +851,12 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	mCurrentImage = newImg;
 
-	if (mCurrentImage)
+	if (mCurrentImage){
 		mCurrentImage->receiveUpdates(this);
+
+		int idx = findFileIdx(mCurrentImage->filePath(), mImages);
+		mCurrentImage->setIdx(idx, mImages.count());
+	}
 }
 
 void DkImageLoader::reloadImage() {

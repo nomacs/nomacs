@@ -165,6 +165,9 @@ public:
 	virtual ~DkImageContainerT();
 
 	void fetchFile();
+	void setIdx(int idx, int count);
+	int getIdx();
+	int getCount();
 	void cancel();
 	void clear() override;
 	void receiveUpdates(QObject* obj, bool connectSignals = true);
@@ -232,6 +235,9 @@ protected:
 	bool mDownloaded = false;
 
 	QTimer mFileUpdateTimer;
+
+	int mIdx = -1;
+	int mCount = -1;
 };
 
 }

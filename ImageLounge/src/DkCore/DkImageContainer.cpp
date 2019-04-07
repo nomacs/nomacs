@@ -704,6 +704,19 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 	return true;
 }
 
+void DkImageContainerT::setIdx(int idx, int count) {
+	mIdx = idx;
+	mCount = count;
+}
+
+int DkImageContainerT::getIdx() {
+	return mIdx;
+}
+
+int DkImageContainerT::getCount() {
+	return mCount;
+}
+
 void DkImageContainerT::fetchFile() {
 	
 	if (mFetchingBuffer && getLoadState() == loading_canceled) {

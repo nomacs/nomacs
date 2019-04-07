@@ -118,6 +118,7 @@ protected:
 	int map(double val) const;
 	double mapInv(int val) const;
 
+	QLabel* mIndexLabel;
 	QLabel* mTitleLabel;
 	QSlider* mSlider;
 	QDoubleSpinBox* mSliderBox;

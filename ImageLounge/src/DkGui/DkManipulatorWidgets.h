@@ -222,6 +222,7 @@ private:
 	QSharedPointer<DkImageContainerT> mImgC;
 	QLabel* mPreview = 0;
 	QLabel* mTitleLabel = 0;
+	QLabel* mIndexLabel = 0;
 	int mMaxPreview = 150;
 };
 

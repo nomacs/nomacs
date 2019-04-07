@@ -658,7 +658,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
-	mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
+	mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating(), imgC->getIdx(), imgC->getCount());
 	mFileInfoLabel->setEdited(imgC->isEdited());
 	mCommentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());

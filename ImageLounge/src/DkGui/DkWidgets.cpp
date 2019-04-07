@@ -1076,6 +1076,10 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	setObjectName("DkFileInfoLabel");
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
+	mIndexLabel = new QLabel(this);
+	mIndexLabel->setMouseTracking(true);
+	mIndexLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
 	mTitleLabel = new QLabel(this);
 	mTitleLabel->setMouseTracking(true);
 	mTitleLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -1094,6 +1098,7 @@ void DkFileInfoLabel::createLayout() {
 	mLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 	mLayout->setSpacing(2);
 
+	mLayout->addWidget(mIndexLabel);
 	mLayout->addWidget(mTitleLabel);
 	mLayout->addWidget(mDateLabel);
 	mLayout->addWidget(mRatingLabel);
@@ -1158,12 +1163,21 @@ DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return mRatingLabel;
 }
 
-void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating) {
+void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating, const int idx, const int count) {
 
 	mFilePath = filePath;
 	updateTitle(filePath, attr);
+	updateIndex(idx, count);
 	updateDate(date);
 	updateRating(rating);
+
+	updateWidth();
+}
+
+void DkFileInfoLabel::updateIndex(const int idx, const int count) {
+
+	mIndexLabel->setText(QString::number(idx + 1) + "/" + QString::number(count));
+	mIndexLabel->setAlignment(Qt::AlignRight);
 
 	updateWidth();
 }
