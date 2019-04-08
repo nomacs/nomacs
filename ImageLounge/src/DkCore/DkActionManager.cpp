@@ -915,7 +915,7 @@ void DkActionManager::createIcons() {
 	mFileIcons[icon_file_dir] = DkImage::loadIcon(":/nomacs/img/dir.svg");
 	mFileIcons[icon_file_open] = DkImage::loadIcon(":/nomacs/img/open.svg");
 	mFileIcons[icon_file_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
-	mFileIcons[icon_file_print] = DkImage::loadIcon(":/nomacs/img/printer.svg");
+	mFileIcons[icon_file_print] = DkImage::loadIcon(":/nomacs/img/print.svg");
 	mFileIcons[icon_file_open_large] = QIcon(":/nomacs/img/open.svg");
 	mFileIcons[icon_file_dir_large] = QIcon(":/nomacs/img/dir.svg");
 	mFileIcons[icon_file_prev] = DkImage::loadIcon(":/nomacs/img/previous.svg");
@@ -1505,7 +1505,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mPreviewActions[preview_batch]->setToolTip(QObject::tr("Adds selected files to batch processing."));
 	mPreviewActions[preview_batch]->setShortcut(QKeySequence(Qt::Key_B));
 
-	mPreviewActions[preview_print] = new QAction(DkImage::loadIcon(":/nomacs/img/printer.svg"), QObject::tr("&Batch Print"), parent);
+	mPreviewActions[preview_print] = new QAction(DkImage::loadIcon(":/nomacs/img/print.svg"), QObject::tr("&Batch Print"), parent);
 	mPreviewActions[preview_print]->setToolTip(QObject::tr("Prints selected files."));
 	mPreviewActions[preview_print]->setShortcut(QKeySequence::Print);
 

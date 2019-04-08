@@ -227,9 +227,6 @@ MESSAGE(STATUS "----------------------------------------------------------------
 MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
 MESSAGE(STATUS "")
 
-option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
-option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
-
 IF(OpenCV_FOUND)
     MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. YES")
 ELSE()

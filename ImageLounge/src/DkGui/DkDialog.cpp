@@ -2077,7 +2077,7 @@ void DkPrintPreviewDialog::createIcons() {
 	mIcons[print_landscape]	= DkImage::loadIcon(":/nomacs/img/landscape.svg");
 	mIcons[print_portrait]	= DkImage::loadIcon(":/nomacs/img/portrait.svg");
 	mIcons[print_setup]		= DkImage::loadIcon(":/nomacs/img/print-setup.svg");
-	mIcons[print_printer]	= DkImage::loadIcon(":/nomacs/img/printer.svg");
+	mIcons[print_printer]	= DkImage::loadIcon(":/nomacs/img/print.svg");
 }
 
 void DkPrintPreviewDialog::createLayout() {
