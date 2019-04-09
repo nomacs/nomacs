@@ -44,13 +44,12 @@ addons:
   homebrew:
     packages:
       - qt5
+      - opencv3
       - exiv2
       - libraw
-      # opencv
-      - opencv3
 
 before_script:
-  # OSX config
+  # Hint for the Qt5 path
   # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
 
   # Linux dependencies

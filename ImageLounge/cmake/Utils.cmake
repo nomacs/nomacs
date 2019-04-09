@@ -4,17 +4,18 @@ macro(NMC_FINDQT)
 	set(CMAKE_AUTORCC OFF)
 	# set(CMAKE_INCLUDE_CURRENT_DIR ON)
  
-	 if(NOT QT_QMAKE_EXECUTABLE)
+	if (MSVC)
+		if(NOT QT_QMAKE_EXECUTABLE)
 		find_program(QT_QMAKE_EXECUTABLE NAMES "qmake" "qmake-qt5" "qmake.exe")
-	 endif()
-	 if(NOT QT_QMAKE_EXECUTABLE)
+		endif()
+		if(NOT QT_QMAKE_EXECUTABLE)
 		message(FATAL_ERROR "you have to set the path to the Qt5 qmake executable")
+		endif()
+		
+		message(STATUS "QMake found: ${QT_QMAKE_EXECUTABLE}")
+		get_filename_component(QT_QMAKE_PATH ${QT_QMAKE_EXECUTABLE} PATH)
 	 endif()
-	 
-	 message(STATUS "QMake found: ${QT_QMAKE_EXECUTABLE}")
-	 get_filename_component(QT_QMAKE_PATH ${QT_QMAKE_EXECUTABLE} PATH)
-	 
-	 set(QT_ROOT ${QT_QMAKE_PATH}/)
+
 	 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5)
 	 	 
 	 find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED COMPONENTS Core Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
