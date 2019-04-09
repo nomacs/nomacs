@@ -20,18 +20,38 @@ addons:
       - cmake
       - debhelper
       - cdbs
-      - qt5-qmake
+      # Qt
+      - qt5-default
+      - libqt5core5a
+      - libqt5widgets5 
+      - libqt5network5 
+      - libqt5gui5 
+      - libqt5printsupport5 
+      - libqt5svg5-dev 
+      - qttools5-dev-tools 
+      - qttools5-dev 
+      # OpenCV
+      - libtiff5-dev 
+      - libopencv-dev 
+      - libhighgui-dev 
+      - libcvaux-dev
+      # other dependencies
+      - libexiv2-dev 
+      - libraw-dev 
+      - libzip-dev 
+
   # OS X
   homebrew:
     packages:
       - qt5
       - exiv2
       - libraw
+      # opencv
       - opencv3
-  
+
 before_script:
-  # OSX dependencies
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
+  # OSX config
+  # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/usr/local/opt/qt5"; fi
 
   # Linux dependencies
   # - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update; fi
