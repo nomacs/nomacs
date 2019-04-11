@@ -205,6 +205,7 @@ void DkSettings::initFileFilters() {
 	app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
 	app_p.containerFilters.append("Microsoft Excel Document (*.xlsx)");
 	app_p.containerFilters.append("Comic Book Archive (*.cbz)");
+	app_p.containerFilters.append("Krita (*.kra)");
 	
 	app_p.openFilters += app_p.containerFilters;
 
