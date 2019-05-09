@@ -25,7 +25,12 @@
 
 #include <stdint.h>
 #include <stdio.h>
+
+#ifdef Q_OS_MAC
+#include <stdlib.h>
+#else 
 #include <malloc.h>
+#endif
 
 // DRIF Public API 
 
