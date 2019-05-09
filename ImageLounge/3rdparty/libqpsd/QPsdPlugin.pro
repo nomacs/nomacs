@@ -18,8 +18,6 @@ CONFIG(release, debug|release) {
 
 TEMPLATE = lib
 
-DESTDIR = $$[QT_INSTALL_PLUGINS]/imageformats
-
 SOURCES += qpsdplugin.cpp \
     qpsdhandler.cpp \
     qpsdhandler_p.cpp
@@ -32,11 +30,5 @@ OTHER_FILES += \
     README.md \
     CHANGELOG.md
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
+target.path = $$[QT_INSTALL_PLUGINS]/imageformats
+INSTALLS += target
