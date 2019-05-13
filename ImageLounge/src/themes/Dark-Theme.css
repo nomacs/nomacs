@@ -194,7 +194,7 @@ QLineEdit#DkWarningEdit[error="true"] {
 }
 
 nmc--DkFolderScrollBar {
-	border: 1px solid #444;
+	border: none;
 }
 
 nmc--DkCentralWidget {
