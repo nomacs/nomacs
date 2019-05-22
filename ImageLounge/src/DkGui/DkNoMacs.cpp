@@ -86,6 +86,7 @@
 #include <QNetworkProxyFactory>
 #include <QInputDialog>
 #include <QApplication>
+#include <QShortcut>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
@@ -790,7 +791,10 @@ void DkNoMacs::lockWindow(bool lock) {
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 		SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT); 
 		SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-		getTabWidget()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press CTRL+SHIFT+ALT+B"));
+		
+		auto keyStr = DkActionManager::instance().action(DkActionManager::menu_view_lock_window)->shortcut().toString();
+		getTabWidget()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press %1")
+			.arg(keyStr));
 	}
 	else if (lock && windowOpacity() == 1.0f) {
 		getTabWidget()->setInfo(tr("You should first reduce opacity\n before working through the window."));
