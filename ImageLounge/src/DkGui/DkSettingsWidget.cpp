@@ -397,7 +397,7 @@ bool DkSettingsModel::setData(const QModelIndex& index, const QVariant& value, i
 
 
 		QString val = value.value<QString>();
-		// TODO: check value & write it directely?
+		// TODO: check value & write it directly?
 
 		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 		item->setData(val, index.column());

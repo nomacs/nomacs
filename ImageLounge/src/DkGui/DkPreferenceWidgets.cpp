@@ -1499,6 +1499,9 @@ void DkEditorPreference::changeSetting(const QString& key, const QVariant& value
 
 	DefaultSettings settings;
 	DkSettingsWidget::changeSetting(settings, key, value, groups);
+
+	// update values
+	nmc::DkSettingsManager::instance().param().load();
 }
 
 void DkEditorPreference::removeSetting(const QString& key, const QStringList& groups) const {
