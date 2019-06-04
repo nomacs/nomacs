@@ -94,7 +94,7 @@ Install required dependencies:
 $ brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
-Go to the `nomacs` directory and run cmake to get the Makefiles
+Go to the `nomacs` directory and run cmake to get the Makefiles:
 
 ``` console
 $ mkdir build
