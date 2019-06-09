@@ -99,6 +99,8 @@
 
 #include <assert.h>
 
+#include <iostream>
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
