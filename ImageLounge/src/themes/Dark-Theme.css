@@ -198,7 +198,7 @@ nmc--DkFolderScrollBar {
 }
 
 nmc--DkCentralWidget {
-	border: 1px solid #444;
+	border: none;
 }
 
 /* DkRecentFiles */
