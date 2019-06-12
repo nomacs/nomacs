@@ -1,26 +1,25 @@
-libqpsd
-=======
+# libqpsd
 
 PSD (Photoshop Document) & PSB (Photoshop Big) Plugin for Qt/C++ (Qt4/Qt5)
 
 
 This project is based on the Photoshop File Format Specification found in http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/PhotoshopFileFormats.htm
 
-### FEATURES
+## FEATURES
 
-#### Supported Formats
+### Supported Formats
 
 - [X] PSD
 - [X] PSB
 
-#### Supported Compressions
+### Supported Compressions
 
 - [X] Raw
 - [X] RLE
 - [ ] Zip without Prediction
 - [ ] Zip with Prediction
 
-#### Supported Color Modes
+### Supported Color Modes
 
 - [X] Bitmap
 - [X] Grayscale
@@ -31,7 +30,7 @@ This project is based on the Photoshop File Format Specification found in http:/
 - [X] Duotone
 - [X] Lab
 
-#### Supported Depths
+### Supported Depths
 
 - [X] 1-bit (Bitmap)
 - [X] 8-bits
@@ -39,7 +38,7 @@ This project is based on the Photoshop File Format Specification found in http:/
 - [ ] 32-bits (Tonemapping Algorithm, needed help!)
 
 
-### CONTRIBUTE
+## CONTRIBUTE
 
 - If you have an existing PSD/PSB file with different color mode or compression. Feel free to send me an [email](mailto:ronmarti18@gmail.com). I need samples with zip-compressed layers (zip w/ or w/o prediction).
 - If you want to contribute to the code, just fork the project and pull requests.
@@ -47,16 +46,22 @@ This project is based on the Photoshop File Format Specification found in http:/
     - Bitcoin: 3A23hHJF8q8hNPz3sedqD9T7g25ELPcvg2
     - Paypal: https://www.paypal.me/RonieMartinez
 
-### CONTRIBUTORS
+## AUTHOR
 
-- Ronie Martinez aka Code ReaQtor (ronmarti18@gmail.com)
-- Yuezhao Huang (huangezhao@gmail.com)
-- username "asgohtals" (http://qt-project.org/member/136052) - contributed PSB files for testing: 
+- [Ronie Martinez](ronmarti18@gmail.com)
+
+## CONTRIBUTORS
+
+- [Yuezhao Huang](https://github.com/yuezhao)
+- [Markus Diem](https://github.com/diemmarkus)
+- [stepanp](https://github.com/stepanp)
+- [Eli Schwartz](https://github.com/eli-schwartz)
+- username [asgohtals](http://qt-project.org/member/136052) contributed PSB files for testing: 
     - berlin-cmyk.psb
     - berlin-quadtone.psb
     - wall-small-Lab.psb
 
-### LIST OF SOFTWARE USING libqpsd
+## LIST OF SOFTWARE USING libqpsd
 
 - [nomacs](http://nomacs.org/)
 - [EzViewer](https://github.com/yuezhao/ezviewer)
@@ -64,7 +69,7 @@ This project is based on the Photoshop File Format Specification found in http:/
 - [Seer](http://www.1218.io/)
 - *for applications not included in the list, shoot me an email*
 
-### REFERENCES
+## REFERENCES
 
 - http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/PhotoshopFileFormats.htm
 - http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
