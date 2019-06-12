@@ -42,6 +42,8 @@
 #include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include <iostream>
+
 namespace nmc {
 
 // DkMetaDataT --------------------------------------------------------------------
