@@ -34,13 +34,13 @@ unset(OpenCV_FOUND CACHE)
 if(ENABLE_OPENCV)
 	set(OpenCV_LIBS "")
 	set(OpenCV_FOUND false)
-	if(PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
-		pkg_check_modules(OpenCV  opencv>=2.1.0)
-		set(OpenCV_LIBS ${OpenCV_LIBRARIES})
-	endif(PKG_CONFIG_FOUND)
+	# if(PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
+	# 	pkg_check_modules(OpenCV  opencv>=2.1.0)
+	# 	set(OpenCV_LIBS ${OpenCV_LIBRARIES})
+	# endif(PKG_CONFIG_FOUND)
 
 	if(OpenCV_LIBS STREQUAL "")
-		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+		find_package(OpenCV REQUIRED core imgproc)
 	endif(OpenCV_LIBS STREQUAL "")
 
 	if(NOT OpenCV_FOUND)
