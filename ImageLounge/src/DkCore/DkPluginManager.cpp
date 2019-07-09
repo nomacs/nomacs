@@ -388,7 +388,7 @@ void DkPluginContainer::run() {
 		vPlugin->setVisible(true);
 		emit runPlugin(vPlugin, false);
 	}
-	else if ((p && p->interfaceType() == DkPluginInterface::interface_basic) || p->interfaceType() == DkPluginInterface::interface_batch) {
+	else if (p && (p->interfaceType() == DkPluginInterface::interface_basic || p->interfaceType() == DkPluginInterface::interface_batch)) {
 
 		QAction* a = qobject_cast<QAction*>(QObject::sender());
 
