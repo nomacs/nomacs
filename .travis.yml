@@ -10,9 +10,6 @@ compiler:
   - gcc
   - clang
 
-before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
-
 addons:
   apt:
     update: true
@@ -40,6 +37,7 @@ addons:
 
   # OS X
   homebrew:
+    update: true
     packages:
       - qt5
       - opencv3
