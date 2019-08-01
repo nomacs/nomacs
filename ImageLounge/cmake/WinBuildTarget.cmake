@@ -71,6 +71,41 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEA
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/libs/$<CONFIGURATION>)
 
+# Define dlls which should be delay loaded on windows -------------------------------------
+set(DELAY_DLL_NAMES
+	raw.dll
+	exiv2.dll
+	)
+
+# dear future me: sorry, for manually defining them - but I have no time right now
+set(DELAY_DLL_NAMES_DEBUG 
+	opencv_core411d.dll
+	opencv_imgproc411d.dll
+	quazip5d.dll
+	Qt5WinExtrasd.dll
+	${DELAY_DLL_NAMES}
+	)
+
+set(DELAY_DLL_NAMES_RELEASE
+	opencv_core411.dll
+	opencv_imgproc411.dll
+	quazip5.dll
+	Qt5WinExtrasd.dll
+	${DELAY_DLL_NAMES}
+	)
+
+foreach(DLL_NAME ${DELAY_DLL_NAMES_DEBUG})
+   set(DELAY_LOAD_DEBUG "${DELAY_LOAD_DEBUG} /DELAYLOAD:${DLL_NAME}")
+endforeach()
+
+foreach(DLL_NAME ${DELAY_DLL_NAMES_RELEASE})
+   set(DELAY_LOAD_RELEASE "${DELAY_LOAD_RELEASE} /DELAYLOAD:${DLL_NAME}")
+endforeach()
+
+set_target_properties(${DLL_CORE_NAME} PROPERTIES LINK_FLAGS_DEBUG ${DELAY_LOAD_DEBUG})
+set_target_properties(${DLL_CORE_NAME} PROPERTIES LINK_FLAGS_RELEASE ${DELAY_LOAD_RELEASE})
+# Define dlls which should be delay loaded on windows -------------------------------------
+
 set_target_properties(${DLL_CORE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_CORE_DLL_EXPORT -DNOMINMAX")
 set_target_properties(${DLL_CORE_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_CORE_NAME}d)
 set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE_NAME})
