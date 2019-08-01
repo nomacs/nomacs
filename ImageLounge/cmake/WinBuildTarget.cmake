@@ -212,14 +212,14 @@ endif()
 
 # path hints for the dependency collector
 set(DC_PATHS_RELEASE 
-	${EXIV2_BUILD_PATH}/src/Release 
+	${EXIV2_BUILD_PATH}/Release/bin
 	${EXPAT_BUILD_PATH}/Release 
 	${LIBRAW_BUILD_PATH}/Release 
 	${QUAZIP_BUILD_PATH}/Release 
 	${OpenCV_DIR}/bin/Release 
 	${QT_QMAKE_PATH} ${VS_PATH})
 set(DC_PATHS_DEBUG 
-	${EXIV2_BUILD_PATH}/src/Debug 
+	${EXIV2_BUILD_PATH}/Debug/bin
 	${EXPAT_BUILD_PATH}/Debug 
 	${LIBRAW_BUILD_PATH}/Debug 
 	${QUAZIP_BUILD_PATH}/Debug 

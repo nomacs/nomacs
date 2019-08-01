@@ -73,7 +73,7 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 			mExifImg = Exiv2::ImageFactory::open(strFilePath);
 		}
 		else {
-			Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba->constData(), ba->size()));
+			Exiv2::BasicIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba->constData(), ba->size()));
 			mExifImg = Exiv2::ImageFactory::open(exifBuffer);
 		}
 	} 

@@ -66,6 +66,10 @@
 
 #include <assert.h>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 namespace nmc {
 
 // DkViewPort --------------------------------------------------------------------
@@ -88,7 +92,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	connect(mAnimationTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
 
 	//no border
-	setMouseTracking (true);//receive mouse event everytime
+	setMouseTracking(true);//receive mouse event everytime
 	
 	mPaintLayout = new QVBoxLayout(this);
 	mPaintLayout->setContentsMargins(0,0,0,0);

@@ -146,6 +146,7 @@ public:
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
 
 protected:
+	
 	Exiv2::Image::AutoPtr loadSidecar(const QString& filePath) const;
 
 	enum {
