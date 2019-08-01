@@ -1260,8 +1260,10 @@ void DkToolBarManager::show(bool show, bool permanent) {
 
 void DkToolBarManager::restore() {
 
-	mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
-	mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
+	if (mToolBar)
+		mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
+	if (mMovieToolBar)
+		mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
 }
 
 void DkToolBarManager::showToolBar(QToolBar* toolbar, bool show) {
@@ -1313,6 +1315,9 @@ void DkToolBarManager::showToolBarsTemporarily(bool show) {
 
 void DkToolBarManager::showDefaultToolBar(bool show, bool permanent) {
 
+	if (!show && !mToolBar)
+		return;
+
 	if (!mToolBar)
 		createDefaultToolBar();
 
@@ -1346,7 +1351,7 @@ void DkToolBarManager::showMovieToolBar(bool show) {
 		nomacs->removeToolBar(mMovieToolBar);
 	}
 
-	if (mToolBar->isVisible())
+	if (mToolBar && mToolBar->isVisible())
 		mMovieToolBar->setVisible(show);
 }
 

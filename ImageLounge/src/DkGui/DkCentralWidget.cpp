@@ -597,7 +597,7 @@ void DkCentralWidget::createViewPort() {
 
 	if (parent() && parent()->objectName() == "DkNoMacsFrameless")
 		vp = new DkViewPortFrameless(this);
-	if (parent() && parent()->objectName() == "DkNoMacsContrast")
+	else if (parent() && parent()->objectName() == "DkNoMacsContrast")
 		vp = new DkViewPortContrast(this);
 	else
 		vp = new DkViewPort(this);
