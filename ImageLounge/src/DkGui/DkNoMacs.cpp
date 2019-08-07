@@ -652,6 +652,11 @@ void DkNoMacs::restartFrameless(bool) {
 	qDebug() << "frameless arguments: " << args;
 }
 
+void DkNoMacs::showRecentFilesOnStartUp() {
+
+	QTimer::singleShot(100, getTabWidget(), SLOT(showRecentFiles()));
+}
+
 void DkNoMacs::startPong() const {
 
 	QString exe = QApplication::applicationFilePath();

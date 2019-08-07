@@ -171,7 +171,6 @@ int main(int argc, char *argv[]) {
 	
 	// CMD parser --------------------------------------------------------------------
 	nmc::DkPluginManager::createPluginsPath();
-
 	
 	// compute batch process
 	if (!parser.value(batchOpt).isEmpty()) {
@@ -265,6 +264,9 @@ int main(int argc, char *argv[]) {
 	// show what we got...
 	w->show();
 
+	// this triggers a first show
+	QCoreApplication::sendPostedEvents();
+
 	if (w)
 		w->onWindowLoaded();
 
@@ -302,7 +304,7 @@ int main(int argc, char *argv[]) {
 	// load recent files if there is nothing to display
 	if (!loading &&
 		nmc::DkSettingsManager::param().app().showRecentFiles) {
-		cw->showRecentFiles();
+		w->showRecentFilesOnStartUp();
 	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettingsManager::param().app().currentAppMode).toInt();

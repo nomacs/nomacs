@@ -90,7 +90,7 @@ set(DELAY_DLL_NAMES_RELEASE
 	opencv_core411.dll
 	opencv_imgproc411.dll
 	quazip5.dll
-	Qt5WinExtrasd.dll
+	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}
 	)
 

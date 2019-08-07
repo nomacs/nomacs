@@ -201,6 +201,7 @@ public slots:
 	void restartWithTranslationUpdate();
 	void restartWithPseudoColor(bool contrast);
 	void restartFrameless(bool frameless);
+	void showRecentFilesOnStartUp();
 
 	// batch actions
 	void computeThumbsBatch();
