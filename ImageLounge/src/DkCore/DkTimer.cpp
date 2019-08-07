@@ -84,7 +84,7 @@ QDataStream& DkTimer::put(QDataStream& s) const {
 **/ 
 QString DkTimer::stringifyTime(int ct) const {
 
-	if (ct < 1000)
+	if (ct < 2000)
 		return QString::number(ct) + " ms";
 
 	int v = qRound(ct / 1000.0);

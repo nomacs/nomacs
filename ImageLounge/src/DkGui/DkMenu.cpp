@@ -95,7 +95,9 @@ void DkMenuBar::showMenu() {
 		return;
 	}
 
-	mTimerMenu->start(mTimeToShow);
+	if (mTimeToShow != -1)
+		mTimerMenu->start(mTimeToShow);
+	
 	show();
 }
 

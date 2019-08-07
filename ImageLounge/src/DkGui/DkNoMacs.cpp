@@ -1630,8 +1630,13 @@ bool DkNoMacs::eventFilter(QObject*, QEvent* event) {
 void DkNoMacs::showMenuBar(bool show) {
 
 	DkSettingsManager::param().app().showMenuBar = show;
+	
+	QAction* mp = DkActionManager::instance().action(DkActionManager::menu_panel_menu);
+	mp->blockSignals(true);
+	mp->setChecked(DkSettingsManager::param().app().showMenuBar);
+	mp->blockSignals(false);
+
 	int tts = (DkSettingsManager::param().app().showMenuBar) ? -1 : 5000;
-	DkActionManager::instance().action(DkActionManager::menu_panel_menu)->setChecked(DkSettingsManager::param().app().showMenuBar);
 	mMenu->setTimeToShow(tts);
 	
 	if (show)
