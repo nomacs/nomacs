@@ -220,8 +220,6 @@ void DkFilePreview::createContextMenu() {
 	contextMenu->addActions(contextMenuActions.toList());
 }
 
-
-
 void DkFilePreview::paintEvent(QPaintEvent*) {
 
 	// render nothing if there are no thumbs
@@ -763,12 +761,17 @@ void DkFilePreview::moveImages() {
 	if (scrollToCurrentImage) {
 		float cDist = limit/2.0f - center;
 
-		if (fabs(cDist) < limit) {
-			currentDx = sqrt(fabs(cDist))/1.3f;
-			if (cDist < 0) currentDx *= -1.0f;
+		if (mThumbs.size() < 2000) {
+			if (fabs(cDist) < limit) {
+				currentDx = sqrt(fabs(cDist)) / 1.3f;
+				if (cDist < 0) currentDx *= -1.0f;
+			}
+			else
+				currentDx = cDist / 4.0f;
 		}
+		// this is not too beautiful - but fast
 		else
-			currentDx = cDist/4.0f;
+			currentDx = cDist/2.0f;
 
 		if (fabs(currentDx) < 2)
 			currentDx = (currentDx < 0) ? -2.0f : 2.0f;
@@ -2270,6 +2273,8 @@ void DkRecentFilesWidget::createLayout() {
 
 void DkRecentFilesWidget::updateList() {
 
+	DkTimer dt;
+
 	DkRecentDirManager fm;
 
 	QWidget* dummy = new QWidget(this);
@@ -2290,6 +2295,8 @@ void DkRecentFilesWidget::updateList() {
 		l->addWidget(rf);
 		idx++;
 	}
+
+	qInfo() << "list updated in" << dt;
 
 	mScrollArea->setWidget(dummy);
 }
