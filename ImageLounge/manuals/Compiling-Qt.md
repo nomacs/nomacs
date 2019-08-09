@@ -20,10 +20,21 @@ configure.bat -debug-and-release -opensource -confirm-license -qt-zlib -qt-pcre 
 REM Visual Studio 2017
 configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake tools -nomake examples -nomake tests -skip qtwebengine  -platform win32-msvc -prefix build
 ```
-
+```bat
+REM Visual Studio 2019
+REM replace -prefix build with i.e. -prefix C:/Qt/Qt5.13.0-x64
+configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake examples -nomake tests -skip qtwebengine -platform win32-msvc -prefix build
+```
 - after it's finished run ``nmake``
 - now it's time to have a cup of coffee
 - having compiled and a cup of coffee type ``nmake install``
+
+### Build Modules (Qt 5.13)
+As of Qt 5.13 we build modules using Qt creator. Therefore you need to open the `*.pro` project files in Qt Creator. Set up the environment to match your build system. Currently we use the vs 2019 compiler & debugger together with the newly built Qt version (see above). Be sure to update the build path of your Release configuration to your Qt install dir (i.e. `C:/Qt/Qt5.13.0-x64`). For nomacs we need these modules:
+- qttools
+- qtsvg
+- qtimageformats
+- qtwinextras
 
 ### Clean Qt5 configuration
 To get a really clean tree, use:

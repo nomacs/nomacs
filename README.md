@@ -4,6 +4,9 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs.svg?branch=master)](https://travis-ci.org/nomacs/nomacs)
 
+- [Compiling Qt](./ImageLounge/manuals/Compiling-Qt.md)
+- [Releasing](./ImageLounge/manuals/Releasing.md)
+
 ## Build nomacs (Windows)
 
 ### Compile dependencies
