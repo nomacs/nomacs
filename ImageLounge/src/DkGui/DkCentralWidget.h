@@ -59,6 +59,7 @@ class DkImageLoader;
 class DkViewPort;
 class DkPreferenceWidget;
 class DkProgressBar;
+class DkBatchWidget;
 
 class DllCoreExport DkTabInfo : public QObject {
 	Q_OBJECT
@@ -203,6 +204,7 @@ protected:
 	DkPreferenceWidget* createPreferences();
 	DkRecentFilesWidget* createRecentFiles();
 	DkThumbScrollWidget* createThumbScrollWidget();
+	DkBatchWidget* createBatch();
 	void createViewPort();
 
 	enum {

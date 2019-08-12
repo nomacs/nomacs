@@ -683,21 +683,6 @@ void DkCentralWidget::addTab(QSharedPointer<DkTabInfo> tabInfo, bool background)
 	//tabbar->setTabButton(0, QTabBar::RightSide, tb);
 }
 
-void DkCentralWidget::openPreferences() {
-
-	// switch to tab if already opened
-	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
-
-		if (tabInfo->getMode() == DkTabInfo::tab_preferences) {
-			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
-			return;
-		}
-	}
-
-	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
-	addTab(info);
-}
-
 void DkCentralWidget::removeTab(int tabIdx) {
 
 	if (tabIdx == -1)
@@ -714,6 +699,8 @@ void DkCentralWidget::removeTab(int tabIdx) {
 	mTabInfos.remove(tabIdx);
 	mTabbar->removeTab(tabIdx);
 	updateTabIdx();
+
+	switchWidget(mTabbar->currentIndex());
 
 	if (mTabInfos.size() == 0) { // Make sure we have at least one tab
 		addTab();
@@ -853,7 +840,6 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 	}
 	else if (hasViewPort())
 		getViewPort()->deactivate();
-	
 }
 
 void DkCentralWidget::showRecentFiles(bool show) {
@@ -874,6 +860,21 @@ void DkCentralWidget::showRecentFiles(bool show) {
 	}
 }
 
+void DkCentralWidget::openPreferences() {
+
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
+
+		if (tabInfo->getMode() == DkTabInfo::tab_preferences) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_preferences, mTabInfos.size()));
+	addTab(info);
+}
+
 void DkCentralWidget::showPreferences(bool show) {
 
 	if (show) {
@@ -889,32 +890,61 @@ void DkCentralWidget::showPreferences(bool show) {
 	}
 }
 
+DkBatchWidget* DkCentralWidget::createBatch() {
+	
+	auto bw = new DkBatchWidget(getCurrentDir(), this);
+
+	// add actions
+	DkActionManager& am = DkActionManager::instance();
+	bw->addActions(am.viewActions().toList());
+	bw->addActions(am.panelActions().toList());
+	
+	return bw;
+}
+
+
+void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
+
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
+
+		if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
+	addTab(info);
+
+	// create the batch dialog...
+	if (!mWidgets[batch_widget]) {
+		createBatch();
+		mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
+	}
+
+	DkBatchWidget* bw = dynamic_cast<DkBatchWidget*>(mWidgets[batch_widget]);
+
+	if (!bw) {
+		qWarning() << "batch widget is NULL where it should not be!";
+		return;
+	}
+
+	bw->setSelectedFiles(selectedFiles);
+}
+
 void DkCentralWidget::showBatch(bool show) {
 
 	if (show) {
-
-		// create the batch dialog...
+		
 		if (!mWidgets[batch_widget]) {
-			DkBatchWidget* bw = new DkBatchWidget(getCurrentDir(), this);
-			mWidgets[batch_widget] = bw;
+			mWidgets[batch_widget] = createBatch();
 			mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
-
-			// add actions
-			DkActionManager& am = DkActionManager::instance();
-			//bw->addActions(am.fileActions().toList());
-			bw->addActions(am.viewActions().toList());
-			//bw->addActions(am.editActions().toList());
-			//bw->addActions(am.sortActions().toList());
-			//bw->addActions(am.toolsActions().toList());
-			bw->addActions(am.panelActions().toList());
-			//bw->addActions(am.syncActions().toList());
-			//bw->addActions(am.pluginActions().toList());
-			//bw->addActions(am.lanActions().toList());
-			//bw->addActions(am.helpActions().toList());
-			//bw->addActions(am.hiddenActions().toList());
 		}
-
+		
 		switchWidget(mWidgets[batch_widget]);
+
+		mWidgets[batch_widget]->show();
 	}
 }
 
@@ -936,6 +966,8 @@ void DkCentralWidget::switchWidget(int widget) {
 		switchWidget(mWidgets[preference_widget]);
 	else if (widget == DkTabInfo::tab_recent_files)
 		switchWidget(mWidgets[recent_files_widget]);
+	else if (widget == DkTabInfo::tab_batch)
+		switchWidget(mWidgets[batch_widget]);
 	else
 		qDebug() << "Sorry, I cannot switch to widget: " << widget;
 }
@@ -1202,36 +1234,6 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool newTab) {
 		display(tr("downloading \"%1\"").arg(url.toDisplayString()));
 		targetTab->getImageLoader()->downloadFile(url);
 	}
-}
-
-void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
-
-	// switch to tab if already opened
-	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
-
-		if (tabInfo->getMode() == DkTabInfo::tab_batch) {
-			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
-			return;
-		}
-	}
-
-	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_batch, mTabInfos.size()));
-	addTab(info);
-
-	// create the batch dialog...
-	if (!mWidgets[batch_widget]) {
-		mWidgets[batch_widget] = new DkBatchWidget(getCurrentDir(), this);
-		mViewLayout->insertWidget(batch_widget, mWidgets[batch_widget]);
-	}
-
-	DkBatchWidget* bw = dynamic_cast<DkBatchWidget*>(mWidgets[batch_widget]);
-
-	if (!bw) {
-		qWarning() << "batch widget is NULL where it should not be!";
-		return;
-	}
-	
-	bw->setSelectedFiles(selectedFiles);
 }
 
 void DkCentralWidget::pasteImage() {
