@@ -50,7 +50,7 @@ namespace nmc {
 
 DkWidget::DkWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
-	qInfo() << "init...";
+	qDebug() << "init...";
 }
 
 // -------------------------------------------------------------------- DkFadeWidget
