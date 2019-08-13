@@ -1310,8 +1310,8 @@ void DkThumbScene::toggleThumbLabels(bool show) {
 
 	DkSettingsManager::param().display().showThumbLabel = show;
 
-	for (int idx = 0; idx < mThumbLabels.size(); idx++)
-		mThumbLabels.at(idx)->updateLabel();
+	for (const auto t : mThumbLabels)
+		t->update();
 
 }
 
@@ -1319,8 +1319,8 @@ void DkThumbScene::toggleSquaredThumbs(bool squares) {
 
 	DkSettingsManager::param().display().displaySquaredThumbs = squares;
 
-	for (int idx = 0; idx < mThumbLabels.size(); idx++)
-		mThumbLabels.at(idx)->updateLabel();
+	for (const auto t : mThumbLabels)
+		t->updateLabel();
 
 	// well, that's not too beautiful
 	if (DkSettingsManager::param().display().displaySquaredThumbs)
