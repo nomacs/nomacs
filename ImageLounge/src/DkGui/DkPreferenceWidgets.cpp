@@ -115,7 +115,7 @@ void DkPreferenceWidget::createLayout() {
 	scrollAreaTabs->setWidget(tabs);
 
 	QHBoxLayout* sL = new QHBoxLayout(this);
-	sL->setContentsMargins(1, 1, 1, 1);	// 1 to get the border
+	sL->setContentsMargins(0, 0, 0, 0);	// use 1 to get the border
 	sL->setSpacing(0);
 	sL->setAlignment(Qt::AlignLeft);
 	sL->addWidget(scrollAreaTabs);
@@ -199,6 +199,7 @@ void DkPreferenceTabWidget::createLayout() {
 	mInfoButton = new QPushButton(tr(""), this);
 	mInfoButton->setObjectName("infoButton");
 	mInfoButton->setFlat(true);
+	mInfoButton->setVisible(false);
 	connect(mInfoButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
 
 	QGridLayout* l = new QGridLayout(this);
@@ -218,7 +219,9 @@ void DkPreferenceTabWidget::setWidget(QWidget* w) {
 }
 
 void DkPreferenceTabWidget::setInfoMessage(const QString& msg) {
+
 	mInfoButton->setText(msg);
+	mInfoButton->setVisible(!msg.isEmpty());
 }
 
 QWidget* DkPreferenceTabWidget::widget() const {
