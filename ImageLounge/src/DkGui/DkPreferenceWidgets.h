@@ -82,8 +82,7 @@ signals:
 protected:
 	void createLayout();
 
-	QGridLayout* mLayout = 0;
-	QWidget* mCentralWidget = 0;
+	DkResizableScrollArea* mCentralScroller = 0;
 	QPushButton* mInfoButton;
 
 	QIcon mIcon;

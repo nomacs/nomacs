@@ -37,6 +37,7 @@ QLabel#FileNamePreviewLabel {
 	font-size: 10pt;
 }
 
+nmc--DkPreferenceWidget nmc--DkResizableScrollArea,
 nmc--DkBatchWidget nmc--DkResizableScrollArea {
 	border: none;
 }
@@ -348,6 +349,11 @@ QScrollArea#DkPreferenceTabs,
 QWidget#DkPreferenceTabs,
 QWidget#DkBatchTabs {
 	background-color: #333;
+}
+
+/* fixes padding view issue of tab entries */
+QScrollArea#DkPreferenceTabsScroller {
+    min-width: 270px;
 }
 
 QPushButton#DkTabEntryWidget,

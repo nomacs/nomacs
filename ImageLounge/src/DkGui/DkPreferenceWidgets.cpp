@@ -107,24 +107,19 @@ void DkPreferenceWidget::createLayout() {
 	mCentralLayout = new QStackedLayout(centralWidget);
 	mCentralLayout->setContentsMargins(0, 0, 0, 0);
 
-	QWidget* dummy = new QWidget(this);
-	QHBoxLayout* layout = new QHBoxLayout(dummy);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
-	layout->setAlignment(Qt::AlignLeft);
-	layout->addWidget(tabs);
-	layout->addWidget(centralWidget);
-
 	// add a scroll area
-	DkResizableScrollArea* scrollArea = new DkResizableScrollArea(this);
-	scrollArea->setObjectName("DkScrollAreaPlots");
-	scrollArea->setWidgetResizable(true);
-	scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	scrollArea->setWidget(dummy);
+	DkResizableScrollArea* scrollAreaTabs = new DkResizableScrollArea(this);
+	scrollAreaTabs->setObjectName("DkPreferenceTabsScroller");
+	scrollAreaTabs->setWidgetResizable(true);
+	scrollAreaTabs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	scrollAreaTabs->setWidget(tabs);
 
-	QVBoxLayout* sL = new QVBoxLayout(this);
+	QHBoxLayout* sL = new QHBoxLayout(this);
 	sL->setContentsMargins(1, 1, 1, 1);	// 1 to get the border
-	sL->addWidget(scrollArea);
+	sL->setSpacing(0);
+	sL->setAlignment(Qt::AlignLeft);
+	sL->addWidget(scrollAreaTabs);
+	sL->addWidget(centralWidget);
 }
 
 void DkPreferenceWidget::addTabWidget(DkPreferenceTabWidget* tabWidget) {
@@ -196,24 +191,28 @@ void DkPreferenceTabWidget::createLayout() {
 	QLabel* titleLabel = new QLabel(name(), this);
 	titleLabel->setObjectName("DkPreferenceTitle");
 
+	// add a scroll area
+	mCentralScroller = new DkResizableScrollArea(this);
+	mCentralScroller->setObjectName("DkPreferenceScroller");
+	mCentralScroller->setWidgetResizable(true);
+
 	mInfoButton = new QPushButton(tr(""), this);
 	mInfoButton->setObjectName("infoButton");
 	mInfoButton->setFlat(true);
 	connect(mInfoButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
 
-	mLayout = new QGridLayout(this);
-	mLayout->setContentsMargins(0, 0, 0, 0);
-	mLayout->setAlignment(Qt::AlignTop);
-	mLayout->addWidget(titleLabel, 0, 0);
-	
-	mLayout->addWidget(mInfoButton, 2, 0, Qt::AlignBottom);
+	QGridLayout* l = new QGridLayout(this);
+	l->setContentsMargins(0, 0, 0, 0);
+	l->setAlignment(Qt::AlignTop);
+	l->addWidget(titleLabel, 0, 0);
+	l->addWidget(mCentralScroller, 1, 0);
+	l->addWidget(mInfoButton, 2, 0, Qt::AlignBottom);
 }
 
 void DkPreferenceTabWidget::setWidget(QWidget* w) {
 
-	mCentralWidget = w;
-	mCentralWidget->setObjectName("DkPreferenceWidget");
-	mLayout->addWidget(mCentralWidget, 1, 0);
+	mCentralScroller->setWidget(w);
+	w->setObjectName("DkPreferenceWidget");
 
 	connect(w, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfoMessage(const QString&)));
 }
@@ -223,7 +222,7 @@ void DkPreferenceTabWidget::setInfoMessage(const QString& msg) {
 }
 
 QWidget* DkPreferenceTabWidget::widget() const {
-	return mCentralWidget;
+	return mCentralScroller->widget();
 }
 
 QIcon DkPreferenceTabWidget::icon() const {
@@ -824,26 +823,13 @@ void DkDisplayPreference::createLayout() {
 	showCropGroup->addWidget(showCrop);
 
 	// left column
-	QWidget* leftWidget = new QWidget(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
-	leftLayout->setAlignment(Qt::AlignTop);
-	leftLayout->addWidget(zoomGroup);
-	leftLayout->addWidget(keepZoomGroup);
-	leftLayout->addWidget(iconGroup);
-	leftLayout->addWidget(slideshowGroup);
-	leftLayout->addWidget(showCropGroup);
-
-	// right column
-	QWidget* rightWidget = new QWidget(this);
-	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
-	rightLayout->setAlignment(Qt::AlignTop);
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setAlignment(Qt::AlignLeft);
-
-	layout->addWidget(leftWidget);
-	layout->addWidget(rightWidget);
-	layout->addStretch();
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->setAlignment(Qt::AlignTop);
+	l->addWidget(zoomGroup);
+	l->addWidget(keepZoomGroup);
+	l->addWidget(iconGroup);
+	l->addWidget(slideshowGroup);
+	l->addWidget(showCropGroup);
 }
 
 void DkDisplayPreference::on_interpolationBox_valueChanged(int value) const {
@@ -1068,18 +1054,14 @@ void DkFilePreference::createLayout() {
 	skipGroup->addWidget(skipBox);
 
 	// left column
-	QWidget* leftWidget = new QWidget(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
-	leftLayout->addWidget(tempFolderGroup);
-	leftLayout->addWidget(cacheGroup);
-	leftLayout->addWidget(historyGroup);
-	leftLayout->addWidget(loadGroup);
-	leftLayout->addWidget(saveGroup);
-	leftLayout->addWidget(skipGroup);
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setAlignment(Qt::AlignLeft);
-	layout->addWidget(leftWidget);
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->setAlignment(Qt::AlignTop);
+	l->addWidget(tempFolderGroup);
+	l->addWidget(cacheGroup);
+	l->addWidget(historyGroup);
+	l->addWidget(loadGroup);
+	l->addWidget(saveGroup);
+	l->addWidget(skipGroup);
 }
 
 void DkFilePreference::on_dirChooser_directoryChanged(const QString& dirPath) const {
@@ -1175,7 +1157,6 @@ void DkFileAssociationsPreference::createLayout() {
 	filterTableView->setModel(mModel);
 	filterTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	filterTableView->verticalHeader()->hide();
-	//filterTableView->horizontalHeader()->hide();
 	filterTableView->setShowGrid(false);
 	filterTableView->resizeColumnsToContents();
 	filterTableView->resizeRowsToContents();
@@ -1183,6 +1164,7 @@ void DkFileAssociationsPreference::createLayout() {
 
 	// now the final widgets
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignTop);
 	layout->addWidget(filterTableView);
 
 #ifdef Q_OS_WIN
@@ -1195,11 +1177,10 @@ void DkFileAssociationsPreference::createLayout() {
 
 	QWidget* bw = new QWidget(this);
 	QHBoxLayout* l = new QHBoxLayout(bw);
-
+	l->setAlignment(Qt::AlignLeft);
 	l->setContentsMargins(0, 0, 0, 0);
 	l->addWidget(openDefault);
 	l->addWidget(assocFiles);
-	l->addStretch();
 
 	layout->addWidget(bw);
 #endif
@@ -1401,6 +1382,7 @@ void DkAdvancedPreference::createLayout() {
 	useLogGroup->addWidget(pbLog);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignTop);
 	layout->addWidget(loadRawGroup);
 	layout->addWidget(loadFileGroup);
 	layout->addWidget(threadsGroup);
