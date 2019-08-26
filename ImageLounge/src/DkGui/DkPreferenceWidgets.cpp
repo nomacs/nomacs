@@ -614,8 +614,18 @@ void DkGeneralPreference::on_exportSettings_clicked() {
 	if (filePath.isEmpty())
 		return;
 
-	QSettings settings(filePath, QSettings::IniFormat);
-	DkSettingsManager::instance().settings().save(settings, true);
+	// try copying setting
+	// NOTE: unfortunately this won't copy ini files on unix
+	bool copied = false;
+	QFile f(DkSettingsManager::instance().param().settingsPath());
+	if (f.exists())
+		copied = f.copy(filePath);
+
+	// save settings (here we lose settings such as [CustomShortcuts])
+	if (!copied) {
+		QSettings settings(filePath, QSettings::IniFormat);
+		DkSettingsManager::instance().settings().save(settings, true);
+	}
 
 	emit infoSignal(tr("Settings exported"));
 }
