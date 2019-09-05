@@ -1789,11 +1789,8 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 	DkTimer dt;
 
 	// try fetching the preview
-	if (mLoadFast) {
-
-		if (loadPreview(ba))
-			return true;
-	}
+	if (loadPreview(ba))
+		return true;
 
 #ifdef WITH_LIBRAW
 	

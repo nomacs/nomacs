@@ -445,9 +445,9 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QString& fil
 QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
 
 	try {
-		loader->loadGeneral(filePath, fileBuffer, true);
+		loader->loadGeneral(filePath, fileBuffer, true, false);
 	} catch (...) {
-		qWarning() << "Unknown error in DkImageContainer::loadImageIntern";
+		qWarning() << "Unknown error in DkImageContainer::lfoadImageIntern";
 	}
 
 	return loader;
