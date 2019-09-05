@@ -351,7 +351,7 @@ void DkGeneralPreference::createLayout() {
 	cbRecentFiles->setToolTip(tr("Show the History Panel on Start-Up"));
 	cbRecentFiles->setChecked(DkSettingsManager::param().app().showRecentFiles);
 
-	QCheckBox* cbLogRecentFiles = new QCheckBox(tr("Log Recent Files"), this);
+	QCheckBox* cbLogRecentFiles = new QCheckBox(tr("Remember Recent Files History"), this);
 	cbLogRecentFiles->setObjectName("logRecentFiles");
 	cbLogRecentFiles->setToolTip(tr("If checked, recent files will be saved."));
 	cbLogRecentFiles->setChecked(DkSettingsManager::param().global().logRecentFiles);
