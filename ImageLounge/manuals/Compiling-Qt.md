@@ -29,6 +29,14 @@ configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -n
 - now it's time to have a cup of coffee
 - having compiled and a cup of coffee type ``nmake install``
 
+### Shadow build
+
+The build directory is where the build-related files such as Makefiles, object files, and other intermediate files are stored. The install directory is where the binaries and libraries are installed, for use either by the system or by the application.
+
+It is recommended to keep these directories separate by shadow-building and using the -prefix option. This enables you to keep the Qt source tree clean from the build artifacts and binaries, which are stored in a separate directory. This method is very convenient if you want to have multiple builds from the same source tree, but for different configurations. To shadow-build, run configure from a separate directory
+
+see https://doc.qt.io/qt-5/configure-options.html#
+
 ### Build Modules (Qt 5.13)
 As of Qt 5.13 we build modules using Qt creator. Therefore you need to open the `*.pro` project files in Qt Creator. Set up the environment to match your build system. Currently we use the vs 2019 compiler & debugger together with the newly built Qt version (see above). Be sure to update the build path of your Release configuration to your Qt install dir (i.e. `C:/Qt/Qt5.13.0-x64`). For nomacs we need these modules:
 - qttools
