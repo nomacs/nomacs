@@ -4562,7 +4562,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkSettings.cpp" line="68"/>
       <source>Make</source>
-      <translation>Construire</translation>
+      <translation>Fabricant</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkSettings.cpp" line="69"/>
