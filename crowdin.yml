@@ -1,3 +1,3 @@
 files:
-  - source: /ImageLounge/translations/*.ts
-    translation: '%original_path%/%original_file_name%'
+  - source: /ImageLounge/translations/src/*.ts
+    translation: /ImageLounge/translations/nomacs_%two_letters_code%.ts
