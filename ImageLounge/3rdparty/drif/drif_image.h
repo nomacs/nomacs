@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC) || defined(Q_OS_OPENBSD)
 #include <stdlib.h>
 #else 
 #include <malloc.h>
