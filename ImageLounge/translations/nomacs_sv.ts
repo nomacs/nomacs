@@ -519,7 +519,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1173"/>
       <source>Show &amp;Menu</source>
-      <translation type="unfinished">Show &amp;Menu</translation>
+      <translation>Visa &amp;meny</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
@@ -739,12 +739,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1282"/>
       <source>F&amp;irst Tab</source>
-      <translation type="unfinished">F&amp;irst Tab</translation>
+      <translation>F&amp;örsta fliken</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1283"/>
       <source>Switch to first tab</source>
-      <translation type="unfinished">Switch to first tab</translation>
+      <translation>Växla till första fliken</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1285"/>
@@ -759,12 +759,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1289"/>
       <source>&amp;Go to Tab</source>
-      <translation type="unfinished">&amp;Go to Tab</translation>
+      <translation>&amp;Gå till flik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1290"/>
       <source>Go to tab by index</source>
-      <translation type="unfinished">Go to tab by index</translation>
+      <translation>Gå till flik efter index</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1292"/>
@@ -779,12 +779,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1296"/>
       <source>La&amp;st Tab</source>
-      <translation type="unfinished">La&amp;st Tab</translation>
+      <translation>Si&amp;sta fliken</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1297"/>
       <source>Switch to last tab</source>
-      <translation type="unfinished">Switch to last tab</translation>
+      <translation>Växla till sista fliken</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1302"/>
@@ -1282,7 +1282,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 0</source>
-      <translation type="unfinished">Star Rating 0</translation>
+      <translation>Stjärnklassning 0</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1564"/>
@@ -1297,67 +1297,67 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Star Rating 1</source>
-      <translation type="unfinished">Star Rating 1</translation>
+      <translation>Stjärnklassning 1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1571"/>
       <source>Star Rating 2</source>
-      <translation type="unfinished">Star Rating 2</translation>
+      <translation>Stjärnklassning 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1575"/>
       <source>Star Rating 3</source>
-      <translation type="unfinished">Star Rating 3</translation>
+      <translation>Stjärnklassning 3</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <source>Star Rating 4</source>
-      <translation type="unfinished">Star Rating 4</translation>
+      <translation>Stjärnklassning 4</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star Rating 5</source>
-      <translation type="unfinished">Star Rating 5</translation>
+      <translation>Stjärnklassning 5</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
       <source>Pan Image Up</source>
-      <translation type="unfinished">Pan Image Up</translation>
+      <translation>Panorera uppåt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
       <source>Pans the image up if zoomed.</source>
-      <translation type="unfinished">Pans the image up if zoomed.</translation>
+      <translation>Panorerar bilden uppåt vid zoomning.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
       <source>Pan Image Down</source>
-      <translation type="unfinished">Pan Image Down</translation>
+      <translation>Panorera neråt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
       <source>Pans the image down if zoomed.</source>
-      <translation type="unfinished">Pans the image down if zoomed.</translation>
+      <translation>Panorerar bilden neråt vid zoomning.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1595"/>
       <source>Pan Image Left</source>
-      <translation type="unfinished">Pan Image Left</translation>
+      <translation>Panorera vänster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1596"/>
       <source>Pans the image left if zoomed.</source>
-      <translation type="unfinished">Pans the image left if zoomed.</translation>
+      <translation>Panorerar bilden åt vänster vid zoomning.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1599"/>
       <source>Pan Image Right</source>
-      <translation type="unfinished">Pan Image Right</translation>
+      <translation>Panorera höger</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1600"/>
       <source>Pans the image right if zoomed.</source>
-      <translation type="unfinished">Pans the image right if zoomed.</translation>
+      <translation>Panorerar bilden åt höger vid zoomning.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
