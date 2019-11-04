@@ -58,7 +58,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="523"/>
       <source>&amp;Adjustments</source>
-      <translation type="unfinished">&amp;Adjustments</translation>
+      <translation>&amp;Justering</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
@@ -114,12 +114,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="966"/>
       <source>&amp;Open Tabs</source>
-      <translation type="unfinished">&amp;Open Tabs</translation>
+      <translation>&amp;Öppna flikar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
       <source>Open a texfile containing a list of filepaths, and open tabs for them</source>
-      <translation type="unfinished">Open a texfile containing a list of filepaths, and open tabs for them</translation>
+      <translation>Öppna en textfil med en lista över filsökvägar och öppna filerna i flikar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="969"/>
@@ -189,12 +189,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
       <source>&amp;Save Tabs</source>
-      <translation type="unfinished">&amp;Save Tabs</translation>
+      <translation>S&amp;para flikar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
       <source>Save a newline separated list of the filenames of the open tabs</source>
-      <translation type="unfinished">Save a newline separated list of the filenames of the open tabs</translation>
+      <translation>Spara en radseparerad lista över filnamn för de öppna flikarna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
@@ -489,12 +489,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1153"/>
       <source>Image &amp;Adjustments</source>
-      <translation type="unfinished">Image &amp;Adjustments</translation>
+      <translation>Bild&amp;justering</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>open image manipulation toolbox</source>
-      <translation type="unfinished">open image manipulation toolbox</translation>
+      <translation>Öppna bildbehandlingsverktygen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1159"/>
@@ -579,12 +579,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1204"/>
       <source>&amp;Hide All Panels</source>
-      <translation type="unfinished">&amp;Hide All Panels</translation>
+      <translation>&amp;Dölj alla paneler</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1206"/>
       <source>Hide all panels</source>
-      <translation type="unfinished">Hide all panels</translation>
+      <translation>Dölj alla paneler</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1210"/>
@@ -719,12 +719,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1275"/>
       <source>&amp;Close All Tabs</source>
-      <translation type="unfinished">&amp;Close All Tabs</translation>
+      <translation>&amp;Stäng alla flikar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1276"/>
       <source>Close all open tabs</source>
-      <translation type="unfinished">Close all open tabs</translation>
+      <translation>Stäng alla öppna flikar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1278"/>
@@ -957,22 +957,22 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose &amp;Monitor</source>
-      <translation type="unfinished">Choose &amp;Monitor</translation>
+      <translation>Välj &amp;skärm</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation type="unfinished">Choose the Monitor to run nomacs</translation>
+      <translation>Välj skärm för att köra nomacs</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
       <source>Show Image Location</source>
-      <translation type="unfinished">Show Image Location</translation>
+      <translation>Visa bildens platsinfo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation type="unfinished">shows where the image was taken in Google maps</translation>
+      <translation>Visar på Google maps, var bilden togs</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
@@ -1437,12 +1437,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="122"/>
       <source>&amp;Background Color...</source>
-      <translation type="unfinished">&amp;Background Color...</translation>
+      <translation>&amp;Bakgrundsfärg...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="123"/>
       <source>Add a background color</source>
-      <translation type="unfinished">Add a background color</translation>
+      <translation>Lägg till en bakgrundsfärg</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
@@ -1482,27 +1482,27 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="143"/>
       <source>Threshold the image</source>
-      <translation type="unfinished">Threshold the image</translation>
+      <translation>Tröskelvärde</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation type="unfinished">&amp;Hue/Saturation...</translation>
+      <translation>&amp;Nyans/Mättnad...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
       <source>Change Hue and Saturation</source>
-      <translation type="unfinished">Change Hue and Saturation</translation>
+      <translation>Ändra nyans och mättnad</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="152"/>
       <source>&amp;Exposure...</source>
-      <translation type="unfinished">&amp;Exposure...</translation>
+      <translation>&amp;Exponering...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation type="unfinished">Change the Exposure and Gamma</translation>
+      <translation>Ändra exponering och gamma</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
