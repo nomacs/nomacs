@@ -3095,52 +3095,52 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
       <source>Percent</source>
-      <translation type="unfinished">Percent</translation>
+      <translation>Procent</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
       <source>Long Side</source>
-      <translation type="unfinished">Long Side</translation>
+      <translation>Långsida</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
       <source>Short Side</source>
-      <translation type="unfinished">Short Side</translation>
+      <translation>Kortsida</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
       <source>Width</source>
-      <translation type="unfinished">Width</translation>
+      <translation>Bredd</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
       <source>Height</source>
-      <translation type="unfinished">Height</translation>
+      <translation>Höjd</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1994"/>
       <source>%</source>
-      <translation type="unfinished">%</translation>
+      <translation>%</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1999"/>
       <source> px</source>
-      <translation type="unfinished"> px</translation>
+      <translation> px</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Transform All</source>
-      <translation type="unfinished">Transform All</translation>
+      <translation>Transformera alla</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Shrink Only</source>
-      <translation type="unfinished">Shrink Only</translation>
+      <translation>Förminska endast</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Enlarge Only</source>
-      <translation type="unfinished">Enlarge Only</translation>
+      <translation>Förstora endast</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2019"/>
@@ -3170,7 +3170,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2035"/>
       <source>Transformations</source>
-      <translation type="unfinished">Transformations</translation>
+      <translation>Transformeringar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2038"/>
@@ -5924,7 +5924,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="780"/>
       <source> px</source>
-      <translation type="unfinished"> px</translation>
+      <translation> px</translation>
     </message>
   </context>
   <context>
