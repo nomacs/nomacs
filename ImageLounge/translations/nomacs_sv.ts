@@ -1193,7 +1193,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1508"/>
       <source>&amp;Batch Print</source>
-      <translation>&amp;Mängdutskrift</translation>
+      <translation>&amp;Batch-utskrift</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1509"/>
@@ -2185,7 +2185,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
       <source>[Adjustment Batch]</source>
-      <translation>[Mängdjustering]</translation>
+      <translation>[Justerings-batch]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="575"/>
@@ -2538,7 +2538,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
       <source>batch-settings-path</source>
-      <translation type="unfinished">batch-settings-path</translation>
+      <translation>batch-inställningar-sökväg</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
@@ -2548,7 +2548,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
       <source>log-path.txt</source>
-      <translation type="unfinished">log-path.txt</translation>
+      <translation>log-path.txt</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
@@ -2558,7 +2558,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
       <source>settings-path.ini</source>
-      <translation type="unfinished">settings-path.ini</translation>
+      <translation>settings-path.ini</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="167"/>
