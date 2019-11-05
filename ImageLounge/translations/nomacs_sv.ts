@@ -1193,12 +1193,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1508"/>
       <source>&amp;Batch Print</source>
-      <translation type="unfinished">&amp;Batch Print</translation>
+      <translation>&amp;Mängdutskrift</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1509"/>
       <source>Prints selected files.</source>
-      <translation type="unfinished">Prints selected files.</translation>
+      <translation>Skriv ut markerade filer.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1524"/>
@@ -2124,7 +2124,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
       <source>transformed</source>
-      <translation type="unfinished">transformed</translation>
+      <translation>Omvandlad</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="321"/>
@@ -2169,7 +2169,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
       <source>%1 %2 applied.</source>
-      <translation type="unfinished">%1 %2 applied.</translation>
+      <translation>%1 %2 tillämpat.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="429"/>
@@ -2438,7 +2438,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="230"/>
       <source>Recent Files</source>
-      <translation type="unfinished">Recent Files</translation>
+      <translation>Tidigare filer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
