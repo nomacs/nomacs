@@ -2180,12 +2180,12 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="435"/>
       <source>%1 error, could not apply image adjustments.</source>
-      <translation type="unfinished">%1 error, could not apply image adjustments.</translation>
+      <translation>%1 fel, kunde inte tillämpa bildjusteringar.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
       <source>[Adjustment Batch]</source>
-      <translation type="unfinished">[Adjustment Batch]</translation>
+      <translation>[Mängdjustering]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="575"/>
@@ -2268,7 +2268,7 @@ Starta om nomacs och försök igen.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation type="unfinished">Original filename added to Exif</translation>
+      <translation>Ursprungligt filnamn tillagt i Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
@@ -2488,7 +2488,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="128"/>
       <source>Start slideshow playback</source>
-      <translation type="unfinished">Start slideshow playback</translation>
+      <translation>Starta bildspel</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="131"/>
