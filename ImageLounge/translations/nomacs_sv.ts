@@ -2963,8 +2963,8 @@ Detta alternativ kan förstöra dina bilder. - Var försiktig!</translation>
       <location filename="../../src/DkGui/DkBatch.cpp" line="764"/>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-      <translation type="unfinished">If checked, output images are not saved at all.
-This option is only useful if plugins save sidecar files - so be careful!</translation>
+      <translation>Vid aktivering sparas inga utdatabilder.
+Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så var försiktig!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
@@ -3006,22 +3006,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="824"/>
       <source>Best Quality</source>
-      <translation type="unfinished">Best Quality</translation>
+      <translation>Bäst kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="825"/>
       <source>High Quality</source>
-      <translation type="unfinished">High Quality</translation>
+      <translation>Hög kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="826"/>
       <source>Medium Quality</source>
-      <translation type="unfinished">Medium Quality</translation>
+      <translation>Medelkvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="827"/>
       <source>Low Quality</source>
-      <translation type="unfinished">Low Quality</translation>
+      <translation>Låg kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="828"/>
@@ -3036,12 +3036,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="841"/>
       <source>Old Filename: </source>
-      <translation type="unfinished">Old Filename: </translation>
+      <translation>Gammalt filnamn: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="846"/>
       <source>New Filename: </source>
-      <translation type="unfinished">New Filename: </translation>
+      <translation>Nytt filnamn: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="879"/>
@@ -3054,12 +3054,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1492"/>
       <source>Select Plugins</source>
-      <translation type="unfinished">Select Plugins</translation>
+      <translation>Välj tilläggsmoduler</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1662"/>
       <source> Settings</source>
-      <translation type="unfinished"> Settings</translation>
+      <translation> Inställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1737"/>
@@ -3562,22 +3562,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="214"/>
       <source>Best Quality</source>
-      <translation type="unfinished">Best Quality</translation>
+      <translation>Bäst kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="215"/>
       <source>High Quality</source>
-      <translation type="unfinished">High Quality</translation>
+      <translation>Hög kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="216"/>
       <source>Medium Quality</source>
-      <translation type="unfinished">Medium Quality</translation>
+      <translation>Medelkvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="217"/>
       <source>Low Quality</source>
-      <translation type="unfinished">Low Quality</translation>
+      <translation>Låg kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="218"/>
