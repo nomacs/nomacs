@@ -3190,12 +3190,12 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2110"/>
       <source>Resize by: %1%</source>
-      <translation type="unfinished">Resize by: %1%</translation>
+      <translation>Ändra storlek efter: %1%</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2114"/>
       <source>Resize %1 to: %2 px</source>
-      <translation type="unfinished">Resize %1 to: %2 px</translation>
+      <translation>Ändra storlek på %1 till: %2 px</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2120"/>
@@ -3223,7 +3223,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Indata</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
@@ -3233,7 +3233,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2371"/>
       <source>Adjustments</source>
-      <translation type="unfinished">Adjustments</translation>
+      <translation>Justeringar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2371"/>
@@ -3266,7 +3266,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2386"/>
       <source>Profiles</source>
-      <translation type="unfinished">Profiles</translation>
+      <translation>Profiler</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2567"/>
@@ -3333,7 +3333,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
       <source>Batch Log</source>
-      <translation type="unfinished">Batch Log</translation>
+      <translation>Batch-logg</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
@@ -5753,7 +5753,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1197"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Indata</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1201"/>
