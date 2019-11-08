@@ -629,12 +629,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1230"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Mappskrollfält</translation>
+      <translation>&amp;Mapprullist</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1231"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Visa mappskrollfält</translation>
+      <translation>Visa mapprullist</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
@@ -4081,7 +4081,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1175"/>
       <source>Set File Associations</source>
-      <translation type="unfinished">Set File Associations</translation>
+      <translation>Ange filassociationer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1178"/>
@@ -4130,7 +4130,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="982"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Vi rekommenderar att ställa in ett måttligt cache-värde runt 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="985"/>
@@ -4140,7 +4140,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="999"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Vi rekommenderar ett måttligt värde för redigeringshistorik på cirka 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1002"/>
@@ -4175,37 +4175,37 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
       <source>Load Saved Images</source>
-      <translation type="unfinished">Load Saved Images</translation>
+      <translation>Läs in sparade bilder</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+      <translation>Efter att bilden sparats kommer den att läsas in på plats</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1030"/>
       <source>Load to Tab</source>
-      <translation type="unfinished">Load to Tab</translation>
+      <translation>Läs in till flik</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1031"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation type="unfinished">After saving, the saved image will be loaded to a tab.</translation>
+      <translation>Efter att bilden sparats kommer den att läsas in till en flik.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
       <source>Do Nothing</source>
-      <translation type="unfinished">Do Nothing</translation>
+      <translation>Gör ingenting</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
       <source>The saved image will not be loaded.</source>
-      <translation type="unfinished">The saved image will not be loaded.</translation>
+      <translation>Den sparade bilden kommer inte att läsas in.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>Image Saving Policy</source>
-      <translation type="unfinished">Image Saving Policy</translation>
+      <translation>Policy för att spara bilder</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1056"/>
@@ -4407,12 +4407,12 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="326"/>
       <source>&amp;Import Settings</source>
-      <translation type="unfinished">&amp;Import Settings</translation>
+      <translation>&amp;Importinställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="330"/>
       <source>&amp;Export Settings</source>
-      <translation type="unfinished">&amp;Export Settings</translation>
+      <translation>&amp;Exportinställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="334"/>
@@ -4442,7 +4442,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="359"/>
       <source>Check for Duplicates on Open</source>
-      <translation type="unfinished">Check for Duplicates on Open</translation>
+      <translation>Sök efter dubbletter vid öppning</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="361"/>
