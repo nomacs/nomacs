@@ -3180,7 +3180,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation type="unfinished">&amp;Crop Rectangle</translation>
+      <translation>&amp;Beskärningsrektangel</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3318,12 +3318,12 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2652"/>
       <source>Sorry, I cannot start processing - please check the configuration.</source>
-      <translation type="unfinished">Sorry, I cannot start processing - please check the configuration.</translation>
+      <translation>Kan inte starta bearbetning, kontrollera konfigurationen.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2694"/>
       <source>Canceling...</source>
-      <translation type="unfinished">Canceling...</translation>
+      <translation>Avbryter...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2748"/>
@@ -3343,7 +3343,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
       <source>Sorry, I cannot save the settings...</source>
-      <translation type="unfinished">Sorry, I cannot save the settings...</translation>
+      <translation>Kan inte spara inställningarna...</translation>
     </message>
   </context>
   <context>
@@ -3351,12 +3351,12 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to Tab</source>
-      <translation type="unfinished">Go to Tab</translation>
+      <translation>Gå till flik</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to tab number: </source>
-      <translation type="unfinished">Go to tab number: </translation>
+      <translation>Gå till flik nummer: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="500"/>
@@ -3386,7 +3386,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="530"/>
       <source>Editor</source>
-      <translation type="unfinished">Editor</translation>
+      <translation>Redigerare</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1165"/>
