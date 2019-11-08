@@ -1447,22 +1447,22 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Sharpen...</source>
-      <translation>&amp;Afinar...</translation>
+      <translation>&amp;Enfoca...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Sharpens the image by applying an unsharp mask</source>
-      <translation type="unfinished">Sharpens the image by applying an unsharp mask</translation>
+      <translation>Enfoca la imatge aplicant una mascara de desenfocat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
       <source>&amp;Rotate...</source>
-      <translation type="unfinished">&amp;Rotate...</translation>
+      <translation>&amp;Rota...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="133"/>
       <source>Rotate the image</source>
-      <translation type="unfinished">Rotate the image</translation>
+      <translation>Rota la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
@@ -1477,22 +1477,22 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
       <source>&amp;Threshold...</source>
-      <translation type="unfinished">&amp;Threshold...</translation>
+      <translation>&amp;Llindar...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="143"/>
       <source>Threshold the image</source>
-      <translation type="unfinished">Threshold the image</translation>
+      <translation>Llindars de la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation type="unfinished">&amp;Hue/Saturation...</translation>
+      <translation>&amp;To/Saturació...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
       <source>Change Hue and Saturation</source>
-      <translation type="unfinished">Change Hue and Saturation</translation>
+      <translation>Canvia el To i la Saturació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="152"/>
