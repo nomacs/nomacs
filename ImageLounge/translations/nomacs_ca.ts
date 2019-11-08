@@ -1427,27 +1427,27 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="117"/>
       <source>&amp;Tiny Planet...</source>
-      <translation type="unfinished">&amp;Tiny Planet...</translation>
+      <translation>&amp;Tiny Planet...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="118"/>
       <source>Create a Tiny Planet</source>
-      <translation type="unfinished">Create a Tiny Planet</translation>
+      <translation>Crear un Tiny Planet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="122"/>
       <source>&amp;Background Color...</source>
-      <translation type="unfinished">&amp;Background Color...</translation>
+      <translation>Color de fons...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="123"/>
       <source>Add a background color</source>
-      <translation type="unfinished">Add a background color</translation>
+      <translation>Afegir color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Sharpen...</source>
-      <translation type="unfinished">&amp;Sharpen...</translation>
+      <translation>&amp;Afinar...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
