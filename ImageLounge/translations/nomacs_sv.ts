@@ -4412,7 +4412,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="330"/>
       <source>&amp;Export Settings</source>
-      <translation type="unfinished">&amp;Export Settings</translation>
+      <translation>&amp;Exportera inställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="334"/>
@@ -4600,22 +4600,22 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2763"/>
       <source>Profile Name:</source>
-      <translation type="unfinished">Profile Name:</translation>
+      <translation>Profilnamn:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2775"/>
       <source>Profile Already Exists</source>
-      <translation type="unfinished">Profile Already Exists</translation>
+      <translation>Profilen finns redan</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2776"/>
       <source>Do you want to overwrite %1?</source>
-      <translation type="unfinished">Do you want to overwrite %1?</translation>
+      <translation>Vill du skriva över %1?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2840"/>
       <source>No Profiles</source>
-      <translation type="unfinished">No Profiles</translation>
+      <translation>Inga profiler</translation>
     </message>
   </context>
   <context>
@@ -4632,12 +4632,12 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2049"/>
       <source>Show Statistics</source>
-      <translation type="unfinished">Show Statistics</translation>
+      <translation>Visa statistik</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2054"/>
       <source>Histogram Settings</source>
-      <translation type="unfinished">Histogram Settings</translation>
+      <translation>Histograminställningar</translation>
     </message>
   </context>
   <context>
@@ -4645,7 +4645,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="504"/>
       <source>Hue</source>
-      <translation type="unfinished">Hue</translation>
+      <translation>Nyans</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="511"/>
@@ -4655,7 +4655,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="518"/>
       <source>Brightness</source>
-      <translation type="unfinished">Brightness</translation>
+      <translation>Ljus</translation>
     </message>
   </context>
   <context>
@@ -4673,7 +4673,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="808"/>
       <source>updated...</source>
-      <translation type="unfinished">updated...</translation>
+      <translation>uppdaterat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="816"/>
@@ -4861,12 +4861,12 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="123"/>
       <source>Undo</source>
-      <translation type="unfinished">Undo</translation>
+      <translation>Ångra</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="131"/>
       <source>Redo</source>
-      <translation type="unfinished">Redo</translation>
+      <translation>Upprepa</translation>
     </message>
   </context>
   <context>
@@ -5404,7 +5404,7 @@ innan du försöker arbeta igenom fönstret.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="955"/>
       <source>Edit Image</source>
-      <translation type="unfinished">Edit Image</translation>
+      <translation>Redigera bild</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="976"/>
@@ -5440,30 +5440,30 @@ innan du försöker arbeta igenom fönstret.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1124"/>
       <source>The following duplicates were not opened:</source>
-      <translation type="unfinished">The following duplicates were not opened:</translation>
+      <translation>Följande dubbletter öppnades inte:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1138"/>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1170"/>
       <source>Text file (*.txt)</source>
-      <translation type="unfinished">Text file (*.txt)</translation>
+      <translation>Textfil (*.txt)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1139"/>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1171"/>
       <source>All files (*.*)</source>
-      <translation type="unfinished">All files (*.*)</translation>
+      <translation>Alla filer (*.*)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1173"/>
       <source>Save Tab List</source>
-      <translation type="unfinished">Save Tab List</translation>
+      <translation>Spara fliklista</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1246"/>
       <source>Sorry, the directory: %1 does not exist
 </source>
-      <translation type="unfinished">Sorry, the directory: %1 does not exist
+      <translation>Mappen: %1 finns inte
 </translation>
     </message>
     <message>
@@ -5560,7 +5560,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="2101"/>
       <source>Choose a Monitor</source>
-      <translation type="unfinished">Choose a Monitor</translation>
+      <translation>Välj en skärm</translation>
     </message>
   </context>
   <context>
@@ -5743,12 +5743,12 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1167"/>
       <source>Summary: </source>
-      <translation type="unfinished">Summary: </translation>
+      <translation>Sammanfattning: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1168"/>
       <source>Files</source>
-      <translation type="unfinished">Files</translation>
+      <translation>Filer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1197"/>
@@ -5763,12 +5763,12 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1205"/>
       <source>Functions</source>
-      <translation type="unfinished">Functions</translation>
+      <translation>Funktioner</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1224"/>
       <source>Update</source>
-      <translation type="unfinished">Update</translation>
+      <translation>Uppdatera</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1229"/>
@@ -5778,7 +5778,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1234"/>
       <source>Export</source>
-      <translation type="unfinished">Export</translation>
+      <translation>Exportera</translation>
     </message>
   </context>
   <context>
@@ -5786,12 +5786,12 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1265"/>
       <source>Create New Profile</source>
-      <translation type="unfinished">Create New Profile</translation>
+      <translation>Skapa ny profil</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1268"/>
       <source>Apply Default</source>
-      <translation type="unfinished">Apply Default</translation>
+      <translation>Tillämpa standard</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1306"/>
@@ -5802,27 +5802,27 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1331"/>
       <source>Default</source>
-      <translation type="unfinished">Default</translation>
+      <translation>Standard</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1398"/>
       <source>Deleting Profile</source>
-      <translation type="unfinished">Deleting Profile</translation>
+      <translation>Tar bort profil</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1399"/>
       <source>Sorry, I cannot delete %1</source>
-      <translation type="unfinished">Sorry, I cannot delete %1</translation>
+      <translation>Kan inte ta bort %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1416"/>
       <source>Export Batch Profile</source>
-      <translation type="unfinished">Export Batch Profile</translation>
+      <translation>Exportera batch-profil</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1418"/>
       <source>nomacs Batch Profile (*.%1)</source>
-      <translation type="unfinished">nomacs Batch Profile (*.%1)</translation>
+      <translation>nomacs batch-profil (*.%1)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1430"/>
@@ -5832,17 +5832,17 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1431"/>
       <source>Profile Name:</source>
-      <translation type="unfinished">Profile Name:</translation>
+      <translation>Profilnamn:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1442"/>
       <source>Profile Already Exists</source>
-      <translation type="unfinished">Profile Already Exists</translation>
+      <translation>Profilen finns redan</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1443"/>
       <source>Do you want to overwrite %1?</source>
-      <translation type="unfinished">Do you want to overwrite %1?</translation>
+      <translation>Vill du skriva över %1?</translation>
     </message>
   </context>
   <context>
@@ -5886,17 +5886,17 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2138"/>
       <source>Load the directory</source>
-      <translation type="unfinished">Load the directory</translation>
+      <translation>Läs in mappen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2148"/>
       <source>Pin this directory</source>
-      <translation type="unfinished">Pin this directory</translation>
+      <translation>Fäst den här mappen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2156"/>
       <source>Remove this directory</source>
-      <translation type="unfinished">Remove this directory</translation>
+      <translation>Ta bort den här mappen</translation>
     </message>
   </context>
   <context>
@@ -5904,22 +5904,22 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="763"/>
       <source>x:</source>
-      <translation type="unfinished">x:</translation>
+      <translation>x:</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="767"/>
       <source>y:</source>
-      <translation type="unfinished">y:</translation>
+      <translation>y:</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="771"/>
       <source>width:</source>
-      <translation type="unfinished">width:</translation>
+      <translation>Bredd:</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="775"/>
       <source>height:</source>
-      <translation type="unfinished">height:</translation>
+      <translation>Höjd:</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="780"/>
@@ -6070,7 +6070,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="344"/>
       <source>Angle</source>
-      <translation type="unfinished">Angle</translation>
+      <translation>Vinkel</translation>
     </message>
   </context>
   <context>
@@ -6088,7 +6088,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="636"/>
       <source>Type search words or a regular expression</source>
-      <translation type="unfinished">Type search words or a regular expression</translation>
+      <translation>Skriv ett sökord eller "regular expression"</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="647"/>
@@ -6213,12 +6213,12 @@ Tryck ESC för att ångra ändringar</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4269"/>
       <source>width:</source>
-      <translation type="unfinished">width:</translation>
+      <translation>Bredd:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4276"/>
       <source>height:</source>
-      <translation type="unfinished">height:</translation>
+      <translation>Höjd:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4292"/>
@@ -6480,7 +6480,7 @@ Skapar miniatyrer...
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="261"/>
       <source>Angle</source>
-      <translation type="unfinished">Angle</translation>
+      <translation>Vinkel</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="267"/>
