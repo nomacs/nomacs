@@ -2154,12 +2154,12 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
       <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+      <translation>%1 behöver öka bildstorleken, men inställningarna tillåter &apos;endast förminskning&apos; -&gt; undantas.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="370"/>
       <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+      <translation>%1 behöver minska bildstorleken, men inställningarna tillåter &apos;endast förstoring&apos; -&gt; undantas.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="374"/>
@@ -2333,7 +2333,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
       <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-      <translation type="unfinished">Ui - a lot of things went wrong. Your original file can be found here: %1</translation>
+      <translation>Ui - En massa saker gick fel. Din ursprungliga fil kan hittas här: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
@@ -2468,12 +2468,12 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
       <source>Edit ToolBar</source>
-      <translation type="unfinished">Edit ToolBar</translation>
+      <translation>Redigera verktygsfält</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1245"/>
       <source>Movie ToolBar</source>
-      <translation type="unfinished">Movie ToolBar</translation>
+      <translation>Filmverktygsfält</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="122"/>
@@ -2644,7 +2644,7 @@ Starta om nomacs och försök igen.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
+      <translation>Om markerad, uppmanar nomacs dig att spara filer som tagits bort av andra program</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
@@ -3026,7 +3026,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="828"/>
       <source>Bad Quality</source>
-      <translation type="unfinished">Bad Quality</translation>
+      <translation>Dålig kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="838"/>
@@ -3582,7 +3582,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="218"/>
       <source>Bad Quality</source>
-      <translation type="unfinished">Bad Quality</translation>
+      <translation>Dålig kvalitet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="223"/>
@@ -4432,7 +4432,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="354"/>
       <source>Remember Recent Files History</source>
-      <translation type="unfinished">Remember Recent Files History</translation>
+      <translation>Kom ihåg tidigare filhistorik</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
@@ -4750,7 +4750,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="883"/>
       <source>Sorry, I could not find the GPS coordinates...</source>
-      <translation type="unfinished">Sorry, I could not find the GPS coordinates...</translation>
+      <translation>Kunde inte hitta GPS-koordinaterna...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="973"/>
@@ -4772,7 +4772,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
       <source>Sorry, I could not copy the image...</source>
-      <translation type="unfinished">Sorry, I could not copy the image...</translation>
+      <translation>Kunde inte kopiera bilden...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1179"/>
@@ -4937,7 +4937,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
       <source>Compression</source>
-      <translation type="unfinished">Compression</translation>
+      <translation>Komprimering</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="79"/>
@@ -6124,7 +6124,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkSettingsWidget.cpp" line="131"/>
       <source>Filter Settings</source>
-      <translation type="unfinished">Filter Settings</translation>
+      <translation>Filterinställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkSettingsWidget.cpp" line="157"/>
@@ -6289,12 +6289,12 @@ Tryck ESC för att ångra ändringar</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="442"/>
       <source>Threshold</source>
-      <translation type="unfinished">Threshold</translation>
+      <translation>Tröskelvärde</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="449"/>
       <source>Color</source>
-      <translation type="unfinished">Color</translation>
+      <translation>Färg</translation>
     </message>
   </context>
   <context>
@@ -6320,17 +6320,17 @@ Tryck ESC för att ångra ändringar</translation>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1261"/>
       <source> selected</source>
-      <translation type="unfinished"> selected</translation>
+      <translation> markerat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
       <source> images</source>
-      <translation type="unfinished"> images</translation>
+      <translation> bilder</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1265"/>
       <source>%1 | %2</source>
-      <translation type="unfinished">%1 | %2</translation>
+      <translation>%1 | %2</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
@@ -6342,22 +6342,22 @@ Tryck ESC för att ångra ändringar</translation>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
       <source>Sorry, I cannot %1 %2</source>
-      <translation type="unfinished">Sorry, I cannot %1 %2</translation>
+      <translation>Kan inte %1 %2</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1463"/>
       <source>move</source>
-      <translation type="unfinished">move</translation>
+      <translation>flytta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1474"/>
       <source>create link</source>
-      <translation type="unfinished">create link</translation>
+      <translation>skapa länk</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1482"/>
       <source>copy</source>
-      <translation type="unfinished">copy</translation>
+      <translation>kopiera</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1504"/>
