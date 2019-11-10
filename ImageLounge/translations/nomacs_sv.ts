@@ -639,7 +639,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation type="unfinished">&amp;Metadata Ribbon</translation>
+      <translation>&amp;Metadata-band</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1236"/>
@@ -1574,7 +1574,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished">&lt;data too large to display&gt;</translation>
+      <translation>&lt;data för stor för visning&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
@@ -5537,7 +5537,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Kunde inte installera ny version&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5653,7 +5653,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Tryck &lt;SPACE&gt; för att starta.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5663,7 +5663,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Tryck &lt;SPACE&gt; för att starta nytt spel</translation>
     </message>
   </context>
   <context>
@@ -6651,8 +6651,8 @@ Skapar miniatyrer...
       <location filename="../../src/DkCore/DkUpdater.cpp" line="368"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+      <translation>nomacs uppdatering är inaktiverad.
+Kontakta din systemadministratör för vidare information.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="415"/>
@@ -6688,7 +6688,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="304"/>
       <source>Sigma</source>
-      <translation type="unfinished">Sigma</translation>
+      <translation>Sigma</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="309"/>
@@ -6725,8 +6725,8 @@ Please contact your system administrator for further information.</translation>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="162"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+      <translation>nomacs uppdatering är inaktiverad.
+Kontakta din systemadministratör för vidare information.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="248"/>
@@ -6837,7 +6837,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
       <source>Lenna</source>
-      <translation type="unfinished">Lenna</translation>
+      <translation>Lenna</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
