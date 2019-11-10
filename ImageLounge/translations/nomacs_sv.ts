@@ -4407,12 +4407,12 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="326"/>
       <source>&amp;Import Settings</source>
-      <translation>&amp;Importinställningar</translation>
+      <translation>&amp;Importera inställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="330"/>
       <source>&amp;Export Settings</source>
-      <translation>&amp;Exportinställningar</translation>
+      <translation type="unfinished">&amp;Export Settings</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="334"/>
@@ -4482,12 +4482,12 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="379"/>
       <source>Next Image on Horizontal Zoom</source>
-      <translation type="unfinished">Next Image on Horizontal Zoom</translation>
+      <translation>Nästa bild på horisontell zoom</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="381"/>
       <source>If checked, horizontal wheel events load the next/previous images.</source>
-      <translation type="unfinished">If checked, horizontal wheel events load the next/previous images.</translation>
+      <translation>Vid aktivering läser horisontell hjulanvändning in nästa/föregående bild.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="384"/>
@@ -4572,17 +4572,17 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="594"/>
       <source>Import Settings</source>
-      <translation type="unfinished">Import Settings</translation>
+      <translation>Importera inställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="611"/>
       <source>Export Settings</source>
-      <translation type="unfinished">Export Settings</translation>
+      <translation>Exportera inställningar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="632"/>
       <source>Settings exported</source>
-      <translation type="unfinished">Settings exported</translation>
+      <translation>Inställningar exporterade</translation>
     </message>
   </context>
   <context>
@@ -4590,12 +4590,12 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2704"/>
       <source>Set As Default</source>
-      <translation type="unfinished">Set As Default</translation>
+      <translation>Ange som standard</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2762"/>
       <source>Profile Name</source>
-      <translation type="unfinished">Profile Name</translation>
+      <translation>Profilnamn</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2763"/>
@@ -5827,7 +5827,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1430"/>
       <source>Profile Name</source>
-      <translation type="unfinished">Profile Name</translation>
+      <translation>Profilnamn</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1431"/>
