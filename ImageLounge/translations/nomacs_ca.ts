@@ -519,7 +519,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1173"/>
       <source>Show &amp;Menu</source>
-      <translation type="unfinished">Show &amp;Menu</translation>
+      <translation>Mostre &amp;Menú</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
@@ -739,12 +739,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1282"/>
       <source>F&amp;irst Tab</source>
-      <translation type="unfinished">F&amp;irst Tab</translation>
+      <translation>Pr&amp;imera pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1283"/>
       <source>Switch to first tab</source>
-      <translation type="unfinished">Switch to first tab</translation>
+      <translation>Canvia a la primera pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1285"/>
@@ -759,12 +759,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1289"/>
       <source>&amp;Go to Tab</source>
-      <translation type="unfinished">&amp;Go to Tab</translation>
+      <translation>&amp;Ves a Pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1290"/>
       <source>Go to tab by index</source>
-      <translation type="unfinished">Go to tab by index</translation>
+      <translation>Ves a pestanya per index</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1292"/>
@@ -779,12 +779,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1296"/>
       <source>La&amp;st Tab</source>
-      <translation type="unfinished">La&amp;st Tab</translation>
+      <translation>Última Pe&amp;stanya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1297"/>
       <source>Switch to last tab</source>
-      <translation type="unfinished">Switch to last tab</translation>
+      <translation>Mostra la última pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1302"/>
@@ -1158,74 +1158,74 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1471"/>
       <source>Select &amp;All</source>
-      <translation type="unfinished">Select &amp;All</translation>
+      <translation>Seleccion&amp;a Tot</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1478"/>
       <source>Zoom &amp;Out</source>
-      <translation type="unfinished">Zoom &amp;Out</translation>
+      <translation>Redueix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1481"/>
       <source>Display &amp;Squares</source>
-      <translation type="unfinished">Display &amp;Squares</translation>
+      <translation>Mostra Quadrat&amp;s</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1485"/>
       <source>Show &amp;Filename</source>
-      <translation type="unfinished">Show &amp;Filename</translation>
+      <translation>Mostra &amp;Fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1501"/>
       <source>&amp;Rename</source>
-      <translation type="unfinished">&amp;Rename</translation>
+      <translation>&amp;Reanomena</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1504"/>
       <source>&amp;Batch Process</source>
-      <translation type="unfinished">&amp;Batch Process</translation>
+      <translation>Procés &amp;Batch</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1505"/>
       <source>Adds selected files to batch processing.</source>
-      <translation type="unfinished">Adds selected files to batch processing.</translation>
+      <translation>Afegeix els fitxer seleccionats al procés batch.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1508"/>
       <source>&amp;Batch Print</source>
-      <translation type="unfinished">&amp;Batch Print</translation>
+      <translation>Impressió &amp;Batch</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1509"/>
       <source>Prints selected files.</source>
-      <translation type="unfinished">Prints selected files.</translation>
+      <translation>Imprimeix els fitxers seleccionats.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1524"/>
       <source>Start pong</source>
-      <translation type="unfinished">Start pong</translation>
+      <translation>Inicia pong</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1527"/>
       <source>First File</source>
-      <translation type="unfinished">First File</translation>
+      <translation>Primer fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1528"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1544"/>
       <source>Jump to first file</source>
-      <translation type="unfinished">Jump to first file</translation>
+      <translation>Salta al primer fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1531"/>
       <source>Last File</source>
-      <translation type="unfinished">Last File</translation>
+      <translation>Últim fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1532"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1548"/>
       <source>Jump to the end of the current folder</source>
-      <translation type="unfinished">Jump to the end of the current folder</translation>
+      <translation>Salta al final de la carpeta actual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1535"/>
@@ -1327,7 +1327,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
       <source>Pans the image up if zoomed.</source>
-      <translation>Veure la imatge de dalt si fem zoom.</translation>
+      <translation>Veure la imatge de dalt si ampliem.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
@@ -1337,27 +1337,27 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
       <source>Pans the image down if zoomed.</source>
-      <translation type="unfinished">Pans the image down if zoomed.</translation>
+      <translation>Veure al imatge de baix si ampliem.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1595"/>
       <source>Pan Image Left</source>
-      <translation type="unfinished">Pan Image Left</translation>
+      <translation>Veure imatge a esquerra</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1596"/>
       <source>Pans the image left if zoomed.</source>
-      <translation type="unfinished">Pans the image left if zoomed.</translation>
+      <translation>Veu la imatge de l'esquerra si ampliem.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1599"/>
       <source>Pan Image Right</source>
-      <translation type="unfinished">Pan Image Right</translation>
+      <translation>Veu la imatge a la dreta</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1600"/>
       <source>Pans the image right if zoomed.</source>
-      <translation type="unfinished">Pans the image right if zoomed.</translation>
+      <translation>Veu la image a la dreta si ampliem.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
