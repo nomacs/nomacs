@@ -1230,7 +1230,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1535"/>
       <source>Skip Previous Images</source>
-      <translation type="unfinished">Skip Previous Images</translation>
+      <translation>Salta les imatges prèvies</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1536"/>
@@ -2107,7 +2107,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="82"/>
       <source>Batch Action</source>
-      <translation type="unfinished">Batch Action</translation>
+      <translation>Acció Batch</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
@@ -2124,12 +2124,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
       <source>transformed</source>
-      <translation type="unfinished">transformed</translation>
+      <translation>transformat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="321"/>
       <source>%1 image transformed.</source>
-      <translation type="unfinished">%1 image transformed.</translation>
+      <translation>%1 imatge transformada.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="324"/>
@@ -2144,12 +2144,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="329"/>
       <source>%1 image transformed and cropped.</source>
-      <translation type="unfinished">%1 image transformed and cropped.</translation>
+      <translation>%1 imatge transformada i retallada.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="333"/>
       <source>%1 error, could not transform image.</source>
-      <translation type="unfinished">%1 error, could not transform image.</translation>
+      <translation>%1 error, no s'ha pogut transformar la imatge.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
@@ -2169,53 +2169,53 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
       <source>%1 %2 applied.</source>
-      <translation type="unfinished">%1 %2 applied.</translation>
+      <translation>%1 %2 aplicada.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="429"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="583"/>
       <source>%1 Cannot apply %2.</source>
-      <translation type="unfinished">%1 Cannot apply %2.</translation>
+      <translation>%1 No pot aplicar %2.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="435"/>
       <source>%1 error, could not apply image adjustments.</source>
-      <translation type="unfinished">%1 error, could not apply image adjustments.</translation>
+      <translation>%1 error, no s'han pogut aplicar els ajustos d'imatge.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
       <source>[Adjustment Batch]</source>
-      <translation type="unfinished">[Adjustment Batch]</translation>
+      <translation>[Ajustament Batch]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="575"/>
       <source>%1 Cannot cast batch plugin %2.</source>
-      <translation type="unfinished">%1 Cannot cast batch plugin %2.</translation>
+      <translation>%1 No pot instancia el plugin batch %2.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="586"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation type="unfinished">%1 illegal plugin interface: %2</translation>
+      <translation>%1 interfície plugin ilegal: %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="589"/>
       <source>%1 Cannot apply plugin because it is NULL.</source>
-      <translation type="unfinished">%1 Cannot apply plugin because it is NULL.</translation>
+      <translation>%1 No es pot aplicar el plugin perquè és NULL.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="593"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation type="unfinished">%1 error, could not apply plugins.</translation>
+      <translation>%1 error, no s'han pogut aplicar plugins.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="597"/>
       <source>%1 plugins applied.</source>
-      <translation type="unfinished">%1 plugins applied.</translation>
+      <translation>%1 plugins aplicats.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="603"/>
       <source>[Plugin Batch]</source>
-      <translation type="unfinished">[Plugin Batch]</translation>
+      <translation>[Batch de plugins]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="716"/>
@@ -2225,28 +2225,28 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="721"/>
       <source>Error: input file does not exist</source>
-      <translation type="unfinished">Error: input file does not exist</translation>
+      <translation>Error: el fitxer d'entrada no existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="722"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="895"/>
       <source>Input: %1</source>
-      <translation type="unfinished">Input: %1</translation>
+      <translation>Entrada: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="727"/>
       <source>Skipping: nothing to do here.</source>
-      <translation type="unfinished">Skipping: nothing to do here.</translation>
+      <translation>Saltant: res a fer aquí.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="766"/>
       <source>processing %1</source>
-      <translation type="unfinished">processing %1</translation>
+      <translation>processant %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="771"/>
       <source>Error while loading...</source>
-      <translation type="unfinished">Error while loading...</translation>
+      <translation>Error carregant...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="779"/>
