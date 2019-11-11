@@ -119,7 +119,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
       <source>Open a texfile containing a list of filepaths, and open tabs for them</source>
-      <translation type="unfinished">Open a texfile containing a list of filepaths, and open tabs for them</translation>
+      <translation>Obrir un fitxer de text contenint una llista de rutes de fitxers, i obrir-ne pestanyes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="969"/>
@@ -189,12 +189,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
       <source>&amp;Save Tabs</source>
-      <translation type="unfinished">&amp;Save Tabs</translation>
+      <translation>&amp;Guardar Pestanyes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
       <source>Save a newline separated list of the filenames of the open tabs</source>
-      <translation type="unfinished">Save a newline separated list of the filenames of the open tabs</translation>
+      <translation>Guardar un fitxer separat per salts de línia amb els noms dels fitxers oberts</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
@@ -489,12 +489,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1153"/>
       <source>Image &amp;Adjustments</source>
-      <translation type="unfinished">Image &amp;Adjustments</translation>
+      <translation>Imatge i &amp;Ajustaments</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>open image manipulation toolbox</source>
-      <translation type="unfinished">open image manipulation toolbox</translation>
+      <translation>obrir eines de manipulació d'imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1159"/>
@@ -579,12 +579,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1204"/>
       <source>&amp;Hide All Panels</source>
-      <translation type="unfinished">&amp;Hide All Panels</translation>
+      <translation>&amp;Amagar tots els panells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1206"/>
       <source>Hide all panels</source>
-      <translation type="unfinished">Hide all panels</translation>
+      <translation>Amagar tots els panells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1210"/>
@@ -1282,7 +1282,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 0</source>
-      <translation type="unfinished">Star Rating 0</translation>
+      <translation>Classificació d'estrelles 0</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1564"/>
@@ -1297,42 +1297,42 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Star Rating 1</source>
-      <translation type="unfinished">Star Rating 1</translation>
+      <translation>Classificació d'estrelles 1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1571"/>
       <source>Star Rating 2</source>
-      <translation type="unfinished">Star Rating 2</translation>
+      <translation>Classificació d'estrelles 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1575"/>
       <source>Star Rating 3</source>
-      <translation type="unfinished">Star Rating 3</translation>
+      <translation>Classificació d'estrelles 3</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <source>Star Rating 4</source>
-      <translation type="unfinished">Star Rating 4</translation>
+      <translation>Classificació d'estrelles 4</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star Rating 5</source>
-      <translation type="unfinished">Star Rating 5</translation>
+      <translation>Classificació d'estrelles 5</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
       <source>Pan Image Up</source>
-      <translation type="unfinished">Pan Image Up</translation>
+      <translation>Veure imatge amunt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
       <source>Pans the image up if zoomed.</source>
-      <translation type="unfinished">Pans the image up if zoomed.</translation>
+      <translation>Veure la imatge de dalt si fem zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
       <source>Pan Image Down</source>
-      <translation type="unfinished">Pan Image Down</translation>
+      <translation>Veure imatge avall</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
