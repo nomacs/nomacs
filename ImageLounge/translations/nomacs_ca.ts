@@ -2251,12 +2251,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="779"/>
       <source>Error: cannot process a NULL function.</source>
-      <translation type="unfinished">Error: cannot process a NULL function.</translation>
+      <translation>Error: no es pot processar un funció NULL.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="785"/>
       <source>%1 failed</source>
-      <translation type="unfinished">%1 failed</translation>
+      <translation>%1 fallat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
@@ -2268,27 +2268,27 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation type="unfinished">Original filename added to Exif</translation>
+      <translation>Fitxer original afegit a Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
       <source>%1 saved...</source>
-      <translation type="unfinished">%1 saved...</translation>
+      <translation>%1 guardat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="813"/>
       <source>Could not save: %1</source>
-      <translation type="unfinished">Could not save: %1</translation>
+      <translation>No s'ha pogut guardar: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="828"/>
       <source>Error: could not rename file, the target file exists already.</source>
-      <translation type="unfinished">Error: could not rename file, the target file exists already.</translation>
+      <translation>Error: no s'ha pogut reanomenar el fitxer, ja existeix.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="844"/>
       <source>Error: could not rename file</source>
-      <translation type="unfinished">Error: could not rename file</translation>
+      <translation>Error: no s'ha pogut reanomenar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
@@ -2303,12 +2303,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="894"/>
       <source>Error: could not copy file</source>
-      <translation type="unfinished">Error: could not copy file</translation>
+      <translation>Error: no s'ha pogut copiar el fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="896"/>
       <source>Output: %1</source>
-      <translation type="unfinished">Output: %1</translation>
+      <translation>Sortida: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
@@ -2318,17 +2318,17 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation type="unfinished">Error: back-up (%1) file already exists</translation>
+      <translation>Error: fitxer de copia (%1) ja existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="931"/>
       <source>Error: could not rename existing file to %1</source>
-      <translation type="unfinished">Error: could not rename existing file to %1</translation>
+      <translation>Error: no s'ha pogut reanomenar el fitxer existent a %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="949"/>
       <source>Error: could not delete existing file</source>
-      <translation type="unfinished">Error: could not delete existing file</translation>
+      <translation>Error: no s'ha pogut esborrar el fitxer existent</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
