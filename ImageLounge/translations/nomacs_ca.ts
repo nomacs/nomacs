@@ -58,7 +58,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="523"/>
       <source>&amp;Adjustments</source>
-      <translation type="unfinished">&amp;Adjustments</translation>
+      <translation>&amp;Ajustaments</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
@@ -114,7 +114,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="966"/>
       <source>&amp;Open Tabs</source>
-      <translation type="unfinished">&amp;Open Tabs</translation>
+      <translation>Pestanyes &amp;Obertes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
@@ -719,12 +719,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1275"/>
       <source>&amp;Close All Tabs</source>
-      <translation type="unfinished">&amp;Close All Tabs</translation>
+      <translation>&amp;Tancar totes les pestanyes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1276"/>
       <source>Close all open tabs</source>
-      <translation type="unfinished">Close all open tabs</translation>
+      <translation>Tancar les pestanyes obertes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1278"/>
@@ -1497,12 +1497,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="152"/>
       <source>&amp;Exposure...</source>
-      <translation type="unfinished">&amp;Exposure...</translation>
+      <translation>&amp;Exposició...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation type="unfinished">Change the Exposure and Gamma</translation>
+      <translation>Canviar l'Exposició i la Gamma</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
