@@ -169,7 +169,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
       <source>S&amp;ave As</source>
-      <translation type="unfinished">S&amp;ave As</translation>
+      <translation>S&amp;impan Sebagai</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
@@ -179,12 +179,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation type="unfinished">Sa&amp;ve a Copy</translation>
+      <translation>Si&amp;mpan Salinan</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
       <source>Copy the Image</source>
-      <translation type="unfinished">Copy the Image</translation>
+      <translation>Salin Gambar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
@@ -639,7 +639,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation type="unfinished">&amp;Metadata Ribbon</translation>
+      <translation>Pita &amp;Metadata</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1236"/>
@@ -689,12 +689,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
       <source>Show &amp;Log</source>
-      <translation type="unfinished">Show &amp;Log</translation>
+      <translation>Tampilkan &amp;Log</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1260"/>
       <source>Shows the log window</source>
-      <translation type="unfinished">Shows the log window</translation>
+      <translation>Tampilkan jendela log</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1267"/>
@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation type="unfinished">&amp;Resize...</translation>
+      <translation>&amp;Ubah ukuran...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation type="unfinished">Resize the image</translation>
+      <translation>Ubah ukuran gambar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1548,7 +1548,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation type="unfinished">Cannot resize image</translation>
+      <translation>Tidak dapat mengubah ukuran gambar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1844,73 +1844,73 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncomressed</source>
-      <translation type="unfinished">Uncomressed</translation>
+      <translation>Tidak terkompres</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
       <source>T4/Group 3 Fax</source>
-      <translation type="unfinished">T4/Group 3 Fax</translation>
+      <translation>T4/Group 3 Fax</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1499"/>
       <source>T6/Group 4 Fax</source>
-      <translation type="unfinished">T6/Group 4 Fax</translation>
+      <translation>T6/Group 4 Fax</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1500"/>
       <source>LZW</source>
-      <translation type="unfinished">LZW</translation>
+      <translation>LZW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1501"/>
       <source>JPEG (old-style)</source>
-      <translation type="unfinished">JPEG (old-style)</translation>
+      <translation>JPEG (gaya-lama)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>JPEG</source>
-      <translation type="unfinished">JPEG</translation>
+      <translation>JPEG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>Adobe Deflate</source>
-      <translation type="unfinished">Adobe Deflate</translation>
+      <translation>Adobe Deflate</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>JBIG B&amp;W</source>
-      <translation type="unfinished">JBIG B&amp;W</translation>
+      <translation>JBIG Hitam Putih</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1505"/>
       <source>JBIG Color</source>
-      <translation type="unfinished">JBIG Color</translation>
+      <translation>JBIG Warna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Kodak 262</source>
-      <translation type="unfinished">Kodak 262</translation>
+      <translation>Kodak 262</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
       <source>Next</source>
-      <translation type="unfinished">Next</translation>
+      <translation>Selanjutnya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Sony ARW Compressed</source>
-      <translation type="unfinished">Sony ARW Compressed</translation>
+      <translation>Sony ARW Terkompres</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
       <source>Packed RAW</source>
-      <translation type="unfinished">Packed RAW</translation>
+      <translation>Packed RAW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
@@ -2293,7 +2293,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>Menganti Nama: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
@@ -2313,7 +2313,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>Menyalin: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -2503,7 +2503,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Atur mode tampilan &lt;mode&gt;.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
@@ -2513,7 +2513,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Muat semua file dari &lt;directory&gt;.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
@@ -2523,7 +2523,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Muat &lt;images&gt; ke tab.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
@@ -2533,7 +2533,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
       <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-      <translation type="unfinished">Batch processing of &lt;batch-settings.pnm&gt;.</translation>
+      <translation>Pemrosesan batch dari &lt;batch-settings.pnm&gt;.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
@@ -2543,7 +2543,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
       <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-      <translation type="unfinished">Saves batch log to &lt;log-path.txt&gt;.</translation>
+      <translation>Simpan log batch ke &lt;log-path.txt&gt;.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
@@ -2553,7 +2553,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Impor pengaturan dari &lt;settings-path.ini&gt; dan simpan.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -5528,7 +5528,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Tidak dapat memasang versi baru&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5644,7 +5644,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Tekan &lt;SPASI&gt; untuk memulai.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5654,7 +5654,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Tekan &lt;SPASI&gt; untuk memulai Permainan baru</translation>
     </message>
   </context>
   <context>
@@ -6167,8 +6167,8 @@ then press %1</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1737"/>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-      <translation type="unfinished">%1 already used by %2 &gt; %3
-Press ESC to undo changes</translation>
+      <translation>%1 telah digunakan oleh %2 &gt; %3
+Tekan ESC untuk membatalkan perubahan</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1743"/>
