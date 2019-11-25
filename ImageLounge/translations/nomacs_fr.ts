@@ -4890,9 +4890,9 @@ Do you want to show them again?</source>
       <translation>Orientation</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="68"/>
+      <location filename="../src/DkCore/DkSettings.cpp" line="68"/>
       <source>Make</source>
-      <translation>Construire</translation>
+      <translation>Fabricant</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="69"/>
