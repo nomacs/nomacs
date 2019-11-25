@@ -56,8 +56,7 @@ namespace nmc {
 // we would need another module int Qt 5
 QImage DkImage::fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h) {
 	
-	BITMAPINFO bmi;
-	memset(&bmi, 0, sizeof(bmi));
+	BITMAPINFO bmi = {0};
 	bmi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
 	bmi.bmiHeader.biWidth       = w;
 	bmi.bmiHeader.biHeight      = -h;
@@ -71,9 +70,9 @@ QImage DkImage::fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h) {
 		return image;
 
 	// Get bitmap bits
-	uchar *data = (uchar *) malloc(bmi.bmiHeader.biSizeImage); // is it cool to use malloc here?
+	std::unique_ptr<uint32_t[]> data(new uint32_t[bmi.bmiHeader.biSizeImage]);
 
-	if (GetDIBits(hdc, bitmap, 0, h, data, &bmi, DIB_RGB_COLORS)) {
+	if (GetDIBits(hdc, bitmap, 0, h, data.get(), &bmi, DIB_RGB_COLORS)) {
 		// Create image and copy data into image.
 		for (int y=0; y<h; ++y) {
 			void *dest = (void *) image.scanLine(y);
@@ -83,7 +82,6 @@ QImage DkImage::fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h) {
 	} else {
 		qWarning("qt_fromWinHBITMAP(), failed to get bitmap bits");
 	}
-	free(data);
 
 	return image;
 }
@@ -176,8 +174,7 @@ HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
 	HDC display_dc = GetDC(0);
 
 	// Define the header
-	BITMAPINFO bmi;
-	memset(&bmi, 0, sizeof(bmi));
+	BITMAPINFO bmi = {0};
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.bmiHeader.biWidth = w;
 	bmi.bmiHeader.biHeight = -h;
