@@ -1236,23 +1236,23 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1536"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1552"/>
       <source>Jumps 10 images before the current image</source>
-      <translation type="unfinished">Jumps 10 images before the current image</translation>
+      <translation>Salta 10 imatges abans de l'actual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1539"/>
       <source>Skip Next Images</source>
-      <translation type="unfinished">Skip Next Images</translation>
+      <translation>Evita les pròximes imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1540"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1556"/>
       <source>Jumps 10 images after the current image</source>
-      <translation type="unfinished">Jumps 10 images after the current image</translation>
+      <translation>Salta 10 imatges després de l'actual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1543"/>
       <source>First File Sync</source>
-      <translation type="unfinished">First File Sync</translation>
+      <translation>Situa a inici</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1547"/>
@@ -4625,7 +4625,7 @@ Do you want to show them again?</translation>
       <location filename="../../src/DkCore/DkUtils.cpp" line="368"/>
       <source>English</source>
       <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-      <translation type="unfinished">English</translation>
+      <translation>Catalan</translation>
     </message>
   </context>
   <context>
