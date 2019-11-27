@@ -1257,27 +1257,27 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1547"/>
       <source>Last File Sync</source>
-      <translation type="unfinished">Last File Sync</translation>
+      <translation>Situa al final</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1551"/>
       <source>Skip Previous Images Sync</source>
-      <translation type="unfinished">Skip Previous Images Sync</translation>
+      <translation>Situa evitant les imatges prèvies</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1555"/>
       <source>Skip Next Images Sync</source>
-      <translation type="unfinished">Skip Next Images Sync</translation>
+      <translation>Situa evitant les imatges posteriors</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1559"/>
       <source>Delete File Silent</source>
-      <translation type="unfinished">Delete File Silent</translation>
+      <translation>Esborra sense confirmar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1560"/>
       <source>Deletes a file without warning</source>
-      <translation type="unfinished">Deletes a file without warning</translation>
+      <translation>Esborra un fitxer sense confirmació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
@@ -1580,7 +1580,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="835"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Nom de fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="525"/>
@@ -1591,52 +1591,52 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="529"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Destí</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="533"/>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="837"/>
       <source>Size</source>
-      <translation type="unfinished">Size</translation>
+      <translation>Mida</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="537"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="540"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="543"/>
       <source>Date</source>
-      <translation type="unfinished">Date</translation>
+      <translation>Data</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="537"/>
       <source>Created</source>
-      <translation type="unfinished">Created</translation>
+      <translation>Creat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="540"/>
       <source>Last Modified</source>
-      <translation type="unfinished">Last Modified</translation>
+      <translation>Última modificació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="543"/>
       <source>Last Read</source>
-      <translation type="unfinished">Last Read</translation>
+      <translation>Última lectura</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="547"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="560"/>
       <source>Owner</source>
-      <translation type="unfinished">Owner</translation>
+      <translation>Propietari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="551"/>
       <source>OwnerID</source>
-      <translation type="unfinished">OwnerID</translation>
+      <translation>Idpropietari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="555"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="574"/>
       <source>Group</source>
-      <translation type="unfinished">Group</translation>
+      <translation>Grup</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="560"/>
@@ -1644,47 +1644,47 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="574"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="581"/>
       <source>Permissions</source>
-      <translation type="unfinished">Permissions</translation>
+      <translation>Permisos</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="567"/>
       <source>User</source>
-      <translation type="unfinished">User</translation>
+      <translation>Usuari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="581"/>
       <source>Other</source>
-      <translation type="unfinished">Other</translation>
+      <translation>Altres</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="591"/>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>Fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1456"/>
       <source>not defined</source>
-      <translation type="unfinished">not defined</translation>
+      <translation>sense definir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1457"/>
       <source>manual</source>
-      <translation type="unfinished">manual</translation>
+      <translation>manual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1458"/>
       <source>normal</source>
-      <translation type="unfinished">normal</translation>
+      <translation>normal</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1459"/>
       <source>aperture priority</source>
-      <translation type="unfinished">aperture priority</translation>
+      <translation>prioritat d'obertura</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1460"/>
       <source>shutter priority</source>
-      <translation type="unfinished">shutter priority</translation>
+      <translation>prioritat de disparador</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1461"/>
@@ -1769,32 +1769,32 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1479"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation type="unfinished">Auto, Fired, Return not detected</translation>
+      <translation>Auto, Disparat, Retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1480"/>
       <source>Auto, Fired, Return detected</source>
-      <translation type="unfinished">Auto, Fired, Return detected</translation>
+      <translation>Auto, Disparat, Retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1481"/>
       <source>No flash function</source>
-      <translation type="unfinished">No flash function</translation>
+      <translation>Sense funció de flash</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1482"/>
       <source>Off, No flash function</source>
-      <translation type="unfinished">Off, No flash function</translation>
+      <translation>Apagat, sense funció flash</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1483"/>
       <source>Fired, Red-eye reduction</source>
-      <translation type="unfinished">Fired, Red-eye reduction</translation>
+      <translation>Disparat, reducció d'ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1484"/>
       <source>Fired, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Disparat, reducció d'ulls vermells, retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1485"/>
@@ -2992,7 +2992,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="792"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Nom de fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="813"/>
@@ -3372,7 +3372,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="512"/>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>Fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
