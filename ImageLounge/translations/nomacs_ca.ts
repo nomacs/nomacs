@@ -2210,7 +2210,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="597"/>
       <source>%1 plugins applied.</source>
-      <translation>%1 plugins aplicats.</translation>
+      <translation>%1 complements aplicats.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="603"/>
@@ -2246,7 +2246,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="771"/>
       <source>Error while loading...</source>
-      <translation>Error carregant...</translation>
+      <translation>Error en carregar...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="779"/>
@@ -2256,7 +2256,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="785"/>
       <source>%1 failed</source>
-      <translation>%1 fallat</translation>
+      <translation>%1 fallit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
@@ -2268,22 +2268,22 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation>Fitxer original afegit a Exif</translation>
+      <translation>S'ha afegit el nom original del fitxer a les dades Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
       <source>%1 saved...</source>
-      <translation>%1 guardat...</translation>
+      <translation>%1 desat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="813"/>
       <source>Could not save: %1</source>
-      <translation>No s'ha pogut guardar: %1</translation>
+      <translation>No s'ha pogut desar: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="828"/>
       <source>Error: could not rename file, the target file exists already.</source>
-      <translation>Error: no s'ha pogut reanomenar el fitxer, ja existeix.</translation>
+      <translation>Error: no s'ha pogut reanomenar, el fitxer ja existeix.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="844"/>
@@ -2318,7 +2318,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation>Error: fitxer de copia (%1) ja existeix</translation>
+      <translation>Error: El fitxer (%1) de còpia de seguretat ja existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="931"/>
@@ -2328,7 +2328,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="949"/>
       <source>Error: could not delete existing file</source>
-      <translation>Error: no s'ha pogut esborrar el fitxer existent</translation>
+      <translation>Error: no s'ha pogut suprimir el fitxer existent</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
@@ -2338,7 +2338,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation type="unfinished">I could not save to %1 so I restored the original file.</translation>
+      <translation>No s'ha pogut desar com a %1 i s'ha restaurat el fitxer original.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="981"/>
@@ -2639,7 +2639,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1337"/>
       <source>Ask to Save Deleted Files</source>
-      <translation type="unfinished">Ask to Save Deleted Files</translation>
+      <translation>Demana desar els fitxers suprimits</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
@@ -2853,7 +2853,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1177"/>
       <source>Sorry, I could not save: %1</source>
-      <translation type="unfinished">Sorry, I could not save: %1</translation>
+      <translation>No es pot desar: %1</translation>
     </message>
   </context>
   <context>
@@ -3505,7 +3505,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1269"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation type="unfinished">Sorry, I cannot save comments for this image format.</translation>
+      <translation>No es pot desar els comentaris en aquest format d'imatge.</translation>
     </message>
   </context>
   <context>
@@ -3528,7 +3528,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="171"/>
       <source>Save for Web</source>
-      <translation type="unfinished">Save for Web</translation>
+      <translation>Desa per a web</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="184"/>
@@ -3986,12 +3986,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
       <source>Save Folder:</source>
-      <translation type="unfinished">Save Folder:</translation>
+      <translation>Carpeta de destinació:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2454"/>
       <source>Specify a Save Folder</source>
-      <translation type="unfinished">Specify a Save Folder</translation>
+      <translation>Indiqueu on desar el contingut</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2457"/>
@@ -4041,7 +4041,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2636"/>
       <source>Sorry, I could not save: %1</source>
-      <translation type="unfinished">Sorry, I could not save: %1</translation>
+      <translation>No es pot desar: %1</translation>
     </message>
   </context>
   <context>
@@ -4121,7 +4121,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="965"/>
       <source>Screenshots are automatically saved to this folder</source>
-      <translation type="unfinished">Screenshots are automatically saved to this folder</translation>
+      <translation>Les captures de pantalla es desaran automàticament en aquesta carpeta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
@@ -4176,7 +4176,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
       <source>Load Saved Images</source>
-      <translation type="unfinished">Load Saved Images</translation>
+      <translation>Carrega les imatges desades</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
@@ -4625,7 +4625,7 @@ Do you want to show them again?</translation>
       <location filename="../../src/DkCore/DkUtils.cpp" line="368"/>
       <source>English</source>
       <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-      <translation>Catalan</translation>
+      <translation>Català</translation>
     </message>
   </context>
   <context>
