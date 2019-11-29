@@ -2879,7 +2879,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="363"/>
       <source>File List</source>
-      <translation type="unfinished">File List</translation>
+      <translation>Llistat de fitxers</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="413"/>
@@ -2889,17 +2889,17 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="477"/>
       <source>No Files Selected</source>
-      <translation type="unfinished">No Files Selected</translation>
+      <translation>Cap fitxer seleccionat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="479"/>
       <source>%1 File Selected</source>
-      <translation type="unfinished">%1 File Selected</translation>
+      <translation>%1 Fitxer seleccionat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="481"/>
       <source>%1 Files Selected</source>
-      <translation type="unfinished">%1 Files Selected</translation>
+      <translation>%1 Fitxers seleccionats</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="506"/>
