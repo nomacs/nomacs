@@ -1528,7 +1528,7 @@
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="117"/>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="129"/>
       <source>Cannot flip image</source>
-      <translation type="unfinished">Cannot flip image</translation>
+      <translation>No es pot girar la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
@@ -1543,7 +1543,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="244"/>
       <source>Cannot rotate image</source>
-      <translation type="unfinished">Cannot rotate image</translation>
+      <translation>No es pot rotar la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
@@ -2686,7 +2686,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1366"/>
       <source>Number of Threads</source>
-      <translation type="unfinished">Number of Threads</translation>
+      <translation>Número de fils</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
@@ -2749,7 +2749,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="536"/>
       <source>Executable Files (*.exe);;</source>
-      <translation type="unfinished">Executable Files (*.exe);;</translation>
+      <translation>Fitxers executables (*.exe);;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="544"/>
@@ -2767,7 +2767,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3756"/>
       <source>Archive (%1)</source>
-      <translation type="unfinished">Archive (%1)</translation>
+      <translation>Fitxer (%1)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3763"/>
@@ -2778,7 +2778,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3767"/>
       <source>Extract to</source>
-      <translation type="unfinished">Extract to</translation>
+      <translation>Extreu a</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3780"/>
@@ -2839,7 +2839,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4019"/>
       <source>Extracting file %1 of %2</source>
-      <translation type="unfinished">Extracting file %1 of %2</translation>
+      <translation>S'està extraient el fitxer %1 de %2</translation>
     </message>
   </context>
   <context>
@@ -2848,7 +2848,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="342"/>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1029"/>
       <source>Original Image</source>
-      <translation type="unfinished">Original Image</translation>
+      <translation>Imatge original</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1177"/>
@@ -2861,7 +2861,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2248"/>
       <source>Start/Cancel Batch Processing (%1)</source>
-      <translation type="unfinished">Start/Cancel Batch Processing (%1)</translation>
+      <translation>Inicia/Cancel·la el procés en lot (%1)</translation>
     </message>
   </context>
   <context>
@@ -2905,7 +2905,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkGui/DkBatch.cpp" line="506"/>
       <location filename="../../src/DkGui/DkBatch.cpp" line="520"/>
       <source>Results</source>
-      <translation type="unfinished">Results</translation>
+      <translation>Resultats</translation>
     </message>
   </context>
   <context>
@@ -2936,7 +2936,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="751"/>
       <source>Browse</source>
-      <translation type="unfinished">Browse</translation>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="753"/>
@@ -4072,7 +4072,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1156"/>
       <source>Browse</source>
-      <translation type="unfinished">Browse</translation>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
@@ -6788,7 +6788,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="266"/>
       <source>Original Image</source>
-      <translation type="unfinished">Original Image</translation>
+      <translation>Imatge original</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
