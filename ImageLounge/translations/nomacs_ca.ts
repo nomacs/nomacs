@@ -159,7 +159,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="989"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="991"/>
@@ -2739,12 +2739,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="503"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="504"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="536"/>
@@ -2794,7 +2794,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3788"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4008"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
@@ -3435,12 +3435,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4352"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -3513,17 +3513,17 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="147"/>
       <source>JPG Settings</source>
-      <translation type="unfinished">JPG Settings</translation>
+      <translation>Opcions JPG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="149"/>
       <source>J2K Settings</source>
-      <translation type="unfinished">J2K Settings</translation>
+      <translation>Opcions J2K</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="158"/>
       <source>WebP Settings</source>
-      <translation type="unfinished">WebP Settings</translation>
+      <translation>Opcions WebP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="171"/>
@@ -3543,22 +3543,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="207"/>
       <source>Small  (800 x 600)</source>
-      <translation type="unfinished">Small  (800 x 600)</translation>
+      <translation>Petit (800 x 600)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="208"/>
       <source>Medium (1024 x 786)</source>
-      <translation type="unfinished">Medium (1024 x 786)</translation>
+      <translation>Mig (1024 x 786)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="209"/>
       <source>Large  (1920 x 1080)</source>
-      <translation type="unfinished">Large  (1920 x 1080)</translation>
+      <translation>Gran  (1920 x 1080)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="210"/>
       <source>Original Size</source>
-      <translation type="unfinished">Original Size</translation>
+      <translation>Mida original</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="214"/>
@@ -3588,27 +3588,27 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="223"/>
       <source>Lossless Compression</source>
-      <translation type="unfinished">Lossless Compression</translation>
+      <translation>Compressió sense pèrdua</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="230"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="253"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="256"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="366"/>
       <source>File Size: --</source>
-      <translation type="unfinished">File Size: --</translation>
+      <translation>Mida del fitxer: --</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="380"/>
@@ -3679,7 +3679,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="987"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
@@ -4016,7 +4016,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2525"/>
@@ -4360,12 +4360,12 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3650"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3668"/>
@@ -4387,7 +4387,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="305"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="310"/>
@@ -4734,7 +4734,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="746"/>
       <source>Save Image</source>
-      <translation type="unfinished">Save Image</translation>
+      <translation>Desa la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="747"/>
@@ -4768,7 +4768,7 @@ Do you want to show them again?</translation>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1118"/>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1191"/>
       <source>Save File %1</source>
-      <translation type="unfinished">Save File %1</translation>
+      <translation>Desa el fitxer %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
@@ -5120,12 +5120,12 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1131"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1152"/>
@@ -5270,7 +5270,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2883"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
@@ -5280,7 +5280,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2905"/>
@@ -5354,7 +5354,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="350"/>
       <source>&amp;Save and Quit</source>
-      <translation type="unfinished">&amp;Save and Quit</translation>
+      <translation>De&amp;sa i surt</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="351"/>
@@ -5512,7 +5512,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1442"/>
       <source>Save Thumbnails</source>
-      <translation type="unfinished">Save Thumbnails</translation>
+      <translation>Desa les miniatures</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1704"/>
@@ -5574,12 +5574,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2377"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6010,12 +6010,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1066"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1067"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1431"/>
@@ -6153,12 +6153,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1874"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1875"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6224,12 +6224,12 @@ Press ESC to undo changes</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4292"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6250,7 +6250,7 @@ Press ESC to undo changes</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1930"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1931"/>
@@ -6281,7 +6281,7 @@ Press ESC to undo changes</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1971"/>
       <source>Could not save: %1
 %2</source>
-      <translation type="unfinished">Could not save: %1
+      <translation>No s'ha pogut desar: %1
 %2</translation>
     </message>
   </context>
@@ -6453,22 +6453,22 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="68"/>
       <source>&amp;no compression</source>
-      <translation type="unfinished">&amp;no compression</translation>
+      <translation>Se&amp;nse compressió</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="69"/>
       <source>&amp;LZW compression (lossless)</source>
-      <translation type="unfinished">&amp;LZW compression (lossless)</translation>
+      <translation>Compressió &amp;LZW (sense pèrdua)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="79"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="80"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6514,7 +6514,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="319"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="351"/>
@@ -6603,12 +6603,12 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="618"/>
       <source>Save Gradient</source>
-      <translation type="unfinished">Save Gradient</translation>
+      <translation>Desa el degradat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="619"/>
       <source>Saves the current Gradient</source>
-      <translation type="unfinished">Saves the current Gradient</translation>
+      <translation>Desa el degradat actual</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="747"/>
@@ -6900,12 +6900,12 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3696"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
 </TS>
