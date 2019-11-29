@@ -2548,7 +2548,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
       <source>log-path.txt</source>
-      <translation type="unfinished">log-path.txt</translation>
+      <translation>log-path.txt</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
@@ -2691,22 +2691,22 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
       <source>Use Log File</source>
-      <translation type="unfinished">Use Log File</translation>
+      <translation>Utilitza un fitxer d'informe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1372"/>
       <source>If checked, a log file will be created.</source>
-      <translation type="unfinished">If checked, a log file will be created.</translation>
+      <translation>En habilitar aquesta opció, es crearà un fitxer d'informe.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
       <source>Open Log</source>
-      <translation type="unfinished">Open Log</translation>
+      <translation>Obre l'informe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1383"/>
       <source>Logging</source>
-      <translation type="unfinished">Logging</translation>
+      <translation>S'està registrant</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1430"/>
@@ -3334,7 +3334,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
       <source>Batch Log</source>
-      <translation type="unfinished">Batch Log</translation>
+      <translation>Informe del procés per lots</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
