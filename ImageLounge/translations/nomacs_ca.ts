@@ -2931,7 +2931,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="748"/>
       <source>Output Directory</source>
-      <translation type="unfinished">Output Directory</translation>
+      <translation>Carpeta de sortida</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="751"/>
@@ -2941,24 +2941,24 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="753"/>
       <source>Select a Directory</source>
-      <translation type="unfinished">Select a Directory</translation>
+      <translation>Trieu una carpeta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="758"/>
       <source>Overwrite Existing Files</source>
-      <translation type="unfinished">Overwrite Existing Files</translation>
+      <translation>Sobreescriu els fitxers existents</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="759"/>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-      <translation type="unfinished">If checked, existing files are overwritten.
-This option might destroy your images - so be careful!</translation>
+      <translation>En habilitar aquesta opció, se sobreescriuran els fitxers existents.
+Aquesta opció pot malmetre les imatges existents; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="763"/>
       <source>Do not Save Output Images</source>
-      <translation type="unfinished">Do not Save Output Images</translation>
+      <translation>No desis les imatges sortints</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="764"/>
