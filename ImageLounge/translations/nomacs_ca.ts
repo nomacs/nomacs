@@ -2629,7 +2629,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1326"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
-      <translation type="unfinished">If checked, a noise filter is applied which reduced color noise</translation>
+      <translation>En habilitar aquesta opció, s'aplicarà un filtre per reduir el soroll a la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
@@ -2654,7 +2654,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1344"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation type="unfinished">If checked, images are NOT rotated with respect to their Exif orientation</translation>
+      <translation>En habilitar aquesta opció, no es rotaran les imatges per respectar l'orientació Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
@@ -2665,7 +2665,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-      <translation type="unfinished">If checked, orientation is written to the Exif rather than rotating the image Matrix
+      <translation>En habilitar aquesta opció, l'orientació s'escriurà a les dades Exif en comptes de rotar la matriu
 </translation>
     </message>
     <message>
@@ -2964,8 +2964,8 @@ Aquesta opció pot malmetre les imatges existents; aneu amb precaució!</transla
       <location filename="../../src/DkGui/DkBatch.cpp" line="764"/>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-      <translation type="unfinished">If checked, output images are not saved at all.
-This option is only useful if plugins save sidecar files - so be careful!</translation>
+      <translation>En habilitar aquesta opció, realment no es desaran les imatges sortints.
+Aquesta és només útil si els complements desen fitxers associats; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
@@ -2975,7 +2975,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="769"/>
       <source>If checked, the batch is applied to the input folder - so be careful!</source>
-      <translation type="unfinished">If checked, the batch is applied to the input folder - so be careful!</translation>
+      <translation>En habilitar aquesta opció, el procés per lots s'aplica a la carpeta d'entrada; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="773"/>
@@ -3774,7 +3774,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation type="unfinished">If checked, the mouse wheel behaviour is inverted while zooming.</translation>
+      <translation>En habilitar aquesta opció, s'invertirà el comportament del zoom a la roda del ratolí.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
@@ -3784,7 +3784,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation type="unfinished">NOTE: if checked, nomacs might be slow while zooming.</translation>
+      <translation>NOTA: En habilitar aquesta opció, el nomacs es pot alentir en modificar el zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
@@ -3794,7 +3794,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation type="unfinished">If checked, scrollbars will appear that allow panning with the mouse.</translation>
+      <translation>En habilitar aquesta opció, les barres de moviment apareixeran per permetre el moviment del ratolí.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
