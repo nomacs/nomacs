@@ -1362,7 +1362,7 @@
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
       <source>Cropped</source>
-      <translation type="unfinished">Cropped</translation>
+      <translation>Retallat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="84"/>
@@ -2085,7 +2085,7 @@
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1099"/>
       <source>Plugin Manager</source>
-      <translation type="unfinished">Plugin Manager</translation>
+      <translation>Gestor de complements</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1100"/>
@@ -2097,12 +2097,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1274"/>
       <source>Close plugin</source>
-      <translation type="unfinished">Close plugin</translation>
+      <translation>Tanqueu el complement</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1276"/>
       <source>Please close the currently opened plugin.</source>
-      <translation type="unfinished">Please close the currently opened plugin.</translation>
+      <translation>Tanqueu el complement en ús.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="82"/>
@@ -2368,32 +2368,32 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="803"/>
       <source>Binary</source>
-      <translation type="unfinished">Binary</translation>
+      <translation>Binari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="804"/>
       <source>Indexed 8-bit</source>
-      <translation type="unfinished">Indexed 8-bit</translation>
+      <translation>Indexat 8-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="810"/>
       <source>RGB 32-bit</source>
-      <translation type="unfinished">RGB 32-bit</translation>
+      <translation>RGB 32-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="816"/>
       <source>ARGB 32-bit</source>
-      <translation type="unfinished">ARGB 32-bit</translation>
+      <translation>ARGB 32-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="819"/>
       <source>RGB 16-bit</source>
-      <translation type="unfinished">RGB 16-bit</translation>
+      <translation>RGB 16-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="822"/>
       <source>ARGB 24-bit</source>
-      <translation type="unfinished">ARGB 24-bit</translation>
+      <translation>ARGB 24-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="824"/>
@@ -5628,7 +5628,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="545"/>
       <source>Plugin Manager</source>
-      <translation type="unfinished">Plugin Manager</translation>
+      <translation>Gestor de complements</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="557"/>
