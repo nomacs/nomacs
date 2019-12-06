@@ -519,7 +519,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1173"/>
       <source>Show &amp;Menu</source>
-      <translation type="unfinished">Show &amp;Menu</translation>
+      <translation>Zobrazit &amp;nabídku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
