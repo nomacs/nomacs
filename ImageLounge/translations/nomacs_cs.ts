@@ -3179,7 +3179,7 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation type="unfinished">&amp;Crop Rectangle</translation>
+      <translation>Oříznout na &amp;obdélník</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
