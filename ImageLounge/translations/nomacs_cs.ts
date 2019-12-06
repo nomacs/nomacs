@@ -1849,7 +1849,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
@@ -1864,7 +1864,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1500"/>
       <source>LZW</source>
-      <translation type="unfinished">LZW</translation>
+      <translation>LZW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1501"/>
@@ -1875,7 +1875,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>JPEG</source>
-      <translation type="unfinished">JPEG</translation>
+      <translation>JPEG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
@@ -1895,7 +1895,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Kodak 262</source>
-      <translation type="unfinished">Kodak 262</translation>
+      <translation>Kodak 262</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
@@ -1920,7 +1920,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
       <source>CCIRLEW</source>
-      <translation type="unfinished">CCIRLEW</translation>
+      <translation>CCIRLEW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1513"/>
@@ -1945,22 +1945,22 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1517"/>
       <source>IT8CTPAD</source>
-      <translation type="unfinished">IT8CTPAD</translation>
+      <translation>IT8CTPAD</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1518"/>
       <source>IT8LW</source>
-      <translation type="unfinished">IT8LW</translation>
+      <translation>IT8LW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1519"/>
       <source>IT8MP</source>
-      <translation type="unfinished">IT8MP</translation>
+      <translation>IT8MP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1520"/>
       <source>IT8BL</source>
-      <translation type="unfinished">IT8BL</translation>
+      <translation>IT8BL</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1521"/>
@@ -1980,7 +1980,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1524"/>
       <source>DCS</source>
-      <translation type="unfinished">DCS</translation>
+      <translation>DCS</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1525"/>
@@ -1995,7 +1995,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1527"/>
       <source>JBIG</source>
-      <translation type="unfinished">JBIG</translation>
+      <translation>JBIG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1528"/>
@@ -2010,7 +2010,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1530"/>
       <source>JPEG 2000</source>
-      <translation type="unfinished">JPEG 2000</translation>
+      <translation>JPEG 2000</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1531"/>
@@ -2020,7 +2020,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1532"/>
       <source>JBIG2 TIFF FX</source>
-      <translation type="unfinished">JBIG2 TIFF FX</translation>
+      <translation>JBIG2 TIFF FX</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1533"/>
@@ -2050,27 +2050,27 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1538"/>
       <source>LZMA2</source>
-      <translation type="unfinished">LZMA2</translation>
+      <translation>LZMA2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1539"/>
       <source>Zstd</source>
-      <translation type="unfinished">Zstd</translation>
+      <translation>Zstd</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1540"/>
       <source>WebP</source>
-      <translation type="unfinished">WebP</translation>
+      <translation>WebP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1541"/>
       <source>PNG</source>
-      <translation type="unfinished">PNG</translation>
+      <translation>PNG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1542"/>
       <source>JPEG XR</source>
-      <translation type="unfinished">JPEG XR</translation>
+      <translation>JPEG XR</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1543"/>
@@ -6049,12 +6049,12 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
       <source>Bicubic (4x4 interpolatia)</source>
-      <translation type="unfinished">Bicubic (4x4 interpolatia)</translation>
+      <translation>Bicubic (4x4 interpolace)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="399"/>
       <source>Lanczos (8x8 interpolation)</source>
-      <translation type="unfinished">Lanczos (8x8 interpolation)</translation>
+      <translation>Lanczos (8x8 interpolace)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="402"/>
