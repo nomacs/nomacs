@@ -2644,7 +2644,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
+      <translation>Je-li zaškrtnuto, nomacs se zeptá na uložení souborů které byly smazány jinou aplikací.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
