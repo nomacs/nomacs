@@ -4173,22 +4173,22 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
       <source>Load Saved Images</source>
-      <translation type="unfinished">Load Saved Images</translation>
+      <translation>Načíst uložený obrázek</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+      <translation>Po uložení se uložený obrázek načte na stejném místě.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1030"/>
       <source>Load to Tab</source>
-      <translation type="unfinished">Load to Tab</translation>
+      <translation>Načíst do panelu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1031"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation type="unfinished">After saving, the saved image will be loaded to a tab.</translation>
+      <translation>Po uložení se uložený obrázek načte do nového panelu.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
@@ -4203,7 +4203,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>Image Saving Policy</source>
-      <translation type="unfinished">Image Saving Policy</translation>
+      <translation>Zásady ukládání obrázků</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1056"/>
