@@ -3802,7 +3802,7 @@ Tato možnost je užitečná pouze pokud rozšíření ukládají soubory strano
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation>Interpolaci obrázků nebude provedena, pokud je úroveň zvětšení větší než zadaná hodnota.</translation>
+      <translation>Interpolace obrázků nebude provedena, pokud je úroveň zvětšení větší než zadaná hodnota.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
@@ -5883,17 +5883,17 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2138"/>
       <source>Load the directory</source>
-      <translation type="unfinished">Load the directory</translation>
+      <translation>Načíst adresář</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2148"/>
       <source>Pin this directory</source>
-      <translation type="unfinished">Pin this directory</translation>
+      <translation>Připnout tento adresář</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="2156"/>
       <source>Remove this directory</source>
-      <translation type="unfinished">Remove this directory</translation>
+      <translation>Odepnout tento adresář</translation>
     </message>
   </context>
   <context>
