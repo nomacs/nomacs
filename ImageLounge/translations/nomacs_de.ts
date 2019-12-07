@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation type="unfinished">&amp;Resize...</translation>
+      <translation>&amp;Größe ändern...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation type="unfinished">Resize the image</translation>
+      <translation>Bildgröße verändern</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1548,7 +1548,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation type="unfinished">Cannot resize image</translation>
+      <translation>Bildgröße kann nicht verändert werden</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1875,7 +1875,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>JPEG</source>
-      <translation type="unfinished">JPEG</translation>
+      <translation>JPEG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
@@ -1905,7 +1905,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Sony ARW Compressed</source>
-      <translation type="unfinished">Sony ARW Compressed</translation>
+      <translation>Sony ARW Komprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
@@ -1915,7 +1915,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
       <source>Samsung SRW Compressed</source>
-      <translation type="unfinished">Samsung SRW Compressed</translation>
+      <translation>Samsung SRW Komprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
