@@ -1799,17 +1799,17 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1485"/>
       <source>Fired, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return detected</translation>
+      <translation>Disparat, reducció d'ulls vermells, retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1486"/>
       <source>On, Red-eye reduction</source>
-      <translation type="unfinished">On, Red-eye reduction</translation>
+      <translation>Activat, reducció ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1487"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">On, Red-eye reduction, Return not detected</translation>
+      <translation>Activat, reducció ulls vermells, retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1488"/>
