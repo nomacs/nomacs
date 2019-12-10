@@ -405,7 +405,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1109"/>
       <source>Undo Last Action</source>
-      <translation>Vrátit poslední akci</translation>
+      <translation>Vrátí poslední akci</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1111"/>
@@ -415,7 +415,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1114"/>
       <source>Redo Last Action</source>
-      <translation>Opakovat poslední akci</translation>
+      <translation>Opakuje poslední akci</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1116"/>
@@ -1282,7 +1282,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 0</source>
-      <translation type="unfinished">Star Rating 0</translation>
+      <translation>Hodnocení bez hvězdičky</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1564"/>
@@ -1297,27 +1297,27 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Star Rating 1</source>
-      <translation type="unfinished">Star Rating 1</translation>
+      <translation>Hodnocení 1 hvězdičkou</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1571"/>
       <source>Star Rating 2</source>
-      <translation type="unfinished">Star Rating 2</translation>
+      <translation>Hodnocení 2 hvězdičkami</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1575"/>
       <source>Star Rating 3</source>
-      <translation type="unfinished">Star Rating 3</translation>
+      <translation>Hodnocení 3 hvězdičkami</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <source>Star Rating 4</source>
-      <translation type="unfinished">Star Rating 4</translation>
+      <translation>Hodnocení 4 hvězdičkami</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star Rating 5</source>
-      <translation type="unfinished">Star Rating 5</translation>
+      <translation>Hodnocení 5 hvězdičkami</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
