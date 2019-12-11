@@ -1322,42 +1322,42 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
       <source>Pan Image Up</source>
-      <translation type="unfinished">Pan Image Up</translation>
+      <translation>Posunout obrázek nahoru</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
       <source>Pans the image up if zoomed.</source>
-      <translation type="unfinished">Pans the image up if zoomed.</translation>
+      <translation>Posouvá během přiblížení obrázek nahoru.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
       <source>Pan Image Down</source>
-      <translation type="unfinished">Pan Image Down</translation>
+      <translation>Posunout obrázek dolu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
       <source>Pans the image down if zoomed.</source>
-      <translation type="unfinished">Pans the image down if zoomed.</translation>
+      <translation>Posouvá během přiblížení obrázek dolu.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1595"/>
       <source>Pan Image Left</source>
-      <translation type="unfinished">Pan Image Left</translation>
+      <translation>Posunout obrázek doleva</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1596"/>
       <source>Pans the image left if zoomed.</source>
-      <translation type="unfinished">Pans the image left if zoomed.</translation>
+      <translation>Posouvá během přiblížení obrázek doleva.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1599"/>
       <source>Pan Image Right</source>
-      <translation type="unfinished">Pan Image Right</translation>
+      <translation>Posunout obrázek doprava</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1600"/>
       <source>Pans the image right if zoomed.</source>
-      <translation type="unfinished">Pans the image right if zoomed.</translation>
+      <translation>Posouvá během přiblížení obrázek doprava.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
