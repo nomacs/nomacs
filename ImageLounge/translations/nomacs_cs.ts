@@ -494,7 +494,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>open image manipulation toolbox</source>
-      <translation>otevřít nástroj pro manipulaci s obrázky</translation>
+      <translation>Otevře nástroj pro manipulaci s obrázky</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1159"/>
@@ -524,7 +524,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Skryje nabídku a opět zobrazí ji klávesou ALT</translation>
+      <translation>Skryje nabídku a opět ji zobrazí klávesou ALT</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
@@ -534,7 +534,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1179"/>
       <source>Show Toolbar</source>
-      <translation>Zobrazovat nástrojovou lištu</translation>
+      <translation>Zobrazí nástrojovou lištu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1182"/>
@@ -544,7 +544,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1184"/>
       <source>Show Statusbar</source>
-      <translation>Zobrazovat stavový řádek</translation>
+      <translation>Zobrazí stavový řádek</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1187"/>
@@ -724,7 +724,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1276"/>
       <source>Close all open tabs</source>
-      <translation>Zavřít všechny otevřené panely</translation>
+      <translation>Zavřw všechny otevřené panely</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1278"/>
@@ -1432,7 +1432,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="118"/>
       <source>Create a Tiny Planet</source>
-      <translation>Vytvořit malou planetu</translation>
+      <translation>Vytvoří malou planetu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="122"/>
@@ -1442,7 +1442,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="123"/>
       <source>Add a background color</source>
-      <translation>Přidat barvu pozadí</translation>
+      <translation>Přidá barvu pozadí</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
@@ -1452,7 +1452,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Sharpens the image by applying an unsharp mask</source>
-      <translation>Zaostřit obrázek maskováním neostrosti</translation>
+      <translation>Zaostří obrázek maskováním neostrosti</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
@@ -1462,7 +1462,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="133"/>
       <source>Rotate the image</source>
-      <translation>Otočení obrázku</translation>
+      <translation>Otočí obrázek</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
@@ -1502,7 +1502,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation>Změna expozice a gammy</translation>
+      <translation>Změní expozici a gammu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
@@ -1568,13 +1568,13 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="454"/>
       <source>Cannot draw background color</source>
-      <translation type="unfinished">Cannot draw background color</translation>
+      <translation>Nelze vykreslit barvu pozadí</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished">&lt;data too large to display&gt;</translation>
+      <translation>&lt;data jsou příliš velká&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
@@ -2268,7 +2268,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation type="unfinished">Original filename added to Exif</translation>
+      <translation>Původní název souboru byl přidán do Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
@@ -2293,7 +2293,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>Přejmenovávám: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
@@ -2313,7 +2313,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>Kopíruji: %1 -&gt; %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -5397,7 +5397,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="934"/>
       <source>Meta Data Info</source>
-      <translation>Meta data informace</translation>
+      <translation>Informace o metadatech</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="955"/>
@@ -6648,8 +6648,8 @@ Vytváření miniatur…
       <location filename="../../src/DkCore/DkUpdater.cpp" line="368"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+      <translation>Aktualizace nomacs jsou zakázány.
+Další informace získáte od správce systému.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="415"/>
@@ -6722,8 +6722,8 @@ Please contact your system administrator for further information.</translation>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="162"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation type="unfinished">nomacs updates are disabled.
-Please contact your system administrator for further information.</translation>
+      <translation>Aktualizace nomacs jsou zakázány.
+Další informace získáte od správce systému.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="248"/>
