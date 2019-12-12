@@ -2553,7 +2553,7 @@ Restartujte nomacs a zkuste to znovu.</translation>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Importuje nastavení z &lt;settings-path.ini&gt; a uloží ho.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -5534,7 +5534,7 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Nelze nainstalovat novou verzi&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5650,7 +5650,7 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Pro spuštění stiskněte &lt;SPACE&gt; (mezerník).</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5660,7 +5660,7 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Stiskem klávesy &lt;SPACE&gt; (mezerníku) spustíte novou hru</translation>
     </message>
   </context>
   <context>
