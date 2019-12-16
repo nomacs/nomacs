@@ -89,7 +89,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="615"/>
       <source>&amp;Synchronize</source>
-      <translation>&amp;Eşzamanla</translation>
+      <translation>&amp;Eşzamanlama</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="958"/>
@@ -479,7 +479,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1148"/>
       <source>&amp;Settings</source>
-      <translation>&amp;Ayarla</translation>
+      <translation>&amp;Ayarlar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1150"/>
@@ -599,12 +599,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1215"/>
       <source>Metadata &amp;Info</source>
-      <translation>Meta Bilgisi</translation>
+      <translation>Üstveri &amp;Bilgisi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1217"/>
       <source>Show Metadata Info</source>
-      <translation>Göster Meta Bilgisi</translation>
+      <translation>Üstveri Bilgisini Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1220"/>
@@ -1422,7 +1422,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="112"/>
       <source>Invert the Image</source>
-      <translation>Görüntüyü Tersle</translation>
+      <translation>Resmi Ters Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="117"/>
@@ -1447,7 +1447,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Sharpen...</source>
-      <translation>%Keskinleştir...</translation>
+      <translation>Keskinleştir...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
@@ -1849,7 +1849,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
@@ -1869,7 +1869,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1501"/>
       <source>JPEG (old-style)</source>
-      <translation type="unfinished">JPEG (old-style)</translation>
+      <translation>JPEG (eski biçim)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
@@ -1900,7 +1900,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
       <source>Next</source>
-      <translation type="unfinished">Next</translation>
+      <translation>Sonraki</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
@@ -1915,7 +1915,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
       <source>Samsung SRW Compressed</source>
-      <translation type="unfinished">Samsung SRW Compressed</translation>
+      <translation>Samsung SRW Sıkıştırılmış</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
@@ -1950,12 +1950,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1518"/>
       <source>IT8LW</source>
-      <translation type="unfinished">IT8LW</translation>
+      <translation>IT8LW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1519"/>
       <source>IT8MP</source>
-      <translation type="unfinished">IT8MP</translation>
+      <translation>IT8MP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1520"/>
@@ -1980,7 +1980,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1524"/>
       <source>DCS</source>
-      <translation type="unfinished">DCS</translation>
+      <translation>DCS</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1525"/>
@@ -1995,7 +1995,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1527"/>
       <source>JBIG</source>
-      <translation type="unfinished">JBIG</translation>
+      <translation>JBIG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1528"/>
@@ -2010,7 +2010,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1530"/>
       <source>JPEG 2000</source>
-      <translation type="unfinished">JPEG 2000</translation>
+      <translation>JPEG 2000</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1531"/>
@@ -5102,7 +5102,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1068"/>
       <source>Metadata Menu</source>
-      <translation>Meta veriler menüsü</translation>
+      <translation>Üstveri menüsü</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
