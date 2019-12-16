@@ -159,7 +159,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="989"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="991"/>
@@ -845,7 +845,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1324"/>
       <source>if checked images are smoother</source>
-      <translation>si ho seleccioneu, se suavitzaran les imatges</translation>
+      <translation>en habilitar aquesta opció, se suavitzaran les imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1328"/>
@@ -855,7 +855,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1330"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>si ho activeu, es mostrarà un patró pels objectes transparents</translation>
+      <translation>en habilitar aquesta opció, es mostrarà un patró pels objectes transparents</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1334"/>
@@ -1236,48 +1236,48 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1536"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1552"/>
       <source>Jumps 10 images before the current image</source>
-      <translation type="unfinished">Jumps 10 images before the current image</translation>
+      <translation>Salta 10 imatges abans de l'actual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1539"/>
       <source>Skip Next Images</source>
-      <translation type="unfinished">Skip Next Images</translation>
+      <translation>Evita les pròximes imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1540"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1556"/>
       <source>Jumps 10 images after the current image</source>
-      <translation type="unfinished">Jumps 10 images after the current image</translation>
+      <translation>Salta 10 imatges després de l'actual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1543"/>
       <source>First File Sync</source>
-      <translation type="unfinished">First File Sync</translation>
+      <translation>Situa a inici</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1547"/>
       <source>Last File Sync</source>
-      <translation type="unfinished">Last File Sync</translation>
+      <translation>Situa al final</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1551"/>
       <source>Skip Previous Images Sync</source>
-      <translation type="unfinished">Skip Previous Images Sync</translation>
+      <translation>Situa evitant les imatges prèvies</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1555"/>
       <source>Skip Next Images Sync</source>
-      <translation type="unfinished">Skip Next Images Sync</translation>
+      <translation>Situa evitant les imatges posteriors</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1559"/>
       <source>Delete File Silent</source>
-      <translation type="unfinished">Delete File Silent</translation>
+      <translation>Esborra sense confirmar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1560"/>
       <source>Deletes a file without warning</source>
-      <translation type="unfinished">Deletes a file without warning</translation>
+      <translation>Esborra un fitxer sense confirmació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
@@ -1362,7 +1362,7 @@
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
       <source>Cropped</source>
-      <translation type="unfinished">Cropped</translation>
+      <translation>Retallat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="84"/>
@@ -1528,7 +1528,7 @@
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="117"/>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="129"/>
       <source>Cannot flip image</source>
-      <translation type="unfinished">Cannot flip image</translation>
+      <translation>No es pot girar la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
@@ -1543,7 +1543,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="244"/>
       <source>Cannot rotate image</source>
-      <translation type="unfinished">Cannot rotate image</translation>
+      <translation>No es pot rotar la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
@@ -1580,7 +1580,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="835"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Nom de fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="525"/>
@@ -1591,52 +1591,52 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="529"/>
       <source>Target</source>
-      <translation type="unfinished">Target</translation>
+      <translation>Destí</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="533"/>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="837"/>
       <source>Size</source>
-      <translation type="unfinished">Size</translation>
+      <translation>Mida</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="537"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="540"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="543"/>
       <source>Date</source>
-      <translation type="unfinished">Date</translation>
+      <translation>Data</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="537"/>
       <source>Created</source>
-      <translation type="unfinished">Created</translation>
+      <translation>Creat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="540"/>
       <source>Last Modified</source>
-      <translation type="unfinished">Last Modified</translation>
+      <translation>Última modificació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="543"/>
       <source>Last Read</source>
-      <translation type="unfinished">Last Read</translation>
+      <translation>Última lectura</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="547"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="560"/>
       <source>Owner</source>
-      <translation type="unfinished">Owner</translation>
+      <translation>Propietari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="551"/>
       <source>OwnerID</source>
-      <translation type="unfinished">OwnerID</translation>
+      <translation>Idpropietari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="555"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="574"/>
       <source>Group</source>
-      <translation type="unfinished">Group</translation>
+      <translation>Grup</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="560"/>
@@ -1644,47 +1644,47 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="574"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="581"/>
       <source>Permissions</source>
-      <translation type="unfinished">Permissions</translation>
+      <translation>Permisos</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="567"/>
       <source>User</source>
-      <translation type="unfinished">User</translation>
+      <translation>Usuari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="581"/>
       <source>Other</source>
-      <translation type="unfinished">Other</translation>
+      <translation>Altres</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="591"/>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>Fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1456"/>
       <source>not defined</source>
-      <translation type="unfinished">not defined</translation>
+      <translation>sense definir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1457"/>
       <source>manual</source>
-      <translation type="unfinished">manual</translation>
+      <translation>manual</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1458"/>
       <source>normal</source>
-      <translation type="unfinished">normal</translation>
+      <translation>normal</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1459"/>
       <source>aperture priority</source>
-      <translation type="unfinished">aperture priority</translation>
+      <translation>prioritat d'obertura</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1460"/>
       <source>shutter priority</source>
-      <translation type="unfinished">shutter priority</translation>
+      <translation>prioritat de disparador</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1461"/>
@@ -1769,47 +1769,47 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1479"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation type="unfinished">Auto, Fired, Return not detected</translation>
+      <translation>Auto, Disparat, Retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1480"/>
       <source>Auto, Fired, Return detected</source>
-      <translation type="unfinished">Auto, Fired, Return detected</translation>
+      <translation>Auto, Disparat, Retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1481"/>
       <source>No flash function</source>
-      <translation type="unfinished">No flash function</translation>
+      <translation>Sense funció de flash</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1482"/>
       <source>Off, No flash function</source>
-      <translation type="unfinished">Off, No flash function</translation>
+      <translation>Apagat, sense funció flash</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1483"/>
       <source>Fired, Red-eye reduction</source>
-      <translation type="unfinished">Fired, Red-eye reduction</translation>
+      <translation>Disparat, reducció d'ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1484"/>
       <source>Fired, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Disparat, reducció d'ulls vermells, retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1485"/>
       <source>Fired, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">Fired, Red-eye reduction, Return detected</translation>
+      <translation>Disparat, reducció d'ulls vermells, retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1486"/>
       <source>On, Red-eye reduction</source>
-      <translation type="unfinished">On, Red-eye reduction</translation>
+      <translation>Activat, reducció ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1487"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">On, Red-eye reduction, Return not detected</translation>
+      <translation>Activat, reducció ulls vermells, retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1488"/>
@@ -2085,7 +2085,7 @@
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1099"/>
       <source>Plugin Manager</source>
-      <translation type="unfinished">Plugin Manager</translation>
+      <translation>Gestor de complements</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1100"/>
@@ -2097,12 +2097,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1274"/>
       <source>Close plugin</source>
-      <translation type="unfinished">Close plugin</translation>
+      <translation>Tanqueu el complement</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1276"/>
       <source>Please close the currently opened plugin.</source>
-      <translation type="unfinished">Please close the currently opened plugin.</translation>
+      <translation>Tanqueu el complement en ús.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="82"/>
@@ -2210,7 +2210,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="597"/>
       <source>%1 plugins applied.</source>
-      <translation>%1 plugins aplicats.</translation>
+      <translation>%1 complements aplicats.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="603"/>
@@ -2246,7 +2246,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="771"/>
       <source>Error while loading...</source>
-      <translation>Error carregant...</translation>
+      <translation>Error en carregar...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="779"/>
@@ -2256,7 +2256,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="785"/>
       <source>%1 failed</source>
-      <translation>%1 fallat</translation>
+      <translation>%1 fallit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
@@ -2268,22 +2268,22 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation>Fitxer original afegit a Exif</translation>
+      <translation>S'ha afegit el nom original del fitxer a les dades Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
       <source>%1 saved...</source>
-      <translation>%1 guardat...</translation>
+      <translation>%1 desat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="813"/>
       <source>Could not save: %1</source>
-      <translation>No s'ha pogut guardar: %1</translation>
+      <translation>No s'ha pogut desar: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="828"/>
       <source>Error: could not rename file, the target file exists already.</source>
-      <translation>Error: no s'ha pogut reanomenar el fitxer, ja existeix.</translation>
+      <translation>Error: no s'ha pogut reanomenar, el fitxer ja existeix.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="844"/>
@@ -2318,7 +2318,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
       <source>Error: back-up (%1) file already exists</source>
-      <translation>Error: fitxer de copia (%1) ja existeix</translation>
+      <translation>Error: El fitxer (%1) de còpia de seguretat ja existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="931"/>
@@ -2328,7 +2328,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="949"/>
       <source>Error: could not delete existing file</source>
-      <translation>Error: no s'ha pogut esborrar el fitxer existent</translation>
+      <translation>Error: no s'ha pogut suprimir el fitxer existent</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
@@ -2338,7 +2338,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation type="unfinished">I could not save to %1 so I restored the original file.</translation>
+      <translation>No s'ha pogut desar com a %1 i s'ha restaurat el fitxer original.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="981"/>
@@ -2368,32 +2368,32 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="803"/>
       <source>Binary</source>
-      <translation type="unfinished">Binary</translation>
+      <translation>Binari</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="804"/>
       <source>Indexed 8-bit</source>
-      <translation type="unfinished">Indexed 8-bit</translation>
+      <translation>Indexat 8-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="810"/>
       <source>RGB 32-bit</source>
-      <translation type="unfinished">RGB 32-bit</translation>
+      <translation>RGB 32-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="816"/>
       <source>ARGB 32-bit</source>
-      <translation type="unfinished">ARGB 32-bit</translation>
+      <translation>ARGB 32-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="819"/>
       <source>RGB 16-bit</source>
-      <translation type="unfinished">RGB 16-bit</translation>
+      <translation>RGB 16-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="822"/>
       <source>ARGB 24-bit</source>
-      <translation type="unfinished">ARGB 24-bit</translation>
+      <translation>ARGB 24-bit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="824"/>
@@ -2548,7 +2548,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
       <source>log-path.txt</source>
-      <translation type="unfinished">log-path.txt</translation>
+      <translation>log-path.txt</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
@@ -2629,7 +2629,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1326"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
-      <translation type="unfinished">If checked, a noise filter is applied which reduced color noise</translation>
+      <translation>En habilitar aquesta opció, s'aplicarà un filtre per reduir el soroll a la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
@@ -2639,7 +2639,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1337"/>
       <source>Ask to Save Deleted Files</source>
-      <translation type="unfinished">Ask to Save Deleted Files</translation>
+      <translation>Demana desar els fitxers suprimits</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
@@ -2654,18 +2654,18 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1344"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation type="unfinished">If checked, images are NOT rotated with respect to their Exif orientation</translation>
+      <translation>En habilitar aquesta opció, no es rotaran les imatges per respectar l'orientació Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
       <source>Save Exif Orientation</source>
-      <translation type="unfinished">Save Exif Orientation</translation>
+      <translation>Desa l'orientació Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-      <translation type="unfinished">If checked, orientation is written to the Exif rather than rotating the image Matrix
+      <translation>En habilitar aquesta opció, l'orientació s'escriurà a les dades Exif en comptes de rotar la matriu
 </translation>
     </message>
     <message>
@@ -2686,27 +2686,27 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1366"/>
       <source>Number of Threads</source>
-      <translation type="unfinished">Number of Threads</translation>
+      <translation>Número de fils</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
       <source>Use Log File</source>
-      <translation type="unfinished">Use Log File</translation>
+      <translation>Utilitza un fitxer d'informe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1372"/>
       <source>If checked, a log file will be created.</source>
-      <translation type="unfinished">If checked, a log file will be created.</translation>
+      <translation>En habilitar aquesta opció, es crearà un fitxer d'informe.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
       <source>Open Log</source>
-      <translation type="unfinished">Open Log</translation>
+      <translation>Obre l'informe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1383"/>
       <source>Logging</source>
-      <translation type="unfinished">Logging</translation>
+      <translation>S'està registrant</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1430"/>
@@ -2739,17 +2739,17 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="503"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="504"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="536"/>
       <source>Executable Files (*.exe);;</source>
-      <translation type="unfinished">Executable Files (*.exe);;</translation>
+      <translation>Fitxers executables (*.exe);;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="544"/>
@@ -2767,7 +2767,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3756"/>
       <source>Archive (%1)</source>
-      <translation type="unfinished">Archive (%1)</translation>
+      <translation>Fitxer (%1)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3763"/>
@@ -2778,7 +2778,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3767"/>
       <source>Extract to</source>
-      <translation type="unfinished">Extract to</translation>
+      <translation>Extreu a</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3780"/>
@@ -2794,7 +2794,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3788"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4008"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
@@ -2839,7 +2839,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4019"/>
       <source>Extracting file %1 of %2</source>
-      <translation type="unfinished">Extracting file %1 of %2</translation>
+      <translation>S'està extraient el fitxer %1 de %2</translation>
     </message>
   </context>
   <context>
@@ -2848,12 +2848,12 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="342"/>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1029"/>
       <source>Original Image</source>
-      <translation type="unfinished">Original Image</translation>
+      <translation>Imatge original</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1177"/>
       <source>Sorry, I could not save: %1</source>
-      <translation type="unfinished">Sorry, I could not save: %1</translation>
+      <translation>No es pot desar: %1</translation>
     </message>
   </context>
   <context>
@@ -2861,7 +2861,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2248"/>
       <source>Start/Cancel Batch Processing (%1)</source>
-      <translation type="unfinished">Start/Cancel Batch Processing (%1)</translation>
+      <translation>Inicia/Cancel·la el procés en lot (%1)</translation>
     </message>
   </context>
   <context>
@@ -2874,12 +2874,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="362"/>
       <source>Thumbnails</source>
-      <translation type="unfinished">Thumbnails</translation>
+      <translation>Miniatures</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="363"/>
       <source>File List</source>
-      <translation type="unfinished">File List</translation>
+      <translation>Llistat de fitxers</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="413"/>
@@ -2889,23 +2889,23 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="477"/>
       <source>No Files Selected</source>
-      <translation type="unfinished">No Files Selected</translation>
+      <translation>Cap fitxer seleccionat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="479"/>
       <source>%1 File Selected</source>
-      <translation type="unfinished">%1 File Selected</translation>
+      <translation>%1 Fitxer seleccionat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="481"/>
       <source>%1 Files Selected</source>
-      <translation type="unfinished">%1 Files Selected</translation>
+      <translation>%1 Fitxers seleccionats</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="506"/>
       <location filename="../../src/DkGui/DkBatch.cpp" line="520"/>
       <source>Results</source>
-      <translation type="unfinished">Results</translation>
+      <translation>Resultats</translation>
     </message>
   </context>
   <context>
@@ -2931,41 +2931,41 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="748"/>
       <source>Output Directory</source>
-      <translation type="unfinished">Output Directory</translation>
+      <translation>Carpeta de sortida</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="751"/>
       <source>Browse</source>
-      <translation type="unfinished">Browse</translation>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="753"/>
       <source>Select a Directory</source>
-      <translation type="unfinished">Select a Directory</translation>
+      <translation>Trieu una carpeta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="758"/>
       <source>Overwrite Existing Files</source>
-      <translation type="unfinished">Overwrite Existing Files</translation>
+      <translation>Sobreescriu els fitxers existents</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="759"/>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-      <translation type="unfinished">If checked, existing files are overwritten.
-This option might destroy your images - so be careful!</translation>
+      <translation>En habilitar aquesta opció, se sobreescriuran els fitxers existents.
+Aquesta opció pot malmetre les imatges existents; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="763"/>
       <source>Do not Save Output Images</source>
-      <translation type="unfinished">Do not Save Output Images</translation>
+      <translation>No desis les imatges sortints</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="764"/>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-      <translation type="unfinished">If checked, output images are not saved at all.
-This option is only useful if plugins save sidecar files - so be careful!</translation>
+      <translation>En habilitar aquesta opció, realment no es desaran les imatges sortints.
+Aquesta és només útil si els complements desen fitxers associats; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
@@ -2975,7 +2975,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="769"/>
       <source>If checked, the batch is applied to the input folder - so be careful!</source>
-      <translation type="unfinished">If checked, the batch is applied to the input folder - so be careful!</translation>
+      <translation>En habilitar aquesta opció, el procés per lots s'aplica a la carpeta d'entrada; aneu amb precaució!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="773"/>
@@ -2986,13 +2986,13 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
       <location filename="../../src/DkGui/DkBatch.cpp" line="774"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation type="unfinished">If checked, the original file will be deleted if the conversion was successful.
- So be careful!</translation>
+      <translation>En habilitar aquesta opció, el fitxer original se suprimirà si la conversió s'ha dut a terme correctament.
+ Aneu amb compte!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="792"/>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Nom de fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="813"/>
@@ -3078,7 +3078,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="1255"/>
       <source>[OK]</source>
-      <translation type="unfinished">[OK]</translation>
+      <translation>[D'ACORD]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="1257"/>
@@ -3324,7 +3324,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2694"/>
       <source>Canceling...</source>
-      <translation type="unfinished">Canceling...</translation>
+      <translation>S'està cancel·lant...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2748"/>
@@ -3334,7 +3334,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
       <source>Batch Log</source>
-      <translation type="unfinished">Batch Log</translation>
+      <translation>Informe del procés per lots</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
@@ -3372,7 +3372,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="512"/>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>Fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
@@ -3417,7 +3417,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1376"/>
       <source>Save File</source>
-      <translation type="unfinished">Save File</translation>
+      <translation>Desa el fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1384"/>
@@ -3435,12 +3435,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4352"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -3505,7 +3505,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1269"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation type="unfinished">Sorry, I cannot save comments for this image format.</translation>
+      <translation>No es pot desar els comentaris en aquest format d'imatge.</translation>
     </message>
   </context>
   <context>
@@ -3513,22 +3513,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="147"/>
       <source>JPG Settings</source>
-      <translation type="unfinished">JPG Settings</translation>
+      <translation>Opcions JPG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="149"/>
       <source>J2K Settings</source>
-      <translation type="unfinished">J2K Settings</translation>
+      <translation>Opcions J2K</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="158"/>
       <source>WebP Settings</source>
-      <translation type="unfinished">WebP Settings</translation>
+      <translation>Opcions WebP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="171"/>
       <source>Save for Web</source>
-      <translation type="unfinished">Save for Web</translation>
+      <translation>Desa per a web</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="184"/>
@@ -3543,22 +3543,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="207"/>
       <source>Small  (800 x 600)</source>
-      <translation type="unfinished">Small  (800 x 600)</translation>
+      <translation>Petit (800 x 600)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="208"/>
       <source>Medium (1024 x 786)</source>
-      <translation type="unfinished">Medium (1024 x 786)</translation>
+      <translation>Mig (1024 x 786)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="209"/>
       <source>Large  (1920 x 1080)</source>
-      <translation type="unfinished">Large  (1920 x 1080)</translation>
+      <translation>Gran  (1920 x 1080)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="210"/>
       <source>Original Size</source>
-      <translation type="unfinished">Original Size</translation>
+      <translation>Mida original</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="214"/>
@@ -3588,32 +3588,32 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="223"/>
       <source>Lossless Compression</source>
-      <translation type="unfinished">Lossless Compression</translation>
+      <translation>Compressió sense pèrdua</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="230"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="253"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="256"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="366"/>
       <source>File Size: --</source>
-      <translation type="unfinished">File Size: --</translation>
+      <translation>Mida del fitxer: --</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="380"/>
       <source>File Size: ~%1</source>
-      <translation type="unfinished">File Size: ~%1</translation>
+      <translation>Mida del fitxer: ~%1</translation>
     </message>
   </context>
   <context>
@@ -3639,7 +3639,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="941"/>
       <source>Cancel (ESC)</source>
-      <translation type="unfinished">Cancel (ESC)</translation>
+      <translation>Cancel·la (ESC)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="945"/>
@@ -3679,7 +3679,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="987"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
@@ -3774,7 +3774,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation type="unfinished">If checked, the mouse wheel behaviour is inverted while zooming.</translation>
+      <translation>En habilitar aquesta opció, s'invertirà el comportament del zoom a la roda del ratolí.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
@@ -3784,7 +3784,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation type="unfinished">NOTE: if checked, nomacs might be slow while zooming.</translation>
+      <translation>NOTA: En habilitar aquesta opció, el nomacs es pot alentir en modificar el zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
@@ -3794,7 +3794,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation type="unfinished">If checked, scrollbars will appear that allow panning with the mouse.</translation>
+      <translation>En habilitar aquesta opció, les barres de moviment apareixeran per permetre el moviment del ratolí.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
@@ -3814,7 +3814,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation type="unfinished">If checked, predefined zoom levels are used when zooming.</translation>
+      <translation>En habilitar aquesta opció, s'utilitzaran els valors per defecte del zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3839,7 +3839,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation type="unfinished">If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</translation>
+      <translation>En habilitar aquesta opció, el nivell del zoom es manté només si la imatge carregada té el mateix nivell que l'anterior.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
@@ -3909,7 +3909,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
       <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-      <translation type="unfinished">If unchecked, loading is only animated if nomacs is fullscreen</translation>
+      <translation>En inhabilitar aquesta opció, la càrrega es realitza de forma animada només si el nomacs està a pantalla completa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="801"/>
@@ -3986,12 +3986,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
       <source>Save Folder:</source>
-      <translation type="unfinished">Save Folder:</translation>
+      <translation>Carpeta de destinació:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2454"/>
       <source>Specify a Save Folder</source>
-      <translation type="unfinished">Specify a Save Folder</translation>
+      <translation>Indiqueu on desar el contingut</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2457"/>
@@ -4016,7 +4016,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2525"/>
@@ -4041,7 +4041,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2636"/>
       <source>Sorry, I could not save: %1</source>
-      <translation type="unfinished">Sorry, I could not save: %1</translation>
+      <translation>No es pot desar: %1</translation>
     </message>
   </context>
   <context>
@@ -4072,7 +4072,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1156"/>
       <source>Browse</source>
-      <translation type="unfinished">Browse</translation>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
@@ -4121,7 +4121,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="965"/>
       <source>Screenshots are automatically saved to this folder</source>
-      <translation type="unfinished">Screenshots are automatically saved to this folder</translation>
+      <translation>Les captures de pantalla es desaran automàticament en aquesta carpeta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
@@ -4176,7 +4176,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
       <source>Load Saved Images</source>
-      <translation type="unfinished">Load Saved Images</translation>
+      <translation>Carrega les imatges desades</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
@@ -4360,12 +4360,12 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3650"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3668"/>
@@ -4387,7 +4387,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="305"/>
       <source>Background Color</source>
-      <translation type="unfinished">Background Color</translation>
+      <translation>Color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="310"/>
@@ -4438,7 +4438,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
       <source>If checked, recent files will be saved.</source>
-      <translation type="unfinished">If checked, recent files will be saved.</translation>
+      <translation>En habilitar aquesta opció, es desaran els fitxers recents.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="359"/>
@@ -4478,7 +4478,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="376"/>
       <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-      <translation type="unfinished">If checked, the mouse wheel zooms - otherwise it is used to switch between images.</translation>
+      <translation>En habilitar aquesta opció, s'utilitza la roda del ratolí com a zoom - en cas contrari s'utilitza per alternar entre imatges.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="379"/>
@@ -4488,7 +4488,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="381"/>
       <source>If checked, horizontal wheel events load the next/previous images.</source>
-      <translation type="unfinished">If checked, horizontal wheel events load the next/previous images.</translation>
+      <translation>En habilitar aquesta opció, el moviment horitzontal de la roda mostra la imatge següent/anterior.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="384"/>
@@ -4498,7 +4498,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="386"/>
       <source>If checked, a double click on the canvas opens the fullscreen mode.</source>
-      <translation type="unfinished">If checked, a double click on the canvas opens the fullscreen mode.</translation>
+      <translation>En habilitar aquesta opció, el doble clic del ratolí a la interfície obre en pantalla completa.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="389"/>
@@ -4508,7 +4508,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="391"/>
       <source>If checked, the nomacs logo is shown in the bottom right corner.</source>
-      <translation type="unfinished">If checked, the nomacs logo is shown in the bottom right corner.</translation>
+      <translation>En habilitar aquesta opció, el logo del nomacs es mostrarà a la cantonada inferior dreta.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="394"/>
@@ -4518,7 +4518,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="396"/>
       <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-      <translation type="unfinished">If checked, CTRL + Mouse is switched with ALT + Mouse.</translation>
+      <translation>En habilitar aquesta opció, CTRL + Ratolí canviarà a ALT + Ratolí.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="399"/>
@@ -4625,7 +4625,7 @@ Do you want to show them again?</translation>
       <location filename="../../src/DkCore/DkUtils.cpp" line="368"/>
       <source>English</source>
       <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
-      <translation type="unfinished">English</translation>
+      <translation>Català</translation>
     </message>
   </context>
   <context>
@@ -4734,7 +4734,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="746"/>
       <source>Save Image</source>
-      <translation type="unfinished">Save Image</translation>
+      <translation>Desa la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="747"/>
@@ -4768,7 +4768,7 @@ Do you want to show them again?</translation>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1118"/>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1191"/>
       <source>Save File %1</source>
-      <translation type="unfinished">Save File %1</translation>
+      <translation>Desa el fitxer %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
@@ -5120,12 +5120,12 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1131"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1152"/>
@@ -5270,7 +5270,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2883"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
@@ -5280,7 +5280,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2905"/>
@@ -5354,7 +5354,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="350"/>
       <source>&amp;Save and Quit</source>
-      <translation type="unfinished">&amp;Save and Quit</translation>
+      <translation>De&amp;sa i surt</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="351"/>
@@ -5420,7 +5420,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1040"/>
       <source>Thumbnails</source>
-      <translation type="unfinished">Thumbnails</translation>
+      <translation>Miniatures</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1078"/>
@@ -5512,7 +5512,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1442"/>
       <source>Save Thumbnails</source>
-      <translation type="unfinished">Save Thumbnails</translation>
+      <translation>Desa les miniatures</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1704"/>
@@ -5533,7 +5533,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1829"/>
       <source>Cancel Update</source>
-      <translation type="unfinished">Cancel Update</translation>
+      <translation>Cancel·la l'actualització</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
@@ -5553,7 +5553,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1878"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -5574,12 +5574,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2377"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -5628,7 +5628,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="545"/>
       <source>Plugin Manager</source>
-      <translation type="unfinished">Plugin Manager</translation>
+      <translation>Gestor de complements</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="557"/>
@@ -6010,12 +6010,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1066"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1067"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1431"/>
@@ -6153,12 +6153,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1874"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1875"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6224,12 +6224,12 @@ Press ESC to undo changes</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4292"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6250,7 +6250,7 @@ Press ESC to undo changes</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1930"/>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Save</translation>
+      <translation>De&amp;sa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1931"/>
@@ -6281,7 +6281,7 @@ Press ESC to undo changes</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1971"/>
       <source>Could not save: %1
 %2</source>
-      <translation type="unfinished">Could not save: %1
+      <translation>No s'ha pogut desar: %1
 %2</translation>
     </message>
   </context>
@@ -6428,19 +6428,19 @@ Press ESC to undo changes</translation>
       <source>
 Creating thumbnails...
 </source>
-      <translation type="unfinished">
-Creating thumbnails...
+      <translation>
+S'està creant les miniatures...
 </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="296"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="300"/>
       <source>Thumbnails</source>
-      <translation type="unfinished">Thumbnails</translation>
+      <translation>Miniatures</translation>
     </message>
   </context>
   <context>
@@ -6448,27 +6448,27 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="65"/>
       <source>TIF compression</source>
-      <translation type="unfinished">TIF compression</translation>
+      <translation>Compressió TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="68"/>
       <source>&amp;no compression</source>
-      <translation type="unfinished">&amp;no compression</translation>
+      <translation>Se&amp;nse compressió</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="69"/>
       <source>&amp;LZW compression (lossless)</source>
-      <translation type="unfinished">&amp;LZW compression (lossless)</translation>
+      <translation>Compressió &amp;LZW (sense pèrdua)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="79"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="80"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6514,7 +6514,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="319"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="351"/>
@@ -6603,12 +6603,12 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="618"/>
       <source>Save Gradient</source>
-      <translation type="unfinished">Save Gradient</translation>
+      <translation>Desa el degradat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="619"/>
       <source>Saves the current Gradient</source>
-      <translation type="unfinished">Saves the current Gradient</translation>
+      <translation>Desa el degradat actual</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="747"/>
@@ -6712,7 +6712,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2003"/>
       <source>Cancel</source>
-      <translation type="unfinished">Cancel</translation>
+      <translation>Cancel·la</translation>
     </message>
   </context>
   <context>
@@ -6788,7 +6788,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="266"/>
       <source>Original Image</source>
-      <translation type="unfinished">Original Image</translation>
+      <translation>Imatge original</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
@@ -6848,7 +6848,7 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1551"/>
       <source>you cannot cancel this</source>
-      <translation type="unfinished">you cannot cancel this</translation>
+      <translation>no ho podeu cancel·lar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1559"/>
@@ -6900,12 +6900,12 @@ Please contact your system administrator for further information.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3696"/>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>D'&amp;acord</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Cancel</translation>
+      <translation>&amp;Cancel·la</translation>
     </message>
   </context>
 </TS>
