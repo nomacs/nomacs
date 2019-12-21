@@ -105,7 +105,7 @@ public:
 	static void mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable);
 	static void gammaToLinear(cv::Mat& img);
 	static void linearToGamma(cv::Mat& img);
-	static void logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale = 1.0);
+	static void logPolar(const cv::Mat& src, cv::Mat& dst, cv::Point2d center, double scaleLog, double angle, double scale = 1.0);
 	static void tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bool invert = false);
 #endif
 
@@ -144,7 +144,7 @@ public:
 	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
 	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
 	static QImage bgColor(const QImage& src, const QColor& col);
-	static QByteArray extractImageFromDataStream(const QByteArray& ba, const QByteArray& beginSignature = "‰PNG", const QByteArray& endSignature = "END®B`‚", bool debugOutput = false);
+	static QByteArray extractImageFromDataStream(const QByteArray& ba, const QByteArray& beginSignature = "â€°PNG", const QByteArray& endSignature = "ENDÂ®B`â€š", bool debugOutput = false);
 	static QByteArray fixSamsungPanorama(QByteArray& ba);
 	static int intFromByteArray(const QByteArray& ba, int pos);
 	
