@@ -6196,7 +6196,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="259"/>
       <source>Portable</source>
-      <translation type="unfinished">Portable</translation>
+      <translation>ポータブル</translation>
     </message>
   </context>
   <context>
@@ -6576,7 +6576,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="562"/>
       <source>Click into the field for a new slider</source>
-      <translation type="unfinished">Click into the field for a new slider</translation>
+      <translation>フィールド内でクリックすると新しいスライダーが表示されます</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="606"/>
@@ -6591,12 +6591,12 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="612"/>
       <source>Select Color</source>
-      <translation>色を選択する</translation>
+      <translation>色を選択</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="613"/>
       <source>Adds a slider at the selected color value</source>
-      <translation type="unfinished">Adds a slider at the selected color value</translation>
+      <translation>クリックした部分の色の値でスライダーを追加します</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="618"/>
