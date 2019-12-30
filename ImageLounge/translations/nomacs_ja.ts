@@ -850,7 +850,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1328"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>透明パターン</translation>
+      <translation>透明パターン(&amp;T)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1330"/>
@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation type="unfinished">&amp;Resize...</translation>
+      <translation>サイズ変更(&amp;R)...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation type="unfinished">Resize the image</translation>
+      <translation>画像のサイズを変更する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1548,7 +1548,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation type="unfinished">Cannot resize image</translation>
+      <translation>画像のサイズを変更できません</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1704,7 +1704,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1464"/>
       <source>landscape mode</source>
-      <translation>ランドスケープ モード</translation>
+      <translation>ランドスケープモード</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1467"/>
@@ -1844,12 +1844,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncomressed</source>
-      <translation type="unfinished">Uncomressed</translation>
+      <translation>非圧縮</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
@@ -2134,12 +2134,12 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="324"/>
       <source>%1 image resized, scale factor: %2%</source>
-      <translation>画像 %1 をスケール因子 %2% でリサイズ</translation>
+      <translation>画像 %1 をスケール因子 %2% でサイズ変更</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="326"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation>画像 %1 を新しい幅 %2 px でリサイズ</translation>
+      <translation>画像 %1 を新しい幅 %2 px でサイズ変更</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="329"/>
@@ -2195,7 +2195,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="586"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation>%1 illegal plugin interface: %2</translation>
+      <translation>%1 は不正なプラグインインターフェースです: %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="589"/>
@@ -2586,7 +2586,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1516"/>
       <source>Show test image</source>
-      <translation>Show test image</translation>
+      <translation>テスト画像を表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1519"/>
@@ -2749,7 +2749,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="536"/>
       <source>Executable Files (*.exe);;</source>
-      <translation>実行可能ファイル (*.exe);</translation>
+      <translation>実行可能ファイル (*.exe);;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="544"/>
@@ -2814,7 +2814,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3912"/>
       <source>Not a valid archive.</source>
-      <translation>アーカイブが有効ではありません。</translation>
+      <translation>有効なアーカイブではありません。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3941"/>
@@ -2824,7 +2824,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3943"/>
       <source>The archive does not contain any images.</source>
-      <translation>アーカイブには画像が含まれていません。</translation>
+      <translation>アーカイブに画像が含まれていません。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3968"/>
@@ -3091,7 +3091,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1985"/>
       <source>Resize</source>
-      <translation>リサイズ</translation>
+      <translation>サイズ変更</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1990"/>
@@ -3191,12 +3191,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2110"/>
       <source>Resize by: %1%</source>
-      <translation>次でリサイズ: %1%</translation>
+      <translation>次でサイズ変更: %1%</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2114"/>
       <source>Resize %1 to: %2 px</source>
-      <translation>%1 を %2 px にリサイズ</translation>
+      <translation>%1 を %2 px にサイズ変更</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2120"/>
@@ -3626,7 +3626,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkControlWidget.cpp" line="559"/>
       <source>Apply plugin changes?</source>
-      <translation>プラグインの変更を適用しますか。</translation>
+      <translation>プラグインの変更を適用しますか？</translation>
     </message>
   </context>
   <context>
@@ -3634,7 +3634,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="937"/>
       <source>Crop (ENTER)</source>
-      <translation>Crop (ENTER)</translation>
+      <translation>切り抜き(ENTER)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="941"/>
@@ -3669,7 +3669,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="967"/>
       <source>Swap Dimensions</source>
-      <translation>スワップ寸法</translation>
+      <translation>寸法を入れ替え</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="973"/>
@@ -3689,7 +3689,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
       <source>Rule of Thirds</source>
-      <translation>Rule of Thirds</translation>
+      <translation>三分割法</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
@@ -4125,7 +4125,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
       <source>Use Temporary Folder</source>
-      <translation>一時フォルダーを使用する</translation>
+      <translation>使用する一時フォルダー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="982"/>
@@ -4253,7 +4253,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="212"/>
       <source>Shows the Thumbnail Bar at the Bottom</source>
-      <translation>サムネールバーを下に表示する</translation>
+      <translation>サムネイルバーを下に表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="215"/>
@@ -5072,7 +5072,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="781"/>
       <source>Shows the Metadata on the Left</source>
-      <translation>メタデータを左に表示します</translation>
+      <translation>メタデータを左に表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="784"/>
@@ -5082,7 +5082,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="785"/>
       <source>Shows the Metadata at the Top</source>
-      <translation>メタデータを上に表示します</translation>
+      <translation>メタデータを上に表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="788"/>
@@ -5092,7 +5092,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="789"/>
       <source>Shows the Metadata on the Right</source>
-      <translation>メタデータを右に表示します</translation>
+      <translation>メタデータを右に表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="792"/>
@@ -5102,12 +5102,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="793"/>
       <source>Shows the Metadata at the Bottom</source>
-      <translation>メタデータを下に表示します</translation>
+      <translation>メタデータを下に表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1068"/>
       <source>Metadata Menu</source>
-      <translation>Metadata Menu</translation>
+      <translation>メタデータメニュー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
@@ -5477,7 +5477,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1274"/>
       <source>Question</source>
-      <translation>Question</translation>
+      <translation>質問</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1275"/>
@@ -5930,7 +5930,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="888"/>
       <source>Resize Image</source>
-      <translation>サイズを変更</translation>
+      <translation>画像のサイズを変更</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="907"/>
@@ -6673,7 +6673,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="454"/>
       <source>Translation updated</source>
-      <translation>翻訳が更新されました</translation>
+      <translation>翻訳を更新しました</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="459"/>
@@ -6754,7 +6754,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="262"/>
       <source>For more information see </source>
-      <translation>For more information see </translation>
+      <translation>詳細はこちら: </translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="268"/>
@@ -6790,7 +6790,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
       <source>Resize</source>
-      <translation>リサイズ</translation>
+      <translation>サイズ変更</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="718"/>
