@@ -3929,12 +3929,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="821"/>
       <source>Show crop rectangle</source>
-      <translation type="unfinished">Show crop rectangle</translation>
+      <translation>切り抜いた部分 (矩形) を表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="825"/>
       <source>Show Metadata Cropping</source>
-      <translation type="unfinished">Show Metadata Cropping</translation>
+      <translation>メタデータの切り抜きの表示</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="863"/>
