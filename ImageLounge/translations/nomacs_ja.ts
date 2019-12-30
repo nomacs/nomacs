@@ -6204,7 +6204,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkCore/DkStatusBar.cpp" line="54"/>
       <source>CTRL activates the crosshair cursor</source>
-      <translation type="unfinished">CTRL activates the crosshair cursor</translation>
+      <translation>CTRLキーを押したままにすると十字カーソルになります</translation>
     </message>
   </context>
   <context>
@@ -6319,17 +6319,17 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1261"/>
       <source> selected</source>
-      <translation type="unfinished"> selected</translation>
+      <translation> 個選択中</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
       <source> images</source>
-      <translation type="unfinished"> images</translation>
+      <translation> 個の画像</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1265"/>
       <source>%1 | %2</source>
-      <translation type="unfinished">%1 | %2</translation>
+      <translation>%1 | %2</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
@@ -6341,22 +6341,22 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
       <source>Sorry, I cannot %1 %2</source>
-      <translation type="unfinished">Sorry, I cannot %1 %2</translation>
+      <translation>申し訳ありません、%2 を %1 できません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1463"/>
       <source>move</source>
-      <translation type="unfinished">move</translation>
+      <translation>移動</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1474"/>
       <source>create link</source>
-      <translation type="unfinished">create link</translation>
+      <translation>リンクを作成</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1482"/>
       <source>copy</source>
-      <translation type="unfinished">copy</translation>
+      <translation>コピー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1504"/>
