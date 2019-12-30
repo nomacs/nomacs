@@ -2819,7 +2819,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3941"/>
       <source>Number of images: </source>
-      <translation>画像の数:</translation>
+      <translation>画像の数: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3943"/>
@@ -3664,7 +3664,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="965"/>
       <source>Swap</source>
-      <translation>スワップ</translation>
+      <translation>入れ替え</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="967"/>
@@ -4112,7 +4112,8 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1112"/>
       <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-      <translation>すべての情報フィールドは現在、非表示になっています。あなたは、それらを再度表示しますか？</translation>
+      <translation>現在すべての情報フィールドが非表示になっています。
+再度表示しますか？</translation>
     </message>
   </context>
   <context>
@@ -4273,12 +4274,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="582"/>
       <source>Name: </source>
-      <translation>名前:</translation>
+      <translation>名前: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="583"/>
       <source>Size: </source>
-      <translation>サイズ:</translation>
+      <translation>サイズ: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="584"/>
@@ -5181,7 +5182,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2772"/>
       <source>Mosaic Image:</source>
-      <translation>モザイク画像：</translation>
+      <translation>モザイク画像:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2775"/>
@@ -6300,12 +6301,12 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="892"/>
       <source>Name: </source>
-      <translation>名前:</translation>
+      <translation>名前: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="893"/>
       <source>Size: </source>
-      <translation>サイズ:</translation>
+      <translation>サイズ: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="894"/>
@@ -6400,7 +6401,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1872"/>
       <source>Thumb Preview Toolbar</source>
-      <translation type="unfinished">Thumb Preview Toolbar</translation>
+      <translation>サムネイルプレビューツールバー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1890"/>
@@ -6415,7 +6416,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1918"/>
       <source>Thumb</source>
-      <translation type="unfinished">Thumb</translation>
+      <translation>サムネイル</translation>
     </message>
   </context>
   <context>
@@ -6541,7 +6542,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="424"/>
       <source>Please name the new format:</source>
-      <translation type="unfinished">Please name the new format:</translation>
+      <translation>新しいフォーマットの名前をつけてください:</translation>
     </message>
   </context>
   <context>
@@ -6549,7 +6550,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="527"/>
       <source>Pseudo Color Toolbar</source>
-      <translation type="unfinished">Pseudo Color Toolbar</translation>
+      <translation>疑似カラーツールバー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="532"/>
@@ -6560,7 +6561,7 @@ Creating thumbnails...
       <location filename="../../src/DkGui/DkToolbars.cpp" line="533"/>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="783"/>
       <source>Enables the Pseudo Color function</source>
-      <translation type="unfinished">Enables the Pseudo Color function</translation>
+      <translation>疑似カラー機能を有効にする</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="542"/>
@@ -6585,7 +6586,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="607"/>
       <source>Resets the Pseudo Color function</source>
-      <translation type="unfinished">Resets the Pseudo Color function</translation>
+      <translation>疑似カラー機能をリセットする</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="612"/>
@@ -6635,7 +6636,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="781"/>
       <source>Disables the Pseudo Color function</source>
-      <translation type="unfinished">Disables the Pseudo Color function</translation>
+      <translation>疑似カラー機能を無効にする</translation>
     </message>
   </context>
   <context>
@@ -6861,7 +6862,7 @@ Please contact your system administrator for further information.</source>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1594"/>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
       <source>Attempted to set NULL image</source>
-      <translation type="unfinished">Attempted to set NULL image</translation>
+      <translation>NULL画像を設定しようとしました</translation>
     </message>
   </context>
   <context>
