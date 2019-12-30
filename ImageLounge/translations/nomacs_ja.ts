@@ -2503,7 +2503,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>表示モード&lt;mode&gt;を設定する。</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
@@ -6030,7 +6030,7 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="385"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>スケール</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="395"/>
@@ -6050,12 +6050,12 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
       <source>Bicubic (4x4 interpolatia)</source>
-      <translation type="unfinished">Bicubic (4x4 interpolatia)</translation>
+      <translation>バイキュービック (4x4 interpolatia)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="399"/>
       <source>Lanczos (8x8 interpolation)</source>
-      <translation type="unfinished">Lanczos (8x8 interpolation)</translation>
+      <translation>Lanczos (8x8補完)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="402"/>
