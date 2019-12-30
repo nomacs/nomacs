@@ -972,7 +972,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>画像が撮影された場所をGoogleマップで表示します</translation>
+      <translation>画像が撮影された場所をGoogleマップで表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
@@ -1128,7 +1128,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1453"/>
       <source>Connect &amp;All</source>
-      <translation>全て接続する(&amp;A)</translation>
+      <translation>全て接続(&amp;A)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1456"/>
@@ -1138,7 +1138,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1458"/>
       <source>&amp;Sync All Actions</source>
-      <translation>全ての動作を同期する</translation>
+      <translation>全ての動作を同期(&amp;S)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1459"/>
@@ -2358,7 +2358,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1066"/>
       <source>Image</source>
-      <translation>イメージ</translation>
+      <translation>画像</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1088"/>
@@ -3176,12 +3176,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2038"/>
       <source>&amp;Crop from Metadata</source>
-      <translation type="unfinished">&amp;Crop from Metadata</translation>
+      <translation>メタデータから切り抜き(&amp;C)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation type="unfinished">&amp;Crop Rectangle</translation>
+      <translation>矩形に切り抜き(&amp;C)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3714,7 +3714,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
       <source>Crop to Metadata</source>
-      <translation type="unfinished">Crop to Metadata</translation>
+      <translation>メタデータへ切り抜き</translation>
     </message>
   </context>
   <context>
@@ -3722,7 +3722,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1987"/>
       <source>Crop Toolbar</source>
-      <translation>ツールバーを表示する</translation>
+      <translation>切り抜きツールバー</translation>
     </message>
   </context>
   <context>
@@ -4077,7 +4077,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
       <source>Register</source>
-      <translation>登録する</translation>
+      <translation>登録</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1175"/>
@@ -4098,7 +4098,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1275"/>
       <source>Image</source>
-      <translation>イメージ</translation>
+      <translation>画像</translation>
     </message>
   </context>
   <context>
@@ -4200,7 +4200,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
       <source>The saved image will not be loaded.</source>
-      <translation>保存された画像を読み込むことが出来ませんでした</translation>
+      <translation>保存した画像を読み込みません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
@@ -4437,7 +4437,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
       <source>If checked, recent files will be saved.</source>
-      <translation>チェックを入れると、最近使用したファイルが記録されます</translation>
+      <translation>チェックを入れると、最近使用したファイルを記録します</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="359"/>
@@ -4487,7 +4487,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="381"/>
       <source>If checked, horizontal wheel events load the next/previous images.</source>
-      <translation>チェックすればホイールで次/前の画像を読み込みます</translation>
+      <translation>チェックを入れると、マウスの水平スクロールで次/前の画像を読み込みます</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="384"/>
