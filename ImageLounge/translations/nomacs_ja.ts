@@ -2220,7 +2220,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="716"/>
       <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-      <translation>%1 はすでに存在します -&gt; スキップ (ファイルを上書きしたい場合は &apos;上書きする&apos; をチェックしてください)</translation>
+      <translation>%1 はすでに存在します -&gt; スキップ (ファイルを上書きしたい場合は「上書きする」をチェックしてください)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="721"/>
@@ -2261,7 +2261,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
       <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-      <translation>%1 は保存されません。&apos;保存しない&apos; オプションがチェックされています...</translation>
+      <translation>%1 は保存されません。「保存しない」オプションがチェックされています...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="806"/>
@@ -2298,7 +2298,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
       <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-      <translation>ファイルをコピーする必要がありますが、&apos;保存しない&apos;がチェックされているため、何も行いません...</translation>
+      <translation>ファイルをコピーする必要がありますが、「保存しない」がチェックされているため、何も行いません...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="894"/>
@@ -2333,7 +2333,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
       <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-      <translation type="unfinished">Ui - a lot of things went wrong. Your original file can be found here: %1</translation>
+      <translation>UI - 多数の間違いがありました。元のファイルはこちらにあります: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
@@ -2468,12 +2468,12 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
       <source>Edit ToolBar</source>
-      <translation type="unfinished">Edit ToolBar</translation>
+      <translation>編集ツールバー</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1245"/>
       <source>Movie ToolBar</source>
-      <translation type="unfinished">Movie ToolBar</translation>
+      <translation>映像ツールバー</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="122"/>
@@ -2644,7 +2644,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
+      <translation>チェックを入れると、nomacsは他のアプリケーションによって削除されたファイルを保存するか確認するダイアログを表示します</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
@@ -3027,7 +3027,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="828"/>
       <source>Bad Quality</source>
-      <translation type="unfinished">Bad Quality</translation>
+      <translation>悪品質</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="838"/>
@@ -3583,7 +3583,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="218"/>
       <source>Bad Quality</source>
-      <translation type="unfinished">Bad Quality</translation>
+      <translation>悪品質</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="223"/>
@@ -4432,7 +4432,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="354"/>
       <source>Remember Recent Files History</source>
-      <translation type="unfinished">Remember Recent Files History</translation>
+      <translation>最近使用したファイルの履歴を記録する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
