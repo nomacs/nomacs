@@ -529,7 +529,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
       <source>Tool&amp;bar</source>
-      <translation>Araç&amp;çubuğu</translation>
+      <translation>Araç &amp;çubuğu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1179"/>
@@ -704,7 +704,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1269"/>
       <source>Open a new tab</source>
-      <translation>Yeni bir sekme açar</translation>
+      <translation>Yeni bir sekme aç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1271"/>
@@ -1910,7 +1910,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
       <source>Packed RAW</source>
-      <translation type="unfinished">Packed RAW</translation>
+      <translation>Paketlenmiş RAW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
