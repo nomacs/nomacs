@@ -117,6 +117,22 @@ You will now have a binary (`nomacs.app`), which you can test (or use directly).
 $ sudo make install
 ```
 
+## Build in Docker
+We have created a docker image that best simulates the travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
+````bash
+docker build --rm -f "Dockerfile" -t nomacs:latest empty-docker-dir
+`````
+To deploy nomacs in a docker on your system, you can mount this directory using:
+````bash
+docker run --rm -it -v C:\\coding\\nomacs:/usr/nomacs nomacs:latest
+````
+If needed, you can upload the image:
+````bash
+docker login
+docker tag nomacs diemmarkus/nomacs
+docker push diemmarkus/nomacs:latest
+````
+
 ## Links
 
 - [nomacs.org](https://nomacs.org)
