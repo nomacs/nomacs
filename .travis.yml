@@ -17,7 +17,7 @@ addons:
         - cmake
         - build-essential
         - qt5-default
-        - qtcreator-dev
+        - qttools5-dev-tools 
         - qttools5-dev
         - libqt5svg5-dev
         - libexiv2-dev
