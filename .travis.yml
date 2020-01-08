@@ -18,6 +18,7 @@ addons:
         - build-essential
         - qt5-default
         - qtcreator-dev
+        - qttools5-dev
         - libqt5svg5-dev
         - libexiv2-dev
         # optional packages
