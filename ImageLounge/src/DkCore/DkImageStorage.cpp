@@ -1419,7 +1419,7 @@ void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTa
 	qDebug() << "gamma computation takes: " << dt;
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double angle, double scale) {
+void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, cv::Point2d center, double scaleLog, double angle, double scale) {
 
 	cv::Mat mapx, mapy;
 
