@@ -13,27 +13,17 @@ compiler:
 addons:
   apt:
     update: true
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
-      - lcov
-      - cmake
-      - debhelper
-      - cdbs
-      # Qt
-      - qt5-default
-      - qttools5-dev-tools 
-      - qttools5-dev 
-      - libqt5svg5-dev
-      # OpenCV
-      - libtiff5-dev 
-      - libopencv-dev 
-      - libhighgui-dev 
-      - libcvaux-dev
-      # other dependencies
-      - libexiv2-dev 
-      - libraw-dev 
-      - libzip-dev 
+        - cmake
+        - build-essential
+        - qt5-default
+        - qtcreator-dev
+        - libqt5svg5-dev
+        - libexiv2-dev
+        # optional packages
+        - libopencv-dev
+        - libraw-dev
+        - libquazip5-dev
 
   # OS X
   homebrew:
