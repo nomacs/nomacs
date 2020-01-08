@@ -1574,7 +1574,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished">&lt;data too large to display&gt;</translation>
+      <translation>&lt;data too large to display&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
@@ -2119,7 +2119,7 @@ Please restart nomacs and try again.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="415"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="544"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation type="unfinished">%1 inactive -&gt; skipping</translation>
+      <translation>%1 inactiv &gt; a sării peste</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
@@ -2293,7 +2293,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>Renumiți: %1&gt;%2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
@@ -2313,7 +2313,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>Copiați: %1&gt;%2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -5538,7 +5538,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Nu se poate instala noua versiune&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5664,7 +5664,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Lovește &lt;SPACE&gt; pentru a începe un nou Joc</translation>
     </message>
   </context>
   <context>
