@@ -169,7 +169,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
       <source>S&amp;ave As</source>
-      <translation type="unfinished">S&amp;ave As</translation>
+      <translation>Enregistrer &amp;sous</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
@@ -4890,9 +4890,9 @@ Do you want to show them again?</source>
       <translation>Orientation</translation>
     </message>
     <message>
-      <location filename="../src/DkCore/DkSettings.cpp" line="68"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="68"/>
       <source>Make</source>
-      <translation>Fabricant</translation>
+      <translation>Construire</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="69"/>
