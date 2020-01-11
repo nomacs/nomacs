@@ -2643,7 +2643,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
+      <translation>İşaretlenirse, nomacs diğer uygulamalar tarafından silinen dosyaları kaydetmeyi sorar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
@@ -5374,9 +5374,8 @@ Do you want to show them again?</source>
       <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-      <translation type="unfinished">Window Locked
-To unlock: gain focus (ALT+Tab),
-then press %1</translation>
+      <translation>Pencere Kilitli
+Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="807"/>
