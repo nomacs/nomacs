@@ -58,7 +58,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="523"/>
       <source>&amp;Adjustments</source>
-      <translation>Képszerkesztés</translation>
+      <translation>K&amp;épszerkesztés</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
@@ -114,7 +114,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="966"/>
       <source>&amp;Open Tabs</source>
-      <translation type="unfinished">&amp;Open Tabs</translation>
+      <translation>&amp;Fülek megnyitása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
@@ -269,7 +269,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1035"/>
       <source>St&amp;art Private Instance</source>
-      <translation>Új privát &amp;ablak nyitása</translation>
+      <translation>Új privát &amp;ablak megnyitása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1037"/>
@@ -350,7 +350,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1078"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;növekvő</translation>
+      <translation>&amp;Növekvő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1080"/>
@@ -360,7 +360,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1084"/>
       <source>&amp;Descending</source>
-      <translation>&amp;csökkenő</translation>
+      <translation>&amp;Csökkenő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1086"/>
@@ -421,7 +421,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1116"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1495"/>
       <source>&amp;Copy</source>
-      <translation>&amp;Másolása</translation>
+      <translation>&amp;Másolás</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1119"/>
@@ -464,7 +464,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1142"/>
       <source>delete current fileInfo</source>
-      <translation>jelenlegi fájlinformáció törlése</translation>
+      <translation>jelenlegi fájlinformációk törlése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
@@ -524,7 +524,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Menü elrejtése és ALT megnyomásával újra megjelenítés</translation>
+      <translation>Menü elrejtése és ALT megnyomásával megjelenítése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
@@ -1367,12 +1367,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="84"/>
       <source>&amp;Grayscale</source>
-      <translation>&amp;Szürkeárnyalat</translation>
+      <translation>&amp;Szürkeárnyalatos</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="85"/>
       <source>Convert to Grayscale</source>
-      <translation>Szürkeárnyalatra konvertálás</translation>
+      <translation>Szürkeárnyalatosra konvertálás</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="89"/>
@@ -1452,7 +1452,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Sharpens the image by applying an unsharp mask</source>
-      <translation type="unfinished">Sharpens the image by applying an unsharp mask</translation>
+      <translation>Kép élesítése az Életlen maszk alkalmazásával</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
@@ -1487,7 +1487,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation>&amp;Árnyalat-Telítettség...</translation>
+      <translation>&amp;Árnyalat/telítettség...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
@@ -1502,7 +1502,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation>Expozíciót és a Gamma módosítása</translation>
+      <translation>Expozíció és a Gamma módosítása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
