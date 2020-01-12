@@ -79,7 +79,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="596"/>
       <source>&amp;?</source>
-      <translation>Súgó</translation>
+      <translation>?</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="612"/>
@@ -189,7 +189,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
       <source>&amp;Save Tabs</source>
-      <translation type="unfinished">&amp;Save Tabs</translation>
+      <translation>&amp;Lapok mentése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
@@ -957,12 +957,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose &amp;Monitor</source>
-      <translation>Válassza ki a &amp;Monitort</translation>
+      <translation>Válassza ki a &amp;monitort</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>Válassza ki a Monitort a nomacs futtatásához</translation>
+      <translation>Válassza ki a monitort a nomacs futtatásához</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
@@ -972,7 +972,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>mutassa hol készült a kép a Google maps-ban</translation>
+      <translation>mutassa a Google maps-ban hogy hol készült a kép</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
@@ -1880,12 +1880,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>Adobe Deflate</source>
-      <translation type="unfinished">Adobe Deflate</translation>
+      <translation>Adobe Deflate</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>JBIG B&amp;W</source>
-      <translation type="unfinished">JBIG B&amp;W</translation>
+      <translation>JBIG B&amp;W</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1505"/>
@@ -1895,37 +1895,37 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Kodak 262</source>
-      <translation type="unfinished">Kodak 262</translation>
+      <translation>Kodak 262</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
       <source>Next</source>
-      <translation type="unfinished">Next</translation>
+      <translation>Következő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Sony ARW Compressed</source>
-      <translation type="unfinished">Sony ARW Compressed</translation>
+      <translation>Sony ARW tömörített</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
       <source>Packed RAW</source>
-      <translation type="unfinished">Packed RAW</translation>
+      <translation>Csomagolt RAW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
       <source>Samsung SRW Compressed</source>
-      <translation type="unfinished">Samsung SRW Compressed</translation>
+      <translation>Samsung SRW tömörített</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
       <source>CCIRLEW</source>
-      <translation type="unfinished">CCIRLEW</translation>
+      <translation>CCIRLEW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1513"/>
       <source>Samsung SRW Compressed 2</source>
-      <translation type="unfinished">Samsung SRW Compressed 2</translation>
+      <translation>Samsung SRW tömörített 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1514"/>
