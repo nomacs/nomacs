@@ -3429,7 +3429,7 @@ Deze optie is alleen nuttig als de plug-ins sidecar bestanden opslaan - dus wees
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4348"/>
       <source>Remember Monitor Settings</source>
-      <translation type="unfinished">Remember Monitor Settings</translation>
+      <translation>Onthoud Monitorinstellingen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4352"/>
@@ -4175,7 +4175,7 @@ Wilt u de velden terug zichtbaar maken?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
       <source>Load Saved Images</source>
-      <translation type="unfinished">Load Saved Images</translation>
+      <translation>Laad Opgeslagen Afbeeldingen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
@@ -4195,7 +4195,7 @@ Wilt u de velden terug zichtbaar maken?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
       <source>Do Nothing</source>
-      <translation type="unfinished">Do Nothing</translation>
+      <translation>Doe Niks</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
@@ -6316,7 +6316,7 @@ Druk op ESC om de wijzigingen ongedaan te maken</translation>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1261"/>
       <source> selected</source>
-      <translation type="unfinished"> selected</translation>
+      <translation> geselecteerd</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
