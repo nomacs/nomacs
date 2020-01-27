@@ -36,6 +36,7 @@
 #include <QAction>
 #include <QGraphicsPathItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsBlurEffect>
 #include <QToolBar>
 #include <QMainWindow>
 #include <QColorDialog>
@@ -116,6 +117,7 @@ protected:
 
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
+	QPointF begin;
 
 	bool cancelTriggered;
 	bool isOutside;

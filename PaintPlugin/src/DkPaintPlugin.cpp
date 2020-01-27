@@ -219,6 +219,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				paths.append(QPainterPath());
 				paths.last().moveTo(mapToImage(event->pos()));
 				paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
+				begin = mapToImage(event->pos());
 				pathsPen.append(pen);
 				update();
 			}
@@ -260,7 +261,23 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 					}
 					else {
 						QPointF point = mapToImage(event->pos());
+						// pencil
 						paths.last().lineTo(point);
+						//paths.last().clear(); // comment to pencil
+						// line
+						//paths.last().moveTo(begin);
+						//paths.last().lineTo(point);
+						// ellipse
+						//paths.last().addEllipse(QRectF(begin, point));
+						// rect
+						//paths.last().addRect(QRectF(begin, point));
+						// blur (not implement)
+						//QRectF selected = QRectF(begin, point);
+						//QRectF scaled = QRectF(begin*10, point*10).normalized();
+						//QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
+						//blur->setBlurRadius(10);
+						//QGraphicsPixmapItem *item = new QGraphicsPixmapItem();
+						//item->setGraphicsEffect(blur);
 						update();
 					}
 					isOutside = false;
