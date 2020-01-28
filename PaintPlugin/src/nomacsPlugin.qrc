@@ -6,5 +6,6 @@
             <file>img/arrow.svg</file>
             <file>img/circle-outline.svg</file>
             <file>img/square-outline.svg</file>
+            <file>img/square.svg</file>
     </qresource>
 </RCC>

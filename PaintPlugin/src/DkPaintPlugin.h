@@ -62,6 +62,7 @@ enum {
 	mode_arrow,
 	mode_circle,
 	mode_square,
+	mode_square_fill,
 };
 
 class DkPaintPlugin : public QObject, nmc::DkViewPortInterface {
@@ -162,6 +163,7 @@ public:
 		arrow_icon,
 		circle_icon,
 		square_icon,
+		square_fill_icon,
 
 		icons_end,
 	};
@@ -183,6 +185,7 @@ public slots:
 	void on_arrowAction_toggled(bool checked);
 	void on_circleAction_toggled(bool checked);
 	void on_squareAction_toggled(bool checked);
+	void on_squarefillAction_toggled(bool checked);
 	void on_penColButton_clicked();
 	void on_widthBox_valueChanged(int val);
 	void on_alphaBox_valueChanged(int val);
@@ -218,6 +221,7 @@ protected:
 	QAction* arrowAction;
 	QAction* circleAction;
 	QAction* squareAction;
+	QAction* squarefillAction;
 
 	QVector<QIcon> icons;		// needed for colorizing
 	

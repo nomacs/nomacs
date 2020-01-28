@@ -332,6 +332,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 							break;
 						
 						case mode_square:
+						case mode_square_fill:
 							paths.last().clear();
 							paths.last().addRect(QRectF(begin, point));
 							break;
@@ -394,6 +395,8 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
 			painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
 		}
+		else if(pathsMode.at(idx) == mode_square_fill)
+			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 		else
 			painter.drawPath(paths.at(idx));
 	}
@@ -428,6 +431,8 @@ QImage DkPaintViewPort::getPaintedImage() {
 						painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
 						painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
 					}
+					else if(pathsMode.at(idx) == mode_arrow)
+						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else
 						painter.drawPath(paths.at(idx));
 				}
@@ -545,6 +550,7 @@ void DkPaintToolBar::createIcons() {
 	icons[arrow_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/arrow.svg");
 	icons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
 	icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
+	icons[square_fill_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square.svg");
 }
 
 void DkPaintToolBar::createLayout() {
@@ -593,6 +599,11 @@ void DkPaintToolBar::createLayout() {
 	squareAction->setCheckable(true);
 	squareAction->setChecked(false);
 
+	squarefillAction = new QAction(icons[square_fill_icon], tr("Filled Square"), this);
+	squarefillAction->setObjectName("squarefillAction");
+	squarefillAction->setCheckable(true);
+	squarefillAction->setChecked(false);
+
 	// pen color
 	penCol = QColor(0,0,0);
 	penColButton = new QPushButton(this);
@@ -629,6 +640,7 @@ void DkPaintToolBar::createLayout() {
 	modesGroup->addAction(arrowAction);
 	modesGroup->addAction(circleAction);
 	modesGroup->addAction(squareAction);
+	modesGroup->addAction(squarefillAction);
 
 	addAction(applyAction);
 	addAction(cancelAction);
@@ -641,6 +653,7 @@ void DkPaintToolBar::createLayout() {
 	addAction(arrowAction);
 	addAction(circleAction);
 	addAction(squareAction);
+	addAction(squarefillAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -711,6 +724,10 @@ void DkPaintToolBar::on_circleAction_toggled(bool checked){
 
 void DkPaintToolBar::on_squareAction_toggled(bool checked){
 	emit modeChangeSignal(mode_square);
+}
+
+void DkPaintToolBar::on_squarefillAction_toggled(bool checked){
+	emit modeChangeSignal(mode_square_fill);
 }
 
 void DkPaintToolBar::on_widthBox_valueChanged(int val) {
