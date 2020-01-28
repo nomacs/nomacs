@@ -116,15 +116,14 @@ QLineF getShorterLine(QPainterPath line, const int thickness) {
     return l.toLine();
 }
 
-void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap){
+// blur selected rectangle region
+void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap, int radius){
 	auto pixelRatio = pixmap.devicePixelRatio();
 	QRectF selection = rect.boundingRect();
 	QRect selectionScaled = selection.toRect();
-	//QRectF selection = QRectF(p1, p2).normalized();
-	//QRect selectionScaled = QRect(p1.toPoint()*pixelRatio, p2.toPoint()*pixelRatio).normalized();
 
 	QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
-    blur->setBlurRadius(10);
+    blur->setBlurRadius(radius);
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem (
                 pixmap.copy(selectionScaled));
     item->setGraphicsEffect(blur);
@@ -133,7 +132,7 @@ void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap){
     scene.addItem(item);
 
     scene.render(painter, selection, QRectF());
-    blur->setBlurRadius(12);
+    blur->setBlurRadius(radius+2);
     scene.render(painter, selection, QRectF());
     scene.render(painter, selection, QRectF());
 }
@@ -266,6 +265,7 @@ void DkPaintViewPort::undoLastPaint() {
 
 	paths.pop_back();
 	pathsPen.pop_back();
+	pathsMode.pop_back();
 	update();
 }
 
@@ -364,23 +364,6 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 							paths.last().lineTo(point);
 							break;
 						}
-						// pencil
-						//paths.last().lineTo(point);
-						//paths.last().clear(); // comment to pencil
-						// line
-						//paths.last().moveTo(begin);
-						//paths.last().lineTo(point);
-						// ellipse
-						//paths.last().addEllipse(QRectF(begin, point));
-						// rect
-						//paths.last().addRect(QRectF(begin, point));
-						// blur (not implement)
-						//QRectF selected = QRectF(begin, point);
-						//QRectF scaled = QRectF(begin*10, point*10).normalized();
-						//QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
-						//blur->setBlurRadius(10);
-						//QGraphicsPixmapItem *item = new QGraphicsPixmapItem();
-						//item->setGraphicsEffect(blur);
 						update();
 					}
 					isOutside = false;
@@ -421,16 +404,11 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 		else if(pathsMode.at(idx) == mode_square_fill)
 			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 		else if(pathsMode.at(idx) == mode_blur){
-			/*
-			painter.setPen(QPen(QBrush(QColor(0,0,0,180)),1,Qt::DashLine));
-			painter.setBrush(QBrush(QColor(255,255,255,120))); 
-			painter.drawPath(paths.at(idx));
-			*/
 			if(parent()){
 				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 				QImage img = viewport->getImage();
 				QPixmap pixmap = QPixmap::fromImage(img).copy();
-				getBlur(paths.at(idx), &painter, pixmap);
+				getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width());
 			}
 		}
 		else
@@ -471,7 +449,7 @@ QImage DkPaintViewPort::getPaintedImage() {
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else if(pathsMode.at(idx) == mode_blur){
 						QPixmap pixmap = QPixmap::fromImage(img).copy();
-						getBlur(paths.at(idx), &painter, pixmap);
+						getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width());
 					}
 					else
 						painter.drawPath(paths.at(idx));
@@ -496,6 +474,7 @@ void DkPaintViewPort::setMode(int mode){
 void DkPaintViewPort::clear() {
 	paths.clear();
 	pathsPen.clear();
+	pathsMode.clear();
 }
 
 void DkPaintViewPort::setBrush(const QBrush& brush) {

@@ -79,6 +79,10 @@ public:
     QImage image() const override;
 	bool hideHUD() const override;
 
+	QPainterPath getArrowHead(QPainterPath line, const int thickness);
+	QLineF getShorterLine(QPainterPath line, const int thickness);
+	void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap, int radius);
+
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort() override;
 	bool createViewPort(QWidget* parent) override;
