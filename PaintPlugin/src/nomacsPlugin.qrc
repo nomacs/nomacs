@@ -7,5 +7,6 @@
             <file>img/circle-outline.svg</file>
             <file>img/square-outline.svg</file>
             <file>img/square.svg</file>
+            <file>img/blur.svg</file>
     </qresource>
 </RCC>

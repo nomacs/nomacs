@@ -116,6 +116,28 @@ QLineF getShorterLine(QPainterPath line, const int thickness) {
     return l.toLine();
 }
 
+void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap){
+	auto pixelRatio = pixmap.devicePixelRatio();
+	QRectF selection = rect.boundingRect();
+	QRect selectionScaled = selection.toRect();
+	//QRectF selection = QRectF(p1, p2).normalized();
+	//QRect selectionScaled = QRect(p1.toPoint()*pixelRatio, p2.toPoint()*pixelRatio).normalized();
+
+	QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
+    blur->setBlurRadius(10);
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem (
+                pixmap.copy(selectionScaled));
+    item->setGraphicsEffect(blur);
+
+    QGraphicsScene scene;
+    scene.addItem(item);
+
+    scene.render(painter, selection, QRectF());
+    blur->setBlurRadius(12);
+    scene.render(painter, selection, QRectF());
+    scene.render(painter, selection, QRectF());
+}
+
 QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const {
 	
 	if (!image)
@@ -333,6 +355,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 						
 						case mode_square:
 						case mode_square_fill:
+						case mode_blur:
 							paths.last().clear();
 							paths.last().addRect(QRectF(begin, point));
 							break;
@@ -397,6 +420,19 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 		}
 		else if(pathsMode.at(idx) == mode_square_fill)
 			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
+		else if(pathsMode.at(idx) == mode_blur){
+			/*
+			painter.setPen(QPen(QBrush(QColor(0,0,0,180)),1,Qt::DashLine));
+			painter.setBrush(QBrush(QColor(255,255,255,120))); 
+			painter.drawPath(paths.at(idx));
+			*/
+			if(parent()){
+				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
+				QImage img = viewport->getImage();
+				QPixmap pixmap = QPixmap::fromImage(img).copy();
+				getBlur(paths.at(idx), &painter, pixmap);
+			}
+		}
 		else
 			painter.drawPath(paths.at(idx));
 	}
@@ -433,6 +469,10 @@ QImage DkPaintViewPort::getPaintedImage() {
 					}
 					else if(pathsMode.at(idx) == mode_arrow)
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
+					else if(pathsMode.at(idx) == mode_blur){
+						QPixmap pixmap = QPixmap::fromImage(img).copy();
+						getBlur(paths.at(idx), &painter, pixmap);
+					}
 					else
 						painter.drawPath(paths.at(idx));
 				}
@@ -551,6 +591,7 @@ void DkPaintToolBar::createIcons() {
 	icons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
 	icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
 	icons[square_fill_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square.svg");
+	icons[blur_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/blur.svg");
 }
 
 void DkPaintToolBar::createLayout() {
@@ -604,6 +645,11 @@ void DkPaintToolBar::createLayout() {
 	squarefillAction->setCheckable(true);
 	squarefillAction->setChecked(false);
 
+	blurAction = new QAction(icons[blur_icon], tr("Blur"), this);
+	blurAction->setObjectName("blurAction");
+	blurAction->setCheckable(true);
+	blurAction->setChecked(false);
+
 	// pen color
 	penCol = QColor(0,0,0);
 	penColButton = new QPushButton(this);
@@ -641,6 +687,7 @@ void DkPaintToolBar::createLayout() {
 	modesGroup->addAction(circleAction);
 	modesGroup->addAction(squareAction);
 	modesGroup->addAction(squarefillAction);
+	modesGroup->addAction(blurAction);
 
 	addAction(applyAction);
 	addAction(cancelAction);
@@ -654,6 +701,7 @@ void DkPaintToolBar::createLayout() {
 	addAction(circleAction);
 	addAction(squareAction);
 	addAction(squarefillAction);
+	addAction(blurAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -728,6 +776,10 @@ void DkPaintToolBar::on_squareAction_toggled(bool checked){
 
 void DkPaintToolBar::on_squarefillAction_toggled(bool checked){
 	emit modeChangeSignal(mode_square_fill);
+}
+
+void DkPaintToolBar::on_blurAction_toggled(bool checked){
+	emit modeChangeSignal(mode_blur);
 }
 
 void DkPaintToolBar::on_widthBox_valueChanged(int val) {
