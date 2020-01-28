@@ -180,6 +180,7 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(modeChangeSignal(int)), this, SLOT(setMode(int)), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	
 	loadSettings();
@@ -261,8 +262,34 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 					}
 					else {
 						QPointF point = mapToImage(event->pos());
+						switch (selectedMode)
+						{
+						case mode_pencil:
+							paths.last().lineTo(point);
+							break;
+
+						case mode_line:
+							paths.last().clear();
+							paths.last().moveTo(begin);
+							paths.last().lineTo(point);
+							break;
+
+						case mode_circle:
+							paths.last().clear();
+							paths.last().addEllipse(QRectF(begin, point));
+							break;
+						
+						case mode_square:
+							paths.last().clear();
+							paths.last().addRect(QRectF(begin, point));
+							break;
+
+						default:
+							paths.last().lineTo(point);
+							break;
+						}
 						// pencil
-						paths.last().lineTo(point);
+						//paths.last().lineTo(point);
 						//paths.last().clear(); // comment to pencil
 						// line
 						//paths.last().moveTo(begin);
@@ -350,6 +377,13 @@ QImage DkPaintViewPort::getPaintedImage() {
 	}
 	
 	return QImage();
+}
+
+void DkPaintViewPort::setMode(int mode){
+	selectedMode = mode;
+	setCursor(defaultCursor);
+
+	this->repaint();
 }
 
 void DkPaintViewPort::clear() {
@@ -443,6 +477,11 @@ void DkPaintToolBar::createIcons() {
 	icons[pan_icon]		= nmc::DkImage::loadIcon(":/nomacs/img/pan.svg");
 	icons[pan_icon].addPixmap(nmc::DkImage::loadIcon(":/nomacs/img/pan-checked.svg"), QIcon::Normal, QIcon::On);
 	icons[undo_icon]	= nmc::DkImage::loadIcon(":/nomacs/img/rotate-cc.svg");
+
+	icons[pencil_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/pencil.svg");
+	icons[line_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/line.svg");
+	icons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
+	icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
 }
 
 void DkPaintToolBar::createLayout() {
@@ -464,6 +503,27 @@ void DkPaintToolBar::createLayout() {
 	panAction->setObjectName("panAction");
 	panAction->setCheckable(true);
 	panAction->setChecked(false);
+
+	// brush modes
+	pencilAction = new QAction(icons[pencil_icon], tr("Pencil"), this);
+	pencilAction->setObjectName("pencilAction");
+	pencilAction->setCheckable(true);
+	pencilAction->setChecked(true);
+
+	lineAction = new QAction(icons[line_icon], tr("Line"), this);
+	lineAction->setObjectName("lineAction");
+	lineAction->setCheckable(true);
+	lineAction->setChecked(false);
+
+	circleAction = new QAction(icons[circle_icon], tr("Circle"), this);
+	circleAction->setObjectName("circleAction");
+	circleAction->setCheckable(true);
+	circleAction->setChecked(false);
+
+	squareAction = new QAction(icons[square_icon], tr("Square"), this);
+	squareAction->setObjectName("squareAction");
+	squareAction->setCheckable(true);
+	squareAction->setChecked(false);
 
 	// pen color
 	penCol = QColor(0,0,0);
@@ -495,11 +555,22 @@ void DkPaintToolBar::createLayout() {
 	alphaBox->setMinimum(0);
 	alphaBox->setMaximum(100);
 
+	QActionGroup *modesGroup = new QActionGroup(this);
+	modesGroup->addAction(pencilAction);
+	modesGroup->addAction(lineAction);
+	modesGroup->addAction(circleAction);
+	modesGroup->addAction(squareAction);
+
 	addAction(applyAction);
 	addAction(cancelAction);
 	addSeparator();
 	addAction(panAction);
 	addAction(undoAction);
+	addSeparator();
+	addAction(pencilAction);
+	addAction(lineAction);
+	addAction(circleAction);
+	addAction(squareAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -550,6 +621,22 @@ void DkPaintToolBar::on_cancelAction_triggered() {
 void DkPaintToolBar::on_panAction_toggled(bool checked) {
 
 	emit panSignal(checked);
+}
+
+void DkPaintToolBar::on_pencilAction_toggled(bool checked){
+	emit modeChangeSignal(mode_pencil);
+}
+
+void DkPaintToolBar::on_lineAction_toggled(bool checked){
+	emit modeChangeSignal(mode_line);
+}
+
+void DkPaintToolBar::on_circleAction_toggled(bool checked){
+	emit modeChangeSignal(mode_circle);
+}
+
+void DkPaintToolBar::on_squareAction_toggled(bool checked){
+	emit modeChangeSignal(mode_square);
 }
 
 void DkPaintToolBar::on_widthBox_valueChanged(int val) {
