@@ -343,20 +343,23 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 						case mode_line:
 						case mode_arrow:
-							paths.last().clear();
+							//paths.last().clear();
+							paths.last() = QPainterPath();
 							paths.last().moveTo(begin);
 							paths.last().lineTo(point);
 							break;
 
 						case mode_circle:
-							paths.last().clear();
+							//paths.last().clear();
+							paths.last() = QPainterPath();
 							paths.last().addEllipse(QRectF(begin, point));
 							break;
 						
 						case mode_square:
 						case mode_square_fill:
 						case mode_blur:
-							paths.last().clear();
+							//paths.last().clear();
+							paths.last() = QPainterPath();
 							paths.last().addRect(QRectF(begin, point));
 							break;
 
