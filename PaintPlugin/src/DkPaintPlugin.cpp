@@ -67,6 +67,55 @@ bool DkPaintPlugin::hideHUD() const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
+const int ArrowWidth = 10;
+const int ArrowHeight = 18;
+QPainterPath getArrowHead(QPainterPath line, const int thickness) {
+	QPointF p1 = line.pointAtPercent(0.0);
+	QPointF p2 = line.pointAtPercent(1.0);
+    QLineF base(p1, p2);
+    // Create the vector for the position of the base  of the arrowhead
+    QLineF temp(QPoint(0,0), p2-p1);
+    int val = ArrowHeight + thickness*4;
+    if (base.length() < val) {
+        val = (base.length() + thickness*2);
+    }
+    temp.setLength(base.length() + thickness*2 - val);
+    // Move across the line up to the head
+    QPointF bottonTranslation(temp.p2());
+
+    // Rotate base of the arrowhead
+    base.setLength(ArrowWidth + thickness*2);
+    base.setAngle(base.angle() + 90);
+    // Move to the correct point
+    QPointF temp2 = p1 - base.p2();
+    // Center it
+    QPointF centerTranslation((temp2.x()/2), (temp2.y()/2));
+
+    base.translate(bottonTranslation);
+    base.translate(centerTranslation);
+
+    QPainterPath path;
+    path.moveTo(p2);
+    path.lineTo(base.p1());
+    path.lineTo(base.p2());
+    path.lineTo(p2);
+	path.closeSubpath();
+    return path;
+}
+
+// gets a shorter line to prevent overlap in the point of the arrow
+QLineF getShorterLine(QPainterPath line, const int thickness) {
+	QPointF p1 = line.pointAtPercent(0.0);
+	QPointF p2 = line.pointAtPercent(1.0);
+	QLineF l(p1, p2);
+    int val = ArrowHeight + thickness*4;
+    if (l.length() < val) {
+        val = (l.length() + thickness*2);
+    }
+    l.setLength(l.length() + thickness*2 - val);
+    return l.toLine();
+}
+
 QSharedPointer<nmc::DkImageContainer> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> image) const {
 	
 	if (!image)
@@ -222,6 +271,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
 				begin = mapToImage(event->pos());
 				pathsPen.append(pen);
+				pathsMode.append(selectedMode);
 				update();
 			}
 			else 
@@ -259,6 +309,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 						paths.append(QPainterPath());
 						paths.last().moveTo(mapToImage(event->pos()));
 						pathsPen.append(pen);
+						pathsMode.append(selectedMode);
 					}
 					else {
 						QPointF point = mapToImage(event->pos());
@@ -269,6 +320,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 							break;
 
 						case mode_line:
+						case mode_arrow:
 							paths.last().clear();
 							paths.last().moveTo(begin);
 							paths.last().lineTo(point);
@@ -338,7 +390,12 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 	for (int idx = 0; idx < paths.size(); idx++) {
 
 		painter.setPen(pathsPen.at(idx));
-		painter.drawPath(paths.at(idx));
+		if(pathsMode.at(idx) == mode_arrow){
+			painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
+			painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
+		}
+		else
+			painter.drawPath(paths.at(idx));
 	}
 
 	painter.end();
@@ -367,7 +424,12 @@ QImage DkPaintViewPort::getPaintedImage() {
 
 				for (int idx = 0; idx < paths.size(); idx++) {
 					painter.setPen(pathsPen.at(idx));
-					painter.drawPath(paths.at(idx));
+					if(pathsMode.at(idx) == mode_arrow){
+						painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
+						painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
+					}
+					else
+						painter.drawPath(paths.at(idx));
 				}
 				painter.end();
 
@@ -480,6 +542,7 @@ void DkPaintToolBar::createIcons() {
 
 	icons[pencil_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/pencil.svg");
 	icons[line_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/line.svg");
+	icons[arrow_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/arrow.svg");
 	icons[circle_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/circle-outline.svg");
 	icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
 }
@@ -514,6 +577,11 @@ void DkPaintToolBar::createLayout() {
 	lineAction->setObjectName("lineAction");
 	lineAction->setCheckable(true);
 	lineAction->setChecked(false);
+
+	arrowAction = new QAction(icons[arrow_icon], tr("Arrow"), this);
+	arrowAction->setObjectName("arrowAction");
+	arrowAction->setCheckable(true);
+	arrowAction->setChecked(false);
 
 	circleAction = new QAction(icons[circle_icon], tr("Circle"), this);
 	circleAction->setObjectName("circleAction");
@@ -558,6 +626,7 @@ void DkPaintToolBar::createLayout() {
 	QActionGroup *modesGroup = new QActionGroup(this);
 	modesGroup->addAction(pencilAction);
 	modesGroup->addAction(lineAction);
+	modesGroup->addAction(arrowAction);
 	modesGroup->addAction(circleAction);
 	modesGroup->addAction(squareAction);
 
@@ -569,6 +638,7 @@ void DkPaintToolBar::createLayout() {
 	addSeparator();
 	addAction(pencilAction);
 	addAction(lineAction);
+	addAction(arrowAction);
 	addAction(circleAction);
 	addAction(squareAction);
 	addSeparator();
@@ -629,6 +699,10 @@ void DkPaintToolBar::on_pencilAction_toggled(bool checked){
 
 void DkPaintToolBar::on_lineAction_toggled(bool checked){
 	emit modeChangeSignal(mode_line);
+}
+
+void DkPaintToolBar::on_arrowAction_toggled(bool checked){
+	emit modeChangeSignal(mode_arrow);
 }
 
 void DkPaintToolBar::on_circleAction_toggled(bool checked){

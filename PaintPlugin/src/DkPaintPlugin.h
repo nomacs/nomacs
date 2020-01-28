@@ -59,6 +59,7 @@ class DkPaintToolBar;
 enum {
 	mode_pencil = 0,
 	mode_line,
+	mode_arrow,
 	mode_circle,
 	mode_square,
 };
@@ -127,9 +128,11 @@ protected:
 
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
+	QVector<int> pathsMode;
 	QPointF begin;
 
 	int selectedMode;
+	QPainterPath ArrowHead;
 
 	bool cancelTriggered;
 	bool isOutside;
@@ -156,6 +159,7 @@ public:
 
 		pencil_icon,
 		line_icon,
+		arrow_icon,
 		circle_icon,
 		square_icon,
 
@@ -176,6 +180,7 @@ public slots:
 	void on_panAction_toggled(bool checked);
 	void on_pencilAction_toggled(bool checked);
 	void on_lineAction_toggled(bool checked);
+	void on_arrowAction_toggled(bool checked);
 	void on_circleAction_toggled(bool checked);
 	void on_squareAction_toggled(bool checked);
 	void on_penColButton_clicked();
@@ -210,6 +215,7 @@ protected:
 
 	QAction* pencilAction;
 	QAction* lineAction;
+	QAction* arrowAction;
 	QAction* circleAction;
 	QAction* squareAction;
 

@@ -3,6 +3,7 @@
 	        <file>img/description.png</file>
             <file>img/pencil.svg</file>
             <file>img/line.svg</file>
+            <file>img/arrow.svg</file>
             <file>img/circle-outline.svg</file>
             <file>img/square-outline.svg</file>
     </qresource>
