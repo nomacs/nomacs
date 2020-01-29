@@ -294,6 +294,14 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				begin = mapToImage(event->pos());
 				pathsPen.append(pen);
 				pathsMode.append(selectedMode);
+				if(selectedMode == mode_text)
+				{
+					QFont font;
+					font.setFamily(font.defaultFamily());
+					font.setPixelSize(pen.width()*15);
+					paths.last() = QPainterPath();
+					paths.last().addText(begin, font, "Qt text test");
+				}
 				update();
 			}
 			else 
@@ -363,6 +371,9 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 							paths.last().addRect(QRectF(begin, point));
 							break;
 
+						case mode_text:
+							break;
+
 						default:
 							paths.last().lineTo(point);
 							break;
@@ -404,7 +415,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
 			painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
 		}
-		else if(pathsMode.at(idx) == mode_square_fill)
+		else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
 			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 		else if(pathsMode.at(idx) == mode_blur){
 			if(parent()){
@@ -448,7 +459,7 @@ QImage DkPaintViewPort::getPaintedImage() {
 						painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
 						painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
 					}
-					else if(pathsMode.at(idx) == mode_square_fill)
+					else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else if(pathsMode.at(idx) == mode_blur){
 						QPixmap pixmap = QPixmap::fromImage(img).copy();
@@ -574,6 +585,7 @@ void DkPaintToolBar::createIcons() {
 	icons[square_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square-outline.svg");
 	icons[square_fill_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/square.svg");
 	icons[blur_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/blur.svg");
+	icons[text_icon] = nmc::DkImage::loadIcon(":/nomacsPluginPaint/img/text.svg");
 }
 
 void DkPaintToolBar::createLayout() {
@@ -632,6 +644,11 @@ void DkPaintToolBar::createLayout() {
 	blurAction->setCheckable(true);
 	blurAction->setChecked(false);
 
+	textAction = new QAction(icons[text_icon], tr("Text"), this);
+	textAction->setObjectName("textAction");
+	textAction->setCheckable(true);
+	textAction->setChecked(false);
+
 	// pen color
 	penCol = QColor(0,0,0);
 	penColButton = new QPushButton(this);
@@ -670,6 +687,7 @@ void DkPaintToolBar::createLayout() {
 	modesGroup->addAction(squareAction);
 	modesGroup->addAction(squarefillAction);
 	modesGroup->addAction(blurAction);
+	modesGroup->addAction(textAction);
 
 	addAction(applyAction);
 	addAction(cancelAction);
@@ -684,6 +702,7 @@ void DkPaintToolBar::createLayout() {
 	addAction(squareAction);
 	addAction(squarefillAction);
 	addAction(blurAction);
+	addAction(textAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -762,6 +781,10 @@ void DkPaintToolBar::on_squarefillAction_toggled(bool checked){
 
 void DkPaintToolBar::on_blurAction_toggled(bool checked){
 	emit modeChangeSignal(mode_blur);
+}
+
+void DkPaintToolBar::on_textAction_toggled(bool checked){
+	emit modeChangeSignal(mode_text);
 }
 
 void DkPaintToolBar::on_widthBox_valueChanged(int val) {
