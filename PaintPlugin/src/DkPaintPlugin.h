@@ -141,8 +141,10 @@ protected:
 	QVector<QPen> pathsPen;
 	QVector<int> pathsMode;
 	QPointF begin;
+	QString sbuffer;
 
 	int selectedMode;
+	bool textinputenable;
 	QPainterPath ArrowHead;
 
 	bool cancelTriggered;

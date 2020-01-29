@@ -258,6 +258,7 @@ void DkPaintViewPort::init() {
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
 	paintToolbar->setPenWidth(pen.width());
+	textinputenable = false;
 }
 
 void DkPaintViewPort::undoLastPaint() {
@@ -298,6 +299,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				pathsMode.append(selectedMode);
 				if(selectedMode == mode_text)
 				{
+					textinputenable = true;
 					//QLineEdit *textInput = new QLineEdit(this);
 					//connect (textInput, SIGNAL(textChanged(const QString &text)), this, SLOT(textChange(const QString &text)));
 					/*
@@ -494,15 +496,22 @@ void DkPaintViewPort::setMode(int mode){
 }
 
 void DkPaintViewPort::textChange(const QString &text){
-	paths.last() = QPainterPath();
 	QFont font;
 	font.setFamily(font.defaultFamily());
 	font.setPixelSize(pen.width()*15);
-	paths.last().addText(begin, font, text);
-	update();
+	if(textinputenable)
+	{
+		sbuffer = text;
+		paths.last() = QPainterPath();
+		paths.last().addText(begin, font, text);
+		update();
+	}
 }
 
 void DkPaintViewPort::textEditFinsh(){
+	if(sbuffer.isEmpty())
+		undoLastPaint();
+	textinputenable = false;
 }
 
 void DkPaintViewPort::clear() {
@@ -740,9 +749,9 @@ void DkPaintToolBar::createLayout() {
 }
 
 void DkPaintToolBar::modifyLayout(int mode) {
-	//if(mode == mode_text)
-	//	toolbarWidgetList.value(textInput->objectName())->setVisible(true);
-	//else
+	if(mode == mode_text)
+		toolbarWidgetList.value(textInput->objectName())->setVisible(true);
+	else
 		toolbarWidgetList.value(textInput->objectName())->setVisible(false);
 }
 
@@ -841,9 +850,9 @@ void DkPaintToolBar::on_textInput_textChanged(const QString &text){
 	emit textChangeSignal(text);
 }
 
-void DkPaintToolBar::on_textInput_editingFinished()
-{
+void DkPaintToolBar::on_textInput_editingFinished(){
 	emit editFinishSignal();
+	textInput->clear();
 }
 
 void DkPaintToolBar::on_alphaBox_valueChanged(int val) {
