@@ -290,7 +290,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				isOutside = false;
 				paths.append(QPainterPath());
 				paths.last().moveTo(mapToImage(event->pos()));
-				paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
+				//paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
 				begin = mapToImage(event->pos());
 				pathsPen.append(pen);
 				pathsMode.append(selectedMode);
@@ -299,8 +299,10 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 					QFont font;
 					font.setFamily(font.defaultFamily());
 					font.setPixelSize(pen.width()*15);
-					paths.last() = QPainterPath();
-					paths.last().addText(begin, font, "Qt text test");
+					QString text;
+					text = QInputDialog::getText(this, "Text Input", tr("string"), QLineEdit::Normal);
+					paths.last().addText(begin, font, text);
+					text.clear();
 				}
 				update();
 			}

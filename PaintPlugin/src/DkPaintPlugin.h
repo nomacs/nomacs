@@ -36,6 +36,7 @@
 #include <QAction>
 #include <QGraphicsPathItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QInputDialog>
 #include <QGraphicsBlurEffect>
 #include <QToolBar>
 #include <QMainWindow>
