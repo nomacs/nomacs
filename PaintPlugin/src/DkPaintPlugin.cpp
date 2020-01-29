@@ -425,8 +425,20 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			painter.fillPath(getArrowHead(paths.at(idx), pathsPen.at(idx).width()), QBrush(pathsPen.at(idx).color()));
 			painter.drawLine(getShorterLine(paths.at(idx), pathsPen.at(idx).width()));
 		}
-		else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
+		//else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
+		else if(pathsMode.at(idx) == mode_square_fill)
 			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
+		else if(pathsMode.at(idx) == mode_text){
+			painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
+			//painter.setPen(QPen(QBrush(QColor(0,0,0,180)),1,Qt::DashLine));
+			//painter.setBrush(QBrush(QColor(255,255,255,120))); 
+			//painter.drawRect(paths.at(idx).boundingRect());
+			//painter.setPen(pathsPen.at(idx));
+			QPointF p = paths.at(idx).boundingRect().bottomRight();
+			painter.setPen(QPen(QBrush(QColor(0,0,0,180)),3,Qt::DotLine));
+			painter.drawLine(QLineF(p, p-QPoint(0, pathsPen.at(idx).width()*10)));
+			//painter.drawPoint(paths.at(idx).boundingRect().bottomRight());
+		}
 		else if(pathsMode.at(idx) == mode_blur){
 			if(parent()){
 				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
@@ -680,6 +692,7 @@ void DkPaintToolBar::createLayout() {
 
 	textInput = new QLineEdit(this);
 	textInput->setObjectName("textInput");
+	textInput->setFixedWidth(100);
 
 	// pen color
 	penCol = QColor(0,0,0);
