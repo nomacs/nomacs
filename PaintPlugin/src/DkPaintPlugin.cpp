@@ -252,6 +252,8 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(modeChangeSignal(int)), this, SLOT(setMode(int)), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(textChangeSignal(const QString&)), this, SLOT(textChange(const QString&)), Qt::UniqueConnection);
+	connect(paintToolbar, SIGNAL(editFinishSignal()), this, SLOT(textEditFinsh()), Qt::UniqueConnection);
 	
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
@@ -296,6 +298,9 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				pathsMode.append(selectedMode);
 				if(selectedMode == mode_text)
 				{
+					//QLineEdit *textInput = new QLineEdit(this);
+					//connect (textInput, SIGNAL(textChanged(const QString &text)), this, SLOT(textChange(const QString &text)));
+					/*
 					QFont font;
 					font.setFamily(font.defaultFamily());
 					font.setPixelSize(pen.width()*15);
@@ -303,6 +308,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 					text = QInputDialog::getText(this, "Text Input", tr("string"), QLineEdit::Normal);
 					paths.last().addText(begin, font, text);
 					text.clear();
+					*/
 				}
 				update();
 			}
@@ -487,6 +493,18 @@ void DkPaintViewPort::setMode(int mode){
 	this->repaint();
 }
 
+void DkPaintViewPort::textChange(const QString &text){
+	paths.last() = QPainterPath();
+	QFont font;
+	font.setFamily(font.defaultFamily());
+	font.setPixelSize(pen.width()*15);
+	paths.last().addText(begin, font, text);
+	update();
+}
+
+void DkPaintViewPort::textEditFinsh(){
+}
+
 void DkPaintViewPort::clear() {
 	paths.clear();
 	pathsPen.clear();
@@ -651,6 +669,9 @@ void DkPaintToolBar::createLayout() {
 	textAction->setCheckable(true);
 	textAction->setChecked(false);
 
+	textInput = new QLineEdit(this);
+	textInput->setObjectName("textInput");
+
 	// pen color
 	penCol = QColor(0,0,0);
 	penColButton = new QPushButton(this);
@@ -691,6 +712,8 @@ void DkPaintToolBar::createLayout() {
 	modesGroup->addAction(blurAction);
 	modesGroup->addAction(textAction);
 
+	toolbarWidgetList = QMap<QString, QAction*>();
+
 	addAction(applyAction);
 	addAction(cancelAction);
 	addSeparator();
@@ -709,6 +732,18 @@ void DkPaintToolBar::createLayout() {
 	addWidget(widthBox);
 	addWidget(penColButton);
 	addWidget(alphaBox);
+	addSeparator();
+	//addWidget(textInput);
+	toolbarWidgetList.insert(textInput->objectName(), this->addWidget(textInput));
+
+	modifyLayout(mode_pencil);
+}
+
+void DkPaintToolBar::modifyLayout(int mode) {
+	//if(mode == mode_text)
+	//	toolbarWidgetList.value(textInput->objectName())->setVisible(true);
+	//else
+		toolbarWidgetList.value(textInput->objectName())->setVisible(false);
 }
 
 void DkPaintToolBar::setVisible(bool visible) {
@@ -758,40 +793,57 @@ void DkPaintToolBar::on_panAction_toggled(bool checked) {
 }
 
 void DkPaintToolBar::on_pencilAction_toggled(bool checked){
+	modifyLayout(mode_pencil);
 	emit modeChangeSignal(mode_pencil);
 }
 
 void DkPaintToolBar::on_lineAction_toggled(bool checked){
+	modifyLayout(mode_line);
 	emit modeChangeSignal(mode_line);
 }
 
 void DkPaintToolBar::on_arrowAction_toggled(bool checked){
+	modifyLayout(mode_arrow);
 	emit modeChangeSignal(mode_arrow);
 }
 
 void DkPaintToolBar::on_circleAction_toggled(bool checked){
+	modifyLayout(mode_circle);
 	emit modeChangeSignal(mode_circle);
 }
 
 void DkPaintToolBar::on_squareAction_toggled(bool checked){
+	modifyLayout(mode_square);
 	emit modeChangeSignal(mode_square);
 }
 
 void DkPaintToolBar::on_squarefillAction_toggled(bool checked){
+	modifyLayout(mode_square_fill);
 	emit modeChangeSignal(mode_square_fill);
 }
 
 void DkPaintToolBar::on_blurAction_toggled(bool checked){
+	modifyLayout(mode_blur);
 	emit modeChangeSignal(mode_blur);
 }
 
 void DkPaintToolBar::on_textAction_toggled(bool checked){
+	modifyLayout(mode_text);
 	emit modeChangeSignal(mode_text);
 }
 
 void DkPaintToolBar::on_widthBox_valueChanged(int val) {
 
 	emit widthSignal(val);
+}
+
+void DkPaintToolBar::on_textInput_textChanged(const QString &text){
+	emit textChangeSignal(text);
+}
+
+void DkPaintToolBar::on_textInput_editingFinished()
+{
+	emit editFinishSignal();
 }
 
 void DkPaintToolBar::on_alphaBox_valueChanged(int val) {

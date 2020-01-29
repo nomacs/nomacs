@@ -34,6 +34,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QAction>
+#include <QLineEdit>
 #include <QGraphicsPathItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QInputDialog>
@@ -123,6 +124,8 @@ public slots:
 
 protected slots:
 	void setMode(int mode);
+	void textChange(const QString &text);
+	void textEditFinsh();
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
@@ -200,6 +203,8 @@ public slots:
 	void on_penColButton_clicked();
 	void on_widthBox_valueChanged(int val);
 	void on_alphaBox_valueChanged(int val);
+	void on_textInput_textChanged(const QString &text);
+	void on_textInput_editingFinished();
 	void on_undoAction_triggered();
 	virtual void setVisible(bool visible);
 
@@ -213,10 +218,13 @@ signals:
 	void panSignal(bool checked);
 	void undoSignal();
 	void modeChangeSignal(int mode);
+	void textChangeSignal(const QString &text);
+	void editFinishSignal();
 
 protected:
 	void createLayout();
 	void createIcons();
+	void modifyLayout(int mode);
 
 	QPushButton* penColButton;
 	QColorDialog* colorDialog;
@@ -224,6 +232,7 @@ protected:
 	QSpinBox* alphaBox;
 	QColor penCol;
 	int penAlpha;
+	QMap<QString, QAction*> toolbarWidgetList;
 	QAction* panAction;
 	QAction* undoAction;
 
@@ -235,6 +244,8 @@ protected:
 	QAction* squarefillAction;
 	QAction* blurAction;
 	QAction* textAction;
+
+	QLineEdit* textInput;
 
 	QVector<QIcon> icons;		// needed for colorizing
 	
