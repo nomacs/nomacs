@@ -435,8 +435,14 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			//painter.drawRect(paths.at(idx).boundingRect());
 			//painter.setPen(pathsPen.at(idx));
 			QPointF p = paths.at(idx).boundingRect().bottomRight();
-			painter.setPen(QPen(QBrush(QColor(0,0,0,180)),3,Qt::DotLine));
-			painter.drawLine(QLineF(p, p-QPoint(0, pathsPen.at(idx).width()*10)));
+			if((idx == paths.size()-1) && (textinputenable))
+			{
+				painter.setPen(QPen(QBrush(QColor(0,0,0,180)),3,Qt::DotLine));
+				if(sbuffer.isEmpty())
+					painter.drawLine(QLineF(begin, begin-QPoint(0, pathsPen.at(idx).width()*10)));
+				else
+					painter.drawLine(QLineF(p, p-QPoint(0, pathsPen.at(idx).width()*10)));
+			}
 			//painter.drawPoint(paths.at(idx).boundingRect().bottomRight());
 		}
 		else if(pathsMode.at(idx) == mode_blur){
