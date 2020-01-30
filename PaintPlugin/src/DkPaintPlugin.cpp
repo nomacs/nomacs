@@ -69,6 +69,7 @@ bool DkPaintPlugin::hideHUD() const {
 **/
 const int ArrowWidth = 10;
 const int ArrowHeight = 18;
+const int TextEnlarge = 15;
 QPainterPath getArrowHead(QPainterPath line, const int thickness) {
 	QPointF p1 = line.pointAtPercent(0.0);
 	QPointF p2 = line.pointAtPercent(1.0);
@@ -254,6 +255,7 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(textChangeSignal(const QString&)), this, SLOT(textChange(const QString&)), Qt::UniqueConnection);
 	connect(paintToolbar, SIGNAL(editFinishSignal()), this, SLOT(textEditFinsh()), Qt::UniqueConnection);
+	connect(this, SIGNAL(editShowSignal(bool)), paintToolbar, SLOT(showLineEdit(bool)), Qt::UniqueConnection);
 	
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
@@ -300,17 +302,8 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				if(selectedMode == mode_text)
 				{
 					textinputenable = true;
-					//QLineEdit *textInput = new QLineEdit(this);
-					//connect (textInput, SIGNAL(textChanged(const QString &text)), this, SLOT(textChange(const QString &text)));
-					/*
-					QFont font;
-					font.setFamily(font.defaultFamily());
-					font.setPixelSize(pen.width()*15);
-					QString text;
-					text = QInputDialog::getText(this, "Text Input", tr("string"), QLineEdit::Normal);
-					paths.last().addText(begin, font, text);
-					text.clear();
-					*/
+					// lineedit show only when in text mode and mouse click
+					emit editShowSignal(true);
 				}
 				update();
 			}
@@ -437,7 +430,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			QPointF p = paths.at(idx).boundingRect().bottomRight();
 			if((idx == paths.size()-1) && (textinputenable))
 			{
-				painter.setPen(QPen(QBrush(QColor(0,0,0,180)),3,Qt::DotLine));
+				painter.setPen(QPen(QBrush(QColor(0,0,0,180)),pathsPen.at(idx).width(),Qt::DotLine));
 				if(sbuffer.isEmpty())
 					painter.drawLine(QLineF(begin, begin-QPoint(0, pathsPen.at(idx).width()*10)));
 				else
@@ -509,6 +502,7 @@ QImage DkPaintViewPort::getPaintedImage() {
 void DkPaintViewPort::setMode(int mode){
 	selectedMode = mode;
 	setCursor(defaultCursor);
+	emit editShowSignal(false);
 
 	this->repaint();
 }
@@ -516,7 +510,7 @@ void DkPaintViewPort::setMode(int mode){
 void DkPaintViewPort::textChange(const QString &text){
 	QFont font;
 	font.setFamily(font.defaultFamily());
-	font.setPixelSize(pen.width()*15);
+	font.setPixelSize(pen.width()*TextEnlarge);
 	if(textinputenable)
 	{
 		sbuffer = text;
@@ -530,6 +524,7 @@ void DkPaintViewPort::textEditFinsh(){
 	if(sbuffer.isEmpty())
 		undoLastPaint();
 	textinputenable = false;
+	emit editShowSignal(false);
 }
 
 void DkPaintViewPort::clear() {
@@ -764,12 +759,15 @@ void DkPaintToolBar::createLayout() {
 	//addWidget(textInput);
 	toolbarWidgetList.insert(textInput->objectName(), this->addWidget(textInput));
 
-	modifyLayout(mode_pencil);
+	showLineEdit(false);
 }
 
-void DkPaintToolBar::modifyLayout(int mode) {
-	if(mode == mode_text)
+void DkPaintToolBar::showLineEdit(bool show) {
+	if(show)
+	{
 		toolbarWidgetList.value(textInput->objectName())->setVisible(true);
+		textInput->setFocus();
+	}
 	else
 		toolbarWidgetList.value(textInput->objectName())->setVisible(false);
 }
@@ -821,42 +819,34 @@ void DkPaintToolBar::on_panAction_toggled(bool checked) {
 }
 
 void DkPaintToolBar::on_pencilAction_toggled(bool checked){
-	modifyLayout(mode_pencil);
 	emit modeChangeSignal(mode_pencil);
 }
 
 void DkPaintToolBar::on_lineAction_toggled(bool checked){
-	modifyLayout(mode_line);
 	emit modeChangeSignal(mode_line);
 }
 
 void DkPaintToolBar::on_arrowAction_toggled(bool checked){
-	modifyLayout(mode_arrow);
 	emit modeChangeSignal(mode_arrow);
 }
 
 void DkPaintToolBar::on_circleAction_toggled(bool checked){
-	modifyLayout(mode_circle);
 	emit modeChangeSignal(mode_circle);
 }
 
 void DkPaintToolBar::on_squareAction_toggled(bool checked){
-	modifyLayout(mode_square);
 	emit modeChangeSignal(mode_square);
 }
 
 void DkPaintToolBar::on_squarefillAction_toggled(bool checked){
-	modifyLayout(mode_square_fill);
 	emit modeChangeSignal(mode_square_fill);
 }
 
 void DkPaintToolBar::on_blurAction_toggled(bool checked){
-	modifyLayout(mode_blur);
 	emit modeChangeSignal(mode_blur);
 }
 
 void DkPaintToolBar::on_textAction_toggled(bool checked){
-	modifyLayout(mode_text);
 	emit modeChangeSignal(mode_text);
 }
 

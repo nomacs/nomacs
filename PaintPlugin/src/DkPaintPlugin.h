@@ -121,6 +121,9 @@ public slots:
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
 
+signals:
+	void editShowSignal(bool show);
+
 protected slots:
 	void setMode(int mode);
 	void textChange(const QString &text);
@@ -207,6 +210,7 @@ public slots:
 	void on_textInput_textChanged(const QString &text);
 	void on_textInput_editingFinished();
 	void on_undoAction_triggered();
+	void showLineEdit(bool show);
 	virtual void setVisible(bool visible);
 
 signals:
@@ -225,7 +229,6 @@ signals:
 protected:
 	void createLayout();
 	void createIcons();
-	void modifyLayout(int mode);
 
 	QPushButton* penColButton;
 	QColorDialog* colorDialog;
