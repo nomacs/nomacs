@@ -1995,7 +1995,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1527"/>
       <source>JBIG</source>
-      <translation type="unfinished">JBIG</translation>
+      <translation>JBIG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1528"/>
