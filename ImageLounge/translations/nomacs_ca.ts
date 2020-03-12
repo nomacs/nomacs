@@ -1538,7 +1538,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
       <source>Cannot sharpen image</source>
-      <translation type="unfinished">Cannot sharpen image</translation>
+      <translation>No s'ha pogut afinar la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="244"/>
@@ -1553,22 +1553,22 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
       <source>Cannot threshold image</source>
-      <translation type="unfinished">Cannot threshold image</translation>
+      <translation>No s'ha pogut fer el llindar de la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="352"/>
       <source>Cannot change Hue/Saturation</source>
-      <translation type="unfinished">Cannot change Hue/Saturation</translation>
+      <translation>No s'ha pogut canviar Hue/Saturació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="402"/>
       <source>Cannot apply exposure</source>
-      <translation type="unfinished">Cannot apply exposure</translation>
+      <translation>No s'ha pogut aplicar exposició</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="454"/>
       <source>Cannot draw background color</source>
-      <translation type="unfinished">Cannot draw background color</translation>
+      <translation>No s'ha pogut pintar el color de fons</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
@@ -2581,12 +2581,12 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1515"/>
       <source>Lena</source>
-      <translation type="unfinished">Lena</translation>
+      <translation>Lena</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1516"/>
       <source>Show test image</source>
-      <translation type="unfinished">Show test image</translation>
+      <translation>Mostrar imatge de prova</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1519"/>
@@ -2596,12 +2596,12 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1520"/>
       <source>Generates all images in the world</source>
-      <translation type="unfinished">Generates all images in the world</translation>
+      <translation>Generar totes les imatges del mon</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1523"/>
       <source>Pong</source>
-      <translation type="unfinished">Pong</translation>
+      <translation>Pong</translation>
     </message>
   </context>
   <context>
@@ -2609,7 +2609,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1323"/>
       <source>Always Load JPG if Embedded</source>
-      <translation type="unfinished">Always Load JPG if Embedded</translation>
+      <translation>Carregar sempre JPG si incrustat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
