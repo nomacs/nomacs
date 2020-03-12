@@ -1028,7 +1028,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1407"/>
       <source>Apply actions to multiple images</source>
-      <translation>Zastosuj akcję do wielu obrazów</translation>
+      <translation>Zastosuj przekształcenia do wielu obrazów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1410"/>
@@ -1267,7 +1267,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1555"/>
       <source>Skip Next Images Sync</source>
-      <translation>Pomiń synchronizację następnych obrazów</translation>
+      <translation>Synchronizuj pominięcie kolejnych obrazów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1559"/>
@@ -6484,7 +6484,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="297"/>
       <source>Load New Image Format</source>
-      <translation>Wczytaj nowy format obrazu</translation>
+      <translation>Wczytaj obraz w nowym formacie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="304"/>
