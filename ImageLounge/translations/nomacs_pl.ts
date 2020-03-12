@@ -26,7 +26,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="226"/>
       <source>&amp;Explorer</source>
-      <translation>&amp;Eksploarator</translation>
+      <translation>&amp;Eksplorator plików</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="364"/>
@@ -64,7 +64,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="653"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Panele</translation>
+      <translation>P&amp;anele</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="541"/>
