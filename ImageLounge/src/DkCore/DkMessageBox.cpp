@@ -208,8 +208,12 @@ void DkMessageBox::updateSize() {
 	if (!isVisible())
 		return;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+	QSize screenSize = QApplication::desktop()->availableGeometry(QCursor::pos()).size();
+#else
 	QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
 	QSize screenSize = screen ? screen->size() : QSize(1024, 768);	// diem: be safe
+#endif
 
 #if defined(Q_OS_WINCE)
 	// the width of the screen, less the window border.
