@@ -185,6 +185,7 @@ public slots:
 	void on_iconSizeBox_valueChanged(int value) const;
 	void on_fadeImageBox_valueChanged(double value) const;
 	void on_displayTimeBox_valueChanged(double value) const;
+	void on_showPlayer_toggled(bool checked) const;
 	void on_keepZoom_buttonClicked(int buttonId) const;
 	void on_invertZoom_toggled(bool checked) const;
 	void on_hQAntiAliasing_toggled(bool checked) const;

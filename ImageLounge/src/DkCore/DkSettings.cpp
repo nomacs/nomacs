@@ -435,6 +435,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
+	slideShow_p.showPlayer = settings.value("showPlayer", slideShow_p.showPlayer).toBool();
 	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
 	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
@@ -698,6 +699,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("filter", slideShow_p.filter);
 	if (force ||slideShow_p.time != slideShow_d.time)
 		settings.setValue("time", slideShow_p.time);
+	if (force || slideShow_p.showPlayer != slideShow_d.showPlayer)
+		settings.setValue("showPlayer", slideShow_p.showPlayer);
 	if (force ||slideShow_p.moveSpeed != slideShow_d.moveSpeed)
 		settings.setValue("moveSpeed", slideShow_p.moveSpeed);
 	if (force ||slideShow_p.display != slideShow_d.display)
@@ -866,6 +869,7 @@ void DkSettings::setToDefaultSettings() {
 
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
+	slideShow_p.showPlayer = true;
 	slideShow_p.moveSpeed = 0;		// TODO: set to 1 for finishing slideshow
 	slideShow_p.display = QBitArray(display_end, true);
 	slideShow_p.backgroundColor = QColor(51, 51, 51, 255);

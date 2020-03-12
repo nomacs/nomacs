@@ -809,6 +809,10 @@ void DkDisplayPreference::createLayout() {
 	displayTimeBox->setSingleStep(.2);
 	displayTimeBox->setValue(DkSettingsManager::param().slideShow().time);
 
+	QCheckBox* showPlayer = new QCheckBox(tr("Show Player"), this);
+	showPlayer->setObjectName("showPlayer");
+	showPlayer->setChecked(DkSettingsManager::param().slideShow().showPlayer);
+
 	DkGroupWidget* slideshowGroup = new DkGroupWidget(tr("Slideshow"), this);
 	slideshowGroup->addWidget(fadeImageLabel);
 	slideshowGroup->addWidget(cbTransition);
@@ -816,6 +820,7 @@ void DkDisplayPreference::createLayout() {
 	slideshowGroup->addWidget(cbAlwaysAnimate);
 	slideshowGroup->addWidget(displayTimeLabel);
 	slideshowGroup->addWidget(displayTimeBox);
+	slideshowGroup->addWidget(showPlayer);
 
 	// show crop from metadata
 	QCheckBox* showCrop = new QCheckBox(tr("Show crop rectangle"), this);
@@ -853,6 +858,13 @@ void DkDisplayPreference::on_displayTimeBox_valueChanged(double value) const {
 
 	if (DkSettingsManager::param().slideShow().time != value)
 		DkSettingsManager::param().slideShow().time = (float)value;
+
+}
+
+void DkDisplayPreference::on_showPlayer_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().slideShow().showPlayer != checked)
+		DkSettingsManager::param().slideShow().showPlayer = checked;
 
 }
 
