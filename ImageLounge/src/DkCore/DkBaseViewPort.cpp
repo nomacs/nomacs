@@ -192,7 +192,7 @@ void DkBaseViewPort::zoomLeveled(double factor, const QPointF& center) {
 	zoom(factor, center);
 }
 
-void DkBaseViewPort::zoom(double factor, const QPointF& center) {
+void DkBaseViewPort::zoom(double factor, const QPointF& center, bool force) {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -202,7 +202,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center) {
 		return;
 
 	// reset view & block if we pass the 'image fit to screen' on zoom out
-	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1) {
+	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1 && !force) {
 
 		mBlockZooming = true;
 		mZoomTimer->start(500);
@@ -211,7 +211,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center) {
 	}
 
 	// reset view if we pass the 'image fit to screen' on zoom in
-	if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11()*factor > 1) {
+	if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11()*factor > 1 && !force) {
 
 		resetView();
 		return;
