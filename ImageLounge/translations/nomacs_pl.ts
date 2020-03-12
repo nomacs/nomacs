@@ -840,7 +840,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1322"/>
       <source>&amp;Anti Aliasing</source>
-      <translation>&amp;Anti Aliasing</translation>
+      <translation>&amp;Antyaliasing</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1324"/>
@@ -3773,12 +3773,12 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation>Jeśli zaznaczono, zachowanie kółka myszy podczas powiększania zostanie odwrócone.</translation>
+      <translation>Odwraca kierunek powiększania z użyciem kółka myszy.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
       <source>Display Images with High Quality Anti Aliasing</source>
-      <translation>Wyświetl obrazy używając Wysokiej Jakości Anti Aliasingu</translation>
+      <translation>Wyświetl obrazy używając Antyaliasingu wysokiej jakości</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
@@ -4395,7 +4395,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="310"/>
       <source>Fullscreen Color</source>
-      <translation>Kolor pełnego ekranu</translation>
+      <translation>Kolor tła w pełnym ekranie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="315"/>
@@ -4541,7 +4541,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="406"/>
       <source>Check for updates on start-up.</source>
-      <translation>Sprawdź aktualizacje przy starcie.</translation>
+      <translation>Sprawdzaj aktualizacje przy starcie.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="410"/>
@@ -4816,12 +4816,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1699"/>
       <source>Anti Aliasing Enabled</source>
-      <translation>Anti Aliasing włączony</translation>
+      <translation>Antyaliasing włączony</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1699"/>
       <source>Anti Aliasing Disabled</source>
-      <translation>Anti Aliasing wyłączony</translation>
+      <translation>Antyaliasing wyłączony</translation>
     </message>
   </context>
   <context>
