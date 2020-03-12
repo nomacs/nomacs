@@ -134,7 +134,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="977"/>
       <source>Manage Applications which are Automatically Opened</source>
-      <translation>Zarządzanie aplikacjami, które są automatycznie otwierane</translation>
+      <translation>Zarządzaj automatycznie otwieranymi aplikacjami</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="980"/>
@@ -453,7 +453,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1137"/>
       <source>paste image</source>
-      <translation>wklej obraz</translation>
+      <translation>Wklej obraz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1139"/>
@@ -504,7 +504,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1162"/>
       <source>resize the current image</source>
-      <translation>zmień rozmiar bieżącego obrazu</translation>
+      <translation>Zmień rozmiar bieżącego obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1164"/>
@@ -514,7 +514,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1167"/>
       <source>cut the current image</source>
-      <translation>przytnij bieżący obraz</translation>
+      <translation>Przytnij bieżący obraz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1173"/>
@@ -962,7 +962,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>Wybierz monitor, aby uruchomić nomacs</translation>
+      <translation>Wybierz monitor, na którym uruchomić nomacs</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
@@ -1422,7 +1422,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="112"/>
       <source>Invert the Image</source>
-      <translation>Odwróć obraz</translation>
+      <translation>Odwróć kolory obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="117"/>
@@ -4717,7 +4717,8 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="274"/>
       <source>%1 
  does not contain any image</source>
-      <translation>%1 nie zawiera żadnego obrazu</translation>
+      <translation>%1 
+ nie zawiera żadnego obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="568"/>
@@ -4740,7 +4741,8 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="747"/>
       <source>Do you want to save changes to:
 %1</source>
-      <translation>Czy chcesz zapisać zmiany dla: %1</translation>
+      <translation>Czy chcesz zapisać zmiany dla:
+%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="865"/>
@@ -4783,7 +4785,8 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1180"/>
       <source>Do you want to overwrite:
 %1?</source>
-      <translation>Czy chcesz zastąpić:%1?</translation>
+      <translation>Czy chcesz zastąpić:
+%1?</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1306"/>
@@ -4793,7 +4796,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1446"/>
       <source>%1 deleted...</source>
-      <translation>usunięto %1</translation>
+      <translation>Usunięto %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1450"/>
