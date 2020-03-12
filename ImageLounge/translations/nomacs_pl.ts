@@ -2608,12 +2608,12 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1323"/>
       <source>Always Load JPG if Embedded</source>
-      <translation>Zawsze ładuj JPG jeśli osadzone</translation>
+      <translation>Zawsze ładuj JPG, jeśli osadzone</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
       <source>Load JPG if it Fits the Screen Resolution</source>
-      <translation>Załaduj JPG, jeśli pasuje do rozdzielczości ekranu</translation>
+      <translation>Załaduj JPG, jeśli odpowiada rozdzielczości ekranu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1325"/>
