@@ -259,7 +259,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1031"/>
       <source>St&amp;art New Instance</source>
-      <translation>Uruchom nową inst&amp;ancję programu</translation>
+      <translation>Uruc&amp;hom nową instancję programu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1033"/>
@@ -269,7 +269,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1035"/>
       <source>St&amp;art Private Instance</source>
-      <translation>Uruchom prywatną inst&amp;ancję programu</translation>
+      <translation>Uruchom prywatną instancję pro&amp;gramu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1037"/>
@@ -300,7 +300,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1048"/>
       <source>&amp;Exit</source>
-      <translation>Za&amp;kończ</translation>
+      <translation>Za&amp;mknij</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1049"/>
@@ -310,7 +310,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1054"/>
       <source>by &amp;Filename</source>
-      <translation>według &amp;nazwy pliku</translation>
+      <translation>Według &amp;nazwy pliku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1056"/>
@@ -320,7 +320,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1060"/>
       <source>by Date &amp;Created</source>
-      <translation>według daty &amp;utworzenia</translation>
+      <translation>Według daty &amp;utworzenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1062"/>
@@ -330,7 +330,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1066"/>
       <source>by Date Modified</source>
-      <translation>według daty modyfikacji</translation>
+      <translation>Według daty mo&amp;dyfikacji</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1068"/>
@@ -340,7 +340,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1072"/>
       <source>Random</source>
-      <translation>Losowo</translation>
+      <translation>&amp;Losowo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1074"/>
