@@ -699,7 +699,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1267"/>
       <source>New &amp;Tab</source>
-      <translation>Nowa &amp;karta</translation>
+      <translation>Nowa kar&amp;ta</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1269"/>
@@ -719,7 +719,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1275"/>
       <source>&amp;Close All Tabs</source>
-      <translation>&amp;Zamknij wszystkie karty</translation>
+      <translation>Zamknij wsz&amp;ystkie karty</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1276"/>
@@ -729,7 +729,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1278"/>
       <source>&amp;Fit Window</source>
-      <translation>&amp;Dopasuj okno</translation>
+      <translation>Dopas&amp;uj okno</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1280"/>
@@ -830,7 +830,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1318"/>
       <source>&amp;Zoom Out</source>
-      <translation>Pomniejs&amp;z</translation>
+      <translation>Po&amp;mniejsz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1320"/>
@@ -870,7 +870,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1340"/>
       <source>&amp;Change Opacity</source>
-      <translation>&amp;Zmień krycie</translation>
+      <translation>Zmień przezro&amp;czystość</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1342"/>
@@ -880,7 +880,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1344"/>
       <source>Opacity &amp;Up</source>
-      <translation>&amp;Zmniejsz krycie</translation>
+      <translation>Zmnie&amp;jsz przezroczystość</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1346"/>
@@ -891,7 +891,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1348"/>
       <source>Opacity &amp;Down</source>
-      <translation>&amp;Zwiększ krycie</translation>
+      <translation>Zwię&amp;ksz przezroczystość</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1352"/>
