@@ -3903,12 +3903,12 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="796"/>
       <source>Always Animate Image Loading</source>
-      <translation>Zawsze animuj ładowanie obrazu</translation>
+      <translation>Zawsze animuj przełączanie obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
       <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-      <translation>Jeśli nie zaznaczono, animacja ładowania obrazu pojawia się tylko w trybie pełnoekranowym</translation>
+      <translation>Jeśli nie zaznaczono, przełączanie między obrazami jest animowane tylko w trybie pełnoekranowym</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="801"/>
