@@ -4134,7 +4134,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="994"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-      <translation>Zalecamy ustawić przeciętną wielkość pamięci podręcznej około 100 MB. [%1-%2 MB]</translation>
+      <translation>Zalecany umiarkowany rozmiar pamięci podręcznej to około 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="997"/>
@@ -4144,7 +4144,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-      <translation>Zalecamy ustawić przeciętną wartość pamięci edycji około 100 MB. [%1-%2 MB]</translation>
+      <translation>Zalecany umiarkowany rozmiar pamięci historii to około 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1014"/>
@@ -4154,12 +4154,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1020"/>
       <source>Skip Images</source>
-      <translation>Pomiń obrazy</translation>
+      <translation>Pomijaj obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation>Obrazy są pomijane do naciśnięcia przycisku "Następny"</translation>
+      <translation>Obrazy są pomijane do chwili zwolnienia przycisku "Następny".</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
@@ -4169,17 +4169,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
       <source>The next image is loaded after the current image is shown.</source>
-      <translation>Następny obraz jest ładowany po pokazaniu obecnego obrazu.</translation>
+      <translation>Następny obraz jest wczytywany po wyświetleniu obecnego obrazu.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1034"/>
       <source>Image Loading Policy</source>
-      <translation>Zasady ładowania obrazów</translation>
+      <translation>Zasady wczytywania obrazów</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1040"/>
       <source>Load Saved Images</source>
-      <translation>Załaduj zapisane obrazy</translation>
+      <translation>Wczytuj zapisane obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
