@@ -993,12 +993,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1396"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>&amp;Eksportuj wielostronicowy TIFF</translation>
+      <translation>&amp;Eksportuj strony z wielostronicowego TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1397"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Eksportuj strony TIFF do wielu plików tiff</translation>
+      <translation>Eksportuj strony TIFF do oddzielnych plików</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1399"/>
@@ -1038,7 +1038,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1411"/>
       <source>set the current image as wallpaper</source>
-      <translation>ustaw bieżący obraz jako tapetę</translation>
+      <translation>Ustaw bieżący obraz jako tapetę</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1413"/>
