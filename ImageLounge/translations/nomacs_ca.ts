@@ -1844,7 +1844,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncompressed</source>
-      <translation type="unfinished">Uncompressed</translation>
+      <translation>Descomprimit</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
@@ -3924,7 +3924,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
       <source>Show Player</source>
-      <translation type="unfinished">Show Player</translation>
+      <translation>Mostrar reproductor</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
@@ -5260,7 +5260,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2825"/>
       <source>Filters:</source>
-      <translation type="unfinished">Filters:</translation>
+      <translation>Filtres:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2830"/>
