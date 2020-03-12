@@ -3774,7 +3774,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation>Se l&apos;opzione &amp;egrave; selezionata, il comportamento della rotellina del mouse viene invertito durante lo zoom.</translation>
+      <translation>Se spuntata, il comportamento della rotellina del mouse viene invertito durante lo zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
@@ -3794,7 +3794,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation>Se l&apos;opzione &amp;egrave; selezionata, appariranno delle barre di scorrimento che permettono la panoramica con il mouse.</translation>
+      <translation>Se spuntata, appariranno delle barre di scorrimento che permettono la panoramica con il mouse.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
@@ -3814,7 +3814,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation type="unfinished">If checked, predefined zoom levels are used when zooming.</translation>
+      <translation>Se spuntata, durante lo zoom vengono utilizzati livelli di zoom predefiniti.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3839,7 +3839,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation type="unfinished">If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</translation>
+      <translation>Se spuntata, il livello di zoom viene mantenuto solo se l&apos;immagine caricata ha lo stesso livello della precedente.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
