@@ -2680,7 +2680,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation>Wybierz liczbę wątków w puli wątków</translation>
+      <translation>Wybierz liczbę wątków wykorzystywanych przez program</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
@@ -2690,7 +2690,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1382"/>
       <source>Use Log File</source>
-      <translation>Używaj dziennika</translation>
+      <translation>Używaj logu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1384"/>
@@ -2705,7 +2705,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1395"/>
       <source>Logging</source>
-      <translation>Rejestrowanie</translation>
+      <translation>Rejestr zdarzeń</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1442"/>
