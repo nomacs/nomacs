@@ -922,7 +922,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1363"/>
       <source>Start/Pause the slideshow</source>
-      <translation>Rozpocznij / wstrzymaj pokaz slajdów</translation>
+      <translation>Rozpocznij/wstrzymaj pokaz slajdów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1366"/>
@@ -972,7 +972,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>pokazuje, gdzie zdjęcie zostało zrobione w Mapach Google</translation>
+      <translation>pokazuje w Mapach Google, gdzie zdjęcie zostało zrobione</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
@@ -3653,7 +3653,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="954"/>
       <source>No Aspect Ratio</source>
-      <translation>Bez zachowania proporcji</translation>
+      <translation>Bez ustalonych proporcji</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="962"/>
@@ -4471,7 +4471,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="371"/>
       <source>Start with the first image in a folder after showing the last.</source>
-      <translation>Rozpocznij pierwszym obrazem po pokazaniu ostatniego.</translation>
+      <translation>Wróć do pierwszego obrazu po pokazaniu ostatniego.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="374"/>
@@ -5961,12 +5961,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1023"/>
       <source>pixel/inch</source>
-      <translation>piksel/cal</translation>
+      <translation>piksele/cal</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1024"/>
       <source>pixel/cm</source>
-      <translation>piksel/cm</translation>
+      <translation>piksele/cm</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1035"/>
@@ -5991,12 +5991,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1045"/>
       <source>Bicubic (4x4 pixel interpolation)</source>
-      <translation>Bicubic (interpolacja pikseli 4x4)</translation>
+      <translation>Dwusześcienna (interpolacja 4x4)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1046"/>
       <source>Lanczos (8x8 pixel interpolation)</source>
-      <translation>Lanczos (interpolacja pikseli 8x8)</translation>
+      <translation>Lanczos (interpolacja 8x8)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1055"/>
