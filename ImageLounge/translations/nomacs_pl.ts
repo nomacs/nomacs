@@ -244,7 +244,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1024"/>
       <source>Load next image</source>
-      <translation>Wczytaj następny obraz</translation>
+      <translation>Wczytaj następny plik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1026"/>
@@ -375,7 +375,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1096"/>
       <source>rotate the image 90%1 clockwise</source>
-      <translation>obróć obraz o 90%1 zgodnie z ruchem wskazówek zegara</translation>
+      <translation>Obróć obraz o 90%1 zgodnie z ruchem wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1098"/>
@@ -385,7 +385,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1101"/>
       <source>rotate the image 90%1 counter clockwise</source>
-      <translation>obróć obraz o 90%1 przeciwnie do ruchu wskazówek zegara</translation>
+      <translation>Obróć obraz o 90%1 przeciwnie do ruchu wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1103"/>
@@ -395,7 +395,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1104"/>
       <source>rotate the image by 180%1</source>
-      <translation>obróć obraz o 180°%1</translation>
+      <translation>Obróć obraz o 180°%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1106"/>
@@ -427,7 +427,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1119"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1124"/>
       <source>copy image</source>
-      <translation>kopiuj obraz</translation>
+      <translation>Kopiuj obraz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1121"/>
@@ -442,7 +442,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1129"/>
       <source>copy pixel color value as HEX</source>
-      <translation>kopiuj wartość piksela koloru jako HEX</translation>
+      <translation>Kopiuj wartość piksela koloru jako HEX</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1134"/>
@@ -825,7 +825,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1316"/>
       <source>zoom in</source>
-      <translation>powiększ</translation>
+      <translation>Powiększ</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1318"/>
@@ -835,7 +835,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1320"/>
       <source>zoom out</source>
-      <translation>pomniejsz</translation>
+      <translation>Pomniejsz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1322"/>
@@ -845,7 +845,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1324"/>
       <source>if checked images are smoother</source>
-      <translation>jeśli zaznaczono, obrazy są gładsze</translation>
+      <translation>Włącza wygładzanie krawędzi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1328"/>
@@ -855,7 +855,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1330"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>jeśli zaznaczono, wzorzec będzie wyświetlany dla przezroczystych obiektów</translation>
+      <translation>Wyświetla wzór na przezroczystych elementach</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1334"/>
@@ -972,7 +972,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>pokazuje w Mapach Google, gdzie zdjęcie zostało zrobione</translation>
+      <translation>Pokazuje w Mapach Google, gdzie zostało zrobione zdjęcie</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
