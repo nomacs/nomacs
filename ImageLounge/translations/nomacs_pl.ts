@@ -442,7 +442,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1129"/>
       <source>copy pixel color value as HEX</source>
-      <translation>Kopiuj wartość piksela koloru jako HEX</translation>
+      <translation>Kopiuj wartość koloru piksela jako HEX</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1134"/>
@@ -865,7 +865,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1336"/>
       <source>shows a frameless window</source>
-      <translation>pokazuje okienko bez ramki</translation>
+      <translation>Pokazuje okienko bez ramki</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1340"/>
@@ -875,7 +875,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1342"/>
       <source>change the window opacity</source>
-      <translation>zmień krycie okna</translation>
+      <translation>Zmień przezroczystość okna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1344"/>
@@ -886,7 +886,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1346"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1350"/>
       <source>changes the window opacity</source>
-      <translation>zmienia krycie okna</translation>
+      <translation>Zmienia przezroczystość okna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1348"/>
@@ -896,7 +896,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1352"/>
       <source>To&amp;ggle Opacity</source>
-      <translation>Przełącz krycie</translation>
+      <translation>Prze&amp;łącz przezroczystość</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1354"/>
@@ -932,7 +932,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1367"/>
       <source>pause the current movie</source>
-      <translation>wstrzymaj aktualny film</translation>
+      <translation>Wstrzymaj odtwarzany film</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1371"/>
@@ -942,7 +942,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1372"/>
       <source>show previous frame</source>
-      <translation>pokaż poprzednią klatkę</translation>
+      <translation>Pokaż poprzednią klatkę</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1374"/>
@@ -952,7 +952,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1375"/>
       <source>show next frame</source>
-      <translation>pokaż następną klatkę</translation>
+      <translation>Pokaż następną klatkę</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
@@ -982,7 +982,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1388"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation>generuj wszystkie miniatury dla aktualnego katalogu</translation>
+      <translation>Generuj wszystkie miniatury dla aktualnego katalogu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1391"/>
@@ -1058,7 +1058,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1420"/>
       <source>about</source>
-      <translation>o programie</translation>
+      <translation>O programie</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1422"/>
@@ -1088,7 +1088,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1429"/>
       <source>check for updates</source>
-      <translation>sprawdź aktualizacje</translation>
+      <translation>Sprawdź aktualizacje programu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1432"/>
@@ -1322,7 +1322,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
       <source>Pan Image Up</source>
-      <translation>Pan obraz w górę</translation>
+      <translation>Przesuń obraz w górę</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
@@ -1332,7 +1332,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
       <source>Pan Image Down</source>
-      <translation>Przesuwa obraz w dół</translation>
+      <translation>Przesuń obraz w dół</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
@@ -1342,7 +1342,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1595"/>
       <source>Pan Image Left</source>
-      <translation>Przesuwa obraz w lewo</translation>
+      <translation>Przesuń obraz w lewo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1596"/>
@@ -1352,7 +1352,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1599"/>
       <source>Pan Image Right</source>
-      <translation>Przesuwa obraz w prawo</translation>
+      <translation>Przesuń obraz w prawo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1600"/>
