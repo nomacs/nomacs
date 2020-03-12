@@ -2447,7 +2447,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
       <source>Batch</source>
-      <translation>Partia</translation>
+      <translation>Zbiór</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="88"/>
@@ -2969,7 +2969,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
       <source>Use Input Folder</source>
-      <translation>Użyj folderu wyjściowego</translation>
+      <translation>Użyj folderu źródłowego</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="769"/>
