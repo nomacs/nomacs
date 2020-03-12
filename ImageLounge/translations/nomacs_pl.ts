@@ -3969,12 +3969,12 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2393"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Eksport wielostronicowych TIFF</translation>
+      <translation>Eksportuj strony z wielostronicowego TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2439"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Wielostronicowy TIFF:</translation>
+      <translation>Wskaż plik TIFF:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2442"/>
@@ -3985,7 +3985,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2445"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>Wielostronnicowy plik TIFF nie załadowany</translation>
+      <translation>Nie załadowano wielostronicowego pliku TIFF </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
@@ -4793,7 +4793,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1446"/>
       <source>%1 deleted...</source>
-      <translation>%1 usunięto...</translation>
+      <translation>usunięto %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1450"/>
@@ -6224,7 +6224,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkMenu.cpp" line="214"/>
       <source>no clients found</source>
-      <translation>klientów nie znaleziono</translation>
+      <translation>Nie znaleziono klientów</translation>
     </message>
   </context>
   <context>
