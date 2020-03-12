@@ -4184,7 +4184,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation>Po zapisaniu, zapisany obraz zostanie załadowany w miejscu</translation>
+      <translation>Po zapisaniu, obraz zostanie wczytany w miejscu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
@@ -4194,7 +4194,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation>Po zapisaniu, zapisany obraz zostanie załadowany w miejsce</translation>
+      <translation>Po zapisaniu, obraz zostanie wczytany do karty</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
@@ -4204,7 +4204,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
       <source>The saved image will not be loaded.</source>
-      <translation>Zapisany obraz nie zostanie załadowany.</translation>
+      <translation>Zapisany obraz nie zostanie wczytany</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1053"/>
