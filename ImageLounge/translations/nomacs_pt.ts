@@ -1843,8 +1843,8 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
-      <source>Uncomressed</source>
-      <translation>Sem compressão</translation>
+      <source>Uncompressed</source>
+      <translation type="unfinished">Uncompressed</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
@@ -2356,12 +2356,12 @@ Reinicie o nomacs e tente novamente.</translation>
       <translation>Não foi possível apagar a imagem original porque foram detetadas %1 falha(s).</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1066"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1070"/>
       <source>Image</source>
       <translation>Imagem</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1088"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1092"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
       <translation>O nomacs - Image Lounge é um visualizador de imagens muito leve.</translation>
     </message>
@@ -2607,109 +2607,109 @@ Reinicie o nomacs e tente novamente.</translation>
   <context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1311"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1323"/>
       <source>Always Load JPG if Embedded</source>
       <translation>Carregar sempre JPG se incorporada</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1312"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
       <source>Load JPG if it Fits the Screen Resolution</source>
       <translation>Carregar JPG se couber na resolução do ecrã</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1313"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1325"/>
       <source>Always Load RAW Data</source>
       <translation>Carregar sempre dados não editados</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1336"/>
       <source>Apply Noise Filtering to RAW Images</source>
       <translation>Aplicar filtro de interferência às imagens não editadas</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1326"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1338"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
       <translation>Se ativa, será aplicado um filtro de interferência para reduzir o ruído das cores</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1341"/>
       <source>RAW Loader Settings</source>
       <translation>Definições de imagens não editadas</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1337"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
       <source>Ask to Save Deleted Files</source>
       <translation>Pedir para guardar ficheiros apagados</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1351"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
       <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
       <source>Ignore Exif Orientation when Loading</source>
       <translation>Ignorar orientação Exif ao carregar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1344"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
       <translation>Se ativa, as imagens não serão rodadas, respeitando a orientação Exif</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1359"/>
       <source>Save Exif Orientation</source>
       <translation>Guardar orientação Exif</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
       <translation>Se ativa, a orientação será escrita nos dados Exif em vez de as rodar em matriz
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1350"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1362"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
       <translation>NOTA: esta opção permite-lhe rodar as imagens JPS sem perder as informações</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1353"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1365"/>
       <source>File Loading/Saving</source>
       <translation>Carregar/Guardar ficheiros</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
       <translation>Escolha o número de processos a utilizar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1366"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
       <source>Number of Threads</source>
       <translation>Número de processos</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1382"/>
       <source>Use Log File</source>
       <translation>Utilizar ficheiro de registo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1372"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1384"/>
       <source>If checked, a log file will be created.</source>
       <translation>Se ativa, será criado um ficheiro de registo.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1387"/>
       <source>Open Log</source>
       <translation>Abrir registo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1383"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1395"/>
       <source>Logging</source>
       <translation>Registo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1430"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1442"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
@@ -3923,21 +3923,26 @@ Tenha cuidado!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
+      <source>Show Player</source>
+      <translation type="unfinished">Show Player</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
       <source>Slideshow</source>
       <translation>Apresentação</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="821"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="826"/>
       <source>Show crop rectangle</source>
       <translation>Mostrar caixa de recorte</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="825"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="830"/>
       <source>Show Metadata Cropping</source>
       <translation>Mostrar meta-dados de recorte</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="863"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="875"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
@@ -4065,38 +4070,38 @@ Tenha cuidado!</translation>
   <context>
     <name>nmc::DkFileAssociationsPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1155"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1167"/>
       <source>Filter</source>
       <translation>Filtro</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1156"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1168"/>
       <source>Browse</source>
       <translation>Procurar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1169"/>
       <source>Register</source>
       <translation>Registar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1175"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1187"/>
       <source>Set File Associations</source>
       <translation>Definir associação de ficheiros</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1178"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1190"/>
       <source>Set as Default Viewer</source>
       <translation>Utilizar como visualizador padrão</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1196"/>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1208"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1220"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Reinicie o nomacs para aplicar as alterações</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1275"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1287"/>
       <source>Image</source>
       <translation>Imagem</translation>
     </message>
@@ -4119,97 +4124,97 @@ Pretende mostrar os campos?</translation>
   <context>
     <name>nmc::DkFilePreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="965"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="977"/>
       <source>Screenshots are automatically saved to this folder</source>
       <translation>As capturas de ecrã serão guardadas nesta pasta</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="979"/>
       <source>Use Temporary Folder</source>
       <translation>Utilizar pasta temporária</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="982"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="994"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
       <translation>Recomendamos que defina um valor próximo dos 100 MB para utilizar como cache. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="985"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="997"/>
       <source>Maximal Cache Size</source>
       <translation>Tamanho máximo de cache</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="999"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
       <translation>Recomendamos a definição de um valor de edição de histórico moderado, +/- 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1002"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1014"/>
       <source>History Size</source>
       <translation>Tamanho do histórico</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1008"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1020"/>
       <source>Skip Images</source>
       <translation>Ignorar imagens</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1009"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
       <translation>As imagens serão ignoradas até que a tecla Seguinte seja solta</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1010"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
       <source>Wait for Images to be Loaded</source>
       <translation>Esperar pelo carregamento das imagens</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
       <source>The next image is loaded after the current image is shown.</source>
       <translation>A imagem seguinte é carregada após a imagem atual ser mostrada.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1034"/>
       <source>Image Loading Policy</source>
       <translation>Política de carregamento de imagens</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1040"/>
       <source>Load Saved Images</source>
       <translation>Carregar imagens guardadas</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>After saving, the saved image will be loaded in place</source>
       <translation>Depois de guardar, as imagens serão carregadas imediatamente</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1030"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
       <source>Load to Tab</source>
       <translation>Carregar em separador</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1031"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
       <translation>Depois de guardar, as imagens serão carregadas em novo separador</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
       <source>Do Nothing</source>
       <translation>Nada fazer</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
       <source>The saved image will not be loaded.</source>
       <translation>A imagem guardada não será carregada</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1053"/>
       <source>Image Saving Policy</source>
       <translation>Política para guardar imagens</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1056"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
       <source>Number of Skipped Images on PgUp/PgDown</source>
       <translation>Número de imagens a ignorar com PgUp/PgDown</translation>
     </message>
@@ -4872,12 +4877,12 @@ não possui imagens</translation>
   <context>
     <name>nmc::DkMessageBox</name>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="66"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="68"/>
       <source>Error</source>
       <translation>Erro</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="100"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="102"/>
       <source>Remember my choice</source>
       <translation>Memorizar escolha</translation>
     </message>
@@ -5901,27 +5906,27 @@ Gostaria de as substituir?</translation>
   <context>
     <name>nmc::DkRectWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="763"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="765"/>
       <source>x:</source>
       <translation>x:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="767"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="769"/>
       <source>y:</source>
       <translation>y:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="771"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="773"/>
       <source>width:</source>
       <translation>largura:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="775"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="777"/>
       <source>height:</source>
       <translation>altura:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="780"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="782"/>
       <source> px</source>
       <translation> px</translation>
     </message>
@@ -6197,14 +6202,6 @@ Prima Esc para cancelar as alterações</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="259"/>
       <source>Portable</source>
       <translation>Portátil</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkStatusBar</name>
-    <message>
-      <location filename="../../src/DkCore/DkStatusBar.cpp" line="54"/>
-      <source>CTRL activates the crosshair cursor</source>
-      <translation>A tecla Ctrl ativa o cursor em X</translation>
     </message>
   </context>
   <context>
@@ -6789,78 +6786,78 @@ Contacte o administrador de sistemas para obter mais informações.</translation
       <translation>Imagem original</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="698"/>
       <source>Resize</source>
       <translation>Redimensionar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="718"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="722"/>
       <source>Shall I move %1 to trash?</source>
       <translation>Mover %1 para o lixo?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="720"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="724"/>
       <source>Do you want to permanently delete %1?</source>
       <translation>Deseja apagar %1 permanentemente?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="725"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="729"/>
       <source>Delete File</source>
       <translation>Apagar ficheiros</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Error</source>
       <translation>Erro</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Sorry, I could not create a wallpaper...</source>
       <translation>Não foi possível definir o papel de parede...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="839"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="843"/>
       <source>Busy</source>
       <translation>Ocupado</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Padrão de transparência ativo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Padrão de transparência inativo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>Lenna</source>
       <translation>Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>A remarkable woman</source>
       <translation>Uma mulher espantosa</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1551"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1555"/>
       <source>you cannot cancel this</source>
       <translation>não pode cancelar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1559"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1563"/>
       <source>did you understand the brainteaser?</source>
       <translation>percebeu o quebra-cabeças?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1565"/>
       <source>%1 is wrong...</source>
       <translation>%1 está errado...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1594"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1621"/>
       <source>Attempted to set NULL image</source>
       <translation>Tentativa de definir imagem NULL</translation>
     </message>
@@ -6868,7 +6865,7 @@ Contacte o administrador de sistemas para obter mais informações.</translation
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2100"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2104"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Prima F10 para sair deste modo</translation>
     </message>
