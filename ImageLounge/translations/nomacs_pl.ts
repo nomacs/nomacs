@@ -1417,7 +1417,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="111"/>
       <source>&amp;Invert Image</source>
-      <translation>&amp;Odwróć obraz</translation>
+      <translation>&amp;Odwróć kolory</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="112"/>
@@ -3386,7 +3386,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="530"/>
       <source>Editor</source>
-      <translation>Edytor</translation>
+      <translation>Edytor ustawień</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1165"/>
@@ -6121,7 +6121,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkSettingsWidget.cpp" line="131"/>
       <source>Filter Settings</source>
-      <translation>Ustawienia filtru kolorów</translation>
+      <translation>Filtruj ustawienia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkSettingsWidget.cpp" line="157"/>
