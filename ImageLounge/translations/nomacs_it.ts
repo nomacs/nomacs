@@ -3357,7 +3357,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to tab number: </source>
-      <translation type="unfinished">Go to tab number: </translation>
+      <translation>Vai alla scheda numero:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="500"/>
@@ -3714,7 +3714,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
       <source>Crop to Metadata</source>
-      <translation type="unfinished">Crop to Metadata</translation>
+      <translation>&amp;Ritaglia da metadati</translation>
     </message>
   </context>
   <context>
@@ -3730,7 +3730,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="992"/>
       <source>No metadata available!</source>
-      <translation type="unfinished">No metadata available!</translation>
+      <translation>Non ci sono metadati disponibili!</translation>
     </message>
   </context>
   <context>
@@ -3774,42 +3774,42 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation type="unfinished">If checked, the mouse wheel behaviour is inverted while zooming.</translation>
+      <translation>Se l&apos;opzione &amp;egrave; selezionata, il comportamento della rotellina del mouse viene invertito durante lo zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
       <source>Display Images with High Quality Anti Aliasing</source>
-      <translation type="unfinished">Display Images with High Quality Anti Aliasing</translation>
+      <translation>Visualizza Immagini con Anti Aliasing di Alta Qualit&amp;agrave;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation type="unfinished">NOTE: if checked, nomacs might be slow while zooming.</translation>
+      <translation>NOTA: se spuntata, nomacs potrebbero essere lento durante lo zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
       <source>Show Scrollbars when zooming into images</source>
-      <translation type="unfinished">Show Scrollbars when zooming into images</translation>
+      <translation>Mostra le barre di scorrimento quando si esegue lo zoom sulle immagini</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation type="unfinished">If checked, scrollbars will appear that allow panning with the mouse.</translation>
+      <translation>Se l&apos;opzione &amp;egrave; selezionata, appariranno delle barre di scorrimento che permettono la panoramica con il mouse.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
       <source>Show pixels if zoom level is above</source>
-      <translation type="unfinished">Show pixels if zoom level is above</translation>
+      <translation>Mostra i pixel se il livello di zoom &amp;egrave; superiore</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation type="unfinished">nomacs will not interpolate images if the zoom level is larger.</translation>
+      <translation>nomacs non interpoler&amp;agrave; le immagini se il livello di zoom è più grande.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
       <source>Use Fixed Zoom Levels</source>
-      <translation type="unfinished">Use Fixed Zoom Levels</translation>
+      <translation>Utilizzare Livelli di Zoom Fissi</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
