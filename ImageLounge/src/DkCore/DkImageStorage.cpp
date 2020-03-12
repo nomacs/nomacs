@@ -1770,6 +1770,11 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 
 	QSize s = mImg.size() * scale;
 
+	if (s.height() == 0)
+		s.setHeight(1);
+	if (s.width() == 0)
+		s.setWidth(1);
+
 #ifdef WITH_OPENCV
 	cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
 	cv::Mat tmp;
