@@ -3181,7 +3181,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation>&amp;Ritaglia Rettangolo</translation>
+      <translation>&amp;Rettangolo di Ritaglio</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3889,7 +3889,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="779"/>
       <source>Swipe</source>
-      <translation type="unfinished">Swipe</translation>
+      <translation>Scorrere</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="780"/>
@@ -3909,7 +3909,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
       <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-      <translation type="unfinished">If unchecked, loading is only animated if nomacs is fullscreen</translation>
+      <translation>Se deselezionato, il caricamento &amp;egrave; animato solo se nomacs &amp;egrave; a schermo intero</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="801"/>
@@ -3919,7 +3919,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="805"/>
       <source>Define the time an image is displayed.</source>
-      <translation type="unfinished">Define the time an image is displayed.</translation>
+      <translation>Definire il tempo di visualizzazione di un&apos;immagine.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
@@ -3934,12 +3934,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="826"/>
       <source>Show crop rectangle</source>
-      <translation type="unfinished">Show crop rectangle</translation>
+      <translation>Mostra rettangolo di ritaglio</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="830"/>
       <source>Show Metadata Cropping</source>
-      <translation type="unfinished">Show Metadata Cropping</translation>
+      <translation>Mostra il ritaglio dei metadati</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="875"/>
@@ -3957,12 +3957,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="483"/>
       <source>Open Selected Image</source>
-      <translation type="unfinished">Open Selected Image</translation>
+      <translation>Apri Immagine Selezionata</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="493"/>
       <source>Adjust Columns</source>
-      <translation type="unfinished">Adjust Columns</translation>
+      <translation>Regolare le Colonne</translation>
     </message>
   </context>
   <context>
@@ -4059,7 +4059,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="564"/>
       <source>Offset</source>
-      <translation type="unfinished">Offset</translation>
+      <translation>Compensazione</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="571"/>
@@ -4126,7 +4126,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="977"/>
       <source>Screenshots are automatically saved to this folder</source>
-      <translation type="unfinished">Screenshots are automatically saved to this folder</translation>
+      <translation>Gli screenshot vengono salvati automaticamente in questa cartella</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="979"/>
@@ -4136,7 +4136,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="994"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Si consiglia di impostare un valore di cache moderato intorno ai 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="997"/>
@@ -4146,12 +4146,12 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Si consiglia di impostare un valore moderato per la cronologia delle modifiche intorno ai 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1014"/>
       <source>History Size</source>
-      <translation type="unfinished">History Size</translation>
+      <translation>Dimensione della Cronologia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1020"/>
@@ -4161,7 +4161,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation type="unfinished">Images are skipped until the Next key is released</translation>
+      <translation>Le immagini vengono saltate finch&amp;eacute; non viene rilasciato il pulsante Avanti.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
@@ -4171,12 +4171,12 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
       <source>The next image is loaded after the current image is shown.</source>
-      <translation type="unfinished">The next image is loaded after the current image is shown.</translation>
+      <translation>L&apos;immagine successiva viene caricata dopo la visualizzazione dell&apos;immagine corrente.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1034"/>
       <source>Image Loading Policy</source>
-      <translation type="unfinished">Image Loading Policy</translation>
+      <translation>Politica di caricamento delle immagini</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1040"/>
@@ -4186,7 +4186,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+      <translation>Dopo il salvataggio, l&apos;immagine salvata verrà caricata in posizione</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
