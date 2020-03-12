@@ -1098,7 +1098,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1433"/>
       <source>Checks for a new version of the translations of the current language</source>
-      <translation>Sprawdza, czy jest nowa wersja tłumaczenia na ustawiony język</translation>
+      <translation>Sprawdza, czy jest nowa wersja tłumaczenia dla ustawionego języka</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1438"/>
@@ -1108,7 +1108,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1440"/>
       <source>synchronize the current view</source>
-      <translation>synchronizacja bieżącego widoku</translation>
+      <translation>Synchronizuj bieżący widok</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1443"/>
@@ -1123,7 +1123,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1450"/>
       <source>arrange connected instances</source>
-      <translation>organizuj połączone instancje</translation>
+      <translation>Organizuj połączone instancje</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1453"/>
@@ -1133,7 +1133,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1456"/>
       <source>connect all instances</source>
-      <translation>połącz wszystkie instancje</translation>
+      <translation>Połącz wszystkie instancje</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1458"/>
@@ -1153,7 +1153,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1466"/>
       <source>manage installed plugins and download new ones</source>
-      <translation>zarządzaj zainstalowanymi wtyczkami i pobierz nowe</translation>
+      <translation>Zarządzaj zainstalowanymi wtyczkami i pobieraj nowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1471"/>
@@ -1188,7 +1188,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1505"/>
       <source>Adds selected files to batch processing.</source>
-      <translation>Dodaj zaznaczone pliki do przetwarzania wsadowego.</translation>
+      <translation>Dodaje zaznaczone pliki do przetwarzania wsadowego.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1508"/>
@@ -1198,7 +1198,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1509"/>
       <source>Prints selected files.</source>
-      <translation>Drukuj zaznaczone pliki.</translation>
+      <translation>Drukuje zaznaczone pliki.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1524"/>
@@ -1236,33 +1236,33 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1536"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1552"/>
       <source>Jumps 10 images before the current image</source>
-      <translation>Przejdź 10 obrazów przed bieżącym obrazem</translation>
+      <translation>Przeskocz o 10 obrazów przed bieżącym</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1539"/>
       <source>Skip Next Images</source>
-      <translation>Pomiń następne zdjęcia</translation>
+      <translation>Pomiń kolejne obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1540"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1556"/>
       <source>Jumps 10 images after the current image</source>
-      <translation>Przejdź 10 obrazów za bieżącym obrazem</translation>
+      <translation>Przeskocz o 10 obrazów za bieżącym</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1543"/>
       <source>First File Sync</source>
-      <translation>Synchronizacja pierwszego pliku</translation>
+      <translation>Synchronizacja do pierwszego pliku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1547"/>
       <source>Last File Sync</source>
-      <translation>Synchronizacja ostatniego pliku</translation>
+      <translation>Synchronizacja do ostatniego pliku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1551"/>
       <source>Skip Previous Images Sync</source>
-      <translation>Pomiń synchronizację poprzednich obrazów</translation>
+      <translation>Synchronizuj pominięcie poprzednich obrazów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1555"/>
