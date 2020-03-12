@@ -3813,7 +3813,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation>Jeśli zaznaczono, używane są wstępnie zdefiniowane poziomy powiększania podczas powiększania.</translation>
+      <translation>Jeśli zaznaczono, używane są wstępnie zdefiniowane poziomy powiększenia podczas powiększania.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -4441,7 +4441,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
       <source>If checked, recent files will be saved.</source>
-      <translation>Jeśli zaznaczone, ostatnie pliki zostaną zapisane.</translation>
+      <translation>Jeśli zaznaczone, zachowuje historię ostatnio otwartych plików.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="359"/>
@@ -4481,17 +4481,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="376"/>
       <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-      <translation>Jeśli zaznaczone, kółko myszy powiększa - w przeciwnym razie służy do przełączania między obrazami.</translation>
+      <translation>Jeśli zaznaczone, kółko myszy powiększa obraz - w przeciwnym razie przełącza między obrazami.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="379"/>
       <source>Next Image on Horizontal Zoom</source>
-      <translation>Następny obraz w poziomym powiększeniu</translation>
+      <translation>Następny obraz przy poziomym powiększeniu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="381"/>
       <source>If checked, horizontal wheel events load the next/previous images.</source>
-      <translation>Jeśli zaznaczono, obrazy będą ładowane w poziomym powiększeniu.</translation>
+      <translation>Jeśli zaznaczono, poziome akcje kółka myszy wczytują następny lub poprzedni obraz.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="384"/>
@@ -4516,7 +4516,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="394"/>
       <source>Switch CTRL with ALT</source>
-      <translation>Przełącz CTRL z ALT</translation>
+      <translation>Zamień CTRL na ALT</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="396"/>
@@ -4526,17 +4526,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="399"/>
       <source>Close on ESC</source>
-      <translation>Zamknij przy wciśnięciu ESC</translation>
+      <translation>Zamknij przy pomocy ESC</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="401"/>
       <source>Close nomacs if ESC is pressed.</source>
-      <translation>Zamknij nomacs przy wciśnięciu klawisza ESC.</translation>
+      <translation>Zamykaj nomacs wciskając klawisz ESC.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="404"/>
       <source>Check For Updates</source>
-      <translation>Sprawdź aktualizacje</translation>
+      <translation>Sprawdzaj aktualizacje</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="406"/>
