@@ -507,6 +507,10 @@ void DkViewPort::fullView() {
 
 void DkViewPort::showZoom() {
 
+	// don't show zoom if we are in fullscreen mode
+	if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
+		return;
+
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", mImgMatrix.m11()*mWorldMatrix.m11()*100);
 	
