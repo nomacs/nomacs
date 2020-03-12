@@ -1328,7 +1328,7 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 		return DkRotatingRect();
 
 	// pretend it's not here if it is already applied
-	QString applied = getXmpValue("Xmp.crs.crs:AlreadyApplied");
+	QString applied = getXmpValue("Xmp.crs.AlreadyApplied");
 	QString hasCrop = getXmpValue("Xmp.crs.HasCrop");
 	if (applied.compare("true", Qt::CaseInsensitive) == 0 ||	// compare is 0 if the strings are the same
 		hasCrop.compare("true", Qt::CaseInsensitive) != 0)
