@@ -1533,7 +1533,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
       <source>Sorry, I could not create a tiny planet</source>
-      <translation type="unfinished">Sorry, I could not create a tiny planet</translation>
+      <translation>Spiacente, non posso creare il wallpaper...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
@@ -1553,7 +1553,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
       <source>Cannot threshold image</source>
-      <translation type="unfinished">Cannot threshold image</translation>
+      <translation>Impossibile ridimensionare l'immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="352"/>
@@ -1568,7 +1568,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="454"/>
       <source>Cannot draw background color</source>
-      <translation type="unfinished">Cannot draw background color</translation>
+      <translation>Non &amp;egrave; possibile disegnare il colore di sfondo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
@@ -2681,7 +2681,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation type="unfinished">Choose the number of Threads in the thread pool</translation>
+      <translation>Scegliere il numero di Threads nel pool di thread</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
@@ -2923,7 +2923,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1971"/>
       <source>%1 manipulators selected</source>
-      <translation type="unfinished">%1 manipulators selected</translation>
+      <translation>%1 manipolatori selezionati</translation>
     </message>
   </context>
   <context>
@@ -3176,12 +3176,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2038"/>
       <source>&amp;Crop from Metadata</source>
-      <translation type="unfinished">&amp;Crop from Metadata</translation>
+      <translation>&amp;Ritaglia da metadati</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation type="unfinished">&amp;Crop Rectangle</translation>
+      <translation>&amp;Ritaglia Rettangolo</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3224,7 +3224,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
@@ -3277,7 +3277,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2574"/>
       <source>I am missing a widget.</source>
-      <translation type="unfinished">I am missing a widget.</translation>
+      <translation>Mi manca un widget.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2588"/>
@@ -3293,7 +3293,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
       <location filename="../../src/DkGui/DkBatch.cpp" line="2610"/>
       <source>Should I create:
 %1</source>
-      <translation type="unfinished">Should I create:
+      <translation>Dovrei creare:
 %1</translation>
     </message>
     <message>
@@ -3314,7 +3314,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2642"/>
       <source>Sorry, the file pattern is empty.</source>
-      <translation type="unfinished">Sorry, the file pattern is empty.</translation>
+      <translation>Spiacente, lo schema del file &amp;egrave; vuoto.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2652"/>
@@ -3334,7 +3334,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
       <source>Batch Log</source>
-      <translation type="unfinished">Batch Log</translation>
+      <translation>Batch Log</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
@@ -3352,7 +3352,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to Tab</source>
-      <translation type="unfinished">Go to Tab</translation>
+      <translation>&amp;Vai alla scheda</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
@@ -5757,7 +5757,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1197"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1201"/>
