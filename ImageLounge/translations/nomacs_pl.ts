@@ -370,7 +370,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1093"/>
       <source>9&amp;0%1 Clockwise</source>
-      <translation>9&amp;0° %1 zgodnie z ruchem wskazówek zegara</translation>
+      <translation>9&amp;0%1 zgodnie z ruchem wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1096"/>
@@ -380,7 +380,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1098"/>
       <source>&amp;90%1 Counter Clockwise</source>
-      <translation>&amp;90° przeciwnie do ruchu wskazówek zegara</translation>
+      <translation>&amp;90%1 przeciwnie do ruchu wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1101"/>
@@ -390,7 +390,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1103"/>
       <source>180%1</source>
-      <translation>180%1</translation>
+      <translation>&amp;180%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1104"/>
@@ -410,7 +410,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1111"/>
       <source>&amp;Redo</source>
-      <translation>Ponó&amp;w</translation>
+      <translation>%Powtórz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1114"/>
@@ -469,7 +469,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
       <source>&amp;Keyboard Shortcuts</source>
-      <translation>S&amp;króty klawiaturowe</translation>
+      <translation>&amp;Skróty klawiaturowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1146"/>
@@ -3165,7 +3165,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2026"/>
       <source>180%1</source>
-      <translation>180%1</translation>
+      <translation>&amp;180%1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2035"/>
