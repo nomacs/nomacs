@@ -119,7 +119,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
       <source>Open a texfile containing a list of filepaths, and open tabs for them</source>
-      <translation>Otwórz plik tekstowy zawierający listę ścieżek plików, i otwórz je w kartach</translation>
+      <translation>Otwórz plik tekstowy zawierający listę ścieżek plików i otwórz je w kartach</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="969"/>
@@ -194,7 +194,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
       <source>Save a newline separated list of the filenames of the open tabs</source>
-      <translation>Zapisz w liście oddzielnie nazwy plików otwartych kart</translation>
+      <translation>Zapisz listę plików otwartych w kartach</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
@@ -464,7 +464,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1142"/>
       <source>delete current fileInfo</source>
-      <translation>usuń bieżące informacje o pliku</translation>
+      <translation>Usuń bieżący plik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
@@ -474,7 +474,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1146"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation>pozwala dostosować skróty klawiaturowe</translation>
+      <translation>Pozwala dostosować skróty klawiaturowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1148"/>
@@ -484,7 +484,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1150"/>
       <source>settings</source>
-      <translation>ustawienia</translation>
+      <translation>Ustawienia programu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1153"/>
@@ -494,7 +494,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>open image manipulation toolbox</source>
-      <translation>otwórz przybornik dostosowania obrazu</translation>
+      <translation>Otwórz przybornik do manipulacji obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1159"/>
@@ -544,7 +544,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1184"/>
       <source>Show Statusbar</source>
-      <translation>Pokaż pasek statusu</translation>
+      <translation>Pokaż pasek stanu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1187"/>
@@ -564,7 +564,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1195"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Wyświetl podgląd zoom</translation>
+      <translation>Wyświetl podgląd powiększenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1199"/>
@@ -594,7 +594,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1212"/>
       <source>Show File Explorer</source>
-      <translation>Pokaż Eksplorator plików</translation>
+      <translation>Pokaż eksplorator plików</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1215"/>
@@ -669,12 +669,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1249"/>
       <source>Image &amp;Notes</source>
-      <translation>No&amp;tatka do obrazu</translation>
+      <translation>No&amp;tatki do obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1251"/>
       <source>Shows Image Notes</source>
-      <translation>Pokazuje notatki obrazu</translation>
+      <translation>Pokazuje notatki dodane do obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1254"/>
