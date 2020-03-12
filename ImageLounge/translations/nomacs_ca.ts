@@ -1507,22 +1507,22 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
       <source>Could not convert to grayscale</source>
-      <translation type="unfinished">Could not convert to grayscale</translation>
+      <translation>No s'ha pogut convertir a escala de grisos</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="71"/>
       <source>Cannot auto adjust</source>
-      <translation type="unfinished">Cannot auto adjust</translation>
+      <translation>No s'ha pogut ajustar automàticament</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="89"/>
       <source>The Image is Already Normalized...</source>
-      <translation type="unfinished">The Image is Already Normalized...</translation>
+      <translation>La imatge ja està normalitzada...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="104"/>
       <source>Cannot invert image</source>
-      <translation type="unfinished">Cannot invert image</translation>
+      <translation>No s'ha pogut invertir la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="117"/>
@@ -1533,7 +1533,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
       <source>Sorry, I could not create a tiny planet</source>
-      <translation type="unfinished">Sorry, I could not create a tiny planet</translation>
+      <translation>Ho sentim no s'ha pogut crear un tiny planet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
@@ -2091,8 +2091,8 @@
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1100"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation type="unfinished">The dll could not be deleted!
-Please restart nomacs and try again.</translation>
+      <translation>La dll no s'ha pogut esborrar!
+Reinicieu nomacs i torneu a provar-ho.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1274"/>
@@ -2112,7 +2112,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
       <source>[Transform Batch]</source>
-      <translation type="unfinished">[Transform Batch]</translation>
+      <translation>[Batch de transformació]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="276"/>
@@ -2343,17 +2343,17 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="981"/>
       <source>%1 deleted.</source>
-      <translation type="unfinished">%1 deleted.</translation>
+      <translation>%1 esborrat.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="984"/>
       <source>I could not delete %1</source>
-      <translation type="unfinished">I could not delete %1</translation>
+      <translation>No s'ha pogut esborrar %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="989"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation type="unfinished">I did not delete the original because I detected %1 failure(s).</translation>
+      <translation>No s'ha pogut esborrar l'original per hem detectat %1 error(s).</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1070"/>
@@ -2363,7 +2363,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1092"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-      <translation type="unfinished">nomacs - Image Lounge is a lightweight image viewer.</translation>
+      <translation>nomacs - Image Lounge és un visor d'imatges lleuger.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="803"/>
@@ -2398,32 +2398,32 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="824"/>
       <source>RGB 24-bit</source>
-      <translation type="unfinished">RGB 24-bit</translation>
+      <translation>RGB 24-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="825"/>
       <source>ARGB 16-bit</source>
-      <translation type="unfinished">ARGB 16-bit</translation>
+      <translation>ARGB 16-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="828"/>
       <source>BGR 32-bit</source>
-      <translation type="unfinished">BGR 32-bit</translation>
+      <translation>BGR 32-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="829"/>
       <source>ABGR 32-bit</source>
-      <translation type="unfinished">ABGR 32-bit</translation>
+      <translation>ABGR 32-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="830"/>
       <source>Grayscale 8-bit</source>
-      <translation type="unfinished">Grayscale 8-bit</translation>
+      <translation>Escala de grisos 8-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="831"/>
       <source>Alpha 8-bit</source>
-      <translation type="unfinished">Alpha 8-bit</translation>
+      <translation>Alpha 8-bits</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="225"/>
@@ -2453,17 +2453,17 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="88"/>
       <source>Player 1</source>
-      <translation type="unfinished">Player 1</translation>
+      <translation>Reproductor 1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="89"/>
       <source>Player 2</source>
-      <translation type="unfinished">Player 2</translation>
+      <translation>Reproductor 2</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="99"/>
       <source>Anonymous</source>
-      <translation type="unfinished">Anonymous</translation>
+      <translation>Anònim</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
@@ -2478,27 +2478,27 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="122"/>
       <source>An input image.</source>
-      <translation type="unfinished">An input image.</translation>
+      <translation>Una imatge d'entrada.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="125"/>
       <source>Start in fullscreen.</source>
-      <translation type="unfinished">Start in fullscreen.</translation>
+      <translation>Iniciar en pantalla completa.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="128"/>
       <source>Start slideshow playback</source>
-      <translation type="unfinished">Start slideshow playback</translation>
+      <translation>Iniciar reproducció de diapositives</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="131"/>
       <source>Start Pong.</source>
-      <translation type="unfinished">Start Pong.</translation>
+      <translation>Iniciar Pong.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="134"/>
       <source>Start in private mode.</source>
-      <translation type="unfinished">Start in private mode.</translation>
+      <translation>Iniciar en mode privat.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
@@ -2508,7 +2508,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
       <source>default | frameless | pseudocolor</source>
-      <translation type="unfinished">default | frameless | pseudocolor</translation>
+      <translation>per defecte | sense marc | pseudocolor</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
@@ -2518,7 +2518,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
       <source>directory</source>
-      <translation type="unfinished">directory</translation>
+      <translation>directory</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
@@ -2528,7 +2528,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
       <source>images</source>
-      <translation type="unfinished">images</translation>
+      <translation>imatges</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
@@ -2538,7 +2538,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
       <source>batch-settings-path</source>
-      <translation type="unfinished">batch-settings-path</translation>
+      <translation>batch-settings-path</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
@@ -2558,22 +2558,22 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
       <source>settings-path.ini</source>
-      <translation type="unfinished">settings-path.ini</translation>
+      <translation>settings-path.ini</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="167"/>
       <source>Register file associations (Windows only).</source>
-      <translation type="unfinished">Register file associations (Windows only).</translation>
+      <translation>Registrar fitxers associats (només Windows).</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="337"/>
       <source>Critical Error</source>
-      <translation type="unfinished">Critical Error</translation>
+      <translation>Error Crític</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="338"/>
       <source>Sorry, nomacs ran out of memory...</source>
-      <translation type="unfinished">Sorry, nomacs ran out of memory...</translation>
+      <translation>Ho sentim nomacs s'ha quedat sense memòria...</translation>
     </message>
   </context>
   <context>
