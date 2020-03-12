@@ -36,7 +36,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="407"/>
       <source>&amp;Open With</source>
-      <translation>&amp;Otwórz za pomocą</translation>
+      <translation>Otwórz za &amp;pomocą</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="429"/>
@@ -124,7 +124,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="969"/>
       <source>&amp;Quick Launch</source>
-      <translation>&amp;Szybkie uruchamianie</translation>
+      <translation>Szybkie &amp;uruchamianie</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="976"/>
@@ -139,7 +139,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="980"/>
       <source>Re&amp;name</source>
-      <translation>Zm&amp;iana nazwy</translation>
+      <translation>Zmiana &amp;nazwy</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="983"/>
@@ -149,7 +149,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="985"/>
       <source>&amp;Go To</source>
-      <translation>&amp;Przejdź do</translation>
+      <translation>Prze&amp;jdź do</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="987"/>
@@ -199,7 +199,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
       <source>&amp;Save for Web</source>
-      <translation>&amp;Zapisz dla sieci Web</translation>
+      <translation>Zapisz dla sieci &amp;Web</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1004"/>
@@ -219,7 +219,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1010"/>
       <source>&amp;Recent Files</source>
-      <translation>&amp;Ostatnio otwarte</translation>
+      <translation>Os&amp;tatnio otwarte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1014"/>
@@ -229,7 +229,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1016"/>
       <source>&amp;Reload File</source>
-      <translation>&amp;Wczytaj ponownie plik</translation>
+      <translation>W&amp;czytaj ponownie plik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1019"/>
@@ -239,7 +239,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1021"/>
       <source>Ne&amp;xt File</source>
-      <translation>Następ&amp;ny plik</translation>
+      <translation>N&amp;astępny plik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1024"/>
@@ -249,7 +249,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1026"/>
       <source>Pre&amp;vious File</source>
-      <translation>Pop&amp;rzedni plik</translation>
+      <translation>Poprz&amp;edni plik</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1029"/>
@@ -279,7 +279,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1039"/>
       <source>&amp;Find &amp;&amp; Filter</source>
-      <translation>&amp;Znajdź &amp;i filtruj</translation>
+      <translation>Znajdź i &amp;filtruj</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1041"/>
@@ -290,7 +290,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1043"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation>Skanuj folder &amp;rekurencyjnie</translation>
+      <translation>S&amp;kanuj folder rekurencyjnie</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1044"/>
