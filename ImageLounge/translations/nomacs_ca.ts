@@ -1814,32 +1814,32 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1488"/>
       <source>On, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">On, Red-eye reduction, Return detected</translation>
+      <translation>Activat, reducció ulls vermells, retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1489"/>
       <source>Off, Red-eye reduction</source>
-      <translation type="unfinished">Off, Red-eye reduction</translation>
+      <translation>Desactivat, reducció ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1490"/>
       <source>Auto, Did not fire, Red-eye reduction</source>
-      <translation type="unfinished">Auto, Did not fire, Red-eye reduction</translation>
+      <translation>Auto, No disparat, reducció ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1491"/>
       <source>Auto, Fired, Red-eye reduction</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction</translation>
+      <translation>Auto, disparat, reducció ulls vermells</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1492"/>
       <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Auto, disparat, reducció ulls vermells, retorn no detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1493"/>
       <source>Auto, Fired, Red-eye reduction, Return detected</source>
-      <translation type="unfinished">Auto, Fired, Red-eye reduction, Return detected</translation>
+      <translation>Auto, disparat, reducció ulls vermells, retorn detectat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
@@ -2438,7 +2438,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="230"/>
       <source>Recent Files</source>
-      <translation type="unfinished">Recent Files</translation>
+      <translation>Fitxers recents</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>

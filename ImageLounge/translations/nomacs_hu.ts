@@ -58,7 +58,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="523"/>
       <source>&amp;Adjustments</source>
-      <translation>Képszerkesztés</translation>
+      <translation>K&amp;épszerkesztés</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
@@ -79,7 +79,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="596"/>
       <source>&amp;?</source>
-      <translation>Súgó</translation>
+      <translation>?</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="612"/>
@@ -114,7 +114,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="966"/>
       <source>&amp;Open Tabs</source>
-      <translation type="unfinished">&amp;Open Tabs</translation>
+      <translation>&amp;Fülek megnyitása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
@@ -169,7 +169,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
       <source>S&amp;ave As</source>
-      <translation type="unfinished">S&amp;ave As</translation>
+      <translation>M&amp;entés másként</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
@@ -179,17 +179,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation type="unfinished">Sa&amp;ve a Copy</translation>
+      <translation>Má&amp;solat mentése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
       <source>Copy the Image</source>
-      <translation type="unfinished">Copy the Image</translation>
+      <translation>Kép másolása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
       <source>&amp;Save Tabs</source>
-      <translation type="unfinished">&amp;Save Tabs</translation>
+      <translation>&amp;Lapok mentése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
@@ -269,7 +269,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1035"/>
       <source>St&amp;art Private Instance</source>
-      <translation>Új privát &amp;ablak nyitása</translation>
+      <translation>Új privát &amp;ablak megnyitása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1037"/>
@@ -350,7 +350,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1078"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;növekvő</translation>
+      <translation>&amp;Növekvő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1080"/>
@@ -360,7 +360,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1084"/>
       <source>&amp;Descending</source>
-      <translation>&amp;csökkenő</translation>
+      <translation>&amp;Csökkenő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1086"/>
@@ -421,7 +421,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1116"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1495"/>
       <source>&amp;Copy</source>
-      <translation>&amp;Másolása</translation>
+      <translation>&amp;Másolás</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1119"/>
@@ -464,7 +464,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1142"/>
       <source>delete current fileInfo</source>
-      <translation>jelenlegi fájlinformáció törlése</translation>
+      <translation>jelenlegi fájlinformációk törlése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
@@ -524,7 +524,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Menü elrejtése és ALT megnyomásával újra megjelenítés</translation>
+      <translation>Menü elrejtése és ALT megnyomásával megjelenítése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
@@ -689,7 +689,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
       <source>Show &amp;Log</source>
-      <translation type="unfinished">Show &amp;Log</translation>
+      <translation>&amp;Napló megtekintése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1260"/>
@@ -957,12 +957,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose &amp;Monitor</source>
-      <translation>Válassza ki a &amp;Monitort</translation>
+      <translation>Válassza ki a &amp;monitort</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>Válassza ki a Monitort a nomacs futtatásához</translation>
+      <translation>Válassza ki a monitort a nomacs futtatásához</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
@@ -972,7 +972,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>mutassa hol készült a kép a Google maps-ban</translation>
+      <translation>mutassa a Google maps-ban hogy hol készült a kép</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
@@ -1367,12 +1367,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="84"/>
       <source>&amp;Grayscale</source>
-      <translation>&amp;Szürkeárnyalat</translation>
+      <translation>&amp;Szürkeárnyalatos</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="85"/>
       <source>Convert to Grayscale</source>
-      <translation>Szürkeárnyalatra konvertálás</translation>
+      <translation>Szürkeárnyalatosra konvertálás</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="89"/>
@@ -1452,7 +1452,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Sharpens the image by applying an unsharp mask</source>
-      <translation type="unfinished">Sharpens the image by applying an unsharp mask</translation>
+      <translation>Kép élesítése az Életlen maszk alkalmazásával</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation type="unfinished">&amp;Resize...</translation>
+      <translation>&amp;Átméretezés...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation type="unfinished">Resize the image</translation>
+      <translation>Kép átméretezése</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1487,7 +1487,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation>&amp;Árnyalat-Telítettség...</translation>
+      <translation>&amp;Árnyalat/telítettség...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
@@ -1502,7 +1502,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation>Expozíciót és a Gamma módosítása</translation>
+      <translation>Expozíció és a Gamma módosítása</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
@@ -1548,7 +1548,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation type="unfinished">Cannot resize image</translation>
+      <translation>Nem lehet átméretezni a képet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1844,12 +1844,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncomressed</source>
-      <translation type="unfinished">Uncomressed</translation>
+      <translation>Tömörítetlen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
@@ -1864,28 +1864,28 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1500"/>
       <source>LZW</source>
-      <translation type="unfinished">LZW</translation>
+      <translation>LZW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1501"/>
       <source>JPEG (old-style)</source>
-      <translation type="unfinished">JPEG (old-style)</translation>
+      <translation>JPEG (régi stílusú)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>JPEG</source>
-      <translation type="unfinished">JPEG</translation>
+      <translation>JPEG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>Adobe Deflate</source>
-      <translation type="unfinished">Adobe Deflate</translation>
+      <translation>Adobe Deflate</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>JBIG B&amp;W</source>
-      <translation type="unfinished">JBIG B&amp;W</translation>
+      <translation>JBIG B&amp;W</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1505"/>
@@ -1895,37 +1895,37 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Kodak 262</source>
-      <translation type="unfinished">Kodak 262</translation>
+      <translation>Kodak 262</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
       <source>Next</source>
-      <translation type="unfinished">Next</translation>
+      <translation>Következő</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Sony ARW Compressed</source>
-      <translation type="unfinished">Sony ARW Compressed</translation>
+      <translation>Sony ARW tömörített</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
       <source>Packed RAW</source>
-      <translation type="unfinished">Packed RAW</translation>
+      <translation>Csomagolt RAW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
       <source>Samsung SRW Compressed</source>
-      <translation type="unfinished">Samsung SRW Compressed</translation>
+      <translation>Samsung SRW tömörített</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
       <source>CCIRLEW</source>
-      <translation type="unfinished">CCIRLEW</translation>
+      <translation>CCIRLEW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1513"/>
       <source>Samsung SRW Compressed 2</source>
-      <translation type="unfinished">Samsung SRW Compressed 2</translation>
+      <translation>Samsung SRW tömörített 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1514"/>
