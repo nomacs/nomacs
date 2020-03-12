@@ -982,7 +982,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1388"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation>Generuj wszystkie miniatury dla aktualnego katalogu</translation>
+      <translation>Odśwież wszystkie miniatury w aktualnym katalogu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1391"/>
@@ -1103,7 +1103,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1438"/>
       <source>Synchronize &amp;View</source>
-      <translation>Synchronizuj &amp;Widok</translation>
+      <translation>Synchronizuj &amp;widok</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1440"/>
@@ -1113,7 +1113,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1443"/>
       <source>&amp;Window Overlay</source>
-      <translation>&amp;Przezroczystość okna</translation>
+      <translation>&amp;Nakładanie okien</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1448"/>
