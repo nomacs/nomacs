@@ -169,7 +169,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
       <source>S&amp;ave As</source>
-      <translation type="unfinished">S&amp;ave As</translation>
+      <translation>Zapisz jako</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
@@ -179,7 +179,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation type="unfinished">Sa&amp;ve a Copy</translation>
+      <translation>Zapisz kopię</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
@@ -1083,7 +1083,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1428"/>
       <source>&amp;Check for Updates</source>
-      <translation>Sprawdź aktualiza&amp;cje</translation>
+      <translation>&amp;Sprawdź aktualizacje</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1429"/>
@@ -5981,12 +5981,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1043"/>
       <source>Area (best for downscaling)</source>
-      <translation>Obszarowo (najlepszy dla pomniejszania)</translation>
+      <translation>Obszarowe (najlepsze do pomniejszania)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1044"/>
       <source>Linear</source>
-      <translation>Liniowy</translation>
+      <translation>Liniowe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1045"/>
@@ -6039,12 +6039,12 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="396"/>
       <source>Area (best for downscaling)</source>
-      <translation>Obszarowo (najlepszy dla pomniejszania)</translation>
+      <translation>Obszarowe (najlepsze do pomniejszania)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="397"/>
       <source>Linear</source>
-      <translation>Liniowy</translation>
+      <translation>Liniowe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
