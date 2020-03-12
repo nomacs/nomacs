@@ -529,7 +529,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
       <source>Tool&amp;bar</source>
-      <translation>Pasek &amp;narzędziowy</translation>
+      <translation>Pasek &amp;narzędzi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1179"/>
@@ -539,7 +539,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1182"/>
       <source>&amp;Statusbar</source>
-      <translation>Pa&amp;sek statusu</translation>
+      <translation>Pasek &amp;stanu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1184"/>
@@ -927,7 +927,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1366"/>
       <source>&amp;Pause Movie</source>
-      <translation>&amp;Wstrzymaj odtwarzanie filmu</translation>
+      <translation>Wstrzymaj &amp;film</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1367"/>
@@ -937,7 +937,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1371"/>
       <source>P&amp;revious Frame</source>
-      <translation>&amp;Poprzednia klatka</translation>
+      <translation>Pop&amp;rzednia klatka</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1372"/>
@@ -947,7 +947,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1374"/>
       <source>&amp;Next Frame</source>
-      <translation>&amp;Następna klatka</translation>
+      <translation>Na&amp;stępna klatka</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1375"/>
