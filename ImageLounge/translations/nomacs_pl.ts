@@ -559,7 +559,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1193"/>
       <source>O&amp;verview</source>
-      <translation>&amp;Podgląd</translation>
+      <translation>Podg&amp;ląd</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1195"/>
@@ -649,7 +649,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1239"/>
       <source>File &amp;Info</source>
-      <translation>&amp;Informacje o pliku</translation>
+      <translation>Info&amp;rmacje o pliku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1241"/>
@@ -659,7 +659,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1244"/>
       <source>&amp;Histogram</source>
-      <translation>&amp;Histogram</translation>
+      <translation>Histo&amp;gram</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1246"/>
@@ -669,7 +669,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1249"/>
       <source>Image &amp;Notes</source>
-      <translation>&amp;Notatka obrazu</translation>
+      <translation>No&amp;tatka do obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1251"/>
@@ -977,7 +977,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation>Generuj minia&amp;tury</translation>
+      <translation>&amp;Generuj miniatury</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1388"/>
@@ -993,7 +993,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1396"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Eksportuj wielostronicowy &amp;TIFF</translation>
+      <translation>&amp;Eksportuj wielostronicowy TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1397"/>
@@ -1003,7 +1003,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1399"/>
       <source>Extract From Archive</source>
-      <translation>Wyodrębnij z archiwum</translation>
+      <translation>&amp;Wyodrębnij z archiwum</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1400"/>
@@ -1113,12 +1113,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1443"/>
       <source>&amp;Window Overlay</source>
-      <translation>Przeźroczystość &amp;okna</translation>
+      <translation>&amp;Przezroczystość okna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1448"/>
       <source>Arrange Instances</source>
-      <translation>Organizuj instancje</translation>
+      <translation>&amp;Organizuj instancje</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1450"/>
@@ -1138,7 +1138,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1458"/>
       <source>&amp;Sync All Actions</source>
-      <translation>&amp;Synchronizuj wszystkie akcje</translation>
+      <translation>Synchronizuj wszystkie &amp;akcje</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1459"/>
@@ -1183,7 +1183,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1504"/>
       <source>&amp;Batch Process</source>
-      <translation>Przetwarzanie &amp;wsadowe</translation>
+      <translation>&amp;Przetwarzanie wsadowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1505"/>
@@ -6479,7 +6479,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="288"/>
       <source>Add New Image Format</source>
-      <translation>Dodaj nowy format obrazu</translation>
+      <translation>&amp;Dodaj nowy format obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="297"/>
