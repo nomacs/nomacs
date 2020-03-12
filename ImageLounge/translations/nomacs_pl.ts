@@ -410,7 +410,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1111"/>
       <source>&amp;Redo</source>
-      <translation>%Powtórz</translation>
+      <translation>%Ponów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1114"/>
