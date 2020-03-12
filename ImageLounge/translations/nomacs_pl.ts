@@ -744,7 +744,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1283"/>
       <source>Switch to first tab</source>
-      <translation>Przełącz do pierwszej karty</translation>
+      <translation>Przejdź do pierwszej karty</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1285"/>
@@ -774,7 +774,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1294"/>
       <source>Switch to next tab</source>
-      <translation>Przełącz do następnej karty</translation>
+      <translation>Przejdź do następnej karty</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1296"/>
@@ -784,7 +784,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1297"/>
       <source>Switch to last tab</source>
-      <translation>Przełącz do ostatniej karty</translation>
+      <translation>Przejdź do ostatniej karty</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1302"/>
@@ -850,7 +850,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1328"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>&amp;Wzorzec przezroczystości</translation>
+      <translation>&amp;Wzór przezroczystości</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1330"/>
@@ -902,7 +902,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1354"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1445"/>
       <source>toggle the window opacity</source>
-      <translation>przełącz krycie okna</translation>
+      <translation>Przełącz przezroczystość okna</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1356"/>
@@ -912,12 +912,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1358"/>
       <source>lock the window</source>
-      <translation>zablokuj okno</translation>
+      <translation>Pokazuj okno zawsze na wierzchu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1362"/>
       <source>&amp;Toggle Slideshow</source>
-      <translation>Przełącz pokaz slajdów</translation>
+      <translation>Włącz pokaz slajdów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1363"/>
@@ -1282,7 +1282,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 0</source>
-      <translation>Ocena gwiazdkowa 0</translation>
+      <translation>Ocena w gwiazdkach 0</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1564"/>
@@ -1297,27 +1297,27 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Star Rating 1</source>
-      <translation>Ocena gwiazdkowa 1</translation>
+      <translation>Ocena w gwiazdkach 1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1571"/>
       <source>Star Rating 2</source>
-      <translation>Ocena gwiazdkowa 2</translation>
+      <translation>Ocena w gwiazdkach 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1575"/>
       <source>Star Rating 3</source>
-      <translation>Ocena gwiazdkowa 3</translation>
+      <translation>Ocena w gwiazdkach 3</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <source>Star Rating 4</source>
-      <translation>Ocena gwiazdkowa 4</translation>
+      <translation>Ocena w gwiazdkach 4</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star Rating 5</source>
-      <translation>Ocena gwiazdkowa 5</translation>
+      <translation>Ocena w gwiazdkach 5</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
