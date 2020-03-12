@@ -184,7 +184,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
       <source>Copy the Image</source>
-      <translation type="unfinished">Copy the Image</translation>
+      <translation>Kopiuj obraz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
@@ -639,7 +639,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation type="unfinished">&amp;Metadata Ribbon</translation>
+      <translation>Wstążka &amp;metadanych</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1236"/>
@@ -689,12 +689,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
       <source>Show &amp;Log</source>
-      <translation type="unfinished">Show &amp;Log</translation>
+      <translation>Pokaż &amp;log</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1260"/>
       <source>Shows the log window</source>
-      <translation type="unfinished">Shows the log window</translation>
+      <translation>Pokazuje okno logu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1267"/>
@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation type="unfinished">&amp;Resize...</translation>
+      <translation>Zmień &amp;rozmiar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation type="unfinished">Resize the image</translation>
+      <translation>Zmień rozmiar obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1548,7 +1548,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation type="unfinished">Cannot resize image</translation>
+      <translation>Nie można zmienić rozmiaru obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1875,7 +1875,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1506"/>
       <source>JPEG</source>
-      <translation>JPEG</translation>
+      <translation type="unfinished">JPEG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
@@ -1905,7 +1905,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1509"/>
       <source>Sony ARW Compressed</source>
-      <translation type="unfinished">Sony ARW Compressed</translation>
+      <translation>Sony ARW Skompresowany</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
@@ -1915,7 +1915,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
       <source>Samsung SRW Compressed</source>
-      <translation type="unfinished">Samsung SRW Compressed</translation>
+      <translation>Samsung SRW Skompresowany</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
@@ -1925,7 +1925,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1513"/>
       <source>Samsung SRW Compressed 2</source>
-      <translation type="unfinished">Samsung SRW Compressed 2</translation>
+      <translation>Samsung SRW Skompresowany 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1514"/>
@@ -1940,7 +1940,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1516"/>
       <source>Kodak KDC Compressed</source>
-      <translation type="unfinished">Kodak KDC Compressed</translation>
+      <translation>Kodak KDC Skompresowany</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1517"/>
@@ -2015,7 +2015,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1531"/>
       <source>Nikon NEF Compressed</source>
-      <translation type="unfinished">Nikon NEF Compressed</translation>
+      <translation>Nikon NEF Skompresowany</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1532"/>
@@ -2050,7 +2050,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1538"/>
       <source>LZMA2</source>
-      <translation>LZMA2</translation>
+      <translation type="unfinished">LZMA2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1539"/>
@@ -2065,12 +2065,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1541"/>
       <source>PNG</source>
-      <translation>PNG</translation>
+      <translation type="unfinished">PNG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1542"/>
       <source>JPEG XR</source>
-      <translation>JPEG XR</translation>
+      <translation type="unfinished">JPEG XR</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1543"/>
@@ -2512,7 +2512,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Wczytaj wszystkie pliki z &lt;katalogu&gt;.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
@@ -2522,7 +2522,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Wczytaj &lt;obrazy&gt; do kart.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
@@ -2552,7 +2552,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Importuje ustawienia z &lt;ścieżka-ustawień.ini&gt; i zapisuje je.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -5534,7 +5534,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Nie można zainstalować nowej wersji&lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5650,7 +5650,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Naciśnij &lt;SPACJĘ&gt;, aby rozpocząć.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5660,7 +5660,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Naciśnij &lt;SPACJĘ&gt;, by rozpocząć nową grę</translation>
     </message>
   </context>
   <context>
