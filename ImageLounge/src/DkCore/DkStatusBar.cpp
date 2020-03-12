@@ -51,7 +51,7 @@ void DkStatusBar::createLayout() {
 		mLabels[idx]->hide();
 
 		if (idx == 0) {
-			mLabels[idx]->setToolTip(tr("CTRL activates the crosshair cursor"));
+			//mLabels[idx]->setToolTip(tr("CTRL activates the crosshair cursor"));
 			addWidget(mLabels[idx]);
 		}
 		else

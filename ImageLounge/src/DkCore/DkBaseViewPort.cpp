@@ -479,7 +479,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		if (event->modifiers() == mCtrlMod && event->modifiers() != mAltMod) {
 			setCursor(Qt::CrossCursor);
-			DkStatusBarManager::instance().show(true, false);
+			//DkStatusBarManager::instance().show(true, false);
 		}
 		else if (mWorldMatrix.m11() > 1 && !imageInside())
 			setCursor(Qt::OpenHandCursor);
