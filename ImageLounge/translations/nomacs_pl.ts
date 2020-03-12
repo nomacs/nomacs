@@ -3788,12 +3788,12 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
       <source>Show Scrollbars when zooming into images</source>
-      <translation>Pokaż paski przewijania, gdy powiększany jest obraz</translation>
+      <translation>Pokaż paski przewijania przy powiększonych obrazach</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation>Jeśli zaznaczono, paski przewijania pojawią się, aby umożliwić przesuwanie myszą.</translation>
+      <translation>Jeśli zaznaczono, pokazuje paski przewijania, umożliwiające przesuwanie obrazu myszą.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
@@ -3808,12 +3808,12 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
       <source>Use Fixed Zoom Levels</source>
-      <translation>Użyj stałego poziomu powiększenia</translation>
+      <translation>Użyj zdefiniowanych poziomów powiększenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation>Jeśli zaznaczono, używane są wstępnie zdefiniowane poziomy powiększenia podczas powiększania.</translation>
+      <translation>Jeśli zaznaczono, używane są wstępnie zdefiniowane poziomy powiększenia podczas przybliżania obrazu.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3838,7 +3838,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation>Jeśli zaznaczone, poziom powiększenia jest zachowany, jeśli ładowany obraz ma ten sam poziom jak poprzedni.</translation>
+      <translation>Jeśli zaznaczone, poziom powiększenia jest zachowany, jeśli ładowany obraz ma taki sam rozmiar jak poprzedni.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
@@ -3848,7 +3848,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="734"/>
       <source>Always zoom to fit</source>
-      <translation>Zawsze dopasuj powiększenie</translation>
+      <translation>Zawsze dopasowuj do widoku</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="747"/>
