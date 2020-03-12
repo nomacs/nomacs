@@ -2111,7 +2111,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
       <source>[Transform Batch]</source>
-      <translation>Przekształć wiele plików</translation>
+      <translation>Przekształć pliki</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="276"/>
@@ -2447,7 +2447,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
       <source>Batch</source>
-      <translation>Zbiór</translation>
+      <translation>Przetwarzanie wsadowe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="88"/>
@@ -2964,7 +2964,7 @@ Ta opcja może zniszczyć twoje obrazy - zachowaj ostrożność!</translation>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
       <translation>Jeśli zaznaczono, wyjściowe obrazy nie będą w ogóle zapisywane.
-Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostrożność!</translation>
+Ta opcja jest przydatna tylko gdy wtyczki zapisują pliki niezależnie - zachowaj ostrożność!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
@@ -2986,7 +2986,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
       <translation>Oryginalny plik zostanie usunięty po udanej konwersji.
- Używaj ostrożnie!</translation>
+Używaj ostrożnie!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="792"/>
@@ -3246,7 +3246,7 @@ Ta opcja jest przydatna tylko gdy wtyczki zapisują swoje pliki - zachowaj ostro
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2374"/>
       <source>Transform</source>
-      <translation>Przekształć</translation>
+      <translation>Przekształcenia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2378"/>
@@ -4300,7 +4300,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="549"/>
       <source>Current Filename</source>
-      <translation>Obecna nazwa pliku</translation>
+      <translation>Nazwa pliku źródłowego</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="550"/>
