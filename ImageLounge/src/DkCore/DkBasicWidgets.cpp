@@ -738,10 +738,12 @@ DkRectWidget::DkRectWidget(const QRect& r, QWidget* parent) : DkWidget(parent) {
 
 void DkRectWidget::setRect(const QRect & r) {
 
+	blockSignals(true);
 	mSpCropRect[crop_x]->setValue(r.x());
 	mSpCropRect[crop_y]->setValue(r.y());
 	mSpCropRect[crop_width]->setValue(r.width());
 	mSpCropRect[crop_height]->setValue(r.height());
+	blockSignals(false);
 }
 
 QRect DkRectWidget::rect() const {

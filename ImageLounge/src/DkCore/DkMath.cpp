@@ -224,6 +224,8 @@ QPointF DkRotatingRect::getTopLeft() const {
 
 void DkRotatingRect::setSize(const QSizeF & s) {
 
+	double angle = getAngle()-CV_PI*0.5;
+
 	QRectF r;
 	r.setSize(s);
 	r.moveCenter(getCenter());
@@ -233,7 +235,7 @@ void DkRotatingRect::setSize(const QSizeF & s) {
 	// assigning a QRectF to a QPolygonF results in a closed polygon - but we want it to be open so remove the last point
 	mRect.pop_back();
 
-	rotate(-getAngle());
+	rotate(angle);
 }
 
 QSize DkRotatingRect::size() const {
