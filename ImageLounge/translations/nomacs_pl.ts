@@ -2743,7 +2743,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="504"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="536"/>
@@ -2793,7 +2793,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3788"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4008"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
@@ -3228,7 +3228,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
       <source>no files selected</source>
-      <translation>brak zaznaczonych plików</translation>
+      <translation>nie wybrano plików</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2371"/>
@@ -3439,7 +3439,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
   <context>
@@ -3597,7 +3597,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="253"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="256"/>
@@ -3643,7 +3643,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="945"/>
       <source>Pan</source>
-      <translation>Przesuwanie</translation>
+      <translation>Przesuń</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="953"/>
@@ -3703,12 +3703,12 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1003"/>
       <source>Invert Crop Tool Color</source>
-      <translation>Odwróć kolor narzędzia przycinania</translation>
+      <translation>Odwróć kolory narzędzia przycinania</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1008"/>
       <source>Show Info</source>
-      <translation>Pokaż Info</translation>
+      <translation>Pokaż informacje</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
@@ -3783,7 +3783,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation>Uwaga: Jeśli zaznaczone, nomacs może działać wolno podczas powiększania.</translation>
+      <translation>Uwaga: Jeśli zaznaczone, nomacs może wolniej działać podczas powiększania.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
@@ -4020,7 +4020,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2525"/>
@@ -4368,7 +4368,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3668"/>
@@ -5126,7 +5126,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1131"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1152"/>
@@ -5281,7 +5281,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2905"/>
@@ -5578,7 +5578,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
   <context>
@@ -6014,7 +6014,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1067"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1431"/>
@@ -6157,7 +6157,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1875"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
   <context>
@@ -6219,7 +6219,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
   <context>
@@ -6456,7 +6456,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="80"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
   <context>
@@ -6502,7 +6502,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="319"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="351"/>
@@ -6893,7 +6893,7 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
       <source>&amp;Cancel</source>
-      <translation>A&amp;nuluj</translation>
+      <translation>&amp;Anuluj</translation>
     </message>
   </context>
 </TS>
