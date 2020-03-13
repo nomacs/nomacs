@@ -2893,7 +2893,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="479"/>
       <source>%1 File Selected</source>
-      <translation>%1 plik wybrano</translation>
+      <translation>%1 plik wybrany</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="481"/>
@@ -3125,22 +3125,22 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1999"/>
       <source> px</source>
-      <translation> pikseli</translation>
+      <translation> px</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Transform All</source>
-      <translation>Przekształć wszystkie</translation>
+      <translation>Przekształcaj wszystkie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Shrink Only</source>
-      <translation>Zwęź tylko</translation>
+      <translation>Tylko zmniejszaj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2005"/>
       <source>Enlarge Only</source>
-      <translation>Powiększ tylko</translation>
+      <translation>Tylko powiększaj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2019"/>
@@ -3155,12 +3155,12 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2024"/>
       <source>90%1 Counter Clockwise</source>
-      <translation>90° przeciwnie do ruchu wskazówek zegara</translation>
+      <translation>90%1 przeciwnie do ruchu wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2025"/>
       <source>90%1 Clockwise</source>
-      <translation>&amp;90° zgodnie z ruchem wskazówek zegara</translation>
+      <translation>90%1 zgodnie z ruchem wskazówek zegara</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2026"/>
@@ -3175,12 +3175,12 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2038"/>
       <source>&amp;Crop from Metadata</source>
-      <translation>&amp;Przytnij z metadanych</translation>
+      <translation>&amp;Przytnij według metadanych</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation>&amp;Przytnij prostokąt</translation>
+      <translation>&amp;Prostokąt przycięcia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -5924,7 +5924,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="782"/>
       <source> px</source>
-      <translation> pikseli</translation>
+      <translation> px</translation>
     </message>
   </context>
   <context>
