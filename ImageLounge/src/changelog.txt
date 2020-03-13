@@ -1,6 +1,9 @@
 nomacs 3.14.0
 =============
+- HEIF/HEIC support added
 - metadata filtering added
+- start-up time reduced
+- bug fixes
 
 nomacs 3.12.0
 =============
