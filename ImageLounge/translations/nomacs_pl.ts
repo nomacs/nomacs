@@ -2728,7 +2728,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="494"/>
       <source>&amp;Add</source>
-      <translation>&amp;Dod&amp;aj</translation>
+      <translation>&amp;Dodaj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="497"/>
@@ -6031,7 +6031,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="385"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>Skala</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="395"/>
@@ -6438,7 +6438,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="65"/>
       <source>TIF compression</source>
-      <translation>kompresja TIF</translation>
+      <translation>kompresja TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="68"/>
@@ -6499,7 +6499,7 @@ Tworzenie miniatur...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="317"/>
       <source>&amp;Add</source>
-      <translation>&amp;Dod&amp;aj</translation>
+      <translation>&amp;Dodaj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="319"/>
@@ -6823,7 +6823,7 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Disabled</source>
-      <translation>Wzorzec przezroczystości wyłączony</translation>
+      <translation>Wzór przezroczystości wyłączony</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
