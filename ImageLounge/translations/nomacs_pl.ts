@@ -5440,7 +5440,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1124"/>
       <source>The following duplicates were not opened:</source>
-      <translation>Następujące duplikaty nie zostały dodane:</translation>
+      <translation>Następujące duplikaty nie zostały otwarte:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1138"/>
@@ -5463,8 +5463,7 @@ then press %1</translation>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1246"/>
       <source>Sorry, the directory: %1 does not exist
 </source>
-      <translation>Przepraszam, katalog: %1 nie istnieje
-</translation>
+      <translation>Przepraszam, katalog: %1 nie istnieje</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1250"/>
@@ -5485,7 +5484,8 @@ then press %1</translation>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1275"/>
       <source>The fileInfo: %1  already exists.
  Do you want to replace it?</source>
-      <translation>Plik informacji: %1 już istnieje. Czy chcesz go zastąpić?</translation>
+      <translation>Plik: %1 już istnieje.
+ Czy chcesz go zastąpić?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1289"/>
@@ -5521,7 +5521,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1802"/>
       <source>Already downloading update</source>
-      <translation>Pobieranie aktualizacji</translation>
+      <translation>Aktualizacja jest już pobierana</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1829"/>
@@ -5559,7 +5559,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="2101"/>
       <source>Choose a Monitor</source>
-      <translation>Wybierz &amp;monitor</translation>
+      <translation>Wybierz monitor</translation>
     </message>
   </context>
   <context>
@@ -5767,7 +5767,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1224"/>
       <source>Update</source>
-      <translation>Aktualizacja</translation>
+      <translation>Aktualizuj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1229"/>
@@ -5790,7 +5790,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1268"/>
       <source>Apply Default</source>
-      <translation>Zastosuj domyślne</translation>
+      <translation>Przywróć domyślne</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1306"/>
@@ -5931,7 +5931,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="888"/>
       <source>Resize Image</source>
-      <translation>Zmien rozmiar obrazu</translation>
+      <translation>Zmień rozmiar obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="907"/>
