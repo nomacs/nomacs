@@ -917,7 +917,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1362"/>
       <source>&amp;Toggle Slideshow</source>
-      <translation>Włącz pokaz slajdów</translation>
+      <translation>W&amp;łącz pokaz slajdów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1363"/>
@@ -1477,7 +1477,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
       <source>&amp;Threshold...</source>
-      <translation>Pró&amp;g...</translation>
+      <translation>Pro&amp;gowanie...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="143"/>
@@ -2563,7 +2563,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/main.cpp" line="167"/>
       <source>Register file associations (Windows only).</source>
-      <translation>Utwórz skojarzenia plików (tylko Windows).</translation>
+      <translation>Skojarz typy plików (tylko Windows).</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="337"/>
@@ -3376,7 +3376,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
       <source>File Associations</source>
-      <translation>Skojarzenia plików</translation>
+      <translation>Skojarzenia typów plików</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="524"/>
@@ -4086,7 +4086,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1187"/>
       <source>Set File Associations</source>
-      <translation>Ustaw skojarzenia plików</translation>
+      <translation>Ustaw skojarzenia typów plików</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1190"/>
@@ -6838,17 +6838,17 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1555"/>
       <source>you cannot cancel this</source>
-      <translation>nie można tego anulować</translation>
+      <translation>Nie można tego anulować</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1563"/>
       <source>did you understand the brainteaser?</source>
-      <translation>czy rozumiesz łamigłówkę?</translation>
+      <translation>Czy zrozumiałeś łamigłówkę?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1565"/>
       <source>%1 is wrong...</source>
-      <translation>%1 jest nieprawidłowy...</translation>
+      <translation>%1 jest niepoprawne...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
@@ -6875,12 +6875,12 @@ skontaktuj się z administratorem systemu, aby uzyskać dodatkowe informacje.</t
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3683"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
-      <translation>Witamy nomacs, wybierz preferowany język poniżej.</translation>
+      <translation>Witamy w nomacs, wybierz swój preferowany język poniżej.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3688"/>
       <source>&amp;Register File Associations</source>
-      <translation>&amp;Utwórz skojarzenia plików</translation>
+      <translation>&amp;Skojarz typy plików</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3691"/>
