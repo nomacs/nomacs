@@ -2591,7 +2591,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1519"/>
       <source>All Images</source>
-      <translation>Wszystkie zdjęcia</translation>
+      <translation>Wszystkie obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1520"/>
@@ -2883,7 +2883,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="413"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="477"/>
@@ -3046,7 +3046,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="879"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
   </context>
   <context>
@@ -3760,7 +3760,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2489"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
   </context>
   <context>
@@ -4030,7 +4030,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2536"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2623"/>
@@ -5210,7 +5210,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2787"/>
       <source>Specify the root folder of images used for mosaic elements.</source>
-      <translation type="unfinished">Specify the root folder of images used for mosaic elements.</translation>
+      <translation>Wskaż folder z obrazami do wykorzystania jako elementy mozaiki.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2789"/>
@@ -5255,17 +5255,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2825"/>
       <source>Filters:</source>
-      <translation>Filtry:</translation>
+      <translation>Filtr wykluczeń:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2830"/>
       <source>You can split multiple ignore words with ;</source>
-      <translation>Oddziel wiele słów ignorowanych przy pomocy ;</translation>
+      <translation>Oddzielaj ignorowane słowa przy pomocy ;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2834"/>
       <source>All Images</source>
-      <translation>Wszystkie zdjęcia</translation>
+      <translation>Wszystkie obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2883"/>
@@ -5290,7 +5290,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2915"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2936"/>
@@ -5311,12 +5311,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3195"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
-      <translation>Potrzeba użyć niektórych obrazów dwukrotnie - może baza danych jest zbyt mała?</translation>
+      <translation>Niektórych obrazów trzeba użyć dwukrotnie - może zbiór obrazów jest zbyt mały?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3200"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>Niestety nie można utworzyć mozaiki z tej bazy danych obrazów.</translation>
+      <translation>Niestety nie można utworzyć mozaiki z tej bazy obrazów.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3317"/>
@@ -5374,7 +5374,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="726"/>
       <source>Change Opacity</source>
-      <translation>Zmień krycie</translation>
+      <translation>Zmień przezroczystość</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="803"/>
@@ -5424,7 +5424,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1078"/>
       <source>Open an Image Directory</source>
-      <translation>Otwórz katalog obrazów</translation>
+      <translation>Otwórz katalog z obrazami</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1091"/>
