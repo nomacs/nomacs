@@ -1843,8 +1843,8 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
-      <source>Uncomressed</source>
-      <translation>Tömörítetlen</translation>
+      <source>Uncompressed</source>
+      <translation type="unfinished">Uncompressed</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
@@ -2154,12 +2154,12 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
       <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+      <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="370"/>
       <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-      <translation type="unfinished">%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+      <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="374"/>
@@ -2356,12 +2356,12 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
       <translation>Nem lehet törölni az eredetit, mert %1 hibá(ka)t észlelt.</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1066"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1070"/>
       <source>Image</source>
       <translation>Kép</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1088"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1092"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
       <translation>nomacs - Image Lounge egy egyszerű képnézegető.</translation>
     </message>
@@ -2607,108 +2607,108 @@ Indítsa újra a nomacs-ot, és próbálja meg újra.</translation>
   <context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1311"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1323"/>
       <source>Always Load JPG if Embedded</source>
       <translation>Mindig töltse be a beágyazott JPG-ket</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1312"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
       <source>Load JPG if it Fits the Screen Resolution</source>
       <translation>JPG betöltése, ha illeszkedik a képernyő felbontásához</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1313"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1325"/>
       <source>Always Load RAW Data</source>
       <translation>Mindig töltse be a RAW adatot</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1336"/>
       <source>Apply Noise Filtering to RAW Images</source>
       <translation>Alkalmazzon zajszűrést a RAW képeken</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1326"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1338"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
       <translation>ha be van jelölve, zajszűrőt alkalmaz ami csökkenti a színzajt</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1341"/>
       <source>RAW Loader Settings</source>
       <translation>RAW betöltési beállítások</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1337"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
       <source>Ask to Save Deleted Files</source>
       <translation>Kérdezzen rá a törölt fájlok mentésére</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1351"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
       <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
       <source>Ignore Exif Orientation when Loading</source>
       <translation>Exif orientáció figyelmen kívül hagyása betöltéskor</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1344"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
       <translation>ha be van jelölve, a képek nem lesznek elforgatva az Exif orientációjukhoz viszonyítva</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1359"/>
       <source>Save Exif Orientation</source>
       <translation>Exif orientáció mentése</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
       <translation>ha be van jelölve, az orientáció a Exifbe lesz írva a kép mátrix elforgatása helyett</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1350"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1362"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
       <translation>Megjegyzés: ez JPGk elforgatását teszi lehetővé információ vesztés nélkül.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1353"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1365"/>
       <source>File Loading/Saving</source>
       <translation>Fájl betöltés/mentés</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
       <translation>Válassza ki a szálkészletben található szálak számát</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1366"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
       <source>Number of Threads</source>
       <translation>Szálak száma</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1382"/>
       <source>Use Log File</source>
       <translation>Naplófájl használata</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1372"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1384"/>
       <source>If checked, a log file will be created.</source>
       <translation>ha be van jelölve, egy naplófájl készül.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1387"/>
       <source>Open Log</source>
       <translation>Naplófájl megnyitása</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1383"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1395"/>
       <source>Logging</source>
       <translation>Naplózás</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1430"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1442"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
@@ -3922,21 +3922,26 @@ Legyen óvatos!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
+      <source>Show Player</source>
+      <translation type="unfinished">Show Player</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
       <source>Slideshow</source>
       <translation>Diavetítés</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="821"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="826"/>
       <source>Show crop rectangle</source>
       <translation>Vágó terület mutatása</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="825"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="830"/>
       <source>Show Metadata Cropping</source>
       <translation>Metaadat vágás megjelenítése</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="863"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="875"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
@@ -4064,38 +4069,38 @@ Legyen óvatos!</translation>
   <context>
     <name>nmc::DkFileAssociationsPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1155"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1167"/>
       <source>Filter</source>
       <translation>Szűrés</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1156"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1168"/>
       <source>Browse</source>
       <translation>Tallózás</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1169"/>
       <source>Register</source>
       <translation>Regisztrálás</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1175"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1187"/>
       <source>Set File Associations</source>
       <translation>Fájltársítások</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1178"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1190"/>
       <source>Set as Default Viewer</source>
       <translation>Beállítás alapértelmezett megjelenítőként</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1196"/>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1208"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1220"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Indítsa újra az nomacs-ot a módosítások alkalmazásáért</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1275"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1287"/>
       <source>Image</source>
       <translation>Kép</translation>
     </message>
@@ -4118,97 +4123,97 @@ Szeretné újra megjeleníteni?</translation>
   <context>
     <name>nmc::DkFilePreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="965"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="977"/>
       <source>Screenshots are automatically saved to this folder</source>
       <translation>Képernyőképek automatikus mentése ebbe a mappába</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="979"/>
       <source>Use Temporary Folder</source>
       <translation>Ideiglenes mappa használata</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="982"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="994"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
       <translation>Ajánlott 100 MB-os gyorsítótár méret. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="985"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="997"/>
       <source>Maximal Cache Size</source>
       <translation>Gyorsítótár maximális mérete</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="999"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
       <translation>Ajánlott 100 MB-os szerkesztési előzmény méret. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1002"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1014"/>
       <source>History Size</source>
       <translation>Előzmény méret</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1008"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1020"/>
       <source>Skip Images</source>
       <translation>Képek átugrása</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1009"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
       <translation>Képek át lesznek ugorva a Következő gomb elengedéséig</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1010"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
       <source>Wait for Images to be Loaded</source>
       <translation>Várjon a képek betöltésére</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
       <source>The next image is loaded after the current image is shown.</source>
       <translation>A következő kép a jelenlegi kép megjelenése után kezd betöltődni.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1034"/>
       <source>Image Loading Policy</source>
       <translation>Kép betöltési szabályzat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1040"/>
       <source>Load Saved Images</source>
       <translation type="unfinished">Load Saved Images</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>After saving, the saved image will be loaded in place</source>
       <translation>Mentés után a mentett kép betöltődik erre a helyre</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1030"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
       <source>Load to Tab</source>
       <translation>Betöltés lapra</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1031"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
       <translation>Mentés után a mentett kép betöltődik egy lapra.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
       <source>Do Nothing</source>
       <translation type="unfinished">Do Nothing</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
       <source>The saved image will not be loaded.</source>
       <translation>A mentett kép nem tölthető be.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1053"/>
       <source>Image Saving Policy</source>
       <translation>Kép mentése szabályzat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1056"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
       <source>Number of Skipped Images on PgUp/PgDown</source>
       <translation>PgUp/PgDown megnyomására kihagyott képek száma</translation>
     </message>
@@ -4868,12 +4873,12 @@ Szeretné újra megjeleníteni?</translation>
   <context>
     <name>nmc::DkMessageBox</name>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="66"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="68"/>
       <source>Error</source>
       <translation>Hiba</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="100"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="102"/>
       <source>Remember my choice</source>
       <translation>Emlékezzen a döntésemre</translation>
     </message>
@@ -5898,27 +5903,27 @@ then press %1</translation>
   <context>
     <name>nmc::DkRectWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="763"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="765"/>
       <source>x:</source>
       <translation>x:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="767"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="769"/>
       <source>y:</source>
       <translation>y:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="771"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="773"/>
       <source>width:</source>
       <translation>szélesség:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="775"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="777"/>
       <source>height:</source>
       <translation>magasság:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="780"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="782"/>
       <source> px</source>
       <translation> px</translation>
     </message>
@@ -6194,14 +6199,6 @@ Nyomjon ESC-et a változások visszavonásához</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="259"/>
       <source>Portable</source>
       <translation>Hordozható</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkStatusBar</name>
-    <message>
-      <location filename="../../src/DkCore/DkStatusBar.cpp" line="54"/>
-      <source>CTRL activates the crosshair cursor</source>
-      <translation>CTRL aktiválja a célkereszt kurzort</translation>
     </message>
   </context>
   <context>
@@ -6784,78 +6781,78 @@ Kérjük forduljon a rendszergazdához további információkért.</translation>
       <translation>Eredeti kép</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="698"/>
       <source>Resize</source>
       <translation>Átméretezés</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="718"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="722"/>
       <source>Shall I move %1 to trash?</source>
       <translation>%1 mozgatása a szemetesbe?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="720"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="724"/>
       <source>Do you want to permanently delete %1?</source>
       <translation>Szeretné végleg törölni %1?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="725"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="729"/>
       <source>Delete File</source>
       <translation>Fájl törlése</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Error</source>
       <translation>Hiba</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Sorry, I could not create a wallpaper...</source>
       <translation>Sajnálom, nem tudtam létrehozni háttérképet...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="839"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="843"/>
       <source>Busy</source>
       <translation>Elfoglalt</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Átláthatósági minta engedélyezve</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Átláthatósági minta letiltva</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>Lenna</source>
       <translation type="unfinished">Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>A remarkable woman</source>
       <translation>Egy figyelemre méltó nő</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1551"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1555"/>
       <source>you cannot cancel this</source>
       <translation>nem lehet megszakítani</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1559"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1563"/>
       <source>did you understand the brainteaser?</source>
       <translation>megértette a fejtörőt?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1565"/>
       <source>%1 is wrong...</source>
       <translation>%1 hibás...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1594"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1621"/>
       <source>Attempted to set NULL image</source>
       <translation>Megkísérelt NULL képet beállítani</translation>
     </message>
@@ -6863,7 +6860,7 @@ Kérjük forduljon a rendszergazdához további információkért.</translation>
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2100"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2104"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Nyomjon F10-et a keret nélküli nézetből kilépéshez</translation>
     </message>

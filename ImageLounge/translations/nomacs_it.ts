@@ -1533,7 +1533,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
       <source>Sorry, I could not create a tiny planet</source>
-      <translation type="unfinished">Sorry, I could not create a tiny planet</translation>
+      <translation>Spiacente, non posso creare il wallpaper...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
@@ -1553,7 +1553,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
       <source>Cannot threshold image</source>
-      <translation type="unfinished">Cannot threshold image</translation>
+      <translation>Impossibile ridimensionare l'immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="352"/>
@@ -1568,7 +1568,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="454"/>
       <source>Cannot draw background color</source>
-      <translation type="unfinished">Cannot draw background color</translation>
+      <translation>Non &amp;egrave; possibile disegnare il colore di sfondo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
@@ -1843,7 +1843,7 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
-      <source>Uncomressed</source>
+      <source>Uncompressed</source>
       <translation>Decompresso</translation>
     </message>
     <message>
@@ -2119,7 +2119,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="415"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="544"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation type="unfinished">%1 inactive -&gt; skipping</translation>
+      <translation>%1 inattivo -> saltare</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
@@ -2293,7 +2293,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>Rinominando: %1 -> %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
@@ -2313,7 +2313,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>Copiando: %1 -> %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -2356,12 +2356,12 @@ Si prega di riavviare nomacs e riprovare.</translation>
       <translation>I did not delete the original because I detected %1 failure(s).</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1066"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1070"/>
       <source>Image</source>
       <translation>L'immagine</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkSettings.cpp" line="1088"/>
+      <location filename="../../src/DkCore/DkSettings.cpp" line="1092"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
       <translation>nomacs - Image Lounge is a lightweight image viewer.</translation>
     </message>
@@ -2503,7 +2503,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Impostare la modalit&amp;agrave; di visualizzazione &lt;mode>.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
@@ -2513,7 +2513,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Carica tutti file di &lt;directory>.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
@@ -2523,7 +2523,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Caricare &lt;images> sulle schede.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
@@ -2533,7 +2533,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
       <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-      <translation type="unfinished">Batch processing of &lt;batch-settings.pnm&gt;.</translation>
+      <translation>Elaborazione in serie di &lt;batch-settings.pnm>.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
@@ -2543,7 +2543,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
       <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-      <translation type="unfinished">Saves batch log to &lt;log-path.txt&gt;.</translation>
+      <translation>Salva il batch log su &lt;log-path.txt>.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
@@ -2553,7 +2553,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Importa le impostazioni da &lt;settings-path.ini> e salvale.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -2607,109 +2607,109 @@ Si prega di riavviare nomacs e riprovare.</translation>
   <context>
     <name>nmc::DkAdvancedPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1311"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1323"/>
       <source>Always Load JPG if Embedded</source>
       <translation>Carica sempre la JPG se incorporata</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1312"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
       <source>Load JPG if it Fits the Screen Resolution</source>
       <translation>Carica JPG se si adatta alla risoluzione dello schermo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1313"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1325"/>
       <source>Always Load RAW Data</source>
       <translation>Carica sempre i dati RAW</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1324"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1336"/>
       <source>Apply Noise Filtering to RAW Images</source>
       <translation>Applica il filtro del rumore alle immagini RAW</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1326"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1338"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
       <translation>Se selezionata, viene applicato un filtro di rumore che riduce il rumore cromatico</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1341"/>
       <source>RAW Loader Settings</source>
       <translation>Impostazioni del caricatore RAW</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1337"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
       <source>Ask to Save Deleted Files</source>
       <translation>Chiedi di salvare i file eliminati</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1339"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1351"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
       <translation>Se verificato, nomacs chiede di salvare i file che erano stati eliminati da altre applicazioni</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
       <source>Ignore Exif Orientation when Loading</source>
       <translation>Ignora l'orientamento Exif durante il caricamento</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1344"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
       <translation>Se selezionato, le immagini non vengono ruotate in base all'orientamento Exif</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1359"/>
       <source>Save Exif Orientation</source>
       <translation>Salva Orientamento Exif</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1349"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
       <translation>Se selezionato, l'orientamento viene scritto nei valori Exif invece di ruotare la matrice dell'immagine
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1350"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1362"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
       <translation>NOTA: questo permette di ruotare le JPG senza perdita di informazioni.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1353"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1365"/>
       <source>File Loading/Saving</source>
       <translation>Caricamento/salvataggio del file</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation type="unfinished">Choose the number of Threads in the thread pool</translation>
+      <translation>Scegliere il numero di Threads nel pool di thread</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1366"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
       <source>Number of Threads</source>
       <translation>Numero di thread</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1370"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1382"/>
       <source>Use Log File</source>
       <translation>Usa il file log</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1372"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1384"/>
       <source>If checked, a log file will be created.</source>
       <translation>Se selezionata, verrà creato un file di log.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1387"/>
       <source>Open Log</source>
       <translation>Apri Log</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1383"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1395"/>
       <source>Logging</source>
       <translation>Caricamento</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1430"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1442"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Riavviare nomacs per applicare i cambiamenti</translation>
     </message>
@@ -2923,7 +2923,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1971"/>
       <source>%1 manipulators selected</source>
-      <translation type="unfinished">%1 manipulators selected</translation>
+      <translation>%1 manipolatori selezionati</translation>
     </message>
   </context>
   <context>
@@ -3176,12 +3176,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2038"/>
       <source>&amp;Crop from Metadata</source>
-      <translation type="unfinished">&amp;Crop from Metadata</translation>
+      <translation>&amp;Ritaglia da metadati</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2041"/>
       <source>&amp;Crop Rectangle</source>
-      <translation type="unfinished">&amp;Crop Rectangle</translation>
+      <translation>&amp;Rettangolo di Ritaglio</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2104"/>
@@ -3224,7 +3224,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2366"/>
@@ -3277,7 +3277,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2574"/>
       <source>I am missing a widget.</source>
-      <translation type="unfinished">I am missing a widget.</translation>
+      <translation>Mi manca un widget.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2588"/>
@@ -3293,7 +3293,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
       <location filename="../../src/DkGui/DkBatch.cpp" line="2610"/>
       <source>Should I create:
 %1</source>
-      <translation type="unfinished">Should I create:
+      <translation>Dovrei creare:
 %1</translation>
     </message>
     <message>
@@ -3314,7 +3314,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2642"/>
       <source>Sorry, the file pattern is empty.</source>
-      <translation type="unfinished">Sorry, the file pattern is empty.</translation>
+      <translation>Spiacente, lo schema del file &amp;egrave; vuoto.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2652"/>
@@ -3334,7 +3334,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
       <source>Batch Log</source>
-      <translation type="unfinished">Batch Log</translation>
+      <translation>Batch Log</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2845"/>
@@ -3352,12 +3352,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to Tab</source>
-      <translation type="unfinished">Go to Tab</translation>
+      <translation>&amp;Vai alla scheda</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="280"/>
       <source>Go to tab number: </source>
-      <translation type="unfinished">Go to tab number: </translation>
+      <translation>Vai alla scheda numero:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="500"/>
@@ -3714,7 +3714,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
       <source>Crop to Metadata</source>
-      <translation type="unfinished">Crop to Metadata</translation>
+      <translation>&amp;Ritaglia da metadati</translation>
     </message>
   </context>
   <context>
@@ -3730,7 +3730,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="992"/>
       <source>No metadata available!</source>
-      <translation type="unfinished">No metadata available!</translation>
+      <translation>Non ci sono metadati disponibili!</translation>
     </message>
   </context>
   <context>
@@ -3774,47 +3774,47 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="670"/>
       <source>If checked, the mouse wheel behaviour is inverted while zooming.</source>
-      <translation type="unfinished">If checked, the mouse wheel behaviour is inverted while zooming.</translation>
+      <translation>Se spuntata, il comportamento della rotellina del mouse viene invertito durante lo zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="674"/>
       <source>Display Images with High Quality Anti Aliasing</source>
-      <translation type="unfinished">Display Images with High Quality Anti Aliasing</translation>
+      <translation>Visualizza Immagini con Anti Aliasing di Alta Qualit&amp;agrave;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation type="unfinished">NOTE: if checked, nomacs might be slow while zooming.</translation>
+      <translation>NOTA: se spuntata, nomacs potrebbero essere lento durante lo zoom.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
       <source>Show Scrollbars when zooming into images</source>
-      <translation type="unfinished">Show Scrollbars when zooming into images</translation>
+      <translation>Mostra le barre di scorrimento quando si esegue lo zoom sulle immagini</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="682"/>
       <source>If checked, scrollbars will appear that allow panning with the mouse.</source>
-      <translation type="unfinished">If checked, scrollbars will appear that allow panning with the mouse.</translation>
+      <translation>Se spuntata, appariranno delle barre di scorrimento che permettono la panoramica con il mouse.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
       <source>Show pixels if zoom level is above</source>
-      <translation type="unfinished">Show pixels if zoom level is above</translation>
+      <translation>Mostra i pixel se il livello di zoom &amp;egrave; superiore</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation type="unfinished">nomacs will not interpolate images if the zoom level is larger.</translation>
+      <translation>nomacs non interpoler&amp;agrave; le immagini se il livello di zoom è più grande.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
       <source>Use Fixed Zoom Levels</source>
-      <translation type="unfinished">Use Fixed Zoom Levels</translation>
+      <translation>Utilizzare Livelli di Zoom Fissi</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation type="unfinished">If checked, predefined zoom levels are used when zooming.</translation>
+      <translation>Se spuntata, durante lo zoom vengono utilizzati livelli di zoom predefiniti.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3839,7 +3839,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation type="unfinished">If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</translation>
+      <translation>Se spuntata, il livello di zoom viene mantenuto solo se l&apos;immagine caricata ha lo stesso livello della precedente.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
@@ -3889,7 +3889,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="779"/>
       <source>Swipe</source>
-      <translation type="unfinished">Swipe</translation>
+      <translation>Scorrere</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="780"/>
@@ -3909,7 +3909,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="798"/>
       <source>If unchecked, loading is only animated if nomacs is fullscreen</source>
-      <translation type="unfinished">If unchecked, loading is only animated if nomacs is fullscreen</translation>
+      <translation>Se deselezionato, il caricamento &amp;egrave; animato solo se nomacs &amp;egrave; a schermo intero</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="801"/>
@@ -3919,25 +3919,30 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="805"/>
       <source>Define the time an image is displayed.</source>
-      <translation type="unfinished">Define the time an image is displayed.</translation>
+      <translation>Definire il tempo di visualizzazione di un&apos;immagine.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
+      <source>Show Player</source>
+      <translation>Visualizza il Pla&amp;yer</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
       <source>Slideshow</source>
       <translation>Presentazione</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="821"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="826"/>
       <source>Show crop rectangle</source>
-      <translation type="unfinished">Show crop rectangle</translation>
+      <translation>Mostra rettangolo di ritaglio</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="825"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="830"/>
       <source>Show Metadata Cropping</source>
-      <translation type="unfinished">Show Metadata Cropping</translation>
+      <translation>Mostra il ritaglio dei metadati</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="863"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="875"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Riavviare nomacs per applicare i cambiamenti</translation>
     </message>
@@ -3952,12 +3957,12 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="483"/>
       <source>Open Selected Image</source>
-      <translation type="unfinished">Open Selected Image</translation>
+      <translation>Apri Immagine Selezionata</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="493"/>
       <source>Adjust Columns</source>
-      <translation type="unfinished">Adjust Columns</translation>
+      <translation>Regolare le Colonne</translation>
     </message>
   </context>
   <context>
@@ -4054,7 +4059,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="564"/>
       <source>Offset</source>
-      <translation type="unfinished">Offset</translation>
+      <translation>Compensazione</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="571"/>
@@ -4065,38 +4070,38 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
   <context>
     <name>nmc::DkFileAssociationsPreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1155"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1167"/>
       <source>Filter</source>
       <translation>Filtro</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1156"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1168"/>
       <source>Browse</source>
       <translation>Sfoglia</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1157"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1169"/>
       <source>Register</source>
       <translation>Registra</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1175"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1187"/>
       <source>Set File Associations</source>
       <translation>Imposta le associazioni dei file</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1178"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1190"/>
       <source>Set as Default Viewer</source>
       <translation>Scegli come visualizzatore &amp;predefinito</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1196"/>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1208"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1220"/>
       <source>Please Restart nomacs to apply changes</source>
       <translation>Riavviare nomacs per applicare i cambiamenti</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1275"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1287"/>
       <source>Image</source>
       <translation>L'immagine</translation>
     </message>
@@ -4119,97 +4124,97 @@ Desideri mostrarle di nuovo?</translation>
   <context>
     <name>nmc::DkFilePreference</name>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="965"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="977"/>
       <source>Screenshots are automatically saved to this folder</source>
-      <translation type="unfinished">Screenshots are automatically saved to this folder</translation>
+      <translation>Gli screenshot vengono salvati automaticamente in questa cartella</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="967"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="979"/>
       <source>Use Temporary Folder</source>
       <translation>Utilizza la cartella temporanea</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="982"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="994"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Si consiglia di impostare un valore di cache moderato intorno ai 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="985"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="997"/>
       <source>Maximal Cache Size</source>
       <translation>Dimensione massima della cache</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="999"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished">We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</translation>
+      <translation>Si consiglia di impostare un valore moderato per la cronologia delle modifiche intorno ai 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1002"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1014"/>
       <source>History Size</source>
-      <translation type="unfinished">History Size</translation>
+      <translation>Dimensione della Cronologia</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1008"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1020"/>
       <source>Skip Images</source>
       <translation>Salta le immagini</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1009"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation type="unfinished">Images are skipped until the Next key is released</translation>
+      <translation>Le immagini vengono saltate finch&amp;eacute; non viene rilasciato il pulsante Avanti.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1010"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
       <source>Wait for Images to be Loaded</source>
       <translation>Attendere il caricamento delle immagini</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1011"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
       <source>The next image is loaded after the current image is shown.</source>
-      <translation type="unfinished">The next image is loaded after the current image is shown.</translation>
+      <translation>L&apos;immagine successiva viene caricata dopo la visualizzazione dell&apos;immagine corrente.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1034"/>
       <source>Image Loading Policy</source>
-      <translation type="unfinished">Image Loading Policy</translation>
+      <translation>Politica di caricamento delle immagini</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1028"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1040"/>
       <source>Load Saved Images</source>
       <translation>Carica le immagini salvate</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1029"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation type="unfinished">After saving, the saved image will be loaded in place</translation>
+      <translation>Dopo il salvataggio, l&apos;immagine salvata verr&amp;agrave; caricata in posizione</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1030"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
       <source>Load to Tab</source>
-      <translation type="unfinished">Load to Tab</translation>
+      <translation>&amp;Vai alla scheda</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1031"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation type="unfinished">After saving, the saved image will be loaded to a tab.</translation>
+      <translation>Dopo il salvataggio, l&apos;immagine salvata verr&amp;agrave; caricata in posizione</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1032"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
       <source>Do Nothing</source>
-      <translation type="unfinished">Do Nothing</translation>
+      <translation>Non fare nulla</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1033"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
       <source>The saved image will not be loaded.</source>
       <translation>Le immagini salvate non saranno caricate.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1041"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1053"/>
       <source>Image Saving Policy</source>
-      <translation type="unfinished">Image Saving Policy</translation>
+      <translation>Politica di caricamento delle immagini</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1056"/>
+      <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
       <source>Number of Skipped Images on PgUp/PgDown</source>
       <translation type="unfinished">Number of Skipped Images on PgUp/PgDown</translation>
     </message>
@@ -4871,12 +4876,12 @@ Desideri mostrarle di nuovo?</translation>
   <context>
     <name>nmc::DkMessageBox</name>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="66"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="68"/>
       <source>Error</source>
       <translation>Errore</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkMessageBox.cpp" line="100"/>
+      <location filename="../../src/DkCore/DkMessageBox.cpp" line="102"/>
       <source>Remember my choice</source>
       <translation>Ricorda la mia scelta</translation>
     </message>
@@ -5536,7 +5541,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Impossibile installare la nuova versione &lt;br></translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5652,7 +5657,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Premi &lt;SPAZIO> per avviare</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5662,7 +5667,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Premi &lt;SPACE> per avviare un nuovo Gioco</translation>
     </message>
   </context>
   <context>
@@ -5752,7 +5757,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1197"/>
       <source>Input</source>
-      <translation type="unfinished">Input</translation>
+      <translation>Input</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1201"/>
@@ -5901,27 +5906,27 @@ prima di lavorare attraverso la finestra.</translation>
   <context>
     <name>nmc::DkRectWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="763"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="765"/>
       <source>x:</source>
       <translation>x:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="767"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="769"/>
       <source>y:</source>
       <translation>y:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="771"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="773"/>
       <source>width:</source>
       <translation>larghezza:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="775"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="777"/>
       <source>height:</source>
       <translation>altezza:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="780"/>
+      <location filename="../../src/DkCore/DkBasicWidgets.cpp" line="782"/>
       <source> px</source>
       <translation> px</translation>
     </message>
@@ -6197,14 +6202,6 @@ Premi ESC per annullare le modifiche</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="259"/>
       <source>Portable</source>
       <translation>Portabile</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkStatusBar</name>
-    <message>
-      <location filename="../../src/DkCore/DkStatusBar.cpp" line="54"/>
-      <source>CTRL activates the crosshair cursor</source>
-      <translation type="unfinished">CTRL activates the crosshair cursor</translation>
     </message>
   </context>
   <context>
@@ -6789,78 +6786,78 @@ Contattare l'amministratore del sistema per informazioni.</translation>
       <translation>Immagine originale</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="694"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="698"/>
       <source>Resize</source>
       <translation>Ridimensiona</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="718"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="722"/>
       <source>Shall I move %1 to trash?</source>
       <translation>Cestinare %1 ?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="720"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="724"/>
       <source>Do you want to permanently delete %1?</source>
       <translation>Eliminare definitivamente %1?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="725"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="729"/>
       <source>Delete File</source>
       <translation>Delete File</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Error</source>
       <translation>Errore</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="796"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Sorry, I could not create a wallpaper...</source>
       <translation>Spiacente, non posso creare il wallpaper...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="839"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="843"/>
       <source>Busy</source>
       <translation>Occupato</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Transparency Pattern abilitato</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1503"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1507"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Transparency Pattern disabilitato</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>Lenna</source>
       <translation>Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1541"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1545"/>
       <source>A remarkable woman</source>
       <translation>Una donna eccezionale</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1551"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1555"/>
       <source>you cannot cancel this</source>
       <translation>non puoi annullare questo</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1559"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1563"/>
       <source>did you understand the brainteaser?</source>
       <translation>Hai capito il rompicapo?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1565"/>
       <source>%1 is wrong...</source>
       <translation>%1 è sbagliato...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1594"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1621"/>
       <source>Attempted to set NULL image</source>
       <translation>Ho tentato di impostare un immagine NULL</translation>
     </message>
@@ -6868,7 +6865,7 @@ Contattare l'amministratore del sistema per informazioni.</translation>
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2100"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2104"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Premi F10 per uscire dalla visualizzazione Frameless</translation>
     </message>
