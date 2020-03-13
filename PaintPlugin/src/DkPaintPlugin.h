@@ -34,8 +34,10 @@
 #include <QString>
 #include <QMessageBox>
 #include <QAction>
+#include <QLineEdit>
 #include <QGraphicsPathItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsBlurEffect>
 #include <QToolBar>
 #include <QMainWindow>
 #include <QColorDialog>
@@ -55,6 +57,17 @@ namespace nmp {
 class DkPaintViewPort;
 class DkPaintToolBar;
 
+enum {
+	mode_pencil = 0,
+	mode_line,
+	mode_arrow,
+	mode_circle,
+	mode_square,
+	mode_square_fill,
+	mode_blur,
+	mode_text,
+};
+
 class DkPaintPlugin : public QObject, nmc::DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
@@ -67,6 +80,10 @@ public:
 
     QImage image() const override;
 	bool hideHUD() const override;
+
+	QPainterPath getArrowHead(QPainterPath line, const int thickness);
+	QLineF getShorterLine(QPainterPath line, const int thickness);
+	void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap, int radius);
 
 	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 	nmc::DkPluginViewPort* getViewPort() override;
@@ -104,6 +121,14 @@ public slots:
 	virtual void setVisible(bool visible);
 	void undoLastPaint();
 
+signals:
+	void editShowSignal(bool show);
+
+protected slots:
+	void setMode(int mode);
+	void textChange(const QString &text);
+	void textEditFinsh();
+
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
@@ -116,6 +141,13 @@ protected:
 
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
+	QVector<int> pathsMode;
+	QPointF begin;
+	QString sbuffer;
+
+	int selectedMode;
+	bool textinputenable;
+	QPainterPath ArrowHead;
 
 	bool cancelTriggered;
 	bool isOutside;
@@ -140,8 +172,18 @@ public:
 		pan_icon,
 		undo_icon,
 
+		pencil_icon,
+		line_icon,
+		arrow_icon,
+		circle_icon,
+		square_icon,
+		square_fill_icon,
+		blur_icon,
+		text_icon,
+
 		icons_end,
 	};
+
 
 	DkPaintToolBar(const QString & title, QWidget * parent = 0);
 	virtual ~DkPaintToolBar();
@@ -154,10 +196,21 @@ public slots:
 	void on_applyAction_triggered();
 	void on_cancelAction_triggered();
 	void on_panAction_toggled(bool checked);
+	void on_pencilAction_toggled(bool checked);
+	void on_lineAction_toggled(bool checked);
+	void on_arrowAction_toggled(bool checked);
+	void on_circleAction_toggled(bool checked);
+	void on_squareAction_toggled(bool checked);
+	void on_squarefillAction_toggled(bool checked);
+	void on_blurAction_toggled(bool checked);
+	void on_textAction_toggled(bool checked);
 	void on_penColButton_clicked();
 	void on_widthBox_valueChanged(int val);
 	void on_alphaBox_valueChanged(int val);
+	void on_textInput_textChanged(const QString &text);
+	void on_textInput_editingFinished();
 	void on_undoAction_triggered();
+	void showLineEdit(bool show);
 	virtual void setVisible(bool visible);
 
 signals:
@@ -169,6 +222,9 @@ signals:
 	void shadingHint(bool invert);
 	void panSignal(bool checked);
 	void undoSignal();
+	void modeChangeSignal(int mode);
+	void textChangeSignal(const QString &text);
+	void editFinishSignal();
 
 protected:
 	void createLayout();
@@ -180,8 +236,20 @@ protected:
 	QSpinBox* alphaBox;
 	QColor penCol;
 	int penAlpha;
+	QMap<QString, QAction*> toolbarWidgetList;
 	QAction* panAction;
 	QAction* undoAction;
+
+	QAction* pencilAction;
+	QAction* lineAction;
+	QAction* arrowAction;
+	QAction* circleAction;
+	QAction* squareAction;
+	QAction* squarefillAction;
+	QAction* blurAction;
+	QAction* textAction;
+
+	QLineEdit* textInput;
 
 	QVector<QIcon> icons;		// needed for colorizing
 	
