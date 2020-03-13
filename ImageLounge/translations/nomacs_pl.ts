@@ -2665,13 +2665,12 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-      <translation>Jeśli zaznaczono, orientacja jest zapisywana w EXIF zamiast obracania macierzy obrazu
-</translation>
+      <translation>Jeśli zaznaczono, orientacja jest zapisywana w Exif zamiast obracania macierzy obrazu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1362"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
-      <translation>Uwaga: to pozwala na obracanie jpg bez utraty informacji.</translation>
+      <translation>Uwaga: pozwala to na obracanie JPG'ów bez utraty informacji.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1365"/>
@@ -2681,7 +2680,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation>Wybierz liczbę wątków wykorzystywanych przez program</translation>
+      <translation>Określ liczbę wątków wykorzystywanych przez program</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
@@ -2799,12 +2798,12 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
       <source>Open Archive</source>
-      <translation>Otwórz Archiwum</translation>
+      <translation>Otwórz archiwum</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3867"/>
       <source>Archives (%1)</source>
-      <translation>Archiwum (%1)</translation>
+      <translation>Archiwa (%1)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3878"/>
@@ -2861,7 +2860,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2248"/>
       <source>Start/Cancel Batch Processing (%1)</source>
-      <translation>Uruchom/Anuluj przetwarzanie wsadowe (%1)</translation>
+      <translation>Uruchom/anuluj przetwarzanie wsadowe (%1)</translation>
     </message>
   </context>
   <context>
@@ -2894,18 +2893,18 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="479"/>
       <source>%1 File Selected</source>
-      <translation>%1 wybrany plik</translation>
+      <translation>%1 plik wybrano</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="481"/>
       <source>%1 Files Selected</source>
-      <translation>%1 wybranych plików</translation>
+      <translation>%1 plików wybranych</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="506"/>
       <location filename="../../src/DkGui/DkBatch.cpp" line="520"/>
       <source>Results</source>
-      <translation>Wyniki</translation>
+      <translation>Wynik</translation>
     </message>
   </context>
   <context>
@@ -2923,7 +2922,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1971"/>
       <source>%1 manipulators selected</source>
-      <translation>%1 wybranych przekształceń</translation>
+      <translation>%1 przekształceń wybranych</translation>
     </message>
   </context>
   <context>
@@ -2953,7 +2952,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
       <translation>Istniejące pliki zostaną nadpisane.
-Ta opcja może zniszczyć twoje obrazy - zachowaj ostrożność!</translation>
+Uwaga - ryzyko utraty obrazów - zachowaj ostrożność!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="763"/>
@@ -2965,7 +2964,7 @@ Ta opcja może zniszczyć twoje obrazy - zachowaj ostrożność!</translation>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
       <translation>Jeśli zaznaczono, wyjściowe obrazy nie będą w ogóle zapisywane.
-Ta opcja jest przydatna tylko gdy wtyczki zapisują pliki niezależnie - zachowaj ostrożność!</translation>
+Ta opcja jest przydatna tylko, gdy wtyczki zapisują pliki niezależnie - zachowaj ostrożność!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
