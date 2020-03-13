@@ -2111,7 +2111,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
       <source>[Transform Batch]</source>
-      <translation>Przekształć pliki</translation>
+      <translation>[Zbiór przekształcany]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="276"/>
@@ -2128,7 +2128,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="321"/>
       <source>%1 image transformed.</source>
-      <translation>%1 - obraz przetworzony.</translation>
+      <translation>%1 - obraz przekształcony.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="324"/>
@@ -2143,7 +2143,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="329"/>
       <source>%1 image transformed and cropped.</source>
-      <translation>%1 - obraz przetworzono i przycięto </translation>
+      <translation>%1 - obraz przetworzono i przycięto</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="333"/>
@@ -2168,7 +2168,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
       <source>%1 %2 applied.</source>
-      <translation>%1 %2 zastosowane.</translation>
+      <translation>%1 - zastosowano %2.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="429"/>
@@ -2179,7 +2179,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="435"/>
       <source>%1 error, could not apply image adjustments.</source>
-      <translation>%1 błąd, nie można zastosować korekt obrazu.</translation>
+      <translation>%1 - błąd, nie można zastosować korekt obrazu.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
