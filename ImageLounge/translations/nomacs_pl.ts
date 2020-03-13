@@ -4465,7 +4465,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="369"/>
       <source>Loop Images</source>
-      <translation>Zapętl obrazy</translation>
+      <translation>Zapętlaj obrazy</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="371"/>
@@ -4505,7 +4505,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="389"/>
       <source>Show Background Image</source>
-      <translation>Pokaż obraz w tle</translation>
+      <translation>Pokaż obraz tła</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="391"/>
@@ -4520,7 +4520,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="396"/>
       <source>If checked, CTRL + Mouse is switched with ALT + Mouse.</source>
-      <translation>Jeśli zaznaczone, CTRL + mysz jest przełączone na ALT + mysz.</translation>
+      <translation>Jeśli zaznaczone, CTRL + mysz zamienia się na ALT + mysz.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="399"/>
@@ -4530,7 +4530,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="401"/>
       <source>Close nomacs if ESC is pressed.</source>
-      <translation>Zamykaj nomacs wciskając klawisz ESC.</translation>
+      <translation>Zamykaj nomacs, po wciśnięciu klawisza ESC.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="404"/>
@@ -4585,7 +4585,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="632"/>
       <source>Settings exported</source>
-      <translation>Wyeksportowano ustawienia</translation>
+      <translation>Ustawienia wyeksportowano</translation>
     </message>
   </context>
   <context>
@@ -4593,7 +4593,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2704"/>
       <source>Set As Default</source>
-      <translation>Zapisz jako domyślne</translation>
+      <translation>Ustaw jako domyślne</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2762"/>
@@ -4618,7 +4618,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2840"/>
       <source>No Profiles</source>
-      <translation>Brak profilów</translation>
+      <translation>Brak profili</translation>
     </message>
   </context>
   <context>
@@ -4635,7 +4635,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2049"/>
       <source>Show Statistics</source>
-      <translation>Pokaz statystyki</translation>
+      <translation>Pokaż statystyki</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2054"/>
@@ -4671,7 +4671,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="690"/>
       <source>Sorry, you are not allowed to read: %1</source>
-      <translation>Niestety, nie masz uprawnień do przeczytania: %1</translation>
+      <translation>Niestety, nie masz uprawnień do odczytu: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="808"/>
@@ -4723,7 +4723,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="568"/>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="630"/>
       <source>You have reached the beginning</source>
-      <translation>Osiągnąłeś początek</translation>
+      <translation>Wróciłeś do początku</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="574"/>
@@ -4761,7 +4761,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1011"/>
       <source>Save Directory</source>
-      <translation>Zapisz katalog</translation>
+      <translation>Katalog zapisu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1062"/>
