@@ -2111,7 +2111,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
       <source>[Transform Batch]</source>
-      <translation>[Zbiór przekształcany]</translation>
+      <translation>[Przekształcenia]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="276"/>
@@ -2143,7 +2143,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="329"/>
       <source>%1 image transformed and cropped.</source>
-      <translation>%1 - obraz przetworzono i przycięto</translation>
+      <translation>%1 - obraz przekształcono i przycięto</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="333"/>
@@ -2184,37 +2184,37 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
       <source>[Adjustment Batch]</source>
-      <translation>Dopasuj wiele plików</translation>
+      <translation>[Dopasowania]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="575"/>
       <source>%1 Cannot cast batch plugin %2.</source>
-      <translation>%1 Nie można rzutować wtyczki wsadowej %2.</translation>
+      <translation>%1 - Nie można zastosować wtyczki wsadowej %2.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="586"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation>%1 niedozwolony interfejs wtyczki: %2</translation>
+      <translation>%1 - niedozwolony interfejs wtyczki: %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="589"/>
       <source>%1 Cannot apply plugin because it is NULL.</source>
-      <translation>%1 nie można zastosować wtyczki, ponieważ jej wartość jest zerowa.</translation>
+      <translation>%1 - nie można zastosować wtyczki, ponieważ jej wartość jest zerowa.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="593"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation>%1 błąd, nie można zastosować wtyczek.</translation>
+      <translation>%1 - błąd, nie można zastosować wtyczek.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="597"/>
       <source>%1 plugins applied.</source>
-      <translation>%1 wtyczki zastosowane.</translation>
+      <translation>%1 - wtyczki zastosowane.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="603"/>
       <source>[Plugin Batch]</source>
-      <translation>Użyj wtyczki na wielu plikach</translation>
+      <translation>[Wtyczki]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="716"/>
@@ -2235,7 +2235,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="727"/>
       <source>Skipping: nothing to do here.</source>
-      <translation>Pomijanie: nic do zrobienia tutaj.</translation>
+      <translation>Pomijanie: nie ma nic do zrobienia.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="766"/>
