@@ -469,12 +469,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
       <source>&amp;Keyboard Shortcuts</source>
-      <translation>&amp;Skróty klawiaturowe</translation>
+      <translation>&amp;Skróty klawiszowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1146"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation>Pozwala dostosować skróty klawiaturowe</translation>
+      <translation>Pozwala dostosować skróty klawiszowe</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1148"/>
@@ -1487,12 +1487,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Hue/Saturation...</source>
-      <translation>&amp;Barwa/nasycenie...</translation>
+      <translation>Odcie&amp;ń/nasycenie...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
       <source>Change Hue and Saturation</source>
-      <translation>Zmiana barwy i nasycenia</translation>
+      <translation>Zmiana odcienia i nasycenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="152"/>
@@ -1558,7 +1558,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="352"/>
       <source>Cannot change Hue/Saturation</source>
-      <translation>Nie można zmienić barwy/nasycenia</translation>
+      <translation>Nie można zmienić odcienia/nasycenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="402"/>
@@ -3036,7 +3036,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="841"/>
       <source>Old Filename: </source>
-      <translation>Stara nazwa pliku: </translation>
+      <translation>Oryginalna nazwa pliku: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="846"/>
@@ -4648,7 +4648,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="504"/>
       <source>Hue</source>
-      <translation>Barwa</translation>
+      <translation>Odcień</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="511"/>
@@ -6136,7 +6136,7 @@ a potem naciśnij %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1824"/>
       <source>Keyboard Shortcuts</source>
-      <translation>Skróty klawiaturowe</translation>
+      <translation>Skróty klawiszowe</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1860"/>
