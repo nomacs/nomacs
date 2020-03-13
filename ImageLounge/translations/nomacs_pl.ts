@@ -1522,7 +1522,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="104"/>
       <source>Cannot invert image</source>
-      <translation>Nie można odwrócić obrazu</translation>
+      <translation>Nie można odwrócić kolorów</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="117"/>
@@ -1533,7 +1533,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
       <source>Sorry, I could not create a tiny planet</source>
-      <translation>Przepraszamy, nie mogę utworzyć małej planety</translation>
+      <translation>Przepraszamy, nie można utworzyć małej planety</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
@@ -1558,7 +1558,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="352"/>
       <source>Cannot change Hue/Saturation</source>
-      <translation>Nie można zmienić Barwy/Nasycenia</translation>
+      <translation>Nie można zmienić barwy/nasycenia</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="402"/>
@@ -2091,7 +2091,8 @@
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1100"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation>Nie można usunąć pliku dll! Uruchom ponownie nomacs i spróbuj ponownie.</translation>
+      <translation>Nie można usunąć pliku dll!
+Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1274"/>
@@ -2507,7 +2508,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
       <source>default | frameless | pseudocolor</source>
-      <translation>domyślny | bezramowy | pseudokolor</translation>
+      <translation>domyślny | bezramkowy | pseudokolor</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
@@ -2527,7 +2528,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
       <source>images</source>
-      <translation>zdjęcia</translation>
+      <translation>obrazy</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
@@ -2547,7 +2548,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
       <source>log-path.txt</source>
-      <translation>log-patch.txt</translation>
+      <translation>log-path.txt</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
@@ -2572,7 +2573,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="338"/>
       <source>Sorry, nomacs ran out of memory...</source>
-      <translation>Przepraszamy, Nomacs zabrakło pamięci...</translation>
+      <translation>Przepraszamy, nomacsowi zabrakło pamięci...</translation>
     </message>
   </context>
   <context>
@@ -2648,17 +2649,17 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
       <source>Ignore Exif Orientation when Loading</source>
-      <translation>Ignoruj informację o orientacji z EXIF przy wczytywaniu</translation>
+      <translation>Ignoruj informację o orientacji z Exif przy wczytywaniu</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation>Jeśli zaznaczone, obrazy nie są obracane w odniesieniu do ich orientacji Exif</translation>
+      <translation>Jeśli zaznaczone, obrazy nie są obracane według ich orientacji z danych Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1359"/>
       <source>Save Exif Orientation</source>
-      <translation>Zachowaj orientację EXIF</translation>
+      <translation>Zachowaj orientację Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1361"/>
