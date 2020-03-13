@@ -4953,12 +4953,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="81"/>
       <source>Date Time</source>
-      <translation>Data czas</translation>
+      <translation>Data</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="82"/>
       <source>Date Time Original</source>
-      <translation>Oryginalna data, czas</translation>
+      <translation>Data oryginału</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
@@ -4968,12 +4968,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
       <source>Creator</source>
-      <translation>Twórca</translation>
+      <translation>Autor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
       <source>Creator Title</source>
-      <translation>Twórca tytuł</translation>
+      <translation>Tytuł autora</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
@@ -5095,7 +5095,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="789"/>
       <source>Shows the Metadata on the Right</source>
-      <translation>Pokaż metadane po lprawej</translation>
+      <translation>Pokaż metadane po prawej</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="792"/>
@@ -5130,7 +5130,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1152"/>
       <source>Number of columns (-1 is default)</source>
-      <translation>Liczba kolumn (-1 jest domyślne)</translation>
+      <translation>Liczba kolumn (domyślnie -1)</translation>
     </message>
   </context>
   <context>
@@ -5156,7 +5156,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="587"/>
       <source>Check All</source>
-      <translation>Sprawdź wszystkie</translation>
+      <translation>Zaznacz wszystkie</translation>
     </message>
   </context>
   <context>
@@ -5184,7 +5184,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2772"/>
       <source>Mosaic Image:</source>
-      <translation>Mozaika:</translation>
+      <translation>Obraz mozaiki:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2775"/>
@@ -5215,7 +5215,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2789"/>
       <source>Specify an Image Database</source>
-      <translation>Określ bazę danych obrazów</translation>
+      <translation>Określ folder z elementami mozaiki</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2792"/>
@@ -5240,12 +5240,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2812"/>
       <source>Number of Horizontal Patches</source>
-      <translation>Ilość kafelek poziomo</translation>
+      <translation>Liczba kafelek w poziomie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2817"/>
       <source>Number of Vertical Patches</source>
-      <translation>Ilość kafelek pionowo</translation>
+      <translation>Liczba kafelek w pionie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2822"/>
