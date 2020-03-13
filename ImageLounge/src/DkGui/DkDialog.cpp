@@ -2046,14 +2046,15 @@ void DkPrintPreviewDialog::init() {
 	if (!mPrinter) {
 #ifdef Q_OS_WIN
 		if(QPrinterInfo::defaultPrinter().isNull())
-			mPrinter = new QPrinter(QPrinter::HighResolution);
+			mPrinter = new QPrinter();	// new QPrinter(QPrinter::HighResolution);
 		else
-			mPrinter = new QPrinter(QPrinterInfo::defaultPrinter(), QPrinter::HighResolution);
+			mPrinter = new QPrinter(QPrinterInfo::defaultPrinter());
 			
 #else
-		mPrinter = new QPrinter(QPrinter::HighResolution);
+		mPrinter = new QPrinter();
 #endif
 	}
+
 	mPreview = new DkPrintPreviewWidget(mPrinter, this);
 
 	createIcons();
