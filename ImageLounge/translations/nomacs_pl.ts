@@ -2255,7 +2255,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="785"/>
       <source>%1 failed</source>
-      <translation>%1 nie powiodło się</translation>
+      <translation>%1 - niepowodzenie</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
@@ -2267,12 +2267,12 @@ Please restart nomacs and try again.</source>
       <location filename="../../src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation>Oryginalna nazwa pliku dodawana do Exif</translation>
+      <translation>Oryginalna nazwa pliku dodana do Exif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="810"/>
       <source>%1 saved...</source>
-      <translation>%1 zapisane...</translation>
+      <translation>%1 zapisano...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="813"/>
@@ -2337,12 +2337,12 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation>Nie można zapisać do %1 więc przywrócono oryginalny plik.</translation>
+      <translation>Nie można zapisać do %1, więc przywrócono oryginalny plik.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="981"/>
       <source>%1 deleted.</source>
-      <translation>%1 usunięte.</translation>
+      <translation>%1 usunięto.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="984"/>
@@ -3082,7 +3082,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="1257"/>
       <source>[FAIL]</source>
-      <translation>[FAIL]</translation>
+      <translation>[NIEPOWODZENIE]</translation>
     </message>
   </context>
   <context>
@@ -3328,7 +3328,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2748"/>
       <source>%1/%2 files processed... %3 failed.</source>
-      <translation>%1/%2 pliki przetworzone... %3 nie powiodło się.</translation>
+      <translation>%1/%2 plików przetworzono, %3 niepowodzenia.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2774"/>
