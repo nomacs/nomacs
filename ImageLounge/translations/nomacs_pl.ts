@@ -4058,7 +4058,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="564"/>
       <source>Offset</source>
-      <translation>Margines</translation>
+      <translation>Przesunięcie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="571"/>
@@ -4116,7 +4116,7 @@ Używaj ostrożnie!</translation>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1112"/>
       <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-      <translation>Wszystkie pola informacyjne są obecnie ukryte. Czy chcesz je ponownie pokazać?</translation>
+      <translation>Wszystkie pola informacji są obecnie ukryte. Czy chcesz je ponownie pokazać?</translation>
     </message>
   </context>
   <context>
@@ -4189,7 +4189,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1042"/>
       <source>Load to Tab</source>
-      <translation>Załaduj do karty</translation>
+      <translation>Wczytaj do karty</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
@@ -4199,7 +4199,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
       <source>Do Nothing</source>
-      <translation>Nic</translation>
+      <translation>Nie rób nic</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
@@ -4222,7 +4222,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="199"/>
       <source>Show Left</source>
-      <translation>Pokaż lewo</translation>
+      <translation>Pokaż po lewej</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="200"/>
@@ -4232,7 +4232,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="203"/>
       <source>Show Top</source>
-      <translation>Pokaż górę</translation>
+      <translation>Pokaż na górze</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="204"/>
@@ -4242,7 +4242,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="207"/>
       <source>Show Right</source>
-      <translation>Pokaż prawo</translation>
+      <translation>Pokaż po prawej</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="208"/>
@@ -4252,7 +4252,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="211"/>
       <source>Show Bottom</source>
-      <translation>Pokaż dół</translation>
+      <translation>Pokaż na dole</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="212"/>
@@ -4262,12 +4262,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="215"/>
       <source>Undock</source>
-      <translation>Oddokuj</translation>
+      <translation>Odłącz</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="216"/>
       <source>Undock the thumbnails</source>
-      <translation>Oddokuj miniatury</translation>
+      <translation>Odłącz pasek miniatur miniatury</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="219"/>
@@ -4358,7 +4358,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3645"/>
       <source>Overwrite Existing Thumbnails</source>
-      <translation>Zastąp istniejące miniaturki</translation>
+      <translation>Zastąp istniejące miniatury</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3650"/>
@@ -4376,8 +4376,7 @@ Do you want to show them again?</source>
  %1
 </source>
       <translation>Wygeneruj miniatury dla wszystkich obrazów w:
-%1
-</translation>
+ %1</translation>
     </message>
   </context>
   <context>
@@ -4411,12 +4410,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="326"/>
       <source>&amp;Import Settings</source>
-      <translation>Importuj ustawienia</translation>
+      <translation>&amp;Importuj ustawienia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="330"/>
       <source>&amp;Export Settings</source>
-      <translation>Eksportuj ustawienia</translation>
+      <translation>&amp;Eksportuj ustawienia</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="334"/>
@@ -5071,7 +5070,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="780"/>
       <source>Show Left</source>
-      <translation>Pokaż lewo</translation>
+      <translation>Pokaż po lewej</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="781"/>
@@ -5081,7 +5080,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="784"/>
       <source>Show Top</source>
-      <translation>Pokaż górę</translation>
+      <translation>Pokaż na górze</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="785"/>
@@ -5091,7 +5090,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="788"/>
       <source>Show Right</source>
-      <translation>Pokaż prawo</translation>
+      <translation>Pokaż po prawej</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="789"/>
@@ -5101,7 +5100,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="792"/>
       <source>Show Bottom</source>
-      <translation>Pokaż dół</translation>
+      <translation>Pokaż na dole</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="793"/>
