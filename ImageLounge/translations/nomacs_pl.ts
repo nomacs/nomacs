@@ -3798,7 +3798,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
       <source>Show pixels if zoom level is above</source>
-      <translation>Pokazuj piksele przy powiększeniu powyżej</translation>
+      <translation>Pokazuj piksele przy powiększeniu powyżej:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
@@ -3823,7 +3823,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="717"/>
       <source>Zoom</source>
-      <translation>Powiększ</translation>
+      <translation>Powiększanie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="729"/>
@@ -3833,7 +3833,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="730"/>
       <source>Keep zoom if the size is the same</source>
-      <translation>Zachowaj zoom, jeśli rozmiar jest taki sam</translation>
+      <translation>Zachowaj powiększenie, jeśli rozmiar jest taki sam</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
@@ -3858,12 +3858,12 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="756"/>
       <source>Define the icon size in pixel.</source>
-      <translation>Zdefiniuj rozmiar ikony w pikselach.</translation>
+      <translation>Zdefiniuj rozmiar ikon w pikselach.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="762"/>
       <source>Icon Size</source>
-      <translation>Rozmiar ikony</translation>
+      <translation>Rozmiar ikon</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="766"/>
@@ -3985,7 +3985,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2445"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>Nie załadowano wielostronicowego pliku TIFF </translation>
+      <translation>Nie załadowano wielostronicowego pliku TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
@@ -4035,7 +4035,7 @@ Używaj ostrożnie!</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2623"/>
       <source>%1 exists, skipping...</source>
-      <translation>%1 istnieje, pominięto...</translation>
+      <translation>%1 istnieje, pomijanie...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2628"/>
