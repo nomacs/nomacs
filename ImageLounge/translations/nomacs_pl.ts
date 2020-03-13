@@ -5993,7 +5993,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1045"/>
       <source>Bicubic (4x4 pixel interpolation)</source>
-      <translation>Dwusześcienna (interpolacja 4x4)</translation>
+      <translation>Dwusześcienne (interpolacja 4x4)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1046"/>
@@ -6087,7 +6087,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="636"/>
       <source>Type search words or a regular expression</source>
-      <translation>Wpisz szukane słowo lub wyrażenie</translation>
+      <translation>Wpisz szukane słowo lub wyrażenie regularne</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="647"/>
@@ -6097,7 +6097,7 @@ then press %1</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="652"/>
       <source>F&amp;ind</source>
-      <translation>Znajdź</translation>
+      <translation>&amp;Znajdź</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="694"/>
@@ -6182,7 +6182,8 @@ Press ESC to undo changes</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1743"/>
       <source>%1 already used by %2
 Press ESC to undo changes</source>
-      <translation>%1 już używane przez %2 > %3 naciśnij klawisz ESC, aby cofnąć zmiany</translation>
+      <translation>%1 jest już używane przez %2 
+Wciśnij klawisz ESC, aby cofnąć zmiany</translation>
     </message>
   </context>
   <context>
@@ -6270,7 +6271,8 @@ Press ESC to undo changes</source>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1971"/>
       <source>Could not save: %1
 %2</source>
-      <translation>Nie można zapisać: %1%2</translation>
+      <translation>Nie można zapisać: %1
+%2</translation>
     </message>
   </context>
   <context>
@@ -6278,7 +6280,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="442"/>
       <source>Threshold</source>
-      <translation>Próg</translation>
+      <translation>Progowanie</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="449"/>
@@ -6309,7 +6311,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1261"/>
       <source> selected</source>
-      <translation> zaznaczony</translation>
+      <translation> zaznaczonych</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
@@ -6331,32 +6333,32 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
       <source>Sorry, I cannot %1 %2</source>
-      <translation>Nie można skopiować %1 do %2</translation>
+      <translation>Nie można %1 %2</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1463"/>
       <source>move</source>
-      <translation>przenieś</translation>
+      <translation>Przenieś</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1474"/>
       <source>create link</source>
-      <translation>utwórz link</translation>
+      <translation>Utwórz link</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1482"/>
       <source>copy</source>
-      <translation>kopiuj</translation>
+      <translation>Kopiuj</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1504"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation>Przenieść %1 pliki do kosza?</translation>
+      <translation>Przenieść %1 plików do kosza?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1506"/>
       <source>Are you sure you want to permanently delete %1 file(s)?</source>
-      <translation>Czy na pewno chcesz trwale usunąć plik(i) %1?</translation>
+      <translation>Czy na pewno chcesz trwale usunąć %1 plików?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1511"/>
@@ -6367,7 +6369,8 @@ Press ESC to undo changes</source>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1535"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation>Nie można usunąć: %1</translation>
+      <translation>Nie można usunąć: 
+%1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1562"/>
@@ -6400,7 +6403,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1905"/>
       <source>Filter Files (Ctrl + F)</source>
-      <translation>Filtruj pliki (Ctrl +F)</translation>
+      <translation>Filtruj pliki (Ctrl + F)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1918"/>
