@@ -17,7 +17,7 @@
 - increment installer version number in `nomacs-setup.wxs`: <?define ProductVersion = "3.7.5"?>
 - double-click `make-installer.bat`
 - check if the newly created installer `noamcs-setup.msi` is signed
-- upload `nomacs-setup.msi` to http://download.nomacs.org/htdocs/
+- upload `nomacs-setup.msi` to https://github.com/nomacs/nomacs/releases/
 - if you think you are ready to triger automated updates:
     - open ssh with nomacs.org
     - ``cd /var/www/version``
@@ -28,11 +28,9 @@
 
 - copy the installer/nomacs.x64/ folder to projects/nomacs/releases and name it `nomacs-3.x.x`
 - copy all files from portable-files to this new folder
-- zip the `nomacs-3.x.x folder`
+- zip the `nomacs-3.x.x folder` and name it `nomacs-portable-win.zip`
 - back-up the installer folder to the release folder
-- upload the `nomacs-3.x.x.zip` to http://download.nomacs.org/htdocs/portable
-- update the index.html accordingly
-- update http://download.nomacs.org/htdocs/versions/index.html
+- upload the `nomacs-portable-win.zip` to https://github.com/nomacs/nomacs/releases/
 
 ### Certificate
 
