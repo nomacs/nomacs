@@ -39,6 +39,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPushButton>
+#include <QGuiApplication>
+#include <QScreen>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -206,7 +208,17 @@ void DkMessageBox::updateSize() {
 	if (!isVisible())
 		return;
 
+	QFontMetrics fm(QApplication::font("QMdiSubWindowTitleBar"));
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 	QSize screenSize = QApplication::desktop()->availableGeometry(QCursor::pos()).size();
+	int textWidth = fm.width(windowTitle()) + 50;
+#else
+	QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
+	QSize screenSize = screen ? screen->size() : QSize(1024, 768);	// diem: be safe
+	int textWidth = fm.horizontalAdvance(windowTitle()) + 50;
+#endif
+
 #if defined(Q_OS_WINCE)
 	// the width of the screen, less the window border.
 	int hardLimit = screenSize.width() - (frameGeometry().width() - geometry().width());
@@ -238,8 +250,7 @@ void DkMessageBox::updateSize() {
 			width = hardLimit;
 	}
 
-	QFontMetrics fm(QApplication::font("QMdiSubWindowTitleBar"));
-	int windowTitleWidth = qMin(fm.width(windowTitle()) + 50, hardLimit);
+	int windowTitleWidth = qMin(textWidth, hardLimit);
 	if (windowTitleWidth > width)
 		width = windowTitleWidth;
 

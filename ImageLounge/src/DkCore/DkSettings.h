@@ -282,6 +282,7 @@ public:
 	struct SlideShow {
 		int filter;
 		float time;
+		bool showPlayer;
 		bool silentFullscreen;
 		QBitArray display;
 		QColor backgroundColor;

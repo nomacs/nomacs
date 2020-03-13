@@ -1328,7 +1328,7 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize& size) const {
 		return DkRotatingRect();
 
 	// pretend it's not here if it is already applied
-	QString applied = getXmpValue("Xmp.crs.crs:AlreadyApplied");
+	QString applied = getXmpValue("Xmp.crs.AlreadyApplied");
 	QString hasCrop = getXmpValue("Xmp.crs.HasCrop");
 	if (applied.compare("true", Qt::CaseInsensitive) == 0 ||	// compare is 0 if the strings are the same
 		hasCrop.compare("true", Qt::CaseInsensitive) != 0)
@@ -1493,7 +1493,7 @@ void DkMetaDataHelper::init() {
 	mFlashModes.insert(0x5f, QObject::tr("Auto, Fired, Red-eye reduction, Return detected"));
 
 	// compression mapping taken from: https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Compression
-	mCompressionModes.insert(1, QObject::tr("Uncomressed"));
+	mCompressionModes.insert(1, QObject::tr("Uncompressed"));
 	mCompressionModes.insert(2, QObject::tr("CCITT 1D"));
 	mCompressionModes.insert(3, QObject::tr("T4/Group 3 Fax"));
 	mCompressionModes.insert(4, QObject::tr("T6/Group 4 Fax"));

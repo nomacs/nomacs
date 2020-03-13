@@ -760,7 +760,9 @@ void DkControlWidget::setFullScreen(bool fullscreen) {
 
 	showWidgetsSettings();
 
-	if (fullscreen &&!mPlayer->isVisible())
+	if (DkSettingsManager::param().slideShow().showPlayer &&
+		fullscreen &&
+		!mPlayer->isVisible())
 		mPlayer->show(3000);
 }
 

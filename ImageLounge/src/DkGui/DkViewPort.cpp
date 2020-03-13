@@ -380,7 +380,7 @@ void DkViewPort::setImage(QImage newImg) {
 	}
 }
 
-void DkViewPort::zoom(double factor, const QPointF& center) {
+void DkViewPort::zoom(double factor, const QPointF& center, bool force) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -393,7 +393,7 @@ void DkViewPort::zoom(double factor, const QPointF& center) {
 		return;
 
 	// reset view & block if we pass the 'image fit to screen' on zoom out
-	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1) {
+	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1 && !force) {
 
 		mBlockZooming = true;
 		mZoomTimer->start(500);
@@ -402,7 +402,7 @@ void DkViewPort::zoom(double factor, const QPointF& center) {
 	}
 
 	// reset view if we pass the 'image fit to screen' on zoom in
-	if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11()*factor > 1) {
+	if (mWorldMatrix.m11() < 1 && mWorldMatrix.m11()*factor > 1 && !force) {
 		
 		resetView();
 		return;
@@ -498,7 +498,7 @@ void DkViewPort::resetView() {
 void DkViewPort::fullView() {
 	
 	QPointF p = mViewportRect.center();
-	zoom(1.0/(mImgMatrix.m11()*mWorldMatrix.m11()), p.toPoint());
+	zoom(1.0/(mImgMatrix.m11()*mWorldMatrix.m11()), p.toPoint(), true);
 	
 	emit zoomSignal(mWorldMatrix.m11()*mImgMatrix.m11() * 100);
 	changeCursor();
@@ -506,6 +506,10 @@ void DkViewPort::fullView() {
 }
 
 void DkViewPort::showZoom() {
+
+	// don't show zoom if we are in fullscreen mode
+	if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
+		return;
 
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", mImgMatrix.m11()*mWorldMatrix.m11()*100);
@@ -1948,7 +1952,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent) : DkViewPort(parent) {
 DkViewPortFrameless::~DkViewPortFrameless() {
 }
 
-void DkViewPortFrameless::zoom(double factor, const QPointF& center) {
+void DkViewPortFrameless::zoom(double factor, const QPointF& center, bool force) {
 
 	if (mImgStorage.isEmpty() || mBlockZooming)
 		return;
@@ -1958,7 +1962,7 @@ void DkViewPortFrameless::zoom(double factor, const QPointF& center) {
 		return;
 
 	// reset view & block if we pass the 'image fit to screen' on zoom out
-	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1) {
+	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1 && !force) {
 
 		mBlockZooming = true;
 		mZoomTimer->start(500);

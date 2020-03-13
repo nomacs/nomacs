@@ -75,7 +75,7 @@ public:
 	virtual ~DkBaseViewPort();
 
 	void zoomConstraints(double minZoom = 0.01, double maxZoom = 100.0);
-	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1));
+	virtual void zoom(double factor = 0.5, const QPointF& center = QPointF(-1,-1), bool force = false);
 	virtual void zoomLeveled(double factor = 0.5, const QPointF& center = QPointF(-1, -1));
 	
 	void setForceFastRendering(bool fastRendering = true) {

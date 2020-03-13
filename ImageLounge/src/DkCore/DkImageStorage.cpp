@@ -73,10 +73,13 @@ QImage DkImage::fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h) {
 	std::unique_ptr<uint32_t[]> data(new uint32_t[bmi.bmiHeader.biSizeImage]);
 
 	if (GetDIBits(hdc, bitmap, 0, h, data.get(), &bmi, DIB_RGB_COLORS)) {
+		
+		auto dp = data.get();
+		
 		// Create image and copy data into image.
 		for (int y=0; y<h; ++y) {
-			void *dest = (void *) image.scanLine(y);
-			void *src = data + y * image.bytesPerLine();
+			void* dest = (void *) image.scanLine(y);
+			void* src = dp + y * image.bytesPerLine();
 			memcpy(dest, src, image.bytesPerLine());
 		}
 	} else {
@@ -1430,8 +1433,8 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, cv::Point2d center, dou
 	mapx = cv::Mat(dsize.height, dsize.width, CV_32F);
 	mapy = cv::Mat(dsize.height, dsize.width, CV_32F);
 
-	float xDist = dst.cols - center.x;
-	float yDist = dst.rows - center.y;
+	double xDist = dst.cols - center.x;
+	double yDist = dst.rows - center.y;
 
 	double radius = std::sqrt(xDist*xDist + yDist*yDist);
 
@@ -1449,14 +1452,14 @@ void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, cv::Point2d center, dou
 	bufa = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 3);
 
 	for (x = 0; x < dsize.width; x++)
-		bufx.ptr<float>()[x] = (float)x - center.x;
+		bufx.ptr<float>()[x] = (float)(x - center.x);
 
 	for (y = 0; y < dsize.height; y++) {
 		float* mx = mapx.ptr<float>(y);
 		float* my = mapy.ptr<float>(y);
 
 		for (x = 0; x < dsize.width; x++)
-			bufy.ptr<float>()[x] = (float)y - center.y;
+			bufy.ptr<float>()[x] = (float)(y - center.y);
 
 		cv::cartToPolar(bufx, bufy, bufp, bufa);
 
@@ -1766,6 +1769,11 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 	}
 
 	QSize s = mImg.size() * scale;
+
+	if (s.height() == 0)
+		s.setHeight(1);
+	if (s.width() == 0)
+		s.setWidth(1);
 
 #ifdef WITH_OPENCV
 	cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
