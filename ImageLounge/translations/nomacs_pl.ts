@@ -1719,7 +1719,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1469"/>
       <source>Fired, Return not detected</source>
-      <translation>Z lampą, odbicie niewykryte</translation>
+      <translation>Z lampą, odbicie nie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1470"/>
@@ -1734,27 +1734,27 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1472"/>
       <source>On, Fired</source>
-      <translation>Wł., lampa użyta</translation>
+      <translation>Wł., z lampą</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1473"/>
       <source>On, Return not detected</source>
-      <translation>Wł. odbicie nie wykryte</translation>
+      <translation>Wł., odbicie nie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1474"/>
       <source>On, Return detected</source>
-      <translation>Wł. odbicie wykryte</translation>
+      <translation>Wł., odbicie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1475"/>
       <source>Off, Did not fire</source>
-      <translation>Wył. lampa nie użyta</translation>
+      <translation>Wył., lampa nie użyta</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1476"/>
       <source>Off, Did not fire, Return not detected</source>
-      <translation>Wył. Lampa nie użyta, odbicie nie wykryte</translation>
+      <translation>Wył., lampa nie użyta, odbicie nie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1477"/>
@@ -1769,7 +1769,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1479"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation>Auto, Z lampą, odbicie nie wykryte</translation>
+      <translation>Auto, z lampą, odbicie nie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1480"/>
@@ -1784,7 +1784,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1482"/>
       <source>Off, No flash function</source>
-      <translation>Wył. bez funkcji lampy błyskowej</translation>
+      <translation>Wył., bez funkcji lampy błyskowej</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1483"/>
@@ -1809,17 +1809,17 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1487"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation>Wł. redukcja czerwonych oczu, odbicie nie wykryte</translation>
+      <translation>Wł., redukcja czerwonych oczu, odbicie nie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1488"/>
       <source>On, Red-eye reduction, Return detected</source>
-      <translation>Wł. redukcja czerwonych oczu, odbicie wykryte</translation>
+      <translation>Wł., redukcja czerwonych oczu, odbicie wykryte</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1489"/>
       <source>Off, Red-eye reduction</source>
-      <translation>Wył, usuwanie czerwonych oczu</translation>
+      <translation>Wył., redukcja czerwonych oczu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1490"/>
@@ -2106,7 +2106,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="82"/>
       <source>Batch Action</source>
-      <translation>Operacja wsadowa</translation>
+      <translation>Operacja na wielu plikach</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="128"/>
@@ -2123,32 +2123,32 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
       <source>transformed</source>
-      <translation>przekształcone</translation>
+      <translation>przekształcono</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="321"/>
       <source>%1 image transformed.</source>
-      <translation>Obraz %1 został przekształcony.</translation>
+      <translation>%1 - obraz przetworzony.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="324"/>
       <source>%1 image resized, scale factor: %2%</source>
-      <translation>%1 obraz zmieniany, współczynnik skali: %2%</translation>
+      <translation>%1 - obraz przeskalowany, skala: %2%</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="326"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation>%1 obraz przeskalowany, nowy rozmiar: %2 px</translation>
+      <translation>%1 - obraz przeskalowany, nowy rozmiar: %2 px</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="329"/>
       <source>%1 image transformed and cropped.</source>
-      <translation>Przetworzono i przycięto %1 obrazów.</translation>
+      <translation>%1 - obraz przetworzono i przycięto </translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="333"/>
       <source>%1 error, could not transform image.</source>
-      <translation>Błąd %1, nie można przekształcić obrazu.</translation>
+      <translation>%1 - błąd, nie można przetworzyć obrazu.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
@@ -2174,7 +2174,7 @@ Please restart nomacs and try again.</source>
       <location filename="../../src/DkCore/DkProcess.cpp" line="429"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="583"/>
       <source>%1 Cannot apply %2.</source>
-      <translation>%1 nie można zastosować %2.</translation>
+      <translation>%1 - nie można zastosować %2.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="435"/>
