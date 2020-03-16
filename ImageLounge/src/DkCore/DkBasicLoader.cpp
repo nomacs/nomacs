@@ -195,6 +195,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 	}
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+	qtFormats << "jpe";	// fixes #435 - thumbnail gets loaded in the RAW loader
 	QString suf = fInfo.suffix().toLower();
 
 	QImage img;
@@ -293,7 +294,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	// add marker to fix broken panorama images from SAMSUNG
 	// see: https://github.com/nomacs/nomacs/issues/254
-	if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive))) {
+	if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg|jpe)", Qt::CaseInsensitive))) {
 
 		// prefer external buffer
 		QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
