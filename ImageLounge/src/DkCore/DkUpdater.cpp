@@ -385,7 +385,7 @@ void DkTranslationUpdater::checkForUpdates() {
 	}
 
 	QUrl url ("http://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language + ".qm");
-	qDebug() << "checking for new translations at " << url;
+	qInfo() << "checking for new translations at " << url;
 	mReply = mAccessManager.get(QNetworkRequest(url));
 	connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
