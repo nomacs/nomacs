@@ -108,3 +108,7 @@ set(NOMACS_LIBS ${DLL_CORE_NAME})
 set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_BINARY_DIR})
 
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
+
+if (UNIX)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/xgd-data")
+endif()
