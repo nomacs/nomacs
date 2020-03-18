@@ -38,6 +38,6 @@
     </screenshots>
 
     <releases>
-        <release version="@NOMACS_VERSION@"/>
+        <release version="@NOMACS_VERSION@" date="@TODAY@"/>
     </releases>
 </component>

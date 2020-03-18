@@ -72,10 +72,6 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE
 # installation
 #  binary
 install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} DESTINATION bin LIBRARY DESTINATION lib${LIB_SUFFIX})
-#  desktop file
-install(FILES nomacs.desktop DESTINATION share/applications)
-#  icon
-install(FILES src/img/nomacs.svg DESTINATION share/pixmaps)
 #  translations
 install(FILES ${NOMACS_QM} DESTINATION "share/nomacs/Image Lounge/translations")
 #  manpage
@@ -84,8 +80,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 else()
     install(FILES Readme/nomacs.1 DESTINATION share/man/man1)
 endif()
-#  appdata
-install(FILES nomacs.appdata.xml DESTINATION share/metainfo/)
 
 # themes
 file(GLOB NMC_THEMES "src/themes/*.css")
@@ -109,6 +103,5 @@ set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOU
 
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
 
-if (UNIX)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/xgd-data")
-endif()
+string(TIMESTAMP TODAY "%Y-%m-%d")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/xgd-data")
