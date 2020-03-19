@@ -1817,6 +1817,7 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager
 	mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
 	mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
 	mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
+	mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
 
 	for (QWidget* w : mMplWidgets)
 		mSettingsLayout->addWidget(w);
@@ -1903,6 +1904,12 @@ void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulato
 
 	if (!mplExt)
 		return;
+	
+	if (!mplExt->widget()) {
+		qCritical() << mpl->name() << "does not have a corresponding UI";
+		Q_ASSERT(mplExt->widget());	// bang
+		return;
+	}
 
 	mSettingsTitle->setText(mplExt->name());
 	mSettingsTitle->show();
@@ -1942,7 +1949,7 @@ void DkBatchManipulatorWidget::selectManipulator() {
 	QAction* action = dynamic_cast<QAction*>(QObject::sender());
 	QSharedPointer<DkBaseManipulator> mpl = mManager.manipulator(action);
 
-	if (mpl)
+	if (mpl && action->isChecked())
 		selectManipulator(mpl);
 }
 
