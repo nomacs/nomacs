@@ -88,7 +88,7 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 								  int forceLoad, int maxThumbSize) {
 	
 	DkTimer dt;
-	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
+	//qDebug() << "[thumb] file: " << filePath;
 
 	// see if we can read the thumbnail from the exif data
 	QImage thumb;
@@ -206,8 +206,8 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 			qWarning() << "Sorry, I could not save the metadata";
 		}
 	}
-	//if (!thumb.isNull())
-	//	qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
+	// if (!thumb.isNull())
+	// 	qInfoClean() << "[thumb] " << fInfo.fileName() << " (" << thumb.width() << " x " << thumb.height() << ") loaded in " << dt << ((exifThumb) ? " from EXIV" : " from File");
 
 	return thumb;
 }
@@ -301,7 +301,14 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	if (forceLoad == force_full_thumb || forceLoad == force_save_thumb || forceLoad == save_thumb)
 		mImg = QImage();
 
-	if (!mImg.isNull() || !mImgExists || mFetching || !DkUtils::hasValidSuffix(getFilePath()))
+	if (!mImg.isNull() || !mImgExists || mFetching)
+		return false;
+
+	// check if we can load the file
+	// though if it might seem over engineered: it is much faster cascading it here
+	if (!DkUtils::hasValidSuffix(getFilePath()) && 
+		!QFileInfo(getFilePath()).suffix().isEmpty() &&
+		!DkUtils::isValid(getFilePath()))
 		return false;
 
 	// we have to do our own bool here

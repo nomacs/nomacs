@@ -1901,13 +1901,25 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString& dirPath, QSt
 #else
 
 	// true file list
-	QDir tmpDir = dirPath;
+	QDir tmpDir(dirPath);
 	tmpDir.setSorting(QDir::LocaleAware);
 	QStringList fileList = tmpDir.entryList(DkSettingsManager::param().app().browseFilters);
-	qDebug() << fileList;
 
 #endif
 
+	// append files with no suffix
+	QDir cDir(dirPath);
+	QStringList allFiles = cDir.entryList();
+	QStringList noSuffixFiles;
+
+	for (const QString& name : allFiles) {
+		
+		if (!name.contains(".") && DkUtils::isValid(QFileInfo(dirPath, name))) {
+			fileList << name;
+		}
+	}
+
+	// remove files that contain ignore keywords
 	for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
 		QRegExp exp = QRegExp("^((?!" + ignoreKeywords[idx] + ").)*$");
 		exp.setCaseSensitivity(Qt::CaseInsensitive);

@@ -2435,7 +2435,6 @@ QList<DkRecentDir> DkRecentDirManager::genFileLists(const QStringList & filePath
 		}
 	}
 
-
 	// TODO: here is the issue reported in #279
 	// the map re-sorts the entries w.r.t to the path
 	// create recent directories

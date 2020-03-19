@@ -224,7 +224,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 
 	// default Qt loader
 	// here we just try those formats that are officially supported
-	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str())) {
+	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str()) || suf.isEmpty()) {
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		if (!ba || ba->isEmpty())
@@ -1229,6 +1229,9 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
 		return false;
 
 	QString suffix = fInfo.suffix();
+
+	if (suffix.isEmpty())
+		return false;
 
 	for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
 
