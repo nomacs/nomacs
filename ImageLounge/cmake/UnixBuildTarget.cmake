@@ -103,5 +103,9 @@ set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOU
 
 configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
 
+if (NOT DEFINED ${CMAKE_INSTALL_DATAROOTDIR})
+	set(CMAKE_INSTALL_DATAROOTDIR "share") # -> will be installed in /usr/local/share
+endif()
+
 string(TIMESTAMP TODAY "%Y-%m-%d")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/xgd-data")
