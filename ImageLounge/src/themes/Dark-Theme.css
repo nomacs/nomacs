@@ -29,7 +29,7 @@ nmc--DkBatchTabButton {
 
 QPushButton#DkTabEntryWidget:checked,
 nmc--DkBatchTabButton:checked {
-	background-color: rgba(0, 0, 0, 80);
+	background-color: rgba(80, 80, 80, 80);
 	border: none;	/* clear border styles first */
 	border-left: 4px solid HIGHLIGHT_COLOR;
 }
@@ -167,10 +167,6 @@ QListWidget#historyList::item:disabled {
 	color: #aaa;
 }
 
-nmc--DkGroupWidget {
-	color: #f00;
-}
-
 QLabel#subTitle,
 nmc--DkGroupWidget QCheckBox,
 nmc--DkGroupWidget QRadioButton,
@@ -213,8 +209,8 @@ nmc--DkRecentFilesWidget QScrollArea {
 }
 
 nmc--DkRecentDirWidget {
-	background-color: rgba(0, 0, 0, 200);
-	border: 1px solid rgba(0, 0, 0, 255);
+	background-color: rgba(80, 80, 80, 200);
+	border: 1px solid rgba(80, 80, 80, 255);
 }
 
 nmc--DkRecentDirWidget:hover {
@@ -254,7 +250,7 @@ QTabBar::close-button:hover {
 }
 
 nmc--DkThumbPreviewLabel[empty="true"] {
-	background-color: #333;
+	background-color: BACKGROUND_COLOR;
 }
 
 QLabel#DkSplashInfoLabel {
