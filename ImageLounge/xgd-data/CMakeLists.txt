@@ -9,5 +9,5 @@ install(FILES org.nomacs.ImageLounge.desktop
 	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 
 install(FILES ../nomacs.svg
-	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/share/icons/hicolor/scalable/apps
+	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps
 	RENAME org.nomacs.ImageLounge.svg)
