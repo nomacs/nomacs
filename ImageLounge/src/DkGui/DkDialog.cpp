@@ -147,7 +147,7 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
 		"This program is licensed under GNU General Public License v3<br>"
-		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2015<br><br>"
+		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2020<br><br>"
 
 		"Press [ESC] to exit");
 
