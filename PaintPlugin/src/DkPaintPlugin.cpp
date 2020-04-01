@@ -118,15 +118,15 @@ QLineF getShorterLine(QPainterPath line, const int thickness) {
 }
 
 // blur selected rectangle region
-void getBlur(QPainterPath rect, QPainter *painter, QPixmap &pixmap, int radius){
-	auto pixelRatio = pixmap.devicePixelRatio();
+void getBlur(QPainterPath rect, QPainter *painter, QImage &img, int radius){
+	//auto pixelRatio = pixmap.devicePixelRatio();
 	QRectF selection = rect.boundingRect();
-	QRect selectionScaled = selection.toRect();
+	QRect selectionScaled = QRect(selection.topLeft().toPoint(), selection.bottomRight().toPoint());
 
 	QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
     blur->setBlurRadius(radius);
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem (
-                pixmap.copy(selectionScaled));
+                QPixmap::fromImage(img).copy(selectionScaled));
     item->setGraphicsEffect(blur);
 
     QGraphicsScene scene;
@@ -450,8 +450,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 				QImage img = viewport->getImage();
 				//QPixmap pixmap = QPixmap::fromImage(img).copy();
-				QPixmap pixmap = QPixmap::fromImage(img).copy(QRect(paths.at(idx).boundingRect().topLeft().toPoint(), paths.at(idx).boundingRect().bottomRight().toPoint()));
-				getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width());
+				getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width());
 			}
 		}
 		else
@@ -492,8 +491,7 @@ QImage DkPaintViewPort::getPaintedImage() {
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else if(pathsMode.at(idx) == mode_blur){
 						//QPixmap pixmap = QPixmap::fromImage(img).copy();
-						QPixmap pixmap = QPixmap::fromImage(img).copy(QRect(paths.at(idx).boundingRect().topLeft().toPoint(), paths.at(idx).boundingRect().bottomRight().toPoint()));
-						getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width()*5);
+						getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width()*5);
 					}
 					else
 						painter.drawPath(paths.at(idx));
