@@ -491,7 +491,7 @@ QImage DkPaintViewPort::getPaintedImage() {
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else if(pathsMode.at(idx) == mode_blur){
 						//QPixmap pixmap = QPixmap::fromImage(img).copy();
-						getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width()*5);
+						getBlur(paths.at(idx), &painter, img, pathsPen.at(idx).width());
 					}
 					else
 						painter.drawPath(paths.at(idx));
