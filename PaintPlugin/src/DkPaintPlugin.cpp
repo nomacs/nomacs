@@ -449,7 +449,8 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 			if(parent()){
 				nmc::DkBaseViewPort* viewport = dynamic_cast<nmc::DkBaseViewPort*>(parent());
 				QImage img = viewport->getImage();
-				QPixmap pixmap = QPixmap::fromImage(img).copy();
+				//QPixmap pixmap = QPixmap::fromImage(img).copy();
+				QPixmap pixmap = QPixmap::fromImage(img).copy(QRect(paths.at(idx).boundingRect().topLeft().toPoint(), paths.at(idx).boundingRect().bottomRight().toPoint()));
 				getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width());
 			}
 		}
@@ -490,7 +491,8 @@ QImage DkPaintViewPort::getPaintedImage() {
 					else if(pathsMode.at(idx) == mode_square_fill || pathsMode.at(idx) == mode_text)
 						painter.fillPath(paths.at(idx), QBrush(pathsPen.at(idx).color()));
 					else if(pathsMode.at(idx) == mode_blur){
-						QPixmap pixmap = QPixmap::fromImage(img).copy();
+						//QPixmap pixmap = QPixmap::fromImage(img).copy();
+						QPixmap pixmap = QPixmap::fromImage(img).copy(QRect(paths.at(idx).boundingRect().topLeft().toPoint(), paths.at(idx).boundingRect().bottomRight().toPoint()));
 						getBlur(paths.at(idx), &painter, pixmap, pathsPen.at(idx).width());
 					}
 					else
