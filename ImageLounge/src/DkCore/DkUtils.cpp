@@ -585,7 +585,19 @@ void DkUtils::mSleep(int ms) {
 
 bool DkUtils::exists(const QFileInfo& file, int waitMs) {
 
-	QFuture<bool> future = QtConcurrent::run(&DkUtils::checkFile, file);
+	QFuture<bool> future = QtConcurrent::run(
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+		// TODO: if we have a lot of mounted files (windows) in the history
+        // we can potentially exhaust the pool & image loading has
+        // to wait for these exists
+        // I now only moved it to the thumbnail pool which does
+        // not fix this issue at all (now thumbnail preview stalls)
+        // we could
+        // - create a dedicated pool for exists
+        // - create a dedicated pool for image loading
+        DkThumbsThreadPool::pool(),		// hook it to the thumbs pool
+#endif
+		&DkUtils::checkFile, file);
 
 	for (int idx = 0; idx < waitMs; idx++) {
 		if (future.isFinished())
