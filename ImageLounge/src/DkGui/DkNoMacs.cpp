@@ -1199,14 +1199,16 @@ void DkNoMacs::openQuickLaunch() {
 		// add all actions
 		mQuickAccess->addActions(DkActionManager::instance().allActions());
 		
-		connect(tb->getQuickAccess(), SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)));
 		connect(mQuickAccess, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 	}
-	
+
+	if (tb)
+		connect(tb->getQuickAccess(), SIGNAL(executeSignal(const QString&)), mQuickAccess, SLOT(execute(const QString&)), Qt::UniqueConnection);
+
 	mQuickAccess->addDirs(DkSettingsManager::param().global().recentFolders);
 	mQuickAccess->addFiles(DkSettingsManager::param().global().recentFiles);
 
-	if (tb->isVisible())
+	if (tb && tb->isVisible())
 		tb->setQuickAccessModel(mQuickAccess->getModel());
 	else {
 		
