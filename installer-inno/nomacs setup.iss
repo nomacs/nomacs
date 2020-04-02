@@ -110,10 +110,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode; Components: main
 
 [Files]
-Source: "{#MyAppBaseDir}\bin\license\LICENSE.GPLv2"; DestDir: "{app}\bin"; Flags: dontcopy;
-Source: "{#MyAppBaseDir}\bin\license\LICENSE.GPLv3"; DestDir: "{app}\bin"; Flags: dontcopy;
-Source: "{#MyAppBaseDir}\bin\license\LICENSE.LGPL"; DestDir: "{app}\bin"; Flags: dontcopy;
-Source: "{#MyAppBaseDir}\bin\license\LICENSE.OPENCV"; DestDir: "{app}\bin"; Flags: dontcopy;
 Source: "{#MyAppBaseDir}\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
 Source: "{#MyAppBaseDir}\bin\settings.ini"; DestDir: "{app}\bin"; Flags: deleteafterinstall; Components: main
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -411,88 +407,6 @@ Root: HKA; Subkey: "Software\Classes\nomacs.xpm.3\shell\open\command"; ValueType
 Filename: "{cmd}"; Parameters: "/C ""taskkill /im nomacs.exe /f /t"; Flags: runhidden
 
 [Code]
-const
-  maxLicenseCount = 4;
-var       
-  customLicenses: array[0..maxLicenseCount-1] of string;
-  CustomLicensePage: array[0..maxLicenseCount-1] of TOutputMsgMemoWizardPage;
-  CustomLicenseAcceptedRadio: array[0..maxLicenseCount-1] of TRadioButton;
-  CustomLicenseNotAcceptedRadio: array[0..maxLicenseCount-1] of TRadioButton;
-  currentLicense: integer;
-procedure CheckCustomLicenseAccepted(Sender: TObject);
-begin 
-  WizardForm.NextButton.Enabled := CustomLicenseAcceptedRadio[currentLicense].Checked;
-end;
-procedure copyTRadioButton(var a: TRadioButton;const b: TRadioButton);
-begin
-  a.Caption := b.Caption;
-  a.Left := b.Left;
-  a.Top := b.Top;
-  a.Width := b.Width;
-  a.Height := b.Height;
-  a.Hint := b.Hint;
-  a.Align := b.Align;
-  a.ClientHeight := b.ClientHeight;
-  a.ClientWidth := b.ClientWidth;
-  a.ShowHint := b.ShowHint;
-  a.Visible := b.Visible;
-  a.Enabled := b.Enabled;
-  a.Cursor := b.Cursor;
-end;
-function CloneLicenseRadioButton(Source: TRadioButton): TRadioButton;
-begin
-  Result := TRadioButton.Create(WizardForm);
-  Result.Parent := CustomLicensePage[currentLicense].Surface;
-  copyTRadioButton(Result,Source);
-  Result.OnClick := @CheckCustomLicenseAccepted;
-end;
-procedure InitializeWizard();
-var
-  LicenseFilePath: string;
-begin    
-  customLicenses[0]:='LICENSE.GPLv2';
-  customLicenses[1]:='LICENSE.GPLv3';
-  customLicenses[2]:='LICENSE.LGPL';
-  customLicenses[3]:='LICENSE.OPENCV';
-  for currentLicense:=0 to maxLicenseCount-1 do
-  begin
-    if customLicenses[currentLicense]='' then
-      break;
-    CustomLicensePage[currentLicense] := CreateOutputMsgMemoPage(
-      wpLicense, SetupMessage(msgWizardLicense), SetupMessage(msgLicenseLabel),
-      SetupMessage(msgLicenseLabel3), ''
-    );
-    CustomLicensePage[currentLicense].RichEditViewer.Height :=
-      WizardForm.LicenseMemo.Height;
-    ExtractTemporaryFile(customLicenses[currentLicense]);
-    LicenseFilePath := ExpandConstant('{tmp}\' + customLicenses[currentLicense]);
-    CustomLicensePage[currentLicense].RichEditViewer.Lines.LoadFromFile(LicenseFilePath);
-    DeleteFile(LicenseFilePath);
-    CustomLicenseAcceptedRadio[currentLicense] :=
-      CloneLicenseRadioButton(WizardForm.LicenseAcceptedRadio);
-    CustomLicenseNotAcceptedRadio[currentLicense] :=
-      CloneLicenseRadioButton(WizardForm.LicenseNotAcceptedRadio);
-    CustomLicenseAcceptedRadio[currentLicense].Checked := false;
-    CustomLicenseNotAcceptedRadio[currentLicense].Checked := true;
-  end;
-end;
-procedure CurPageChanged(CurPageID: Integer);
-var i:integer;
-begin
-  for i:=0 to maxLicenseCount-1 do
-  begin
-    if customLicenses[i]='' then
-      break;
-    if CurPageID = CustomLicensePage[i].ID then
-      begin
-        currentLicense:=i;
-        copyTRadioButton(CustomLicenseAcceptedRadio[i],WizardForm.LicenseAcceptedRadio);
-        copyTRadioButton(CustomLicenseNotAcceptedRadio[i],WizardForm.LicenseNotAcceptedRadio);
-        CheckCustomLicenseAccepted(nil);
-      end;
-  end;
-end;
-
 function GetMsgFullInstallation(Value: string): string;
 begin
   Result := SetupMessage(msgFullInstallation);
