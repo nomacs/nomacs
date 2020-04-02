@@ -191,7 +191,7 @@ NMC_COPY_FILES()
 
 if(UNIX AND ENABLE_PLUGINS)
 
-	if (NOT DEFINED ${PLUGINS_DIR})
+	if (NOT EXISTS ${PLUGINS_DIR})
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 		message(STATUS "setting plugins dir")
 	else ()
@@ -201,7 +201,7 @@ if(UNIX AND ENABLE_PLUGINS)
 	if (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
 	elseif (NOT EXISTS ${PLUGINS_DIR} AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
-		# set the snapcraft dir
+		# set the snapcraft/flathub dir
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
 	endif ()
 
