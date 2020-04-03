@@ -16,7 +16,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="205"/>
       <source>Picasa Ph&amp;oto Viewer</source>
-      <translation>Picasa F&amp;oto Görüntüleyici</translation>
+      <translation>Picasa F&amp;otoğraf Görüntüleyici</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="216"/>
@@ -26,7 +26,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="226"/>
       <source>&amp;Explorer</source>
-      <translation>&amp;Explorer</translation>
+      <translation>&amp;Kâşif</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="364"/>
@@ -41,13 +41,13 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="429"/>
       <source>S&amp;ort</source>
-      <translation>Sırala</translation>
+      <translation>S&amp;ırala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="443"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="669"/>
       <source>&amp;View</source>
-      <translation>Görünüm</translation>
+      <translation>&amp;Görünüm</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="501"/>
@@ -69,7 +69,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="541"/>
       <source>Tool&amp;bars</source>
-      <translation>Araç çubukları</translation>
+      <translation>Araç&amp;çubukları</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="572"/>
@@ -89,7 +89,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="615"/>
       <source>&amp;Synchronize</source>
-      <translation>&amp;Eşzamanlama</translation>
+      <translation>&amp;Eşleştirme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="958"/>
@@ -99,17 +99,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="960"/>
       <source>Open an image</source>
-      <translation>Bir resim açın</translation>
+      <translation>Bir görüntü açın</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="962"/>
       <source>Open &amp;Directory</source>
-      <translation>&amp;Dizin Aç</translation>
+      <translation>Rehber &amp;Aç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="964"/>
       <source>Open a directory and load its first image</source>
-      <translation>Dizini ilk resimle aç</translation>
+      <translation>Bir dizin açın ve ilk görüntüsünü yükleyin</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="966"/>
@@ -119,7 +119,8 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="967"/>
       <source>Open a texfile containing a list of filepaths, and open tabs for them</source>
-      <translation>Dosya yollarının listesini içeren bir metin dosyası açın ve onlar için sekmeler açın.</translation>
+      <translation>Dosya yollarının listesini içeren bir metin dosyası açın,
+ve onlar için sekmeleri açın</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="969"/>
@@ -129,12 +130,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="976"/>
       <source>&amp;Manage Applications</source>
-      <translation>Uygulamaları &amp;Yönet</translation>
+      <translation>&amp;Uygulamaları Yönet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="977"/>
       <source>Manage Applications which are Automatically Opened</source>
-      <translation>Otomatik açılan uygulamaları yönet</translation>
+      <translation>Otomatik Olarak Açılan Uygulamaları Yönet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="980"/>
@@ -144,7 +145,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="983"/>
       <source>Rename an image</source>
-      <translation>Resmi yeniden adlandır</translation>
+      <translation>Görüntüyü yeniden adlandır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="985"/>
@@ -154,7 +155,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="987"/>
       <source>Go To an image</source>
-      <translation>Resme git</translation>
+      <translation>Görüntüye git</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="989"/>
@@ -164,7 +165,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="991"/>
       <source>Save an image</source>
-      <translation>Resmi Kaydet</translation>
+      <translation>Görüntüyü Kaydet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
@@ -174,12 +175,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
       <source>Save an image as</source>
-      <translation>Resmi farklı kaydet</translation>
+      <translation>Görüntüyü farklı kaydet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation type="unfinished">Sa&amp;ve a Copy</translation>
+      <translation>Bir Kopya Kaydet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
@@ -194,17 +195,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1001"/>
       <source>Save a newline separated list of the filenames of the open tabs</source>
-      <translation>Açık sekmelerin dosya isimlerinin yeni satır(/n) ile ayrılmış listesini kaydet</translation>
+      <translation>Açık sekmelerin dosya adlarının yeni satırla ayrılmış bir listesini kaydetme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
       <source>&amp;Save for Web</source>
-      <translation>Web için kaydet</translation>
+      <translation>&amp;Web için kaydet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1004"/>
       <source>Save an Image for Web Applications</source>
-      <translation>Web Uygulamaları için kaydet</translation>
+      <translation>Web Uygulamaları için Görüntüyü Kaydet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1006"/>
@@ -214,7 +215,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1008"/>
       <source>Print an image</source>
-      <translation>Bir resim yazdır</translation>
+      <translation>Bir görüntü yazdır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1010"/>
@@ -229,7 +230,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1016"/>
       <source>&amp;Reload File</source>
-      <translation>Dosyayı tekrar yükle</translation>
+      <translation>&amp;Dosyayı tekrar yükle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1019"/>
@@ -239,12 +240,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1021"/>
       <source>Ne&amp;xt File</source>
-      <translation>Son&amp;raki dosya</translation>
+      <translation>Son&amp;raki Dosya</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1024"/>
       <source>Load next image</source>
-      <translation>Sonraki resmi yükle</translation>
+      <translation>Sonraki görüntüyü yükle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1026"/>
@@ -254,22 +255,22 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1029"/>
       <source>Load previous file</source>
-      <translation>Önceki dosya yükleyin</translation>
+      <translation>Önceki dosyayı yükle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1031"/>
       <source>St&amp;art New Instance</source>
-      <translation>Yeni Örneği Başlangıç</translation>
+      <translation>Yeni Örneği Baş&amp;lat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1033"/>
       <source>Open file in new instance</source>
-      <translation>Yeni örneği açık dosya</translation>
+      <translation>Dosyayı yeni örnekte aç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1035"/>
       <source>St&amp;art Private Instance</source>
-      <translation>Ö&amp;zel örnek</translation>
+      <translation>Özel Örnek Baş&amp;lat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1037"/>
@@ -285,17 +286,17 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1041"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1392"/>
       <source>Find an image</source>
-      <translation>Resmi bul</translation>
+      <translation>Görüntü bul</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1043"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation>Var&amp;sayılan tarama klasörü</translation>
+      <translation>Var&amp;sayılan Tarama Klasörü</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1044"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation>Klasör ve Alt Klasörler adımı</translation>
+      <translation>Klasör ve Alt Klasörler Arasında Geçiş</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1048"/>
@@ -310,7 +311,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1054"/>
       <source>by &amp;Filename</source>
-      <translation>&amp;Dosya adınca</translation>
+      <translation>&amp;Dosya adına göre</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1056"/>
@@ -320,22 +321,22 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1060"/>
       <source>by Date &amp;Created</source>
-      <translation>tarihi &amp;Düzenlenme</translation>
+      <translation>Oluşturulma &amp;tarihe göre</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1062"/>
       <source>Sort by Date Created</source>
-      <translation>Düzenlenme Tarihine Göre Sırala</translation>
+      <translation>Oluşturma Tarihine Göre Sırala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1066"/>
       <source>by Date Modified</source>
-      <translation>değiştirilme tarihi</translation>
+      <translation>Değiştirilme Tarihine Göre</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1068"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Son değiştirilmeye göre sırala</translation>
+      <translation>Son Değiştirilme Tarihine Göre Sırala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1072"/>
@@ -345,7 +346,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1074"/>
       <source>Sort in Random Order</source>
-      <translation>Rastgele sırala</translation>
+      <translation>Rastgele Sırala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1078"/>
@@ -355,7 +356,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1080"/>
       <source>Sort in Ascending Order</source>
-      <translation>Artan düzende sırala</translation>
+      <translation>Artan Sıralama</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1084"/>
@@ -365,7 +366,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1086"/>
       <source>Sort in Descending Order</source>
-      <translation>Azalan düzende sırala</translation>
+      <translation>Azalan Sıralama</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1093"/>
@@ -375,7 +376,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1096"/>
       <source>rotate the image 90%1 clockwise</source>
-      <translation>görüntüyü 90%1 saat yönünde döndür</translation>
+      <translation>Görüntüyü 90%1 saat yönünde döndür</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1098"/>
@@ -395,17 +396,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1104"/>
       <source>rotate the image by 180%1</source>
-      <translation>180%1 oranda döndür</translation>
+      <translation>görüntüyü 180%1 döndür</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1106"/>
       <source>&amp;Undo</source>
-      <translation>&amp;Gerial</translation>
+      <translation>&amp;Geri al</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1109"/>
       <source>Undo Last Action</source>
-      <translation>Son eylemi geri al</translation>
+      <translation>Son Eylemi Geri Al</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1111"/>
@@ -415,7 +416,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1114"/>
       <source>Redo Last Action</source>
-      <translation>Son eylemi yinele</translation>
+      <translation>Son Eylemi Yeniden Uygula</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1116"/>
@@ -427,12 +428,12 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1119"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1124"/>
       <source>copy image</source>
-      <translation>resmi kopyala</translation>
+      <translation>görüntüyü kopyala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1121"/>
       <source>Copy &amp;Buffer</source>
-      <translation>&amp;Arabelleği Kopyala</translation>
+      <translation>&amp;Tamponu Kopyala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1126"/>
@@ -442,7 +443,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1129"/>
       <source>copy pixel color value as HEX</source>
-      <translation>piksel rengini HEX olarak kopyala</translation>
+      <translation>piksel renk değerini HEX olarak kopyala</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1134"/>
@@ -453,7 +454,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1137"/>
       <source>paste image</source>
-      <translation>resmi yapıştır</translation>
+      <translation>görüntüyü yapıştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1139"/>
@@ -464,7 +465,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1142"/>
       <source>delete current fileInfo</source>
-      <translation>mevcut dosya bilgisini sil</translation>
+      <translation>geçerli dosya bilgisini sil</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1144"/>
@@ -474,7 +475,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1146"/>
       <source>lets you customize your keyboard shortcuts</source>
-      <translation>klavye kısayollarını özelleştirebilmenizi sağlar</translation>
+      <translation>klavye kısayollarını özelleştirmenizi sağlar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1148"/>
@@ -484,7 +485,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1150"/>
       <source>settings</source>
-      <translation>Ayarlar</translation>
+      <translation>ayarlar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1153"/>
@@ -494,42 +495,42 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1156"/>
       <source>open image manipulation toolbox</source>
-      <translation>görüntü manipülasyon aracını aç</translation>
+      <translation>görüntü manipülasyon araç kutusunu aç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1159"/>
       <source>R&amp;esize Image</source>
-      <translation>Resmi öl&amp;çekle</translation>
+      <translation>&amp;Görüntü Yeniden Boyutlandır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1162"/>
       <source>resize the current image</source>
-      <translation>mevcut görüntüyü ölçekle</translation>
+      <translation>mevcut görüntüyü yeniden boyutlandır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1164"/>
       <source>Cr&amp;op Image</source>
-      <translation>Resmi Kır&amp;p</translation>
+      <translation>Görüntüyü Kır&amp;p</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1167"/>
       <source>cut the current image</source>
-      <translation>mevcut resmi kes</translation>
+      <translation>mevcut görüntüyü kes</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1173"/>
       <source>Show &amp;Menu</source>
-      <translation>Göster &amp;Menü</translation>
+      <translation>&amp;Menüyü Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1174"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Menüyü gizler ve ALT ile tekrar gösterir</translation>
+      <translation>Menüyü Gizler ve ALT ile Tekrar Gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1177"/>
       <source>Tool&amp;bar</source>
-      <translation>Araç &amp;çubuğu</translation>
+      <translation>Araç&amp;çubuğu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1179"/>
@@ -549,32 +550,32 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1187"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Yapay Renk İşlevi</translation>
+      <translation>&amp;Suni Renk Görevi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1189"/>
       <source>Show Pseudocolor Function</source>
-      <translation>Yapay Renk İşlevini Göster</translation>
+      <translation>Suni Renk Görevini Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1193"/>
       <source>O&amp;verview</source>
-      <translation>Gene&amp;lbakış</translation>
+      <translation>G&amp;enel bakış</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1195"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Yakınlaştırma Genel Bakışını Gösterir</translation>
+      <translation>Yakınlaştırmaya Genel Bakışı Gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1199"/>
       <source>Pla&amp;yer</source>
-      <translation>Oynatıcı</translation>
+      <translation>Oy&amp;natıcı</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1201"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Slayt Gösterisi Player gösterir</translation>
+      <translation>Slayt Gösterisi Oynatıcısını Gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1204"/>
@@ -589,12 +590,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1210"/>
       <source>File &amp;Explorer</source>
-      <translation>Dosya Gezgini</translation>
+      <translation>Dosya &amp;Kaşifi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1212"/>
       <source>Show File Explorer</source>
-      <translation>Göster Dosya Gezgini</translation>
+      <translation>Dosya Kaşifini Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1215"/>
@@ -604,12 +605,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1217"/>
       <source>Show Metadata Info</source>
-      <translation>Üstveri Bilgisini Göster</translation>
+      <translation>Üst Veri Bilgisini Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1220"/>
       <source>&amp;Thumbnails</source>
-      <translation>Küçük &amp;Resimler</translation>
+      <translation>&amp;Küçük Resimler</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1222"/>
@@ -619,32 +620,32 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1225"/>
       <source>&amp;Thumbnail Preview</source>
-      <translation>Küçük Re&amp;sim Önizlemesi</translation>
+      <translation>Kü&amp;çük Resim Ön izleme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1227"/>
       <source>Show Thumbnails Preview</source>
-      <translation>Küçük Resim Önizlemelerini Gösterir</translation>
+      <translation>Küçük Resim Ön izlemelerini Gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1230"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Dosya Kaydırma Çubuğu</translation>
+      <translation>&amp;Klasör Kaydırma Çubuğu</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1231"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Dosya Kaydırma Çubuğunu Göster</translation>
+      <translation>Klasör Kaydırma Çubuğunu Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation type="unfinished">&amp;Metadata Ribbon</translation>
+      <translation>&amp;Üst Veri Şeridi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1236"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Üstveri Panelini Gösterir</translation>
+      <translation>Üst veri Panelini Gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1239"/>
@@ -679,12 +680,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1254"/>
       <source>Edit &amp;History</source>
-      <translation>Düzenlemeler Geç&amp;mişi</translation>
+      <translation>&amp;Geçmişi Düzenle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1255"/>
       <source>Shows the edit history</source>
-      <translation>Düzenlemeler Geçmişini Gösterir</translation>
+      <translation>Düzenleme geçmişini gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
@@ -699,7 +700,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1267"/>
       <source>New &amp;Tab</source>
-      <translation>Yen&amp;i Sekme</translation>
+      <translation>Ye&amp;ni Sekme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1269"/>
@@ -709,12 +710,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1271"/>
       <source>&amp;Close Tab</source>
-      <translation>Se&amp;kmeyi Kapat</translation>
+      <translation>Sek&amp;meyi Kapat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1273"/>
       <source>Close current tab</source>
-      <translation>Mevcut sekmeyi kapatır</translation>
+      <translation>Mevcut sekmeyi kapat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1275"/>
@@ -739,12 +740,13 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1282"/>
       <source>F&amp;irst Tab</source>
-      <translation>İlk sekme</translation>
+      <translation>İlk&amp; sekme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1283"/>
       <source>Switch to first tab</source>
-      <translation>İlk sekmeye geçiş yap</translation>
+      <translation>İlk sekmeye geç
+</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1285"/>
@@ -754,7 +756,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1287"/>
       <source>Switch to previous tab</source>
-      <translation>Önceki seçmeye geçiş yapar</translation>
+      <translation>Önceki seçmeye geçiş yap</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1289"/>
@@ -764,27 +766,27 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1290"/>
       <source>Go to tab by index</source>
-      <translation>Indekse göre sekmeye git</translation>
+      <translation>Dizine göre sekmeye git</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1292"/>
       <source>&amp;Next Tab</source>
-      <translation>S&amp;onraki Sekme</translation>
+      <translation>Son&amp;raki Sekme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1294"/>
       <source>Switch to next tab</source>
-      <translation>Sonraki sekmeye geçiş yapar</translation>
+      <translation>Sonraki sekmeye geç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1296"/>
       <source>La&amp;st Tab</source>
-      <translation>Son sekme</translation>
+      <translation>So&amp;n Sekme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1297"/>
       <source>Switch to last tab</source>
-      <translation>Son sekmeye geçiş yap</translation>
+      <translation>Son sekmeye geç</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1302"/>
@@ -799,53 +801,53 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1306"/>
       <source>&amp;Zoom to Fit</source>
-      <translation>&amp;Sığdırmak için Yakınlaş</translation>
+      <translation>&amp;Sığacak Şekilde Yakınlaştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1308"/>
       <source>Shows the initial view (no zooming)</source>
-      <translation>Başlangıç görünümü gösterir (yakınlaştırma yapılmamış görünüm)</translation>
+      <translation>Başlangıç görünümü gösterir (yakınlaştırma yok)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1310"/>
       <source>Show &amp;100%</source>
-      <translation>%100'ünü G&amp;öster</translation>
+      <translation>%100 &amp;Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1312"/>
       <source>Shows the image at 100%</source>
-      <translation>Görüntüyü %100'de gösterir</translation>
+      <translation>Görüntüyü% 100 oranında gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1314"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1475"/>
       <source>Zoom &amp;In</source>
-      <translation>&amp;Yakınlaş</translation>
+      <translation>&amp;Yakınlaştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1316"/>
       <source>zoom in</source>
-      <translation>yakınlaştırır</translation>
+      <translation>yakınlaştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1318"/>
       <source>&amp;Zoom Out</source>
-      <translation>&amp;Uzaklaş</translation>
+      <translation>&amp;Uzaklaştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1320"/>
       <source>zoom out</source>
-      <translation>uzaklaştırır</translation>
+      <translation>uzaklaştır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1322"/>
       <source>&amp;Anti Aliasing</source>
-      <translation>Ke&amp;nar Yumuşatma</translation>
+      <translation>Kenar Yu&amp;muşatma</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1324"/>
       <source>if checked images are smoother</source>
-      <translation>işaretlendiğinde görüntülerin keskinliği giderilir</translation>
+      <translation>işaretlendiğinde görüntüleri pürüssüzleştirir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1328"/>
@@ -855,54 +857,54 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1330"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>işaretlendiğinde, şeffaf nesneler yerine bir desen gösterilecek</translation>
+      <translation>işaretlenirse, saydam nesneler için bir desen görüntülenir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1334"/>
       <source>&amp;Frameless</source>
-      <translation>Çe&amp;rçevesiz</translation>
+      <translation>&amp;Çerçevesiz</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1336"/>
       <source>shows a frameless window</source>
-      <translation>pencereyi çerçeve olmadan gösterir</translation>
+      <translation>çerçevesiz bir pencere gösterir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1340"/>
       <source>&amp;Change Opacity</source>
-      <translation>Matlığı &amp;Değiştir</translation>
+      <translation>Opaklık &amp;Değiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1342"/>
       <source>change the window opacity</source>
-      <translation>pencere matlığını değiştirir</translation>
+      <translation>pencere opaklığını değiştirme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1344"/>
       <source>Opacity &amp;Up</source>
-      <translation>Matlığı Ar&amp;ttır</translation>
+      <translation>Opaklığı Ar&amp;tır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1346"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1350"/>
       <source>changes the window opacity</source>
-      <translation>pencere matlığını değiştirir</translation>
+      <translation>pencere opaklığını değiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1348"/>
       <source>Opacity &amp;Down</source>
-      <translation>Matlığı A&amp;zalt</translation>
+      <translation>Opaklığı Az&amp;alt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1352"/>
       <source>To&amp;ggle Opacity</source>
-      <translation>Matlığı D&amp;eğiştir</translation>
+      <translation>Opaklığı D&amp;eğiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1354"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1445"/>
       <source>toggle the window opacity</source>
-      <translation>pencere matlığını değiştirir</translation>
+      <translation>pencere opaklığını değiştirir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1356"/>
@@ -912,17 +914,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1358"/>
       <source>lock the window</source>
-      <translation>pencereyi kilitler</translation>
+      <translation>pencereyi kilitle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1362"/>
       <source>&amp;Toggle Slideshow</source>
-      <translation>&amp;Slayt Gösterisini Aç / Kapat</translation>
+      <translation>&amp;Slayt Gösterisini Değiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1363"/>
       <source>Start/Pause the slideshow</source>
-      <translation>Slayt gösterisini başlatır/durdurur</translation>
+      <translation>Slayt gösterisini başlat /duraklat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1366"/>
@@ -932,17 +934,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1367"/>
       <source>pause the current movie</source>
-      <translation>mevcut filmi duraklatır</translation>
+      <translation>geçerli filmi duraklat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1371"/>
       <source>P&amp;revious Frame</source>
-      <translation>&amp;Önceki Kare</translation>
+      <translation>Ön&amp;ceki Kare</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1372"/>
       <source>show previous frame</source>
-      <translation>önceki kareyi gösterir</translation>
+      <translation>önceki kareyi göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1374"/>
@@ -952,37 +954,37 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1375"/>
       <source>show next frame</source>
-      <translation>sonraki kareyi gösterir</translation>
+      <translation>sonraki kareyi göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose &amp;Monitor</source>
-      <translation>&amp;Ekran Seçimi</translation>
+      <translation>Ekran &amp;Seçimi</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>Nomacs'ın çalışacağı ekranı seçin</translation>
+      <translation>nomacs Çalıştırılacak Monitörü seçin</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
       <source>Show Image Location</source>
-      <translation>Resmin konumunu göster</translation>
+      <translation>Görüntü konumunu göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1381"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>resmin yerini Google Haritalar'da göster</translation>
+      <translation>Görüntünün Google Haritalar'da nerede çekildiğini göster</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1387"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation>&amp;Küçük Resimleri Oluştur</translation>
+      <translation>&amp;Küçük Resimler Oluştur</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1388"/>
       <source>compute all thumbnails of the current folder</source>
-      <translation>mevcut dizindeki dosyaların küçük resimlerini oluşturur</translation>
+      <translation>geçerli klasördekilerin tümünün küçük resimlerini oluşturur</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1391"/>
@@ -993,7 +995,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1396"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>&amp;Çok Sayfalı TIFF Olarak Aktar</translation>
+      <translation>Çok Sayfalı TIFF'yi Dışa Aktar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1397"/>
@@ -1003,7 +1005,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1399"/>
       <source>Extract From Archive</source>
-      <translation>Arşiv Dosyasından Çıkart</translation>
+      <translation>Arşivden Çıkart</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1400"/>
@@ -1033,22 +1035,22 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1410"/>
       <source>&amp;Wallpaper</source>
-      <translation>&amp;Duvar Kağıdı</translation>
+      <translation>&amp;Duvar kağıdı</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1411"/>
       <source>set the current image as wallpaper</source>
-      <translation>mevcut görüntüyü duvar kağıdı olarak ayarla</translation>
+      <translation>geçerli görüntüyü duvar kağıdı olarak ayarla</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1413"/>
       <source>Add Image Format</source>
-      <translation>Resim Biçimi ekle</translation>
+      <translation>Görüntü Biçimi Ekle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1414"/>
       <source>Add a new image format to nomacs</source>
-      <translation>Nomacs yeni görüntü formatı ekle</translation>
+      <translation>Nomacs yeni görüntü biçimi ekle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1418"/>
@@ -1282,7 +1284,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 0</source>
-      <translation>Beğenme Oranı 0</translation>
+      <translation>Yıldız Sayısı 0</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1564"/>
@@ -1297,67 +1299,67 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
       <source>Star Rating 1</source>
-      <translation>Beğenme Oranı 1</translation>
+      <translation>Yıldız Sayısı 1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1571"/>
       <source>Star Rating 2</source>
-      <translation>Beğenme Oranı 2</translation>
+      <translation>Yıldız Sayısı 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1575"/>
       <source>Star Rating 3</source>
-      <translation>Beğenme Oranı 3</translation>
+      <translation>Yıldız Sayısı 3</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <source>Star Rating 4</source>
-      <translation>Beğenme Oranı 4</translation>
+      <translation>Yıldız Sayısı 4</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star Rating 5</source>
-      <translation>Beğenme Oranı 5</translation>
+      <translation>Yıldız Sayısı 5</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1587"/>
       <source>Pan Image Up</source>
-      <translation>Resmi yukarı kaydır</translation>
+      <translation>Görüntüyü Yukarı Kaydır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1588"/>
       <source>Pans the image up if zoomed.</source>
-      <translation>Yakınlaştırılırsa resmi yukarı kaydır.</translation>
+      <translation>Yakınlaştırılmışsa görüntüyü yukarı kaydırır.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1591"/>
       <source>Pan Image Down</source>
-      <translation>Resmi aşağı kaydır</translation>
+      <translation>Görüntüyü Aşağı Kaydır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1592"/>
       <source>Pans the image down if zoomed.</source>
-      <translation>Yakınlaştırılırsa resmi aşağı kaydır.</translation>
+      <translation>Yakınlaştırılmışsa görüntüyü aşağı kaydırır.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1595"/>
       <source>Pan Image Left</source>
-      <translation>Resmi sola kaydır</translation>
+      <translation>Görüntüyü Sola Kaydır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1596"/>
       <source>Pans the image left if zoomed.</source>
-      <translation>Yakınlaştırılırsa resmi sola kaydır.</translation>
+      <translation>Yakınlaştırılmışsa görüntüyü sola kaydırır.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1599"/>
       <source>Pan Image Right</source>
-      <translation>Resmi sağa kaydır</translation>
+      <translation>Görüntüyü Sağa Kaydır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1600"/>
       <source>Pans the image right if zoomed.</source>
-      <translation>Yakınlaştırılırsa resmi sağa kaydır.</translation>
+      <translation>Yakınlaştırılmışsa görüntüyü sağa kaydırır.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
@@ -1372,52 +1374,52 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="85"/>
       <source>Convert to Grayscale</source>
-      <translation>Gri Tonlamaya Dönüştür</translation>
+      <translation>Gri Tonlamaya Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="89"/>
       <source>&amp;Auto Adjust</source>
-      <translation>&amp;Otomatik Ayarlama</translation>
+      <translation>&amp;Otomatik Ayarla</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="91"/>
       <source>Auto Adjust Image Contrast and Color Balance</source>
-      <translation>Kontrast ve renk dengesini otomatik ayarla</translation>
+      <translation>Görüntü Karşıtlığını ve Renk Dengesini Otomatik Düzelt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="95"/>
       <source>Nor&amp;malize Image</source>
-      <translation>Resmi stan&amp;dartlaştır</translation>
+      <translation>Görüntüyü Norm&amp;alleştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="97"/>
       <source>Normalize the Image</source>
-      <translation>Resmi standartlaştır</translation>
+      <translation>Görüntüyü Normalleştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="101"/>
       <source>Flip &amp;Horizontal</source>
-      <translation>&amp;Yatay ayna</translation>
+      <translation>&amp;Yatay Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="102"/>
       <source>Flip Image Horizontally</source>
-      <translation>Resmi yatay çevir</translation>
+      <translation>Görüntü Yatay Olarak Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="106"/>
       <source>Flip &amp;Vertical</source>
-      <translation>Dikey ayna</translation>
+      <translation>&amp;Dikey Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="107"/>
       <source>Flip Image Vertically</source>
-      <translation>Resmi dikey çevir</translation>
+      <translation>Görüntü Dikey Olarak Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="111"/>
       <source>&amp;Invert Image</source>
-      <translation>Renkler &amp;Ters</translation>
+      <translation>&amp;Görüntü (renklerini) Ters Çevir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="112"/>
@@ -1427,12 +1429,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="117"/>
       <source>&amp;Tiny Planet...</source>
-      <translation>&amp;Polar Panorama...</translation>
+      <translation>&amp;Kutup Panorama...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="118"/>
       <source>Create a Tiny Planet</source>
-      <translation>Polar Panorama oluştur</translation>
+      <translation>Kutup Panorama Yap</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="122"/>
@@ -1452,7 +1454,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Sharpens the image by applying an unsharp mask</source>
-      <translation>Keskin olmayan bir maske uygulayarak görüntüyü keskinleştirir</translation>
+      <translation>Keskinliği Azaltma maskesi uygulayarak görüntüyü keskinleştirir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
@@ -1472,12 +1474,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation>Resmi yeniden boyutlandır</translation>
+      <translation>Görüntüyü yeniden boyutlandır</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
       <source>&amp;Threshold...</source>
-      <translation>&amp;Eşik Değeri...</translation>
+      <translation>&amp;Eşik...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="143"/>
@@ -1502,7 +1504,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="153"/>
       <source>Change the Exposure and Gamma</source>
-      <translation>Pozlama ve Gamayı değiştir</translation>
+      <translation>Pozlama ve Kontras derecesini değiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
@@ -1548,7 +1550,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="273"/>
       <source>Cannot resize image</source>
-      <translation>Resim yeniden boyutlandırılamaz</translation>
+      <translation>Görüntü yeniden boyutlandırılamıyor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="314"/>
@@ -1574,7 +1576,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished">&lt;data too large to display&gt;</translation>
+      <translation type="unfinished"/>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
@@ -1844,7 +1846,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncompressed</source>
-      <translation type="unfinished">Uncompressed</translation>
+      <translation>Sıkıştırılmamış</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
@@ -1880,12 +1882,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>Adobe Deflate</source>
-      <translation type="unfinished">Adobe Deflate</translation>
+      <translation>Adobe alçaltması</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>JBIG B&amp;W</source>
-      <translation>JBIG Siyah Beyaz</translation>
+      <translation>JBIG S&amp;B</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1505"/>
@@ -1930,7 +1932,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1514"/>
       <source>PackBits</source>
-      <translation type="unfinished">PackBits</translation>
+      <translation>Paket Bitleri</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1515"/>
@@ -1970,7 +1972,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1522"/>
       <source>PixarLog</source>
-      <translation type="unfinished">PixarLog</translation>
+      <translation>PixarLog</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1523"/>
@@ -2000,7 +2002,8 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1528"/>
       <source>SGILog</source>
-      <translation type="unfinished">SGILog</translation>
+      <translation>SGILog
+</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1529"/>
@@ -2035,12 +2038,12 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1535"/>
       <source>Microsoft Document Imaging(MDI) Vector</source>
-      <translation>Microsoft Belge Görüntüleme(MDI) Yöneyi</translation>
+      <translation>Microsoft Belge Görüntüleme(MDI) Vektörü</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1536"/>
       <source>ESRI Lerc</source>
-      <translation type="unfinished">ESRI Lerc</translation>
+      <translation>ESRI Lerc</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1537"/>
@@ -2060,7 +2063,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1540"/>
       <source>WebP</source>
-      <translation type="unfinished">WebP</translation>
+      <translation>WebP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1541"/>
@@ -2118,7 +2121,7 @@ Please restart nomacs and try again.</source>
       <location filename="../../src/DkCore/DkProcess.cpp" line="415"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="544"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation type="unfinished">%1 inactive -&gt; skipping</translation>
+      <translation>%1 etkin değil -&gt;atlanıyor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
@@ -2163,7 +2166,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="374"/>
       <source>%1 image size matches scale factor -&gt; skipping.</source>
-      <translation type="unfinished">%1 image size matches scale factor -&gt; skipping.</translation>
+      <translation>%1 görüntü boyutu ölçek faktörü ile aynı-&gt;atlanıyor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
@@ -2292,7 +2295,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>%1-&gt;%2 Yeniden adlandırılıyor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
@@ -2312,7 +2315,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>%1-&gt;%2 Kopyalanıyor</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -2502,7 +2505,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>İzleme biçimi ayarlama &lt;mode&gt;</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
@@ -2512,7 +2515,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Bir klasörün &lt;directory&gt;tüm dosyalarını yükle</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
@@ -2522,7 +2525,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>Sekmelere &lt;images&gt; yükle.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
@@ -2532,7 +2535,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
       <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-      <translation type="unfinished">Batch processing of &lt;batch-settings.pnm&gt;.</translation>
+      <translation>&lt;batch-settings.pnm&gt;Toplu işleme</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
@@ -2542,7 +2545,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
       <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-      <translation type="unfinished">Saves batch log to &lt;log-path.txt&gt;.</translation>
+      <translation>Toplu günlükleri &lt;log-path.txt&gt; kaydet.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
@@ -2552,7 +2555,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Ayarları içe al &lt;settings-path.ini&gt; ve kaydet.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -2643,7 +2646,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1351"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation>İşaretlenirse, nomacs diğer uygulamalar tarafından silinen dosyaları kaydetmeyi sorar</translation>
+      <translation>İşaretlenirse, nomacs diğer uygulamalar tarafından silinen dosyaları kaydetmenizi ister</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
@@ -2759,84 +2762,84 @@ Please restart nomacs and try again.</source>
   <context>
     <name>nmc::DkArchiveExtractionDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3747"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3748"/>
       <source>Extract images from an archive</source>
       <translation>Görüntüleri bir arşivden çıkart</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3756"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3757"/>
       <source>Archive (%1)</source>
       <translation>Arşiv (%1)</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3763"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3772"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3764"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3773"/>
       <source>&amp;Browse</source>
       <translation>&amp;Gözat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3767"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3768"/>
       <source>Extract to</source>
       <translation>Şuraya çıkar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3780"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3781"/>
       <source>Remove Subfolders</source>
       <translation>Alt klasörleri kaldır</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3786"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3787"/>
       <source>&amp;Extract</source>
       <translation>&amp;Çıkart</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3788"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4008"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3789"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4009"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3867"/>
       <source>Open Archive</source>
       <translation>Arşivi Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3867"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3868"/>
       <source>Archives (%1)</source>
       <translation>Arşivler (%1)</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3878"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3879"/>
       <source>Open Directory</source>
       <translation>Klasörü Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3912"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3913"/>
       <source>Not a valid archive.</source>
       <translation>Geçersiz arşiv.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3941"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3942"/>
       <source>Number of images: </source>
       <translation>Görüntü sayısı: </translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3943"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3944"/>
       <source>The archive does not contain any images.</source>
       <translation>Arşiv hiçbir görsel içermiyor.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3968"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3969"/>
       <source>The images could not be extracted!</source>
       <translation>Görseller çıkartılamadı!</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4010"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4011"/>
       <source>Extracting files...</source>
       <translation>Dosyalar çıkartılıyor...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4019"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4020"/>
       <source>Extracting file %1 of %2</source>
       <translation>% 2 dosyasının %1'ini ayıklıyor</translation>
     </message>
@@ -2844,13 +2847,13 @@ Please restart nomacs and try again.</source>
   <context>
     <name>nmc::DkBasicLoader</name>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="342"/>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1029"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="343"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1030"/>
       <source>Original Image</source>
       <translation>Özgün Görsel</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1177"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1178"/>
       <source>Sorry, I could not save: %1</source>
       <translation>Maalesef, kaydedemedim: %1</translation>
     </message>
@@ -3426,17 +3429,17 @@ Bu seçenek sadece eklentiler sidecar dosyalarını kaydediyorsa yararlıdır - 
   <context>
     <name>nmc::DkChooseMonitorDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4348"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4349"/>
       <source>Remember Monitor Settings</source>
       <translation>Ekran Ayarlarını Anımsa</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4352"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
       <source>&amp;OK</source>
       <translation>&amp;Tamam</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4354"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
@@ -3734,17 +3737,17 @@ Bu seçenek sadece eklentiler sidecar dosyalarını kaydediyorsa yararlıdır - 
   <context>
     <name>nmc::DkDialogManager</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4070"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4071"/>
       <source>Preview</source>
       <translation>Önizleme</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4085"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4086"/>
       <source>Shortcuts</source>
       <translation>Kısayollar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4125"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4126"/>
       <source>Mosaic</source>
       <translation>Mozaik</translation>
     </message>
@@ -3922,7 +3925,7 @@ Bu seçenek sadece eklentiler sidecar dosyalarını kaydediyorsa yararlıdır - 
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
       <source>Show Player</source>
-      <translation type="unfinished">Show Player</translation>
+      <translation>Oynatıcıyı Göster</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
@@ -3966,83 +3969,83 @@ Bu seçenek sadece eklentiler sidecar dosyalarını kaydediyorsa yararlıdır - 
   <context>
     <name>nmc::DkExportTiffDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2393"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2394"/>
       <source>Export Multi-Page TIFF</source>
       <translation>Çok Sayfalı TIFF'yi Dışa Aktar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2439"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2440"/>
       <source>Multi-Page TIFF:</source>
       <translation>Çoklu-Sayfa TIFF'i:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2442"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2451"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2443"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2452"/>
       <source>&amp;Browse</source>
       <translation>&amp;Gözat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2445"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2446"/>
       <source>No Multi-Page TIFF loaded</source>
       <translation>Hiçbir Çoklu-Sayfa TIFF'i yüklenmedi</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2449"/>
       <source>Save Folder:</source>
       <translation>Kayıt Klasörü:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2454"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2455"/>
       <source>Specify a Save Folder</source>
       <translation>Bir Kayıt Klasörü Belirtin</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2457"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2458"/>
       <source>Filename:</source>
       <translation>Dosya adı:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2468"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2469"/>
       <source>Export Pages</source>
       <translation>Sayfaları Dışa Aktar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2475"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2476"/>
       <source>Overwrite</source>
       <translation>Üzerine yaz</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2507"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
       <source>&amp;Export</source>
       <translation>&amp;Dışa Aktar</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2509"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2525"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2526"/>
       <source>Open TIFF</source>
       <translation>TIFF Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2536"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2537"/>
       <source>Open an Image Directory</source>
       <translation>Bir Resim Dizini Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2623"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2624"/>
       <source>%1 exists, skipping...</source>
       <translation>%1 mevcut, atlanıyor...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2628"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2629"/>
       <source>Sorry, I could not load page: %1</source>
       <translation>Üzgünüm, şu sayfayı yükleyemedim: %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2636"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2637"/>
       <source>Sorry, I could not save: %1</source>
       <translation>Maalesef, kaydedemedim: %1</translation>
     </message>
@@ -4355,22 +4358,22 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkForceThumbDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3645"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3646"/>
       <source>Overwrite Existing Thumbnails</source>
       <translation>Mevcut Küçük Resimlerin Üzerine Yaz</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3650"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
       <source>&amp;OK</source>
       <translation>&amp;Tamam</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3652"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3668"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3669"/>
       <source>Compute thumbnails for all images in:
  %1
 </source>
@@ -4435,7 +4438,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="354"/>
       <source>Remember Recent Files History</source>
-      <translation>Son Kullanılan Dosya Geçmişini Hatırla</translation>
+      <translation>Son Dosya Geçmişini Hatırla</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
@@ -4450,7 +4453,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="361"/>
       <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-      <translation>Bir sekmede zaten açık olan herhangi bir dosya tekrar açılırsa, dosyaları bir daha açmayın.</translation>
+      <translation>Bir sekmede zaten açık olan herhangi bir dosya tekrar açılırsa, dosyaları bir daha açmayın&apos;.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="364"/>
@@ -4705,7 +4708,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="933"/>
       <source>Sorry, I can&apos;t write to the file: %1</source>
-      <translation>Üzgünüm, dosyaya yazamam: %1</translation>
+      <translation>Üzgünüm, dosyaya yazamam&apos;: %1</translation>
     </message>
   </context>
   <context>
@@ -4771,7 +4774,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
       <source>Sorry, I could not copy the image...</source>
-      <translation>Üzgünüm, Resmi kopyalayamadım...</translation>
+      <translation>Üzgünüm, görüntüyü kopyalayamadım...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1179"/>
@@ -5112,7 +5115,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
       <source>Change Metadata Entries</source>
-      <translation>Üstveri Girişlerini Değiştir</translation>
+      <translation>Üst veri Girişlerini Değiştir</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
@@ -5159,175 +5162,175 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkMosaicDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2699"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2700"/>
       <source>Create Mosaic Image</source>
       <translation>Mozaik Görüntü Oluştur</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2762"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2763"/>
       <source>Darken</source>
       <translation>Koyulaştırma</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2763"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2764"/>
       <source>Lighten</source>
       <translation>Rengini Açma</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2764"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2765"/>
       <source>Saturation</source>
       <translation>Doygunluk</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2772"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2773"/>
       <source>Mosaic Image:</source>
       <translation>Mozaik Görüntü:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2775"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2785"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2776"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2786"/>
       <source>&amp;Browse</source>
       <translation>&amp;Gözat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2777"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2778"/>
       <source>Choose which image to mosaic.</source>
       <translation>Mozaik haline getirilecek görüntüyü seçin.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2779"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2780"/>
       <source>No Image loaded</source>
       <translation>Yüklenmiş resim yok</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2782"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2783"/>
       <source>Mosaic Elements Folder:</source>
-      <translation>Mozaik Öğeleri Klasörü:</translation>
+      <translation>Mozaik Elemanları Klasörü:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2787"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2788"/>
       <source>Specify the root folder of images used for mosaic elements.</source>
-      <translation>Mozaik öğeleri için kullanılan görüntülerin kök klasörünü belirtin.</translation>
+      <translation>Mozaik elemanları için kullanılan görüntülerin kök klasörünü belirtin.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2789"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2790"/>
       <source>Specify an Image Database</source>
       <translation>Bir görüntü veritabanı belirtin</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2792"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2793"/>
       <source>Resolution:</source>
       <translation>Çözünürlük:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2796"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2797"/>
       <source>Pixel Width</source>
       <translation>Piksel genişliği</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2801"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2802"/>
       <source>Pixel Height</source>
       <translation>Piksel yüksekliği</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2808"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2809"/>
       <source>Patches:</source>
       <translation>Yamalar:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2812"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2813"/>
       <source>Number of Horizontal Patches</source>
       <translation>Yatay Yama Sayısı</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2817"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2818"/>
       <source>Number of Vertical Patches</source>
       <translation>Dikey Yama Sayısı</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2822"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2823"/>
       <source>If this label turns red, the computation might be slower.</source>
       <translation>Bu etiket kırmızıya dönerse, hesaplama daha yavaş olabilir.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2825"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2826"/>
       <source>Filters:</source>
       <translation>Filtreler:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2830"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2831"/>
       <source>You can split multiple ignore words with ;</source>
       <translation>Birden çok yok sayma sözcüğünü ayırabilirsin ;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2834"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2835"/>
       <source>All Images</source>
       <translation>Tüm görüntüler</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2883"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
       <source>&amp;Save</source>
       <translation>&amp;Kaydet</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>&amp;Generate</source>
       <translation>&amp;Oluştur</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2886"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2905"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2906"/>
       <source>Open TIFF</source>
       <translation>TIFF Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2915"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2916"/>
       <source>Open an Image Directory</source>
       <translation>Bir Resim Dizini Aç</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2936"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2948"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2937"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2949"/>
       <source>%1 x %2 cm @150 dpi</source>
       <translation>%1 x %2 cm @150 dpi</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2993"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2994"/>
       <source>Patch Resolution: %1 px</source>
       <translation>Yama Çözünürlüğü: %1 px</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3191"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3192"/>
       <source>Filling empty areas...</source>
       <translation>Boş alanların doldurulması...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3195"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3196"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
       <translation>Bazı görüntüleri iki kez kullanmam gerekiyor - veritabanı çok küçük olabilir mi?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3200"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3201"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
       <translation>Üzgünüm, görünüşe göre bu veri tabanı ile mozaik oluşturamıyorum</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3317"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3318"/>
       <source>Something is seriously wrong, I could not load: %1</source>
       <translation>Birşeyler cidden yanlış, şunu yükleyemiyorum:
 %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3565"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3566"/>
       <source>Error</source>
       <translation>Hata</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3565"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3566"/>
       <source>Sorry, I could not mix the image...</source>
       <translation>Üzgünüm, görüntüyü karıştıramıyorum...</translation>
     </message>
@@ -5380,7 +5383,8 @@ Do you want to show them again?</source>
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
       <translation>Pencere Kilitli
-Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translation>
+Kilidi açmak için: (ALT+Tab) ile odaklayın,
+daha sonra %1'e basın</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="807"/>
@@ -5411,7 +5415,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="998"/>
       <source>Console</source>
-      <translation>Uçbirim</translation>
+      <translation>Kumanda Paneli</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1040"/>
@@ -5492,7 +5496,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1305"/>
       <source>Sorry, I can&apos;t rename: %1</source>
-      <translation>Üzgünüm, %1 yeniden adlandırılamıyor</translation>
+      <translation>Üzgünüm, yeniden adlandırılamıyor:%1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1386"/>
@@ -5533,7 +5537,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Yeni &lt;br&gt; sürüm yüklenemedi</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5562,17 +5566,17 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
   <context>
     <name>nmc::DkOpacityDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2372"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2373"/>
       <source>Window Opacity</source>
       <translation>Pencere Donukluğu</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2377"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
       <source>&amp;OK</source>
       <translation>&amp;Tamam</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2379"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
@@ -5649,7 +5653,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Başlamak için &lt;SPACE&gt; basın.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5659,7 +5663,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Yeni bir Oyun başlatmak için &lt;SPACE&gt; tuşlayın</translation>
     </message>
   </context>
   <context>
@@ -5684,52 +5688,52 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <name>nmc::DkPrintPreviewDialog</name>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2025"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2116"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2117"/>
       <source>Print Preview</source>
       <translation>Baskı önizleme</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2085"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2086"/>
       <source>Fit Width</source>
       <translation>Genişliği Sığdır</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2086"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2087"/>
       <source>Fit Page</source>
       <translation>Sayfaya Sığdır</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2088"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2089"/>
       <source>Zoom in</source>
       <translation>Yakınlaştır</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2091"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2092"/>
       <source>Zoom out</source>
       <translation>Uzaklaştır</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2094"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2095"/>
       <source>keep ALT key pressed to zoom with the mouse wheel</source>
       <translation>fare tekerleği ile yakınlaştırmak için ALT tuşuna basılı tutun</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2105"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2106"/>
       <source>Portrait</source>
       <translation>Portre</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2108"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2109"/>
       <source>Landscape</source>
       <translation>Manzara</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2112"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2113"/>
       <source>Page setup</source>
       <translation>Sayfa ayarı</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2113"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2114"/>
       <source>Print</source>
       <translation>Yazdır</translation>
     </message>
@@ -6028,7 +6032,7 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="385"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>Ölçü</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="395"/>
@@ -6172,8 +6176,8 @@ Kilidi açmak için: (ALT+Tab) ile odaklayın, daha sonra %1'e basın</translati
       <location filename="../../src/DkGui/DkDialog.cpp" line="1737"/>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-      <translation type="unfinished">%1 already used by %2 &gt; %3
-Press ESC to undo changes</translation>
+      <translation>%1 zaten %2 &gt; %3 tarafından kullanılıyor
+Değişiklikleri geri almak için ESC'ye basın</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1743"/>
@@ -6199,22 +6203,22 @@ Değişiklikleri geri almak için ESC'ye basın</translation>
   <context>
     <name>nmc::DkSvgSizeDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4269"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4270"/>
       <source>width:</source>
       <translation>genişlik:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4276"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4277"/>
       <source>height:</source>
       <translation>yükseklik:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4292"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
       <source>&amp;OK</source>
       <translation>&amp;Tamam</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4294"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>
@@ -6512,7 +6516,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="398"/>
       <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-      <translation>Üzgünüz, şu anda desteklemiyoruz: *.%1 dosya</translation>
+      <translation>Üzgünüz, şu anda desteklemiyoruz&apos;: *.%1 dosya</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="403"/>
@@ -6861,32 +6865,32 @@ Daha fazla bilgi için lütfen sistem yöneticinize başvurun.</translation>
   <context>
     <name>nmc::DkWelcomeDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3674"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3675"/>
       <source>Welcome</source>
       <translation>Hoş geldiniz</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3683"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3684"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
       <translation>Nomacs'a hoş geldiniz, lütfen aşağıdan tercih ettiğiniz dili seçin.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3688"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3689"/>
       <source>&amp;Register File Associations</source>
       <translation>&amp; Kayıt dosyası ilişkilendirmeleri</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3691"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3692"/>
       <source>Set As &amp;Default Viewer</source>
       <translation>&amp;Varsayılan Görüntüleyici olarak ayarla</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3696"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
       <source>&amp;OK</source>
       <translation>&amp;Tamam</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3698"/>
       <source>&amp;Cancel</source>
       <translation>&amp;İptal et</translation>
     </message>

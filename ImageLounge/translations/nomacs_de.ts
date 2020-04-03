@@ -169,7 +169,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="993"/>
       <source>S&amp;ave As</source>
-      <translation type="unfinished">S&amp;ave As</translation>
+      <translation>Speichern &amp;unter...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="995"/>
@@ -179,12 +179,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation type="unfinished">Sa&amp;ve a Copy</translation>
+      <translation>Kopie &amp;speichern</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="998"/>
       <source>Copy the Image</source>
-      <translation>Kopieren das Bild</translation>
+      <translation>Bild kopieren</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1000"/>
@@ -639,7 +639,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1234"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation type="unfinished">&amp;Metadata Ribbon</translation>
+      <translation>&amp;Metadaten Menüband</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1236"/>
@@ -689,7 +689,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
       <source>Show &amp;Log</source>
-      <translation>Zeige &amp;Log</translation>
+      <translation>Protokol&amp;l anzeigen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1260"/>
@@ -1292,7 +1292,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1580"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1584"/>
       <source>Star rating which is saved to an image&apos;s metadata</source>
-      <translation type="unfinished">Star rating which is saved to an image&apos;s metadata</translation>
+      <translation>In den Bild-Metadaten gespeicherte Sternebewertung</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1567"/>
@@ -1467,12 +1467,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="137"/>
       <source>&amp;Resize...</source>
-      <translation>&amp;Größe ändern...</translation>
+      <translation>G&amp;röße ändern</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="138"/>
       <source>Resize the image</source>
-      <translation>Bildgröße verändern</translation>
+      <translation>Bildgröße ändern</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
@@ -1574,7 +1574,7 @@
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished">&lt;data too large to display&gt;</translation>
+      <translation>&lt;Daten zu groß zum Anzeigen></translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
@@ -1844,32 +1844,32 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1496"/>
       <source>Uncompressed</source>
-      <translation type="unfinished">Uncompressed</translation>
+      <translation>Unkomprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1497"/>
       <source>CCITT 1D</source>
-      <translation type="unfinished">CCITT 1D</translation>
+      <translation>CCITT 1D</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1498"/>
       <source>T4/Group 3 Fax</source>
-      <translation type="unfinished">T4/Group 3 Fax</translation>
+      <translation>T4/Gruppe 3 Fax</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1499"/>
       <source>T6/Group 4 Fax</source>
-      <translation type="unfinished">T6/Group 4 Fax</translation>
+      <translation>T6/Gruppe 4 Fax</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1500"/>
       <source>LZW</source>
-      <translation type="unfinished">LZW</translation>
+      <translation>LZW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1501"/>
       <source>JPEG (old-style)</source>
-      <translation type="unfinished">JPEG (old-style)</translation>
+      <translation>JPEG (herkömmlich)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1502"/>
@@ -1880,22 +1880,22 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1503"/>
       <source>Adobe Deflate</source>
-      <translation type="unfinished">Adobe Deflate</translation>
+      <translation>Adobe Deflate</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1504"/>
       <source>JBIG B&amp;W</source>
-      <translation type="unfinished">JBIG B&amp;W</translation>
+      <translation>JBIG B&amp;W</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1505"/>
       <source>JBIG Color</source>
-      <translation type="unfinished">JBIG Color</translation>
+      <translation>JBIG Color</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1507"/>
       <source>Kodak 262</source>
-      <translation type="unfinished">Kodak 262</translation>
+      <translation>Kodak 262</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1508"/>
@@ -1910,7 +1910,7 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1510"/>
       <source>Packed RAW</source>
-      <translation type="unfinished">Packed RAW</translation>
+      <translation>Komprimiertes RAW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1511"/>
@@ -1920,22 +1920,22 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1512"/>
       <source>CCIRLEW</source>
-      <translation type="unfinished">CCIRLEW</translation>
+      <translation>CCIRLEW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1513"/>
       <source>Samsung SRW Compressed 2</source>
-      <translation type="unfinished">Samsung SRW Compressed 2</translation>
+      <translation>Samsung SRW Komprimiert 2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1514"/>
       <source>PackBits</source>
-      <translation type="unfinished">PackBits</translation>
+      <translation>PackBits</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1515"/>
       <source>Thunderscan</source>
-      <translation type="unfinished">Thunderscan</translation>
+      <translation>Thunderscan</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1516"/>
@@ -1945,82 +1945,82 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1517"/>
       <source>IT8CTPAD</source>
-      <translation type="unfinished">IT8CTPAD</translation>
+      <translation>IT8CTPAD</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1518"/>
       <source>IT8LW</source>
-      <translation type="unfinished">IT8LW</translation>
+      <translation>IT8LW</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1519"/>
       <source>IT8MP</source>
-      <translation type="unfinished">IT8MP</translation>
+      <translation>IT8MP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1520"/>
       <source>IT8BL</source>
-      <translation type="unfinished">IT8BL</translation>
+      <translation>IT8BL</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1521"/>
       <source>PixarFilm</source>
-      <translation type="unfinished">PixarFilm</translation>
+      <translation>PixarFilm</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1522"/>
       <source>PixarLog</source>
-      <translation type="unfinished">PixarLog</translation>
+      <translation>PixarLog</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1523"/>
       <source>Deflate</source>
-      <translation type="unfinished">Deflate</translation>
+      <translation>Entpacken</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1524"/>
       <source>DCS</source>
-      <translation type="unfinished">DCS</translation>
+      <translation>DCS</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1525"/>
       <source>Aperio JPEG 2000 YCbCr</source>
-      <translation type="unfinished">Aperio JPEG 2000 YCbCr</translation>
+      <translation>Aperio JPEG 2000 YCbCr</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1526"/>
       <source>Aperio JPEG 2000 RGB</source>
-      <translation type="unfinished">Aperio JPEG 2000 RGB</translation>
+      <translation>Aperio JPEG 2000 YCbCr</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1527"/>
       <source>JBIG</source>
-      <translation type="unfinished">JBIG</translation>
+      <translation>JBIG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1528"/>
       <source>SGILog</source>
-      <translation type="unfinished">SGILog</translation>
+      <translation>SGILog</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1529"/>
       <source>SGILog24</source>
-      <translation type="unfinished">SGILog24</translation>
+      <translation>SGILog24</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1530"/>
       <source>JPEG 2000</source>
-      <translation type="unfinished">JPEG 2000</translation>
+      <translation>JPEG 2000</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1531"/>
       <source>Nikon NEF Compressed</source>
-      <translation>Nikon NEF Komprimiert</translation>
+      <translation>Nikon NEF komprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1532"/>
       <source>JBIG2 TIFF FX</source>
-      <translation type="unfinished">JBIG2 TIFF FX</translation>
+      <translation>JBIG2 TIFF FX</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1533"/>
@@ -2030,57 +2030,57 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1534"/>
       <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
-      <translation type="unfinished">Microsoft Document Imaging(MDI) Progressive Transform Codec</translation>
+      <translation>Microsoft Document Imaging(MDI) Progressive Transform Codec</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1535"/>
       <source>Microsoft Document Imaging(MDI) Vector</source>
-      <translation type="unfinished">Microsoft Document Imaging(MDI) Vector</translation>
+      <translation>Microsoft Document Imaging(MDI) Vector</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1536"/>
       <source>ESRI Lerc</source>
-      <translation type="unfinished">ESRI Lerc</translation>
+      <translation>ESRI Lerc</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1537"/>
       <source>Lossy JPEG</source>
-      <translation type="unfinished">Lossy JPEG</translation>
+      <translation>JPEG verlustbehaftet</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1538"/>
       <source>LZMA2</source>
-      <translation type="unfinished">LZMA2</translation>
+      <translation>LZMA2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1539"/>
       <source>Zstd</source>
-      <translation type="unfinished">Zstd</translation>
+      <translation>Zstd</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1540"/>
       <source>WebP</source>
-      <translation type="unfinished">WebP</translation>
+      <translation>WebP</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1541"/>
       <source>PNG</source>
-      <translation type="unfinished">PNG</translation>
+      <translation>PNG</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1542"/>
       <source>JPEG XR</source>
-      <translation type="unfinished">JPEG XR</translation>
+      <translation>JPEG XR</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1543"/>
       <source>Kodak DCR Compressed</source>
-      <translation type="unfinished">Kodak DCR Compressed</translation>
+      <translation>Kodak DCR komprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1544"/>
       <source>Pentax PEF Compressed</source>
-      <translation type="unfinished">Pentax PEF Compressed</translation>
+      <translation>Pentax PEF komprimiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="1099"/>
@@ -2119,7 +2119,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
       <location filename="../../src/DkCore/DkProcess.cpp" line="415"/>
       <location filename="../../src/DkCore/DkProcess.cpp" line="544"/>
       <source>%1 inactive -&gt; skipping</source>
-      <translation type="unfinished">%1 inactive -&gt; skipping</translation>
+      <translation>%1 nicht aktiv -> ignoriert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="318"/>
@@ -2154,17 +2154,17 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
       <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-      <translation>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</translation>
+      <translation>%1 Das Bild müsste vergrößert werden, aber es wurde 'nur verkleinern' angewählt -> übersprungen.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="370"/>
       <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-      <translation>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</translation>
+      <translation>%1 Das Bild müsste verkleinert werden, aber es wurde 'nur vergrößern' ausgewählt -> übersprungen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="374"/>
       <source>%1 image size matches scale factor -&gt; skipping.</source>
-      <translation type="unfinished">%1 image size matches scale factor -&gt; skipping.</translation>
+      <translation>%1 Die Bildgröße entspricht dem Skalierungsfaktor -> ignoriert.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
@@ -2220,7 +2220,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="716"/>
       <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-      <translation type="unfinished">%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</translation>
+      <translation>%1 ist bereits vorhanden -> überspringen (aktiviere ' Überschreiben' wenn die Datei überschrieben werden soll)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="721"/>
@@ -2261,7 +2261,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
       <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-      <translation type="unfinished">%1 not saved - option &apos;Do not Save&apos; is checked...</translation>
+      <translation>%1 nicht gespeichert - Option 'Nicht speichern' ist ausgewählt...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="806"/>
@@ -2293,12 +2293,12 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation type="unfinished">Renaming: %1 -&gt; %2</translation>
+      <translation>%1 -> %2 umbenannt</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
       <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-      <translation type="unfinished">I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</translation>
+      <translation>Ich sollte die Datei kopieren, aber 'Nicht speichern' ist ausgewählt - also werde ich nichts tun...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="894"/>
@@ -2313,7 +2313,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation type="unfinished">Copying: %1 -&gt; %2</translation>
+      <translation>%1-> %2 kopiert</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="923"/>
@@ -2333,7 +2333,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
       <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-      <translation type="unfinished">Ui - a lot of things went wrong. Your original file can be found here: %1</translation>
+      <translation>Ui, viele Dinge sind schief gelaufen. Ihre ursprüngliche Datei finden Sie hier: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
@@ -2468,12 +2468,12 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
       <source>Edit ToolBar</source>
-      <translation type="unfinished">Edit ToolBar</translation>
+      <translation>Werkzeugleiste bearbeiten</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="1245"/>
       <source>Movie ToolBar</source>
-      <translation type="unfinished">Movie ToolBar</translation>
+      <translation>Video Werkzeugleiste</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="122"/>
@@ -2503,7 +2503,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="138"/>
       <source>Set the viewing mode &lt;mode&gt;.</source>
-      <translation type="unfinished">Set the viewing mode &lt;mode&gt;.</translation>
+      <translation>Anzeige Modus &lt;mode> festlegen.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="139"/>
@@ -2513,7 +2513,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation type="unfinished">Load all files of a &lt;directory&gt;.</translation>
+      <translation>Alle Dateien aus &lt;directory> laden.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="144"/>
@@ -2523,7 +2523,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation type="unfinished">Load &lt;images&gt; to tabs.</translation>
+      <translation>&lt;Bilder> in einen Tab laden.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="149"/>
@@ -2533,7 +2533,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="153"/>
       <source>Batch processing of &lt;batch-settings.pnm&gt;.</source>
-      <translation type="unfinished">Batch processing of &lt;batch-settings.pnm&gt;.</translation>
+      <translation>Batchverarbeitung mit &lt;batch-settings.pnm>.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
@@ -2543,7 +2543,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
       <source>Saves batch log to &lt;log-path.txt&gt;.</source>
-      <translation type="unfinished">Saves batch log to &lt;log-path.txt&gt;.</translation>
+      <translation>Batchverarbeitung unter &lt;log-path.txt> speichern.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="159"/>
@@ -2553,7 +2553,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>Einstellungen von &lt;settings-path.ini> importieren.</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="164"/>
@@ -2644,7 +2644,7 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1351"/>
       <source>If checked, nomacs asks to save files which were deleted by other applications</source>
-      <translation type="unfinished">If checked, nomacs asks to save files which were deleted by other applications</translation>
+      <translation>Wenn diese Option eingeschaltet ist, fragt nomacs, ob Dateien, die von anderen Anwendungen gelöscht wurden, gespeichert werden sollen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1354"/>
@@ -2760,84 +2760,84 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
   <context>
     <name>nmc::DkArchiveExtractionDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3747"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3748"/>
       <source>Extract images from an archive</source>
       <translation>Extrahiere Bilder aus einem Archiv</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3756"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3757"/>
       <source>Archive (%1)</source>
       <translation>Archiv (%1)</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3763"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3772"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3764"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3773"/>
       <source>&amp;Browse</source>
       <translation>&amp;Durchsuchen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3767"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3768"/>
       <source>Extract to</source>
       <translation>Extrahiere nach</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3780"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3781"/>
       <source>Remove Subfolders</source>
       <translation>Unterverzeichnisse entfernen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3786"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3787"/>
       <source>&amp;Extract</source>
       <translation>&amp;Extrahieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3788"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4008"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3789"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4009"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3866"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3867"/>
       <source>Open Archive</source>
       <translation>Archiv öffnen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3867"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3868"/>
       <source>Archives (%1)</source>
       <translation>Archive (%1)</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3878"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3879"/>
       <source>Open Directory</source>
       <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3912"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3913"/>
       <source>Not a valid archive.</source>
       <translation>Kein gültiges Archiv.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3941"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3942"/>
       <source>Number of images: </source>
       <translation>Anzahl der Bilder: </translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3943"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3944"/>
       <source>The archive does not contain any images.</source>
       <translation>Das Archiv enthält keine Bilder.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3968"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3969"/>
       <source>The images could not be extracted!</source>
       <translation>Bilder konnten nicht extrahiert werden!</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4010"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4011"/>
       <source>Extracting files...</source>
       <translation>Extrahiere Dateien...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4019"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4020"/>
       <source>Extracting file %1 of %2</source>
       <translation>Extrahiere Datei %1 von %2</translation>
     </message>
@@ -2845,13 +2845,13 @@ Starten Sie nomacs neu um es erneut zu versuchen.</translation>
   <context>
     <name>nmc::DkBasicLoader</name>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="342"/>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1029"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="343"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1030"/>
       <source>Original Image</source>
       <translation>Originales Bild</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1177"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1178"/>
       <source>Sorry, I could not save: %1</source>
       <translation>%1 konnte nicht gespeichert werden</translation>
     </message>
@@ -3281,7 +3281,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2588"/>
       <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-      <translation type="unfinished">Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</translation>
+      <translation>Bitte überprüfen Sie 'Vorhandene Dateien überschreiben' oder wählen Sie ein anderes Ausgabeverzeichnis.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2609"/>
@@ -3390,22 +3390,22 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1165"/>
       <source>I could not load &quot;%1&quot;</source>
-      <translation type="unfinished">I could not load &quot;%1&quot;</translation>
+      <translation>Ich konnte &quot;%1&quot; nicht laden.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1220"/>
       <source>Unable to load file &quot;%1&quot;</source>
-      <translation type="unfinished">Unable to load file &quot;%1&quot;</translation>
+      <translation>Konnte Datei '%1' nicht laden.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1228"/>
       <source>&quot;%1&quot; cannot be loaded</source>
-      <translation type="unfinished">&quot;%1&quot; cannot be loaded</translation>
+      <translation>&quot;%1&quot; kann nicht geladen werden.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1234"/>
       <source>downloading &quot;%1&quot;</source>
-      <translation type="unfinished">downloading &quot;%1&quot;</translation>
+      <translation>Lade &quot;%1&quot; herunter.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1258"/>
@@ -3426,17 +3426,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkChooseMonitorDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4348"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4349"/>
       <source>Remember Monitor Settings</source>
       <translation>Monitor-Einstellungen merken</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4352"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
       <source>&amp;OK</source>
       <translation>&amp;OK</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4353"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4354"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
@@ -3734,17 +3734,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkDialogManager</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4070"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4071"/>
       <source>Preview</source>
       <translation>Vorschau</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4085"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4086"/>
       <source>Shortcuts</source>
       <translation>Tastaturkürzel</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4125"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4126"/>
       <source>Mosaic</source>
       <translation>Mosaik</translation>
     </message>
@@ -3922,7 +3922,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="812"/>
       <source>Show Player</source>
-      <translation type="unfinished">Show Player</translation>
+      <translation>Zeige Abspieler</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="816"/>
@@ -3966,83 +3966,83 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkExportTiffDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2393"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2394"/>
       <source>Export Multi-Page TIFF</source>
       <translation>Multi-Page TIFF exportieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2439"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2440"/>
       <source>Multi-Page TIFF:</source>
       <translation>Multi-Page TIFF:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2442"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2451"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2443"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2452"/>
       <source>&amp;Browse</source>
       <translation>&amp;Durchsuchen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2445"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2446"/>
       <source>No Multi-Page TIFF loaded</source>
       <translation>Kein Multi-Page TIFF geladen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2448"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2449"/>
       <source>Save Folder:</source>
       <translation>Zielordner:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2454"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2455"/>
       <source>Specify a Save Folder</source>
       <translation>Einen Zielordner auswählen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2457"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2458"/>
       <source>Filename:</source>
       <translation>Dateiname:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2468"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2469"/>
       <source>Export Pages</source>
       <translation>Exportiere Seiten</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2475"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2476"/>
       <source>Overwrite</source>
       <translation>Überschreiben</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2507"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
       <source>&amp;Export</source>
       <translation>&amp;Exportieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2508"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2509"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2525"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2526"/>
       <source>Open TIFF</source>
       <translation>Öffne TIFF Datei</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2536"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2537"/>
       <source>Open an Image Directory</source>
       <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2623"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2624"/>
       <source>%1 exists, skipping...</source>
       <translation>%1 ist bereits vorhanden, überspringe...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2628"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2629"/>
       <source>Sorry, I could not load page: %1</source>
       <translation>%1 konnte nicht geladen werden</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2636"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2637"/>
       <source>Sorry, I could not save: %1</source>
       <translation>%1 konnte nicht gespeichert werden</translation>
     </message>
@@ -4355,22 +4355,22 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkForceThumbDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3645"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3646"/>
       <source>Overwrite Existing Thumbnails</source>
       <translation>Existierende EXIF-Vorschaubilder überschreiben</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3650"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
       <source>&amp;OK</source>
       <translation>&amp;OK</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3651"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3652"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3668"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3669"/>
       <source>Compute thumbnails for all images in:
  %1
 </source>
@@ -4436,7 +4436,7 @@ berechnen?
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="354"/>
       <source>Remember Recent Files History</source>
-      <translation type="unfinished">Remember Recent Files History</translation>
+      <translation>Speichere Datei-Verlauf</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="356"/>
@@ -4451,7 +4451,7 @@ berechnen?
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="361"/>
       <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-      <translation type="unfinished">If any files are opened which are already open in a tab, don&apos;t open them again.</translation>
+      <translation>Verhindert das erneute Öffnen von bereits in einem Tab geöffneten Dateien. </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="364"/>
@@ -4461,7 +4461,7 @@ berechnen?
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="366"/>
       <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-      <translation type="unfinished">Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+      <translation>Aktiviert die "Gehe zu Tab", "Erster Tab" und "Letzter Tab" Optionen im Menü Anzeige und im Datei Menü die Optionen "Öffne Tabs" und "Speichere Tabs".</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="369"/>
@@ -4694,8 +4694,7 @@ berechnen?
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="923"/>
       <source>I can&apos;t save an empty file, sorry...
 </source>
-      <translation type="unfinished">I can&apos;t save an empty file, sorry...
-</translation>
+      <translation>Entschuldigung, ich kann keine leere Datei speichern...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="928"/>
@@ -4706,7 +4705,7 @@ berechnen?
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="933"/>
       <source>Sorry, I can&apos;t write to the file: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t write to the file: %1</translation>
+      <translation>Entschuldigung, ich kann die Datei '%1' nicht schreiben.</translation>
     </message>
   </context>
   <context>
@@ -4751,7 +4750,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="883"/>
       <source>Sorry, I could not find the GPS coordinates...</source>
-      <translation type="unfinished">Sorry, I could not find the GPS coordinates...</translation>
+      <translation>Entschuldigung, ich konnte die GPS-Koordinaten nicht finden...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="973"/>
@@ -4773,7 +4772,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
       <source>Sorry, I could not copy the image...</source>
-      <translation type="unfinished">Sorry, I could not copy the image...</translation>
+      <translation>Entschuldigung, ich konnte das Bild nicht kopieren.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1179"/>
@@ -5114,7 +5113,7 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
       <source>Change Metadata Entries</source>
-      <translation type="unfinished">Change Metadata Entries</translation>
+      <translation>Ändere Metadaten-Einträge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
@@ -5161,174 +5160,174 @@ enthält keine Bilder</translation>
   <context>
     <name>nmc::DkMosaicDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2699"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2700"/>
       <source>Create Mosaic Image</source>
       <translation>Erstellen eines Mosaikbildes</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2762"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2763"/>
       <source>Darken</source>
       <translation>Verfinstern</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2763"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2764"/>
       <source>Lighten</source>
       <translation>Aufhellen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2764"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2765"/>
       <source>Saturation</source>
       <translation>Sättigung</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2772"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2773"/>
       <source>Mosaic Image:</source>
       <translation>Mosaikbild:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2775"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2785"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2776"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2786"/>
       <source>&amp;Browse</source>
       <translation>&amp;Durchsuchen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2777"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2778"/>
       <source>Choose which image to mosaic.</source>
       <translation>Wählen Sie das Bild, das als Mosaik dargestellt werden soll</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2779"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2780"/>
       <source>No Image loaded</source>
       <translation>Kein Bild geladen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2782"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2783"/>
       <source>Mosaic Elements Folder:</source>
-      <translation type="unfinished">Mosaic Elements Folder:</translation>
+      <translation>Mosaik Elemente Ordner</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2787"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2788"/>
       <source>Specify the root folder of images used for mosaic elements.</source>
-      <translation type="unfinished">Specify the root folder of images used for mosaic elements.</translation>
+      <translation>Basis-Ordner für Bilder, die als Mosaik-Elemente verwendet werden, spezifizieren.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2789"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2790"/>
       <source>Specify an Image Database</source>
       <translation>Bilddatenbank festlegen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2792"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2793"/>
       <source>Resolution:</source>
       <translation>Auflösung:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2796"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2797"/>
       <source>Pixel Width</source>
       <translation>Pixel Breite</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2801"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2802"/>
       <source>Pixel Height</source>
       <translation>Pixel Höhe</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2808"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2809"/>
       <source>Patches:</source>
       <translation>Patches:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2812"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2813"/>
       <source>Number of Horizontal Patches</source>
       <translation>Anzahl der horizontalenPatches</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2817"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2818"/>
       <source>Number of Vertical Patches</source>
       <translation>Anzahl der vertikalen Patches</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2822"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2823"/>
       <source>If this label turns red, the computation might be slower.</source>
       <translation>Wenn dieses Label rot ist, dauert die Berechnung möglicherweise länger</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2825"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2826"/>
       <source>Filters:</source>
       <translation>Filter:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2830"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2831"/>
       <source>You can split multiple ignore words with ;</source>
       <translation>Wörter mit ";" abtrennen um mehrere zu ignorieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2834"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2835"/>
       <source>All Images</source>
       <translation>Alle Bilder</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2883"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
       <source>&amp;Save</source>
       <translation>&amp;Speichern</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
       <source>&amp;Generate</source>
       <translation>&amp;Generieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2885"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2886"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2905"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2906"/>
       <source>Open TIFF</source>
       <translation>Öffne TIFF Datei</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2915"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2916"/>
       <source>Open an Image Directory</source>
       <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2936"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2948"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2937"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2949"/>
       <source>%1 x %2 cm @150 dpi</source>
       <translation>%1 x %2 cm @150 dpi</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2993"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2994"/>
       <source>Patch Resolution: %1 px</source>
       <translation>Patch Auflösung: %1 px</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3191"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3192"/>
       <source>Filling empty areas...</source>
       <translation>Leere Bildbereiche auffüllen...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3195"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3196"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
       <translation>Bilder werden doppelt verwendet - möglicherweise ist die Bilddatenbank zu klein?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3200"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3201"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
       <translation>Mit dieser Datenbank kann dieses Mosaik nicht erstellt werden.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3317"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3318"/>
       <source>Something is seriously wrong, I could not load: %1</source>
       <translation>Fehler! Konnte %1 nicht laden</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3565"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3566"/>
       <source>Error</source>
       <translation>Fehler</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3565"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3566"/>
       <source>Sorry, I could not mix the image...</source>
       <translation>Leider konnte das Bild nicht darüber gelegt werden...</translation>
     </message>
@@ -5380,9 +5379,8 @@ enthält keine Bilder</translation>
       <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-      <translation type="unfinished">Window Locked
-To unlock: gain focus (ALT+Tab),
-then press %1</translation>
+      <translation>Fenster gesperrt.
+Zum Entsperren: Fokus erlangen (ALT+Tab)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="807"/>
@@ -5414,7 +5412,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="998"/>
       <source>Console</source>
-      <translation type="unfinished">Console</translation>
+      <translation>Konsole</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1040"/>
@@ -5468,7 +5466,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1250"/>
       <source>Sorry, I can&apos;t write to the fileInfo: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t write to the fileInfo: %1</translation>
+      <translation>Entschuldigung, ich kann FileInfo nicht schreiben: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1259"/>
@@ -5489,12 +5487,12 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1289"/>
       <source>Sorry, I can&apos;t delete: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t delete: %1</translation>
+      <translation>Entschuldigung, kann nicht löschen: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1305"/>
       <source>Sorry, I can&apos;t rename: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t rename: %1</translation>
+      <translation>Entschuldigung, kann nicht umbenennen: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1386"/>
@@ -5535,7 +5533,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1863"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation type="unfinished">Unable to install new version&lt;br&gt;</translation>
+      <translation>Update konnte nicht installiert werden &lt;br></translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1864"/>
@@ -5564,17 +5562,17 @@ bevor die Klicks weitergegeben werden</translation>
   <context>
     <name>nmc::DkOpacityDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2372"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2373"/>
       <source>Window Opacity</source>
       <translation>Fenstertransparenz</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2377"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
       <source>&amp;OK</source>
       <translation>&amp;OK</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2378"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2379"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
@@ -5651,7 +5649,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="337"/>
       <source>Press &lt;SPACE&gt; to start.</source>
-      <translation type="unfinished">Press &lt;SPACE&gt; to start.</translation>
+      <translation>Drücken Sie &lt;SPACE> zum Starten.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="485"/>
@@ -5661,7 +5659,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkPong.cpp" line="486"/>
       <source>Hit &lt;SPACE&gt; to start a new Game</source>
-      <translation type="unfinished">Hit &lt;SPACE&gt; to start a new Game</translation>
+      <translation>Mit &lt;SPACE> ein neues Spiel starten</translation>
     </message>
   </context>
   <context>
@@ -5686,52 +5684,52 @@ bevor die Klicks weitergegeben werden</translation>
     <name>nmc::DkPrintPreviewDialog</name>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2025"/>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2116"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2117"/>
       <source>Print Preview</source>
       <translation>Druckvoransicht</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2085"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2086"/>
       <source>Fit Width</source>
       <translation>Breite anpassen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2086"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2087"/>
       <source>Fit Page</source>
       <translation>Seite anpassen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2088"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2089"/>
       <source>Zoom in</source>
       <translation>Einzoomen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2091"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2092"/>
       <source>Zoom out</source>
       <translation>Auszoomen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2094"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2095"/>
       <source>keep ALT key pressed to zoom with the mouse wheel</source>
       <translation>ALT Taste gedrückt halten um mit dem Mausrad zu zoomen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2105"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2106"/>
       <source>Portrait</source>
       <translation>Hochformat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2108"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2109"/>
       <source>Landscape</source>
       <translation>Querformat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2112"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2113"/>
       <source>Page setup</source>
       <translation>Seiteneinstellungen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="2113"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="2114"/>
       <source>Print</source>
       <translation>Drucken</translation>
     </message>
@@ -6050,12 +6048,12 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
       <source>Bicubic (4x4 interpolatia)</source>
-      <translation type="unfinished">Bicubic (4x4 interpolatia)</translation>
+      <translation>Bikubisch (4x4 Interpolation)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="399"/>
       <source>Lanczos (8x8 interpolation)</source>
-      <translation type="unfinished">Lanczos (8x8 interpolation)</translation>
+      <translation>Lanczos (8x8 Interpolation)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="402"/>
@@ -6174,8 +6172,8 @@ bevor die Klicks weitergegeben werden</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1737"/>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-      <translation type="unfinished">%1 already used by %2 &gt; %3
-Press ESC to undo changes</translation>
+      <translation>%1 wird bereits von %2 > %3 verwendet
+Drücken Sie ESC zum Abbrechen</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1743"/>
@@ -6201,22 +6199,22 @@ Drücken Sie ESC zum Abbrechen</translation>
   <context>
     <name>nmc::DkSvgSizeDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4269"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4270"/>
       <source>width:</source>
       <translation>Breite:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4276"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4277"/>
       <source>height:</source>
       <translation>Höhe:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4292"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
       <source>&amp;OK</source>
       <translation>&amp;OK</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="4293"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="4294"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
@@ -6516,7 +6514,7 @@ Thumbnails werden erstellt...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="398"/>
       <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-      <translation type="unfinished">Sorry, currently we don&apos;t support: *.%1 files</translation>
+      <translation>Entschuldigung, aktuell unterstützen wir *.%1 Dateien nicht.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="403"/>
@@ -6863,32 +6861,32 @@ Please contact your system administrator for further information.</source>
   <context>
     <name>nmc::DkWelcomeDialog</name>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3674"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3675"/>
       <source>Welcome</source>
       <translation>Willkommen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3683"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3684"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
       <translation>Bitte wählen Sie ihre Sprache:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3688"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3689"/>
       <source>&amp;Register File Associations</source>
       <translation>Dateizuordnungen &amp;registrieren</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3691"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3692"/>
       <source>Set As &amp;Default Viewer</source>
       <translation>Als Standardbetrachter festlegen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3696"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
       <source>&amp;OK</source>
       <translation>&amp;OK</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkDialog.cpp" line="3697"/>
+      <location filename="../../src/DkGui/DkDialog.cpp" line="3698"/>
       <source>&amp;Cancel</source>
       <translation>&amp;Abbrechen</translation>
     </message>
