@@ -4462,7 +4462,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="366"/>
       <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-      <translation type="unfinished">Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</translation>
+      <translation>Aktiverar alternativen &quot;Gå till flik&quot;, &quot;Första fliken&quot;, och &quot;Sista fliken&quot; i Visa-menyn, och alternativen &quot;Öppna flikar&quot; och &quot;Spara flikar&quot; i Arkiv-menyn.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="369"/>
@@ -4696,7 +4696,7 @@ Vill du visa dem igen?</translation>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="923"/>
       <source>I can&apos;t save an empty file, sorry...
 </source>
-      <translation type="unfinished">I can&apos;t save an empty file, sorry...
+      <translation>Kan inte spara en tom fil...
 </translation>
     </message>
     <message>
@@ -4709,7 +4709,7 @@ Vill du visa dem igen?</translation>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="933"/>
       <source>Sorry, I can&apos;t write to the file: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t write to the file: %1</translation>
+      <translation>Kan inte skriva till filen: %1</translation>
     </message>
   </context>
   <context>
@@ -4755,7 +4755,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="883"/>
       <source>Sorry, I could not find the GPS coordinates...</source>
-      <translation type="unfinished">Sorry, I could not find the GPS coordinates...</translation>
+      <translation>Kunde inte hitta GPS-koordinaterna...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="973"/>
@@ -4777,7 +4777,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1132"/>
       <source>Sorry, I could not copy the image...</source>
-      <translation type="unfinished">Sorry, I could not copy the image...</translation>
+      <translation>Kunde inte kopiera bilden...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1179"/>
@@ -4942,7 +4942,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
       <source>Compression</source>
-      <translation type="unfinished">Compression</translation>
+      <translation>Komprimering</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="79"/>
@@ -5119,7 +5119,7 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
       <source>Change Metadata Entries</source>
-      <translation type="unfinished">Change Metadata Entries</translation>
+      <translation>Ändra metadataposter</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1130"/>
@@ -5209,12 +5209,12 @@ innehåller ingen bild</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2783"/>
       <source>Mosaic Elements Folder:</source>
-      <translation type="unfinished">Mosaic Elements Folder:</translation>
+      <translation>Mapp för mosaikelement:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2788"/>
       <source>Specify the root folder of images used for mosaic elements.</source>
-      <translation type="unfinished">Specify the root folder of images used for mosaic elements.</translation>
+      <translation>Specificera rotmappen för bilder som används till mosaikelement.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2790"/>
@@ -5385,9 +5385,9 @@ innehåller ingen bild</translation>
       <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
-      <translation type="unfinished">Window Locked
-To unlock: gain focus (ALT+Tab),
-then press %1</translation>
+      <translation>Fönstret är låst.
+För att låsa upp: Fokusera (ALT+Tab) och
+tryck sedan %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="807"/>
@@ -5419,7 +5419,7 @@ innan du försöker arbeta igenom fönstret.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="998"/>
       <source>Console</source>
-      <translation type="unfinished">Console</translation>
+      <translation>Konsoll</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1040"/>
@@ -5474,7 +5474,7 @@ innan du försöker arbeta igenom fönstret.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1250"/>
       <source>Sorry, I can&apos;t write to the fileInfo: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t write to the fileInfo: %1</translation>
+      <translation>Kan inte skriva till filinfo: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1259"/>
@@ -5496,12 +5496,12 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1289"/>
       <source>Sorry, I can&apos;t delete: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t delete: %1</translation>
+      <translation>Kan inte ta bort: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1305"/>
       <source>Sorry, I can&apos;t rename: %1</source>
-      <translation type="unfinished">Sorry, I can&apos;t rename: %1</translation>
+      <translation>Kan inte byta namn på: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1386"/>
@@ -6037,7 +6037,7 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="385"/>
       <source>Scale</source>
-      <translation type="unfinished">Scale</translation>
+      <translation>Skala</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="395"/>
@@ -6057,12 +6057,12 @@ Vill du ersätta den?</translation>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
       <source>Bicubic (4x4 interpolatia)</source>
-      <translation type="unfinished">Bicubic (4x4 interpolatia)</translation>
+      <translation>Bikubisk (4x4 interpolering)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="399"/>
       <source>Lanczos (8x8 interpolation)</source>
-      <translation type="unfinished">Lanczos (8x8 interpolation)</translation>
+      <translation>Lanczos (8x8 interpolering)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="402"/>
@@ -6525,7 +6525,7 @@ Skapar miniatyrer...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="398"/>
       <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-      <translation type="unfinished">Sorry, currently we don&apos;t support: *.%1 files</translation>
+      <translation>För närvarande stöds inte: *.%1-filer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="403"/>
