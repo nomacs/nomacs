@@ -147,6 +147,10 @@ def search_for_used_dlls(infile, path, dll_list, conf):
 
             dllname = line[pos:match.end()].decode()
 
+            # MSVC marks delay loaded dlls with the string OCF
+            if dllname.startswith("OCF"):
+                dllname = dllname.replace("OCF", "", 1)
+
             regexp = "("+")|(".join(conf['blacklist'])+")"
             blacklist_match = re.match(
                 regexp, dllname.lower())

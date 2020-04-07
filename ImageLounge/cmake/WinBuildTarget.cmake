@@ -75,20 +75,20 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSI
 set(DELAY_DLL_NAMES
 	raw.dll
 	exiv2.dll
-	)
+    )
 
 # dear future me: sorry, for manually defining them - but I have no time right now
 set(DELAY_DLL_NAMES_DEBUG 
-	opencv_core411d.dll
-	opencv_imgproc411d.dll
+	opencv_core420d.dll
+	opencv_imgproc420d.dll
 	quazip5d.dll
 	Qt5WinExtrasd.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
-	opencv_core411.dll
-	opencv_imgproc411.dll
+	opencv_core420.dll
+	opencv_imgproc420.dll
 	quazip5.dll
 	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}

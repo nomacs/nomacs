@@ -22,8 +22,8 @@ configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -n
 ```
 ```bat
 REM Visual Studio 2019
-REM replace -prefix build with i.e. -prefix C:/Qt/Qt5.13.0-x64
-configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake examples -nomake tests -skip qtwebengine -platform win32-msvc -prefix build
+REM replace -prefix build with i.e. -prefix C:/Qt/Qt5.14.1-x64
+configure.bat -debug-and-release -opensource -confirm-license -opengl dynamic -no-dbus -nomake examples -nomake tests -make tools -make libs -skip qtwebengine -platform win32-msvc -prefix C:/Qt/Qt-5.14.1
 ```
 - after it's finished run ``nmake``
 - now it's time to have a cup of coffee
