@@ -4,6 +4,7 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs.svg?branch=master)](https://travis-ci.org/nomacs/nomacs)
 [![Downloads](https://img.shields.io/github/downloads/nomacs/nomacs/total.svg)](https://github.com/nomacs/nomacs/releases/latest)
+[![Crowdin](https://badges.crowdin.net/nomacs/localized.svg)](http://translate.nomacs.org/project/nomacs)
 
 - [Compiling Qt](./ImageLounge/manuals/Compiling-Qt.md)
 - [Releasing](./ImageLounge/manuals/Releasing.md)
@@ -12,13 +13,13 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 ### Compile dependencies
 
-- `Qt` SDK or the compiled sources (>= 5.2.1)
+- [Qt](https://github.com/qt/qtbase) SDK or the compiled sources (>= 5.2.1)
 - [expat](https://github.com/nomacs/expat) (needed for exiv2)
 - [Exiv2](https://github.com/nomacs/exiv2) (>= 0.26)
 - [OpenCV](https://github.com/TUWien/opencv) (>= 3.4) _optional_
 - [LibRaw](https://github.com/nomacs/LibRaw) (>= 0.17) _optional_
 - [QuaZip](https://github.com/nomacs/quazip) (>= 0.7.6) _optional_
-- `Python` (>= 3.6) for build scripts
+- [Python](https://github.com/python/cpython) (>= 3.6) for build scripts
 
 ### Compile LibRaw
 
