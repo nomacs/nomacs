@@ -27,8 +27,6 @@
 
 #include "DkFakeMiniaturesDialog.h"
 
-#include "opencv2/imgproc/imgproc_c.h"
-
 #define INIT_X 0
 #define INIT_Y 0.7117
 #define INIT_WIDTH 1
