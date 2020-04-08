@@ -24,6 +24,8 @@ repository.zip
 /.gitattributes
 /installer/nomacs/.*
 /installer/nomacs.x64/*
+/installer-inno/nomacs.x64/*
+/installer/nomacs.x64-old/*
 /installer/nomacs.x86/*
 /installer/img/banner-thanks.psd
 /installer/*.wixobj

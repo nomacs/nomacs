@@ -3,7 +3,7 @@
 
 #define MyAppName "nomacs - Image Lounge"
 #define MyAppDesc "nomacs - Image Lounge is a lightweight image viewer."
-#define MyAppVersion "3.12.1.4206"
+#define MyAppVersion "3.14.3"
 #define MyAppURL "https://nomacs.org/"
 #define MyAppExeName "bin\nomacs.exe"
 #define MyAppBaseDir "."
@@ -11,7 +11,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{86C293B8-D8A9-40D7-8E54-BF4F8059597B}
+AppId={{70663c70-5bf6-4e90-8a4a-c2f167c017ad}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -110,8 +110,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode; Components: main
 
 [Files]
-Source: "{#MyAppBaseDir}\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
-Source: "{#MyAppBaseDir}\bin\settings.ini"; DestDir: "{app}\bin"; Flags: deleteafterinstall; Components: main
+Source: "{#MyAppBaseDir}\nomacs.x64\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
+; Source: "{#MyAppBaseDir}\bin\settings.ini"; DestDir: "{app}\bin"; Flags: deleteafterinstall; Components: main
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -139,13 +139,13 @@ Type: filesandordirs; Name: "{userappdata}\nomacs"; Components: resetsettings
 Name: "en"; MessagesFile: "compiler:Default.isl"
 ;Name: "afrikaans"; MessagesFile: "compiler:Languages\Afrikaans.isl"
 ;Name: "albanian"; MessagesFile: "compiler:Languages\Albanian.isl"
-Name: "ar"; MessagesFile: "compiler:Languages\Arabic.isl"
+;Name: "ar"; MessagesFile: "compiler:Languages\Arabic.isl"
 ;Name: "armenian"; MessagesFile: "compiler:Languages\Armenian.isl"
 ;Name: "asturian"; MessagesFile: "compiler:Languages\Asturian.isl"
 ;Name: "basque"; MessagesFile: "compiler:Languages\Basque.isl"
 ;Name: "belarusian"; MessagesFile: "compiler:Languages\Belarusian.isl"
 ;Name: "bengali"; MessagesFile: "compiler:Languages\Bengali.islu"
-Name: "bs"; MessagesFile: "compiler:Languages\Bosnian.isl"
+;Name: "bs"; MessagesFile: "compiler:Languages\Bosnian.isl"
 ;Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 Name: "bg"; MessagesFile: "compiler:Languages\Bulgarian.isl"
 ;Name: "catalan"; MessagesFile: "compiler:Languages\Catalan.isl"
