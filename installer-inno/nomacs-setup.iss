@@ -25,7 +25,7 @@ DefaultDirName={autopf}\{#MyAppName}
 ;PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#MyAppBaseDir}
-OutputBaseFilename=nomacs setup
+OutputBaseFilename=nomacs-setup-x64
 WizardImageFile={#MyAppBaseDir}\img\banner-thanks.bmp
 ;WizardSmallImageFile={#MyAppBaseDir}\img\nomacs.svg
 SetupIconFile={#MyAppBaseDir}\img\nomacs.ico
@@ -37,6 +37,7 @@ ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 ChangesAssociations=yes
 CloseApplications=yes
+DisableProgramGroupPage=yes
 
 [Types]
 Name: "full"; Description: "{code:GetMsgFullInstallation}"
@@ -105,9 +106,9 @@ Name: "fa\x3f"; Description: ".x3f"; Types: full custom
 Name: "fa\xbm"; Description: ".xbm"; Types: full custom
 Name: "fa\xpm"; Description: ".xpm"; Types: full custom
 
-[Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Components: main
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode; Components: main
+; [Tasks]
+; Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Components: main
+; Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode; Components: main
 
 [Files]
 Source: "{#MyAppBaseDir}\nomacs.x64\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
@@ -116,8 +117,8 @@ Source: "{#MyAppBaseDir}\nomacs.x64\*"; DestDir: "{app}\bin"; Flags: ignoreversi
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+;Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";
 
 [Ini]
 Filename: "{app}\bin\default.ini"; Section: "General"; Key: "firstTime"; String: "false"; Components: setlanguage
