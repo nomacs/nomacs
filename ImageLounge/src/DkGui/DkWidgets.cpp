@@ -457,6 +457,12 @@ void DkExplorer::setCurrentPath(const QString& filePath) {
 	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(filePath)));
 }
 
+void DkExplorer::setRootPath(const QString &root) {
+
+	fileTree->setRootIndex(sortModel->mapFromSource(fileModel->index(root)));
+	fileModel->setRootPath(root);
+}
+
 void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 	QFileInfo cFile = fileModel->fileInfo(sortModel->mapToSource(index));

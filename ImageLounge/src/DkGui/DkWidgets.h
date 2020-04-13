@@ -367,6 +367,7 @@ public:
 public slots:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
 	void setCurrentPath(const QString& filePath);
+	void setRootPath(const QString &root);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
