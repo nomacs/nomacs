@@ -408,6 +408,7 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	readSettings();
 
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+	connect(rootPathBrowseButton, SIGNAL(clicked()), this, SLOT(browseClicked()));
 	
 	if (mLoadSelected)
 		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
@@ -437,7 +438,21 @@ void DkExplorer::createLayout() {
 	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
 	fileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
-	setWidget(fileTree);
+	QWidget* rootPathWidget = new QWidget(this);
+	QHBoxLayout* rpLayout = new QHBoxLayout(rootPathWidget);
+	rootPathLabel = new DkElidedLabel(rootPathWidget, "");
+	rootPathBrowseButton = new QPushButton(tr("Browse"));
+	rpLayout->setContentsMargins(4, 2, 2, 2);
+	rpLayout->addWidget(rootPathLabel, 1);
+	rpLayout->addWidget(rootPathBrowseButton);
+
+	QWidget* widget = new QWidget(this);
+	QVBoxLayout* layout = new QVBoxLayout(widget);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setSpacing(0);
+	layout->addWidget(rootPathWidget);
+	layout->addWidget(fileTree);
+	setWidget(widget);
 }
 
 void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img) {
@@ -457,10 +472,21 @@ void DkExplorer::setCurrentPath(const QString& filePath) {
 	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(filePath)));
 }
 
+void DkExplorer::browseClicked() {
+
+	QString root = QFileDialog::getExistingDirectory(this, tr("Choose Root Directory"),
+	                                                 rootPath, QFileDialog::ShowDirsOnly);
+	if (root != "")
+    setRootPath(root);
+}
+
 void DkExplorer::setRootPath(const QString &root) {
 
+	rootPath = root;
 	fileTree->setRootIndex(sortModel->mapFromSource(fileModel->index(root)));
 	fileModel->setRootPath(root);
+	rootPathLabel->setText(root);
+	rootPathLabel->setToolTip(root);
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const {
@@ -571,6 +597,7 @@ void DkExplorer::writeSettings() {
 
 	settings.setValue("LoadSelected", mLoadSelected);
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
+	settings.setValue("RootPath", rootPath);
 	settings.endGroup();
 }
 
@@ -593,6 +620,7 @@ void DkExplorer::readSettings() {
 
 	mLoadSelected = settings.value("LoadSelected", mLoadSelected).toBool();
 	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
+	setRootPath(settings.value("RootPath", QDir::rootPath()).toString());
 	settings.endGroup();
 }
 
