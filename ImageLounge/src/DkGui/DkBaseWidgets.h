@@ -167,6 +167,26 @@ protected:
 	virtual void updateStyleSheet();
 };
 
+class DllCoreExport DkElidedLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkElidedLabel(QWidget *parent = 0, const QString &text = QString());
+
+	void setText(QString text);
+	QString text() const { return content; }
+	QSize minimumSizeHint();
+	QSize minimumSize();
+	int minimumWidth();
+
+protected:
+	void resizeEvent(QResizeEvent *event);
+
+private:
+	void updateElision();
+	QString content;
+};
+
 class DkLabelBg : public DkLabel {
 	Q_OBJECT
 

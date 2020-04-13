@@ -354,6 +354,41 @@ DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, tex
 	setObjectName("DkLabelBg");
 }
 
+// DkElidedLabel --------------------------------------------------------------------
+DkElidedLabel::DkElidedLabel(QWidget *parent, const QString &text)
+	: QLabel("", parent) {
+	setText(text);
+	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum);
+}
+
+void DkElidedLabel::setText(QString text) {
+	content = text;
+	updateElision();
+}
+
+void DkElidedLabel::resizeEvent(QResizeEvent *event) {
+	updateElision();
+	QLabel::resizeEvent(event);
+}
+
+void DkElidedLabel::updateElision() {
+	QFontMetrics metrix(font());
+	QString clippedText = metrix.elidedText(content, Qt::ElideRight, width());
+	QLabel::setText(clippedText);
+}
+
+QSize DkElidedLabel::minimumSizeHint() {
+	return QSize(0, QLabel::minimumSizeHint().height());
+}
+
+QSize DkElidedLabel::minimumSize() {
+	return QSize(0, QLabel::minimumSize().height());
+}
+
+int DkElidedLabel::minimumWidth() {
+	return 0;
+}
+
 // DkFadeLabel --------------------------------------------------------------------
 DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 	init();
