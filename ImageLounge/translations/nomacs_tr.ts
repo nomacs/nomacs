@@ -1576,7 +1576,7 @@ ve onlar için sekmeleri açın</translation>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="407"/>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="881"/>
       <source>&lt;data too large to display&gt;</source>
-      <translation type="unfinished"/>
+      <translation>&lt;Veri göstermek için çok büyük></translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="522"/>
