@@ -620,7 +620,7 @@ void DkExplorer::readSettings() {
 
 	mLoadSelected = settings.value("LoadSelected", mLoadSelected).toBool();
 	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
-	setRootPath(settings.value("RootPath", QDir::rootPath()).toString());
+	setRootPath(settings.value("RootPath", QDir::homePath()).toString());
 	settings.endGroup();
 }
 
