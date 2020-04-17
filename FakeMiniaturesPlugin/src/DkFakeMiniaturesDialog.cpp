@@ -269,7 +269,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 	//cv::Mat distImg;
 	//cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
 
-	cv::distanceTransform(distImg, distImg, CV_DIST_C, 3);
+	cv::distanceTransform(distImg, distImg, cv::DIST_C, 3);
 	cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
 	
 	for (size_t idx = 0; idx < planes.size(); idx++)
@@ -281,7 +281,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 
 	if(satFactor > 1) {
 		Mat imgHsv;
-		cvtColor(blurImg, imgHsv, CV_RGB2HSV);
+		cvtColor(blurImg, imgHsv, cv::COLOR_RGB2HSV);
 		std::vector<Mat> imgHsvCh;
 		split(imgHsv, imgHsvCh);
 
@@ -297,9 +297,10 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 			}
 		}
 	
+
 		merge(imgHsvCh, imgHsv);
 		Mat tempImg(blurImg);
-		cvtColor(imgHsv, blurImg, CV_HSV2RGB);
+		cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
 	
 		if(tempImg.type() == CV_8UC4) {	// the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
 			std::vector<Mat> inImgCh;

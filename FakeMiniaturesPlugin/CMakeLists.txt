@@ -18,7 +18,7 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
   NMC_FINDQT()
 
   # OpenCV
-  NMC_FIND_OPENCV()
+  NMC_FIND_OPENCV("core" "imgproc")
 endif()
 	
 include_directories (

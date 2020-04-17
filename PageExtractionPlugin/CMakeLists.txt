@@ -18,11 +18,10 @@ if (NOT BUILDING_MULTIPLE_PLUGINS)
   NMC_FINDQT()
 
   # OpenCV
-  NMC_FIND_OPENCV()
+  NMC_FIND_OPENCV("core" "imgproc")
     
 endif()
-	
-NMC_FIND_OPENCV("core" "imgproc")
+
 include_directories (
     ${QT_INCLUDES}
     ${OpenCV_INCLUDE_DIRS}
