@@ -82,8 +82,9 @@ note that you have to execute
 ``` console
 sudo ldconfig
 ```
+after a successfully install.
 
-on your own after a successfully install
+Install the [heif plugin](https://github.com/jakar/qt-heif-image-plugin) for HEIF support.
 
 ### For Package Maintainers
 
