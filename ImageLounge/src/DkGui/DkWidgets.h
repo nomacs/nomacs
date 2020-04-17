@@ -367,6 +367,8 @@ public:
 public slots:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
 	void setCurrentPath(const QString& filePath);
+	void browseClicked();
+	void setRootPath(const QString &root);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
@@ -385,9 +387,14 @@ protected:
 	void writeSettings();
 	void readSettings();
 
+	QString rootPath;
+	QPushButton* rootPathBrowseButton;
+	DkElidedLabel* rootPathLabel;
+
 	DkFileSystemModel* fileModel;
 	DkSortFileProxyModel* sortModel;
 	QTreeView* fileTree;
+
 	QVector<QAction*> columnActions;
 	bool mLoadSelected = false;
 };
