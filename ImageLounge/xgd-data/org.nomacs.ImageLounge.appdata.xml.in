@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2020 Markus Diem -->
+<component type="desktop-application">
+
+    <id>org.nomacs.ImageLounge</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <name>nomacs - Image Lounge</name>
+    <developer_name>Markus Diem</developer_name>
+    <summary>nomacs is a free, open source image viewer</summary>
+
+    <description>
+        <p>
+        nomacs features semi-transparent widgets that display 
+        additional information such as thumbnails, metadata or histogram. 
+        It is able to browse images in zip or MS Office files which can be 
+        extracted to a directory. Metadata stored with the image can be 
+        displayed and you can add notes to images. A thumbnail preview of 
+        the current folder is included as well as a file explorer panel which 
+        allows switching between folders. Within a directory you can apply a 
+        file filter, so that only images are displayed whose filenames have a 
+        certain string or match a regular expression. Activating the cache 
+        allows for instantly switching between images.
+        </p>
+    </description>
+
+    <launchable type="desktop-id">org.nomacs.ImageLounge.desktop</launchable>
+    <url type="homepage">https://nomacs.org</url>
+
+    <content_rating type="oars-1.1">
+        <content_attribute id="drugs-alcohol">mild</content_attribute>
+        <content_attribute id="language-profanity">mild</content_attribute>
+    </content_rating>
+
+    <screenshots>
+        <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.49.26-1.png</screenshot>
+        <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.59.10.png</screenshot>
+    </screenshots>
+
+    <releases>
+        <release version="@NOMACS_VERSION@" date="@TODAY@"/>
+    </releases>
+</component>
