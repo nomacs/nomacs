@@ -47,6 +47,7 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QDebug>
+#include <QtConcurrentRun>
 
 #include <qmath.h>
 #include <assert.h>
@@ -1615,8 +1616,11 @@ int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveF
 #endif // #ifdef WITH_OPENCV
 
 // FileDownloader --------------------------------------------------------------------
-FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
-	QNetworkProxyQuery npq(QUrl("https://nomacs.org"));
+FileDownloader::FileDownloader(const QUrl& imageUrl, const QString& filePath, QObject *parent) : QObject(parent) {
+	
+	mFilePath = filePath;
+	
+	QNetworkProxyQuery npq(QUrl("https://google.com"));
 	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
 		mWebCtrl.setProxy(listOfProxies[0]);
@@ -1638,6 +1642,35 @@ void FileDownloader::downloadFile(const QUrl& url) {
 	mUrl = url;
 }
 
+void FileDownloader::saved() {
+
+	if (mSaveWatcher.result()) {
+		qInfo() << "downloaded image saved to" << mFilePath;
+		emit downloaded(mFilePath);
+	}
+	else {
+		qWarning() << "could not download file to " << mFilePath;
+	}
+}
+
+bool FileDownloader::save(const QString& filePath, const QSharedPointer<QByteArray> data) {
+
+	if (!data) {
+		qWarning() << "cannot save file if data is NULL";
+		return false;
+	}
+
+	QFileInfo fi(filePath);
+
+	if (!fi.absoluteDir().exists())
+		QDir().mkpath(fi.absolutePath());
+
+	QFile f(filePath);
+	f.open(QIODevice::WriteOnly);
+
+	return f.write(*data);
+}
+
 void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 
 	if (pReply->error() != QNetworkReply::NoError) {
@@ -1648,7 +1681,16 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 	mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
 	//emit a signal
 	pReply->deleteLater();
-	emit downloaded();
+
+	// data only requested
+	if (mFilePath.isEmpty()) {
+		emit downloaded();
+	}
+	// ok save it
+	else {
+		connect(&mSaveWatcher, SIGNAL(finished()), this, SLOT(saved()), Qt::UniqueConnection);
+		mSaveWatcher.setFuture(QtConcurrent::run(&nmc::FileDownloader::save, mFilePath, mDownloadedData));
+	}
 }
 
 QSharedPointer<QByteArray> FileDownloader::downloadedData() const {

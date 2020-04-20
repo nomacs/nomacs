@@ -200,7 +200,7 @@ protected slots:
 	void imageLoaded();
 	void savingFinished();
 	void loadingFinished();
-	void fileDownloaded();
+	void fileDownloaded(const QString& filePath);
 
 protected:
 	void fetchImage();

@@ -959,9 +959,6 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	QApplication::sendPostedEvents();	// force an event post here
 
-	if (mCurrentImage && mCurrentImage->isFileDownloaded())
-		saveTempFile(mCurrentImage->image());
-
 	updateCacher(mCurrentImage);
 	updateHistory();
 
@@ -981,7 +978,6 @@ void DkImageLoader::downloadFile(const QUrl& url) {
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(QString());
 	setCurrentImage(newImg);
 	newImg->downloadFile(url);
-	newImg->setEdited(true);
 	emit updateSpinnerSignalDelayed(true);
 }
 
