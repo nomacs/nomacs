@@ -2,10 +2,12 @@ nomacs 3.14.4
 =============
 - fixes batch resize crash
 - translations updated
+- cr3 support added
 - Updates
     - Qt 5.14.1
     - OpenCV 4.2.0
     - quazip 0.8
+	- LibRaw (nightly)
 
 nomacs 3.14.2
 =============
