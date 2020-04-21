@@ -840,7 +840,7 @@ void DkImageContainerT::downloadFile(const QUrl& url) {
 		if (!QFileInfo(savePath).exists())
 			savePath = QDir::tempPath() + "/nomacs";
 		
-		QFileInfo saveFile(savePath, url.toString().split("/").last());
+		QFileInfo saveFile(savePath, DkUtils::nowString() + " " + DkUtils::fileNameFromUrl(url));
 
 		mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, saveFile.absoluteFilePath(), this));
 		connect(mFileDownloader.data(), SIGNAL(downloaded(const QString&)), this, SLOT(fileDownloaded(const QString&)), Qt::UniqueConnection);

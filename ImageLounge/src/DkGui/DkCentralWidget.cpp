@@ -1322,8 +1322,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }
     else {
-        //
-        qDebug() << "no handled Mime types found in drop: " << mimeData->formats();
+        qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
     }
 
 	// load from image buffer
