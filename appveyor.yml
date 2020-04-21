@@ -1,0 +1,33 @@
+image: Visual Studio 2019
+configuration: Release
+skip_commits:
+  files:
+    - '.github/*'
+    - '.travis.yml'
+    - '.gitignore'
+    - '*.md'
+
+install:
+
+ - git submodule update --init --recursive
+ - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+ # my machine:
+ #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
+ - cd ImageLounge
+ - mkdir build
+ - cd build
+ - cmake -DENABLE_TRANSLATIONS=ON .. 
+
+build:
+  project: build/nomacs.sln
+  parallel: true
+  verbosity: minimal
+
+after_build:
+  - copy %CONFIGURATION%\nomacs.exe .
+
+artifacts:
+- path: 'build\libavif_vs2019_x64_*.zip'
+  name: Static Lib and Includes
+- path: 'build\*.exe'
+  name: Basic apps
