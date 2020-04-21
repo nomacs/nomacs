@@ -9,20 +9,22 @@ skip_commits:
 
 environment:
     matrix:
-    - PLATFORM: x86
-      QT5: C:\Qt\5.14.1\msvc2017
-    - PLATFORM: x86_amd64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       QT5: C:\Qt\5.14.1\msvc2017_64
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      ARCHITECTURE: x86_64
+      WARNINGS_AS_ERRORS: ON
 
 install:
- - git submodule update --init --recursive
- - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
- # my machine:
- #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
- - cd ImageLounge
- - mkdir build
- - cd build
- - cmake -DENABLE_TRANSLATIONS=ON -DCMAKE_PREFIX_PATH=%QT5% -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF ..
+
+    #  - git submodule update --init --recursive
+    # my machine:
+    #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
+    - call "%VCVARS%"
+    - cd ImageLounge
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_TRANSLATIONS=ON -DCMAKE_PREFIX_PATH=%QT5% -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF ..
  
 build:
   project: build/nomacs.sln
