@@ -1448,6 +1448,21 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	return rImg;
 }
 
+void DkResizeDialog::setVisible(bool visible) {
+
+	QDialog::setVisible(visible);
+
+	updateSnippets();
+	drawPreview();
+
+}
+
+void DkResizeDialog::resizeEvent(QResizeEvent* re) {
+
+	drawPreview();
+	QDialog::resizeEvent(re);
+}
+
 // DkShortcutDelegate --------------------------------------------------------------------
 DkShortcutDelegate::DkShortcutDelegate(QObject* parent) : QItemDelegate(parent) {
 	mItem = 0;
