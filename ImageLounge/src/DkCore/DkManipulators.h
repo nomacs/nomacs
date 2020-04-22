@@ -131,6 +131,7 @@ public:
 		m_hue,
 		m_exposure, 
 		m_tiny_planet,
+		m_blur,
 		m_unsharp_mask,
 		
 		m_ext_end

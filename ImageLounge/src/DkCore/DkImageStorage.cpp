@@ -1510,6 +1510,27 @@ void DkImage::tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bo
 
 #endif
 
+bool DkImage::gaussianBlur(QImage& img, float sigma) {
+
+#ifdef WITH_OPENCV
+	DkTimer dt;
+	cv::Mat imgCv = DkImage::qImage2Mat(img);
+
+	cv::Mat imgG;
+	cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
+	cv::Mat gy = gx.t();
+	cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
+	img = DkImage::mat2QImage(imgG);
+
+	qDebug() << "gaussian blur takes: " << dt;
+#else
+	Q_UNUSED(img);
+	Q_UNUSED(sigma);
+#endif
+
+	return true;
+}
+
 bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 
 #ifdef WITH_OPENCV

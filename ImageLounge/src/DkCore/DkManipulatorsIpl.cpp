@@ -191,7 +191,37 @@ bool DkTinyPlanetManipulator::inverted() const {
 	return mInverted;
 }
 
-// DkUnsharlpMaskManipulator --------------------------------------------------------------------
+// DkUnsharpMaskManipulator --------------------------------------------------------------------
+DkBlurManipulator::DkBlurManipulator(QAction* action) : DkBaseManipulatorExt(action) {
+}
+
+QImage DkBlurManipulator::apply(const QImage& img) const {
+
+	QImage imgC = img.copy();
+	DkImage::gaussianBlur(imgC, (float)sigma());
+	return imgC;
+}
+
+QString DkBlurManipulator::errorMessage() const {
+	
+	// so give me coffee & TV
+	return QObject::tr("Cannot blur image");
+}
+
+void DkBlurManipulator::setSigma(int sigma) {
+
+	if (mSigma == sigma)
+		return;
+
+	mSigma = sigma;
+	action()->trigger();
+}
+
+int DkBlurManipulator::sigma() const {
+	return mSigma;
+}
+
+// DkUnsharpMaskManipulator --------------------------------------------------------------------
 DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction * action) : DkBaseManipulatorExt(action) {
 }
 

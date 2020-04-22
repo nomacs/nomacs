@@ -52,6 +52,7 @@ DkManipulatorWidget::DkManipulatorWidget(QWidget* parent) : DkFadeWidget(parent)
 	// create widgets
 	DkActionManager& am = DkActionManager::instance();
 	mWidgets << new DkTinyPlanetWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+	mWidgets << new DkBlurWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_blur), this);
 	mWidgets << new DkUnsharpMaskWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mWidgets << new DkRotateWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_rotate), this);
 	mWidgets << new DkResizeWidget(am.manipulatorManager().manipulatorExt(DkManipulatorManager::m_resize), this);
@@ -290,7 +291,36 @@ QSharedPointer<DkTinyPlanetManipulator> DkTinyPlanetWidget::manipulator() const 
 	return qSharedPointerDynamicCast<DkTinyPlanetManipulator>(baseManipulator());
 }
 
-// DkUnsharlpMaskWidget --------------------------------------------------------------------
+// DkBlurWidget --------------------------------------------------------------------
+DkBlurWidget::DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
+	
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+
+	manipulator->setWidget(this);
+}
+
+void DkBlurWidget::createLayout() {
+
+	// post processing sliders
+	DkSlider* sigmaSlider = new DkSlider(tr("Sigma"), this);
+	sigmaSlider->setObjectName("sigmaSlider");
+	sigmaSlider->setValue(manipulator()->sigma());
+	sigmaSlider->setMaximum(50);
+
+	QVBoxLayout* sliderLayout = new QVBoxLayout(this);
+	sliderLayout->addWidget(sigmaSlider);
+}
+
+void DkBlurWidget::on_sigmaSlider_valueChanged(int val) {
+	manipulator()->setSigma(val);
+}
+
+QSharedPointer<DkBlurManipulator> DkBlurWidget::manipulator() const {
+	return qSharedPointerDynamicCast<DkBlurManipulator>(baseManipulator());
+}
+
+// DkUnsharpMaskWidget --------------------------------------------------------------------
 DkUnsharpMaskWidget::DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent) : DkBaseManipulatorWidget(manipulator, parent) {
 	createLayout();
 	QMetaObject::connectSlotsByName(this);

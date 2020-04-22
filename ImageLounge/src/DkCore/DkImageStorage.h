@@ -125,6 +125,7 @@ public:
 	static bool normImage(QImage& img);
 	static QImage autoAdjustImage(const QImage& img);
 	static bool autoAdjustImage(QImage& img);
+	static bool gaussianBlur(QImage& img, float sigma = 20.0f);
 	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);
 	static bool alphaChannelUsed(const QImage& img);
 	static QImage thresholdImage(const QImage& img, double thr, bool color = false);
