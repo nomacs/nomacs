@@ -1828,6 +1828,21 @@ bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 		if (error != LIBRAW_SUCCESS)
 			return false;
 
+		// develop using libraw
+		if (mCamType == camera_unknown) {
+			error = iProcessor.dcraw_process();
+
+			auto rimg = iProcessor.dcraw_make_mem_image();
+
+			if (rimg) {
+
+				mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
+				mImg = mImg.copy();		// make a deep copy...
+				LibRaw::dcraw_clear_mem(rimg);
+
+				return true;
+			}
+		}
 
 		// demosaic image
 		cv::Mat rawMat;
