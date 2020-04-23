@@ -21,3 +21,58 @@ nmc--DkRecentFilesWidget QScrollBar::handle:horizontal {background: #666; min-wi
 nmc--DkRecentFilesWidget QScrollBar::add-line:horizontal {width: 0px;}
 nmc--DkRecentFilesWidget QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}
 nmc--DkRecentFilesWidget QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}
+
+QLabel#subTitle,
+QLabel#DkDecentInfo,
+QLabel#batchContentInfo,
+QLabel#recentFilesPath,
+QListWidget#historyList::item:disabled,
+QLabel#DkMetadataValueLabel,
+QPushButton#infoButton,
+nmc--DkGroupWidget QCheckBox,
+nmc--DkGroupWidget QRadioButton,
+nmc--DkGroupWidget QLineEdit,
+nmc--DkGroupWidget QLabel {
+	color: #666;
+}
+
+QLabel#BatchInfo {
+    color: #fff;
+
+}
+
+QLabel#batchContentTitle {
+   	color: #333;
+}
+
+QLabel#DkPreferenceTitle {
+   	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
+	border-bottom: 1px solid #333;
+}
+
+/* profile widget */
+nmc--DkProfileSummaryWidget {
+	background-color: rgba(255, 255, 255, 200);
+}
+
+QDockWidget {
+	font: thin "Segoe UI";
+	color: #000;
+	border: 1px solid #ccc;
+}
+
+QDockWidget::title {
+    text-align: left; /* align the text to the left */
+    padding-left: 5px;
+	border-bottom: 1px solid #ccc;
+}
+
+QPushButton#displayButton,
+QLabel#recentFilesTitle {
+    color: #000;
+}
+
+QPushButton#displayButton {
+   	border: 1px solid #ddd;
+    background-color: #fff;
+}
