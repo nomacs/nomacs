@@ -274,15 +274,14 @@ signals:
 	void previousSignal();
 
 public slots:
-	void show();
+	void showNext();
+	void showPrevious();
 
 protected:
 	void createLayout();
 
 	QPushButton* mPreviousButton;
 	QPushButton* mNextButton;
-
-	QTimer* hideTimer; 
 };
 
 class DkFolderScrollBar : public QSlider {

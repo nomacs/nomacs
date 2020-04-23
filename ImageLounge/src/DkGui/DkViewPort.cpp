@@ -1207,8 +1207,15 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	if (DkSettingsManager::param().display().showNavigation)
-		mNavigationWidget->show();
+	if (DkSettingsManager::param().display().showNavigation) {
+
+		if (event->pos().x() < 0.1 * width())
+			mNavigationWidget->showPrevious();
+		else if (event->pos().x() > 0.9 * width())
+			mNavigationWidget->showNext();
+		else if (mNavigationWidget->isVisible())
+			mNavigationWidget->hide();
+	}
 
 	//qDebug() << "mouse move (DkViewPort)";
 	//changeCursor();

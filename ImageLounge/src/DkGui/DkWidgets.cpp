@@ -1395,11 +1395,6 @@ void DkPlayer::show(int ms) {
 // -------------------------------------------------------------------- DkHudNavigation 
 DkHudNavigation::DkHudNavigation(QWidget* parent) : DkFadeWidget(parent) {
 
-	hideTimer = new QTimer(this);
-	hideTimer->setInterval(1000);
-	hideTimer->setSingleShot(true);
-	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
-
 	createLayout();
 }
 
@@ -1431,12 +1426,19 @@ void DkHudNavigation::createLayout() {
 	l->addWidget(mNextButton);
 
 }
- 
-void DkHudNavigation::show() {
 
-	hideTimer->start();
+void DkHudNavigation::showNext() {
 
+	mNextButton->show();
 	DkFadeWidget::show();
+	mPreviousButton->hide();
+}
+
+void DkHudNavigation::showPrevious() {
+
+	mPreviousButton->show();
+	DkFadeWidget::show();
+	mNextButton->hide();
 }
 
 // DkTransformRectangle --------------------------------------------------------------------
