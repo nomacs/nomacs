@@ -809,6 +809,7 @@ QStringList DkSearchDialog::makeViewable(const QStringList& resultList, bool for
 DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	init();
+	resize(DkUtils::getInitialDialogSize());
 }
 
 void DkResizeDialog::accept() {

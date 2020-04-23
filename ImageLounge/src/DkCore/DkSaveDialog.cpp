@@ -97,6 +97,7 @@ DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 	createLayout();
 	init();
 
+	resize(DkUtils::getInitialDialogSize());
 }
 
 DkCompressDialog::~DkCompressDialog() {

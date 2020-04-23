@@ -571,6 +571,20 @@ QWidget * DkUtils::getMainWindow() {
 	return win;
 }
 
+QSize DkUtils::getInitialDialogSize() {
+
+	auto win = getMainWindow();
+
+	if (!win)
+		return QSize(1024, 768);
+
+	double width = qMax(win->width() * 0.8, 600.0);
+	double height = qMax(width * 9 / 16, 450.0);
+	QSize s(qRound(width), qRound(height));
+
+	return s;
+}
+
 void DkUtils::mSleep(int ms) {
 
 #ifdef Q_OS_WIN
