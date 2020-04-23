@@ -410,6 +410,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 	display_p.showCrop = settings.value("showCrop", display_p.showCrop).toBool();
 	display_p.histogramStyle = settings.value("histogramStyle", display_p.histogramStyle).toInt();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
+	display_p.showNavigation = settings.value("showNavigation", display_p.showNavigation).toBool();
 	display_p.themeName = settings.value("themeName312", display_p.themeName).toString();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
@@ -659,6 +660,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("histogramStyle", display_p.histogramStyle);
 	if (force ||display_p.tpPattern != display_d.tpPattern)
 		settings.setValue("tpPattern", display_p.tpPattern);
+	if (force || display_p.showNavigation != display_d.showNavigation)
+		settings.setValue("showNavigation", display_p.showNavigation);
 	if (force || display_p.themeName != display_d.themeName)
 		settings.setValue("themeName312", display_p.themeName);
 	if (force ||display_p.showBorder != display_d.showBorder)
@@ -855,6 +858,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.showCrop = false;
 	display_p.histogramStyle = 0; // DkHistogram::DisplayMode::histogram_mode_simple
 	display_p.tpPattern = false;
+	display_p.showNavigation = true;
 	display_p.themeName = "Light-Theme.css";
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;

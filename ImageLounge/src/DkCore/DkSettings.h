@@ -210,6 +210,7 @@ public:
 		bool zoomToFit;
 		bool invertZoom;
 		bool tpPattern;
+		bool showNavigation;
 		QString themeName;
 		QColor highlightColor;
 		QColor hudBgColor;

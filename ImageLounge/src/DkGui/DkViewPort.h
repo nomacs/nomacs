@@ -57,6 +57,7 @@
 
 class QVBoxLayout;
 class QMimeData;
+class QPushButton;
 
 namespace nmc {
 
@@ -70,6 +71,7 @@ class DkPluginInterface;
 class DkPluginContainer;
 class DkBaseManipulator;
 class DkResizeDialog;
+class DkHudNavigation;
 
 class DllCoreExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
@@ -233,6 +235,8 @@ protected:
 	
 	DkRotatingRect mCropRect;
 
+	DkHudNavigation* mNavigationWidget = 0;
+	
 	// image manipulators
 	QFutureWatcher<QImage> mManipulatorWatcher;
 	QSharedPointer<DkBaseManipulator> mActiveManipulator;

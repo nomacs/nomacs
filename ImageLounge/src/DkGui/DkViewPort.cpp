@@ -114,6 +114,10 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	mController->getCropWidget()->setImageTransform(&mImgMatrix);
 	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
+	// this must be initialized after mController to be above it
+	mNavigationWidget = new DkHudNavigation(this);
+	mPaintLayout->addWidget(mNavigationWidget);
+
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.fileActions().toList());
@@ -167,6 +171,10 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	
 	connect(am.action(DkActionManager::sc_test_img), SIGNAL(triggered()), this, SLOT(loadLena()));
 	connect(am.action(DkActionManager::menu_sync_view), SIGNAL(triggered()), this, SLOT(tcpForceSynchronize()));
+
+	// playing
+	connect(mNavigationWidget, SIGNAL(previousSignal()), this, SLOT(loadPrevFileFast()));
+	connect(mNavigationWidget, SIGNAL(nextSignal()), this, SLOT(loadNextFileFast()));
 
 	// trivial connects
 	connect(this, &DkViewPort::movieLoadedSignal,
@@ -1198,6 +1206,9 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
+
+	if (DkSettingsManager::param().display().showNavigation)
+		mNavigationWidget->show();
 
 	//qDebug() << "mouse move (DkViewPort)";
 	//changeCursor();

@@ -1,7 +1,9 @@
 <RCC>
   <qresource prefix="/nomacs">
     <file>img/next.svg</file>
+    <file>img/next-hud.svg</file>
     <file>img/previous.svg</file>
+    <file>img/previous-hud.svg</file>
     <file>img/down.svg</file>
     <file>img/down-white.svg</file>
     <file>img/up.svg</file>

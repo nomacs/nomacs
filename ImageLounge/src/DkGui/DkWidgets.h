@@ -262,6 +262,29 @@ protected:
 	QWidget* container;
 };
 
+class DkHudNavigation : public DkFadeWidget {
+	Q_OBJECT
+
+public:
+	DkHudNavigation(QWidget* parent = 0);
+	~DkHudNavigation() {};
+
+signals:
+	void nextSignal();
+	void previousSignal();
+
+public slots:
+	void show();
+
+protected:
+	void createLayout();
+
+	QPushButton* mPreviousButton;
+	QPushButton* mNextButton;
+
+	QTimer* hideTimer; 
+};
+
 class DkFolderScrollBar : public QSlider {
 	Q_OBJECT
 

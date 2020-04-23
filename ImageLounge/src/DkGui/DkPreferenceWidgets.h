@@ -195,6 +195,7 @@ public slots:
 	void on_showCrop_toggled(bool checked) const;
 	void on_showScrollBars_toggled(bool checked) const;
 	void on_useZoomLevels_toggled(bool checked) const;
+	void on_showNavigation_toggled(bool checked) const;
 	void on_zoomLevels_editingFinished() const;	
 	void on_zoomLevelsDefault_clicked() const;
 

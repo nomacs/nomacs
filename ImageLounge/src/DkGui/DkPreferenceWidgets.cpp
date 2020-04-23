@@ -762,6 +762,16 @@ void DkDisplayPreference::createLayout() {
 	DkGroupWidget* iconGroup = new DkGroupWidget(tr("Icon Size"), this);
 	iconGroup->addWidget(sbIconSize);
 
+	// show navigation
+	QCheckBox* cbShowNavigation = new QCheckBox(tr("Show Navigation Arrows"), this);
+	cbShowNavigation->setObjectName("showNavigation");
+	cbShowNavigation->setToolTip(tr("If checked, navigation arrows will be displayed on top of the image"));
+	cbShowNavigation->setChecked(DkSettingsManager::param().display().showNavigation);
+
+	DkGroupWidget* navigationGroup = new DkGroupWidget(tr("Navigation"), this);
+	navigationGroup->addWidget(cbShowNavigation);
+
+
 	// slideshow
 	QLabel* fadeImageLabel = new QLabel(tr("Image Transition"), this);
 
@@ -836,6 +846,7 @@ void DkDisplayPreference::createLayout() {
 	l->addWidget(zoomGroup);
 	l->addWidget(keepZoomGroup);
 	l->addWidget(iconGroup);
+	l->addWidget(navigationGroup);
 	l->addWidget(slideshowGroup);
 	l->addWidget(showCropGroup);
 }
@@ -933,6 +944,13 @@ void DkDisplayPreference::on_useZoomLevels_toggled(bool checked) const {
 
 	DkZoomConfig::instance().setUseLevels(checked);
 	mZoomLevels->setEnabled(checked);
+
+}
+
+void DkDisplayPreference::on_showNavigation_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().display().showNavigation != checked)
+		DkSettingsManager::param().display().showNavigation = checked;
 
 }
 
