@@ -15,6 +15,11 @@ environment:
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
 
+cache:
+    - 3rd-party/opencv/build -> 3rd-party/opencv/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/expat/build -> 3rd-party/expat/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/exiv2/build -> 3rd-party/exiv2/CMakeLists.txt # don't rebuild unless the cmake config changes
+
 install:
     - git submodule update --init --recursive
     # my machine:
