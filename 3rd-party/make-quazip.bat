@@ -15,5 +15,5 @@ cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -DZLIB_BUILD_PATH="%mypath%opencv/build/3rdparty"^
  -B%build_dir% %mypath%/%name%
 
-msbuild -target:quazip5 -property:Configuration=Debug  %build_dir%/%name%.sln
-msbuild -target:quazip5 -property:Configuration=Release  %build_dir%/%name%.sln
+msbuild -m -target:quazip5 -property:Configuration=Debug  %build_dir%/%name%.sln
+msbuild -m -target:quazip5 -property:Configuration=Release  %build_dir%/%name%.sln
