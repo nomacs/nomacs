@@ -5,7 +5,7 @@ SET NAME=exiv2
 SET BUILD_DIR=%mypath%/%name%/build
 
 REM build exiv2
-cmake -DEXPAT_BUILD_PATH="../../expat/build" -DZLIB_BUILD_PATH="../../opencv/build/3rdparty" -B%build_dir% %mypath%/%name%
+cmake -DEXPAT_BUILD_PATH="%mypath%/expat/build" -DZLIB_BUILD_PATH="%mypath%/opencv/build/3rdparty" -B%build_dir% %mypath%/%name%
 
 msbuild -property:Configuration=Debug  %build_dir%/%name%.sln
 msbuild -property:Configuration=Release  %build_dir%/%name%.sln
