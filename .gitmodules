@@ -7,3 +7,6 @@
 [submodule "3rd-party/opencv"]
 	path = 3rd-party/opencv
 	url = https://github.com/opencv/opencv.git
+[submodule "3rd-party/quazip"]
+	path = 3rd-party/quazip
+	url = https://github.com/nomacs/quazip.git
