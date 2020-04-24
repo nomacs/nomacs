@@ -26,7 +26,7 @@ install:
     #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
     - call "%VCVARS%"
     # build dependencies
-    - call 3rd-party/make.bat
+    - call 3rd-party/make.bat %QT5%
     - cd ImageLounge
     - mkdir build
     - cd build
