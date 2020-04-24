@@ -17,9 +17,13 @@ environment:
 
 install:
 
-    #  - git submodule update --init --recursive
+    # - appveyor DownloadFile https://github.com/opencv/opencv/releases/download/4.3.0/opencv-4.3.0-vc14_vc15.exe -FileName opencv.zip
+    # - 7z x opencv.zip -o.\3rd-party\opencv > nul
+    - git submodule update --init --recursive
     # my machine:
     #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
+
+    - call 3rd-party/build.bat
     - call "%VCVARS%"
     - cd ImageLounge
     - mkdir build
