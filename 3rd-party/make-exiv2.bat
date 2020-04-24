@@ -9,8 +9,8 @@ SET BUILD_DIR=%mypath%/%name%/build
 REM build exiv2
 cmake^
  -DEXPAT_BUILD_PATH="%mypath%/expat/build"^
- -DEXPAT_INCLUDE_DIR="C:/coding/3rd-party/expat/lib"^
- -DZLIB_INCLUDE_DIR="C:/coding/3rd-party/opencv/3rdparty/zlib"^
+ -DEXPAT_INCLUDE_DIR="%mypath%/expat/lib"^
+ -DZLIB_INCLUDE_DIR="%mypath%/opencv/3rdparty/zlib"^
  -DZLIB_BUILD_PATH="%mypath%/opencv/build/3rdparty"^
  -B%build_dir% %mypath%/%name%
 
