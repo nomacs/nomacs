@@ -8,7 +8,7 @@ SET QT_PATH=%QT_PATH:\=/%
 
 SET MYPATH=%~dp0
 
-call %mypath%/make-quazip.bat %qt_path%
 call %mypath%/make-opencv.bat
 call %mypath%/make-expat.bat
 call %mypath%/make-exiv2.bat
+call %mypath%/make-quazip.bat %qt_path%
