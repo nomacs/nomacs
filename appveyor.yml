@@ -33,7 +33,7 @@ install:
     - cmake -DENABLE_TRANSLATIONS=ON -DCMAKE_PREFIX_PATH="%QT5%;../3rd-party/exiv2/build;../3rd-party/opencv/build;../3rd-party/quazip/build" -DENABLE_QUAZIP=OFF -DENABLE_RAW=OFF ..
  
 build:
-  project: build/nomacs.sln
+  project: ImageLounge/build/nomacs.sln
   parallel: true
   verbosity: minimal
 
