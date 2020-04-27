@@ -10,6 +10,11 @@ SET BUILD_DIR=%mypath%/build/%name%
 
 echo %qt_path%
 
+if exist %build_dir% ( 
+    echo %name% exists, skipping
+    goto :eof
+)
+
 cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -DZLIB_INCLUDE_DIRS="%mypath%opencv/3rdparty/zlib"^
  -DZLIB_BUILD_PATH="%mypath%build/opencv/3rdparty"^

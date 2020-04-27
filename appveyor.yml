@@ -23,26 +23,10 @@ cache:
 
 install:
     - git submodule update --init --recursive
-    # my machine:
-    #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
     - call "%VCVARS%"
     # build dependencies
-    - IF not exist 3rd-party/build/opencv (call 3rd-party/make-opencv.bat)
-    - IF not exist 3rd-party/build/expat (call 3rd-party/make-expat.bat)
-    - IF not exist 3rd-party/build/exiv2 (call 3rd-party/make-exiv2.bat) 
-    - IF not exist 3rd-party/build/quazip (call 3rd-party/make-quazip.bat) %QT5%
-    - cmd: 
-        "cmake 
-        -DENABLE_TRANSLATIONS=ON 
-        -DCMAKE_PREFIX_PATH=
-            \"%QT5%;
-            ../3rd-party/build/exiv2;
-            ../3rd-party/build/opencv;
-            ../3rd-party/build/quazip\" 
-        -DENABLE_QUAZIP=OFF -DENABLE_RAW=OFF 
-        -B build 
-        ImageLounge
-        "
+    - call 3rd-party/make.bat %QT5%
+    - call configure-nomacs.bat %QT5%
  
 build:
     project: build/nomacs.sln
@@ -53,11 +37,11 @@ after_build:
     - cd installer
     - dir
     - dir nomacs.x64
-    - make-installer.bat
+    # - make-installer.bat
     - cd..
 
-artifacts:
-- path: 'installer\nomacs-setup-x64.msi'
-  name: nomacs installer
+# artifacts:
+# - path: 'installer\nomacs-setup-x64.msi'
+#   name: nomacs installer
 # - path: 'build\*.exe'
 #   name: Basic apps

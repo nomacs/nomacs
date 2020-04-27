@@ -6,6 +6,11 @@ SET MYPATH=%MYPATH:\=/%
 SET NAME=exiv2
 SET BUILD_DIR=%mypath%/build/%name%
 
+if exist %build_dir% ( 
+    echo %name% exists, skipping
+    goto :eof
+)
+
 REM build exiv2
 cmake^
  -DEXPAT_BUILD_PATH="%mypath%/build/expat"^
