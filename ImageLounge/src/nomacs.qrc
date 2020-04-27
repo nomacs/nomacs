@@ -1,7 +1,9 @@
 <RCC>
   <qresource prefix="/nomacs">
     <file>img/next.svg</file>
+    <file>img/next-hud.svg</file>
     <file>img/previous.svg</file>
+    <file>img/previous-hud.svg</file>
     <file>img/down.svg</file>
     <file>img/down-white.svg</file>
     <file>img/up.svg</file>
@@ -68,6 +70,7 @@
     <file>img/flip-vertical.svg</file>
     <file>img/exposure.svg</file>
     <file>img/threshold.svg</file>
+    <file>img/blur.svg</file>
     <file>img/sharpen.svg</file>
     <file>img/tiny-planet.svg</file>
     <file>img/invert.svg</file>

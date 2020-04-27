@@ -1,8 +1,10 @@
 nomacs 3.14.4
 =============
 - fixes batch resize crash
+- cr3, pcx support added
+- default system theme added
+- edit: adds blur
 - translations updated
-- cr3 support added
 - Updates
     - Qt 5.14.1
     - OpenCV 4.2.0

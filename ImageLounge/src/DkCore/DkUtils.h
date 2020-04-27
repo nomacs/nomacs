@@ -170,6 +170,8 @@ public:
 
 	static QWidget* getMainWindow();
 
+	static QSize getInitialDialogSize();
+
 	/**
 	 * Sleeps n ms.
 	 * This function is based on the QTest::qSleep(int ms)

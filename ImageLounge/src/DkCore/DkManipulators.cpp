@@ -123,6 +123,11 @@ void DkManipulatorManager::createManipulators(QWidget* parent) {
 	action->setStatusTip(QObject::tr("Add a background color"));
 	mpls[m_color] = QSharedPointer<DkColorManipulator>::create(action);
 
+	// blur
+	action = new QAction(DkImage::loadIcon(":/nomacs/img/blur.svg", size), QObject::tr("&Blur..."), parent);
+	action->setStatusTip(QObject::tr("Blur the image"));
+	mpls[m_blur] = QSharedPointer<DkBlurManipulator>::create(action);
+
 	// unsharp mask
 	action = new QAction(DkImage::loadIcon(":/nomacs/img/sharpen.svg", size), QObject::tr("&Sharpen..."), parent);
 	action->setStatusTip(QObject::tr("Sharpens the image by applying an unsharp mask"));

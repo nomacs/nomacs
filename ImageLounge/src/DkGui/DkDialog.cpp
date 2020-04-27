@@ -809,6 +809,7 @@ QStringList DkSearchDialog::makeViewable(const QStringList& resultList, bool for
 DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	init();
+	resize(DkUtils::getInitialDialogSize());
 }
 
 void DkResizeDialog::accept() {
@@ -1446,6 +1447,21 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	}
 
 	return rImg;
+}
+
+void DkResizeDialog::setVisible(bool visible) {
+
+	QDialog::setVisible(visible);
+
+	updateSnippets();
+	drawPreview();
+
+}
+
+void DkResizeDialog::resizeEvent(QResizeEvent* re) {
+
+	drawPreview();
+	QDialog::resizeEvent(re);
 }
 
 // DkShortcutDelegate --------------------------------------------------------------------

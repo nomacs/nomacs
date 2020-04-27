@@ -96,6 +96,8 @@ DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 	setObjectName("DkCompressionDialog");
 	createLayout();
 	init();
+
+	resize(DkUtils::getInitialDialogSize());
 }
 
 DkCompressDialog::~DkCompressDialog() {
@@ -204,9 +206,9 @@ void DkCompressDialog::createLayout() {
 
 	// size combo for web
 	mSizeCombo = new QComboBox(this);
-	mSizeCombo->addItem(tr("Small  (800 x 600)"), 600);
-	mSizeCombo->addItem(tr("Medium (1024 x 786)"), 786);
-	mSizeCombo->addItem(tr("Large  (1920 x 1080)"), 1080);
+	mSizeCombo->addItem(tr("Small  (800 x 600)"), 800);
+	mSizeCombo->addItem(tr("Medium (1024 x 786)"), 1024);
+	mSizeCombo->addItem(tr("Large  (1920 x 1080)"), 1920);
 	mSizeCombo->addItem(tr("Original Size"), -1);
 	connect(mSizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
 
@@ -404,10 +406,10 @@ float DkCompressDialog::getResizeFactor() {
 
 	float factor = -1;
 	float finalEdge = (float)mSizeCombo->itemData(mSizeCombo->currentIndex()).toInt();
-	float minEdge = (float)std::min(mImg.width(), mImg.height());
+	float maxEdge = (float)std::max(mImg.width(), mImg.height());
 
-	if (finalEdge != -1 && minEdge > finalEdge)
-		factor = finalEdge/minEdge;
+	if (finalEdge != -1 && maxEdge > finalEdge)
+		factor = finalEdge/maxEdge;
 
 	return factor;
 }

@@ -300,12 +300,7 @@ protected slots:
 
 	void drawPreview();
 
-	void setVisible(bool visible) override {
-		updateSnippets();
-		drawPreview();
-
-		QDialog::setVisible(visible);
-	}
+	void setVisible(bool visible) override;
 
 public slots:
 	virtual void accept() override;
@@ -349,6 +344,7 @@ protected:
 	void loadSettings();
 	void saveSettings();
 	QImage resizeImg(QImage img, bool silent = true);
+	void resizeEvent(QResizeEvent* re);
 };
 
 class DkShortcutDelegate : public QItemDelegate {

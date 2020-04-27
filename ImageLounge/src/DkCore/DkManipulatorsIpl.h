@@ -145,6 +145,21 @@ private:
 	QColor mColor = Qt::white;
 };
 
+class DllCoreExport DkBlurManipulator : public DkBaseManipulatorExt {
+
+public:
+	DkBlurManipulator(QAction* action);
+
+	QImage apply(const QImage& img) const override;
+	QString errorMessage() const override;
+
+	void setSigma(int sigma);
+	int sigma() const;
+
+private:
+	int mSigma = 5;
+};
+
 class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
 
 public:

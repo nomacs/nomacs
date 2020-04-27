@@ -1811,6 +1811,7 @@ void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager
 	mMplWidgets.clear();	// TODO: delete the old ones now?
 
 	mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+	mMplWidgets << new DkBlurWidget(manager.manipulatorExt(DkManipulatorManager::m_blur), this);
 	mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
 	mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
 	mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);

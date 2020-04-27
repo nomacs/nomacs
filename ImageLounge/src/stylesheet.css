@@ -18,18 +18,15 @@ QLabel#batchContentTitle {
 	font: thin "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
-	color: #333;
 }
 
 QLabel#batchContentInfo {
 	font-style: italic;
 	padding-bottom: 20px;
-	color: #666;
 	font-size: 8pt;
 }
 
 QLabel#BatchInfo {
-	color: #fff;
 	font-style: italic;
 }
 
@@ -82,30 +79,27 @@ QTabBar::close-button:hover {
 	image: url(:/nomacs/img/close-hover.svg);
 }
 
-QDockWidget {
-	font: thin "Segoe UI";
-	color: #000;
-	border: 1px solid #ccc;
-}
-
-QDockWidget::title {
-    text-align: left; /* align the text to the left */
-    padding-left: 5px;
-	border-bottom: 1px solid #ccc;
-}
-
 QPushButton#DkPlayerButton {
 	margin: 0px;
 	border: none;
 	background-color: HUD_BACKGROUND_COLOR;
 }
 
+QPushButton#hudNavigationButton:hover,
 QPushButton#DkPlayerButton:hover{
 	background-color: rgba(0,0,0,.6);
 } 
 
+QPushButton#hudNavigationButton:pressed,
 QPushButton#DkPlayerButton:pressed {
 	background-color: HIGHLIGHT_LIGHT;
+}
+
+QPushButton#hudNavigationButton {
+    border: none;
+
+    min-height: 32px;
+    max-height: 128px;
 }
 
 QPushButton#DkRestartButton {
@@ -202,10 +196,6 @@ QPushButton#cancelButtonSplash {
 	color: rgba(0,0,0,200);
 }
 
-QLabel#DkDecentInfo {
-	color: #666;
-}
-
 QLineEdit#DkWarningEdit {
 	color: #000;
 }
@@ -225,7 +215,6 @@ QListWidget#historyList {
 }
 
 QListWidget#historyList::item:disabled {
-	color: #666;
 	font-style: italic;
 }
 
@@ -314,10 +303,6 @@ QLabel#DkMetaDataKeyLabel {
 	color: HUD_FOREGROUND_COLOR;
 }
 
-QLabel#DkMetadataValueLabel {
-	color: #666;
-}
-
 nmc--DkManipulatorWidget > QScrollArea,
 nmc--DkMetaDataHUD > QScrollArea {
 	background-color: transparent;
@@ -391,15 +376,12 @@ QLabel#DkPreferenceTitle {
 	font: thin "Segoe UI";
 	font-size: 24pt;
 	font-weight: 100;
-	border-bottom: 1px solid #333;
-	border-top: 1px solid rgba(255,255,255,0);	/* that's a hack - border-bottom is not working otherwise */
 }
 
 QPushButton#infoButton {
 	font: thin "Segoe UI";
 	font-size: 16pt;
 	font-weight: 100;
-	color: #666;
 	text-align: left;
 	padding-left: 20px;
 	border: none;
@@ -422,7 +404,6 @@ QLabel#subTitle {
 	font: thin "Segoe UI";
 	margin-top: 10px;
 	font-size: 14pt;
-	color: #666;
 }
 
 /* preferences widgets */
@@ -449,13 +430,6 @@ nmc--DkGroupWidget QComboBox,
 nmc--DkGroupWidget QLineEdit,
 nmc--DkGroupWidget QLabel {
 	font-size: 10pt;
-}
-
-nmc--DkGroupWidget QCheckBox,
-nmc--DkGroupWidget QRadioButton,
-nmc--DkGroupWidget QLineEdit,
-nmc--DkGroupWidget QLabel {
-	color: #666;
 }
 
 nmc--DkProgressBar {
@@ -589,11 +563,6 @@ QSlider#cpHueSlider::handle:vertical {
 	height: 5px;
 }
 
-/* profile widget */
-nmc--DkProfileSummaryWidget {
-	background-color: rgba(255, 255, 255, 200);
-}
-
 QLabel#summaryMeta {
 	margin-left: 20px;
 	qproperty-alignment: AlignRight;
@@ -633,13 +602,11 @@ nmc--DkRecentDirWidget::hover {
 QLabel#recentFilesTitle {
 	font: thin "Segoe UI";
 	font-size: 16pt;
-	color: #000;
 	font-weight: 100;
 }
 
 QLabel#recentFilesPath {
 	font-style: italic;
-	color: #666;
 }
 
 QPushButton#load_dir,
@@ -683,12 +650,8 @@ QDoubleSpinBox#sbZoom {
 }
 
 QPushButton#displayButton {
-	border: 1px solid #ddd;
-	background-color: #fff;
-	
 	font: light "Segoe UI";
 	font-size: 16pt;
-	color: #000;
 	font-weight: 100;
 }
 
