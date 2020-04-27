@@ -2,7 +2,7 @@ REM Build expat
 
 SET MYPATH=%~dp0
 SET NAME=expat
-SET BUILD_DIR=%mypath%/%name%/build
+SET BUILD_DIR=%mypath%/build/%name%
 
 REM build expat which is needed for exiv2
 cmake -DBUILD_examples=OFF -DBUILD_tests=OFF -B%build_dir% %mypath%/%name%

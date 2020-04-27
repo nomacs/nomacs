@@ -6,13 +6,13 @@ SET MYPATH=%MYPATH:\=/%
 
 SET QT_PATH=%1
 SET NAME=quazip
-SET BUILD_DIR=%mypath%/%name%/build
+SET BUILD_DIR=%mypath%/build/%name%
 
 echo %qt_path%
 
 cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -DZLIB_INCLUDE_DIRS="%mypath%opencv/3rdparty/zlib"^
- -DZLIB_BUILD_PATH="%mypath%opencv/build/3rdparty"^
+ -DZLIB_BUILD_PATH="%mypath%build/opencv/3rdparty"^
  -B%build_dir% %mypath%/%name%
 
 msbuild -m -verbosity:minimal -target:quazip5 -property:Configuration=Debug  %build_dir%/%name%.sln

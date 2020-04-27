@@ -16,9 +16,10 @@ environment:
       WARNINGS_AS_ERRORS: ON
 
 cache:
-    - 3rd-party/opencv/build -> 3rd-party/opencv/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/expat/build -> 3rd-party/expat/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/exiv2/build -> 3rd-party/exiv2/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/opencv -> 3rd-party/opencv/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/expat -> 3rd-party/expat/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/exiv2 -> 3rd-party/exiv2/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/quazip -> 3rd-party/quazip/CMakeLists.txt # don't rebuild unless the cmake config changes
 
 install:
     - git submodule update --init --recursive
@@ -26,15 +27,18 @@ install:
     #  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
     - call "%VCVARS%"
     # build dependencies
-    - call 3rd-party/make.bat %QT5%
+    - IF not exist 3rd-party/build/opencv (call 3rd-party/make-opencv.bat)
+    - IF not exist 3rd-party/build/expat (call 3rd-party/make-expat.bat)
+    - IF not exist 3rd-party/build/exiv2 (call 3rd-party/make-exiv2.bat) 
+    - IF not exist 3rd-party/build/quazip (call 3rd-party/make-quazip.bat) %QT5%
     - cmd: 
         "cmake 
         -DENABLE_TRANSLATIONS=ON 
         -DCMAKE_PREFIX_PATH=
             \"%QT5%;
-            ../3rd-party/exiv2/build;
-            ../3rd-party/opencv/build;
-            ../3rd-party/quazip/build\" 
+            ../3rd-party/build/exiv2;
+            ../3rd-party/build/opencv;
+            ../3rd-party/build/quazip\" 
         -DENABLE_QUAZIP=OFF -DENABLE_RAW=OFF 
         -B build 
         ImageLounge

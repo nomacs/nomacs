@@ -2,7 +2,7 @@ REM build opencv
 
 SET MYPATH=%~dp0
 SET NAME=opencv
-SET BUILD_DIR=%mypath%/%name%/build
+SET BUILD_DIR=%mypath%/build/%name%
 
 REM build opencv (that could take a while...)
 cmake -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -B%build_dir% %mypath%/%name%
