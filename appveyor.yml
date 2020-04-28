@@ -36,9 +36,9 @@ build:
 after_build:
     - cd installer
     - dir
-    - dir nomacs.x64
+    # - dir nomacs.x64
     # - make-installer.bat
-    - cd..
+    # - cd..
 
 # artifacts:
 # - path: 'installer\nomacs-setup-x64.msi'
