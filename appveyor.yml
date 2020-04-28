@@ -29,7 +29,7 @@ install:
     - call configure-nomacs.bat %QT5%
  
 build:
-    project: build/nomacs.sln
+    project: build/nomacs/nomacs.sln
     parallel: true
     verbosity: minimal
 
