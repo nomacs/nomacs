@@ -19,4 +19,4 @@ cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -DZLIB_BUILD_PATH="%mypath%build/opencv/3rdparty"^
  -B%build_dir% %mypath%/%name%
 
-cmake --build %build_dir% --config Release -- -m
+cmake --build %build_dir% --config Release --target quazip5 -- -m
