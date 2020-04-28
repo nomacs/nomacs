@@ -34,15 +34,17 @@ build_script:
 after_build:
     - cd installer
     - dir
+    - call make-installer.bat
     # - dir nomacs.x64
     # - make-installer.bat
     # - cd..
 
-# artifacts:
-    # - path: installer\nomacs.x64
-    #   name: nomacs-portable
-    #   type: zip
-# - path: 'installer\nomacs-setup-x64.msi'
-#   name: nomacs installer
+artifacts:
+    - path: 'installer/nomacs.x64'
+      name: nomacs-portable
+      type: zip
+
+    - path: 'installer/nomacs-setup-x64.msi'
+      name: nomacs installer
 # - path: 'build\*.exe'
 #   name: Basic apps
