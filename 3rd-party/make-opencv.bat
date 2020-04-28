@@ -1,10 +1,11 @@
 REM build opencv
+@echo off
 
 SET MYPATH=%~dp0
 SET NAME=opencv
 SET BUILD_DIR=%mypath%/build/%name%
 
-if exist %build_dir% ( 
+if exist %build_dir%/bin/Release/ ( 
     echo %name% exists, skipping
     goto :eof
 )

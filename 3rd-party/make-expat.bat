@@ -1,10 +1,11 @@
 REM Build expat
+@echo off
 
 SET MYPATH=%~dp0
 SET NAME=expat
 SET BUILD_DIR=%mypath%/build/%name%
 
-if exist %build_dir% ( 
+if exist %build_dir%/Release/expat.dll ( 
     echo %name% exists, skipping
     goto :eof
 )

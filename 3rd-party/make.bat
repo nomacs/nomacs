@@ -1,5 +1,6 @@
-REM Be sure to run this in a VS Native Tools environment
-REM "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
+echo building all nomacs dependencies - it's about tea time
+
+@echo off
 
 REM SET QT5="C:/Qt/Qt-5.14.1-installer/5.14.2/msvc2017_64/bin"
 SET QT5=%1

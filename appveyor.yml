@@ -16,11 +16,11 @@ environment:
       WARNINGS_AS_ERRORS: ON
 
 cache:
-    - 3rd-party/build/opencv -> 3rd-party/opencv/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/build/expat -> 3rd-party/expat/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/build/exiv2 -> 3rd-party/exiv2/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/build/quazip -> 3rd-party/quazip/CMakeLists.txt # don't rebuild unless the cmake config changes
-    - 3rd-party/build/libraw -> 3rd-party/libraw/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
+    - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
+    - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
 
 install:
     - git submodule update --init --recursive

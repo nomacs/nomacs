@@ -1,4 +1,5 @@
 REM build quazip
+@echo off
 
 SET MYPATH=%~dp0
 REM fix windows backslashed paths : /
@@ -8,9 +9,7 @@ SET QT_PATH=%1
 SET NAME=quazip
 SET BUILD_DIR=%mypath%/build/%name%
 
-echo %qt_path%
-
-if exist %build_dir%/Release ( 
+if exist %build_dir%/Release/quazip5.dll ( 
     echo %name% exists, skipping
     goto :eof
 )

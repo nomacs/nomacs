@@ -1,4 +1,5 @@
 REM Build exiv2 - be sure to run build-expat.bat and build-opencv.bat first
+@echo off
 
 SET MYPATH=%~dp0
 REM fix windows backslashed paths : /
@@ -6,7 +7,7 @@ SET MYPATH=%MYPATH:\=/%
 SET NAME=exiv2
 SET BUILD_DIR=%mypath%/build/%name%
 
-if exist %build_dir% ( 
+if exist %build_dir%/Release/bin/exiv2.dll ( 
     echo %name% exists, skipping
     goto :eof
 )
