@@ -10,3 +10,6 @@
 [submodule "3rd-party/quazip"]
 	path = 3rd-party/quazip
 	url = https://github.com/nomacs/quazip.git
+[submodule "3rd-party/LibRaw"]
+	path = 3rd-party/LibRaw
+	url = https://github.com/nomacs/LibRaw.git
