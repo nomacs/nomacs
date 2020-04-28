@@ -10,7 +10,7 @@ SET BUILD_DIR=%mypath%/build/%name%
 
 echo %qt_path%
 
-if exist %build_dir% ( 
+if exist %build_dir%Release ( 
     echo %name% exists, skipping
     goto :eof
 )
