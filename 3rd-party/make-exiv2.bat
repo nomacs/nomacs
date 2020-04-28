@@ -19,5 +19,4 @@ cmake^
  -DZLIB_BUILD_PATH="%mypath%/build/opencv/3rdparty"^
  -B%build_dir% %mypath%/%name%
 
-msbuild -m -verbosity:minimal -property:Configuration=Debug  %build_dir%/%name%.sln
-msbuild -m -verbosity:minimal -property:Configuration=Release  %build_dir%/%name%.sln
+cmake --build %build_dir% --config Release -- -m

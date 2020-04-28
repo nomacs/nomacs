@@ -20,18 +20,16 @@ cache:
     - 3rd-party/build/expat -> 3rd-party/expat/CMakeLists.txt # don't rebuild unless the cmake config changes
     - 3rd-party/build/exiv2 -> 3rd-party/exiv2/CMakeLists.txt # don't rebuild unless the cmake config changes
     - 3rd-party/build/quazip -> 3rd-party/quazip/CMakeLists.txt # don't rebuild unless the cmake config changes
+    - 3rd-party/build/libraw -> 3rd-party/libraw/CMakeLists.txt # don't rebuild unless the cmake config changes
 
 install:
     - git submodule update --init --recursive
     - call "%VCVARS%"
     # build dependencies
     - call 3rd-party/make.bat %QT5%
-    - call configure-nomacs.bat %QT5%
  
 build:
-    project: build/nomacs/nomacs.sln
-    parallel: true
-    verbosity: minimal
+    - call make-nomacs.bat %QT5%
 
 after_build:
     - cd installer
@@ -41,6 +39,9 @@ after_build:
     # - cd..
 
 # artifacts:
+    # - path: installer\nomacs.x64
+    #   name: nomacs-portable
+    #   type: zip
 # - path: 'installer\nomacs-setup-x64.msi'
 #   name: nomacs installer
 # - path: 'build\*.exe'

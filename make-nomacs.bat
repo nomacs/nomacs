@@ -13,11 +13,13 @@ SET BUILD_DIR=%mypath%build/%name%
 echo %QT5%
 
 cmake^
- -DENABLE_TRANSLATIONS=ON^
+ -DENABLE_TRANSLATIONS=OFF^
  -DCMAKE_PREFIX_PATH="%QT5%;%mypath%3rd-party/build/exiv2;%mypath%3rd-party/build/opencv;%mypath%3rd-party/build/quazip;%mypath%3rd-party/build/libraw;"^
- -DENABLE_RAW=OFF^
- -DENABLE_QUAZIP=OFF^
-  -B%build_dir% %mypath%/ImageLounge
+ -B%build_dir% %mypath%/ImageLounge
+
+cmake --build %build_dir% --config Release -- -m
+REM cmake --build %build_dir% --config Release --target INSTALL -- -m
+
 
 REM cmake --build %build_dir% -- -m
 

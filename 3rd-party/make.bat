@@ -11,4 +11,5 @@ SET MYPATH=%~dp0
 call %mypath%/make-opencv.bat
 call %mypath%/make-expat.bat
 call %mypath%/make-exiv2.bat
-REM call %mypath%/make-quazip.bat %qt5%
+call %mypath%/make-libraw.bat
+call %mypath%/make-quazip.bat %qt5%
