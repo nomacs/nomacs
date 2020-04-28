@@ -13,3 +13,6 @@
 [submodule "3rd-party/LibRaw"]
 	path = 3rd-party/LibRaw
 	url = https://github.com/nomacs/LibRaw.git
+[submodule "3rd-party/imageformats"]
+	path = 3rd-party/imageformats
+	url = https://github.com/nomacs/imageformats.git
