@@ -28,7 +28,7 @@ install:
     # build dependencies
     - call 3rd-party/make.bat %QT5%
  
-build:
+build_script:
     - call make-nomacs.bat %QT5%
 
 after_build:
