@@ -18,7 +18,7 @@ cmake^
  -B%build_dir% %mypath%/ImageLounge
 
 cmake --build %build_dir% --config Release -- -m
-REM cmake --build %build_dir% --config Release --target INSTALL -- -m
+cmake --build %build_dir% --config Release --target INSTALL -- -m
 
 
 REM cmake --build %build_dir% -- -m
