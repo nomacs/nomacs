@@ -16,3 +16,6 @@
 [submodule "3rd-party/imageformats"]
 	path = 3rd-party/imageformats
 	url = https://github.com/nomacs/imageformats.git
+[submodule "ImageLounge/plugins"]
+	path = ImageLounge/plugins
+	url = https://github.com/nomacs/nomacs-plugins.git
