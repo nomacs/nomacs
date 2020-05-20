@@ -237,12 +237,18 @@ if (ENABLE_HEIF)
 	find_package(libde265)
 	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    
+    if (EXISTS ${LIBDE265_BUILD_PATH}/libde265/Debug/)
+        file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    endif()
 
 	find_package(libheif)
 	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Debug/libheifd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    
+    if (EXISTS ${LIBDE265_BUILD_PATH}/libheif/Debug/)
+        file(COPY ${libheif_BUILD_PATH}/libheif/Debug/libheifd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    endif ()
 endif()
 
 # path hints for the dependency collector
