@@ -189,7 +189,7 @@ NMC_COPY_FILES()
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
-if(UNIX AND ENABLE_PLUGINS)
+if(ENABLE_PLUGINS)
 
 	if (NOT EXISTS ${PLUGINS_DIR})
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
