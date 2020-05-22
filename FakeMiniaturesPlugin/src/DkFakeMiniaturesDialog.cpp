@@ -131,23 +131,23 @@ void DkFakeMiniaturesDialog::createLayout() {
  **/
 void DkFakeMiniaturesDialog::createImgPreview() {
 
-	if (!img || img->isNull())
+	if (!mImg || mImg->isNull())
 		return;
 	
 	QPoint lt;
-	float rW = previewWidth / (float) img->width();
-	float rH = previewHeight / (float) img->height();
+	float rW = previewWidth / (float) mImg->width();
+	float rH = previewHeight / (float) mImg->height();
 	rMin = (rW < rH) ? rW : rH;
 
 	if(rMin < 1) {
-		if(rW < rH) lt = QPoint(0,(float) img->height() * (rH - rMin) / 2.0f);
+		if(rW < rH) lt = QPoint(0,(float) mImg->height() * (rH - rMin) / 2.0f);
 		else {
-			 lt = QPoint((float) img->width() * (rW - rMin) / 2.0f, 0);
+			 lt = QPoint((float) mImg->width() * (rW - rMin) / 2.0f, 0);
 		}
 	}
-	else lt = QPoint((previewWidth - img->width()) / 2.0f, (previewHeight - img->height()) / 2.0f);
+	else lt = QPoint((previewWidth - mImg->width()) / 2.0f, (previewHeight - mImg->height()) / 2.0f);
 
-	QSize imgSizeScaled = QSize(img->size());
+	QSize imgSizeScaled = QSize(mImg->size());
 	if(rMin < 1) imgSizeScaled *= rMin;
 
 	previewImgRect = QRect(lt, imgSizeScaled);
@@ -157,8 +157,8 @@ void DkFakeMiniaturesDialog::createImgPreview() {
 	previewImgRect.setWidth(previewImgRect.width()-1);			// we have a border... correct that...
 	previewImgRect.setHeight(previewImgRect.height()-1);
 
-	if(rMin < 1) scaledImg = img->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	else scaledImg = *img;
+	if(rMin < 1) scaledImg = mImg->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	else scaledImg = *mImg;
 	
 	imgPreview = applyMiniaturesFilter(scaledImg, QRect(INIT_X, INIT_Y*scaledImg.height(), INIT_WIDTH*scaledImg.width(), INIT_HEIGHT*scaledImg.height())); 
 	
@@ -248,7 +248,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 
 	int kernelSize = kernelSizeWidget->getToolValue();
 	if (inImg == scaledImg) {
-		double diagO = sqrt(img->width()*img->width()+img->height()*img->height());
+		double diagO = sqrt(mImg->width()*mImg->width()+mImg->height()*mImg->height());
 		double diagP = sqrt(scaledImg.width()*scaledImg.width()+scaledImg.height()*scaledImg.height());
 		kernelSize = qRound(kernelSize*diagP/diagO);
 	}
@@ -333,7 +333,7 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 	cv::Mat blurImg(src.size(), src.depth());
 
 	// a template function would have more 'style' here
-	const double* itgrl64Ptr = 0;
+	//const double* itgrl64Ptr = 0;
 
 	// images with an area below 4000*4000 can be compuated using 32 bit 
 	cv::integral(src, integralImg, CV_32S);
@@ -348,7 +348,7 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 		for (int cIdx = 0; cIdx < src.cols; cIdx++) {
 
 			// kernel size depends on the distance transform, the user selected
-			float dpv = depthPtr[cIdx];
+			//float dpv = depthPtr[cIdx];
 			float ksf = depthPtr[cIdx]*maxKernel*0.5f;
 
 			//if (!ks) {
@@ -365,7 +365,7 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 
 			// clip all coordinates
 			int left	= qMax(cIdx-ks, 0);
-			int right	= qMin(cIdx+ks+1, src.cols);	// note not cols-1 since integral img is src.cols+1
+			int right	= qMin(cIdx+ks+1, src.cols);	// note not cols-1 since integral mImg is src.cols+1
 			int bottom	= qMax(rIdx-ks, 0);				// note top bottom is flipped since -y coords
 			int top		= qMin(rIdx+ks+1, src.rows);
 			int area	= (right-left)*(top-bottom);
@@ -417,14 +417,16 @@ void DkFakeMiniaturesDialog::cancelPressed() {
 void DkFakeMiniaturesDialog::showEvent(QShowEvent *event) {
 
 	isOk = false;	
-	double diag = sqrt(img->width()*img->width()+img->height()*img->height());
+	double diag = sqrt(mImg->width()*mImg->width()+mImg->height()*mImg->height());
 	kernelSizeWidget->setToolValue(qMin(qMax(int(diag * 0.02), 5), 140));
 	saturationWidget->setToolValue(2);
+
+	QDialog::showEvent(event);
 }
 
 void DkFakeMiniaturesDialog::setImage(const QImage *img) {
 
-	this->img = img;
+	this->mImg = img;
 	createImgPreview();
 	drawImgPreview();
 };
@@ -441,13 +443,13 @@ QImage DkFakeMiniaturesDialog::getImage() {
 		rescaledRect.setWidth(rescaledRect.width()/rMin);
 		rescaledRect.setHeight(rescaledRect.height()/rMin);
 	}
-	QRect imgRect = (*(this->img)).rect();
+	QRect imgRect = (*(this->mImg)).rect();
 	if(rescaledRect.topLeft().x() < imgRect.topLeft().x()) rescaledRect.topLeft().setX(imgRect.topLeft().x());
 	if(rescaledRect.topLeft().y() < imgRect.topLeft().y()) rescaledRect.topLeft().setY(imgRect.topLeft().y());
 	if(rescaledRect.bottomRight().x() > imgRect.bottomRight().x()) rescaledRect.bottomRight().setX(imgRect.bottomRight().x());
 	if(rescaledRect.bottomRight().y() > imgRect.bottomRight().y()) rescaledRect.bottomRight().setY(imgRect.bottomRight().y());
 
-	QImage miniature = applyMiniaturesFilter(*(this->img), rescaledRect);
+	QImage miniature = applyMiniaturesFilter(*(this->mImg), rescaledRect);
 	return miniature;
 };
 
@@ -499,7 +501,8 @@ void DkPreviewLabel::mouseMoveEvent(QMouseEvent *e) {
 };
  
 void DkPreviewLabel::mouseReleaseEvent(QMouseEvent *e) {
-    selectionStarted=false;
+    
+	selectionStarted=false;
 	if (selectionRect.top() > selectionRect.bottom()) {
 		int top = selectionRect.top();
 		selectionRect.setTop(selectionRect.bottom());
@@ -512,6 +515,8 @@ void DkPreviewLabel::mouseReleaseEvent(QMouseEvent *e) {
 	}
 
 	fmDialog->redrawImgPreview();
+
+	QLabel::mouseReleaseEvent(e);
 };
 
 void DkPreviewLabel::enterEvent(QEvent * e){

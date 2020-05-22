@@ -40,7 +40,7 @@ namespace nmp {
 // This code is based on OpenCV's rectangle sample (squares.cpp)
 DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */, bool alternativeMethod /* = false */) : alternativeMethod(alternativeMethod) {
 
-	this->img = colImg;
+	this->mImg = colImg;
 }
 
 cv::Mat DkPageSegmentation::getDebugImg() const {
@@ -54,7 +54,7 @@ DkPolyRect DkPageSegmentation::getMaxRect() const {
 	DkPolyRect largeRect;
 	double maxArea = -1;
 
-	for (const DkPolyRect& p : rects) {
+	for (const DkPolyRect& p : mRects) {
 
 		double ca = p.getAreaConst();
 
@@ -69,7 +69,7 @@ DkPolyRect DkPageSegmentation::getMaxRect() const {
 
 QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
-	if (!rects.empty()) {
+	if (!mRects.empty()) {
 		nmc::DkRotatingRect rr = getMaxRect().toRotatingRect();
 		return cropToRect(img, rr);
 	}
@@ -81,21 +81,21 @@ void DkPageSegmentation::compute() {
 
 	cv::Mat lImg;
 	if (alternativeMethod) {
-		if (scale == 1.0f && img.rows > 700.0f)
-			scale = 700.0f / img.rows;
+		if (scale == 1.0f && mImg.rows > 700.0f)
+			scale = 700.0f / mImg.rows;
 			
-		lImg = findRectanglesAlternative(img, rects);
+		lImg = findRectanglesAlternative(mImg, mRects);
 	} else {
 		cv::Mat imgLab;
 		
-		if (scale == 1.0f && 960.0f/img.cols < 0.8f)
-			scale = 960.0f/img.cols;
+		if (scale == 1.0f && 960.0f/mImg.cols < 0.8f)
+			scale = 960.0f/mImg.cols;
 			
-		cv::cvtColor(img, imgLab, CV_RGB2Lab);	// boost colors
-		lImg = findRectangles(img, rects);
+		cv::cvtColor(mImg, imgLab, CV_RGB2Lab);	// boost colors
+		lImg = findRectangles(mImg, mRects);
 	}
 
-	qDebug() << "[DkPageSegmentation] " << rects.size() << " rectangles circles found resize factor: " << scale;
+	qDebug() << "[DkPageSegmentation] " << mRects.size() << " rectangles circles found resize factor: " << scale;
 }
 
 cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
@@ -152,7 +152,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 
 					double cArea = contourArea(cv::Mat(contours[i]));
 
-					if (fabs(cArea) > minArea*scale*scale && (!maxArea || fabs(cArea) < maxArea*(scale*scale))) {
+					if (fabs(cArea) > mMinArea*scale*scale && (!mMaxArea || fabs(cArea) < mMaxArea*(scale*scale))) {
 						std::vector<cv::Point> cHull;
 						cv::convexHull(cv::Mat(contours[i]), cHull, false);
 						hull.push_back(cHull);
@@ -178,7 +178,7 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 				double cArea = contourArea(cv::Mat(approx));
 
 				// DEBUG ------------------------
-				//if (fabs(cArea) < maxArea)
+				//if (fabs(cArea) < mMaxArea)
 				//	fillConvexPoly(pImg, &approx[0], (int)approx.size(), DkUtils::blue);
 				// DEBUG ------------------------
 
@@ -189,12 +189,12 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 				// area may be positive or negative - in accordance with the
 				// contour orientation
 				if( approx.size() == 4 &&
-					fabs(cArea) > minArea*scale*scale &&
-					(!maxArea || fabs(cArea) < maxArea*scale*scale) && 
+					fabs(cArea) > mMinArea*scale*scale &&
+					(!mMaxArea || fabs(cArea) < mMaxArea*scale*scale) && 
 					isContourConvex(cv::Mat(approx)) ) {
 
 					DkPolyRect cr(approx);
-					//moutc << minArea*scale*scale << " < " << fabs(cArea) << " < " << maxArea*scale*scale << dkendl;
+					//moutc << mMinArea*scale*scale << " < " << fabs(cArea) << " < " << mMaxArea*scale*scale << dkendl;
 
 					// if cosines of all angles are small
 					// (all angles are ~90 degree)
@@ -264,7 +264,7 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingR
 	QPainter painter(&cImg);
 	painter.setWorldTransform(tForm);
 
-	// for rotated rects we want perfect anti-aliasing
+	// for rotated mRects we want perfect anti-aliasing
 	if (minD > FLT_EPSILON)
 		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
@@ -273,7 +273,7 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingR
 
 	return cImg;
 
-	//QImage dImg = img;
+	//QImage dImg = mImg;
 	//QPainter p1(&dImg);
 	//p1.drawPolygon(rect.getPoly());
 
@@ -282,7 +282,7 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const nmc::DkRotatingR
 
 void DkPageSegmentation::filterDuplicates(float overlap, float areaRatio) {
 
-	filterDuplicates(rects, overlap, areaRatio);
+	filterDuplicates(mRects, overlap, areaRatio);
 }
 
 void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float overlap, float areaRatio) const {
@@ -361,7 +361,7 @@ void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float 
 
 void DkPageSegmentation::draw(cv::Mat& img, const cv::Scalar& col) const {
 
-	draw(img, rects, col);
+	draw(img, mRects, col);
 }
 
 void DkPageSegmentation::draw(QImage& img, const QColor& col) const {
@@ -369,14 +369,14 @@ void DkPageSegmentation::draw(QImage& img, const QColor& col) const {
 	double mA = getMaxRect().getArea();
 	std::vector<DkPolyRect> fRects;
 
-	for (const DkPolyRect& r : rects) {
+	for (const DkPolyRect& r : mRects) {
 
 		if (r.getAreaConst() > mA*0.9)
 			fRects.push_back(r);
 	}
 
 	QPainter p(&img);
-	drawRects(&p, rects);
+	drawRects(&p, mRects);
 	drawRects(&p, fRects, col);
 }
 

@@ -57,7 +57,7 @@ QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QS
 		QImage img = imgC->image();
 		fakeMiniaturesDialog->setImage(&img);
 
-		bool done = fakeMiniaturesDialog->exec();
+		fakeMiniaturesDialog->exec();
 
 		QImage returnImg(imgC->image());
 		if (fakeMiniaturesDialog->wasOkPressed()) 

@@ -160,7 +160,7 @@ protected:
 	bool rotCropEnabled;
 	DkSkewEstimator skewEstimator;
 	bool angleLinesEnabled;
-	int guideMode;
+	int mGuideMode;
 };
 
 

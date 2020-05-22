@@ -406,8 +406,8 @@ private:
 	std::vector<nmc::DkVector> vecA;
 	std::vector<nmc::DkVector> vecB;
 	int64 interArea;
-	nmc::DkVector maxRange;
-	nmc::DkVector minRange;
+	nmc::DkVector mMaxRange;
+	nmc::DkVector mMinRange;
 	nmc::DkVector scale;
 	float gamut;
 
@@ -447,7 +447,7 @@ public:
 	nmc::DkRotatingRect toRotatingRect() const;
 
 protected:
-	std::vector<nmc::DkVector> pts;
+	std::vector<nmc::DkVector> mPts;
 	double maxCosine;
 	double area;
 

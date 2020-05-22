@@ -177,10 +177,10 @@ QSharedPointer<nmc::DkImageContainer> DkPageExtractionPlugin::runPlugin(
 
 	//	QPolygonF gt = readGT(imgC->filePath());
 	//	
-	//	QPen pen(QColor(100, 200, 50));
-	//	pen.setWidth(10);
+	//	QPen mPen(QColor(100, 200, 50));
+	//	mPen.setWidth(10);
 	//	QPainter p(&dImg);
-	//	p.setPen(pen);
+	//	p.setPen(mPen);
 	//	p.drawPolygon(gt);
 	//	p.end();
 

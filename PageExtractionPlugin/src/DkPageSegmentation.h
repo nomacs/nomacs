@@ -47,7 +47,7 @@ public:
 	virtual void filterDuplicates(float overlap = 0.6f, float areaRatio = 0.5f);
 	virtual void filterDuplicates(std::vector<DkPolyRect>& rects, float overlap = 0.6f, float areaRatio = 0.1f) const;
 
-	virtual std::vector<DkPolyRect> getRects() const { return rects; };
+	virtual std::vector<DkPolyRect> getRects() const { return mRects; };
 	virtual cv::Mat getDebugImg() const;
 	virtual QImage getCropped(const QImage& img) const;
 	virtual void draw(cv::Mat& img, const cv::Scalar& col = cv::Scalar(255, 222, 0)) const;
@@ -58,19 +58,19 @@ public:
 	bool looseDetection;
 
 protected:
-	cv::Mat img;
+	cv::Mat mImg;
 	cv::Mat dbgImg;
 
 	int thresh = 80;
 	int numThresh = 10;
-	double minArea = 12000;
-	double maxArea = 0;
+	double mMinArea = 12000;
+	double mMaxArea = 0;
 	float maxSide = 0;
 	float maxSideFactor = 0.97f;
 	float scale = 1.0f;
 	bool alternativeMethod;
 
-	std::vector<DkPolyRect> rects;
+	std::vector<DkPolyRect> mRects;
 
 	virtual cv::Mat findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;
 	virtual cv::Mat findRectanglesAlternative(const cv::Mat& img, std::vector<DkPolyRect>& squares) const;

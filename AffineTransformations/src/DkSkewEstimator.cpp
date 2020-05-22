@@ -355,9 +355,9 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 				if (yrPoss1.size() > 0 && yrPoss2.size() > 0) {
 					for (int y1i = 0; y1i < yrPoss1.size(); y1i++) {
 
-						int ys1 = yrPoss1.at(y1i);
+						//int ys1 = yrPoss1.at(y1i);
 						for (int y2i = 0; y2i < yrPoss2.size(); y2i++) {
-							int ys2 = yrPoss2.at(y2i);
+							//int ys2 = yrPoss2.at(y2i);
 
 							double sumVal = 0;
 							for (int xi = x1; xi <= x2; xi++)
@@ -369,8 +369,11 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 							if (sumVal > currMax.x()) {
 				
 								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
-								currMax = QVector3D(sumVal, - rotationFactor * lineAngle, (float) qSqrt( (edgeMap.cols*0.5 - centerPoint.x()) * (edgeMap.cols*0.5 - centerPoint.x()) + (edgeMap.rows*0.5 - centerPoint.y()) * (edgeMap.rows*0.5 - centerPoint.y()) ));
-								maxLine = QVector4D(x1, y1, x2, y2);
+								currMax = QVector3D(
+									(float)sumVal, 
+									(float) (- rotationFactor * lineAngle), 
+									(float) qSqrt( (edgeMap.cols*0.5 - centerPoint.x()) * (edgeMap.cols*0.5 - centerPoint.x()) + (edgeMap.rows*0.5 - centerPoint.y()) * (edgeMap.rows*0.5 - centerPoint.y()) ));
+								maxLine = QVector4D((float)x1, (float)y1, (float)x2, (float)y2);
 							}
 
 							K++;
@@ -417,9 +420,9 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 				if (yrPoss1.size() > 0 && yrPoss2.size() > 0) {
 					for (int y1i = 0; y1i < yrPoss1.size(); y1i++) {
 
-						int ys1 = yrPoss1.at(y1i);
+						//int ys1 = yrPoss1.at(y1i);
 						for (int y2i = 0; y2i < yrPoss2.size(); y2i++) {
-							int ys2 = yrPoss2.at(y2i);
+							//int ys2 = yrPoss2.at(y2i);
 
 							double sumVal = 0;
 							for (int xi = x1; xi <= x2; xi++)
@@ -431,8 +434,8 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 							if (sumVal > currMax.x()) {
 				
 								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
-								currMax = QVector3D(sumVal, rotationFactor * lineAngle, (float) qSqrt( (edgeMap.rows *0.5 - centerPoint.x()) * (edgeMap.rows*0.5 - centerPoint.x()) + (edgeMap.cols*0.5 - centerPoint.y()) * (edgeMap.cols*0.5 - centerPoint.y()) ));
-								maxLine = QVector4D(y1, x1, y2, x2);
+								currMax = QVector3D((float)sumVal, (float)(rotationFactor * lineAngle), (float) qSqrt( (edgeMap.rows *0.5 - centerPoint.x()) * (edgeMap.rows*0.5 - centerPoint.x()) + (edgeMap.cols*0.5 - centerPoint.y()) * (edgeMap.cols*0.5 - centerPoint.y()) ));
+								maxLine = QVector4D((float)y1, (float)x1, (float)y2, (float)x2);
 							}
 
 							K++;
@@ -470,7 +473,7 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 	QVector<QVector3D> thrWeights = QVector<QVector3D> ();
 	for (int i = 0; i < weights.size(); i++)
 		if (weights.at(i).x()/maxWeight > eta) {
-			thrWeights.append(QVector3D(qSqrt((weights.at(i).x()/maxWeight - eta)/(1 - eta)), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
+			thrWeights.append(QVector3D((float)qSqrt((weights.at(i).x()/maxWeight - eta)/(1 - eta)), (float)(weights.at(i).y() / M_PI * 180), (float)(weights.at(i).z() / imgDiagonal)));
 			//thrWeights.append(QVector3D((weights.at(i).x()/maxWeight - eta) * (weights.at(i).x()/maxWeight - eta), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
 		}
 

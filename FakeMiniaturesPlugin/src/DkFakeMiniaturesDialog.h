@@ -69,7 +69,6 @@ class DkFakeMiniaturesDialog : public QDialog {
 		void setImage(const QImage *img);		
 		void setImagePreview(QImage img) {imgPreview = img;};
 		QImage getImage();
-		void resetValues();
 		QImage applyMiniaturesFilter(QImage inImg, QRect qRoi);
 		QImage getScaledImg() {return scaledImg;};
 		void drawImgPreview();	
@@ -83,7 +82,7 @@ class DkFakeMiniaturesDialog : public QDialog {
 
 	protected:
 		bool isOk;
-		const QImage *img;
+		const QImage *mImg;
 		QImage imgPreview;
 		int dialogWidth;
 		int dialogHeight;
@@ -109,7 +108,7 @@ class DkFakeMiniaturesDialog : public QDialog {
 
 	/**
 	 * Converts a QImage to a Mat
-	 * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
+	 * @param mImg formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
 	 * @return cv::Mat the corresponding Mat
 	 **/ 
 	static Mat qImage2Mat(const QImage img) {
@@ -130,7 +129,7 @@ class DkFakeMiniaturesDialog : public QDialog {
 			//qDebug() << "indexed...";
 		}
 		else {
-			//qDebug() << "image flag: " << img.format();
+			//qDebug() << "image flag: " << mImg.format();
 			cImg = img.convertToFormat(QImage::Format_ARGB32);
 			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
 			//qDebug() << "I need to convert the QImage to ARGB32";
@@ -143,7 +142,7 @@ class DkFakeMiniaturesDialog : public QDialog {
 
 	/**
 	 * Converts a cv::Mat to a QImage.
-	 * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
+	 * @param mImg supported formats CV8UC1 | CV_8UC3 | CV_8UC4
 	 * @return QImage the corresponding QImage
 	 **/ 
 	static QImage mat2QImage(Mat img) {
@@ -157,12 +156,12 @@ class DkFakeMiniaturesDialog : public QDialog {
 		if (img.type() == CV_8UC1) {
 			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8);	// opencv uses size_t if for scaling in x64 applications
 			//Mat tmp;
-			//cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
-			//img = tmp;
+			//cvtColor(mImg, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
+			//mImg = tmp;
 		}
 		if (img.type() == CV_8UC3) {
 			
-			//cv::cvtColor(img, img, CV_RGB2BGR);
+			//cv::cvtColor(mImg, mImg, CV_RGB2BGR);
 			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
 		}
 		if (img.type() == CV_8UC4) {

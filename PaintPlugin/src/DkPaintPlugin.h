@@ -151,8 +151,8 @@ protected:
 
 	bool cancelTriggered;
 	bool isOutside;
-	QBrush brush;
-	QPen pen;
+	QBrush mBrush;
+	QPen mPen;
 	QPointF lastPoint;
 	bool panning;
 	DkPaintToolBar* paintToolbar;

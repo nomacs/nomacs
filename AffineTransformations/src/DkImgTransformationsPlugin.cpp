@@ -72,6 +72,8 @@ bool DkImgTransformationsPlugin::hideHUD() const {
 **/
 QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
 
+	Q_UNUSED(runID);
+
 	//for a mViewport plugin runID and image are null
 	if (mViewport && imgC) {
 
@@ -92,6 +94,7 @@ QSharedPointer<nmc::DkImageContainer> DkImgTransformationsPlugin::runPlugin(cons
 
 bool DkImgTransformationsPlugin::createViewPort(QWidget * parent) {
 
+	Q_UNUSED(parent);
 	mViewport = new DkImgTransformationsViewPort();
 
 	return true;
@@ -134,7 +137,7 @@ void DkImgTransformationsViewPort::init() {
 	QSettings settings;
 	settings.beginGroup("affineTransformPlugin");
     defaultMode = settings.value("mode", defaultMode).toInt();
-    guideMode = settings.value("guideMode", guide_no_guide).toInt();
+    mGuideMode = settings.value("guideMode", guide_no_guide).toInt();
 	rotCropEnabled = (settings.value("cropEnabled", Qt::Unchecked).toInt() == Qt::Checked);
 	angleLinesEnabled = (settings.value("angleLines", Qt::Checked).toInt() == Qt::Checked);
     settings.endGroup();
@@ -159,7 +162,7 @@ void DkImgTransformationsViewPort::init() {
 	imgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), defaultMode, this);
 
 	imgTransformationsToolbar->setCropState((rotCropEnabled) ? Qt::Checked : Qt::Unchecked);
-	imgTransformationsToolbar->setGuideLineState(guideMode);
+	imgTransformationsToolbar->setGuideLineState(mGuideMode);
 	imgTransformationsToolbar->setAngleLineState((angleLinesEnabled) ? Qt::Checked : Qt::Unchecked);
 
 	connect(imgTransformationsToolbar, SIGNAL(scaleXValSignal(double)), this, SLOT(setScaleXValue(double)));
@@ -424,7 +427,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	painter.drawImage(inImage.rect(), inImage);
 	
-	drawGuide(&painter, QPolygonF(QRectF(imgRect)), guideMode);
+	drawGuide(&painter, QPolygonF(QRectF(imgRect)), mGuideMode);
 	painter.drawRect(imgRect);
 
 	if (selectedMode == mode_scale) {
@@ -724,7 +727,7 @@ bool DkImgTransformationsViewPort::isCanceled() {
 
 void DkImgTransformationsViewPort::setGuideStyle(int guideMode) {
 
-	this->guideMode = guideMode;
+	this->mGuideMode = guideMode;
 	this->repaint();
 }
 
