@@ -335,12 +335,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1068"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Ordina per la data della ultima modifica</translation>
+      <translation>Ordina per data di ultima modifica</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1072"/>
       <source>Random</source>
-      <translation>casualmente</translation>
+      <translation>casuale</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1074"/>
@@ -400,7 +400,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1106"/>
       <source>&amp;Undo</source>
-      <translation>&amp;Rifai</translation>
+      <translation>&amp;Annulla</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1109"/>
@@ -410,7 +410,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1111"/>
       <source>&amp;Redo</source>
-      <translation>&amp;Disfai</translation>
+      <translation>&amp;Ripeti</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1114"/>
@@ -1397,17 +1397,17 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="101"/>
       <source>Flip &amp;Horizontal</source>
-      <translation>Ribalti &amp;orizzontalmente</translation>
+      <translation>Ribalta &amp;orizzontalmente</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="102"/>
       <source>Flip Image Horizontally</source>
-      <translation>Ribalti l'immagine orizzontalmente</translation>
+      <translation>Ribalta l'immagine orizzontalmente</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="106"/>
       <source>Flip &amp;Vertical</source>
-      <translation>Ribalti &amp;verticalmente</translation>
+      <translation>Ribalta &amp;verticalmente</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="107"/>
@@ -2538,7 +2538,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/main.cpp" line="154"/>
       <source>batch-settings-path</source>
-      <translation type="unfinished"/>
+      <translation>Percorso impostazioni batch</translation>
     </message>
     <message>
       <location filename="../../src/main.cpp" line="158"/>
