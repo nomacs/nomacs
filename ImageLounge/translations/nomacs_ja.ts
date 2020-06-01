@@ -564,7 +564,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1195"/>
       <source>Shows the Zoom Overview</source>
-      <translation>ズームできる画像全体の縮図を表示する</translation>
+      <translation>ズームの概要を表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1199"/>
@@ -764,7 +764,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1290"/>
       <source>Go to tab by index</source>
-      <translation>インデックスを使用して、タブに移動</translation>
+      <translation>インデックスを使用して、タブに移動する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1292"/>
@@ -804,7 +804,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1308"/>
       <source>Shows the initial view (no zooming)</source>
-      <translation>表示領域に合わせて表示する</translation>
+      <translation>表示領域に合わせて表示する (ズームなし)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1310"/>
@@ -957,12 +957,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose &amp;Monitor</source>
-      <translation>選択＆モニター</translation>
+      <translation>モニターを選択(&amp;M)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1378"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>nomacs を実行するモニターを選択</translation>
+      <translation>nomacsを実行するモニターを選択する</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
@@ -1103,7 +1103,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1438"/>
       <source>Synchronize &amp;View</source>
-      <translation>同期＆表示</translation>
+      <translation>表示を同期(&amp;V)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1440"/>
@@ -1236,7 +1236,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1536"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1552"/>
       <source>Jumps 10 images before the current image</source>
-      <translation>現在の画像の 10枚前にジャンプする</translation>
+      <translation>現在の画像の10枚前にジャンプする</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1539"/>
@@ -1247,7 +1247,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1540"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1556"/>
       <source>Jumps 10 images after the current image</source>
-      <translation>現在の画像の 10枚後ろにジャンプする</translation>
+      <translation>現在の画像の10枚後ろにジャンプする</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1543"/>
@@ -1362,7 +1362,7 @@
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
       <source>Cropped</source>
-      <translation>トリミングされた</translation>
+      <translation>トリミング済み</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="84"/>
@@ -2363,7 +2363,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1092"/>
       <source>nomacs - Image Lounge is a lightweight image viewer.</source>
-      <translation>nomacs - 画像ラウンジは軽量画像ビューアーです。</translation>
+      <translation>nomacs - Image Loungeは、軽量な画像ビューアーです。</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUtils.cpp" line="803"/>
@@ -2573,7 +2573,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/main.cpp" line="338"/>
       <source>Sorry, nomacs ran out of memory...</source>
-      <translation>残念ながら、nomacs を実行するメモリが不足してます...</translation>
+      <translation>残念ながら、nomacsを実行するメモリが不足しています...</translation>
     </message>
   </context>
   <context>
@@ -2624,7 +2624,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1336"/>
       <source>Apply Noise Filtering to RAW Images</source>
-      <translation>RAW 画像に、ノイズフィルターを適用する</translation>
+      <translation>RAW画像に、ノイズフィルターを適用する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1338"/>
@@ -2654,7 +2654,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation>チェックを入れると、画像は Exif の向きに対して回転しません</translation>
+      <translation>チェックを入れると、画像はExifの向きに対して回転しません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1359"/>
@@ -2839,7 +2839,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4020"/>
       <source>Extracting file %1 of %2</source>
-      <translation>ファイルの展開中 %1 of %2</translation>
+      <translation>%1/%2 個のファイルを展開中</translation>
     </message>
   </context>
   <context>
@@ -2853,7 +2853,7 @@ nomacsを起動し直して再試行してください。</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1178"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>申し訳ありませんが、保存できませんでした: %1</translation>
+      <translation>残念ながら、保存できませんでした: %1</translation>
     </message>
   </context>
   <context>
@@ -3146,7 +3146,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2019"/>
       <source>Orientation</source>
-      <translation>画像方向</translation>
+      <translation>画像の向き</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2022"/>
@@ -3412,7 +3412,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1258"/>
       <source>Sorry, I could not drop the content.</source>
-      <translation>申し訳ありません、コンテンツを削除できませんでした。</translation>
+      <translation>残念ながら、コンテンツを削除できませんでした。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1376"/>
@@ -3505,7 +3505,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1269"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation>申し訳ありませんが、この画像フォーマットにはコメントが保存できません。</translation>
+      <translation>残念ながら、この画像形式ではコメントを保存できません。</translation>
     </message>
   </context>
   <context>
@@ -3513,17 +3513,17 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="147"/>
       <source>JPG Settings</source>
-      <translation>JPG の設定</translation>
+      <translation>JPGの設定</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="149"/>
       <source>J2K Settings</source>
-      <translation>J2K の設定</translation>
+      <translation>J2Kの設定</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="158"/>
       <source>WebP Settings</source>
-      <translation>WebP の設定</translation>
+      <translation>WebPの設定</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="171"/>
@@ -3784,7 +3784,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="676"/>
       <source>NOTE: if checked, nomacs might be slow while zooming.</source>
-      <translation>備考: チェックを入れると、ズーム中にnomacsの動作が遅くなる可能性があります</translation>
+      <translation>注意: チェックを入れると、nomacsはズーム中の動きが遅くなることがあります。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="680"/>
@@ -3799,12 +3799,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="685"/>
       <source>Show pixels if zoom level is above</source>
-      <translation>ズームレベルが以下よりも上の場合はピクセルを表示する</translation>
+      <translation>ズームレベルが、設定値を上回る場合にはピクセルを表示する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation>nomacs はズームレベルが大きいと画像を補間しません。</translation>
+      <translation>nomacsはズームレベルが大きいと画像を補間しません。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="697"/>
@@ -3814,7 +3814,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="699"/>
       <source>If checked, predefined zoom levels are used when zooming.</source>
-      <translation>チェックを入れると、事前に定義されたズームレベルがズーム時に使用されます</translation>
+      <translation>チェックを入れると、ズーム時に定義済みのズームレベルが使用されます。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3834,12 +3834,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="730"/>
       <source>Keep zoom if the size is the same</source>
-      <translation>サイズが同じ場合はズームを維持する</translation>
+      <translation>サイズが同一ならば、ズームを維持する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="731"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation>チェックを入れると、読み込まれた画像が前の画像と同一のズームレベルの場合にのみズームレベルが維持されます</translation>
+      <translation>チェックを入れると、読み込まれた画像が前の画像と同じレベルの場合にのみ、ズームレベルが維持されます。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="732"/>
@@ -3849,7 +3849,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="734"/>
       <source>Always zoom to fit</source>
-      <translation>常にフィットするようにズームする</translation>
+      <translation>常にズームしてフィットさせる</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="747"/>
@@ -4041,12 +4041,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2629"/>
       <source>Sorry, I could not load page: %1</source>
-      <translation>申し訳ありませんが、ページを読み込めませんでした: %1</translation>
+      <translation>残念ながら、ページを読み込めませんでした: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2637"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>申し訳ありませんが、保存できませんでした: %1</translation>
+      <translation>残念ながら、保存できませんでした: %1</translation>
     </message>
   </context>
   <context>
@@ -4161,12 +4161,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1021"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation>次のキーを押すまでは画像がスキップされます。</translation>
+      <translation>←キー、または→キーを押し続けている間は画像をスキップします</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
       <source>Wait for Images to be Loaded</source>
-      <translation>画像が読み込まれるまで待って下さい</translation>
+      <translation>画像が読み込まれるまで待つ</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1023"/>
@@ -4408,7 +4408,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="322"/>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="580"/>
       <source>Reset All Settings</source>
-      <translation>すべての設定をリセットする</translation>
+      <translation>すべての設定をリセット</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="326"/>
@@ -4483,7 +4483,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="376"/>
       <source>If checked, the mouse wheel zooms - otherwise it is used to switch between images.</source>
-      <translation>チェックを入れると「マウスホイールは、ズーム機能」になり、チェックが外れていれば「画像の切り替え」に使われます。</translation>
+      <translation>チェックを入れると、マウスホイールは「ズーム機能」になり、チェックが外れていれば「画像の切り替え」に使われます。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="379"/>
@@ -4669,12 +4669,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="683"/>
       <source>Sorry, the file: %1 does not exist... </source>
-      <translation>申し訳ありませんが、ファイル: %1 は存在しません</translation>
+      <translation>残念ながら、ファイル: %1 は存在しません...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="690"/>
       <source>Sorry, you are not allowed to read: %1</source>
-      <translation>申し訳ありませんが、読み込むことができません: %1</translation>
+      <translation>残念ながら、読み込むことができません: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="808"/>
@@ -4684,13 +4684,13 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="816"/>
       <source>Sorry, I could not load: %1</source>
-      <translation>申し訳ありませんが、読み込むことができませんでした: %1</translation>
+      <translation>残念ながら、読み込むことができませんでした: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="858"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation>申し訳ありません、ダウンロードできませんでした:
+      <translation>残念ながら、ダウンロードできませんでした:
 %1</translation>
     </message>
     <message>
@@ -4703,7 +4703,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="928"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>申し訳ありませんが、ディレクトリ: %1 は存在しません
+      <translation>残念ながら、ディレクトリ: %1 は存在しません
 </translation>
     </message>
     <message>
@@ -4749,7 +4749,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="865"/>
       <source>sorry, %1 does not exist anymore...</source>
-      <translation>申し訳ありませんが、%1 はすでに存在しません...</translation>
+      <translation>残念ながら、%1 はすでに存在しません...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="883"/>
@@ -4793,7 +4793,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1306"/>
       <source>Sorry, I cannot save an empty image...</source>
-      <translation>申し訳ありませんが、空の画像は保存できません...</translation>
+      <translation>残念ながら、空の画像は保存できません...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1446"/>
@@ -4803,7 +4803,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1450"/>
       <source>Sorry, I could not delete: %1</source>
-      <translation>申し訳ありません、削除できませんでした: %1</translation>
+      <translation>残念ながら、削除できませんでした: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1500"/>
@@ -4896,17 +4896,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="67"/>
       <source>Orientation</source>
-      <translation>画像方向</translation>
+      <translation>画像の向き</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="68"/>
       <source>Make</source>
-      <translation>メーカー名</translation>
+      <translation>撮影したカメラの情報</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="69"/>
       <source>Model</source>
-      <translation>モデル名</translation>
+      <translation>機種・型式</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="70"/>
@@ -4966,7 +4966,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="83"/>
       <source>Image Description</source>
-      <translation>画像タイトル</translation>
+      <translation>画像の説明</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="84"/>
@@ -4976,17 +4976,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="85"/>
       <source>Creator Title</source>
-      <translation>タイトルの作成者</translation>
+      <translation>作成者名</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="86"/>
       <source>City</source>
-      <translation>都市</translation>
+      <translation>都市名</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="87"/>
       <source>Country</source>
-      <translation>国</translation>
+      <translation>国・地域</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="88"/>
@@ -5319,7 +5319,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3201"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>申し訳ありませんが、このデータベースでモザイクを作成することはできないようです。</translation>
+      <translation>残念ながら、このデータベースでモザイクを作成することはできないようです。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3318"/>
@@ -5334,7 +5334,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3566"/>
       <source>Sorry, I could not mix the image...</source>
-      <translation>申し訳ありませんが、画像をミックスすることができませんでした...</translation>
+      <translation>残念ながら、画像をミックスすることができませんでした...</translation>
     </message>
   </context>
   <context>
@@ -5460,13 +5460,13 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1173"/>
       <source>Save Tab List</source>
-      <translation>タブのリストを保存</translation>
+      <translation>タブのリストを保存する</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1246"/>
       <source>Sorry, the directory: %1 does not exist
 </source>
-      <translation>申し訳ありませんが、ディレクトリ: %1 は存在しません
+      <translation>残念ながら、ディレクトリ: %1 は存在しません
 </translation>
     </message>
     <message>
@@ -5718,7 +5718,7 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2095"/>
       <source>keep ALT key pressed to zoom with the mouse wheel</source>
-      <translation>ALTキーを押したままマウスホイールを動かすとズームします</translation>
+      <translation>マウスホイールでズームするには、ALTキーを押したままにします</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2106"/>
@@ -5815,7 +5815,7 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1399"/>
       <source>Sorry, I cannot delete %1</source>
-      <translation>申し訳ありません、%1 を削除できません</translation>
+      <translation>残念ながら、%1 を削除できません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1416"/>
@@ -6022,12 +6022,12 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1431"/>
       <source>Sorry, but the image size %1 x %2 is illegal.</source>
-      <translation>申し訳ありません。画像サイズ %1 x %2 は不正です。</translation>
+      <translation>残念ながら、画像サイズ %1 x %2 は不正です。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1443"/>
       <source>Sorry, the image is too large: %1</source>
-      <translation>申し訳ありません。画像が大きすぎます: %1</translation>
+      <translation>残念ながら、画像があまりにも大き過ぎます: %1</translation>
     </message>
   </context>
   <context>
@@ -6055,12 +6055,12 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="398"/>
       <source>Bicubic (4x4 interpolatia)</source>
-      <translation>バイキュービック法（4x4 バイキュービック補間）</translation>
+      <translation>バイキュービック法 (4x4バイキュービック補間)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="399"/>
       <source>Lanczos (8x8 interpolation)</source>
-      <translation>ランチョス法（8x8 補間）</translation>
+      <translation>ランチョス法 (8x8補間)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="402"/>
@@ -6180,7 +6180,7 @@ then press %1</source>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
       <translation>%1 は既に %2 &gt; %3 で使われています
-変更を取り消すには、ESC を押してください</translation>
+変更を取り消すには、ESCを押してください</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1743"/>
@@ -6320,7 +6320,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
       <source> images</source>
-      <translation>images（画像）</translation>
+      <translation> 個の画像</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1265"/>
@@ -6337,7 +6337,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
       <source>Sorry, I cannot %1 %2</source>
-      <translation>申し訳ありません、%2 を %1 できません</translation>
+      <translation>残念ながら、%2 を %1 できません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1463"/>
@@ -6373,7 +6373,7 @@ Press ESC to undo changes</source>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1535"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation>申し訳ありません、削除できません:
+      <translation>残念ながら、削除できません:
 %1</translation>
     </message>
     <message>
@@ -6389,7 +6389,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1581"/>
       <source>Sorry, I cannot rename: %1 to %2</source>
-      <translation>申し訳ありませんが、%1 から %2 へ名前を変更できません</translation>
+      <translation>残念ながら、%1 から %2 へ名前を変更できません</translation>
     </message>
   </context>
   <context>
@@ -6726,7 +6726,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="248"/>
       <source>sorry, I could not check for newer versions</source>
-      <translation>申し訳ありませんが、新しいバージョンを確認できませんでした</translation>
+      <translation>残念ながら、新しいバージョンを確認できませんでした</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="248"/>
@@ -6769,7 +6769,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="279"/>
       <source>sorry, unable to download the new version</source>
-      <translation>申し訳ありませんが、新しいバージョンをダウンロードすることが出来ませんでした</translation>
+      <translation>残念ながら、新バージョンをダウンロードできません</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="349"/>
@@ -6812,7 +6812,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="800"/>
       <source>Sorry, I could not create a wallpaper...</source>
-      <translation>申し訳ありませんが、壁紙を作成できませんでした...</translation>
+      <translation>残念ながら、壁紙を作成できませんでした...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="843"/>
