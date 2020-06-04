@@ -144,27 +144,8 @@ file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DES
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
 
-# add default settings file
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
-
 if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
 
-	# # WinExtras
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtrasd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-	
-	# # SVG support
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
-	
 	# WinExtras
 	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
@@ -194,6 +175,11 @@ if (EXISTS ${OPEN_SSL_PATH})
     file(COPY ${OPEN_SSL_PATH}/libcrypto-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
     message(STATUS "open ssl found...")
 endif()
+
+# add default settings file
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.ini)
