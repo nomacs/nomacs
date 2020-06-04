@@ -184,6 +184,17 @@ if (NOT Qt5Widgets_VERSION VERSION_LESS 5.11.0)
 	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/styles/)
 endif()
 
+# OpenSSL
+if (NOT DEFINED ${OPEN_SSL_PATH} )
+    set(OPEN_SSL_PATH "C:/OpenSSL-v111-Win64/bin")
+    message(STATUS "defaulting open ssl path to ${OPEN_SSL_PATH}")
+endif()
+
+if (EXISTS ${OPEN_SSL_PATH})
+    file(COPY ${OPEN_SSL_PATH}/libcrypto-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    message(STATUS "open ssl found...")
+endif()
+
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.ini)
 	file(WRITE ${CMAKE_BINARY_DIR}/Debug/settings.ini "")
