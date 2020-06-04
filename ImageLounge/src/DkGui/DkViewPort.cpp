@@ -463,7 +463,7 @@ void DkViewPort::zoom(double factor, const QPointF& center, bool force) {
 	zoomToPoint(factor, pos, mWorldMatrix);
 
 	controlImagePosition();
-	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schöner
+	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schï¿½ner
 	showZoom();
 	changeCursor();
 
@@ -624,8 +624,10 @@ void DkViewPort::tcpForceSynchronize() {
 
 void DkViewPort::tcpSynchronize(QTransform relativeMatrix, bool force) {
 	
-	if (!relativeMatrix.isIdentity())
+	if (!relativeMatrix.isIdentity()) {
 		emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
+		return;
+	}
 
 	// check if we need a synchronization
 	if ((force || qApp->keyboardModifiers() == mAltMod ||
@@ -1243,7 +1245,9 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 				tcpSynchronize(relTransform);
 			}
 		}
-		tcpSynchronize();
+        // absolute transformation
+        else
+		    tcpSynchronize();
 	}
 
 	int dist = QPoint(event->pos()-mPosGrab.toPoint()).manhattanLength();
@@ -1307,7 +1311,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 	else if (angle < 0.2*CV_PI || angle > 0.8*CV_PI)
 		horizontal = false;
 	else
-		return no_swipe;	// angles ~45° are not accepted
+		return no_swipe;	// angles ~45ï¿½ are not accepted
 
 	QPoint startPos = QWidget::mapFromGlobal(end);
 	qDebug() << "vec: " << vec.x << ", " << vec.y;
