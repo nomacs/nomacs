@@ -34,6 +34,16 @@
 
 namespace nmp {
 
+
+#ifdef WITH_OPENCV
+	// I know - but I just want to get rid of these little issues...
+#if (CV_MAJOR_VERSION > 3)
+	int DIST_C = cv::DIST_C;
+#else
+	int DIST_C = CV_DIST_C;
+#endif
+#endif
+
 /**************************************************************
 * DkFakeMiniaturesDialog: Dialog for creating fake miniatures
 ***************************************************************/
@@ -189,62 +199,6 @@ void DkFakeMiniaturesDialog::drawImgPreview() {
 QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 
 #ifdef WITH_OPENCV	
-	// old opencv bluring
-	/*Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
-	Mat bw(blurImg.rows, blurImg.cols, CV_8UC1, Scalar(255));
-	Mat roi(bw, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
-	roi = Scalar(0);
-	
-	Mat dt;
-	distanceTransform(bw, dt, CV_DIST_C, 3);
-	double maxMat;
-	minMaxIdx(dt, 0, &maxMat, 0, 0);
-
-	int N = 10;
-	double diag = sqrt(inImg.width()*inImg.width()+inImg.height()*inImg.height());
-
-	std::vector<Mat> filteredStack;
-	filteredStack.push_back(imgMat);
-	for (int i = 1; i<=((N-1)*2)-1; i+=2) {
-		Mat filteredImg = filteredStack.back().clone();
-		GaussianBlur(filteredImg, filteredImg, cv::Size(3,3), 0.02 * diag, 0.02 * diag);//6, 6);
-		filteredStack.push_back(filteredImg);
-	}
-
-	std::vector<Mat> channelsDT;
-	split(dt, channelsDT);
-	std::vector<Mat> channelsImg;
-	split(imgMat, channelsImg);
-
-	for (int i = 1; i<10; i++) {
-		double thr = maxMat / (N*N) * (i*i);
-
-		std::vector<Mat> channelsStack;
-		split(filteredStack.at(i), channelsStack);
-
-		for (int row = 0; row < imgMat.rows; row++)
-		{
-			float *ptrDT = channelsDT[0].ptr<float>(row);
-			unsigned char *ptrRS = channelsStack[0].ptr<unsigned char>(row);
-			unsigned char *ptrGS = channelsStack[1].ptr<unsigned char>(row);
-			unsigned char *ptrBS = channelsStack[2].ptr<unsigned char>(row);
-
-			unsigned char *ptrR = channelsImg[0].ptr<unsigned char>(row);
-			unsigned char *ptrG = channelsImg[1].ptr<unsigned char>(row);
-			unsigned char *ptrB = channelsImg[2].ptr<unsigned char>(row);
-
-			for (int col = 0; col < imgMat.cols; col++) {
-				if (ptrDT[col] > thr) {
-					ptrR[col] = ptrRS[col];
-					ptrG[col] = ptrGS[col];
-					ptrB[col] = ptrBS[col];
-				}
-			}
-		}
-	}
-
-	merge(channelsImg, imgMat);
-	*/
 
 	int kernelSize = kernelSizeWidget->getToolValue();
 	if (inImg == scaledImg) {
@@ -269,7 +223,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 	//cv::Mat distImg;
 	//cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
 
-	cv::distanceTransform(distImg, distImg, cv::DIST_C, 3);
+	cv::distanceTransform(distImg, distImg, DIST_C, 3);
 	cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
 	
 	for (size_t idx = 0; idx < planes.size(); idx++)
