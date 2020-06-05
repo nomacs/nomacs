@@ -1711,7 +1711,7 @@ void DkActionManager::enableImageActions(bool enable) const {
 	action(DkActionManager::menu_panel_exif)->setEnabled(enable);
 	action(DkActionManager::menu_panel_overview)->setEnabled(enable);
 	action(DkActionManager::menu_panel_player)->setEnabled(enable);
-	action(DkActionManager::menu_panel_thumbview)->setEnabled(enable);
+	//action(DkActionManager::menu_panel_thumbview)->setEnabled(enable);	// if we don't disable the thumbnail preview, we can toggle it with SHIFT+T
 
 	action(DkActionManager::menu_view_slideshow)->setEnabled(enable);
 	action(DkActionManager::menu_view_fullscreen)->setEnabled(enable);

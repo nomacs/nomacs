@@ -1865,6 +1865,8 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	setLayout(layout);
 
 	enableSelectionActions();
+
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkThumbScrollWidget::createToolbar() {
@@ -1928,6 +1930,13 @@ void DkThumbScrollWidget::createActions() {
 	DkActionManager& am = DkActionManager::instance();
 	//addActions(am.allActions().toList());
 	addActions(am.previewActions().toList());
+
+    // add a shortcut to open the selected image
+	QAction* loadFile = new QAction(tr("Open Image"), this);
+	loadFile->setObjectName("loadFile");
+	loadFile->setShortcut(Qt::Key_Return);
+
+	addAction(loadFile);
 }
 
 void DkThumbScrollWidget::batchProcessFiles() const {
@@ -1959,6 +1968,19 @@ void DkThumbScrollWidget::batchPrint() const {
 
 	printPreviewDialog->exec();
 	printPreviewDialog->deleteLater();
+}
+
+void DkThumbScrollWidget::on_loadFile_triggered() {
+
+	auto selected = mThumbsScene->selectedItems();
+
+	if (selected.isEmpty())
+		return;
+	
+	auto thumb = dynamic_cast<DkThumbLabel*>(selected.first());
+
+	if (thumb && thumb->getThumb())
+		mThumbsScene->loadFileSignal(thumb->getThumb()->getFilePath(), false);
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
