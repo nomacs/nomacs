@@ -173,6 +173,7 @@ endif()
 
 if (EXISTS ${OPEN_SSL_PATH})
     file(COPY ${OPEN_SSL_PATH}/libcrypto-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    file(COPY ${OPEN_SSL_PATH}/libssl-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
     message(STATUS "open ssl found...")
 endif()
 
