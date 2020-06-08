@@ -34,10 +34,7 @@ build_script:
 
 after_build:
     - cd installer
-    - dir
     - call make-installer.bat
-    - cd C:/OpenSSL-v111-Win64/bin
-    - dir
 
 artifacts:
     - path: 'installer/nomacs.x64'
@@ -46,5 +43,3 @@ artifacts:
 
     - path: 'installer/nomacs-setup-x64.msi'
       name: nomacs installer
-# - path: 'build\*.exe'
-#   name: Basic apps
