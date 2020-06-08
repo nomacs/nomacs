@@ -25,6 +25,7 @@ cache:
 
 install:
     - git submodule update --init --recursive
+    - git lfs pull
     - call "%VCVARS%"
     # build dependencies
     - call 3rd-party/make.bat %QT5%
