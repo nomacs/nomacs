@@ -114,8 +114,12 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
 
-# copy additional Qt files
+# copy pre-compiled imageformats
+# this will break in the future - but is by far the easiest way now - sorry...
+file(GLOB PRECOMPILED_IMAGE_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/win-binaries/*.dll")
+file(COPY ${PRECOMPILED_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
 
+# copy additional Qt files
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
 file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}/../plugins/imageformats/*.dll")
