@@ -35,7 +35,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then CMAKE_ARGS="-DCMAKE_PREFIX_PATH=/opt/qt55/bin/ -DENABLE_IMAGESTITCHING=off -DENABLE_QUAZIP=OFF"; fi
   
   - git clone --depth 1 http://github.com/nomacs/nomacs nomacs
-  - mkdir nomacs/ImageLounge/plugins
+  - mkdir -p nomacs/ImageLounge/plugins
   - find . -maxdepth 1 -not -name "nomacs" -not -name ".*" -exec mv {} nomacs/ImageLounge/plugins/ \;
   - mkdir build
   - cd build
