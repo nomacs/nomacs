@@ -150,6 +150,7 @@ void DkSettings::initFileFilters() {
 	//if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
 	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
+	if (qtFormats.contains("avif"))		app_p.saveFilters.append("AV1 Image File Format (*.avif)");
 
 #ifdef Q_OS_WIN
 	if (qtFormats.contains("ico"))		app_p.saveFilters.append("Icon Files (*.ico)");
@@ -165,6 +166,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("cur"))		app_p.openFilters.append("Windows Cursor Files (*.cur)");
 	if (qtFormats.contains("icns"))		app_p.openFilters.append("Apple Icon Image (*.icns)");
 	if (qtFormats.contains("svgz"))		app_p.openFilters.append("Scalable Vector Graphics (*.svg *.svgz)");
+	if (qtFormats.contains("avifs"))	app_p.openFilters.append("AVIF image sequence (*.avifs)");
 
 #ifndef Q_OS_WIN
 	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
