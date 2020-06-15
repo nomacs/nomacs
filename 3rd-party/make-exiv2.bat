@@ -13,6 +13,7 @@ if exist %build_dir%/Release/bin/exiv2.dll (
 )
 
 REM build exiv2
+echo building %name%
 cmake^
  -DEXPAT_BUILD_PATH="%mypath%/build/expat"^
  -DEXPAT_INCLUDE_DIR="%mypath%/expat/lib"^

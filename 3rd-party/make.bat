@@ -1,6 +1,5 @@
-echo building all nomacs dependencies - it's about tea time
-
 @echo off
+echo building all nomacs dependencies - it's about tea time
 
 REM SET QT5="C:/Qt/Qt-5.14.1-installer/5.14.2/msvc2017_64/bin"
 SET QT5=%1

@@ -14,6 +14,7 @@ if exist %build_dir%/Release/quazip5.dll (
     goto :eof
 )
 
+echo building %name%
 cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -DZLIB_INCLUDE_DIRS="%mypath%opencv/3rdparty/zlib"^
  -DZLIB_BUILD_PATH="%mypath%build/opencv/3rdparty"^

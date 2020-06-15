@@ -11,6 +11,7 @@ if exist %build_dir%/Release/raw.dll (
 )
 
 REM build libraw
+echo building %name%
 cmake -DENABLE_EXAMPLES=OFF -B%build_dir% %mypath%/%name%
 
 cmake --build %build_dir% --config Release -- -m

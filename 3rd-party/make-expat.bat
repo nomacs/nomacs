@@ -11,6 +11,7 @@ if exist %build_dir%/Release/expat.dll (
 )
 
 REM build expat which is needed for exiv2
+echo building %name%
 cmake -DBUILD_examples=OFF -DBUILD_tests=OFF -B%build_dir% %mypath%/%name%
 
 cmake --build %build_dir% --config Release -- -m
