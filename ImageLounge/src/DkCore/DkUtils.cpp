@@ -648,6 +648,23 @@ QFileInfo DkUtils::urlToLocalFile(const QUrl& url) {
 	return file;
 }
 
+QString DkUtils::fileNameFromUrl(const QUrl& url) {
+	
+	QString name(url.toString());
+
+	// get Tweety.svg from https://upload.wikimedia.org/wikipedia/en/0/02/Tweety.svg
+	name = name.split("/").last(); 
+	// get 100919-snoop-dogg-feature.jpg from https://thenypost.files.wordpress.com/2019/10/100919-snoop-dogg-feature.jpg?quality=90&strip=all&w=618&h=410&crop=1
+	name = name.split("?").first(); 
+	
+	return name;
+}
+
+QString DkUtils::nowString() {
+	
+	return QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss");
+}
+
 /**
  * @brief isValidByContent identifies a file by file content.
  * @param file is an existing file.

@@ -959,9 +959,6 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	QApplication::sendPostedEvents();	// force an event post here
 
-	if (mCurrentImage && mCurrentImage->isFileDownloaded())
-		saveTempFile(mCurrentImage->image());
-
 	updateCacher(mCurrentImage);
 	updateHistory();
 
@@ -981,7 +978,6 @@ void DkImageLoader::downloadFile(const QUrl& url) {
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(QString());
 	setCurrentImage(newImg);
 	newImg->downloadFile(url);
-	newImg->setEdited(true);
 	emit updateSpinnerSignalDelayed(true);
 }
 
@@ -1020,7 +1016,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 
 	qInfo() << "saving to: " << fInfo.absolutePath();
 	
-	QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
+	QString fileName = name + "-" + DkUtils::nowString() + fileExt;
 	fInfo = QFileInfo(fInfo.absolutePath(), fileName);
 
 	if (!fInfo.exists()) {
