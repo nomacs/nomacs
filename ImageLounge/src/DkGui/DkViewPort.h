@@ -207,6 +207,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event) override;
 	virtual bool event(QEvent *event) override;
 	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void leaveEvent(QEvent* event) override;
 
 	bool mTestLoaded = false;
 	bool mGestureStarted = false;

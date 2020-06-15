@@ -1000,6 +1000,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	QGraphicsView::paintEvent(event);
 }
 
+void DkViewPort::leaveEvent(QEvent* event) {
+
+	// hide navigation buttons if the mouse leaves the viewport
+	mNavigationWidget->hide();
+	DkBaseViewPort::leaveEvent(event);
+}
+
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::drawBackground(QPainter & painter) {
 	
