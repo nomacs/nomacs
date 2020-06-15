@@ -30,6 +30,7 @@
 #pragma warning(push, 0)    
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
+#include <QFutureWatcher>
 #include <QUrl>
 #include <QImage>
 #pragma warning(pop)
@@ -423,7 +424,7 @@ class FileDownloader : public QObject {
 	Q_OBJECT
 
 public:
-	explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+	explicit FileDownloader(const QUrl& imageUrl, const QString& filePath = "", QObject *parent = 0);
 
 	virtual ~FileDownloader();
 
@@ -432,16 +433,22 @@ public:
 	void downloadFile(const QUrl& url);
 
 signals:
-	void downloaded();
+	void downloaded(const QString& filePath = "");
 
 private slots:
 	void fileDownloaded(QNetworkReply* pReply);
+	void saved();
 
 private:
 
 	QNetworkAccessManager mWebCtrl;
 	QSharedPointer<QByteArray> mDownloadedData;
 	QUrl mUrl;
+	QString mFilePath;
+
+	QFutureWatcher<bool> mSaveWatcher;
+
+	static bool save(const QString& filePath, const QSharedPointer<QByteArray> data);
 };
 
 }

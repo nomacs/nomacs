@@ -834,15 +834,23 @@ void DkImageContainerT::loadingFinished() {
 void DkImageContainerT::downloadFile(const QUrl& url) {
 
 	if (!mFileDownloader) {
-		mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
-		connect(mFileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
+
+		QString savePath = DkSettingsManager::param().global().tmpPath;
+
+		if (!QFileInfo(savePath).exists())
+			savePath = QDir::tempPath() + "/nomacs";
+		
+		QFileInfo saveFile(savePath, DkUtils::nowString() + " " + DkUtils::fileNameFromUrl(url));
+
+		mFileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, saveFile.absoluteFilePath(), this));
+		connect(mFileDownloader.data(), SIGNAL(downloaded(const QString&)), this, SLOT(fileDownloaded(const QString&)), Qt::UniqueConnection);
 		qDebug() << "trying to download: " << url;
 	}
 	else
 		mFileDownloader->downloadFile(url);
 }
 
-void DkImageContainerT::fileDownloaded() {
+void DkImageContainerT::fileDownloaded(const QString& filePath) {
 
 	if (!mFileDownloader) {
 		qDebug() << "empty fileDownloader, where it should not be";
@@ -862,6 +870,12 @@ void DkImageContainerT::fileDownloaded() {
 	}
 
 	mDownloaded = true;
+
+	if (filePath.isEmpty())
+		setFilePath(mFileDownloader->getUrl().toString().split("/").last());
+	else
+		setFilePath(filePath);
+	
 	fetchImage();
 }
 

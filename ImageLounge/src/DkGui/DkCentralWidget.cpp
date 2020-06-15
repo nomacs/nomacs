@@ -1229,6 +1229,10 @@ void DkCentralWidget::loadUrl(const QUrl& url, bool newTab) {
 		}
 	}
 	else {
+
+        // is this the right way to do it?
+		addTab();
+
 		//load a remote url
 		QSharedPointer<DkTabInfo> targetTab = mTabInfos[mTabbar->currentIndex()];
 		display(tr("downloading \"%1\"").arg(url.toDisplayString()));
@@ -1264,6 +1268,9 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
     if (!mimeData)
         return false;
 
+	if (!hasViewPort())
+		createViewPort();
+
     QStringList mimeFmts = mimeData->formats();
 
 	// try to load an image
@@ -1293,17 +1300,8 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		}
 	}
 
-    if (dropImg.isNull() && mimeData->hasImage()) {
-        // we got an image buffer
-        dropImg = qvariant_cast<QImage>(mimeData->imageData());
-		qInfo() << "Qt image loaded from mime";
-    }
-
 	if (!dropImg.isNull()) {
-		
-		if (!hasViewPort())
-			createViewPort();
-		
+				
 		getViewPort()->loadImage(dropImg);
 		return true;
 	}
@@ -1315,7 +1313,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		//we got a list of uris
 		//mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
 		for (QUrl u : mimeData->urls()) {
-			if (u.isValid())
+			if (u.isValid() && DkUtils::isValid(u.toString()))
 				urls.append(u);
 		}
 	}
@@ -1324,10 +1322,15 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }
     else {
-        //
-        qDebug() << "no handled Mime types found in drop: " << mimeData->formats();
-        return false;
+        qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
     }
+
+	// load from image buffer
+	if (dropImg.isNull() && mimeData->hasImage()) {
+		// we got an image buffer
+		dropImg = qvariant_cast<QImage>(mimeData->imageData());
+		qInfo() << "Qt image loaded from mime";
+	}
 
     if(urls.size() == 0) {
         return false;
