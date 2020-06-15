@@ -969,7 +969,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			painter.setOpacity(oldOp);
 		}
 
-		//Now disable matrixWorld for overlay display
+		// now disable world matrix for overlay display
 		painter.setWorldMatrixEnabled(false);
 	}
 	else

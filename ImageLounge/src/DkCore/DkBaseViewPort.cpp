@@ -555,6 +555,11 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 		// but account for rounding issues with aspect ratio (<= 1)
 		if (qAbs(ir.width() - img.width()) <= 1 &&
 			qAbs(ir.height() - img.height()) <= 1) {
+
+			// match image size & ir size
+			// this removes an (often vertical) fissure in the smoothed image
+			ir.setSize(img.size());
+
 			painter.setWorldMatrixEnabled(false);
 			painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
 			painter.drawImage(ir, img, img.rect());
