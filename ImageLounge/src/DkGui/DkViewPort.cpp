@@ -1151,7 +1151,6 @@ bool DkViewPort::event(QEvent *event) {
 
 void DkViewPort::dragLeaveEvent(QDragLeaveEvent *event) {
 
-	qDebug() << "";
 	event->accept();	
 }
 
