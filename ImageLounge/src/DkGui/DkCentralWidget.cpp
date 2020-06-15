@@ -1313,7 +1313,10 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		//we got a list of uris
 		//mimeData has both urls and text (empty string. at least for dolphin 16.04.3)
 		for (QUrl u : mimeData->urls()) {
-			if (u.isValid() && DkUtils::isValid(u.toString()))
+
+			QFileInfo f = DkUtils::urlToLocalFile(u);
+
+			if (u.isValid() && DkUtils::isValid(f))
 				urls.append(u);
 		}
 	}
