@@ -969,7 +969,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			painter.setOpacity(oldOp);
 		}
 
-		//Now disable matrixWorld for overlay display
+		// now disable world matrix for overlay display
 		painter.setWorldMatrixEnabled(false);
 	}
 	else
@@ -998,6 +998,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// propagate
 	QGraphicsView::paintEvent(event);
+}
+
+void DkViewPort::leaveEvent(QEvent* event) {
+
+	// hide navigation buttons if the mouse leaves the viewport
+	mNavigationWidget->hide();
+	DkBaseViewPort::leaveEvent(event);
 }
 
 // drawing functions --------------------------------------------------------------------
