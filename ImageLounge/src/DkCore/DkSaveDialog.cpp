@@ -170,9 +170,6 @@ void DkCompressDialog::init() {
 	// default compression quality
 	updateQuality(mImgQuality);
 
-	// please add the following line to your else if (mDialogMode == avif_dialog) branch
-	//updateQuality(mAvifImgQuality);
-
 	if (mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) {
 
 		if (mDialogMode == jpg_dialog)
@@ -197,6 +194,17 @@ void DkCompressDialog::init() {
 #endif
 		mSizeCombo->hide();
 		losslessCompression(mCbLossless->isChecked());
+	}
+	else if (mDialogMode == avif_dialog) {
+		setWindowTitle(tr("AVIF Settings"));
+
+		mSizeCombo->hide();
+		mCompressionCombo->show();
+		mCompressionCombo->setEnabled(true);
+		mColChooser->hide();
+		mCbLossless->hide();
+		//AVIF use different quality scale
+		updateQuality(mAvifImgQuality);
 	}
 	else if (mDialogMode == web_dialog) {
 
@@ -356,6 +364,16 @@ void DkCompressDialog::drawPreview() {
 		mNewImg.loadFromData(ba, "WEBP");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using webp...";
+	}
+	else if (mDialogMode == avif_dialog) {
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::WriteOnly);
+		mNewImg.save(&buffer, "AVIF", getCompression());
+		buffer.close();
+		mNewImg.loadFromData(ba, "AVIF");
+		updateFileSizeLabel((float)ba.size(), origImg.size());
+		qDebug() << "using avif...";
 	}
 	else if (mDialogMode == web_dialog) {
 
