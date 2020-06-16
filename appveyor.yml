@@ -15,6 +15,9 @@ environment:
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
 
+    certpwd:
+      secure: 931hCkba4VFc/e5FRs3XxQ==
+
 cache:
     - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
@@ -35,7 +38,10 @@ build_script:
 
 after_build:
     - cd installer
+    # sign
+    - call signtool sign /f ./cert-2018.p12 /p certpwd /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
+    - call signtool sign /f ./cert-2018.p12 /p certpwd /a ./nomacs-setup-x64.msi
 
 artifacts:
     - path: 'installer/nomacs.x64'
