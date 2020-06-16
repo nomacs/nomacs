@@ -39,9 +39,9 @@ build_script:
 after_build:
     - cd installer
     # sign
-    - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
+    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
-    - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
+    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
 artifacts:
     - path: 'installer/nomacs.x64'
