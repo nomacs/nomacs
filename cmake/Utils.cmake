@@ -64,7 +64,6 @@ macro(NMC_PREPARE_PLUGIN)
 				MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 			ENDIF()
 		endif()
-	# SET(NOMACS_PLUGIN_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/install CACHE PATH "Path to the plugin install directory for deploying")
   
 	endif(NOT NOMACS_VARS_ALREADY_SET)
 	
@@ -77,10 +76,10 @@ macro(NMC_PREPARE_PLUGIN)
 	if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 		message(STATUS "A debug build. -DDEBUG is defined")
 		add_definitions(-DDEBUG)
-		ADD_DEFINITIONS(-DQT_NO_DEBUG)
-	elseif (NOT MSVC) # debug and release need qt debug outputs on windows
-		message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
-#		add_definitions(-DQT_NO_DEBUG_OUTPUT)
+		add_definitions(-DQT_NO_DEBUG)
+	# elseif (NOT MSVC) # debug and release need qt debug outputs on windows
+	# 	message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
+    #	add_definitions(-DQT_NO_DEBUG_OUTPUT)
 	endif ()
  
 endmacro(NMC_PREPARE_PLUGIN)
@@ -95,20 +94,23 @@ macro(NMC_CREATE_TARGETS)
 	endforeach()
 	endif()
  
- 
 	IF (MSVC)
 		if(${NUM_ADDITONAL_DLLS} GREATER 0) 
 			foreach(DLL ${ADDITIONAL_DLLS})
 				add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${DLL} ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
 			endforeach()
 		endif()
-
-		
+	
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${NOMACS_BUILD_DIRECTORY}/Debug/plugins/)
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${NOMACS_BUILD_DIRECTORY}/Release/plugins/)
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${NOMACS_BUILD_DIRECTORY}/RelWithDebInfo/plugins/)
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${NOMACS_BUILD_DIRECTORY}/MinSizeRel/plugins/)
-		
+        
+        add_dependencies(
+        	${PROJECT_NAME} 
+	        ${DLL_CORE_NAME} 
+	    )
+
 		### DependencyCollector
 		set(DC_SCRIPT ${CMAKE_SOURCE_DIR}/cmake/DependencyCollector.py)
 		set(DC_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/DependencyCollector.ini)
@@ -193,7 +195,6 @@ macro(NMC_GENERATE_PACKAGE_XML)
 	string(REGEX REPLACE ".*:\ +\"" "" TAGLINE ${line})
 	string(REGEX REPLACE "\".*" "" TAGLINE ${TAGLINE})
 	# message(STATUS "TAGLINE: ${TAGLINE}")
-	
 	
 	set(XML_CONTENT "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 	set(XML_CONTENT "${XML_CONTENT}<Package>\n")
