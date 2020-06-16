@@ -43,4 +43,16 @@ artifacts:
       type: zip
 
     - path: 'installer/nomacs-setup-x64.msi'
-      name: nomacs installer
+      name: nomacs-installer
+
+deploy:
+    # Deploy to GitHub
+    - provider: GitHub
+      artifact: nomacs-installer,nomacs-portable
+      auth_token:
+        secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
+      draft: true
+      prerelease: false
+      on:
+        branch: master
+        APPVEYOR_REPO_TAG: true
