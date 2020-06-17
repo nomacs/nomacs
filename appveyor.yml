@@ -31,7 +31,7 @@ cache:
 
 install:
     - call echo %test%%
-    - call echo "%test%"
+    - ps echo $test
     - call echo %
     - call echo \%
     - git submodule update --init --recursive
