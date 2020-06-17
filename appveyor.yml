@@ -18,6 +18,9 @@ environment:
     certpwd:
       secure: 931hCkba4VFc/e5FRs3XxQ==
 
+    test:
+      secure: SKChEDnk9W7aJS/c9tWAYg==
+
 cache:
     - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
@@ -27,6 +30,7 @@ cache:
     - 3rd-party/build/imageformats -> 3rd-party/imageformats/make.bat # don't rebuild unless the make script changes
 
 install:
+    - call echo %test%
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
