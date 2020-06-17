@@ -18,7 +18,7 @@ environment:
     certpwd:
       secure: 931hCkba4VFc/e5FRs3XxQ==
     
-    test:
+    certpass:
       secure: kTgvDuzEpd3AJzXO0ZXCyulOHH4sJjKIWbhYrhW4Um4=
 
 cache:
@@ -30,7 +30,7 @@ cache:
     - 3rd-party/build/imageformats -> 3rd-party/make.bat        # I had issues with -p
 
 install:
-    - ps echo $env:test
+    - ps Write-Output $certpass
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
