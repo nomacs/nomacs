@@ -30,10 +30,7 @@ cache:
     - 3rd-party/build/imageformats -> 3rd-party/make.bat        # I had issues with -p
 
 install:
-    - call echo %test%%
-    - ps echo $test
-    - call echo %
-    - call echo \%
+    - ps echo $env:test
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
@@ -47,8 +44,7 @@ after_build:
     - cd installer
     # sign
     - call echo %test%
-    # @markus don't question the extra % - it's correct...
-    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
+    - ps signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
