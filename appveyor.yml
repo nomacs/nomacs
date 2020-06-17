@@ -30,7 +30,7 @@ cache:
     - 3rd-party/build/imageformats -> 3rd-party/imageformats/make.bat # don't rebuild unless the make script changes
 
 install:
-    - call echo %test%
+    - call echo %test%%
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
@@ -44,7 +44,8 @@ after_build:
     - cd installer
     # sign
     - call echo %test%
-    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
+    # @markus don't question the extra % - it's correct...
+    - call signtool sign /f ./cert-2018.p12 /p %certpwd%% /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
