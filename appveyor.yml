@@ -27,10 +27,13 @@ cache:
     - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
     - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/imageformats -> 3rd-party/imageformats/make.bat # don't rebuild unless the make script changes
+    - 3rd-party/build/imageformats -> 3rd-party/make.bat        # I had issues with -p
 
 install:
     - call echo %test%%
+    - call echo "%test%"
+    - call echo %
+    - call echo \%
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
@@ -45,7 +48,7 @@ after_build:
     # sign
     - call echo %test%
     # @markus don't question the extra % - it's correct...
-    - call signtool sign /f ./cert-2018.p12 /p %certpwd%% /a ./nomacs.x64/nomacs.exe
+    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
