@@ -82,6 +82,7 @@ public:
 		j2k_dialog,
 		webp_dialog,
 		web_dialog,
+		avif_dialog,
 
 		dialog_end
 	};
