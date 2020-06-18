@@ -1,5 +1,5 @@
-REM Build exiv2 - be sure to run build-expat.bat and build-opencv.bat first
 @echo off
+REM Build exiv2 - be sure to run build-expat.bat and build-opencv.bat first
 
 SET MYPATH=%~dp0
 REM fix windows backslashed paths : /
