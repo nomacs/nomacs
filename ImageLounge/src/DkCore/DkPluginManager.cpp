@@ -371,6 +371,9 @@ void DkPluginContainer::run() {
 
 	if (p && p->interfaceType() == DkPluginInterface::interface_viewport) {
 
+        // init viewport (if no image is there already)
+		emit DkActionManager::instance().pluginActionManager()->showViewPort();
+
 		DkViewPortInterface* vPlugin = pluginViewPort();
 		mActive = true;
 

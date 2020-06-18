@@ -196,6 +196,7 @@ signals:
 	void runPlugin(DkViewPortInterface* plugin, bool close) const;
 	void runPlugin(DkPluginContainer* plugin, const QString& key) const;
 	void applyPluginChanges(bool askForSaving) const;
+	void showViewPort() const;
 
 protected:
 	void assignCustomPluginShortcuts();
