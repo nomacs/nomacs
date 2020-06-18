@@ -2,6 +2,7 @@
 REM Build exiv2 - be sure to run build-expat.bat and build-opencv.bat first
 
 SET MYPATH=%~dp0
+SET RELEASE=%1
 REM fix windows backslashed paths : /
 SET MYPATH=%MYPATH:\=/%
 SET NAME=exiv2
@@ -22,3 +23,8 @@ cmake^
  -B%build_dir% %mypath%/%name%
 
 cmake --build %build_dir% --config Release -- -m
+
+if not %RELEASE% == release (
+    echo building %name% - [Debug]
+    cmake --build %build_dir% --config Debug -- -m
+)

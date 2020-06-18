@@ -34,10 +34,10 @@ install:
     - git lfs pull
     - call "%VCVARS%"
     # build dependencies
-    - call 3rd-party/make.bat %QT5%
+    - call 3rd-party/make.bat %QT5% release
  
 build_script:
-    - call make-nomacs.bat %QT5%
+    - call make-nomacs.bat %QT5% release
 
 after_build:
     - cd installer

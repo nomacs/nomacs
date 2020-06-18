@@ -6,6 +6,7 @@ REM fix windows backslashed paths : /
 SET MYPATH=%MYPATH:\=/%
 
 SET QT_PATH=%1
+SET RELEASE=%2
 SET NAME=quazip
 SET BUILD_DIR=%mypath%/build/%name%
 
@@ -21,3 +22,8 @@ cmake -DCMAKE_PREFIX_PATH=%qt_path%^
  -B%build_dir% %mypath%/%name%
 
 cmake --build %build_dir% --config Release --target quazip5 -- -m
+
+if not %RELEASE% == release (
+    echo building %name% - [Debug]
+    cmake --build %build_dir% --config Debug --target quazip5 -- -m
+)

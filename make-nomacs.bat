@@ -4,6 +4,7 @@ REM "C:/Qt/Qt-5.14.1-installer/5.14.2/msvc2017_64/bin"
 
 SET MYPATH=%~dp0
 SET QT5=%1
+SET RELEASE=%2
 
 REM fix windows backslashed paths : /
 SET MYPATH=%MYPATH:\=/%
@@ -22,3 +23,8 @@ cmake^
 
 cmake --build %build_dir% --config Release -- -m
 cmake --build %build_dir% --config Release --target INSTALL -- -m
+
+if not %RELEASE% == release (
+    echo building %name% - [Debug]
+    cmake --build %build_dir% --config Debug -- -m
+)
