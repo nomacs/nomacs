@@ -27,7 +27,6 @@ cache:
     - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
     - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/imageformats -> 3rd-party/make.bat        # I had issues with -p
 
 install:
     - git submodule update --init --recursive
