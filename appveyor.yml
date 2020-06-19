@@ -25,9 +25,9 @@ cache:
     - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/imageformats/libde265 -> 3rd-party/imageformats/make-libde265.bat
-    - 3rd-party/build/imageformats/libdeheif -> 3rd-party/imageformats/make-libheif.bat
-    - 3rd-party/build/imageformats/libdepcx -> 3rd-party/imageformats/make.bat
-    - 3rd-party/build/imageformats/libdepsd -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/libheif -> 3rd-party/imageformats/make-libheif.bat
+    - 3rd-party/build/imageformats/libpcx -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/libpsd -> 3rd-party/imageformats/make.bat
     - 3rd-party/build/imageformats/qt-heif-image-plugin -> 3rd-party/imageformats/make.bat
 
 install:
