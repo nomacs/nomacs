@@ -27,6 +27,11 @@ cache:
     - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
     - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/imageformats/libde265 -> 3rd-party/imageformats/make-libde265.bat
+    - 3rd-party/build/imageformats/libdeheif -> 3rd-party/imageformats/make-libheif.bat
+    - 3rd-party/build/imageformats/libdepcx -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/libdepsd -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/qt-heif-image-plugin -> 3rd-party/imageformats/make.bat
 
 install:
     - git submodule update --init --recursive
@@ -42,7 +47,7 @@ after_build:
     - cd installer
     - echo delete this line
     # sign
-    - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
+    # - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
