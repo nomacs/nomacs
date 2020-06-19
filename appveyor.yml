@@ -43,7 +43,7 @@ after_build:
     - cd installer
     - echo delete this line
     # sign
-    # - ps signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
+    - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 

@@ -17,3 +17,4 @@ call %mypath%/make-exiv2.bat %release%
 call %mypath%/make-libraw.bat %release%
 call %mypath%/make-quazip.bat %qt5% %release%
 call %mypath%/imageformats/make.bat %qt5% %mypath%build/imageformats
+
