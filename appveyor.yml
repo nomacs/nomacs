@@ -16,7 +16,7 @@ environment:
       WARNINGS_AS_ERRORS: ON
 
     certpwd:
-      secure: jqqjTi73BP1uUc244mwwWw==
+      secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
     
 cache:
     - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
@@ -44,7 +44,7 @@ after_build:
     - cd installer
     - echo delete this line
     # sign
-    - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
+    - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
