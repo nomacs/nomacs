@@ -16,11 +16,8 @@ environment:
       WARNINGS_AS_ERRORS: ON
 
     certpwd:
-      secure: 931hCkba4VFc/e5FRs3XxQ==
+      secure: jqqjTi73BP1uUc244mwwWw==
     
-    certpass:
-      secure: kTgvDuzEpd3AJzXO0ZXCyulOHH4sJjKIWbhYrhW4Um4=
-
 cache:
     - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
@@ -47,7 +44,7 @@ after_build:
     - cd installer
     - echo delete this line
     # sign
-    # - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
+    - ps: signtool sign /f ./cert-2018.p12 /p $env:certpwd /a ./nomacs.x64/nomacs.exe
     - call make-installer.bat
     # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
 
