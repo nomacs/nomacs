@@ -26,15 +26,15 @@ cache:
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/imageformats/libde265 -> 3rd-party/imageformats/make-libde265.bat
     - 3rd-party/build/imageformats/libheif -> 3rd-party/imageformats/make-libheif.bat
-    - 3rd-party/build/imageformats/libpcx -> 3rd-party/imageformats/make.bat
-    - 3rd-party/build/imageformats/libpsd -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/libqpcx -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats/libqpsd -> 3rd-party/imageformats/make.bat
     - 3rd-party/build/imageformats/qt-heif-image-plugin -> 3rd-party/imageformats/make.bat
 
 install:
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
-    # build dependencies
+    # build dependencies (release only)
     - call 3rd-party/make.bat %QT5% release
  
 build_script:
@@ -42,11 +42,8 @@ build_script:
 
 after_build:
     - cd installer
-    - echo delete this line
-    # sign
-    - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs.x64/nomacs.exe
-    - call make-installer.bat
-    # - call signtool sign /f ./cert-2018.p12 /p %certpwd% /a ./nomacs-setup-x64.msi
+    # make msi installer & sign nomacs
+    - call make-installer.bat %certpwd%
 
 artifacts:
     - path: 'installer/nomacs.x64'
@@ -56,14 +53,14 @@ artifacts:
     - path: 'installer/nomacs-setup-x64.msi'
       name: nomacs-installer
 
-deploy:
-    # Deploy to GitHub
-    - provider: GitHub
-      artifact: nomacs-installer,nomacs-portable
-      auth_token:
-        secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
-      draft: true
-      prerelease: false
-      on:
-        branch: master
-        APPVEYOR_REPO_TAG: true
+# deploy:
+#     # Deploy to GitHub
+#     - provider: GitHub
+#       artifact: nomacs-installer,nomacs-portable
+#       auth_token:
+#         secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
+#       draft: true
+#       prerelease: false
+#       on:
+#         branch: master
+#         APPVEYOR_REPO_TAG: true

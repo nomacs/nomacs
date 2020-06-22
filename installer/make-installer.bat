@@ -1,9 +1,10 @@
+echo off
+
 REM set your WiX path
 SET PATH=%PATH%;"C:\Program Files (x86)\WiX Toolset v3.11\bin";"C:\Program Files (x86)\Windows Kits\10\bin\x64\";
 SET ARCH=x64
 
-REM sign nomacs
-signtool sign /n "Technische Universit„t Wien" /t http://timestamp.digicert.com .\nomacs.%ARCH%\nomacs.exe
+call sign .\nomacs.%ARCH%\nomacs.exe %~1
 
 REM harvest dlls
 heat.exe dir .\nomacs.%ARCH% -o HarvestedFiles.wxs -scom -frag -srd -sreg -gg -cg ApplicationResources -dr BIN_DIR_REF
@@ -15,7 +16,7 @@ REM make setup (might take a few seconds)
 light.exe -ext WixUIExtension nomacs-setup.wixobj nomacs-ui.wixobj HarvestedFiles.wixobj -b ./nomacs.%ARCH% -out nomacs-setup-%ARCH%.msi
 
 REM sign the setup
-signtool sign /n "Technische Universit„t Wien" /t http://timestamp.digicert.com .\nomacs-setup-%ARCH%.msi
+call sign .\nomacs-setup-%ARCH%.msi %~1
 
 REM clean up
 del *.wixobj
