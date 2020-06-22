@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Tim Jerman",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified"	: "2020-06-16",
+	"DateModified"	: "2020-06-22",
 	"Description"	: "Apply affine transformations to the selected image. The available transformations are: scale, rotation (with automatic skewness detection), and shear.",
 	"Tagline" 	: "Transform and rotate images",
 	"PluginId"		: "7a4a50a45ddb408ba46a16a40e6518fd",
