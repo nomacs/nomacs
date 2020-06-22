@@ -24,11 +24,7 @@ cache:
     - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
     - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
     - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/imageformats/libde265 -> 3rd-party/imageformats/make-libde265.bat
-    - 3rd-party/build/imageformats/libheif -> 3rd-party/imageformats/make-libheif.bat
-    - 3rd-party/build/imageformats/libqpcx -> 3rd-party/imageformats/make.bat
-    - 3rd-party/build/imageformats/libqpsd -> 3rd-party/imageformats/make.bat
-    - 3rd-party/build/imageformats/qt-heif-image-plugin -> 3rd-party/imageformats/make.bat
+    - 3rd-party/build/imageformats -> 3rd-party/make.bat        # @markus: it is the 3rd-party make on purpose...
 
 install:
     - git submodule update --init --recursive
