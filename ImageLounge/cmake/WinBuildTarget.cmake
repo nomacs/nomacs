@@ -245,11 +245,11 @@ if (ENABLE_HEIF)
     endif()
 
 	find_package(libheif)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
     
     if (EXISTS ${LIBDE265_BUILD_PATH}/libheif/Debug/)
-        file(COPY ${libheif_BUILD_PATH}/libheif/Debug/libheifd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+        file(COPY ${libheif_BUILD_PATH}/libheif/Debug/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
     endif ()
 endif()
 
