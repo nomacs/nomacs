@@ -7,9 +7,6 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 [![Downloads](https://img.shields.io/github/downloads/nomacs/nomacs/total.svg)](https://github.com/nomacs/nomacs/releases/latest)
 [![Crowdin](https://badges.crowdin.net/nomacs/localized.svg)](http://translate.nomacs.org/project/nomacs)
 
-- [Compiling Qt](./ImageLounge/manuals/Compiling-Qt.md)
-- [Releasing](./ImageLounge/manuals/Releasing.md)
-
 ## Build nomacs (Windows)
 
 We assume you have an IDE (i.e. Visual Studio), git, and [Qt](https://www.qt.io/download-open-source) installed.  

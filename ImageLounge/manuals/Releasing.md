@@ -1,6 +1,9 @@
 # Releasing 🍸
 
-## Windows
+we now use [appveyor](https://ci.appveyor.com/project/diemmarkus/nomacs) to automatically generate releases.  
+The description below needs to be followed to manually draft a release.
+
+## Windows [OLD]
 
 - Update Version Number (in `CMakeLists.txt` *and* `nomacs.rc`)
 - Update translations
