@@ -1261,6 +1261,22 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		compression = jpgDialog->getCompression();
 	}
 
+	if (selectedFilter.contains("avif")) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(dialogParent);
+
+		jpgDialog->setDialogMode(DkCompressDialog::avif_dialog);
+		jpgDialog->setImage(saveImg);
+
+		if (!jpgDialog->exec()) {
+			jpgDialog->deleteLater();
+			return;
+		}
+
+		compression = jpgDialog->getCompression();
+	}
+
 	DkTifDialog* tifDialog = 0;
 
 	if (selectedFilter.contains("tif")) {
