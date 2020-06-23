@@ -37,9 +37,14 @@ repository.zip
 /nomacsCore.dir
 /installer/*.msi
 .vscode
+
+# my make
+*-local.bat
+
 #snaps
 *.snap
 parts/
 prime/
 stage/
 snap/.snapcraft/
+
