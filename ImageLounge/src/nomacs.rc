@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "DkVersion.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -73,8 +74,8 @@ IDI_ICON7               ICON                    ".\\img\\icons\\file-icon-raw.ic
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,14,2,5118
- PRODUCTVERSION 3,14,2,0
+ FILEVERSION NOMACS_VERSION_RC
+ PRODUCTVERSION NOMACS_VERSION_RC
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -91,12 +92,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TU Wien"
             VALUE "FileDescription", "nomacs - Image Lounge"
-            VALUE "FileVersion", "3.14.2.5118"
+            VALUE "FileVersion", NOMACS_GIT_TAG
             VALUE "InternalName", "nomacs.exe"
             VALUE "LegalCopyright", "(C) 2011-2020, Markus Diem, Stefan Fiel, Florian Kleber"
             VALUE "OriginalFilename", "nomacs.exe"
             VALUE "ProductName", "nomacs"
-            VALUE "ProductVersion", "3.14.2.0"
+            VALUE "ProductVersion", NOMACS_VERSION_STR
         END
     END
     BLOCK "VarFileInfo"
