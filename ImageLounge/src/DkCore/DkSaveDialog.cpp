@@ -94,6 +94,22 @@ int DkTifDialog::getCompression() const {
 DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	setObjectName("DkCompressionDialog");
+
+	// define compression values that suit your image format
+	mImgQuality.resize(end_quality);
+	mImgQuality[best_quality]	= 100;
+	mImgQuality[high_quality]	= 97;
+	mImgQuality[medium_quality] = 90;
+	mImgQuality[low_quality]	= 80;
+	mImgQuality[bad_quality]	= 60;
+
+	mAvifImgQuality.resize(end_quality);
+	mAvifImgQuality[best_quality]	= 100;
+	mAvifImgQuality[high_quality]	= 80;
+	mAvifImgQuality[medium_quality] = 60;
+	mAvifImgQuality[low_quality]	= 40;
+	mAvifImgQuality[bad_quality]	= 20;
+
 	createLayout();
 	init();
 
@@ -143,6 +159,17 @@ void DkCompressDialog::init() {
 
 	mHasAlpha = false;
 
+	auto updateQuality = [&](const QVector<int>& values) {
+
+		for (int idx = 0; idx < end_quality; idx++) {
+			Q_ASSERT(idx < values.size());
+			mCompressionCombo->setItemData(idx, values[idx]);
+		}
+	};
+
+	// default compression quality
+	updateQuality(mImgQuality);
+
 	if (mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) {
 
 		if (mDialogMode == jpg_dialog)
@@ -167,6 +194,17 @@ void DkCompressDialog::init() {
 #endif
 		mSizeCombo->hide();
 		losslessCompression(mCbLossless->isChecked());
+	}
+	else if (mDialogMode == avif_dialog) {
+		setWindowTitle(tr("AVIF Settings"));
+
+		mSizeCombo->hide();
+		mCompressionCombo->show();
+		mCompressionCombo->setEnabled(true);
+		mColChooser->hide();
+		mCbLossless->hide();
+		//AVIF use different quality scale
+		updateQuality(mAvifImgQuality);
 	}
 	else if (mDialogMode == web_dialog) {
 
@@ -212,12 +250,13 @@ void DkCompressDialog::createLayout() {
 	mSizeCombo->addItem(tr("Original Size"), -1);
 	connect(mSizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
 
+	// compression quality is set in ::init()
 	mCompressionCombo = new QComboBox(this);
-	mCompressionCombo->addItem(tr("Best Quality"), 100);
-	mCompressionCombo->addItem(tr("High Quality"), 97);
-	mCompressionCombo->addItem(tr("Medium Quality"), 90);
-	mCompressionCombo->addItem(tr("Low Quality"), 80);
-	mCompressionCombo->addItem(tr("Bad Quality"), 60);
+	mCompressionCombo->addItem(tr("Best Quality"));
+	mCompressionCombo->addItem(tr("High Quality"));
+	mCompressionCombo->addItem(tr("Medium Quality"));
+	mCompressionCombo->addItem(tr("Low Quality"));
+	mCompressionCombo->addItem(tr("Bad Quality"));
 	mCompressionCombo->setCurrentIndex(1);
 	connect(mCompressionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(drawPreview()));
 
@@ -325,6 +364,16 @@ void DkCompressDialog::drawPreview() {
 		mNewImg.loadFromData(ba, "WEBP");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using webp...";
+	}
+	else if (mDialogMode == avif_dialog) {
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::WriteOnly);
+		mNewImg.save(&buffer, "AVIF", getCompression());
+		buffer.close();
+		mNewImg.loadFromData(ba, "AVIF");
+		updateFileSizeLabel((float)ba.size(), origImg.size());
+		qDebug() << "using avif...";
 	}
 	else if (mDialogMode == web_dialog) {
 

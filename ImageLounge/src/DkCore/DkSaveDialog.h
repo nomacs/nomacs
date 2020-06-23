@@ -41,6 +41,8 @@
 #endif
 #endif
 
+#pragma warning(disable: 4251)	// TODO: remove
+
 // Qt defines
 class QRadioButton;
 class QCheckBox;
@@ -80,6 +82,7 @@ public:
 		j2k_dialog,
 		webp_dialog,
 		web_dialog,
+		avif_dialog,
 
 		dialog_end
 	};
@@ -112,6 +115,19 @@ protected:
 	void saveSettings();
 	void loadSettings();
 	void resizeEvent(QResizeEvent *ev) override;
+
+	enum {
+		best_quality = 0,
+		high_quality,
+		medium_quality,
+		low_quality,
+		bad_quality,
+
+		end_quality
+	};
+
+	QVector<int> mImgQuality;
+	QVector<int> mAvifImgQuality;
 
 	int mDialogMode = jpg_dialog;
 	bool mHasAlpha = false;
