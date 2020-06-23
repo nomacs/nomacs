@@ -3,6 +3,7 @@
 nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images. nomacs is licensed under the GNU General Public License v3 and available for Windows, Linux, FreeBSD, Mac, and OS/2.
 
 [![Build Status](https://travis-ci.org/nomacs/nomacs.svg?branch=master)](https://travis-ci.org/nomacs/nomacs)
+[![Build status](https://ci.appveyor.com/api/projects/status/0lw27jchw3ymaqd4?svg=true)](https://ci.appveyor.com/project/diemmarkus/nomacs)
 [![Downloads](https://img.shields.io/github/downloads/nomacs/nomacs/total.svg)](https://github.com/nomacs/nomacs/releases/latest)
 [![Crowdin](https://badges.crowdin.net/nomacs/localized.svg)](http://translate.nomacs.org/project/nomacs)
 
@@ -11,35 +12,31 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 ## Build nomacs (Windows)
 
-### Compile dependencies
+We assume you have an IDE (i.e. Visual Studio), git, and [Qt](https://www.qt.io/download-open-source) installed.  
 
-- [Qt](https://github.com/qt/qtbase) SDK or the compiled sources (>= 5.2.1)
-- [expat](https://github.com/nomacs/expat) (needed for exiv2)
-- [Exiv2](https://github.com/nomacs/exiv2) (>= 0.26)
-- [OpenCV](https://github.com/TUWien/opencv) (>= 3.4) _optional_
-- [LibRaw](https://github.com/nomacs/LibRaw) (>= 0.17) _optional_
-- [QuaZip](https://github.com/nomacs/quazip) (>= 0.7.6) _optional_
-- [Python](https://github.com/python/cpython) (>= 3.6) for build scripts
+### Build Dependencies
+Get all dependencies:
+```bash
+git submodule init
+git submodule update
+```
+Project folders in ``3rd-party`` will not be empty anymore. Then call:
+```bash
+3rd-party\make.bat "qt/bin"
+```
+This will configure all projects using cmake and build them into `3rd-party/build`. Replace `qt/bin` with the path to the folder that contains `qmake.exe`. 
 
-### Compile LibRaw
+If you only want to build the latest stable, you can build only release dlls:
+```bash
+3rd-party\make.bat "qt/bin" release
+```
 
-- only needed if ENABLE_RAW is checked
-- clone [libraw](https://github.com/nomacs/LibRaw)
-- checkout to the latest `0.XX-stable` branch
-- follow the build instructions
-- in the nomacs `CMakeUserPaths.cmake`, add the build path to `${CMAKE_PREFIX_PATH}`
-
-### Compile nomacs
-
-- copy `CMakeUserPathsGit.cmake` and rename it to `CMakeUserPaths.cmake`
-- add your library paths to the `${CMAKE_PREFIX_PATH}` in `CMakeUserPaths.cmake`
-- Open CMake GUI
-- set your ImageLounge folder to `where is the source code`
-- choose a build folder (i.e. `build2017-x64`)
-- Hit `Configure`then `Generate`
-- Open the Project
-- Right-click the nomacs project and choose `Set as StartUp Project`
-- Compile the Solution
+### Build nomacs
+If building all dependencies succeeded, you can build nomacs using:
+```bash
+make-nomacs.bat
+```
+This will build nomacs into `build/nomacs`. If you are using Visual Studio, you can then double-click `build/nomacs/nomacs.sln`. Right-click the nomacs project and choose `Set as StartUp Project`.
 
 ### If anything did not work
 

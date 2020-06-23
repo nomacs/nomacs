@@ -79,16 +79,16 @@ set(DELAY_DLL_NAMES
 
 # dear future me: sorry, for manually defining them - but I have no time right now
 set(DELAY_DLL_NAMES_DEBUG 
-	opencv_core420d.dll
-	opencv_imgproc420d.dll
+	opencv_core430d.dll
+	opencv_imgproc430d.dll
 	quazip5d.dll
 	Qt5WinExtrasd.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
-	opencv_core420.dll
-	opencv_imgproc420.dll
+	opencv_core430.dll
+	opencv_imgproc430.dll
 	quazip5.dll
 	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}
@@ -114,8 +114,12 @@ set_target_properties(${DLL_CORE_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_CORE
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL RELEASE)
 
-# copy additional Qt files
+# copy pre-compiled imageformats
+# this will break in the future - but is by far the easiest way now - sorry...
+file(GLOB PRECOMPILED_IMAGE_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/win-binaries/*.dll")
+file(COPY ${PRECOMPILED_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
 
+# copy additional Qt files
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
 file(GLOB QT_IMAGE_FORMATS "${QT_QMAKE_PATH}/../plugins/imageformats/*.dll")
@@ -144,27 +148,8 @@ file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DES
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupport.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/printsupport)
 file(COPY ${QT_QMAKE_PATH}/../plugins/printsupport/windowsprintersupportd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/printsupport)
 
-# add default settings file
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
-
 if (NOT Qt5Widgets_VERSION VERSION_LESS 5.9.0)
 
-	# # WinExtras
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtwinextras/bin/Qt5WinExtrasd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-	
-	# # SVG support
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/bin/Qt5Svgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvg.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/imageformats)
-	# file(COPY ${QT_QMAKE_PATH}/../../qtsvg/plugins/imageformats/qsvgd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/imageformats)
-	
 	# WinExtras
 	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${QT_QMAKE_PATH}/Qt5WinExtras.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
@@ -183,6 +168,23 @@ if (NOT Qt5Widgets_VERSION VERSION_LESS 5.11.0)
 	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/styles/)
 	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/styles/)
 endif()
+
+# OpenSSL
+if (NOT DEFINED ${OPEN_SSL_PATH} )
+    set(OPEN_SSL_PATH "C:/OpenSSL-v111-Win64/bin")
+    message(STATUS "defaulting open ssl path to ${OPEN_SSL_PATH}")
+endif()
+
+if (EXISTS ${OPEN_SSL_PATH})
+    file(COPY ${OPEN_SSL_PATH}/libcrypto-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    file(COPY ${OPEN_SSL_PATH}/libssl-1_1-x64.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+    message(STATUS "open ssl found...")
+endif()
+
+# add default settings file
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+file(COPY ${CMAKE_SOURCE_DIR}/src/default.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
 
 # create settings file for portable version while working
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/Debug/settings.ini)
@@ -237,12 +239,18 @@ if (ENABLE_HEIF)
 	find_package(libde265)
 	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
 	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    
+    if (EXISTS ${LIBDE265_BUILD_PATH}/libde265/Debug/)
+        file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    endif()
 
 	find_package(libheif)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/libheif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Debug/libheifd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
+	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
+    
+    if (EXISTS ${LIBDE265_BUILD_PATH}/libheif/Debug/)
+        file(COPY ${libheif_BUILD_PATH}/libheif/Debug/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+    endif ()
 endif()
 
 # path hints for the dependency collector

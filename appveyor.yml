@@ -1,0 +1,62 @@
+image: Visual Studio 2019
+configuration: Release
+skip_commits:
+  files:
+    - '.github/*'
+    - '.travis.yml'
+    - '.gitignore'
+    - '*.md'
+
+environment:
+    matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      QT5: C:\Qt\5.14\msvc2017_64
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      ARCHITECTURE: x86_64
+      WARNINGS_AS_ERRORS: ON
+
+    certpwd:
+      secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
+    
+cache:
+    - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
+    - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
+    - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
+    - 3rd-party/build/imageformats -> 3rd-party/make.bat        # @markus: it is the 3rd-party make on purpose...
+
+install:
+    - git submodule update --init --recursive
+    - git lfs pull
+    - call "%VCVARS%"
+    # build dependencies (release only)
+    - call 3rd-party/make.bat %QT5% release
+ 
+build_script:
+    - call make-nomacs.bat %QT5% release
+
+after_build:
+    - cd installer
+    # make msi installer & sign nomacs
+    - call make-installer.bat %certpwd%
+
+artifacts:
+    - path: 'installer/nomacs.x64'
+      name: nomacs-portable
+      type: zip
+
+    - path: 'installer/nomacs-setup-x64.msi'
+      name: nomacs-installer
+
+# deploy:
+#     # Deploy to GitHub
+#     - provider: GitHub
+#       artifact: nomacs-installer,nomacs-portable
+#       auth_token:
+#         secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
+#       draft: true
+#       prerelease: false
+#       on:
+#         branch: master
+#         APPVEYOR_REPO_TAG: true

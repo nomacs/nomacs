@@ -1,0 +1,21 @@
+[submodule "3rd-party/exiv2"]
+	path = 3rd-party/exiv2
+	url = https://github.com/nomacs/exiv2.git
+[submodule "3rd-party/expat"]
+	path = 3rd-party/expat
+	url = https://github.com/nomacs/expat.git
+[submodule "3rd-party/opencv"]
+	path = 3rd-party/opencv
+	url = https://github.com/opencv/opencv.git
+[submodule "3rd-party/quazip"]
+	path = 3rd-party/quazip
+	url = https://github.com/nomacs/quazip.git
+[submodule "3rd-party/LibRaw"]
+	path = 3rd-party/LibRaw
+	url = https://github.com/nomacs/LibRaw.git
+[submodule "3rd-party/imageformats"]
+	path = 3rd-party/imageformats
+	url = https://github.com/nomacs/imageformats.git
+[submodule "ImageLounge/plugins"]
+	path = ImageLounge/plugins
+	url = https://github.com/nomacs/nomacs-plugins.git

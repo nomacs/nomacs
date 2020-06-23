@@ -80,7 +80,7 @@ if (ENABLE_TIFF)
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 	
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
-	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
+	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../../opencv/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
     set(TIFF_LIBRARIES 	optimized "${TIFF_BUILD_PATH}/Release/libtiff.lib;" optimized "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib"
 								debug "${TIFF_BUILD_PATH}/Debug/libtiffd.lib"  debug "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib")
 
@@ -97,8 +97,9 @@ if (ENABLE_TIFF)
 		add_definitions(-DWITH_LIBTIFF)
 	elseif(NOT EXISTS ${TIFF_CONFIG_DIR})
 		message(FATAL_ERROR "TIFF_CONFIG_DIR dir not found. Needs path which contains Release/libtiff.lib and debug/libtiffd.lib (usually in the OpenCV_Build_Directory/libs). Note: tif_config.h is only available if you have compiled OpenCV on yourself. If you want to use the precompiled version you have to disable TIFF")
-	elseif(NOT EXISTS ${TIFF_INCLUDE_DIR})
-		message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
+    elseif(NOT EXISTS ${TIFF_INCLUDE_DIR})
+        message(STATUS "looking for opencv in: ${OPENCV_DIR}")
+		message(FATAL_ERROR "UPDATE TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 	endif()
 
 endif (ENABLE_TIFF)

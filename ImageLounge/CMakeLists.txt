@@ -5,15 +5,8 @@ cmake_minimum_required (VERSION 3.0)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
 
-	# IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
-	# 	cmake_policy(SET CMP0020 NEW)	# qt warnings
-	# ENDIF()
-	# IF(CMAKE_VERSION VERSION_GREATER 2.8.12.9)
-	# 	cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
-	# ENDIF()
 endif(COMMAND cmake_policy)
 
-######################## begin of project
 project(nomacs)
 
 # needed for soname
@@ -47,7 +40,7 @@ option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
 option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
-option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)
+option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)   # deprecated
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
@@ -60,7 +53,7 @@ endif()
 
 if(APPLE)
 	set(ENABLE_QUAZIP OFF)
-	message(STATUS "QuaZip disabled because you are using a mac")
+	message(STATUS "QuaZip disabled - it's not supported on OSX")
 endif()
 
 if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
@@ -81,8 +74,6 @@ endif()
 # load paths from the user file if exists
 if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
 	include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
-elseif(MSVC)
-	message(WARNING "Could not find CMakeUserPaths.cmake - please use this file to specify your install directories (see CMakeUserPathsGit.cmake)")
 endif()
 
 include(CheckCXXCompilerFlag)
@@ -104,7 +95,7 @@ endif()
 # find Qt
 NMC_FINDQT()
 
-if (!ENABLE_QT_DEBUG)
+if (NOT ENABLE_QT_DEBUG)
 	message (STATUS "disabling qt debug messages")
 	add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
@@ -189,7 +180,7 @@ NMC_COPY_FILES()
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
-if(UNIX AND ENABLE_PLUGINS)
+if(ENABLE_PLUGINS)
 
 	if (NOT EXISTS ${PLUGINS_DIR})
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
