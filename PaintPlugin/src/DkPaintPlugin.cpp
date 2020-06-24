@@ -59,7 +59,7 @@ QImage DkPaintPlugin::image() const {
 }
 
 bool DkPaintPlugin::hideHUD() const {
-	return false;
+	return true;
 }
 
 /**
