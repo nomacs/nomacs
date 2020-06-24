@@ -43,6 +43,7 @@ option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
 option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)   # deprecated
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
+option(ENABLE_AVIF "Compile nomacs with AVIF support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 
 # Codecov

@@ -19,6 +19,7 @@ cmake^
  -DCMAKE_PREFIX_PATH="%QT5%;%mypath%3rd-party/build/exiv2;%mypath%3rd-party/build/opencv;%mypath%3rd-party/build/quazip;%mypath%3rd-party/build/libraw;%mypath%3rd-party/build/imageformats/libheif;%mypath%3rd-party/build/imageformats/libde265"^
  -DENABLE_TRANSLATIONS=ON^
  -DENABLE_HEIF=ON^
+ -DENABLE_AVIF=ON^
  -B%build_dir% %mypath%/ImageLounge
 
 cmake --build %build_dir% --config Release -- -m
