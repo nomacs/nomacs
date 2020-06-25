@@ -32,6 +32,7 @@ cmake^
  -DENABLE_TRANSLATIONS=ON^
  -DENABLE_HEIF=ON^
  -DENABLE_AVIF=ON^
+ -DENABLE_INCREMENTER=ON^
  -B%build_dir% %my_path%/ImageLounge
 
 cmake --build %build_dir% --config Release -- -m

@@ -47,6 +47,9 @@ artifacts:
       name: nomacs-portable
       type: zip
 
+    - path: 'installer/nomacs-setup-x64.exe'
+      name: nomacs-multi-user-installer
+
     - path: 'installer/nomacs-setup-x64.msi'
       name: nomacs-installer
 

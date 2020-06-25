@@ -3,6 +3,6 @@
 // In addition to the version number displayed in the help section, 
 // it will update the VS_VERSION_INFO in the *.rc file.
 
-#define NOMACS_VERSION_RC 3,15,0,1337
-#define NOMACS_VERSION_STR "3.15.0.1337"
-#define NOMACS_GIT_TAG "9f90de989b3c752a86ed92776f89c85bf553c644"
+#define NOMACS_VERSION_RC 3,14,1,1361
+#define NOMACS_VERSION_STR "3.14.1.1361"
+#define NOMACS_GIT_TAG "addd1b18d923924fd130b6017d95edaf33b5eae8"
