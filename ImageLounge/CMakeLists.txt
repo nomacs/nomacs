@@ -74,7 +74,20 @@ endif()
 
 # load paths from the user file if exists
 if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
-	include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+    include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+elseif (MSVC)
+
+    set(DEPENDENCY_PATH "" CACHE STRING "Select the path where all dependencies are built")
+
+    # windows needs some hints here...
+    if (NOT "${DEPENDENCY_PATH}" STREQUAL "")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/exiv2/")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/opencv/")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/quazip/")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/libraw/")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/imageformats/libheif")
+        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/imageformats/libde265")
+    endif()
 endif()
 
 include(CheckCXXCompilerFlag)
@@ -197,7 +210,7 @@ if(ENABLE_PLUGINS)
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../nomacs-plugins/src")
 	endif ()
 
-	if(EXISTS "${PLUGINS_DIR}")
+	if(EXISTS "${PLUGINS_DIR}/CMakeLists.txt")
 		message(STATUS "using plugin directory: ${PLUGINS_DIR}")
 		set(NOMACS_FOUND true)
 		set(NOMACS_VARS_ALREADY_SET true)

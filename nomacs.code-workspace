@@ -1,18 +1,1 @@
-{
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		// cmake nomacs
-		"cmake.sourceDirectory": "${workspaceRoot}/ImageLounge/",
-		"cmake.buildDirectory": "${workspaceRoot}/build2017-x64/",
-		"cmake.configureArgs": [
-			"-DENABLE_QUAZIP=ON",
-			"-DENABLE_HEIF=ON",
-			"-DENABLE_TRANSLATIONS=ON"
-		],
-		
-	}
-}
+{}
