@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/CompositePlugin">
+        <file>img/description.png</file>
+        <file>img/close.svg</file>
+    </qresource>
+</RCC>
