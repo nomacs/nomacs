@@ -243,23 +243,6 @@ if(DLL_CORE_NAME)
 	set(NOMACS_CORE_LIB optimized ${CMAKE_BINARY_DIR}/libs/Release/${CORE_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${CORE_DEBUG_NAME}.lib)
 endif()
 
-set(NOMACS_LIBS ${NOMACS_CORE_LIB})
-set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
-configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
-
-### DependencyCollector
-set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
-set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
-
-# CMAKE_MAKE_PROGRAM works for VS 2017 too
-get_filename_component(VS_PATH ${CMAKE_MAKE_PROGRAM} PATH)
-if(CMAKE_CL_64)
-	set(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
-else()
-	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
-endif()
-
 if (ENABLE_HEIF)
 	find_package(libde265)
 	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
@@ -276,6 +259,23 @@ if (ENABLE_HEIF)
     if (EXISTS ${LIBDE265_BUILD_PATH}/libheif/Debug/)
         file(COPY ${libheif_BUILD_PATH}/libheif/Debug/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
     endif ()
+endif()
+
+set(NOMACS_LIBS ${NOMACS_CORE_LIB})
+set(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(NOMACS_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/DkGui ${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore ${CMAKE_CURRENT_SOURCE_DIR}/src/DkLoader ${CMAKE_BINARY_DIR})
+configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
+
+### DependencyCollector
+set(DC_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.py)
+set(DC_CONFIG ${CMAKE_BINARY_DIR}/DependencyCollector.ini)
+
+# CMAKE_MAKE_PROGRAM works for VS 2017 too
+get_filename_component(VS_PATH ${CMAKE_MAKE_PROGRAM} PATH)
+if(CMAKE_CL_64)
+	set(VS_PATH "${VS_PATH}/../../../Common7/IDE/Remote Debugger/x64")
+else()
+	set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 endif()
 
 # path hints for the dependency collector
