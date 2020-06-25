@@ -1309,12 +1309,6 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		}
 	}
 
-	if (!dropImg.isNull()) {
-				
-		getViewPort()->loadImage(dropImg);
-		return true;
-	}
-
     // parse mime data. get a non-empty list of urls. url is the first.
     QList<QUrl> urls;
 
@@ -1333,15 +1327,20 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
         //we got text data. maybe it is a list of urls
         urls = DkUtils::findUrlsInTextNewline(mimeData->text());
     }
-    else {
-        qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
-    }
-
 	// load from image buffer
-	if (dropImg.isNull() && mimeData->hasImage()) {
+	else if (dropImg.isNull() && mimeData->hasImage()) {
 		// we got an image buffer
 		dropImg = qvariant_cast<QImage>(mimeData->imageData());
 		qInfo() << "Qt image loaded from mime";
+	}
+	else {
+		qDebug() << "Sorry, I could not handle the clipboard data:" << mimeData->formats();
+	}
+
+	if (!dropImg.isNull()) {
+
+		getViewPort()->loadImage(dropImg);
+		return true;
 	}
 
     if(urls.size() == 0) {

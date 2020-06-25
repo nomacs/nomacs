@@ -116,7 +116,8 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 
 	// this must be initialized after mController to be above it
 	mNavigationWidget = new DkHudNavigation(this);
-	mPaintLayout->addWidget(mNavigationWidget);
+    mPaintLayout->addWidget(mNavigationWidget);
+	// TODO: if visible, currently mNavigationWidget eats all mouse events that are supposed for control widget
 
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
@@ -1217,9 +1218,12 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	if (DkSettingsManager::param().display().showNavigation) {
 
-		if (event->pos().x() < 0.1 * width())
+		int left = qMin(100, qRound(0.1 * width()));
+		int right = qMax(width()-100, qRound(0.9 * width()));
+
+		if (event->pos().x() < left)
 			mNavigationWidget->showPrevious();
-		else if (event->pos().x() > 0.9 * width())
+		else if (event->pos().x() > right)
 			mNavigationWidget->showNext();
 		else if (mNavigationWidget->isVisible())
 			mNavigationWidget->hide();

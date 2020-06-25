@@ -119,6 +119,10 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_MINSIZEREL R
 file(GLOB PRECOMPILED_IMAGE_FORMATS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/win-binaries/*.dll")
 file(COPY ${PRECOMPILED_IMAGE_FORMATS} DESTINATION ${CMAKE_BINARY_DIR}/Release/imageformats)
 
+if (ENABLE_AVIF)
+    file(DOWNLOAD "https://github.com/novomesk/qt-avif-image-plugin/releases/download/v0.2.0/qavif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qavif.dll)
+endif()
+
 # copy additional Qt files
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
