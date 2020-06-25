@@ -14,6 +14,7 @@ environment:
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
+      PYTHON: "C:\\Python38-x64"
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
@@ -27,6 +28,8 @@ cache:
     - 3rd-party/build/imageformats -> 3rd-party/make.bat        # @markus: it is the 3rd-party make on purpose...
 
 install:
+    - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+    - python --version
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
