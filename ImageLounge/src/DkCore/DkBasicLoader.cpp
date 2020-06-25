@@ -98,6 +98,8 @@
 #ifdef Q_OS_WIN
 #include <olectl.h>
 #pragma comment(lib, "oleaut32.lib")
+
+#include <QtWin>
 #endif //#ifdef Q_OS_WIN
 
 
@@ -1312,7 +1314,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	HICON hIcon = DkImage::toWinHICON(QPixmap::fromImage(img));
+	HICON hIcon = QtWin::toHICON(QPixmap::fromImage(img));
 	int nColorBits = 32;
 
 	QBuffer buffer(ba.data());
