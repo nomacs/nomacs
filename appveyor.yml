@@ -39,7 +39,8 @@ build_script:
 after_build:
     - cd installer
     # make msi installer & sign nomacs
-    - call make-installer.bat %certpwd%
+    - call make-msi-setup.bat %certpwd%
+    - call make-inno-setup.bat %certpwd%
 
 artifacts:
     - path: 'installer/nomacs.x64'

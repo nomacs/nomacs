@@ -18,7 +18,7 @@ The description below needs to be followed to manually draft a release.
 - you need the WiX toolset [1]
 - clean plugin folders in nomacs.x64 and nomacs.x86 (i.e. remove OpenCV dlls)
 - increment installer version number in `nomacs-setup.wxs`: <?define ProductVersion = "3.7.5"?>
-- double-click `make-installer.bat`
+- double-click `make-msi-setup.bat`
 - check if the newly created installer `noamcs-setup.msi` is signed
 - upload `nomacs-setup.msi` to https://github.com/nomacs/nomacs/releases/
 - if you think you are ready to triger automated updates:
