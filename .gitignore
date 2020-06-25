@@ -37,6 +37,7 @@ repository.zip
 /nomacsCore.dir
 /installer/*.msi
 .vscode
+*.code-workspace
 
 # my make
 *-local.bat
