@@ -488,7 +488,11 @@ void DkViewPort::zoomToFit() {
 	QSizeF imgSize = getImageSize();
 	QSizeF winSize = size();
 	double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
-	zoomTo(zoomLevel);
+
+	if (zoomLevel > 1)
+		zoomTo(zoomLevel);
+	else if (zoomLevel < 1)
+		resetView();
 }
 
 void DkViewPort::resetView() {
@@ -570,8 +574,9 @@ void DkViewPort::updateImageMatrix() {
 
 	mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
-	// update world matrix
-	if (mWorldMatrix.m11() != 1) {
+	// update world matrix?
+	// mWorldMatrix.m11() != 1
+	if (qAbs(mWorldMatrix.m11()-1.0) > 1e-4) {
 
 		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
@@ -580,8 +585,9 @@ void DkViewPort::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
+	// NOTE: this is not the same as resetView!
 	else if (DkSettingsManager::param().display().zoomToFit)
-		zoomToFit();	// NOTE: this is not the same as resetView!
+		zoomToFit();	
 
 }
 

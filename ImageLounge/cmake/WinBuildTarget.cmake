@@ -170,7 +170,7 @@ if (NOT Qt5Widgets_VERSION VERSION_LESS 5.11.0)
 	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/styles)
 	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/styles/)
 	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/styles/)
-	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyle.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/styles/)
+	file(COPY ${QT_QMAKE_PATH}/../plugins/styles/qwindowsvistastyled.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/styles/)
 endif()
 
 # OpenSSL

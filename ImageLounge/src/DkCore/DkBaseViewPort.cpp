@@ -591,7 +591,9 @@ void DkBaseViewPort::drawPattern(QPainter & painter) const {
 
 bool DkBaseViewPort::imageInside() const {
 
-	return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(mWorldMatrix.mapRect(mImgViewRect));
+	QRect viewRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
+
+	return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(viewRect);
 }
 
 void DkBaseViewPort::updateImageMatrix() {
@@ -652,52 +654,6 @@ QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size) const {
 
 	return imgMatrix;
 }
-
-//QImage DkBaseViewPort::getScaledImage(float factor) {
-//
-//// this function does not help anything if we cannot interpolate with OpenCV
-//#ifndef WITH_OPENCV
-//	return imgQt;
-//#endif
-//
-//	if (factor > 0.5f)
-//		return imgQt;
-//
-//	int divisor = DkMath::getNextPowerOfTwoDivisior(factor);
-//
-//	//if (divisor < 2)
-//	//	return imgQt;
-//
-//	// is the image cached already?
-//	if (imgPyramid.contains(divisor))
-//		return imgPyramid.value(divisor);
-//
-//	QSize newSize = imgQt.size()*1.0f/(float)divisor;
-//
-//	//// caching should not consume more than 30 MB
-//	//if (newSize.width()*newSize.height() > 30 * 2^20)
-//	//	return imgQt;
-//
-//#ifdef WITH_OPENCV
-//
-//	Mat resizeImage = DkImage::qImage2Mat(imgQt);
-//
-//	// is the image convertible?
-//	if (resizeImage.empty())
-//		return imgQt;
-//
-//	Mat tmp;
-//	cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, CV_INTER_AREA);
-//	resizeImage = tmp;
-//	QImage iplImg = DkImage::mat2QImage(resizeImage);
-//
-//	imgPyramid.insert(divisor, iplImg);
-//
-//	return iplImg;
-//#endif
-//
-//	return imgQt;
-//}
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 

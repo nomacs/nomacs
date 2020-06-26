@@ -3,7 +3,7 @@
 
 #define MyAppName "nomacs - Image Lounge"
 #define MyAppDesc "nomacs - Image Lounge is a lightweight image viewer."
-#define MyAppVersion "3.14.1.1392"
+#define MyAppVersion "3.14.1.1435"
 #define MyAppURL "https://nomacs.org/"
 #define MyAppExeName "bin\nomacs.exe"
 #define MyAppBaseDir "."
