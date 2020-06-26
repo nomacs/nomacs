@@ -1,8 +1,8 @@
 echo off
 
-set inno_local = "C:\Users\markus\AppData\Local\Programs\Inno Setup 6"
-set inno_appveyor = "C:\Users\markus\AppData\Local\Programs\Inno Setup 6"
-set sign = "C:\Program Files (x86)\Windows Kits\10\bin\x64\"
+SET inno_local="%LOCALAPPDATA%\Programs\Inno Setup 6"
+SET inno_appveyor="C:\Program Files (x86)\Inno Setup 6"
+SET sign="C:\Program Files (x86)\Windows Kits\10\bin\x64\"
 
 REM set your inno setup path
 SET PATH=%PATH%;%inno_local%;%inno_appveyor%;%sign%;
