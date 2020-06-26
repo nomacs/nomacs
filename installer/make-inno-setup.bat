@@ -13,4 +13,4 @@ call sign ./nomacs.%ARCH%/nomacs.exe %~1
 REM compile
 ISCC.exe ./nomacs-setup.iss
 
-call sign ./nomacs-setup-%ARCH%.exe
+call sign ./nomacs-setup-%ARCH%.exe %~1
