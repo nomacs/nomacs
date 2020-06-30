@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
-<?define ProductVersion = "3.14.42"?>
+<?define ProductVersion = "3.14.1.1435"?>
 
 <!-- default nomacs -->
 <?define ProductUpgradeCode = "08a898f6-d3c5-4869-9d27-91be685c9ae7"?>
 <?define ShortcutName = "nomacs - Image Lounge"?>
 <?define ProductName = "nomacs"?>
- 
- <!-- read build -->
- <!-- <?define ProductUpgradeCode = "2f3d74d3-96f5-4ced-84a7-ead195c6a8c1"?>
-<?define ShortcutName = "ReadFramework"?>
-<?define ProductName = "ReadFramework"?>
- -->
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
 	<Product Id="*" UpgradeCode="$(var.ProductUpgradeCode)" 

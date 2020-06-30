@@ -89,15 +89,6 @@ public:
 		ipl_lanczos, 
 		ipl_end};
 
-#ifdef Q_OS_WIN
-	static QImage fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h);
-	static QPixmap fromWinHICON(HICON icon);
-
-	static HBITMAP createIconMask(const QBitmap& bitmap);
-	static HBITMAP toWinHBITMAP(const QPixmap& pm);
-	static HICON toWinHICON(const QPixmap& pm);
-#endif
-
 #ifdef WITH_OPENCV
 	static cv::Mat qImage2Mat(const QImage& img);
 	static QImage mat2QImage(cv::Mat img);

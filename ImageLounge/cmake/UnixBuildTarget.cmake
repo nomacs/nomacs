@@ -76,9 +76,9 @@ install(TARGETS ${BINARY_NAME} ${DLL_CORE_NAME} DESTINATION bin LIBRARY DESTINAT
 install(FILES ${NOMACS_QM} DESTINATION "share/nomacs/Image Lounge/translations")
 #  manpage
 if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
-    install(FILES Readme/nomacs.1 DESTINATION man/man1)
+    install(FILES xgd-data/nomacs.1 DESTINATION man/man1)
 else()
-    install(FILES Readme/nomacs.1 DESTINATION share/man/man1)
+    install(FILES xgd-data/nomacs.1 DESTINATION share/man/man1)
 endif()
 
 # themes

@@ -55,6 +55,7 @@
 #ifdef Q_OS_WIN
 #include <QWinTaskbarProgress>
 #include <windows.h>
+#include <QtWin>
 #endif
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -244,8 +245,6 @@ void DkAppManager::assignIcon(QAction* app) const {
 
 #ifdef Q_OS_WIN
 
-	//#include <windows.h>
-
 	if (!app) {
 		qDebug() << "SERIOUS problem here, I should assign an icon to a NULL pointer action";
 		return;
@@ -277,8 +276,8 @@ void DkAppManager::assignIcon(QAction* app) const {
 	HICON smallIcon;
 	ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
-	if (nIcons != 0 && largeIcon != NULL)
-		appIcon = DkImage::fromWinHICON(smallIcon);
+	if (nIcons != 0 && smallIcon != NULL)
+		appIcon = QtWin::fromHICON(smallIcon);
 
 	DestroyIcon(largeIcon);
 	DestroyIcon(smallIcon);
