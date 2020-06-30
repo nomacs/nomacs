@@ -8,7 +8,7 @@ def pack(version: str, base: str):
     dstdir = "/installer/" + pname
     licenses = "/ImageLounge/license"
     
-    zippath = base + dstdir + ".zip"
+    zippath = base + "/installer/nomacs-portable-win.zip"
     dst = base + dstdir
 
     # collect all files

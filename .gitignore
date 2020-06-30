@@ -32,7 +32,7 @@ repository.zip
 /installer/nomacs-setup.msi
 /installer/*.wixpdb
 /installer/HarvestedFiles.wxs
-/installer/nomacs-*.zip
+/installer/nomacs-portable-win.zip
 /notes.md
 /x64
 /nomacsCore.dir
