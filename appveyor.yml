@@ -20,21 +20,21 @@ environment:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
     
 cache:
-    - 3rd-party/build/opencv -> 3rd-party/make-opencv.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/expat -> 3rd-party/make-expat.bat         # don't rebuild unless the make script changes
-    - 3rd-party/build/exiv2 -> 3rd-party/make-exiv2.bat         # don't rebuild unless the make script changes
-    - 3rd-party/build/quazip -> 3rd-party/make-quazip.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/libraw -> 3rd-party/make-libraw.bat       # don't rebuild unless the make script changes
-    - 3rd-party/build/imageformats -> 3rd-party/make.bat        # @markus: it is the 3rd-party make on purpose...
+    - 3rd-party/build/opencv -> scripts/make-libs.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/expat -> scripts/make-libs.py         # don't rebuild unless the make script changes
+    - 3rd-party/build/exiv2 -> scripts/make-libs.py         # don't rebuild unless the make script changes
+    - 3rd-party/build/quazip -> scripts/make-libs.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/libraw -> scripts/make-libs.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/imageformats -> scripts/make-imageformats.py   # don't rebuild unless the make script changes
 
 install:
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
-    - python --version
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
     # build dependencies (release only)
-    - call 3rd-party/make.bat %QT5% release
+    - call python scripts/make-libs.py %QT5% --build-config release
+    - call python scripts/make-imageformats.py %QT5% release
  
 build_script:
     - call make-nomacs.bat %QT5% release
