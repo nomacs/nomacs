@@ -8,7 +8,8 @@ def pack(version: str, base: str):
     dstdir = "/installer/" + pname
     licenses = "/ImageLounge/license"
     
-    zippath = base + "/installer/nomacs-portable-win.zip"
+    zipname = "nomacs-portable-win.zip"
+    zippath = base + "/installer/" + zipname
     dst = base + dstdir
 
     # collect all files
@@ -25,7 +26,7 @@ def pack(version: str, base: str):
     shutil.rmtree(dst)
 
     zipsize = os.stat(zippath).st_size / (1024*1024) # -> MB
-    print(("[nomacs portable] %d files zipped to %s [%.2f MB] ") % (nf, dstdir + ".zip", zipsize))
+    print(("[nomacs portable] %d files zipped to %s [%.2f MB] ") % (nf, zipname, zipsize))
 
 def zip(src: str, dst: str, zipbase: str):
     import zipfile
@@ -66,21 +67,22 @@ def copytree(src: str, dst: str, ext: str = "", symlinks: bool = False, ignore: 
 
 if __name__ == "__main__":
     import argparse
-    import os
+    import sys, os
+    from utils import repopath
 
     parser = argparse.ArgumentParser(
         description='packs nomacs portable.')
 
-    parser.add_argument("repopath", type=str,
-                        help="""full path to the nomacs repository""")
     parser.add_argument("version", type=str,
                         help="""current nomacs version""")
 
+    rp = repopath(sys.argv[0])
+    print(rp)
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.repopath):
-        print("repository path does not exist: " + args.repopath)
+    if not os.path.exists(rp):
+        print("repository path does not exist: " + rp)
         exit()
 
-    pack(args.version, args.repopath)
+    pack(args.version, rp)
