@@ -1,13 +1,15 @@
-nomacs 3.14.4
+nomacs 3.16
 =============
-- fixes batch resize crash
+- avif support
 - cr3, pcx support added
 - default system theme added
 - edit: adds blur
 - translations updated
+- plugins: adds composite image plugin
+- bug fixes
 - Updates
-    - Qt 5.14.1
-    - OpenCV 4.2.0
+    - Qt 5.14.2
+    - OpenCV 4.3.0
     - quazip 0.8
 	- LibRaw (nightly)
 
