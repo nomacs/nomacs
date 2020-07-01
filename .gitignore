@@ -50,3 +50,5 @@ prime/
 stage/
 snap/.snapcraft/
 
+# python
+*.pyc
