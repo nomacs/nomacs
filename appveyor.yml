@@ -33,10 +33,10 @@ install:
     - git lfs pull
     - call "%VCVARS%"
     # build dependencies (release only)
-    # - call python scripts/make-libs.py %QT5% --build-config release
- 
-build_script:
     - call python scripts/make-imageformats.py %QT5% --build-config release --nomacs
+    
+build_script:
+    - call python scripts/make-libs.py %QT5% --build-config release
     # - call make-nomacs.bat %QT5% release
 
 # after_build:
