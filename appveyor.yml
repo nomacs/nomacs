@@ -33,38 +33,38 @@ install:
     - git lfs pull
     - call "%VCVARS%"
     # build dependencies (release only)
-    - call python scripts/make-libs.py %QT5% --build-config release
-    - call python scripts/make-imageformats.py %QT5% release
+    # - call python scripts/make-libs.py %QT5% --build-config release
  
 build_script:
-    - call make-nomacs.bat %QT5% release
+    - call python scripts/make-imageformats.py %QT5% --build-config release --nomacs
+    # - call make-nomacs.bat %QT5% release
 
-after_build:
-    - cd installer
-    # make msi installer & sign nomacs
-    - call make-msi-setup.bat %certpwd%
-    - call make-inno-setup.bat %certpwd%
-    # TODO: we should call this from cmake (version number)
-    - call python ../scripts/make-portable.py 3.14.0
+# after_build:
+#     - cd installer
+#     # make msi installer & sign nomacs
+#     - call make-msi-setup.bat %certpwd%
+#     - call make-inno-setup.bat %certpwd%
+#     # TODO: we should call this from cmake (version number)
+#     - call python ../scripts/make-portable.py 3.14.0
 
-artifacts:
-    - path: 'installer/nomacs-portable-win.zip'
-      name: nomacs-portable
+# artifacts:
+#     - path: 'installer/nomacs-portable-win.zip'
+#       name: nomacs-portable
 
-    - path: 'installer/nomacs-setup-x64.msi'
-      name: nomacs-installer
+#     - path: 'installer/nomacs-setup-x64.msi'
+#       name: nomacs-installer
         
-    - path: 'installer/nomacs-setup-x64.exe'
-      name: nomacs-multi-user-installer
+#     - path: 'installer/nomacs-setup-x64.exe'
+#       name: nomacs-multi-user-installer
 
-# deploy:
-#     # Deploy to GitHub
-#     - provider: GitHub
-#       artifact: nomacs-installer,nomacs-portable
-#       auth_token:
-#         secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
-#       draft: true
-#       prerelease: false
-#       on:
-#         branch: master
-#         APPVEYOR_REPO_TAG: true
+# # deploy:
+# #     # Deploy to GitHub
+# #     - provider: GitHub
+# #       artifact: nomacs-installer,nomacs-portable
+# #       auth_token:
+# #         secure: KkKZpdw2KAV3Neyr0jr/7fyq20RiK982n34O+7weSxsDfLB4lZ2IG5UIgVThxEiy
+# #       draft: true
+# #       prerelease: false
+# #       on:
+# #         branch: master
+# #         APPVEYOR_REPO_TAG: true
