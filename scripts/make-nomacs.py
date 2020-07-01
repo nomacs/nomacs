@@ -1,47 +1,11 @@
-
-
-class Config(object):
-    
-    def __init__(self, params):
-        self.__dict__.update(params)
-
-        self.defaults()
-        self.check()
-
-    def check(self):
-
-        # check if all directories exist
-        for key in self.__dict__:
-
-            p = self.__dict__[key]
-
-            if key.endswith("path") and \
-               not os.path.exists(p):
-                    print("[WARNING] %s path does not exist: %s" % (key, p))
-
-    def defaults(self):
-
-        # "debug" builds debug and release
-        if "buildconfig" not in self.__dict__ or not self.buildconfig:
-            self.buildconfig = "debug"
-
-        # call install?
-        if "install" not in self.__dict__ or not self.install:
-            self.install = True
-
-    def __str__(self):
-
-        keyvals = [key + ": " + str(self.__dict__[key]) for key in self.__dict__]
-        return "\n".join(keyvals)
+from .utils import Config
 
 class NmcConfig(Config):
 
     def __init__(self, params):
-        super().__init__(params)
+        super().__init__(params, "nomacs")
 
     def defaults(self):
-
-        super().defaults()
 
         if not self.libpath:
             self.libpath = self.rootpath + "3rd-party/build"
@@ -53,6 +17,7 @@ class NmcConfig(Config):
         if "builddir" not in self.__dict__ or not self.builddir:
             self.builddir = self.rootpath + "build"
 
+        super().defaults()
 
     def cmake_args(self):
 
@@ -70,32 +35,12 @@ class NmcConfig(Config):
 
         return args
 
-def make(config: NmcConfig = Config):
-    import subprocess as sp
-
-    cmakeconfig = "cmake " + " ".join(config.cmake_args())
-
-    print(cmakeconfig)
-
-    # configure
-    sp.run(cmakeconfig)
-
-    # build release
-    sp.run("cmake --build %s --config Release -- -m" % (config.builddir))
-
-    # build debug?!
-    if config.buildconfig.lower() == "debug":
-        sp.run("cmake --build %s --config Debug -- -m" % (config.builddir))
-
-    # install
-    if config.install:
-        sp.run("cmake --build %s --config Release --target INSTALL -- -m" % (config.builddir))
-
 if __name__ == "__main__":
     import argparse
     import sys
     import os
-    from utils import repopath
+    
+    from .utils import repopath, make
 
     parser = argparse.ArgumentParser(
         description='packs nomacs portable.')
@@ -113,6 +58,7 @@ if __name__ == "__main__":
     params["rootpath"] = rootpath
 
     c = NmcConfig(params)
+    c.cmakeonly = True
 
     # uncomment for debugging
     # print(c)
