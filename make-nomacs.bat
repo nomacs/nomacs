@@ -1,4 +1,5 @@
 @echo off
+REM deprecated
 REM build nomacs
 REM make-nomacs "C:/Qt/Qt-5.14.1-installer/5.14.2/msvc2017_64/bin" debug "C:/coding/nomacs/nomacs/3rd-party/build"
 REM note to myself: it is already complex enough that we should script it in python

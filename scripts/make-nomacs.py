@@ -41,6 +41,8 @@ class NmcConfig(Config):
 
     def defaults(self):
 
+        super().defaults()
+
         if not self.libpath:
             self.libpath = self.rootpath + "3rd-party/build"
 
@@ -87,13 +89,13 @@ def make(config: NmcConfig = Config):
 
     # install
     if config.install:
-        sp.run("cmake --build %s --config Release --target INSTALL -- -m")
+        sp.run("cmake --build %s --config Release --target INSTALL -- -m" % (config.builddir))
 
 if __name__ == "__main__":
     import argparse
     import sys
     import os
-    from utils import repopath, version
+    from utils import repopath
 
     parser = argparse.ArgumentParser(
         description='packs nomacs portable.')
@@ -112,6 +114,7 @@ if __name__ == "__main__":
 
     c = NmcConfig(params)
 
-    print(c)
+    # uncomment for debugging
+    # print(c)
 
     make(c)
