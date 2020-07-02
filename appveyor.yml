@@ -34,7 +34,7 @@ install:
     - call "%VCVARS%"
     
 build_script:
-    - python scripts\makenomacs.py C:\Qt\Qt-5.14.1-installer\5.14.2\msvc2017_64\bin --all --build-config release
+    - python scripts\makenomacs.py %QT5% --all --build-config release
 
 after_build:
     - cd installer
