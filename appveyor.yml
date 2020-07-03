@@ -20,12 +20,12 @@ environment:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
     
 cache:
-    - 3rd-party/build/opencv -> scripts/make-libs.py        # don't rebuild unless the make script changes
-    - 3rd-party/build/expat -> scripts/make-libs.py         # don't rebuild unless the make script changes
-    - 3rd-party/build/exiv2 -> scripts/make-libs.py         # don't rebuild unless the make script changes
-    - 3rd-party/build/quazip -> scripts/make-libs.py        # don't rebuild unless the make script changes
-    - 3rd-party/build/libraw -> scripts/make-libs.py        # don't rebuild unless the make script changes
-    - 3rd-party/build/imageformats -> scripts/make-imageformats.py   # don't rebuild unless the make script changes
+    - 3rd-party/build/opencv -> scripts/make.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/expat -> scripts/make.py         # don't rebuild unless the make script changes
+    - 3rd-party/build/exiv2 -> scripts/make.py         # don't rebuild unless the make script changes
+    - 3rd-party/build/quazip -> scripts/make.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/libraw -> scripts/make.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/imageformats -> scripts/make.py   # don't rebuild unless the make script changes
 
 install:
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
