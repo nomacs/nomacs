@@ -28,7 +28,7 @@ cache:
     - 3rd-party/build/imageformats -> scripts/make.py   # don't rebuild unless the make script changes
 
 install:
-    - rmdir /s /q scripts
+    # - rmdir /s /q scripts # don't know why I need this...
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
     - git submodule update --init --recursive
     - git lfs pull
