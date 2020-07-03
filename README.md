@@ -9,31 +9,24 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 
 ## Build nomacs (Windows)
 
-We assume you have an IDE (i.e. Visual Studio), git, and [Qt](https://www.qt.io/download-open-source) installed.  
+We assume you have an IDE (i.e. Visual Studio), python, git, and [Qt](https://www.qt.io/download-open-source) installed.  
 
-### Build Dependencies
 Get all dependencies:
 ```bash
 git submodule init
 git submodule update
 ```
-Project folders in ``3rd-party`` will not be empty anymore. Then call:
+Project folders in ``3rd-party`` will not be empty anymore. Now call:
 ```bash
-3rd-party\make.bat "qt/bin"
-```
-This will configure all projects using cmake and build them into `3rd-party/build`. Replace `qt/bin` with the path to the folder that contains `qmake.exe`. 
-
-If you only want to build the latest stable, you can build only release dlls:
-```bash
-3rd-party\make.bat "qt/bin" release
+python scripts/make.py "qtpath/bin"
 ```
 
-### Build nomacs
-If building all dependencies succeeded, you can build nomacs using:
-```bash
-make-nomacs.bat
-```
 This will build nomacs into `build/nomacs`. If you are using Visual Studio, you can then double-click `build/nomacs/nomacs.sln`. Right-click the nomacs project and choose `Set as StartUp Project`.
+
+Build individual projects using:
+```bash
+python scripts/make.py "qt/bin" --project quazip,libraw --force
+```
 
 ### If anything did not work
 
