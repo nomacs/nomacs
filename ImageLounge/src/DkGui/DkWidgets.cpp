@@ -407,9 +407,16 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	createLayout();
 	readSettings();
 
+	// open selected images
+	QAction* selAction = new QAction(tr("Open Image"), this);
+	selAction->setShortcut(Qt::Key_Return);
+	connect(selAction, SIGNAL(triggered()), this, SLOT(openSelected()));
+	
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
 	connect(rootPathBrowseButton, SIGNAL(clicked()), this, SLOT(browseClicked()));
 	
+	addAction(selAction);
+
 	if (mLoadSelected)
 		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
 }
@@ -565,6 +572,19 @@ void DkExplorer::loadSelectedToggled(bool checked) {
 		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
 	else
 		disconnect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+}
+
+void DkExplorer::openSelected() {
+	
+	auto index = fileTree->selectionModel()->currentIndex();
+	QFileInfo cFile = fileModel->fileInfo(sortModel->mapToSource(index));
+	qDebug() << "opening: " << cFile.absoluteFilePath();
+
+	if (DkUtils::isValid(cFile))
+		emit openFile(cFile.absoluteFilePath());
+	else if (cFile.isDir())
+		emit openDir(cFile.absoluteFilePath());
+
 }
 
 void DkExplorer::setEditable(bool editable) {
