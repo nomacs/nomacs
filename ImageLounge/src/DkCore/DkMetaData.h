@@ -120,6 +120,7 @@ public:
 	void getAllMetaData(QStringList& keys, QStringList& values) const;
 	void setResolution(const QVector2D& res);
 	void clearOrientation();
+	void clearExifState();
 	void setOrientation(int o);
 	void setRating(int r);
 	bool setDescription(const QString& description);

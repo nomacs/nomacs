@@ -1011,6 +1011,12 @@ void DkMetaDataT::clearOrientation() {
 	setExifValue("Exif.Image.Orientation", "1");	// we wrote "0" here - that was against the standard!
 }
 
+void DkMetaDataT::clearExifState() {
+	
+	if (mExifState == dirty)
+		mExifState = loaded;
+}
+
 void DkMetaDataT::setOrientation(int o) {
 
 	if (mExifState == not_loaded || mExifState == no_data)
@@ -1149,7 +1155,7 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 	success &= setExifValue("Exif.Image.ProcessingSoftware", qApp->organizationName() + " - " + qApp->applicationName() + " " + qApp->applicationVersion());
 
 	// TODO: convert Date Time to Date Time Original and set new Date Time
-
+		
 	clearOrientation();
 	
 	// NOTE: exiv crashes for some images (i.e. \exif-crash\0125-results.png)
@@ -1165,7 +1171,7 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 	if (mExifState == not_loaded || mExifState == no_data)
 		return false;
-	
+
 	try {
 
 		if (mExifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&

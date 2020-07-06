@@ -1098,7 +1098,7 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
 	return QString();
 }
 
-bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) {
+bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) const {
 
 	bool bufferCreated = false;
 
@@ -1157,24 +1157,28 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 	if (saved && mMetaData) {
 		
 		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData()) {
-			
+
 			if (!bufferCreated)
 				mMetaData->readMetaData(filePath, ba);
 			else
 				// if we created the buffere here - force loading metadata from the file
 				mMetaData->readMetaData(filePath);
-		}
-
-		if (mMetaData->isLoaded()) {
-			try {
-				mMetaData->updateImageMetaData(img);
-				mMetaData->saveMetaData(ba, true);
-			} 
-			catch (...) {
-				// is it still throwing anything?
-				qDebug() << "Sorry, I could not save the meta data...";
 			}
-		}
+
+			if (mMetaData->isLoaded()) {
+			
+				try {
+					// be careful: here we actually lie about the constness
+					mMetaData->updateImageMetaData(img);
+					mMetaData->saveMetaData(ba, true);
+				} 
+				catch (...) {
+					// is it still throwing anything?
+					qDebug() << "Sorry, I could not save the meta data...";
+					// clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
+					mMetaData->clearExifState();
+				}
+			}
 	}
 
 	if (!saved)

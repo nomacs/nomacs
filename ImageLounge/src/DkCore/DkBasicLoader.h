@@ -249,7 +249,7 @@ public:
 	void resetPageIdx();
 
 	QString save(const QString& filePath, const QImage& img, int compression = -1);
-	bool saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);
+	bool saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1) const;
 	void saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba);
 	void saveMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba);
 	void saveThumbToMetaData(const QString& filePath);
@@ -355,7 +355,7 @@ public:
 #endif
 
 signals:
-	void errorDialogSignal(const QString& msg);
+	void errorDialogSignal(const QString& msg) const;
 
 public slots:
 	QImage rotate(const QImage& img, int orientation);
