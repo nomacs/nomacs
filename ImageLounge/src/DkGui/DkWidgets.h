@@ -396,6 +396,7 @@ public slots:
 	void setEditable(bool editable);
 	void adjustColumnWidth();
 	void loadSelectedToggled(bool checked);
+	void openSelected();
 
 signals:
 	void openFile(const QString& filePath) const;
