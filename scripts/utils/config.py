@@ -86,13 +86,3 @@ class Config(object):
             return False
 
         return os.path.isfile(self.binaryfile)
-
-def repopath(arg0: str):
-
-    relp = os.path.dirname(arg0)
-    absp = os.path.abspath(relp)
-
-    # here we assume that this script is in /scripts/src
-    rp = os.path.join(absp, os.pardir) 
-
-    return os.path.abspath(rp)

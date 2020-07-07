@@ -1,7 +1,10 @@
 
-def pack(version: str, base: str):
+def pack(base: str):
     import os
     import shutil
+    from utils.fun import version
+
+    version = version()
 
     pname = "nomacs-" + version
     binarydir = "/installer/nomacs.x64"
@@ -68,16 +71,12 @@ def copytree(src: str, dst: str, ext: str = "", symlinks: bool = False, ignore: 
 if __name__ == "__main__":
     import argparse
     import sys, os
-    from utils.config import repopath
+    from utils.fun import repopath
 
     parser = argparse.ArgumentParser(
         description='packs nomacs portable.')
 
-    parser.add_argument("version", type=str,
-                        help="""current nomacs version""")
-
     rp = repopath(sys.argv[0])
-    print(rp)
 
     args = parser.parse_args()
 
@@ -85,4 +84,4 @@ if __name__ == "__main__":
         print("repository path does not exist: " + rp)
         exit()
 
-    pack(args.version, rp)
+    pack(rp)

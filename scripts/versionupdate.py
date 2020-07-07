@@ -11,78 +11,41 @@ import logging
 __author__ = "Markus Diem"
 __credits__ = ["Markus Diem"]
 __license__ = "GPLv3"
-__version__ = "0.1"
+__version__ = "0.3"
 __maintainer__ = "Markus Diem"
 __email__ = "markus@nomacs.org"
 __status__ = "Production"
 
 
-OUTPUT_NAME = "version-incrementer"
+OUTPUT_NAME = "versionupdate"
 
-def get_version_from_file(filepath: str):
 
+def update(filepath: str):
     from shutil import move
     from os import remove
+    from utils.fun import version
 
-    outpath = filepath + "tmp"
+    v = version()
 
-    with open(filepath, "r") as src:
-        for l in src.readlines():
-
-            version = get_version(l)
-
-            if version:
-                return version
-
-    return ""
-
-
-def get_version(line: str):
-
-    # searching (DkVersion.h): #define NOMACS_VERSION_STR "0.3.5.0\0"
-    if "NOMACS_VERSION_STR" in line:
-        
-        str_ver = line.split("\"")
-        ver = str_ver[1].split(".")
-
-        if len(ver) == 4:
-            # increment
-            ver[-1] = str(int(ver[-1])+1)
-        elif len(ver) == 3:
-            ver.append(".0")
-
-        return ".".join(ver)
-    else:
-        return ""
-
-
-def increment(versionfile: str, filepath: str):
-    from shutil import move
-    from os import remove
-
-    v = get_version_from_file(versionfile)
-
-    print("current version: " + v)
-
-    outpath = filepath + "tmp"
+    tmppath = filepath + "tmp"
 
     with open(filepath, "r") as src:
-        with open(outpath, "w") as dst:
+        with open(tmppath, "w") as dst:
         
             for l in src.readlines():
 
-                l = increment_version_string(v, l)
-                l = increment_version(v, l)
+                l = update_version_string(v, l)
+                l = update_version_rc(v, l)
 
-                l = add_git_tag_string(v, l)
+                l = add_git_tag_string(l)
 
                 dst.write(l)    
 
     remove(filepath)
-    move(outpath, filepath)
+    move(tmppath, filepath)
 
 
-def increment_version_string(new_v: str, line: str):
+def update_version_string(version: str, line: str):
 
     # searching (DkVersion.h): #define NOMACS_VERSION_STR "0.3.5.0\0"
     # searching (msi installer): <?define ProductVersion = "3.14.42"?>
@@ -92,27 +55,23 @@ def increment_version_string(new_v: str, line: str):
         "define MyAppVersion" in line:
         
         str_ver = line.split("\"")
-        line = str_ver[0] + "\"" + new_v + "\"" + str_ver[-1]
-
-        # send status message only once
-        if "NOMACS_VERSION_STR" in line:
-            print("[Version Incrementer] version updated: " + line.split("\"")[-2])
+        line = str_ver[0] + "\"" + version + "\"" + str_ver[-1]
 
     return line
 
-def increment_version(new_v: str, line: str):
+def update_version_rc(version: str, line: str):
     
     # searching: #define NOMACS_VERSION_RC 0,3,5,0
     if "NOMACS_VERSION_RC" in line:
 
         str_ver = line.split(" ")
-        str_ver[-1] = new_v.replace(".", ",")
+        str_ver[-1] = version.replace(".", ",")
  
         line = " ".join(str_ver) + "\n"
 
     return line
 
-def add_git_tag_string(version: str, line: str):
+def add_git_tag_string(line: str):
 
     # searching: #define NOMACS_GIT_TAG "4add4f1f6b6c731a9f4cf63596e087d4f68c2aed"
     if "NOMACS_GIT_TAG" in line:
@@ -139,16 +98,14 @@ def git_tag():
 if __name__ == "__main__":
     import argparse
     import os
+    from utils.fun import mypath
 
     parser = argparse.ArgumentParser(
        description='Increments the build version of a C++ project and adds the git rev as product version.')
 
-    parser.add_argument("version", type=str,
-                        help="""file path to the version config (i.e. DkVersion.h)""")
 
     parser.add_argument("inputfile", type=str,
                         help="""full path to the file who's version should be updated""")
-
 
     args = parser.parse_args()
 
@@ -156,4 +113,4 @@ if __name__ == "__main__":
         print("input file does not exist: " + args.inputfile)
         exit()
 
-    increment(args.versionfile, args.inputfile)
+    update(args.inputfile)

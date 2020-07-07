@@ -344,7 +344,7 @@ if __name__ == "__main__":
     import argparse
     import sys
     
-    from utils.config import repopath
+    from utils.fun import repopath
     from utils.build import build
 
     parser = argparse.ArgumentParser(
@@ -379,7 +379,8 @@ if __name__ == "__main__":
 
     c = NomacsConfig(params)
 
-    configure_libs(params, c)
+    if not params['libpath']:
+        configure_libs(params, c)
 
     # uncomment for debugging
     print(c)

@@ -207,22 +207,25 @@ if (ENABLE_INCREMENTER)
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND python 
-        ${CMAKE_CURRENT_SOURCE_DIR}/version-incrementer.py 
-        ${CMAKE_BINARY_DIR}/DkVersion.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py 
+        ${NOMACS_FULL_VERSION})
+
+    add_custom_command(
+        TARGET ${DLL_CORE_NAME} PRE_BUILD 
+        COMMAND python 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
         ${CMAKE_BINARY_DIR}/DkVersion.h)
 
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND python 
-        ${CMAKE_CURRENT_SOURCE_DIR}/version-incrementer.py 
-        ${CMAKE_BINARY_DIR}/DkVersion.h 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
         ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.wxs)
 
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND python 
-        ${CMAKE_CURRENT_SOURCE_DIR}/version-incrementer.py 
-        ${CMAKE_BINARY_DIR}/DkVersion.h 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
         ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.iss)
 
     message(STATUS "build incrementer enabled...")

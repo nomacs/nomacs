@@ -156,8 +156,6 @@ public:
 
 	static void addLanguages(QComboBox* langCombo, QStringList& languages);
 
-	static void registerFileVersion();
-
 	static void initializeDebug();
 
 	static void logToFile(QtMsgType type, const QString &msg);

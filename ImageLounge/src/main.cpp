@@ -67,6 +67,8 @@
 #include "DkDependencyResolver.h"
 #include "DkMetaData.h"
 
+#include "DkVersion.h"
+
 #include <iostream>
 #include <cassert>
 
@@ -80,18 +82,11 @@ int main(int argc, wchar_t *argv[]) {
 int main(int argc, char *argv[]) {
 #endif
 
-#ifdef READ_TUWIEN
-	QCoreApplication::setOrganizationName("TU Wien");
-	QCoreApplication::setOrganizationDomain("https://nomacs.org");
-	QCoreApplication::setApplicationName("nomacs [READ]");
-#else
-	QCoreApplication::setOrganizationName("nomacs");
-	QCoreApplication::setOrganizationDomain("https://nomacs.org");
-	QCoreApplication::setApplicationName("Image Lounge");
-#endif
+    QCoreApplication::setOrganizationName("nomacs");
+    QCoreApplication::setOrganizationDomain("https://nomacs.org");
+    QCoreApplication::setApplicationName("Image Lounge");
+    QCoreApplication::setApplicationVersion(NOMACS_VERSION_STR);
 	
-	nmc::DkUtils::registerFileVersion();
-
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif

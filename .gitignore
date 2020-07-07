@@ -11,7 +11,7 @@ release
 debug
 _UpgradeReport_Files
 Backup
-build*
+/build*
 msvc*
 data
 installer/repository

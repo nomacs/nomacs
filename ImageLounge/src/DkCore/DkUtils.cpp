@@ -1,4 +1,3 @@
-#include "DkUtils.h"
 /*******************************************************************************************************
  DkUtils.cpp
  Created on:	09.03.2010
@@ -31,7 +30,6 @@
 #include "DkSettings.h"
 #include "DkNoMacs.h"
 #include "DkViewPort.h"
-#include "DkVersion.h"
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_OPENBSD)
 #include <sys/sysinfo.h>
@@ -378,12 +376,6 @@ void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
-}
-
-void DkUtils::registerFileVersion() {
-
-	QString version(NOMACS_VERSION_STR);	// default version (we do not know the build)
-	QApplication::setApplicationVersion(version);
 }
 
 /// <summary>
