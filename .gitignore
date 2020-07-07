@@ -52,3 +52,6 @@ snap/.snapcraft/
 
 # python
 *.pyc
+
+# version thingies
+*-versioned*

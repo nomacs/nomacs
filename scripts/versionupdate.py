@@ -20,17 +20,18 @@ __status__ = "Production"
 OUTPUT_NAME = "versionupdate"
 
 
-def update(filepath: str):
+def update(filepath: str, copy: bool = False):
     from shutil import move
     from os import remove
     from utils.fun import version
 
     v = version()
 
-    tmppath = filepath + "tmp"
+    dstpath, ext = os.path.splitext(filepath)
+    dstpath += "-versioned" + ext
 
     with open(filepath, "r") as src:
-        with open(tmppath, "w") as dst:
+        with open(dstpath, "w") as dst:
         
             for l in src.readlines():
 
@@ -41,8 +42,10 @@ def update(filepath: str):
 
                 dst.write(l)    
 
-    remove(filepath)
-    move(tmppath, filepath)
+    # replace current file?
+    if not copy:
+        remove(filepath)
+        move(dstpath, filepath)
 
 
 def update_version_string(version: str, line: str):
@@ -106,6 +109,8 @@ if __name__ == "__main__":
 
     parser.add_argument("inputfile", type=str,
                         help="""full path to the file who's version should be updated""")
+    parser.add_argument("--copy", action='store_true',
+                        help="""if set, a _ver file will be created""")
 
     args = parser.parse_args()
 
@@ -113,4 +118,4 @@ if __name__ == "__main__":
         print("input file does not exist: " + args.inputfile)
         exit()
 
-    update(args.inputfile)
+    update(args.inputfile, args.copy)

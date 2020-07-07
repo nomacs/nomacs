@@ -11,6 +11,6 @@ SET ARCH=x64
 call sign ./nomacs.%ARCH%/nomacs.exe %~1
 
 REM compile
-ISCC.exe ./nomacs-setup.iss
+ISCC.exe ./nomacs-setup-versioned.iss
 
 call sign ./nomacs-setup-%ARCH%.exe %~1
