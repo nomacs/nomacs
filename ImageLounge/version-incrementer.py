@@ -19,10 +19,50 @@ __status__ = "Production"
 
 OUTPUT_NAME = "version-incrementer"
 
-def increment(v: str, filepath: str):
+def get_version_from_file(filepath: str):
+
     from shutil import move
     from os import remove
 
+    outpath = filepath + "tmp"
+
+    with open(filepath, "r") as src:
+        for l in src.readlines():
+
+            version = get_version(l)
+
+            if version:
+                return version
+
+    return ""
+
+
+def get_version(line: str):
+
+    # searching (DkVersion.h): #define NOMACS_VERSION_STR "0.3.5.0\0"
+    if "NOMACS_VERSION_STR" in line:
+        
+        str_ver = line.split("\"")
+        ver = str_ver[1].split(".")
+
+        if len(ver) == 4:
+            # increment
+            ver[-1] = str(int(ver[-1])+1)
+        elif len(ver) == 3:
+            ver.append(".0")
+
+        return ".".join(ver)
+    else:
+        return ""
+
+
+def increment(versionfile: str, filepath: str):
+    from shutil import move
+    from os import remove
+
+    v = get_version_from_file(versionfile)
+
+    print("current version: " + v)
 
     outpath = filepath + "tmp"
 
@@ -52,15 +92,7 @@ def increment_version_string(new_v: str, line: str):
         "define MyAppVersion" in line:
         
         str_ver = line.split("\"")
-        old_v = str_ver[1].split(".")
-
-        if len(old_v) == 4:
-            # increment
-            build = str(int(old_v[-1])+1)
-        elif len(old_v) == 3:
-            build = "0"
-
-        line = str_ver[0] + "\"" + new_v + "." + build + "\"" + str_ver[-1]
+        line = str_ver[0] + "\"" + new_v + "\"" + str_ver[-1]
 
         # send status message only once
         if "NOMACS_VERSION_STR" in line:
@@ -74,18 +106,7 @@ def increment_version(new_v: str, line: str):
     if "NOMACS_VERSION_RC" in line:
 
         str_ver = line.split(" ")
-        v = str_ver[-1].split(",")
-
-        if len(v) == 4:
-            build = str(int(v[-1])+1)
-        elif len(v) == 3:
-            build += ",0"
-        else:
-            print("cannot increment: " + line)
-            return line
-
-        new_v = new_v.replace(".", ",")
-        str_ver[-1] = new_v + "," + build
+        str_ver[-1] = new_v.replace(".", ",")
  
         line = " ".join(str_ver) + "\n"
 
@@ -123,10 +144,10 @@ if __name__ == "__main__":
        description='Increments the build version of a C++ project and adds the git rev as product version.')
 
     parser.add_argument("version", type=str,
-                        help="""current version""")
+                        help="""file path to the version config (i.e. DkVersion.h)""")
 
     parser.add_argument("inputfile", type=str,
-                        help="""full path to the file""")
+                        help="""full path to the file who's version should be updated""")
 
 
     args = parser.parse_args()
@@ -135,4 +156,4 @@ if __name__ == "__main__":
         print("input file does not exist: " + args.inputfile)
         exit()
 
-    increment(args.version, args.inputfile)
+    increment(args.versionfile, args.inputfile)
