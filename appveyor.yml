@@ -28,14 +28,12 @@ cache:
     - 3rd-party/build/imageformats -> scripts/make.py
 
 install:
-    - call rmdir /s /q scripts # don't know why I need this...
     - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
     - git submodule update --init --recursive
     - git lfs pull
     - call "%VCVARS%"
     
 build_script:
-    # - python scripts\makelibs.py %QT5% --build-config release
     - python scripts\make.py %QT5% --build-config release
 
 after_build:
