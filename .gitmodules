@@ -19,6 +19,3 @@
 [submodule "ImageLounge/plugins"]
 	path = ImageLounge/plugins
 	url = https://github.com/nomacs/nomacs-plugins.git
-[submodule "scripts"]
-	path = scripts
-	url = https://github.com/nomacs/scripts.git
