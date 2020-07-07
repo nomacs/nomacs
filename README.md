@@ -28,6 +28,15 @@ Build individual projects using:
 python scripts/make.py "qt/bin" --project quazip,libraw --force
 ```
 
+### Developer Build
+I like having a separate developer build (without submodules) that uses 3rd party libs already compiled. To do so you need to: 
+```bash
+git submodule update --init --remote scripts 
+
+# python scripts/make.py "C:\Qt\Qt-5.14.1-installer\5.14.2\msvc2017_64\bin" --lib-path C:\coding\nomacs\nomacs\3rd-party\build
+python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
+```
+
 ### If anything did not work
 
 - check if you have setup opencv (otherwise uncheck ENABLE_OPENCV)
