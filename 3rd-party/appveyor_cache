@@ -1,5 +1,0 @@
-# this is a dummy file created in 2020
-# changing it, will cause appveyor to clear the cache
-# the correct thing would be:
-# - 3rd-party/build/opencv -> scripts/make.py
-# however, scripts/make.py isn't available during cache restoring (since it's a submodule)

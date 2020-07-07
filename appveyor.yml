@@ -20,12 +20,12 @@ environment:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
     
 cache:
-    - 3rd-party/build/opencv -> 3rd-party/appveyor_cache        # don't rebuild unless the our dummy cache changes
-    - 3rd-party/build/expat -> 3rd-party/appveyor_cache
-    - 3rd-party/build/exiv2 -> 3rd-party/appveyor_cache
-    - 3rd-party/build/quazip -> 3rd-party/appveyor_cache
-    - 3rd-party/build/libraw -> 3rd-party/appveyor_cache
-    - 3rd-party/build/imageformats -> 3rd-party/appveyor_cache
+    - 3rd-party/build/opencv -> scripts/make.py        # don't rebuild unless the make script changes
+    - 3rd-party/build/expat -> scripts/make.py
+    - 3rd-party/build/exiv2 -> scripts/make.py
+    - 3rd-party/build/quazip -> scripts/make.py
+    - 3rd-party/build/libraw -> scripts/make.py
+    - 3rd-party/build/imageformats -> scripts/make.py
 
 install:
     - call rmdir /s /q scripts # don't know why I need this...
