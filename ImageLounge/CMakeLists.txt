@@ -161,6 +161,8 @@ IF(NOT ENABLE_PLUGINS)
 	LIST(REMOVE_ITEM GUI_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/DkPluginManager.h)
 ENDIF(NOT ENABLE_PLUGINS)
 
+# create version file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/DkCore/DkVersion.h.in ${CMAKE_CURRENT_BINARY_DIR}/DkVersion.h)
 
 set(NOMACS_FORMS src/nomacs.ui)
 set(NOMACS_RESOURCES src/nomacs.qrc)
