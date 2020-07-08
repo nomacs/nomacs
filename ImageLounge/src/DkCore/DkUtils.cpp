@@ -875,20 +875,11 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	// wohooooo - moveToTrash finally made it into Qt : )
 	QFile file(filePath);
 	return file.moveToTrash();
-#else
 
-	return moveToTrashImpl(filePath);
 #endif
-
-	return false;	// should never be hit
-}
-
-bool DkUtils::moveToTrashImpl(const QString& filePath) {
 
 	// code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
 #ifdef Q_OS_WIN
-
-	QFileInfo fileInfo(filePath);
 
 	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
 	winPath.append(1, L'\0');	// path string must be double nul-terminated
@@ -918,13 +909,13 @@ bool DkUtils::moveToTrashImpl(const QString& filePath) {
 		// ok - a file with the same name exists in the trash -> add date-time
 		// fixes #493
 		return file.rename(trashFilePath + fileInfo.fileName() + DkUtils::nowString());
-}
+	}
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
 #endif
 
-	return false;
+	return false;	// should never be hit
 }
 
 QString DkUtils::readableByte(float bytes) {
