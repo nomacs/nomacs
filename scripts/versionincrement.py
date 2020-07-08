@@ -24,16 +24,14 @@ def increment(line: str, newversion: str):
 
     str_ver = line.split(":")
 
-    # searching version.cache: version:0.3.5.0
+    # searching version.cache: version:0.3.5
     if "version" in line and len(str_ver) == 2:
 
         old_v = str_ver[1].split(".")
 
-        if len(old_v) == 4:
+        if len(old_v) == 3:
             # increment
             build = str(int(old_v[-1])+1)
-        elif len(old_v) == 3:
-            build = "0"
 
         line = str_ver[0] + ":" + newversion + "." + build
 
@@ -66,7 +64,7 @@ def update_version(version: str):
 
     else:
         with open(filepath, "w") as dst:
-            dst.write("version:" + version + ".0")
+            dst.write("version:" + version)
 
 
 if __name__ == "__main__":

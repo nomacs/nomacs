@@ -50,9 +50,9 @@ def update(filepath: str, copy: bool = False):
 
 def update_version_string(version: str, line: str):
 
-    # searching (DkVersion.h): #define NOMACS_VERSION_STR "0.3.5.0\0"
+    # searching (DkVersion.h): #define NOMACS_VERSION_STR "3.14.42\0"
     # searching (msi installer): <?define ProductVersion = "3.14.42"?>
-    # searching (inno installer): define MyAppVersion "3.14.5"
+    # searching (inno installer): define MyAppVersion "3.14.42"
     if "NOMACS_VERSION_STR" in line or \
         "<?define ProductVersion" in line or \
         "define MyAppVersion" in line:
@@ -64,7 +64,7 @@ def update_version_string(version: str, line: str):
 
 def update_version_rc(version: str, line: str):
     
-    # searching: #define NOMACS_VERSION_RC 0,3,5,0
+    # searching: #define NOMACS_VERSION_RC 3,14,42
     if "NOMACS_VERSION_RC" in line:
 
         str_ver = line.split(" ")

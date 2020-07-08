@@ -208,7 +208,7 @@ if (ENABLE_INCREMENTER)
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND python 
         ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py 
-        ${NOMACS_FULL_VERSION})
+        ${NOMACS_VERSION})
 
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
