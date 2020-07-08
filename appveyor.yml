@@ -41,7 +41,6 @@ after_build:
     # make msi installer & sign nomacs
     - call make-msi-setup.bat %certpwd%
     - call make-inno-setup.bat %certpwd%
-    # TODO: we should call this from cmake (version number)
     - call python ../scripts/make-portable.py
 
 artifacts:
