@@ -870,6 +870,8 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 		return false;
 	}
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+
 // code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
 #ifdef Q_OS_WIN
 
@@ -906,6 +908,14 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
 #endif
+
+#else
+
+    // wohooooo - moveToTrash finally made it into Qt : )
+    QFile file(filePath);
+    return file.moveToTrash();
+
+#endif // Qt >= 5.15
 
 	return false;	// should never be hit
 }
