@@ -276,7 +276,7 @@ protected:
 	QProcess mProcess;
 
 	// functions
-	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	virtual void init();
 	
@@ -296,7 +296,7 @@ class DllCoreExport DkNoMacsSync : public DkNoMacs {
 	Q_OBJECT
 
 public:
-	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkNoMacsSync();
 	
 signals:
@@ -317,7 +317,7 @@ class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {
 	Q_OBJECT
 
 public:
-	DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 };
 
 
@@ -326,7 +326,7 @@ class DllCoreExport DkNoMacsFrameless : public DkNoMacs {
 	Q_OBJECT
 
 public:
-	DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	
 	virtual ~DkNoMacsFrameless();
 
@@ -345,7 +345,7 @@ class DllCoreExport DkNoMacsContrast : public DkNoMacsSync {
 	Q_OBJECT
 
 public:
-	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	
 	virtual ~DkNoMacsContrast();
 

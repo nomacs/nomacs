@@ -60,7 +60,7 @@ class DllCoreExport DkTifDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkTifDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkTifDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	int getCompression() const;
 
@@ -87,7 +87,7 @@ public:
 		dialog_end
 	};
 
-	DkCompressDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkCompressDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	virtual ~DkCompressDialog();
 
 	void imageHasAlpha(bool hasAlpha);

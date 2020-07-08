@@ -95,7 +95,7 @@ class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkMetaDataDock();
 
 public slots:
@@ -236,7 +236,7 @@ class DkCommentWidget : public DkFadeLabel {
 	Q_OBJECT
 
 public:
-	DkCommentWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkCommentWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	~DkCommentWidget() {};
 	
 	void setMetaData(QSharedPointer<DkMetaDataT> metaData);

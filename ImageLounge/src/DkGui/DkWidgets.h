@@ -113,7 +113,7 @@ public:
 		rating_0,	// no image for that one
 	};
 
-	DkRatingLabel(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkRatingLabel(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkRatingLabel() {};
 
 	void setRating(int rating) {
@@ -178,7 +178,7 @@ class DkRatingLabelBg : public DkRatingLabel {
 	Q_OBJECT
 
 public:
-	DkRatingLabelBg(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkRatingLabelBg(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkRatingLabelBg();
 
 	void changeRating(int newRating) override;
@@ -381,7 +381,7 @@ class DllCoreExport DkExplorer : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkExplorer();
 
 	DkFileSystemModel* getModel() { return fileModel; };
@@ -502,7 +502,7 @@ class DkTransformRect : public DkWidget {
 
 public:
 	
-	DkTransformRect(int idx = -1, DkRotatingRect* rect = 0, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkTransformRect(int idx = -1, DkRotatingRect* rect = 0, QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	virtual ~DkTransformRect() {};
 
 	void draw(QPainter *painter);
@@ -552,7 +552,7 @@ public:
 		scaling
 	};
 
-	DkEditableRect(const QRectF& rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkEditableRect(const QRectF& rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	virtual ~DkEditableRect() {};
 
 	void reset();
@@ -629,7 +629,7 @@ class DkCropWidget : public DkEditableRect {
 	Q_OBJECT
 
 public:
-	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	DkCropToolBar* getToolbar() const;
 
@@ -721,7 +721,7 @@ class DkFolderLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
 	void loadFileSignal(const QString&) const;

@@ -129,7 +129,7 @@ class DllCoreExport DkColorChooser : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	virtual ~DkColorChooser() {};
 
 	void setColor(const QColor& color);
