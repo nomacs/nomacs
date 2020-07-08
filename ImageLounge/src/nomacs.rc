@@ -17,8 +17,8 @@
 // German (Austria) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEA)
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_AUSTRIAN
-#pragma code_page(1252)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US 
+// #pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TU Wien"
             VALUE "FileDescription", "nomacs - Image Lounge"
-            VALUE "FileVersion", NOMACS_GIT_TAG
+            VALUE "FileVersion", NOMACS_VERSION_STR
             VALUE "InternalName", "nomacs.exe"
             VALUE "LegalCopyright", "(C) 2011-2020, Markus Diem, Stefan Fiel, Florian Kleber"
             VALUE "OriginalFilename", "nomacs.exe"
