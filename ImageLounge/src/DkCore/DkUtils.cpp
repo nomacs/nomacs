@@ -889,11 +889,19 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 
 #elif defined(Q_OS_LINUX)
 
-	QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/";    // trash file path contain delete files
+	QString trashFilePath = QDir::homePath() +"/.local/share/Trash/files/";    // trash file path contain delete files
 
-	QDir file;
-	return file.rename(filePath, trashFilePath + fileInfo.fileName());  // rename(file old path, file trash path)
+	QFile file(filePath);
 
+	// move to trash
+	if (file.rename(trashFilePath + fileInfo.fileName())) {
+		return true;
+	}
+	else {
+		// ok - a file with the same name exists in the trash -> add date-time
+		// fixes #493
+		return file.rename(trashFilePath + fileInfo.fileName() + DkUtils::nowString());
+	}
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
