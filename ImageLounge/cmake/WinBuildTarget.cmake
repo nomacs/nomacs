@@ -220,7 +220,7 @@ if (ENABLE_INCREMENTER)
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND python 
         ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.wxs
+        ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.wxi
         --copy
         )
 
