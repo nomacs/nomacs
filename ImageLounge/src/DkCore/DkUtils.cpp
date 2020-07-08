@@ -870,19 +870,34 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 		return false;
 	}
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 
-// code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
+	// wohooooo - moveToTrash finally made it into Qt : )
+	QFile file(filePath);
+	return file.moveToTrash();
+#else
+
+	return moveToTrashImpl(filePath);
+#endif
+
+	return false;	// should never be hit
+}
+
+bool DkUtils::moveToTrashImpl(const QString& filePath) {
+
+	// code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
 #ifdef Q_OS_WIN
+
+	QFileInfo fileInfo(filePath);
 
 	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
 	winPath.append(1, L'\0');	// path string must be double nul-terminated
 
 	SHFILEOPSTRUCTW shfos = {};
-	shfos.hwnd   = nullptr;		// handle to window that will own generated windows, if applicable
-	shfos.wFunc  = FO_DELETE;
-	shfos.pFrom  = winPath.c_str();
-	shfos.pTo    = nullptr;		// not used for deletion operations
+	shfos.hwnd = nullptr;		// handle to window that will own generated windows, if applicable
+	shfos.wFunc = FO_DELETE;
+	shfos.pFrom = winPath.c_str();
+	shfos.pTo = nullptr;		// not used for deletion operations
 	shfos.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT; // use the recycle bin
 
 	const int retVal = SHFileOperationW(&shfos);
@@ -891,7 +906,7 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 
 #elif defined(Q_OS_LINUX)
 
-	QString trashFilePath = QDir::homePath() +"/.local/share/Trash/files/";    // trash file path contain delete files
+	QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/";    // trash file path contain delete files
 
 	QFile file(filePath);
 
@@ -903,21 +918,13 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 		// ok - a file with the same name exists in the trash -> add date-time
 		// fixes #493
 		return file.rename(trashFilePath + fileInfo.fileName() + DkUtils::nowString());
-	}
+}
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
 #endif
 
-#else
-
-    // wohooooo - moveToTrash finally made it into Qt : )
-    QFile file(filePath);
-    return file.moveToTrash();
-
-#endif // Qt >= 5.15
-
-	return false;	// should never be hit
+	return false;
 }
 
 QString DkUtils::readableByte(float bytes) {
