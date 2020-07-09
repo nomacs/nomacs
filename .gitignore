@@ -12,6 +12,7 @@ debug
 _UpgradeReport_Files
 Backup
 /build*
+3rd-party/build
 msvc*
 data
 installer/repository

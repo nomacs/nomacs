@@ -361,7 +361,7 @@ if __name__ == "__main__":
     parser.add_argument('--build-config', dest='buildconfig', type=str, default="",
                         help='build configuration [debug|release]')
     parser.add_argument('--project', dest='project', type=str, default="all",
-                        help='comma separated name of the project(s) to be built (\'all\' will build everything)')
+                        help='comma separated name of the project(s) to be built (i.e. project=opencv,expat)')
     parser.add_argument('--force', action='store_true',
                     help='forces building the project')
     parser.add_argument('--configure', action='store_true',
