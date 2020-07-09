@@ -876,10 +876,8 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 	QFile file(filePath);
 	return file.moveToTrash();
 
-#endif
-
 	// code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
-#ifdef Q_OS_WIN
+#elif defined(Q_OS_WIN)
 
 	std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
 	winPath.append(1, L'\0');	// path string must be double nul-terminated
