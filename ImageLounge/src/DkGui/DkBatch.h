@@ -192,7 +192,7 @@ public:
 		tab_end
 	};
 
-	DkBatchInput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchInput(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	QString getDir() const;
 	QStringList getSelectedFiles() const;
@@ -291,7 +291,7 @@ class DkBatchOutput : public DkWidget, public DkBatchContent {
 Q_OBJECT
 
 public:
-	DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	virtual bool hasUserInput() const override;
 	virtual bool requiresUserInput() const override {return mRUserInput;};
@@ -384,7 +384,7 @@ class DkProfileWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
-	DkProfileWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkProfileWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	//void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
 	bool hasUserInput() const override;
@@ -425,7 +425,7 @@ class DkBatchPluginWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
-	DkBatchPluginWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchPluginWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	void transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const;
 	bool loadProperties(QSharedPointer<DkPluginBatch> batchPlugin);
@@ -466,7 +466,7 @@ class DkBatchManipulatorWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
-	DkBatchManipulatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchManipulatorWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	void transferProperties(QSharedPointer<DkManipulatorBatch> batchPlugin) const;
 	bool loadProperties(QSharedPointer<DkManipulatorBatch> batchPlugin);
@@ -507,7 +507,7 @@ class DkBatchTransformWidget : public DkWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
-	DkBatchTransformWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchTransformWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
 	bool loadProperties(QSharedPointer<DkBatchTransform> batchTransform);

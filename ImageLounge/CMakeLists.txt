@@ -235,6 +235,7 @@ MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://noma
 execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE qt_version)
 message(STATUS " Qt version: ${qt_version}")
 
+
 IF(OpenCV_FOUND)
     MESSAGE(STATUS " nomacs will be compiled with OPENCV support .................. YES")
 ELSE()

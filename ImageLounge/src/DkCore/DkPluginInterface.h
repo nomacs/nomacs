@@ -177,7 +177,7 @@ class DllCoreExport DkPluginViewPort : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0) : DkWidget(parent, flags) {
+	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags()) : DkWidget(parent, flags) {
 		
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");

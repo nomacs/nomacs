@@ -57,14 +57,14 @@ class DllCoreExport DkWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 };
 
 class DllCoreExport DkFadeWidget : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFadeWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkFadeWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void registerAction(QAction* action);
 	void block(bool blocked);
@@ -241,7 +241,7 @@ class DllCoreExport DkDockWidget : public QDockWidget {
 	Q_OBJECT
 
 public:
-	DkDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	DkDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags() );
 	~DkDockWidget();
 
 	void registerAction(QAction* action);

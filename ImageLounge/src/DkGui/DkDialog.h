@@ -108,7 +108,7 @@ class DkSplashScreen : public QDialog {
 	Q_OBJECT
 
 public:
-	DkSplashScreen(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkSplashScreen(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkSplashScreen() {};
 
 protected:
@@ -148,7 +148,7 @@ class DkTrainDialog : public QDialog {
 	Q_OBJECT
 	
 public:
-	DkTrainDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkTrainDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	QString getAcceptedFile() {
 		return mAcceptedFile;
@@ -185,7 +185,7 @@ class DkAppManagerDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkAppManagerDialog(DkAppManager* manager = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkAppManagerDialog(DkAppManager* manager = 0, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
 	void on_addButton_clicked();
@@ -218,7 +218,7 @@ public:
 		button_end,
 	};
 
-	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void setFiles(const QStringList& fileList);
 	void setPath(const QString& dirPath);
@@ -265,7 +265,7 @@ class DkResizeDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkResizeDialog() {};
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
@@ -416,7 +416,7 @@ class DkShortcutsDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkShortcutsDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkShortcutsDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void addActions(const QVector<QAction*>& actions, const QString& name);
 
@@ -440,7 +440,7 @@ class DkTextDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkTextDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkTextDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void setText(const QStringList& text);
 	QTextEdit* getTextEdit() { return textEdit; };
@@ -458,7 +458,7 @@ class DkUpdateDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	QLabel* upperLabel;
 
 signals:
@@ -504,7 +504,7 @@ class DkPrintPreviewWidget : public QPrintPreviewWidget {
 	Q_OBJECT
 
 public:
-	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void setImage(const QImage& img);
 	void addImage(const QImage& img);
@@ -549,7 +549,7 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPrintPreviewDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	
 	void setImage(const QImage& img);
 	void addImage(const QImage& img);
@@ -584,7 +584,7 @@ class DkOpacityDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkOpacityDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkOpacityDialog(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	int value() const;
 
 protected:
@@ -597,7 +597,7 @@ class DkExportTiffDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkExportTiffDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkExportTiffDialog(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 public slots:
 	void on_openButton_pressed();
@@ -656,7 +656,7 @@ class DkMosaicDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkMosaicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkMosaicDialog(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	QImage getImage();
 
 public slots:
@@ -749,7 +749,7 @@ class DkForceThumbDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkForceThumbDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkForceThumbDialog(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	bool forceSave() const;
 	void setDir(const QDir& fileInfo);
@@ -765,7 +765,7 @@ class DkWelcomeDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkWelcomeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkWelcomeDialog(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 	bool isLanguageChanged();
 
@@ -838,7 +838,7 @@ class DkArchiveExtractionDialog : public QDialog {
 	Q_OBJECT
 	
 public:
-	DkArchiveExtractionDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkArchiveExtractionDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	void setCurrentFile(const QString& filePath, bool isZip);
 

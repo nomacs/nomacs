@@ -77,7 +77,7 @@ public:
 		cm_end,
 	};
 
-	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	~DkFilePreview() {
 		saveSettings();
@@ -309,7 +309,7 @@ class DllCoreExport DkThumbScrollWidget : public DkFadeWidget {
 	Q_OBJECT
 
 public:
-	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 	DkThumbScene* getThumbWidget() {
 		return mThumbsScene;
@@ -388,7 +388,7 @@ class DkThumbPreviewLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkThumbPreviewLabel(const QString& filePath, int thumbSize = 100, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkThumbPreviewLabel(const QString& filePath, int thumbSize = 100, QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 signals:
 	void loadFileSignal(const QString& filePath, bool newTab);

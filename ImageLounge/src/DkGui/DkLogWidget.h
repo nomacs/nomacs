@@ -66,7 +66,7 @@ class DkLogDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkLogDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkLogDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
 	void createLayout();

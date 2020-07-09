@@ -245,7 +245,7 @@ class DkEditDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkEditDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkEditDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
