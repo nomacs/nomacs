@@ -183,7 +183,7 @@ void DkImgTransformationsViewPort::init() {
 
 QPoint DkImgTransformationsViewPort::map(const QPointF &pos) {
 
-	QPoint posM = QPoint(pos.x(), pos.y());
+	QPoint posM = pos.toPoint();
 	if (mWorldMatrix)	posM = mWorldMatrix->inverted().map(posM);
 	if (mImgMatrix)		posM = mImgMatrix->inverted().map(posM);
 	
@@ -382,15 +382,18 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	painter.fillRect(this->rect(), nmc::DkSettingsManager::param().display().bgColor);
 
-
+	// This is true 16:9 code (sorry : )
 	if (mWorldMatrix)
 		painter.setWorldTransform((*mImgMatrix) * (*mWorldMatrix));
 
 	if (selectedMode == mode_scale) {
 		painter.save();
 
-		imgRectT.setSize(QSize(imgRectT.width()*scaleValues.x(),imgRectT.height()*scaleValues.y()));
-		imgRectT.translate(imgRectT.width()*0.5 *(1-scaleValues.x()) * (1/scaleValues.x()),imgRectT.height()*0.5*(1-scaleValues.y())*(1/scaleValues.y()));
+		imgRectT.setSize(QSizeF(imgRectT.width()*scaleValues.x(),imgRectT.height()*scaleValues.y()).toSize());
+		imgRectT.translate(
+			QPointF(
+			imgRectT.width()*0.5 *(1-scaleValues.x()) * (1/scaleValues.x()),
+			imgRectT.height()*0.5*(1-scaleValues.y())*(1/scaleValues.y())).toPoint());
 
 		affineTransform.scale(scaleValues.x(),scaleValues.y());
 		affineTransform.translate(inImage.width()*0.5 *(1-scaleValues.x()) * (1/scaleValues.x()),inImage.height()*0.5*(1-scaleValues.y())*(1/scaleValues.y()));
@@ -448,17 +451,16 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 			for (int i = 0; i < lines.size(); i++) {
 				(lineTypes.at(i)) ? linePen.setColor(nmc::DkSettingsManager::param().display().highlightColor) : linePen.setColor(hCAlpha);
 				painter.setPen(linePen);
-				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
+				painter.drawLine(QPointF(lines.at(i).x(), lines.at(i).y()), QPointF(lines.at(i).z(), lines.at(i).w()));
 			}
 		}
 
 		painter.restore();
 		if (rotCropEnabled) {
-			QSize cropSize = QSize();
 
 			double newHeight = - ((double)(inImage.height()) - (double) (inImage.width()) * qAbs(qTan(rotationValue * PI /180))) / (qAbs(qTan(rotationValue * PI /180))*qAbs(qSin(rotationValue * PI /180))-qAbs(qCos(rotationValue * PI /180)));
-			cropSize = QSize(((double) (inImage.width())-newHeight*qAbs(qSin(rotationValue * PI /180)))/qAbs(qCos(rotationValue * PI /180)) , newHeight);
-			QRect cropRect = QRect(QPoint(rotationCenter.x()-0.5*cropSize.width(),rotationCenter.y()-0.5*cropSize.height()),cropSize);
+			QSize cropSize = QSize(qRound(((double) (inImage.width())-newHeight*qAbs(qSin(rotationValue * PI /180)))/qAbs(qCos(rotationValue * PI /180))) , qRound(newHeight));
+			QRect cropRect = QRect(QPointF(rotationCenter.x()-0.5*cropSize.width(),rotationCenter.y()-0.5*cropSize.height()).toPoint(),cropSize);
 		
 			if (cropSize.width() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width()) && cropSize.height() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width())) {
 				
@@ -496,7 +498,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	nmc::DkVector lp = p[1]-p[0];	// parallel to drawing
 	nmc::DkVector l9 = p[3]-p[0];	// perpendicular to drawing
 
-	int nLines = (paintMode == guide_rule_of_thirds) ? 3 : l9.norm()/20;
+	int nLines = (paintMode == guide_rule_of_thirds) ? 3 : qRound(l9.norm()/20);
 	nmc::DkVector offset = l9;
 	offset.normalize();
 	offset *= l9.norm()/nLines;
@@ -515,7 +517,7 @@ void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF&
 	lp = p[3]-p[0];	// parallel to drawing
 	l9 = p[1]-p[0];	// perpendicular to drawing
 
-	nLines = (paintMode == guide_rule_of_thirds) ? 3 : l9.norm()/20;
+	nLines = (paintMode == guide_rule_of_thirds) ? 3 : qRound(l9.norm()/20);
 	offset = l9;
 	offset.normalize();
 	offset *= l9.norm()/nLines;
@@ -582,8 +584,8 @@ QImage DkImgTransformationsViewPort::getTransformedImage() {
 
 					QSize cropSize = QSize();
 					double newHeight = - ((double)(inImage.height()) - (double) (inImage.width()) * qAbs(qTan(rotationValue * PI /180))) / (qAbs(qTan(rotationValue * PI /180))*qAbs(qSin(rotationValue * PI /180))-qAbs(qCos(rotationValue * PI /180)));
-					cropSize = QSize(((double) (inImage.width())-newHeight*qAbs(qSin(rotationValue * PI /180)))/qAbs(qCos(rotationValue * PI /180)) , newHeight);
-					if (cropSize.width() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width()) && cropSize.height() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width())) croppedImageRect = QRect(QPoint(0.5*paintedImage.width()-0.5*cropSize.width(),0.5*paintedImage.height()-0.5*cropSize.height()),cropSize);
+					cropSize = QSize(qRound(((double) (inImage.width())-newHeight*qAbs(qSin(rotationValue * PI /180)))/qAbs(qCos(rotationValue * PI /180))) , qRound(newHeight));
+					if (cropSize.width() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width()) && cropSize.height() <= qSqrt(inImage.height()*inImage.height()+inImage.width()*inImage.width())) croppedImageRect = QRect(QPointF(0.5*paintedImage.width()-0.5*cropSize.width(),0.5*paintedImage.height()-0.5*cropSize.height()).toPoint(),cropSize);
 					QImage croppedImage = paintedImage.copy(croppedImageRect);
 
 					return croppedImage;

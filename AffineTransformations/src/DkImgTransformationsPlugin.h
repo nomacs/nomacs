@@ -27,6 +27,8 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+
 #include <QObject>
 #include <QtPlugin>
 #include <QImage>
@@ -48,6 +50,8 @@
 #include <QVector4D>
 #include <QSettings>
 #include <QMouseEvent>
+
+#pragma warning(pop, 0)	// no warnings from includes - end
 
 #include "DkPluginInterface.h"
 #include "DkSkewEstimator.h"
@@ -103,7 +107,7 @@ class DkImgTransformationsViewPort : public nmc::DkPluginViewPort {
 
 public:
 
-	DkImgTransformationsViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkImgTransformationsViewPort(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkImgTransformationsViewPort();
 
 	bool isCanceled();

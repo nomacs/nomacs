@@ -27,6 +27,8 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+
 #include <QWidget>
 #include <QLabel>
 #include <QBoxLayout>
@@ -37,11 +39,11 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-// OpenCV
+ // OpenCV
 #ifdef WITH_OPENCV
 
 #ifdef Q_WS_WIN
-	#pragma warning(disable: 4996)
+#pragma warning(disable: 4996)
 #endif
 
 #include "opencv2/core/core.hpp"
@@ -49,6 +51,8 @@
 
 using namespace cv;
 #endif
+
+#pragma warning(pop, 0)	// no warnings from includes - end
 
 namespace nmp {
 
@@ -61,7 +65,7 @@ class DkFakeMiniaturesDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		DkFakeMiniaturesDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		DkFakeMiniaturesDialog(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 		~DkFakeMiniaturesDialog();
 		bool wasOkPressed() {
 			return isOk;

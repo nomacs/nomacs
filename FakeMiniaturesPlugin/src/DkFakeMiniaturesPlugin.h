@@ -27,6 +27,8 @@
 
 #pragma once
 
+#pragma warning(disable: 4251)	// TODO: remove
+
 #include <QObject>
 #include <QWidget>
 #include <QtPlugin>

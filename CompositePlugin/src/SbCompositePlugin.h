@@ -48,7 +48,7 @@ public:
 	}
 	~SbCompositeDockWidget() {}
 protected:
-	void closeEvent(QCloseEvent* event) {
+	void closeEvent(QCloseEvent*) {
 		emit closed();
 	}
 signals:
@@ -63,14 +63,14 @@ public:
 	void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override {
 		if (!imgC)
 			return;
-		this->imgC = imgC;
+		mImgC = imgC;
 		emit gotImage();
 	}
 	QSharedPointer<DkImageContainerT> getImgC() {
-		return imgC;
+		return mImgC;
 	}
 private:
-	QSharedPointer<DkImageContainerT> imgC;
+	QSharedPointer<DkImageContainerT> mImgC;
 signals:
 	void gotImage();
 };
@@ -84,7 +84,7 @@ class SbCompositePlugin : public QObject, DkViewPortInterface {
 
 public:
 
-	SbCompositePlugin(QObject* parent = 0) {}
+	SbCompositePlugin(QObject* parent = 0) : QObject(parent) {}
 	~SbCompositePlugin() {}
 
 	//DkPluginInterface

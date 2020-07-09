@@ -101,7 +101,7 @@ class DkPaintViewPort : public nmc::DkPluginViewPort {
 	Q_OBJECT
 
 public:
-	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 	~DkPaintViewPort();
 	
 	QBrush getBrush() const;
