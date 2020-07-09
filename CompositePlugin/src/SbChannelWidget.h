@@ -1,4 +1,7 @@
 #pragma once
+
+#pragma warning(push, 0)        
+
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -20,6 +23,9 @@
 #include <QToolTip>
 
 #include <opencv2/opencv.hpp>
+#pragma warning(pop, 0)        
+
+
 #include "DkImageStorage.h"
 #include "DkBasicLoader.h"
 
