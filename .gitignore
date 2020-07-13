@@ -22,7 +22,6 @@ package.xml
 installer-test
 repository.zip
 /ImageLounge/cmake/*.tmp
-/.gitattributes
 /installer/nomacs/.*
 /installer/nomacs.x64/*
 /installer-inno/nomacs.x64/*
