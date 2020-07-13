@@ -895,19 +895,52 @@ bool DkUtils::moveToTrash(const QString& filePath) {
 
 #elif defined(Q_OS_LINUX)
 
+	// TODO (or not): currently if no one ever deleted something, /share/Trash does not exist -> should we create it?
 	QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/";    // trash file path contain delete files
+	QString trashFileName = fileInfo.fileName();
+	qInfo() << "deleting to: " << trashFilePath + fileInfo.fileName();
 
 	QFile file(filePath);
 
+	auto createTrashInfo = [&](const QString& filePath) {
+
+		QString trashInfoPath = QDir::homePath() + "/.local/share/Trash/info/";    // trash file path contain delete files
+		QFile ti(trashInfoPath + trashFileName + ".trashinfo");
+
+		if (ti.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			QTextStream stream(&ti);
+			stream << "[Trash Info]\n";
+			stream << "Path=" << filePath << "\n";
+			stream << "DeletionDate=" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss") << "\n";
+			ti.close();
+
+		}
+		else {
+			qWarning() << "could not write trash info...";
+		}
+	};
+
+	bool deleted = false;
+
 	// move to trash
-	if (file.rename(trashFilePath + fileInfo.fileName())) {
-		return true;
+	if (file.rename(trashFilePath + trashFileName)) {
+		deleted = true;
 	}
 	else {
 		// ok - a file with the same name exists in the trash -> add date-time
 		// fixes #493
-		return file.rename(trashFilePath + fileInfo.fileName() + DkUtils::nowString());
+		trashFileName = fileInfo.fileName() + DkUtils::nowString();
+		deleted = file.rename(trashFilePath + trashFileName);
 	}
+
+
+	if (deleted) {
+		createTrashInfo(filePath);
+		return true;
+	}
+	else
+		return false;
+
 #else
 	QFile fileHandle(filePath);
 	return fileHandle.remove();
