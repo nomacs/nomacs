@@ -1116,7 +1116,10 @@ void DkNoMacs::openFile() {
 		}
 
 		if (!dup) {
-			getTabWidget()->loadFile(fp, true);
+
+			// > 1: only open in tab if more than one file is opened
+			bool newTab = filePaths.size() > 1 | getTabWidget()->getTabs().size() > 1;
+			getTabWidget()->loadFile(fp, newTab);
 		}
 	}
 	if (duplicates.count() > 0) { // Show message if at least one duplicate was found

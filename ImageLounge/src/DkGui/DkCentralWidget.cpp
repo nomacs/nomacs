@@ -983,7 +983,8 @@ void DkCentralWidget::switchWidget(int widget) {
 
 void DkCentralWidget::switchWidget(QWidget* widget) {
 
-	if (mViewLayout->currentWidget() == widget)
+	if (mViewLayout->currentWidget() == widget && 
+		mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
 		return;
 
 	if (widget)
