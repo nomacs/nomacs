@@ -27,7 +27,8 @@ QLabel#batchContentInfo {
 }
 
 QLabel#BatchInfo {
-	font-style: italic;
+    font-style: italic;
+    color: #fff;
 }
 
 QLabel#FileNamePreviewLabel {
