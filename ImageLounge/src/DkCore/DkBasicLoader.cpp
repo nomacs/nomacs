@@ -1174,11 +1174,12 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 				try {
 					// be careful: here we actually lie about the constness
 					mMetaData->updateImageMetaData(img);
-					mMetaData->saveMetaData(ba, true);
+					if (!mMetaData->saveMetaData(ba, true))
+						mMetaData->clearExifState();
 				} 
 				catch (...) {
 					// is it still throwing anything?
-					qDebug() << "Sorry, I could not save the meta data...";
+					qInfo() << "Sorry, I could not save the meta data...";
 					// clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
 					mMetaData->clearExifState();
 				}
@@ -1226,6 +1227,7 @@ void DkBasicLoader::saveMetaData(const QString& filePath, QSharedPointer<QByteAr
 		saved = mMetaData->saveMetaData(ba);
 	} 
 	catch(...) {
+		qInfo() << "could not save metadata...";
 	}
 	
 	if (saved)
