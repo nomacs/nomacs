@@ -1222,7 +1222,9 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	if (DkSettingsManager::param().display().showNavigation) {
+	if (DkSettingsManager::param().display().showNavigation &&
+		event->modifiers() == Qt::NoModifier && 
+		event->buttons() == Qt::NoButton) {
 
 		int left = qMin(100, qRound(0.1 * width()));
 		int right = qMax(width()-100, qRound(0.9 * width()));
