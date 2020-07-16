@@ -479,6 +479,7 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	// open selected images
 	QAction* selAction = new QAction(tr("Open Image"), this);
 	selAction->setShortcut(Qt::Key_Return);
+	selAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(selAction, SIGNAL(triggered()), this, SLOT(openSelected()));
 	
 	connect(mFileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));

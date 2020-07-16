@@ -21,6 +21,15 @@ QPushButton:flat {
     border: none; /* no border for a flat push button */
 }
 
+QTabWidget > QWidget {
+    background-color: BACKGROUND_COLOR;
+    border: none;
+}
+
+QTabWidget:pane {
+    border: 1px solid #666;
+}
+
 nmc--DkBatchTabButton {
 	min-width: 250px;
 	padding: 10px 20px;
@@ -86,8 +95,13 @@ QComboBox::drop-down {
 	image: url(:/nomacs/img/down-white.svg);
 	border: none;
 	width: 16px;
-	height: 16px;
+    height: 16px;
+    margin: 2px;
 	background-color: none;
+}
+
+QComboBox {
+    min-height: 20px;
 }
 
 QComboBox::drop-down:hover {
@@ -199,7 +213,7 @@ QLineEdit#DkWarningEdit {
 
 QLabel#DkDecentInfo[warning="true"],
 QLineEdit#DkWarningEdit[error="true"] {
-	color: #ce5a5a;
+	color: #f56e87;
 }
 
 nmc--DkFolderScrollBar {

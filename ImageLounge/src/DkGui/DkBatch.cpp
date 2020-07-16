@@ -359,8 +359,8 @@ void DkBatchInput::createLayout() {
 
 	// tab widget
 	mInputTabs = new QTabWidget(this);
-	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
-	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/bars.svg"), tr("File List"));
+	mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
+	mInputTabs->addTab(mInputTextEdit, DkImage::loadIcon(":/nomacs/img/bars.svg"), tr("File List"));
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
 	widgetLayout->setContentsMargins(0, 0, 0, 0);
