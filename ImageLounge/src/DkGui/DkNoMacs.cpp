@@ -900,7 +900,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 	if (!mExplorer) {
 
 		// get last location
-		mExplorer = new DkExplorer(tr("File Explorer"));
+		mExplorer = new DkBrowseExplorer(tr("File Explorer"));
 		mExplorer->registerAction(DkActionManager::instance().action(DkActionManager::menu_panel_explorer));
 		mExplorer->setDisplaySettings(&DkSettingsManager::param().app().showExplorer);
 		addDockWidget(mExplorer->getDockLocationSettings(Qt::LeftDockWidgetArea), mExplorer);

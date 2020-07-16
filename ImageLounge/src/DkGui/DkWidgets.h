@@ -382,15 +382,13 @@ class DllCoreExport DkExplorer : public DkDockWidget {
 
 public:
 	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	~DkExplorer();
+	virtual ~DkExplorer();
 
-	DkFileSystemModel* getModel() { return fileModel; };
+	DkFileSystemModel* getModel() { return mFileModel; };
 
 public slots:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
 	void setCurrentPath(const QString& filePath);
-	void browseClicked();
-	void setRootPath(const QString &root);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
@@ -403,23 +401,43 @@ signals:
 	void openDir(const QString& dir) const;
 
 protected:
-	void closeEvent(QCloseEvent *event) override;
+	void closeEvent(QCloseEvent* event) override;
 	void contextMenuEvent(QContextMenuEvent* event) override;
 
-	void createLayout();
-	void writeSettings();
-	void readSettings();
+	virtual void createLayout();
+	virtual void writeSettings();
+	virtual void readSettings();
 
-	QString rootPath;
-	QPushButton* rootPathBrowseButton;
-	DkElidedLabel* rootPathLabel;
+	QVBoxLayout* mLayout = nullptr;
+	QTreeView* mFileTree = nullptr;
+	DkFileSystemModel* mFileModel = nullptr;
+	DkSortFileProxyModel* mSortModel = nullptr;
 
-	DkFileSystemModel* fileModel;
-	DkSortFileProxyModel* sortModel;
-	QTreeView* fileTree;
+private:
 
-	QVector<QAction*> columnActions;
+	QVector<QAction*> mColumnActions;
 	bool mLoadSelected = false;
+};
+
+class DllCoreExport DkBrowseExplorer : public DkExplorer {
+	Q_OBJECT
+
+public:
+	DkBrowseExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+	~DkBrowseExplorer();
+
+public slots:
+	void browseClicked();
+	void setRootPath(const QString& root);
+
+protected:
+	void createLayout() override;
+	void readSettings() override;
+	void writeSettings() override;
+
+	QString mRootPath;
+	QPushButton* mRootPathBrowseButton;
+	DkElidedLabel* mRootPathLabel;
 };
 
 class DkOverview : public QLabel {
