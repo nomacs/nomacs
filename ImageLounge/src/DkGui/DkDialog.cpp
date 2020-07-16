@@ -104,6 +104,17 @@
 
 namespace nmc {
 
+QFileDialog::Options DkDialog::fileDialogOptions() {
+
+	QFileDialog::Options flags;
+
+	if (!DkSettingsManager::param().resources().nativeDialog)
+		flags = QFileDialog::DontUseNativeDialog;
+		
+
+	return flags;
+}
+
 // DkSplashScreen --------------------------------------------------------------------
 DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDialog(0, flags) {
 
@@ -348,8 +359,14 @@ void DkTrainDialog::textChanged(const QString& text) {
 void DkTrainDialog::openFile() {
 
 	// load system default open dialog
-	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		mFile, tr("All Files (*.*)"));
+	QString filePath = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open Image"),
+		mFile, 
+		tr("All Files (*.*)"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (QFileInfo(filePath).exists()) {
 		mPathEdit->setText(filePath);
@@ -541,9 +558,14 @@ void DkAppManagerDialog::on_addButton_clicked() {
 	defaultPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);	// still retrieves startmenu on windows
 #endif
 
-	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
+	QString filePath = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open Application"),
 		defaultPath, 
-		appFilter);
+		appFilter,
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (filePath.isEmpty())
 		return;
@@ -1971,8 +1993,14 @@ void DkTextDialog::save() {
 	extList << tr("Text File (*.txt)") << tr("All Files (*.*)");
 	QString saveFilters(extList.join(";;"));
 
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Text File"),
-		savePath, saveFilters);
+	QString fileName = QFileDialog::getSaveFileName(
+		this,
+		tr("Save Text File"),
+		savePath,
+		saveFilters,
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (fileName.isEmpty())
 		return;
@@ -2539,9 +2567,14 @@ void DkExportTiffDialog::createLayout() {
 void DkExportTiffDialog::on_openButton_pressed() {
 
 	// load system default open dialog
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
+	QString fileName = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open TIFF"),
 		mFilePath, 
-		DkSettingsManager::param().app().saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		DkSettingsManager::param().app().saveFilters.filter(QRegExp(".*tif.*")).join(";;"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	setFile(fileName);
 }
@@ -2550,8 +2583,12 @@ void DkExportTiffDialog::on_saveButton_pressed() {
 	qDebug() << "save triggered...";
 
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		mSaveDirPath);
+	QString dirName = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"),
+		mSaveDirPath,
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (QDir(dirName).exists()) {
 		mSaveDirPath = dirName;
@@ -2919,8 +2956,14 @@ void DkMosaicDialog::createLayout() {
 void DkMosaicDialog::on_openButton_pressed() {
 
 	// load system default open dialog
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
-		mFilePath, DkSettingsManager::param().app().openFilters.join(";;"));
+	QString fileName = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open TIFF"),
+		mFilePath, 
+		DkSettingsManager::param().app().openFilters.join(";;"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	setFile(fileName);
 }
@@ -2929,7 +2972,12 @@ void DkMosaicDialog::on_dbButton_pressed() {
 	qDebug() << "save triggered...";
 
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mSavePath);
+	QString dirName = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"), 
+		mSavePath,
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (QFileInfo(dirName).exists()) {
 		mSavePath = dirName;
@@ -3880,8 +3928,14 @@ void DkArchiveExtractionDialog::checkbocChecked(int) {
 void DkArchiveExtractionDialog::openArchive() {
 
 	// load system default open dialog
-	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Archive"),
-		(mArchivePathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mArchivePathEdit->text(), tr("Archives (%1)").arg(DkSettingsManager::param().app().containerRawFilters.remove(",")));
+	QString filePath = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open Archive"),
+		(mArchivePathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mArchivePathEdit->text(), 
+		tr("Archives (%1)").arg(DkSettingsManager::param().app().containerRawFilters.remove(",")),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (QFileInfo(filePath).exists()) {
 		mArchivePathEdit->setText(filePath);
@@ -3892,8 +3946,12 @@ void DkArchiveExtractionDialog::openArchive() {
 void DkArchiveExtractionDialog::openDir() {
 
 	// load system default open dialog
-	QString filePath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-		(mDirPathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mDirPathEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	QString filePath = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open Directory"),
+		(mDirPathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mDirPathEdit->text(), 
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | DkDialog::fileDialogOptions()
+	);
 
 	if (QFileInfo(filePath).exists())
 		mDirPathEdit->setText(filePath);
@@ -4430,3 +4488,4 @@ bool DkChooseMonitorDialog::showDialog() const {
 }
 
 } // close namespace
+

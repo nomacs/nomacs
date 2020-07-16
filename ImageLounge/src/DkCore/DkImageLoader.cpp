@@ -40,6 +40,7 @@
 #include "DkUtils.h"
 #include "DkStatusBar.h"
 #include "DkActionManager.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -1005,7 +1006,9 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 			QString dirName = QFileDialog::getExistingDirectory(
 				DkUtils::getMainWindow(), 
 				tr("Save Directory"), 
-				getDirPath());
+				getDirPath(),
+				QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+			);
 
 			fInfo = dirName + QDir::separator();
 
@@ -1055,8 +1058,14 @@ void DkImageLoader::saveFileWeb(const QImage& saveImg) {
 	if (saveFileInfo.exists())
 		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + suffix);
 
-	QString fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
-		saveFileInfo.absoluteFilePath(), saveFilterGui);
+	QString fileName = QFileDialog::getSaveFileName(
+		dialogParent, 
+		tr("Save File %1").arg(saveName),
+		saveFileInfo.absoluteFilePath(), 
+		saveFilterGui,
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (fileName.isEmpty())
 		return;
@@ -1113,7 +1122,10 @@ void DkImageLoader::copyUserFile() {
 			dialogParent,
 			tr("Save File %1").arg(saveName),
 			saveName,
-			extension);
+			extension,
+			nullptr,
+			DkDialog::fileDialogOptions()
+		);
 
         if (saveName.isEmpty())
 			return;
@@ -1184,8 +1196,14 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		// note: basename removes the whole file name from the first dot...
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFileInfo.absoluteFilePath() : QFileInfo(saveFileInfo.absoluteDir(), saveName).absoluteFilePath();
 
-		fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
-			savePath, DkSettingsManager::param().app().saveFilters.join(";;"), &selectedFilter);
+		fileName = QFileDialog::getSaveFileName(
+			dialogParent, 
+			tr("Save File %1").arg(saveName),
+			savePath, 
+			DkSettingsManager::param().app().saveFilters.join(";;"), 
+			&selectedFilter,
+			DkDialog::fileDialogOptions()
+		);
 	}
 
 	if (fileName.isEmpty())

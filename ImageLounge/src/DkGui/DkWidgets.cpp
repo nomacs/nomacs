@@ -36,6 +36,7 @@
 #include "DkSettings.h"
 #include "DkStatusBar.h"
 #include "DkActionManager.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
@@ -481,8 +482,13 @@ void DkExplorer::setCurrentPath(const QString& filePath) {
 
 void DkExplorer::browseClicked() {
 
-	QString root = QFileDialog::getExistingDirectory(this, tr("Choose Root Directory"),
-	                                                 rootPath, QFileDialog::ShowDirsOnly);
+	QString root = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Choose Root Directory"),
+	    rootPath, 
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
+	
 	if (root != "")
     setRootPath(root);
 }
@@ -2588,7 +2594,12 @@ void DkDirectoryChooser::createLayout(const QString& dirPath) {
 
 void DkDirectoryChooser::on_dirButton_clicked() {
 
-	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mDirEdit->text());
+	QString dirPath = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"), 
+		mDirEdit->text(),
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (dirPath.isEmpty())
 		return;

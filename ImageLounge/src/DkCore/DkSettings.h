@@ -306,6 +306,7 @@ public:
 	struct Resources {
 		float cacheMemory;
 		float historyMemory;
+		bool nativeDialog;
 		int maxImagesCached;
 		bool waitForLastImg;
 		bool filterRawImages;

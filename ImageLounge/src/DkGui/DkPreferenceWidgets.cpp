@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkSettingsWidget.h"
 #include "DkActionManager.h"
 #include "DkNoMacs.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QVBoxLayout>
@@ -593,7 +594,10 @@ void DkGeneralPreference::on_importSettings_clicked() {
 		DkUtils::getMainWindow(), 
 		tr("Import Settings"),
 		QDir::homePath(), 
-		"Nomacs Settings (*.ini)");
+		"Nomacs Settings (*.ini)",
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	// user canceled?
 	if (filePath.isEmpty())
@@ -610,7 +614,10 @@ void DkGeneralPreference::on_exportSettings_clicked() {
 		DkUtils::getMainWindow(), 
 		tr("Export Settings"),
 		QDir::homePath(), 
-		"Nomacs Settings (*.ini)");
+		"Nomacs Settings (*.ini)",
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	// user canceled?
 	if (filePath.isEmpty())
@@ -1396,6 +1403,15 @@ void DkAdvancedPreference::createLayout() {
 	DkGroupWidget* threadsGroup = new DkGroupWidget(tr("Number of Threads"), this);
 	threadsGroup->addWidget(sbNumThreads);
 
+	// native dialogs
+	QCheckBox* cbNative = new QCheckBox(tr("Enable Native File Dialogs"), this);
+	cbNative->setObjectName("useNative");
+	cbNative->setToolTip(tr("If checked, native system dialogs are used for opening/saving files."));
+	cbNative->setChecked(DkSettingsManager::param().resources().nativeDialog);
+
+	DkGroupWidget* nativeGroup = new DkGroupWidget(tr("Native Dialogs"), this);
+	nativeGroup->addWidget(cbNative);
+
 	// log
 	QCheckBox* cbUseLog = new QCheckBox(tr("Use Log File"), this);
 	cbUseLog->setObjectName("useLog");
@@ -1419,6 +1435,7 @@ void DkAdvancedPreference::createLayout() {
 	layout->addWidget(loadRawGroup);
 	layout->addWidget(loadFileGroup);
 	layout->addWidget(threadsGroup);
+	layout->addWidget(nativeGroup);
 	layout->addWidget(useLogGroup);
 
 }
@@ -1458,6 +1475,13 @@ void DkAdvancedPreference::on_useLog_toggled(bool checked) const {
 	if (DkSettingsManager::param().app().useLogFile != checked) {
 		DkSettingsManager::param().app().useLogFile = checked;
 		emit infoSignal(tr("Please Restart nomacs to apply changes"));
+	}
+}
+
+void DkAdvancedPreference::on_useNative_toggled(bool checked) const {
+
+	if (DkSettingsManager::param().resources().nativeDialog != checked) {
+		DkSettingsManager::param().resources().nativeDialog = checked;
 	}
 }
 

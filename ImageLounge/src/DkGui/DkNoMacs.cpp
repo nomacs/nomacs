@@ -1074,8 +1074,12 @@ void DkNoMacs::thumbsDockAreaChanged() {
 void DkNoMacs::openDir() {
 
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		getTabWidget()->getCurrentDir());
+	QString dirName = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"),
+		getTabWidget()->getCurrentDir(), 
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (dirName.isEmpty())
 		return;
@@ -1090,9 +1094,14 @@ void DkNoMacs::openFile() {
 	openFilters.prepend(tr("All Files (*.*)"));
 
 	// load system default open dialog
-	QStringList filePaths = QFileDialog::getOpenFileNames(this, tr("Open Image"),
-		getTabWidget()->getCurrentDir(), 
-		openFilters.join(";;"));
+	QStringList filePaths = QFileDialog::getOpenFileNames(
+		this,
+		tr("Open Image"),
+		getTabWidget()->getCurrentDir(),
+		openFilters.join(";;"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (filePaths.isEmpty())
 		return;
@@ -1141,9 +1150,14 @@ void DkNoMacs::openFileList() {
 	openFilters.append(tr("All files (*.*)"));
 
 	// load system default open dialog
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+	QString fileName = QFileDialog::getOpenFileName(
+		this, 
+		tr("Open Image"),
 		getTabWidget()->getCurrentDir(),
-		openFilters.join(";;"));
+		openFilters.join(";;"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (fileName.isEmpty())
 		return;
@@ -1172,9 +1186,14 @@ void DkNoMacs::saveFileList() {
 	saveFilters.append(tr("Text file (*.txt)"));
 	saveFilters.append(tr("All files (*.*)"));
 
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Tab List"),
+	QString fileName = QFileDialog::getSaveFileName(
+		this, 
+		tr("Save Tab List"),
 		getTabWidget()->getCurrentDir(),
-		saveFilters.join(";;"));
+		saveFilters.join(";;"),
+		nullptr,
+		DkDialog::fileDialogOptions()
+	);
 
 	if (fileName.isEmpty())
 		return;
