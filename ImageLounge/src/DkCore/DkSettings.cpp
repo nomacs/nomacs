@@ -894,7 +894,7 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.syncAbsoluteTransform = true;
 	sync_p.syncActions = false;
 
-	resources_p.cacheMemory = 0;
+	resources_p.cacheMemory = 256;
 	resources_p.historyMemory = 128;
 	resources_p.nativeDialog = true;
 	resources_p.maxImagesCached = 5;
