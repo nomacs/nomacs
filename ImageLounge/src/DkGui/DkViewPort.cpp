@@ -1057,7 +1057,19 @@ void DkViewPort::loadSvg() {
 	if (!mLoader)
 		return;
 
-	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
+	auto cc = mLoader->getCurrentImage();
+	if (cc) {
+		mSvg = QSharedPointer<QSvgRenderer>(
+			new QSvgRenderer(
+			*cc->getFileBuffer()
+			));
+	}
+	else {
+		mSvg = QSharedPointer<QSvgRenderer>(
+			new QSvgRenderer(
+			mLoader->filePath()
+			));
+	}
 
 	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
 
