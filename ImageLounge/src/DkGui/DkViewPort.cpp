@@ -493,6 +493,8 @@ void DkViewPort::zoomToFit() {
 		zoomTo(zoomLevel);
 	else if (zoomLevel < 1)
 		resetView();
+	else if (zoomLevel == 1 && mLoader && mLoader->hasSvg())
+		resetView();
 }
 
 void DkViewPort::resetView() {
