@@ -2169,7 +2169,7 @@ Uruchom ponownie nomacs i spróbuj jeszcze raz.</translation>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="426"/>
       <source>%1 %2 applied.</source>
-      <translation>%1 zastosowano %2.</translation>
+      <translation>%1 %2 został zastosowany.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="429"/>
@@ -4570,7 +4570,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="580"/>
       <source>This will reset all personal settings!</source>
-      <translation>To zresetuje wszystkie dane osobiste!</translation>
+      <translation>To zresetuje wszystkie ustawienia osobiste!</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="594"/>
@@ -4687,7 +4687,8 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="858"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation>Niestety, nie można pobrać: %1</translation>
+      <translation>Niestety, nie można pobrać:
+%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="923"/>
