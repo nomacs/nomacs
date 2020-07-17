@@ -222,6 +222,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			mac = values[1];
 	}
 
+
 #if _MSC_VER == 1600
 	url = XPx86;	// for WinXP packages
 #elif defined _WIN64
