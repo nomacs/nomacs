@@ -1057,7 +1057,19 @@ void DkViewPort::loadSvg() {
 	if (!mLoader)
 		return;
 
-	mSvg = QSharedPointer<QSvgRenderer>(new QSvgRenderer(mLoader->filePath()));
+	auto cc = mLoader->getCurrentImage();
+	if (cc) {
+		mSvg = QSharedPointer<QSvgRenderer>(
+			new QSvgRenderer(
+			*cc->getFileBuffer()
+			));
+	}
+	else {
+		mSvg = QSharedPointer<QSvgRenderer>(
+			new QSvgRenderer(
+			mLoader->filePath()
+			));
+	}
 
 	connect(mSvg.data(), SIGNAL(repaintNeeded()), this, SLOT(update()));
 
@@ -1222,7 +1234,9 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	if (DkSettingsManager::param().display().showNavigation) {
+	if (DkSettingsManager::param().display().showNavigation &&
+		event->modifiers() == Qt::NoModifier && 
+		event->buttons() == Qt::NoButton) {
 
 		int left = qMin(100, qRound(0.1 * width()));
 		int right = qMax(width()-100, qRound(0.9 * width()));

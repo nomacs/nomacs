@@ -824,8 +824,14 @@ void DkImageContainerT::loadingFinished() {
 	}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
-	if (mFileBuffer && mFileBuffer->size()/(1024.0f*1024.0f) > DkSettingsManager::param().resources().cacheMemory*0.5f)
-		mFileBuffer->clear();
+	if (mFileBuffer) {
+
+		double bs = mFileBuffer->size() / (1024.0f * 1024.0f);
+
+		// if the file buffer is more than 5MB - we check if we need to delete it
+		if (bs > 5 && bs > DkSettingsManager::param().resources().cacheMemory * 0.5f)
+			mFileBuffer->clear();
+	}
 	
 	mLoadState = loaded;
 	emit fileLoadedSignal(true);

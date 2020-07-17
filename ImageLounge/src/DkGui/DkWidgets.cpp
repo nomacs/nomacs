@@ -36,6 +36,7 @@
 #include "DkSettings.h"
 #include "DkStatusBar.h"
 #include "DkActionManager.h"
+#include "DkDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
@@ -400,6 +401,74 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 	return QSortFilterProxyModel::lessThan(left, right);
 }
 
+// -------------------------------------------------------------------- DkBrowseExplorer 
+DkBrowseExplorer::DkBrowseExplorer(
+	const QString& title,
+	QWidget* parent,
+	Qt::WindowFlags flags) : DkExplorer(title, parent, flags) {
+
+	createLayout();
+	readSettings();
+
+	connect(mRootPathBrowseButton, SIGNAL(clicked()), this, SLOT(browseClicked()));
+}
+
+DkBrowseExplorer::~DkBrowseExplorer() {
+
+	writeSettings();
+}
+
+void DkBrowseExplorer::browseClicked() {
+
+	QString root = QFileDialog::getExistingDirectory(
+		this,
+		tr("Choose Root Directory"),
+		mRootPath,
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
+
+	if (root != "")
+		setRootPath(root);
+}
+
+void DkBrowseExplorer::setRootPath(const QString& root) {
+
+	mRootPath = root;
+	mFileTree->setRootIndex(mSortModel->mapFromSource(mFileModel->index(root)));
+	mFileModel->setRootPath(root);
+	mRootPathLabel->setText(root);
+	mRootPathLabel->setToolTip(root);
+}
+
+void DkBrowseExplorer::createLayout() {
+
+	QWidget* rootPathWidget = new QWidget(this);
+	QHBoxLayout* rpLayout = new QHBoxLayout(rootPathWidget);
+	mRootPathLabel = new DkElidedLabel(rootPathWidget, "");
+	mRootPathBrowseButton = new QPushButton(tr("Browse"));
+	rpLayout->setContentsMargins(4, 2, 2, 2);
+	rpLayout->addWidget(mRootPathLabel, 1);
+	rpLayout->addWidget(mRootPathBrowseButton);
+
+	mLayout->insertWidget(0, rootPathWidget);
+}
+
+void DkBrowseExplorer::readSettings() {
+
+	DefaultSettings settings;
+	settings.beginGroup(objectName());
+	setRootPath(settings.value("RootPath", QDir::homePath()).toString());
+	settings.endGroup();
+}
+
+void DkBrowseExplorer::writeSettings() {
+
+	DefaultSettings settings;
+	settings.beginGroup(objectName());
+	settings.setValue("RootPath", mRootPath);
+	settings.endGroup();
+}
+
 // DkExplorer --------------------------------------------------------------------
 DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkDockWidget(title, parent, flags) {
 
@@ -410,15 +479,15 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	// open selected images
 	QAction* selAction = new QAction(tr("Open Image"), this);
 	selAction->setShortcut(Qt::Key_Return);
+	selAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	connect(selAction, SIGNAL(triggered()), this, SLOT(openSelected()));
 	
-	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
-	connect(rootPathBrowseButton, SIGNAL(clicked()), this, SLOT(browseClicked()));
+	connect(mFileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
 	
 	addAction(selAction);
 
 	if (mLoadSelected)
-		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
+		connect(mFileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
 }
 
 DkExplorer::~DkExplorer() {
@@ -429,36 +498,27 @@ DkExplorer::~DkExplorer() {
 
 void DkExplorer::createLayout() {
 
-	fileModel = new DkFileSystemModel(this);
+	mFileModel = new DkFileSystemModel(this);
 	
-	sortModel = new DkSortFileProxyModel(this);
-	sortModel->setSourceModel(fileModel);
-	sortModel->setSortLocaleAware(true);
+	mSortModel = new DkSortFileProxyModel(this);
+	mSortModel->setSourceModel(mFileModel);
+	mSortModel->setSortLocaleAware(true);
 	
-	fileTree = new QTreeView(this);
-	fileTree->setSortingEnabled(true);
-	fileTree->setModel(sortModel);
-	fileTree->setDragEnabled(true);
-	fileTree->setAcceptDrops(true);
+	mFileTree = new QTreeView(this);
+	mFileTree->setSortingEnabled(true);
+	mFileTree->setModel(mSortModel);
+	mFileTree->setDragEnabled(true);
+	mFileTree->setAcceptDrops(true);
 
 	// by default descendingOrder is set
-	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
-	fileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-	QWidget* rootPathWidget = new QWidget(this);
-	QHBoxLayout* rpLayout = new QHBoxLayout(rootPathWidget);
-	rootPathLabel = new DkElidedLabel(rootPathWidget, "");
-	rootPathBrowseButton = new QPushButton(tr("Browse"));
-	rpLayout->setContentsMargins(4, 2, 2, 2);
-	rpLayout->addWidget(rootPathLabel, 1);
-	rpLayout->addWidget(rootPathBrowseButton);
+	mFileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
+	mFileTree->header()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
 	QWidget* widget = new QWidget(this);
-	QVBoxLayout* layout = new QVBoxLayout(widget);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
-	layout->addWidget(rootPathWidget);
-	layout->addWidget(fileTree);
+	mLayout = new QVBoxLayout(widget);
+	mLayout->setContentsMargins(0, 0, 0, 0);
+	mLayout->setSpacing(0);
+	mLayout->addWidget(mFileTree);
 	setWidget(widget);
 }
 
@@ -474,31 +534,14 @@ void DkExplorer::setCurrentPath(const QString& filePath) {
 
 	// expand folders
 	if (QFileInfo(filePath).isDir())
-		fileTree->expand(sortModel->mapFromSource(fileModel->index(filePath)));
+		mFileTree->expand(mSortModel->mapFromSource(mFileModel->index(filePath)));
 
-	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(filePath)));
-}
-
-void DkExplorer::browseClicked() {
-
-	QString root = QFileDialog::getExistingDirectory(this, tr("Choose Root Directory"),
-	                                                 rootPath, QFileDialog::ShowDirsOnly);
-	if (root != "")
-    setRootPath(root);
-}
-
-void DkExplorer::setRootPath(const QString &root) {
-
-	rootPath = root;
-	fileTree->setRootIndex(sortModel->mapFromSource(fileModel->index(root)));
-	fileModel->setRootPath(root);
-	rootPathLabel->setText(root);
-	rootPathLabel->setToolTip(root);
+	mFileTree->setCurrentIndex(mSortModel->mapFromSource(mFileModel->index(filePath)));
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const {
 
-	QFileInfo cFile = fileModel->fileInfo(sortModel->mapToSource(index));
+	QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
 
 	qDebug() << "opening: " << cFile.absoluteFilePath();
 
@@ -515,7 +558,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 	// enable editing
 	QAction* editAction = new QAction(tr("Editable"), this);
 	editAction->setCheckable(true);
-	editAction->setChecked(!fileModel->isReadOnly());
+	editAction->setChecked(!mFileModel->isReadOnly());
 	connect(editAction, SIGNAL(triggered(bool)), this, SLOT(setEditable(bool)));
 
 	// open selected images
@@ -535,17 +578,17 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 	cm->addAction(sizeAction);
 	cm->addSeparator();
 
-	columnActions.clear();	// quick&dirty
+	mColumnActions.clear();	// quick&dirty
 
-	for (int idx = 0; idx < fileModel->columnCount(); idx++) {
+	for (int idx = 0; idx < mFileModel->columnCount(); idx++) {
 
-		QAction* action = new QAction(fileModel->headerData(idx, Qt::Horizontal).toString(), this);
+		QAction* action = new QAction(mFileModel->headerData(idx, Qt::Horizontal).toString(), this);
 		action->setCheckable(true);
-		action->setChecked(!fileTree->isColumnHidden(idx));
+		action->setChecked(!mFileTree->isColumnHidden(idx));
 		action->setObjectName(QString::number(idx));
 
 		connect(action, SIGNAL(toggled(bool)), this, SLOT(showColumn(bool)));
-		columnActions.push_back(action);
+		mColumnActions.push_back(action);
 
 		cm->addAction(action);
 	}
@@ -561,7 +604,7 @@ void DkExplorer::showColumn(bool show) {
 	if (!ok)
 		return;
 
-	fileTree->setColumnHidden(idx, !show);
+	mFileTree->setColumnHidden(idx, !show);
 }
 
 void DkExplorer::loadSelectedToggled(bool checked) {
@@ -569,15 +612,15 @@ void DkExplorer::loadSelectedToggled(bool checked) {
 	mLoadSelected = checked;
 
 	if (mLoadSelected)
-		connect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
+		connect(mFileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)), Qt::UniqueConnection);
 	else
-		disconnect(fileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+		disconnect(mFileTree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
 }
 
 void DkExplorer::openSelected() {
 	
-	auto index = fileTree->selectionModel()->currentIndex();
-	QFileInfo cFile = fileModel->fileInfo(sortModel->mapToSource(index));
+	auto index = mFileTree->selectionModel()->currentIndex();
+	QFileInfo cFile = mFileModel->fileInfo(mSortModel->mapToSource(index));
 	qDebug() << "opening: " << cFile.absoluteFilePath();
 
 	if (DkUtils::isValid(cFile))
@@ -588,13 +631,13 @@ void DkExplorer::openSelected() {
 }
 
 void DkExplorer::setEditable(bool editable) {
-	fileModel->setReadOnly(!editable);	
+	mFileModel->setReadOnly(!editable);	
 }
 
 void DkExplorer::adjustColumnWidth() {
 
-	for (int idx = 0; idx < fileTree->model()->columnCount(); idx++)
-		fileTree->resizeColumnToContents(idx);
+	for (int idx = 0; idx < mFileTree->model()->columnCount(); idx++)
+		mFileTree->resizeColumnToContents(idx);
 	qDebug() << "size adjusted...";
 }
 
@@ -609,15 +652,14 @@ void DkExplorer::writeSettings() {
 	DefaultSettings settings;
 	settings.beginGroup(objectName());
 	
-	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
-		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
-		settings.setValue(headerVal + "Size", fileTree->columnWidth(idx));
-		settings.setValue(headerVal + "Hidden", fileTree->isColumnHidden(idx));
+	for (int idx = 0; idx < mFileModel->columnCount(QModelIndex()); idx++) {
+		QString headerVal = mFileModel->headerData(idx, Qt::Horizontal).toString();
+		settings.setValue(headerVal + "Size", mFileTree->columnWidth(idx));
+		settings.setValue(headerVal + "Hidden", mFileTree->isColumnHidden(idx));
 	}
 
 	settings.setValue("LoadSelected", mLoadSelected);
-	settings.setValue("ReadOnly", fileModel->isReadOnly());
-	settings.setValue("RootPath", rootPath);
+	settings.setValue("ReadOnly", mFileModel->isReadOnly());
 	settings.endGroup();
 }
 
@@ -626,21 +668,20 @@ void DkExplorer::readSettings() {
 	DefaultSettings settings;
 	settings.beginGroup(objectName());
 
-	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
+	for (int idx = 0; idx < mFileModel->columnCount(QModelIndex()); idx++) {
 		
-		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
+		QString headerVal = mFileModel->headerData(idx, Qt::Horizontal).toString();
 		
 		int colWidth = settings.value(headerVal + "Size", -1).toInt();
 		if (colWidth != -1) 
-			fileTree->setColumnWidth(idx, colWidth);
+			mFileTree->setColumnWidth(idx, colWidth);
 
 		bool showCol = idx != 0;	// by default, show the first column only
-		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
+		mFileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
 
 	mLoadSelected = settings.value("LoadSelected", mLoadSelected).toBool();
-	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
-	setRootPath(settings.value("RootPath", QDir::homePath()).toString());
+	mFileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
 	settings.endGroup();
 }
 
@@ -2588,7 +2629,12 @@ void DkDirectoryChooser::createLayout(const QString& dirPath) {
 
 void DkDirectoryChooser::on_dirButton_clicked() {
 
-	QString dirPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mDirEdit->text());
+	QString dirPath = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"), 
+		mDirEdit->text(),
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (dirPath.isEmpty())
 		return;
@@ -3085,3 +3131,4 @@ void DkDisplayWidget::updateLayout() {
 
 
 }
+

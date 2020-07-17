@@ -36,6 +36,7 @@
 #include <QDialog>
 #include <QDir>
 #include <QFutureWatcher>
+#include <QFileDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBasicLoader.h"
@@ -70,6 +71,11 @@ class DkThumbNail;
 class DkAppManager;
 class DkDisplayWidget;
 class DkCentralWidget;
+
+namespace DkDialog {
+	QFileDialog::Options fileDialogOptions();
+};
+
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590

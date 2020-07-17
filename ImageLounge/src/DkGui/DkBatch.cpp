@@ -359,8 +359,8 @@ void DkBatchInput::createLayout() {
 
 	// tab widget
 	mInputTabs = new QTabWidget(this);
-	mInputTabs->addTab(mThumbScrollWidget,  QIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
-	mInputTabs->addTab(mInputTextEdit, QIcon(":/nomacs/img/bars.svg"), tr("File List"));
+	mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
+	mInputTabs->addTab(mInputTextEdit, DkImage::loadIcon(":/nomacs/img/bars.svg"), tr("File List"));
 
 	QGridLayout* widgetLayout = new QGridLayout(this);
 	widgetLayout->setContentsMargins(0, 0, 0, 0);
@@ -410,8 +410,12 @@ void DkBatchInput::setVisible(bool visible) {
 void DkBatchInput::browse() {
 
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		mCDirPath);
+	QString dirName = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"),
+		mCDirPath,
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (dirName.isEmpty())
 		return;
@@ -876,8 +880,12 @@ void DkBatchOutput::browse() {
 	QString dirGuess = (mOutputlineEdit->text().isEmpty()) ? mInputDirectory : mOutputlineEdit->text();
 	
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		dirGuess);
+	QString dirName = QFileDialog::getExistingDirectory(
+		this, 
+		tr("Open an Image Directory"),
+		dirGuess,
+		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
+	);
 
 	if (dirName.isEmpty())
 		return;
@@ -1412,10 +1420,14 @@ void DkProfileWidget::exportCurrentProfile() {
 		QDir::separator() + currentProfile() +
 		"." + DkBatchProfile::extension();
 
-	QString sPath = QFileDialog::getSaveFileName(this, 
+	QString sPath = QFileDialog::getSaveFileName(
+		this, 
 		tr("Export Batch Profile"), 
 		expPath,
-		tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()));
+		tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()),
+		nullptr,
+		DkDialog::fileDialogOptions()
+		);
 
 	emit saveProfileSignal(sPath);
 }

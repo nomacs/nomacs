@@ -983,7 +983,8 @@ void DkCentralWidget::switchWidget(int widget) {
 
 void DkCentralWidget::switchWidget(QWidget* widget) {
 
-	if (mViewLayout->currentWidget() == widget)
+	if (mViewLayout->currentWidget() == widget && 
+		mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
 		return;
 
 	if (widget)
@@ -1387,8 +1388,16 @@ bool DkCentralWidget::loadCascadeTrainingFiles(QList<QUrl> urls) {
             vecFiles.append(urls.at(idx).toLocalFile());
 
         // ask user for filename
-        QString sPath(QFileDialog::getSaveFileName(this, tr("Save File"),
-            QFileInfo(vecFiles.first()).absolutePath(), "Cascade Training File (*.vec)"));
+        QString sPath(
+			QFileDialog::getSaveFileName(
+				this, 
+				tr("Save File"),
+				QFileInfo(vecFiles.first()).absolutePath(), 
+				"Cascade Training File (*.vec)",
+				nullptr,
+				DkDialog::fileDialogOptions()
+			)
+		);
 
         DkBasicLoader loader;
         int numFiles = loader.mergeVecFiles(vecFiles, sPath);

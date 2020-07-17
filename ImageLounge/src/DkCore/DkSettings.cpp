@@ -213,6 +213,9 @@ void DkSettings::initFileFilters() {
 
 	app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
 
+    // exif filter as reported in #518 - afaik this is not a standard (typically it contains jpg/tiff)
+    app_p.openFilters.append("EXIF (*.exif)");
+
 	// finally: fabians filter & OpenCV vecs
 	app_p.openFilters.append("OpenCV Haar Training (*.vec)");
 	app_p.openFilters.append("Rohkost (*.roh)");
@@ -465,6 +468,7 @@ void DkSettings::load(QSettings& settings, bool defaults) {
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
 	resources_p.historyMemory = settings.value("historyMemory", resources_p.historyMemory).toFloat();
+	resources_p.nativeDialog = settings.value("nativeDialog", resources_p.nativeDialog).toBool();
 	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toInt();
 	resources_p.waitForLastImg = settings.value("waitForLastImg", resources_p.waitForLastImg).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
@@ -742,6 +746,8 @@ void DkSettings::save(QSettings& settings, bool force) {
 		settings.setValue("cacheMemory", resources_p.cacheMemory);
 	if (force ||resources_p.historyMemory != resources_d.historyMemory)
 		settings.setValue("historyMemory", resources_p.historyMemory);
+	if (force || resources_p.nativeDialog != resources_d.nativeDialog)
+		settings.setValue("nativeDialog", resources_p.nativeDialog);
 	if (force ||resources_p.maxImagesCached != resources_d.maxImagesCached)
 		settings.setValue("maxImagesCached", resources_p.maxImagesCached);
 	if (force ||resources_p.waitForLastImg != resources_d.waitForLastImg)
@@ -891,8 +897,9 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.syncAbsoluteTransform = true;
 	sync_p.syncActions = false;
 
-	resources_p.cacheMemory = 0;
+	resources_p.cacheMemory = 256;
 	resources_p.historyMemory = 128;
+	resources_p.nativeDialog = true;
 	resources_p.maxImagesCached = 5;
 	resources_p.filterRawImages = true;
 	resources_p.loadRawThumb = raw_thumb_always;
@@ -948,7 +955,6 @@ void DkSettings::setNumThreads(int numThreads) {
 		global_p.numThreads = numThreads;
 		QThreadPool::globalInstance()->setMaxThreadCount(numThreads);
 	}
-
 }
 
 bool DkSettings::isPortable() {
