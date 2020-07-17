@@ -213,6 +213,9 @@ void DkSettings::initFileFilters() {
 
 	app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
 
+    // exif filter as reported in #518 - afaik this is not a standard (typically it contains jpg/tiff)
+    app_p.openFilters.append("EXIF (*.exif)");
+
 	// finally: fabians filter & OpenCV vecs
 	app_p.openFilters.append("OpenCV Haar Training (*.vec)");
 	app_p.openFilters.append("Rohkost (*.roh)");
