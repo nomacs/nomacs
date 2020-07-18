@@ -28,8 +28,12 @@
 
 #include "DkCropWidgets.h"
 
+#include "DkSettings.h"
+
 #pragma warning(push, 0)	// no warnings from includes
-// Qt Includes
+#include <QPainter>
+#include <QPainterPath>
+#include <QDebug>
 #pragma warning(pop)
 
 namespace nmc {
@@ -37,12 +41,78 @@ namespace nmc {
 // DkCropWidget --------------------------------------------------------------------
 DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkFadeWidget(parent, f) {
 
+	mPen = Qt::NoPen;
+	mBrush = QColor(0, 0, 0, 200);
 }
 
 void DkCropWidget::mouseDoubleClickEvent(QMouseEvent* ev) {
 
     crop();
     QWidget::mouseDoubleClickEvent(ev);
+}
+
+void DkCropWidget::paintEvent(QPaintEvent* pe) {
+
+	// create path
+	QPainterPath path;
+	QRect canvas = geometry();
+	path.addRect(canvas);
+
+	QRectF crop = mCropArea.cropViewRect();
+	path.addRect(crop);
+
+	// now draw
+	QPainter painter(this);
+
+	painter.setPen(mPen);
+	painter.setBrush(mBrush);
+	painter.drawPath(path);
+
+	// draw corners
+	int r = 4;
+	painter.setBrush(QColor(255, 255, 255));
+	painter.drawEllipse(crop.topLeft(), r, r);
+	painter.drawEllipse(crop.topRight(), r, r);
+	painter.drawEllipse(crop.bottomLeft(), r, r);
+	painter.drawEllipse(crop.bottomRight(), r, r);
+
+	//drawGuide(&painter, p, mPaintMode);
+
+	//// debug
+	//painter.drawPoint(mRect.getCenter());
+
+	// this changes the painter -> do it at the end
+	if (!mRect.isEmpty()) {
+
+		//for (int idx = 0; idx < mCtrlPoints.size(); idx++) {
+
+		//	QPointF cp;
+
+		//	if (idx < 4) {
+		//		QPointF c = p[idx];
+		//		cp = c - mCtrlPoints[idx]->getCenter();
+		//	}
+		//	// paint control points in the middle of the edge
+		//	else if (idx >= 4) {
+		//		QPointF s = mCtrlPoints[idx]->getCenter();
+
+		//		QPointF lp = p[idx % 4];
+		//		QPointF rp = p[(idx + 1) % 4];
+
+		//		QVector2D lv = QVector2D(lp - s);
+		//		QVector2D rv = QVector2D(rp - s);
+
+		//		cp = (lv + 0.5 * (rv - lv)).toPointF();
+		//	}
+
+		//	mCtrlPoints[idx]->move(qRound(cp.x()), qRound(cp.y()));
+		//	mCtrlPoints[idx]->draw(&painter);
+		//}
+	}
+
+	painter.end();
+
+	QWidget::paintEvent(pe);
 }
 
 void DkCropWidget::crop(bool cropToMetadata) {
@@ -71,7 +141,7 @@ void DkCropWidget::setImageRect(const QRectF* rect) {
 
 void DkCropWidget::setVisible(bool visible) {
 
-    QWidget::setVisible(visible);
+    DkFadeWidget::setVisible(visible);
 }
 
 void DkCropArea::setWorldMatrix(const QTransform* matrix) {
@@ -84,6 +154,21 @@ void DkCropArea::setImageMatrix(const QTransform* matrix) {
 
 void DkCropArea::setImageRect(const QRectF* rect) {
     mImgViewRect = rect;
+}
+
+QRectF DkCropArea::cropViewRect() const {
+	
+	Q_ASSERT(mImgViewRect != nullptr);
+	Q_ASSERT(mImgMatrix != nullptr);
+	Q_ASSERT(mWorldMatrix != nullptr);
+
+	// TODO: use updated rect here...
+	QRectF rect = *mImgViewRect;
+	
+	//rect = mImgMatrix->mapRect(rect);
+	rect = mWorldMatrix->mapRect(rect);
+	
+	return rect;
 }
 
 }

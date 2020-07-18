@@ -28,8 +28,11 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes
 #include "DkBaseWidgets.h"
+
+#pragma warning(push, 0)	// no warnings from includes
+#include <QPen>
+#include <QBrush>
 #pragma warning(pop)
 
 #ifndef DllExport
@@ -54,6 +57,8 @@ public:
     void setWorldMatrix(const QTransform* matrix);
     void setImageMatrix(const QTransform* matrix);
     void setImageRect(const QRectF* rect);
+
+    QRectF cropViewRect() const;
 
 private:
     const QTransform* mWorldMatrix = nullptr;
@@ -84,6 +89,10 @@ signals:
 protected:
     void mouseDoubleClickEvent(QMouseEvent* ev) override;
 
+    void paintEvent(QPaintEvent* pe) override;
+
+    QPen mPen;
+    QBrush mBrush;
 
     DkCropArea mCropArea;
     QRectF mRect; // TODO: remove?

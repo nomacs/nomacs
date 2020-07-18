@@ -741,7 +741,6 @@ void DkControlWidget::settingsChanged() {
 void DkControlWidget::setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
 
 	mZoomWidget->getOverview()->setTransforms(worldMatrix, imgMatrix);
-
 	mCropWidget->setTransforms(worldMatrix, imgMatrix);
 }
 
