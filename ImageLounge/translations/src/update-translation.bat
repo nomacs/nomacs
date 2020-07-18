@@ -1,4 +1,4 @@
-set lupdatePath="C:\Qt\Qt-5.14.1\bin\lupdate.exe"
+set lupdatePath="C:\Qt\5.14.2\msvc2017_64\bin\lupdate.exe"
 
 %lupdatePath%  ..\..\src\ -no-obsolete -ts nomacs.ts
 
