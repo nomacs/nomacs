@@ -109,10 +109,8 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 		setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	}
 
-	mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
-	mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
-	mController->getCropWidget()->setImageTransform(&mImgMatrix);
-	mController->getCropWidget()->setImageRect(&mImgViewRect);
+	mController->setTransforms(&mWorldMatrix, &mImgMatrix);
+	mController->setImageRect(&mImgViewRect);
 
 	// this must be initialized after mController to be above it
 	mNavigationWidget = new DkHudNavigation(this);
