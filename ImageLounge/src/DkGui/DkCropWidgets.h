@@ -67,6 +67,27 @@ private:
 
 };
 
+class DkCropStyle {
+
+public:
+
+    DkCropStyle(
+        const QColor& dark = QColor(0, 0, 0), 
+        const QColor& light = QColor(255, 255, 255));
+
+    QBrush bgBrush() const;
+    QPen pen() const;
+
+    QColor lightColor() const;
+    
+private:
+    QColor mDarkColor;
+    QColor mLightColor;
+    int mLineWidth = 2;
+    double mOpacity = 0.8;
+
+};
+
 class DkCropWidget : public DkFadeWidget {
     Q_OBJECT
 
@@ -91,8 +112,7 @@ protected:
 
     void paintEvent(QPaintEvent* pe) override;
 
-    QPen mPen;
-    QBrush mBrush;
+    DkCropStyle mStyle;
 
     DkCropArea mCropArea;
     QRectF mRect; // TODO: remove?

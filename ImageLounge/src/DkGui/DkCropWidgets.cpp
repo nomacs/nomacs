@@ -41,8 +41,6 @@ namespace nmc {
 // DkCropWidget --------------------------------------------------------------------
 DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkFadeWidget(parent, f) {
 
-	mPen = Qt::NoPen;
-	mBrush = QColor(0, 0, 0, 200);
 }
 
 void DkCropWidget::mouseDoubleClickEvent(QMouseEvent* ev) {
@@ -64,17 +62,38 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	// now draw
 	QPainter painter(this);
 
-	painter.setPen(mPen);
-	painter.setBrush(mBrush);
+	painter.setPen(mStyle.pen());
+	painter.setBrush(mStyle.bgBrush());
+	painter.setRenderHint(QPainter::Antialiasing);
+
 	painter.drawPath(path);
+
+	auto drawGuides = [&](int N = 3) {
+
+		for (int idx = 0; idx < N; idx++) {
+
+			// vertical lines
+			double l = crop.left() + crop.width() / N * idx;
+			QLineF line(QPointF(l, crop.top()), QPointF(l, crop.bottom()));
+			painter.drawLine(line);
+
+			// horizontal lines
+			l = crop.top() + crop.height() / N * idx;
+			line = QLineF(QPointF(crop.left(), l), QPointF(crop.right(), l));
+			painter.drawLine(line);
+		}
+	};
+
+	drawGuides();
 
 	// draw corners
 	int r = 4;
-	painter.setBrush(QColor(255, 255, 255));
+	painter.setBrush(mStyle.lightColor());
 	painter.drawEllipse(crop.topLeft(), r, r);
 	painter.drawEllipse(crop.topRight(), r, r);
 	painter.drawEllipse(crop.bottomLeft(), r, r);
 	painter.drawEllipse(crop.bottomRight(), r, r);
+
 
 	//drawGuide(&painter, p, mPaintMode);
 
@@ -169,6 +188,33 @@ QRectF DkCropArea::cropViewRect() const {
 	rect = mWorldMatrix->mapRect(rect);
 	
 	return rect;
+}
+
+// -------------------------------------------------------------------- DkCropStyle 
+DkCropStyle::DkCropStyle(const QColor& dark, const QColor& light) {
+
+	mDarkColor = dark;
+	mLightColor = light;
+}
+
+QBrush DkCropStyle::bgBrush() const {
+
+	QColor bb = mDarkColor;
+	bb.setAlpha(qRound(mOpacity * 255));
+
+	return bb;
+}
+
+QColor DkCropStyle::lightColor() const {
+	return mLightColor;
+}
+
+QPen DkCropStyle::pen() const {
+
+	QPen p(mLightColor, mLineWidth);
+	p.setCosmetic(true);
+
+	return p;
 }
 
 }
