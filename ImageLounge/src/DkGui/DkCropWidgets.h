@@ -77,6 +77,7 @@ public:
 
     QBrush bgBrush() const;
     QPen pen() const;
+    QPen cornerPen() const;
 
     QColor lightColor() const;
     

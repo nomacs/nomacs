@@ -73,6 +73,7 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 
 	painter.drawPath(path);
 
+	// draw guides
 	auto drawGuides = [&](int N = 3) {
 
 		for (int idx = 0; idx < N; idx++) {
@@ -89,15 +90,39 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 		}
 	};
 
-	drawGuides();
+	// highlight rectangle's corner
+	auto drawCorners = [&](const QRectF& r, double width = 30) {
 
-	// draw corners
-	int r = 4;
-	painter.setBrush(mStyle.lightColor());
-	painter.drawEllipse(crop.topLeft(), r, r);
-	painter.drawEllipse(crop.topRight(), r, r);
-	painter.drawEllipse(crop.bottomLeft(), r, r);
-	painter.drawEllipse(crop.bottomRight(), r, r);
+		painter.setPen(mStyle.cornerPen());
+
+		QPointF p = r.topLeft();
+		painter.drawLine(p, QPointF(p.x() + width, p.y()));
+		painter.drawLine(p, QPointF(p.x(), p.y() + width));
+
+		p = r.topRight();
+		painter.drawLine(p, QPointF(p.x() - width, p.y()));
+		painter.drawLine(p, QPointF(p.x(), p.y() + width));
+
+		p = r.bottomRight();
+		painter.drawLine(p, QPointF(p.x() - width, p.y()));
+		painter.drawLine(p, QPointF(p.x(), p.y() - width));
+
+		p = r.bottomLeft();
+		painter.drawLine(p, QPointF(p.x() + width, p.y()));
+		painter.drawLine(p, QPointF(p.x(), p.y() - width));
+	};
+
+
+	// draw decorations
+	drawGuides();
+	drawCorners(crop);
+	
+	//int r = 4;
+	//painter.setBrush(mStyle.lightColor());
+	//painter.drawEllipse(crop.topLeft(), r, r);
+	//painter.drawEllipse(crop.topRight(), r, r);
+	//painter.drawEllipse(crop.bottomLeft(), r, r);
+	//painter.drawEllipse(crop.bottomRight(), r, r);
 
 
 	//drawGuide(&painter, p, mPaintMode);
@@ -217,6 +242,14 @@ QColor DkCropStyle::lightColor() const {
 QPen DkCropStyle::pen() const {
 
 	QPen p(mLightColor, mLineWidth);
+	p.setCosmetic(true);
+
+	return p;
+}
+
+QPen DkCropStyle::cornerPen() const {
+
+	QPen p(mLightColor, mLineWidth*2);
 	p.setCosmetic(true);
 
 	return p;
