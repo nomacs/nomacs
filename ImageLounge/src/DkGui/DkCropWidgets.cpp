@@ -53,13 +53,18 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 
 	// create path
 	QPainterPath path;
-	QRect canvas = geometry();
+	QRect canvas(
+		geometry().x() - mStyle.pen().width(),
+		geometry().y() - mStyle.pen().width(),
+		geometry().width() + 2*mStyle.pen().width(),
+		geometry().height() + 2*mStyle.pen().width()
+		);
 	path.addRect(canvas);
 
 	QRectF crop = mCropArea.cropViewRect();
 	path.addRect(crop);
 
-	// now draw
+	// init painter
 	QPainter painter(this);
 
 	painter.setPen(mStyle.pen());

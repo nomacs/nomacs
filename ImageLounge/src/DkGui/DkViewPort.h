@@ -132,7 +132,7 @@ public slots:
 	void rotate180();
 	void resizeImage();
 	void deleteImage();
-	void zoomToFit();
+	void zoomToFit(double margin = 0);
 	void resizeEvent(QResizeEvent* event) override;
 	void toggleResetMatrix();
 	void zoomTo(double zoomLevel);

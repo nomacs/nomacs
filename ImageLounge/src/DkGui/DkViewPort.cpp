@@ -481,13 +481,13 @@ void DkViewPort::zoomTo(double zoomLevel) {
 	zoom(zoomLevel/mImgMatrix.m11());
 }
 
-void DkViewPort::zoomToFit() {
+void DkViewPort::zoomToFit(double margin) {
 
 	QSizeF imgSize = getImageSize();
 	QSizeF winSize = size();
-	double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+	double zoomLevel = qMin((winSize.width() - margin) / imgSize.width(), (winSize.height() - margin) / imgSize.height());
 
-	if (zoomLevel > 1)
+	if (zoomLevel > 1 || margin != 0)
 		zoomTo(zoomLevel);
 	else if (zoomLevel < 1)
 		resetView();
