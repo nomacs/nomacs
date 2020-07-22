@@ -54,17 +54,47 @@ namespace nmc {
 class DkCropArea {
 
 public:
+    enum Handle : int {
+
+        h_no_handle = 0,
+        h_top_left,
+        h_top_right,
+        h_bottom_right,
+        h_bottom_left,
+        h_top,
+        h_bottom,
+        h_left,
+        h_right,
+        h_move,
+
+        h_end
+    };
+
     void setWorldMatrix(const QTransform* matrix);
     void setImageMatrix(const QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
     QRectF cropViewRect() const;
 
+    void updateHandle(const QPoint& pos);
+    void resetHandle();
+    QCursor cursor(const QPoint& pos) const;
+    Handle currentHandle() const;
+
+    void update(const QPoint& pos);
+    void move(const QPoint& dxy);
+
 private:
     const QTransform* mWorldMatrix = nullptr;
     const QTransform* mImgMatrix = nullptr;
     const QRectF* mImgViewRect = nullptr;
 
+    // the crop rect is kept in image coordinates
+    mutable QRectF mCropRect;
+    DkCropArea::Handle mCurrentHandle = Handle::h_no_handle;
+
+    Handle getHandle(const QPoint& pos, int proximity = 15) const;
+    QPointF mapToImage(const QPoint& pos) const;
 };
 
 class DkCropStyle {
@@ -110,6 +140,9 @@ signals:
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent* ev) override;
+    void mouseMoveEvent(QMouseEvent* ev) override;
+    void mousePressEvent(QMouseEvent* ev) override;
+    void mouseReleaseEvent(QMouseEvent* ev) override;
 
     void paintEvent(QPaintEvent* pe) override;
 
@@ -117,6 +150,7 @@ protected:
 
     DkCropArea mCropArea;
     QRectF mRect; // TODO: remove?
+    QPoint mLastMousePos;
 };
 
 }

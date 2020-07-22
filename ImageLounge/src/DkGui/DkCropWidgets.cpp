@@ -34,6 +34,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QDebug>
+#include <QMouseEvent>
 #pragma warning(pop)
 
 namespace nmc {
@@ -47,6 +48,47 @@ void DkCropWidget::mouseDoubleClickEvent(QMouseEvent* ev) {
 
     crop();
     QWidget::mouseDoubleClickEvent(ev);
+}
+
+void DkCropWidget::mouseMoveEvent(QMouseEvent* ev) {
+
+	QCursor c = mCropArea.cursor(ev->pos());
+	setCursor(c);
+
+	if (ev->buttons() & Qt::LeftButton) {
+
+		if (mCropArea.currentHandle() == DkCropArea::h_move)
+			mCropArea.move(mLastMousePos - ev->pos());
+		else
+			mCropArea.update(ev->pos());
+
+		update();
+
+		mLastMousePos = ev->pos();
+	}
+
+	// do not propagate
+	//DkFadeWidget::mouseMoveEvent(ev);
+}
+
+void DkCropWidget::mousePressEvent(QMouseEvent* ev) {
+
+	mLastMousePos = ev->pos();
+	mCropArea.updateHandle(ev->pos());
+	
+	if (mCropArea.currentHandle() == DkCropArea::h_move)
+		setCursor(Qt::ClosedHandCursor);
+
+	// do not propagate
+	//DkFadeWidget::mousePressEvent(ev);
+}
+
+void DkCropWidget::mouseReleaseEvent(QMouseEvent*) {
+
+	mCropArea.resetHandle();
+
+	// do not propagate
+	//DkFadeWidget::mouseReleaseEvent(ev);
 }
 
 void DkCropWidget::paintEvent(QPaintEvent* pe) {
@@ -112,24 +154,10 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 		painter.drawLine(p, QPointF(p.x(), p.y() - width));
 	};
 
-
 	// draw decorations
 	drawGuides();
 	drawCorners(crop);
 	
-	//int r = 4;
-	//painter.setBrush(mStyle.lightColor());
-	//painter.drawEllipse(crop.topLeft(), r, r);
-	//painter.drawEllipse(crop.topRight(), r, r);
-	//painter.drawEllipse(crop.bottomLeft(), r, r);
-	//painter.drawEllipse(crop.bottomRight(), r, r);
-
-
-	//drawGuide(&painter, p, mPaintMode);
-
-	//// debug
-	//painter.drawPoint(mRect.getCenter());
-
 	// this changes the painter -> do it at the end
 	if (!mRect.isEmpty()) {
 
@@ -207,17 +235,131 @@ void DkCropArea::setImageRect(const QRectF* rect) {
 
 QRectF DkCropArea::cropViewRect() const {
 	
-	Q_ASSERT(mImgViewRect != nullptr);
-	Q_ASSERT(mImgMatrix != nullptr);
-	Q_ASSERT(mWorldMatrix != nullptr);
+	// init the crop rect
+	if (mCropRect.isNull()) {
 
-	// TODO: use updated rect here...
-	QRectF rect = *mImgViewRect;
+		Q_ASSERT(mImgViewRect != nullptr);
+		mCropRect = *mImgViewRect;
+	}
+
+	Q_ASSERT(mWorldMatrix);
+	return mWorldMatrix->mapRect(mCropRect);
+}
+
+DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const {
 	
-	//rect = mImgMatrix->mapRect(rect);
-	rect = mWorldMatrix->mapRect(rect);
+	if (mCurrentHandle != h_no_handle)
+		return mCurrentHandle;
+
+	int pxs = proximity * proximity;
+	QRect r = cropViewRect().toRect();
+
+	// squared euclidean distance
+	auto dist = [](const QPoint& p1, const QPoint& p2) {
+
+		int dx = p1.x() - p2.x();
+		int dy = p1.y() - p2.y();
+
+		return dx * dx + dy * dy;
+	};
+
+	if (dist(r.topLeft(), pos) < pxs)
+		return Handle::h_top_left;
+	else if (dist(r.bottomRight(), pos) < pxs)
+		return Handle::h_bottom_right;
+	else if (dist(r.topRight(), pos) < pxs)
+		return Handle::h_top_right;
+	else if (dist(r.bottomLeft(), pos) < pxs)
+		return Handle::h_bottom_left;
+	else if (qAbs(r.left() - pos.x()) < proximity)
+		return Handle::h_left;
+	else if (qAbs(r.right() - pos.x()) < proximity)
+		return Handle::h_right;
+	else if (qAbs(r.top() - pos.y()) < proximity)
+		return Handle::h_top;
+	else if (qAbs(r.bottom() - pos.y()) < proximity)
+		return Handle::h_bottom;
+	else if (r.contains(pos))
+		return Handle::h_move;
+
+	return Handle::h_no_handle;
+}
+
+QPointF DkCropArea::mapToImage(const QPoint& pos) const {
+	Q_ASSERT(mWorldMatrix);
+	return mWorldMatrix->inverted().map(pos);
+}
+
+void DkCropArea::updateHandle(const QPoint& pos) {
+
+	mCurrentHandle = getHandle(pos);
+}
+
+void DkCropArea::resetHandle() {
+	mCurrentHandle = h_no_handle;
+}
+
+QCursor DkCropArea::cursor(const QPoint& pos) const {
 	
-	return rect;
+	Handle h = getHandle(pos);
+
+	if (h == h_top_left ||
+		h == h_bottom_right) {
+		return Qt::SizeFDiagCursor;
+	}
+	else if (h == h_top_right ||
+		h == h_bottom_left) {
+		return Qt::SizeBDiagCursor;
+	}
+	else if (h == h_left ||
+		h == h_right) {
+		return Qt::SizeHorCursor;
+	}
+	else if (h == h_top ||
+		h == h_bottom) {
+		return Qt::SizeVerCursor;
+	}
+	else if (h == h_move) {
+		return Qt::OpenHandCursor;
+	}
+
+	return QCursor();
+}
+
+DkCropArea::Handle DkCropArea::currentHandle() const {
+	return mCurrentHandle;
+}
+
+void DkCropArea::move(const QPoint& dxy) {
+	mCropRect.moveCenter(mCropRect.center() - dxy);
+}
+
+void DkCropArea::update(const QPoint& pos) {
+
+	if (mCurrentHandle == h_no_handle)
+		return;
+
+	QPointF ipos = mapToImage(pos);
+
+	switch (mCurrentHandle) {
+
+	case Handle::h_top_left:
+		mCropRect.setTopLeft(ipos); break;
+	case Handle::h_top_right:
+		mCropRect.setTopRight(ipos); break;
+	case Handle::h_bottom_right:
+		mCropRect.setBottomRight(ipos); break;
+	case Handle::h_bottom_left:
+		mCropRect.setBottomLeft(ipos); break;
+	case Handle::h_left:
+		mCropRect.setLeft(ipos.x()); break;
+	case Handle::h_right:
+		mCropRect.setRight(ipos.x()); break;
+	case Handle::h_top:
+		mCropRect.setTop(ipos.y()); break;
+	case Handle::h_bottom:
+		mCropRect.setBottom(ipos.y()); break;
+	}
 }
 
 // -------------------------------------------------------------------- DkCropStyle 
