@@ -84,6 +84,8 @@ public:
     void update(const QPoint& pos);
     void move(const QPoint& dxy);
 
+    void reset();
+
 private:
     const QTransform* mWorldMatrix = nullptr;
     const QTransform* mImgMatrix = nullptr;
@@ -91,7 +93,7 @@ private:
 
     // the crop rect is kept in image coordinates
     mutable QRectF mCropRect;
-    DkCropArea::Handle mCurrentHandle = Handle::h_no_handle;
+    DkCropArea::Handle mCurrentHandle = DkCropArea::Handle::h_no_handle;
 
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
     QPointF mapToImage(const QPoint& pos) const;

@@ -204,11 +204,15 @@ void DkCropWidget::crop(bool cropToMetadata) {
 
 void DkCropWidget::reset() {
 
+	mCropArea.reset();
     // TODO: implement reset here...
 }
 
 void DkCropWidget::setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
-    mCropArea.setWorldMatrix(worldMatrix);
+    
+	mCropArea = DkCropArea();
+	
+	mCropArea.setWorldMatrix(worldMatrix);
     mCropArea.setImageMatrix(imgMatrix);
 }
 
@@ -218,6 +222,7 @@ void DkCropWidget::setImageRect(const QRectF* rect) {
 
 void DkCropWidget::setVisible(bool visible) {
 
+	reset();
     DkFadeWidget::setVisible(visible);
 }
 
@@ -332,6 +337,12 @@ DkCropArea::Handle DkCropArea::currentHandle() const {
 
 void DkCropArea::move(const QPoint& dxy) {
 	mCropRect.moveCenter(mCropRect.center() - dxy);
+}
+
+void DkCropArea::reset() {
+
+	mCurrentHandle = Handle::h_no_handle;
+	mCropRect = QRectF();
 }
 
 void DkCropArea::update(const QPoint& pos) {
