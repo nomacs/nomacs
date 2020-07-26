@@ -121,7 +121,7 @@ public:
 
 	void settingsChanged();
 
-	void setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix);
+	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix);
 	void setImageRect(const QRectF* imgRect);
 
 public slots:

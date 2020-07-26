@@ -33,6 +33,7 @@
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPen>
 #include <QBrush>
+#include <QDockWidget>
 #pragma warning(pop)
 
 #ifndef DllExport
@@ -70,8 +71,7 @@ public:
         h_end
     };
 
-    void setWorldMatrix(const QTransform* matrix);
-    void setImageMatrix(const QTransform* matrix);
+    void setWorldMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
     QRectF cropViewRect() const;
@@ -84,11 +84,12 @@ public:
     void update(const QPoint& pos);
     void move(const QPoint& dxy);
 
+    void rotate(double angle);
+
     void reset();
 
 private:
-    const QTransform* mWorldMatrix = nullptr;
-    const QTransform* mImgMatrix = nullptr;
+    QTransform* mWorldMatrix = nullptr;
     const QRectF* mImgViewRect = nullptr;
 
     // the crop rect is kept in image coordinates
@@ -126,15 +127,17 @@ class DkCropWidget : public DkFadeWidget {
 
 public:
     DkCropWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
-
+    
     void reset();
 
-    void setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix);
+    void setWorldTransform(QTransform* worldMatrix);
     void setImageRect(const QRectF* rect);
 
 public slots:
     void crop(bool cropToMetadata = false);
     virtual void setVisible(bool visible) override;
+
+    void rotate(double angle);
 
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
@@ -153,6 +156,23 @@ protected:
     DkCropArea mCropArea;
     QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
+
+    QDockWidget* mCropDock = nullptr;
+};
+
+class DkCropToolBarNew : public QWidget {
+    Q_OBJECT
+
+public:
+    DkCropToolBarNew(QWidget* parent = 0);
+
+signals:
+    void rotateSignal(double angle) const;
+
+private:
+    void createLayout();
+
+
 };
 
 }

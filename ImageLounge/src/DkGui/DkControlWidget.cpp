@@ -739,10 +739,10 @@ void DkControlWidget::settingsChanged() {
 
 }
 
-void DkControlWidget::setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
+void DkControlWidget::setTransforms(QTransform* worldMatrix, QTransform* imgMatrix) {
 
 	mZoomWidget->getOverview()->setTransforms(worldMatrix, imgMatrix);
-	mCropWidget->setTransforms(worldMatrix, imgMatrix);
+	mCropWidget->setWorldTransform(worldMatrix);
 }
 
 void DkControlWidget::setImageRect(const QRectF* imgRect) {
