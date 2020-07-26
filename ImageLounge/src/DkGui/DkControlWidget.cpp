@@ -468,7 +468,7 @@ void DkControlWidget::hideCrop(bool hide /* = true */) {
 void DkControlWidget::showCrop(bool visible) {
 
 	if (visible) {
-		mViewport->zoomToFit(100);
+		mViewport->zoomToFit(200);
 		mCropWidget->reset();
 		switchWidget(mWidgets[crop_widget]);
 		//connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), mViewport, SLOT(setBackgroundBrush(const QBrush&)));

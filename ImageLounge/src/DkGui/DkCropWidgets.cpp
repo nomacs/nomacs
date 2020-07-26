@@ -165,36 +165,9 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	drawGuides();
 	drawCorners(crop);
 
-	// this changes the painter -> do it at the end
-	if (!mRect.isEmpty()) {
-
-		//for (int idx = 0; idx < mCtrlPoints.size(); idx++) {
-
-		//	QPointF cp;
-
-		//	if (idx < 4) {
-		//		QPointF c = p[idx];
-		//		cp = c - mCtrlPoints[idx]->getCenter();
-		//	}
-		//	// paint control points in the middle of the edge
-		//	else if (idx >= 4) {
-		//		QPointF s = mCtrlPoints[idx]->getCenter();
-
-		//		QPointF lp = p[idx % 4];
-		//		QPointF rp = p[(idx + 1) % 4];
-
-		//		QVector2D lv = QVector2D(lp - s);
-		//		QVector2D rv = QVector2D(rp - s);
-
-		//		cp = (lv + 0.5 * (rv - lv)).toPointF();
-		//	}
-
-		//	mCtrlPoints[idx]->move(qRound(cp.x()), qRound(cp.y()));
-		//	mCtrlPoints[idx]->draw(&painter);
-		//}
-	}
-
 	painter.end();
+
+	qDebug() << "crop:" << mCropArea.cropViewRect();
 
 	QWidget::paintEvent(pe);
 }
@@ -244,8 +217,9 @@ void DkCropWidget::setVisible(bool visible) {
 			w->addDockWidget(Qt::BottomDockWidgetArea, mCropDock);
 		}
 	}
-	else if (!visible && mCropDock)
-		mCropDock->hide();
+
+	if (mCropDock)
+		mCropDock->setVisible(visible);
 
     DkFadeWidget::setVisible(visible);
 }
@@ -273,7 +247,16 @@ QRectF DkCropArea::cropViewRect() const {
 	}
 
 	Q_ASSERT(mWorldMatrix);
-	return mWorldMatrix->mapRect(mCropRect);
+
+	// only use scaling
+	double sx = getScale();
+	QTransform st;
+	st.scale(sx, sx);
+
+	QRectF viewRect = st.mapRect(mCropRect);
+	QPointF c = mWorldMatrix->map(mCropRect.center());
+	viewRect.moveCenter(c);
+	return viewRect;
 }
 
 DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const {
@@ -320,6 +303,23 @@ QPointF DkCropArea::mapToImage(const QPoint& pos) const {
 	return mWorldMatrix->inverted().map(pos);
 }
 
+double DkCropArea::getScale() const {
+
+	Q_ASSERT(mWorldMatrix);
+
+	QTransform t = *mWorldMatrix;
+	double sx = std::sqrt(t.m11() * t.m11() + t.m12() * t.m12());
+	if (sx < 0)
+		sx *= -1;
+
+	return sx;
+}
+
+double DkCropArea::getAngle() const {
+
+	return std::asin(mWorldMatrix->m21() / getScale()) * DK_RAD2DEG;
+}
+
 void DkCropArea::updateHandle(const QPoint& pos) {
 
 	mCurrentHandle = getHandle(pos);
@@ -361,7 +361,8 @@ DkCropArea::Handle DkCropArea::currentHandle() const {
 }
 
 void DkCropArea::move(const QPoint& dxy) {
-	mCropRect.moveCenter(mCropRect.center() - dxy);
+
+	mCropRect.moveCenter(mCropRect.center()-(dxy/getScale()));
 }
 
 void DkCropArea::rotate(double angle) {
@@ -370,11 +371,10 @@ void DkCropArea::rotate(double angle) {
 	Q_ASSERT(mWorldMatrix);
 	
 	QPointF c = mCropRect.center();
-	double ca = angle + std::asin(mWorldMatrix->m21()) * DK_RAD2DEG;
 
 	// rotate image around center...
 	mWorldMatrix->translate(c.x(), c.y());
-	mWorldMatrix->rotate(ca);
+	mWorldMatrix->rotate(angle + getAngle());
 	mWorldMatrix->translate(-c.x(), -c.y());
 }
 
@@ -455,8 +455,12 @@ DkCropToolBarNew::DkCropToolBarNew(QWidget* parent) : QWidget(parent) {
 void DkCropToolBarNew::createLayout() {
 
 	DkDoubleSlider* angleSlider = new DkDoubleSlider("", this);
+	angleSlider->setTickInterval(1/90.0);
 	angleSlider->setMinimum(-45);
 	angleSlider->setMaximum(45);
+	angleSlider->setValue(0.0);
+	angleSlider->setMaximumWidth(400);
+
 	connect(angleSlider, &DkDoubleSlider::valueChanged, this, &DkCropToolBarNew::rotateSignal);
 
 	QHBoxLayout* l = new QHBoxLayout(this);

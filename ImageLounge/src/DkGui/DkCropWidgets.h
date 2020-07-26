@@ -98,6 +98,9 @@ private:
 
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
     QPointF mapToImage(const QPoint& pos) const;
+
+    double getScale() const;
+    double getAngle() const;
 };
 
 class DkCropStyle {
