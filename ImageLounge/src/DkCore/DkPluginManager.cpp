@@ -62,6 +62,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QJsonValue>
+#include <QLibraryInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -1309,7 +1310,7 @@ void DkPluginManager::createPluginsPath() {
 #ifdef Q_OS_WIN
 	QDir pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
 #else
-	QDir pluginsDir = QCoreApplication::applicationDirPath() +  "/../lib/nomacs-plugins/";
+	QDir pluginsDir = QLibraryInfo::location(QLibraryInfo::LibrariesPath) +  "/nomacs-plugins/";
 #endif // Q_OS_WIN
 
 	if (!pluginsDir.exists())
