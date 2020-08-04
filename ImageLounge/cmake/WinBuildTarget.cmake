@@ -30,10 +30,6 @@ target_link_libraries(
 	
 set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT -DNOMINMAX")
 
-if (ENABLE_READ_BUILD)
-	set_target_properties(${BINARY_NAME} PROPERTIES COMPILE_FLAGS "-DREAD_TUWIEN")
-endif()
-
 # add DLL
 add_library(
 	${DLL_CORE_NAME} SHARED 
@@ -201,24 +197,11 @@ foreach(QM ${NOMACS_QM})
 	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_BINARY_DIR}/$<CONFIGURATION>/translations/\")
 endforeach(QM)
 
-# add build incrementer command if requested
-if (ENABLE_INCREMENTER)
-
+if (Python_FOUND)
+    # add version for install scripts
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
-        COMMAND python 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py 
-        ${NOMACS_VERSION})
-
-    add_custom_command(
-        TARGET ${DLL_CORE_NAME} PRE_BUILD 
-        COMMAND python 
-        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
-        ${CMAKE_BINARY_DIR}/DkVersion.h)
-
-    add_custom_command(
-        TARGET ${DLL_CORE_NAME} PRE_BUILD 
-        COMMAND python 
+        COMMAND ${Python_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
         ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.wxi
         --copy
@@ -226,13 +209,11 @@ if (ENABLE_INCREMENTER)
 
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
-        COMMAND python 
+        COMMAND ${Python_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
         ${CMAKE_CURRENT_SOURCE_DIR}/../installer/nomacs-setup.iss
         --copy
         )
-
-    message(STATUS "build incrementer enabled...")
 endif()
 
 # set properties for Visual Studio Projects
@@ -303,7 +284,5 @@ set(DC_PATHS_DEBUG
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND python ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
-
-
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${Python_EXECUTABLE} ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
 

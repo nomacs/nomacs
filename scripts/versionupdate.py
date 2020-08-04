@@ -37,6 +37,7 @@ def update(filepath: str, copy: bool = False):
 
                 l = update_version_string(v, l)
                 l = update_version_rc(v, l)
+                l = update_version_patch(v, l)
 
                 l = add_git_tag_string(l)
 
@@ -70,6 +71,25 @@ def update_version_rc(version: str, line: str):
         str_ver = line.split(" ")
         str_ver[-1] = version.replace(".", ",")
  
+        line = " ".join(str_ver) + "\n"
+
+    return line
+
+def update_version_patch(version: str, line: str):
+
+    # get patch from 3.14.42
+    vs = version.split(".")
+
+    if len(vs) != 3:
+        print("WARNING: could not split version: " + version)
+        return
+
+    # searching: #define NOMACS_VER_PATCH 0
+    if "NOMACS_VER_PATCH" in line:
+
+        str_ver = line.split(" ")
+        str_ver[-1] = vs[-1]
+
         line = " ".join(str_ver) + "\n"
 
     return line
