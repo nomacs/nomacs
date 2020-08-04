@@ -47,6 +47,7 @@ option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_AVIF "Compile nomacs with AVIF support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
+option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored by MSVC
 
 # Codecov
 if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
@@ -295,18 +296,6 @@ IF(ENABLE_QUAZIP)
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
-ENDIF()
-
-IF(USE_SYSTEM_QUAZIP)
-    MESSAGE(STATUS " nomacs will use system QuaZip ................................ YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will use system QuaZip ................................ NO")
-ENDIF()
-
-IF(USE_SYSTEM_LIBQPSD)
-    MESSAGE(STATUS " nomacs will use system QPSD .................................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will use system QPSD .................................. NO")
 ENDIF()
 
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
