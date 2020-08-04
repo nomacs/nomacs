@@ -23,12 +23,6 @@ OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" ON)
 OPTION (ENABLE_COMPOSITE "Compile Composite Image plugin" ON)
 OPTION (ENABLE_SIMPLE "Compile SIMPLE PLUGIN" OFF)
 
-if(NOT CMAKE_CL_64 AND MSVC)
-    OPTION (ENABLE_NIKON "Compile Nikon plugin" ON)
-else()
-    message(STATUS "Info: The Nikon Plugin cannot be built with x64 compiler configuration")
-endif()
-
 NMC_PREPARE_PLUGIN()
 NMC_FINDQT()
 NMC_FIND_OPENCV("core" "imgproc")
