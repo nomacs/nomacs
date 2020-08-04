@@ -190,7 +190,6 @@ endif()
 
 if (Python_FOUND)
     
-    message(STATUS "using: ${Python_EXECUTABLE}")
     add_custom_command(
         TARGET ${DLL_CORE_NAME} PRE_BUILD 
         COMMAND ${Python_EXECUTABLE}

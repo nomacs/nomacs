@@ -1,6 +1,6 @@
 import os
 
-def repopath(arg0: str = ""):
+def repopath(arg0 = ""):
     
     relp = os.path.dirname(arg0)
     rp = os.path.abspath(relp)
@@ -9,7 +9,7 @@ def repopath(arg0: str = ""):
 
     return os.path.abspath(rp)
 
-def mypath(file: str = ""):
+def mypath(file = ""):
 
     if not file:
         file = __file__

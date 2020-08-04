@@ -20,7 +20,7 @@ __status__ = "Production"
 OUTPUT_NAME = "versionupdate"
 
 
-def update(filepath: str, copy: bool = False):
+def update(filepath, copy = False):
     from shutil import move
     from os import remove
     from utils.fun import version
@@ -49,7 +49,7 @@ def update(filepath: str, copy: bool = False):
         move(dstpath, filepath)
 
 
-def update_version_string(version: str, line: str):
+def update_version_string(version, line):
 
     # searching (DkVersion.h): #define NOMACS_VERSION_STR "3.14.42\0"
     # searching (msi installer): <?define ProductVersion = "3.14.42"?>
@@ -63,7 +63,7 @@ def update_version_string(version: str, line: str):
 
     return line
 
-def update_version_rc(version: str, line: str):
+def update_version_rc(version, line):
     
     # searching: #define NOMACS_VERSION_RC 3,14,42
     if "NOMACS_VERSION_RC" in line:
@@ -75,7 +75,7 @@ def update_version_rc(version: str, line: str):
 
     return line
 
-def update_version_patch(version: str, line: str):
+def update_version_patch(version, line):
 
     # get patch from 3.14.42
     vs = version.split(".")
@@ -94,7 +94,7 @@ def update_version_patch(version: str, line: str):
 
     return line
 
-def add_git_tag_string(line: str):
+def add_git_tag_string(line):
 
     # searching: #define NOMACS_GIT_TAG "4add4f1f6b6c731a9f4cf63596e087d4f68c2aed"
     if "NOMACS_GIT_TAG" in line:
