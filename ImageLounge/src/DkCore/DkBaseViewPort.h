@@ -172,7 +172,7 @@ protected:
 	QTransform mImgMatrix;
 	QTransform mWorldMatrix;
 	QRectF mImgViewRect;
-	QRectF mViewportRect;
+	QRect mViewportRect;
 	QRectF mImgRect;
 	QTimer* mHideCursorTimer;
 
@@ -180,6 +180,8 @@ protected:
 	QPointF mPosGrab;
 	double mMinZoom = 0.01;
 	double mMaxZoom = 100;
+
+	double mAngle = 0.0;
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;

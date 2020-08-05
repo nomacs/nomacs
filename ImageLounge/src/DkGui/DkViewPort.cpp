@@ -328,7 +328,7 @@ void DkViewPort::setImage(QImage newImg) {
 	updateImageMatrix();		
 
 	// if image is not inside, we'll align it at the top left border
-	if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect))) {
+	if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect).toRect())) {
 		mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
 		centerImage();
 	}

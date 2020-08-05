@@ -86,8 +86,6 @@ public:
     void update(const QPoint& pos);
     void move(const QPoint& dxy);
 
-    void rotate(double angle);
-
     void reset();
 
     void recenter(const QRectF& target);
@@ -162,8 +160,8 @@ protected:
     void paintEvent(QPaintEvent* pe) override;
     void resizeEvent(QResizeEvent* re) override;
 
-    QRect winRect(int margin = 100) const;
-    void controlImagePosition(const QRect& r) override;
+    QRect canvas(int margin = 100) const;
+    void updateViewRect(const QRect& r);
 
     DkCropStyle mStyle;
 
@@ -173,6 +171,7 @@ protected:
 
     QSharedPointer<DkImageContainerT> mImage;
     QDockWidget* mCropDock = nullptr;
+
 };
 
 class DkCropToolBarNew : public QWidget {

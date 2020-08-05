@@ -50,6 +50,10 @@ namespace nmc {
 // DkCropWidget --------------------------------------------------------------------
 DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/) : DkBaseViewPort(parent) {
 
+	mViewportRect = canvas();
+	mPanControl = QPointF(0, 0);
+	mMinZoom = 1.0;
+
 	mCropArea.setWorldMatrix(&mWorldMatrix);
 	mCropArea.setImageRect(&mImgViewRect);
 }
@@ -186,23 +190,48 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	//QTransform t = mCropArea.transformCropToRect(winRect());
 	//QRectF tr = t.mapRect(crop);
 	//painter.drawRect(tr);
-	painter.drawRect(winRect());
+	painter.drawRect(mViewportRect);
 
 	// debug vis remove! -------------------------
 }
 
 void DkCropWidget::resizeEvent(QResizeEvent* re) {
 
-	if (isVisible())
-		recenter();
+	if (re->oldSize() == re->size())
+		return;
 
-	DkBaseViewPort::resizeEvent(re);
+	updateViewRect(canvas());
+	recenter();
+
+	return QGraphicsView::resizeEvent(re);
+}
+
+QRect DkCropWidget::canvas(int margin) const {
+
+	return QRect(
+		margin,
+		margin,
+		width() - 2*margin,
+		height() - 2*margin
+	);
+}
+
+void DkCropWidget::updateViewRect(const QRect& r) {
+
+	if (r == mViewportRect)
+		return;
+
+	mViewportRect = r;
+	updateImageMatrix();
+	changeCursor();
 }
 
 void DkCropWidget::recenter() {
 
-	mCropArea.recenter(winRect());
-	update();	
+	mCropArea.recenter(canvas());
+	updateViewRect(mCropArea.cropViewRect());
+
+	update();
 }
 
 void DkCropWidget::setImageContainer(const QSharedPointer<DkImageContainerT>& img) {
@@ -210,28 +239,6 @@ void DkCropWidget::setImageContainer(const QSharedPointer<DkImageContainerT>& im
 
 	if (img)
 		DkBaseViewPort::setImage(mImage->image());
-}
-
-QRect DkCropWidget::winRect(int margin) const {
-
-	QRect wr(
-		geometry().x() + margin,
-		geometry().y() + margin,
-		geometry().width() - 2 * margin,
-		geometry().height() - 2 * margin
-	);
-
-	return wr;
-}
-
-void DkCropWidget::controlImagePosition(const QRect& r) {
-
-	QRect ir = r;
-
-	if (r.isNull())
-		ir = mCropArea.cropViewRect();
-
-	controlImagePosition(ir);
 }
 
 void DkCropWidget::crop(bool cropToMetadata) {
@@ -289,7 +296,8 @@ void DkCropWidget::setVisible(bool visible) {
 }
 
 void DkCropWidget::rotate(double angle) {
-	mCropArea.rotate(angle);
+	
+	mAngle = angle;
 	update();
 }
 
@@ -408,18 +416,18 @@ void DkCropArea::move(const QPoint& dxy) {
 	mCropRect.moveCenter(mCropRect.center()-dxy);
 }
 
-void DkCropArea::rotate(double angle) {
-
-	Q_ASSERT(mImgViewRect);
-	Q_ASSERT(mWorldMatrix);
-	
-	QPointF c = mCropRect.center();
-
-	// rotate image around center...
-	mWorldMatrix->translate(c.x(), c.y());
-	mWorldMatrix->rotate(angle /*+ getAngle()*/);
-	mWorldMatrix->translate(-c.x(), -c.y());
-}
+//void DkCropArea::rotate(double angle) {
+//
+//	Q_ASSERT(mImgViewRect);
+//	Q_ASSERT(mWorldMatrix);
+//	
+//	QPointF c = mCropRect.center();
+//
+//	//// rotate image around center...
+//	//mWorldMatrix->translate(c.x(), c.y());
+//	//mWorldMatrix->rotate(angle + getAngle());
+//	//mWorldMatrix->translate(-c.x(), -c.y());
+//}
 
 void DkCropArea::reset() {
 

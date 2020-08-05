@@ -239,7 +239,7 @@ QString DkTabInfo::getTabText() const {
 		return QObject::tr("Settings");
 	else if (mTabMode == tab_batch)
 		return QObject::tr("Batch");
-	else if (mTabMode == tab_batch)
+	else if (mTabMode == tab_crop)
 		return QObject::tr("Crop");
 
 	QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
@@ -1078,6 +1078,8 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 			mode = DkTabInfo::tab_preferences;
 		else if (widget == mWidgets[batch_widget])
 			mode = DkTabInfo::tab_batch;
+		else if (widget == mWidgets[crop_widget])
+			mode = DkTabInfo::tab_crop;
 
 		mTabInfos[mTabbar->currentIndex()]->setMode(mode);
 		updateTab(mTabInfos[mTabbar->currentIndex()]);
