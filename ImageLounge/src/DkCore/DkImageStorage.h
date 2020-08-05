@@ -174,7 +174,7 @@ public:
 
 	void setImage(const QImage& img);
 	QImage imageConst() const;
-	QImage image(double scale = 1.0);
+	QImage image(const QSize& size = QSize());
 	void cancel();
 
 public slots:
@@ -189,14 +189,14 @@ signals:
 protected:
 	QImage mImg;
 	QImage mScaledImg;
-	double mScale = 1.0;
+	QSize mSize;
 
 	QTimer* mWaitTimer = 0;
 	QFutureWatcher<QImage> mFutureWatcher;
 
 	ComputeState mComputeState = l_not_computed;
 
-	QImage computeIntern(const QImage& src, double scale);
+	QImage computeIntern(const QImage& src, const QSize& size);
 	void init();
 
 };

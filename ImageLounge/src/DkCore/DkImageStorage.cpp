@@ -1494,7 +1494,7 @@ void DkImageStorage::init() {
 	mComputeState = l_not_computed;
 	mScaledImg = QImage();
 	mWaitTimer->stop();
-	mScale = 1.0;
+	mSize = QSize();
 }
 
 void DkImageStorage::setImage(const QImage& img) {
@@ -1521,20 +1521,22 @@ QImage DkImageStorage::imageConst() const {
 	return mImg;
 }
 
-QImage DkImageStorage::image(double scale) {
+QImage DkImageStorage::image(const QSize& size) {
 
-	if (scale >= 1.0 || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing)
+	if (size.isNull() || 
+		mImg.isNull() ||
+		!DkSettingsManager::param().display().antiAliasing ||	// user disabled?
+		mImg.size().width() < size.width()						// scale factor > 1?
+		)
 		return mImg;
 
-	QSize s = mImg.size() * scale;
-
-	if (s == mScaledImg.size())
+	if (mScaledImg.size() == size)
 		return mScaledImg;
 
 	if (mComputeState != l_computing) {
 		// trigger a new computation
 		init();
-		mScale = scale;
+		mSize = size;
 		mWaitTimer->start();
 	}
 
@@ -1559,13 +1561,16 @@ void DkImageStorage::compute() {
 
 	mComputeState = l_computing;
 
-	mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mScale));
+	mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mSize));
 }
 
-QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
-	
-	if (scale >= 1.0)
+QImage DkImageStorage::computeIntern(const QImage & src, const QSize& size) {
+
+	// should not happen
+	if (size.width() >= mImg.width()) {
+		qWarning() << "DkImageStorage::computeIntern was called without a need...";
 		return src;
+	}
 
 	DkTimer dt;
 	QImage resizedImg = src;
@@ -1584,7 +1589,7 @@ QImage DkImageStorage::computeIntern(const QImage & src, double scale) {
 		}
 	}
 
-	QSize s = mImg.size() * scale;
+	QSize s = mSize;
 
 	if (s.height() == 0)
 		s.setHeight(1);
@@ -1617,6 +1622,6 @@ void DkImageStorage::imageComputed() {
 	if (mComputeState == l_computed)
 		emit imageUpdated();
 	else
-		qWarning() << "could not compute scale factor" << mScale;
+		qWarning() << "could not compute interpolated image...";
 }
 }

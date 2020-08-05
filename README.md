@@ -61,7 +61,7 @@ Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
 ``` console
 mkdir build
 cd build
-cmake -DUSE_SYSTEM_QUAZIP=ON ../ImageLounge/.
+cmake ../ImageLounge/.
 ```
 
 Compile nomacs:

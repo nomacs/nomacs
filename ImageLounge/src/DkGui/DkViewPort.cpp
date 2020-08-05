@@ -934,7 +934,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 		painter.setWorldTransform(mWorldMatrix);
 
-		//	interpolate between 100% and max interpolate level
+		// interpolate between 100% and max interpolate level
 		if (!mForceFastRendering && // force?
 			mImgMatrix.m11()*mWorldMatrix.m11() - DBL_EPSILON > 1.0 && // @100% ?
 			mImgMatrix.m11()*mWorldMatrix.m11() <= DkSettingsManager::param().display().interpolateZoomLevel / 100.0) {	// > max zoom level
@@ -971,7 +971,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 				painter.setTransform(swipeTransform);
 			}
 
-			qDebug() << "render hints:" << painter.renderHints();
 			painter.drawImage(mFadeImgViewRect, mAnimationBuffer, mAnimationBuffer.rect());
 			painter.setOpacity(oldOp);
 		}
@@ -1684,7 +1683,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 			(mController->getPlayer()->isPlaying() || 
 			DkUtils::getMainWindow()->isFullScreen() || 
 			DkSettingsManager::param().display().alwaysAnimate)) {
-		mAnimationBuffer = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+		
+		QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
+		mAnimationBuffer = mImgStorage.image(dr.size());
 		mFadeImgViewRect = mImgViewRect;
 		mFadeImgRect = mImgRect;
 		mAnimationValue = 1.0f;
@@ -2084,7 +2085,9 @@ void DkViewPortFrameless::draw(QPainter & painter, double) {
 		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
 	}
 	else {
-		QImage img = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+
+		QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
+		QImage img = mImgStorage.image(displayRect.size());
 
 		// opacity == 1.0f -> do not show pattern if we crossfade two images
 		if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel())
@@ -2422,7 +2425,8 @@ void DkViewPortContrast::draw(QPainter & painter, double opacity) {
 	if (DkUtils::getMainWindow()->isFullScreen())
 		painter.setBackground(DkSettingsManager::param().slideShow().backgroundColor);
 
-	QImage img = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+	QRect dr = mWorldMatrix.mapRect(mImgViewRect).toRect();
+	QImage img = mImgStorage.image(dr.size());
 
 	// opacity == 1.0f -> do not show pattern if we crossfade two images
 	if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)

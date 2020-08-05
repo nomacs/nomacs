@@ -11,7 +11,7 @@ project(nomacs)
 
 # needed for soname
 set(NOMACS_VERSION_MAJOR 3)
-set(NOMACS_VERSION_MINOR 16)
+set(NOMACS_VERSION_MINOR 17)
 set(NOMACS_VERSION_PATCH 0)
 set(NOMACS_VERSION ${NOMACS_VERSION_MAJOR}.${NOMACS_VERSION_MINOR})
 set(NOMACS_FULL_VERSION ${NOMACS_VERSION}.${NOMACS_VERSION_PATCH})
@@ -27,6 +27,9 @@ add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
 
+# if python is available, we can run additional build scripts (i.e. versioning)
+find_package(Python QUIET)
+
 # include macros needed
 include("cmake/Utils.cmake")
 
@@ -39,12 +42,12 @@ option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(ENABLE_QT_DEBUG "Disable Qt Debug Messages" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 option(ENABLE_INCREMENTER "Run Build Incrementer" OFF)
-option(ENABLE_TRANSLATIONS "Compile Translations" OFF)
-option(ENABLE_READ_BUILD "Build nomacs for READ" OFF)   # deprecated
+option(ENABLE_TRANSLATIONS "Compile Translations" ON)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_AVIF "Compile nomacs with AVIF support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
+option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored by MSVC
 
 # Codecov
 if (ENABLE_CODE_COV AND CMAKE_COMPILER_IS_GNUCXX)
@@ -57,24 +60,10 @@ if(APPLE)
 	message(STATUS "QuaZip disabled - it's not supported on OSX")
 endif()
 
-if(${ENABLE_READ_BUILD}) # cannot be incorporated into if one line above
-	# set output path when building for READ
-	if(MSVC)
-		SET(CMAKE_LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-		SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIGURATION>)
-		SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIGURATION>)
-		message(STATUS "READ build turned on...")
-	else()
-		set(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
-		SET(CMAKE_LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/READ)
-		SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
-		SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/READ)
-	endif()
-endif()
-
 # load paths from the user file if exists
 if (EXISTS ${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
     include(${CMAKE_SOURCE_DIR}/CMakeUserPaths.cmake)
+
 elseif (MSVC)
 
     set(DEPENDENCY_PATH "" CACHE STRING "Select the path where all dependencies are built")
@@ -186,6 +175,39 @@ else()
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnixBuildTarget.cmake)
 endif()
 
+# add build incrementer command if requested
+if (ENABLE_INCREMENTER AND Python_FOUND)
+
+    add_custom_command(
+        TARGET ${DLL_CORE_NAME} PRE_BUILD 
+        COMMAND ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionincrement.py 
+        ${NOMACS_VERSION})
+
+    message(STATUS "build incrementer enabled...")
+
+endif()
+
+if (Python_FOUND)
+    
+    add_custom_command(
+        TARGET ${DLL_CORE_NAME} PRE_BUILD 
+        COMMAND ${Python_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
+        ${CMAKE_BINARY_DIR}/DkVersion.h)
+
+    # I am having issues with the PRE_BUILD above
+    # if version increment is off, we just need to run the update once (for version won't change)
+    # so let's do that:
+    execute_process(COMMAND ${Python_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/versionupdate.py 
+            ${CMAKE_BINARY_DIR}/DkVersion.h)
+
+else()
+    message(WARNING "Python not found: the version number will be incorrect!")
+endif()
+
+
 NMC_INSTALL()
 
 NMC_COPY_FILES()
@@ -200,7 +222,6 @@ if(ENABLE_PLUGINS)
 
 	if (NOT EXISTS ${PLUGINS_DIR})
 		set(PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins")
-		message(STATUS "setting plugins dir")
 	else ()
 		message(STATUS "${PLUGINS_DIR} is defined")
 	endif()
@@ -276,18 +297,6 @@ IF(ENABLE_QUAZIP)
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. YES")
 ELSE()
     MESSAGE(STATUS " nomacs will be compiled with QuaZip support .................. NO")
-ENDIF()
-
-IF(USE_SYSTEM_QUAZIP)
-    MESSAGE(STATUS " nomacs will use system QuaZip ................................ YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will use system QuaZip ................................ NO")
-ENDIF()
-
-IF(USE_SYSTEM_LIBQPSD)
-    MESSAGE(STATUS " nomacs will use system QPSD .................................. YES")
-ELSE()
-    MESSAGE(STATUS " nomacs will use system QPSD .................................. NO")
 ENDIF()
 
 MESSAGE(STATUS "----------------------------------------------------------------------------------")

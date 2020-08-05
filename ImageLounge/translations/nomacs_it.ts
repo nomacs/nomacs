@@ -58,7 +58,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="523"/>
       <source>&amp;Adjustments</source>
-      <translation>&amp; Regolazioni</translation>
+      <translation>&amp;Regolazioni</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="539"/>
@@ -2853,7 +2853,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1178"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Spiacente, non potevo salvare: %1</translation>
+      <translation>Spiacente, non è stato possibile salvare: %1</translation>
     </message>
   </context>
   <context>
@@ -2874,7 +2874,7 @@ Si prega di riavviare nomacs e riprovare.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="362"/>
       <source>Thumbnails</source>
-      <translation>I thumbnail</translation>
+      <translation>Miniature</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="363"/>
@@ -3659,7 +3659,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="962"/>
       <source>Horizontal Constraint</source>
-      <translation>Costrizione orizzontale</translation>
+      <translation>Vincolo orizzontale</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="965"/>
@@ -3970,7 +3970,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2394"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Esporta Multi-Page TIFF</translation>
+      <translation>Esporta TIFF multipagina</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2440"/>
@@ -3986,7 +3986,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2446"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>Nessun Multi-Page TIFF caricato</translation>
+      <translation>Nessun TIFF multipagina caricato</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2449"/>
@@ -4046,7 +4046,7 @@ Questa opzione è utile solo se i plugin salvano i file sidecar - quindi state a
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2637"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Spiacente, non potevo salvare: %1</translation>
+      <translation>Spiacente, non è stato possibile salvare: %1</translation>
     </message>
   </context>
   <context>
@@ -4196,7 +4196,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1043"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation>Dopo il salvataggio, l&apos;immagine salvata verr&amp;agrave; caricata in posizione</translation>
+      <translation>Dopo il salvataggio, l'immagine salvata verrà caricata nella scheda</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1044"/>
@@ -4211,7 +4211,7 @@ Desideri mostrarle di nuovo?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1053"/>
       <source>Image Saving Policy</source>
-      <translation>Politica di caricamento delle immagini</translation>
+      <translation>Politica di salvataggio delle immagini</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
@@ -5423,7 +5423,7 @@ prima di lavorare attraverso la finestra.</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1040"/>
       <source>Thumbnails</source>
-      <translation>I thumbnail</translation>
+      <translation>Miniature</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1078"/>
@@ -6434,7 +6434,7 @@ Creazione delle miniature...
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="300"/>
       <source>Thumbnails</source>
-      <translation>I thumbnail</translation>
+      <translation>Miniature</translation>
     </message>
   </context>
   <context>
