@@ -649,37 +649,38 @@ QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size) const {
 	return imgMatrix;
 }
 
-void DkBaseViewPort::controlImagePosition(float lb, float ub) {
+void DkBaseViewPort::controlImagePosition(const QRect& r) {
 
 	QRectF imgRectWorld = mWorldMatrix.mapRect(mImgViewRect);
+	QRect cr;
 
-	if (lb == -1 && ub == -1 && mPanControl.x() != -1 && mPanControl.y() != -1) {
-		lb = (float)mPanControl.x(); 
-		ub = (float)mPanControl.y();
+	if (r.isNull() && mPanControl.x() != -1 && mPanControl.y() != -1) {
+		
+		cr.setTopLeft(mPanControl.toPoint());
+		cr.setBottomRight(mViewportRect.bottomRight().toPoint() - mPanControl.toPoint());
 	}
 	// we must not pan further if scrollbars are visible
-	else if (lb == -1 && ub == -1 && DkSettingsManager::instance().param().display().showScrollBars) {
-		lb = 0.0f;
-		ub = 0.0f;
+	else if (r.isNull() && DkSettingsManager::instance().param().display().showScrollBars) {
+		
+		cr = mViewportRect.toRect();
 	}
 	else {
 
 		// default behavior
-		if (lb == -1)	lb = (float)mViewportRect.width()/2.0f;
-		if (ub == -1)	ub = (float)mViewportRect.height()/2.0f;
+		cr = QRect(mViewportRect.center().toPoint(), QSize(1,1));
 	}
 
-	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
-		mWorldMatrix.translate((lb-imgRectWorld.left())/mWorldMatrix.m11(), 0);
+	if (imgRectWorld.left() > cr.left() && imgRectWorld.width() > width())
+		mWorldMatrix.translate((cr.left()-imgRectWorld.left())/mWorldMatrix.m11(), 0);
 
-	if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
-		mWorldMatrix.translate(0, (ub-imgRectWorld.top())/mWorldMatrix.m11());
+	if (imgRectWorld.top() > cr.top() && imgRectWorld.height() > height())
+		mWorldMatrix.translate(0, (cr.top()-imgRectWorld.top())/mWorldMatrix.m11());
 
-	if (imgRectWorld.right() < width()-lb && imgRectWorld.width() > width())
-		mWorldMatrix.translate(((width()-lb)-imgRectWorld.right())/mWorldMatrix.m11(), 0);
+	if (imgRectWorld.right() < cr.right() && imgRectWorld.width() > width())
+		mWorldMatrix.translate((cr.right()-imgRectWorld.right())/mWorldMatrix.m11(), 0);
 
-	if (imgRectWorld.bottom() < height()-ub && imgRectWorld.height() > height())
-		mWorldMatrix.translate(0, ((height()-ub)-imgRectWorld.bottom())/mWorldMatrix.m11());
+	if (imgRectWorld.bottom() < cr.bottom() && imgRectWorld.height() > height())
+		mWorldMatrix.translate(0, (cr.bottom()-imgRectWorld.bottom())/mWorldMatrix.m11());
 
 	// update scene size (this is needed to make the scroll area work)
 	if (DkSettingsManager::instance().param().display().showScrollBars)

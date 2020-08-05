@@ -196,7 +196,7 @@ protected:
 	virtual void updateImageMatrix();
 	virtual QTransform getScaledImageMatrix() const;
 	virtual QTransform getScaledImageMatrix(const QSize& size) const;
-	virtual void controlImagePosition(float lb = -1, float ub = -1);
+	virtual void controlImagePosition(const QRect& r = QRect());
 	virtual void centerImage();
 	virtual void changeCursor();
 	void zoomToPoint(double factor, const QPointF& pos, QTransform& matrix) const;

@@ -113,6 +113,10 @@ public:
 	
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
+	void setCropRect(const QRect* rect);
+
+	bool imageInside() const override;
+
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
 	void sendNewFileSignal(qint16 op, QString filename = "") const;
@@ -225,6 +229,9 @@ protected:
 	QRectF mFadeImgRect;
 	bool mNextSwipe = true;
 
+	bool mAlwaysMove = true;
+	const QRect* mCropRect = nullptr;
+
 	QImage mImgBg;
 
 	QVBoxLayout* mPaintLayout = 0;
@@ -234,8 +241,6 @@ protected:
 
 	QPoint mCurrentPixelPos;
 	
-	DkRotatingRect mCropRect;
-
 	DkHudNavigation* mNavigationWidget = 0;
 	
 	// image manipulators
@@ -253,6 +258,7 @@ protected:
 	void showZoom();
 	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
+	void controlImagePosition(const QRect& r = QRect()) override;
 
 };
 
@@ -280,7 +286,7 @@ protected:
 	virtual void draw(QPainter & painter, double opacity = 1.0) override;
 	void drawFrame(QPainter & painter);
 	virtual void drawBackground(QPainter & painter) override;
-	void controlImagePosition(float lb = -1, float ub = -1) override;
+	void controlImagePosition(const QRect& = QRect()) override;
 	virtual void centerImage() override;
 
 	// variables

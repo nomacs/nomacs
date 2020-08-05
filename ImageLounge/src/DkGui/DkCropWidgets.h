@@ -74,7 +74,8 @@ public:
     void setWorldMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
-    QRectF cropViewRect() const;
+    QRect cropViewRect() const;
+    QRect* cropViewRectPtr() const;
 
     void updateHandle(const QPoint& pos);
     void resetHandle();
@@ -102,7 +103,6 @@ private:
     QTransform transformCropToRect(const QRectF& target) const;
 
     //QPointF mapToImage(const QPoint& pos) const;
-
 };
 
 class DkCropStyle {
@@ -138,11 +138,14 @@ public:
     void setWorldTransform(QTransform* worldMatrix);
     void setImageRect(const QRectF* rect);
 
+    QRect* cropRect() const;
+
 public slots:
     void crop(bool cropToMetadata = false);
     virtual void setVisible(bool visible) override;
 
     void rotate(double angle);
+    void recenter();
 
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
@@ -155,8 +158,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* ev) override;
 
     void paintEvent(QPaintEvent* pe) override;
-
-    void recenter();
+    void resizeEvent(QResizeEvent* re) override;
 
     QRect winRect(int margin = 100) const;
 

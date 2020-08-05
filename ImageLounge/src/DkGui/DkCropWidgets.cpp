@@ -190,6 +190,14 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	QWidget::paintEvent(pe);
 }
 
+void DkCropWidget::resizeEvent(QResizeEvent* re) {
+
+	if (isVisible())
+		recenter();
+
+	DkFadeWidget::resizeEvent(re);
+}
+
 void DkCropWidget::recenter() {
 
 	mCropArea.recenter(winRect());
@@ -221,7 +229,7 @@ void DkCropWidget::crop(bool cropToMetadata) {
 void DkCropWidget::reset() {
 
 	mCropArea.reset();
-    // TODO: implement reset here...
+	recenter();
 }
 
 void DkCropWidget::setWorldTransform(QTransform* worldMatrix) {
@@ -232,12 +240,15 @@ void DkCropWidget::setImageRect(const QRectF* rect) {
     mCropArea.setImageRect(rect);
 }
 
+QRect* DkCropWidget::cropRect() const {
+	return mCropArea.cropViewRectPtr();
+}
+
 void DkCropWidget::setVisible(bool visible) {
 
-	reset();
 
 	if (!isVisible() && visible) {
-
+		
 		if (!mCropDock) {
 			mCropDock = new QDockWidget(this);
 			mCropDock->setTitleBarWidget(new QWidget());
@@ -273,7 +284,7 @@ void DkCropArea::setImageRect(const QRectF* rect) {
     mImgViewRect = rect;
 }
 
-QRectF DkCropArea::cropViewRect() const {
+QRect DkCropArea::cropViewRect() const {
 	
 	// init the crop rect
 	if (mCropRect.isNull()) {
@@ -286,13 +297,18 @@ QRectF DkCropArea::cropViewRect() const {
 	return mCropRect;
 }
 
+QRect* DkCropArea::cropViewRectPtr() const {
+
+	return &mCropRect;
+}
+
 DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const {
 	
 	if (mCurrentHandle != h_no_handle)
 		return mCurrentHandle;
 
 	int pxs = proximity * proximity;
-	QRect r = cropViewRect().toRect();
+	QRect r = cropViewRect();
 
 	// squared euclidean distance
 	auto dist = [](const QPoint& p1, const QPoint& p2) {
@@ -398,13 +414,13 @@ void DkCropArea::recenter(const QRectF& target) {
 
 	QTransform t = transformCropToRect(target);
 
-	mCropRect = t.mapRect(mCropRect);
+	mCropRect = t.mapRect(cropViewRect());
 	*mWorldMatrix = *mWorldMatrix * t;
 }
 
 QTransform DkCropArea::transformCropToRect(const QRectF& target) const {
 
-	QRectF crop = mCropRect;
+	QRectF crop = cropViewRect();
 	double scale = qMin(target.width() / crop.width(), target.height() / crop.height());
 
 	QTransform t;
