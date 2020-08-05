@@ -32,6 +32,7 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 #include "DkMath.h"
+#include "DkImageContainer.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPainter>
@@ -47,8 +48,10 @@
 namespace nmc {
 
 // DkCropWidget --------------------------------------------------------------------
-DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkFadeWidget(parent, f) {
+DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/) : DkBaseViewPort(parent) {
 
+	mCropArea.setWorldMatrix(&mWorldMatrix);
+	mCropArea.setImageRect(&mImgViewRect);
 }
 
 void DkCropWidget::mouseDoubleClickEvent(QMouseEvent* ev) {
@@ -76,7 +79,7 @@ void DkCropWidget::mouseMoveEvent(QMouseEvent* ev) {
 	if (mCropArea.currentHandle() == DkCropArea::h_move) {
 
 		ev->ignore();
-		DkFadeWidget::mouseMoveEvent(ev);
+		DkBaseViewPort::mouseMoveEvent(ev);
 	}
 }
 
@@ -87,7 +90,7 @@ void DkCropWidget::mousePressEvent(QMouseEvent* ev) {
 	
 	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move)
-		DkFadeWidget::mousePressEvent(ev);
+		DkBaseViewPort::mousePressEvent(ev);
 }
 
 void DkCropWidget::mouseReleaseEvent(QMouseEvent* ev) {
@@ -96,12 +99,14 @@ void DkCropWidget::mouseReleaseEvent(QMouseEvent* ev) {
 
 	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move)
-		DkFadeWidget::mouseReleaseEvent(ev);
+		DkBaseViewPort::mouseReleaseEvent(ev);
 
 	recenter();
 }
 
 void DkCropWidget::paintEvent(QPaintEvent* pe) {
+	
+	DkBaseViewPort::paintEvent(pe);
 
 	// create path
 	QPainterPath path;
@@ -117,7 +122,7 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	path.addRect(crop);
 
 	// init painter
-	QPainter painter(this);
+	QPainter painter(viewport());
 
 	painter.setPen(mStyle.pen());
 	painter.setBrush(mStyle.bgBrush());
@@ -184,10 +189,6 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	painter.drawRect(winRect());
 
 	// debug vis remove! -------------------------
-
-	painter.end();
-
-	QWidget::paintEvent(pe);
 }
 
 void DkCropWidget::resizeEvent(QResizeEvent* re) {
@@ -195,13 +196,20 @@ void DkCropWidget::resizeEvent(QResizeEvent* re) {
 	if (isVisible())
 		recenter();
 
-	DkFadeWidget::resizeEvent(re);
+	DkBaseViewPort::resizeEvent(re);
 }
 
 void DkCropWidget::recenter() {
 
 	mCropArea.recenter(winRect());
 	update();	
+}
+
+void DkCropWidget::setImageContainer(const QSharedPointer<DkImageContainerT>& img) {
+	mImage = img;
+
+	if (img)
+		DkBaseViewPort::setImage(mImage->image());
 }
 
 QRect DkCropWidget::winRect(int margin) const {
@@ -214,6 +222,16 @@ QRect DkCropWidget::winRect(int margin) const {
 	);
 
 	return wr;
+}
+
+void DkCropWidget::controlImagePosition(const QRect& r) {
+
+	QRect ir = r;
+
+	if (r.isNull())
+		ir = mCropArea.cropViewRect();
+
+	controlImagePosition(ir);
 }
 
 void DkCropWidget::crop(bool cropToMetadata) {
@@ -246,7 +264,6 @@ QRect* DkCropWidget::cropRect() const {
 
 void DkCropWidget::setVisible(bool visible) {
 
-
 	if (!isVisible() && visible) {
 		
 		if (!mCropDock) {
@@ -268,7 +285,7 @@ void DkCropWidget::setVisible(bool visible) {
 	if (mCropDock)
 		mCropDock->setVisible(visible);
 
-    DkFadeWidget::setVisible(visible);
+	DkBaseViewPort::setVisible(visible);
 }
 
 void DkCropWidget::rotate(double angle) {

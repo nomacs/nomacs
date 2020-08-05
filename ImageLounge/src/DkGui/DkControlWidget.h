@@ -62,7 +62,6 @@ class DkThumbScrollWidget;
 class DkMetaDataHUD;
 class DkCommentWidget;
 class DkViewPort;
-class DkCropWidget;
 class DkZoomWidget;
 class DkPlayer;
 class DkFolderScrollBar;
@@ -94,7 +93,6 @@ public:
 	enum Widgets {
 		last_widget = -1,
 		hud_widget,
-		crop_widget,
 
 		widget_end
 	};
@@ -113,7 +111,6 @@ public:
 	DkPlayer* getPlayer() const;
 	DkFileInfoLabel* getFileInfoLabel() const;
 	DkHistogram* getHistogram() const;
-	DkCropWidget* getCropWidget() const;
 
 	void stopLabels();
 	void showWidgetsSettings();
@@ -122,7 +119,6 @@ public:
 	void settingsChanged();
 
 	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix);
-	void setImageRect(const QRectF* imgRect);
 
 public slots:
 	void toggleHUD(bool hide);
@@ -131,8 +127,6 @@ public slots:
 	void showFileInfo(bool visible);
 	void showPlayer(bool visible);
 	void startSlideshow(bool start = true);
-	void hideCrop(bool hide = true);
-	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 	void showCommentWidget(bool visible);
@@ -174,7 +168,6 @@ protected:
 	QGridLayout* mHudLayout;
 
 	DkViewPort* mViewport;
-	DkCropWidget* mCropWidget;
 
 	DkFilePreview* mFilePreview;
 	DkMetaDataHUD* mMetaDataInfo;

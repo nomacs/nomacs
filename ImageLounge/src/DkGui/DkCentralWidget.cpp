@@ -42,6 +42,7 @@
 #include "DkActionManager.h"
 #include "DkPreferenceWidgets.h"
 #include "DkDialog.h"
+#include "DkCropWidgets.h"
 
 #ifdef WITH_PLUGINS
 #include "DkPluginManager.h"
@@ -206,6 +207,8 @@ QIcon DkTabInfo::getIcon() {
 		return DkImage::loadIcon(":/nomacs/img/settings.svg");
 	else if (mTabMode == tab_batch)
 		return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
+	else if (mTabMode == tab_crop)
+		return DkImage::loadIcon(":/nomacs/img/crop.svg");
 
 	if (!mImageLoader->getCurrentImage())
 		return icon;
@@ -236,6 +239,8 @@ QString DkTabInfo::getTabText() const {
 		return QObject::tr("Settings");
 	else if (mTabMode == tab_batch)
 		return QObject::tr("Batch");
+	else if (mTabMode == tab_batch)
+		return QObject::tr("Crop");
 
 	QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
 
@@ -289,6 +294,7 @@ DkCentralWidget::DkCentralWidget(QWidget* parent) : DkWidget(parent) {
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
 	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
+	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered()), this, SLOT(openCrop()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 
 #ifdef WITH_PLUGINS
@@ -448,6 +454,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
 		showBatch();
+	}
+	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_crop) {
+		showCrop();
 	}
 
 }
@@ -911,6 +920,18 @@ DkBatchWidget* DkCentralWidget::createBatch() {
 	return bw;
 }
 
+DkCropWidget* DkCentralWidget::createCrop() {
+
+	auto cw = new DkCropWidget(this);
+
+	// add actions
+	DkActionManager& am = DkActionManager::instance();
+	cw->addActions(am.viewActions().toList());
+	cw->addActions(am.panelActions().toList());
+
+	return cw;
+}
+
 
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
 
@@ -954,6 +975,59 @@ void DkCentralWidget::showBatch(bool show) {
 		switchWidget(mWidgets[batch_widget]);
 
 		mWidgets[batch_widget]->show();
+	}
+}
+
+void DkCentralWidget::openCrop() {
+
+	auto imgC = getCurrentImage();
+
+	if (!imgC) {
+		qDebug() << "cannot crop if the image is empty...";
+		return;
+	}
+
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
+
+		if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_crop, mTabInfos.size()));
+	addTab(info);
+
+	// create the crop dialog...
+	if (!mWidgets[crop_widget]) {
+		createCrop();
+		mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
+	}
+
+	auto cw = dynamic_cast<DkCropWidget*>(mWidgets[crop_widget]);
+
+	if (!cw) {
+		qWarning() << "batch widget is NULL where it should not be!";
+		return;
+	}
+
+	cw->setImageContainer(imgC);
+	cw->reset();
+}
+
+void DkCentralWidget::showCrop(bool show) {
+
+	if (show) {
+
+		if (!mWidgets[crop_widget]) {
+			mWidgets[crop_widget] = createCrop();
+			mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
+		}
+
+		switchWidget(mWidgets[crop_widget]);
+
+		mWidgets[crop_widget]->show();
 	}
 }
 

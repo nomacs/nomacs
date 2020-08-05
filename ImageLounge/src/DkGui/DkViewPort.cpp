@@ -110,7 +110,6 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	}
 
 	mController->setTransforms(&mWorldMatrix, &mImgMatrix);
-	mController->setImageRect(&mImgViewRect);
 
 	// this must be initialized after mController to be above it
 	mNavigationWidget = new DkHudNavigation(this);
@@ -1255,7 +1254,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	if (DkStatusBarManager::instance().statusbar()->isVisible())
 		getPixelInfo(event->pos());
 
-	if ((mAlwaysMove || mWorldMatrix.m11() > 1) && event->buttons() == Qt::LeftButton) {
+	if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
 
 		QPointF cPos = event->pos();
 		QPointF dxy = (cPos - mPosGrab);
@@ -1455,16 +1454,6 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	DkStatusBarManager::instance().setMessage(msg, DkStatusBar::status_pixel_info);
 }
-
-void DkViewPort::controlImagePosition(const QRect& r) {
-
-	QRect ri;
-	if (r.isNull() && mCropRect)
-		ri = *mCropRect;
-
-	DkBaseViewPort::controlImagePosition(r);
-}
-
 
 QString DkViewPort::getCurrentPixelHexValue() {
 
@@ -1971,22 +1960,6 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
 	}
 }
-
-void DkViewPort::setCropRect(const QRect* rect) {
-	mCropRect = rect;
-}
-
-bool DkViewPort::imageInside() const {
-
-	if (mCropRect) {
-
-		QRect viewRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
-		return mCropRect->contains(viewRect);
-	}
-
-	return DkBaseViewPort::imageInside();
-}
-
 
 DkControlWidget* DkViewPort::getController() {
 	

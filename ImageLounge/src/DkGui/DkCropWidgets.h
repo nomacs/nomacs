@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "DkBaseWidgets.h"
+#include "DkBaseViewport.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPen>
@@ -51,6 +51,7 @@
 namespace nmc {
 
 // nomacs defines
+class DkImageContainerT;
     
 class DkCropArea {
 
@@ -127,11 +128,11 @@ private:
 
 };
 
-class DkCropWidget : public DkFadeWidget {
+class DkCropWidget : public DkBaseViewPort {
     Q_OBJECT
 
 public:
-    DkCropWidget(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkCropWidget(QWidget* parent = 0);
     
     void reset();
 
@@ -146,6 +147,7 @@ public slots:
 
     void rotate(double angle);
     void recenter();
+    void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
@@ -161,6 +163,7 @@ protected:
     void resizeEvent(QResizeEvent* re) override;
 
     QRect winRect(int margin = 100) const;
+    void controlImagePosition(const QRect& r) override;
 
     DkCropStyle mStyle;
 
@@ -168,6 +171,7 @@ protected:
     QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
 
+    QSharedPointer<DkImageContainerT> mImage;
     QDockWidget* mCropDock = nullptr;
 };
 

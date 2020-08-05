@@ -113,10 +113,6 @@ public:
 	
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
-	void setCropRect(const QRect* rect);
-
-	bool imageInside() const override;
-
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
 	void sendNewFileSignal(qint16 op, QString filename = "") const;
@@ -229,9 +225,6 @@ protected:
 	QRectF mFadeImgRect;
 	bool mNextSwipe = true;
 
-	bool mAlwaysMove = true;
-	const QRect* mCropRect = nullptr;
-
 	QImage mImgBg;
 
 	QVBoxLayout* mPaintLayout = 0;
@@ -258,8 +251,6 @@ protected:
 	void showZoom();
 	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
-	void controlImagePosition(const QRect& r = QRect()) override;
-
 };
 
 class DllCoreExport DkViewPortFrameless : public DkViewPort {
