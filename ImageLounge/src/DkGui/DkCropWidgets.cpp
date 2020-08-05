@@ -64,18 +64,20 @@ void DkCropWidget::mouseMoveEvent(QMouseEvent* ev) {
 
 	if (ev->buttons() & Qt::LeftButton) {
 
-		if (mCropArea.currentHandle() == DkCropArea::h_move)
-			mCropArea.move(mLastMousePos - ev->pos());
-		else
+		if (mCropArea.currentHandle() != DkCropArea::h_move)
 			mCropArea.update(ev->pos());
-
+		
 		update();
 
 		mLastMousePos = ev->pos();
 	}
 
-	// do not propagate
-	//DkFadeWidget::mouseMoveEvent(ev);
+	// propagate moves
+	if (mCropArea.currentHandle() == DkCropArea::h_move) {
+
+		ev->ignore();
+		DkFadeWidget::mouseMoveEvent(ev);
+	}
 }
 
 void DkCropWidget::mousePressEvent(QMouseEvent* ev) {
@@ -83,19 +85,20 @@ void DkCropWidget::mousePressEvent(QMouseEvent* ev) {
 	mLastMousePos = ev->pos();
 	mCropArea.updateHandle(ev->pos());
 	
+	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move)
-		setCursor(Qt::ClosedHandCursor);
-
-	// do not propagate
-	//DkFadeWidget::mousePressEvent(ev);
+		DkFadeWidget::mousePressEvent(ev);
 }
 
-void DkCropWidget::mouseReleaseEvent(QMouseEvent*) {
+void DkCropWidget::mouseReleaseEvent(QMouseEvent* ev) {
 
 	mCropArea.resetHandle();
 
-	// do not propagate
-	//DkFadeWidget::mouseReleaseEvent(ev);
+	// propagate moves
+	if (mCropArea.currentHandle() == DkCropArea::h_move)
+		DkFadeWidget::mouseReleaseEvent(ev);
+
+	recenter();
 }
 
 void DkCropWidget::paintEvent(QPaintEvent* pe) {
@@ -165,11 +168,44 @@ void DkCropWidget::paintEvent(QPaintEvent* pe) {
 	drawGuides();
 	drawCorners(crop);
 
+	// debug vis remove! -------------------------
+	painter.setBrush(Qt::NoBrush);
+
+	QPen debug;
+	debug.setColor(QColor(201, 60, 140));
+	debug.setWidth(3);
+	debug.setStyle(Qt::DashLine);
+	painter.setPen(debug);
+	//painter.drawRect(mCropArea.imgViewRect());
+
+	//QTransform t = mCropArea.transformCropToRect(winRect());
+	//QRectF tr = t.mapRect(crop);
+	//painter.drawRect(tr);
+	painter.drawRect(winRect());
+
+	// debug vis remove! -------------------------
+
 	painter.end();
 
-	qDebug() << "crop:" << mCropArea.cropViewRect();
-
 	QWidget::paintEvent(pe);
+}
+
+void DkCropWidget::recenter() {
+
+	mCropArea.recenter(winRect());
+	update();	
+}
+
+QRect DkCropWidget::winRect(int margin) const {
+
+	QRect wr(
+		geometry().x() + margin,
+		geometry().y() + margin,
+		geometry().width() - 2 * margin,
+		geometry().height() - 2 * margin
+	);
+
+	return wr;
 }
 
 void DkCropWidget::crop(bool cropToMetadata) {
@@ -242,21 +278,12 @@ QRectF DkCropArea::cropViewRect() const {
 	// init the crop rect
 	if (mCropRect.isNull()) {
 
+		Q_ASSERT(mWorldMatrix);
 		Q_ASSERT(mImgViewRect != nullptr);
-		mCropRect = *mImgViewRect;
+		mCropRect = mWorldMatrix->mapRect(*mImgViewRect).toRect();
 	}
 
-	Q_ASSERT(mWorldMatrix);
-
-	// only use scaling
-	double sx = getScale();
-	QTransform st;
-	st.scale(sx, sx);
-
-	QRectF viewRect = st.mapRect(mCropRect);
-	QPointF c = mWorldMatrix->map(mCropRect.center());
-	viewRect.moveCenter(c);
-	return viewRect;
+	return mCropRect;
 }
 
 DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const {
@@ -298,27 +325,10 @@ DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const
 	return Handle::h_no_handle;
 }
 
-QPointF DkCropArea::mapToImage(const QPoint& pos) const {
-	Q_ASSERT(mWorldMatrix);
-	return mWorldMatrix->inverted().map(pos);
-}
-
-double DkCropArea::getScale() const {
-
-	Q_ASSERT(mWorldMatrix);
-
-	QTransform t = *mWorldMatrix;
-	double sx = std::sqrt(t.m11() * t.m11() + t.m12() * t.m12());
-	if (sx < 0)
-		sx *= -1;
-
-	return sx;
-}
-
-double DkCropArea::getAngle() const {
-
-	return std::asin(mWorldMatrix->m21() / getScale()) * DK_RAD2DEG;
-}
+//QPointF DkCropArea::mapToImage(const QPoint& pos) const {
+//	Q_ASSERT(mWorldMatrix);
+//	return mWorldMatrix->inverted().map(pos);
+//}
 
 void DkCropArea::updateHandle(const QPoint& pos) {
 
@@ -362,7 +372,7 @@ DkCropArea::Handle DkCropArea::currentHandle() const {
 
 void DkCropArea::move(const QPoint& dxy) {
 
-	mCropRect.moveCenter(mCropRect.center()-(dxy/getScale()));
+	mCropRect.moveCenter(mCropRect.center()-dxy);
 }
 
 void DkCropArea::rotate(double angle) {
@@ -374,14 +384,39 @@ void DkCropArea::rotate(double angle) {
 
 	// rotate image around center...
 	mWorldMatrix->translate(c.x(), c.y());
-	mWorldMatrix->rotate(angle + getAngle());
+	mWorldMatrix->rotate(angle /*+ getAngle()*/);
 	mWorldMatrix->translate(-c.x(), -c.y());
 }
 
 void DkCropArea::reset() {
 
 	mCurrentHandle = Handle::h_no_handle;
-	mCropRect = QRectF();
+	mCropRect = QRect();
+}
+
+void DkCropArea::recenter(const QRectF& target) {
+
+	QTransform t = transformCropToRect(target);
+
+	mCropRect = t.mapRect(mCropRect);
+	*mWorldMatrix = *mWorldMatrix * t;
+}
+
+QTransform DkCropArea::transformCropToRect(const QRectF& target) const {
+
+	QRectF crop = mCropRect;
+	double scale = qMin(target.width() / crop.width(), target.height() / crop.height());
+
+	QTransform t;
+	t.scale(scale, scale);
+
+	QRectF cs = t.mapRect(crop);
+	QPointF dxy(target.center() - cs.center());
+	dxy /= scale;
+
+	t.translate(dxy.x(), dxy.y());
+
+	return t;
 }
 
 void DkCropArea::update(const QPoint& pos) {
@@ -389,26 +424,24 @@ void DkCropArea::update(const QPoint& pos) {
 	if (mCurrentHandle == h_no_handle)
 		return;
 
-	QPointF ipos = mapToImage(pos);
-
 	switch (mCurrentHandle) {
 
 	case Handle::h_top_left:
-		mCropRect.setTopLeft(ipos); break;
+		mCropRect.setTopLeft(pos); break;
 	case Handle::h_top_right:
-		mCropRect.setTopRight(ipos); break;
+		mCropRect.setTopRight(pos); break;
 	case Handle::h_bottom_right:
-		mCropRect.setBottomRight(ipos); break;
+		mCropRect.setBottomRight(pos); break;
 	case Handle::h_bottom_left:
-		mCropRect.setBottomLeft(ipos); break;
+		mCropRect.setBottomLeft(pos); break;
 	case Handle::h_left:
-		mCropRect.setLeft(ipos.x()); break;
+		mCropRect.setLeft(pos.x()); break;
 	case Handle::h_right:
-		mCropRect.setRight(ipos.x()); break;
+		mCropRect.setRight(pos.x()); break;
 	case Handle::h_top:
-		mCropRect.setTop(ipos.y()); break;
+		mCropRect.setTop(pos.y()); break;
 	case Handle::h_bottom:
-		mCropRect.setBottom(ipos.y()); break;
+		mCropRect.setBottom(pos.y()); break;
 	}
 }
 

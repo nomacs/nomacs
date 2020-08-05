@@ -88,19 +88,21 @@ public:
 
     void reset();
 
+    void recenter(const QRectF& target);
+
 private:
     QTransform* mWorldMatrix = nullptr;
     const QRectF* mImgViewRect = nullptr;
 
-    // the crop rect is kept in image coordinates
-    mutable QRectF mCropRect;
+    // the crop rect is kept in display coordinates
+    mutable QRect mCropRect;
     DkCropArea::Handle mCurrentHandle = DkCropArea::Handle::h_no_handle;
 
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
-    QPointF mapToImage(const QPoint& pos) const;
+    QTransform transformCropToRect(const QRectF& target) const;
 
-    double getScale() const;
-    double getAngle() const;
+    //QPointF mapToImage(const QPoint& pos) const;
+
 };
 
 class DkCropStyle {
@@ -153,6 +155,10 @@ protected:
     void mouseReleaseEvent(QMouseEvent* ev) override;
 
     void paintEvent(QPaintEvent* pe) override;
+
+    void recenter();
+
+    QRect winRect(int margin = 100) const;
 
     DkCropStyle mStyle;
 
