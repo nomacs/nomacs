@@ -532,7 +532,8 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 		painter.setWorldMatrixEnabled(true);
 	}
 
-	QImage img = mImgStorage.image((float)(mImgMatrix.m11()*mWorldMatrix.m11()));
+	QRect displayRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
+	QImage img = mImgStorage.image(displayRect.size());
 
 	// opacity == 1.0f -> do not show pattern if we crossfade two images
 	if (DkSettingsManager::param().display().tpPattern && img.hasAlphaChannel() && opacity == 1.0)
@@ -544,29 +545,22 @@ void DkBaseViewPort::draw(QPainter & painter, double opacity) {
 	if (mSvg && mSvg->isValid()) {
 		mSvg->render(&painter, mImgViewRect);
 	}
-	else if (mMovie && mMovie->isValid())
+	else if (mMovie && mMovie->isValid()) {
 		painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
+	}
 	else {
 
 		// if we have the exact level cached: render it directly
-		QRect ir = mWorldMatrix.mapRect(mImgViewRect).toRect();
-
-		// we actually ask for ir.size() == imgQt.size()
-		// but account for rounding issues with aspect ratio (<= 1)
-		if (qAbs(ir.width() - img.width()) <= 1 &&
-			qAbs(ir.height() - img.height()) <= 1) {
-
-			// match image size & ir size
-			// this removes an (often vertical) fissure in the smoothed image
-			ir.setSize(img.size());
+		if (displayRect.width() == img.width() &&
+			displayRect.height() == img.height()) {
 
 			painter.setWorldMatrixEnabled(false);
 			painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
-			painter.drawImage(ir, img, img.rect());
+			painter.drawImage(displayRect, img, img.rect());
 			painter.setWorldMatrixEnabled(true);
 		}
 		else {
-			if (mImgMatrix.m11()*mWorldMatrix.m11() - DBL_EPSILON < 1.0)
+			if (mImgMatrix.m11()*mWorldMatrix.m11() - std::numeric_limits<double>::epsilon() < 1.0)
 				painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 			painter.drawImage(mImgViewRect, img, img.rect());
 		}
