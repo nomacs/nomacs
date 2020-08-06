@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "DkBaseViewport.h"
+#include "DkBaseViewPort.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPen>
@@ -47,6 +47,7 @@
 #endif
 
 // Qt defines
+class QComboBox;
 
 namespace nmc {
 
@@ -72,23 +73,38 @@ public:
         h_end
     };
 
+    enum Ratio : int {
+        r_free = 0,
+        r_original,
+        r_square,
+        r_16_9,
+        r_4_3,
+        r_3_2,
+        r_flip,
+
+        r_end,
+    };
+
     void setWorldMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
-    QRect cropViewRect() const;
-    QRect* cropViewRectPtr() const;
+    QRect rect() const;
 
     void updateHandle(const QPoint& pos);
     void resetHandle();
     QCursor cursor(const QPoint& pos) const;
     Handle currentHandle() const;
 
+    void setAspectRatio(const DkCropArea::Ratio& r);
+    void setOriginalRatio(double ratio);
+
     void update(const QPoint& pos);
     void move(const QPoint& dxy);
-
     void reset();
 
     void recenter(const QRectF& target);
+
+    QPoint mDebugPoint;
 
 private:
     QTransform* mWorldMatrix = nullptr;
@@ -96,10 +112,16 @@ private:
 
     // the crop rect is kept in display coordinates
     mutable QRect mCropRect;
+    DkCropArea::Ratio mRatio = r_free;
     DkCropArea::Handle mCurrentHandle = DkCropArea::Handle::h_no_handle;
+    
+    double mOriginalRatio = 1.0;
 
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
     QTransform transformCropToRect(const QRectF& target) const;
+    bool isLandscape() const;
+    void applyRatio(const DkCropArea::Ratio& r);
+    double toRatio(const DkCropArea::Ratio& r);
 
     //QPointF mapToImage(const QPoint& pos) const;
 };
@@ -138,13 +160,15 @@ public:
     void setImageRect(const QRectF* rect);
 
     QRect* cropRect() const;
+    void recenter();
 
 public slots:
     void crop(bool cropToMetadata = false);
-    virtual void setVisible(bool visible) override;
+    void setVisible(bool visible) override;
 
     void rotate(double angle);
-    void recenter();
+    void setAspectRatio(const DkCropArea::Ratio& ratio);
+
     void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
 signals:
@@ -174,18 +198,24 @@ protected:
 
 };
 
+// TODO: rename to DkCropToolBar
 class DkCropToolBarNew : public QWidget {
     Q_OBJECT
 
 public:
     DkCropToolBarNew(QWidget* parent = 0);
 
+private slots:
+    void on_ratioBox_currentIndexChanged(int idx) const;
+
 signals:
     void rotateSignal(double angle) const;
+    void aspectRatioSignal(const DkCropArea::Ratio& ratio) const;
 
 private:
     void createLayout();
 
+    QComboBox* mRatioBox = nullptr;
 
 };
 

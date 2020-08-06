@@ -483,7 +483,6 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
 
-		qDebug() << "I'd move my dear...";
 		QPointF cPos = event->pos();
 		QPointF dxy = (cPos - mPosGrab);
 		mPosGrab = cPos;
@@ -509,8 +508,6 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 		if (isFullScreen())
 			mHideCursorTimer->start(3000);
 	}
-
-	qDebug() << "scale factor: " << mWorldMatrix.m11();
 
 	QWidget::mouseMoveEvent(event);
 }
