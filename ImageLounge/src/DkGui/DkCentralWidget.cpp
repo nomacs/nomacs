@@ -1013,7 +1013,6 @@ void DkCentralWidget::openCrop() {
 	}
 
 	cw->setImageContainer(imgC);
-	cw->reset();
 }
 
 void DkCentralWidget::showCrop(bool show) {

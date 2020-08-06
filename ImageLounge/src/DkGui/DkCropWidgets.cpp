@@ -237,8 +237,10 @@ void DkCropWidget::recenter() {
 void DkCropWidget::setImageContainer(const QSharedPointer<DkImageContainerT>& img) {
 	mImage = img;
 
-	if (img)
+	if (img) {
 		DkBaseViewPort::setImage(mImage->image());
+		reset();
+	}
 }
 
 void DkCropWidget::crop(bool cropToMetadata) {
@@ -255,6 +257,7 @@ void DkCropWidget::reset() {
 
 	mCropArea.reset();
 	recenter();
+	resetWorldMatrix();
 }
 
 void DkCropWidget::setWorldTransform(QTransform* worldMatrix) {

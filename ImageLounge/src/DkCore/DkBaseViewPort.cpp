@@ -116,7 +116,7 @@ void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom) {
 // zoom - pan --------------------------------------------------------------------
 void DkBaseViewPort::resetView() {
 
-	mWorldMatrix.reset();
+	resetWorldMatrix();
 	changeCursor();
 
 	update();
@@ -124,7 +124,7 @@ void DkBaseViewPort::resetView() {
 
 void DkBaseViewPort::fullView() {
 
-	mWorldMatrix.reset();
+	resetWorldMatrix();
 	zoom(1.0/mImgMatrix.m11());
 	changeCursor();
 
@@ -198,10 +198,6 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center, bool force) {
 	if (mImgStorage.isEmpty())
 		return;
 
-	//limit zoom out ---
-	if (mWorldMatrix.m11()*factor < mMinZoom && factor < 1)
-		return;
-
 	// reset view & block if we pass the 'image fit to screen' on zoom out
 	if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11()*factor < 1 && !force) {
 
@@ -217,6 +213,10 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center, bool force) {
 		resetView();
 		return;
 	}
+
+	//limit zoom out ---
+	if (mWorldMatrix.m11() * factor < mMinZoom && factor < 1)
+		return;
 
 	//limit zoom in ---
 	if (mWorldMatrix.m11()*mImgMatrix.m11() > mMaxZoom && factor > 1)
@@ -266,7 +266,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	mImgRect = QRectF(QPoint(), getImageSize());
 	
 	if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
-		mWorldMatrix.reset();							
+		resetWorldMatrix();
 
 	updateImageMatrix();
 	update();
@@ -638,6 +638,12 @@ void DkBaseViewPort::updateImageMatrix() {
 		mWorldMatrix.scale(scaleFactor, scaleFactor);
 		mWorldMatrix.translate(dx, dy);
 	}
+}
+
+void DkBaseViewPort::resetWorldMatrix() {
+
+	mWorldMatrix.reset();
+	mWorldMatrix.translate(mViewportRect.x(), mViewportRect.y());
 }
 
 QTransform DkBaseViewPort::getScaledImageMatrix() const {
