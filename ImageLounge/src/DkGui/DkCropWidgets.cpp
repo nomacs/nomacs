@@ -54,6 +54,7 @@ DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/) : DkBaseViewPort(parent) {
 	mViewportRect = canvas();
 	mPanControl = QPointF(0, 0);
 	mMinZoom = 1.0;
+	mImgWithin = false;
 
 	mCropArea.setWorldMatrix(&mWorldMatrix);
 	mCropArea.setImageRect(&mImgViewRect);
@@ -67,8 +68,6 @@ void DkCropWidget::mouseDoubleClickEvent(QMouseEvent* ev) {
 
 void DkCropWidget::mouseMoveEvent(QMouseEvent* ev) {
 
-	QCursor c = mCropArea.cursor(ev->pos());
-	setCursor(c);
 
 	if (ev->buttons() & Qt::LeftButton) {
 
@@ -85,6 +84,10 @@ void DkCropWidget::mouseMoveEvent(QMouseEvent* ev) {
 
 		ev->ignore();
 		DkBaseViewPort::mouseMoveEvent(ev);
+	} 
+	else {
+		QCursor c = mCropArea.cursor(ev->pos());
+		setCursor(c);
 	}
 }
 
@@ -209,6 +212,39 @@ void DkCropWidget::resizeEvent(QResizeEvent* re) {
 	return QGraphicsView::resizeEvent(re);
 }
 
+void DkCropWidget::controlImagePosition(const QRect& r) {
+
+	QRect cr = controlRect(r);
+	
+	QRect imgr = mWorldMatrix.mapRect(mImgViewRect).toRect();
+
+	//// guarantee that we never fall off the crop rect
+	//if (cr.width() > imgr.width()) {
+	//	double s = (double)cr.width() / imgr.width();
+	//	mWorldMatrix.scale(s, s);
+	//}
+	//if (cr.height() > imgr.height()) {
+	//	double s = (double)cr.height() / imgr.height();
+	//	mWorldMatrix.scale(s, s);
+	//}
+	
+	if (imgr.left() > cr.left())
+		mWorldMatrix.translate((cr.left() - imgr.left()) / mWorldMatrix.m11(), 0);
+
+	if (imgr.top() > cr.top())
+		mWorldMatrix.translate(0, (cr.top() - imgr.top()) / mWorldMatrix.m11());
+
+	if (imgr.right() < cr.right())
+		mWorldMatrix.translate((cr.right() - imgr.right()) / mWorldMatrix.m11(), 0);
+
+	if (imgr.bottom() < cr.bottom())
+		mWorldMatrix.translate(0, (cr.bottom() - imgr.bottom()) / mWorldMatrix.m11());
+
+	// update scene size (this is needed to make the scroll area work)
+	if (DkSettingsManager::instance().param().display().showScrollBars)
+		setSceneRect(getImageViewRect());
+}
+
 QRect DkCropWidget::canvas(int margin) const {
 
 	return QRect(
@@ -233,6 +269,7 @@ void DkCropWidget::recenter() {
 
 	mCropArea.recenter(canvas());
 	updateViewRect(mCropArea.rect());
+	controlImagePosition(); // TODO: do we need that?
 
 	update();
 }
@@ -280,6 +317,7 @@ void DkCropWidget::setVisible(bool visible) {
 		
 		if (!mCropDock) {
 			mCropDock = new QDockWidget(this);
+			mCropDock->setObjectName("cropDock");
 			mCropDock->setTitleBarWidget(new QWidget());
 
 			DkCropToolBarNew* ctb = new DkCropToolBarNew(this);
@@ -522,6 +560,9 @@ void DkCropArea::reset() {
 
 void DkCropArea::recenter(const QRectF& target) {
 
+	if (target.isNull())
+		return;
+
 	QTransform t = transformCropToRect(target);
 
 	mCropRect = t.mapRect(rect());
@@ -531,7 +572,14 @@ void DkCropArea::recenter(const QRectF& target) {
 QTransform DkCropArea::transformCropToRect(const QRectF& target) const {
 
 	QRectF crop = rect();
+
+	if (crop.isNull())
+		return QTransform();
+
 	double scale = qMin(target.width() / crop.width(), target.height() / crop.height());
+
+	if (scale == 0.0)
+		return QTransform();
 
 	QTransform t;
 	t.scale(scale, scale);
@@ -578,6 +626,20 @@ void DkCropArea::update(const QPoint& pos) {
 		return lp.toQPointF().toPoint() + origin;
 	};
 
+	auto clip = [&](QPoint& p) {
+
+		// keep position within the image
+		QRect ir = mWorldMatrix->mapRect(*mImgViewRect).toRect();
+		if (p.x() > ir.right())
+			p.setX(ir.right());
+		if (p.x() < ir.left())
+			p.setX(ir.left());
+		if (p.y() > ir.bottom())
+			p.setY(ir.bottom());
+		if (p.y() < ir.top())
+			p.setY(ir.top());
+	};
+
 	QPoint p = pos;
 
 	// fix the other coordinate
@@ -599,12 +661,14 @@ void DkCropArea::update(const QPoint& pos) {
 
 	case Handle::h_top_left: {
 		p = enforce(p, mCropRect.bottomRight());
+		clip(p);
 		mCropRect.setTopLeft(p);
 		break;
 	}
 	case Handle::h_top:
 	case Handle::h_top_right: {
 		p = enforce(p, mCropRect.bottomLeft(), false);
+		clip(p);
 		mCropRect.setTopRight(p);
 		break;
 	}
@@ -612,12 +676,14 @@ void DkCropArea::update(const QPoint& pos) {
 	case Handle::h_right:
 	case Handle::h_bottom_right: {
 		p = enforce(p, mCropRect.topLeft());
+		clip(p);
 		mCropRect.setBottomRight(p);
 		break;
 	}
 	case Handle::h_left:
 	case Handle::h_bottom_left: {
 		p = enforce(p, mCropRect.topRight(), false);
+		clip(p);
 		mCropRect.setBottomLeft(p);
 		break;
 	}
@@ -677,7 +743,7 @@ void DkCropToolBarNew::createLayout() {
 
 	// dear future me: we can use this with C++20:
 	// using enum DkCropArea;
-	mRatioBox->addItem(DkImage::loadIcon(":/nomacs/img/crop.svg"), tr("Aspect Ratio"), DkCropArea::Ratio::r_free);
+	mRatioBox->addItem(DkImage::loadIcon(":/nomacs/img/aspect-ratio.svg"), tr("Aspect Ratio"), DkCropArea::Ratio::r_free);
 	mRatioBox->addItem(tr("Free"), DkCropArea::Ratio::r_free);
 	mRatioBox->addItem(tr("Original"), DkCropArea::Ratio::r_original);
 	mRatioBox->addItem(tr("Square"), DkCropArea::Ratio::r_square);

@@ -182,6 +182,7 @@ protected:
 	double mMaxZoom = 100;
 
 	double mAngle = 0.0;
+	bool mImgWithin = true; // if set to true, the image will always be inside the viewport
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;
@@ -204,6 +205,7 @@ protected:
 	virtual void changeCursor();
 	void zoomToPoint(double factor, const QPointF& pos, QTransform& matrix) const;
 
+	QRect controlRect(const QRect& r) const;
 };
 
 }

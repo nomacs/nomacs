@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/nomacs">
+    <file>img/aspect-ratio.svg</file>
     <file>img/next.svg</file>
     <file>img/next-hud.svg</file>
     <file>img/previous.svg</file>

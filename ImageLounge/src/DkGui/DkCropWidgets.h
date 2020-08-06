@@ -184,6 +184,8 @@ protected:
     void paintEvent(QPaintEvent* pe) override;
     void resizeEvent(QResizeEvent* re) override;
 
+    void controlImagePosition(const QRect& r = QRect()) override;
+
     QRect canvas(int margin = 100) const;
     void updateViewRect(const QRect& r);
 
