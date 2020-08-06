@@ -80,7 +80,6 @@ public:
         r_16_9,
         r_4_3,
         r_3_2,
-        r_flip,
 
         r_end,
     };
@@ -96,15 +95,13 @@ public:
     Handle currentHandle() const;
 
     void setAspectRatio(const DkCropArea::Ratio& r);
-    void setOriginalRatio(double ratio);
+    void flip();
 
     void update(const QPoint& pos);
     void move(const QPoint& dxy);
     void reset();
-
+    
     void recenter(const QRectF& target);
-
-    QPoint mDebugPoint;
 
 private:
     QTransform* mWorldMatrix = nullptr;
@@ -159,7 +156,6 @@ public:
     void setWorldTransform(QTransform* worldMatrix);
     void setImageRect(const QRectF* rect);
 
-    QRect* cropRect() const;
     void recenter();
 
 public slots:
@@ -168,6 +164,7 @@ public slots:
 
     void rotate(double angle);
     void setAspectRatio(const DkCropArea::Ratio& ratio);
+    void flip();
 
     void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
@@ -195,6 +192,8 @@ protected:
     QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
 
+    bool mIsRotating = false;
+
     QSharedPointer<DkImageContainerT> mImage;
     QDockWidget* mCropDock = nullptr;
 
@@ -211,8 +210,10 @@ private slots:
     void on_ratioBox_currentIndexChanged(int idx) const;
 
 signals:
+    void isRotatingSignal(bool rotating) const;
     void rotateSignal(double angle) const;
     void aspectRatioSignal(const DkCropArea::Ratio& ratio) const;
+    void flipSignal() const;
 
 private:
     void createLayout();
