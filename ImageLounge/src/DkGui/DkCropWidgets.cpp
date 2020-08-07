@@ -289,13 +289,17 @@ void DkCropWidget::crop() {
 		return;
 	}
 
-	QTransform wm = mWorldMatrix;
-	wm.translate(-mViewportRect.x() / wm.m11(), -mViewportRect.y() / wm.m11());
-	rotateTransform(wm, mAngle);
+	QRect r = mCropArea.rect();
+	r = mWorldMatrix.inverted().mapRect(r);
+	r = mImgMatrix.inverted().mapRect(r);
 
-	QTransform t = mImgMatrix * wm;
+	if (mCropArea.isActive() || mAngle != 0.0) {
+		QTransform t;
+		t.translate(-r.left(), -r.top());
+		rotateTransform(t, mAngle, r.center());
 
-	mImage->cropImage(mCropArea.rect(), t);
+		mImage->cropImage(r, t);
+	}
 
 	emit croppedSignal();
 }
@@ -365,6 +369,14 @@ void DkCropWidget::flip() {
 	
 	mCropArea.flip();
 	recenter();
+}
+
+bool DkCropArea::isActive() const {
+
+	const QRect& r = rect();
+
+	return qRound(r.width() / mWorldMatrix->m11()) != qRound(mImgViewRect->width()) ||
+		qRound(r.height() / mWorldMatrix->m11()) != qRound(mImgViewRect->height());
 }
 
 void DkCropArea::setWorldMatrix(QTransform* matrix) {

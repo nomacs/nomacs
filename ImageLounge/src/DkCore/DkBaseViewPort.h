@@ -205,7 +205,7 @@ protected:
 	virtual void changeCursor();
 	void zoomToPoint(double factor, const QPointF& pos, QTransform& matrix) const;
 
-	void rotateTransform(QTransform& t, double angle) const;
+	void rotateTransform(QTransform& t, double angle, const QPointF& c = QPointF()) const;
 
 	QRect controlRect(const QRect& r) const;
 };

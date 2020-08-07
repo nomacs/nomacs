@@ -246,15 +246,19 @@ void DkBaseViewPort::zoomToPoint(double factor, const QPointF & pos, QTransform 
 	matrix.scale(factor, factor);
 }
 
-void DkBaseViewPort::rotateTransform(QTransform& t, double angle) const {
+void DkBaseViewPort::rotateTransform(QTransform& t, double angle, const QPointF& c) const {
 
 	if (angle != 0.0) {
-		QPointF c = mWorldMatrix.inverted().map(mViewportRect.center());
+		
+		QPointF cc = c;
+
+		if (cc.isNull())
+			cc = mWorldMatrix.inverted().map(mViewportRect.center());
 
 		// rotate image around center...
-		t.translate(c.x(), c.y());
+		t.translate(cc.x(), cc.y());
 		t.rotate(angle);
-		t.translate(-c.x(), -c.y());
+		t.translate(-cc.x(), -cc.y());
 	}
 }
 

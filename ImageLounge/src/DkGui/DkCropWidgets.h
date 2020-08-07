@@ -84,6 +84,8 @@ public:
         r_end,
     };
 
+    bool isActive() const;
+
     void setWorldMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
