@@ -681,6 +681,29 @@ QPixmap DkImage::merge(const QVector<QImage>& imgs) {
 	return pm;
 }
 
+QImage DkImage::cropToImage(const QImage& src, const QRect& cropRect, const QTransform& t, const QColor& fillColor) {
+
+	// illegal?
+	if (cropRect.width() <= 0 || cropRect.height() <= 0)
+		return src;
+
+	QImage img = QImage(cropRect.width(), cropRect.height(), QImage::Format_ARGB32);
+	img.fill(fillColor.rgba());
+
+	// render the image into the new coordinate system
+	QPainter painter(&img);
+	painter.setWorldTransform(t);
+
+	// for rotated rects we want perfect anti-aliasing
+	if (t.isRotating())
+		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+
+	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
+	painter.end();
+
+	return img;
+}
+
 QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, const QColor & fillColor) {
 
 	QTransform tForm; 

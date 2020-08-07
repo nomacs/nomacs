@@ -928,10 +928,12 @@ DkCropWidget* DkCentralWidget::createCrop() {
 	DkActionManager& am = DkActionManager::instance();
 	cw->addActions(am.viewActions().toList());
 	cw->addActions(am.panelActions().toList());
+	connect(cw, &DkCropWidget::croppedSignal, this, [&]() {
+		removeTab();
+		});
 
 	return cw;
 }
-
 
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
 

@@ -145,6 +145,13 @@ void DkImageContainer::cropImage(const DkRotatingRect & rect, const QColor & col
 		getMetaData()->saveRectToXMP(rect, image().size());
 }
 
+void DkImageContainer::cropImage(const QRect& rect, const QTransform& t, const QColor& col) {
+
+	QImage cropped = DkImage::cropToImage(image(), rect, t, col);
+	setImage(cropped, QObject::tr("Cropped"));
+	getMetaData()->clearXMPRect();
+}
+
 QFileInfo DkImageContainer::fileInfo() const {
 	return mFileInfo;
 }

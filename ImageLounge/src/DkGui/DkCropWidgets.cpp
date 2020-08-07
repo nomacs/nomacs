@@ -61,6 +61,11 @@ DkCropWidget::DkCropWidget(QWidget* parent /* = 0*/) : DkBaseViewPort(parent) {
 	mCropArea.setWorldMatrix(&mWorldMatrix);
 	mCropArea.setImageRect(&mImgViewRect);
 
+	QAction* crop = new QAction(tr("Crop"), this);
+	crop->setShortcut(Qt::Key_Return);
+	addAction(crop);
+	connect(crop, &QAction::triggered, this, &DkCropWidget::crop);
+
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.viewActions().toList());
 }
@@ -275,14 +280,24 @@ void DkCropWidget::setImageContainer(const QSharedPointer<DkImageContainerT>& im
 	}
 }
 
-void DkCropWidget::crop(bool cropToMetadata) {
+void DkCropWidget::crop() {
 
-    if (!mRect.isEmpty())
-        emit cropImageSignal(mRect, cropToMetadata);
+	qDebug() << "cropping for you sir...";
 
-    setVisible(false);
-    setWindowOpacity(0);
-    emit hideSignal();
+	if (!mImage) {
+		qWarning() << "cannot crop NULL image...";
+		return;
+	}
+
+	QTransform wm = mWorldMatrix;
+	wm.translate(-mViewportRect.x() / wm.m11(), -mViewportRect.y() / wm.m11());
+	rotateTransform(wm, mAngle);
+
+	QTransform t = mImgMatrix * wm;
+
+	mImage->cropImage(mCropArea.rect(), t);
+
+	emit croppedSignal();
 }
 
 void DkCropWidget::reset() {

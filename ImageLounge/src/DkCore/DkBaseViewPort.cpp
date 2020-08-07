@@ -246,6 +246,18 @@ void DkBaseViewPort::zoomToPoint(double factor, const QPointF & pos, QTransform 
 	matrix.scale(factor, factor);
 }
 
+void DkBaseViewPort::rotateTransform(QTransform& t, double angle) const {
+
+	if (angle != 0.0) {
+		QPointF c = mWorldMatrix.inverted().map(mViewportRect.center());
+
+		// rotate image around center...
+		t.translate(c.x(), c.y());
+		t.rotate(angle);
+		t.translate(-c.x(), -c.y());
+	}
+}
+
 QRect DkBaseViewPort::controlRect(const QRect& r) const {
 
 	QRect cr = r;
@@ -371,15 +383,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 	if (!mImgStorage.isEmpty()) {
 
 		QTransform wt = mWorldMatrix;
-
-		if (mAngle != 0.0) {
-			QPointF c = mWorldMatrix.inverted().map(mViewportRect.center());
-			
-			// rotate image around center...
-			wt.translate(c.x(), c.y());
-			wt.rotate(mAngle);
-			wt.translate(-c.x(), -c.y());
-		}
+		rotateTransform(wt, mAngle);
 
 		painter.setWorldTransform(wt);
 

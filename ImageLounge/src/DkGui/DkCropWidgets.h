@@ -159,7 +159,6 @@ public:
     void recenter();
 
 public slots:
-    void crop(bool cropToMetadata = false);
     void setVisible(bool visible) override;
 
     void rotate(double angle);
@@ -168,9 +167,11 @@ public slots:
 
     void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
+    void crop();
+
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
-    void hideSignal() const;
+    void croppedSignal() const;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent* ev) override;
