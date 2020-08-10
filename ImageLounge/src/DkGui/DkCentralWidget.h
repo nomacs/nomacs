@@ -60,7 +60,7 @@ class DkViewPort;
 class DkPreferenceWidget;
 class DkProgressBar;
 class DkBatchWidget;
-class DkCropWidget;
+class DkCropViewPort;
 
 class DllCoreExport DkTabInfo : public QObject {
 	Q_OBJECT
@@ -209,7 +209,7 @@ protected:
 	DkRecentFilesWidget* createRecentFiles();
 	DkThumbScrollWidget* createThumbScrollWidget();
 	DkBatchWidget* createBatch();
-	DkCropWidget* createCrop();
+	DkCropViewPort* createCrop();
 	void createViewPort();
 
 	enum {

@@ -158,7 +158,6 @@ public slots:
 	void loadLena();
 	bool unloadImage(bool fileChange = true) override;
 	void deactivate();
-	void cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData);
 	void repeatZoom();
 
 	void applyPlugin(DkPluginContainer* plugin, const QString& key);

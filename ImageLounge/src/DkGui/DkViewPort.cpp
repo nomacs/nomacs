@@ -1966,19 +1966,6 @@ DkControlWidget* DkViewPort::getController() {
 	return mController;
 }
 
-void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData) {
-
-	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
-
-	if (!imgC) {
-		qWarning() << "cannot crop NULL image...";
-		return;
-	}
-	
-	imgC->cropImage(rect, bgCol, cropToMetaData);
-	setEditedImage(imgC);
-}
-
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent) : DkViewPort(parent) {
 	

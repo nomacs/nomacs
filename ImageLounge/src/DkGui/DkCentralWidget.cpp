@@ -920,15 +920,15 @@ DkBatchWidget* DkCentralWidget::createBatch() {
 	return bw;
 }
 
-DkCropWidget* DkCentralWidget::createCrop() {
+DkCropViewPort* DkCentralWidget::createCrop() {
 
-	auto cw = new DkCropWidget(this);
+	auto cw = new DkCropViewPort(this);
 
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	cw->addActions(am.viewActions().toList());
 	cw->addActions(am.panelActions().toList());
-	connect(cw, &DkCropWidget::croppedSignal, this, [&]() {
+	connect(cw, &DkCropViewPort::croppedSignal, this, [&]() {
 		removeTab();
 		});
 
@@ -1007,7 +1007,7 @@ void DkCentralWidget::openCrop() {
 		mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
 	}
 
-	auto cw = dynamic_cast<DkCropWidget*>(mWidgets[crop_widget]);
+	auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
 
 	if (!cw) {
 		qWarning() << "batch widget is NULL where it should not be!";

@@ -147,11 +147,11 @@ private:
 
 };
 
-class DkCropWidget : public DkBaseViewPort {
+class DkCropViewPort : public DkBaseViewPort {
     Q_OBJECT
 
 public:
-    DkCropWidget(QWidget* parent = 0);
+    DkCropViewPort(QWidget* parent = 0);
     
     void reset();
 
@@ -203,11 +203,11 @@ protected:
 };
 
 // TODO: rename to DkCropToolBar
-class DkCropToolBarNew : public QWidget {
+class DkCropToolBar : public QWidget {
     Q_OBJECT
 
 public:
-    DkCropToolBarNew(QWidget* parent = 0);
+    DkCropToolBar(QWidget* parent = 0);
 
 private slots:
     void on_ratioBox_currentIndexChanged(int idx) const;
