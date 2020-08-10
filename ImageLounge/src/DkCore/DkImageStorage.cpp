@@ -1523,7 +1523,7 @@ QImage DkImageStorage::imageConst() const {
 
 QImage DkImageStorage::image(const QSize& size) {
 
-	if (size.isNull() || 
+	if (size.isEmpty() || 
 		mImg.isNull() ||
 		!DkSettingsManager::param().display().antiAliasing ||	// user disabled?
 		mImg.size().width() < size.width()						// scale factor > 1?
@@ -1597,10 +1597,15 @@ QImage DkImageStorage::computeIntern(const QImage & src, const QSize& size) {
 		s.setWidth(1);
 
 #ifdef WITH_OPENCV
-	cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
-	cv::Mat tmp;
-	cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-	resizedImg = DkImage::mat2QImage(tmp);
+	try {
+		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
+		cv::Mat tmp;
+		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+		resizedImg = DkImage::mat2QImage(tmp);
+	}
+	catch (...) {
+		qWarning() << "DkImageStorage: OpenCV exception caught while resizing...";
+	}
 #else
 	resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
