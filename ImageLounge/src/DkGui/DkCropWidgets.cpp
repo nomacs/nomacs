@@ -643,7 +643,9 @@ void DkCropArea::update(const QPoint& pos) {
 		return lp.toQPointF().toPoint() + origin;
 	};
 
-	auto clip = [&](QPoint& p) {
+	auto clip = [&](QPoint& p) -> bool {
+
+		QPoint src = p;
 
 		// keep position within the image
 		QRect ir = mWorldMatrix->mapRect(*mImgViewRect).toRect();
@@ -655,6 +657,8 @@ void DkCropArea::update(const QPoint& pos) {
 			p.setY(ir.bottom());
 		if (p.y() < ir.top())
 			p.setY(ir.top());
+
+		return src != p;
 	};
 
 	QPoint p = pos;
@@ -678,30 +682,30 @@ void DkCropArea::update(const QPoint& pos) {
 
 	case Handle::h_top_left: {
 		p = enforce(p, mCropRect.bottomRight());
-		clip(p);
-		mCropRect.setTopLeft(p);
+		if (!clip(p) || mRatio == Ratio::r_free)
+			mCropRect.setTopLeft(p);
 		break;
 	}
 	case Handle::h_top:
 	case Handle::h_top_right: {
 		p = enforce(p, mCropRect.bottomLeft(), false);
-		clip(p);
-		mCropRect.setTopRight(p);
+		if (!clip(p) || mRatio == Ratio::r_free)
+			mCropRect.setTopRight(p);
 		break;
 	}
 	case Handle::h_bottom:
 	case Handle::h_right:
 	case Handle::h_bottom_right: {
 		p = enforce(p, mCropRect.topLeft());
-		clip(p);
-		mCropRect.setBottomRight(p);
+		if (!clip(p) || mRatio == Ratio::r_free)
+			mCropRect.setBottomRight(p);
 		break;
 	}
 	case Handle::h_left:
 	case Handle::h_bottom_left: {
 		p = enforce(p, mCropRect.topRight(), false);
-		clip(p);
-		mCropRect.setBottomLeft(p);
+		if (!clip(p) || mRatio == Ratio::r_free)
+			mCropRect.setBottomLeft(p);
 		break;
 	}
 	}
