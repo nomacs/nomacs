@@ -53,6 +53,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageContainerT;
+class DkDoubleSlider;
     
 class DkCropArea {
 
@@ -174,6 +175,7 @@ public slots:
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
     void croppedSignal() const;
+    void resetSignal() const;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent* ev) override;
@@ -209,6 +211,9 @@ class DkCropToolBar : public QWidget {
 public:
     DkCropToolBar(QWidget* parent = 0);
 
+public slots:
+    void reset();
+
 private slots:
     void on_ratioBox_currentIndexChanged(int idx) const;
 
@@ -222,6 +227,7 @@ private:
     void createLayout();
 
     QComboBox* mRatioBox = nullptr;
+    DkDoubleSlider* mAngleSlider = nullptr;
 
 };
 

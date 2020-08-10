@@ -309,6 +309,7 @@ void DkCropViewPort::reset() {
 	mCropArea.reset();
 	recenter();
 	resetWorldMatrix();
+	emit resetSignal();
 }
 
 void DkCropViewPort::setWorldTransform(QTransform* worldMatrix) {
@@ -337,6 +338,7 @@ void DkCropViewPort::setVisible(bool visible) {
 					mIsRotating = r; 
 					update(); 
 				});
+			connect(this, &DkCropViewPort::resetSignal, ctb, &DkCropToolBar::reset);
 
 			mCropDock->setWidget(ctb);
 		}
@@ -768,17 +770,18 @@ void DkCropToolBar::createLayout() {
 
 	QPushButton* flipButton = new QPushButton(tr("Flip"), this);
 
-	DkDoubleSlider* angleSlider = new DkDoubleSlider("", this);
-	angleSlider->setTickInterval(1/90.0);
-	angleSlider->setMinimum(-45);
-	angleSlider->setMaximum(45);
-	angleSlider->setValue(0.0);
-	angleSlider->setMaximumWidth(400);
+	mAngleSlider = new DkDoubleSlider("", this);
+	mAngleSlider->setTickInterval(1/90.0);
+	mAngleSlider->setMinimum(-45);
+	mAngleSlider->setMaximum(45);
+	mAngleSlider->setValue(0.0);
+	mAngleSlider->setMaximumWidth(400);
 
-	auto s = angleSlider->getSlider();
+	// connections
+	auto s = mAngleSlider->getSlider();
 	connect(s, &QSlider::sliderPressed, this, [&]() { emit isRotatingSignal(true); });
 	connect(s, &QSlider::sliderReleased, this, [&]() { emit isRotatingSignal(false); });
-	connect(angleSlider, &DkDoubleSlider::valueChanged, this, &DkCropToolBar::rotateSignal);
+	connect(mAngleSlider, &DkDoubleSlider::valueChanged, this, &DkCropToolBar::rotateSignal);
 	connect(flipButton, &QPushButton::clicked, this, &DkCropToolBar::flipSignal);
 
 	QHBoxLayout* l = new QHBoxLayout(this);
@@ -787,7 +790,7 @@ void DkCropToolBar::createLayout() {
 	l->addStretch();
 	l->addWidget(mRatioBox);
 	l->addWidget(flipButton);
-	l->addWidget(angleSlider);
+	l->addWidget(mAngleSlider);
 	l->addStretch();
 }
 
@@ -795,6 +798,11 @@ void DkCropToolBar::on_ratioBox_currentIndexChanged(int idx) const {
 
 	auto r = static_cast<DkCropArea::Ratio>(mRatioBox->itemData(idx).toInt());
 	emit aspectRatioSignal(r);
+}
+
+void DkCropToolBar::reset() {
+
+	mAngleSlider->setValue(0);
 }
 
 }
