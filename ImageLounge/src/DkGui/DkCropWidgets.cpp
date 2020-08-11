@@ -258,15 +258,24 @@ void DkCropViewPort::updateViewRect(const QRect& r) {
 		return;
 
 	mViewportRect = r;
-	updateImageMatrix();
+	updateImageMatrix(true);	// force centering
 	changeCursor();
+}
+
+QTransform DkCropViewPort::getScaledImageMatrix() const {
+
+	QSize s = size();
+	if (!mViewportRect.isNull())
+		s = mViewportRect.size();
+
+	return DkBaseViewPort::getScaledImageMatrix(s);
 }
 
 void DkCropViewPort::recenter() {
 
 	mCropArea.recenter(canvas());
 	updateViewRect(mCropArea.rect());
-	controlImagePosition(); // TODO: do we need that?
+	//controlImagePosition(); // TODO: do we need that?
 
 	update();
 }
@@ -489,45 +498,57 @@ DkCropArea::Handle DkCropArea::currentHandle() const {
 }
 
 void DkCropArea::setAspectRatio(const DkCropArea::Ratio& r) {
-	mRatio = r;
-	applyRatio(r);
-}
 
-void DkCropArea::applyRatio(const DkCropArea::Ratio& r) {
-	
-	// do nothing
+	mRatio = r;
+
+	// don't do anything
 	if (r == r_free)
 		return;
 
-	auto enforceRatio = [&](double ratio) {
+	QRect nr = rect();
+	clip(nr);
+	applyRatio(nr, toRatio(r));
 
-		const QRect& r = rect();
-		int cl = isLandscape() ? r.width() : r.height();
-		int ns = qRound(cl/ratio);
+	// center it
+	mCropRect = moveCenterTo(mCropRect, nr);
+}
 
-		QPoint oc = r.center();
+void DkCropArea::applyRatio(QRect& r, double ratio) const {
+	
+	bool landscape = r.width() >= r.height();
 
-		if (isLandscape())
-			mCropRect.setHeight(ns);
-		else
-			mCropRect.setWidth(ns);
+	// the new rect should always be smaller...
+	if (ratio <= 1) {
+		landscape = !landscape;
+		ratio = 1.0 / ratio;
+	}
 
-		// center it
-		mCropRect.moveCenter(oc);
-	};
+	int cl = landscape ? r.width() : r.height();
+	int ns = qRound(cl/ratio);
 
-	enforceRatio(toRatio(r));
+	if (landscape) {
+		r.setHeight(ns);
+	}
+	else {
+		r.setWidth(ns);
+	}
 }
 
 void DkCropArea::flip() {
 
-	const QRect& r = rect();
+	QRect r = rect();
 
-	QPoint oc = r.center();
 	int ow = r.width();
 	mCropRect.setWidth(r.height());
 	mCropRect.setHeight(ow);
-	mCropRect.moveCenter(oc);
+
+	double ratio = (double)mCropRect.width() / mCropRect.height();
+
+	if (clip(mCropRect)) {
+		applyRatio(mCropRect, ratio);
+	}
+
+	mCropRect = moveCenterTo(r, mCropRect);
 }
 
 double DkCropArea::toRatio(const DkCropArea::Ratio& r) {
@@ -548,6 +569,28 @@ double DkCropArea::toRatio(const DkCropArea::Ratio& r) {
 	qWarning() << "illegal ratio: " << r;
 
 	return 1.0;
+}
+
+bool DkCropArea::clip(QRect& r) const {
+
+	QRect o = mWorldMatrix->mapRect(*mImgViewRect).toRect();
+	o = o.intersected(r);
+
+	if (o != r) {
+		r = o;
+		return true;
+	}
+
+	return false;
+}
+
+QRect DkCropArea::moveCenterTo(const QRect& from, const QRect& to) const {
+
+	QRect r = to;
+	QPoint dxy = from.center() - to.center();
+	r.moveCenter(to.center()+dxy);
+
+	return r;
 }
 
 void DkCropArea::move(const QPoint& dxy) {

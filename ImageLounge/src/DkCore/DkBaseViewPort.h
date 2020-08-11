@@ -196,10 +196,10 @@ protected:
 	// functions
 	virtual void draw(QPainter & painter, double opacity = 1.0);
 	virtual void drawPattern(QPainter & painter) const;
-	virtual void updateImageMatrix();
+	virtual void updateImageMatrix(bool forceCentering = false);
 	void resetWorldMatrix();
 	virtual QTransform getScaledImageMatrix() const;
-	virtual QTransform getScaledImageMatrix(const QSize& size) const;
+	virtual QTransform getScaledImageMatrix(const QSize& size, bool center = true) const;
 	virtual void controlImagePosition(const QRect& r = QRect());
 	virtual void centerImage();
 	virtual void changeCursor();

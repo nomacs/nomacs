@@ -120,8 +120,11 @@ private:
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
     QTransform transformCropToRect(const QRectF& target) const;
     bool isLandscape() const;
-    void applyRatio(const DkCropArea::Ratio& r);
+    void applyRatio(QRect& r, double ratio) const;
     double toRatio(const DkCropArea::Ratio& r);
+    bool clip(QRect& r) const;
+
+    QRect moveCenterTo(const QRect& from, const QRect& to) const;
 
     //QPointF mapToImage(const QPoint& pos) const;
 };
@@ -190,6 +193,7 @@ protected:
 
     QRect canvas(int margin = 100) const;
     void updateViewRect(const QRect& r);
+    QTransform getScaledImageMatrix() const override;
 
     DkCropStyle mStyle;
 

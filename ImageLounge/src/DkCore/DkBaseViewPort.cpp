@@ -637,7 +637,7 @@ bool DkBaseViewPort::imageInside() const {
 	return (mImgWithin && mWorldMatrix.m11() <= 1.0f) || mViewportRect.contains(viewRect);
 }
 
-void DkBaseViewPort::updateImageMatrix() {
+void DkBaseViewPort::updateImageMatrix(bool forceCentering) {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -653,14 +653,16 @@ void DkBaseViewPort::updateImageMatrix() {
 	if (!mViewportRect.contains(mImgRect.toRect()))
 		mImgMatrix = getScaledImageMatrix();
 	else {
-		mImgMatrix.translate((float)(mViewportRect.width()-imgSize.width())*0.5f, (float)(mViewportRect.height()-imgSize.height())*0.5f);
+		mImgMatrix.translate(
+			((float)mViewportRect.width()-imgSize.width())*0.5f, 
+			((float)mViewportRect.height()-imgSize.height())*0.5f);
 		mImgMatrix.scale(1.0f, 1.0f);
 	}
 
 	mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
 	// update world matrix
-	if (mWorldMatrix.m11() != 1) {
+	if (mWorldMatrix.m11() != 1 || forceCentering) {
 
 		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
@@ -686,27 +688,35 @@ QTransform DkBaseViewPort::getScaledImageMatrix() const {
 	return getScaledImageMatrix(s);
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size) const {
+QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size, bool center) const {
 
 	// the image resizes as we zoom
-	float ratioImg = (float)mImgRect.width()/(float)mImgRect.height();
-	float ratioWin = (float)size.width()/(float)size.height();
+	double ratioImg = (double)mImgRect.width()/mImgRect.height();
+	double ratioWin = (double)size.width()/size.height();
 
 	QTransform imgMatrix;
-	float s;
-	if (mImgRect.width() == 0 || mImgRect.height() == 0)
-		s = 1.0f;
-	// default
-	else if (mImgWithin)
-		s = (ratioImg > ratioWin) ? (float)size.width()/(float)mImgRect.width() : (float)size.height()/(float)mImgRect.height();
-	// crop viewport
-	else
-		s = (ratioImg < ratioWin) ? (float)size.width() / (float)mImgRect.width() : (float)size.height() / (float)mImgRect.height();
+	double scale = 1.0;
+	double wr = (double)size.width() / mImgRect.width();
+	double hr = (double)size.height() / mImgRect.height();
 
-	imgMatrix.scale(s, s);
+	if (mImgRect.isValid()) {
+
+		if (mImgWithin)
+			scale = (ratioImg > ratioWin) ? wr : hr;
+		else
+			scale = (ratioImg < ratioWin) ? wr : hr;
+
+	}
+
+	imgMatrix.scale(scale, scale);
 
 	QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-	imgMatrix.translate((size.width()-imgViewRect.width())*0.5f/s, (size.height()-imgViewRect.height())*0.5f/s);
+	
+	if (center) {
+		imgMatrix.translate(
+			(size.width()  - imgViewRect.width())  * 0.5 / scale,
+			(size.height() - imgViewRect.height()) * 0.5 / scale);
+	}
 
 	return imgMatrix;
 }
