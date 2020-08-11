@@ -246,7 +246,7 @@ protected:
 
 	void drawPolygon(QPainter & painter, const QPolygon & polygon);
 	virtual void drawBackground(QPainter & painter);
-	void updateImageMatrix(bool forceCentering = false) override;
+	void updateImageMatrix() override;
 	void showZoom();
 	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
@@ -272,7 +272,7 @@ protected:
 	virtual void paintEvent(QPaintEvent* event) override;
 
 	// functions
-	void updateImageMatrix(bool forceCentering = false) override;
+	void updateImageMatrix() override;
 	void draw(QPainter & painter, double opacity = 1.0) override;
 	void drawFrame(QPainter & painter);
 	void drawBackground(QPainter & painter) override;

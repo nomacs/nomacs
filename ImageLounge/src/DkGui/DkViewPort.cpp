@@ -551,7 +551,7 @@ void DkViewPort::toggleResetMatrix() {
 	DkSettingsManager::param().display().keepZoom = !DkSettingsManager::param().display().keepZoom;
 }
 
-void DkViewPort::updateImageMatrix(bool forceCentering) {
+void DkViewPort::updateImageMatrix() {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -575,7 +575,7 @@ void DkViewPort::updateImageMatrix(bool forceCentering) {
 
 	// update world matrix?
 	// mWorldMatrix.m11() != 1
-	if (qAbs(mWorldMatrix.m11()-1.0) > 1e-4 || forceCentering) {
+	if (qAbs(mWorldMatrix.m11()-1.0) > 1e-4) {
 
 		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
@@ -2258,7 +2258,7 @@ void DkViewPortFrameless::controlImagePosition(const QRect&) {
 void DkViewPortFrameless::centerImage() {
 }
 
-void DkViewPortFrameless::updateImageMatrix(bool forceCentering) {
+void DkViewPortFrameless::updateImageMatrix() {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -2284,9 +2284,9 @@ void DkViewPortFrameless::updateImageMatrix(bool forceCentering) {
 	mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
 	// update world matrix
-	if (mWorldMatrix.m11() != 1 || forceCentering) {
+	if (mWorldMatrix.m11() != 1) {
 
-		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
+		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
 		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
 

@@ -258,7 +258,7 @@ void DkCropViewPort::updateViewRect(const QRect& r) {
 		return;
 
 	mViewportRect = r;
-	updateImageMatrix(true);	// force centering
+	updateImageMatrix();
 	changeCursor();
 }
 
@@ -536,19 +536,20 @@ void DkCropArea::applyRatio(QRect& r, double ratio) const {
 
 void DkCropArea::flip() {
 
-	QRect r = rect();
+	QRect nr = rect();
 
-	int ow = r.width();
-	mCropRect.setWidth(r.height());
-	mCropRect.setHeight(ow);
+	int ow = nr.width();
+	nr.setWidth(nr.height());
+	nr.setHeight(ow);
 
-	double ratio = (double)mCropRect.width() / mCropRect.height();
+	double ratio = (double)nr.width() / nr.height();
 
-	if (clip(mCropRect)) {
-		applyRatio(mCropRect, ratio);
+	// TODO: there is still an issue with clipping (if you flip from full view 3 times)
+	if (clip(nr)) {
+		applyRatio(nr, ratio);
 	}
 
-	mCropRect = moveCenterTo(r, mCropRect);
+	mCropRect = moveCenterTo(mCropRect, nr);
 }
 
 double DkCropArea::toRatio(const DkCropArea::Ratio& r) {

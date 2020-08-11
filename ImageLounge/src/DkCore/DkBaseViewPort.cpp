@@ -637,7 +637,7 @@ bool DkBaseViewPort::imageInside() const {
 	return (mImgWithin && mWorldMatrix.m11() <= 1.0f) || mViewportRect.contains(viewRect);
 }
 
-void DkBaseViewPort::updateImageMatrix(bool forceCentering) {
+void DkBaseViewPort::updateImageMatrix() {
 
 	if (mImgStorage.isEmpty())
 		return;
@@ -662,15 +662,17 @@ void DkBaseViewPort::updateImageMatrix(bool forceCentering) {
 	mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
 	// update world matrix
-	if (mWorldMatrix.m11() != 1 || forceCentering) {
+	double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
 
-		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
-		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
-		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
+	// clamp it
+	if (qAbs(scaleFactor - 1.0) < 1e-4)
+		scaleFactor = 1.0;
 
-		mWorldMatrix.scale(scaleFactor, scaleFactor);
-		mWorldMatrix.translate(dx, dy);
-	}
+	double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
+	double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
+
+	mWorldMatrix.scale(scaleFactor, scaleFactor);
+	mWorldMatrix.translate(dx, dy);
 }
 
 void DkBaseViewPort::resetWorldMatrix() {
