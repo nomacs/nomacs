@@ -1274,7 +1274,7 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_close_all_tabs] = new QAction(QObject::tr("&Close All Tabs"), parent);
 	mViewActions[menu_view_close_all_tabs]->setStatusTip(QObject::tr("Close all open tabs"));
 
-	mViewActions[menu_view_fit_frame] = new QAction(QObject::tr("&Fit Window"), parent);
+	mViewActions[menu_view_fit_frame] = new QAction(QObject::tr("&Fit Window to Image"), parent);
 	mViewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
 	mViewActions[menu_view_fit_frame]->setStatusTip(QObject::tr("Fit window to the image"));
 
@@ -1302,9 +1302,9 @@ void DkActionManager::createActions(QWidget* parent) {
 	mViewActions[menu_view_fullscreen]->setShortcuts(scs);
 	mViewActions[menu_view_fullscreen]->setStatusTip(QObject::tr("Full Screen"));
 
-	mViewActions[menu_view_reset] = new QAction(mViewIcons[icon_view_reset], QObject::tr("&Zoom to Fit"), parent);
+	mViewActions[menu_view_reset] = new QAction(mViewIcons[icon_view_reset], QObject::tr("&Fit Image to Window"), parent);
 	mViewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
-	mViewActions[menu_view_reset]->setStatusTip(QObject::tr("Shows the initial view (no zooming)"));
+	mViewActions[menu_view_reset]->setStatusTip(QObject::tr("Zoom image to fit window"));
 
 	mViewActions[menu_view_100] = new QAction(mViewIcons[icon_view_100], QObject::tr("Show &100%"), parent);
 	mViewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
