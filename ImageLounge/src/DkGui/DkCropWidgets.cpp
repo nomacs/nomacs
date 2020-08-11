@@ -34,6 +34,7 @@
 #include "DkMath.h"
 #include "DkImageContainer.h"
 #include "DkActionManager.h"
+#include "DkBasicLoader.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPainter>
@@ -68,6 +69,17 @@ DkCropViewPort::DkCropViewPort(QWidget* parent /* = 0*/) : DkBaseViewPort(parent
 
 	DkActionManager& am = DkActionManager::instance();
 	addActions(am.viewActions().toList());
+	addActions(am.editActions().toList());
+
+	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
+	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
+	connect(am.action(DkActionManager::menu_edit_rotate_180), SIGNAL(triggered()), this, SLOT(rotate180()));
+
+	connect(am.action(DkActionManager::menu_view_reset), SIGNAL(triggered()), this, SLOT(resetView()));
+	connect(am.action(DkActionManager::menu_view_100), SIGNAL(triggered()), this, SLOT(fullView()));
+	connect(am.action(DkActionManager::menu_view_zoom_in), SIGNAL(triggered()), this, SLOT(zoomIn()));
+	connect(am.action(DkActionManager::menu_view_zoom_out), SIGNAL(triggered()), this, SLOT(zoomOut()));
+	connect(am.action(DkActionManager::menu_view_tp_pattern), SIGNAL(toggled(bool)), this, SLOT(togglePattern(bool)));
 }
 
 void DkCropViewPort::mouseDoubleClickEvent(QMouseEvent* ev) {
@@ -312,6 +324,34 @@ void DkCropViewPort::crop() {
 
 	emit croppedSignal();
 }
+
+void DkCropViewPort::rotateCW() {
+
+	rotateWithReset(90);
+}
+
+void DkCropViewPort::rotateCCW() {
+
+	rotateWithReset(-90);
+}
+
+void DkCropViewPort::rotate180() {
+
+	rotateWithReset(180);
+}
+
+void DkCropViewPort::rotateWithReset(double angle) {
+
+	if (!mImage)
+		return;
+
+	QImage img = DkImage::rotate(mImage->image(), angle);
+	mImage->setImage(img, tr("Rotated"));
+
+	DkBaseViewPort::setImage(mImage->image());
+	reset();
+}
+
 
 void DkCropViewPort::reset() {
 

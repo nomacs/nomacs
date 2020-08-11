@@ -167,13 +167,17 @@ public:
 public slots:
     void setVisible(bool visible) override;
 
-    void rotate(double angle);
     void setAspectRatio(const DkCropArea::Ratio& ratio);
     void flip();
 
     void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
     void crop();
+
+    void rotateCW();
+    void rotateCCW();
+    void rotate180();
+    void rotate(double angle);
 
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
@@ -194,6 +198,7 @@ protected:
     QRect canvas(int margin = 100) const;
     void updateViewRect(const QRect& r);
     QTransform getScaledImageMatrix() const override;
+    void rotateWithReset(double angle);
 
     DkCropStyle mStyle;
 

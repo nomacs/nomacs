@@ -172,7 +172,6 @@ void DkBaseViewPort::moveView(const QPointF& delta) {
 
 	mWorldMatrix.translate(lDelta.x(), lDelta.y());
 	controlImagePosition();
-	qDebug() << "controlling...";
 	update();
 }
 
@@ -226,7 +225,7 @@ void DkBaseViewPort::zoom(double factor, const QPointF& center, bool force) {
 
     // if no center assigned: zoom in at the image center
 	if (pos.x() == -1 || pos.y() == -1)
-		pos = mImgViewRect.center();
+		pos = mViewportRect.topLeft() + mImgViewRect.center();	// mViewPortRect is not at (0,0) for DkCropViewPort
 
 	zoomToPoint(factor, pos, mWorldMatrix);
 

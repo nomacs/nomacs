@@ -267,7 +267,7 @@ DkRotateManipulator::DkRotateManipulator(QAction * action) : DkBaseManipulatorEx
 }
 
 QImage DkRotateManipulator::apply(const QImage & img) const {
-	return DkImage::rotateImage(img, angle());
+	return DkImage::rotate(img, angle());
 }
 
 QString DkRotateManipulator::errorMessage() const {
