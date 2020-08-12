@@ -927,9 +927,15 @@ DkCropViewPort* DkCentralWidget::createCrop() {
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	cw->addActions(am.viewActions().toList());
-	cw->addActions(am.panelActions().toList());
-	connect(cw, &DkCropViewPort::croppedSignal, this, [&]() {
-		removeTab();
+	cw->addActions(am.editActions().toList());
+	connect(cw, &DkCropViewPort::closeSignal, this, 
+		[&]() {
+			// close crop
+			for (const auto& t : mTabInfos) {
+				if (t->getMode() == DkTabInfo::TabMode::tab_crop) {
+					removeTab(t->getTabIdx());
+				}
+			}
 		});
 
 	return cw;
@@ -1061,6 +1067,13 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 	if (mViewLayout->currentWidget() == widget && 
 		mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
 		return;
+
+	// crop tab is always closed if focus is lost
+	if (mViewLayout->currentWidget() == mWidgets[crop_widget]) {
+
+		auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
+		cw->askBeforeClose();
+	}
 
 	if (widget)
 		mViewLayout->setCurrentWidget(widget);

@@ -43,6 +43,7 @@
 #include <QMouseEvent>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMessageBox>
 
 #include <QMainWindow>
 #include <QHBoxLayout>
@@ -62,14 +63,7 @@ DkCropViewPort::DkCropViewPort(QWidget* parent /* = 0*/) : DkBaseViewPort(parent
 	mCropArea.setWorldMatrix(&mWorldMatrix);
 	mCropArea.setImageRect(&mImgViewRect);
 
-	QAction* crop = new QAction(tr("Crop"), this);
-	crop->setShortcut(Qt::Key_Return);
-	addAction(crop);
-	connect(crop, &QAction::triggered, this, &DkCropViewPort::crop);
-
 	DkActionManager& am = DkActionManager::instance();
-	addActions(am.viewActions().toList());
-	addActions(am.editActions().toList());
 
 	connect(am.action(DkActionManager::menu_edit_rotate_cw), SIGNAL(triggered()), this, SLOT(rotateCW()));
 	connect(am.action(DkActionManager::menu_edit_rotate_ccw), SIGNAL(triggered()), this, SLOT(rotateCCW()));
@@ -292,6 +286,21 @@ void DkCropViewPort::recenter() {
 	update();
 }
 
+void DkCropViewPort::askBeforeClose() {
+
+	if (!mIsDirty)
+		return;
+
+	QMessageBox* msg = new QMessageBox(QMessageBox::Question, tr("Crop Image"),
+		tr("Do you want to apply cropping?"),
+		(QMessageBox::Yes | QMessageBox::No), this);
+	msg->setButtonText(QMessageBox::Yes, tr("&Crop"));
+	msg->setButtonText(QMessageBox::No, tr("&Don't Crop"));
+
+	int answer = msg->exec();
+	applyCrop(answer == QMessageBox::Yes);
+}
+
 void DkCropViewPort::setImageContainer(const QSharedPointer<DkImageContainerT>& img) {
 	mImage = img;
 
@@ -299,6 +308,16 @@ void DkCropViewPort::setImageContainer(const QSharedPointer<DkImageContainerT>& 
 		DkBaseViewPort::setImage(mImage->image());
 		reset();
 	}
+}
+
+void DkCropViewPort::applyCrop(bool apply) {
+
+	if (apply)
+		crop();
+
+	// close
+	mIsDirty = false;
+	emit closeSignal();
 }
 
 void DkCropViewPort::crop() {
@@ -321,8 +340,6 @@ void DkCropViewPort::crop() {
 
 		mImage->cropImage(r, t);
 	}
-
-	emit croppedSignal();
 }
 
 void DkCropViewPort::rotateCW() {
@@ -359,6 +376,7 @@ void DkCropViewPort::reset() {
 	recenter();
 	resetWorldMatrix();
 	emit resetSignal();
+	mIsDirty = true;
 }
 
 void DkCropViewPort::setWorldTransform(QTransform* worldMatrix) {
@@ -387,6 +405,7 @@ void DkCropViewPort::setVisible(bool visible) {
 					mIsRotating = r; 
 					update(); 
 				});
+			connect(ctb, &DkCropToolBar::closeSignal, this, &DkCropViewPort::applyCrop);
 			connect(this, &DkCropViewPort::resetSignal, ctb, &DkCropToolBar::reset);
 
 			mCropDock->setWidget(ctb);
@@ -843,6 +862,12 @@ DkCropToolBar::DkCropToolBar(QWidget* parent) : QWidget(parent) {
 
 void DkCropToolBar::createLayout() {
 
+	QPushButton* applyButton = new QPushButton(tr("&Apply"), this);
+	applyButton->setShortcut(Qt::Key_Return);
+
+	QPushButton* cancelButton = new QPushButton(tr("&Cancel"), this);
+	cancelButton->setShortcut(Qt::Key_Escape);
+
 	mRatioBox = new QComboBox(this);
 	mRatioBox->setObjectName("ratioBox");
 
@@ -857,6 +882,7 @@ void DkCropToolBar::createLayout() {
 	mRatioBox->addItem(tr("3:2"), DkCropArea::Ratio::r_3_2);
 
 	QPushButton* flipButton = new QPushButton(tr("Flip"), this);
+	flipButton->setShortcut(Qt::Key_F);
 
 	mAngleSlider = new DkDoubleSlider("", this);
 	mAngleSlider->setTickInterval(1/90.0);
@@ -871,11 +897,15 @@ void DkCropToolBar::createLayout() {
 	connect(s, &QSlider::sliderReleased, this, [&]() { emit isRotatingSignal(false); });
 	connect(mAngleSlider, &DkDoubleSlider::valueChanged, this, &DkCropToolBar::rotateSignal);
 	connect(flipButton, &QPushButton::clicked, this, &DkCropToolBar::flipSignal);
+	connect(applyButton, &QPushButton::clicked, this, [&]() { emit closeSignal(true); });
+	connect(cancelButton, &QPushButton::clicked, this, [&]() { emit closeSignal(false); });
 
 	QHBoxLayout* l = new QHBoxLayout(this);
 	l->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
 	l->addStretch();
+	l->addWidget(applyButton);
+	l->addWidget(cancelButton);
 	l->addWidget(mRatioBox);
 	l->addWidget(flipButton);
 	l->addWidget(mAngleSlider);

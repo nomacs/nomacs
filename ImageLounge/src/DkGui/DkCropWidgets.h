@@ -164,6 +164,8 @@ public:
 
     void recenter();
 
+    void askBeforeClose();
+
 public slots:
     void setVisible(bool visible) override;
 
@@ -172,6 +174,7 @@ public slots:
 
     void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
+    void applyCrop(bool apply);
     void crop();
 
     void rotateCW();
@@ -181,7 +184,7 @@ public slots:
 
 signals:
     void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
-    void croppedSignal() const;
+    void closeSignal() const;
     void resetSignal() const;
 
 protected:
@@ -205,7 +208,8 @@ protected:
     DkCropArea mCropArea;
     QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
-
+    
+    bool mIsDirty = false;
     bool mIsRotating = false;
 
     QSharedPointer<DkImageContainerT> mImage;
@@ -231,6 +235,7 @@ signals:
     void rotateSignal(double angle) const;
     void aspectRatioSignal(const DkCropArea::Ratio& ratio) const;
     void flipSignal() const;
+    void closeSignal(bool apply) const;
 
 private:
     void createLayout();
