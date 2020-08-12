@@ -734,7 +734,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
       <source>Fit window to the image</source>
-      <translation>Fenster anpassen</translation>
+      <translation>Fenster an Bild anpassen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1281"/>
@@ -799,7 +799,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
       <source>&amp;Zoom to Fit</source>
-      <translation>Bild &amp;einpassen</translation>
+      <translation>Bild an Fenster &amp;anpassen</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
