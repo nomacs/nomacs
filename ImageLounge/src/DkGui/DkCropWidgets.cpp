@@ -393,6 +393,7 @@ void DkCropViewPort::setVisible(bool visible) {
 		
 		if (!mCropDock) {
 			mCropDock = new QDockWidget(this);
+			mCropDock->setContentsMargins(0, 0, 0, 0);
 			mCropDock->setObjectName("cropDock");
 			mCropDock->setTitleBarWidget(new QWidget());
 
@@ -854,7 +855,7 @@ QPen DkCropStyle::cornerPen() const {
 	return p;
 }
 
-DkCropToolBar::DkCropToolBar(QWidget* parent) : QWidget(parent) {
+DkCropToolBar::DkCropToolBar(QWidget* parent) : DkWidget(parent) {
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -862,18 +863,35 @@ DkCropToolBar::DkCropToolBar(QWidget* parent) : QWidget(parent) {
 
 void DkCropToolBar::createLayout() {
 
-	QPushButton* applyButton = new QPushButton(tr("&Apply"), this);
-	applyButton->setShortcut(Qt::Key_Return);
+	setObjectName("darkManipulator");
 
-	QPushButton* cancelButton = new QPushButton(tr("&Cancel"), this);
+	QPixmap i = DkImage::loadIcon(":/nomacs/img/crop.svg", QSize(32, 32), QColor(255,255,255));
+	QPushButton* applyButton = new QPushButton(i, tr("&Apply"), this);
+	applyButton->setStatusTip(tr("closes the crop view, and applies cropping to the image (ENTER)"));
+	applyButton->setShortcut(Qt::Key_Return);
+	applyButton->setObjectName("dark");
+
+	i = DkImage::loadIcon(":/nomacs/img/close.svg", QSize(32, 32), QColor(255, 255, 255));
+	QPushButton* cancelButton = new QPushButton(i, tr("&Cancel"), this);
+	cancelButton->setStatusTip(tr("closes the crop view, leaving the image unchanged (ESC)"));
 	cancelButton->setShortcut(Qt::Key_Escape);
+	cancelButton->setObjectName("dark");
+
+	mAngleSlider = new DkDoubleSlider(tr("Rotate"), this);
+	mAngleSlider->setObjectName("darkManipulator");
+	mAngleSlider->setTickInterval(1 / 90.0);
+	mAngleSlider->setMinimum(-45);
+	mAngleSlider->setMaximum(45);
+	mAngleSlider->setValue(0.0);
+	mAngleSlider->setMaximumWidth(400);
 
 	mRatioBox = new QComboBox(this);
 	mRatioBox->setObjectName("ratioBox");
 
 	// dear future me: we can use this with C++20:
 	// using enum DkCropArea;
-	mRatioBox->addItem(DkImage::loadIcon(":/nomacs/img/aspect-ratio.svg"), tr("Aspect Ratio"), DkCropArea::Ratio::r_free);
+	i = DkImage::loadIcon(":/nomacs/img/aspect-ratio.svg", QSize(32, 32), QColor(255, 255, 255));
+	mRatioBox->addItem(i, tr("Aspect Ratio"), DkCropArea::Ratio::r_free);
 	mRatioBox->addItem(tr("Free"), DkCropArea::Ratio::r_free);
 	mRatioBox->addItem(tr("Original"), DkCropArea::Ratio::r_original);
 	mRatioBox->addItem(tr("Square"), DkCropArea::Ratio::r_square);
@@ -882,14 +900,9 @@ void DkCropToolBar::createLayout() {
 	mRatioBox->addItem(tr("3:2"), DkCropArea::Ratio::r_3_2);
 
 	QPushButton* flipButton = new QPushButton(tr("Flip"), this);
+	flipButton->setStatusTip(tr("flips the crop rectangle (F)"));
 	flipButton->setShortcut(Qt::Key_F);
-
-	mAngleSlider = new DkDoubleSlider("", this);
-	mAngleSlider->setTickInterval(1/90.0);
-	mAngleSlider->setMinimum(-45);
-	mAngleSlider->setMaximum(45);
-	mAngleSlider->setValue(0.0);
-	mAngleSlider->setMaximumWidth(400);
+	flipButton->setObjectName("dark");
 
 	// connections
 	auto s = mAngleSlider->getSlider();
@@ -902,13 +915,16 @@ void DkCropToolBar::createLayout() {
 
 	QHBoxLayout* l = new QHBoxLayout(this);
 	l->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	l->setSpacing(20);
 
 	l->addStretch();
 	l->addWidget(applyButton);
 	l->addWidget(cancelButton);
+	l->addSpacing(20);
+	l->addWidget(mAngleSlider);
+	l->addSpacing(20);
 	l->addWidget(mRatioBox);
 	l->addWidget(flipButton);
-	l->addWidget(mAngleSlider);
 	l->addStretch();
 }
 

@@ -124,7 +124,6 @@ public:
 	static QImage grayscaleImage(const QImage& img);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
 	static QPixmap loadIcon(const QString& filePath = QString(), const QSize& size = QSize(), const QColor& col = QColor());
-	static QPixmap loadIcon(const QString& filePath, const QColor& col, const QSize& size = QSize());
 	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
 	static QImage createThumb(const QImage& img, const int maxSize = -1);
 	static bool addToImage(QImage& img, unsigned char val = 1);

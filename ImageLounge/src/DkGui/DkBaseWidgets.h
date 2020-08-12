@@ -58,6 +58,10 @@ class DllCoreExport DkWidget : public QWidget {
 
 public:
 	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+
+protected:
+	void paintEvent(QPaintEvent* event) override;
+
 };
 
 class DllCoreExport DkFadeWidget : public DkWidget {
@@ -103,7 +107,6 @@ protected:
 
 	// functions
 	void init();
-	void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNamedWidget : public DkFadeWidget {
@@ -158,7 +161,7 @@ protected:
 
 	// functions
 	virtual void init();
-	virtual void paintEvent(QPaintEvent *event) override;
+	void paintEvent(QPaintEvent *event) override;
 	virtual void draw(QPainter* painter);
 
 	// for my children...

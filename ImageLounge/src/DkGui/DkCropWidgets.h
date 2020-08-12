@@ -29,6 +29,7 @@
 #pragma once
 
 #include "DkBaseViewPort.h"
+#include "DkBaseWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes
 #include <QPen>
@@ -218,7 +219,7 @@ protected:
 };
 
 // TODO: rename to DkCropToolBar
-class DkCropToolBar : public QWidget {
+class DkCropToolBar : public DkWidget {
     Q_OBJECT
 
 public:

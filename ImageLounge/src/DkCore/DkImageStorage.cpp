@@ -1080,22 +1080,6 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size, const QCo
 	return icon;
 }
 
-QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col, const QSize& size) {
-
-
-	QSize is = size;
-
-	if (is.isNull()) {
-		int s = DkSettingsManager::param().effectiveIconSize();
-		is = QSize(s, s);
-	}
-
-	QPixmap icon = loadFromSvg(filePath, is);
-	icon = colorizePixmap(icon, col);
-
-	return icon;
-}
-
 QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
 
 	QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));

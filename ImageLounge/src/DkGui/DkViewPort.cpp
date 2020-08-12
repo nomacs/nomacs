@@ -82,7 +82,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
 	if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
 		QColor col = backgroundBrush().color().darker();
-		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
+		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", QSize(100, 100), col).toImage();
 	}
 
 	mRepeatZoomTimer->setInterval(20);
