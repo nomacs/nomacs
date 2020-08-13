@@ -2,7 +2,7 @@ REM this script signs the exe provided, use:
 REM sign nomacs.x64/nomacs.exe cert-password
 
 REM the second argument is assumed to be the certificate's password (for appveyor)
-if "%~2" == "" goto local
+if "%~2" == "" goto end
 
 REM sign with the repositorie's certificate (password has to be provided)
 
