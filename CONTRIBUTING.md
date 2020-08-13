@@ -1,8 +1,8 @@
 # Contributing
 
-The best way to improve nomacs is your contribution. You can submit simple changes such as formatting corrections, extend manuals and READMEs where appropriate, fix bugs or submit new features.
+The best way to improve nomacs is your contribution. You can submit simple changes such as formatting corrections, extend manuals and READMEs where appropriate, [translate nomacs](https://crowdin.com/project/nomacs), [donate](https://www.paypal.com/donate/?token=QVR8WZJpxnlbuYpoUfeKzpwW0tdiMFZaNLDVOaCFhFi9P97Jklz2jvs8iqGyXAMYz0755G&country.x=US&locale.x=en_US), fix bugs, or submit new features.
 
-Fork, then clone nomacs:
+If you contribute source code, you should fork and then clone nomacs:
 
 ```git
 git clone git@github.com:your-username/nomacs.git
@@ -63,6 +63,6 @@ public:
   QString Name() const;
 
 private:
-  QAction* mAction = 0;
+  QAction* action = 0;
 };
 ```
