@@ -1,6 +1,6 @@
 # Contributing
 
-The best way to improve nomacs is your contribution. You can submit simple changes such as formatting corrections, extend manuals and READMEs where appropriate, fix bugs or submit new features.
+The best way to improve nomacs is your contribution. You can submit simple changes such as formatting corrections, extend manuals and READMEs where appropriate, [translate nomacs](https://crowdin.com/project/nomacs), fix bugs, or submit new features.
 
 Fork, then clone nomacs:
 
