@@ -728,8 +728,19 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1277"/>
-      <source>&amp;Fit Window</source>
-      <translation>Anpassa &amp;fönstret efter bilden</translation>
+      <source>&amp;Fit Window to Image</source>
+      <translation>&amp;Anpassa fönster till bild
+</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
+      <source>&amp;Fit Image to Window</source>
+      <translation>&amp;Anpassa bild till fönster</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
+      <source>Zoom image to fit window</source>
+      <translation>Zooma bild till fönsterstorlek</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
@@ -795,16 +806,6 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1303"/>
       <source>Full Screen</source>
       <translation>Helskärmsvisning</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
-      <source>&amp;Zoom to Fit</source>
-      <translation>Anpassa &amp;bilden till fönstret</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
-      <source>Shows the initial view (no zooming)</source>
-      <translation>Inledande visningsläge (ingen zoom)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1309"/>
@@ -2098,24 +2099,24 @@
       <translation>Pentax PEF komprimerad</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1102"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
       <source>Plugin Manager</source>
       <translation>Instickshanterare</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1104"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
       <translation>DLL-filen kunde inte tas bort!
 Starta om nomacs och försök igen.</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1277"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1278"/>
       <source>Close plugin</source>
       <translation>Stäng tillägget</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1279"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1280"/>
       <source>Please close the currently opened plugin.</source>
       <translation>Stäng det aktuella tillägget.</translation>
     </message>
@@ -2880,7 +2881,7 @@ Starta om nomacs och försök igen.</translation>
       <translation>Ursprunglig bild</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1190"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1191"/>
       <source>Sorry, I could not save: %1</source>
       <translation>Kunde inte spara: %1</translation>
     </message>
@@ -3783,7 +3784,7 @@ Detta alternativ är bara användbart om insticksmoduler sparar sidofiler, så v
   <context>
     <name>nmc::DkDescriptionEdit</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="995"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="996"/>
       <source>No metadata available!</source>
       <translation>Ingen metadata tillgängliga!</translation>
     </message>
@@ -4922,22 +4923,22 @@ innehåller ingen bild</translation>
   <context>
     <name>nmc::DkInstalledPluginsModel</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="784"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="785"/>
       <source>Uninstall</source>
       <translation>Avinstallera</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="797"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="798"/>
       <source>Name</source>
       <translation>Namn</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="799"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="800"/>
       <source>Version</source>
       <translation>Version</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="801"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="802"/>
       <source>Uninstall plugin</source>
       <translation>Avinstallera insticksmodul</translation>
     </message>
@@ -5696,22 +5697,22 @@ Vill du ersätta den?</translation>
   <context>
     <name>nmc::DkPluginContainer</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="436"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
       <source>Author:</source>
       <translation>Utvecklare:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
       <source>Company:</source>
       <translation>Företag:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
       <source>Created:</source>
       <translation>Skapad:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="440"/>
       <source>Last Modified:</source>
       <translation>Senast ändrad:</translation>
     </message>
@@ -5719,12 +5720,12 @@ Vill du ersätta den?</translation>
   <context>
     <name>nmc::DkPluginManagerDialog</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="548"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="549"/>
       <source>Plugin Manager</source>
       <translation>Instickshanterare</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="560"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="561"/>
       <source>&amp;Close</source>
       <translation>&amp;Stäng</translation>
     </message>
@@ -5732,7 +5733,7 @@ Vill du ersätta den?</translation>
   <context>
     <name>nmc::DkPluginTableWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="619"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="620"/>
       <source>Search plugins</source>
       <translation>Sök tilläggsmoduler</translation>
     </message>
@@ -6916,43 +6917,43 @@ Kontakta din systemadministratör för vidare information.</translation>
       <translation>Upptagen</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Transparensmönster aktiverat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Transparensmönster inaktiverat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
       <source>Lenna</source>
       <translation>Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
       <source>A remarkable woman</source>
       <translation>En anmärkningsvärd kvinna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1609"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1608"/>
       <source>you cannot cancel this</source>
       <translation>du kan inte avbryta detta</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1616"/>
       <source>did you understand the brainteaser?</source>
       <translation>förstod du hjärngymnastiken?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1619"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1618"/>
       <source>%1 is wrong...</source>
       <translation>%1 är fel...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1652"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1675"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1651"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1674"/>
       <source>Attempted to set NULL image</source>
       <translation>Försökte ange NULL-bild</translation>
     </message>
@@ -6960,7 +6961,7 @@ Kontakta din systemadministratör för vidare information.</translation>
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2158"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2161"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Tryck F10 för att avsluta ramlös visning</translation>
     </message>

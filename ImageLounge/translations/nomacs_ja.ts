@@ -728,8 +728,18 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1277"/>
-      <source>&amp;Fit Window</source>
-      <translation>ウィンドウを合わせる(&amp;F)</translation>
+      <source>&amp;Fit Window to Image</source>
+      <translation>ウィンドウサイズを画像に合わせる(&amp;F)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
+      <source>&amp;Fit Image to Window</source>
+      <translation>画像サイズをウィンドウに合わせる(&amp;F)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
+      <source>Zoom image to fit window</source>
+      <translation>ウィンドウサイズに合うように画像をズームする</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
@@ -795,16 +805,6 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1303"/>
       <source>Full Screen</source>
       <translation>全画面表示</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
-      <source>&amp;Zoom to Fit</source>
-      <translation>フィットするようにズーム(&amp;Z)</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
-      <source>Shows the initial view (no zooming)</source>
-      <translation>表示領域に合わせて表示する (ズームなし)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1309"/>
@@ -2098,24 +2098,24 @@
       <translation>Pentax PEF Compressed</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1102"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
       <source>Plugin Manager</source>
       <translation>プラグインマネージャー</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1104"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
       <translation>dllを削除できませんでした。
 nomacsを起動し直して再試行してください。</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1277"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1278"/>
       <source>Close plugin</source>
       <translation>プラグインを閉じる</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1279"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1280"/>
       <source>Please close the currently opened plugin.</source>
       <translation>現在開いているプラグインを閉じてください。</translation>
     </message>
@@ -2881,7 +2881,7 @@ nomacsを起動し直して再試行してください。</translation>
       <translation>元の画像</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1190"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1191"/>
       <source>Sorry, I could not save: %1</source>
       <translation>残念ながら、保存できませんでした: %1</translation>
     </message>
@@ -3784,7 +3784,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkDescriptionEdit</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="995"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="996"/>
       <source>No metadata available!</source>
       <translation>利用可能なメタデータがありません</translation>
     </message>
@@ -4921,22 +4921,22 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkInstalledPluginsModel</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="784"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="785"/>
       <source>Uninstall</source>
       <translation>アンインストール</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="797"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="798"/>
       <source>Name</source>
       <translation>名前</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="799"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="800"/>
       <source>Version</source>
       <translation>バージョン</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="801"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="802"/>
       <source>Uninstall plugin</source>
       <translation>プラグインのアンインストール</translation>
     </message>
@@ -5694,22 +5694,22 @@ then press %1</source>
   <context>
     <name>nmc::DkPluginContainer</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="436"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
       <source>Author:</source>
       <translation>作者:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
       <source>Company:</source>
       <translation>会社:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
       <source>Created:</source>
       <translation>作成日:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="440"/>
       <source>Last Modified:</source>
       <translation>最終更新日:</translation>
     </message>
@@ -5717,12 +5717,12 @@ then press %1</source>
   <context>
     <name>nmc::DkPluginManagerDialog</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="548"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="549"/>
       <source>Plugin Manager</source>
       <translation>プラグインマネージャー</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="560"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="561"/>
       <source>&amp;Close</source>
       <translation>閉じる(&amp;C)</translation>
     </message>
@@ -5730,7 +5730,7 @@ then press %1</source>
   <context>
     <name>nmc::DkPluginTableWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="619"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="620"/>
       <source>Search plugins</source>
       <translation>プラグインを検索</translation>
     </message>
@@ -6914,43 +6914,43 @@ Please contact your system administrator for further information.</source>
       <translation>ビジー</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
       <source>Transparency Pattern Enabled</source>
       <translation>透明パターンが有効になりました</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1560"/>
       <source>Transparency Pattern Disabled</source>
       <translation>透明パターンが無効になりました</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
       <source>Lenna</source>
       <translation>画像サンプル「Lenna」</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1598"/>
       <source>A remarkable woman</source>
       <translation>注目すべき女性</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1609"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1608"/>
       <source>you cannot cancel this</source>
       <translation>これは中止できません</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1616"/>
       <source>did you understand the brainteaser?</source>
       <translation>この難問が分かりましたか。</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1619"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1618"/>
       <source>%1 is wrong...</source>
       <translation>%1は違います…</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1652"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1675"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1651"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1674"/>
       <source>Attempted to set NULL image</source>
       <translation>NULL画像を設定しようとしました</translation>
     </message>
@@ -6958,7 +6958,7 @@ Please contact your system administrator for further information.</source>
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2158"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2161"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>フレームなしビューを終了するにはF10を押してください</translation>
     </message>
