@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 160 160" style="enable-background:new 0 0 160 160;" xml:space="preserve">
+<style type="text/css">
+	.st0{display:none;}
+	.st1{display:inline;}
+	.st2{fill:#231F20;}
+</style>
+<g id="Layer_3" class="st0">
+	<g class="st1">
+		<path class="st2" d="M82,73v14h-9V73H82 M82.2,72h-9.4c-0.4,0-0.8,0.4-0.8,0.8v14.4c0,0.4,0.4,0.8,0.8,0.8h9.4
+			c0.4,0,0.8-0.4,0.8-0.8V72.8C83,72.4,82.6,72,82.2,72L82.2,72z"/>
+	</g>
+	<g class="st1">
+		<path class="st2" d="M87,78v9h-4v-9H87 M87.5,77h-5c-0.3,0-0.5,0.2-0.5,0.5v10c0,0.3,0.2,0.5,0.5,0.5h5c0.3,0,0.5-0.2,0.5-0.5v-10
+			C88,77.2,87.8,77,87.5,77L87.5,77z"/>
+	</g>
+	<g class="st1">
+		<polygon class="st2" points="75,77 74,77 74,78 75,78 75,77 		"/>
+	</g>
+	<g class="st1">
+		<polygon class="st2" points="77,77 76,77 76,78 77,78 77,77 		"/>
+	</g>
+	<g class="st1">
+		<polygon class="st2" points="79,77 78,77 78,78 79,78 79,77 		"/>
+	</g>
+	<g class="st1">
+		<polygon class="st2" points="81,77 80,77 80,78 81,78 81,77 		"/>
+	</g>
+</g>
+<g id="Layer_2">
+	<path class="st2" d="M100,10v120H10V10H100 M102.7,0H7.3C3.3,0,0,3.3,0,7.3v125.3c0,4.1,3.3,7.3,7.3,7.3h95.3
+		c4.1,0,7.3-3.3,7.3-7.3V7.3C110,3.3,106.7,0,102.7,0L102.7,0z"/>
+	<g>
+		<polygon class="st2" points="90,50 80,50 80,60 90,60 90,50 		"/>
+	</g>
+	<g>
+		<polygon class="st2" points="70,50 60,50 60,60 70,60 70,50 		"/>
+	</g>
+	<g>
+		<polygon class="st2" points="50,50 40,50 40,60 50,60 50,50 		"/>
+	</g>
+	<g>
+		<polygon class="st2" points="30,70 20,70 20,80 30,80 30,70 		"/>
+	</g>
+	<g>
+		<polygon class="st2" points="30,90 20,90 20,100 30,100 30,90 		"/>
+	</g>
+	<g>
+		<polygon class="st2" points="30,110 20,110 20,120 30,120 30,110 		"/>
+	</g>
+	<path class="st2" d="M152.7,50H110v10h40v90H30v-10H20v12.7c0,4.1,3.3,7.3,7.3,7.3h125.3c4.1,0,7.3-3.3,7.3-7.3V57.3
+		C160,53.3,156.7,50,152.7,50z"/>
+	<path class="st2" d="M30,59.9h-9.9v0c0-5.5,4.5-9.9,9.9-9.9h0V59.9z"/>
+</g>
+</svg>

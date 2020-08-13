@@ -899,7 +899,8 @@ void DkCropToolBar::createLayout() {
 	mRatioBox->addItem(tr("4:3"), DkCropArea::Ratio::r_4_3);
 	mRatioBox->addItem(tr("3:2"), DkCropArea::Ratio::r_3_2);
 
-	QPushButton* flipButton = new QPushButton(tr("Flip"), this);
+    i = DkImage::loadIcon(":/nomacs/img/crop-flip.svg", QSize(32, 32), QColor(255, 255, 255));
+	QPushButton* flipButton = new QPushButton(i, tr("Flip"), this);
 	flipButton->setStatusTip(tr("flips the crop rectangle (F)"));
 	flipButton->setShortcut(Qt::Key_F);
 	flipButton->setObjectName("dark");
