@@ -82,7 +82,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
 	if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
 		QColor col = backgroundBrush().color().darker();
-		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
+		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", QSize(100, 100), col).toImage();
 	}
 
 	mRepeatZoomTimer->setInterval(20);
@@ -109,10 +109,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 		setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	}
 
-	mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
-	mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
-	mController->getCropWidget()->setImageTransform(&mImgMatrix);
-	mController->getCropWidget()->setImageRect(&mImgViewRect);
+	mController->setTransforms(&mWorldMatrix, &mImgMatrix);
 
 	// this must be initialized after mController to be above it
 	mNavigationWidget = new DkHudNavigation(this);
@@ -331,7 +328,7 @@ void DkViewPort::setImage(QImage newImg) {
 	updateImageMatrix();		
 
 	// if image is not inside, we'll align it at the top left border
-	if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect))) {
+	if (!mViewportRect.intersects(mWorldMatrix.mapRect(mImgViewRect).toRect())) {
 		mWorldMatrix.translate(-mWorldMatrix.dx(), -mWorldMatrix.dy());
 		centerImage();
 	}
@@ -357,11 +354,11 @@ void DkViewPort::setImage(QImage newImg) {
 	else
 		mAnimationValue = 0.0f;
 
-	// set/clear crop rect
-	if (mLoader->getCurrentImage())
-		mCropRect = mLoader->getCurrentImage()->cropRect();
-	else
-		mCropRect = DkRotatingRect();
+	//// set/clear crop rect
+	//if (mLoader->getCurrentImage())
+	//	mCropRect = mLoader->getCurrentImage()->cropRect();
+	//else
+	//	mCropRect = DkRotatingRect();
 
 	update();
 
@@ -464,7 +461,7 @@ void DkViewPort::zoom(double factor, const QPointF& center, bool force) {
 	zoomToPoint(factor, pos, mWorldMatrix);
 
 	controlImagePosition();
-	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch sch�ner
+	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schöner
 	showZoom();
 	changeCursor();
 
@@ -483,13 +480,13 @@ void DkViewPort::zoomTo(double zoomLevel) {
 	zoom(zoomLevel/mImgMatrix.m11());
 }
 
-void DkViewPort::zoomToFit() {
+void DkViewPort::zoomToFit(double margin) {
 
 	QSizeF imgSize = getImageSize();
 	QSizeF winSize = size();
-	double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
+	double zoomLevel = qMin((winSize.width() - margin) / imgSize.width(), (winSize.height() - margin) / imgSize.height());
 
-	if (zoomLevel > 1)
+	if (zoomLevel > 1 || margin != 0)
 		zoomTo(zoomLevel);
 	else if (zoomLevel < 1)
 		resetView();
@@ -983,24 +980,24 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	else
 		drawBackground(painter);
 
-	// draw the cropping rect
-	if (!mCropRect.isEmpty() && DkSettingsManager::param().display().showCrop && imageContainer()) {
+	//// draw the cropping rect
+	//if (!mCropRect.isEmpty() && DkSettingsManager::param().display().showCrop && imageContainer()) {
 
-		// create path
-		QPainterPath path;
-		path.addRect(getImageViewRect().toRect());
+	//	// create path
+	//	QPainterPath path;
+	//	path.addRect(getImageViewRect().toRect());
 
-		DkRotatingRect r = mCropRect;
-		QPolygonF polyF;
-		polyF = r.getClosedPoly();
-		polyF = mImgMatrix.map(polyF);
-		polyF = mWorldMatrix.map(polyF);
-		path.addPolygon(polyF.toPolygon());
+	//	DkRotatingRect r = mCropRect;
+	//	QPolygonF polyF;
+	//	polyF = r.getClosedPoly();
+	//	polyF = mImgMatrix.map(polyF);
+	//	polyF = mWorldMatrix.map(polyF);
+	//	path.addPolygon(polyF.toPolygon());
 
-		painter.setPen(Qt::NoPen);
-		painter.setBrush(QColor(0,0,0,100));
-		painter.drawPath(path);
-	}
+	//	painter.setPen(Qt::NoPen);
+	//	painter.setBrush(QColor(0,0,0,100));
+	//	painter.drawPath(path);
+	//}
 
 	painter.end();
 
@@ -1201,7 +1198,7 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 		mPosGrab = event->pos();
 	}
 	
-	// keep in mind if the gesture was started in the mViewport
+	// keep in mind if the gesture was started in the viewport
 	// this fixes issues if some HUD widgets or child widgets
 	// do not implement mouse events correctly
 	if (event->buttons() == Qt::LeftButton)
@@ -1964,23 +1961,9 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 	}
 }
 
-
 DkControlWidget* DkViewPort::getController() {
 	
 	return mController;
-}
-
-void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData) {
-
-	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
-
-	if (!imgC) {
-		qWarning() << "cannot crop NULL image...";
-		return;
-	}
-	
-	imgC->cropImage(rect, bgCol, cropToMetaData);
-	setEditedImage(imgC);
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
@@ -2268,7 +2251,7 @@ void DkViewPortFrameless::moveView(QPointF delta) {
 }
 
 
-void DkViewPortFrameless::controlImagePosition(float, float) {
+void DkViewPortFrameless::controlImagePosition(const QRect&) {
 	// dummy method
 }
 
@@ -2303,7 +2286,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 	// update world matrix
 	if (mWorldMatrix.m11() != 1) {
 
-		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
+		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
 		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
 

@@ -42,6 +42,7 @@
 #include "DkActionManager.h"
 #include "DkPreferenceWidgets.h"
 #include "DkDialog.h"
+#include "DkCropWidgets.h"
 
 #ifdef WITH_PLUGINS
 #include "DkPluginManager.h"
@@ -206,6 +207,8 @@ QIcon DkTabInfo::getIcon() {
 		return DkImage::loadIcon(":/nomacs/img/settings.svg");
 	else if (mTabMode == tab_batch)
 		return DkImage::loadIcon(":/nomacs/img/batch-processing.svg");
+	else if (mTabMode == tab_crop)
+		return DkImage::loadIcon(":/nomacs/img/crop.svg");
 
 	if (!mImageLoader->getCurrentImage())
 		return icon;
@@ -236,6 +239,8 @@ QString DkTabInfo::getTabText() const {
 		return QObject::tr("Settings");
 	else if (mTabMode == tab_batch)
 		return QObject::tr("Batch");
+	else if (mTabMode == tab_crop)
+		return QObject::tr("Crop");
 
 	QSharedPointer<DkImageContainerT> imgC = mImageLoader->getCurrentImage();
 
@@ -289,6 +294,7 @@ DkCentralWidget::DkCentralWidget(QWidget* parent) : DkWidget(parent) {
 	connect(am.action(DkActionManager::menu_view_next_tab), SIGNAL(triggered()), this, SLOT(nextTab()));
 	connect(am.action(DkActionManager::menu_view_last_tab), &QAction::triggered, this, [this]() { setActiveTab(getTabs().count()-1); });
 	connect(am.action(DkActionManager::menu_tools_batch), SIGNAL(triggered()), this, SLOT(openBatch()));
+	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered()), this, SLOT(openCrop()));
 	connect(am.action(DkActionManager::menu_panel_thumbview), SIGNAL(triggered(bool)), this, SLOT(showThumbView(bool)));
 
 #ifdef WITH_PLUGINS
@@ -448,6 +454,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_batch) {
 		showBatch();
+	}
+	else if (mTabInfos.at(idx)->getMode() == DkTabInfo::tab_crop) {
+		showCrop();
 	}
 
 }
@@ -911,6 +920,26 @@ DkBatchWidget* DkCentralWidget::createBatch() {
 	return bw;
 }
 
+DkCropViewPort* DkCentralWidget::createCrop() {
+
+	auto cw = new DkCropViewPort(this);
+
+	// add actions
+	DkActionManager& am = DkActionManager::instance();
+	cw->addActions(am.viewActions().toList());
+	cw->addActions(am.editActions().toList());
+	connect(cw, &DkCropViewPort::closeSignal, this, 
+		[&]() {
+			// close crop
+			for (const auto& t : mTabInfos) {
+				if (t->getMode() == DkTabInfo::TabMode::tab_crop) {
+					removeTab(t->getTabIdx());
+				}
+			}
+		});
+
+	return cw;
+}
 
 void DkCentralWidget::openBatch(const QStringList& selectedFiles) {
 
@@ -957,6 +986,58 @@ void DkCentralWidget::showBatch(bool show) {
 	}
 }
 
+void DkCentralWidget::openCrop() {
+
+	auto imgC = getCurrentImage();
+
+	if (!imgC) {
+		qDebug() << "cannot crop if the image is empty...";
+		return;
+	}
+
+	// switch to tab if already opened
+	for (QSharedPointer<DkTabInfo> tabInfo : mTabInfos) {
+
+		if (tabInfo->getMode() == DkTabInfo::tab_batch) {
+			mTabbar->setCurrentIndex(tabInfo->getTabIdx());
+			return;
+		}
+	}
+
+	QSharedPointer<DkTabInfo> info(new DkTabInfo(DkTabInfo::tab_crop, mTabInfos.size()));
+	addTab(info);
+
+	// create the crop dialog...
+	if (!mWidgets[crop_widget]) {
+		createCrop();
+		mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
+	}
+
+	auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
+
+	if (!cw) {
+		qWarning() << "batch widget is NULL where it should not be!";
+		return;
+	}
+
+	cw->setImageContainer(imgC);
+}
+
+void DkCentralWidget::showCrop(bool show) {
+
+	if (show) {
+
+		if (!mWidgets[crop_widget]) {
+			mWidgets[crop_widget] = createCrop();
+			mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
+		}
+
+		switchWidget(mWidgets[crop_widget]);
+
+		mWidgets[crop_widget]->show();
+	}
+}
+
 void DkCentralWidget::showTabs(bool show) {
 
 	if (show && mTabInfos.size() > 1)
@@ -987,6 +1068,13 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 		mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
 		return;
 
+	// crop tab is always closed if focus is lost
+	if (mViewLayout->currentWidget() == mWidgets[crop_widget]) {
+
+		auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
+		cw->askBeforeClose();
+	}
+
 	if (widget)
 		mViewLayout->setCurrentWidget(widget);
 	else
@@ -1004,6 +1092,8 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 			mode = DkTabInfo::tab_preferences;
 		else if (widget == mWidgets[batch_widget])
 			mode = DkTabInfo::tab_batch;
+		else if (widget == mWidgets[crop_widget])
+			mode = DkTabInfo::tab_crop;
 
 		mTabInfos[mTabbar->currentIndex()]->setMode(mode);
 		updateTab(mTabInfos[mTabbar->currentIndex()]);

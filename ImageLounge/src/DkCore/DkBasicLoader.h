@@ -357,9 +357,6 @@ public:
 signals:
 	void errorDialogSignal(const QString& msg) const;
 
-public slots:
-	QImage rotate(const QImage& img, int orientation);
-
 protected:
 	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
 	bool loadTgaFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;

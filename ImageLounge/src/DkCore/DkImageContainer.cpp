@@ -134,15 +134,20 @@ void DkImageContainer::setHistoryIndex(int idx) {
 	getLoader()->setHistoryIndex(idx);
 }
 
-void DkImageContainer::cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata) {
+void DkImageContainer::cropImage(const DkRotatingRect& rect, const QColor& col, bool cropToMetadata) {
+    if (!cropToMetadata) {
+        QImage cropped = DkImage::cropToImage(image(), rect, col);
+        setImage(cropped, QObject::tr("Cropped"));
+        getMetaData()->clearXMPRect();
+    } else
+        getMetaData()->saveRectToXMP(rect, image().size());
+}
 
-	if (!cropToMetadata) {
-		QImage cropped = DkImage::cropToImage(image(), rect, col);
-		setImage(cropped, QObject::tr("Cropped"));
-		getMetaData()->clearXMPRect();
-	}
-	else
-		getMetaData()->saveRectToXMP(rect, image().size());
+void DkImageContainer::cropImage(const QRect& rect, const QTransform& t, const QColor& col) {
+
+	QImage cropped = DkImage::cropToImage(image(), rect, t, col);
+	setImage(cropped, QObject::tr("Cropped"));
+	getMetaData()->clearXMPRect();
 }
 
 QFileInfo DkImageContainer::fileInfo() const {

@@ -121,7 +121,8 @@ public:
 	virtual void undo();
 	virtual void redo();
 	virtual void setHistoryIndex(int idx);
-	void cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata);
+    void cropImage(const DkRotatingRect& rect, const QColor& col, bool cropToMetadata);
+    void cropImage(const QRect& rect, const QTransform& t, const QColor& col = QColor(0,0,0,0));
 	DkRotatingRect cropRect();
 
 protected:

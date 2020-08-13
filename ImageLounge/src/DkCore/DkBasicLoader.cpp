@@ -334,7 +334,7 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			int orientation = mMetaData->getOrientationDegree();
 
 			if (orientation != -1 && !mMetaData->isTiff() && !DkSettingsManager::param().metaData().ignoreExifOrientation)
-				img = rotate(img, orientation);
+				img = DkImage::rotate(img, orientation);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}
@@ -1254,23 +1254,6 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
 	}
 
 	return false;
-}
-
-// image editing --------------------------------------------------------------------
-/**
- * This method rotates an image.
- * @param orientation the orientation in degree.
- **/ 
-QImage DkBasicLoader::rotate(const QImage& img, int orientation) {
-
-	if (orientation == 0 || orientation == -1)
-		return img;
-
-	QTransform rotationMatrix;
-	rotationMatrix.rotate((double)orientation);
-	QImage rImg = img.transformed(rotationMatrix);
-
-	return rImg;
 }
 
 /**

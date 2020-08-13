@@ -246,7 +246,22 @@ QImage DkImage::thresholdImage(const QImage & img, double thr, bool color) {
 	return tImg;
 }
 
-QImage DkImage::rotateImage(const QImage & img, double angle) {
+QImage DkImage::rotateSimple(const QImage & img, double angle) {
+
+	if (angle == 0 || angle == -1)
+		return img;
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate(angle);
+	QImage rImg = img.transformed(rotationMatrix);
+
+	return rImg;
+}
+
+QImage DkImage::rotate(const QImage & img, double angle) {
+
+	if (qAbs(angle) == 90 || qAbs(angle) == 180 || angle == 0)
+		return rotateSimple(img, angle);
 
 	// compute new image size
 	DkVector nSl((float)img.width(), (float)img.height());
@@ -681,6 +696,29 @@ QPixmap DkImage::merge(const QVector<QImage>& imgs) {
 	return pm;
 }
 
+QImage DkImage::cropToImage(const QImage& src, const QRect& cropRect, const QTransform& t, const QColor& fillColor) {
+
+	// illegal?
+	if (cropRect.width() <= 0 || cropRect.height() <= 0)
+		return src;
+
+	QImage img = QImage(cropRect.width(), cropRect.height(), QImage::Format_ARGB32);
+	img.fill(fillColor.rgba());
+
+	// render the image into the new coordinate system
+	QPainter painter(&img);
+	painter.setWorldTransform(t);
+
+	// for rotated rects we want perfect anti-aliasing
+	if (t.isRotating())
+		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+
+	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
+	painter.end();
+
+	return img;
+}
+
 QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, const QColor & fillColor) {
 
 	QTransform tForm; 
@@ -1038,22 +1076,6 @@ QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size, const QCo
 
 	if (c.alpha() != 0)
 		icon = colorizePixmap(icon, c);
-
-	return icon;
-}
-
-QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col, const QSize& size) {
-
-
-	QSize is = size;
-
-	if (is.isNull()) {
-		int s = DkSettingsManager::param().effectiveIconSize();
-		is = QSize(s, s);
-	}
-
-	QPixmap icon = loadFromSvg(filePath, is);
-	icon = colorizePixmap(icon, col);
 
 	return icon;
 }

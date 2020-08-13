@@ -120,7 +120,7 @@ void DkManipulatorWidget::createLayout() {
 	QPushButton* undoButton = new QPushButton(pm, "", this);
 	undoButton->setFlat(true);
 	undoButton->setIconSize(QSize(32, 32));
-	undoButton->setObjectName("DkRestartButton");
+	undoButton->setObjectName("dark");
 	undoButton->setStatusTip(tr("Undo"));
 	connect(undoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_undo), SIGNAL(triggered()));
 
@@ -128,7 +128,7 @@ void DkManipulatorWidget::createLayout() {
 	QPushButton* redoButton = new QPushButton(pm, "", this);
 	redoButton->setFlat(true);
 	redoButton->setIconSize(QSize(32, 32));
-	redoButton->setObjectName("DkRestartButton");
+	redoButton->setObjectName("dark");
 	redoButton->setStatusTip(tr("Redo"));
 	connect(redoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
 
