@@ -866,13 +866,13 @@ void DkCropToolBar::createLayout() {
 	setObjectName("darkManipulator");
 
 	QPixmap i = DkImage::loadIcon(":/nomacs/img/crop.svg", QSize(32, 32), QColor(255,255,255));
-	QPushButton* applyButton = new QPushButton(i, tr("&Apply"), this);
+	QPushButton* applyButton = new QPushButton(i, tr("Apply"), this);
 	applyButton->setStatusTip(tr("closes the crop view, and applies cropping to the image (ENTER)"));
 	applyButton->setShortcut(Qt::Key_Return);
 	applyButton->setObjectName("dark");
 
 	i = DkImage::loadIcon(":/nomacs/img/close.svg", QSize(32, 32), QColor(255, 255, 255));
-	QPushButton* cancelButton = new QPushButton(i, tr("&Cancel"), this);
+	QPushButton* cancelButton = new QPushButton(i, tr("Cancel"), this);
 	cancelButton->setStatusTip(tr("closes the crop view, leaving the image unchanged (ESC)"));
 	cancelButton->setShortcut(Qt::Key_Escape);
 	cancelButton->setObjectName("dark");
