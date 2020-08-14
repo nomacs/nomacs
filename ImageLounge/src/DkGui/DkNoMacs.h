@@ -69,7 +69,7 @@ class DkTrainDialog;
 #ifdef WITH_QUAZIP
 class DkArchiveExtractionDialog;
 #endif
-class DkBrowseExplorer;
+class DkExplorer;
 class DkMetaDataDock;
 class DkEditDock;
 class DkHistoryDock;
@@ -257,7 +257,7 @@ protected:
 #ifdef WITH_QUAZIP
 	DkArchiveExtractionDialog* mArchiveExtractionDialog = 0;
 #endif
-	DkBrowseExplorer* mExplorer = 0;
+	DkExplorer* mExplorer = 0;
 	DkMetaDataDock* mMetaDataDock = 0;
 	DkEditDock* mEditDock = 0;
 	DkHistoryDock* mHistoryDock = 0;
