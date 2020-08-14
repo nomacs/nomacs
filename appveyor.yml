@@ -53,3 +53,6 @@ artifacts:
     - path: 'installer/nomacs-setup-x64.exe'
       name: nomacs-multi-user-installer
 
+    - path: 'installer/nomacs.x64/translations'
+      name: translations
+      type: zip
