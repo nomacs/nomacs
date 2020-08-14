@@ -1597,10 +1597,12 @@ QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) 
 		int nom = sList[0].toInt();		// nominator
 		int denom = sList[1].toInt();	// denominator
 
-		// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
+		// if exposure time is less than a second -> normalize to get nice values (1/500 instead of 2/1000)
 		if (nom <= denom && nom != 0) {
-			int gcd = DkMath::gcd(denom, nom);
-			value = QString::number(nom/gcd) + QString("/") + QString::number(denom/gcd);
+			
+			// fixes #496
+			double nd = (double)denom / nom;
+			value = QString("1/") + QString::number(qRound(nd));
 		}
 		else
 			value = QString::fromStdString(DkUtils::stringify((float)nom/(float)denom,1));
