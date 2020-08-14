@@ -84,6 +84,13 @@ void DkCropViewPort::mouseDoubleClickEvent(QMouseEvent* ev) {
 
 void DkCropViewPort::mouseMoveEvent(QMouseEvent* ev) {
 
+	if (ev->modifiers() == Qt::ShiftModifier && 
+		mCropArea.aspectRatio() == DkCropArea::Ratio::r_free) {
+		mCropArea.setTempRatio(DkCropArea::Ratio::r_original);
+	}
+	else if (ev->modifiers() != Qt::ShiftModifier) {
+		mCropArea.disableTempRatio();
+	}
 
 	if (ev->buttons() & Qt::LeftButton) {
 
@@ -97,7 +104,6 @@ void DkCropViewPort::mouseMoveEvent(QMouseEvent* ev) {
 
 	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move) {
-
 		ev->ignore();
 		DkBaseViewPort::mouseMoveEvent(ev);
 	} 
@@ -111,7 +117,11 @@ void DkCropViewPort::mousePressEvent(QMouseEvent* ev) {
 
 	mLastMousePos = ev->pos();
 	mCropArea.updateHandle(ev->pos());
-	
+
+	// create a new crop rect
+	if (mCropArea.currentHandle() == DkCropArea::h_new)
+		mCropArea.makeRectAt(ev->pos());
+
 	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move)
 		DkBaseViewPort::mousePressEvent(ev);
@@ -120,6 +130,7 @@ void DkCropViewPort::mousePressEvent(QMouseEvent* ev) {
 void DkCropViewPort::mouseReleaseEvent(QMouseEvent* ev) {
 
 	mCropArea.resetHandle();
+	mCropArea.commitMouseAction();
 
 	// propagate moves
 	if (mCropArea.currentHandle() == DkCropArea::h_move)
@@ -288,7 +299,7 @@ void DkCropViewPort::recenter() {
 
 void DkCropViewPort::askBeforeClose() {
 
-	if (!mIsDirty)
+	if (!mIsDirty || !mCropArea.isActive())
 		return;
 
 	QMessageBox* msg = new QMessageBox(QMessageBox::Question, tr("Crop Image"),
@@ -446,8 +457,10 @@ bool DkCropArea::isActive() const {
 
 	const QRect& r = rect();
 
-	return qRound(r.width() / mWorldMatrix->m11()) != qRound(mImgViewRect->width()) ||
-		qRound(r.height() / mWorldMatrix->m11()) != qRound(mImgViewRect->height());
+	bool aw = qAbs(r.width() / mWorldMatrix->m11() - mImgViewRect->width()) > 1;
+	bool ah = qAbs(r.height() / mWorldMatrix->m11() - mImgViewRect->height()) > 1;
+
+	return aw || ah;
 }
 
 void DkCropArea::setWorldMatrix(QTransform* matrix) {
@@ -458,6 +471,33 @@ void DkCropArea::setImageRect(const QRectF* rect) {
     
 	Q_ASSERT(rect);
 	mImgViewRect = rect;
+}
+
+void DkCropArea::makeRectAt(const QPoint& pos) {
+
+	QRect r(pos, QSize(1,1));
+	mCropRect = r;
+	mNewRect = true;
+
+	mCurrentHandle = Handle::h_bottom_right;
+}
+
+void DkCropArea::commitMouseAction() {
+
+	if (mTmpRatio)
+		mRatio = Ratio::r_free;
+
+	// commit new rect?
+	if (mNewRect) {
+
+		const QRect& r = rect();
+
+		// reject?
+		if (r.width() < 5 && r.height() < 5) {
+			mCropRect = QRect();
+		}
+		mNewRect = false;
+	}
 }
 
 QRect DkCropArea::rect() const {
@@ -506,8 +546,10 @@ DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const
 		return Handle::h_top;
 	else if (qAbs(r.bottom() - pos.y()) < proximity)
 		return Handle::h_bottom;
-	else if (r.contains(pos))
+	else if (r.contains(pos) && isActive())
 		return Handle::h_move;
+	else if (r.contains(pos))
+		return Handle::h_new;
 
 	return Handle::h_no_handle;
 }
@@ -571,6 +613,26 @@ void DkCropArea::setAspectRatio(const DkCropArea::Ratio& r) {
 
 	// center it
 	mCropRect = moveCenterTo(mCropRect, nr);
+}
+
+DkCropArea::Ratio DkCropArea::aspectRatio() const {
+	return mRatio;
+}
+
+void DkCropArea::setTempRatio(const DkCropArea::Ratio& r) {
+
+	if (mRatio == Ratio::r_free) {
+		mRatio = r;
+		mTmpRatio = true;
+	}
+}
+
+void DkCropArea::disableTempRatio() {
+
+	if (mTmpRatio) {
+		mRatio = Ratio::r_free;
+		mTmpRatio = false;
+	}
 }
 
 void DkCropArea::applyRatio(QRect& r, double ratio) const {
@@ -938,6 +1000,7 @@ void DkCropToolBar::on_ratioBox_currentIndexChanged(int idx) const {
 void DkCropToolBar::reset() {
 
 	mAngleSlider->setValue(0);
+	mRatioBox->setCurrentIndex(0);
 }
 
 }

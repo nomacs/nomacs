@@ -71,6 +71,7 @@ public:
         h_left,
         h_right,
         h_move,
+        h_new,
 
         h_end
     };
@@ -91,6 +92,8 @@ public:
     void setWorldMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
+    void makeRectAt(const QPoint& pos);
+    void commitMouseAction();
     QRect rect() const;
 
     void updateHandle(const QPoint& pos);
@@ -99,6 +102,9 @@ public:
     Handle currentHandle() const;
 
     void setAspectRatio(const DkCropArea::Ratio& r);
+    DkCropArea::Ratio aspectRatio() const;
+    void setTempRatio(const DkCropArea::Ratio& r);
+    void disableTempRatio();
     void flip();
 
     void update(const QPoint& pos);
@@ -116,6 +122,8 @@ private:
     DkCropArea::Ratio mRatio = r_free;
     DkCropArea::Handle mCurrentHandle = DkCropArea::Handle::h_no_handle;
     
+    bool mNewRect = false;
+    bool mTmpRatio = false;
     double mOriginalRatio = 1.0;
 
     Handle getHandle(const QPoint& pos, int proximity = 15) const;
@@ -207,7 +215,6 @@ protected:
     DkCropStyle mStyle;
 
     DkCropArea mCropArea;
-    QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
     
     bool mIsDirty = false;
