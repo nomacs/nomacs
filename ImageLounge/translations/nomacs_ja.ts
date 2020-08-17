@@ -4073,12 +4073,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2490"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>マルチページのTIFFが読み込まれていません</translation>
+      <translation>マルチページTIFFが読み込まれていません</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2493"/>
       <source>Save Folder:</source>
-      <translation>保存するフォルダー:</translation>
+      <translation>保存フォルダー:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2499"/>
