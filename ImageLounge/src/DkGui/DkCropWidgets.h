@@ -37,6 +37,8 @@
 #include <QDockWidget>
 #pragma warning(pop)
 
+#include <memory>
+
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT
