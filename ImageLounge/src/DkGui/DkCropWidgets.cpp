@@ -45,6 +45,10 @@
 #include <QPushButton>
 #include <QMessageBox>
 
+#include <QSpinBox>
+#include <QMenu>
+#include <QWidgetAction>
+
 #include <QMainWindow>
 #include <QHBoxLayout>
 #include <QSlider>
@@ -60,8 +64,11 @@ DkCropViewPort::DkCropViewPort(QWidget* parent /* = 0*/) : DkBaseViewPort(parent
 	mMinZoom = 1.0;
 	mImgWithin = false;
 
-	mCropArea.setWorldMatrix(&mWorldMatrix);
-	mCropArea.setImageRect(&mImgViewRect);
+	mCropArea = std::make_shared<DkCropArea>();
+
+	mCropArea->setWorldMatrix(&mWorldMatrix);
+	mCropArea->setImageMatrix(&mImgMatrix);
+	mCropArea->setImageRect(&mImgViewRect);
 
 	DkActionManager& am = DkActionManager::instance();
 
@@ -85,17 +92,17 @@ void DkCropViewPort::mouseDoubleClickEvent(QMouseEvent* ev) {
 void DkCropViewPort::mouseMoveEvent(QMouseEvent* ev) {
 
 	if (ev->modifiers() == Qt::ShiftModifier && 
-		mCropArea.aspectRatio() == DkCropArea::Ratio::r_free) {
-		mCropArea.setTempRatio(DkCropArea::Ratio::r_original);
+		mCropArea->aspectRatio() == DkCropArea::Ratio::r_free) {
+		mCropArea->setTempRatio(DkCropArea::Ratio::r_original);
 	}
 	else if (ev->modifiers() != Qt::ShiftModifier) {
-		mCropArea.disableTempRatio();
+		mCropArea->disableTempRatio();
 	}
 
 	if (ev->buttons() & Qt::LeftButton) {
 
-		if (mCropArea.currentHandle() != DkCropArea::h_move)
-			mCropArea.update(ev->pos());
+		if (mCropArea->currentHandle() != DkCropArea::h_move)
+			mCropArea->update(ev->pos());
 		
 		update();
 
@@ -103,12 +110,12 @@ void DkCropViewPort::mouseMoveEvent(QMouseEvent* ev) {
 	}
 
 	// propagate moves
-	if (mCropArea.currentHandle() == DkCropArea::h_move) {
+	if (mCropArea->currentHandle() == DkCropArea::h_move) {
 		ev->ignore();
 		DkBaseViewPort::mouseMoveEvent(ev);
 	} 
 	else {
-		QCursor c = mCropArea.cursor(ev->pos());
+		QCursor c = mCropArea->cursor(ev->pos());
 		setCursor(c);
 	}
 }
@@ -116,24 +123,24 @@ void DkCropViewPort::mouseMoveEvent(QMouseEvent* ev) {
 void DkCropViewPort::mousePressEvent(QMouseEvent* ev) {
 
 	mLastMousePos = ev->pos();
-	mCropArea.updateHandle(ev->pos());
+	mCropArea->updateHandle(ev->pos());
 
 	// create a new crop rect
-	if (mCropArea.currentHandle() == DkCropArea::h_new)
-		mCropArea.makeRectAt(ev->pos());
+	if (mCropArea->currentHandle() == DkCropArea::h_new)
+		mCropArea->makeRectAt(ev->pos());
 
 	// propagate moves
-	if (mCropArea.currentHandle() == DkCropArea::h_move)
+	if (mCropArea->currentHandle() == DkCropArea::h_move)
 		DkBaseViewPort::mousePressEvent(ev);
 }
 
 void DkCropViewPort::mouseReleaseEvent(QMouseEvent* ev) {
 
-	mCropArea.resetHandle();
-	mCropArea.commitMouseAction();
+	mCropArea->resetHandle();
+	mCropArea->commitMouseAction();
 
 	// propagate moves
-	if (mCropArea.currentHandle() == DkCropArea::h_move)
+	if (mCropArea->currentHandle() == DkCropArea::h_move)
 		DkBaseViewPort::mouseReleaseEvent(ev);
 
 	recenter();
@@ -153,7 +160,7 @@ void DkCropViewPort::paintEvent(QPaintEvent* pe) {
 		);
 	path.addRect(canvas);
 
-	QRectF crop = mCropArea.rect();
+	QRectF crop = mCropArea->rect();
 	path.addRect(crop);
 
 	// init painter
@@ -216,9 +223,9 @@ void DkCropViewPort::paintEvent(QPaintEvent* pe) {
 	//debug.setWidth(3);
 	//debug.setStyle(Qt::DashLine);
 	//painter.setPen(debug);
-	////painter.drawRect(mCropArea.imgViewRect());
+	////painter.drawRect(mCropArea->imgViewRect());
 
-	////QTransform t = mCropArea.transformCropToRect(winRect());
+	////QTransform t = mCropArea->transformCropToRect(winRect());
 	////QRectF tr = t.mapRect(crop);
 	////painter.drawRect(tr);
 	//painter.drawRect(mViewportRect);
@@ -290,8 +297,8 @@ QTransform DkCropViewPort::getScaledImageMatrix() const {
 
 void DkCropViewPort::recenter() {
 
-	mCropArea.recenter(canvas());
-	updateViewRect(mCropArea.rect());
+	mCropArea->recenter(canvas());
+	updateViewRect(mCropArea->rect());
 	//controlImagePosition(); // TODO: do we need that?
 
 	update();
@@ -299,7 +306,7 @@ void DkCropViewPort::recenter() {
 
 void DkCropViewPort::askBeforeClose() {
 
-	if (!mIsDirty || !mCropArea.isActive())
+	if (!mIsDirty || !mCropArea->isActive())
 		return;
 
 	QMessageBox* msg = new QMessageBox(QMessageBox::Question, tr("Crop Image"),
@@ -340,11 +347,10 @@ void DkCropViewPort::crop() {
 		return;
 	}
 
-	QRect r = mCropArea.rect();
-	r = mWorldMatrix.inverted().mapRect(r);
-	r = mImgMatrix.inverted().mapRect(r);
+	if (mCropArea->isActive() || mAngle != 0.0) {
+	
+		QRect r = mCropArea->mapToImage(mCropArea->rect());
 
-	if (mCropArea.isActive() || mAngle != 0.0) {
 		QTransform t;
 		t.translate(-r.left(), -r.top());
 		rotateTransform(t, mAngle, r.center());
@@ -383,7 +389,7 @@ void DkCropViewPort::rotateWithReset(double angle) {
 
 void DkCropViewPort::reset() {
 
-	mCropArea.reset();
+	mCropArea->reset();
 	recenter();
 	resetWorldMatrix();
 	emit resetSignal();
@@ -391,11 +397,11 @@ void DkCropViewPort::reset() {
 }
 
 void DkCropViewPort::setWorldTransform(QTransform* worldMatrix) {
-	mCropArea.setWorldMatrix(worldMatrix);
+	mCropArea->setWorldMatrix(worldMatrix);
 }
 
 void DkCropViewPort::setImageRect(const QRectF* rect) {
-    mCropArea.setImageRect(rect);
+    mCropArea->setImageRect(rect);
 }
 
 void DkCropViewPort::setVisible(bool visible) {
@@ -408,7 +414,7 @@ void DkCropViewPort::setVisible(bool visible) {
 			mCropDock->setObjectName("cropDock");
 			mCropDock->setTitleBarWidget(new QWidget());
 
-			DkCropToolBar* ctb = new DkCropToolBar(this);
+			DkCropToolBar* ctb = new DkCropToolBar(mCropArea, this);
 			connect(ctb, &DkCropToolBar::rotateSignal, this, &DkCropViewPort::rotate);
 			connect(ctb, &DkCropToolBar::aspectRatioSignal, this, &DkCropViewPort::setAspectRatio);
 			connect(ctb, &DkCropToolBar::flipSignal, this, &DkCropViewPort::flip);
@@ -417,6 +423,7 @@ void DkCropViewPort::setVisible(bool visible) {
 					mIsRotating = r; 
 					update(); 
 				});
+			connect(ctb, &DkCropToolBar::update, this, [&]() { update(); } );
 			connect(ctb, &DkCropToolBar::closeSignal, this, &DkCropViewPort::applyCrop);
 			connect(this, &DkCropViewPort::resetSignal, ctb, &DkCropToolBar::reset);
 
@@ -443,13 +450,13 @@ void DkCropViewPort::rotate(double angle) {
 
 void DkCropViewPort::setAspectRatio(const DkCropArea::Ratio& ratio) {
 
-	mCropArea.setAspectRatio(ratio);
+	mCropArea->setAspectRatio(ratio);
 	recenter();
 }
 
 void DkCropViewPort::flip() {
 	
-	mCropArea.flip();
+	mCropArea->flip();
 	recenter();
 }
 
@@ -465,6 +472,10 @@ bool DkCropArea::isActive() const {
 
 void DkCropArea::setWorldMatrix(QTransform* matrix) {
     mWorldMatrix = matrix;
+}
+
+void DkCropArea::setImageMatrix(QTransform* matrix) {
+	mImgMatrix = matrix;
 }
 
 void DkCropArea::setImageRect(const QRectF* rect) {
@@ -500,6 +511,17 @@ void DkCropArea::commitMouseAction() {
 	}
 }
 
+void DkCropArea::setRect(const QRect& r) {
+
+	QRect nr = r;
+	clip(nr);
+
+	//if (mRatio != Ratio::r_free)
+	//	applyRatio(nr, toRatio(mRatio));
+
+	mCropRect = nr;
+}
+
 QRect DkCropArea::rect() const {
 	
 	// init the crop rect
@@ -511,6 +533,24 @@ QRect DkCropArea::rect() const {
 	}
 
 	return mCropRect;
+}
+
+QRect DkCropArea::mapToImage(const QRect& r) const {
+
+	QRect mr = r;
+	mr = mWorldMatrix->inverted().mapRect(mr);
+	mr = mImgMatrix->inverted().mapRect(mr);
+
+	return mr;
+}
+
+QRect DkCropArea::mapFromImage(const QRect& r) const {
+
+	QRect mr = r;
+	mr = mImgMatrix->mapRect(mr);
+	mr = mWorldMatrix->mapRect(mr);
+
+	return mr;
 }
 
 DkCropArea::Handle DkCropArea::getHandle(const QPoint& pos, int proximity) const {
@@ -917,7 +957,71 @@ QPen DkCropStyle::cornerPen() const {
 	return p;
 }
 
-DkCropToolBar::DkCropToolBar(QWidget* parent) : DkWidget(parent) {
+// -------------------------------------------------------------------- DkCropEdit
+DkCropEdit::DkCropEdit(QWidget* parent) : DkWidget(parent) {
+
+	createLayout();
+}
+
+void DkCropEdit::setRect(const QRect& r) {
+
+	blockSignals(true);
+	mRectBoxes[Box::x]->setValue(r.x());
+	mRectBoxes[Box::y]->setValue(r.y());
+	mRectBoxes[Box::w]->setValue(r.width());
+	mRectBoxes[Box::h]->setValue(r.height());
+	blockSignals(false);
+}
+
+QRect DkCropEdit::rect() const {
+	
+	return QRect(
+		mRectBoxes[Box::x]->value(),
+		mRectBoxes[Box::y]->value(),
+		mRectBoxes[Box::w]->value(),
+		mRectBoxes[Box::h]->value()
+	);
+}
+
+void DkCropEdit::createLayout() {
+
+	mRectBoxes.resize(Box::end);
+
+	for (int idx = 0; idx < mRectBoxes.size(); idx++) {
+
+		mRectBoxes[idx] = new QSpinBox(this);
+		mRectBoxes[idx]->setMaximum(10000);	// FIXME: this is a stupid max val
+		connect(
+			mRectBoxes[idx],
+			qOverload<int>(&QSpinBox::valueChanged),
+			this,
+			[&](int) {
+				emit newRectSignal(rect());
+			});
+	}
+
+	mRectBoxes[x]->setPrefix(tr("x") + ": ");
+	mRectBoxes[y]->setPrefix(tr("y") + ": ");
+	mRectBoxes[w]->setPrefix(tr("w") + ": ");
+	mRectBoxes[h]->setPrefix(tr("h") + ": ");
+
+	mRectBoxes[x]->setMinimum(0);
+	mRectBoxes[y]->setMinimum(0);
+	mRectBoxes[w]->setMinimum(1);
+	mRectBoxes[h]->setMinimum(1);
+
+	QGridLayout* gl = new QGridLayout(this);
+	gl->addWidget(mRectBoxes[x], 1, 1);
+	gl->addWidget(mRectBoxes[y], 2, 1);
+	gl->addWidget(mRectBoxes[w], 3, 1);
+	gl->addWidget(mRectBoxes[h], 4, 1);
+}
+
+
+// -------------------------------------------------------------------- DkCropToolBar 
+DkCropToolBar::DkCropToolBar(std::shared_ptr<DkCropArea> crop, QWidget* parent) : DkWidget(parent) {
+
+	mCropArea = crop;
 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -967,6 +1071,11 @@ void DkCropToolBar::createLayout() {
 	flipButton->setShortcut(Qt::Key_F);
 	flipButton->setObjectName("dark");
 
+	i = DkImage::loadIcon(":/nomacs/img/bars.svg", QSize(32, 32), QColor(255, 255, 255));
+	mEditButton = new QPushButton(i, "", this);
+	mEditButton->setStatusTip(tr("edit rectangle coordinates"));
+	mEditButton->setObjectName("dark");
+
 	// connections
 	auto s = mAngleSlider->getSlider();
 	connect(s, &QSlider::sliderPressed, this, [&]() { emit isRotatingSignal(true); });
@@ -975,6 +1084,7 @@ void DkCropToolBar::createLayout() {
 	connect(flipButton, &QPushButton::clicked, this, &DkCropToolBar::flipSignal);
 	connect(applyButton, &QPushButton::clicked, this, [&]() { emit closeSignal(true); });
 	connect(cancelButton, &QPushButton::clicked, this, [&]() { emit closeSignal(false); });
+	connect(mEditButton, &QPushButton::clicked, this, [&]() { showMenu(); });
 
 	QHBoxLayout* l = new QHBoxLayout(this);
 	l->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -988,7 +1098,31 @@ void DkCropToolBar::createLayout() {
 	l->addSpacing(20);
 	l->addWidget(mRatioBox);
 	l->addWidget(flipButton);
+	l->addWidget(mEditButton);
 	l->addStretch();
+
+}
+
+void DkCropToolBar::showMenu(const QPoint& pos) {
+
+	if (!mContextMenu) {
+
+		mContextMenu = new QMenu(this);
+		mCropEdit = new DkCropEdit(this);
+		connect(mCropEdit, &DkCropEdit::newRectSignal, this, 
+			[&](const QRect& r) {
+				mCropArea->setRect(mCropArea->mapFromImage(r));
+				emit update();
+			});
+
+		QWidgetAction* a = new QWidgetAction(this);
+		a->setDefaultWidget(mCropEdit);
+		mContextMenu->addAction(a);
+	}
+
+	// we want the coordinates to be in image coordinates
+	mCropEdit->setRect(mCropArea->mapToImage(mCropArea->rect()));
+	mContextMenu->exec(!pos.isNull() ? pos : mapToGlobal(mEditButton->geometry().bottomRight()));
 }
 
 void DkCropToolBar::on_ratioBox_currentIndexChanged(int idx) const {

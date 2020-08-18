@@ -49,6 +49,8 @@
 
 // Qt defines
 class QComboBox;
+class QSpinBox;
+class QMenu;
 
 namespace nmc {
 
@@ -90,11 +92,16 @@ public:
     bool isActive() const;
 
     void setWorldMatrix(QTransform* matrix);
+    void setImageMatrix(QTransform* matrix);
     void setImageRect(const QRectF* rect);
 
     void makeRectAt(const QPoint& pos);
     void commitMouseAction();
+    
+    void setRect(const QRect& r);
     QRect rect() const;
+    QRect mapToImage(const QRect& r) const;
+    QRect mapFromImage(const QRect& r) const;
 
     void updateHandle(const QPoint& pos);
     void resetHandle();
@@ -115,6 +122,7 @@ public:
 
 private:
     QTransform* mWorldMatrix = nullptr;
+    QTransform* mImgMatrix = nullptr;
     const QRectF* mImgViewRect = nullptr;
 
     // the crop rect is kept in display coordinates
@@ -214,7 +222,7 @@ protected:
 
     DkCropStyle mStyle;
 
-    DkCropArea mCropArea;
+    std::shared_ptr<DkCropArea> mCropArea = nullptr;
     QPoint mLastMousePos;
     
     bool mIsDirty = false;
@@ -225,12 +233,40 @@ protected:
 
 };
 
+class DllCoreExport DkCropEdit : public DkWidget {
+    Q_OBJECT
+
+public:
+    DkCropEdit(QWidget* parent = nullptr);
+
+    void setRect(const QRect& r);
+    QRect rect() const;
+
+signals:
+    void newRectSignal(const QRect& r);
+
+protected:
+    void createLayout();
+
+    enum Box {
+        x = 0,
+        y,
+        w,
+        h,
+
+        end
+    };
+
+    QVector<QSpinBox*> mRectBoxes;
+};
+
+
 // TODO: rename to DkCropToolBar
 class DkCropToolBar : public DkWidget {
     Q_OBJECT
 
 public:
-    DkCropToolBar(QWidget* parent = 0);
+    DkCropToolBar(std::shared_ptr<DkCropArea> crop, QWidget* parent = 0);
 
 public slots:
     void reset();
@@ -244,12 +280,20 @@ signals:
     void aspectRatioSignal(const DkCropArea::Ratio& ratio) const;
     void flipSignal() const;
     void closeSignal(bool apply) const;
-
+    void update() const;
+       
 private:
     void createLayout();
+    void showMenu(const QPoint& pos = QPoint());
+
+    QMenu* mContextMenu = nullptr;
+    DkCropEdit* mCropEdit = nullptr;
 
     QComboBox* mRatioBox = nullptr;
     DkDoubleSlider* mAngleSlider = nullptr;
+    QPushButton* mEditButton = nullptr;
+
+    std::shared_ptr<DkCropArea> mCropArea = nullptr;
 
 };
 
