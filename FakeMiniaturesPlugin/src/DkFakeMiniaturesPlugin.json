@@ -3,7 +3,7 @@
 	"AuthorName" 	: "Tim Jerman",
 	"Company"		: "",
 	"DateCreated" 	: "2014-06-01",
-	"DateModified"	: "2020-08-10",
+	"DateModified"	: "2020-08-19",
 	"Description"	: "On the preview image select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. The amount of blur and saturation can be changed with the sliders on the right of the dialog.",
 	"Tagline" 		: "Apply a fake miniature filter (tilt shift effect) to the image.",
 	"PluginId"		: "a2ac7b68866b4ab29fb1df3e170b8f0d",
