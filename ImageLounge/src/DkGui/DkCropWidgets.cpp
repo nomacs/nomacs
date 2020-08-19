@@ -993,7 +993,7 @@ void DkCropEdit::createLayout() {
 		mRectBoxes[idx]->setMaximum(10000);	// FIXME: this is a stupid max val
 		connect(
 			mRectBoxes[idx],
-			qOverload<int>(&QSpinBox::valueChanged),
+			QOverload<int>::of(&QSpinBox::valueChanged),
 			this,
 			[&](int) {
 				emit newRectSignal(rect());
