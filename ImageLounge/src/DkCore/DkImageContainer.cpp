@@ -41,7 +41,11 @@
 
 // quazip
 #ifdef WITH_QUAZIP
+#ifdef WITH_QUAZIP1
+#include <quazip/JlCompress.h>
+#else
 #include <quazip5/JlCompress.h>
+#endif
 #endif
 #pragma warning(pop)		// no warnings from includes - end
 
