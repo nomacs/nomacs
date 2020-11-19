@@ -384,7 +384,7 @@ bool DkImageContainer::hasImage() const {
 bool DkImageContainer::hasMovie() const {
 
 	QString newSuffix = QFileInfo(filePath()).suffix();
-	return newSuffix.contains(QRegExp("(avifs|gif|mng|webp)", Qt::CaseInsensitive)) != 0;
+	return newSuffix.contains(QRegExp("(avif|gif|mng|webp)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkImageContainer::hasSvg() const {
