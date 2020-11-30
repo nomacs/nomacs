@@ -1135,7 +1135,11 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 			sImg = sImg.convertToFormat(QImage::Format_RGB888);
 		}
 		else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8) {
-			sImg = sImg.convertToFormat(QImage::Format_RGB32);
+			if (sImg.hasAlphaChannel()) {
+				sImg = sImg.convertToFormat(QImage::Format_ARGB32);
+			} else {
+				sImg = sImg.convertToFormat(QImage::Format_RGB32);
+			}
 		}
 #endif
 
