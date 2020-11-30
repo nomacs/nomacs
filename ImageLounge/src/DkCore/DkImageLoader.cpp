@@ -1234,15 +1234,35 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	DkCompressDialog* jpgDialog = 0;
 	QImage lSaveImg = saveImg;
 
-	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+	DkTifDialog* tifDialog = 0;
+
+	if (selectedFilter.contains("jxl")) {
+		//no dialog yet, but we have to avoid triggering jpg_dialog for .JXL format
+	}
+	else if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(dialogParent);
+
+		jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
+
+		jpgDialog->setImage(saveImg);
+		jpgDialog->setMinimumSize(450, 150);
+
+		if (!jpgDialog->exec()) {
+			jpgDialog->deleteLater();
+			return;
+		}
+
+		compression = jpgDialog->getCompression();
+
+	}
+	else if (selectedFilter.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive))) {
 		
 		if (!jpgDialog)
 			jpgDialog = new DkCompressDialog(dialogParent);
 
-		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
-			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
-		else
-			jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+		jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
 
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		jpgDialog->setImage(saveImg);
@@ -1265,9 +1285,9 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
 			lSaveImg = tmpImg;
 		}
-	}
 
-	if (selectedFilter.contains("webp")) {
+	}
+	else if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
 			jpgDialog = new DkCompressDialog(dialogParent);
@@ -1281,9 +1301,9 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		}
 
 		compression = jpgDialog->getCompression();
-	}
 
-	if (selectedFilter.contains("avif")) {
+	}
+	else if (selectedFilter.contains("avif")) {
 
 		if (!jpgDialog)
 			jpgDialog = new DkCompressDialog(dialogParent);
@@ -1297,11 +1317,9 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		}
 
 		compression = jpgDialog->getCompression();
+
 	}
-
-	DkTifDialog* tifDialog = 0;
-
-	if (selectedFilter.contains("tif")) {
+	else if (selectedFilter.contains("tif")) {
 
 		if (!tifDialog)
 			tifDialog = new DkTifDialog(dialogParent);
