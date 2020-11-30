@@ -140,6 +140,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
 	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg *.jpe)");
 	if (qtFormats.contains("jp2"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("jxl"))		app_p.saveFilters.append("JPEG XL (*.jxl)");
 	if (qtFormats.contains("tif"))		app_p.saveFilters.append("TIFF (*.tif *.tiff)");
 	if (qtFormats.contains("bmp"))		app_p.saveFilters.append("Windows Bitmap (*.bmp)");
 	if (qtFormats.contains("ppm"))		app_p.saveFilters.append("Portable Pixmap (*.ppm)");
