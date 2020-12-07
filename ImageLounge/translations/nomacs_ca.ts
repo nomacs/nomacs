@@ -3361,7 +3361,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2386"/>
       <source>Input</source>
-      <translation type="unfinished"/>
+      <translation>Entrada</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2386"/>
@@ -3404,7 +3404,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2406"/>
       <source>Profiles</source>
-      <translation type="unfinished"/>
+      <translation>Perfils</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2587"/>
@@ -3436,22 +3436,22 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2647"/>
       <source>Please select an output directory.</source>
-      <translation type="unfinished"/>
+      <translation>Trieu un directori de sortida.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2652"/>
       <source>Sorry, I cannot create %1.</source>
-      <translation type="unfinished"/>
+      <translation>Ho lamentem, no s'ha pogut crear %1.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2657"/>
       <source>Sorry, I cannot find files to process.</source>
-      <translation type="unfinished"/>
+      <translation>Ho lamentem, no s'han pogut trobar els fitxers per processar.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2662"/>
       <source>Sorry, the file pattern is empty.</source>
-      <translation type="unfinished"/>
+      <translation>Ho lamentem, el patró de fitxer està buit.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2672"/>
@@ -5848,7 +5848,7 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1205"/>
       <source>Input</source>
-      <translation type="unfinished"/>
+      <translation>Entrada</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1209"/>
