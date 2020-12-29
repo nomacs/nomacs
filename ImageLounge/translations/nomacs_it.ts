@@ -71,7 +71,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="903"/>
       <source>flips the crop rectangle (F)</source>
-      <translation>capovolge il rettangolo di taglio (F)</translation>
+      <translation>capovolge il ritaglio rettangolare (F)</translation>
     </message>
   </context>
   <context>
@@ -79,7 +79,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="294"/>
       <source>Crop Image</source>
-      <translation>Taglia Immagine</translation>
+      <translation>Ritaglia Immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="295"/>
