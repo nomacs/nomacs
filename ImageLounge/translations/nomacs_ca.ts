@@ -1239,7 +1239,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1457"/>
       <source>&amp;Sync All Actions</source>
-      <translation>&amp;Sincronita totes les accions</translation>
+      <translation>&amp;Sincronitza totes les accions</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1458"/>
@@ -3456,7 +3456,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2672"/>
       <source>Sorry, I cannot start processing - please check the configuration.</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no podem començar a a processar - reviseu la configuració.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2714"/>
