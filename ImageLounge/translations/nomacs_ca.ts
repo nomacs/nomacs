@@ -3466,7 +3466,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2768"/>
       <source>%1/%2 files processed... %3 failed.</source>
-      <translation type="unfinished"/>
+      <translation>%1/%2 fitxers processats... %3 fallat.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2794"/>
@@ -3481,7 +3481,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2865"/>
       <source>Sorry, I cannot save the settings...</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no podem guardar les preferències...</translation>
     </message>
   </context>
   <context>
@@ -3510,22 +3510,22 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to Tab</source>
-      <translation type="unfinished"/>
+      <translation>Anar a la pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to tab number: </source>
-      <translation type="unfinished"/>
+      <translation>Anar a la pestanya numero: </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
       <source>General</source>
-      <translation type="unfinished"/>
+      <translation>General</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="524"/>
       <source>Display</source>
-      <translation type="unfinished"/>
+      <translation>Pantalla</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="530"/>
@@ -3535,17 +3535,17 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="536"/>
       <source>File Associations</source>
-      <translation type="unfinished"/>
+      <translation>Associació de fitxers</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="542"/>
       <source>Advanced</source>
-      <translation type="unfinished"/>
+      <translation>Avançat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="548"/>
       <source>Editor</source>
-      <translation type="unfinished"/>
+      <translation>Editor</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1265"/>
@@ -3570,7 +3570,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1362"/>
       <source>Sorry, I could not drop the content.</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no s'ha pogut afegir el contingut.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1484"/>
@@ -3580,7 +3580,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1497"/>
       <source>%1 vec files merged</source>
-      <translation type="unfinished"/>
+      <translation>%1 fitxers vec units</translation>
     </message>
   </context>
   <context>
@@ -3588,7 +3588,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4423"/>
       <source>Remember Monitor Settings</source>
-      <translation type="unfinished"/>
+      <translation>Recordar configuració de pantalla</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="4427"/>
@@ -3627,7 +3627,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="117"/>
       <source>Drag the slider downwards for elimination</source>
-      <translation type="unfinished"/>
+      <translation>Mou la barra cap avall per eliminar</translation>
     </message>
   </context>
   <context>
@@ -3635,7 +3635,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1182"/>
       <source>Click here to add notes</source>
-      <translation type="unfinished"/>
+      <translation>Cliqueu aquí per afegir notes</translation>
     </message>
   </context>
   <context>
@@ -3643,22 +3643,22 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1201"/>
       <source>NOTES</source>
-      <translation type="unfinished"/>
+      <translation>NOTES</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1215"/>
       <source>Enter your notes here. They will be saved to the image metadata.</source>
-      <translation type="unfinished"/>
+      <translation>Entreu les notes aquí. Es guardaran en les metadades de la imatge.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1221"/>
       <source>Save Note (CTRL + ENTER)</source>
-      <translation type="unfinished"/>
+      <translation>Guardar nota (CTRL + ENTER)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1228"/>
       <source>Discard Changes (ESC)</source>
-      <translation type="unfinished"/>
+      <translation>Descartar canvis (ESC)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1269"/>
@@ -3784,7 +3784,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkControlWidget.cpp" line="525"/>
       <source>Closing Plugin</source>
-      <translation type="unfinished"/>
+      <translation>Tancar complement</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkControlWidget.cpp" line="526"/>
@@ -3846,7 +3846,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="681"/>
       <source>Display Images with High Quality Anti Aliasing</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar imatge amb Antialiasing d'alta qualitat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="683"/>
@@ -3856,7 +3856,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="687"/>
       <source>Show Scrollbars when zooming into images</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar barres de desplaçament quan feu zoom a les imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="689"/>
@@ -3866,17 +3866,17 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="692"/>
       <source>Show pixels if zoom level is above</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar píxels si el nivell de zoom està per sobre</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="696"/>
       <source>nomacs will not interpolate images if the zoom level is larger.</source>
-      <translation type="unfinished"/>
+      <translation>nomacs no interpolarà imatges si els nivell de zoom és més gran.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="704"/>
       <source>Use Fixed Zoom Levels</source>
-      <translation type="unfinished"/>
+      <translation>Fer servir nivells fixes de zoom</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="706"/>
@@ -3886,22 +3886,22 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="713"/>
       <source>Load Defaults</source>
-      <translation type="unfinished"/>
+      <translation>Carregar valors per defecte</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="724"/>
       <source>Zoom</source>
-      <translation type="unfinished"/>
+      <translation>Zoom</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="736"/>
       <source>Always keep zoom</source>
-      <translation type="unfinished"/>
+      <translation>Mantenir sempre el zoom</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="737"/>
       <source>Keep zoom if the size is the same</source>
-      <translation type="unfinished"/>
+      <translation>Mantenir el zoom si la mida és la mateixa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="738"/>
@@ -3911,27 +3911,27 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="739"/>
       <source>Never keep zoom</source>
-      <translation type="unfinished"/>
+      <translation>Mai mantenir el zoom</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="741"/>
       <source>Always zoom to fit</source>
-      <translation type="unfinished"/>
+      <translation>Sempre fer zoom fins encaixar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="754"/>
       <source>When Displaying New Images</source>
-      <translation type="unfinished"/>
+      <translation>Quan mostri noves imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="763"/>
       <source>Define the icon size in pixel.</source>
-      <translation type="unfinished"/>
+      <translation>Definir la mida de icona en píxel.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="769"/>
       <source>Icon Size</source>
-      <translation type="unfinished"/>
+      <translation>Mida de icona</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="773"/>
@@ -3951,42 +3951,42 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="783"/>
       <source>Image Transition</source>
-      <translation type="unfinished"/>
+      <translation>Transició de imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="788"/>
       <source>Choose a transition when loading a new image</source>
-      <translation type="unfinished"/>
+      <translation>Triar una transició quan carregui una nova imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="792"/>
       <source>Unknown Transition</source>
-      <translation type="unfinished"/>
+      <translation>Transició desconeguda</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="795"/>
       <source>Appear</source>
-      <translation type="unfinished"/>
+      <translation>Apareixer</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="796"/>
       <source>Swipe</source>
-      <translation type="unfinished"/>
+      <translation>Lliscar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="797"/>
       <source>Fade</source>
-      <translation type="unfinished"/>
+      <translation>Esvair</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="806"/>
       <source>Define the image transition speed.</source>
-      <translation type="unfinished"/>
+      <translation>Definir la velocitat de la transició de imatge.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="813"/>
       <source>Always Animate Image Loading</source>
-      <translation type="unfinished"/>
+      <translation>Animar sempre la càrrega de la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="815"/>
@@ -3996,12 +3996,12 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="818"/>
       <source>Display Time</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar hora</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="822"/>
       <source>Define the time an image is displayed.</source>
-      <translation type="unfinished"/>
+      <translation>Definir el temps que es mostra la imatge.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="829"/>
@@ -4016,12 +4016,12 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="843"/>
       <source>Show crop rectangle</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar el rectangle de retall</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="847"/>
       <source>Show Metadata Cropping</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar retallat de metadades</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="893"/>
@@ -4355,7 +4355,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="216"/>
       <source>Undock the thumbnails</source>
-      <translation type="unfinished"/>
+      <translation>Desbloquejar les miniatures</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="219"/>
@@ -4632,7 +4632,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="411"/>
       <source>General</source>
-      <translation type="unfinished"/>
+      <translation>General</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
