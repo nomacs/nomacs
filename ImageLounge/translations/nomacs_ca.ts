@@ -4039,17 +4039,17 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="559"/>
       <source>Editable</source>
-      <translation type="unfinished"/>
+      <translation>Editable</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="565"/>
       <source>Open Selected Image</source>
-      <translation type="unfinished"/>
+      <translation>Obrir la imatge seleccionada</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="575"/>
       <source>Adjust Columns</source>
-      <translation type="unfinished"/>
+      <translation>Ajustar columnes</translation>
     </message>
   </context>
   <context>
@@ -4057,12 +4057,12 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2438"/>
       <source>Export Multi-Page TIFF</source>
-      <translation type="unfinished"/>
+      <translation>Exportació TIFF multipàgina</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2484"/>
       <source>Multi-Page TIFF:</source>
-      <translation type="unfinished"/>
+      <translation>TIFF multipàgina:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2487"/>
