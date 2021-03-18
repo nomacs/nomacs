@@ -99,7 +99,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="366"/>
       <source>Rotated</source>
-      <translation type="unfinished"/>
+      <translation>Rotat</translation>
     </message>
   </context>
   <context>
@@ -2475,7 +2475,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1082"/>
       <source>Image</source>
-      <translation type="unfinished"/>
+      <translation>Imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="1104"/>
@@ -2713,7 +2713,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1518"/>
       <source>All Images</source>
-      <translation type="unfinished"/>
+      <translation>Totes les imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1519"/>
@@ -2910,7 +2910,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3828"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3837"/>
       <source>&amp;Browse</source>
-      <translation type="unfinished"/>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3832"/>
@@ -3283,7 +3283,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2039"/>
       <source>Orientation</source>
-      <translation type="unfinished"/>
+      <translation>Orientació</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2042"/>
@@ -3476,7 +3476,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2865"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2865"/>
@@ -4068,12 +4068,12 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
       <location filename="../../src/DkGui/DkDialog.cpp" line="2487"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2496"/>
       <source>&amp;Browse</source>
-      <translation type="unfinished"/>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2490"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation type="unfinished"/>
+      <translation>No s'ha carregat cap TIFF multipàgina</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2493"/>
@@ -4088,22 +4088,22 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2502"/>
       <source>Filename:</source>
-      <translation type="unfinished"/>
+      <translation>Nom de fitxer:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2513"/>
       <source>Export Pages</source>
-      <translation type="unfinished"/>
+      <translation>Exportar pàgines</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2520"/>
       <source>Overwrite</source>
-      <translation type="unfinished"/>
+      <translation>Sobreescriure</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2552"/>
       <source>&amp;Export</source>
-      <translation type="unfinished"/>
+      <translation>Exportar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2553"/>
@@ -4113,7 +4113,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2572"/>
       <source>Open TIFF</source>
-      <translation type="unfinished"/>
+      <translation>Obrir TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2588"/>
@@ -4123,12 +4123,12 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2677"/>
       <source>%1 exists, skipping...</source>
-      <translation type="unfinished"/>
+      <translation>%1 ja existeix, ignorant...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2682"/>
       <source>Sorry, I could not load page: %1</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no s'ha pogut carregar la pàgina: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2690"/>
@@ -4141,7 +4141,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="587"/>
       <source>Exposure</source>
-      <translation type="unfinished"/>
+      <translation>Exposició</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="594"/>
@@ -4151,7 +4151,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="601"/>
       <source>Gamma</source>
-      <translation type="unfinished"/>
+      <translation>Gamma</translation>
     </message>
   </context>
   <context>
@@ -4159,7 +4159,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1192"/>
       <source>Filter</source>
-      <translation type="unfinished"/>
+      <translation>Filtre</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1193"/>
@@ -4169,17 +4169,17 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1194"/>
       <source>Register</source>
-      <translation type="unfinished"/>
+      <translation>Registrar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1212"/>
       <source>Set File Associations</source>
-      <translation type="unfinished"/>
+      <translation>Establir associacions de fitxers</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1215"/>
       <source>Set as Default Viewer</source>
-      <translation type="unfinished"/>
+      <translation>Establir com a visor per defecte</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1233"/>
@@ -4190,7 +4190,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1312"/>
       <source>Image</source>
-      <translation type="unfinished"/>
+      <translation>Imatge</translation>
     </message>
   </context>
   <context>
@@ -4198,13 +4198,14 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1206"/>
       <source>Info Box</source>
-      <translation type="unfinished"/>
+      <translation>Calaix d'informació</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1207"/>
       <source>All information fields are currently hidden.
 Do you want to show them again?</source>
-      <translation type="unfinished"/>
+      <translation>Tots els camps d'informació són ocults actualment.
+Voleu tornar-los a mostrar?</translation>
     </message>
   </context>
   <context>
@@ -4217,52 +4218,52 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1004"/>
       <source>Use Temporary Folder</source>
-      <translation type="unfinished"/>
+      <translation>Utilitzeu una carpeta temporal</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1019"/>
       <source>We recommend to set a moderate cache value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished"/>
+      <translation>Recomanem establir una mida de memòria cau al voltant de 100 MB. [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1022"/>
       <source>Maximal Cache Size</source>
-      <translation type="unfinished"/>
+      <translation>Mida màxima de la memòria cau</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1036"/>
       <source>We recommend to set a moderate edit history value around 100 MB. [%1-%2 MB]</source>
-      <translation type="unfinished"/>
+      <translation>Recomanem establir un valor d'historial d'edicions al voltant de 100 MB.- [%1-%2 MB]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1039"/>
       <source>History Size</source>
-      <translation type="unfinished"/>
+      <translation>Mida de l'historial</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1045"/>
       <source>Skip Images</source>
-      <translation type="unfinished"/>
+      <translation>Ometre Imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1046"/>
       <source>Images are skipped until the Next key is released</source>
-      <translation type="unfinished"/>
+      <translation>Les imatges seran omeses fins que premeu la tecla Següent</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1047"/>
       <source>Wait for Images to be Loaded</source>
-      <translation type="unfinished"/>
+      <translation>Espereu a que carreguin les imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1048"/>
       <source>The next image is loaded after the current image is shown.</source>
-      <translation type="unfinished"/>
+      <translation>La següent imatge es carregarà després de que es mostri l'actual.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1059"/>
       <source>Image Loading Policy</source>
-      <translation type="unfinished"/>
+      <translation>Política de càrrega d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1065"/>
@@ -4272,37 +4273,37 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1066"/>
       <source>After saving, the saved image will be loaded in place</source>
-      <translation type="unfinished"/>
+      <translation>Després de desar, la imatge desada es carregarà in situ</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1067"/>
       <source>Load to Tab</source>
-      <translation type="unfinished"/>
+      <translation>Carregar a la pestanya</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1068"/>
       <source>After saving, the saved image will be loaded to a tab.</source>
-      <translation type="unfinished"/>
+      <translation>Després de desar, la imatge desada es carregarà en una pestanya.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1069"/>
       <source>Do Nothing</source>
-      <translation type="unfinished"/>
+      <translation>No feu res</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1070"/>
       <source>The saved image will not be loaded.</source>
-      <translation type="unfinished"/>
+      <translation>La imatge desada no serà carregada.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1078"/>
       <source>Image Saving Policy</source>
-      <translation type="unfinished"/>
+      <translation>Política de desat d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1093"/>
       <source>Number of Skipped Images on PgUp/PgDown</source>
-      <translation type="unfinished"/>
+      <translation>Número d'imatges saltades en RePàg/AvPàg</translation>
     </message>
   </context>
   <context>
@@ -4310,47 +4311,47 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="199"/>
       <source>Show Left</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a l'esquerra</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="200"/>
       <source>Shows the Thumbnail Bar on the Left</source>
-      <translation type="unfinished"/>
+      <translation>Mostra la barra de miniatures a l'esquerra</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="203"/>
       <source>Show Top</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a dalt</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="204"/>
       <source>Shows the Thumbnail Bar at the Top</source>
-      <translation type="unfinished"/>
+      <translation>Mostra la barra de miniatures a dalt</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="207"/>
       <source>Show Right</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a la dreta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="208"/>
       <source>Shows the Thumbnail Bar on the Right</source>
-      <translation type="unfinished"/>
+      <translation>Mostra la barra de miniatures a la dreta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="211"/>
       <source>Show Bottom</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a baix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="212"/>
       <source>Shows the Thumbnail Bar at the Bottom</source>
-      <translation type="unfinished"/>
+      <translation>Mostra la barra de miniatures a baix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="215"/>
       <source>Undock</source>
-      <translation type="unfinished"/>
+      <translation>Desacoblar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="216"/>
@@ -4680,32 +4681,32 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2792"/>
       <source>Set As Default</source>
-      <translation type="unfinished"/>
+      <translation>Establir com a valor per defecte</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2850"/>
       <source>Profile Name</source>
-      <translation type="unfinished"/>
+      <translation>Nom de perfil</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2851"/>
       <source>Profile Name:</source>
-      <translation type="unfinished"/>
+      <translation>Nom de perfil:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2863"/>
       <source>Profile Already Exists</source>
-      <translation type="unfinished"/>
+      <translation>El perfil ja existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2864"/>
       <source>Do you want to overwrite %1?</source>
-      <translation type="unfinished"/>
+      <translation>Voleu sobreescriure %1?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2928"/>
       <source>No Profiles</source>
-      <translation type="unfinished"/>
+      <translation>No hi ha perfils</translation>
     </message>
   </context>
   <context>
@@ -4722,12 +4723,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2132"/>
       <source>Show Statistics</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar estadístiques</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2137"/>
       <source>Histogram Settings</source>
-      <translation type="unfinished"/>
+      <translation>Preferències de l'histograma</translation>
     </message>
   </context>
   <context>
@@ -4748,7 +4749,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="534"/>
       <source>Hue</source>
-      <translation type="unfinished"/>
+      <translation>To</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="541"/>
@@ -4758,7 +4759,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="548"/>
       <source>Brightness</source>
-      <translation type="unfinished"/>
+      <translation>Brillantor</translation>
     </message>
   </context>
   <context>
@@ -4766,28 +4767,29 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="688"/>
       <source>Sorry, the file: %1 does not exist... </source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, el fitxer %1 no existeix...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="695"/>
       <source>Sorry, you are not allowed to read: %1</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no esteu autoritzats a llegir: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="813"/>
       <source>updated...</source>
-      <translation type="unfinished"/>
+      <translation>actualitzat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="821"/>
       <source>Sorry, I could not load: %1</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no s'ha pogut carregar: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="877"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no s'ha pogut descarregar:
+%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="948"/>
@@ -4800,7 +4802,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="953"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, la carpeta: %1 no existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageContainer.cpp" line="958"/>
@@ -4816,19 +4818,20 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="275"/>
       <source>%1 
  does not contain any image</source>
-      <translation type="unfinished"/>
+      <translation>%1
+ no conté cap imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="569"/>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="631"/>
       <source>You have reached the beginning</source>
-      <translation type="unfinished"/>
+      <translation>Heu arribat al començament</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="575"/>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="636"/>
       <source>You have reached the end</source>
-      <translation type="unfinished"/>
+      <translation>Heu arribat al final</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="747"/>
@@ -4839,12 +4842,13 @@ Do you want to show them again?</source>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="748"/>
       <source>Do you want to save changes to:
 %1</source>
-      <translation type="unfinished"/>
+      <translation>Voleu desar els canvis fets a:
+%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="866"/>
       <source>sorry, %1 does not exist anymore...</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, %1 ja no existeix...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="884"/>
@@ -4854,12 +4858,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="971"/>
       <source>%1 of %2</source>
-      <translation type="unfinished"/>
+      <translation>%1 de %2</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1008"/>
       <source>Save Directory</source>
-      <translation type="unfinished"/>
+      <translation>Desar Directori</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1063"/>
@@ -4876,38 +4880,39 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1187"/>
       <source>Overwrite File</source>
-      <translation type="unfinished"/>
+      <translation>Sobreescriure fitxer</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1188"/>
       <source>Do you want to overwrite:
 %1?</source>
-      <translation type="unfinished"/>
+      <translation>Voleu sobreescriure:
+%1?</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1336"/>
       <source>Sorry, I cannot save an empty image...</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no es pot desar una imatge buida...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1476"/>
       <source>%1 deleted...</source>
-      <translation type="unfinished"/>
+      <translation>%1 eliminat...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1480"/>
       <source>Sorry, I could not delete: %1</source>
-      <translation type="unfinished"/>
+      <translation>Ho sentim, no s'ha pogut eliminar: %1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1530"/>
       <source>Rotated</source>
-      <translation type="unfinished"/>
+      <translation>Rotat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageLoader.cpp" line="1790"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
   </context>
   <context>
@@ -4915,12 +4920,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Enabled</source>
-      <translation type="unfinished"/>
+      <translation>Anti Alias activat</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Disabled</source>
-      <translation type="unfinished"/>
+      <translation>Anti Alias desactivat</translation>
     </message>
   </context>
   <context>
@@ -4928,7 +4933,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="785"/>
       <source>Uninstall</source>
-      <translation type="unfinished"/>
+      <translation>Desinstal·lar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="798"/>
@@ -4938,12 +4943,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="800"/>
       <source>Version</source>
-      <translation type="unfinished"/>
+      <translation>Versió</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="802"/>
       <source>Uninstall plugin</source>
-      <translation type="unfinished"/>
+      <translation>Desinstal·lar complement</translation>
     </message>
   </context>
   <context>
@@ -4951,7 +4956,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkWidgets.h" line="875"/>
       <source>Drag Items Here</source>
-      <translation type="unfinished"/>
+      <translation>Arrossegueu aquí</translation>
     </message>
   </context>
   <context>
@@ -4959,12 +4964,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="124"/>
       <source>Undo</source>
-      <translation type="unfinished"/>
+      <translation>Desfés</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="132"/>
       <source>Redo</source>
-      <translation type="unfinished"/>
+      <translation>Refés</translation>
     </message>
   </context>
   <context>
@@ -4972,12 +4977,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkMessageBox.cpp" line="68"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMessageBox.cpp" line="102"/>
       <source>Remember my choice</source>
-      <translation type="unfinished"/>
+      <translation>Recordeu la meva selecció</translation>
     </message>
   </context>
   <context>
@@ -4985,52 +4990,52 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="66"/>
       <source>Image Size</source>
-      <translation type="unfinished"/>
+      <translation>Mida de la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="67"/>
       <source>Orientation</source>
-      <translation type="unfinished"/>
+      <translation>Orientació</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="68"/>
       <source>Make</source>
-      <translation type="unfinished"/>
+      <translation>Fabricant</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="69"/>
       <source>Model</source>
-      <translation type="unfinished"/>
+      <translation>Model</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="70"/>
       <source>Aperture Value</source>
-      <translation type="unfinished"/>
+      <translation>Valor d'obertura</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="71"/>
       <source>ISO</source>
-      <translation type="unfinished"/>
+      <translation>ISO</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="72"/>
       <source>Flash</source>
-      <translation type="unfinished"/>
+      <translation>Flaix</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="73"/>
       <source>Focal Length</source>
-      <translation type="unfinished"/>
+      <translation>Distància focal</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="74"/>
       <source>Exposure Mode</source>
-      <translation type="unfinished"/>
+      <translation>Mode d'exposició</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="75"/>
       <source>Exposure Time</source>
-      <translation type="unfinished"/>
+      <translation>Temps d'exposició</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSettings.cpp" line="76"/>
@@ -5118,7 +5123,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="398"/>
       <source>Filter</source>
-      <translation type="unfinished"/>
+      <translation>Filtre</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="412"/>
@@ -5167,7 +5172,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="780"/>
       <source>Show Left</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a l'esquerra</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="781"/>
@@ -5177,7 +5182,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="784"/>
       <source>Show Top</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a dalt</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="785"/>
@@ -5187,7 +5192,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="788"/>
       <source>Show Right</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a la dreta</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="789"/>
@@ -5197,7 +5202,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="792"/>
       <source>Show Bottom</source>
-      <translation type="unfinished"/>
+      <translation>Mostrar a baix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="793"/>
@@ -5287,7 +5292,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2829"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2839"/>
       <source>&amp;Browse</source>
-      <translation type="unfinished"/>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2831"/>
@@ -5357,12 +5362,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2884"/>
       <source>You can split multiple ignore words with ;</source>
-      <translation type="unfinished"/>
+      <translation>Podeu separar diverses paraules ignorades amb ;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2888"/>
       <source>All Images</source>
-      <translation type="unfinished"/>
+      <translation>Totes les imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2937"/>
@@ -5372,7 +5377,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2938"/>
       <source>&amp;Generate</source>
-      <translation type="unfinished"/>
+      <translation>&amp;Generar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2939"/>
@@ -5382,7 +5387,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2961"/>
       <source>Open TIFF</source>
-      <translation type="unfinished"/>
+      <translation>Obrir TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2977"/>
@@ -5393,7 +5398,7 @@ Do you want to show them again?</source>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3001"/>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3013"/>
       <source>%1 x %2 cm @150 dpi</source>
-      <translation type="unfinished"/>
+      <translation>%1 x %2 cm @150 dpi</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3058"/>
@@ -5423,7 +5428,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3630"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3630"/>
@@ -5922,22 +5927,22 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1442"/>
       <source>Profile Name</source>
-      <translation type="unfinished"/>
+      <translation>Nom de perfil</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1443"/>
       <source>Profile Name:</source>
-      <translation type="unfinished"/>
+      <translation>Nom de perfil:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1454"/>
       <source>Profile Already Exists</source>
-      <translation type="unfinished"/>
+      <translation>El perfil ja existeix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1455"/>
       <source>Do you want to overwrite %1?</source>
-      <translation type="unfinished"/>
+      <translation>Voleu sobreescriure %1?</translation>
     </message>
   </context>
   <context>
@@ -6360,7 +6365,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2015"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2015"/>
@@ -6423,7 +6428,7 @@ Press ESC to undo changes</source>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1534"/>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1580"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1451"/>
@@ -6593,7 +6598,7 @@ S'està creant les miniatures...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="315"/>
       <source>&amp;Browse</source>
-      <translation type="unfinished"/>
+      <translation>Navega</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="328"/>
@@ -6900,7 +6905,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
       <source>Error</source>
-      <translation type="unfinished"/>
+      <translation>Error</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
