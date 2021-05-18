@@ -6,7 +6,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="870"/>
       <source>closes the crop view, and applies cropping to the image (ENTER)</source>
-      <translation>tanca la vista escapçada i aplica escapçat a la imatge (ENTER)</translation>
+      <translation>tanca la vista escapçada i aplica escapçat a la imatge (RETORN)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="869"/>
@@ -21,7 +21,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="876"/>
       <source>closes the crop view, leaving the image unchanged (ESC)</source>
-      <translation>tanca la vista d'escapçar, deixant la imatge sense modificar (ESC)</translation>
+      <translation>tanca la vista d'escapçar, sense modificar la imatge (ESC)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="880"/>
@@ -31,7 +31,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="894"/>
       <source>Aspect Ratio</source>
-      <translation>Ratio d'aspecte</translation>
+      <translation>Ràtio d'aspecte</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="895"/>
@@ -84,7 +84,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="295"/>
       <source>Do you want to apply cropping?</source>
-      <translation>Voleu aplicar escapçat?</translation>
+      <translation>Voleu aplicar l'escapçat?</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="297"/>
@@ -790,7 +790,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1258"/>
       <source>Show &amp;Log</source>
-      <translation>Mostra &amp;Registre</translation>
+      <translation>Mostra l'info&amp;rme</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
@@ -835,12 +835,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
       <source>&amp;Fit Image to Window</source>
-      <translation>&amp;Ajusta imatge a la finestra</translation>
+      <translation>&amp;Ajusta la imatge a la finestra</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
       <source>Zoom image to fit window</source>
-      <translation>Amplia imatge per ajustar a la finestra</translation>
+      <translation>Amplia la imatge per ajustar a la finestra</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
@@ -1393,7 +1393,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star rating which is saved to an image&apos;s metadata</source>
-      <translation>Star rating which is saved to an image&apos;s metadata</translation>
+      <translation>Puntuació amb que es desen les metadades</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1566"/>
