@@ -185,7 +185,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="611"/>
       <source>&amp;Sync</source>
-      <translation type="unfinished"/>
+      <translation>&amp;Sinc</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="614"/>
@@ -2866,7 +2866,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="511"/>
       <source>&amp;Add</source>
-      <translation type="unfinished"/>
+      <translation>&amp;Afegeix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="514"/>
@@ -3021,7 +3021,7 @@ Reinicieu nomacs i torneu a provar-ho.</translation>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="415"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="481"/>
@@ -3184,7 +3184,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="885"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
   </context>
   <context>
@@ -3828,7 +3828,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="2574"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
   </context>
   <context>
@@ -4034,7 +4034,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="480"/>
       <source>Open Image</source>
-      <translation type="unfinished"/>
+      <translation>Obre una imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="559"/>
@@ -4118,7 +4118,7 @@ Aquesta és només útil si els complements desen fitxers associats; aneu amb pr
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2588"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2677"/>
@@ -5324,7 +5324,7 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2846"/>
       <source>Resolution:</source>
-      <translation type="unfinished"/>
+      <translation>Resolució:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2850"/>
@@ -5394,7 +5394,7 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2977"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3001"/>
@@ -5448,7 +5448,7 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="347"/>
       <source>Quit nomacs</source>
-      <translation type="unfinished"/>
+      <translation>Tanca el Nomacs</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="348"/>
@@ -5508,12 +5508,12 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="954"/>
       <source>Edit Image</source>
-      <translation type="unfinished"/>
+      <translation>Edita la imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="975"/>
       <source>History</source>
-      <translation type="unfinished"/>
+      <translation>Historial</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="997"/>
@@ -5528,18 +5528,18 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1079"/>
       <source>Open an Image Directory</source>
-      <translation type="unfinished"/>
+      <translation>Obre una carpeta d'imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1094"/>
       <source>All Files (*.*)</source>
-      <translation type="unfinished"/>
+      <translation>Tots els fitxers (*.*)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1099"/>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1155"/>
       <source>Open Image</source>
-      <translation type="unfinished"/>
+      <translation>Obre una imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1135"/>
@@ -5550,13 +5550,13 @@ llavors premeu %1</translation>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1149"/>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1186"/>
       <source>Text file (*.txt)</source>
-      <translation type="unfinished"/>
+      <translation>Fitxer de text (*.txt)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1150"/>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1187"/>
       <source>All files (*.*)</source>
-      <translation type="unfinished"/>
+      <translation>Tots els fitxers (*.*)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="1191"/>
@@ -5734,7 +5734,7 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="561"/>
       <source>&amp;Close</source>
-      <translation type="unfinished"/>
+      <translation>Tan&amp;ca</translation>
     </message>
   </context>
   <context>
@@ -5960,27 +5960,27 @@ llavors premeu %1</translation>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1099"/>
       <source>one star</source>
-      <translation type="unfinished"/>
+      <translation>una estrella</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1103"/>
       <source>two stars</source>
-      <translation type="unfinished"/>
+      <translation>dues estrelles</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1107"/>
       <source>three star</source>
-      <translation type="unfinished"/>
+      <translation>tres estrelles</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1111"/>
       <source>four star</source>
-      <translation type="unfinished"/>
+      <translation>quatre estrelles</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkWidgets.cpp" line="1115"/>
       <source>five star</source>
-      <translation type="unfinished"/>
+      <translation>cinc estrelles</translation>
     </message>
   </context>
   <context>
@@ -6347,22 +6347,22 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1969"/>
       <source>&amp;Close</source>
-      <translation type="unfinished"/>
+      <translation>Tan&amp;ca</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1993"/>
       <source>Text File (*.txt)</source>
-      <translation type="unfinished"/>
+      <translation>Fitxer de text (*.txt)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1993"/>
       <source>All Files (*.*)</source>
-      <translation type="unfinished"/>
+      <translation>Tots els fitxers (*.*)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1998"/>
       <source>Save Text File</source>
-      <translation type="unfinished"/>
+      <translation>Desa el fitxer de text</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2015"/>
@@ -6387,7 +6387,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="479"/>
       <source>Color</source>
-      <translation type="unfinished"/>
+      <translation>Color</translation>
     </message>
   </context>
   <context>
@@ -6413,12 +6413,12 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1261"/>
       <source> selected</source>
-      <translation type="unfinished"/>
+      <translation> seleccionat</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1263"/>
       <source> images</source>
-      <translation type="unfinished"/>
+      <translation>imatges</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1265"/>
@@ -6514,7 +6514,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkThumbsWidgets.cpp" line="1935"/>
       <source>Open Image</source>
-      <translation type="unfinished"/>
+      <translation>Obre una imatge</translation>
     </message>
   </context>
   <context>
@@ -6605,7 +6605,7 @@ S'està creant les miniatures...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="328"/>
       <source>&amp;Add</source>
-      <translation type="unfinished"/>
+      <translation>&amp;Afegeix</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="330"/>
@@ -6615,12 +6615,12 @@ S'està creant les miniatures...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="364"/>
       <source>Open Image</source>
-      <translation type="unfinished"/>
+      <translation>Obre una imatge</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="366"/>
       <source>All Files (*.*)</source>
-      <translation type="unfinished"/>
+      <translation>Tots els fitxers (*.*)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="415"/>
@@ -6653,7 +6653,7 @@ S'està creant les miniatures...
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="532"/>
       <source>Enable</source>
-      <translation type="unfinished"/>
+      <translation>Habilita</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="533"/>
@@ -6976,7 +6976,7 @@ Contacteu amb el vostre administrador per a més informació.</translation>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3739"/>
       <source>Welcome</source>
-      <translation type="unfinished"/>
+      <translation>Us donem la benvinguda</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="3748"/>
