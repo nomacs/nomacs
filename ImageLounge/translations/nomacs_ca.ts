@@ -4586,7 +4586,7 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="385"/>
       <source>Double Click Opens Fullscreen</source>
-      <translation type="unfinished"/>
+      <translation>Doble clic obre en pantalla completa</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="387"/>
@@ -4606,7 +4606,7 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="395"/>
       <source>Switch CTRL with ALT</source>
-      <translation type="unfinished"/>
+      <translation>Canvia CTRL amb ALT</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="397"/>
@@ -4616,22 +4616,22 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="400"/>
       <source>Close on ESC</source>
-      <translation type="unfinished"/>
+      <translation>Tanca amb ESC</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="402"/>
       <source>Close nomacs if ESC is pressed.</source>
-      <translation type="unfinished"/>
+      <translation>Tanca el Nomacs en prémer ESC.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="405"/>
       <source>Check For Updates</source>
-      <translation type="unfinished"/>
+      <translation>Cerca actualitzacions</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="407"/>
       <source>Check for updates on start-up.</source>
-      <translation type="unfinished"/>
+      <translation>Cerca actualitzacions en iniciar.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="411"/>
@@ -4641,12 +4641,12 @@ Voleu tornar-los a mostrar?</translation>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="429"/>
       <source>Choose your preferred language.</source>
-      <translation type="unfinished"/>
+      <translation>Trieu la llengua a mostrar</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="434"/>
       <source>Info on how to translate nomacs.</source>
-      <translation type="unfinished"/>
+      <translation>Informació per traduir el Nomacs.</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="437"/>
