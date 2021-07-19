@@ -2,6 +2,107 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="id" sourcelanguage="en">
   <context>
+    <name>DkCropToolBar</name>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="870"/>
+      <source>closes the crop view, and applies cropping to the image (ENTER)</source>
+      <translation>tutup tampilan potong, dan terapkan pemotongan ke gambar (ENTER)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="869"/>
+      <source>Apply</source>
+      <translation>Terapkan</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="875"/>
+      <source>Cancel</source>
+      <translation>Batal</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="876"/>
+      <source>closes the crop view, leaving the image unchanged (ESC)</source>
+      <translation>tutup tampilan potong, biarkan gambar tidak berubah (ESC)</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="880"/>
+      <source>Rotate</source>
+      <translation>Putar</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="894"/>
+      <source>Aspect Ratio</source>
+      <translation>Aspek Rasio</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="895"/>
+      <source>Free</source>
+      <translation>Gratis</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="896"/>
+      <source>Original</source>
+      <translation>Asli</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="897"/>
+      <source>Square</source>
+      <translation>Persegi</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="898"/>
+      <source>16:9</source>
+      <translation>16:9</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="899"/>
+      <source>4:3</source>
+      <translation>4:3</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="900"/>
+      <source>3:2</source>
+      <translation>3:2</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="902"/>
+      <source>Flip</source>
+      <translation>Balik</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="903"/>
+      <source>flips the crop rectangle (F)</source>
+      <translation>balikkan persegi pemotongan (F)</translation>
+    </message>
+  </context>
+  <context>
+    <name>DkCropViewPort</name>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="294"/>
+      <source>Crop Image</source>
+      <translation>Potong Gambar</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="295"/>
+      <source>Do you want to apply cropping?</source>
+      <translation>Apakah anda ingin menerapkan pemotongan?</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="297"/>
+      <source>&amp;Crop</source>
+      <translation>&amp;Potong</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="298"/>
+      <source>&amp;Don&apos;t Crop</source>
+      <translation>&amp;Jangan Potong</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCropWidgets.cpp" line="366"/>
+      <source>Rotated</source>
+      <translation>Diputar</translation>
+    </message>
+  </context>
+  <context>
     <name>QObject</name>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="184"/>
@@ -728,8 +829,18 @@
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1277"/>
-      <source>&amp;Fit Window</source>
-      <translation>Sesuaikan Jendela</translation>
+      <source>&amp;Fit Window to Image</source>
+      <translation>&amp;Sesuaikan Jendela ke Gambar</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
+      <source>&amp;Fit Image to Window</source>
+      <translation>&amp;Sesuaikan Gambar ke Jendela</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
+      <source>Zoom image to fit window</source>
+      <translation>Perbesar gambar untuk menyesuaikan jendela</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
@@ -795,16 +906,6 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1303"/>
       <source>Full Screen</source>
       <translation>Layar Penuh</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
-      <source>&amp;Zoom to Fit</source>
-      <translation>Perbesar untuk Fit</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
-      <source>Shows the initial view (no zooming)</source>
-      <translation>Menampilkan tampilan inisial (tidak ada zoom)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1309"/>
@@ -1360,7 +1461,8 @@
       <translation>Geser gambar ke kanan jika diperbesar.</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="141"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="140"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="149"/>
       <source>Cropped</source>
       <translation>Dipotong</translation>
     </message>
@@ -2098,24 +2200,24 @@
       <translation>Pentax PEF Terkompres</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1102"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
       <source>Plugin Manager</source>
       <translation>Mengelola Plugin</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1103"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1104"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
       <translation>Dll tidak bisa dihapus!
 Silahkan restart nomacs dan coba lagi.</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1277"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1278"/>
       <source>Close plugin</source>
       <translation>Tutup plugin</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1279"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="1280"/>
       <source>Please close the currently opened plugin.</source>
       <translation>Silahkan tutup plugin yang terbuka saat ini.</translation>
     </message>
@@ -2441,29 +2543,34 @@ Silahkan restart nomacs dan coba lagi.</translation>
       <translation>Alpha 8-bit</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="229"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
       <source>New Tab</source>
       <translation>Tab Baru</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="232"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="235"/>
       <source>Thumbnail Preview</source>
       <translation>Pratinjau Gambar Kecil</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="234"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="237"/>
       <source>Recent Files</source>
       <translation>File Terakhir</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="236"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="239"/>
       <source>Settings</source>
       <translation>Setelan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="238"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="241"/>
       <source>Batch</source>
       <translation>Batch</translation>
+    </message>
+    <message>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="243"/>
+      <source>Crop</source>
+      <translation>Crop</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPong.h" line="88"/>
@@ -2481,12 +2588,12 @@ Silahkan restart nomacs dan coba lagi.</translation>
       <translation>Tanpa Nama</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1201"/>
+      <location filename="../../src/DkGui/DkToolbars.cpp" line="881"/>
       <source>Edit ToolBar</source>
       <translation>Sunting Bilah Alat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1245"/>
+      <location filename="../../src/DkGui/DkToolbars.cpp" line="925"/>
       <source>Movie ToolBar</source>
       <translation>Bilah Alat Film</translation>
     </message>
@@ -2881,7 +2988,7 @@ Silahkan restart nomacs dan coba lagi.</translation>
       <translation>Gambar Asli</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1190"/>
+      <location filename="../../src/DkCore/DkBasicLoader.cpp" line="1191"/>
       <source>Sorry, I could not save: %1</source>
       <translation>Maaf, saya tidak bisa menyimpan: %1</translation>
     </message>
@@ -3397,77 +3504,77 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkCentralWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="284"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to Tab</source>
       <translation>Buka Tab</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="284"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="289"/>
       <source>Go to tab number: </source>
       <translation>Buka nomor tab:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="509"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="518"/>
       <source>General</source>
       <translation>Umum</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="515"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="524"/>
       <source>Display</source>
       <translation>Tampilan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="521"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="530"/>
       <source>File</source>
       <translation>File</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="527"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="536"/>
       <source>File Associations</source>
       <translation>Asosiasi file</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="533"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="542"/>
       <source>Advanced</source>
       <translation>Lanjutan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="539"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="548"/>
       <source>Editor</source>
       <translation>Editor</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1175"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1265"/>
       <source>I could not load &quot;%1&quot;</source>
       <translation>Saya tidak bisa memuat &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1230"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1320"/>
       <source>Unable to load file &quot;%1&quot;</source>
       <translation>Tidak bisa memuat berkas &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1238"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1328"/>
       <source>&quot;%1&quot; cannot be loaded</source>
       <translation>&quot;%1&quot; tidak bisa dimuat</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1248"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1338"/>
       <source>downloading &quot;%1&quot;</source>
       <translation>mengunduh &quot;%1&quot;</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1272"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1362"/>
       <source>Sorry, I could not drop the content.</source>
       <translation>Maaf, saya tidak bisa turunkan konten.</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1394"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1484"/>
       <source>Save File</source>
       <translation>Simpan File</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1407"/>
+      <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1497"/>
       <source>%1 vec files merged</source>
       <translation>%1 file vec digabung</translation>
     </message>
@@ -3671,116 +3778,20 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkControlWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkControlWidget.cpp" line="558"/>
+      <location filename="../../src/DkGui/DkControlWidget.cpp" line="525"/>
       <source>Closing Plugin</source>
       <translation>Menutup Plugin</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkControlWidget.cpp" line="559"/>
+      <location filename="../../src/DkGui/DkControlWidget.cpp" line="526"/>
       <source>Apply plugin changes?</source>
       <translation>Terapkan perubahan plugin?</translation>
     </message>
   </context>
   <context>
-    <name>nmc::DkCropToolBar</name>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="937"/>
-      <source>Crop (ENTER)</source>
-      <translation>Crop (ENTER)</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="941"/>
-      <source>Cancel (ESC)</source>
-      <translation>Batal (ESC)</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="945"/>
-      <source>Pan</source>
-      <translation>Pan</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="953"/>
-      <source>User Defined</source>
-      <translation>Ditetapkan Pengguna</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="954"/>
-      <source>No Aspect Ratio</source>
-      <translation>Tidak ada Aspek Rasio</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="962"/>
-      <source>Horizontal Constraint</source>
-      <translation>Kendala Horisontal</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="965"/>
-      <source>Swap</source>
-      <translation>Swap</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="967"/>
-      <source>Swap Dimensions</source>
-      <translation>Dimensi Swap</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="973"/>
-      <source>Vertical Constraint</source>
-      <translation>Kendala Vertikaal</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="987"/>
-      <source>Background Color</source>
-      <translation>Warna Latar Belakang</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Guides</source>
-      <translation>Panduan</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Rule of Thirds</source>
-      <translation>Aturan ke Tiga</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="996"/>
-      <source>Grid</source>
-      <translation>Kisi</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1000"/>
-      <source>Show Guides in the Preview</source>
-      <translation>Tampilkan Panduan di Pratinjau</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1003"/>
-      <source>Invert Crop Tool Color</source>
-      <translation>Membalikan Warna Alat Crop</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1008"/>
-      <source>Show Info</source>
-      <translation>Tampilkan Info</translation>
-    </message>
-    <message>
-      <location filename="../../src/DkGui/DkToolbars.cpp" line="1013"/>
-      <source>Crop to Metadata</source>
-      <translation>Pangkas ke Metadata</translation>
-    </message>
-  </context>
-  <context>
-    <name>nmc::DkCropWidget</name>
-    <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2130"/>
-      <source>Crop Toolbar</source>
-      <translation>Pangkas Toolbar</translation>
-    </message>
-  </context>
-  <context>
     <name>nmc::DkDescriptionEdit</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="995"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="996"/>
       <source>No metadata available!</source>
       <translation>Tidak ada metadata yang tersedia!</translation>
     </message>
@@ -3806,12 +3817,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
   <context>
     <name>nmc::DkDirectoryChooser</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2618"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2558"/>
       <source>...</source>
       <translation>...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2634"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2574"/>
       <source>Open an Image Directory</source>
       <translation>Membuka Direktori Gambar</translation>
     </message>
@@ -4665,32 +4676,32 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkGenericProfileWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2852"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2792"/>
       <source>Set As Default</source>
       <translation>Ditetapkan sebagai default</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2910"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2850"/>
       <source>Profile Name</source>
       <translation>Nama profil</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2911"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2851"/>
       <source>Profile Name:</source>
       <translation>Nama Profil:</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2923"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2863"/>
       <source>Profile Already Exists</source>
       <translation>Profil Sudah Ada</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2924"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2864"/>
       <source>Do you want to overwrite %1?</source>
       <translation>Apakah Anda ingin menimpa %1?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2988"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2928"/>
       <source>No Profiles</source>
       <translation>Tidak ada profil</translation>
     </message>
@@ -4707,12 +4718,12 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkHistogram</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2192"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2132"/>
       <source>Show Statistics</source>
       <translation>Tampilkan Statistik</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.cpp" line="2197"/>
+      <location filename="../../src/DkGui/DkWidgets.cpp" line="2137"/>
       <source>Histogram Settings</source>
       <translation>Pengaturan Histogram</translation>
     </message>
@@ -4751,48 +4762,48 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkImageContainerT</name>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="683"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="688"/>
       <source>Sorry, the file: %1 does not exist... </source>
       <translation>Maaf, file: %1 tidak ada... </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="690"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="695"/>
       <source>Sorry, you are not allowed to read: %1</source>
       <translation>Maaf, Anda tidak diperbolehkan untuk membaca: %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="808"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="813"/>
       <source>updated...</source>
       <translation>memperbarui...</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="816"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="821"/>
       <source>Sorry, I could not load: %1</source>
       <translation>Maaf, Saya tidak dapat memuat: %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="872"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="877"/>
       <source>Sorry, I could not download:
 %1</source>
       <translation>Maaf, Saya tidak dapat mendownload;
 %1</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="943"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="948"/>
       <source>I can&apos;t save an empty file, sorry...
 </source>
       <translation>Saya tidak bisa menyimpan berkas kosong, maaf...
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="948"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="953"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
       <translation>Maaf, direktori: %1 tidak ada
 </translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageContainer.cpp" line="953"/>
+      <location filename="../../src/DkCore/DkImageContainer.cpp" line="958"/>
       <source>Sorry, I can&apos;t write to the file: %1</source>
       <translation>Maaf, Saya tidak bisa meynimpan ke berkas: %1</translation>
     </message>
@@ -4902,12 +4913,12 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkImageStorage</name>
     <message>
-      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1515"/>
+      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Enabled</source>
       <translation>Anti Aliasing Diaktifkan</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1515"/>
+      <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Disabled</source>
       <translation>Anti Aliasing Dinonaktifkan</translation>
     </message>
@@ -4915,22 +4926,22 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkInstalledPluginsModel</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="784"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="785"/>
       <source>Uninstall</source>
       <translation>Uninstall</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="797"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="798"/>
       <source>Name</source>
       <translation>Nama</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="799"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="800"/>
       <source>Version</source>
       <translation>Versi</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="801"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="802"/>
       <source>Uninstall plugin</source>
       <translation>Cabut Plugin</translation>
     </message>
@@ -4938,7 +4949,7 @@ Do you want to show them again?</source>
   <context>
     <name>nmc::DkListWidget</name>
     <message>
-      <location filename="../../src/DkGui/DkWidgets.h" line="900"/>
+      <location filename="../../src/DkGui/DkWidgets.h" line="875"/>
       <source>Drag Items Here</source>
       <translation>Tarik item di sini</translation>
     </message>
@@ -5687,22 +5698,22 @@ lalu tekan %1</translation>
   <context>
     <name>nmc::DkPluginContainer</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="436"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
       <source>Author:</source>
       <translation>Penulis:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="437"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
       <source>Company:</source>
       <translation>Perusahaan:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="438"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
       <source>Created:</source>
       <translation>Dibuat:</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="439"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="440"/>
       <source>Last Modified:</source>
       <translation>Terakhir Diubah:</translation>
     </message>
@@ -5710,12 +5721,12 @@ lalu tekan %1</translation>
   <context>
     <name>nmc::DkPluginManagerDialog</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="548"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="549"/>
       <source>Plugin Manager</source>
       <translation>Mengelola Plugin</translation>
     </message>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="560"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="561"/>
       <source>&amp;Close</source>
       <translation>Tutup</translation>
     </message>
@@ -5723,7 +5734,7 @@ lalu tekan %1</translation>
   <context>
     <name>nmc::DkPluginTableWidget</name>
     <message>
-      <location filename="../../src/DkCore/DkPluginManager.cpp" line="619"/>
+      <location filename="../../src/DkCore/DkPluginManager.cpp" line="620"/>
       <source>Search plugins</source>
       <translation>Cari plugin</translation>
     </message>
@@ -6865,83 +6876,83 @@ Harap hubungi administrasi sistem anda untuk informasi lebih lanjut.</translatio
   <context>
     <name>nmc::DkViewPort</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="275"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="272"/>
       <source>Original Image</source>
       <translation>Gambar Asli</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="717"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="714"/>
       <source>Resize</source>
       <translation>Mengubah Ukuran</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="741"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="738"/>
       <source>Shall I move %1 to trash?</source>
       <translation>Haruskan saya memindahkan %1 ke sampah?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="743"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="740"/>
       <source>Do you want to permanently delete %1?</source>
       <translation>Apakah Anda ingin menghapus secara permanen %1?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="748"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="745"/>
       <source>Delete File</source>
       <translation>Hapus File</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="819"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
       <source>Error</source>
       <translation>Kesalahan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="819"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="816"/>
       <source>Sorry, I could not create a wallpaper...</source>
       <translation>Maaf, Saya tidak bisa membuat wallpaper...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="862"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="859"/>
       <source>Busy</source>
       <translation>Sibuk</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1557"/>
       <source>Transparency Pattern Enabled</source>
       <translation>Pola Transparansi Diaktifkan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1561"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1557"/>
       <source>Transparency Pattern Disabled</source>
       <translation>Pola Transparansi Dinonaktifkan</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1595"/>
       <source>Lenna</source>
       <translation>Lenna</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1599"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1595"/>
       <source>A remarkable woman</source>
       <translation>Seorang wanita yang luar biasa</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1609"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1605"/>
       <source>you cannot cancel this</source>
       <translation>anda tidak bisa membatalkan ini</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1617"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1613"/>
       <source>did you understand the brainteaser?</source>
       <translation>apakah Anda mengerti brainteaser?</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1619"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1615"/>
       <source>%1 is wrong...</source>
       <translation>%1 salah...</translation>
     </message>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1652"/>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="1675"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1648"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="1671"/>
       <source>Attempted to set NULL image</source>
       <translation>Mencoba untuk mengatur NULL gambar</translation>
     </message>
@@ -6949,7 +6960,7 @@ Harap hubungi administrasi sistem anda untuk informasi lebih lanjut.</translatio
   <context>
     <name>nmc::DkViewPortFrameless</name>
     <message>
-      <location filename="../../src/DkGui/DkViewPort.cpp" line="2158"/>
+      <location filename="../../src/DkGui/DkViewPort.cpp" line="2144"/>
       <source>Press F10 to exit Frameless view</source>
       <translation>Tekan F10 untuk keluar dari pandangan Frameless</translation>
     </message>
