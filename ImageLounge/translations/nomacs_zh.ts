@@ -6,7 +6,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="870"/>
       <source>closes the crop view, and applies cropping to the image (ENTER)</source>
-      <translation>关闭裁剪视图，并将裁剪应用于图像（ENTER）</translation>
+      <translation>关闭裁剪视图，并将裁剪应用于图像（回车）</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="869"/>
@@ -21,7 +21,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="876"/>
       <source>closes the crop view, leaving the image unchanged (ESC)</source>
-      <translation>关闭裁剪视图，保持图像不变（ESC）</translation>
+      <translation>关闭裁剪视图，保持图像不变（Esc键）</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="880"/>
