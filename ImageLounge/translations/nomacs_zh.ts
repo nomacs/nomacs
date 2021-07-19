@@ -36,7 +36,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="895"/>
       <source>Free</source>
-      <translation>Free</translation>
+      <translation>自由</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="896"/>
@@ -89,12 +89,12 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="297"/>
       <source>&amp;Crop</source>
-      <translation>裁剪</translation>
+      <translation>裁剪[&amp;C]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="298"/>
       <source>&amp;Don&apos;t Crop</source>
-      <translation>不要裁剪</translation>
+      <translation>不裁剪[&amp;D]</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="366"/>
@@ -270,7 +270,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="992"/>
       <source>S&amp;ave As</source>
-      <translation>另存为(&amp;S)</translation>
+      <translation>另存为[&amp;A]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="994"/>
@@ -280,7 +280,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="996"/>
       <source>Sa&amp;ve a Copy</source>
-      <translation>另存为副本(&amp;v)</translation>
+      <translation>另存为[&amp;V]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="997"/>
@@ -740,7 +740,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1233"/>
       <source>&amp;Metadata Ribbon</source>
-      <translation>元数据功能区(&amp;M)</translation>
+      <translation>元数据区[&amp;M]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1235"/>
@@ -790,7 +790,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1258"/>
       <source>Show &amp;Log</source>
-      <translation>显示日志(&amp;L)</translation>
+      <translation>显示日志[&amp;L]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
@@ -830,17 +830,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1277"/>
       <source>&amp;Fit Window to Image</source>
-      <translation>调整窗口大小以适应图像</translation>
+      <translation>窗口大小适应图像[&amp;F]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1305"/>
       <source>&amp;Fit Image to Window</source>
-      <translation>调整图像大小以适合窗口</translation>
+      <translation>图像大小适合窗口[&amp;F]</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1307"/>
       <source>Zoom image to fit window</source>
-      <translation>缩放图像以适合窗口</translation>
+      <translation>缩放图像适合窗口</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1279"/>
@@ -1393,7 +1393,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1579"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1583"/>
       <source>Star rating which is saved to an image&apos;s metadata</source>
-      <translation>星级评分，将存入图像元数据中</translation>
+      <translation>标记星级(将存入图像元数据中)</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1566"/>
@@ -1549,7 +1549,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Blur...</source>
-      <translation>&amp;模糊...</translation>
+      <translation>模糊[&amp;B]...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
@@ -1579,7 +1579,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="142"/>
       <source>&amp;Resize...</source>
-      <translation>调整大小...(&amp;R)</translation>
+      <translation>调整大小[&amp;R]...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="143"/>
@@ -2142,17 +2142,17 @@
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1539"/>
       <source>Microsoft Document Imaging(MDI) Binary Level Codec</source>
-      <translation>Microsoft Document Imaging（MDI）二进制级编解码器</translation>
+      <translation>微软文档图像（MDI）二进制级编解码器</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1540"/>
       <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
-      <translation>Microsoft Document Imaging（MDI）渐进式转换编解码器</translation>
+      <translation>微软文档图像（MDI）渐进式转换编解码器</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1541"/>
       <source>Microsoft Document Imaging(MDI) Vector</source>
-      <translation>Microsoft Document Imaging（MDI）矢量</translation>
+      <translation>微软文档图像（MDI）矢量</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkMetaData.cpp" line="1542"/>
@@ -2270,12 +2270,12 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="366"/>
       <source>%1 I need to increase the image size, but the option is set to &apos;decrease only&apos; -&gt; skipping.</source>
-      <translation>需要增加图像（%1）的大小，但选项设置为“仅减少” -&gt; 跳过。</translation>
+      <translation>%1 需要增加图像大小，但选项设置为&apos;仅减少&apos; -&gt; 跳过。</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="370"/>
       <source>%1 I need to decrease the image size, but the option is set to &apos;increase only&apos; -&gt; skipping.</source>
-      <translation>需要减小图像（%1）的大小，但选项设置为“仅增加” -&gt; 跳过。</translation>
+      <translation>%1 需要减小图像大小，但选项设置为&apos;仅增加&apos; -&gt; 跳过。</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="374"/>
@@ -2336,7 +2336,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="716"/>
       <source>%1 already exists -&gt; skipping (check &apos;overwrite&apos; if you want to overwrite the file)</source>
-      <translation>%1 已经存在 -> 跳过（如果你想覆盖此文件，选择“覆盖”）</translation>
+      <translation>%1 已经存在 -&gt;  跳过（如果想要覆盖此文件，请选择&apos;覆盖&apos;）</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="721"/>
@@ -2377,7 +2377,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="800"/>
       <source>%1 not saved - option &apos;Do not Save&apos; is checked...</source>
-      <translation>%1 未保存 - 已选中“不保存”选项...</translation>
+      <translation>%1 未保存 - 已选中&apos;不保存&apos;选项...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="806"/>
@@ -2414,7 +2414,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="878"/>
       <source>I should copy the file, but &apos;Do not Save&apos; is checked - so I will do nothing...</source>
-      <translation>本应复制该文件，但“不保存”已选中 - 故不进行任何操作...</translation>
+      <translation>本应复制该文件，但已选中&apos;不保存&apos; - 故不进行任何操作...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="894"/>
@@ -2449,7 +2449,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="960"/>
       <source>Ui - a lot of things went wrong. Your original file can be found here: %1</source>
-      <translation>Ui - 发生很多错误。你的原始文件可以在这里找到：%1</translation>
+      <translation>Ui - 发生很多错误。原始文件可在此处找到：%1</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="965"/>
@@ -2589,7 +2589,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="881"/>
       <source>Edit ToolBar</source>
-      <translation>自定义工具栏</translation>
+      <translation>编辑工具栏</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkToolbars.cpp" line="925"/>
@@ -2817,7 +2817,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1409"/>
       <source>If checked, native system dialogs are used for opening/saving files.</source>
-      <translation>如果选中，打开或保存文件时会使用原生的系统对话框</translation>
+      <translation>如果选中，打开或保存文件时会使用原生系统对话框。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1412"/>
@@ -3416,7 +3416,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2608"/>
       <source>Please check &apos;Overwrite Existing Files&apos; or choose a different output directory.</source>
-      <translation> 请勾选“覆盖已有文件”，或者选择其他输出目录。 </translation>
+      <translation> 请勾选&apos;覆盖已有文件&apos;，或者选择其他输出目录。 </translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2629"/>
@@ -3546,22 +3546,22 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1265"/>
       <source>I could not load &quot;%1&quot;</source>
-      <translation>无法读取“%1”</translation>
+      <translation>无法读取&quot;%1&quot;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1320"/>
       <source>Unable to load file &quot;%1&quot;</source>
-      <translation> 无法加载“%1” 文件</translation>
+      <translation> 无法加载&quot;%1&quot;文件</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1328"/>
       <source>&quot;%1&quot; cannot be loaded</source>
-      <translation>“%1”无法被加载</translation>
+      <translation>&quot;%1&quot;无法被加载</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1338"/>
       <source>downloading &quot;%1&quot;</source>
-      <translation>正在下载“%1”</translation>
+      <translation>正在下载&quot;%1&quot;</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCentralWidget.cpp" line="1362"/>
@@ -4534,7 +4534,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="362"/>
       <source>If any files are opened which are already open in a tab, don&apos;t open them again.</source>
-      <translation>不再打开已打开的文件。</translation>
+      <translation>已已打开的文件，无法重复打开。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="365"/>
@@ -4544,7 +4544,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="367"/>
       <source>Enables the &quot;Go to Tab&quot;, &quot;First Tab&quot;, and &quot;Last Tab&quot; options in the View menu, and the &quot;Open Tabs&quot; and &quot;Save Tabs&quot; options in the File menu.</source>
-      <translation> 启用显示菜单中的“移动到标签”、“第一个标签”、“最后一个标签”，文件菜单中的“打开标签”和“保存标签” 。</translation>
+      <translation> 启用视图菜单中的&quot;转到标签&quot;、&quot;第一个标签&quot;、&quot;最后一个标签&quot;，文件菜单中的&quot;打开标签&quot;和&quot;保存标签&quot;。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="370"/>
@@ -5303,7 +5303,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2841"/>
       <source>Specify the root folder of images used for mosaic elements.</source>
-      <translation>指定用于拼接的图像元素的根文件夹。</translation>
+      <translation>指定用做马赛克元素的图像所处的根文件夹。</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2843"/>
@@ -5475,7 +5475,7 @@ Do you want to show them again?</source>
 To unlock: gain focus (ALT+Tab),
 then press %1</source>
       <translation>窗口已锁定
-先用 ALT+Tab 获取焦点
+先键 ALT+Tab 获取焦点
 然后按 %1 解锁</translation>
     </message>
     <message>
