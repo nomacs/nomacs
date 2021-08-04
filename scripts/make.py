@@ -59,7 +59,6 @@ class ExpatConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "--clean-first",
             "-DBUILD_examples=OFF",
             "-DBUILD_tests=OFF",
             "-B" + self.builddir,
@@ -94,7 +93,6 @@ class ExifConfig(Config):
 
         # tune cmake parameters here
         args = self.additional_cmake_args + [
-            "--clean-first",
             "-DEXPAT_BUILD_PATH=" + self.libpath + "/expat",
             "-DEXPAT_INCLUDE_DIR=" + self.repopath + "/expat/lib",
             "-B" + self.builddir,
@@ -125,7 +123,6 @@ class LibrawConfig(Config):
 
         # tune cmake parameters here
         args = self.additional_cmake_args + [
-            "--clean-first",
             "-DENABLE_EXAMPLES=OFF",
             "-B" + self.builddir,
             self.srcpath
@@ -158,7 +155,6 @@ class QuazipConfig(Config):
 
         # tune cmake parameters here
         args = self.additional_cmake_args + [
-            "--clean-first",
             "-DCMAKE_PREFIX_PATH=" + self.qtpath,
             "-B" + self.builddir,
             self.srcpath
@@ -210,7 +206,6 @@ class OpenCVConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "--clean-first",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_TESTS=OFF",
             "-DBUILD_opencv_java=OFF",
@@ -256,7 +251,6 @@ class FormatsConfig(Config):
 
         # tune cmake parameters here
         args = [
-            "--clean-first",
             "-DCMAKE_PREFIX_PATH=" +
             os.path.join(self.libpath, "libde265") + ";" +
             os.path.join(self.libpath, "libheif") + ";" +
