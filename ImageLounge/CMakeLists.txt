@@ -46,6 +46,7 @@ option(ENABLE_TRANSLATIONS "Compile Translations" ON)
 option(ENABLE_PLUGINS "Compile nomacs with plugin support" ON)
 option(ENABLE_HEIF "Compile nomacs with HEIF support" OFF)
 option(ENABLE_AVIF "Compile nomacs with AVIF support" OFF)
+option(ENABLE_JXL "Compile nomacs with JPEG XL support" OFF)
 option(ENABLE_CODE_COV "Run Code Coverage tests" OFF)
 option(USE_SYSTEM_QUAZIP "QuaZip will not be compiled from source" ON) # ignored by MSVC
 
