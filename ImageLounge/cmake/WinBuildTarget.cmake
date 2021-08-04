@@ -119,6 +119,10 @@ if (ENABLE_AVIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-avif-image-plugin/releases/latest/download/qavif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qavif.dll)
 endif()
 
+if (ENABLE_JXL)
+    file(DOWNLOAD "https://github.com/novomesk/qt-jpegxl-image-plugin/releases/latest/download/qjpegxl.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qjpegxl.dll)
+endif()
+
 # copy additional Qt files
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)

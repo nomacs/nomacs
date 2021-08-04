@@ -29,6 +29,7 @@ class NomacsConfig(Config):
             "-DENABLE_TRANSLATIONS=ON",
             "-DENABLE_HEIF=ON",
             "-DENABLE_AVIF=ON",
+            "-DENABLE_JXL=ON",
             "-DENABLE_INCREMENTER=ON",
             "-B" + self.builddir,
             self.srcpath
