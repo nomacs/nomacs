@@ -6,7 +6,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="870"/>
       <source>closes the crop view, and applies cropping to the image (ENTER)</source>
-      <translation>tutup tampilan potong, dan terapkan pemotongan ke gambar (ENTER)</translation>
+      <translation>tutup tampilan pangkas, dan terapkan pemangkasan pada gambar (ENTER)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="869"/>
