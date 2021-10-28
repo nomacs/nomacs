@@ -21,7 +21,7 @@
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="876"/>
       <source>closes the crop view, leaving the image unchanged (ESC)</source>
-      <translation>tutup tampilan potong, biarkan gambar tidak berubah (ESC)</translation>
+      <translation>tutup tampilan pangkas, biarkan gambar tidak berubah (ESC)</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkCropWidgets.cpp" line="880"/>
@@ -1549,12 +1549,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="127"/>
       <source>&amp;Blur...</source>
-      <translation>&amp;Kabur...</translation>
+      <translation>&amp;Buram...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="128"/>
       <source>Blur the image</source>
-      <translation>Kaburkan gambar</translation>
+      <translation>Buramkan gambar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="132"/>
@@ -1650,7 +1650,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="208"/>
       <source>Cannot blur image</source>
-      <translation>Tidak bisa mengaburkan gambar</translation>
+      <translation>Tidak bisa memburamkan gambar</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulatorsIpl.cpp" line="236"/>
