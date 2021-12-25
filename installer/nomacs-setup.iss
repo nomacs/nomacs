@@ -51,6 +51,7 @@ Name: "resetsettings"; Description: "Reset user configs for current user"; Types
 Name: "fa"; Description: "File associations"; Types: full custom
 Name: "fa\3fr"; Description: ".3fr"; Types: full custom
 Name: "fa\arw"; Description: ".arw"; Types: full custom
+Name: "fa\avif"; Description: ".avif"; Types: full custom
 Name: "fa\bmp"; Description: ".bmp"; Types: full custom
 Name: "fa\cr2"; Description: ".crw"; Types: full custom
 Name: "fa\crw"; Description: ".crw"; Types: full custom
@@ -74,6 +75,7 @@ Name: "fa\jpgx"; Description: ".jp2"; Types: full custom
 Name: "fa\jpm"; Description: ".jp2"; Types: full custom
 Name: "fa\jps"; Description: ".jps"; Types: full custom
 Name: "fa\jpx"; Description: ".jp2"; Types: full custom
+Name: "fa\jxl"; Description: ".jxl"; Types: full custom
 Name: "fa\mng"; Description: ".mng"; Types: full custom
 Name: "fa\mos"; Description: ".mos"; Types: full custom
 Name: "fa\mpo"; Description: ".mpo"; Types: full custom
@@ -226,6 +228,7 @@ Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
 [Registry]
 Root: HKA; Subkey: "Software\Classes\.3fr"; ValueType: string; ValueName: ""; ValueData: "nomacs.3fr.3"; Flags: uninsdeletevalue; Components: fa\3fr
 Root: HKA; Subkey: "Software\Classes\.arw"; ValueType: string; ValueName: ""; ValueData: "nomacs.arw.3"; Flags: uninsdeletevalue; Components: fa\arw
+Root: HKA; Subkey: "Software\Classes\.avif"; ValueType: string; ValueName: ""; ValueData: "nomacs.avif.3"; Flags: uninsdeletevalue; Components: fa\avif
 Root: HKA; Subkey: "Software\Classes\.bmp"; ValueType: string; ValueName: ""; ValueData: "nomacs.bmp.3"; Flags: uninsdeletevalue; Components: fa\bmp
 Root: HKA; Subkey: "Software\Classes\.cr2"; ValueType: string; ValueName: ""; ValueData: "nomacs.crw.3"; Flags: uninsdeletevalue; Components: fa\cr2
 Root: HKA; Subkey: "Software\Classes\.crw"; ValueType: string; ValueName: ""; ValueData: "nomacs.crw.3"; Flags: uninsdeletevalue; Components: fa\crw
@@ -249,6 +252,7 @@ Root: HKA; Subkey: "Software\Classes\.jpgx"; ValueType: string; ValueName: ""; V
 Root: HKA; Subkey: "Software\Classes\.jpm"; ValueType: string; ValueName: ""; ValueData: "nomacs.jp2.3"; Flags: uninsdeletevalue; Components: fa\jpm
 Root: HKA; Subkey: "Software\Classes\.jps"; ValueType: string; ValueName: ""; ValueData: "nomacs.jps.3"; Flags: uninsdeletevalue; Components: fa\jps
 Root: HKA; Subkey: "Software\Classes\.jpx"; ValueType: string; ValueName: ""; ValueData: "nomacs.jp2.3"; Flags: uninsdeletevalue; Components: fa\jpx
+Root: HKA; Subkey: "Software\Classes\.jxl"; ValueType: string; ValueName: ""; ValueData: "nomacs.jxl.3"; Flags: uninsdeletevalue; Components: fa\jxl
 Root: HKA; Subkey: "Software\Classes\.mng"; ValueType: string; ValueName: ""; ValueData: "nomacs.mng.3"; Flags: uninsdeletevalue; Components: fa\mng
 Root: HKA; Subkey: "Software\Classes\.mos"; ValueType: string; ValueName: ""; ValueData: "nomacs.mos.3"; Flags: uninsdeletevalue; Components: fa\mos
 Root: HKA; Subkey: "Software\Classes\.mpo"; ValueType: string; ValueName: ""; ValueData: "nomacs.mpo.3"; Flags: uninsdeletevalue; Components: fa\mpo
@@ -283,6 +287,7 @@ Root: HKA; Subkey: "Software\Classes\.xpm"; ValueType: string; ValueName: ""; Va
 
 Root: HKA; Subkey: "Software\Classes\nomacs.3fr.3"; ValueType: string; ValueName: ""; ValueData: "Hasselblad Raw"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.arw.3"; ValueType: string; ValueName: ""; ValueData: "Sony Raw"; Flags: uninsdeletekey; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.avif.3"; ValueType: string; ValueName: ""; ValueData: "AV1 Image File Format"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.bmp.3"; ValueType: string; ValueName: ""; ValueData: "Windows Bitmap"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.crw.3"; ValueType: string; ValueName: ""; ValueData: "Canon Raw"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.cur.3"; ValueType: string; ValueName: ""; ValueData: "Windows Cursor Files"; Flags: uninsdeletekey; Components: fa
@@ -298,6 +303,7 @@ Root: HKA; Subkey: "Software\Classes\nomacs.iiq.3"; ValueType: string; ValueName
 Root: HKA; Subkey: "Software\Classes\nomacs.jp2.3"; ValueType: string; ValueName: ""; ValueData: "JPEG 2000"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jpg.3"; ValueType: string; ValueName: ""; ValueData: "JPEG"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jps.3"; ValueType: string; ValueName: ""; ValueData: "JPEG Stereo"; Flags: uninsdeletekey; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.jxl.3"; ValueType: string; ValueName: ""; ValueData: "JPEG XL"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mng.3"; ValueType: string; ValueName: ""; ValueData: "Multi-Image Network Graphics"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mos.3"; ValueType: string; ValueName: ""; ValueData: "Leaf Raw"; Flags: uninsdeletekey; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mpo.3"; ValueType: string; ValueName: ""; ValueData: "Multi Picture Object"; Flags: uninsdeletekey; Components: fa
@@ -328,6 +334,7 @@ Root: HKA; Subkey: "Software\Classes\nomacs.xpm.3"; ValueType: string; ValueName
 
 Root: HKA; Subkey: "Software\Classes\nomacs.3fr.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,5"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.arw.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,5"; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.avif.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.bmp.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,4"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.crw.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,5"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.cur.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
@@ -343,6 +350,7 @@ Root: HKA; Subkey: "Software\Classes\nomacs.iiq.3\DefaultIcon"; ValueType: strin
 Root: HKA; Subkey: "Software\Classes\nomacs.jp2.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jpg.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,1"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jps.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.jxl.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mng.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,2"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mos.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,5"; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mpo.3\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\nomacs.exe,0"; Components: fa
@@ -373,6 +381,7 @@ Root: HKA; Subkey: "Software\Classes\nomacs.xpm.3\DefaultIcon"; ValueType: strin
 
 Root: HKA; Subkey: "Software\Classes\nomacs.3fr.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.arw.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.avif.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.bmp.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.crw.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.cur.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
@@ -388,6 +397,7 @@ Root: HKA; Subkey: "Software\Classes\nomacs.iiq.3\shell\open\command"; ValueType
 Root: HKA; Subkey: "Software\Classes\nomacs.jp2.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jpg.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.jps.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
+Root: HKA; Subkey: "Software\Classes\nomacs.jxl.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mng.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mos.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
 Root: HKA; Subkey: "Software\Classes\nomacs.mpo.3\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\nomacs.exe"" ""%1"""; Components: fa
