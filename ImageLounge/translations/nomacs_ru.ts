@@ -159,7 +159,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="522"/>
       <source>&amp;Adjustments</source>
-      <translation>&amp; Корректировки</translation>
+      <translation>&amp;Корректировки</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="538"/>
@@ -210,7 +210,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="963"/>
       <source>Open a directory and load its first image</source>
-      <translation>Откройте каталог и загрузить его первое изображение</translation>
+      <translation>Открыть каталог и загрузить его первое изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="965"/>
@@ -300,7 +300,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1002"/>
       <source>&amp;Save for Web</source>
-      <translation>&amp;Сохранить для Web</translation>
+      <translation>&amp;Сохранить для Сети</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1003"/>
@@ -456,7 +456,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1079"/>
       <source>Sort in Ascending Order</source>
-      <translation>Сортировка в порядке возрастания</translation>
+      <translation>Сортировать в порядке возрастания</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1083"/>
@@ -466,7 +466,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1085"/>
       <source>Sort in Descending Order</source>
-      <translation>Сортировка в порядке убывания</translation>
+      <translation>Сортировать в порядке убывания</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1092"/>
@@ -528,7 +528,7 @@
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1118"/>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1123"/>
       <source>copy image</source>
-      <translation>копировать изображение</translation>
+      <translation>Копировать изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1120"/>
@@ -554,7 +554,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1136"/>
       <source>paste image</source>
-      <translation>вставить изображение</translation>
+      <translation>Вставить изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1138"/>
@@ -565,7 +565,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1141"/>
       <source>delete current fileInfo</source>
-      <translation>удалить текущий файл данных</translation>
+      <translation>Удалить текущий файл данных</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1143"/>
@@ -590,7 +590,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1152"/>
       <source>Image &amp;Adjustments</source>
-      <translation>&amp; Корректировки изображения</translation>
+      <translation>&amp;Корректировки изображения</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1155"/>
@@ -605,7 +605,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1161"/>
       <source>resize the current image</source>
-      <translation>масштабировать текущее изображение</translation>
+      <translation>Масштабировать текущее изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1163"/>
@@ -615,7 +615,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1166"/>
       <source>cut the current image</source>
-      <translation>обрезать текущее изображение</translation>
+      <translation>Обрезать текущее изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1172"/>
@@ -700,7 +700,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1214"/>
       <source>Metadata &amp;Info</source>
-      <translation>Информация &amp;метаданных</translation>
+      <translation>Информация о &amp;метаданных</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1216"/>
@@ -790,12 +790,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1258"/>
       <source>Show &amp;Log</source>
-      <translation>Показать &amp;логи</translation>
+      <translation>Показать &amp;журнал отладки</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1259"/>
       <source>Shows the log window</source>
-      <translation>Показать окно отладки</translation>
+      <translation>Показать окно журнала отладки</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1266"/>
@@ -926,7 +926,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1315"/>
       <source>zoom in</source>
-      <translation>увеличить</translation>
+      <translation>Увеличить</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1317"/>
@@ -936,12 +936,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1319"/>
       <source>zoom out</source>
-      <translation>уменьшить</translation>
+      <translation>Уменьшить</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1321"/>
       <source>&amp;Anti Aliasing</source>
-      <translation>&amp;Антиалиасинг</translation>
+      <translation>&amp;Сглаживание</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1323"/>
@@ -951,7 +951,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1327"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>&amp;Шаблон прозрачности</translation>
+      <translation>&amp;Решётка прозрачности</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1329"/>
@@ -1068,12 +1068,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1379"/>
       <source>Show Image Location</source>
-      <translation>Показать расположение изображения</translation>
+      <translation>Показать, где было снято изображение</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1380"/>
       <source>shows where the image was taken in Google maps</source>
-      <translation>показывает, где изображение было снято в Google maps</translation>
+      <translation>Показать изображение на Google Maps</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1386"/>
@@ -1094,12 +1094,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1395"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Экспорт многостраничного &amp; TIFF</translation>
+      <translation>Экспорт многостраничного &amp;TIFF</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1396"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Экспорт страниц TIFF в несколько tiff - файлов</translation>
+      <translation>Экспорт страниц TIFF в несколько TIFF — файлов</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1398"/>
@@ -1294,7 +1294,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1507"/>
       <source>&amp;Batch Print</source>
-      <translation>Распечатать &amp;несколько</translation>
+      <translation>&amp;Множественная печать</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1508"/>
@@ -1589,12 +1589,12 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="147"/>
       <source>&amp;Threshold...</source>
-      <translation>&amp;Порог...</translation>
+      <translation>&amp;Пороговое значение...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="148"/>
       <source>Threshold the image</source>
-      <translation>Порог изображение</translation>
+      <translation>Пороговое значение изображения</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="152"/>
@@ -1609,7 +1609,7 @@
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="157"/>
       <source>&amp;Exposure...</source>
-      <translation>&amp; Экспозиции...</translation>
+      <translation>&amp;Экспозиция...</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkManipulators.cpp" line="158"/>
@@ -2297,7 +2297,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="435"/>
       <source>%1 error, could not apply image adjustments.</source>
-      <translation>%1 ошибка, не удается применить корректировки изображения.</translation>
+      <translation>%1 ошибка, не удаётся применить корректировки изображения.</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkProcess.cpp" line="443"/>
@@ -2838,7 +2838,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1421"/>
       <source>Open Log</source>
-      <translation>Открыть журнал</translation>
+      <translation>Открыть журнал отладки</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="1429"/>
@@ -3055,7 +3055,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1989"/>
       <source>inactive</source>
-      <translation>неактивный</translation>
+      <translation>неактивен</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1991"/>
@@ -3068,7 +3068,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="752"/>
       <source>Output Directory</source>
-      <translation>Выходной каталог</translation>
+      <translation>Конечная папка сохранения результатов</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="755"/>
@@ -3094,7 +3094,7 @@ This option might destroy your images - so be careful!</source>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="767"/>
       <source>Do not Save Output Images</source>
-      <translation>Не сохраняйте выходное изображение</translation>
+      <translation>Не сохранять получившиеся изображения</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="768"/>
@@ -3106,7 +3106,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="772"/>
       <source>Use Input Folder</source>
-      <translation>Используйте Входную папку</translation>
+      <translation>Использовать входную папку</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="773"/>
@@ -3116,7 +3116,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="777"/>
       <source>Delete Input Files</source>
-      <translation>Удаление входных файлов</translation>
+      <translation>Удаленить исходные файлы</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="778"/>
@@ -3200,7 +3200,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1749"/>
       <source>inactive</source>
-      <translation>неактивный</translation>
+      <translation>неактивен</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1751"/>
@@ -3321,7 +3321,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2124"/>
       <source>inactive</source>
-      <translation>неактивный</translation>
+      <translation>неактивен</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2130"/>
@@ -3377,7 +3377,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
       <location filename="../../src/DkGui/DkBatch.cpp" line="2398"/>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2406"/>
       <source>inactive</source>
-      <translation>неактивный</translation>
+      <translation>неактивен</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="2394"/>
@@ -3633,7 +3633,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1182"/>
       <source>Click here to add notes</source>
-      <translation>Нажмите здесь, чтобы добавить заметки</translation>
+      <translation>Щёлкните, чтобы добавить</translation>
     </message>
   </context>
   <context>
@@ -3689,7 +3689,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="211"/>
       <source>Save for Web</source>
-      <translation>Сохранить для Интернета</translation>
+      <translation>Сохранить для Сети</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkSaveDialog.cpp" line="224"/>
@@ -3795,7 +3795,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="996"/>
       <source>No metadata available!</source>
-      <translation>Метаданные не доступны!</translation>
+      <translation>Метаданные недоступны!</translation>
     </message>
   </context>
   <context>
@@ -3914,7 +3914,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="741"/>
       <source>Always zoom to fit</source>
-      <translation>Всегда масштабировать по размеру</translation>
+      <translation>Всегда масштабировать по размеру окна</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkPreferenceWidgets.cpp" line="754"/>
@@ -4076,12 +4076,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2493"/>
       <source>Save Folder:</source>
-      <translation>Конечный каталог:</translation>
+      <translation>Папка для сохранения:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2499"/>
       <source>Specify a Save Folder</source>
-      <translation>Укажите каталог для сохранения</translation>
+      <translation>Укажите папку для сохранения</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2502"/>
@@ -4121,7 +4121,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2677"/>
       <source>%1 exists, skipping...</source>
-      <translation>%1 существует, пропускаем...</translation>
+      <translation>%1 существует, пропуск...</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2682"/>
@@ -4921,12 +4921,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Enabled</source>
-      <translation>Антиалиасинг включен</translation>
+      <translation>Сглаживание включено</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkImageStorage.cpp" line="1537"/>
       <source>Anti Aliasing Disabled</source>
-      <translation>Антиалиасинг выключен</translation>
+      <translation>Сглаживание отключено</translation>
     </message>
   </context>
   <context>
@@ -4939,7 +4939,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="798"/>
       <source>Name</source>
-      <translation>Действие</translation>
+      <translation>Название</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkPluginManager.cpp" line="800"/>
@@ -5213,7 +5213,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1068"/>
       <source>Metadata Menu</source>
-      <translation>Меню «метаданные»</translation>
+      <translation>Меню «Метаданные»</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="1123"/>
@@ -5287,7 +5287,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2826"/>
       <source>Mosaic Image:</source>
-      <translation>&amp;Изображение из мозаики:</translation>
+      <translation>Изображение из мозаики:</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2829"/>
@@ -5318,7 +5318,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2843"/>
       <source>Specify an Image Database</source>
-      <translation>Укажите базу данных изображений</translation>
+      <translation>Уточните расположение источника изображений</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="2846"/>
@@ -5503,7 +5503,7 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="933"/>
       <source>Meta Data Info</source>
-      <translation>Мета-данные</translation>
+      <translation>Метаданные</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkNoMacs.cpp" line="954"/>
@@ -5900,7 +5900,7 @@ then press %1</source>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1314"/>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1370"/>
       <source>inactive</source>
-      <translation>неактивный</translation>
+      <translation>неактивен</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="1339"/>
@@ -6268,7 +6268,7 @@ then press %1</source>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1593"/>
       <source>Name</source>
-      <translation>Действие</translation>
+      <translation>Название</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="1593"/>
@@ -6331,7 +6331,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkMenu.cpp" line="214"/>
       <source>no clients found</source>
-      <translation>клиентов не найденно</translation>
+      <translation>клиенты не найдены</translation>
     </message>
   </context>
   <context>
@@ -6384,7 +6384,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="472"/>
       <source>Threshold</source>
-      <translation>Порог</translation>
+      <translation>Пороговое значение</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkManipulatorWidgets.cpp" line="479"/>
@@ -6598,7 +6598,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="308"/>
       <source>Load New Image Format</source>
-      <translation>Загрузить новый формат изображения</translation>
+      <translation>Новый формат изображения</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkDialog.cpp" line="315"/>
@@ -6745,7 +6745,7 @@ Creating thumbnails...
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="368"/>
       <source>Updates Disabled</source>
-      <translation>Обновления выключены</translation>
+      <translation>Обновления отключены</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="369"/>
@@ -6819,7 +6819,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="161"/>
       <source>Updates Disabled</source>
-      <translation>Обновления выключены</translation>
+      <translation>Обновления отключены</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="162"/>
@@ -6864,12 +6864,12 @@ Please contact your system administrator for further information.</source>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="280"/>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="350"/>
       <source>updates</source>
-      <translation>обновления</translation>
+      <translation>Обновления</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="272"/>
       <source>nomacs is up-to-date</source>
-      <translation>nomacs обновлен</translation>
+      <translation>nomacs обновлён</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkUpdater.cpp" line="280"/>
