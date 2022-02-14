@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <limits>
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc

@@ -46,7 +46,6 @@
 
 namespace nmc
 {
-
 // DkMetaDataT --------------------------------------------------------------------
 DkMetaDataT::DkMetaDataT()
 {

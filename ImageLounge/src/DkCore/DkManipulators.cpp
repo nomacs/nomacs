@@ -103,13 +103,13 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
     mpls[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
 
     // flip horizontal
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg", size), QObject::tr("Reflect &Horizontal"), parent);
-    action->setStatusTip(QObject::tr("Reflect Image Horizontally"));
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-horizontal.svg", size), QObject::tr("Flip &Horizontal"), parent);
+    action->setStatusTip(QObject::tr("Flip Image Horizontally"));
     mpls[m_flip_h] = QSharedPointer<DkFlipHManipulator>::create(action);
 
     // flip vertical
-    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg", size), QObject::tr("Reflect &Vertical"), parent);
-    action->setStatusTip(QObject::tr("Reflect Image Vertically"));
+    action = new QAction(DkImage::loadIcon(":/nomacs/img/flip-vertical.svg", size), QObject::tr("Flip &Vertical"), parent);
+    action->setStatusTip(QObject::tr("Flip Image Vertically"));
     mpls[m_flip_v] = QSharedPointer<DkFlipVManipulator>::create(action);
 
     // invert image

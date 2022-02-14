@@ -1,8 +1,5 @@
 <RCC>
   <qresource prefix="/nomacs">
-    <file>img/aspect-ratio.svg</file>
-    <file>img/undo.svg</file>
-    <file>img/redo.svg</file>
     <file>img/next.svg</file>
     <file>img/next-hud.svg</file>
     <file>img/previous.svg</file>
@@ -11,7 +8,6 @@
     <file>img/down-white.svg</file>
     <file>img/up.svg</file>
     <file>img/crop.svg</file>
-    <file>img/crop-flip.svg</file>
     <file>img/copy.svg</file>
     <file>img/paste.svg</file>
     <file>img/rename.svg</file>
@@ -61,6 +57,8 @@
     <file>img/swap.svg</file>
     <file>img/pan.svg</file>
     <file>img/pan-checked.svg</file>
+    <file>img/crop-invert.svg</file>
+    <file>img/crop-invert-checked.svg</file>
     <file>img/info.svg</file>
     <file>img/widget-separator.svg</file>
     <file>img/trash.svg</file>

@@ -243,6 +243,84 @@ private:
     int mImageMode = mode_uninitialized;
 };
 
+class DkCropToolBar : public QToolBar
+{
+    Q_OBJECT
+
+public:
+    enum {
+        crop_icon = 0,
+        pan_icon,
+        cancel_icon,
+        invert_icon,
+        info_icon,
+
+        icons_end,
+
+    };
+
+    DkCropToolBar(const QString &title, QWidget *parent = 0);
+    virtual ~DkCropToolBar();
+
+    QColor getColor()
+    {
+        return mBgCol;
+    };
+
+    void loadSettings();
+
+public slots:
+    void setAspectRatio(const QPointF &aRatio);
+    void setRect(const QRect &r);
+    void on_cropAction_triggered();
+    void on_cancelAction_triggered();
+    void on_swapAction_triggered();
+    void on_ratioBox_currentIndexChanged(const QString &text);
+    void on_guideBox_currentIndexChanged(int idx);
+    void on_horValBox_valueChanged(double val);
+    void on_verValBox_valueChanged(double val);
+    void on_angleBox_valueChanged(double val);
+    void on_bgColButton_clicked();
+    void on_panAction_toggled(bool checked);
+    void on_invertAction_toggled(bool checked);
+    void on_infoAction_toggled(bool checked);
+    void angleChanged(double val);
+    virtual void setVisible(bool visible) override;
+
+signals:
+    void panSignal(bool checked);
+    void cropSignal(bool cropToMetadata = false); // vs. crop
+    void cancelSignal();
+    void aspectRatio(const DkVector &diag);
+    void angleSignal(double angle);
+    void colorSignal(const QBrush &brush);
+    void paintHint(int paintMode);
+    void shadingHint(bool invert);
+    void showInfo(bool show);
+    void updateRectSignal(const QRect &r);
+
+protected:
+    void createLayout();
+    void createIcons();
+    void saveSettings();
+
+    QComboBox *mRatioBox = 0;
+    QComboBox *mGuideBox = 0;
+    QAction *mInvertAction = 0;
+    QDoubleSpinBox *mHorValBox = 0;
+    QDoubleSpinBox *mVerValBox = 0;
+    QDoubleSpinBox *mAngleBox = 0;
+    QPushButton *mBgColButton = 0;
+    QColorDialog *mColorDialog = 0;
+    QColor mBgCol;
+    QAction *mPanAction = 0;
+    QAction *mInfoAction = 0;
+    QCheckBox *mCbMeta = 0;
+    DkRectWidget *mCropRect = 0;
+
+    QVector<QIcon> mIcons; // needed for colorizing
+};
+
 class DllCoreExport DkToolBarManager
 {
 public:

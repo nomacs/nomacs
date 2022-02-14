@@ -110,7 +110,6 @@
 
 namespace nmc
 {
-
 // DkEditImage --------------------------------------------------------------------
 
 DkEditImage::DkEditImage()
@@ -363,7 +362,7 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
             if (orientation != -1 && !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL()
                 && !DkSettingsManager::param().metaData().ignoreExifOrientation) {
-                img = DkImage::rotate(img, orientation);
+                img = DkImage::rotateImage(img, orientation);
             }
 
         } catch (...) {
@@ -441,7 +440,7 @@ bool DkBasicLoader::loadRohFile(const QString &filePath, QImage &img, QSharedPoi
 
     // if (imgLoaded) {
     //	setEditImage(img, tr("Original Image"));
-    // }
+    //}
 
     return imgLoaded;
 }
@@ -2183,7 +2182,7 @@ bool DkRawLoader::openBuffer(const QSharedPointer<QByteArray> &ba, LibRaw &iProc
     QFileInfo fi(mFilePath);
 
     // use iprocessor from libraw to read the data
-    //  OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
+    // OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
     if (fi.suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
         error = iProcessor.open_file(mFilePath.toStdString().c_str());
     } else {
@@ -2458,7 +2457,6 @@ QImage DkRawLoader::raw2Img(const LibRaw &iProcessor, cv::Mat &img) const
 // -------------------------------------------------------------------- DkTgaLoader
 namespace tga
 {
-
 DkTgaLoader::DkTgaLoader(QSharedPointer<QByteArray> ba)
 {
     mBa = ba;
