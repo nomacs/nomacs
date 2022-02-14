@@ -1019,8 +1019,8 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString &filePa
  * @param fileInfo path to file to be written
  * @param ba raw content to be written to file
  */
-bool DkBasicLoader::writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const
-{
+bool DkBasicLoader::writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const {
+
     if (!ba || ba->isEmpty())
         return false;
 
@@ -1359,8 +1359,21 @@ void DkBasicLoader::saveThumbToMetaData(const QString &filePath)
     saveThumbToMetaData(filePath, ba);
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<QByteArray> &ba)
-{
+/**
+ * @brief this will save the exif metadata to the file - outside of the regular save() routine.
+ * 
+ * Use it at your own risk. Keep children away.
+ * 
+ * @param filePath path to current file to be updated
+ */
+void DkBasicLoader::saveMetaData(const QString& filePath) {
+
+	QSharedPointer<QByteArray> ba;	// dummy
+	saveMetaData(filePath, ba);
+}
+
+void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
+	
     if (!hasImage())
         return;
 
@@ -1369,19 +1382,16 @@ void DkBasicLoader::saveThumbToMetaData(const QString &filePath, QSharedPointer<
 }
 
 /**
- * @brief this will write the current exif/metadata to the loaded file.
- *
- * It calls the other overload passing an empty buffer,
- * so it'll load the buffer, save the exif data to the buffer
- * and write the buffer back to the file.
- *
- * @param filePath path to current file to be updated
+ * @brief saves the file to a file buffer and writes the file buffer to the original file
+ * 
+ * This routine will write new metadata to the file on disk.
+ * Use with caution. It works outside of the regular save workflow.
+ * See ImageLoader (regular workflow starts there) and ImageContainer.
+ * 
+ * @param filePath path to image file
+ * @param ba file buffer to be saved (leave empty to work on the specified file as it is on disk)
  */
-void DkBasicLoader::saveMetaData(const QString &filePath)
-{
-    QSharedPointer<QByteArray> ba; // dummy
-    saveMetaData(filePath, ba);
-}
+void DkBasicLoader::saveMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 
 /**
  * @brief writes metadata to the file on disk, if it's marked as dirty
@@ -1447,11 +1457,11 @@ bool DkBasicLoader::isContainer(const QString &filePath)
  * @note This will *not* silently auto-save your beautiful images.
  * It was apparently intended to be used that way (it called saveMetaData(), like ~DkImageContainerT()).
  * All changes should be explicitly committed, including exif notes.
- * If you think this is wrong, a comment would be appreciated. See issue #799. PSE, 2022.
- *
- **/
-void DkBasicLoader::release()
-{
+ * If you think this is wrong, a comment would be appreciated. See issue #799.
+ * 
+ **/ 
+void DkBasicLoader::release() {
+
     // TODO: auto save routines here?
     // answer: no.
 

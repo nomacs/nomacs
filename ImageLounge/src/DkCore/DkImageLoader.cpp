@@ -1501,6 +1501,8 @@ void DkImageLoader::rotateImage(double angle)
 
     QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData(); // via ImageContainer, BasicLoader
     bool metaDataSet = false;
+	bool allowSilentUpdate = false;
+	bool alreadyUpdated = false;
 
     if (metaData->hasMetaData() && DkSettingsManager::param().metaData().saveExifOrientation) {
         try {

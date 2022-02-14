@@ -218,8 +218,7 @@ public:
 
     DkBasicLoader(int mode = mode_default);
 
-    ~DkBasicLoader()
-    {
+	~DkBasicLoader() {
         release();
     };
 
@@ -345,9 +344,11 @@ public:
     void setHistoryIndex(int idx);
     int historyIndex() const;
 
-    void loadFileToBuffer(const QString &filePath, QByteArray &ba) const;
-    QSharedPointer<QByteArray> loadFileToBuffer(const QString &filePath) const;
-    bool writeBufferToFile(const QString &fileInfo, const QSharedPointer<QByteArray> ba) const;
+	void loadFileToBuffer(const QString& filePath, QByteArray& ba) const;
+	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath) const;
+	bool writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const;
+
+	void release();
 
     void release();
 
