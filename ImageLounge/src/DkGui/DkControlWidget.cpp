@@ -243,7 +243,7 @@ void DkControlWidget::init() {
 	//centerLabel->setText("ich bin richtig...", -1);
 	//bottomLeftLabel->setText("topLeft label...", -1);
 	//spinnerLabel->show();
-	
+
 	show();
 }
 
@@ -282,6 +282,7 @@ void DkControlWidget::connectWidgets() {
 
 	// comment widget
 	connect(mCommentWidget, SIGNAL(showInfoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
+	connect(mCommentWidget, SIGNAL(commentSavedSignal()), mViewport, SLOT(setImageUpdated()));
 
 	// mViewport
 	connect(mViewport, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
@@ -627,7 +628,7 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
 	mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
 	mFileInfoLabel->setEdited(imgC->isEdited());
-	mCommentWidget->setMetaData(metaData);
+	mCommentWidget->setMetaData(metaData); // reset
 	updateRating(metaData->getRating());
 
 }

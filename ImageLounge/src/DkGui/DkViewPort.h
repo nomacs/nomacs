@@ -180,6 +180,7 @@ public slots:
 	void manipulatorApplied();
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
+	virtual void setImageUpdated();
 	virtual void loadImage(const QImage& newImg);
 	virtual void loadImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setEditedImage(const QImage& newImg, const QString& editName);

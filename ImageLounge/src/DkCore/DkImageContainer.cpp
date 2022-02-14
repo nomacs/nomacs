@@ -477,10 +477,12 @@ void DkImageContainer::saveMetaData() {
 
 void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
-	loader->saveMetaData(filePath, fileBuffer);
+	// TODO this shouldn't be used without notifying the user, see issue #799
+	loader->saveMetaData(filePath, fileBuffer); // TODO use with caution
 }
 
-void DkImageContainer::setEdited(bool edited) {
+void DkImageContainer::setEdited(bool edited /* = true */) {
+
 	mEdited = edited;
 }
 
@@ -599,7 +601,11 @@ DkImageContainerT::~DkImageContainerT() {
 	mImageWatcher.blockSignals(true);
 	mImageWatcher.cancel();
 
-	saveMetaData();
+	// This dtor is where saveMetaData() used to be called, which called the "dangerous" overload of saveMetaData(),
+	// which is dangerous because it updates the file. We consider this to be a bug.
+	// The other place where the file was silently updated in the background was the release() routine, called on unload.
+	// All changes should be explicitly committed, including exif notes.
+	// If you think this is wrong, a comment would be appreciated. See issue #799.
 
 	// we have to wait here
 	mSaveMetaDataWatcher.blockSignals(true);

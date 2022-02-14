@@ -262,6 +262,12 @@ void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loade
 	}
 }
 
+void DkViewPort::setImageUpdated() {
+
+	if (!mLoader) return;
+	mLoader->setImageUpdated();
+}
+
 void DkViewPort::loadImage(const QImage& newImg) {
 
 	// delete current information
@@ -1926,13 +1932,14 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		return;
 
 	if (connectSignals) {
-		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+		connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
+
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection); // update image matrix
 
 		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
 		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
 
 		connect(loader.data(), SIGNAL(showInfoSignal(const QString&, int, int)), mController, SLOT(setInfo(const QString&, int, int)), Qt::UniqueConnection);
 
@@ -1943,7 +1950,10 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 		connect(mController->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
 	}
 	else {
-		//connect(mLoader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::UniqueConnection);
+		disconnect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)));
+		disconnect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), mController->getMetaDataWidget(), SLOT(updateMetaData(QSharedPointer<DkImageContainerT>)));
+		disconnect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>)), mController, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
+
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)));
 
 		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mController->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));

@@ -240,6 +240,7 @@ public:
 	~DkCommentWidget() {};
 	
 	void setMetaData(QSharedPointer<DkMetaDataT> metaData);
+	QString text() const;
 
 public slots:
 	void on_CommentLabel_textChanged();
@@ -249,16 +250,18 @@ public slots:
 
 signals:
 	void showInfoSignal(const QString& msg) const;
+	void commentEditedSignal() const;
+	void commentSavedSignal() const;
 
 protected:
-	void setComment(const QString& description);
+	void initComment(const QString& description);
+	void resetComment();
 	void saveComment();
 	void createLayout();
 
 	DkCommentTextEdit* mCommentLabel;
 	QSharedPointer<DkMetaDataT> mMetaData;
-	bool mTextChanged = false;
-	bool mDirty = false;
+	bool mTextEdited = false;
 	QString mOldText;
 };
 

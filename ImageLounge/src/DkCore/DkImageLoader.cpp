@@ -1519,10 +1519,12 @@ bool DkImageLoader::deleteFile() {
 }
 
 /**
- * Rotates the image.
- * First, we try to set the rotation flag in the metadata
- * (this is the fastest way to rotate an image).
- * If this does not work, the image matrix is rotated.
+ * @brief rotates the image.
+ * 
+ * First, we try to set the rotation flag in the metadata.
+ * That wouldn't work if the image has no meta data, like a bmp file for example.
+ * Then, the image matrix is rotated.
+ * 
  * @param angle the rotation angle in degree.
  **/ 
 void DkImageLoader::rotateImage(double angle) {
@@ -1541,19 +1543,28 @@ void DkImageLoader::rotateImage(double angle) {
 
 	QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData();
 	bool metaDataSet = false;
+	bool allowSilentUpdate = false;
+	bool alreadyUpdated = false;
 
 	if (metaData->hasMetaData() && DkSettingsManager::param().metaData().saveExifOrientation) {
 		try {
+			// Set orientation in exif data
 			if (!metaData->isJpg())
 				metaData->setThumbnail(thumb);
 			metaData->setOrientation(qRound(angle));
 			metaDataSet = true;
 
-			// if that is working out, we need to set the image without changing the history
-			QVector<DkEditImage>* imgs = mCurrentImage->getLoader()->history();
+			// Make sure to save the rotated image properly (in the history)
+			// Otherwise the user wouldn't be able to undo the rotation, which feels like a bug
+			// We're leaving this in for now, as dead code. If nobody yells, we'll remove it.
 
-			if (!imgs->isEmpty()) {
-				imgs->last().setImage(img);
+			if (allowSilentUpdate) {
+				// if that is working out, we need to set the image without changing the history
+				QVector<DkEditImage>* imgs = mCurrentImage->getLoader()->history();
+				if (!imgs->isEmpty()) {
+					imgs->last().setImage(img);
+					alreadyUpdated = true;
+				}
 			}
 
 		}
@@ -1561,11 +1572,12 @@ void DkImageLoader::rotateImage(double angle) {
 		}
 	}
 
-	if (!metaDataSet) {
+	if (!alreadyUpdated) {
+		// Update the image itself, along with the history and everything
+		// In other words, the rotated image is saved to the history and the edit flag is set
 		setImage(img, tr("Rotated"), mCurrentImage->filePath());
 	}
 
-	emit imageUpdatedSignal(mCurrentImage);
 }
 
 /**
@@ -2233,6 +2245,12 @@ QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImage
 	emit imageUpdatedSignal(mCurrentImage);
 
 	return img;
+}
+
+void DkImageLoader::setImageUpdated() {
+
+	mCurrentImage->setEdited();
+	emit imageUpdatedSignal(mCurrentImage);
 }
 
 /**
