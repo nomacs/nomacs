@@ -46,7 +46,6 @@
 
 namespace nmc
 {
-
 // DkManipulatorWidget --------------------------------------------------------------------
 DkManipulatorWidget::DkManipulatorWidget(QWidget *parent)
     : DkFadeWidget(parent)
@@ -118,19 +117,19 @@ void DkManipulatorWidget::createLayout()
     mPreview->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     // undo
-    QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/undo.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
+    QPixmap pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cc.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
     QPushButton *undoButton = new QPushButton(pm, "", this);
     undoButton->setFlat(true);
     undoButton->setIconSize(QSize(32, 32));
-    undoButton->setObjectName("dark");
+    undoButton->setObjectName("DkRestartButton");
     undoButton->setStatusTip(tr("Undo"));
     connect(undoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_undo), SIGNAL(triggered()));
 
-    pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/redo.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
+    pm = DkImage::colorizePixmap(QIcon(":/nomacs/img/rotate-cw.svg").pixmap(QSize(32, 32)), QColor(255, 255, 255));
     QPushButton *redoButton = new QPushButton(pm, "", this);
     redoButton->setFlat(true);
     redoButton->setIconSize(QSize(32, 32));
-    redoButton->setObjectName("dark");
+    redoButton->setObjectName("DkRestartButton");
     redoButton->setStatusTip(tr("Redo"));
     connect(redoButton, SIGNAL(clicked()), am.action(DkActionManager::menu_edit_redo), SIGNAL(triggered()));
 

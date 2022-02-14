@@ -818,6 +818,340 @@ void DkTransferToolBar::saveGradient()
     saveSettings();
 }
 
+// DkCropToolbar --------------------------------------------------------------------
+DkCropToolBar::DkCropToolBar(const QString &title, QWidget *parent /* = 0 */)
+    : QToolBar(title, parent)
+{
+    createIcons();
+    createLayout();
+    QMetaObject::connectSlotsByName(this);
+
+    setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(this), DkSettingsManager::param().effectiveIconSize(this)));
+    setObjectName("cropToolBar");
+}
+
+DkCropToolBar::~DkCropToolBar()
+{
+    // save settings
+    saveSettings();
+}
+
+void DkCropToolBar::loadSettings()
+{
+    DefaultSettings settings;
+    settings.beginGroup("Crop");
+
+    mHorValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
+    mVerValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
+    mGuideBox->setCurrentIndex(settings.value("guides", 1).toInt());
+    mInvertAction->setChecked(settings.value("inverted", false).toBool());
+    mInfoAction->setChecked(settings.value("info", true).toBool());
+    mCbMeta->setChecked(settings.value("cropToMetadata", false).toBool());
+    settings.endGroup();
+}
+
+void DkCropToolBar::saveSettings()
+{
+    DefaultSettings settings;
+    settings.beginGroup("Crop");
+
+    settings.setValue("AspectRatioHorizontal", mHorValBox->value());
+    settings.setValue("AspectRatioVertical", mVerValBox->value());
+    settings.setValue("guides", mGuideBox->currentIndex());
+    settings.setValue("inverted", mInvertAction->isChecked());
+    settings.setValue("info", mInfoAction->isChecked());
+    settings.setValue("cropToMetadata", mCbMeta->isChecked());
+    settings.endGroup();
+}
+
+void DkCropToolBar::createIcons()
+{
+    // create icons
+    mIcons.resize(icons_end);
+
+    mIcons[crop_icon] = DkImage::loadIcon(":/nomacs/img/crop.svg");
+    mIcons[cancel_icon] = DkImage::loadIcon(":/nomacs/img/close.svg");
+    mIcons[pan_icon] = DkImage::loadIcon(":/nomacs/img/pan.svg");
+    mIcons[pan_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/pan-checked.svg"), QIcon::Normal, QIcon::On);
+    mIcons[invert_icon] = DkImage::loadIcon(":/nomacs/img/crop-invert.svg");
+    mIcons[invert_icon].addPixmap(DkImage::loadIcon(":/nomacs/img/crop-invert-checked.svg"), QIcon::Normal, QIcon::On);
+    mIcons[info_icon] = DkImage::loadIcon(":/nomacs/img/info.svg");
+
+    if (!DkSettingsManager::param().display().defaultIconColor) {
+        // now colorize all icons
+        for (int idx = 0; idx < mIcons.size(); idx++) {
+            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::On),
+                                                          DkSettingsManager::param().display().iconColor),
+                                  QIcon::Normal,
+                                  QIcon::On);
+            mIcons[idx].addPixmap(DkImage::colorizePixmap(mIcons[idx].pixmap(DkSettingsManager::param().effectiveIconSize(this), QIcon::Normal, QIcon::Off),
+                                                          DkSettingsManager::param().display().iconColor),
+                                  QIcon::Normal,
+                                  QIcon::Off);
+        }
+    }
+}
+
+void DkCropToolBar::createLayout()
+{
+    QList<QKeySequence> enterSc;
+    enterSc.append(QKeySequence(Qt::Key_Enter));
+    enterSc.append(QKeySequence(Qt::Key_Return));
+
+    QAction *cropAction = new QAction(mIcons[crop_icon], tr("Crop (ENTER)"), this);
+    cropAction->setShortcuts(enterSc);
+    cropAction->setObjectName("cropAction");
+
+    QAction *cancelAction = new QAction(mIcons[cancel_icon], tr("Cancel (ESC)"), this);
+    cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
+    cancelAction->setObjectName("cancelAction");
+
+    mPanAction = new QAction(mIcons[pan_icon], tr("Pan"), this);
+    mPanAction->setShortcut(QKeySequence(Qt::Key_P));
+    mPanAction->setObjectName("panAction");
+    mPanAction->setCheckable(true);
+    mPanAction->setChecked(false);
+
+    QStringList ratios;
+    ratios << "1:1"
+           << "4:3"
+           << "5:4"
+           << "14:10"
+           << "14:11"
+           << "16:9"
+           << "16:10";
+    ratios.prepend(tr("User Defined"));
+    ratios.prepend(tr("No Aspect Ratio"));
+    mRatioBox = new QComboBox(this);
+    mRatioBox->addItems(ratios);
+    mRatioBox->setObjectName("ratioBox");
+
+    mHorValBox = new QDoubleSpinBox(this);
+    mHorValBox->setObjectName("horValBox");
+    mHorValBox->setSpecialValueText("  ");
+    mHorValBox->setToolTip(tr("Horizontal Constraint"));
+    mHorValBox->setStatusTip(mHorValBox->toolTip());
+
+    QAction *swapAction = new QAction(DkImage::loadIcon(":/nomacs/img/swap.svg"), tr("Swap"), this);
+    swapAction->setObjectName("swapAction");
+    swapAction->setToolTip(tr("Swap Dimensions"));
+    swapAction->setStatusTip(swapAction->toolTip());
+
+    mVerValBox = new QDoubleSpinBox(this);
+    mVerValBox->setObjectName("verValBox");
+    mVerValBox->setSpecialValueText("  ");
+    mHorValBox->setToolTip(tr("Vertical Constraint"));
+    mHorValBox->setStatusTip(mHorValBox->toolTip());
+
+    mAngleBox = new QDoubleSpinBox(this);
+    mAngleBox->setObjectName("angleBox");
+    mAngleBox->setSuffix(dk_degree_str);
+    mAngleBox->setMinimum(-180);
+    mAngleBox->setMaximum(180);
+
+    // background color
+    mBgCol = QColor(0, 0, 0, 0);
+    mBgColButton = new QPushButton(this);
+    mBgColButton->setObjectName("bgColButton");
+    mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+    mBgColButton->setToolTip(tr("Background Color"));
+    mBgColButton->setStatusTip(mBgColButton->toolTip());
+
+    mColorDialog = new QColorDialog(this);
+    mColorDialog->setObjectName("colorDialog");
+    mColorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+
+    // crop customization
+    QStringList guides;
+    guides << tr("Guides") << tr("Rule of Thirds") << tr("Grid");
+    mGuideBox = new QComboBox(this);
+    mGuideBox->addItems(guides);
+    mGuideBox->setObjectName("guideBox");
+    mGuideBox->setToolTip(tr("Show Guides in the Preview"));
+    mGuideBox->setStatusTip(mGuideBox->toolTip());
+
+    mInvertAction = new QAction(mIcons[invert_icon], tr("Invert Crop Tool Color"), this);
+    mInvertAction->setObjectName("invertAction");
+    mInvertAction->setCheckable(true);
+    mInvertAction->setChecked(false);
+
+    mInfoAction = new QAction(mIcons[info_icon], tr("Show Info"), this);
+    mInfoAction->setObjectName("infoAction");
+    mInfoAction->setCheckable(true);
+    mInfoAction->setChecked(false);
+
+    mCbMeta = new QCheckBox(tr("Crop to Metadata"), this);
+    mCbMeta->setChecked(false);
+    mCbMeta->hide(); // "disabled" for now (keep it simple)
+
+    mCropRect = new DkRectWidget(QRect(), this);
+    mCropRect->setObjectName("cropRect");
+
+    addAction(cropAction);
+    addAction(mPanAction);
+    addAction(cancelAction);
+    addSeparator();
+    addWidget(mRatioBox);
+    addWidget(mHorValBox);
+    addAction(swapAction);
+    addWidget(mVerValBox);
+    addWidget(mAngleBox);
+    addSeparator();
+    addWidget(mBgColButton);
+    addSeparator();
+    addWidget(mGuideBox);
+    addAction(mInvertAction);
+    addAction(mInfoAction);
+    addWidget(mCbMeta);
+    addSeparator();
+    addWidget(mCropRect);
+
+    connect(mCropRect, SIGNAL(updateRectSignal(const QRect &)), this, SIGNAL(updateRectSignal(const QRect &)));
+}
+
+void DkCropToolBar::setVisible(bool visible)
+{
+    if (!visible)
+        emit colorSignal(Qt::NoBrush);
+    else
+        emit colorSignal(mBgCol);
+
+    if (visible) {
+        mPanAction->setChecked(false);
+        mAngleBox->setValue(0);
+    }
+
+    QToolBar::setVisible(visible);
+}
+
+void DkCropToolBar::setAspectRatio(const QPointF &aRatio)
+{
+    mHorValBox->setValue(aRatio.x());
+    mVerValBox->setValue(aRatio.y());
+}
+
+void DkCropToolBar::setRect(const QRect &r)
+{
+    mCropRect->setRect(r);
+}
+
+void DkCropToolBar::on_cropAction_triggered()
+{
+    emit cropSignal(mCbMeta->isChecked());
+}
+
+void DkCropToolBar::on_cancelAction_triggered()
+{
+    emit cancelSignal();
+}
+
+void DkCropToolBar::on_invertAction_toggled(bool checked)
+{
+    emit shadingHint(checked);
+}
+
+void DkCropToolBar::on_infoAction_toggled(bool checked)
+{
+    emit showInfo(checked);
+}
+
+void DkCropToolBar::on_swapAction_triggered()
+{
+    int tmpV = qRound(mHorValBox->value());
+    mHorValBox->setValue(mVerValBox->value());
+    mVerValBox->setValue(tmpV);
+}
+
+void DkCropToolBar::on_angleBox_valueChanged(double val)
+{
+    emit angleSignal(DK_DEG2RAD * val);
+}
+
+void DkCropToolBar::angleChanged(double val)
+{
+    double angle = val * DK_RAD2DEG;
+    while (angle > 90)
+        angle -= 180;
+    while (angle <= -90)
+        angle += 180;
+
+    mAngleBox->blockSignals(true);
+    mAngleBox->setValue(angle);
+    mAngleBox->blockSignals(false);
+}
+
+void DkCropToolBar::on_bgColButton_clicked()
+{
+    QColor tmpCol = mBgCol;
+    if (!tmpCol.alpha())
+        tmpCol.setAlpha(255); // avoid frustrated users
+
+    mColorDialog->setCurrentColor(tmpCol);
+    int ok = mColorDialog->exec();
+
+    if (ok == QDialog::Accepted) {
+        mBgCol = mColorDialog->currentColor();
+        mBgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(mBgCol) + "; border: 1px solid #888;}");
+        emit colorSignal(mBgCol);
+    }
+}
+
+void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString &text)
+{
+    // user defined -> do nothing
+    if (mRatioBox->currentIndex() == 1)
+        return;
+
+    // no aspect ratio -> clear boxes
+    if (mRatioBox->currentIndex() == 0) {
+        mHorValBox->setValue(0);
+        mVerValBox->setValue(0);
+        return;
+    }
+
+    QStringList vals = text.split(":");
+
+    qDebug() << vals;
+
+    if (vals.size() == 2) {
+        mHorValBox->setValue(vals[0].toDouble());
+        mVerValBox->setValue(vals[1].toDouble());
+    }
+}
+
+void DkCropToolBar::on_guideBox_currentIndexChanged(int idx)
+{
+    emit paintHint(idx);
+}
+
+void DkCropToolBar::on_verValBox_valueChanged(double val)
+{
+    // just pass it on
+    on_horValBox_valueChanged(val);
+}
+
+void DkCropToolBar::on_horValBox_valueChanged(double)
+{
+    DkVector diag = DkVector((float)mHorValBox->value(), (float)mVerValBox->value());
+    emit aspectRatio(diag);
+
+    QString rs = QString::number(mHorValBox->value()) + ":" + QString::number(mVerValBox->value());
+
+    int idx = mRatioBox->findText(rs);
+
+    if (idx != -1)
+        mRatioBox->setCurrentIndex(idx);
+    else if (mHorValBox->value() == 0 && mVerValBox->value() == 0)
+        mRatioBox->setCurrentIndex(0);
+    else
+        mRatioBox->setCurrentIndex(1);
+}
+
+void DkCropToolBar::on_panAction_toggled(bool checked)
+{
+    emit panSignal(checked);
+}
+
 // -------------------------------------------------------------------- DkToolBarManager
 DkToolBarManager::DkToolBarManager()
 {

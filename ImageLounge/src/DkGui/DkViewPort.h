@@ -61,7 +61,6 @@ class QPushButton;
 
 namespace nmc
 {
-
 // some dummies
 class DkImageLoader;
 class DkLoader;
@@ -141,7 +140,7 @@ public slots:
     void rotate180();
     void resizeImage();
     void deleteImage();
-    void zoomToFit(double margin = 0);
+    void zoomToFit();
     void resizeEvent(QResizeEvent *event) override;
     void toggleResetMatrix();
     void zoomTo(double zoomLevel);
@@ -167,6 +166,7 @@ public slots:
     void loadLena();
     bool unloadImage(bool fileChange = true) override;
     void deactivate();
+    void cropImage(const DkRotatingRect &rect, const QColor &bgCol, bool cropToMetaData);
     void repeatZoom();
 
     void applyPlugin(DkPluginContainer *plugin, const QString &key);
@@ -242,6 +242,8 @@ protected:
 
     QPoint mCurrentPixelPos;
 
+    DkRotatingRect mCropRect;
+
     DkHudNavigation *mNavigationWidget = 0;
 
     // image manipulators
@@ -255,7 +257,7 @@ protected:
 
     void drawPolygon(QPainter &painter, const QPolygon &polygon);
     virtual void drawBackground(QPainter &painter);
-    void updateImageMatrix() override;
+    virtual void updateImageMatrix() override;
     void showZoom();
     void toggleLena(bool fullscreen);
     void getPixelInfo(const QPoint &pos);
@@ -282,12 +284,12 @@ protected:
     virtual void paintEvent(QPaintEvent *event) override;
 
     // functions
-    void updateImageMatrix() override;
-    void draw(QPainter &painter, double opacity = 1.0) override;
+    virtual void updateImageMatrix() override;
+    virtual void draw(QPainter &painter, double opacity = 1.0) override;
     void drawFrame(QPainter &painter);
-    void drawBackground(QPainter &painter) override;
-    void controlImagePosition(const QRect & = QRect()) override;
-    void centerImage() override;
+    virtual void drawBackground(QPainter &painter) override;
+    void controlImagePosition(float lb = -1, float ub = -1) override;
+    virtual void centerImage() override;
 
     // variables
     QVector<QAction *> mStartActions;

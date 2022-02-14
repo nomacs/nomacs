@@ -68,7 +68,6 @@ class LibRaw;
 
 namespace nmc
 {
-
 class DkMetaDataT;
 
 #ifdef WITH_QUAZIP

@@ -82,7 +82,6 @@ class QImage;
 
 namespace nmc
 {
-
 class DllCoreExport DkMetaDataT
 {
 public:
