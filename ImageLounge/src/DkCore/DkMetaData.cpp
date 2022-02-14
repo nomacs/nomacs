@@ -113,16 +113,27 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 
 }
 
+/**
+ * @brief saveMetaData() reloads the specified file and updates that file with the modified exif data.
+ * 
+ * Note that this changes the file (again).
+ * It's a wrapper around the real saveMetaData() function, which works with an in-memory copy.
+ * 
+ * @param filePath path to the file to be read and updated
+ * @param force update file even if no exif data has been changed
+ */
 bool DkMetaDataT::saveMetaData(const QString& filePath, bool force) {
 
 	if (mExifState != loaded && mExifState != dirty)
 		return false;
 
+	// Open image file for reading, read whole file into memory
 	QFile file(filePath);
 	file.open(QFile::ReadOnly);
-	
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
 	file.close();
+
+	// Write modified metadata (from this instance) to mExifImg and then to ba (in-memory image file)
 	bool saved = saveMetaData(ba, force);
 	if (!saved) {
 		qDebug() << "[DkMetaDataT] could not save: " << QFileInfo(filePath).fileName();
@@ -133,6 +144,7 @@ bool DkMetaDataT::saveMetaData(const QString& filePath, bool force) {
 		return false;
 	}
 
+	// Open image file for WRITING, save it with modified metadata
 	file.open(QFile::WriteOnly);
 	file.write(ba->data(), ba->size());
 	file.close();
@@ -142,6 +154,16 @@ bool DkMetaDataT::saveMetaData(const QString& filePath, bool force) {
 	return true;
 }
 
+/**
+ * @brief saveMetaData() updates the exif record of an in-memory copy of the image file
+ * 
+ * It takes a copy of the file, as a byte array reference, and creates a new copy
+ * with the new exif data. The reference pointer is changed to point to this new copy.
+ * The caller is expected to write this new copy to disk or whatever.
+ * 
+ * @param ba in-memory copy of the file to be updated
+ * @param force update file even if no exif data has been changed
+ */
 bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	if (!ba)
@@ -152,6 +174,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	else if (mExifState == not_loaded || mExifState == no_data)
 		return false;
 
+	// Get exif sections from currently loaded image (old exif object)
 	Exiv2::ExifData &exifData = mExifImg->exifData();
 	Exiv2::XmpData &xmpData = mExifImg->xmpData();
 	Exiv2::IptcData &iptcData = mExifImg->iptcData();
@@ -161,6 +184,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	try {
 
+		// Load new exif object (based on byte array of raw image file, see overload)
 		exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte*)ba->data(), ba->size()));
 		exifImgN = Exiv2::ImageFactory::open(exifMem);
 	} 
@@ -175,16 +199,17 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 		return false;
 	}
 
-
 	exifImgN->readMetadata();
 
+	// Update new exif object, copy changes made to the old exif object (loaded image)
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
 
 	exifImgN->writeMetadata();		// TODO: CIMG6206.jpg crashes here...
 
-	// now get the data again
+	// Copy image + new exif and return temporary object as byte array
+	// The calling function should then write it back to the file
 	Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
 	if (exifBuf.pData_) {
 		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
@@ -197,6 +222,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	else
 		return false;
 
+	// Replace old exif object with new one and clear "dirty" flag
 	mExifImg = exifImgN;
 	mExifState = loaded;
 
@@ -1718,7 +1744,7 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude", false);
 			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef", false);
 			//example url
-			//http://maps.google.com/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
+			//http://maps.google.com/maps?q=N48+8'+31.940001''+E16+15'+35.009998''
 
 			gpsInfo = "http://maps.google.com/maps?q=";
 

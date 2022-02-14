@@ -91,7 +91,7 @@ public:
 	bool isFromZip();
 	bool isEdited() const;
 	bool isSelected() const;
-	void setEdited(bool edited);
+	void setEdited(bool edited = true);
 	QString getTitleAttribute() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;

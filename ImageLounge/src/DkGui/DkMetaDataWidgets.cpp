@@ -334,7 +334,7 @@ bool DkMetaDataProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex & s
 		return t->contains(filterRegExp(), -1)/* | t->contains(filterRegExp(), 1)*/;
 	}
 
-	qWarning() << "[DkMetaDataProxyModel] Ich höre gerade, es ist ein bisschen was durcheinander gekommen";
+	qWarning() << "[DkMetaDataProxyModel] Ich hÃ¶re gerade, es ist ein bisschen was durcheinander gekommen";
 	return true;
 }
 
@@ -1250,51 +1250,63 @@ void DkCommentWidget::createLayout() {
 void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 	mMetaData = metaData;
-	setComment(metaData->getDescription());
+	initComment(metaData->getDescription());
 }
 
-void DkCommentWidget::setComment(const QString& description) {
+void DkCommentWidget::initComment(const QString& description) {
 	
-	mCommentLabel->setText(description);
-
 	mOldText = description;
-	mDirty = false;
+	resetComment();
+}
+
+void DkCommentWidget::resetComment() {
+
+	//First, reset comment text (triggering changed event, but not edited event)
+	mCommentLabel->setText(mOldText);
+	mCommentLabel->clearFocus();
+	//Reset internal state (this panel only)
+	mTextEdited = false;
+	//Just like in any typical webform, "cancel"/"reset" shouldn't save anything
+
+}
+
+QString DkCommentWidget::text() const {
+	return mCommentLabel->toPlainText();
 }
 
 void DkCommentWidget::saveComment() {
 
-	if (mTextChanged && mCommentLabel->toPlainText() != mMetaData->getDescription() && mMetaData) {
+	if (mTextEdited && mCommentLabel->toPlainText() != mMetaData->getDescription() && mMetaData) {
 		
-		if (!mMetaData->setDescription(mCommentLabel->toPlainText()) && !mCommentLabel->toPlainText().isEmpty()) {
+		if (!mMetaData->setDescription(text()) && !text().isEmpty()) {
 			emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
+			return;
 		}
-		else
-			mDirty = true;
+		emit commentSavedSignal();
 	}
 }
 
 void DkCommentWidget::on_CommentLabel_textChanged() {
 
-	mTextChanged = true;
+	mTextEdited = text() != mOldText;
+	if (mTextEdited)
+		emit commentEditedSignal();
 }
 
 void DkCommentWidget::on_CommentLabel_focusLost() {
 
-	saveComment();
+	// We don't want to do anything when changing focus
 }
 
 void DkCommentWidget::on_saveButton_clicked() {
 
+	saveComment();
 	mCommentLabel->clearFocus();
 }
 
 void DkCommentWidget::on_cancelButton_clicked() {
 
-	mTextChanged = false;
-	mCommentLabel->clearFocus();
-	mCommentLabel->setText("");
-
-	saveComment();
+	resetComment();
 }
 
 }

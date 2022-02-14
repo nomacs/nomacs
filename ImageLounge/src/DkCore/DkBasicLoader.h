@@ -213,7 +213,7 @@ public:
 	DkBasicLoader(int mode = mode_default);
 
 	~DkBasicLoader() {
-		release(true);
+		release();
 	};
 
 	/**
@@ -324,7 +324,7 @@ public:
 	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath) const;
 	bool writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
-	void release(bool clear = false);
+	void release();
 
 
 #ifdef WITH_OPENCV
