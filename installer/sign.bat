@@ -8,7 +8,7 @@ REM sign with the repositorie's certificate (password has to be provided)
 
 echo online signing...
 echo arg: %2
-signtool sign /t http://timestamp.digicert.com /f ./cert-2018.p12 /p %2 /a %~1
+REM signtool sign /t http://timestamp.digicert.com /f ./cert-2018.p12 /fd certHash /p %2 /a %~1
 goto end
 
 REM REM set code page to utf-8 (for german umlaute)
