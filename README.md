@@ -51,7 +51,7 @@ Get the required packages:
 sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
 ```
 
-Get the nomacs sources from github:
+Clone the nomacs repository from GitHub:
 ``` console
 git clone https://github.com/nomacs/nomacs.git
 ```
@@ -96,9 +96,15 @@ Install required dependencies:
 $ brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
+Clone the nomacs repository from GitHub:
+``` console
+git clone https://github.com/nomacs/nomacs.git
+```
+
 Go to the `nomacs` directory and run cmake to get the Makefiles:
 
 ``` console
+$ cd nomacs
 $ mkdir build
 $ cd build
 $ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin ../ImageLounge/.
