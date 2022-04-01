@@ -143,6 +143,8 @@ include_directories (
 )
 
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
+	execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_HEADERS OUTPUT_VARIABLE qt_install_headers)
+	include_directories (BEFORE ${qt_install_headers})
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
 endif (APPLE)
 
