@@ -1861,7 +1861,7 @@ QMap<int, QString> DkMetaDataHelper::getAllFlashModes() const {
 	return mFlashModes;
 }
 
-// make XmpParser thread-save
+// make XmpParser thread-save and enable support for ISO BMFF formats (AVIF, HEIF, JXL)
 // see http://exiv2.org/doc/classExiv2_1_1XmpParser.html#aea661a7039adb5a748eb7639c8ce9294
 void DkMetaDataHelper::initialize() {
 
@@ -1890,6 +1890,16 @@ void DkMetaDataHelper::initialize() {
 	//Exiv2::XmpParser::initialize(XmpLock::LockUnlock, &xmpLock);
 	Exiv2::XmpParser::initialize();
 	qDebug() << "initializing the xmp parser takes" << dt;
+
+#ifdef EXV_ENABLE_BMFF
+	if (Exiv2::enableBMFF(true)) {
+		qInfo() << "Metadata support for BMFF formats is active.";
+	} else {
+		qInfo() << "Exiv2 was built without metadata support for BMFF formats.";
+	}
+#else
+	qInfo() << "Metadata support for AVIF, HEIF and JPEG XL formats is not available.";
+#endif
 }
 
 }
