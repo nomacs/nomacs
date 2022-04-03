@@ -920,22 +920,16 @@ DkBatchWidget* DkCentralWidget::createBatch() {
 	return bw;
 }
 
-DkCropViewPort* DkCentralWidget::createCrop() {
+DkCropWidget* DkCentralWidget::createCrop() {
 
-	auto cw = new DkCropViewPort(this);
+	auto cw = new DkCropWidget(this);
 
 	// add actions
 	DkActionManager& am = DkActionManager::instance();
 	cw->addActions(am.viewActions().toList());
-	cw->addActions(am.editActions().toList());
-	connect(cw, &DkCropViewPort::closeSignal, this, 
-		[&]() {
-			// close crop
-			for (const auto& t : mTabInfos) {
-				if (t->getMode() == DkTabInfo::TabMode::tab_crop) {
-					removeTab(t->getTabIdx());
-				}
-			}
+	cw->addActions(am.panelActions().toList());
+	connect(cw, &DkCropWidget::croppedSignal, this, [&]() {
+		removeTab();
 		});
 
 	return cw;
@@ -1013,7 +1007,7 @@ void DkCentralWidget::openCrop() {
 		mViewLayout->insertWidget(crop_widget, mWidgets[crop_widget]);
 	}
 
-	auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
+	auto cw = dynamic_cast<DkCropWidget*>(mWidgets[crop_widget]);
 
 	if (!cw) {
 		qWarning() << "batch widget is NULL where it should not be!";
@@ -1067,13 +1061,6 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 	if (mViewLayout->currentWidget() == widget && 
 		mTabInfos[mTabbar->currentIndex()]->getMode() != DkTabInfo::tab_empty)
 		return;
-
-	// crop tab is always closed if focus is lost
-	if (mViewLayout->currentWidget() == mWidgets[crop_widget]) {
-
-		auto cw = dynamic_cast<DkCropViewPort*>(mWidgets[crop_widget]);
-		cw->askBeforeClose();
-	}
 
 	if (widget)
 		mViewLayout->setCurrentWidget(widget);

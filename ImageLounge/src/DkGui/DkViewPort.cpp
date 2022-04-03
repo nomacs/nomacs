@@ -82,7 +82,7 @@ DkViewPort::DkViewPort(QWidget *parent) : DkBaseViewPort(parent) {
 	mImgBg.load(QFileInfo(QApplication::applicationDirPath(), "bg.png").absoluteFilePath());
 	if (mImgBg.isNull() && DkSettingsManager::param().global().showBgImage) {
 		QColor col = backgroundBrush().color().darker();
-		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", QSize(100, 100), col).toImage();
+		mImgBg = DkImage::loadIcon(":/nomacs/img/nomacs-bg.svg", col, QSize(100, 100)).toImage();
 	}
 
 	mRepeatZoomTimer->setInterval(20);
@@ -1978,6 +1978,19 @@ DkControlWidget* DkViewPort::getController() {
 	return mController;
 }
 
+void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData) {
+
+	QSharedPointer<DkImageContainerT> imgC = mLoader->getCurrentImage();
+
+	if (!imgC) {
+		qWarning() << "cannot crop NULL image...";
+		return;
+	}
+	
+	imgC->cropImage(rect, bgCol, cropToMetaData);
+	setEditedImage(imgC);
+}
+
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent) : DkViewPort(parent) {
 	
@@ -2298,7 +2311,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 	// update world matrix
 	if (mWorldMatrix.m11() != 1) {
 
-		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
+		float scaleFactor = (float)(oldImgMatrix.m11()/mImgMatrix.m11());
 		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
 		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
 

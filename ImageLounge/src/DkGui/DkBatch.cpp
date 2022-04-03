@@ -2291,9 +2291,9 @@ void DkBatchButtonsWidget::createLayout() {
 	// play - pause button
 	QSize s(32, 32);
 	QIcon icon;
-	QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", s, QColor(255, 255, 255)));
+	QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", QColor(255, 255, 255), s));
 	icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
-	pm = DkImage::loadIcon(":/nomacs/img/stop.svg", s, QColor(255, 255, 255));
+	pm = DkImage::loadIcon(":/nomacs/img/stop.svg", QColor(255, 255, 255), s);
 	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
 
 	mPlayButton = new QPushButton(icon, "", this);
@@ -2304,9 +2304,9 @@ void DkBatchButtonsWidget::createLayout() {
 	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
 	icon = QIcon();
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(255, 255, 255)));
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(255, 255, 255), s));
 	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(100, 100, 100)));
+	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", QColor(100, 100 , 100), s));
 	icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
 
 	mLogButton = new QPushButton(icon, "", this);

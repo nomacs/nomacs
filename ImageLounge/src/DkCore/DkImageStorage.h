@@ -120,10 +120,11 @@ public:
 	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);
 	static bool alphaChannelUsed(const QImage& img);
 	static QImage thresholdImage(const QImage& img, double thr, bool color = false);
-	static QImage rotate(const QImage& img, double angle);
+	static QImage rotateImage(const QImage& img, double angle);
 	static QImage grayscaleImage(const QImage& img);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
 	static QPixmap loadIcon(const QString& filePath = QString(), const QSize& size = QSize(), const QColor& col = QColor());
+	static QPixmap loadIcon(const QString& filePath, const QColor& col, const QSize& size = QSize());
 	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
 	static QImage createThumb(const QImage& img, const int maxSize = -1);
 	static bool addToImage(QImage& img, unsigned char val = 1);
@@ -145,9 +146,6 @@ public:
 	static cv::Mat gammaMat(const cv::Mat& src, double gmma);
 	static cv::Mat applyLUT(const cv::Mat& src, const cv::Mat& lut);
 #endif // WITH_OPENCV
-
-private:
-	static QImage rotateSimple(const QImage& img, double angle);
 	
 };
 

@@ -1408,7 +1408,6 @@ QString DkThemeManager::loadStylesheet() const {
 
 	QString cssString;
 
-	//QFileInfo cssInfo("C:/coding/nomacs/nomacs-only/ImageLounge/src/stylesheet.css");
 	QFileInfo cssInfo(":/nomacs/stylesheet.css");
 	QFile file(cssInfo.absoluteFilePath());
 

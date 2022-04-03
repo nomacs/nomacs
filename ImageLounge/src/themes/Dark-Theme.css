@@ -143,8 +143,8 @@ QTextEdit,
 QTreeView,
 QTableView,
 QListView {
-    border: 1px solid #444;
-    alternate-background-color:#444;
+        border: 1px solid #444;
+        alternate-background-color:#444;
 }
 
 QPushButton:hover,
