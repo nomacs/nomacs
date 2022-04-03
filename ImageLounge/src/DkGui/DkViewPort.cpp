@@ -110,8 +110,10 @@ DkViewPort::DkViewPort(QWidget *parent)
         setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 
-    mController->setTransforms(&mWorldMatrix, &mImgMatrix);
-	mController->setImageRect(&mImgViewRect);
+	mController->getOverview()->setTransforms(&mWorldMatrix, &mImgMatrix);
+	mController->getCropWidget()->setWorldTransform(&mWorldMatrix);
+	mController->getCropWidget()->setImageTransform(&mImgMatrix);
+	mController->getCropWidget()->setImageRect(&mImgViewRect);
 
     // this must be initialized after mController to be above it
     mNavigationWidget = new DkHudNavigation(this);
@@ -484,13 +486,13 @@ void DkViewPort::zoomTo(double zoomLevel)
     zoom(zoomLevel / mImgMatrix.m11());
 }
 
-void DkViewPort::zoomToFit(double margin)
-{
+void DkViewPort::zoomToFit() {
+
     QSizeF imgSize = getImageSize();
     QSizeF winSize = size();
-    double zoomLevel = qMin((winSize.width() - margin) / imgSize.width(), (winSize.height() - margin) / imgSize.height());
+	double zoomLevel = qMin(winSize.width() / imgSize.width(), winSize.height() / imgSize.height());
 
-    if (zoomLevel > 1 || margin != 0)
+	if (zoomLevel > 1)
         zoomTo(zoomLevel);
     else if (zoomLevel < 1)
         resetView();

@@ -2121,6 +2121,66 @@ void DkEditableRect::setVisible(bool visible)
     DkFadeWidget::setVisible(visible);
 }
 
+// DkEditableRect --------------------------------------------------------------------
+DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkEditableRect(rect, parent, f) {
+
+	cropToolbar = 0;
+}
+
+void DkCropWidget::createToolbar() {
+
+	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
+
+	connect(cropToolbar, SIGNAL(updateRectSignal(const QRect&)), this, SLOT(setRect(const QRect&)));
+
+	connect(cropToolbar, SIGNAL(cropSignal(bool)), this, SLOT(crop(bool)));
+	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(hideSignal()));
+	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
+	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
+	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
+	connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
+	connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
+	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
+	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
+	connect(this, SIGNAL(updateRectSignal(const QRect&)), cropToolbar, SLOT(setRect(const QRect&)));
+	
+	cropToolbar->loadSettings();	// need to this manually after connecting the slots
+
+}
+
+void DkCropWidget::mouseDoubleClickEvent(QMouseEvent * ev) {
+	
+	crop();
+	QWidget::mouseDoubleClickEvent(ev);
+}
+
+DkCropToolBar* DkCropWidget::getToolbar() const {
+	return cropToolbar;
+}
+
+void DkCropWidget::crop(bool cropToMetadata) {
+
+	if (!cropToolbar)
+		return;
+
+	if (!mRect.isEmpty())
+		emit cropImageSignal(mRect, cropToolbar->getColor(), cropToMetadata);
+
+	setVisible(false);
+	setWindowOpacity(0);
+	emit hideSignal();
+}
+
+void DkCropWidget::setVisible(bool visible) {
+
+	if (visible && !cropToolbar)
+		createToolbar();
+
+	DkToolBarManager::inst().showToolBar(cropToolbar, visible);
+	DkEditableRect::setVisible(visible);
+}
+
 // Image histogram  -------------------------------------------------------------------
 DkHistogram::DkHistogram(QWidget *parent)
     : DkFadeWidget(parent)
