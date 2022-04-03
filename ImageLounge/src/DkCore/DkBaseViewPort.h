@@ -172,7 +172,7 @@ protected:
 	QTransform mImgMatrix;
 	QTransform mWorldMatrix;
 	QRectF mImgViewRect;
-	QRect mViewportRect;
+	QRectF mViewportRect;
 	QRectF mImgRect;
 	QTimer* mHideCursorTimer;
 
@@ -180,9 +180,6 @@ protected:
 	QPointF mPosGrab;
 	double mMinZoom = 0.01;
 	double mMaxZoom = 100;
-
-	double mAngle = 0.0;
-	bool mImgWithin = true; // if set to true, the image will always be inside the viewport
 
 	// TODO: test if gestures are fully supported in Qt5 then remove this
 	float mLastZoom;
@@ -197,17 +194,13 @@ protected:
 	virtual void draw(QPainter & painter, double opacity = 1.0);
 	virtual void drawPattern(QPainter & painter) const;
 	virtual void updateImageMatrix();
-	void resetWorldMatrix();
 	virtual QTransform getScaledImageMatrix() const;
 	virtual QTransform getScaledImageMatrix(const QSize& size) const;
-	virtual void controlImagePosition(const QRect& r = QRect());
+	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
 	void zoomToPoint(double factor, const QPointF& pos, QTransform& matrix) const;
 
-	void rotateTransform(QTransform& t, double angle, const QPointF& c = QPointF()) const;
-
-	QRect controlRect(const QRect& r) const;
 };
 
 }

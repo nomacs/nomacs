@@ -236,6 +236,8 @@ protected:
 
 	QPoint mCurrentPixelPos;
 	
+	DkRotatingRect mCropRect;
+
 	DkHudNavigation* mNavigationWidget = 0;
 	
 	// image manipulators
@@ -253,6 +255,7 @@ protected:
 	void showZoom();
 	void toggleLena(bool fullscreen);
 	void getPixelInfo(const QPoint& pos);
+
 };
 
 class DllCoreExport DkViewPortFrameless : public DkViewPort {
@@ -279,7 +282,7 @@ protected:
 	virtual void draw(QPainter & painter, double opacity = 1.0) override;
 	void drawFrame(QPainter & painter);
 	virtual void drawBackground(QPainter & painter) override;
-	void controlImagePosition(const QRect& = QRect()) override;
+	void controlImagePosition(float lb = -1, float ub = -1) override;
 	virtual void centerImage() override;
 
 	// variables

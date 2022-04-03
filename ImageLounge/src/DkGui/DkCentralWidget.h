@@ -60,7 +60,6 @@ class DkViewPort;
 class DkPreferenceWidget;
 class DkProgressBar;
 class DkBatchWidget;
-class DkCropWidget;
 
 class DllCoreExport DkTabInfo : public QObject {
 	Q_OBJECT
@@ -73,7 +72,6 @@ public:
 		tab_recent_files,
 		tab_preferences,
 		tab_batch,
-		tab_crop,
 
 		tab_empty,
 
@@ -177,8 +175,6 @@ public slots:
 	void loadUrls(const QList<QUrl>& urls, const int maxUrlsToLoad = 20);
 	void openBatch(const QStringList& selectedFiles = QStringList());
 	void showBatch(bool show = true);
-	void openCrop();
-	void showCrop(bool show = true);	// hide function?!
 	void openPreferences();
 	void restart() const;
 	void showProgress(bool show, int time = -1);
@@ -209,7 +205,6 @@ protected:
 	DkRecentFilesWidget* createRecentFiles();
 	DkThumbScrollWidget* createThumbScrollWidget();
 	DkBatchWidget* createBatch();
-	DkCropWidget* createCrop();
 	void createViewPort();
 
 	enum {
@@ -218,7 +213,6 @@ protected:
 		recent_files_widget,
 		preference_widget,
 		batch_widget,
-		crop_widget,
 
 		widget_end
 	};

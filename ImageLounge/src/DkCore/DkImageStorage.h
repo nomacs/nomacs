@@ -132,7 +132,6 @@ public:
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 	static QPixmap makeSquare(const QPixmap& pm);
 	static QPixmap merge(const QVector<QImage>& imgs);
-	static QImage cropToImage(const QImage& src, const QRect& cropRect, const QTransform& t, const QColor& fillColor = QColor());
 	static QImage cropToImage(const QImage& src, const DkRotatingRect& rect, const QColor& fillColor = QColor());
 	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
 	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
