@@ -54,17 +54,6 @@ DkWidget::DkWidget(QWidget *parent, Qt::WindowFlags flags)
 {
 }
 
-void DkWidget::paintEvent(QPaintEvent *event)
-{
-    // fixes stylesheets which are not applied to custom widgets
-    QStyleOption opt;
-    opt.init(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-
-    QWidget::paintEvent(event);
-}
-
 // -------------------------------------------------------------------- DkFadeWidget
 DkFadeWidget::DkFadeWidget(QWidget *parent, Qt::WindowFlags flags)
     : DkWidget(parent, flags)
@@ -92,8 +81,18 @@ void DkFadeWidget::init()
     setVisible(false);
 }
 
-void DkFadeWidget::registerAction(QAction *action)
-{
+void DkFadeWidget::paintEvent(QPaintEvent *event) {
+	
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
+}
+
+void DkFadeWidget::registerAction(QAction* action) {
     mAction = action;
 }
 

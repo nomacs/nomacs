@@ -139,13 +139,14 @@ void DkImageContainer::setHistoryIndex(int idx)
     getLoader()->setHistoryIndex(idx);
 }
 
-void DkImageContainer::cropImage(const DkRotatingRect &rect, const QColor &col, bool cropToMetadata)
-{
+void DkImageContainer::cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata) {
+
     if (!cropToMetadata) {
         QImage cropped = DkImage::cropToImage(image(), rect, col);
         setImage(cropped, QObject::tr("Cropped"));
         getMetaData()->clearXMPRect();
-    } else
+	}
+	else
         getMetaData()->saveRectToXMP(rect, image().size());
 }
 

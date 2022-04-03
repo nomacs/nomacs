@@ -103,39 +103,37 @@ public:
     static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);
     template<typename numFmt>
     static QVector<numFmt> getLinear2GammaTable(int maxVal = USHRT_MAX);
-    static void gammaToLinear(QImage &img);
-    static void linearToGamma(QImage &img);
-    static void mapGammaTable(QImage &img, const QVector<uchar> &gammaTable);
-    static QImage normImage(const QImage &img);
-    static bool normImage(QImage &img);
-    static QImage autoAdjustImage(const QImage &img);
-    static bool autoAdjustImage(QImage &img);
-    static bool gaussianBlur(QImage &img, float sigma = 20.0f);
-    static bool unsharpMask(QImage &img, float sigma = 20.0f, float weight = 1.5f);
-    static bool alphaChannelUsed(const QImage &img);
-    static QImage thresholdImage(const QImage &img, double thr, bool color = false);
-    static QImage rotate(const QImage &img, double angle);
-    static QImage grayscaleImage(const QImage &img);
-    static QPixmap colorizePixmap(const QPixmap &icon, const QColor &col, float opacity = 1.0f);
-    static QPixmap loadIcon(const QString &filePath = QString(), const QSize &size = QSize(), const QColor &col = QColor());
-    static QPixmap loadFromSvg(const QString &filePath, const QSize &size);
-    static QImage createThumb(const QImage &img, const int maxSize = -1);
-    static bool addToImage(QImage &img, unsigned char val = 1);
-    static QColor getMeanColor(const QImage &img);
-    static uchar findHistPeak(const int *hist, float quantile = 0.005f);
-    static QPixmap makeSquare(const QPixmap &pm);
-    static QPixmap merge(const QVector<QImage> &imgs);
-    static QImage cropToImage(const QImage &src, const QRect &cropRect, const QTransform &t, const QColor &fillColor = QColor());
-    static QImage cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor = QColor());
-    static QImage hueSaturation(const QImage &src, int hue, int sat, int brightness);
-    static QImage exposure(const QImage &src, double exposure, double offset, double gamma);
-    static QImage bgColor(const QImage &src, const QColor &col);
-    static QByteArray extractImageFromDataStream(const QByteArray &ba,
-                                                 const QByteArray &beginSignature = "‰PNG",
-                                                 const QByteArray &endSignature = "END®B`‚",
-                                                 bool debugOutput = false);
-    static QByteArray fixSamsungPanorama(QByteArray &ba);
-    static int intFromByteArray(const QByteArray &ba, int pos);
+	static void gammaToLinear(QImage& img);
+	static void linearToGamma(QImage& img);
+	static void mapGammaTable(QImage& img, const QVector<uchar>& gammaTable);
+	static QImage normImage(const QImage& img);
+	static bool normImage(QImage& img);
+	static QImage autoAdjustImage(const QImage& img);
+	static bool autoAdjustImage(QImage& img);
+	static bool gaussianBlur(QImage& img, float sigma = 20.0f);
+	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);
+	static bool alphaChannelUsed(const QImage& img);
+	static QImage thresholdImage(const QImage& img, double thr, bool color = false);
+	static QImage rotateImage(const QImage& img, double angle);
+	static QImage grayscaleImage(const QImage& img);
+	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
+	static QPixmap loadIcon(const QString& filePath = QString(), const QSize& size = QSize(), const QColor& col = QColor());
+	static QPixmap loadIcon(const QString& filePath, const QColor& col, const QSize& size = QSize());
+	static QPixmap loadFromSvg(const QString& filePath, const QSize& size);
+	static QImage createThumb(const QImage& img, const int maxSize = -1);
+	static bool addToImage(QImage& img, unsigned char val = 1);
+	static QColor getMeanColor(const QImage& img);
+	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
+	static QPixmap makeSquare(const QPixmap& pm);
+	static QPixmap merge(const QVector<QImage>& imgs);
+	static QImage cropToImage(const QImage& src, const QRect& cropRect, const QTransform& t, const QColor& fillColor = QColor());
+	static QImage cropToImage(const QImage& src, const DkRotatingRect& rect, const QColor& fillColor = QColor());
+	static QImage hueSaturation(const QImage& src, int hue, int sat, int brightness);
+	static QImage exposure(const QImage& src, double exposure, double offset, double gamma);
+	static QImage bgColor(const QImage& src, const QColor& col);
+	static QByteArray extractImageFromDataStream(const QByteArray& ba, const QByteArray& beginSignature = "‰PNG", const QByteArray& endSignature = "END®B`‚", bool debugOutput = false);
+	static QByteArray fixSamsungPanorama(QByteArray& ba);
+	static int intFromByteArray(const QByteArray& ba, int pos);
 
 #ifdef WITH_OPENCV
     static cv::Mat exposureMat(const cv::Mat &src, double exposure);
@@ -143,8 +141,6 @@ public:
     static cv::Mat applyLUT(const cv::Mat &src, const cv::Mat &lut);
 #endif // WITH_OPENCV
 
-private:
-    static QImage rotateSimple(const QImage &img, double angle);
 };
 
 class DllCoreExport DkImageStorage : public QObject

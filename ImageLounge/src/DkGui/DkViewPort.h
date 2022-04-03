@@ -167,6 +167,7 @@ public slots:
     void loadLena();
     bool unloadImage(bool fileChange = true) override;
     void deactivate();
+	void cropImage(const DkRotatingRect& rect, const QColor& bgCol, bool cropToMetaData);
     void repeatZoom();
 
     void applyPlugin(DkPluginContainer *plugin, const QString &key);
@@ -253,9 +254,9 @@ protected:
     virtual void swipeAction(int swipeGesture);
     virtual void createShortcuts();
 
-    void drawPolygon(QPainter &painter, const QPolygon &polygon);
-    virtual void drawBackground(QPainter &painter);
-    void updateImageMatrix() override;
+	void drawPolygon(QPainter & painter, const QPolygon & polygon);
+	virtual void drawBackground(QPainter & painter);
+	virtual void updateImageMatrix() override;
     void showZoom();
     void toggleLena(bool fullscreen);
     void getPixelInfo(const QPoint &pos);
@@ -282,12 +283,12 @@ protected:
     virtual void paintEvent(QPaintEvent *event) override;
 
     // functions
-    void updateImageMatrix() override;
-    void draw(QPainter &painter, double opacity = 1.0) override;
-    void drawFrame(QPainter &painter);
-    void drawBackground(QPainter &painter) override;
-    void controlImagePosition(const QRect & = QRect()) override;
-    void centerImage() override;
+	virtual void updateImageMatrix() override;
+	virtual void draw(QPainter & painter, double opacity = 1.0) override;
+	void drawFrame(QPainter & painter);
+	virtual void drawBackground(QPainter & painter) override;
+	void controlImagePosition(const QRect& = QRect()) override;
+	virtual void centerImage() override;
 
     // variables
     QVector<QAction *> mStartActions;

@@ -2054,8 +2054,8 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event)
     QWidget::keyPressEvent(event);
 }
 
-void DkEditableRect::setPaintHint(int paintMode /* = DkEditableRect::no_guide */)
-{
+void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */) {
+
     this->mPaintMode = paintMode;
     update();
 }

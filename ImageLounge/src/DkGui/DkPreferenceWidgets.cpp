@@ -88,12 +88,12 @@ void DkPreferenceWidget::createLayout()
     tabs->setObjectName("DkPreferenceTabs");
 
     QSize s(32, 32);
-    QPixmap pm = DkImage::loadIcon(":/nomacs/img/power.svg", s, QColor(255, 255, 255));
-    QPushButton *restartButton = new QPushButton(pm, "", this);
+	QPixmap pm = DkImage::loadIcon(":/nomacs/img/power.svg", QColor(255, 255, 255), s);
+	QPushButton* restartButton = new QPushButton(pm, "", this);
     restartButton->setObjectName("DkPlayerButton");
     restartButton->setFlat(true);
     restartButton->setIconSize(pm.size());
-    restartButton->setObjectName("dark");
+	restartButton->setObjectName("DkRestartButton");
     restartButton->setStatusTip(tr("Restart nomacs"));
     connect(restartButton, SIGNAL(clicked()), this, SIGNAL(restartSignal()));
 

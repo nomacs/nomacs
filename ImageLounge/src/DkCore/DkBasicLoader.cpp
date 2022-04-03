@@ -1454,6 +1454,23 @@ bool DkBasicLoader::isContainer(const QString &filePath)
     return false;
 }
 
+// image editing --------------------------------------------------------------------
+/**
+ * This method rotates an image.
+ * @param orientation the orientation in degree.
+ **/ 
+QImage DkBasicLoader::rotate(const QImage& img, int orientation) {
+
+	if (orientation == 0 || orientation == -1)
+		return img;
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate((double)orientation);
+	QImage rImg = img.transformed(rotationMatrix);
+
+	return rImg;
+}
+
 /**
  * @brief releases the currently loaded images.
  *

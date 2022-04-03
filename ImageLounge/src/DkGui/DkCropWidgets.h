@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
-
+ 
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -29,15 +29,12 @@
 #pragma once
 
 #include "DkBaseViewPort.h"
-#include "DkBaseWidgets.h"
 
-#pragma warning(push, 0) // no warnings from includes
+#pragma warning(push, 0)	// no warnings from includes
+#include <QPen>
 #include <QBrush>
 #include <QDockWidget>
-#include <QPen>
 #pragma warning(pop)
-
-#include <memory>
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -51,18 +48,14 @@
 
 // Qt defines
 class QComboBox;
-class QSpinBox;
-class QMenu;
 
-namespace nmc
-{
+namespace nmc {
 
 // nomacs defines
 class DkImageContainerT;
-class DkDoubleSlider;
+    
+class DkCropArea {
 
-class DkCropArea
-{
 public:
     enum Handle : int {
 
@@ -76,7 +69,6 @@ public:
         h_left,
         h_right,
         h_move,
-        h_new,
 
         h_end
     };
@@ -94,182 +86,128 @@ public:
 
     bool isActive() const;
 
-    void setWorldMatrix(QTransform *matrix);
-    void setImageMatrix(QTransform *matrix);
-    void setImageRect(const QRectF *rect);
+    void setWorldMatrix(QTransform* matrix);
+    void setImageRect(const QRectF* rect);
 
-    void makeRectAt(const QPoint &pos);
-    void commitMouseAction();
-
-    void setRect(const QRect &r);
     QRect rect() const;
-    QRect mapToImage(const QRect &r) const;
-    QRect mapFromImage(const QRect &r) const;
 
-    void updateHandle(const QPoint &pos);
+    void updateHandle(const QPoint& pos);
     void resetHandle();
-    QCursor cursor(const QPoint &pos) const;
+    QCursor cursor(const QPoint& pos) const;
     Handle currentHandle() const;
 
-    void setAspectRatio(const DkCropArea::Ratio &r);
-    DkCropArea::Ratio aspectRatio() const;
-    void setTempRatio(const DkCropArea::Ratio &r);
-    void disableTempRatio();
+    void setAspectRatio(const DkCropArea::Ratio& r);
     void flip();
 
-    void update(const QPoint &pos);
-    void move(const QPoint &dxy);
+    void update(const QPoint& pos);
+    void move(const QPoint& dxy);
     void reset();
-
-    void recenter(const QRectF &target);
+    
+    void recenter(const QRectF& target);
 
 private:
-    QTransform *mWorldMatrix = nullptr;
-    QTransform *mImgMatrix = nullptr;
-    const QRectF *mImgViewRect = nullptr;
+    QTransform* mWorldMatrix = nullptr;
+    const QRectF* mImgViewRect = nullptr;
 
     // the crop rect is kept in display coordinates
     mutable QRect mCropRect;
     DkCropArea::Ratio mRatio = r_free;
     DkCropArea::Handle mCurrentHandle = DkCropArea::Handle::h_no_handle;
-
-    bool mNewRect = false;
-    bool mTmpRatio = false;
+    
     double mOriginalRatio = 1.0;
 
-    Handle getHandle(const QPoint &pos, int proximity = 15) const;
-    QTransform transformCropToRect(const QRectF &target) const;
+    Handle getHandle(const QPoint& pos, int proximity = 15) const;
+    QTransform transformCropToRect(const QRectF& target) const;
     bool isLandscape() const;
-    void applyRatio(QRect &r, double ratio) const;
-    double toRatio(const DkCropArea::Ratio &r);
-    bool clip(QRect &r) const;
+    void applyRatio(const DkCropArea::Ratio& r);
+    double toRatio(const DkCropArea::Ratio& r);
 
-    QRect moveCenterTo(const QRect &from, const QRect &to) const;
-
-    // QPointF mapToImage(const QPoint& pos) const;
+    //QPointF mapToImage(const QPoint& pos) const;
 };
 
-class DkCropStyle
-{
+class DkCropStyle {
+
 public:
-    DkCropStyle(const QColor &dark = QColor(0, 0, 0), const QColor &light = QColor(255, 255, 255));
+
+    DkCropStyle(
+        const QColor& dark = QColor(0, 0, 0), 
+        const QColor& light = QColor(255, 255, 255));
 
     QBrush bgBrush() const;
     QPen pen() const;
     QPen cornerPen() const;
 
     QColor lightColor() const;
-
+    
 private:
     QColor mDarkColor;
     QColor mLightColor;
     int mLineWidth = 2;
     double mOpacity = 0.8;
+
 };
 
-class DkCropViewPort : public DkBaseViewPort
-{
+class DkCropWidget : public DkBaseViewPort {
     Q_OBJECT
 
 public:
-    DkCropViewPort(QWidget *parent = 0);
-
+    DkCropWidget(QWidget* parent = 0);
+    
     void reset();
 
-    void setWorldTransform(QTransform *worldMatrix);
-    void setImageRect(const QRectF *rect);
+    void setWorldTransform(QTransform* worldMatrix);
+    void setImageRect(const QRectF* rect);
 
     void recenter();
-
-    void askBeforeClose();
 
 public slots:
     void setVisible(bool visible) override;
 
-    void setAspectRatio(const DkCropArea::Ratio &ratio);
+    void rotate(double angle);
+    void setAspectRatio(const DkCropArea::Ratio& ratio);
     void flip();
 
-    void setImageContainer(const QSharedPointer<DkImageContainerT> &img);
+    void setImageContainer(const QSharedPointer<DkImageContainerT>& img);
 
-    void applyCrop(bool apply);
     void crop();
 
-    void rotateCW();
-    void rotateCCW();
-    void rotate180();
-    void rotate(double angle);
-
 signals:
-    void cropImageSignal(const QRectF &rect, bool cropToMetaData = false) const;
-    void closeSignal() const;
-    void resetSignal() const;
+    void cropImageSignal(const QRectF& rect, bool cropToMetaData = false) const;
+    void croppedSignal() const;
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent *ev) override;
-    void mouseMoveEvent(QMouseEvent *ev) override;
-    void mousePressEvent(QMouseEvent *ev) override;
-    void mouseReleaseEvent(QMouseEvent *ev) override;
+    void mouseDoubleClickEvent(QMouseEvent* ev) override;
+    void mouseMoveEvent(QMouseEvent* ev) override;
+    void mousePressEvent(QMouseEvent* ev) override;
+    void mouseReleaseEvent(QMouseEvent* ev) override;
 
-    void paintEvent(QPaintEvent *pe) override;
-    void resizeEvent(QResizeEvent *re) override;
+    void paintEvent(QPaintEvent* pe) override;
+    void resizeEvent(QResizeEvent* re) override;
 
-    void controlImagePosition(const QRect &r = QRect()) override;
+    void controlImagePosition(const QRect& r = QRect()) override;
 
     QRect canvas(int margin = 100) const;
-    void updateViewRect(const QRect &r);
-    QTransform getScaledImageMatrix() const override;
-    void rotateWithReset(double angle);
+    void updateViewRect(const QRect& r);
 
     DkCropStyle mStyle;
 
-    std::shared_ptr<DkCropArea> mCropArea = nullptr;
+    DkCropArea mCropArea;
+    QRectF mRect; // TODO: remove?
     QPoint mLastMousePos;
 
-    bool mIsDirty = false;
     bool mIsRotating = false;
 
     QSharedPointer<DkImageContainerT> mImage;
-    QDockWidget *mCropDock = nullptr;
-};
+    QDockWidget* mCropDock = nullptr;
 
-class DllCoreExport DkCropEdit : public DkWidget
-{
-    Q_OBJECT
-
-public:
-    DkCropEdit(QWidget *parent = nullptr);
-
-    void setRect(const QRect &r);
-    QRect rect() const;
-
-signals:
-    void newRectSignal(const QRect &r);
-
-protected:
-    void createLayout();
-
-    enum Box {
-        x = 0,
-        y,
-        w,
-        h,
-
-        end
-    };
-
-    QVector<QSpinBox *> mRectBoxes;
 };
 
 // TODO: rename to DkCropToolBar
-class DkCropToolBar : public DkWidget
-{
+class DkCropToolBarNew : public QWidget {
     Q_OBJECT
 
 public:
-    DkCropToolBar(std::shared_ptr<DkCropArea> crop, QWidget *parent = 0);
-
-public slots:
-    void reset();
+    DkCropToolBarNew(QWidget* parent = 0);
 
 private slots:
     void on_ratioBox_currentIndexChanged(int idx) const;
@@ -277,23 +215,14 @@ private slots:
 signals:
     void isRotatingSignal(bool rotating) const;
     void rotateSignal(double angle) const;
-    void aspectRatioSignal(const DkCropArea::Ratio &ratio) const;
+    void aspectRatioSignal(const DkCropArea::Ratio& ratio) const;
     void flipSignal() const;
-    void closeSignal(bool apply) const;
-    void update() const;
 
 private:
     void createLayout();
-    void showMenu(const QPoint &pos = QPoint());
 
-    QMenu *mContextMenu = nullptr;
-    DkCropEdit *mCropEdit = nullptr;
+    QComboBox* mRatioBox = nullptr;
 
-    QComboBox *mRatioBox = nullptr;
-    DkDoubleSlider *mAngleSlider = nullptr;
-    QPushButton *mEditButton = nullptr;
-
-    std::shared_ptr<DkCropArea> mCropArea = nullptr;
 };
 
 }

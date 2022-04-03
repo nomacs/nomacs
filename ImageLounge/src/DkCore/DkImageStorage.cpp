@@ -252,22 +252,7 @@ QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
     return tImg;
 }
 
-QImage DkImage::rotateSimple(const QImage &img, double angle)
-{
-    if (angle == 0 || angle == -1)
-        return img;
-
-    QTransform rotationMatrix;
-    rotationMatrix.rotate(angle);
-    QImage rImg = img.transformed(rotationMatrix);
-
-    return rImg;
-}
-
-QImage DkImage::rotate(const QImage &img, double angle)
-{
-    if (qAbs(angle) == 90 || qAbs(angle) == 180 || angle == 0)
-        return rotateSimple(img, angle);
+QImage DkImage::rotateImage(const QImage & img, double angle) {
 
     // compute new image size
     DkVector nSl((float)img.width(), (float)img.height());
@@ -1068,8 +1053,24 @@ QPixmap DkImage::loadIcon(const QString &filePath, const QSize &size, const QCol
     return icon;
 }
 
-QPixmap DkImage::loadFromSvg(const QString &filePath, const QSize &size)
-{
+QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col, const QSize& size) {
+
+
+	QSize is = size;
+
+	if (is.isNull()) {
+		int s = DkSettingsManager::param().effectiveIconSize();
+		is = QSize(s, s);
+	}
+
+	QPixmap icon = loadFromSvg(filePath, is);
+	icon = colorizePixmap(icon, col);
+
+	return icon;
+}
+
+QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
+
     QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
 
     QPixmap pm(size);

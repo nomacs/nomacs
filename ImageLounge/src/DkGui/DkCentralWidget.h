@@ -61,7 +61,7 @@ class DkViewPort;
 class DkPreferenceWidget;
 class DkProgressBar;
 class DkBatchWidget;
-class DkCropViewPort;
+class DkCropWidget;
 
 class DllCoreExport DkTabInfo : public QObject
 {
@@ -207,11 +207,11 @@ protected:
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 
-    DkPreferenceWidget *createPreferences();
-    DkRecentFilesWidget *createRecentFiles();
-    DkThumbScrollWidget *createThumbScrollWidget();
-    DkBatchWidget *createBatch();
-    DkCropViewPort *createCrop();
+	DkPreferenceWidget* createPreferences();
+	DkRecentFilesWidget* createRecentFiles();
+	DkThumbScrollWidget* createThumbScrollWidget();
+	DkBatchWidget* createBatch();
+	DkCropWidget* createCrop();
     void createViewPort();
 
     enum {
