@@ -121,9 +121,6 @@ public:
 
 	void settingsChanged();
 
-	void setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix);
-	void setImageRect(const QRectF* imgRect);
-
 public slots:
 	void toggleHUD(bool hide);
 	void showPreview(bool visible);

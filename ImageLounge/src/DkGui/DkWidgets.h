@@ -64,6 +64,9 @@ class QSettings;
 
 namespace nmc {
 
+// nomacs defines
+class DkCropToolBar;
+
 class DkButton : public QPushButton {
 	Q_OBJECT
 
@@ -450,7 +453,7 @@ public:
 		mImgT = QImage();
 	};
 
-	void setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
+	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix){
 		mWorldMatrix = worldMatrix;
 		mImgMatrix = imgMatrix;
 	};
@@ -468,8 +471,8 @@ protected:
 	QImage mImgT;
 	QSize mImgSize;
 	QTransform* mScaledImgMatrix;
-	const QTransform* mWorldMatrix;
-	const QTransform* mImgMatrix;
+	QTransform* mWorldMatrix;
+	QTransform* mImgMatrix;
 	QRectF mViewPortRect;
 	QPointF mPosGrab;
 	QPointF mEnterPos;
@@ -638,6 +641,28 @@ protected:
 	bool mPanning = false;
 	int mPaintMode = rule_of_thirds;
 	bool mShowInfo = false;
+};
+
+class DkCropWidget : public DkEditableRect {
+	Q_OBJECT
+
+public:
+	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+
+	DkCropToolBar* getToolbar() const;
+
+public slots:
+	void crop(bool cropToMetadata = false);
+	virtual void setVisible(bool visible) override;
+
+signals:
+	void hideSignal();
+
+protected:
+	void createToolbar();
+	void mouseDoubleClickEvent(QMouseEvent* ev) override;
+
+	DkCropToolBar* cropToolbar;
 };
 
 // Image histogram display

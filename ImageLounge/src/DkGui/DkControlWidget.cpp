@@ -38,7 +38,6 @@
 #include "DkPluginManager.h"
 #include "DkMessageBox.h"
 #include "DkActionManager.h"
-#include "DkCropWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStackedLayout>
@@ -58,7 +57,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : Dk
 
 	// cropping
 	// TODO: add lazy initialization here
-	mCropWidget = new DkCropWidget(this);
+	mCropWidget = new DkCropWidget(QRectF(), this);
 	
 	// thumbnails, metadata
 	mFilePreview = new DkFilePreview(this, flags);
@@ -475,10 +474,9 @@ void DkControlWidget::hideCrop(bool hide /* = true */) {
 void DkControlWidget::showCrop(bool visible) {
 
 	if (visible) {
-		mViewport->zoomToFit(100);
 		mCropWidget->reset();
 		switchWidget(mWidgets[crop_widget]);
-		//connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), mViewport, SLOT(setBackgroundBrush(const QBrush&)));
+		connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), mViewport, SLOT(setBackgroundBrush(const QBrush&)));
 	}
 	else
 		switchWidget();
@@ -746,16 +744,6 @@ void DkControlWidget::settingsChanged() {
 		showFileInfo(true);
 	}
 
-}
-
-void DkControlWidget::setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
-
-	mZoomWidget->getOverview()->setTransforms(worldMatrix, imgMatrix);
-	mCropWidget->setTransforms(worldMatrix, imgMatrix);
-}
-
-void DkControlWidget::setImageRect(const QRectF* imgRect) {
-	mCropWidget->setImageRect(imgRect);
 }
 
 void DkControlWidget::updateRating(int rating) {
