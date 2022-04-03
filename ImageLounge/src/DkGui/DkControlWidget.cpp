@@ -38,6 +38,16 @@
 #include "DkToolbars.h"
 #include "DkViewPort.h"
 #include "DkWidgets.h"
+#include "DkThumbsWidgets.h"
+#include "DkMetaDataWidgets.h"
+#include "DkMetaData.h"
+#include "DkSettings.h"
+#include "DkPluginInterface.h"
+#include "DkToolbars.h"
+#include "DkPluginManager.h"
+#include "DkMessageBox.h"
+#include "DkActionManager.h"
+#include "DkCropWidgets.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QGridLayout>
@@ -57,7 +67,10 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
     mViewport = parent;
     setObjectName("DkControlWidget");
 
+	// cropping
     // TODO: add lazy initialization here
+	mCropWidget = new DkCropWidget(this);
+	
     // thumbnails, metadata
     mFilePreview = new DkFilePreview(this, flags);
     mMetaDataInfo = new DkMetaDataHUD(this);
@@ -73,7 +86,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags)
     mCommentWidget = new DkCommentWidget(this);
 
     // delayed info
-    mDelayedInfo = new DkDelayedMessage(this);
+	mDelayedInfo = new DkDelayedMessage(this); // TODO: make a nice constructor
 
     // info labels
     mBottomLabel = new DkLabelBg(this, "");
@@ -125,6 +138,7 @@ void DkControlWidget::init()
     mBottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mRatingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mZoomWidget->setContentsMargins(10, 10, 0, 0);
+	mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     // register actions
@@ -132,6 +146,7 @@ void DkControlWidget::init()
     mFilePreview->registerAction(am.action(DkActionManager::menu_panel_preview));
     mMetaDataInfo->registerAction(am.action(DkActionManager::menu_panel_exif));
     mPlayer->registerAction(am.action(DkActionManager::menu_panel_player));
+	mCropWidget->registerAction(am.action(DkActionManager::menu_edit_crop));
     mFileInfoLabel->registerAction(am.action(DkActionManager::menu_panel_info));
     mHistogram->registerAction(am.action(DkActionManager::menu_panel_histogram));
     mCommentWidget->registerAction(am.action(DkActionManager::menu_panel_comment));
@@ -218,6 +233,7 @@ void DkControlWidget::init()
     // init main widgets
     mWidgets.resize(widget_end);
     mWidgets[hud_widget] = new QWidget(this);
+	mWidgets[crop_widget] = mCropWidget;
 
     // global controller layout
     mHudLayout = new QGridLayout(mWidgets[hud_widget]);
@@ -234,6 +250,11 @@ void DkControlWidget::init()
     mHudLayout->addWidget(center, ver_center, hor_center, 1, 1);
     mHudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
     mHudLayout->addWidget(mFolderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
+
+	//// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	//QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
+	//editLayout->setContentsMargins(0,0,0,0);
+	//editLayout->addWidget(cropWidget);
 
     mLayout = new QStackedLayout(this);
     mLayout->setContentsMargins(0, 0, 0, 0);
@@ -282,6 +303,10 @@ void DkControlWidget::connectWidgets()
     connect(mPlayer, SIGNAL(previousSignal()), mViewport, SLOT(loadPrevFileFast()));
     connect(mPlayer, SIGNAL(nextSignal()), mViewport, SLOT(loadNextFileFast()));
 
+	// cropping
+	connect(mCropWidget, SIGNAL(cropImageSignal(const DkRotatingRect&, const QColor&, bool)), mViewport, SLOT(cropImage(const DkRotatingRect&, const QColor&, bool)));
+	connect(mCropWidget, SIGNAL(hideSignal()), this, SLOT(hideCrop()));
+
     // comment widget
     connect(mCommentWidget, SIGNAL(showInfoSignal(const QString &)), this, SLOT(setInfo(const QString &)));
     connect(mCommentWidget, SIGNAL(commentSavedSignal()), this, SLOT(setCommentSaved()));
@@ -299,6 +324,7 @@ void DkControlWidget::connectWidgets()
     }
 
     // actions
+	connect(am.action(DkActionManager::menu_edit_crop), SIGNAL(triggered(bool)), this, SLOT(showCrop(bool)));
     connect(am.action(DkActionManager::menu_panel_overview), SIGNAL(toggled(bool)), this, SLOT(showOverview(bool)));
     connect(am.action(DkActionManager::menu_panel_player), SIGNAL(toggled(bool)), this, SLOT(showPlayer(bool)));
     connect(am.action(DkActionManager::menu_panel_preview), SIGNAL(toggled(bool)), this, SLOT(showPreview(bool)));
@@ -448,8 +474,26 @@ void DkControlWidget::showOverview(bool visible)
     }
 }
 
-void DkControlWidget::showHistogram(bool visible)
-{
+void DkControlWidget::hideCrop(bool hide /* = true */) {
+
+	showCrop(!hide);
+}
+
+void DkControlWidget::showCrop(bool visible) {
+
+	if (visible) {
+		mViewport->zoomToFit(100);
+		mCropWidget->reset();
+		switchWidget(mWidgets[crop_widget]);
+		//connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), mViewport, SLOT(setBackgroundBrush(const QBrush&)));
+	}
+	else
+		switchWidget();
+
+}
+
+void DkControlWidget::showHistogram(bool visible) {
+	
     if (!mHistogram)
         return;
 
@@ -691,9 +735,14 @@ void DkControlWidget::settingsChanged()
     }
 }
 
-void DkControlWidget::setTransforms(QTransform *worldMatrix, QTransform *imgMatrix)
-{
+void DkControlWidget::setTransforms(const QTransform* worldMatrix, const QTransform* imgMatrix) {
+
     mZoomWidget->getOverview()->setTransforms(worldMatrix, imgMatrix);
+	mCropWidget->setTransforms(worldMatrix, imgMatrix);
+}
+
+void DkControlWidget::setImageRect(const QRectF* imgRect) {
+	mCropWidget->setImageRect(imgRect);
 }
 
 void DkControlWidget::updateRating(int rating)
@@ -758,8 +807,11 @@ DkHistogram *DkControlWidget::getHistogram() const
     return mHistogram;
 }
 
-DkFilePreview *DkControlWidget::getFilePreview() const
-{
+DkCropWidget * DkControlWidget::getCropWidget() const {
+	return mCropWidget;
+}
+
+DkFilePreview * DkControlWidget::getFilePreview() const {
     return mFilePreview;
 }
 
