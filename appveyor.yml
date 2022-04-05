@@ -10,7 +10,7 @@ skip_commits:
 environment:
     matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      QT5: C:\Qt\5.14\msvc2017_64
+      QT5: C:\Qt\5.15.2\msvc2019_64
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
