@@ -1,6 +1,3 @@
-[submodule "3rd-party/exiv2"]
-	path = 3rd-party/exiv2
-	url = https://github.com/nomacs/exiv2.git
 [submodule "3rd-party/expat"]
 	path = 3rd-party/expat
 	url = https://github.com/nomacs/expat.git
@@ -19,3 +16,6 @@
 [submodule "ImageLounge/plugins"]
 	path = ImageLounge/plugins
 	url = https://github.com/nomacs/nomacs-plugins.git
+[submodule "3rd-party/exiv2"]
+	path = 3rd-party/exiv2
+	url = https://github.com/novomesk/exiv2-nomacs.git
