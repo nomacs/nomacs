@@ -1216,14 +1216,33 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 QString DkMetaDataT::exiv2ToQString(std::string exifString) {
 
+	const char* prefix_ascii1 = "charset=\"ASCII\" ";
+	const char* prefix_ascii2 = "charset=Ascii ";
+	const char* prefix_Unicode = "charset=Unicode ";
 	QString info;
 
-	if (QString::fromStdString(exifString).contains("charset=\"ASCII\"", Qt::CaseInsensitive)) {
-		info = QString::fromLocal8Bit((char*)(exifString.c_str()), (int)exifString.size());
-		info = info.replace("charset=\"ASCII\" ", "", Qt::CaseInsensitive);
+	const size_t input_size = exifString.size();
+
+	if (QString::fromStdString(exifString).startsWith(prefix_ascii1, Qt::CaseInsensitive)) {
+		const size_t prefix1_size = strlen(prefix_ascii1);
+		if (input_size > prefix1_size) {
+			info = QString::fromLocal8Bit(exifString.c_str() + prefix1_size, int(input_size - prefix1_size));
+		}
 	}
-	else {
-		info = QString::fromUtf8((char*)(exifString.c_str()), (int)exifString.size());
+	else if (QString::fromStdString(exifString).startsWith(prefix_ascii2, Qt::CaseInsensitive)) {
+		const size_t prefix2_size = strlen(prefix_ascii2);
+		if(input_size > prefix2_size) {
+			info = QString::fromLocal8Bit(exifString.c_str() + prefix2_size, int(input_size - prefix2_size));
+		}
+	}
+	else if (QString::fromStdString(exifString).startsWith(prefix_Unicode, Qt::CaseInsensitive)) {
+		const size_t prefixunicode_size = strlen(prefix_Unicode);
+		if(input_size > prefixunicode_size) {
+			info = QString::fromUtf8(exifString.c_str() + prefixunicode_size, int(input_size - prefixunicode_size));
+		}
+	}
+	else if (input_size > 0) {
+		info = QString::fromUtf8(exifString.c_str(), (int)input_size);
 	}
 
 	return info;
