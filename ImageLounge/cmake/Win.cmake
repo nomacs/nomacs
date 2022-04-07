@@ -15,7 +15,7 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Debug)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release)
 
 # add exiv2
-find_package(exiv2)
+find_package(exiv2 REQUIRED)
 
 # search for opencv
 unset(OpenCV_LIB_DIR_DBG CACHE)

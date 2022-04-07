@@ -51,6 +51,9 @@
 #include <exiv2/xmpsidecar.hpp>
 #include <exiv2/image.hpp>
 #include <exiv2/preview.hpp>
+#ifdef EXV_ENABLE_BMFF
+#include <exiv2/bmffimage.hpp>
+#endif
 #include <iomanip>
 
 #endif
