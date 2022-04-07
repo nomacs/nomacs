@@ -75,16 +75,16 @@ set(DELAY_DLL_NAMES
 
 # dear future me: sorry, for manually defining them - but I have no time right now
 set(DELAY_DLL_NAMES_DEBUG 
-	opencv_core430d.dll
-	opencv_imgproc430d.dll
+	opencv_core455d.dll
+	opencv_imgproc455d.dll
 	quazip5d.dll
 	Qt5WinExtrasd.dll
 	${DELAY_DLL_NAMES}
 	)
 
 set(DELAY_DLL_NAMES_RELEASE
-	opencv_core430.dll
-	opencv_imgproc430.dll
+	opencv_core455.dll
+	opencv_imgproc455.dll
 	quazip5.dll
 	Qt5WinExtras.dll
 	${DELAY_DLL_NAMES}
