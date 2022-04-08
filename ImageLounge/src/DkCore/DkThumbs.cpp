@@ -118,6 +118,14 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 	removeBlackBorder(thumb);
 
 	bool exifThumb = !thumb.isNull();
+	int orientation = metaData.getOrientationDegree();
+
+	if (exifThumb && (metaData.isAVIF() || metaData.isHEIF() || metaData.isJXL()) && orientation != -1 && orientation != 0) {
+		// do not rotate together with full image but rotate Exif thumb only
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)orientation);
+		thumb = thumb.transformed(rotationMatrix);
+	}
 
 	QFileInfo fInfo(filePath);
 	QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
@@ -172,8 +180,6 @@ QImage DkThumbNail::computeIntern(const QString& filePath, const QSharedPointer<
 		thumb = thumb.scaled(QSize(w*2, h*2), Qt::KeepAspectRatio, Qt::FastTransformation);
 		thumb = thumb.scaled(QSize(w, h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	}
-
-	int orientation = metaData.getOrientationDegree();
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
