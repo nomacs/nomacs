@@ -337,8 +337,11 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
 			mMetaData->setQtValues(img);
 			int orientation = mMetaData->getOrientationDegree();
 
-			if (orientation != -1 && !mMetaData->isTiff() && !DkSettingsManager::param().metaData().ignoreExifOrientation)
+			if (orientation != -1 &&
+			    !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL() &&
+			    !DkSettingsManager::param().metaData().ignoreExifOrientation) {
 				img = DkImage::rotate(img, orientation);
+			}
 
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}

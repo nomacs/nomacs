@@ -749,6 +749,21 @@ bool DkMetaDataT::isRaw() const {
 	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive)) != 0;
 }
 
+bool DkMetaDataT::isAVIF() const {
+	QString newSuffix = QFileInfo(mFilePath).suffix();
+	return newSuffix.contains(QRegExp("(avif)", Qt::CaseInsensitive));
+}
+
+bool DkMetaDataT::isHEIF() const {
+	QString newSuffix = QFileInfo(mFilePath).suffix();
+	return newSuffix.contains(QRegExp("(heic|heif)", Qt::CaseInsensitive));
+}
+
+bool DkMetaDataT::isJXL() const {
+	QString newSuffix = QFileInfo(mFilePath).suffix();
+	return newSuffix.contains(QRegExp("(jxl)", Qt::CaseInsensitive));
+}
+
 bool DkMetaDataT::isDirty() const {
 
 	return mExifState == dirty;

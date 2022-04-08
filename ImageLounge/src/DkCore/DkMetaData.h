@@ -139,6 +139,9 @@ public:
 	bool isTiff() const;
 	bool isJpg() const;
 	bool isRaw() const;
+	bool isAVIF() const;
+	bool isHEIF() const;
+	bool isJXL() const;
 	bool isDirty() const;
 	bool useSidecar() const;
 	void printMetaData() const; //only for debug
