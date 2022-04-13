@@ -326,6 +326,7 @@ protected slots:
 
 protected:
 	virtual void createLayout();
+	virtual void updateCBCompression();
 	DkFilenameWidget* createFilenameWidget(const QString& tag = QString());
 	void addFilenameWidget(const QString& tag = QString());
 

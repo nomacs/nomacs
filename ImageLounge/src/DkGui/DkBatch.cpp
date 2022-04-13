@@ -825,12 +825,7 @@ void DkBatchOutput::createLayout() {
 	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
 	mCbCompression = new QComboBox(this);
-	mCbCompression->addItem(tr("Best Quality"), 100);
-	mCbCompression->addItem(tr("High Quality"), 97);
-	mCbCompression->addItem(tr("Medium Quality"), 90);
-	mCbCompression->addItem(tr("Low Quality"), 80);
-	mCbCompression->addItem(tr("Bad Quality"), 60);
-	mCbCompression->setCurrentIndex(1);
+	updateCBCompression();
 	mCbCompression->setEnabled(false);
 
 	extensionLayout->addWidget(mCbExtension);
@@ -873,6 +868,46 @@ void DkBatchOutput::createLayout() {
 	contentLayout->addWidget(previewLabel, 6, 0);
 	contentLayout->addWidget(previewWidget, 7, 0);
 	setLayout(contentLayout);
+}
+
+void DkBatchOutput::updateCBCompression()
+{
+	const QString quality_label[5] = {
+		tr("Best Quality"),
+		tr("High Quality"),
+		tr("Medium Quality"),
+		tr("Low Quality"),
+		tr("Bad Quality")
+		};
+	int quality[5];
+
+	const QString extStr = mCbNewExtension->currentText();
+	if (extStr.contains(QRegExp("(avif)", Qt::CaseInsensitive))) {
+		quality[0] = 100;
+		quality[1] = 80;
+		quality[2] = 60;
+		quality[3] = 40;
+		quality[4] = 20;
+	} else { // quality used for JPG and other formats
+		quality[0] = 100;
+		quality[1] = 97;
+		quality[2] = 90;
+		quality[3] = 80;
+		quality[4] = 60;
+	}
+
+	int previous_index = mCbCompression->currentIndex();
+
+	mCbCompression->clear();
+	for (int index = 0; index < 5; index++) {
+		mCbCompression->insertItem(index, quality_label[index], quality[index]);
+	}
+
+	if (previous_index == -1) {
+		mCbCompression->setCurrentIndex(1);
+	} else {
+		mCbCompression->setCurrentIndex(previous_index);
+	}
 }
 
 void DkBatchOutput::browse() {
@@ -982,8 +1017,9 @@ void DkBatchOutput::parameterChanged() {
 
 	// enable/disable compression combo
 	QString extStr = mCbNewExtension->currentText();
-	mCbCompression->setEnabled(extStr.contains(QRegExp("(jpg|jp2|webp)", Qt::CaseInsensitive)));
+	mCbCompression->setEnabled(extStr.contains(QRegExp("(avif|jpg|jp2|jxl|webp)", Qt::CaseInsensitive)));
 
+	updateCBCompression();
 	updateFileLabelPreview();
 	emit changed();
 }
