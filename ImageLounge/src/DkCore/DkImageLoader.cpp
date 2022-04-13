@@ -1237,7 +1237,20 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	DkTifDialog* tifDialog = 0;
 
 	if (selectedFilter.contains("jxl")) {
-		//no dialog yet, but we have to avoid triggering jpg_dialog for .JXL format
+		// jxl has to be before old jpeg to avoid triggering jpg_dialog for .JXL format
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(dialogParent);
+
+		jpgDialog->setDialogMode(DkCompressDialog::jxl_dialog);
+		jpgDialog->setImage(saveImg);
+
+		if (!jpgDialog->exec()) {
+			jpgDialog->deleteLater();
+			return;
+		}
+
+		compression = jpgDialog->getCompression();
+
 	}
 	else if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 

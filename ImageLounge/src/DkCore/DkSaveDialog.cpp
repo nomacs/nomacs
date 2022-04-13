@@ -206,6 +206,15 @@ void DkCompressDialog::init() {
 		//AVIF use different quality scale
 		updateQuality(mAvifImgQuality);
 	}
+	else if (mDialogMode == jxl_dialog) {
+		setWindowTitle(tr("JXL Settings"));
+
+		mSizeCombo->hide();
+		mCompressionCombo->show();
+		mCompressionCombo->setEnabled(true);
+		mColChooser->hide();
+		mCbLossless->hide();
+	}
 	else if (mDialogMode == web_dialog) {
 
 		setWindowTitle(tr("Save for Web"));
@@ -374,6 +383,16 @@ void DkCompressDialog::drawPreview() {
 		mNewImg.loadFromData(ba, "AVIF");
 		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using avif...";
+	}
+	else if (mDialogMode == jxl_dialog) {
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::WriteOnly);
+		mNewImg.save(&buffer, "JXL", getCompression());
+		buffer.close();
+		mNewImg.loadFromData(ba, "JXL");
+		updateFileSizeLabel((float)ba.size(), origImg.size());
+		qDebug() << "using jxl...";
 	}
 	else if (mDialogMode == web_dialog) {
 

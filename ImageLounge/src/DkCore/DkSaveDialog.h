@@ -83,6 +83,7 @@ public:
 		webp_dialog,
 		web_dialog,
 		avif_dialog,
+		jxl_dialog,
 
 		dialog_end
 	};
