@@ -117,7 +117,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="206"/>
       <source>Picasa Ph&amp;oto Viewer</source>
-      <translation>Picasa F&amp;otoğraf Görüntüleyici</translation>
+      <translation>Picasa Fot&amp;oto Görüntüleyici</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="217"/>
