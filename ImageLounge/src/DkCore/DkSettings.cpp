@@ -168,6 +168,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("icns"))		app_p.openFilters.append("Apple Icon Image (*.icns)");
 	if (qtFormats.contains("svgz"))		app_p.openFilters.append("Scalable Vector Graphics (*.svg *.svgz)");
 	if (qtFormats.contains("avifs"))	app_p.openFilters.append("AVIF image sequence (*.avifs)");
+	if (qtFormats.contains("apng"))		app_p.openFilters.append("Animated Portable Network Graphics (*.apng)");
 
 #ifndef Q_OS_WIN
 	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
