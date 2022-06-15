@@ -107,7 +107,16 @@ Go to the `nomacs` directory and run cmake to get the Makefiles:
 $ cd nomacs
 $ mkdir build
 $ cd build
+```
+
+For Homebrew on Intel models:
+```console
 $ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin ../ImageLounge/.
+```
+
+For Homebrew on Apple Silicon models:
+```console
+$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin ../ImageLounge/.
 ```
 
 Run make:
