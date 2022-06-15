@@ -399,16 +399,18 @@ public:
 		// view
 		shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
 		shortcut_close_tab		= Qt::CTRL + Qt::Key_W,
-		shortcut_next_tab		= Qt::CTRL + Qt::Key_Tab,
-		shortcut_previous_tab	= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
 		shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 		shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 		shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
 		shortcut_show_transfer	= Qt::CTRL + Qt::Key_U,
 #ifdef Q_OS_MAC
+		shortcut_next_tab		= Qt::META + Qt::Key_Tab,
+		shortcut_previous_tab	= Qt::META + Qt::SHIFT + Qt::Key_Tab,
 		shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
 		shortcut_frameless		= Qt::CTRL + Qt::Key_R,
 #else
+		shortcut_next_tab		= Qt::CTRL + Qt::Key_Tab,
+		shortcut_previous_tab	= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
 		shortcut_full_screen_ff	= Qt::Key_F11,
 		shortcut_frameless		= Qt::Key_F10,
 #endif
