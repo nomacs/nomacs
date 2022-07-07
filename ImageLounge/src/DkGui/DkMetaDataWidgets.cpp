@@ -103,7 +103,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 		QString lastKey = exifKeys.at(idx).split(".").last();
 		QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
-		QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx));
+		QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx), true);
 		exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
 
 		createItem(exifKeys.at(idx), translatedKey, exifValue);
@@ -904,7 +904,7 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData) {
 
 		if (mKeyValues.contains(cKey)) {
 			QString lastKey = cKey.split(".").last();
-			QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx));
+			QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx), true);
 			exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
 
 			mEntryKeyLabels.append(createKeyLabel(cKey));

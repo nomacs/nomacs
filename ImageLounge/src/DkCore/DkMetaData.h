@@ -104,7 +104,7 @@ public:
 	QSize getImageSize() const;
 	QString getDescription() const;
 	QVector2D getResolution() const;
-	QString getNativeExifValue(const QString& key) const;
+	QString getNativeExifValue(const QString& key, bool humanReadable) const;
 	QString getXmpValue(const QString& key) const;
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;

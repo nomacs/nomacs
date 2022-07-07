@@ -278,7 +278,7 @@ DkMetaDataT::ExifOrientationState DkMetaDataT::checkExifOrientation() const {
 	if (mExifState != loaded && mExifState != dirty)
 		return or_not_set;
 
-	QString orStr = getNativeExifValue("Exif.Image.Orientation");
+	QString orStr = getNativeExifValue("Exif.Image.Orientation", false);
 
 	if (orStr.isEmpty())
 		return or_not_set;
@@ -360,12 +360,12 @@ QSize DkMetaDataT::getImageSize() const {
 		return size;
 
 	bool ok = false;
-	int width = getNativeExifValue("Exif.Photo.PixelXDimension").toInt(&ok);
+	int width = getNativeExifValue("Exif.Photo.PixelXDimension", false).toInt(&ok);
 
 	if (!ok)
 		return size;
 
-	int height = getNativeExifValue("Exif.Photo.PixelYDimension").toInt(&ok);
+	int height = getNativeExifValue("Exif.Photo.PixelYDimension", false).toInt(&ok);
 
 	if (!ok)
 		return size;
@@ -373,7 +373,7 @@ QSize DkMetaDataT::getImageSize() const {
 	return QSize(width, height);
 }
 
-QString DkMetaDataT::getNativeExifValue(const QString& key) const {
+QString DkMetaDataT::getNativeExifValue(const QString& key, bool humanReadable) const {
 
 	QString info;
 
@@ -400,7 +400,13 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 
 				//qDebug() << "pos count: " << pos->count();
 				//Exiv2::Value::AutoPtr v = pos->getValue();
-				info = exiv2ToQString(pos->toString());
+				if (humanReadable) {
+					std::stringstream ss;
+					ss << *pos;
+					info = exiv2ToQString(ss.str());
+				} else {
+					info = exiv2ToQString(pos->toString());
+				}
 
 			}
 			else {
@@ -601,7 +607,7 @@ void DkMetaDataT::getAllMetaData(QStringList& keys, QStringList& values) const {
 	for (int idx = 0; idx < exifKeys.size(); idx++) {
 
 		QString cKey = exifKeys.at(idx);
-		QString exifValue = getNativeExifValue(cKey);
+		QString exifValue = getNativeExifValue(cKey, true);
 
 		keys.append(cKey);
 		values.append(exifValue);
@@ -1275,7 +1281,7 @@ void DkMetaDataT::printMetaData() const {
 	QStringList exifKeys = getExifKeys();
 
 	for (int idx = 0; idx < exifKeys.size(); idx++)
-		qDebug() << exifKeys.at(idx) << " is " << getNativeExifValue(exifKeys.at(idx));
+		qDebug() << exifKeys.at(idx) << " is " << getNativeExifValue(exifKeys.at(idx), true);
 
 	qDebug() << "IPTC------------------------------------------------------------------";
 
@@ -1707,10 +1713,10 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 
 		if (metaData->hasMetaData()) {
 			//metaData = DkImageLoader::imgMetaData;
-			Lat = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitude");
-			LatRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef");
-			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude");
-			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef");
+			Lat = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitude", false);
+			LatRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef", false);
+			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude", false);
+			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef", false);
 			//example url
 			//http://maps.google.com/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
 
