@@ -248,15 +248,17 @@ public slots:
 	void on_saveButton_clicked();
 	void on_cancelButton_clicked();
 
+	void initComment(const QString& description);
+	void resetComment();
+	void saveComment();
+
 signals:
 	void showInfoSignal(const QString& msg) const;
 	void commentEditedSignal() const;
 	void commentSavedSignal() const;
+	void commentSavedSignal(const QString&) const;
 
 protected:
-	void initComment(const QString& description);
-	void resetComment();
-	void saveComment();
 	void createLayout();
 
 	DkCommentTextEdit* mCommentLabel;

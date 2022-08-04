@@ -282,7 +282,8 @@ void DkControlWidget::connectWidgets() {
 
 	// comment widget
 	connect(mCommentWidget, SIGNAL(showInfoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
-	connect(mCommentWidget, SIGNAL(commentSavedSignal()), mViewport, SLOT(setImageUpdated()));
+	connect(mCommentWidget, SIGNAL(commentSavedSignal()), this, SLOT(setCommentSaved()));
+	connect(this, SIGNAL(imageUpdatedSignal()), mCommentWidget, SLOT(resetComment()));
 
 	// mViewport
 	connect(mViewport, SIGNAL(infoSignal(const QString&)), this, SLOT(setInfo(const QString&)));
@@ -305,6 +306,11 @@ void DkControlWidget::connectWidgets() {
 	connect(am.action(DkActionManager::menu_panel_histogram), SIGNAL(toggled(bool)), this, SLOT(showHistogram(bool)));
 	connect(am.action(DkActionManager::menu_panel_comment), SIGNAL(toggled(bool)), this, SLOT(showCommentWidget(bool)));
 	connect(am.action(DkActionManager::menu_panel_toggle), SIGNAL(toggled(bool)), this, SLOT(toggleHUD(bool)));
+}
+
+void DkControlWidget::setCommentSaved() {
+
+	mViewport->imageContainer()->setMetaData(tr("File comment"));
 }
 
 void DkControlWidget::update() {
@@ -630,6 +636,8 @@ void DkControlWidget::updateImage(QSharedPointer<DkImageContainerT> imgC) {
 	mFileInfoLabel->setEdited(imgC->isEdited());
 	mCommentWidget->setMetaData(metaData); // reset
 	updateRating(metaData->getRating());
+
+	connect(imgC.get(), SIGNAL(imageUpdatedSignal()), this, SIGNAL(imageUpdatedSignal()));
 
 }
 

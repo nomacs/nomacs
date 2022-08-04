@@ -52,6 +52,52 @@ DkMetaDataT::DkMetaDataT() {
 	mExifState = not_loaded;
 }
 
+bool DkMetaDataT::isNull() {
+
+    return !mExifImg.get();
+}
+
+QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const {
+
+	//Copy Exiv2::Image object
+	QSharedPointer<DkMetaDataT> metaDataN(new DkMetaDataT());
+	metaDataN->mExifState = mExifState;
+
+	if (mExifImg.get() != 0) {
+		mExifImg->io().seek(0, Exiv2::BasicIo::beg);
+		long size = mExifImg->io().size();
+        Exiv2::DataBuf buff = mExifImg->io().read(size);
+		if (buff.pData_[0] != 0) {
+			//Initial copy, read buffered file contents to create new Exiv2::Image via factory
+			Exiv2::Image::AutoPtr exifImgN = Exiv2::ImageFactory::open(buff.pData_, size);
+			metaDataN->mExifImg = exifImgN;
+			metaDataN->mExifImg->readMetadata();
+		} else {
+			//Second copy without file data, alternatively recreate new Exiv2::Image by reading file again
+			metaDataN->readMetaData(mFilePath);
+		}
+
+		metaDataN->mExifImg->setExifData(mExifImg->exifData()); //explicit copy of list<Exifdatum>
+		metaDataN->mExifState = dirty;
+		metaDataN->mFilePath = mFilePath;
+	}
+
+	return metaDataN;
+}
+
+/**
+ * @brief Updates exif data to match that of other.
+ * 
+ * @param other 
+ */
+void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other) {
+
+	QSharedPointer<DkMetaDataT> src(other);
+	//Copy exif data (to this instance), reading from src
+	mExifImg->setExifData(src->mExifImg->exifData()); //explicit copy of list<Exifdatum>
+
+}
+
 void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
 	if (mUseSidecar) {
@@ -149,7 +195,7 @@ bool DkMetaDataT::saveMetaData(const QString& filePath, bool force) {
 	file.write(ba->data(), ba->size());
 	file.close();
 
-	qDebug() << "[DkMetaDataT] I saved: " << ba->size() << " bytes";
+	qInfo() << "[DkMetaDataT] I saved: " << ba->size() << " bytes";
 
 	return true;
 }
@@ -1088,7 +1134,6 @@ void DkMetaDataT::setOrientation(int o) {
 
 	if (pos == exifData.end() || pos->count() == 0) {
 		exifData["Exif.Image.Orientation"] = uint16_t(1);
-
 		pos = exifData.findKey(key);
 	}
 
@@ -1193,7 +1238,7 @@ void DkMetaDataT::setRating(int r) {
 	}
 }
 
-bool DkMetaDataT::updateImageMetaData(const QImage& img) {
+bool DkMetaDataT::updateImageMetaData(const QImage& img, bool reset_orientation) {
 
 	bool success = true;
 
@@ -1202,9 +1247,10 @@ bool DkMetaDataT::updateImageMetaData(const QImage& img) {
 	success &= setExifValue("Exif.Image.ProcessingSoftware", qApp->organizationName() + " - " + qApp->applicationName() + " " + qApp->applicationVersion());
 
 	// TODO: convert Date Time to Date Time Original and set new Date Time
-		
-	clearOrientation();
-	
+
+	if (reset_orientation)
+		clearOrientation();
+
 	// NOTE: exiv crashes for some images (i.e. \exif-crash\0125-results.png)
 	// if the thumbnail's max size is > 200px
 	setThumbnail(DkImage::createThumb(img, 200));

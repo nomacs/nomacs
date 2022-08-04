@@ -148,6 +148,12 @@ public slots:
 
 	void update();
 
+signals:
+	void imageUpdatedSignal();
+
+protected slots:
+	void setCommentSaved();
+
 protected:
 
 	// events

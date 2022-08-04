@@ -758,12 +758,22 @@ bool DkImageLoader::unloadFile() {
 
 		int answer = msgBox->exec();
 
+		//Save image if pixmap edited (lastImageEdit); otherwise save only metadata if metadata edited
+		bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
+		bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
+
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
-			
-			if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName()))
-				mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
-			else
+
+			if (DkUtils::isSavable(mCurrentImage->fileInfo().fileName())) {
+				if (imgEdited)
+					mCurrentImage->saveImageThreaded(mCurrentImage->filePath());
+				else if (metaEdited)
+					mCurrentImage->saveMetaData();
+			}
+			else {
 				saveUserFileAs(mCurrentImage->image(), false);	// we loose all metadata here - right?
+			}
+
 		}
 		else if (answer != QMessageBox::No) {	// only 'No' will discard the changes
 			return false;
@@ -1231,6 +1241,27 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	QFileInfo sFile = QFileInfo(fileName);
 	int compression = -1;	// default value
 
+	//Save only metadata if image itself hasn't been edited (e.g., after exif-rotating)
+	bool sameFile = fileName == filePath();
+	bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
+	bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
+	if (!imgEdited && metaEdited && sameFile) {
+		//Save metadata only
+		mCurrentImage->saveMetaData(); //DkBasicLoader::saveMetaData() (otherwise called after saving)
+
+		//Notify listeners about saved image
+		setCurrentImage(mCurrentImage);
+		mCurrentImage->setEdited(false);
+		emit imageLoadedSignal(mCurrentImage, true);
+		emit imageUpdatedSignal(mCurrentImage);
+
+		//Skip the rest which is only relevant when re-encoding/saving the image
+		return;
+	}
+	//Below are the compress/encode routines; at the end of a long call chain (saveIntern internSave Threaded)
+	//saveToBuffer() is responsible for adding the exif data to the image buffer soup
+	//which is then written to the specified file.
+
 	DkCompressDialog* jpgDialog = 0;
 	QImage lSaveImg = saveImg;
 
@@ -1536,15 +1567,13 @@ void DkImageLoader::rotateImage(double angle) {
 		return;
 	}
 
-	QImage img = DkImage::rotate(mCurrentImage->image(), qRound(angle));
+	QImage img = DkImage::rotate(mCurrentImage->pixmap(), qRound(angle));
 
-	QImage thumb = DkImage::createThumb(mCurrentImage->image());
+	QImage thumb = DkImage::createThumb(mCurrentImage->pixmap());
 	mCurrentImage->getThumb()->setImage(thumb);
 
-	QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData();
+	QSharedPointer<DkMetaDataT> metaData = mCurrentImage->getMetaData(); //via ImageContainer, BasicLoader
 	bool metaDataSet = false;
-	bool allowSilentUpdate = false;
-	bool alreadyUpdated = false;
 
 	if (metaData->hasMetaData() && DkSettingsManager::param().metaData().saveExifOrientation) {
 		try {
@@ -1554,25 +1583,17 @@ void DkImageLoader::rotateImage(double angle) {
 			metaData->setOrientation(qRound(angle));
 			metaDataSet = true;
 
-			// Make sure to save the rotated image properly (in the history)
-			// Otherwise the user wouldn't be able to undo the rotation, which feels like a bug
-			// We're leaving this in for now, as dead code. If nobody yells, we'll remove it.
-
-			if (allowSilentUpdate) {
-				// if that is working out, we need to set the image without changing the history
-				QVector<DkEditImage>* imgs = mCurrentImage->getLoader()->history();
-				if (!imgs->isEmpty()) {
-					imgs->last().setImage(img);
-					alreadyUpdated = true;
-				}
-			}
-
 		}
 		catch (...) {
 		}
 	}
 
-	if (!alreadyUpdated) {
+	if (metaDataSet) {
+		// Add history item with edited metadata
+		mCurrentImage->setMetaData(metaData, img, tr("Rotated")); //new edit with modified metadata
+		setImageUpdated();
+	}
+	else {
 		// Update the image itself, along with the history and everything
 		// In other words, the rotated image is saved to the history and the edit flag is set
 		setImage(img, tr("Rotated"), mCurrentImage->filePath());
@@ -2129,15 +2150,32 @@ void DkImageLoader::redo() {
 }
 
 /**
-	* Returns the currently loaded image.
-	* @return QImage the current image
-	**/ 
+ * Returns the currently loaded image.
+ * @return QImage the current image
+ **/ 
 QImage DkImageLoader::getImage() {
 		
 	if (!mCurrentImage)
 		return QImage();
 
 	return mCurrentImage->image();
+}
+
+/**
+ * @brief Returns the currently loaded pixmap. May differ from the image returned by getImage()
+ * in case the pixmap represents a meta modification, like after rotating it.
+ * This is primarily meant to be displayed in the gui.
+ *  When saving to disk, the actual image as returned by getImage() should be used.
+ * 
+ * @return QImage 
+ */
+QImage DkImageLoader::getPixmap() {
+		
+	if (!mCurrentImage)
+		return QImage();
+
+	//return mCurrentImage->pixmap();
+	return mCurrentImage->getLoader()->pixmap();
 }
 
 bool DkImageLoader::dirtyTiff() {
@@ -2223,11 +2261,11 @@ void DkImageLoader::setSaveDir(const QString& dirPath) {
 }
 
 /**
- * Sets the current image to img.
+ * Sets the current image to a new image container.
  * @param img the loader's new image.
  **/ 
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(const QImage& img, const QString& editName, const QString& editFilePath) {
-	
+
 	qDebug() << "edited file: " << editFilePath;
 
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFilePath);

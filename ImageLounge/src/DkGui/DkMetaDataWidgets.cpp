@@ -1262,6 +1262,7 @@ void DkCommentWidget::initComment(const QString& description) {
 void DkCommentWidget::resetComment() {
 
 	//First, reset comment text (triggering changed event, but not edited event)
+	mOldText = mMetaData->getDescription();
 	mCommentLabel->setText(mOldText);
 	mCommentLabel->clearFocus();
 	//Reset internal state (this panel only)
@@ -1282,7 +1283,10 @@ void DkCommentWidget::saveComment() {
 			emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
 			return;
 		}
+		initComment(text());
+
 		emit commentSavedSignal();
+		emit commentSavedSignal(tr("File comment"));
 	}
 }
 
