@@ -401,6 +401,10 @@ signals:
     void redoSignal();
     void resetMetaDataSignal();
 
+	void undoSignal();
+	void redoSignal();
+	void resetMetaDataSignal();
+
 protected:
     bool loadRohFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;
     bool loadTgaFile(const QString &filePath, QImage &img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;

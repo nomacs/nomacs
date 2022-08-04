@@ -1360,9 +1360,7 @@ void DkBasicLoader::saveThumbToMetaData(const QString &filePath)
 }
 
 /**
- * @brief this will save the exif metadata to the file - outside of the regular save() routine.
- * 
- * Use it at your own risk. Keep children away.
+ * @brief this will write the current exif/metadata to the loaded file.
  * 
  * @param filePath path to current file to be updated
  */
@@ -1385,7 +1383,6 @@ void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<
  * @brief saves the file to a file buffer and writes the file buffer to the original file
  * 
  * This routine will write new metadata to the file on disk.
- * Use with caution. It works outside of the regular save workflow.
  * See ImageLoader (regular workflow starts there) and ImageContainer.
  * 
  * @param filePath path to image file

@@ -511,7 +511,7 @@ void DkImageContainer::saveMetaData()
 void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
 	// TODO this shouldn't be used without notifying the user, see issue #799
-	loader->saveMetaData(filePath, fileBuffer); // TODO use with caution
+	loader->saveMetaData(filePath, fileBuffer);
 }
 
 void DkImageContainer::setEdited(bool edited /* = true */) {
