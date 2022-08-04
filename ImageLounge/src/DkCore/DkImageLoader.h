@@ -116,6 +116,7 @@ public:
 	bool isEdited() const;
 	int numFiles() const;
 	QImage getImage();
+	QImage getPixmap();
 	bool dirtyTiff();
 
 	QStringList ignoreKeywords() const;

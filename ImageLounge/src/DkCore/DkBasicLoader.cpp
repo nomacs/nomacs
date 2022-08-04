@@ -112,44 +112,74 @@
 namespace nmc {
 
 // DkEditImage --------------------------------------------------------------------
-DkEditImage::DkEditImage(const QImage& img, const QString& editName) {
-	mImg = img;
-	mEditName = editName;
+
+DkEditImage::DkEditImage() : mNewImg(false), mNewMetaData(false) {}
+DkEditImage::DkEditImage(const QImage& img, const QSharedPointer<DkMetaDataT>& metaData, const QString& editName)
+           : mImg(img), mMetaData(metaData), mEditName(editName), mNewImg(true), mNewMetaData(false)
+{
+    //history edit item with modified image
+}
+
+DkEditImage::DkEditImage(const QSharedPointer<DkMetaDataT>& metaData, const QImage& img, const QString& editName)
+           : mImg(img), mMetaData(metaData), mEditName(editName), mNewImg(false), mNewMetaData(true)
+{
+    //history edit item with modified metadata
+}
+
+bool DkEditImage::hasImage() const {
+    //Every edit item has an image, but it may be the old/original one if only metadata has been edited
+    return !mImg.isNull();
+}
+
+bool DkEditImage::hasMetaData() const {
+    return mMetaData;
+}
+
+bool DkEditImage::hasNewImage() const {
+    return hasImage() && mNewImg;
+}
+
+bool DkEditImage::hasNewMetaData() const {
+    return hasMetaData() && mNewMetaData;
 }
 
 void DkEditImage::setImage(const QImage& img) {
-	mImg = img;
+    mImg = img;
 }
 
 QImage DkEditImage::image() const {
-	return mImg;
+    return mImg;
+}
+
+QSharedPointer<DkMetaDataT> DkEditImage::metaData() const {
+    return mMetaData;
 }
 
 QString DkEditImage::editName() const {
-	return mEditName;
+    return mEditName;
 }
 
 int DkEditImage::size() const {
-	
-	return qRound(DkImage::getBufferSizeFloat(mImg.size(), mImg.depth()));
+    
+    return qRound(DkImage::getBufferSizeFloat(mImg.size(), mImg.depth()));
 }
 
 // Basic loader and image edit class --------------------------------------------------------------------
 DkBasicLoader::DkBasicLoader(int mode) {
-	
-	mMode = mode;
-	mTraining = false;
-	mPageIdxDirty = false;
-	mNumPages = 1;
-	mPageIdx = 1;
-	mLoader = no_loader;
+    
+    mMode = mode;
+    mTraining = false;
+    mPageIdxDirty = false;
+    mNumPages = 1;
+    mPageIdx = 1;
+    mLoader = no_loader;
 
-	mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+    mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 }
 
 bool DkBasicLoader::loadGeneral(const QString& filePath, bool loadMetaData, bool fast) {
 
-	return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
+    return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 /**
  * This function loads the images.
@@ -158,206 +188,206 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, bool loadMetaData, bool
  **/ 
 bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast) {
 
-	DkTimer dt;
-	bool imgLoaded = false;
+    DkTimer dt;
+    bool imgLoaded = false;
 
-	mFile = DkUtils::resolveSymLink(filePath);
-	QFileInfo fInfo(mFile);	// resolved lnk
-	QString newSuffix = fInfo.suffix();
+    mFile = DkUtils::resolveSymLink(filePath);
+    QFileInfo fInfo(mFile);	// resolved lnk
+    QString newSuffix = fInfo.suffix();
 
-	release();
+    release();
 
-	if (mPageIdxDirty)
-		imgLoaded = loadPage();
+    if (mPageIdxDirty)
+        imgLoaded = loadPage();
 
-	// identify raw images:
-	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
+    // identify raw images:
+    //newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
-	// this fixes an issue with the new jpg loader
-	// Qt considers an orientation of 0 as wrong and fails to load these jpgs
-	// however, the old nomacs wrote 0 if the orientation should be cleared
-	// so we simply adopt the memory here
-	if (loadMetaData && mMetaData) {
+    // this fixes an issue with the new jpg loader
+    // Qt considers an orientation of 0 as wrong and fails to load these jpgs
+    // however, the old nomacs wrote 0 if the orientation should be cleared
+    // so we simply adopt the memory here
+    if (loadMetaData && mMetaData) {
 
-		try {
-			mMetaData->readMetaData(filePath, ba);
-			
+        try {
+            mMetaData->readMetaData(filePath, ba);
+            
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-			// this is a workaroung for old Qt5 versions where jpgs with 'illegal' orientation=0 were not loaded
-			if (!DkSettingsManager::param().metaData().ignoreExifOrientation) {
-				DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
-				
-				if (orState == DkMetaDataT::or_illegal) {
-					mMetaData->clearOrientation();
-					mMetaData->saveMetaData(ba);
-					qWarning() << "deleting illegal EXIV orientation...";
-				}
-			}
+            // this is a workaroung for old Qt5 versions where jpgs with 'illegal' orientation=0 were not loaded
+            if (!DkSettingsManager::param().metaData().ignoreExifOrientation) {
+                DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
+                
+                if (orState == DkMetaDataT::or_illegal) {
+                    mMetaData->clearOrientation();
+                    mMetaData->saveMetaData(ba);
+                    qWarning() << "deleting illegal EXIV orientation...";
+                }
+            }
 #endif
-		}
-		catch (...) {}	// ignore if we cannot read the metadata
-	}
-	else if (!mMetaData) {
-		qDebug() << "metaData is NULL!";
-	}
+        }
+        catch (...) {}	// ignore if we cannot read the metadata
+    }
+    else if (!mMetaData) {
+        qDebug() << "metaData is NULL!";
+    }
 
-	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
-	qtFormats << "jpe";	// fixes #435 - thumbnail gets loaded in the RAW loader
-	QString suf = fInfo.suffix().toLower();
+    QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+    qtFormats << "jpe";	// fixes #435 - thumbnail gets loaded in the RAW loader
+    QString suf = fInfo.suffix().toLower();
 
-	QImage img;
+    QImage img;
 
     // load drif file
     if (!imgLoaded && ("drif" == suf || "yuv" == suf || "raw" == suf)) 
         imgLoaded = loadDrifFile(mFile, img, ba);
 
-	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
-		imgLoaded = img.loadFromData(*ba.data());
+    if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
+        imgLoaded = img.loadFromData(*ba.data());
 
-		if (imgLoaded)
-			mLoader = qt_loader;
-	}
+        if (imgLoaded)
+            mLoader = qt_loader;
+    }
 
-	// load large icons
-	if (!imgLoaded && suf == "ico") {
+    // load large icons
+    if (!imgLoaded && suf == "ico") {
 
-		QIcon icon(mFile);
+        QIcon icon(mFile);
 
-		if (!icon.isNull()) {
-			img = icon.pixmap(QSize(256, 256)).toImage();
-			imgLoaded = true;
-		}
-	}
+        if (!icon.isNull()) {
+            img = icon.pixmap(QSize(256, 256)).toImage();
+            imgLoaded = true;
+        }
+    }
 
-	// default Qt loader
-	// here we just try those formats that are officially supported
-	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str()) || suf.isEmpty()) {
+    // default Qt loader
+    // here we just try those formats that are officially supported
+    if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str()) || suf.isEmpty()) {
 
-		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		if (!ba || ba->isEmpty())
-			imgLoaded = img.load(mFile, suf.toStdString().c_str());
-		else
-			imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
+        // if image has Indexed8 + alpha channel -> we crash... sorry for that
+        if (!ba || ba->isEmpty())
+            imgLoaded = img.load(mFile, suf.toStdString().c_str());
+        else
+            imgLoaded = img.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
-		if (imgLoaded) mLoader = qt_loader;
-	}
+        if (imgLoaded) mLoader = qt_loader;
+    }
 
-	// OpenCV Tiff loader - supports jpg compressed tiffs
-	if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
+    // OpenCV Tiff loader - supports jpg compressed tiffs
+    if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadTIFFile(mFile, img, ba);
-		
-		if (imgLoaded)	mLoader = tif_loader;
-	}
+        imgLoaded = loadTIFFile(mFile, img, ba);
+        
+        if (imgLoaded)	mLoader = tif_loader;
+    }
 
-	// PSD loader
-	if (!imgLoaded) {
+    // PSD loader
+    if (!imgLoaded) {
 
-		imgLoaded = loadPSDFile(mFile, img, ba);
-		if (imgLoaded) mLoader = psd_loader;
-	}
+        imgLoaded = loadPSDFile(mFile, img, ba);
+        if (imgLoaded) mLoader = psd_loader;
+    }
 
 #if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
-	// WEBP loader
-	if (!imgLoaded) {
+    // WEBP loader
+    if (!imgLoaded) {
 
-		imgLoaded = loadWebPFile(file, ba);
-		if (imgLoaded) loader = webp_loader;
-	}
+        imgLoaded = loadWebPFile(file, ba);
+        if (imgLoaded) loader = webp_loader;
+    }
 #endif
 
-	// RAW loader
-	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
-		
-		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
-		// load raw files
-		imgLoaded = loadRawFile(mFile, img, ba, fast);
-		if (imgLoaded) mLoader = raw_loader;
-	}
+    // RAW loader
+    if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
+        
+        // TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
+        // load raw files
+        imgLoaded = loadRawFile(mFile, img, ba, fast);
+        if (imgLoaded) mLoader = raw_loader;
+    }
 
-	// TGA loader
-	if (!imgLoaded && newSuffix.contains(QRegExp("(tga)", Qt::CaseInsensitive))) {
+    // TGA loader
+    if (!imgLoaded && newSuffix.contains(QRegExp("(tga)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadTgaFile(mFile, img, ba);
+        imgLoaded = loadTgaFile(mFile, img, ba);
 
-		if (imgLoaded) mLoader = tga_loader;		// TODO: add tga loader
-	}
+        if (imgLoaded) mLoader = tga_loader;		// TODO: add tga loader
+    }
 
-	QByteArray lba;
+    QByteArray lba;
 
-	// default Qt loader
-	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+    // default Qt loader
+    if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
-		// TODO: add warning here
-		loadFileToBuffer(mFile, lba);
-		imgLoaded = img.loadFromData(lba);
-		
-		if (imgLoaded)
-			qWarning() << "The image seems to have a wrong extension";
-		
-		if (imgLoaded) mLoader = qt_loader;
-	} 
+        // if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
+        // TODO: add warning here
+        loadFileToBuffer(mFile, lba);
+        imgLoaded = img.loadFromData(lba);
+        
+        if (imgLoaded)
+            qWarning() << "The image seems to have a wrong extension";
+        
+        if (imgLoaded) mLoader = qt_loader;
+    } 
 
-	// add marker to fix broken panorama images from SAMSUNG
-	// see: https://github.com/nomacs/nomacs/issues/254
-	if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg|jpe)", Qt::CaseInsensitive))) {
+    // add marker to fix broken panorama images from SAMSUNG
+    // see: https://github.com/nomacs/nomacs/issues/254
+    if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg|jpe)", Qt::CaseInsensitive))) {
 
-		// prefer external buffer
-		QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
+        // prefer external buffer
+        QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
 
-		if (!baf.isEmpty())
-			imgLoaded = img.loadFromData(baf, suf.toStdString().c_str());
+        if (!baf.isEmpty())
+            imgLoaded = img.loadFromData(baf, suf.toStdString().c_str());
 
-		if (imgLoaded) mLoader = qt_loader;
-	}
+        if (imgLoaded) mLoader = qt_loader;
+    }
 
-	// this loader is a bit buggy -> be carefull
-	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
-		
-		imgLoaded = loadRohFile(mFile, img, ba);
-		if (imgLoaded) mLoader = roh_loader;
-	} 
+    // this loader is a bit buggy -> be carefull
+    if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+        
+        imgLoaded = loadRohFile(mFile, img, ba);
+        if (imgLoaded) mLoader = roh_loader;
+    } 
 
-	// this loader is for OpenCV cascade training files
-	if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
+    // this loader is for OpenCV cascade training files
+    if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadOpenCVVecFile(mFile, img, ba);
-		if (imgLoaded) mLoader = roh_loader;
-	} 
+        imgLoaded = loadOpenCVVecFile(mFile, img, ba);
+        if (imgLoaded) mLoader = roh_loader;
+    } 
 
-	// tiff things
-	if (imgLoaded && !mPageIdxDirty)
-		indexPages(mFile, ba);
-	mPageIdxDirty = false;
+    // tiff things
+    if (imgLoaded && !mPageIdxDirty)
+        indexPages(mFile, ba);
+    mPageIdxDirty = false;
 
-	if (imgLoaded && loadMetaData && mMetaData) {
-		
-		try {
-			mMetaData->setQtValues(img);
-			int orientation = mMetaData->getOrientationDegree();
+    if (imgLoaded && loadMetaData && mMetaData) {
+        
+        try {
+            mMetaData->setQtValues(img);
+            int orientation = mMetaData->getOrientationDegree();
 
-			if (orientation != -1 &&
-			    !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL() &&
-			    !DkSettingsManager::param().metaData().ignoreExifOrientation) {
-				img = DkImage::rotate(img, orientation);
-			}
+            if (orientation != -1 &&
+                !mMetaData->isTiff() && !mMetaData->isAVIF() && !mMetaData->isHEIF() && !mMetaData->isJXL() &&
+                !DkSettingsManager::param().metaData().ignoreExifOrientation) {
+                img = DkImage::rotate(img, orientation);
+            }
 
-		} catch(...) {}	// ignore if we cannot read the metadata
-	}
-	else if (!mMetaData) {
-		qDebug() << "metaData is NULL!";
-	}
+        } catch(...) {}	// ignore if we cannot read the metadata
+    }
+    else if (!mMetaData) {
+        qDebug() << "metaData is NULL!";
+    }
 
-	if (imgLoaded)
-		setEditImage(img, tr("Original Image"));
+    if (imgLoaded)
+        setEditImage(img, tr("Original Image"));
 
-	if (imgLoaded)
-		qInfo() << "[Basic Loader]" << filePath << "loaded in" << dt;
-	else
-		qWarning() << "[Basic Loader] could not load" << filePath;
+    if (imgLoaded)
+        qInfo() << "[Basic Loader]" << filePath << "loaded in" << dt;
+    else
+        qWarning() << "[Basic Loader] could not load" << filePath;
 
-	return imgLoaded;
+    return imgLoaded;
 }
 
 /**
@@ -367,77 +397,77 @@ bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArr
  **/ 
 bool DkBasicLoader::loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
 
-	if (!ba)
-		ba = loadFileToBuffer(filePath);
-	if (!ba || ba->isEmpty())
-		return false;
+    if (!ba)
+        ba = loadFileToBuffer(filePath);
+    if (!ba || ba->isEmpty())
+        return false;
 
-	bool imgLoaded = false;
+    bool imgLoaded = false;
 
-	int rohW = 4000;
-	int rohH = 2672;
-	unsigned char fByte;	// first byte
-	unsigned char sByte;	// second byte
+    int rohW = 4000;
+    int rohH = 2672;
+    unsigned char fByte;	// first byte
+    unsigned char sByte;	// second byte
 
-	try {
-		
-		const unsigned char* pData = (const unsigned char*)ba->constData();
-		unsigned char* buffer = new unsigned char[rohW*rohH];
+    try {
+        
+        const unsigned char* pData = (const unsigned char*)ba->constData();
+        unsigned char* buffer = new unsigned char[rohW*rohH];
 
-		if (!buffer)
-			return imgLoaded;
+        if (!buffer)
+            return imgLoaded;
 
-		for (long long i = 0; i < (rohW*rohH); i++){
-		
-			fByte = pData[i*2];
-			sByte = pData[i*2+1];
-			fByte = fByte >> 4;
-			fByte = fByte & 15;
-			sByte = sByte << 4;
-			sByte = sByte & 240;
+        for (long long i = 0; i < (rohW*rohH); i++){
+        
+            fByte = pData[i*2];
+            sByte = pData[i*2+1];
+            fByte = fByte >> 4;
+            fByte = fByte & 15;
+            sByte = sByte << 4;
+            sByte = sByte & 240;
 
-			buffer[i] = (fByte | sByte);
-		
-		}
+            buffer[i] = (fByte | sByte);
+        
+        }
 
-		img = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
+        img = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
 
-		if (img.isNull())
-			return imgLoaded;
-		else
-			imgLoaded = true;
+        if (img.isNull())
+            return imgLoaded;
+        else
+            imgLoaded = true;
 
 
-		//img = img.copy();
-		QVector<QRgb> colorTable;
+        //img = img.copy();
+        QVector<QRgb> colorTable;
 
-		for (int i = 0; i < 256; i++)
-			colorTable.push_back(QColor(i, i, i).rgb());
-		
-		img.setColorTable(colorTable);
+        for (int i = 0; i < 256; i++)
+            colorTable.push_back(QColor(i, i, i).rgb());
+        
+        img.setColorTable(colorTable);
 
-	} catch(...) {
-		imgLoaded = false;
-	}
+    } catch(...) {
+        imgLoaded = false;
+    }
 
-	//if (imgLoaded) {
-	//	setEditImage(img, tr("Original Image"));
-	//}
+    //if (imgLoaded) {
+    //	setEditImage(img, tr("Original Image"));
+    //}
 
-	return imgLoaded;
+    return imgLoaded;
 }
 
 bool nmc::DkBasicLoader::loadTgaFile(const QString & filePath, QImage & img, QSharedPointer<QByteArray> ba) const {
-	
-	if (!ba || ba->isEmpty())
-		ba = loadFileToBuffer(filePath);
+    
+    if (!ba || ba->isEmpty())
+        ba = loadFileToBuffer(filePath);
 
-	tga::DkTgaLoader tl = tga::DkTgaLoader(ba);
+    tga::DkTgaLoader tl = tga::DkTgaLoader(ba);
 
-	bool success = tl.load();
-	img = tl.image();
+    bool success = tl.load();
+    img = tl.image();
 
-	return success;
+    return success;
 }
 
 /**
@@ -448,16 +478,16 @@ bool nmc::DkBasicLoader::loadTgaFile(const QString & filePath, QImage & img, QSh
  * @return bool true if the file could be loaded.
  **/ 
 bool DkBasicLoader::loadRawFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, bool fast) const {
-	
-	DkRawLoader rawLoader(filePath, mMetaData);
-	rawLoader.setLoadFast(fast);
+    
+    DkRawLoader rawLoader(filePath, mMetaData);
+    rawLoader.setLoadFast(fast);
 
-	bool success = rawLoader.load(ba);
+    bool success = rawLoader.load(ba);
 
-	if (success)
-		img = rawLoader.image();
+    if (success)
+        img = rawLoader.image();
 
-	return success;
+    return success;
 }
 
 #ifdef Q_OS_WIN
@@ -465,42 +495,42 @@ bool DkBasicLoader::loadPSDFile(const QString&, QImage&, QSharedPointer<QByteArr
 #else
 bool DkBasicLoader::loadPSDFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
 
-	// load from file?
-	if (!ba || ba->isEmpty()) {
-		QFile file(filePath);
-		file.open(QIODevice::ReadOnly);
+    // load from file?
+    if (!ba || ba->isEmpty()) {
+        QFile file(filePath);
+        file.open(QIODevice::ReadOnly);
 
-		QPsdHandler psdHandler;
-		psdHandler.setDevice(&file);	// QFile is an IODevice
-		//psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
+        QPsdHandler psdHandler;
+        psdHandler.setDevice(&file);	// QFile is an IODevice
+        //psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
 
-		if (psdHandler.canRead(&file)) {
-			bool success = psdHandler.read(&img);
-			//setEditImage(img, tr("Original Image"));
-			
-			return success;
-		}
-	}
-	else {
-	
-		QBuffer buffer;
-		buffer.setData(*ba.data());
-		buffer.open(QIODevice::ReadOnly);
+        if (psdHandler.canRead(&file)) {
+            bool success = psdHandler.read(&img);
+            //setEditImage(img, tr("Original Image"));
+            
+            return success;
+        }
+    }
+    else {
+    
+        QBuffer buffer;
+        buffer.setData(*ba.data());
+        buffer.open(QIODevice::ReadOnly);
 
-		QPsdHandler psdHandler;
-		psdHandler.setDevice(&buffer);	// QFile is an IODevice
-		//psdHandler.setFormat(file.suffix().toLocal8Bit());
+        QPsdHandler psdHandler;
+        psdHandler.setDevice(&buffer);	// QFile is an IODevice
+        //psdHandler.setFormat(file.suffix().toLocal8Bit());
 
-		if (psdHandler.canRead(&buffer)) {
-			bool success = psdHandler.read(&img);
-			//setEditImage(img, tr("Original Image"));
+        if (psdHandler.canRead(&buffer)) {
+            bool success = psdHandler.read(&img);
+            //setEditImage(img, tr("Original Image"));
 
-			return success;
-		}
-	}
+            return success;
+        }
+    }
 
 #endif // !Q_OS_WIN
-	return false;
+    return false;
 }
 
 #ifndef WITH_LIBTIFF
@@ -508,71 +538,71 @@ bool DkBasicLoader::loadTIFFile(const QString&, QImage&, QSharedPointer<QByteArr
 #else
 bool DkBasicLoader::loadTIFFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba) const {
 
-	bool success = false;
+    bool success = false;
 
-	// first turn off nasty warning/error dialogs - (we do the GUI : )
-	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-	oldWarningHandler = TIFFSetWarningHandler(NULL);
-	oldErrorHandler = TIFFSetErrorHandler(NULL);
+    // first turn off nasty warning/error dialogs - (we do the GUI : )
+    TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+    oldWarningHandler = TIFFSetWarningHandler(NULL);
+    oldErrorHandler = TIFFSetErrorHandler(NULL);
 
-	DkTimer dt;
-	TIFF* tiff = 0;
+    DkTimer dt;
+    TIFF* tiff = 0;
 
 
 // TODO: currently TIFFStreamOpen can only be linked on Windows?!
 #if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
 
-	std::istringstream is(ba ? ba->toStdString() : "");
+    std::istringstream is(ba ? ba->toStdString() : "");
 
-	if (ba) 
-		tiff = TIFFStreamOpen("MemTIFF", &is);
+    if (ba) 
+        tiff = TIFFStreamOpen("MemTIFF", &is);
 
-	// fallback to direct loading
-	if (!tiff)
-		tiff = TIFFOpen(filePath.toLatin1(), "r");
+    // fallback to direct loading
+    if (!tiff)
+        tiff = TIFFOpen(filePath.toLatin1(), "r");
 
-	// loading from buffer allows us to load files with non-latin names
-	QSharedPointer<QByteArray> bal;
-	if (!tiff)
-		bal = loadFileToBuffer(filePath);
+    // loading from buffer allows us to load files with non-latin names
+    QSharedPointer<QByteArray> bal;
+    if (!tiff)
+        bal = loadFileToBuffer(filePath);
 
-	std::istringstream isl(bal ? bal->toStdString() : "");
+    std::istringstream isl(bal ? bal->toStdString() : "");
 
-	if (bal)
-		tiff = TIFFStreamOpen("MemTIFF", &isl);
+    if (bal)
+        tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
-	tiff = TIFFOpen(filePath.toLatin1(), "r");
+    tiff = TIFFOpen(filePath.toLatin1(), "r");
 #endif
 
-	if (!tiff)
-		return success;
+    if (!tiff)
+        return success;
 
-	uint32 width = 0;
-	uint32 height = 0;
+    uint32 width = 0;
+    uint32 height = 0;
 
-	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
-	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
+    TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+    TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
-	// init the qImage
-	img = QImage(width, height, QImage::Format_ARGB32);
+    // init the qImage
+    img = QImage(width, height, QImage::Format_ARGB32);
 
-	const int stopOnError = 1;
-	success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+    const int stopOnError = 1;
+    success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
-	if (success) {
-		for (uint32 y = 0; y<height; ++y)
-			convert32BitOrder(img.scanLine(y), width);
-	}
+    if (success) {
+        for (uint32 y = 0; y<height; ++y)
+            convert32BitOrder(img.scanLine(y), width);
+    }
 
-	TIFFClose(tiff);
+    TIFFClose(tiff);
 
-	TIFFSetWarningHandler(oldWarningHandler);
-	TIFFSetWarningHandler(oldErrorHandler);
+    TIFFSetWarningHandler(oldWarningHandler);
+    TIFFSetWarningHandler(oldErrorHandler);
 
-	return success;
+    return success;
 
 #endif // !WITH_LIBTIFF
-	return false;
+    return false;
 }
 
 #define DRIF_IMAGE_IMPL
@@ -598,9 +628,9 @@ uint32_t drif2qtfmt(uint32_t f)
     case DRIF_FMT_RGB888:  return QImage::Format_RGB888;
     case DRIF_FMT_RGBA8888:  return QImage::Format_RGBA8888;
 
-	// grayscale 8 was added in Qt 5.4
+    // grayscale 8 was added in Qt 5.4
 #if QT_VERSION >= 0x050500
-	case DRIF_FMT_GRAY:  return QImage::Format_Grayscale8;
+    case DRIF_FMT_GRAY:  return QImage::Format_Grayscale8;
 #endif
 
     }
@@ -760,118 +790,263 @@ bool DkBasicLoader::loadDrifFile(const QString& filePath, QImage& img, QSharedPo
 
 void DkBasicLoader::setImage(const QImage & img, const QString & editName, const QString & file) {
 
-	mFile = file;
-	setEditImage(img, editName);
+    mFile = file;
+    setEditImage(img, editName);
+}
+
+void DkBasicLoader::pruneEditHistory() {
+
+    // delete all hidden edit states
+    for (int idx = mImages.size() - 1; idx > mImageIndex; idx--) {
+        mImages.pop_back();
+    }
 }
 
 void DkBasicLoader::setEditImage(const QImage& img, const QString& editName) {
 
-	if (img.isNull())
-		return;
+    if (img.isNull())
+        return;
 
-	// delete all hidden edit states
-	for (int idx = mImages.size() - 1; idx > mImageIndex; idx--) {
-		mImages.pop_back();
-	}
+    // delete all hidden edit states
+    pruneEditHistory();
 
-	// compute new history size
-	int historySize = 0;
-	for (const DkEditImage& e : mImages) {
-		historySize += e.size();
-	}
+    // compute new history size
+    int historySize = 0;
+    for (const DkEditImage& e : mImages) {
+        historySize += e.size();
+    }
 
-	DkEditImage newImg(img, editName);
+    // reset exif orientation after image edit
+    if (!mImages.isEmpty())
+        mMetaData->clearOrientation();
+    // new history item with new pixmap (and old or original metadata)
+    DkEditImage newImg(img, mMetaData->copy(), editName); //new image, old/unchanged metadata
 
-	if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory && mImages.size() > mMinHistorySize) {
-		mImages.removeAt(1);
-		qDebug() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
-	}
+    if (historySize + newImg.size() > DkSettingsManager::param().resources().historyMemory && mImages.size() > mMinHistorySize) {
+        mImages.removeAt(1);
+        qWarning() << "removing history image because it's too large:" << historySize + newImg.size() << "MB";
+    }
 
-	mImages.append(newImg);
-	mImageIndex = mImages.size() - 1;	// set the index again to the last
+    mImages.append(newImg);
+    mImageIndex = mImages.size() - 1;	// set the index again to the last
+}
+
+void DkBasicLoader::setEditMetaData(const QSharedPointer<DkMetaDataT>& metaData, const QImage& img, const QString& editName) {
+
+    // delete all hidden edit states
+    pruneEditHistory();
+
+    // not removing second history item if oversized (see setEditImage())
+
+    // new history item with new metadata (and image, but hasNewImage() will be false)
+    DkEditImage newImg(metaData->copy(), img, editName); //new metadata, old/unchanged image
+
+    mImages.append(newImg);
+    mImageIndex = mImages.size() - 1;	// set the index again to the last
+}
+
+void DkBasicLoader::setEditMetaData(const QSharedPointer<DkMetaDataT>& metaData, const QString& editName) {
+
+    //Add history edit with new metadata (hasMetaData()), copying last or original image
+    QImage lastImg = image(); // copy last edit of pixmap (if any) to new history item
+    setEditMetaData(metaData, lastImg, editName);
+}
+
+void DkBasicLoader::setEditMetaData(const QString& editName) {
+
+    //Add history edit with edited metadata (hasMetaData()), copying last or original image
+    setEditMetaData(mMetaData, image(), editName);
+}
+
+QImage DkBasicLoader::lastImage() const {
+
+    //Find and return the last/current version of the image (ready to be saved to disk)
+    //This is initially the first item (the original image) or the last one,
+    //excluding history items with images that only have modified metadata,
+    //for example, after rotating there'd be a history item with the rotated image
+    //but this rotated pixmap is for the gui only, it should not be saved.
+    for (int idx = mImageIndex; idx >= 0; idx--) {
+        if (mImages[idx].hasNewImage()) {
+            return mImages[idx].image();
+        }
+    }
+
+    return QImage();
 }
 
 QImage DkBasicLoader::image() const {
-	
-	if (mImages.empty())
-		return QImage();
+    
+    return pixmap();
+}
 
-	if (mImageIndex > mImages.size() || mImageIndex == -1) {
-		qWarning() << "Illegal image index: " << mImageIndex;
-		return mImages.last().image();
-	}
+QImage DkBasicLoader::pixmap() const {
 
-	return mImages[mImageIndex].image();
+    //This is sometimes called with an invalid index, for example, after navigating back and forth
+    //if the history has been edited (i.e., > 1 entry). Sometimes, the index is -1 and the history is empty,
+    //which means we have nothing to return (image requested but nothing loaded). (via ViewPort?)
+    if (mImageIndex < 0 || mImageIndex >= mImages.size()) {
+        if (mImages.isEmpty())
+            return QImage();
+        else
+            return mImages.last().image();
+    }
+    //Return current pixmap, which may contain modification from metadata changes like rotation
+    //This should not be used to write the image to disk, use image() instead.
+    return mImages.at(mImageIndex).image();
+}
+
+/**
+ * @brief Returns the pointer to the current metadata object which belongs to the loaded image.
+ * 
+ * Note that this is a pointer, not a copy. After changing the metadata, it's necessary 
+ * to call setEditMetaData(), passing an appropriate edit name, to add a history item (will be copied).
+ * 
+ * @return QSharedPointer<DkMetaDataT> 
+ */
+QSharedPointer<DkMetaDataT> DkBasicLoader::getMetaData() const {
+
+    QSharedPointer<DkMetaDataT> metaData(mMetaData);
+    return metaData;
+};
+
+QSharedPointer<DkMetaDataT> DkBasicLoader::lastMetaDataEdit(bool return_nullptr, bool return_orig) const {
+
+    QSharedPointer<DkMetaDataT> lastEdit; //null edit
+    if (return_orig) {
+        //Return original metadata only if requested (otherwise only return modified metadata)
+        lastEdit = mImages.first().metaData();
+    }
+    else if (!return_nullptr) {
+        //Empty null object will be returned if no history item (with edited metadata) could be found
+        lastEdit = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+    }
+
+    //Get latest modified metadata item from history (or null)
+    for (int idx = mImageIndex; idx > 0; idx--) {
+        if (mImages[idx].hasNewMetaData()) {
+            lastEdit = mImages[idx].metaData();
+            break;
+        }
+    }
+
+    return lastEdit;
+}
+
+bool DkBasicLoader::isImageEdited() {
+
+    for (int i = 1, ii = mImageIndex; i <= ii; i++) {
+        if (mImages[i].hasNewImage()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool DkBasicLoader::isMetaDataEdited() {
+
+    for (int i = 1, ii = mImageIndex; i <= ii; i++) {
+        if (mImages[i].hasNewMetaData()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void DkBasicLoader::undo() {
-	
-	if (mImageIndex > 0)
-		mImageIndex--;
+    
+    //Change history index (for image()...)
+    if (mImageIndex > 0)
+        mImageIndex--;
+
+    //Get last history item with modified metadata (up until new history index)
+    QSharedPointer<DkMetaDataT> metaData(mMetaData);
+    metaData = lastMetaDataEdit(false, true);
+    //Update our current metadata object, which is also used elsewhere (pointer)
+    //for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
+    mMetaData->update(metaData);
+
+    //Notify listeners about changed metadata
+    emit undoSignal();
+    emit resetMetaDataSignal();
+
 }
 
 void DkBasicLoader::redo() {
 
-	if (mImageIndex < mImages.size()-1)
-		mImageIndex++;
+    //Change history index (for image()...)
+    if (mImageIndex < mImages.size()-1)
+        mImageIndex++;
+
+    //Get last history item with modified metadata (up until new history index)
+    QSharedPointer<DkMetaDataT> metaData(mMetaData);
+    metaData = lastMetaDataEdit(false, true);
+    //Update our current metadata object, which is also used elsewhere (pointer)
+    //for example, see DkMetaDataWidgets/DkMetaDataHUD - or DkCommentWidget
+    mMetaData->update(metaData);
+
+    //Notify listeners about changed metadata
+    emit redoSignal();
+    emit resetMetaDataSignal();
+
 }
 
 QVector<DkEditImage>* DkBasicLoader::history() {
-	return &mImages;
+    return &mImages;
 }
 
 DkEditImage DkBasicLoader::lastEdit() const {
-	
-	assert(mImageIndex >= 0 && mImageIndex < mImages.size());
-	return mImages[mImageIndex];
+    
+    assert(mImageIndex >= 0 && mImageIndex < mImages.size());
+    return mImages[mImageIndex];
 }
 
 int DkBasicLoader::historyIndex() const {
-	return mImageIndex;
+    return mImageIndex;
 }
 
 void DkBasicLoader::setMinHistorySize(int size) {
-	mMinHistorySize = size;
+    mMinHistorySize = size;
 }
 
 void DkBasicLoader::setHistoryIndex(int idx) {
-	mImageIndex = idx;
+    mImageIndex = idx;
+    //TODO update mMetaData, see undo()
 }
 
 void DkBasicLoader::loadFileToBuffer(const QString& filePath, QByteArray& ba) const {
 
-	QFileInfo fi(filePath);
+    QFileInfo fi(filePath);
 
-	if (!fi.exists())
-		return;
+    if (!fi.exists())
+        return;
 
 #ifdef WITH_QUAZIP
-	if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
-		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
+    if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
+        DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath), ba);
 #endif
-	
-	QFile file(filePath);
-	file.open(QIODevice::ReadOnly);
+    
+    QFile file(filePath);
+    file.open(QIODevice::ReadOnly);
 
-	ba = file.readAll();
+    ba = file.readAll();
 }
 
 QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString& filePath) const {
 
-	QFileInfo fi(filePath);
+    QFileInfo fi(filePath);
 
 #ifdef WITH_QUAZIP
-	if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
-		return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
+    if (fi.dir().path().contains(DkZipContainer::zipMarker())) 
+        return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
 #endif
 
-	QFile file(filePath);
-	file.open(QIODevice::ReadOnly);
+    QFile file(filePath);
+    file.open(QIODevice::ReadOnly);
 
-	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
-	file.close();
+    QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
+    file.close();
 
-	return ba;
+    return ba;
 }
 
 /**
@@ -885,221 +1060,223 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString& filePa
  */
 bool DkBasicLoader::writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const {
 
-	if (!ba || ba->isEmpty())
-		return false;
+    if (!ba || ba->isEmpty())
+        return false;
 
-	QFile file(fileInfo);
-	file.open(QIODevice::WriteOnly);
-	qint64 bytesWritten = file.write(*ba.data(), ba->size());
-	file.close();
-	qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
+    QFile file(fileInfo);
+    file.open(QIODevice::WriteOnly);
+    qint64 bytesWritten = file.write(*ba.data(), ba->size());
+    file.close();
+    qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
 
-	if (!bytesWritten || bytesWritten == -1)
-		return false;
+    if (!bytesWritten || bytesWritten == -1)
+        return false;
 
-	return true;
+    return true;
 }
 
 void DkBasicLoader::indexPages(const QString& filePath, const QSharedPointer<QByteArray> ba) {
 
-	// reset counters
-	mNumPages = 1;
-	mPageIdx = 1;
+    // reset counters
+    mNumPages = 1;
+    mPageIdx = 1;
 
 #ifdef WITH_LIBTIFF
 
-	QFileInfo fInfo(filePath);
+    QFileInfo fInfo(filePath);
 
-	// for now we just support tiff's
-	if (!fInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
-		return;
+    // for now we just support tiff's
+    if (!fInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
+        return;
 
-	// first turn off nasty warning/error dialogs - (we do the GUI : )
-	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-	oldWarningHandler = TIFFSetWarningHandler(NULL);
-	oldErrorHandler = TIFFSetErrorHandler(NULL); 
+    // first turn off nasty warning/error dialogs - (we do the GUI : )
+    TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+    oldWarningHandler = TIFFSetWarningHandler(NULL);
+    oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
-	DkTimer dt;
-	TIFF* tiff = 0;
+    DkTimer dt;
+    TIFF* tiff = 0;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
-	std::istringstream is(ba ? ba->toStdString() : "");
+    std::istringstream is(ba ? ba->toStdString() : "");
 
-	if (ba)
-		tiff = TIFFStreamOpen("MemTIFF", &is);
+    if (ba)
+        tiff = TIFFStreamOpen("MemTIFF", &is);
 
-	// read from file
-	if (!tiff)
-		tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
+    // read from file
+    if (!tiff)
+        tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
 
-	// loading from buffer allows us to load files with non-latin names
-	QSharedPointer<QByteArray> bal;
-	if (!tiff)
-		bal = loadFileToBuffer(filePath);;
-	std::istringstream isl(bal ? bal->toStdString() : "");
+    // loading from buffer allows us to load files with non-latin names
+    QSharedPointer<QByteArray> bal;
+    if (!tiff)
+        bal = loadFileToBuffer(filePath);;
+    std::istringstream isl(bal ? bal->toStdString() : "");
 
-	if (bal)
-		tiff = TIFFStreamOpen("MemTIFF", &isl);
+    if (bal)
+        tiff = TIFFStreamOpen("MemTIFF", &isl);
 #else
-	// read from file
-	tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
+    // read from file
+    tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
 #endif
 
-	if (!tiff) 
-		return;
+    if (!tiff) 
+        return;
 
-	// libtiff example
-	int dircount = 0;
+    // libtiff example
+    int dircount = 0;
 
-	do {
-		dircount++;
+    do {
+        dircount++;
 
-	} while (TIFFReadDirectory(tiff));
+    } while (TIFFReadDirectory(tiff));
 
-	mNumPages = dircount;
+    mNumPages = dircount;
 
-	if (mNumPages > 1)
-		mPageIdx = 1;
+    if (mNumPages > 1)
+        mPageIdx = 1;
 
-	qDebug() << dircount << " TIFF directories... " << dt;
-	TIFFClose(tiff);
+    qDebug() << dircount << " TIFF directories... " << dt;
+    TIFFClose(tiff);
 
-	TIFFSetWarningHandler(oldWarningHandler);
-	TIFFSetWarningHandler(oldErrorHandler);
+    TIFFSetWarningHandler(oldWarningHandler);
+    TIFFSetWarningHandler(oldErrorHandler);
 #else
-	Q_UNUSED(filePath);
+    Q_UNUSED(filePath);
 #endif
 
 }
 
 bool DkBasicLoader::loadPage(int skipIdx) {
 
-	bool imgLoaded = false;
+    bool imgLoaded = false;
 
-	mPageIdx += skipIdx;
+    mPageIdx += skipIdx;
 
-	// <= 1 since first page is loaded using qt
-	if (mPageIdx > mNumPages || mPageIdx <= 1)
-		return imgLoaded;
+    // <= 1 since first page is loaded using qt
+    if (mPageIdx > mNumPages || mPageIdx <= 1)
+        return imgLoaded;
 
-	return loadPageAt(mPageIdx);
+    return loadPageAt(mPageIdx);
 }
 
 bool DkBasicLoader::loadPageAt(int pageIdx) {
 
-	bool imgLoaded = false;
+    bool imgLoaded = false;
 
 #ifdef WITH_LIBTIFF
 
-	// <= 1 since first page is loaded using qt
-	if (pageIdx > mNumPages || pageIdx < 1)
-		return imgLoaded;
+    // <= 1 since first page is loaded using qt
+    if (pageIdx > mNumPages || pageIdx < 1)
+        return imgLoaded;
 
-	// first turn off nasty warning/error dialogs - (we do the GUI : )
-	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
-	oldWarningHandler = TIFFSetWarningHandler(NULL);
-	oldErrorHandler = TIFFSetErrorHandler(NULL); 
+    // first turn off nasty warning/error dialogs - (we do the GUI : )
+    TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+    oldWarningHandler = TIFFSetWarningHandler(NULL);
+    oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
-	DkTimer dt;
-	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
+    DkTimer dt;
+    TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
 
 #if QT_VERSION >= QT_VERSION_CHECK(5,5,0) && defined(Q_OS_WIN)
 
-	// loading from buffer allows us to load files with non-latin names
-	QSharedPointer<QByteArray> ba;
-	if (!tiff)
-		ba = loadFileToBuffer(mFile);
-	
-	std::istringstream is(ba ? ba->toStdString() : "");
-	if (ba)
-		tiff = TIFFStreamOpen("MemTIFF", &is);
+    // loading from buffer allows us to load files with non-latin names
+    QSharedPointer<QByteArray> ba;
+    if (!tiff)
+        ba = loadFileToBuffer(mFile);
+    
+    std::istringstream is(ba ? ba->toStdString() : "");
+    if (ba)
+        tiff = TIFFStreamOpen("MemTIFF", &is);
 #endif
 
-	if (!tiff)
-		return imgLoaded;
+    if (!tiff)
+        return imgLoaded;
 
-	uint32 width = 0;
-	uint32 height = 0;
+    uint32 width = 0;
+    uint32 height = 0;
 
-	// go to current directory
-	for (int idx = 1; idx < pageIdx; idx++) {
+    // go to current directory
+    for (int idx = 1; idx < pageIdx; idx++) {
 
-		if (!TIFFReadDirectory(tiff))
-			return false;
-	}
-	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
-	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
+        if (!TIFFReadDirectory(tiff))
+            return false;
+    }
+    TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+    TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
 
-	// init the qImage
-	QImage img = QImage(width, height, QImage::Format_ARGB32);
+    // init the qImage
+    QImage img = QImage(width, height, QImage::Format_ARGB32);
 
-	const int stopOnError = 1;
-	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+    const int stopOnError = 1;
+    imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
-	if (imgLoaded) {
-		for (uint32 y=0; y<height; ++y)
-			convert32BitOrder(img.scanLine(y), width);
-	}
+    if (imgLoaded) {
+        for (uint32 y=0; y<height; ++y)
+            convert32BitOrder(img.scanLine(y), width);
+    }
 
-	TIFFClose(tiff);
+    TIFFClose(tiff);
 
-	TIFFSetWarningHandler(oldWarningHandler);
-	TIFFSetWarningHandler(oldErrorHandler);
+    TIFFSetWarningHandler(oldWarningHandler);
+    TIFFSetWarningHandler(oldErrorHandler);
 
-	setEditImage(img, tr("Original Image"));
+    setEditImage(img, tr("Original Image"));
 #else
-	Q_UNUSED(pageIdx);
+    Q_UNUSED(pageIdx);
 #endif
 
 
-	return imgLoaded;
+    return imgLoaded;
 }
 
 bool DkBasicLoader::setPageIdx(int skipIdx) {
 
-	// do nothing if we don't have tiff pages
-	if (mNumPages <= 1)
-		return false;
+    // do nothing if we don't have tiff pages
+    if (mNumPages <= 1)
+        return false;
 
-	mPageIdxDirty = false;
+    mPageIdxDirty = false;
 
-	int newPageIdx = mPageIdx + skipIdx;
+    int newPageIdx = mPageIdx + skipIdx;
 
-	if (newPageIdx > 0 && newPageIdx <= mNumPages) {
-		mPageIdxDirty = true;
-		mPageIdx = newPageIdx;
-	}
+    if (newPageIdx > 0 && newPageIdx <= mNumPages) {
+        mPageIdxDirty = true;
+        mPageIdx = newPageIdx;
+    }
 
-	return mPageIdxDirty;
+    return mPageIdxDirty;
 }
 
 void DkBasicLoader::resetPageIdx() {
 
-	mPageIdxDirty = false;
-	mPageIdx = 1;
+    mPageIdxDirty = false;
+    mPageIdx = 1;
 }
 
 void DkBasicLoader::convert32BitOrder(void *buffer, int width) const {
 
 #ifdef WITH_LIBTIFF
-	// code from Qt QTiffHandler
-	uint32 *target = reinterpret_cast<uint32 *>(buffer);
-	for (int32 x=0; x<width; ++x) {
-		uint32 p = target[x];
-		// convert between ARGB and ABGR
-		target[x] = (p & 0xff000000)
-			| ((p & 0x00ff0000) >> 16)
-			| (p & 0x0000ff00)
-			| ((p & 0x000000ff) << 16);
-	}
+    // code from Qt QTiffHandler
+    uint32 *target = reinterpret_cast<uint32 *>(buffer);
+    for (int32 x=0; x<width; ++x) {
+        uint32 p = target[x];
+        // convert between ARGB and ABGR
+        target[x] = (p & 0xff000000)
+            | ((p & 0x00ff0000) >> 16)
+            | (p & 0x0000ff00)
+            | ((p & 0x000000ff) << 16);
+    }
 #else
-	Q_UNUSED(buffer);
-	Q_UNUSED(width);
+    Q_UNUSED(buffer);
+    Q_UNUSED(width);
 #endif
 }
 
 /**
- * @brief save() writes the image to a file buffer and then writes the buffer back to the original file.
+ * @brief saves the image and its metadata to the specified file.
+ * 
+ * It writes the image to a file buffer and then writes that buffer back to the original file.
  * 
  * @param filePath target path to image file
  * @param img source image to be written to file (may be converted along the way)
@@ -1107,25 +1284,27 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) const {
  */
 QString DkBasicLoader::save(const QString& filePath, const QImage& img, int compression) {
 
-	QSharedPointer<QByteArray> ba;
+    QSharedPointer<QByteArray> ba;
 
-	DkTimer dt;
-	if (saveToBuffer(filePath, img, ba, compression) && ba) {
+    DkTimer dt;
+    if (saveToBuffer(filePath, img, ba, compression) && ba) {
 
-		if (writeBufferToFile(filePath, ba)) {
-			qInfo() << "saving to" << filePath << "in" << dt;
-			return filePath;
-		}
-	}
+        if (writeBufferToFile(filePath, ba)) {
+            // Image (pixmap) saved, now write metadata to file
+            saveMetaData(filePath);
 
-	return QString();
+            qInfo() << "saved to" << filePath << "in" << dt;
+            return filePath;
+        }
+    }
+
+    return QString();
 }
 
 /**
  * @brief saveToBuffer() writes the image matrix img to the file buffer.
  * 
  * The file path is used to convert the image based on the file suffix.
- * The metadata module is then used to update this in-memory file buffer with the (new) exif data.
  * 
  * @param filePath path to file to which this image will later be written, the suffix is relevant
  * @param img image to be written to file buffer
@@ -1134,134 +1313,131 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
  */
 bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) const {
 
-	bool bufferCreated = false;
+    bool bufferCreated = false;
 
-	if (!ba) {
-		ba = QSharedPointer<QByteArray>(new QByteArray());
-		bufferCreated = true;
-	}
+    if (!ba) {
+        ba = QSharedPointer<QByteArray>(new QByteArray());
+        bufferCreated = true;
+    }
 
-	bool saved = false;
+    bool saved = false;
 
-	QFileInfo fInfo(filePath);
+    QFileInfo fInfo(filePath);
 
-	if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
-		saved = saveWindowsIcon(img, ba);
-	}
+    if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
+        saved = saveWindowsIcon(img, ba);
+    }
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
-	else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
-		saved = saveWebPFile(img, ba, compression);
-	}
+    else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
+        saved = saveWebPFile(img, ba, compression);
+    }
 #endif
-	else {
+    else {
 
-		bool hasAlpha = DkImage::alphaChannelUsed(img);
-		QImage sImg = img;
+        bool hasAlpha = DkImage::alphaChannelUsed(img);
+        QImage sImg = img;
 
 
-		// JPEG 2000 can only handle 32 or 8bit images
-		if (!hasAlpha && img.colorTable().empty() && !fInfo.suffix().contains(QRegExp("(avif|j2k|jp2|jpf|jpx|jxl|png)"))) {
-			sImg = sImg.convertToFormat(QImage::Format_RGB888);
-		}
-		else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8) {
-			if (sImg.hasAlphaChannel()) {
-				sImg = sImg.convertToFormat(QImage::Format_ARGB32);
-			} else {
-				sImg = sImg.convertToFormat(QImage::Format_RGB32);
-			}
-		}
+        // JPEG 2000 can only handle 32 or 8bit images
+        if (!hasAlpha && img.colorTable().empty() && !fInfo.suffix().contains(QRegExp("(avif|j2k|jp2|jpf|jpx|jxl|png)"))) {
+            sImg = sImg.convertToFormat(QImage::Format_RGB888);
+        }
+        else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8) {
+            if (sImg.hasAlphaChannel()) {
+                sImg = sImg.convertToFormat(QImage::Format_ARGB32);
+            } else {
+                sImg = sImg.convertToFormat(QImage::Format_RGB32);
+            }
+        }
 
-		if (fInfo.suffix().contains(QRegExp("(png)")))
-			compression = -1;
+        if (fInfo.suffix().contains(QRegExp("(png)")))
+            compression = -1;
 
-		QBuffer fileBuffer(ba.data());
-		//size_t s = fileBuffer.size();
-		fileBuffer.open(QIODevice::WriteOnly);
-		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
-		
-		if (compression >= 0) {	// -1 -> use Qt's default
-			imgWriter->setCompression(compression);
-			imgWriter->setQuality(compression);
-		}
-		if (compression == -1 && imgWriter->format() == "jpg") {
-			imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
-		}
+        QBuffer fileBuffer(ba.data());
+        //size_t s = fileBuffer.size();
+        fileBuffer.open(QIODevice::WriteOnly);
+        QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
+        
+        if (compression >= 0) {	// -1 -> use Qt's default
+            imgWriter->setCompression(compression);
+            imgWriter->setQuality(compression);
+        }
+        if (compression == -1 && imgWriter->format() == "jpg") {
+            imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
+        }
 
 #if QT_VERSION >= 0x050500
-		imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
-		imgWriter->setProgressiveScanWrite(true);
+        imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
+        imgWriter->setProgressiveScanWrite(true);
 #endif
-		saved = imgWriter->write(sImg);
-		delete imgWriter;
-	}
+        saved = imgWriter->write(sImg);
+        delete imgWriter;
+    }
 
-	if (saved && mMetaData) {
-		
-		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData()) {
+    if (saved && mMetaData) {
+        
+        if (!mMetaData->isLoaded() || !mMetaData->hasMetaData()) {
 
-			if (!bufferCreated)
-				mMetaData->readMetaData(filePath, ba);
-			else
-				// if we created the buffere here - force loading metadata from the file
-				mMetaData->readMetaData(filePath);
-			}
+            if (!bufferCreated)
+                mMetaData->readMetaData(filePath, ba);
+            else
+                // if we created the buffere here - force loading metadata from the file
+                mMetaData->readMetaData(filePath);
+        }
 
-			if (mMetaData->isLoaded()) {
-			
-				try {
-					// be careful: here we actually lie about the constness
-					mMetaData->updateImageMetaData(img);
-					if (!mMetaData->saveMetaData(ba, true))
-						mMetaData->clearExifState();
-				} 
-				catch (...) {
-					// is it still throwing anything?
-					qInfo() << "Sorry, I could not save the meta data...";
-					// clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
-					mMetaData->clearExifState();
-				}
-			}
-	}
+        if (mMetaData->isLoaded()) {
+        
+            try {
+                // be careful: here we actually lie about the constness
+                mMetaData->updateImageMetaData(img, false);
+                if (!mMetaData->saveMetaData(ba, true))
+                    mMetaData->clearExifState();
+            } 
+            catch (...) {
+                // is it still throwing anything?
+                qInfo() << "Sorry, I could not save the meta data...";
+                // clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
+                mMetaData->clearExifState();
+            }
+        }
+    }
 
-	if (!saved)
-		emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fInfo.fileName()));
+    if (!saved)
+        emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fInfo.fileName()));
 
-	return saved;
+    return saved;
 }
 
 void DkBasicLoader::saveThumbToMetaData(const QString& filePath) {
 
-	QSharedPointer<QByteArray> ba;	// dummy
-	saveThumbToMetaData(filePath, ba);
+    QSharedPointer<QByteArray> ba;	// dummy
+    saveThumbToMetaData(filePath, ba);
 }
 
 /**
- * @brief this will save the exif metadata to the file - outside of the regular save() routine.
- * 
- * Use it at your own risk. Keep children away.
+ * @brief this will write the current exif/metadata to the loaded file.
  * 
  * @param filePath path to current file to be updated
  */
 void DkBasicLoader::saveMetaData(const QString& filePath) {
 
-	QSharedPointer<QByteArray> ba;	// dummy
-	saveMetaData(filePath, ba);
+    QSharedPointer<QByteArray> ba;	// dummy
+    saveMetaData(filePath, ba);
 }
 
 void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
-	
-	if (!hasImage())
-		return;
+    
+    if (!hasImage())
+        return;
 
-	mMetaData->setThumbnail(DkImage::createThumb(image()));
-	saveMetaData(filePath, ba);
+    mMetaData->setThumbnail(DkImage::createThumb(image()));
+    saveMetaData(filePath, ba);
 }
 
 /**
  * @brief saves the file to a file buffer and writes the file buffer to the original file
  * 
  * This routine will write new metadata to the file on disk.
- * Use with caution. It works outside of the regular save workflow.
  * See ImageLoader (regular workflow starts there) and ImageContainer.
  * 
  * @param filePath path to image file
@@ -1269,46 +1445,46 @@ void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<
  */
 void DkBasicLoader::saveMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 
-	if (!ba)
-		ba = QSharedPointer<QByteArray>(new QByteArray());
+    if (!ba)
+        ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	if (ba->isEmpty() && mMetaData->isDirty()) {
-		ba = loadFileToBuffer(filePath);
-	}
+    if (ba->isEmpty() && mMetaData->isDirty()) {
+        ba = loadFileToBuffer(filePath);
+    }
 
-	// Update in-memory copy of file (ba) with new meta data
-	bool saved = false;
-	try {
-		saved = mMetaData->saveMetaData(ba);
-	} 
-	catch(...) {
-		qInfo() << "could not save metadata...";
-	}
-	
-	// Write in-memory copy to specified file - use this overload only if you really need it
-	if (saved)
-		writeBufferToFile(filePath, ba);
+    // Update in-memory copy of file (ba) with new meta data
+    bool saved = false;
+    try {
+        saved = mMetaData->saveMetaData(ba);
+    } 
+    catch(...) {
+        qInfo() << "could not save metadata...";
+    }
+    
+    // Write in-memory copy to specified file - use this overload only if you really need it
+    if (saved)
+        writeBufferToFile(filePath, ba);
 
 }
 
 bool DkBasicLoader::isContainer(const QString& filePath) {
 
-	QFileInfo fInfo(filePath);
-	if (!fInfo.isFile() || !fInfo.exists())
-		return false;
+    QFileInfo fInfo(filePath);
+    if (!fInfo.isFile() || !fInfo.exists())
+        return false;
 
-	QString suffix = fInfo.suffix();
+    QString suffix = fInfo.suffix();
 
-	if (suffix.isEmpty())
-		return false;
+    if (suffix.isEmpty())
+        return false;
 
-	for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
+    for (int idx = 0; idx < DkSettingsManager::param().app().containerFilters.size(); idx++) {
 
-		if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
-			return true;
-	}
+        if (DkSettingsManager::param().app().containerFilters[idx].contains(suffix))
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -1325,145 +1501,146 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
  **/ 
 void DkBasicLoader::release() {
 
-	// TODO: auto save routines here?
-	// answer: no.
+    // TODO: auto save routines here?
+    // answer: no.
 
-	mImages.clear(); // clear history
-	
-	// Unload metadata
-	mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+    mImages.clear(); // clear history
+    mImageIndex = -1;
+    
+    // Unload metadata
+    mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 
 }
 
 #ifdef Q_OS_WIN
 bool DkBasicLoader::saveWindowsIcon(const QString& filePath, const QImage& img) const {
 
-	QSharedPointer<QByteArray> ba;
+    QSharedPointer<QByteArray> ba;
 
-	if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
+    if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
 
-		writeBufferToFile(filePath, ba);
-		return true;
-	}
+        writeBufferToFile(filePath, ba);
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 struct ICONDIRENTRY
 {
-	UCHAR nWidth;
-	UCHAR nHeight;
-	UCHAR nNumColorsInPalette; // 0 if no palette
-	UCHAR nReserved; // should be 0
-	WORD nNumColorPlanes; // 0 or 1
-	WORD nBitsPerPixel;
-	ULONG nDataLength; // length in bytes
-	ULONG nOffset; // offset of BMP or PNG data from beginning of file
+    UCHAR nWidth;
+    UCHAR nHeight;
+    UCHAR nNumColorsInPalette; // 0 if no palette
+    UCHAR nReserved; // should be 0
+    WORD nNumColorPlanes; // 0 or 1
+    WORD nBitsPerPixel;
+    ULONG nDataLength; // length in bytes
+    ULONG nOffset; // offset of BMP or PNG data from beginning of file
 };
 
 bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const {
 
-	// this code is an adopted version of:
-	// http://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
+    // this code is an adopted version of:
+    // http://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
 
-	if (!ba)
-		ba = QSharedPointer<QByteArray>(new QByteArray());
+    if (!ba)
+        ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	HICON hIcon = QtWin::toHICON(QPixmap::fromImage(img));
-	int nColorBits = 32;
+    HICON hIcon = QtWin::toHICON(QPixmap::fromImage(img));
+    int nColorBits = 32;
 
-	QBuffer buffer(ba.data());
-	buffer.open(QIODevice::WriteOnly);
+    QBuffer buffer(ba.data());
+    buffer.open(QIODevice::WriteOnly);
 
-	if (!hIcon)
-		return false;
+    if (!hIcon)
+        return false;
 
-	HDC screenDevice = GetDC(0);
+    HDC screenDevice = GetDC(0);
 
-	// Write header:
-	UCHAR icoHeader[6] = { 0, 0, 1, 0, 1, 0 }; // ICO file with 1 image
-	buffer.write((const char*)(&icoHeader), sizeof(icoHeader));
+    // Write header:
+    UCHAR icoHeader[6] = { 0, 0, 1, 0, 1, 0 }; // ICO file with 1 image
+    buffer.write((const char*)(&icoHeader), sizeof(icoHeader));
 
-	// Get information about icon:
-	ICONINFO iconInfo;
-	GetIconInfo(hIcon, &iconInfo);
-	HGDIOBJ handle1(iconInfo.hbmColor); // free bitmaps when function ends
-	BITMAPINFO bmInfo = { 0 };
-	bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmInfo.bmiHeader.biBitCount = 0;    // don't get the color table     
-	if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, 0, NULL, &bmInfo, DIB_RGB_COLORS))
-	{
-		return false;
-	}
+    // Get information about icon:
+    ICONINFO iconInfo;
+    GetIconInfo(hIcon, &iconInfo);
+    HGDIOBJ handle1(iconInfo.hbmColor); // free bitmaps when function ends
+    BITMAPINFO bmInfo = { 0 };
+    bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmInfo.bmiHeader.biBitCount = 0;    // don't get the color table     
+    if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, 0, NULL, &bmInfo, DIB_RGB_COLORS))
+    {
+        return false;
+    }
 
-	// Allocate size of bitmap info header plus space for color table:
-	int nBmInfoSize = sizeof(BITMAPINFOHEADER);
-	if (nColorBits < 24)
-	{
-		nBmInfoSize += sizeof(RGBQUAD) * (int)(1 << nColorBits);
-	}
+    // Allocate size of bitmap info header plus space for color table:
+    int nBmInfoSize = sizeof(BITMAPINFOHEADER);
+    if (nColorBits < 24)
+    {
+        nBmInfoSize += sizeof(RGBQUAD) * (int)(1 << nColorBits);
+    }
 
-	QSharedPointer<UCHAR> bitmapInfo(new UCHAR[nBmInfoSize]);
-	BITMAPINFO* pBmInfo = (BITMAPINFO*)bitmapInfo.data();
-	memcpy(pBmInfo, &bmInfo, sizeof(BITMAPINFOHEADER));
+    QSharedPointer<UCHAR> bitmapInfo(new UCHAR[nBmInfoSize]);
+    BITMAPINFO* pBmInfo = (BITMAPINFO*)bitmapInfo.data();
+    memcpy(pBmInfo, &bmInfo, sizeof(BITMAPINFOHEADER));
 
-	// Get bitmap data:
-	QSharedPointer<UCHAR> bits(new UCHAR[bmInfo.bmiHeader.biSizeImage]);
-	pBmInfo->bmiHeader.biBitCount = (WORD)nColorBits;
-	pBmInfo->bmiHeader.biCompression = BI_RGB;
-	if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, bmInfo.bmiHeader.biHeight, bits.data(), pBmInfo, DIB_RGB_COLORS))
-	{
-		return false;
-	}
+    // Get bitmap data:
+    QSharedPointer<UCHAR> bits(new UCHAR[bmInfo.bmiHeader.biSizeImage]);
+    pBmInfo->bmiHeader.biBitCount = (WORD)nColorBits;
+    pBmInfo->bmiHeader.biCompression = BI_RGB;
+    if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, bmInfo.bmiHeader.biHeight, bits.data(), pBmInfo, DIB_RGB_COLORS))
+    {
+        return false;
+    }
 
-	// Get mask data:
-	BITMAPINFO maskInfo = { 0 };
-	maskInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	maskInfo.bmiHeader.biBitCount = 0;  // don't get the color table     
-	if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, 0, NULL, &maskInfo, DIB_RGB_COLORS))
-	{
-		return false;
-	}
+    // Get mask data:
+    BITMAPINFO maskInfo = { 0 };
+    maskInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    maskInfo.bmiHeader.biBitCount = 0;  // don't get the color table     
+    if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, 0, NULL, &maskInfo, DIB_RGB_COLORS))
+    {
+        return false;
+    }
 
-	QSharedPointer<UCHAR> maskBits(new UCHAR[maskInfo.bmiHeader.biSizeImage]);
-	QSharedPointer<UCHAR> maskInfoBytes(new UCHAR[sizeof(BITMAPINFO) + 2 * sizeof(RGBQUAD)]);
-	BITMAPINFO* pMaskInfo = (BITMAPINFO*)maskInfoBytes.data();
-	memcpy(pMaskInfo, &maskInfo, sizeof(maskInfo));
-	if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, maskInfo.bmiHeader.biHeight, maskBits.data(), pMaskInfo, DIB_RGB_COLORS))
-	{
-		return false;
-	}
+    QSharedPointer<UCHAR> maskBits(new UCHAR[maskInfo.bmiHeader.biSizeImage]);
+    QSharedPointer<UCHAR> maskInfoBytes(new UCHAR[sizeof(BITMAPINFO) + 2 * sizeof(RGBQUAD)]);
+    BITMAPINFO* pMaskInfo = (BITMAPINFO*)maskInfoBytes.data();
+    memcpy(pMaskInfo, &maskInfo, sizeof(maskInfo));
+    if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, maskInfo.bmiHeader.biHeight, maskBits.data(), pMaskInfo, DIB_RGB_COLORS))
+    {
+        return false;
+    }
 
-	// Write directory entry:
-	ICONDIRENTRY dir;
-	dir.nWidth = (UCHAR)pBmInfo->bmiHeader.biWidth;
-	dir.nHeight = (UCHAR)pBmInfo->bmiHeader.biHeight;
-	dir.nNumColorsInPalette = (nColorBits == 4 ? 16 : 0);
-	dir.nReserved = 0;
-	dir.nNumColorPlanes = 0;
-	dir.nBitsPerPixel = pBmInfo->bmiHeader.biBitCount;
-	dir.nDataLength = pBmInfo->bmiHeader.biSizeImage + pMaskInfo->bmiHeader.biSizeImage + nBmInfoSize;
-	dir.nOffset = sizeof(dir) + sizeof(icoHeader);
-	buffer.write((const char*)&dir, sizeof(dir));
+    // Write directory entry:
+    ICONDIRENTRY dir;
+    dir.nWidth = (UCHAR)pBmInfo->bmiHeader.biWidth;
+    dir.nHeight = (UCHAR)pBmInfo->bmiHeader.biHeight;
+    dir.nNumColorsInPalette = (nColorBits == 4 ? 16 : 0);
+    dir.nReserved = 0;
+    dir.nNumColorPlanes = 0;
+    dir.nBitsPerPixel = pBmInfo->bmiHeader.biBitCount;
+    dir.nDataLength = pBmInfo->bmiHeader.biSizeImage + pMaskInfo->bmiHeader.biSizeImage + nBmInfoSize;
+    dir.nOffset = sizeof(dir) + sizeof(icoHeader);
+    buffer.write((const char*)&dir, sizeof(dir));
 
-	// Write DIB header (including color table):
-	int nBitsSize = pBmInfo->bmiHeader.biSizeImage;
-	pBmInfo->bmiHeader.biHeight *= 2; // because the header is for both image and mask
-	pBmInfo->bmiHeader.biCompression = 0;
-	pBmInfo->bmiHeader.biSizeImage += pMaskInfo->bmiHeader.biSizeImage; // because the header is for both image and mask
-	buffer.write((const char*)&pBmInfo->bmiHeader, nBmInfoSize);
+    // Write DIB header (including color table):
+    int nBitsSize = pBmInfo->bmiHeader.biSizeImage;
+    pBmInfo->bmiHeader.biHeight *= 2; // because the header is for both image and mask
+    pBmInfo->bmiHeader.biCompression = 0;
+    pBmInfo->bmiHeader.biSizeImage += pMaskInfo->bmiHeader.biSizeImage; // because the header is for both image and mask
+    buffer.write((const char*)&pBmInfo->bmiHeader, nBmInfoSize);
 
-	// Write image data:
-	buffer.write((const char*)bits.data(), nBitsSize);
+    // Write image data:
+    buffer.write((const char*)bits.data(), nBitsSize);
 
-	// Write mask data:
-	buffer.write((const char*)maskBits.data(), pMaskInfo->bmiHeader.biSizeImage);
+    // Write mask data:
+    buffer.write((const char*)maskBits.data(), pMaskInfo->bmiHeader.biSizeImage);
 
-	buffer.close();
+    buffer.close();
 
-	DeleteObject(handle1);
+    DeleteObject(handle1);
 
-	return true;
+    return true;
 }
 
 #endif // #ifdef Q_OS_WIN
@@ -1471,222 +1648,222 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 #ifdef WITH_OPENCV
 
 cv::Mat DkBasicLoader::getImageCv() {
-	return cv::Mat();
+    return cv::Mat();
 }
 
 bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba, QSize s) const {
 
-	if (!ba)
-		ba = QSharedPointer<QByteArray>(new QByteArray());
+    if (!ba)
+        ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	// load from file?
-	if (ba->isEmpty())
-		ba = loadFileToBuffer(filePath);
+    // load from file?
+    if (ba->isEmpty())
+        ba = loadFileToBuffer(filePath);
 
-	if (ba->isEmpty())
-		return false;
+    if (ba->isEmpty())
+        return false;
 
-	// read header & get a pointer to the first image
-	int fileCount, vecSize;
-	const unsigned char* imgPtr = (const unsigned char*)ba->constData();
-	if (!readHeader(&imgPtr, fileCount, vecSize))
-		return false;
+    // read header & get a pointer to the first image
+    int fileCount, vecSize;
+    const unsigned char* imgPtr = (const unsigned char*)ba->constData();
+    if (!readHeader(&imgPtr, fileCount, vecSize))
+        return false;
 
-	int guessedW = 0;
-	int guessedH = 0;
+    int guessedW = 0;
+    int guessedH = 0;
 
-	getPatchSizeFromFileName(QFileInfo(filePath).fileName(), guessedW, guessedH);
+    getPatchSizeFromFileName(QFileInfo(filePath).fileName(), guessedW, guessedH);
 
-	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
+    qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
 
-	if(vecSize > 0 && !guessedH && !guessedW) {
-		guessedW = qFloor(sqrt((float) vecSize));
-		if(guessedW > 0)
-			guessedH = vecSize/guessedW;
-	}
+    if(vecSize > 0 && !guessedH && !guessedW) {
+        guessedW = qFloor(sqrt((float) vecSize));
+        if(guessedW > 0)
+            guessedH = vecSize/guessedW;
+    }
 
-	if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
+    if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
 
-		// TODO: ask user
-		qDebug() << "dimensions do not match, patch size: " << guessedW << " x " << guessedH << " vecSize: " << vecSize;
-		return false;
-	}
+        // TODO: ask user
+        qDebug() << "dimensions do not match, patch size: " << guessedW << " x " << guessedH << " vecSize: " << vecSize;
+        return false;
+    }
 
-	int fSize = ba->size();
-	int numElements = 0;
+    int fSize = ba->size();
+    int numElements = 0;
 
-	// guess size
-	if (s.isEmpty()) {
-		double nEl = (fSize-64)/(vecSize*2);
-		nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
+    // guess size
+    if (s.isEmpty()) {
+        double nEl = (fSize-64)/(vecSize*2);
+        nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
 
-		if (qFloor(nEl) != qCeil(nEl))
-			return false;
-		numElements = qRound(nEl);
-	}
+        if (qFloor(nEl) != qCeil(nEl))
+            return false;
+        numElements = qRound(nEl);
+    }
 
-	double nRowsCols = sqrt(numElements);
-	int numCols = qCeil(nRowsCols);
-	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
+    double nRowsCols = sqrt(numElements);
+    int numCols = qCeil(nRowsCols);
+    int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
 
-	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
+    cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
 
-	for (int idx = 0; idx < numElements; idx++) {
+    for (int idx = 0; idx < numElements; idx++) {
 
-		if (*imgPtr != 0) {
-			qDebug() << "skipping non-empty byte - there is something seriously wrong here!";
-			//return false;	// stop if the byte is non-empty -> otherwise we might read wrong memory
-		}
+        if (*imgPtr != 0) {
+            qDebug() << "skipping non-empty byte - there is something seriously wrong here!";
+            //return false;	// stop if the byte is non-empty -> otherwise we might read wrong memory
+        }
 
-		imgPtr++;	// there is an empty byte between images
-		cv::Mat cPatch = getPatch(&imgPtr, QSize(guessedW, guessedH));
-		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
+        imgPtr++;	// there is an empty byte between images
+        cv::Mat cPatch = getPatch(&imgPtr, QSize(guessedW, guessedH));
+        cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
 
-		if (!cPatchAll.empty())
-			cPatch.copyTo(cPatchAll);
-	}
+        if (!cPatchAll.empty())
+            cPatch.copyTo(cPatchAll);
+    }
 
-	img = DkImage::mat2QImage(allPatches);
-	img = img.convertToFormat(QImage::Format_ARGB32);
+    img = DkImage::mat2QImage(allPatches);
+    img = img.convertToFormat(QImage::Format_ARGB32);
 
-	//setEditImage(img, tr("Original Image"));
+    //setEditImage(img, tr("Original Image"));
 
-	return true;
+    return true;
 }
 
 void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {
 
-	// parse patch size from file
-	QStringList sections = fileName.split(QRegExp("[-\\.]"));	
+    // parse patch size from file
+    QStringList sections = fileName.split(QRegExp("[-\\.]"));	
 
-	for (int idx = 0; idx < sections.size(); idx++) {
+    for (int idx = 0; idx < sections.size(); idx++) {
 
-		QString tmpSec = sections[idx];
-		qDebug() << "section: " << tmpSec;
+        QString tmpSec = sections[idx];
+        qDebug() << "section: " << tmpSec;
 
-		if (tmpSec.contains("w"))
-			width = tmpSec.remove("w").toInt();
-		else if (tmpSec.contains("h"))
-			height = tmpSec.remove("h").toInt();
-	}
+        if (tmpSec.contains("w"))
+            width = tmpSec.remove("w").toInt();
+        else if (tmpSec.contains("h"))
+            height = tmpSec.remove("h").toInt();
+    }
 
 }
 
 bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {
 
-	const int* pData = (const int*)*dataPtr;
-	fileCount = *pData; pData++;	// read file count
-	vecSize = *pData;				// read vec size
+    const int* pData = (const int*)*dataPtr;
+    fileCount = *pData; pData++;	// read file count
+    vecSize = *pData;				// read vec size
 
-	qDebug() << "vec size: " << vecSize << " fileCount " << fileCount;
+    qDebug() << "vec size: " << vecSize << " fileCount " << fileCount;
 
-	*dataPtr += 12;	// skip the first 12 (header) bytes
+    *dataPtr += 12;	// skip the first 12 (header) bytes
 
-	return true;
+    return true;
 }
 
 // the double pointer is here needed to additionally increase the pointer value
 cv::Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
 
-	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, cv::Scalar(0));
+    cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, cv::Scalar(0));
 
-	// ok, take just the second byte
-	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
+    // ok, take just the second byte
+    for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
 
-		unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
+        unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
 
-		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
-			ptr8U[cIdx] = **dataPtr;
-			*dataPtr += 2;	// it is strange: opencv stores vec files as 16 bit but just use the 2nd byte
-		}
-	}
+        for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
+            ptr8U[cIdx] = **dataPtr;
+            *dataPtr += 2;	// it is strange: opencv stores vec files as 16 bit but just use the 2nd byte
+        }
+    }
 
-	return img8U;
+    return img8U;
 }
 
 int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveFilePath) const {
 
-	int lastVecSize = 0;
-	int totalFileCount = 0;
-	int vecCount = 0;
-	int pWidth = 0, pHeight = 0;
-	QByteArray vecBuffer;
+    int lastVecSize = 0;
+    int totalFileCount = 0;
+    int vecCount = 0;
+    int pWidth = 0, pHeight = 0;
+    QByteArray vecBuffer;
 
-	for (const QString& filePath : vecFilePaths) {
+    for (const QString& filePath : vecFilePaths) {
 
-		QFileInfo fInfo(filePath);
-		QSharedPointer<QByteArray> ba = loadFileToBuffer(filePath);
-		if (ba->isEmpty()){
-			qDebug() << "could not load: " << fInfo.fileName();
-			continue;
-		}
+        QFileInfo fInfo(filePath);
+        QSharedPointer<QByteArray> ba = loadFileToBuffer(filePath);
+        if (ba->isEmpty()){
+            qDebug() << "could not load: " << fInfo.fileName();
+            continue;
+        }
 
-		int fileCount, vecSize;
-		const unsigned char* dataPtr = (const unsigned char*)ba->constData();
-		if (!readHeader(&dataPtr, fileCount, vecSize)) {
-			qDebug() << "could not read header, skipping: " << fInfo.fileName();
-			continue;
-		}
+        int fileCount, vecSize;
+        const unsigned char* dataPtr = (const unsigned char*)ba->constData();
+        if (!readHeader(&dataPtr, fileCount, vecSize)) {
+            qDebug() << "could not read header, skipping: " << fInfo.fileName();
+            continue;
+        }
 
-		if (lastVecSize && vecSize != lastVecSize) {
-			qDebug() << "wrong vec size, skipping: " << fInfo.fileName();
-			continue;
-		}
+        if (lastVecSize && vecSize != lastVecSize) {
+            qDebug() << "wrong vec size, skipping: " << fInfo.fileName();
+            continue;
+        }
 
-		vecBuffer.append((const char*)dataPtr, vecSize*fileCount*2+fileCount);	// +fileCount accounts for the '\0' bytes between the patches
+        vecBuffer.append((const char*)dataPtr, vecSize*fileCount*2+fileCount);	// +fileCount accounts for the '\0' bytes between the patches
 
-		getPatchSizeFromFileName(fInfo.fileName(), pWidth, pHeight);
+        getPatchSizeFromFileName(fInfo.fileName(), pWidth, pHeight);
 
-		totalFileCount += fileCount;
-		lastVecSize = vecSize;
+        totalFileCount += fileCount;
+        lastVecSize = vecSize;
 
-		vecCount++;
-	}
+        vecCount++;
+    }
 
-	// don't save if we could not merge the files
-	if (!vecCount)
-		return vecCount;
+    // don't save if we could not merge the files
+    if (!vecCount)
+        return vecCount;
 
-	unsigned int* header = new unsigned int[3];
-	header[0] = totalFileCount;
-	header[1] = lastVecSize;
-	header[2] = 0;
+    unsigned int* header = new unsigned int[3];
+    header[0] = totalFileCount;
+    header[1] = lastVecSize;
+    header[2] = 0;
 
-	vecBuffer.prepend((const char*) header, 3*sizeof(int));
+    vecBuffer.prepend((const char*) header, 3*sizeof(int));
 
-	QFileInfo saveFileInfo(saveFilePath);
+    QFileInfo saveFileInfo(saveFilePath);
 
-	// append width, height if we don't know
-	if (pWidth && pHeight) {
-		QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
-		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + whString + "." + saveFileInfo.suffix());
-	}
+    // append width, height if we don't know
+    if (pWidth && pHeight) {
+        QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
+        saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + whString + "." + saveFileInfo.suffix());
+    }
 
-	QFile file(saveFileInfo.absoluteFilePath());
-	file.open(QIODevice::WriteOnly);
-	file.write(vecBuffer);
-	file.close();
+    QFile file(saveFileInfo.absoluteFilePath());
+    file.open(QIODevice::WriteOnly);
+    file.write(vecBuffer);
+    file.close();
 
-	return vecCount;
+    return vecCount;
 }
 
 #endif // #ifdef WITH_OPENCV
 
 // FileDownloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(const QUrl& imageUrl, const QString& filePath, QObject *parent) : QObject(parent) {
-	
-	mFilePath = filePath;
-	
-	QNetworkProxyQuery npq(QUrl("https://google.com"));
-	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
-	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-		mWebCtrl.setProxy(listOfProxies[0]);
-	}
+    
+    mFilePath = filePath;
+    
+    QNetworkProxyQuery npq(QUrl("https://google.com"));
+    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+    if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+        mWebCtrl.setProxy(listOfProxies[0]);
+    }
 
-	connect(&mWebCtrl, SIGNAL(finished(QNetworkReply*)),
-		SLOT(fileDownloaded(QNetworkReply*)));
+    connect(&mWebCtrl, SIGNAL(finished(QNetworkReply*)),
+        SLOT(fileDownloaded(QNetworkReply*)));
 
-	downloadFile(imageUrl);
+    downloadFile(imageUrl);
 }
 
 FileDownloader::~FileDownloader() {
@@ -1694,68 +1871,68 @@ FileDownloader::~FileDownloader() {
 
 void FileDownloader::downloadFile(const QUrl& url) {
 
-	QNetworkRequest request(url);
-	mWebCtrl.get(request);
-	mUrl = url;
+    QNetworkRequest request(url);
+    mWebCtrl.get(request);
+    mUrl = url;
 }
 
 void FileDownloader::saved() {
 
-	if (mSaveWatcher.result()) {
-		qInfo() << "downloaded image saved to" << mFilePath;
-		emit downloaded(mFilePath);
-	}
-	else {
-		qWarning() << "could not download file to " << mFilePath;
-	}
+    if (mSaveWatcher.result()) {
+        qInfo() << "downloaded image saved to" << mFilePath;
+        emit downloaded(mFilePath);
+    }
+    else {
+        qWarning() << "could not download file to " << mFilePath;
+    }
 }
 
 bool FileDownloader::save(const QString& filePath, const QSharedPointer<QByteArray> data) {
 
-	if (!data) {
-		qWarning() << "cannot save file if data is NULL";
-		return false;
-	}
+    if (!data) {
+        qWarning() << "cannot save file if data is NULL";
+        return false;
+    }
 
-	QFileInfo fi(filePath);
+    QFileInfo fi(filePath);
 
-	if (!fi.absoluteDir().exists())
-		QDir().mkpath(fi.absolutePath());
+    if (!fi.absoluteDir().exists())
+        QDir().mkpath(fi.absolutePath());
 
-	QFile f(filePath);
-	f.open(QIODevice::WriteOnly);
+    QFile f(filePath);
+    f.open(QIODevice::WriteOnly);
 
-	return f.write(*data);
+    return f.write(*data);
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 
-	if (pReply->error() != QNetworkReply::NoError) {
-		qWarning() << "I could not download: " << mUrl;
-		qWarning() << pReply->errorString();
-	}
+    if (pReply->error() != QNetworkReply::NoError) {
+        qWarning() << "I could not download: " << mUrl;
+        qWarning() << pReply->errorString();
+    }
 
-	mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
-	//emit a signal
-	pReply->deleteLater();
+    mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
+    //emit a signal
+    pReply->deleteLater();
 
-	// data only requested
-	if (mFilePath.isEmpty()) {
-		emit downloaded();
-	}
-	// ok save it
-	else {
-		connect(&mSaveWatcher, SIGNAL(finished()), this, SLOT(saved()), Qt::UniqueConnection);
-		mSaveWatcher.setFuture(QtConcurrent::run(&nmc::FileDownloader::save, mFilePath, mDownloadedData));
-	}
+    // data only requested
+    if (mFilePath.isEmpty()) {
+        emit downloaded();
+    }
+    // ok save it
+    else {
+        connect(&mSaveWatcher, SIGNAL(finished()), this, SLOT(saved()), Qt::UniqueConnection);
+        mSaveWatcher.setFuture(QtConcurrent::run(&nmc::FileDownloader::save, mFilePath, mDownloadedData));
+    }
 }
 
 QSharedPointer<QByteArray> FileDownloader::downloadedData() const {
-	return mDownloadedData;
+    return mDownloadedData;
 }
 
 QUrl FileDownloader::getUrl() const {
-	return mUrl;
+    return mUrl;
 }
 
 #ifdef WITH_QUAZIP
@@ -1763,260 +1940,260 @@ QUrl FileDownloader::getUrl() const {
 // DkZipContainer --------------------------------------------------------------------
 DkZipContainer::DkZipContainer(const QString& encodedFilePath) {
 
-	if (!encodedFilePath.isEmpty() && 
-		encodedFilePath.contains(mZipMarker)) {
-		mImageInZip = true;
-		mEncodedFilePath = encodedFilePath;
-		mZipFilePath = decodeZipFile(encodedFilePath);
-		mImageFileName = decodeImageFile(encodedFilePath);
-	}
-	else
-		mImageInZip = false;
+    if (!encodedFilePath.isEmpty() && 
+        encodedFilePath.contains(mZipMarker)) {
+        mImageInZip = true;
+        mEncodedFilePath = encodedFilePath;
+        mZipFilePath = decodeZipFile(encodedFilePath);
+        mImageFileName = decodeImageFile(encodedFilePath);
+    }
+    else
+        mImageInZip = false;
 }
 
 QString DkZipContainer::encodeZipFile(const QString& zipFile, const QString& imageFile) {
 
-	// if you think this code is unreadable, take a look at the old line:
-	//return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+    // if you think this code is unreadable, take a look at the old line:
+    //return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
 
-	QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
-	QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
+    QDir dir = QDir(zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker));
+    QString fileName = (imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
 
-	return QFileInfo(dir, fileName).absoluteFilePath();
+    return QFileInfo(dir, fileName).absoluteFilePath();
 }
 
 QString DkZipContainer::decodeZipFile(const QString& encodedFileInfo) {
 
-	QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
+    QString encodedDir = QFileInfo(encodedFileInfo).absolutePath();
 
-	return encodedDir.left(encodedDir.indexOf(mZipMarker));
+    return encodedDir.left(encodedDir.indexOf(mZipMarker));
 }
 
 QString DkZipContainer::decodeImageFile(const QString& encodedFileInfo) {
 
-	// get relative zip path
-	QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
-	tmp = tmp.replace(mZipMarker, "/");
-	tmp = tmp.replace("//", "/");
+    // get relative zip path
+    QString tmp = encodedFileInfo.right(encodedFileInfo.size() - encodedFileInfo.indexOf(mZipMarker) - QString(mZipMarker).size());
+    tmp = tmp.replace(mZipMarker, "/");
+    tmp = tmp.replace("//", "/");
 
-	// diem: this fixes an issue with images that are in a zip's root folder
-	if (tmp.startsWith("/"))
-		tmp = tmp.right(tmp.length()-1);
+    // diem: this fixes an issue with images that are in a zip's root folder
+    if (tmp.startsWith("/"))
+        tmp = tmp.right(tmp.length()-1);
 
-	return tmp;
+    return tmp;
 }
 
 QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile) {
 
-	QuaZip zip(zipFile);		
-	if(!zip.open(QuaZip::mdUnzip)) 
-		return QSharedPointer<QByteArray>(new QByteArray());
+    QuaZip zip(zipFile);		
+    if(!zip.open(QuaZip::mdUnzip)) 
+        return QSharedPointer<QByteArray>(new QByteArray());
 
-	qDebug() << "DkZip::extractImage filePath: " << zipFile;
-	qDebug() << "3.0 image file" << imageFile;
+    qDebug() << "DkZip::extractImage filePath: " << zipFile;
+    qDebug() << "3.0 image file" << imageFile;
 
-	zip.setCurrentFile(imageFile);
-	QuaZipFile extractedFile(&zip);
-	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
-		return QSharedPointer<QByteArray>(new QByteArray());
+    zip.setCurrentFile(imageFile);
+    QuaZipFile extractedFile(&zip);
+    if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
+        return QSharedPointer<QByteArray>(new QByteArray());
 
-	QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
-	extractedFile.close();
+    QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
+    extractedFile.close();
 
-	zip.close();
+    zip.close();
 
-	return ba;
+    return ba;
 }
 
 void DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile, QByteArray& ba) {
 
-	QuaZip zip(zipFile);		
-	if(!zip.open(QuaZip::mdUnzip)) 
-		return;
+    QuaZip zip(zipFile);		
+    if(!zip.open(QuaZip::mdUnzip)) 
+        return;
 
-	zip.setCurrentFile(imageFile);
-	QuaZipFile extractedFile(&zip);
-	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
-		return;
+    zip.setCurrentFile(imageFile);
+    QuaZipFile extractedFile(&zip);
+    if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
+        return;
 
-	ba = QByteArray(extractedFile.readAll());
-	extractedFile.close();
+    ba = QByteArray(extractedFile.readAll());
+    extractedFile.close();
 
-	zip.close();
+    zip.close();
 
 }
 
 bool DkZipContainer::isZip() const {
 
-	return mImageInZip;
+    return mImageInZip;
 }
 
 QString DkZipContainer::getZipFilePath() const {
 
-	return mZipFilePath;
+    return mZipFilePath;
 }
 
 QString DkZipContainer::getImageFileName() const {
 
-	return mImageFileName;
+    return mImageFileName;
 }
 
 QString DkZipContainer::getEncodedFilePath() const {
 
-	return mEncodedFilePath;
+    return mEncodedFilePath;
 }
 
 QString DkZipContainer::zipMarker() {
 
-	return mZipMarker;
+    return mZipMarker;
 }
 
 #endif
 
 // DkRawLoader --------------------------------------------------------------------
 DkRawLoader::DkRawLoader(const QString & filePath, const QSharedPointer<DkMetaDataT>& metaData) {
-	mFilePath = filePath;
-	mMetaData = metaData;
+    mFilePath = filePath;
+    mMetaData = metaData;
 }
 
 bool DkRawLoader::isEmpty() const {
-	return mFilePath.isEmpty();
+    return mFilePath.isEmpty();
 }
 
 void DkRawLoader::setLoadFast(bool fast) {
-	mLoadFast = fast;
+    mLoadFast = fast;
 }
 
 bool DkRawLoader::load(const QSharedPointer<QByteArray> ba) {
 
-	DkTimer dt;
+    DkTimer dt;
 
-	// try fetching the preview
-	if (loadPreview(ba))
-		return true;
+    // try fetching the preview
+    if (loadPreview(ba))
+        return true;
 
 #ifdef WITH_LIBRAW
-	
-	try {
+    
+    try {
 
-		// open the buffer
-		LibRaw iProcessor;
+        // open the buffer
+        LibRaw iProcessor;
 
-		if (!openBuffer(ba, iProcessor)) {
-			qDebug() << "could not open buffer for" << mFilePath;
-			return false;
-		}
+        if (!openBuffer(ba, iProcessor)) {
+            qDebug() << "could not open buffer for" << mFilePath;
+            return false;
+        }
 
-		// check camera models for specific hacks
-		detectSpecialCamera(iProcessor);
+        // check camera models for specific hacks
+        detectSpecialCamera(iProcessor);
 
-		// try loading RAW preview
-		if (mLoadFast) {
-			mImg = loadPreviewRaw(iProcessor);
+        // try loading RAW preview
+        if (mLoadFast) {
+            mImg = loadPreviewRaw(iProcessor);
 
-			// are we done already?
-			if (!mImg.isNull())
-				return true;
-		}
+            // are we done already?
+            if (!mImg.isNull())
+                return true;
+        }
 
-		//unpack the data
-		int error = iProcessor.unpack();
-		if (std::strcmp(iProcessor.version(), "0.13.5") != 0)	// fixes a bug specific to libraw 13 - version call is UNTESTED
-			iProcessor.raw2image();
+        //unpack the data
+        int error = iProcessor.unpack();
+        if (std::strcmp(iProcessor.version(), "0.13.5") != 0)	// fixes a bug specific to libraw 13 - version call is UNTESTED
+            iProcessor.raw2image();
 
-		if (error != LIBRAW_SUCCESS)
-			return false;
+        if (error != LIBRAW_SUCCESS)
+            return false;
 
-		// develop using libraw
-		if (mCamType == camera_unknown) {
-			error = iProcessor.dcraw_process();
+        // develop using libraw
+        if (mCamType == camera_unknown) {
+            error = iProcessor.dcraw_process();
 
-			auto rimg = iProcessor.dcraw_make_mem_image();
+            auto rimg = iProcessor.dcraw_make_mem_image();
 
-			if (rimg) {
+            if (rimg) {
 
-				mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
-				mImg = mImg.copy();		// make a deep copy...
-				LibRaw::dcraw_clear_mem(rimg);
+                mImg = QImage(rimg->data, rimg->width, rimg->height, rimg->width * 3, QImage::Format_RGB888);
+                mImg = mImg.copy();		// make a deep copy...
+                LibRaw::dcraw_clear_mem(rimg);
 
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 
-		// demosaic image
-		cv::Mat rawMat;
+        // demosaic image
+        cv::Mat rawMat;
 
-		if (iProcessor.imgdata.idata.filters)
-			rawMat = demosaic(iProcessor);
-		else
-			rawMat = prepareImg(iProcessor);
+        if (iProcessor.imgdata.idata.filters)
+            rawMat = demosaic(iProcessor);
+        else
+            rawMat = prepareImg(iProcessor);
 
-		// color correction + white balance
-		if (mIsChromatic) {
-			whiteBalance(iProcessor, rawMat);
-		}
-		
-		// gamma correction
-		gammaCorrection(iProcessor, rawMat);
+        // color correction + white balance
+        if (mIsChromatic) {
+            whiteBalance(iProcessor, rawMat);
+        }
+        
+        // gamma correction
+        gammaCorrection(iProcessor, rawMat);
 
-		// reduce color noise
-		if (DkSettingsManager::param().resources().filterRawImages && mIsChromatic)
-			reduceColorNoise(iProcessor, rawMat);
+        // reduce color noise
+        if (DkSettingsManager::param().resources().filterRawImages && mIsChromatic)
+            reduceColorNoise(iProcessor, rawMat);
 
-		mImg = raw2Img(iProcessor, rawMat);
+        mImg = raw2Img(iProcessor, rawMat);
 
-		//qDebug() << "img size" << mImg.size();
-		//qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
-		iProcessor.recycle();
-		rawMat.release();
-	}
-	catch (...) {
-		qDebug() << "[RAW] error during processing...";
-		return false;
-	}
+        //qDebug() << "img size" << mImg.size();
+        //qDebug() << "raw mat size" << rawMat.rows << "x" << rawMat.cols;
+        iProcessor.recycle();
+        rawMat.release();
+    }
+    catch (...) {
+        qDebug() << "[RAW] error during processing...";
+        return false;
+    }
 
-	qInfo() << "[RAW] loaded in " << dt;
+    qInfo() << "[RAW] loaded in " << dt;
 
 #endif
 
-	return !mImg.isNull();
+    return !mImg.isNull();
 }
 
 QImage DkRawLoader::image() const {
-	return mImg;
+    return mImg;
 }
 
 bool DkRawLoader::loadPreview(const QSharedPointer<QByteArray>& ba) {
 
-	try {
+    try {
 
-		// try to get preview image from exiv2
-		if (mMetaData) {
-			if (mLoadFast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-				DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
+        // try to get preview image from exiv2
+        if (mMetaData) {
+            if (mLoadFast || DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+                DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large) {
 
-				mMetaData->readMetaData(mFilePath, ba);
+                mMetaData->readMetaData(mFilePath, ba);
 
-				int minWidth = 0;
+                int minWidth = 0;
 
 #ifdef WITH_LIBRAW	// if nomacs has libraw - we can still hope for a fallback -> otherwise try whatever we have here
-				if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
-					minWidth = 1920;
+                if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large)
+                    minWidth = 1920;
 #endif
-				mImg = mMetaData->getPreviewImage(minWidth);
+                mImg = mMetaData->getPreviewImage(minWidth);
 
-				if (!mImg.isNull()) {
-					qDebug() << "[RAW] loaded with exiv2";
-					return true;
-				}
-			}
-		}
-	}
-	catch (...) {
-		qWarning() << "Exception caught during fetching RAW from thumbnail...";
-	}
+                if (!mImg.isNull()) {
+                    qDebug() << "[RAW] loaded with exiv2";
+                    return true;
+                }
+            }
+        }
+    }
+    catch (...) {
+        qWarning() << "Exception caught during fetching RAW from thumbnail...";
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -2037,506 +2214,506 @@ bool DkRawLoader::loadPreview(const QSharedPointer<QByteArray>& ba) {
 
 
 QImage DkRawLoader::loadPreviewRaw(LibRaw & iProcessor) const {
-	
-	int tW = iProcessor.imgdata.thumbnail.twidth;
+    
+    int tW = iProcessor.imgdata.thumbnail.twidth;
 
-	if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
-		(DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tW >= 1920)) {
+    if (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_always ||
+        (DkSettingsManager::param().resources().loadRawThumb == DkSettings::raw_thumb_if_large && tW >= 1920)) {
 
-		// crashes here if image is broken
-		int err = iProcessor.unpack_thumb();
-		char* tPtr = iProcessor.imgdata.thumbnail.thumb;
+        // crashes here if image is broken
+        int err = iProcessor.unpack_thumb();
+        char* tPtr = iProcessor.imgdata.thumbnail.thumb;
 
-		if (!err && tPtr) {
+        if (!err && tPtr) {
 
-			QImage img;
-			img.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
+            QImage img;
+            img.loadFromData((const uchar*)tPtr, iProcessor.imgdata.thumbnail.tlength);
 
-			// we're good to go
-			if (!img.isNull()) {
-				qDebug() << "[RAW] I loaded the RAW's thumbnail";
-				return img;
-			}
-			else
-				qDebug() << "RAW could not load the thumb";
-		}
-		else
-			qDebug() << "error unpacking the thumb...";
-	}
+            // we're good to go
+            if (!img.isNull()) {
+                qDebug() << "[RAW] I loaded the RAW's thumbnail";
+                return img;
+            }
+            else
+                qDebug() << "RAW could not load the thumb";
+        }
+        else
+            qDebug() << "error unpacking the thumb...";
+    }
 
-	// default: return nothing
-	return QImage();
+    // default: return nothing
+    return QImage();
 }
 
 bool DkRawLoader::openBuffer(const QSharedPointer<QByteArray>& ba, LibRaw& iProcessor) const {
 
-	int error = LIBRAW_DATA_ERROR;
+    int error = LIBRAW_DATA_ERROR;
 
-	QFileInfo fi(mFilePath);
+    QFileInfo fi(mFilePath);
 
-	//use iprocessor from libraw to read the data
-	// OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
-	if (fi.suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
-		error = iProcessor.open_file(mFilePath.toStdString().c_str());
-	}
-	else {
-		// the buffer check is because:
-		// libraw has an error when loading buffers if the first 4 bytes encode as 'RIFF'
-		// and no data follows at all
-		if (ba->isEmpty() || ba->size() < 100)
-			return false;
+    //use iprocessor from libraw to read the data
+    // OK - so LibRaw 0.17 cannot identify iiq files in the buffer - so we load them from the file
+    if (fi.suffix().contains("iiq", Qt::CaseInsensitive) || !ba || ba->isEmpty()) {
+        error = iProcessor.open_file(mFilePath.toStdString().c_str());
+    }
+    else {
+        // the buffer check is because:
+        // libraw has an error when loading buffers if the first 4 bytes encode as 'RIFF'
+        // and no data follows at all
+        if (ba->isEmpty() || ba->size() < 100)
+            return false;
 
-		error = iProcessor.open_buffer((void*)ba->constData(), ba->size());
-	}
+        error = iProcessor.open_buffer((void*)ba->constData(), ba->size());
+    }
 
-	return (error == LIBRAW_SUCCESS);
+    return (error == LIBRAW_SUCCESS);
 }
 
 void DkRawLoader::detectSpecialCamera(const LibRaw & iProcessor) {
 
-	if (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic")
-		mIsChromatic = false;
-	
-	if (QString(iProcessor.imgdata.idata.model).contains("IQ260"))
-		mCamType = camera_iiq;
-	else if (QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive))
-		mCamType = camera_canon;
+    if (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic")
+        mIsChromatic = false;
+    
+    if (QString(iProcessor.imgdata.idata.model).contains("IQ260"))
+        mCamType = camera_iiq;
+    else if (QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive))
+        mCamType = camera_canon;
 
-	// add your camera flag (for hacks) here
+    // add your camera flag (for hacks) here
 }
 
 cv::Mat DkRawLoader::demosaic(LibRaw & iProcessor) const {
 
-	cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC1);
-	double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC1);
+    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
-	// normalize all image values
-	for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-		unsigned short *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
+    // normalize all image values
+    for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
+        unsigned short *ptrRaw = rawMat.ptr<unsigned short>(rIdx);
 
-		for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
+        for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
 
-			int colIdx = iProcessor.COLOR(rIdx, cIdx);
-			double val = (double)(iProcessor.imgdata.image[(rawMat.cols*rIdx) + cIdx][colIdx]);
-			
-			// normalize the value w.r.t the black point defined
-			val = (val - iProcessor.imgdata.color.black) / dynamicRange;
-			ptrRaw[cIdx] = clip<unsigned short>(val * USHRT_MAX);  // for conversion to 16U
-		}
-	}
+            int colIdx = iProcessor.COLOR(rIdx, cIdx);
+            double val = (double)(iProcessor.imgdata.image[(rawMat.cols*rIdx) + cIdx][colIdx]);
+            
+            // normalize the value w.r.t the black point defined
+            val = (val - iProcessor.imgdata.color.black) / dynamicRange;
+            ptrRaw[cIdx] = clip<unsigned short>(val * USHRT_MAX);  // for conversion to 16U
+        }
+    }
 
-	// no demosaicing
-	if (mIsChromatic) {
+    // no demosaicing
+    if (mIsChromatic) {
 
-		unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
-		type = type & 255;
+        unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+        type = type & 255;
 
-		cv::Mat rgbImg;
+        cv::Mat rgbImg;
 
-		//define bayer pattern
-		if (type == 180) {
-			cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);		//bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
-															//													GB GB GB
-		}
-		else if (type == 30) {
-			cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
-		}
-		else if (type == 225) {
-			cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
-		}
-		else if (type == 75) {
-			cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
-		}
-		else {
-			qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
-			return cv::Mat();
-		}
+        //define bayer pattern
+        if (type == 180) {
+            cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);		//bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) ->	RG RG RG
+                                                            //													GB GB GB
+        }
+        else if (type == 30) {
+            cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
+        }
+        else if (type == 225) {
+            cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
+        }
+        else if (type == 75) {
+            cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
+        }
+        else {
+            qWarning() << "Wrong Bayer Pattern (not BG, RG, GB, GR)\n";
+            return cv::Mat();
+        }
 
-		rawMat = rgbImg;
-	}
+        rawMat = rgbImg;
+    }
 
-	// 16U (1 or 3 channeled) Mat
-	return rawMat;
+    // 16U (1 or 3 channeled) Mat
+    return rawMat;
 }
 
 cv::Mat DkRawLoader::prepareImg(const LibRaw & iProcessor) const {
 
-	cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
-	double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
+    cv::Mat rawMat = cv::Mat(iProcessor.imgdata.sizes.height, iProcessor.imgdata.sizes.width, CV_16UC3, cv::Scalar(0));
+    double dynamicRange = (double)(iProcessor.imgdata.color.maximum - iProcessor.imgdata.color.black);
 
-	// normalization function
-	auto normalize = [&](double val) { 
-	
-		val = (val - iProcessor.imgdata.color.black) / dynamicRange;
-		return clip<unsigned short>(val * USHRT_MAX);
-	};
+    // normalization function
+    auto normalize = [&](double val) { 
+    
+        val = (val - iProcessor.imgdata.color.black) / dynamicRange;
+        return clip<unsigned short>(val * USHRT_MAX);
+    };
 
-	for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
-		unsigned short *ptrI = rawMat.ptr<unsigned short>(rIdx);
+    for (int rIdx = 0; rIdx < rawMat.rows; rIdx++) {
+        unsigned short *ptrI = rawMat.ptr<unsigned short>(rIdx);
 
-		for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
+        for (int cIdx = 0; cIdx < rawMat.cols; cIdx++) {
 
-			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][0]);
-			ptrI++;
-			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][1]);
-			ptrI++;
-			*ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][2]);
-			ptrI++;
-		}
-	}
+            *ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][0]);
+            ptrI++;
+            *ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][1]);
+            ptrI++;
+            *ptrI = normalize(iProcessor.imgdata.image[rawMat.cols*rIdx + cIdx][2]);
+            ptrI++;
+        }
+    }
 
-	return rawMat;
+    return rawMat;
 }
 
 cv::Mat DkRawLoader::whiteMultipliers(const LibRaw & iProcessor) const {
-	
-	// get camera white balance multipliers
-	cv::Mat wm(1, 4, CV_32FC1);
-	
-	float* wmp = wm.ptr<float>();
+    
+    // get camera white balance multipliers
+    cv::Mat wm(1, 4, CV_32FC1);
+    
+    float* wmp = wm.ptr<float>();
 
-	for (int idx = 0; idx < wm.cols; idx++)
-		wmp[idx] = iProcessor.imgdata.color.cam_mul[idx];
+    for (int idx = 0; idx < wm.cols; idx++)
+        wmp[idx] = iProcessor.imgdata.color.cam_mul[idx];
 
-	if (wmp[3] == 0)
-		wmp[3] = wmp[1];	// take green (usually its RGBG)
+    if (wmp[3] == 0)
+        wmp[3] = wmp[1];	// take green (usually its RGBG)
 
-	// normalize white balance multipliers
-	float w = (float)cv::sum(wm)[0] / 4.0f;
-	float maxW = 1.0f;
+    // normalize white balance multipliers
+    float w = (float)cv::sum(wm)[0] / 4.0f;
+    float maxW = 1.0f;
 
-	//clipping according the camera model
-	//if w > 2.0 maxW is 256, otherwise 512
-	//tested empirically
-	//check if it can be defined by some metadata settings?
-	if (w > 2.0f)
-		maxW = 255.0f;
-	if (w > 2.0f && mCamType == camera_canon)
-		maxW = 511.0f;	// some cameras would even need ~800 - why?
+    //clipping according the camera model
+    //if w > 2.0 maxW is 256, otherwise 512
+    //tested empirically
+    //check if it can be defined by some metadata settings?
+    if (w > 2.0f)
+        maxW = 255.0f;
+    if (w > 2.0f && mCamType == camera_canon)
+        maxW = 511.0f;	// some cameras would even need ~800 - why?
 
-	//normalize white point
-	wm /= maxW;
+    //normalize white point
+    wm /= maxW;
 
-	// 1 x 4 32FC1 white balance vector
-	return wm;
+    // 1 x 4 32FC1 white balance vector
+    return wm;
 }
 
 cv::Mat DkRawLoader::gammaTable(const LibRaw & iProcessor) const {
-	
-	// OK this is an instance of reverse engineering:
-	// we found out that the values of (at least) the PhaseOne's achromatic back have to be doubled
-	// our images are no close to what their software (Capture One does) - only the gamma correction
-	// seems to be slightly different... -> now we can load compressed IIQs that are not supported by PS : )
-	double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
+    
+    // OK this is an instance of reverse engineering:
+    // we found out that the values of (at least) the PhaseOne's achromatic back have to be doubled
+    // our images are no close to what their software (Capture One does) - only the gamma correction
+    // seems to be slightly different... -> now we can load compressed IIQs that are not supported by PS : )
+    double cameraHackMlp = (QString(iProcessor.imgdata.idata.model) == "IQ260 Achromatic") ? 2.0 : 1.0;
 
-	//read gamma value and create gamma table	
-	double gamma = (double)iProcessor.imgdata.params.gamm[0];
-	
-	cv::Mat gmt(1, USHRT_MAX, CV_16UC1);
-	unsigned short* gmtp = gmt.ptr<unsigned short>();
-	
-	for (int idx = 0; idx < gmt.cols; idx++) {
-		gmtp[idx] = clip<unsigned short>(qRound((1.099*std::pow((double)idx / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
-	}
+    //read gamma value and create gamma table	
+    double gamma = (double)iProcessor.imgdata.params.gamm[0];
+    
+    cv::Mat gmt(1, USHRT_MAX, CV_16UC1);
+    unsigned short* gmtp = gmt.ptr<unsigned short>();
+    
+    for (int idx = 0; idx < gmt.cols; idx++) {
+        gmtp[idx] = clip<unsigned short>(qRound((1.099*std::pow((double)idx / USHRT_MAX, gamma) - 0.099) * 255 * cameraHackMlp));
+    }
 
-	// a 1 x 65535 U16 gamma table
-	return gmt;
+    // a 1 x 65535 U16 gamma table
+    return gmt;
 }
 
 void DkRawLoader::whiteBalance(const LibRaw & iProcessor, cv::Mat & img) const {
 
-	// white balance must not be empty at this point
-	cv::Mat wb = whiteMultipliers(iProcessor);
-	const float* wbp = wb.ptr<float>();
-	assert(wb.cols == 4);
+    // white balance must not be empty at this point
+    cv::Mat wb = whiteMultipliers(iProcessor);
+    const float* wbp = wb.ptr<float>();
+    assert(wb.cols == 4);
 
-	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
-		
-		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
-		
-		for (int cIdx = 0; cIdx < img.cols; cIdx++) {
-			
-			//apply white balance correction
-			unsigned short r = clip<unsigned short>(*ptr		* wbp[0]);
-			unsigned short g = clip<unsigned short>(*(ptr+1)	* wbp[1]);
-			unsigned short b = clip<unsigned short>(*(ptr+2)	* wbp[2]);
+    for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+        
+        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        
+        for (int cIdx = 0; cIdx < img.cols; cIdx++) {
+            
+            //apply white balance correction
+            unsigned short r = clip<unsigned short>(*ptr		* wbp[0]);
+            unsigned short g = clip<unsigned short>(*(ptr+1)	* wbp[1]);
+            unsigned short b = clip<unsigned short>(*(ptr+2)	* wbp[2]);
 
-			//apply color correction					
-			int cr = qRound(iProcessor.imgdata.color.rgb_cam[0][0] * r + 
-							iProcessor.imgdata.color.rgb_cam[0][1] * g + 
-							iProcessor.imgdata.color.rgb_cam[0][2] * b);
-			int cg = qRound(iProcessor.imgdata.color.rgb_cam[1][0] * r + 
-							iProcessor.imgdata.color.rgb_cam[1][1] * g + 
-							iProcessor.imgdata.color.rgb_cam[1][2] * b);
-			int cb = qRound(iProcessor.imgdata.color.rgb_cam[2][0] * r + 
-							iProcessor.imgdata.color.rgb_cam[2][1] * g + 
-							iProcessor.imgdata.color.rgb_cam[2][2] * b);
+            //apply color correction					
+            int cr = qRound(iProcessor.imgdata.color.rgb_cam[0][0] * r + 
+                            iProcessor.imgdata.color.rgb_cam[0][1] * g + 
+                            iProcessor.imgdata.color.rgb_cam[0][2] * b);
+            int cg = qRound(iProcessor.imgdata.color.rgb_cam[1][0] * r + 
+                            iProcessor.imgdata.color.rgb_cam[1][1] * g + 
+                            iProcessor.imgdata.color.rgb_cam[1][2] * b);
+            int cb = qRound(iProcessor.imgdata.color.rgb_cam[2][0] * r + 
+                            iProcessor.imgdata.color.rgb_cam[2][1] * g + 
+                            iProcessor.imgdata.color.rgb_cam[2][2] * b);
 
-			// clip & save color corrected values
-			*ptr = clip<unsigned short>(cr);
-			ptr++;
-			*ptr = clip<unsigned short>(cg);
-			ptr++;
-			*ptr = clip<unsigned short>(cb);
-			ptr++;
-		}
-	}
+            // clip & save color corrected values
+            *ptr = clip<unsigned short>(cr);
+            ptr++;
+            *ptr = clip<unsigned short>(cg);
+            ptr++;
+            *ptr = clip<unsigned short>(cb);
+            ptr++;
+        }
+    }
 }
 
 void DkRawLoader::gammaCorrection(const LibRaw & iProcessor, cv::Mat& img) const {
 
-	// white balance must not be empty at this point
-	cv::Mat gt = gammaTable(iProcessor);
-	const unsigned short* gammaLookup = gt.ptr<unsigned short>();
-	assert(gt.cols == USHRT_MAX);
-	
-	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+    // white balance must not be empty at this point
+    cv::Mat gt = gammaTable(iProcessor);
+    const unsigned short* gammaLookup = gt.ptr<unsigned short>();
+    assert(gt.cols == USHRT_MAX);
+    
+    for (int rIdx = 0; rIdx < img.rows; rIdx++) {
 
-		unsigned short *ptr = img.ptr<unsigned short>(rIdx);
+        unsigned short *ptr = img.ptr<unsigned short>(rIdx);
 
-		for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
+        for (int cIdx = 0; cIdx < img.cols * img.channels(); cIdx++) {
 
-			// values close to 0 are treated linear
-			if (ptr[cIdx] <= 5)	// 0.018 * 255
-				ptr[cIdx] = (unsigned short)qRound(ptr[cIdx] * (double)iProcessor.imgdata.params.gamm[1] / 255.0);
-			else
-				ptr[cIdx] = gammaLookup[ptr[cIdx]];
-		}
-	}
+            // values close to 0 are treated linear
+            if (ptr[cIdx] <= 5)	// 0.018 * 255
+                ptr[cIdx] = (unsigned short)qRound(ptr[cIdx] * (double)iProcessor.imgdata.params.gamm[1] / 255.0);
+            else
+                ptr[cIdx] = gammaLookup[ptr[cIdx]];
+        }
+    }
 
 }
 
 void DkRawLoader::reduceColorNoise(const LibRaw & iProcessor, cv::Mat & img) const {
 
-	// filter color noise with a median filter
-	float isoSpeed = iProcessor.imgdata.other.iso_speed;
+    // filter color noise with a median filter
+    float isoSpeed = iProcessor.imgdata.other.iso_speed;
 
-	if (isoSpeed > 0) {
+    if (isoSpeed > 0) {
 
-		DkTimer dt;
+        DkTimer dt;
 
-		int winSize;
-		if (isoSpeed > 6400) 
-			winSize = 13;
-		else if (isoSpeed >= 3200) 
-			winSize = 11;
-		else if (isoSpeed >= 2500) 
-			winSize = 9;
-		else if (isoSpeed >= 400) 
-			winSize = 7;
-		else 
-			winSize = 5;
+        int winSize;
+        if (isoSpeed > 6400) 
+            winSize = 13;
+        else if (isoSpeed >= 3200) 
+            winSize = 11;
+        else if (isoSpeed >= 2500) 
+            winSize = 9;
+        else if (isoSpeed >= 400) 
+            winSize = 7;
+        else 
+            winSize = 5;
 
-		DkTimer dMed;
-		
-		// revert back to 8-bit image
-		img.convertTo(img, CV_8U);
+        DkTimer dMed;
+        
+        // revert back to 8-bit image
+        img.convertTo(img, CV_8U);
 
-		cv::cvtColor(img, img, CV_RGB2YCrCb);
+        cv::cvtColor(img, img, CV_RGB2YCrCb);
 
-		std::vector<cv::Mat> imgCh;
-		cv::split(img, imgCh);
-		assert(imgCh.size() == 3);
+        std::vector<cv::Mat> imgCh;
+        cv::split(img, imgCh);
+        assert(imgCh.size() == 3);
 
-		cv::medianBlur(imgCh[1], imgCh[1], winSize);
-		cv::medianBlur(imgCh[2], imgCh[2], winSize);
+        cv::medianBlur(imgCh[1], imgCh[1], winSize);
+        cv::medianBlur(imgCh[2], imgCh[2], winSize);
 
-		cv::merge(imgCh, img);
-		cv::cvtColor(img, img, CV_YCrCb2RGB);
-		qDebug() << "median blur takes:" << dt;
-	}
+        cv::merge(imgCh, img);
+        cv::cvtColor(img, img, CV_YCrCb2RGB);
+        qDebug() << "median blur takes:" << dt;
+    }
 
 }
 
 QImage DkRawLoader::raw2Img(const LibRaw & iProcessor, cv::Mat & img) const {
-	
-	//check the pixel aspect ratio of the raw image
-	if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f)
-		cv::resize(img, img, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
-	
-	// revert back to 8-bit image
-	img.convertTo(img, CV_8U);
+    
+    //check the pixel aspect ratio of the raw image
+    if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f)
+        cv::resize(img, img, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
+    
+    // revert back to 8-bit image
+    img.convertTo(img, CV_8U);
 
-	// TODO: for now - fix this!
-	if (img.channels() == 1)
-		cv::cvtColor(img, img, CV_GRAY2RGB);
+    // TODO: for now - fix this!
+    if (img.channels() == 1)
+        cv::cvtColor(img, img, CV_GRAY2RGB);
 
 
-	return DkImage::mat2QImage(img);
+    return DkImage::mat2QImage(img);
 }
 
 #endif
 
 // -------------------------------------------------------------------- DkTgaLoader 
 namespace tga {
-	
-	DkTgaLoader::DkTgaLoader(QSharedPointer<QByteArray> ba) {
+    
+    DkTgaLoader::DkTgaLoader(QSharedPointer<QByteArray> ba) {
 
-		mBa = ba;
-	}
+        mBa = ba;
+    }
 
-	QImage DkTgaLoader::image() const {
-		return mImg;
-	}
+    QImage DkTgaLoader::image() const {
+        return mImg;
+    }
 
-	bool DkTgaLoader::load() {
-		
-		if (!mBa || mBa->isEmpty())
-			return false;
-		
-		return load(mBa);
-	}
+    bool DkTgaLoader::load() {
+        
+        if (!mBa || mBa->isEmpty())
+            return false;
+        
+        return load(mBa);
+    }
 
-	bool DkTgaLoader::load(QSharedPointer<QByteArray> ba) {
-		
+    bool DkTgaLoader::load(QSharedPointer<QByteArray> ba) {
+        
 
-		// this code is from: http://www.paulbourke.net/dataformats/tga/
-		// thanks!
-		Header header;
+        // this code is from: http://www.paulbourke.net/dataformats/tga/
+        // thanks!
+        Header header;
 
-		const char* dataC = ba->data();
+        const char* dataC = ba->data();
 
-		/* Display the header fields */
-		header.idlength = *dataC; dataC++;
-		header.colourmaptype = *dataC; dataC++;
-		header.datatypecode = *dataC; dataC++;
+        /* Display the header fields */
+        header.idlength = *dataC; dataC++;
+        header.colourmaptype = *dataC; dataC++;
+        header.datatypecode = *dataC; dataC++;
 
-		const short* dataS = (const short*)dataC;
+        const short* dataS = (const short*)dataC;
 
-		header.colourmaporigin = *dataS; dataS++;
-		header.colourmaplength = *dataS; dataS++;
-		dataC = (const char*)dataS;
-		header.colourmapdepth = *dataC; dataC++;
-		dataS = (const short*)dataC;
-		header.x_origin = *dataS; dataS++;
-		header.y_origin = *dataS; dataS++;
-		header.width = *dataS; dataS++;
-		header.height = *dataS; dataS++;
-		dataC = (const char*)dataS;
-		header.bitsperpixel = *dataC; dataC++;
-		header.imagedescriptor = *dataC; dataC++;
+        header.colourmaporigin = *dataS; dataS++;
+        header.colourmaplength = *dataS; dataS++;
+        dataC = (const char*)dataS;
+        header.colourmapdepth = *dataC; dataC++;
+        dataS = (const short*)dataC;
+        header.x_origin = *dataS; dataS++;
+        header.y_origin = *dataS; dataS++;
+        header.width = *dataS; dataS++;
+        header.height = *dataS; dataS++;
+        dataC = (const char*)dataS;
+        header.bitsperpixel = *dataC; dataC++;
+        header.imagedescriptor = *dataC; dataC++;
 
 #ifdef _DEBUG
-		qDebug() << "TGA Header ------------------------------";
-		qDebug() << "ID length:         " << (int)header.idlength;
-		qDebug() << "Colourmap type:    " << (int)header.colourmaptype;
-		qDebug() << "Image type:        " << (int)header.datatypecode;
-		qDebug() << "Colour map offset: " << header.colourmaporigin;
-		qDebug() << "Colour map length: " << header.colourmaplength;
-		qDebug() << "Colour map depth:  " << (int)header.colourmapdepth;
-		qDebug() << "X origin:          " << header.x_origin;
-		qDebug() << "Y origin:          " << header.y_origin;
-		qDebug() << "Width:             " << header.width;
-		qDebug() << "Height:            " << header.height;
-		qDebug() << "Bits per pixel:    " << (int)header.bitsperpixel;
-		qDebug() << "Descriptor:        " << (int)header.imagedescriptor;
+        qDebug() << "TGA Header ------------------------------";
+        qDebug() << "ID length:         " << (int)header.idlength;
+        qDebug() << "Colourmap type:    " << (int)header.colourmaptype;
+        qDebug() << "Image type:        " << (int)header.datatypecode;
+        qDebug() << "Colour map offset: " << header.colourmaporigin;
+        qDebug() << "Colour map length: " << header.colourmaplength;
+        qDebug() << "Colour map depth:  " << (int)header.colourmapdepth;
+        qDebug() << "X origin:          " << header.x_origin;
+        qDebug() << "Y origin:          " << header.y_origin;
+        qDebug() << "Width:             " << header.width;
+        qDebug() << "Height:            " << header.height;
+        qDebug() << "Bits per pixel:    " << (int)header.bitsperpixel;
+        qDebug() << "Descriptor:        " << (int)header.imagedescriptor;
 #endif
 
-		/* What can we handle */
-		if (header.datatypecode != 2 && header.datatypecode != 10) {
-			qWarning() << "Can only handle image type 2 and 10";
-			return false;
-		}
-		
-		if (header.bitsperpixel != 16 &&
-			header.bitsperpixel != 24 && 
-			header.bitsperpixel != 32) {
-			qWarning() << "Can only handle pixel depths of 16, 24, and 32";
-			return false;
-		}
+        /* What can we handle */
+        if (header.datatypecode != 2 && header.datatypecode != 10) {
+            qWarning() << "Can only handle image type 2 and 10";
+            return false;
+        }
+        
+        if (header.bitsperpixel != 16 &&
+            header.bitsperpixel != 24 && 
+            header.bitsperpixel != 32) {
+            qWarning() << "Can only handle pixel depths of 16, 24, and 32";
+            return false;
+        }
 
-		if (header.colourmaptype != 0 && header.colourmaptype != 1) {
-			qWarning() << "Can only handle colour map types of 0 and 1";
-			return false;
-		}
+        if (header.colourmaptype != 0 && header.colourmaptype != 1) {
+            qWarning() << "Can only handle colour map types of 0 and 1";
+            return false;
+        }
 
-		Pixel *pixels = new Pixel[header.width*header.height * sizeof(Pixel)];
+        Pixel *pixels = new Pixel[header.width*header.height * sizeof(Pixel)];
 
-		if (!pixels) {
-			qWarning() << "TGA: could not allocate" << header.width*header.height * sizeof(Pixel)/1024 << "KB";
-			return false;
-		}
+        if (!pixels) {
+            qWarning() << "TGA: could not allocate" << header.width*header.height * sizeof(Pixel)/1024 << "KB";
+            return false;
+        }
 
-		///* Skip over unnecessary stuff */
-		int skipover = header.idlength;
-		skipover += header.colourmaptype * header.colourmaplength;
-		dataC += skipover;
-		
-		/* Read the image */
-		int bytes2read = header.bitsperpixel / 8;	// save?
-		unsigned char p[5];
-		
-		for (int n = 0; n < header.width * header.height;) {
-			
-			if (header.datatypecode == 2) {                     /* Uncompressed */
-				
-				// TODO: out-of-bounds not checked here...
-				for (int bi = 0; bi < bytes2read; bi++, dataC++)
-					p[bi] = *dataC;
-				
-				mergeBytes(&(pixels[n]), p, bytes2read);
-				n++;
-			}
-			else if (header.datatypecode == 10) {             /* Compressed */
-				
-				for (int bi = 0; bi < bytes2read+1; bi++, dataC++)
-					p[bi] = *dataC;
+        ///* Skip over unnecessary stuff */
+        int skipover = header.idlength;
+        skipover += header.colourmaptype * header.colourmaplength;
+        dataC += skipover;
+        
+        /* Read the image */
+        int bytes2read = header.bitsperpixel / 8;	// save?
+        unsigned char p[5];
+        
+        for (int n = 0; n < header.width * header.height;) {
+            
+            if (header.datatypecode == 2) {                     /* Uncompressed */
+                
+                // TODO: out-of-bounds not checked here...
+                for (int bi = 0; bi < bytes2read; bi++, dataC++)
+                    p[bi] = *dataC;
+                
+                mergeBytes(&(pixels[n]), p, bytes2read);
+                n++;
+            }
+            else if (header.datatypecode == 10) {             /* Compressed */
+                
+                for (int bi = 0; bi < bytes2read+1; bi++, dataC++)
+                    p[bi] = *dataC;
 
-				int j = p[0] & 0x7f;
-				mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
-				n++;
-				if (p[0] & 0x80) {         /* RLE chunk */
-					for (int i = 0; i < j; i++) {
-						mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
-						n++;
-					}
-				}
-				else {                   /* Normal chunk */
-					for (int i = 0; i < j; i++) {
+                int j = p[0] & 0x7f;
+                mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
+                n++;
+                if (p[0] & 0x80) {         /* RLE chunk */
+                    for (int i = 0; i < j; i++) {
+                        mergeBytes(&(pixels[n]), &(p[1]), bytes2read);
+                        n++;
+                    }
+                }
+                else {                   /* Normal chunk */
+                    for (int i = 0; i < j; i++) {
 
-						for (int bi = 0; bi < bytes2read; bi++, dataC++)
-							p[bi] = *dataC;
+                        for (int bi = 0; bi < bytes2read; bi++, dataC++)
+                            p[bi] = *dataC;
 
-						mergeBytes(&(pixels[n]), p, bytes2read);
-						n++;
-					}
-				}
-			}
-		}
+                        mergeBytes(&(pixels[n]), p, bytes2read);
+                        n++;
+                    }
+                }
+            }
+        }
 
-		mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32);
-		mImg = mImg.copy();
+        mImg = QImage((uchar*)pixels, header.width, header.height, QImage::Format_ARGB32);
+        mImg = mImg.copy();
 
-		// I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
-		if (!(header.imagedescriptor & 0x20))
-			mImg = mImg.mirrored();
+        // I somehow expected the 5th bit to be 0x10 -> but Paul seems to have a 0th bit : )
+        if (!(header.imagedescriptor & 0x20))
+            mImg = mImg.mirrored();
 
-		delete[] pixels;
+        delete[] pixels;
 
-		return true;
-	}
+        return true;
+    }
 
-	void DkTgaLoader::mergeBytes(Pixel * pixel, unsigned char * p, int bytes) const {
-		
-		if (bytes == 4) {
-			pixel->r = p[0];
-			pixel->g = p[1];
-			pixel->b = p[2];
-			pixel->a = p[3];
-		}
-		else if (bytes == 3) {
-			pixel->r = p[0];
-			pixel->g = p[1];
-			pixel->b = p[2];
-			pixel->a = 255;
-		}
-		else if (bytes == 2) {
-			pixel->r = (p[0] & 0x1f) << 3;
-			pixel->g = ((p[1] & 0x03) << 6) | ((p[0] & 0xe0) >> 2);
-			pixel->b = (p[1] & 0x7c) << 1;
-			pixel->a = 255;// (p[1] & 0x80);
-		}
-	}
+    void DkTgaLoader::mergeBytes(Pixel * pixel, unsigned char * p, int bytes) const {
+        
+        if (bytes == 4) {
+            pixel->r = p[0];
+            pixel->g = p[1];
+            pixel->b = p[2];
+            pixel->a = p[3];
+        }
+        else if (bytes == 3) {
+            pixel->r = p[0];
+            pixel->g = p[1];
+            pixel->b = p[2];
+            pixel->a = 255;
+        }
+        else if (bytes == 2) {
+            pixel->r = (p[0] & 0x1f) << 3;
+            pixel->g = ((p[1] & 0x03) << 6) | ((p[0] & 0xe0) >> 2);
+            pixel->b = (p[1] & 0x7c) << 1;
+            pixel->a = 255;// (p[1] & 0x80);
+        }
+    }
 }
 
 }

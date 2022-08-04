@@ -99,16 +99,26 @@ protected:
 class DllCoreExport DkEditImage {
 
 public:
-	DkEditImage(const QImage& img = QImage(), const QString& editName = "");
+	DkEditImage();
+	DkEditImage(const QImage& img, const QSharedPointer<DkMetaDataT>& metaData, const QString& editName = "");
+	DkEditImage(const QSharedPointer<DkMetaDataT>& metaData, const QImage& img, const QString& editName = "");
 
 	void setImage(const QImage& img);
-	QImage image() const;
 	QString editName() const;
+	QImage image() const;
+	bool hasImage() const;
+	bool hasMetaData() const;
+	bool hasNewImage() const;
+	bool hasNewMetaData() const;
+	QSharedPointer<DkMetaDataT> metaData() const;
 	int size() const;
 
 protected:
-	QImage mImg;
 	QString mEditName;
+	QImage mImg;
+	bool mNewImg;
+	bool mNewMetaData;
+	QSharedPointer<DkMetaDataT> mMetaData;
 
 };
 
@@ -263,7 +273,11 @@ public:
 	 * @param file assigns the current file name
 	 **/
 	void setImage(const QImage& img, const QString& editName, const QString& file);
+	void pruneEditHistory();
 	void setEditImage(const QImage& img, const QString& editName = "");
+	void setEditMetaData(const QSharedPointer<DkMetaDataT>& metaData, const QImage& img, const QString& editName = "");
+	void setEditMetaData(const QSharedPointer<DkMetaDataT>& metaData, const QString& editName = "");
+	void setEditMetaData(const QString& editName);
 
 	void setTraining(bool training) {
 		training = true;
@@ -277,15 +291,20 @@ public:
 		return mLoader;
 	};
 
-	QSharedPointer<DkMetaDataT> getMetaData() const {
-		return mMetaData;
-	};
+	QSharedPointer<DkMetaDataT> getMetaData() const;
 
 	/**
 	 * Returns the 8-bit image, which is rendered.
 	 * @return QImage an 8bit image
 	 **/
 	QImage image() const;
+	QImage lastImage() const;
+	QImage pixmap() const;
+
+	QSharedPointer<DkMetaDataT> lastMetaDataEdit(bool return_nullptr = true, bool return_orig = false) const;
+
+	bool isImageEdited();
+	bool isMetaDataEdited();
 
 	QString getFile() {
 		return mFile;
@@ -356,6 +375,10 @@ public:
 
 signals:
 	void errorDialogSignal(const QString& msg) const;
+
+	void undoSignal();
+	void redoSignal();
+	void resetMetaDataSignal();
 
 protected:
 	bool loadRohFile(const QString& filePath, QImage& img, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) const;

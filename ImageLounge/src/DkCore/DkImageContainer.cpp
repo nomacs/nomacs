@@ -221,6 +221,11 @@ QSharedPointer<DkBasicLoader> DkImageContainer::getLoader() {
 	return mLoader;
 }
 
+/**
+ * @brief Returns the pointer to the current metadata object, see DkBasicLoader::getMetaData().
+ * 
+ * @return QSharedPointer<DkMetaDataT> 
+ */
 QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData() {
 
 	return getLoader()->getMetaData();
@@ -303,7 +308,15 @@ QImage DkImageContainer::image() {
 	if (getLoader()->image().isNull() && getLoadState() == not_loaded)
 		loadImage();
 
-	return mLoader->image();
+	return mLoader->pixmap(); //current pixmap (rotated pixmap after exif rotation)
+}
+
+QImage DkImageContainer::pixmap() {
+
+	//if (getLoader()->image().isNull() && getLoadState() == not_loaded)
+	//	loadImage();
+
+	return mLoader->pixmap(); //current image as shown in the gui, may differ from saved image
 }
 
 QImage DkImageContainer::imageScaledToHeight(int height) {
@@ -346,7 +359,8 @@ QImage DkImageContainer::imageScaledToWidth(int width) {
 
 void DkImageContainer::setImage(const QImage& img, const QString& editName) {
 
-	setImage(img, editName, mFilePath);
+	getLoader()->setEditImage(img, editName);
+	mEdited = true;
 }
 
 void DkImageContainer::setImage(const QImage& img, const QString& editName, const QString& filePath) {
@@ -354,7 +368,30 @@ void DkImageContainer::setImage(const QImage& img, const QString& editName, cons
 	scaledImages.clear();	// invalid now
 
 	setFilePath(mFilePath);
-	getLoader()->setImage(img, editName, filePath);
+	getLoader()->setImage(img, editName, filePath); //set new image
+	mEdited = true;
+}
+
+void DkImageContainer::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage& img, const QString& editName) {
+	//Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
+	//how about a signal?
+
+	getLoader()->setEditMetaData(editedMetaData, img, editName);
+	mEdited = true;
+}
+
+void DkImageContainer::setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString& editName) {
+	//Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
+	//how about a signal?
+
+	getLoader()->setEditMetaData(editedMetaData, editName);
+	mEdited = true;
+}
+
+void DkImageContainer::setMetaData(const QString& editName) {
+	//Add edit history entry with explicitly edited metadata (hasMetaData()) and implicitly modified image
+
+	getLoader()->setEditMetaData(editName);
 	mEdited = true;
 }
 
@@ -412,7 +449,8 @@ bool DkImageContainer::loadImage() {
 }
 
 bool DkImageContainer::saveImage(const QString& filePath, int compression /* = -1 */) {
-	return saveImage(filePath, getLoader()->image(), compression);
+
+	return saveImage(filePath, getLoader()->lastImage(), compression);
 }
 
 bool DkImageContainer::saveImage(const QString& filePath, const QImage saveImg, int compression /* = -1 */) {
@@ -478,7 +516,7 @@ void DkImageContainer::saveMetaData() {
 void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
 	// TODO this shouldn't be used without notifying the user, see issue #799
-	loader->saveMetaData(filePath, fileBuffer); // TODO use with caution
+	loader->saveMetaData(filePath, fileBuffer);
 }
 
 void DkImageContainer::setEdited(bool edited /* = true */) {
@@ -932,20 +970,24 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 
 }
 
-void DkImageContainerT::saveMetaDataThreaded() {
+void DkImageContainerT::saveMetaDataThreaded(const QString& filePath) {
 
 	if (!exists() || (getLoader()->getMetaData() && !getLoader()->getMetaData()->isDirty()))
 		return;
 
 	mFileUpdateTimer.stop();
 	QFuture<void> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::saveMetaDataIntern, filePath(), getLoader(), getFileBuffer());
+		&nmc::DkImageContainerT::saveMetaDataIntern, filePath, getLoader(), getFileBuffer());
 
+}
+
+void DkImageContainerT::saveMetaDataThreaded() {
+	saveMetaDataThreaded(filePath());
 }
 
 bool DkImageContainerT::saveImageThreaded(const QString& filePath, int compression /* = -1 */) {
 
-	return saveImageThreaded(filePath, getLoader()->image(), compression);
+	return saveImageThreaded(filePath, getLoader()->lastImage(), compression);
 }
 
 bool DkImageContainerT::saveImageThreaded(const QString& filePath, const QImage saveImg, int compression /* = -1 */) {

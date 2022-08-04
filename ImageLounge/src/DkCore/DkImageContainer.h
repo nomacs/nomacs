@@ -76,6 +76,7 @@ public:
 	bool operator>= (const DkImageContainer& o) const;
 
 	QImage image();
+	QImage pixmap();
 	QImage imageScaledToHeight(int height);
 	QImage imageScaledToWidth(int width);
 
@@ -114,6 +115,9 @@ public:
 	bool loadImage();
 	void setImage(const QImage& img, const QString& editName);
 	void setImage(const QImage& img, const QString& editName, const QString& filePath);
+	void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QImage& img, const QString& editName);
+	void setMetaData(QSharedPointer<DkMetaDataT> editedMetaData, const QString& editName);
+	void setMetaData(const QString& editName);
 	bool saveImage(const QString& filePath, const QImage saveImg, int compression = -1);
 	bool saveImage(const QString& filePath, int compression = -1);
 	void saveMetaData();
@@ -174,6 +178,7 @@ public:
 	bool loadImageThreaded(bool force = false);
 	bool saveImageThreaded(const QString& filePath, const QImage saveImg, int compression = -1);
 	bool saveImageThreaded(const QString& filePath, int compression = -1);
+	void saveMetaDataThreaded(const QString& filePath);
 	void saveMetaDataThreaded();
 	bool isFileDownloaded() const;
 
