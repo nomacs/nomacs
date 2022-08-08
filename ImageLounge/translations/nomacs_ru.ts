@@ -1373,7 +1373,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1558"/>
       <source>Delete File Silent</source>
-      <translation>Тихо удалить файл</translation>
+      <translation>Удалить файл без уведомлений</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1559"/>
@@ -3106,7 +3106,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="772"/>
       <source>Use Input Folder</source>
-      <translation>Использовать входную папку</translation>
+      <translation>Папка с исходными изображениями</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="773"/>
@@ -3116,7 +3116,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="777"/>
       <source>Delete Input Files</source>
-      <translation>Удаленить исходные файлы</translation>
+      <translation>Удалить исходные файлы</translation>
     </message>
     <message>
       <location filename="../../src/DkGui/DkBatch.cpp" line="778"/>
