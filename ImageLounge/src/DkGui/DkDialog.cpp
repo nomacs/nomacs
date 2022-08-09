@@ -4218,6 +4218,10 @@ void DkDialogManager::openPrintDialog() const {
 	}
 
 	QSharedPointer<DkImageContainerT> imgC = mCentralWidget->getCurrentImage();
+	if (!imgC) {
+		qWarning() << "cannot open print dialog if there is no ImageContainer...";
+		return;
+	}
 
 	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(DkUtils::getMainWindow());
 	previewDialog->setImage(imgC->image());
