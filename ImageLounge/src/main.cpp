@@ -333,6 +333,9 @@ int main(int argc, char *argv[]) {
 			QObject::tr("Sorry, nomacs ran out of memory..."), QMessageBox::Ok);
 	}
 
+	// restore message handler, workaround for: https://github.com/nomacs/nomacs/issues/874
+	qInstallMessageHandler(0);
+
 	if (w)
 		delete w;	// we need delete so that settings are saved (from destructors)
 	if (pw)
