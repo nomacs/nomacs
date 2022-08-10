@@ -10,12 +10,12 @@
 [submodule "3rd-party/LibRaw"]
 	path = 3rd-party/LibRaw
 	url = https://github.com/nomacs/LibRaw.git
-[submodule "3rd-party/imageformats"]
-	path = 3rd-party/imageformats
-	url = https://github.com/nomacs/imageformats.git
 [submodule "ImageLounge/plugins"]
 	path = ImageLounge/plugins
 	url = https://github.com/nomacs/nomacs-plugins.git
 [submodule "3rd-party/exiv2"]
 	path = 3rd-party/exiv2
 	url = https://github.com/novomesk/exiv2-nomacs.git
+[submodule "3rd-party/imageformats"]
+	path = 3rd-party/imageformats
+	url = https://github.com/novomesk/nomacs-imageformats.git

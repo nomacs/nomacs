@@ -123,6 +123,12 @@ if (ENABLE_JXL)
     file(DOWNLOAD "https://github.com/novomesk/qt-jpegxl-image-plugin/releases/latest/download/qjpegxl.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/qjpegxl.dll)
 endif()
 
+if (ENABLE_HEIF)
+    file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/kimg_heif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/kimg_heif.dll)
+    file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/heif.dll" ${CMAKE_BINARY_DIR}/Release/heif.dll)
+    file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/libde265.dll" ${CMAKE_BINARY_DIR}/Release/libde265.dll)
+endif()
+
 # copy additional Qt files
 # add image plugins
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Release/imageformats)
@@ -233,24 +239,6 @@ if(DLL_CORE_NAME)
 	get_property(CORE_DEBUG_NAME TARGET ${DLL_CORE_NAME} PROPERTY DEBUG_OUTPUT_NAME)
 	get_property(CORE_RELEASE_NAME TARGET ${DLL_CORE_NAME} PROPERTY RELEASE_OUTPUT_NAME)
 	set(NOMACS_CORE_LIB optimized ${CMAKE_BINARY_DIR}/libs/Release/${CORE_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${CORE_DEBUG_NAME}.lib)
-endif()
-
-if (ENABLE_HEIF)
-	find_package(libde265)
-	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${LIBDE265_BUILD_PATH}/libde265/Release/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-    
-    if (EXISTS ${LIBDE265_BUILD_PATH}/libde265/Debug/)
-        file(COPY ${LIBDE265_BUILD_PATH}/libde265/Debug/libde265.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-    endif()
-
-	find_package(libheif)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Release/)
-	file(COPY ${libheif_BUILD_PATH}/libheif/Release/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/RelWithDebInfo/)
-    
-    if (EXISTS ${LIBDE265_BUILD_PATH}/libheif/Debug/)
-        file(COPY ${libheif_BUILD_PATH}/libheif/Debug/heif.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-    endif ()
 endif()
 
 set(NOMACS_LIBS ${NOMACS_CORE_LIB})

@@ -255,8 +255,8 @@ class FormatsConfig(Config):
         # tune cmake parameters here
         args = [
             "-DCMAKE_PREFIX_PATH=" +
-            os.path.join(self.libpath, "libde265") + ";" +
-            os.path.join(self.libpath, "libheif") + ";" +
+            # os.path.join(self.libpath, "libde265") + ";" +
+            # os.path.join(self.libpath, "libheif") + ";" +
             self.qtpath,
             "-B" + self.builddir,
             self.srcpath
@@ -301,16 +301,16 @@ def make_imageformats(params):
     params['install'] = False
 
     # config libde265 which we need for libheif
-    libde265 = FormatsConfig(params, "libde265")
-    libde265.builddir = os.path.join(libde265.builddir, libde265.name)
-    libde265.binaryfile = os.path.join(libde265.builddir, libde265.name, "Release", libde265.name + ".dll")
-    build(libde265)
+    # libde265 = FormatsConfig(params, "libde265")
+    # libde265.builddir = os.path.join(libde265.builddir, libde265.name)
+    # libde265.binaryfile = os.path.join(libde265.builddir, libde265.name, "Release", libde265.name + ".dll")
+    # build(libde265)
     
     # config libheif
-    libheif = FormatsConfig(params, "libheif")
-    libheif.builddir = os.path.join(libheif.builddir, libheif.name)
-    libheif.binaryfile = os.path.join(libheif.builddir, "libheif", "Release", "heif.dll")
-    build(libheif)
+    # libheif = FormatsConfig(params, "libheif")
+    # libheif.builddir = os.path.join(libheif.builddir, libheif.name)
+    # libheif.binaryfile = os.path.join(libheif.builddir, "libheif", "Release", "heif.dll")
+    # build(libheif)
     
     # configure image formats
     params["srcpath"] = params["repopath"]
