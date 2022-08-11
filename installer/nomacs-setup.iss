@@ -53,7 +53,8 @@ Name: "fa\3fr"; Description: ".3fr"; Types: full custom
 Name: "fa\arw"; Description: ".arw"; Types: full custom
 Name: "fa\avif"; Description: ".avif"; Types: full custom
 Name: "fa\bmp"; Description: ".bmp"; Types: full custom
-Name: "fa\cr2"; Description: ".crw"; Types: full custom
+Name: "fa\cr2"; Description: ".cr2"; Types: full custom
+Name: "fa\cr3"; Description: ".cr3"; Types: full custom
 Name: "fa\crw"; Description: ".crw"; Types: full custom
 Name: "fa\cur"; Description: ".cur"; Types: full custom
 Name: "fa\dng"; Description: ".dng"; Types: full custom
@@ -65,23 +66,23 @@ Name: "fa\heif"; Description: ".heif"; Types: full custom
 Name: "fa\heifs"; Description: ".heifs"; Types: full custom
 Name: "fa\icns"; Description: ".icns"; Types: full custom
 Name: "fa\iiq"; Description: ".iiq"; Types: full custom
-Name: "fa\j2k"; Description: ".jp2"; Types: full custom
+Name: "fa\j2k"; Description: ".j2k"; Types: full custom
 Name: "fa\jp2"; Description: ".jp2"; Types: full custom
-Name: "fa\jpe"; Description: ".jpg"; Types: full custom
-Name: "fa\jpeg"; Description: ".jpg"; Types: full custom
-Name: "fa\jpf"; Description: ".jp2"; Types: full custom
+Name: "fa\jpe"; Description: ".jpe"; Types: full custom
+Name: "fa\jpeg"; Description: ".jpeg"; Types: full custom
+Name: "fa\jpf"; Description: ".jpf"; Types: full custom
 Name: "fa\jpg"; Description: ".jpg"; Types: full custom
-Name: "fa\jpgx"; Description: ".jp2"; Types: full custom
-Name: "fa\jpm"; Description: ".jp2"; Types: full custom
+Name: "fa\jpgx"; Description: ".jpgx"; Types: full custom
+Name: "fa\jpm"; Description: ".jpm"; Types: full custom
 Name: "fa\jps"; Description: ".jps"; Types: full custom
-Name: "fa\jpx"; Description: ".jp2"; Types: full custom
+Name: "fa\jpx"; Description: ".jpx"; Types: full custom
 Name: "fa\jxl"; Description: ".jxl"; Types: full custom
 Name: "fa\mng"; Description: ".mng"; Types: full custom
 Name: "fa\mos"; Description: ".mos"; Types: full custom
 Name: "fa\mpo"; Description: ".mpo"; Types: full custom
 Name: "fa\mrw"; Description: ".mrw"; Types: full custom
 Name: "fa\nef"; Description: ".nef"; Types: full custom
-Name: "fa\nrw"; Description: ".nef"; Types: full custom
+Name: "fa\nrw"; Description: ".nrw"; Types: full custom
 Name: "fa\orf"; Description: ".orf"; Types: full custom
 Name: "fa\pbm"; Description: ".pbm"; Types: full custom
 Name: "fa\pef"; Description: ".pef"; Types: full custom
@@ -94,13 +95,13 @@ Name: "fa\psd"; Description: ".psd"; Types: full custom
 Name: "fa\raf"; Description: ".raf"; Types: full custom
 Name: "fa\raw"; Description: ".raw"; Types: full custom
 Name: "fa\roh"; Description: ".roh"; Types: full custom
-Name: "fa\rw2"; Description: ".raw"; Types: full custom
+Name: "fa\rw2"; Description: ".rw2"; Types: full custom
 Name: "fa\srw"; Description: ".srw"; Types: full custom
 Name: "fa\svg"; Description: ".svg"; Types: full custom
-Name: "fa\svgz"; Description: ".svg"; Types: full custom
+Name: "fa\svgz"; Description: ".svgz"; Types: full custom
 Name: "fa\tga"; Description: ".tga"; Types: full custom
 Name: "fa\tif"; Description: ".tif"; Types: full custom
-Name: "fa\tiff"; Description: ".tif"; Types: full custom
+Name: "fa\tiff"; Description: ".tiff"; Types: full custom
 Name: "fa\vec"; Description: ".vec"; Types: full custom
 Name: "fa\wbmp"; Description: ".wbmp"; Types: full custom
 Name: "fa\webp"; Description: ".webp"; Types: full custom
@@ -231,6 +232,7 @@ Root: HKA; Subkey: "Software\Classes\.arw"; ValueType: string; ValueName: ""; Va
 Root: HKA; Subkey: "Software\Classes\.avif"; ValueType: string; ValueName: ""; ValueData: "nomacs.avif.3"; Flags: uninsdeletevalue; Components: fa\avif
 Root: HKA; Subkey: "Software\Classes\.bmp"; ValueType: string; ValueName: ""; ValueData: "nomacs.bmp.3"; Flags: uninsdeletevalue; Components: fa\bmp
 Root: HKA; Subkey: "Software\Classes\.cr2"; ValueType: string; ValueName: ""; ValueData: "nomacs.crw.3"; Flags: uninsdeletevalue; Components: fa\cr2
+Root: HKA; Subkey: "Software\Classes\.cr3"; ValueType: string; ValueName: ""; ValueData: "nomacs.crw.3"; Flags: uninsdeletevalue; Components: fa\cr3
 Root: HKA; Subkey: "Software\Classes\.crw"; ValueType: string; ValueName: ""; ValueData: "nomacs.crw.3"; Flags: uninsdeletevalue; Components: fa\crw
 Root: HKA; Subkey: "Software\Classes\.cur"; ValueType: string; ValueName: ""; ValueData: "nomacs.cur.3"; Flags: uninsdeletevalue; Components: fa\cur
 Root: HKA; Subkey: "Software\Classes\.dng"; ValueType: string; ValueName: ""; ValueData: "nomacs.dng.3"; Flags: uninsdeletevalue; Components: fa\dng
