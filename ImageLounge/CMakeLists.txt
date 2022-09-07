@@ -33,7 +33,7 @@ find_package(Python QUIET)
 # include macros needed
 include("cmake/Utils.cmake")
 
-set(QT5_MIN_VERSION 5.2.1)
+set(QT5_MIN_VERSION 5.15.0)
 
 # different compile options
 option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
@@ -75,8 +75,6 @@ elseif (MSVC)
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/opencv/")
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/quazip/")
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/libraw/")
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/imageformats/libheif")
-        set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_PATH}/imageformats/libde265")
     endif()
 endif()
 
