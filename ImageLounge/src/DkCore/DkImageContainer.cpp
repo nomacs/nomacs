@@ -313,10 +313,7 @@ QImage DkImageContainer::image() {
 
 QImage DkImageContainer::pixmap() {
 
-	//if (getLoader()->image().isNull() && getLoadState() == not_loaded)
-	//	loadImage();
-
-	return mLoader->pixmap(); //current image as shown in the gui, may differ from saved image
+	return mLoader->pixmap();
 }
 
 QImage DkImageContainer::imageScaledToHeight(int height) {
@@ -643,7 +640,7 @@ DkImageContainerT::~DkImageContainerT() {
 	// which is dangerous because it updates the file. We consider this to be a bug.
 	// The other place where the file was silently updated in the background was the release() routine, called on unload.
 	// All changes should be explicitly committed, including exif notes.
-	// If you think this is wrong, a comment would be appreciated. See issue #799.
+	// See issue #799. [2022, PSE]
 
 	// we have to wait here
 	mSaveMetaDataWatcher.blockSignals(true);

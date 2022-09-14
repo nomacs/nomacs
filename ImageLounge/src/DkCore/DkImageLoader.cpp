@@ -829,7 +829,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 	if (newImg)
 		loadDir(newImg->dirPath());
 	//else
-	//	qDebug() << "empty image assigned";
+	//	qDebug() << "empty image assigned"; // TODO
 	
 	// if the file stays the same, we just want to update the pointer
 	bool updatePointer = newImg && mCurrentImage && newImg->filePath() == mCurrentImage->filePath();
@@ -1159,6 +1159,8 @@ void DkImageLoader::copyUserFile() {
 
 void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 
+	//TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
+
 	// the subsequent modals destroy the active window
 	QWidget* dialogParent = DkUtils::getMainWindow();
 
@@ -1241,7 +1243,7 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 	QFileInfo sFile = QFileInfo(fileName);
 	int compression = -1;	// default value
 
-	//Save only metadata if image itself hasn't been edited (e.g., after exif-rotating)
+	//Save only metadata if image itself hasn't been edited (after exif rotation)
 	bool sameFile = fileName == filePath();
 	bool imgEdited = mCurrentImage->getLoader()->isImageEdited();
 	bool metaEdited = mCurrentImage->getLoader()->isMetaDataEdited();
@@ -1589,14 +1591,24 @@ void DkImageLoader::rotateImage(double angle) {
 	}
 
 	if (metaDataSet) {
-		// Add history item with edited metadata
+		// Add history item with edited metadata (exif rotation)
 		mCurrentImage->setMetaData(metaData, img, tr("Rotated")); //new edit with modified metadata
 		setImageUpdated();
 	}
 	else {
 		// Update the image itself, along with the history and everything
 		// In other words, the rotated image is saved to the history and the edit flag is set
-		setImage(img, tr("Rotated"), mCurrentImage->filePath());
+		// the exif rotation flag will be reset when adding the new image to the history (BasicLoader)
+		mCurrentImage->setImage(img, tr("Rotated")); //new edit with rotated pixmap (clears orientation)
+		setImageUpdated();
+		// TODO There's a glitch when rotating/changing the image after switching back from settings
+		// which causes the containers to be reloaded. If we call the local setImage() overload,
+		// the metadata object will be reset causing the image to be saved without modified metadata on Save.
+		// With the call above, no metadata is lost, but when navigating away, confirming save on unload
+		// and navigating back, the previous image may still appear (loaded while/before async save).
+		// TODO a) prevent metadata reset without also resetting the gui; b) send signal after save
+		// to reload the saved image (in the other container); c) don't load x while saving x ...
+		// [2022-09, pse]
 	}
 
 }

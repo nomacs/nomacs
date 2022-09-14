@@ -306,11 +306,11 @@ public:
 	bool isImageEdited();
 	bool isMetaDataEdited();
 
-	QString getFile() {
+	QString getFile() const {
 		return mFile;
 	};
 
-	bool isDirty() {
+	bool isDirty() const {
 		return mPageIdxDirty;
 	};
 
