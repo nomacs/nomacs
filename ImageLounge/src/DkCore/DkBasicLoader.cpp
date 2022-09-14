@@ -1277,6 +1277,7 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) const {
  * @brief saves the image and its metadata to the specified file.
  * 
  * It writes the image to a file buffer and then writes that buffer back to the original file.
+ * Modified metadata is saved afterwards.
  * 
  * @param filePath target path to image file
  * @param img source image to be written to file (may be converted along the way)
@@ -1290,9 +1291,6 @@ QString DkBasicLoader::save(const QString& filePath, const QImage& img, int comp
     if (saveToBuffer(filePath, img, ba, compression) && ba) {
 
         if (writeBufferToFile(filePath, ba)) {
-            // Image (pixmap) saved, now write metadata to file
-            saveMetaData(filePath);
-
             qInfo() << "saved to" << filePath << "in" << dt;
             return filePath;
         }
@@ -1319,6 +1317,9 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
         ba = QSharedPointer<QByteArray>(new QByteArray());
         bufferCreated = true;
     }
+    //copy current metadata object: mMetaData pointer may be reset in the background in the process
+    //and then it won't be saved because !isLoaded()... [2022-08, pse]
+    QSharedPointer<DkMetaDataT> metaData = mMetaData; 
 
     bool saved = false;
 
@@ -1370,34 +1371,37 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
         imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
         imgWriter->setProgressiveScanWrite(true);
 #endif
-        saved = imgWriter->write(sImg);
+        saved = imgWriter->write(sImg); //hint: release() might run now, resetting mMetaData which is used below [2022-08, pse]
         delete imgWriter;
     }
 
-    if (saved && mMetaData) {
+    if (saved && metaData) {
         
-        if (!mMetaData->isLoaded() || !mMetaData->hasMetaData()) {
+        if (!metaData->isLoaded() || !metaData->hasMetaData()) {
 
             if (!bufferCreated)
-                mMetaData->readMetaData(filePath, ba);
+                metaData->readMetaData(filePath, ba);
             else
                 // if we created the buffere here - force loading metadata from the file
-                mMetaData->readMetaData(filePath);
+                metaData->readMetaData(filePath);
         }
 
-        if (mMetaData->isLoaded()) {
+        // If we have metadata for the image, save it
+        // If your images are saved without metadata, check if the metadata object is discarded or reset
+        // causing isLoaded() to return false (glitch on reload) - pse
+        if (metaData->isLoaded()) {
         
             try {
                 // be careful: here we actually lie about the constness
-                mMetaData->updateImageMetaData(img, false);
-                if (!mMetaData->saveMetaData(ba, true))
-                    mMetaData->clearExifState();
+                metaData->updateImageMetaData(img, false); //set dimensions in exif (do not reset exif orientation)
+                if (!metaData->saveMetaData(ba, true))
+                    metaData->clearExifState();
             } 
             catch (...) {
                 // is it still throwing anything?
                 qInfo() << "Sorry, I could not save the meta data...";
                 // clear exif state here -> the 'dirty' flag would otherwise edit the original image (see #514)
-                mMetaData->clearExifState();
+                metaData->clearExifState();
             }
         }
     }
@@ -1414,17 +1418,6 @@ void DkBasicLoader::saveThumbToMetaData(const QString& filePath) {
     saveThumbToMetaData(filePath, ba);
 }
 
-/**
- * @brief this will write the current exif/metadata to the loaded file.
- * 
- * @param filePath path to current file to be updated
- */
-void DkBasicLoader::saveMetaData(const QString& filePath) {
-
-    QSharedPointer<QByteArray> ba;	// dummy
-    saveMetaData(filePath, ba);
-}
-
 void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
     
     if (!hasImage())
@@ -1435,9 +1428,29 @@ void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<
 }
 
 /**
- * @brief saves the file to a file buffer and writes the file buffer to the original file
+ * @brief this will write the current exif/metadata to the loaded file.
  * 
- * This routine will write new metadata to the file on disk.
+ * It calls the other overload passing an empty buffer,
+ * so it'll load the buffer, save the exif data to the buffer
+ * and write the buffer back to the file.
+ * 
+ * @param filePath path to current file to be updated
+ */
+void DkBasicLoader::saveMetaData(const QString& filePath) {
+
+    QSharedPointer<QByteArray> ba;	// dummy
+    saveMetaData(filePath, ba);
+}
+
+/**
+ * @brief writes metadata to the file on disk, if it's marked as dirty
+ * 
+ * This routine will write new metadata to the file on disk if metadata is marked dirty.
+ * It does this by first loading the file into a buffer (unless a non-empty buffer is passed),
+ * then it calls the MetaData module to save the exif data to that buffer
+ * and finally, it writes the modified buffer to the file on disk.
+ * The MetaData module has an overload which does basically the same thing.
+ * 
  * See ImageLoader (regular workflow starts there) and ImageContainer.
  * 
  * @param filePath path to image file
@@ -1496,7 +1509,7 @@ bool DkBasicLoader::isContainer(const QString& filePath) {
  * @note This will *not* silently auto-save your beautiful images.
  * It was apparently intended to be used that way (it called saveMetaData(), like ~DkImageContainerT()).
  * All changes should be explicitly committed, including exif notes.
- * If you think this is wrong, a comment would be appreciated. See issue #799.
+ * If you think this is wrong, a comment would be appreciated. See issue #799. PSE, 2022.
  * 
  **/ 
 void DkBasicLoader::release() {
