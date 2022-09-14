@@ -1359,17 +1359,6 @@ void DkBasicLoader::saveThumbToMetaData(const QString &filePath)
     saveThumbToMetaData(filePath, ba);
 }
 
-/**
- * @brief this will write the current exif/metadata to the loaded file.
- * 
- * @param filePath path to current file to be updated
- */
-void DkBasicLoader::saveMetaData(const QString& filePath) {
-
-	QSharedPointer<QByteArray> ba;	// dummy
-	saveMetaData(filePath, ba);
-}
-
 void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 	
     if (!hasImage())
@@ -1380,9 +1369,29 @@ void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<
 }
 
 /**
- * @brief saves the file to a file buffer and writes the file buffer to the original file
+ * @brief this will write the current exif/metadata to the loaded file.
  * 
- * This routine will write new metadata to the file on disk.
+ * It calls the other overload passing an empty buffer,
+ * so it'll load the buffer, save the exif data to the buffer
+ * and write the buffer back to the file.
+ * 
+ * @param filePath path to current file to be updated
+ */
+void DkBasicLoader::saveMetaData(const QString& filePath) {
+
+    QSharedPointer<QByteArray> ba;	// dummy
+    saveMetaData(filePath, ba);
+}
+
+/**
+ * @brief writes metadata to the file on disk, if it's marked as dirty
+ * 
+ * This routine will write new metadata to the file on disk if metadata is marked dirty.
+ * It does this by first loading the file into a buffer (unless a non-empty buffer is passed),
+ * then it calls the MetaData module to save the exif data to that buffer
+ * and finally, it writes the modified buffer to the file on disk.
+ * The MetaData module has an overload which does basically the same thing.
+ * 
  * See ImageLoader (regular workflow starts there) and ImageContainer.
  * 
  * @param filePath path to image file
@@ -1454,7 +1463,7 @@ bool DkBasicLoader::isContainer(const QString &filePath)
  * @note This will *not* silently auto-save your beautiful images.
  * It was apparently intended to be used that way (it called saveMetaData(), like ~DkImageContainerT()).
  * All changes should be explicitly committed, including exif notes.
- * If you think this is wrong, a comment would be appreciated. See issue #799.
+ * If you think this is wrong, a comment would be appreciated. See issue #799. PSE, 2022.
  * 
  **/ 
 void DkBasicLoader::release() {

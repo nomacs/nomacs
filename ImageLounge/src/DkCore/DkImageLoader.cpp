@@ -1109,6 +1109,8 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
 {
     // TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
 
+	//TODO glitch if (!mCurrentImage->getMetaData()->isLoaded()); see rotateImage()
+
     // the subsequent modals destroy the active window
     QWidget *dialogParent = DkUtils::getMainWindow();
 
