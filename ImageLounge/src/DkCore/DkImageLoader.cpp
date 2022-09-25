@@ -1260,6 +1260,8 @@ void DkImageLoader::saveUserFileAs(const QImage& saveImg, bool silent) {
 		//Skip the rest which is only relevant when re-encoding/saving the image
 		return;
 	}
+	//Saving image normally, clear exif rotation flag to prevent double rotation
+	mCurrentImage->getLoader()->getMetaData()->clearOrientation();
 	//Below are the compress/encode routines; at the end of a long call chain (saveIntern internSave Threaded)
 	//saveToBuffer() is responsible for adding the exif data to the image buffer soup
 	//which is then written to the specified file.

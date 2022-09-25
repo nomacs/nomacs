@@ -64,22 +64,14 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const {
 	metaDataN->mExifState = mExifState;
 
 	if (mExifImg.get() != 0) {
-		mExifImg->io().seek(0, Exiv2::BasicIo::beg);
-		long size = mExifImg->io().size();
-        Exiv2::DataBuf buff = mExifImg->io().read(size);
-		if (buff.pData_[0] != 0) {
-			//Initial copy, read buffered file contents to create new Exiv2::Image via factory
-			Exiv2::Image::AutoPtr exifImgN = Exiv2::ImageFactory::open(buff.pData_, size);
-			metaDataN->mExifImg = exifImgN;
-			metaDataN->mExifImg->readMetadata();
-		} else {
-			//Second copy without file data, alternatively recreate new Exiv2::Image by reading file again
-			metaDataN->readMetaData(mFilePath);
-		}
-
-		metaDataN->mExifImg->setExifData(mExifImg->exifData()); //explicit copy of list<Exifdatum>
-		metaDataN->mExifState = dirty;
 		metaDataN->mFilePath = mFilePath;
+		//Load new Exiv2::Image object
+		int i_type = mExifImg->imageType();
+		metaDataN->mExifImg = Exiv2::ImageFactory::create(i_type);
+		//Copy exif data from old object into new object
+		Exiv2::ExifData data = mExifImg->exifData();
+		metaDataN->mExifImg->setExifData(data); //explicit copy of list<Exifdatum>
+		metaDataN->mExifState = dirty;
 	}
 
 	return metaDataN;
