@@ -61,17 +61,23 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const {
 
 	//Copy Exiv2::Image object
 	QSharedPointer<DkMetaDataT> metaDataN(new DkMetaDataT());
+	metaDataN->mFilePath = mFilePath;
 	metaDataN->mExifState = mExifState;
 
 	if (mExifImg.get() != 0) {
-		metaDataN->mFilePath = mFilePath;
-		//Load new Exiv2::Image object
-		int i_type = mExifImg->imageType();
-		metaDataN->mExifImg = Exiv2::ImageFactory::create(i_type);
-		//Copy exif data from old object into new object
-		Exiv2::ExifData data = mExifImg->exifData();
-		metaDataN->mExifImg->setExifData(data); //explicit copy of list<Exifdatum>
-		metaDataN->mExifState = dirty;
+		//ImageFactory::create(type) may crash even if old Image object has that type
+		try {
+			//Load new Exiv2::Image object
+			int i_type = mExifImg->imageType();
+			metaDataN->mExifImg = Exiv2::ImageFactory::create(i_type);
+			//Copy exif data from old object into new object
+			Exiv2::ExifData data = mExifImg->exifData();
+			metaDataN->mExifImg->setExifData(data); //explicit copy of list<Exifdatum>
+			metaDataN->mExifState = dirty;
+		}
+		catch (...) {
+			metaDataN->mExifState = no_data;
+		}
 	}
 
 	return metaDataN;
@@ -119,6 +125,7 @@ void DkMetaDataT::readMetaData(const QString& filePath, QSharedPointer<QByteArra
 		// TODO: check crashes here
 		mExifState = no_data;
 		//qDebug() << "[Exiv2] could not open file for exif data";
+		qInfo() << "[Exiv2] could not load Exif data from file:" << filePath;
 		return;
 	}
 	
