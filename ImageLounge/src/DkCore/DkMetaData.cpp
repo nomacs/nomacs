@@ -79,6 +79,10 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
             metaDataN->mExifState = no_data;
         }
     }
+		catch (...) {
+			metaDataN->mExifState = no_data;
+		}
+	}
 
     return metaDataN;
 }
