@@ -27,10 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QString>
 #include <QStringList>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -42,33 +42,34 @@
 #endif
 #endif
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 // Qt defines
 
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DkDllDependency {
-
+class DllCoreExport DkDllDependency
+{
 public:
-	DkDllDependency(const QString& filePath);
+    DkDllDependency(const QString &filePath);
 
-	bool findDependencies();
+    bool findDependencies();
 
-	QStringList filteredDependencies() const;
-	QStringList dependencies() const;
-	QString filePath() const;
+    QStringList filteredDependencies() const;
+    QStringList dependencies() const;
+    QString filePath() const;
 
-	static QString filter();
-	static QByteArray marker();
+    static QString filter();
+    static QByteArray marker();
 
 protected:
-	QString mFilePath;
-	QStringList mDependencies;
+    QString mFilePath;
+    QStringList mDependencies;
 
-	QVector<int> markerLocations(const QByteArray& ba, const QByteArray& marker) const;
-	QString resolveName(const QByteArray& ba, int location) const;
-	bool isStopCharacter(const char& val) const;
+    QVector<int> markerLocations(const QByteArray &ba, const QByteArray &marker) const;
+    QString resolveName(const QByteArray &ba, int location) const;
+    bool isStopCharacter(const char &val) const;
 };
 
 }

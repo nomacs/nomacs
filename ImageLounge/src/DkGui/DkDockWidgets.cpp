@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -31,73 +31,72 @@
 #include "DkBasicLoader.h"
 #include "DkSettings.h"
 
-#pragma warning(push, 0)	// no warnings from includes
-#include <QVBoxLayout>
+#pragma warning(push, 0) // no warnings from includes
 #include <QListWidget>
+#include <QVBoxLayout>
 #pragma warning(pop)
 
-namespace nmc {
+namespace nmc
+{
 
-DkHistoryDock::DkHistoryDock(const QString& title, QWidget* parent) : DkDockWidget(title, parent) {
-
-	setObjectName("DkHistoryDock");
-	createLayout();
-	QMetaObject::connectSlotsByName(this);
+DkHistoryDock::DkHistoryDock(const QString &title, QWidget *parent)
+    : DkDockWidget(title, parent)
+{
+    setObjectName("DkHistoryDock");
+    createLayout();
+    QMetaObject::connectSlotsByName(this);
 }
 
-void DkHistoryDock::createLayout() {
+void DkHistoryDock::createLayout()
+{
+    mHistoryList = new QListWidget(this);
+    mHistoryList->setObjectName("historyList");
+    mHistoryList->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
 
-	mHistoryList = new QListWidget(this);
-	mHistoryList->setObjectName("historyList");
-	mHistoryList->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
+    QWidget *contentWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(contentWidget);
+    layout->addWidget(mHistoryList);
 
-	QWidget* contentWidget = new QWidget(this);
-	QVBoxLayout* layout = new QVBoxLayout(contentWidget);
-	layout->addWidget(mHistoryList);
-
-	setWidget(contentWidget);
+    setWidget(contentWidget);
 }
 
-void DkHistoryDock::updateImage(QSharedPointer<DkImageContainerT> img) {
-
-	updateList(img);
-	mImg = img;
+void DkHistoryDock::updateImage(QSharedPointer<DkImageContainerT> img)
+{
+    updateList(img);
+    mImg = img;
 }
 
-void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img) {
+void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img)
+{
+    QVector<DkEditImage> *history = img->getLoader()->history();
+    int hIdx = img->getLoader()->historyIndex();
+    QVector<QListWidgetItem *> editItems;
 
-	QVector<DkEditImage>* history = img->getLoader()->history();
-	int hIdx = img->getLoader()->historyIndex();
-	QVector<QListWidgetItem*> editItems;
+    mHistoryList->clear();
 
-	mHistoryList->clear();
+    for (int idx = 0; idx < history->size(); idx++) {
+        const DkEditImage &eImg = history->at(idx);
+        QListWidgetItem *item = new QListWidgetItem(QIcon(":/nomacs/img/nomacs.svg"), eImg.editName());
+        item->setFlags(idx <= hIdx ? Qt::ItemIsEnabled : Qt::NoItemFlags);
 
-	for (int idx = 0; idx < history->size(); idx++) {
-		
-		const DkEditImage& eImg = history->at(idx);
-		QListWidgetItem* item = new QListWidgetItem(QIcon(":/nomacs/img/nomacs.svg"), eImg.editName());
-		item->setFlags(idx <= hIdx ? Qt::ItemIsEnabled : Qt::NoItemFlags);
+        mHistoryList->addItem(item);
+    }
 
-		mHistoryList->addItem(item);
-	}
-
-	if (mHistoryList->item(hIdx))
-		mHistoryList->item(hIdx)->setSelected(true);
+    if (mHistoryList->item(hIdx))
+        mHistoryList->item(hIdx)->setSelected(true);
 }
 
-void DkHistoryDock::on_historyList_itemClicked(QListWidgetItem* item) {
+void DkHistoryDock::on_historyList_itemClicked(QListWidgetItem *item)
+{
+    if (!mImg)
+        return;
 
-	if (!mImg)
-		return;
-
-	for (int idx = 0; idx < mHistoryList->count(); idx++) {
-
-		if (item == mHistoryList->item(idx)) {
-			mImg->setHistoryIndex(idx);
-			break;
-		}
-	}
-
+    for (int idx = 0; idx < mHistoryList->count(); idx++) {
+        if (item == mHistoryList->item(idx)) {
+            mImg->setHistoryIndex(idx);
+            break;
+        }
+    }
 }
 
 }

@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkActionManager.h
  Created on:	28.10.2015
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2015 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2015 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2015 Florian Kleber <florian@nomacs.org>
@@ -27,13 +27,13 @@
 
 #pragma once
 
-#include "DkManipulators.h"
 #include "DkBaseWidgets.h"
+#include "DkManipulators.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QObject>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QObject>
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -45,7 +45,7 @@
 #endif
 #endif
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 // Qt defines
 class QMenu;
@@ -53,597 +53,598 @@ class QMainWindow;
 class QWinTaskbarProgress;
 class QProgressDialog;
 
-namespace nmc {
-	
+namespace nmc
+{
+
 // nomacs defines
 class DkTcpMenu;
 class DkPluginActionManager;
 
-class DllCoreExport DkAppManager : public QObject {
-	Q_OBJECT
+class DllCoreExport DkAppManager : public QObject
+{
+    Q_OBJECT
 
 public:
-	DkAppManager(QWidget* parent = 0);
-	~DkAppManager();
+    DkAppManager(QWidget *parent = 0);
+    ~DkAppManager();
 
-	void setActions(QVector<QAction* > actions);
-	QVector<QAction* > getActions() const;
-	QAction* createAction(const QString& filePath);
-	QAction* findAction(const QString& appPath) const;
+    void setActions(QVector<QAction *> actions);
+    QVector<QAction *> getActions() const;
+    QAction *createAction(const QString &filePath);
+    QAction *findAction(const QString &appPath) const;
 
-	enum defaultAppIdx {
+    enum defaultAppIdx {
 
-		app_photohsop,
-		app_picasa,
-		app_picasa_viewer,
-		app_irfan_view,
-		app_explorer,
+        app_photohsop,
+        app_picasa,
+        app_picasa_viewer,
+        app_irfan_view,
+        app_explorer,
 
-		app_idx_end
-	};
+        app_idx_end
+    };
 
 public slots:
-	void openTriggered() const;
+    void openTriggered() const;
 
 signals:
-	void openFileSignal(QAction* action) const;
+    void openFileSignal(QAction *action) const;
 
 protected:
-	void saveSettings() const;
-	void loadSettings();
-	void assignIcon(QAction* app) const;
-	bool containsApp(QVector<QAction* > apps, const QString& appName) const;
+    void saveSettings() const;
+    void loadSettings();
+    void assignIcon(QAction *app) const;
+    bool containsApp(QVector<QAction *> apps, const QString &appName) const;
 
-	QString searchForSoftware(const QString& organization, const QString& application, const QString& pathKey = "", const QString& exeName = "") const;
-	void findDefaultSoftware();
+    QString searchForSoftware(const QString &organization, const QString &application, const QString &pathKey = "", const QString &exeName = "") const;
+    void findDefaultSoftware();
 
-	QVector<QString> mDefaultNames;
-	QVector<QAction* > mApps;
-	bool mFirstTime = true;
+    QVector<QString> mDefaultNames;
+    QVector<QAction *> mApps;
+    bool mFirstTime = true;
 };
 
-class DllCoreExport DkActionManager {
-
+class DllCoreExport DkActionManager
+{
 public:
-	static DkActionManager& instance();
-	~DkActionManager();
+    static DkActionManager &instance();
+    ~DkActionManager();
 
-	// singleton
-	DkActionManager(DkActionManager const&)		= delete;
-	void operator=(DkActionManager const&)		= delete;
+    // singleton
+    DkActionManager(DkActionManager const &) = delete;
+    void operator=(DkActionManager const &) = delete;
 
-	enum FileMenuActions {
-		menu_file_open,
-		menu_file_open_dir,
-		menu_file_open_list,
-		menu_file_quick_launch,
-		menu_file_app_manager,
-		menu_file_save,
-		menu_file_save_as,
-		menu_file_save_copy,
-		menu_file_save_list,
-		menu_file_save_web,
-		menu_file_rename,
-		menu_file_goto,
-		menu_file_find,
-		menu_file_recursive,
-		menu_file_show_recent,
-		menu_file_print,
-		menu_file_reload,
-		menu_file_next,
-		menu_file_prev,
-		menu_file_new_instance,
-		menu_file_private_instance,
-		menu_file_exit,
+    enum FileMenuActions {
+        menu_file_open,
+        menu_file_open_dir,
+        menu_file_open_list,
+        menu_file_quick_launch,
+        menu_file_app_manager,
+        menu_file_save,
+        menu_file_save_as,
+        menu_file_save_copy,
+        menu_file_save_list,
+        menu_file_save_web,
+        menu_file_rename,
+        menu_file_goto,
+        menu_file_find,
+        menu_file_recursive,
+        menu_file_show_recent,
+        menu_file_print,
+        menu_file_reload,
+        menu_file_next,
+        menu_file_prev,
+        menu_file_new_instance,
+        menu_file_private_instance,
+        menu_file_exit,
 
-		menu_file_end,	// nothing beyond this point
-	};
+        menu_file_end, // nothing beyond this point
+    };
 
-	enum SortMenuActions {
+    enum SortMenuActions {
 
-		menu_sort_filename,
-		menu_sort_date_created,
-		menu_sort_date_modified,
-		menu_sort_random,
-		menu_sort_ascending,
-		menu_sort_descending,
+        menu_sort_filename,
+        menu_sort_date_created,
+        menu_sort_date_modified,
+        menu_sort_random,
+        menu_sort_ascending,
+        menu_sort_descending,
 
-		menu_sort_end,
-	};
+        menu_sort_end,
+    };
 
-	enum EditMenuActions {
-		menu_edit_image,
-		menu_edit_rotate_cw,
-		menu_edit_rotate_ccw,
-		menu_edit_rotate_180,
-		menu_edit_undo,
-		menu_edit_redo,
-		menu_edit_copy,
-		menu_edit_copy_buffer,
-		menu_edit_copy_color,
-		menu_edit_paste,
-		menu_edit_shortcuts,
-		menu_edit_preferences,
-		menu_edit_transform,
-		menu_edit_delete,
-		menu_edit_crop,
+    enum EditMenuActions {
+        menu_edit_image,
+        menu_edit_rotate_cw,
+        menu_edit_rotate_ccw,
+        menu_edit_rotate_180,
+        menu_edit_undo,
+        menu_edit_redo,
+        menu_edit_copy,
+        menu_edit_copy_buffer,
+        menu_edit_copy_color,
+        menu_edit_paste,
+        menu_edit_shortcuts,
+        menu_edit_preferences,
+        menu_edit_transform,
+        menu_edit_delete,
+        menu_edit_crop,
 
-		menu_edit_end,	// nothing beyond this point
-	};
+        menu_edit_end, // nothing beyond this point
+    };
 
-	enum ToolsMenuActions {
-		menu_tools_thumbs,
-		menu_tools_filter,
-		menu_tools_export_tiff,
-		menu_tools_extract_archive,
-		menu_tools_mosaic,
-		menu_tools_batch,
-		menu_tools_wallpaper,
-		menu_tools_train_format,
+    enum ToolsMenuActions {
+        menu_tools_thumbs,
+        menu_tools_filter,
+        menu_tools_export_tiff,
+        menu_tools_extract_archive,
+        menu_tools_mosaic,
+        menu_tools_batch,
+        menu_tools_wallpaper,
+        menu_tools_train_format,
 
-		menu_tools_end,
-	};
+        menu_tools_end,
+    };
 
-	enum PanelMenuActions {
-		menu_panel_toggle,
-		
-		menu_panel_menu,
-		menu_panel_toolbar,
-		menu_panel_statusbar,
-		menu_panel_transfertoolbar,
+    enum PanelMenuActions {
+        menu_panel_toggle,
 
-		menu_panel_player,
-		menu_panel_preview,
-		menu_panel_thumbview,
-		menu_panel_scroller,
-		menu_panel_exif,
-		menu_panel_info,
-		menu_panel_histogram,
-		menu_panel_overview,
-		menu_panel_explorer,
-		menu_panel_metadata_dock,
-		menu_panel_comment,
-		menu_panel_history,
-		menu_panel_log,
+        menu_panel_menu,
+        menu_panel_toolbar,
+        menu_panel_statusbar,
+        menu_panel_transfertoolbar,
 
-		menu_panel_end,
-	};
+        menu_panel_player,
+        menu_panel_preview,
+        menu_panel_thumbview,
+        menu_panel_scroller,
+        menu_panel_exif,
+        menu_panel_info,
+        menu_panel_histogram,
+        menu_panel_overview,
+        menu_panel_explorer,
+        menu_panel_metadata_dock,
+        menu_panel_comment,
+        menu_panel_history,
+        menu_panel_log,
 
-	enum ViewMenuActions {
-		menu_view_fullscreen,
-		menu_view_reset,
-		menu_view_100,
-		menu_view_fit_frame,
-		menu_view_zoom_in,
-		menu_view_zoom_out,
-		menu_view_anti_aliasing,
-		menu_view_tp_pattern,
-		menu_view_frameless,
+        menu_panel_end,
+    };
 
-		menu_view_new_tab,
-		menu_view_close_tab,
-		menu_view_close_all_tabs,
-		menu_view_first_tab,
-		menu_view_previous_tab,
-		menu_view_goto_tab,
-		menu_view_next_tab,
-		menu_view_last_tab,
+    enum ViewMenuActions {
+        menu_view_fullscreen,
+        menu_view_reset,
+        menu_view_100,
+        menu_view_fit_frame,
+        menu_view_zoom_in,
+        menu_view_zoom_out,
+        menu_view_anti_aliasing,
+        menu_view_tp_pattern,
+        menu_view_frameless,
 
-		menu_view_opacity_up,
-		menu_view_opacity_down,
-		menu_view_opacity_an,
-		menu_view_opacity_change,
-		menu_view_lock_window,
-		menu_view_gps_map,
-		menu_view_slideshow,
-		menu_view_movie_pause,
-		menu_view_movie_next,
-		menu_view_movie_prev,
+        menu_view_new_tab,
+        menu_view_close_tab,
+        menu_view_close_all_tabs,
+        menu_view_first_tab,
+        menu_view_previous_tab,
+        menu_view_goto_tab,
+        menu_view_next_tab,
+        menu_view_last_tab,
 
-		menu_view_monitors,	// frameless only
+        menu_view_opacity_up,
+        menu_view_opacity_down,
+        menu_view_opacity_an,
+        menu_view_opacity_change,
+        menu_view_lock_window,
+        menu_view_gps_map,
+        menu_view_slideshow,
+        menu_view_movie_pause,
+        menu_view_movie_next,
+        menu_view_movie_prev,
 
-		menu_view_end,	// nothing beyond this point
-	};
+        menu_view_monitors, // frameless only
 
-	enum SyncMenuActions {
-		menu_sync_view,
-		menu_sync_pos,
-		menu_sync_arrange,
-		menu_sync_connect_all,
-		menu_sync_all_actions,
+        menu_view_end, // nothing beyond this point
+    };
 
-		menu_sync_end,	// nothing beyond this point
-	};
+    enum SyncMenuActions {
+        menu_sync_view,
+        menu_sync_pos,
+        menu_sync_arrange,
+        menu_sync_connect_all,
+        menu_sync_all_actions,
 
-	enum PluginMenuActions {
-		menu_plugin_manager,
+        menu_sync_end, // nothing beyond this point
+    };
 
-		menu_plugins_end,	// nothing beyond this point
-	};
+    enum PluginMenuActions {
+        menu_plugin_manager,
 
-	enum HelpMenuActions{
-		menu_help_update,
-		menu_help_update_translation,
-		menu_help_bug,
-		menu_help_documentation,
-		menu_help_about,
+        menu_plugins_end, // nothing beyond this point
+    };
 
-		menu_help_end,	// nothing beyond this point
-	};
+    enum HelpMenuActions {
+        menu_help_update,
+        menu_help_update_translation,
+        menu_help_bug,
+        menu_help_documentation,
+        menu_help_about,
 
-	enum HiddenActions {
-		sc_test_img,
-		sc_test_rec,
-		sc_test_pong,
+        menu_help_end, // nothing beyond this point
+    };
 
-		sc_first_file,
-		sc_last_file,
-		sc_skip_prev,
-		sc_skip_next,
-		sc_skip_next_sync,
-		sc_skip_prev_sync,
-		sc_first_file_sync,
-		sc_last_file_sync,
-		sc_delete_silent,
+    enum HiddenActions {
+        sc_test_img,
+        sc_test_rec,
+        sc_test_pong,
 
-		sc_star_rating_0,
-		sc_star_rating_1,
-		sc_star_rating_2,
-		sc_star_rating_3,
-		sc_star_rating_4,
-		sc_star_rating_5,
+        sc_first_file,
+        sc_last_file,
+        sc_skip_prev,
+        sc_skip_next,
+        sc_skip_next_sync,
+        sc_skip_prev_sync,
+        sc_first_file_sync,
+        sc_last_file_sync,
+        sc_delete_silent,
 
-		sc_pan_up,
-		sc_pan_down,
-		sc_pan_left,
-		sc_pan_right,
+        sc_star_rating_0,
+        sc_star_rating_1,
+        sc_star_rating_2,
+        sc_star_rating_3,
+        sc_star_rating_4,
+        sc_star_rating_5,
 
-		sc_end,	// nothing beyond this point
-	};
+        sc_pan_up,
+        sc_pan_down,
+        sc_pan_left,
+        sc_pan_right,
 
-	enum PreviewActions {
-		preview_select_all,
-		preview_zoom_in,
-		preview_zoom_out,
-		preview_display_squares,
-		preview_show_labels,
-		preview_copy,
-		preview_paste,
-		preview_rename,
-		preview_delete,
-		preview_filter,
-		preview_batch,
-		preview_print,
+        sc_end, // nothing beyond this point
+    };
 
-		actions_end
-	};
+    enum PreviewActions {
+        preview_select_all,
+        preview_zoom_in,
+        preview_zoom_out,
+        preview_display_squares,
+        preview_show_labels,
+        preview_copy,
+        preview_paste,
+        preview_rename,
+        preview_delete,
+        preview_filter,
+        preview_batch,
+        preview_print,
 
-	enum FileIcons {
-		icon_file_prev,
-		icon_file_next,
-		icon_file_dir,
-		icon_file_open,
-		icon_file_open_large,
-		icon_file_dir_large,
-		icon_file_save,
-		icon_file_print,
-		icon_file_filter,
-		icon_file_find,
+        actions_end
+    };
 
-		icon_file_end,	// nothing beyond this point
-	};
+    enum FileIcons {
+        icon_file_prev,
+        icon_file_next,
+        icon_file_dir,
+        icon_file_open,
+        icon_file_open_large,
+        icon_file_dir_large,
+        icon_file_save,
+        icon_file_print,
+        icon_file_filter,
+        icon_file_find,
 
-	enum EditIcons {
-		icon_edit_image,
-		icon_edit_rotate_cw,
-		icon_edit_rotate_ccw,
-		icon_edit_crop,
-		icon_edit_resize,
-		icon_edit_copy,
-		icon_edit_paste,
-		icon_edit_delete,
+        icon_file_end, // nothing beyond this point
+    };
 
-		icon_edit_end,	// nothing beyond this point
-	};
+    enum EditIcons {
+        icon_edit_image,
+        icon_edit_rotate_cw,
+        icon_edit_rotate_ccw,
+        icon_edit_crop,
+        icon_edit_resize,
+        icon_edit_copy,
+        icon_edit_paste,
+        icon_edit_delete,
 
-	enum ViewIcons {
-		icon_view_fullscreen,
-		icon_view_reset,
-		icon_view_100,
-		icon_view_gps,
-		icon_view_movie_play,
-		icon_view_movie_prev,
-		icon_view_movie_next,
-		icon_view_zoom_in,
-		icon_view_zoom_out,
+        icon_edit_end, // nothing beyond this point
+    };
 
-		icon_view_end,	// nothing beyond this point
-	};
+    enum ViewIcons {
+        icon_view_fullscreen,
+        icon_view_reset,
+        icon_view_100,
+        icon_view_gps,
+        icon_view_movie_play,
+        icon_view_movie_prev,
+        icon_view_movie_next,
+        icon_view_zoom_in,
+        icon_view_zoom_out,
 
-	// default nomacs shortcuts
-	// keyboard shortcuts
-	enum Shortcuts {	
+        icon_view_end, // nothing beyond this point
+    };
 
-		// general
-		shortcut_esc			= Qt::Key_Escape,
+    // default nomacs shortcuts
+    // keyboard shortcuts
+    enum Shortcuts {
 
-		// file
-		shortcut_open_preview	= Qt::Key_T,
-		shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
-		shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
-		shortcut_app_manager	= Qt::CTRL + Qt::Key_M,
-		shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
-		shortcut_first_file		= Qt::Key_Home, 
-		shortcut_last_file		= Qt::Key_End,
-		shortcut_skip_prev		= Qt::Key_PageUp,
-		shortcut_skip_next		= Qt::Key_PageDown,
-		shortcut_prev_file		= Qt::Key_Left,
-		shortcut_next_file		= Qt::Key_Right,
-		shortcut_rename			= Qt::Key_F2,
-		shortcut_goto			= Qt::CTRL + Qt::Key_G,
-		shortcut_extract		= Qt::CTRL + Qt::Key_E,
-		shortcut_reload			= Qt::Key_F5,
+        // general
+        shortcut_esc = Qt::Key_Escape,
 
-		shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
-		shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
-		shortcut_skip_prev_sync	= Qt::ALT + Qt::Key_Left,
-		shortcut_skip_next_sync	= Qt::ALT + Qt::Key_Right,
+        // file
+        shortcut_open_preview = Qt::Key_T,
+        shortcut_open_thumbview = Qt::SHIFT + Qt::Key_T,
+        shortcut_open_dir = Qt::CTRL + Qt::SHIFT + Qt::Key_O,
+        shortcut_app_manager = Qt::CTRL + Qt::Key_M,
+        shortcut_save_as = Qt::CTRL + Qt::SHIFT + Qt::Key_S,
+        shortcut_first_file = Qt::Key_Home,
+        shortcut_last_file = Qt::Key_End,
+        shortcut_skip_prev = Qt::Key_PageUp,
+        shortcut_skip_next = Qt::Key_PageDown,
+        shortcut_prev_file = Qt::Key_Left,
+        shortcut_next_file = Qt::Key_Right,
+        shortcut_rename = Qt::Key_F2,
+        shortcut_goto = Qt::CTRL + Qt::Key_G,
+        shortcut_extract = Qt::CTRL + Qt::Key_E,
+        shortcut_reload = Qt::Key_F5,
 
-		shortcut_star_rating_0	= Qt::Key_0,
-		shortcut_star_rating_1	= Qt::Key_1,
-		shortcut_star_rating_2	= Qt::Key_2,
-		shortcut_star_rating_3	= Qt::Key_3,
-		shortcut_star_rating_4	= Qt::Key_4,
-		shortcut_star_rating_5	= Qt::Key_5,
+        shortcut_first_file_sync = Qt::ALT + Qt::Key_Home,
+        shortcut_last_file_sync = Qt::ALT + Qt::Key_End,
+        shortcut_skip_prev_sync = Qt::ALT + Qt::Key_Left,
+        shortcut_skip_next_sync = Qt::ALT + Qt::Key_Right,
 
-		// view
-		shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
-		shortcut_close_tab		= Qt::CTRL + Qt::Key_W,
-		shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
-		shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
-		shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
-		shortcut_show_transfer	= Qt::CTRL + Qt::Key_U,
+        shortcut_star_rating_0 = Qt::Key_0,
+        shortcut_star_rating_1 = Qt::Key_1,
+        shortcut_star_rating_2 = Qt::Key_2,
+        shortcut_star_rating_3 = Qt::Key_3,
+        shortcut_star_rating_4 = Qt::Key_4,
+        shortcut_star_rating_5 = Qt::Key_5,
+
+        // view
+        shortcut_new_tab = Qt::CTRL + Qt::Key_T,
+        shortcut_close_tab = Qt::CTRL + Qt::Key_W,
+        shortcut_show_toolbar = Qt::CTRL + Qt::Key_B,
+        shortcut_show_statusbar = Qt::CTRL + Qt::Key_I,
+        shortcut_full_screen_ad = Qt::CTRL + Qt::Key_L,
+        shortcut_show_transfer = Qt::CTRL + Qt::Key_U,
 #ifdef Q_OS_MAC
-		shortcut_next_tab		= Qt::META + Qt::Key_Tab,
-		shortcut_previous_tab	= Qt::META + Qt::SHIFT + Qt::Key_Tab,
-		shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
-		shortcut_frameless		= Qt::CTRL + Qt::Key_R,
+        shortcut_next_tab = Qt::META + Qt::Key_Tab,
+        shortcut_previous_tab = Qt::META + Qt::SHIFT + Qt::Key_Tab,
+        shortcut_full_screen_ff = Qt::CTRL + Qt::Key_F,
+        shortcut_frameless = Qt::CTRL + Qt::Key_R,
 #else
-		shortcut_next_tab		= Qt::CTRL + Qt::Key_Tab,
-		shortcut_previous_tab	= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
-		shortcut_full_screen_ff	= Qt::Key_F11,
-		shortcut_frameless		= Qt::Key_F10,
+        shortcut_next_tab = Qt::CTRL + Qt::Key_Tab,
+        shortcut_previous_tab = Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
+        shortcut_full_screen_ff = Qt::Key_F11,
+        shortcut_frameless = Qt::Key_F10,
 #endif
-		shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
-		shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,
-		shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
-		shortcut_show_overview	= Qt::Key_O,
-		shortcut_show_explorer	= Qt::Key_E,
-		shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
-		shortcut_show_history	= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
-		shortcut_show_log		= Qt::CTRL + Qt::ALT + Qt::Key_L,
-		shortcut_view_slideshow	= Qt::Key_Space,
-		shortcut_show_player	= Qt::Key_P,
-		shortcut_show_exif		= Qt::Key_M,
-		shortcut_show_info		= Qt::Key_I,
-		shortcut_show_histogram	= Qt::Key_H,
-		shortcut_show_comment	= Qt::Key_N,
-		shortcut_opacity_down	= Qt::CTRL + Qt::Key_J,
-		shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_J,
-		shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_J,
-		shortcut_an_opacity		= Qt::ALT  + Qt::Key_J,
-		shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
-		shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_N,
-		shortcut_tp_pattern		= Qt::Key_B,
-		shortcut_anti_aliasing	= Qt::Key_A,
-		shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
-		shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
-		shortcut_toggle_panels	= Qt::Key_F,
+        shortcut_reset_view = Qt::CTRL + Qt::Key_0,
+        shortcut_zoom_full = Qt::CTRL + Qt::Key_1,
+        shortcut_fit_frame = Qt::CTRL + Qt::Key_2,
+        shortcut_show_overview = Qt::Key_O,
+        shortcut_show_explorer = Qt::Key_E,
+        shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
+        shortcut_show_history = Qt::CTRL + Qt::SHIFT + Qt::Key_H,
+        shortcut_show_log = Qt::CTRL + Qt::ALT + Qt::Key_L,
+        shortcut_view_slideshow = Qt::Key_Space,
+        shortcut_show_player = Qt::Key_P,
+        shortcut_show_exif = Qt::Key_M,
+        shortcut_show_info = Qt::Key_I,
+        shortcut_show_histogram = Qt::Key_H,
+        shortcut_show_comment = Qt::Key_N,
+        shortcut_opacity_down = Qt::CTRL + Qt::Key_J,
+        shortcut_opacity_up = Qt::CTRL + Qt::SHIFT + Qt::Key_J,
+        shortcut_opacity_change = Qt::ALT + Qt::SHIFT + Qt::Key_J,
+        shortcut_an_opacity = Qt::ALT + Qt::Key_J,
+        shortcut_new_instance = Qt::CTRL + Qt::Key_N,
+        shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_N,
+        shortcut_tp_pattern = Qt::Key_B,
+        shortcut_anti_aliasing = Qt::Key_A,
+        shortcut_lock_window = Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
+        shortcut_recent_files = Qt::CTRL + Qt::Key_H,
+        shortcut_toggle_panels = Qt::Key_F,
 
-		// hidden viewport shortcuts
-		shortcut_pan_left	= Qt::CTRL + Qt::Key_Left,
-		shortcut_pan_right	= Qt::CTRL + Qt::Key_Right,
-		shortcut_pan_up		= Qt::CTRL + Qt::Key_Up,
-		shortcut_pan_down	= Qt::CTRL + Qt::Key_Down,
+        // hidden viewport shortcuts
+        shortcut_pan_left = Qt::CTRL + Qt::Key_Left,
+        shortcut_pan_right = Qt::CTRL + Qt::Key_Right,
+        shortcut_pan_up = Qt::CTRL + Qt::Key_Up,
+        shortcut_pan_down = Qt::CTRL + Qt::Key_Down,
 
-		shortcut_zoom_in		= Qt::Key_Plus,
-		shortcut_zoom_out		= Qt::Key_Minus,
-		shortcut_zoom_in_alt	= Qt::Key_Up,
-		shortcut_zoom_out_alt	= Qt::Key_Down,
+        shortcut_zoom_in = Qt::Key_Plus,
+        shortcut_zoom_out = Qt::Key_Minus,
+        shortcut_zoom_in_alt = Qt::Key_Up,
+        shortcut_zoom_out_alt = Qt::Key_Down,
 
-		// edit
-		shortcut_edit_image		= Qt::Key_D,
-		shortcut_rotate_cw		= Qt::Key_R,
-		shortcut_rotate_ccw		= Qt::SHIFT + Qt::Key_R,
-		shortcut_transform		= Qt::CTRL + Qt::Key_R,
-		shortcut_manipulation   = Qt::CTRL + Qt::SHIFT + Qt::Key_M,
-		shortcut_paste			= Qt::Key_Insert,
-		shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
-		shortcut_crop			= Qt::Key_C,
-		shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
-		shortcut_copy_color		= Qt::CTRL + Qt::ALT + Qt::Key_C,
+        // edit
+        shortcut_edit_image = Qt::Key_D,
+        shortcut_rotate_cw = Qt::Key_R,
+        shortcut_rotate_ccw = Qt::SHIFT + Qt::Key_R,
+        shortcut_transform = Qt::CTRL + Qt::Key_R,
+        shortcut_manipulation = Qt::CTRL + Qt::SHIFT + Qt::Key_M,
+        shortcut_paste = Qt::Key_Insert,
+        shortcut_delete_silent = Qt::SHIFT + Qt::Key_Delete,
+        shortcut_crop = Qt::Key_C,
+        shortcut_copy_buffer = Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+        shortcut_copy_color = Qt::CTRL + Qt::ALT + Qt::Key_C,
 
-		// tools
-		shortcut_batch_processing = Qt::CTRL + Qt::SHIFT + Qt::Key_B,
+        // tools
+        shortcut_batch_processing = Qt::CTRL + Qt::SHIFT + Qt::Key_B,
 
-		// tcp
-		shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
-		shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
-		shortcut_sync			= Qt::CTRL + Qt::Key_D,
-		shortcut_tab			= Qt::ALT + Qt::Key_O,
-		shortcut_arrange		= Qt::ALT + Qt::Key_A,
-		shortcut_send_img		= Qt::ALT + Qt::Key_I,
-		shortcut_connect_all	= Qt::CTRL + Qt::Key_A,
+        // tcp
+        shortcut_shortcuts = Qt::CTRL + Qt::Key_K,
+        shortcut_settings = Qt::CTRL + Qt::SHIFT + Qt::Key_P,
+        shortcut_sync = Qt::CTRL + Qt::Key_D,
+        shortcut_tab = Qt::ALT + Qt::Key_O,
+        shortcut_arrange = Qt::ALT + Qt::Key_A,
+        shortcut_send_img = Qt::ALT + Qt::Key_I,
+        shortcut_connect_all = Qt::CTRL + Qt::Key_A,
 
-		// help
-		shortcut_show_help		= Qt::Key_F1,
+        // help
+        shortcut_show_help = Qt::Key_F1,
 
-		// eggs
-		shortcut_test_pong		= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_P,
-		shortcut_test_img		= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_L,
-		shortcut_test_rec		= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_R,
-	};
+        // eggs
+        shortcut_test_pong = Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_P,
+        shortcut_test_img = Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_L,
+        shortcut_test_rec = Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_R,
+    };
 
-	QMenu* updateOpenWithMenu();
+    QMenu *updateOpenWithMenu();
 
-	QMenu* fileMenu() const;
-	QMenu* sortMenu() const;
-	QMenu* openWithMenu() const;
-	QMenu* viewMenu() const;
-	QMenu* editMenu() const;
-	QMenu* manipulatorMenu() const;
-	QMenu* toolsMenu() const;
-	QMenu* panelMenu() const;
-	QMenu* helpMenu() const;
-	QMenu* contextMenu() const;
-	QMenu* syncMenu() const;
-	DkTcpMenu* localMenu() const;
+    QMenu *fileMenu() const;
+    QMenu *sortMenu() const;
+    QMenu *openWithMenu() const;
+    QMenu *viewMenu() const;
+    QMenu *editMenu() const;
+    QMenu *manipulatorMenu() const;
+    QMenu *toolsMenu() const;
+    QMenu *panelMenu() const;
+    QMenu *helpMenu() const;
+    QMenu *contextMenu() const;
+    QMenu *syncMenu() const;
+    DkTcpMenu *localMenu() const;
 
-	DkManipulatorManager manipulatorManager() const;
+    DkManipulatorManager manipulatorManager() const;
 
-	void createActions(QWidget* parent);
-	void createMenus(QWidget* parent);
-	
-	QAction* action(FileMenuActions action) const;
-	QAction* action(SortMenuActions action) const;
-	QAction* action(ViewMenuActions action) const;
-	QAction* action(EditMenuActions action) const;
-	QAction* action(ToolsMenuActions action) const;
-	QAction* action(PanelMenuActions action) const;
-	QAction* action(SyncMenuActions action) const;
-	QAction* action(PluginMenuActions action) const;
-	QAction* action(HelpMenuActions action) const;
-	QAction* action(HiddenActions action) const;
-	QAction* action(PreviewActions action) const;
+    void createActions(QWidget *parent);
+    void createMenus(QWidget *parent);
 
-	QIcon icon(FileIcons icon) const;
-	QIcon icon(ViewIcons icon) const;
-	QIcon icon(EditIcons icon) const;
-	
-	QVector<QAction *> fileActions() const;
-	QVector<QAction *> sortActions() const;
-	QVector<QAction *> openWithActions() const;
-	QVector<QAction *> viewActions() const;
-	QVector<QAction *> editActions() const;
-	QVector<QAction *> toolsActions() const;
-	QVector<QAction *> panelActions() const;
-	QVector<QAction *> syncActions() const;
-	QVector<QAction *> pluginActions() const;
-	QVector<QAction *> helpActions() const;
-	QVector<QAction *> previewActions() const;
-	QVector<QAction *> manipulatorActions() const;
+    QAction *action(FileMenuActions action) const;
+    QAction *action(SortMenuActions action) const;
+    QAction *action(ViewMenuActions action) const;
+    QAction *action(EditMenuActions action) const;
+    QAction *action(ToolsMenuActions action) const;
+    QAction *action(PanelMenuActions action) const;
+    QAction *action(SyncMenuActions action) const;
+    QAction *action(PluginMenuActions action) const;
+    QAction *action(HelpMenuActions action) const;
+    QAction *action(HiddenActions action) const;
+    QAction *action(PreviewActions action) const;
 
-	QVector<QAction *> allActions() const;
+    QIcon icon(FileIcons icon) const;
+    QIcon icon(ViewIcons icon) const;
+    QIcon icon(EditIcons icon) const;
 
-	QVector<QAction*> hiddenActions() const;	
-	DkAppManager* appManager() const;
-	DkPluginActionManager* pluginActionManager() const;
+    QVector<QAction *> fileActions() const;
+    QVector<QAction *> sortActions() const;
+    QVector<QAction *> openWithActions() const;
+    QVector<QAction *> viewActions() const;
+    QVector<QAction *> editActions() const;
+    QVector<QAction *> toolsActions() const;
+    QVector<QAction *> panelActions() const;
+    QVector<QAction *> syncActions() const;
+    QVector<QAction *> pluginActions() const;
+    QVector<QAction *> helpActions() const;
+    QVector<QAction *> previewActions() const;
+    QVector<QAction *> manipulatorActions() const;
 
-	void assignCustomShortcuts(QVector<QAction*> actions) const;
+    QVector<QAction *> allActions() const;
 
-	void enableImageActions(bool enable = true) const;
-	void enableMovieActions(bool enable = true) const;
+    QVector<QAction *> hiddenActions() const;
+    DkAppManager *appManager() const;
+    DkPluginActionManager *pluginActionManager() const;
+
+    void assignCustomShortcuts(QVector<QAction *> actions) const;
+
+    void enableImageActions(bool enable = true) const;
+    void enableMovieActions(bool enable = true) const;
 
 protected:
-	DkActionManager();
-	
-	void init();
-	void createIcons();
+    DkActionManager();
 
-	QMenu* createFileMenu(QWidget* parent);
-	QMenu* createSortMenu(QWidget* parent);
-	QMenu* createOpenWithMenu(QWidget* parent);
-	QMenu* createViewMenu(QWidget* parent);
-	QMenu* createEditMenu(QWidget* parent);
-	QMenu* createManipulatorMenu(QWidget* parent);
-	QMenu* createToolsMenu(QWidget* parent);
-	QMenu* createPanelMenu(QWidget* parent);
-	QMenu* createHelpMenu(QWidget* parent);
-	QMenu* createContextMenu(QWidget* parent);
-	QMenu* createSyncMenu(QWidget* parent);
+    void init();
+    void createIcons();
 
-	// actions
-	QVector<QAction *> mFileActions;
-	QVector<QAction *> mSortActions;
-	QVector<QAction *> mEditActions;
-	QVector<QAction *> mToolsActions;
-	QVector<QAction *> mPanelActions;
-	QVector<QAction *> mViewActions;
-	QVector<QAction *> mSyncActions;
-	QVector<QAction *> mPluginActions;
-	QVector<QAction *> mHelpActions;
-	QVector<QAction *> mPreviewActions;
+    QMenu *createFileMenu(QWidget *parent);
+    QMenu *createSortMenu(QWidget *parent);
+    QMenu *createOpenWithMenu(QWidget *parent);
+    QMenu *createViewMenu(QWidget *parent);
+    QMenu *createEditMenu(QWidget *parent);
+    QMenu *createManipulatorMenu(QWidget *parent);
+    QMenu *createToolsMenu(QWidget *parent);
+    QMenu *createPanelMenu(QWidget *parent);
+    QMenu *createHelpMenu(QWidget *parent);
+    QMenu *createContextMenu(QWidget *parent);
+    QMenu *createSyncMenu(QWidget *parent);
 
-	QVector<QAction *> mHiddenActions;
+    // actions
+    QVector<QAction *> mFileActions;
+    QVector<QAction *> mSortActions;
+    QVector<QAction *> mEditActions;
+    QVector<QAction *> mToolsActions;
+    QVector<QAction *> mPanelActions;
+    QVector<QAction *> mViewActions;
+    QVector<QAction *> mSyncActions;
+    QVector<QAction *> mPluginActions;
+    QVector<QAction *> mHelpActions;
+    QVector<QAction *> mPreviewActions;
 
-	DkManipulatorManager mManipulators;
+    QVector<QAction *> mHiddenActions;
 
-	// dynamic menus
-	QMenu* mFileMenu = 0;
-	QMenu* mOpenWithMenu = 0;
-	QMenu* mSortMenu = 0;
-	QMenu* mViewMenu = 0;
-	QMenu* mEditMenu = 0;
-	QMenu* mManipulatorMenu = 0;
-	QMenu* mToolsMenu = 0;
-	QMenu* mPanelMenu = 0;
-	QMenu* mHelpMenu = 0;
-	QMenu* mContextMenu = 0;
-	
-	// sync
-	QMenu* mSyncMenu = 0;
-	DkTcpMenu* mLocalMenu = 0;
-	   
-	// icons
-	QVector<QIcon> mFileIcons;
-	QVector<QIcon> mEditIcons;
-	QVector<QIcon> mViewIcons;
-	QVector<QIcon> mToolsIcons;
+    DkManipulatorManager mManipulators;
 
-	DkAppManager* mAppManager = 0;
-	DkPluginActionManager* mPluginManager = 0;
+    // dynamic menus
+    QMenu *mFileMenu = 0;
+    QMenu *mOpenWithMenu = 0;
+    QMenu *mSortMenu = 0;
+    QMenu *mViewMenu = 0;
+    QMenu *mEditMenu = 0;
+    QMenu *mManipulatorMenu = 0;
+    QMenu *mToolsMenu = 0;
+    QMenu *mPanelMenu = 0;
+    QMenu *mHelpMenu = 0;
+    QMenu *mContextMenu = 0;
 
-	QSharedPointer<DkActionManager> inst;
+    // sync
+    QMenu *mSyncMenu = 0;
+    DkTcpMenu *mLocalMenu = 0;
+
+    // icons
+    QVector<QIcon> mFileIcons;
+    QVector<QIcon> mEditIcons;
+    QVector<QIcon> mViewIcons;
+    QVector<QIcon> mToolsIcons;
+
+    DkAppManager *mAppManager = 0;
+    DkPluginActionManager *mPluginManager = 0;
+
+    QSharedPointer<DkActionManager> inst;
 };
 
-class DllCoreExport DkGlobalProgress : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkGlobalProgress : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	static DkGlobalProgress& instance();
-	~DkGlobalProgress();
+    static DkGlobalProgress &instance();
+    ~DkGlobalProgress();
 
-	// singleton
-	DkGlobalProgress(DkGlobalProgress const&)   = delete;
-	void operator=(DkGlobalProgress const&)		= delete;
+    // singleton
+    DkGlobalProgress(DkGlobalProgress const &) = delete;
+    void operator=(DkGlobalProgress const &) = delete;
 
-
-	QObject* progressObject() const;
-	void start();
-	void stop();
+    QObject *progressObject() const;
+    void start();
+    void stop();
 
 #ifdef Q_OS_WIN
-	void setProgressBar(QWinTaskbarProgress* progressbar);
-	QWinTaskbarProgress* progressBar();
+    void setProgressBar(QWinTaskbarProgress *progressbar);
+    QWinTaskbarProgress *progressBar();
 #else
-	QProgressDialog* progressBar() const;
+    QProgressDialog *progressBar() const;
 #endif
 
 public slots:
-	void setProgressValue(int value);
+    void setProgressValue(int value);
 
 private:
-	DkGlobalProgress();
+    DkGlobalProgress();
 
-	QSharedPointer<DkGlobalProgress> inst;
-	bool showProgress;
+    QSharedPointer<DkGlobalProgress> inst;
+    bool showProgress;
 
 #ifdef Q_OS_WIN
-	QWinTaskbarProgress* mProgress = 0;
+    QWinTaskbarProgress *mProgress = 0;
 #else
-	QProgressDialog* mProgress = 0;
+    QProgressDialog *mProgress = 0;
 #endif
 };
-
 
 }

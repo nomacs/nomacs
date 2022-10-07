@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -28,12 +28,12 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes
+#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QSettings>
 #pragma warning(pop)
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -47,7 +47,8 @@
 
 // Qt defines
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 class DkImageContainer;
@@ -59,27 +60,27 @@ class DkImageContainer;
 /// If this class is extended, batch processing
 /// can make use of it too.
 /// </summary>
-class DllCoreExport DkBaseManipulator {
-
+class DllCoreExport DkBaseManipulator
+{
 public:
-	DkBaseManipulator(QAction* action = 0);
+    DkBaseManipulator(QAction *action = 0);
 
-	QString name() const;
-	QAction* action() const;
-	QIcon icon() const;
+    QString name() const;
+    QAction *action() const;
+    QIcon icon() const;
 
-	void setSelected(bool select);
-	bool isSelected() const;
+    void setSelected(bool select);
+    bool isSelected() const;
 
-	virtual QString errorMessage() const = 0;
-	virtual QImage apply(const QImage& img) const = 0;
+    virtual QString errorMessage() const = 0;
+    virtual QImage apply(const QImage &img) const = 0;
 
-	virtual void saveSettings(QSettings& settings);
-	virtual void loadSettings(QSettings& settings);
+    virtual void saveSettings(QSettings &settings);
+    virtual void loadSettings(QSettings &settings);
 
 private:
-	QAction* mAction = 0;
-	bool mIsSelected = false;
+    QAction *mAction = 0;
+    bool mIsSelected = false;
 };
 
 /// <summary>
@@ -89,71 +90,71 @@ private:
 /// the settings.
 /// </summary>
 /// <seealso cref="DkBaseManipulator" />
-class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator {
-
+class DllCoreExport DkBaseManipulatorExt : public DkBaseManipulator
+{
 public:
-	DkBaseManipulatorExt(QAction* action);
+    DkBaseManipulatorExt(QAction *action);
 
-	void setWidget(QWidget* widget);
-	QWidget* widget() const;
+    void setWidget(QWidget *widget);
+    QWidget *widget() const;
 
-	void setDirty(bool dirty);
-	bool isDirty() const;
+    void setDirty(bool dirty);
+    bool isDirty() const;
 
 private:
-	bool mDirty = false;
-	QWidget* mWidget = 0;
+    bool mDirty = false;
+    QWidget *mWidget = 0;
 };
 
-class DllCoreExport DkManipulatorManager {
-
+class DllCoreExport DkManipulatorManager
+{
 public:
-	DkManipulatorManager();
+    DkManipulatorManager();
 
-	// simple manipulators
-	enum ManipulatorId {
-		m_grayscale = 0,
-		m_auto_adjust,
-		m_normalize,
-		m_invert,
-		m_flip_h,
-		m_flip_v,
+    // simple manipulators
+    enum ManipulatorId {
+        m_grayscale = 0,
+        m_auto_adjust,
+        m_normalize,
+        m_invert,
+        m_flip_h,
+        m_flip_v,
 
-		m_end
-	};
+        m_end
+    };
 
-	// extended manipulators
-	enum ManipulatorExtId {
-		m_rotate = m_end,
-		m_resize,
-		m_threshold,
-		m_color,
-		m_hue,
-		m_exposure, 
-		m_tiny_planet,
-		m_blur,
-		m_unsharp_mask,
-		
-		m_ext_end
-	};
+    // extended manipulators
+    enum ManipulatorExtId {
+        m_rotate = m_end,
+        m_resize,
+        m_threshold,
+        m_color,
+        m_hue,
+        m_exposure,
+        m_tiny_planet,
+        m_blur,
+        m_unsharp_mask,
 
-	void createManipulators(QWidget* parent);
+        m_ext_end
+    };
 
-	QVector<QAction*> actions() const;
-	QStringList names() const;
-	
-	QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId& mId) const;
-	QSharedPointer<DkBaseManipulator> manipulator(const ManipulatorId& mId) const;
-	QSharedPointer<DkBaseManipulator> manipulator(const QAction* action) const;
-	QSharedPointer<DkBaseManipulator> manipulator(const QString& name) const;
-	QVector<QSharedPointer<DkBaseManipulator> > manipulators() const;
+    void createManipulators(QWidget *parent);
 
-	int numSelected() const;
+    QVector<QAction *> actions() const;
+    QStringList names() const;
 
-	void loadSettings(QSettings & settings);
-	void saveSettings(QSettings & settings) const;
+    QSharedPointer<DkBaseManipulatorExt> manipulatorExt(const ManipulatorExtId &mId) const;
+    QSharedPointer<DkBaseManipulator> manipulator(const ManipulatorId &mId) const;
+    QSharedPointer<DkBaseManipulator> manipulator(const QAction *action) const;
+    QSharedPointer<DkBaseManipulator> manipulator(const QString &name) const;
+    QVector<QSharedPointer<DkBaseManipulator>> manipulators() const;
+
+    int numSelected() const;
+
+    void loadSettings(QSettings &settings);
+    void saveSettings(QSettings &settings) const;
 
 private:
-	QVector<QSharedPointer<DkBaseManipulator> > mManipulators;
+    QVector<QSharedPointer<DkBaseManipulator>> mManipulators;
 };
 }

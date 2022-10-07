@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkNoMacs.cpp
  Created on:	26.10.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
@@ -26,2977 +26,2966 @@
  *******************************************************************************************************/
 
 #include "DkBatch.h"
-#include "DkProcess.h"
-#include "DkDialog.h"
-#include "DkWidgets.h"
-#include "DkThumbsWidgets.h"
-#include "DkUtils.h"
-#include "DkImageLoader.h"
-#include "DkSettings.h"
-#include "DkMessageBox.h"
-#include "DkPluginManager.h"
 #include "DkActionManager.h"
+#include "DkBasicWidgets.h"
+#include "DkDialog.h"
+#include "DkImageLoader.h"
 #include "DkImageStorage.h"
 #include "DkManipulatorWidgets.h"
-#include "DkSettingsWidget.h"
+#include "DkMessageBox.h"
 #include "DkPluginInterface.h"
-#include "DkBasicWidgets.h"
+#include "DkPluginManager.h"
+#include "DkProcess.h"
+#include "DkSettings.h"
+#include "DkSettingsWidget.h"
+#include "DkThumbsWidgets.h"
+#include "DkUtils.h"
+#include "DkWidgets.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QLabel>
-#include <QListView>
-#include <QTreeView>
-#include <QLineEdit>
+#pragma warning(push, 0) // no warnings from includes - begin
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QDropEvent>
 #include <QFileDialog>
 #include <QGroupBox>
-#include <QComboBox>
-#include <QButtonGroup>
-#include <QProgressBar>
-#include <QTextEdit>
-#include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QHBoxLayout>
-#include <QRadioButton>
-#include <QMessageBox>
-#include <QApplication>
-#include <QTextBlock>
-#include <QDropEvent>
-#include <QMimeData>
-#include <QSplitter>
-#include <QListWidget>
-#include <QAction>
-#include <QStackedLayout>
-#include <QInputDialog>
-#include <QStandardPaths>
-#include <QStandardItemModel>
-#include <QStandardItem>
 #include <QHeaderView>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QInputDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListView>
+#include <QListWidget>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QProgressBar>
+#include <QRadioButton>
+#include <QSplitter>
+#include <QStackedLayout>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QStandardPaths>
+#include <QTextBlock>
+#include <QTextEdit>
+#include <QTreeView>
+#pragma warning(pop) // no warnings from includes - end
 
-namespace nmc {
+namespace nmc
+{
 
 // DkBatchTabButton --------------------------------------------------------------------
-DkBatchTabButton::DkBatchTabButton(const QString& title, const QString& info, QWidget* parent) : QPushButton(title, parent) {
-
-	// TODO: add info
-	mInfo = info;
-	setFlat(true);
-	setCheckable(true);
+DkBatchTabButton::DkBatchTabButton(const QString &title, const QString &info, QWidget *parent)
+    : QPushButton(title, parent)
+{
+    // TODO: add info
+    mInfo = info;
+    setFlat(true);
+    setCheckable(true);
 }
 
-void DkBatchTabButton::setInfo(const QString& info) {
-	mInfo = info;
-	update();
+void DkBatchTabButton::setInfo(const QString &info)
+{
+    mInfo = info;
+    update();
 
-	emit infoChanged(mInfo);
+    emit infoChanged(mInfo);
 }
 
-QString DkBatchTabButton::info() const {
-	return mInfo;
+QString DkBatchTabButton::info() const
+{
+    return mInfo;
 }
 
-void DkBatchTabButton::paintEvent(QPaintEvent *event) {
+void DkBatchTabButton::paintEvent(QPaintEvent *event)
+{
+    QPushButton::paintEvent(event);
 
-	QPushButton::paintEvent(event);
+    // fixes stylesheets which are not applied to custom widgets
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    // style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
-	// fixes stylesheets which are not applied to custom widgets
-	QStyleOption opt;
-	opt.init(this);
-	QPainter p(this);
-	//style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    QFont f;
+    f.setPointSize(9);
+    f.setItalic(true);
+    p.setFont(f);
 
-	QFont f;
-	f.setPointSize(9);
-	f.setItalic(true);
-	p.setFont(f);
+    // change opacity
+    QColor c = p.pen().color();
+    c.setAlpha(200);
+    QPen fPen = p.pen();
+    fPen.setColor(c);
+    p.setPen(fPen);
 
-	// change opacity
-	QColor c = p.pen().color();
-	c.setAlpha(200);
-	QPen fPen = p.pen();
-	fPen.setColor(c);
-	p.setPen(fPen);
-
-	p.drawText(QPoint(25, 50), mInfo);
-
+    p.drawText(QPoint(25, 50), mInfo);
 }
 
 // DkBatchContainer --------------------------------------------------------------------
-DkBatchContainer::DkBatchContainer(const QString& titleString, const QString& headerString, QWidget* parent) : QObject(parent) {
-	
-	mHeaderButton = new DkBatchTabButton(titleString, headerString, parent);
-	createLayout();
+DkBatchContainer::DkBatchContainer(const QString &titleString, const QString &headerString, QWidget *parent)
+    : QObject(parent)
+{
+    mHeaderButton = new DkBatchTabButton(titleString, headerString, parent);
+    createLayout();
 }
 
-void DkBatchContainer::createLayout() {
-
+void DkBatchContainer::createLayout()
+{
 }
 
-void DkBatchContainer::setContentWidget(QWidget* batchContent) {
-	
-	mBatchContent = dynamic_cast<DkBatchContent*>(batchContent);
+void DkBatchContainer::setContentWidget(QWidget *batchContent)
+{
+    mBatchContent = dynamic_cast<DkBatchContent *>(batchContent);
 
-	connect(mHeaderButton, SIGNAL(toggled(bool)), this, SLOT(showContent(bool)));
-	connect(batchContent, SIGNAL(newHeaderText(const QString&)), mHeaderButton, SLOT(setInfo(const QString&)));
+    connect(mHeaderButton, SIGNAL(toggled(bool)), this, SLOT(showContent(bool)));
+    connect(batchContent, SIGNAL(newHeaderText(const QString &)), mHeaderButton, SLOT(setInfo(const QString &)));
 }
 
-QWidget* DkBatchContainer::contentWidget() const {
-	
-	return dynamic_cast<QWidget*>(mBatchContent);
+QWidget *DkBatchContainer::contentWidget() const
+{
+    return dynamic_cast<QWidget *>(mBatchContent);
 }
 
-DkBatchContent * DkBatchContainer::batchContent() const {
-	return mBatchContent;
+DkBatchContent *DkBatchContainer::batchContent() const
+{
+    return mBatchContent;
 }
 
-DkBatchTabButton* DkBatchContainer::headerWidget() const {
-
-	return mHeaderButton;
+DkBatchTabButton *DkBatchContainer::headerWidget() const
+{
+    return mHeaderButton;
 }
 
-void DkBatchContainer::showContent(bool show) const {
+void DkBatchContainer::showContent(bool show) const
+{
+    if (show)
+        emit showSignal();
 
-	if (show)
-		emit showSignal();
-
-	//mShowButton->click();
-	//contentWidget()->setVisible(show);
+    // mShowButton->click();
+    // contentWidget()->setVisible(show);
 }
 
-//void DkBatchContainer::setTitle(const QString& titleString) {
+// void DkBatchContainer::setTitle(const QString& titleString) {
 //	mTitleString = titleString;
 //	mTitleLabel->setText(titleString);
-//}
+// }
 //
-//void DkBatchContainer::setHeader(const QString& headerString) {
+// void DkBatchContainer::setHeader(const QString& headerString) {
 //	mHeaderString = headerString;
 //	mHeaderLabel->setText(headerString);
-//}
+// }
 
 // DkInputTextEdit --------------------------------------------------------------------
-DkInputTextEdit::DkInputTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) {
-
-	setAcceptDrops(true);
-	connect(this, SIGNAL(textChanged()), this, SIGNAL(fileListChangedSignal()));
+DkInputTextEdit::DkInputTextEdit(QWidget *parent /* = 0 */)
+    : QTextEdit(parent)
+{
+    setAcceptDrops(true);
+    connect(this, SIGNAL(textChanged()), this, SIGNAL(fileListChangedSignal()));
 }
 
-void DkInputTextEdit::appendFiles(const QStringList& fileList) {
+void DkInputTextEdit::appendFiles(const QStringList &fileList)
+{
+    QStringList cFileList = getFileList();
+    QStringList newFiles;
 
-	QStringList cFileList = getFileList();
-	QStringList newFiles;
+    // unique!
+    for (const QString &cStr : fileList) {
+        if (!cFileList.contains(cStr))
+            newFiles.append(cStr);
+    }
 
-	// unique!
-	for (const QString& cStr : fileList) {
-
-		if (!cFileList.contains(cStr))
-			newFiles.append(cStr);
-	}
-
-	if (!newFiles.empty()) {
-		append(newFiles.join("\n"));
-		fileListChangedSignal();
-	}
+    if (!newFiles.empty()) {
+        append(newFiles.join("\n"));
+        fileListChangedSignal();
+    }
 }
 
-void DkInputTextEdit::appendDir(const QString& newDir, bool recursive) {
+void DkInputTextEdit::appendDir(const QString &newDir, bool recursive)
+{
+    if (recursive) {
+        qDebug() << "adding recursive...";
+        QDir tmpDir = newDir;
+        QFileInfoList subDirs = tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
 
-	if (recursive) {
-		qDebug() << "adding recursive...";
-		QDir tmpDir = newDir;
-		QFileInfoList subDirs = tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+        for (QFileInfo cDir : subDirs)
+            appendDir(cDir.absoluteFilePath(), recursive);
+    }
 
-		for (QFileInfo cDir : subDirs)
-			appendDir(cDir.absoluteFilePath(), recursive);
-	}
+    QDir tmpDir = newDir;
+    tmpDir.setSorting(QDir::LocaleAware);
+    QFileInfoList fileList = tmpDir.entryInfoList(DkSettingsManager::param().app().fileFilters);
+    QStringList strFileList;
 
-	QDir tmpDir = newDir;
-	tmpDir.setSorting(QDir::LocaleAware);
-	QFileInfoList fileList = tmpDir.entryInfoList(DkSettingsManager::param().app().fileFilters);
-	QStringList strFileList;
+    for (QFileInfo entry : fileList) {
+        strFileList.append(entry.absoluteFilePath());
+    }
 
-	for (QFileInfo entry : fileList) {
-		strFileList.append(entry.absoluteFilePath());
-	}
+    qDebug() << "appending " << strFileList.size() << " files";
 
-	qDebug() << "appending " << strFileList.size() << " files";
-
-	appendFiles(strFileList);
+    appendFiles(strFileList);
 }
 
-void DkInputTextEdit::appendFromMime(const QMimeData* mimeData, bool recursive) {
+void DkInputTextEdit::appendFromMime(const QMimeData *mimeData, bool recursive)
+{
+    if (!mimeData || !mimeData->hasUrls())
+        return;
 
-	if (!mimeData || !mimeData->hasUrls())
-		return;
+    QStringList cFiles;
 
-	QStringList cFiles;
+    for (QUrl url : mimeData->urls()) {
+        QFileInfo cFile = DkUtils::urlToLocalFile(url);
 
-	for (QUrl url : mimeData->urls()) {
+        if (cFile.isDir())
+            appendDir(cFile.absoluteFilePath(), recursive);
+        else if (cFile.exists() && DkUtils::isValid(cFile))
+            cFiles.append(cFile.absoluteFilePath());
+    }
 
-		QFileInfo cFile = DkUtils::urlToLocalFile(url);
-
-		if (cFile.isDir())
-			appendDir(cFile.absoluteFilePath(), recursive);
-		else if (cFile.exists() && DkUtils::isValid(cFile))
-			cFiles.append(cFile.absoluteFilePath());
-	}
-
-	if (!cFiles.empty())
-		appendFiles(cFiles);
+    if (!cFiles.empty())
+        appendFiles(cFiles);
 }
 
-void DkInputTextEdit::insertFromMimeData(const QMimeData* mimeData) {
-
-	appendFromMime(mimeData);
-	QTextEdit::insertFromMimeData(mimeData);
+void DkInputTextEdit::insertFromMimeData(const QMimeData *mimeData)
+{
+    appendFromMime(mimeData);
+    QTextEdit::insertFromMimeData(mimeData);
 }
 
-void DkInputTextEdit::dragEnterEvent(QDragEnterEvent *event) {
+void DkInputTextEdit::dragEnterEvent(QDragEnterEvent *event)
+{
+    QTextEdit::dragEnterEvent(event);
 
-	QTextEdit::dragEnterEvent(event);
-
-	if (event->source() == this)
-		event->acceptProposedAction();
-	else if (event->mimeData()->hasUrls())
-		event->acceptProposedAction();
+    if (event->source() == this)
+        event->acceptProposedAction();
+    else if (event->mimeData()->hasUrls())
+        event->acceptProposedAction();
 }
 
-void DkInputTextEdit::dragMoveEvent(QDragMoveEvent *event) {
+void DkInputTextEdit::dragMoveEvent(QDragMoveEvent *event)
+{
+    QTextEdit::dragMoveEvent(event);
 
-	QTextEdit::dragMoveEvent(event);
-
-	if (event->source() == this)
-		event->acceptProposedAction();
-	else if (event->mimeData()->hasUrls())
-		event->acceptProposedAction();
+    if (event->source() == this)
+        event->acceptProposedAction();
+    else if (event->mimeData()->hasUrls())
+        event->acceptProposedAction();
 }
 
+void DkInputTextEdit::dropEvent(QDropEvent *event)
+{
+    if (event->source() == this) {
+        event->accept();
+        return;
+    }
 
-void DkInputTextEdit::dropEvent(QDropEvent *event) {
-	
-	if (event->source() == this) {
-		event->accept();
-		return;
-	}
+    appendFromMime(event->mimeData(), (event->keyboardModifiers() & Qt::ControlModifier) != 0);
 
-	appendFromMime(event->mimeData(), (event->keyboardModifiers() & Qt::ControlModifier) != 0);
-
-	// do not propagate!
-	//QTextEdit::dropEvent(event);
+    // do not propagate!
+    // QTextEdit::dropEvent(event);
 }
 
-QStringList DkInputTextEdit::getFileList() const {
+QStringList DkInputTextEdit::getFileList() const
+{
+    QStringList fileList;
+    QString textString;
+    QTextStream textStream(&textString);
+    textStream << toPlainText();
 
-	QStringList fileList;
-	QString textString;
-	QTextStream textStream(&textString);
-	textStream << toPlainText();
+    QString line;
+    do {
+        line = textStream.readLine(); // we don't want to get into troubles with carriage returns of different OS
+        if (!line.isNull() && !line.trimmed().isEmpty())
+            fileList.append(line);
+    } while (!line.isNull());
 
-	QString line;
-	do
-	{
-		line = textStream.readLine();	// we don't want to get into troubles with carriage returns of different OS
-		if (!line.isNull() && !line.trimmed().isEmpty())
-			fileList.append(line);
-	} while(!line.isNull());
-
-	return fileList;
+    return fileList;
 }
 
-void DkInputTextEdit::clear() {
-	
-	mResultList.clear();
-	QTextEdit::clear();
+void DkInputTextEdit::clear()
+{
+    mResultList.clear();
+    QTextEdit::clear();
 }
 
-QString DkInputTextEdit::firstDirPath() const {
-	
-	QStringList fl = getFileList();
+QString DkInputTextEdit::firstDirPath() const
+{
+    QStringList fl = getFileList();
 
-	if (fl.isEmpty())
-		return "";
-	
-	return QFileInfo(fl[0]).absolutePath();
+    if (fl.isEmpty())
+        return "";
+
+    return QFileInfo(fl[0]).absolutePath();
 }
 
 // File Selection --------------------------------------------------------------------
-DkBatchInput::DkBatchInput(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
-
-	setObjectName("DkBatchInput");
-	createLayout();
-	setMinimumHeight(300);
-
+DkBatchInput::DkBatchInput(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+    : DkWidget(parent, f)
+{
+    setObjectName("DkBatchInput");
+    createLayout();
+    setMinimumHeight(300);
 }
 
-void DkBatchInput::createLayout() {
-	
-	mDirectoryEdit = new DkDirectoryEdit(this);
+void DkBatchInput::createLayout()
+{
+    mDirectoryEdit = new DkDirectoryEdit(this);
 
-	QWidget* upperWidget = new QWidget(this);
-	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
-	upperWidgetLayout->setContentsMargins(0,0,0,0);
-	upperWidgetLayout->addWidget(mDirectoryEdit, 0, 1);
+    QWidget *upperWidget = new QWidget(this);
+    QGridLayout *upperWidgetLayout = new QGridLayout(upperWidget);
+    upperWidgetLayout->setContentsMargins(0, 0, 0, 0);
+    upperWidgetLayout->addWidget(mDirectoryEdit, 0, 1);
 
-	mInputTextEdit = new DkInputTextEdit(this);
+    mInputTextEdit = new DkInputTextEdit(this);
 
-	mResultTextEdit = new QTextEdit(this);
-	mResultTextEdit->setReadOnly(true);
-	mResultTextEdit->setVisible(false);
+    mResultTextEdit = new QTextEdit(this);
+    mResultTextEdit->setReadOnly(true);
+    mResultTextEdit->setVisible(false);
 
-	mThumbScrollWidget = new DkThumbScrollWidget(this);
-	mThumbScrollWidget->setVisible(true);
-	mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
+    mThumbScrollWidget = new DkThumbScrollWidget(this);
+    mThumbScrollWidget->setVisible(true);
+    mThumbScrollWidget->getThumbWidget()->setImageLoader(mLoader);
 
-	// add explorer
-	mExplorer = new DkExplorer(tr("File Explorer"));
-	mExplorer->getModel()->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
-	mExplorer->getModel()->setNameFilters(QStringList());
-	mExplorer->setMaximumWidth(300);
+    // add explorer
+    mExplorer = new DkExplorer(tr("File Explorer"));
+    mExplorer->getModel()->setFilter(QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot | QDir::AllDirs);
+    mExplorer->getModel()->setNameFilters(QStringList());
+    mExplorer->setMaximumWidth(300);
 
-	QStringList folders = DkSettingsManager::param().global().recentFiles;
+    QStringList folders = DkSettingsManager::param().global().recentFiles;
 
-	if (folders.size() > 0)
-		mExplorer->setCurrentPath(folders[0]);
+    if (folders.size() > 0)
+        mExplorer->setCurrentPath(folders[0]);
 
-	// tab widget
-	mInputTabs = new QTabWidget(this);
-	mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
-	mInputTabs->addTab(mInputTextEdit, DkImage::loadIcon(":/nomacs/img/bars.svg"), tr("File List"));
+    // tab widget
+    mInputTabs = new QTabWidget(this);
+    mInputTabs->addTab(mThumbScrollWidget, DkImage::loadIcon(":/nomacs/img/rects.svg"), tr("Thumbnails"));
+    mInputTabs->addTab(mInputTextEdit, DkImage::loadIcon(":/nomacs/img/bars.svg"), tr("File List"));
 
-	QGridLayout* widgetLayout = new QGridLayout(this);
-	widgetLayout->setContentsMargins(0, 0, 0, 0);
-	widgetLayout->addWidget(mExplorer, 0, 0, 2, 1);
-	widgetLayout->addWidget(upperWidget, 0, 1);
-	widgetLayout->addWidget(mInputTabs, 1, 1);
-	setLayout(widgetLayout);
+    QGridLayout *widgetLayout = new QGridLayout(this);
+    widgetLayout->setContentsMargins(0, 0, 0, 0);
+    widgetLayout->addWidget(mExplorer, 0, 0, 2, 1);
+    widgetLayout->addWidget(upperWidget, 0, 1);
+    widgetLayout->addWidget(mInputTabs, 1, 1);
+    setLayout(widgetLayout);
 
-	connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
-	connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), mInputTextEdit, SLOT(appendFiles(const QStringList&)));
-	connect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), this, SLOT(setDir(const QString&)));
-	connect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), mLoader.data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
-	
-	connect(mInputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
+    connect(mThumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+    connect(mThumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList &)), mInputTextEdit, SLOT(appendFiles(const QStringList &)));
+    connect(mThumbScrollWidget, SIGNAL(updateDirSignal(const QString &)), this, SLOT(setDir(const QString &)));
+    connect(mThumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), mLoader.data(), SLOT(setFolderFilter(const QString &)), Qt::UniqueConnection);
 
-	connect(mDirectoryEdit, SIGNAL(textChanged(const QString&)), this, SLOT(parameterChanged()));
-	connect(mDirectoryEdit, SIGNAL(directoryChanged(const QString&)), this, SLOT(setDir(const QString&)));
-	connect(mExplorer, SIGNAL(openDir(const QString&)), this, SLOT(setDir(const QString&)));
-	connect(mLoader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), mThumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+    connect(mInputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
 
+    connect(mDirectoryEdit, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+    connect(mDirectoryEdit, SIGNAL(directoryChanged(const QString &)), this, SLOT(setDir(const QString &)));
+    connect(mExplorer, SIGNAL(openDir(const QString &)), this, SLOT(setDir(const QString &)));
+    connect(mLoader.data(),
+            SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT>>)),
+            mThumbScrollWidget,
+            SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT>>)));
 }
 
-void DkBatchInput::applyDefault() {
-	
-	mInputTextEdit->clear();
-	selectionChanged();
+void DkBatchInput::applyDefault()
+{
+    mInputTextEdit->clear();
+    selectionChanged();
 }
 
-void DkBatchInput::changeTab(int tabIdx) const {
+void DkBatchInput::changeTab(int tabIdx) const
+{
+    if (tabIdx < 0 || tabIdx >= mInputTabs->count())
+        return;
 
-	if (tabIdx < 0 || tabIdx >= mInputTabs->count())
-		return;
-
-	mInputTabs->setCurrentIndex(tabIdx);
+    mInputTabs->setCurrentIndex(tabIdx);
 }
 
-void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
-	emit updateDirSignal(thumbs);
+void DkBatchInput::updateDir(QVector<QSharedPointer<DkImageContainerT>> thumbs)
+{
+    emit updateDirSignal(thumbs);
 }
 
-void DkBatchInput::setVisible(bool visible) {
-
-	QWidget::setVisible(visible);
-	mThumbScrollWidget->getThumbWidget()->updateLayout();
+void DkBatchInput::setVisible(bool visible)
+{
+    QWidget::setVisible(visible);
+    mThumbScrollWidget->getThumbWidget()->updateLayout();
 }
 
-void DkBatchInput::browse() {
+void DkBatchInput::browse()
+{
+    // load system default open dialog
+    QString dirName =
+        QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mCDirPath, QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
-	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(
-		this, 
-		tr("Open an Image Directory"),
-		mCDirPath,
-		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
-	);
+    if (dirName.isEmpty())
+        return;
 
-	if (dirName.isEmpty())
-		return;
-
-	setDir(dirName);
+    setDir(dirName);
 }
 
-QString DkBatchInput::getDir() const {
-
-	return mDirectoryEdit->existsDirectory() ? QDir(mDirectoryEdit->text()).absolutePath() : "";
+QString DkBatchInput::getDir() const
+{
+    return mDirectoryEdit->existsDirectory() ? QDir(mDirectoryEdit->text()).absolutePath() : "";
 }
 
-QStringList DkBatchInput::getSelectedFiles() const {
-	
-	QStringList textList = mInputTextEdit->getFileList();
+QStringList DkBatchInput::getSelectedFiles() const
+{
+    QStringList textList = mInputTextEdit->getFileList();
 
-	if (textList.empty())
-		return mThumbScrollWidget->getThumbWidget()->getSelectedFiles();
-	else
-		return textList;
+    if (textList.empty())
+        return mThumbScrollWidget->getThumbWidget()->getSelectedFiles();
+    else
+        return textList;
 }
 
-QStringList DkBatchInput::getSelectedFilesBatch() {
+QStringList DkBatchInput::getSelectedFilesBatch()
+{
+    QStringList textList = mInputTextEdit->getFileList();
 
-	QStringList textList = mInputTextEdit->getFileList();
+    if (textList.empty()) {
+        textList = mThumbScrollWidget->getThumbWidget()->getSelectedFiles();
+        mInputTextEdit->appendFiles(textList);
+    }
 
-	if (textList.empty()) {
-		textList = mThumbScrollWidget->getThumbWidget()->getSelectedFiles();
-		mInputTextEdit->appendFiles(textList);
-	}
-
-	return textList;
+    return textList;
 }
 
-
-DkInputTextEdit* DkBatchInput::getInputEdit() const {
-
-	return mInputTextEdit;
+DkInputTextEdit *DkBatchInput::getInputEdit() const
+{
+    return mInputTextEdit;
 }
 
-void DkBatchInput::setFileInfo(QFileInfo file) {
-
-	setDir(file.absoluteFilePath());
+void DkBatchInput::setFileInfo(QFileInfo file)
+{
+    setDir(file.absoluteFilePath());
 }
 
-void DkBatchInput::setDir(const QString& dirPath) {
+void DkBatchInput::setDir(const QString &dirPath)
+{
+    mExplorer->setCurrentPath(dirPath);
 
-	mExplorer->setCurrentPath(dirPath);
-
-	mCDirPath = dirPath;
-	qDebug() << "setting directory to:" << dirPath;
-	mDirectoryEdit->setText(mCDirPath);
-	emit newHeaderText(mCDirPath);
-	emit updateInputDir(mCDirPath);
-	mLoader->loadDir(mCDirPath, false);
-	mThumbScrollWidget->updateThumbs(mLoader->getImages());
+    mCDirPath = dirPath;
+    qDebug() << "setting directory to:" << dirPath;
+    mDirectoryEdit->setText(mCDirPath);
+    emit newHeaderText(mCDirPath);
+    emit updateInputDir(mCDirPath);
+    mLoader->loadDir(mCDirPath, false);
+    mThumbScrollWidget->updateThumbs(mLoader->getImages());
 }
 
-void DkBatchInput::selectionChanged() {
+void DkBatchInput::selectionChanged()
+{
+    QString msg;
+    if (getSelectedFiles().empty())
+        msg = tr("No Files Selected");
+    else if (getSelectedFiles().size() == 1)
+        msg = tr("%1 File Selected").arg(getSelectedFiles().size());
+    else
+        msg = tr("%1 Files Selected").arg(getSelectedFiles().size());
 
-	QString msg;
-	if (getSelectedFiles().empty())
-		msg = tr("No Files Selected");
-	else if (getSelectedFiles().size() == 1)
-		msg = tr("%1 File Selected").arg(getSelectedFiles().size());
-	else
-		msg = tr("%1 Files Selected").arg(getSelectedFiles().size());
-	
+    QString d = mInputTextEdit->firstDirPath();
 
-	QString d = mInputTextEdit->firstDirPath();
+    if (!d.isEmpty() && mCDirPath != d)
+        setDir(d);
 
-	if (!d.isEmpty() && mCDirPath != d)
-		setDir(d);
-
-	emit newHeaderText(msg);
-	emit changed();
+    emit newHeaderText(msg);
+    emit changed();
 }
 
-void DkBatchInput::parameterChanged() {
-	
-	QString newDirPath = mDirectoryEdit->text();
-		
-	if (QDir(newDirPath).exists() && newDirPath != mCDirPath) {
-		setDir(newDirPath);
-		emit changed();
-	}
+void DkBatchInput::parameterChanged()
+{
+    QString newDirPath = mDirectoryEdit->text();
+
+    if (QDir(newDirPath).exists() && newDirPath != mCDirPath) {
+        setDir(newDirPath);
+        emit changed();
+    }
 }
 
-void DkBatchInput::setResults(const QStringList& results) {
+void DkBatchInput::setResults(const QStringList &results)
+{
+    if (mInputTabs->count() < 3) {
+        mInputTabs->addTab(mResultTextEdit, tr("Results"));
+    }
 
-	if (mInputTabs->count() < 3) {
-		mInputTabs->addTab(mResultTextEdit, tr("Results"));
-	}
-
-	mResultTextEdit->clear();
-	mResultTextEdit->setHtml(results.join("<br> "));
-	QTextCursor c = mResultTextEdit->textCursor();
-	c.movePosition(QTextCursor::End);
-	mResultTextEdit->setTextCursor(c);
-	mResultTextEdit->setVisible(true);
+    mResultTextEdit->clear();
+    mResultTextEdit->setHtml(results.join("<br> "));
+    QTextCursor c = mResultTextEdit->textCursor();
+    c.movePosition(QTextCursor::End);
+    mResultTextEdit->setTextCursor(c);
+    mResultTextEdit->setVisible(true);
 }
 
-void DkBatchInput::startProcessing() {
+void DkBatchInput::startProcessing()
+{
+    if (mInputTabs->count() < 3) {
+        mInputTabs->addTab(mResultTextEdit, tr("Results"));
+    }
 
-	if (mInputTabs->count() < 3) {
-		mInputTabs->addTab(mResultTextEdit, tr("Results"));
-	}
-
-	changeTab(tab_results);
-	mInputTextEdit->setEnabled(false);
-	mResultTextEdit->clear();
+    changeTab(tab_results);
+    mInputTextEdit->setEnabled(false);
+    mResultTextEdit->clear();
 }
 
-void DkBatchInput::stopProcessing() {
-
-	//mInputTextEdit->clear();
-	mInputTextEdit->setEnabled(true);
+void DkBatchInput::stopProcessing()
+{
+    // mInputTextEdit->clear();
+    mInputTextEdit->setEnabled(true);
 }
 
 // DkFileNameWdiget --------------------------------------------------------------------
-DkFilenameWidget::DkFilenameWidget(QWidget* parent) : DkWidget(parent) {
-
-	createLayout();
-	showOnlyFilename();
+DkFilenameWidget::DkFilenameWidget(QWidget *parent)
+    : DkWidget(parent)
+{
+    createLayout();
+    showOnlyFilename();
 }
 
-void DkFilenameWidget::createLayout() {
-	
-	mLayout = new QGridLayout(this);
-	mLayout->setContentsMargins(0,0,0,5);
-	setMaximumWidth(500);
+void DkFilenameWidget::createLayout()
+{
+    mLayout = new QGridLayout(this);
+    mLayout->setContentsMargins(0, 0, 0, 5);
+    setMaximumWidth(500);
 
-	mCbType = new QComboBox(this);
-	mCbType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	mCbType->insertItem(fileNameTypes_fileName, tr("Current Filename"));
-	mCbType->insertItem(fileNameTypes_Text, tr("Text"));
-	mCbType->insertItem(fileNameTypes_Number, tr("Number"));
-	connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
-	connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
-	connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+    mCbType = new QComboBox(this);
+    mCbType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    mCbType->insertItem(fileNameTypes_fileName, tr("Current Filename"));
+    mCbType->insertItem(fileNameTypes_Text, tr("Text"));
+    mCbType->insertItem(fileNameTypes_Number, tr("Number"));
+    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
+    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
+    connect(mCbType, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
 
-	mCbCase = new QComboBox(this);
-	mCbCase->addItem(tr("Keep Case"));
-	mCbCase->addItem(tr("To lowercase"));
-	mCbCase->addItem(tr("To UPPERCASE"));
-	connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
-	connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+    mCbCase = new QComboBox(this);
+    mCbCase->addItem(tr("Keep Case"));
+    mCbCase->addItem(tr("To lowercase"));
+    mCbCase->addItem(tr("To UPPERCASE"));
+    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
+    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
 
-	mSbNumber = new QSpinBox(this);
-	mSbNumber->setValue(1);
-	mSbNumber->setMinimum(0);
-	mSbNumber->setMaximum(999);	// changes - if cbDigits->setCurrentIndex() is changed!
-	connect(mSbNumber, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
+    mSbNumber = new QSpinBox(this);
+    mSbNumber->setValue(1);
+    mSbNumber->setMinimum(0);
+    mSbNumber->setMaximum(999); // changes - if cbDigits->setCurrentIndex() is changed!
+    connect(mSbNumber, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
 
-	mCbDigits = new QComboBox(this);
-	mCbDigits->addItem(tr("1 digit"));
-	mCbDigits->addItem(tr("2 digits"));
-	mCbDigits->addItem(tr("3 digits"));
-	mCbDigits->addItem(tr("4 digits"));
-	mCbDigits->addItem(tr("5 digits"));
-	mCbDigits->setCurrentIndex(2);	// see sBNumber->setMaximum()
-	connect(mCbDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
+    mCbDigits = new QComboBox(this);
+    mCbDigits->addItem(tr("1 digit"));
+    mCbDigits->addItem(tr("2 digits"));
+    mCbDigits->addItem(tr("3 digits"));
+    mCbDigits->addItem(tr("4 digits"));
+    mCbDigits->addItem(tr("5 digits"));
+    mCbDigits->setCurrentIndex(2); // see sBNumber->setMaximum()
+    connect(mCbDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
 
-	mLeText = new QLineEdit(this);
-	connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
-	connect(mLeText, SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
+    mLeText = new QLineEdit(this);
+    connect(mCbCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+    connect(mLeText, SIGNAL(textChanged(const QString &)), this, SIGNAL(changed()));
 
-	mPbPlus = new QPushButton("+", this);
-	mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	mPbPlus->setMinimumSize(10,10);
-	mPbPlus->setMaximumSize(30,30);
-	mPbMinus = new QPushButton("-", this);
-	mPbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	mPbMinus->setMinimumSize(10,10);
-	mPbMinus->setMaximumSize(30,30);
-	connect(mPbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
-	connect(mPbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
-	connect(mPbPlus, SIGNAL(clicked()), this, SIGNAL(changed()));
-	connect(mPbMinus, SIGNAL(clicked()), this, SIGNAL(changed()));
+    mPbPlus = new QPushButton("+", this);
+    mPbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mPbPlus->setMinimumSize(10, 10);
+    mPbPlus->setMaximumSize(30, 30);
+    mPbMinus = new QPushButton("-", this);
+    mPbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mPbMinus->setMinimumSize(10, 10);
+    mPbMinus->setMaximumSize(30, 30);
+    connect(mPbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
+    connect(mPbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
+    connect(mPbPlus, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(mPbMinus, SIGNAL(clicked()), this, SIGNAL(changed()));
 }
 
-void DkFilenameWidget::typeCBChanged(int index) {
-	switch (index) {
-		case fileNameTypes_fileName: {showOnlyFilename(); break;};
-		case fileNameTypes_Text: {showOnlyText(); break;};
-		case fileNameTypes_Number: {showOnlyNumber(); break;};
-		default:
-			break;
-	}
+void DkFilenameWidget::typeCBChanged(int index)
+{
+    switch (index) {
+    case fileNameTypes_fileName: {
+        showOnlyFilename();
+        break;
+    };
+    case fileNameTypes_Text: {
+        showOnlyText();
+        break;
+    };
+    case fileNameTypes_Number: {
+        showOnlyNumber();
+        break;
+    };
+    default:
+        break;
+    }
 }
 
-void DkFilenameWidget::showOnlyFilename() {
-	mCbCase->show();
+void DkFilenameWidget::showOnlyFilename()
+{
+    mCbCase->show();
 
-	mSbNumber->hide();
-	mCbDigits->hide();
-	mLeText->hide();
+    mSbNumber->hide();
+    mCbDigits->hide();
+    mLeText->hide();
 
-	mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-	mLayout->addWidget(mCbCase, 0, fileNameWidget_input1);
-	//curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
-	mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
-	mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
-
+    mLayout->addWidget(mCbType, 0, fileNameWidget_type);
+    mLayout->addWidget(mCbCase, 0, fileNameWidget_input1);
+    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
+    mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
+    mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
 
-void DkFilenameWidget::showOnlyNumber() {
-	mSbNumber->show();
-	mCbDigits->show();
+void DkFilenameWidget::showOnlyNumber()
+{
+    mSbNumber->show();
+    mCbDigits->show();
 
-	mCbCase->hide();
-	mLeText->hide();
+    mCbCase->hide();
+    mLeText->hide();
 
-	mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-	mLayout->addWidget(mSbNumber, 0, fileNameWidget_input1);
-	mLayout->addWidget(mCbDigits, 0, fileNameWidget_input2);
-	mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
-	mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
+    mLayout->addWidget(mCbType, 0, fileNameWidget_type);
+    mLayout->addWidget(mSbNumber, 0, fileNameWidget_input1);
+    mLayout->addWidget(mCbDigits, 0, fileNameWidget_input2);
+    mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
+    mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
 
-void DkFilenameWidget::showOnlyText() {
-	mLeText->show();
+void DkFilenameWidget::showOnlyText()
+{
+    mLeText->show();
 
-	mSbNumber->hide();
-	mCbDigits->hide();
-	mCbCase->hide();
-	
+    mSbNumber->hide();
+    mCbDigits->hide();
+    mCbCase->hide();
 
-	mLayout->addWidget(mCbType, 0, fileNameWidget_type);
-	mLayout->addWidget(mLeText, 0, fileNameWidget_input1);
-	//curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2);
-	mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
-	mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
+    mLayout->addWidget(mCbType, 0, fileNameWidget_type);
+    mLayout->addWidget(mLeText, 0, fileNameWidget_input1);
+    // curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2);
+    mLayout->addWidget(mPbPlus, 0, fileNameWidget_plus);
+    mLayout->addWidget(mPbMinus, 0, fileNameWidget_minus);
 }
 
-void DkFilenameWidget::pbPlusPressed() {
-	emit plusPressed(this);
+void DkFilenameWidget::pbPlusPressed()
+{
+    emit plusPressed(this);
 }
 
-void DkFilenameWidget::pbMinusPressed() {
-	emit minusPressed(this);
+void DkFilenameWidget::pbMinusPressed()
+{
+    emit minusPressed(this);
 }
 
-void DkFilenameWidget::enableMinusButton(bool enable) {
-	mPbMinus->setEnabled(enable);
+void DkFilenameWidget::enableMinusButton(bool enable)
+{
+    mPbMinus->setEnabled(enable);
 }
 
-void DkFilenameWidget::enablePlusButton(bool enable) {
-	mPbPlus->setEnabled(enable);
+void DkFilenameWidget::enablePlusButton(bool enable)
+{
+    mPbPlus->setEnabled(enable);
 }
 
-void DkFilenameWidget::checkForUserInput() {
-	if(mCbType->currentIndex() == 0 && mCbCase->currentIndex() == 0)
-		hasChanged = false;
-	else
-		hasChanged = true;
-	//emit changed();
+void DkFilenameWidget::checkForUserInput()
+{
+    if (mCbType->currentIndex() == 0 && mCbCase->currentIndex() == 0)
+        hasChanged = false;
+    else
+        hasChanged = true;
+    // emit changed();
 }
 
-void DkFilenameWidget::digitCBChanged(int index) {
-	mSbNumber->setMaximum(qRound(pow(10, index+1)-1));
-	emit changed();
+void DkFilenameWidget::digitCBChanged(int index)
+{
+    mSbNumber->setMaximum(qRound(pow(10, index + 1) - 1));
+    emit changed();
 }
 
-QString DkFilenameWidget::getTag() const {
+QString DkFilenameWidget::getTag() const
+{
+    QString tag;
 
-	QString tag;
+    switch (mCbType->currentIndex()) {
+    case fileNameTypes_Number: {
+        tag += "<d:";
+        tag += QString::number(mCbDigits->currentIndex()); // is sensitive to the index
+        tag += ":" + QString::number(mSbNumber->value());
+        tag += ">";
+        break;
+    }
+    case fileNameTypes_fileName: {
+        tag += "<c:";
+        tag += QString::number(mCbCase->currentIndex()); // is sensitive to the index
+        tag += ">";
+        break;
+    }
+    case fileNameTypes_Text: {
+        tag += mLeText->text();
+    }
+    }
 
-	switch (mCbType->currentIndex()) {
-		
-	case fileNameTypes_Number: 
-		{
-			tag += "<d:"; 
-			tag += QString::number(mCbDigits->currentIndex());	// is sensitive to the index
-			tag += ":" + QString::number(mSbNumber->value());
-			tag += ">";
-			break;
-		}
-	case fileNameTypes_fileName: 
-		{
-			tag += "<c:"; 
-			tag += QString::number(mCbCase->currentIndex());	// is sensitive to the index
-			tag += ">";
-			break;
-		}
-	case fileNameTypes_Text:
-		{
-			tag += mLeText->text();
-		}
-	}
-
-	return tag;
+    return tag;
 }
 
-bool DkFilenameWidget::setTag(const QString & tag) {
+bool DkFilenameWidget::setTag(const QString &tag)
+{
+    QString cTag = tag;
+    QStringList cmds = cTag.split(":");
 
-	QString cTag = tag;
-	QStringList cmds = cTag.split(":");
+    if (cmds.size() == 1) {
+        mCbType->setCurrentIndex(fileNameTypes_Text);
+        mLeText->setText(tag);
+    } else {
+        if (cmds[0] == "c") {
+            mCbType->setCurrentIndex(fileNameTypes_fileName);
+            mCbCase->setCurrentIndex(cmds[1].toInt());
+        } else if (cmds[0] == "d") {
+            mCbType->setCurrentIndex(fileNameTypes_Number);
+            mCbDigits->setCurrentIndex(cmds[1].toInt());
+            mSbNumber->setValue(cmds[2].toInt());
+        } else {
+            qWarning() << "cannot parse" << cmds;
+            return false;
+        }
+    }
 
-	if (cmds.size() == 1) {
-		mCbType->setCurrentIndex(fileNameTypes_Text);
-		mLeText->setText(tag);
-	}
-	else {
-
-		if (cmds[0] == "c") {
-			mCbType->setCurrentIndex(fileNameTypes_fileName);
-			mCbCase->setCurrentIndex(cmds[1].toInt());
-		}
-		else if (cmds[0] == "d") {
-			mCbType->setCurrentIndex(fileNameTypes_Number);
-			mCbDigits->setCurrentIndex(cmds[1].toInt());
-			mSbNumber->setValue(cmds[2].toInt());
-		}
-		else {
-			qWarning() << "cannot parse" << cmds;
-			return false;
-		}
-	}
-
-	return true;
+    return true;
 }
 
 // DkBatchOutput --------------------------------------------------------------------
-DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : DkWidget(parent, f) {
-
-	setObjectName("DkBatchOutput");
-	createLayout();
+DkBatchOutput::DkBatchOutput(QWidget *parent, Qt::WindowFlags f)
+    : DkWidget(parent, f)
+{
+    setObjectName("DkBatchOutput");
+    createLayout();
 }
 
-void DkBatchOutput::createLayout() {
+void DkBatchOutput::createLayout()
+{
+    // Output Directory Groupbox
+    QLabel *outDirLabel = new QLabel(tr("Output Directory"), this);
+    outDirLabel->setObjectName("subTitle");
 
-	// Output Directory Groupbox
-	QLabel* outDirLabel = new QLabel(tr("Output Directory"), this);
-	outDirLabel->setObjectName("subTitle");
+    mOutputBrowseButton = new QPushButton(tr("Browse"));
+    mOutputlineEdit = new DkDirectoryEdit(this);
+    mOutputlineEdit->setPlaceholderText(tr("Select a Directory"));
+    connect(mOutputBrowseButton, SIGNAL(clicked()), this, SLOT(browse()));
+    connect(mOutputlineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setDir(const QString &)));
 
-	mOutputBrowseButton = new QPushButton(tr("Browse"));
-	mOutputlineEdit = new DkDirectoryEdit(this);
-	mOutputlineEdit->setPlaceholderText(tr("Select a Directory"));
-	connect(mOutputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
-	connect(mOutputlineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(setDir(const QString&)));
+    // overwrite existing
+    mCbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
+    mCbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
+    connect(mCbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
-	// overwrite existing
-	mCbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
-	mCbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
-	connect(mCbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
+    // overwrite existing
+    mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
+    mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files - so be careful!"));
+    connect(mCbDoNotSave, SIGNAL(clicked()), this, SIGNAL(changed()));
 
-	// overwrite existing
-	mCbDoNotSave = new QCheckBox(tr("Do not Save Output Images"));
-	mCbDoNotSave->setToolTip(tr("If checked, output images are not saved at all.\nThis option is only useful if plugins save sidecar files - so be careful!"));
-	connect(mCbDoNotSave, SIGNAL(clicked()), this, SIGNAL(changed()));
+    // Use Input Folder
+    mCbUseInput = new QCheckBox(tr("Use Input Folder"));
+    mCbUseInput->setToolTip(tr("If checked, the batch is applied to the input folder - so be careful!"));
+    connect(mCbUseInput, SIGNAL(clicked(bool)), this, SLOT(useInputFolderChanged(bool)));
 
-	// Use Input Folder
-	mCbUseInput = new QCheckBox(tr("Use Input Folder"));
-	mCbUseInput->setToolTip(tr("If checked, the batch is applied to the input folder - so be careful!"));
-	connect(mCbUseInput, SIGNAL(clicked(bool)), this, SLOT(useInputFolderChanged(bool)));
+    // delete original
+    mCbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
+    mCbDeleteOriginal->setToolTip(tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
 
-	// delete original
-	mCbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
-	mCbDeleteOriginal->setToolTip(tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
+    QWidget *cbWidget = new QWidget(this);
+    QVBoxLayout *cbLayout = new QVBoxLayout(cbWidget);
+    cbLayout->setContentsMargins(0, 0, 0, 0);
+    cbLayout->addWidget(mCbUseInput);
+    cbLayout->addWidget(mCbOverwriteExisting);
+    cbLayout->addWidget(mCbDoNotSave);
+    cbLayout->addWidget(mCbDeleteOriginal);
 
-	QWidget* cbWidget = new QWidget(this);
-	QVBoxLayout* cbLayout = new QVBoxLayout(cbWidget);
-	cbLayout->setContentsMargins(0,0,0,0);
-	cbLayout->addWidget(mCbUseInput);
-	cbLayout->addWidget(mCbOverwriteExisting);
-	cbLayout->addWidget(mCbDoNotSave);
-	cbLayout->addWidget(mCbDeleteOriginal);
+    QWidget *outDirWidget = new QWidget(this);
+    QGridLayout *outDirLayout = new QGridLayout(outDirWidget);
+    // outDirLayout->setContentsMargins(0, 0, 0, 0);
+    outDirLayout->addWidget(mOutputBrowseButton, 0, 0);
+    outDirLayout->addWidget(mOutputlineEdit, 0, 1);
+    outDirLayout->addWidget(cbWidget, 1, 0);
 
-	QWidget* outDirWidget = new QWidget(this);
-	QGridLayout* outDirLayout = new QGridLayout(outDirWidget);
-	//outDirLayout->setContentsMargins(0, 0, 0, 0);
-	outDirLayout->addWidget(mOutputBrowseButton, 0, 0);
-	outDirLayout->addWidget(mOutputlineEdit, 0, 1);
-	outDirLayout->addWidget(cbWidget, 1, 0);
+    // Filename Groupbox
+    QLabel *fileNameLabel = new QLabel(tr("Filename"), this);
+    fileNameLabel->setObjectName("subTitle");
 
-	// Filename Groupbox
-	QLabel* fileNameLabel = new QLabel(tr("Filename"), this);
-	fileNameLabel->setObjectName("subTitle");
+    QWidget *fileNameWidget = new QWidget(this);
+    mFilenameVBLayout = new QVBoxLayout(fileNameWidget);
+    mFilenameVBLayout->setSpacing(0);
 
-	QWidget* fileNameWidget = new QWidget(this);
-	mFilenameVBLayout = new QVBoxLayout(fileNameWidget);
-	mFilenameVBLayout->setSpacing(0);
-	
-	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
-	fwidget->enableMinusButton(false);
-	mFilenameWidgets.push_back(fwidget);
-	mFilenameVBLayout->addWidget(fwidget);
-	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
-	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
-	connect(fwidget, SIGNAL(changed()), this, SLOT(parameterChanged()));
+    DkFilenameWidget *fwidget = new DkFilenameWidget(this);
+    fwidget->enableMinusButton(false);
+    mFilenameWidgets.push_back(fwidget);
+    mFilenameVBLayout->addWidget(fwidget);
+    connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget *)), this, SLOT(plusPressed(DkFilenameWidget *)));
+    connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget *)), this, SLOT(minusPressed(DkFilenameWidget *)));
+    connect(fwidget, SIGNAL(changed()), this, SLOT(parameterChanged()));
 
-	QWidget* extensionWidget = new QWidget(this);
-	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
-	extensionLayout->setAlignment(Qt::AlignLeft);
-	//extensionLayout->setSpacing(0);
-	extensionLayout->setContentsMargins(0,0,0,0);
-	mCbExtension = new QComboBox(this);
-	mCbExtension->addItem(tr("Keep Extension"));
-	mCbExtension->addItem(tr("Convert To"));
-	connect(mCbExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
+    QWidget *extensionWidget = new QWidget(this);
+    QHBoxLayout *extensionLayout = new QHBoxLayout(extensionWidget);
+    extensionLayout->setAlignment(Qt::AlignLeft);
+    // extensionLayout->setSpacing(0);
+    extensionLayout->setContentsMargins(0, 0, 0, 0);
+    mCbExtension = new QComboBox(this);
+    mCbExtension->addItem(tr("Keep Extension"));
+    mCbExtension->addItem(tr("Convert To"));
+    connect(mCbExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
-	mCbNewExtension = new QComboBox(this);
-	mCbNewExtension->addItems(DkSettingsManager::param().app().saveFilters);
-	mCbNewExtension->setFixedWidth(150);
-	mCbNewExtension->setEnabled(false);
-	connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+    mCbNewExtension = new QComboBox(this);
+    mCbNewExtension->addItems(DkSettingsManager::param().app().saveFilters);
+    mCbNewExtension->setFixedWidth(150);
+    mCbNewExtension->setEnabled(false);
+    connect(mCbNewExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 
-	mCbCompression = new QComboBox(this);
-	updateCBCompression();
-	mCbCompression->setEnabled(false);
+    mCbCompression = new QComboBox(this);
+    updateCBCompression();
+    mCbCompression->setEnabled(false);
 
-	extensionLayout->addWidget(mCbExtension);
-	extensionLayout->addWidget(mCbNewExtension);
-	extensionLayout->addWidget(mCbCompression);
-	//extensionLayout->addStretch();
-	mFilenameVBLayout->addWidget(extensionWidget);
-	
-	QLabel* previewLabel = new QLabel(tr("Preview"), this);
-	previewLabel->setObjectName("subTitle");
+    extensionLayout->addWidget(mCbExtension);
+    extensionLayout->addWidget(mCbNewExtension);
+    extensionLayout->addWidget(mCbCompression);
+    // extensionLayout->addStretch();
+    mFilenameVBLayout->addWidget(extensionWidget);
 
-	QLabel* oldLabel = new QLabel(tr("Old Filename: "));
-	oldLabel->setObjectName("FileNamePreviewLabel");
-	mOldFileNameLabel = new QLabel("");
-	mOldFileNameLabel->setObjectName("FileNamePreviewLabel");
+    QLabel *previewLabel = new QLabel(tr("Preview"), this);
+    previewLabel->setObjectName("subTitle");
 
-	QLabel* newLabel = new QLabel(tr("New Filename: "));
-	newLabel->setObjectName("FileNamePreviewLabel");
-	mNewFileNameLabel = new QLabel("");
-	mNewFileNameLabel->setObjectName("FileNamePreviewLabel");
+    QLabel *oldLabel = new QLabel(tr("Old Filename: "));
+    oldLabel->setObjectName("FileNamePreviewLabel");
+    mOldFileNameLabel = new QLabel("");
+    mOldFileNameLabel->setObjectName("FileNamePreviewLabel");
 
-	// Preview Widget
-	QWidget* previewWidget = new QWidget(this);
-	QGridLayout* previewGBLayout = new QGridLayout(previewWidget);
-	//previewWidget->hide();	// show if more than 1 file is selected
-	previewGBLayout->addWidget(oldLabel, 0, 0);
-	previewGBLayout->addWidget(mOldFileNameLabel, 0, 1);
-	previewGBLayout->addWidget(newLabel, 1, 0);
-	previewGBLayout->addWidget(mNewFileNameLabel, 1, 1);
-	previewGBLayout->setColumnStretch(3, 10);
-	previewGBLayout->setAlignment(Qt::AlignTop);
-	
-	QGridLayout* contentLayout = new QGridLayout(this);
-	contentLayout->setContentsMargins(0, 0, 0, 0);
-	contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	contentLayout->addWidget(outDirLabel, 2, 0);
-	contentLayout->addWidget(outDirWidget, 3, 0);
-	contentLayout->addWidget(fileNameLabel, 4, 0);
-	contentLayout->addWidget(fileNameWidget, 5, 0);
-	contentLayout->addWidget(previewLabel, 6, 0);
-	contentLayout->addWidget(previewWidget, 7, 0);
-	setLayout(contentLayout);
+    QLabel *newLabel = new QLabel(tr("New Filename: "));
+    newLabel->setObjectName("FileNamePreviewLabel");
+    mNewFileNameLabel = new QLabel("");
+    mNewFileNameLabel->setObjectName("FileNamePreviewLabel");
+
+    // Preview Widget
+    QWidget *previewWidget = new QWidget(this);
+    QGridLayout *previewGBLayout = new QGridLayout(previewWidget);
+    // previewWidget->hide();	// show if more than 1 file is selected
+    previewGBLayout->addWidget(oldLabel, 0, 0);
+    previewGBLayout->addWidget(mOldFileNameLabel, 0, 1);
+    previewGBLayout->addWidget(newLabel, 1, 0);
+    previewGBLayout->addWidget(mNewFileNameLabel, 1, 1);
+    previewGBLayout->setColumnStretch(3, 10);
+    previewGBLayout->setAlignment(Qt::AlignTop);
+
+    QGridLayout *contentLayout = new QGridLayout(this);
+    contentLayout->setContentsMargins(0, 0, 0, 0);
+    contentLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    contentLayout->addWidget(outDirLabel, 2, 0);
+    contentLayout->addWidget(outDirWidget, 3, 0);
+    contentLayout->addWidget(fileNameLabel, 4, 0);
+    contentLayout->addWidget(fileNameWidget, 5, 0);
+    contentLayout->addWidget(previewLabel, 6, 0);
+    contentLayout->addWidget(previewWidget, 7, 0);
+    setLayout(contentLayout);
 }
 
 void DkBatchOutput::updateCBCompression()
 {
-	const QString quality_label[5] = {
-		tr("Best Quality"),
-		tr("High Quality"),
-		tr("Medium Quality"),
-		tr("Low Quality"),
-		tr("Bad Quality")
-		};
-	int quality[5];
+    const QString quality_label[5] = {tr("Best Quality"), tr("High Quality"), tr("Medium Quality"), tr("Low Quality"), tr("Bad Quality")};
+    int quality[5];
 
-	const QString extStr = mCbNewExtension->currentText();
-	if (extStr.contains(QRegExp("(avif)", Qt::CaseInsensitive))) {
-		quality[0] = 100;
-		quality[1] = 80;
-		quality[2] = 60;
-		quality[3] = 40;
-		quality[4] = 20;
-	} else { // quality used for JPG and other formats
-		quality[0] = 100;
-		quality[1] = 97;
-		quality[2] = 90;
-		quality[3] = 80;
-		quality[4] = 60;
-	}
+    const QString extStr = mCbNewExtension->currentText();
+    if (extStr.contains(QRegExp("(avif)", Qt::CaseInsensitive))) {
+        quality[0] = 100;
+        quality[1] = 80;
+        quality[2] = 60;
+        quality[3] = 40;
+        quality[4] = 20;
+    } else { // quality used for JPG and other formats
+        quality[0] = 100;
+        quality[1] = 97;
+        quality[2] = 90;
+        quality[3] = 80;
+        quality[4] = 60;
+    }
 
-	int previous_index = mCbCompression->currentIndex();
+    int previous_index = mCbCompression->currentIndex();
 
-	mCbCompression->clear();
-	for (int index = 0; index < 5; index++) {
-		mCbCompression->insertItem(index, quality_label[index], quality[index]);
-	}
+    mCbCompression->clear();
+    for (int index = 0; index < 5; index++) {
+        mCbCompression->insertItem(index, quality_label[index], quality[index]);
+    }
 
-	if (previous_index == -1) {
-		mCbCompression->setCurrentIndex(1);
-	} else {
-		mCbCompression->setCurrentIndex(previous_index);
-	}
+    if (previous_index == -1) {
+        mCbCompression->setCurrentIndex(1);
+    } else {
+        mCbCompression->setCurrentIndex(previous_index);
+    }
 }
 
-void DkBatchOutput::browse() {
+void DkBatchOutput::browse()
+{
+    QString dirGuess = (mOutputlineEdit->text().isEmpty()) ? mInputDirectory : mOutputlineEdit->text();
 
-	QString dirGuess = (mOutputlineEdit->text().isEmpty()) ? mInputDirectory : mOutputlineEdit->text();
-	
-	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(
-		this, 
-		tr("Open an Image Directory"),
-		dirGuess,
-		QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions()
-	);
+    // load system default open dialog
+    QString dirName =
+        QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), dirGuess, QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
-	if (dirName.isEmpty())
-		return;
+    if (dirName.isEmpty())
+        return;
 
-	setDir(dirName);
+    setDir(dirName);
 }
 
-void DkBatchOutput::setDir(const QString& dirPath, bool updateLineEdit) {
+void DkBatchOutput::setDir(const QString &dirPath, bool updateLineEdit)
+{
+    mOutputDirectory = dirPath;
+    emit newHeaderText(dirPath);
 
-	mOutputDirectory = dirPath;
-	emit newHeaderText(dirPath);
-	
-	if (updateLineEdit)
-		mOutputlineEdit->setText(dirPath);
+    if (updateLineEdit)
+        mOutputlineEdit->setText(dirPath);
 }
 
-void DkBatchOutput::setInputDir(const QString& dirPath) {
-	mInputDirectory = dirPath;
+void DkBatchOutput::setInputDir(const QString &dirPath)
+{
+    mInputDirectory = dirPath;
 
-	if (mCbUseInput->isChecked())
-		setDir(mInputDirectory);
+    if (mCbUseInput->isChecked())
+        setDir(mInputDirectory);
 }
 
-void DkBatchOutput::useInputFolderChanged(bool checked) {
+void DkBatchOutput::useInputFolderChanged(bool checked)
+{
+    mOutputlineEdit->setEnabled(!checked);
+    mOutputBrowseButton->setEnabled(!checked);
 
-	mOutputlineEdit->setEnabled(!checked);
-	mOutputBrowseButton->setEnabled(!checked);
-
-	if (checked)
-		setDir(mInputDirectory);
+    if (checked)
+        setDir(mInputDirectory);
 }
 
-void DkBatchOutput::plusPressed(DkFilenameWidget* widget, const QString& tag) {
+void DkBatchOutput::plusPressed(DkFilenameWidget *widget, const QString &tag)
+{
+    DkFilenameWidget *fw = createFilenameWidget(tag);
 
-	DkFilenameWidget* fw = createFilenameWidget(tag);
+    int index = mFilenameVBLayout->indexOf(widget);
+    mFilenameWidgets.insert(index + 1, fw);
+    if (mFilenameWidgets.size() > 4) {
+        for (int i = 0; i < mFilenameWidgets.size(); i++)
+            mFilenameWidgets[i]->enablePlusButton(false);
+    }
+    mFilenameVBLayout->insertWidget(index + 1, fw); // append to current widget
 
-	int index = mFilenameVBLayout->indexOf(widget);
-	mFilenameWidgets.insert(index + 1, fw);
-	if (mFilenameWidgets.size() > 4) {
-		for (int i = 0; i  < mFilenameWidgets.size(); i++)
-			mFilenameWidgets[i]->enablePlusButton(false);
-	}
-	mFilenameVBLayout->insertWidget(index + 1, fw); // append to current widget
-
-	parameterChanged();
+    parameterChanged();
 }
 
-void DkBatchOutput::addFilenameWidget(const QString& tag) {
-
-	DkFilenameWidget* fw = createFilenameWidget(tag);
-	mFilenameWidgets.append(fw);
-	mFilenameVBLayout->insertWidget(mFilenameWidgets.size()-1, fw); // append to current widget
+void DkBatchOutput::addFilenameWidget(const QString &tag)
+{
+    DkFilenameWidget *fw = createFilenameWidget(tag);
+    mFilenameWidgets.append(fw);
+    mFilenameVBLayout->insertWidget(mFilenameWidgets.size() - 1, fw); // append to current widget
 }
 
-DkFilenameWidget * DkBatchOutput::createFilenameWidget(const QString & tag) {
+DkFilenameWidget *DkBatchOutput::createFilenameWidget(const QString &tag)
+{
+    DkFilenameWidget *fw = new DkFilenameWidget(this);
+    fw->setTag(tag);
 
-	DkFilenameWidget* fw = new DkFilenameWidget(this);
-	fw->setTag(tag);
+    connect(fw, SIGNAL(plusPressed(DkFilenameWidget *)), this, SLOT(plusPressed(DkFilenameWidget *)));
+    connect(fw, SIGNAL(minusPressed(DkFilenameWidget *)), this, SLOT(minusPressed(DkFilenameWidget *)));
+    connect(fw, SIGNAL(changed()), this, SLOT(parameterChanged()));
 
-	connect(fw, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
-	connect(fw, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
-	connect(fw, SIGNAL(changed()), this, SLOT(parameterChanged()));
-
-	return fw;
+    return fw;
 }
 
-void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
-	
-	mFilenameVBLayout->removeWidget(widget);
-	mFilenameWidgets.remove(mFilenameWidgets.indexOf(widget));
-	if (mFilenameWidgets.size() <= 4) {
-		for (int i = 0; i  < mFilenameWidgets.size(); i++)
-			mFilenameWidgets[i]->enablePlusButton(true);
-	}
+void DkBatchOutput::minusPressed(DkFilenameWidget *widget)
+{
+    mFilenameVBLayout->removeWidget(widget);
+    mFilenameWidgets.remove(mFilenameWidgets.indexOf(widget));
+    if (mFilenameWidgets.size() <= 4) {
+        for (int i = 0; i < mFilenameWidgets.size(); i++)
+            mFilenameWidgets[i]->enablePlusButton(true);
+    }
 
-	widget->hide();
+    widget->hide();
 
-	parameterChanged();
+    parameterChanged();
 }
 
-void DkBatchOutput::extensionCBChanged(int index) {
-	
-	mCbNewExtension->setEnabled(index > 0);
-	parameterChanged();
+void DkBatchOutput::extensionCBChanged(int index)
+{
+    mCbNewExtension->setEnabled(index > 0);
+    parameterChanged();
 }
 
-
-bool DkBatchOutput::hasUserInput() const {
-	// TODO add output directory 
-	return mFilenameWidgets.size() > 1 || mFilenameWidgets[0]->hasUserInput() || mCbExtension->currentIndex() == 1;
+bool DkBatchOutput::hasUserInput() const
+{
+    // TODO add output directory
+    return mFilenameWidgets.size() > 1 || mFilenameWidgets[0]->hasUserInput() || mCbExtension->currentIndex() == 1;
 }
 
-void DkBatchOutput::parameterChanged() {
+void DkBatchOutput::parameterChanged()
+{
+    // enable/disable compression combo
+    QString extStr = mCbNewExtension->currentText();
+    mCbCompression->setEnabled(extStr.contains(QRegExp("(avif|jpg|jp2|jxl|webp)", Qt::CaseInsensitive)));
 
-	// enable/disable compression combo
-	QString extStr = mCbNewExtension->currentText();
-	mCbCompression->setEnabled(extStr.contains(QRegExp("(avif|jpg|jp2|jxl|webp)", Qt::CaseInsensitive)));
-
-	updateCBCompression();
-	updateFileLabelPreview();
-	emit changed();
+    updateCBCompression();
+    updateFileLabelPreview();
+    emit changed();
 }
 
-void DkBatchOutput::updateFileLabelPreview() {
+void DkBatchOutput::updateFileLabelPreview()
+{
+    if (mExampleName.isEmpty())
+        return;
 
-	if (mExampleName.isEmpty())
-		return;
+    DkFileNameConverter converter(mExampleName, getFilePattern(), 0);
 
-	DkFileNameConverter converter(mExampleName, getFilePattern(), 0);
-
-	mOldFileNameLabel->setText(mExampleName);
-	mNewFileNameLabel->setText(converter.getConvertedFileName());
+    mOldFileNameLabel->setText(mExampleName);
+    mNewFileNameLabel->setText(converter.getConvertedFileName());
 }
 
-QString DkBatchOutput::getOutputDirectory() {
-	return mOutputlineEdit->text();
+QString DkBatchOutput::getOutputDirectory()
+{
+    return mOutputlineEdit->text();
 }
 
-QString DkBatchOutput::getFilePattern() {
+QString DkBatchOutput::getFilePattern()
+{
+    QString pattern = "";
 
-	QString pattern = "";
+    for (int idx = 0; idx < mFilenameWidgets.size(); idx++)
+        pattern += mFilenameWidgets.at(idx)->getTag();
 
-	for (int idx = 0; idx < mFilenameWidgets.size(); idx++)
-		pattern += mFilenameWidgets.at(idx)->getTag();	
+    if (mCbExtension->currentIndex() == 0) {
+        pattern += ".<old>";
+    } else {
+        QString ext = mCbNewExtension->itemText(mCbNewExtension->currentIndex());
 
-	if (mCbExtension->currentIndex() == 0) {
-		pattern += ".<old>";
-	}
-	else {
-		QString ext = mCbNewExtension->itemText(mCbNewExtension->currentIndex());
+        QStringList tmp = ext.split("(");
 
-		QStringList tmp = ext.split("(");
+        if (tmp.size() == 2) {
+            QString filters = tmp.at(1);
+            filters.replace(")", "");
+            filters.replace("*", "");
 
-		if (tmp.size() == 2) {
+            QStringList extList = filters.split(" ");
 
-			QString filters = tmp.at(1);
-			filters.replace(")", "");
-			filters.replace("*", "");
+            if (!extList.empty())
+                pattern += extList[0];
+        }
+    }
 
-			QStringList extList = filters.split(" ");
-
-			if (!extList.empty())
-				pattern += extList[0];
-		}
-	}
-
-	return pattern;
+    return pattern;
 }
 
-void DkBatchOutput::loadFilePattern(const QString & pattern) {
+void DkBatchOutput::loadFilePattern(const QString &pattern)
+{
+    QStringList nameList = pattern.split(".");
+    QString ext = nameList.last();
 
-	QStringList nameList = pattern.split(".");
-	QString ext = nameList.last();
+    QString p = pattern;
+    p = p.replace("." + ext, ""); // remove extension
+    p = p.replace(">", "<");
 
-	QString p = pattern;
-	p = p.replace("." + ext, "");		// remove extension
-	p = p.replace(">", "<");
-		
-	QStringList cmdsRaw = p.split("<");
-	QStringList cmds;
+    QStringList cmdsRaw = p.split("<");
+    QStringList cmds;
 
-	for (const QString& c : cmdsRaw) {
-		if (!c.trimmed().isEmpty())
-			cmds << c;
-	}
+    for (const QString &c : cmdsRaw) {
+        if (!c.trimmed().isEmpty())
+            cmds << c;
+    }
 
-	// uff - first is special
-	if (!cmds.empty() && !mFilenameWidgets.empty()) {
-		mFilenameWidgets.first()->setTag(cmds.first());
-		cmds.pop_front();
-	}
+    // uff - first is special
+    if (!cmds.empty() && !mFilenameWidgets.empty()) {
+        mFilenameWidgets.first()->setTag(cmds.first());
+        cmds.pop_front();
+    }
 
-	for (const QString& c : cmds) {
+    for (const QString &c : cmds) {
+        if (c.isEmpty())
+            continue;
 
-		if (c.isEmpty())
-			continue;
-		
-		qDebug() << "processing: " << c;
-		addFilenameWidget(c);
-	}
+        qDebug() << "processing: " << c;
+        addFilenameWidget(c);
+    }
 
-	if (ext != "<old>") {
-		mCbExtension->setCurrentIndex(1);
-		int idx = mCbNewExtension->findText(ext, Qt::MatchContains);
-		mCbNewExtension->setCurrentIndex(idx);
-	}
-	else {
-		mCbExtension->setCurrentIndex(0);
-	}
+    if (ext != "<old>") {
+        mCbExtension->setCurrentIndex(1);
+        int idx = mCbNewExtension->findText(ext, Qt::MatchContains);
+        mCbNewExtension->setCurrentIndex(idx);
+    } else {
+        mCbExtension->setCurrentIndex(0);
+    }
 }
 
-int DkBatchOutput::getCompression() const {
+int DkBatchOutput::getCompression() const
+{
+    if (!mCbCompression->isEnabled())
+        return -1;
 
-	if (!mCbCompression->isEnabled())
-		return -1;
-
-	return mCbCompression->itemData(mCbCompression->currentIndex()).toInt();
+    return mCbCompression->itemData(mCbCompression->currentIndex()).toInt();
 }
 
-void DkBatchOutput::applyDefault() {
+void DkBatchOutput::applyDefault()
+{
+    mCbUseInput->setChecked(false);
+    mCbDeleteOriginal->setChecked(false);
+    mCbOverwriteExisting->setChecked(false);
+    mCbDoNotSave->setChecked(false);
+    mCbExtension->setCurrentIndex(0);
+    mCbNewExtension->setCurrentIndex(0);
+    mCbCompression->setCurrentIndex(0);
+    mOutputDirectory = "";
+    mInputDirectory = "";
+    mHUserInput = false;
+    mRUserInput = false;
 
-	mCbUseInput->setChecked(false);
-	mCbDeleteOriginal->setChecked(false);
-	mCbOverwriteExisting->setChecked(false);
-	mCbDoNotSave->setChecked(false);
-	mCbExtension->setCurrentIndex(0);
-	mCbNewExtension->setCurrentIndex(0);
-	mCbCompression->setCurrentIndex(0);
-	mOutputDirectory = "";
-	mInputDirectory = "";
-	mHUserInput = false;
-	mRUserInput = false;
+    // remove all but the first
+    for (int idx = mFilenameWidgets.size() - 1; idx > 0; idx--) {
+        mFilenameWidgets[idx]->deleteLater();
+        mFilenameWidgets.pop_back();
+    }
 
-	// remove all but the first
-	for (int idx = mFilenameWidgets.size()-1; idx > 0; idx--) {
-		mFilenameWidgets[idx]->deleteLater();
-		mFilenameWidgets.pop_back();
-	}
+    if (!mFilenameWidgets.empty()) {
+        mFilenameWidgets[0]->setTag("c:0"); // current filename
+    } else
+        qWarning() << "no filename widgets...";
 
-	if (!mFilenameWidgets.empty()) {
-		mFilenameWidgets[0]->setTag("c:0");	// current filename
-	}
-	else
-		qWarning() << "no filename widgets...";
-
-	mOutputlineEdit->setText(mOutputDirectory);
+    mOutputlineEdit->setText(mOutputDirectory);
 }
 
-void DkBatchOutput::loadProperties(const DkBatchConfig & config) {
+void DkBatchOutput::loadProperties(const DkBatchConfig &config)
+{
+    DkSaveInfo si = config.saveInfo();
+    mCbOverwriteExisting->setChecked((si.mode() & DkSaveInfo::mode_overwrite) != 0);
+    mCbDoNotSave->setChecked((si.mode() & DkSaveInfo::mode_do_not_save_output) != 0);
+    mCbDeleteOriginal->setChecked(si.isDeleteOriginal());
+    mCbUseInput->setChecked(si.isInputDirOutputDir());
+    mOutputlineEdit->setText(config.getOutputDirPath());
 
-	DkSaveInfo si = config.saveInfo();
-	mCbOverwriteExisting->setChecked((si.mode() & DkSaveInfo::mode_overwrite) != 0);
-	mCbDoNotSave->setChecked((si.mode() & DkSaveInfo::mode_do_not_save_output) != 0);
-	mCbDeleteOriginal->setChecked(si.isDeleteOriginal());
-	mCbUseInput->setChecked(si.isInputDirOutputDir());
-	mOutputlineEdit->setText(config.getOutputDirPath());
-	
-	int c = si.compression();
+    int c = si.compression();
 
-	for (int idx = 0; idx < mCbCompression->count(); idx++) {
-		if (mCbCompression->itemData(idx).toInt() == c) {
-			mCbCompression->setCurrentIndex(idx);
-			break;
-		}
-	}
+    for (int idx = 0; idx < mCbCompression->count(); idx++) {
+        if (mCbCompression->itemData(idx).toInt() == c) {
+            mCbCompression->setCurrentIndex(idx);
+            break;
+        }
+    }
 
-	loadFilePattern(config.getFileNamePattern());
+    loadFilePattern(config.getFileNamePattern());
 
-	parameterChanged();
+    parameterChanged();
 }
 
-DkSaveInfo::OverwriteMode DkBatchOutput::overwriteMode() const {
+DkSaveInfo::OverwriteMode DkBatchOutput::overwriteMode() const
+{
+    DkSaveInfo::OverwriteMode mode = DkSaveInfo::mode_skip_existing;
 
-	DkSaveInfo::OverwriteMode mode = DkSaveInfo::mode_skip_existing;
+    if (mCbOverwriteExisting->isChecked())
+        mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_overwrite);
+    if (mCbDoNotSave->isChecked())
+        mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_do_not_save_output);
 
-	if (mCbOverwriteExisting->isChecked())
-		mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_overwrite);
-	if (mCbDoNotSave->isChecked())
-		mode = (DkSaveInfo::OverwriteMode)(mode | DkSaveInfo::mode_do_not_save_output);
-
-	return mode;
+    return mode;
 }
 
-bool DkBatchOutput::useInputDir() const {
-	return mCbUseInput->isChecked();
+bool DkBatchOutput::useInputDir() const
+{
+    return mCbUseInput->isChecked();
 }
 
-bool DkBatchOutput::deleteOriginal() const {
-
-	return mCbDeleteOriginal->isChecked();
+bool DkBatchOutput::deleteOriginal() const
+{
+    return mCbDeleteOriginal->isChecked();
 }
 
-void DkBatchOutput::setExampleFilename(const QString& exampleName) {
-
-	mExampleName = exampleName;
-	updateFileLabelPreview();
+void DkBatchOutput::setExampleFilename(const QString &exampleName)
+{
+    mExampleName = exampleName;
+    updateFileLabelPreview();
 }
 
 // DkProfileSummaryWidget --------------------------------------------------------------------
-DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget* parent) : DkFadeWidget(parent) {
-	createLayout();
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-	QMetaObject::connectSlotsByName(this);
+DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget *parent)
+    : DkFadeWidget(parent)
+{
+    createLayout();
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    QMetaObject::connectSlotsByName(this);
 }
 
-void DkProfileSummaryWidget::setProfile(const QString& profileName, const DkBatchConfig & config) {
+void DkProfileSummaryWidget::setProfile(const QString &profileName, const DkBatchConfig &config)
+{
+    mTitle->setText(tr("Summary: ") + profileName);
+    mNumFiles->setText(QString::number(config.getFileList().size()) + " " + tr("Files"));
+    mOutputDir->setText(config.getOutputDirPath());
 
-	mTitle->setText(tr("Summary: ") + profileName);
-	mNumFiles->setText(QString::number(config.getFileList().size()) + " "  + tr("Files"));
-	mOutputDir->setText(config.getOutputDirPath());
-	
-	QString functions;
-	for (QSharedPointer<DkAbstractBatch> cf : config.getProcessFunctions()) {
-
-		functions += cf->name() + "\n";
-	}
-	mFunctions->setText(functions);
-
+    QString functions;
+    for (QSharedPointer<DkAbstractBatch> cf : config.getProcessFunctions()) {
+        functions += cf->name() + "\n";
+    }
+    mFunctions->setText(functions);
 }
 
-void DkProfileSummaryWidget::on_deleteButton_clicked() {
-	emit deleteCurrentProfile();
+void DkProfileSummaryWidget::on_deleteButton_clicked()
+{
+    emit deleteCurrentProfile();
 }
 
-void DkProfileSummaryWidget::on_updateButton_clicked() {
-	emit updateCurrentProfile();
+void DkProfileSummaryWidget::on_updateButton_clicked()
+{
+    emit updateCurrentProfile();
 }
 
-void DkProfileSummaryWidget::on_exportButton_clicked() {
-	emit exportCurrentProfile();
+void DkProfileSummaryWidget::on_exportButton_clicked()
+{
+    emit exportCurrentProfile();
 }
 
-void DkProfileSummaryWidget::createLayout() {
+void DkProfileSummaryWidget::createLayout()
+{
+    mTitle = new QLabel("", this);
+    mTitle->setObjectName("subTitle");
 
-	mTitle = new QLabel("", this);
-	mTitle->setObjectName("subTitle");
+    QLabel *numFilesTitle = new QLabel(tr("Input"), this);
+    numFilesTitle->setObjectName("summaryMeta");
+    mNumFiles = new QLabel(this);
 
-	QLabel* numFilesTitle = new QLabel(tr("Input"), this);
-	numFilesTitle->setObjectName("summaryMeta");
-	mNumFiles = new QLabel(this);
+    QLabel *outputDirTitle = new QLabel(tr("Output"), this);
+    outputDirTitle->setObjectName("summaryMeta");
+    mOutputDir = new QLabel(this);
 
-	QLabel* outputDirTitle = new QLabel(tr("Output"), this);
-	outputDirTitle->setObjectName("summaryMeta");
-	mOutputDir = new QLabel(this);
+    QLabel *functionsTitle = new QLabel(tr("Functions"), this);
+    functionsTitle->setObjectName("summaryMeta");
+    mFunctions = new QLabel(this);
 
-	QLabel* functionsTitle = new QLabel(tr("Functions"), this);
-	functionsTitle->setObjectName("summaryMeta");
-	mFunctions = new QLabel(this);
+    QWidget *sw = new QWidget(this);
+    QGridLayout *summaryLayout = new QGridLayout(sw);
+    summaryLayout->setContentsMargins(0, 0, 0, 0);
+    summaryLayout->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+    summaryLayout->addWidget(mTitle, 1, 1, 1, 3);
+    summaryLayout->addWidget(numFilesTitle, 2, 1);
+    summaryLayout->addWidget(mNumFiles, 2, 2);
+    summaryLayout->addWidget(outputDirTitle, 3, 1);
+    summaryLayout->addWidget(mOutputDir, 3, 2);
+    summaryLayout->addWidget(functionsTitle, 4, 1);
+    summaryLayout->addWidget(mFunctions, 4, 2);
 
-	QWidget* sw = new QWidget(this);
-	QGridLayout* summaryLayout = new QGridLayout(sw);
-	summaryLayout->setContentsMargins(0, 0, 0, 0);
-	summaryLayout->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-	summaryLayout->addWidget(mTitle, 1, 1, 1, 3);
-	summaryLayout->addWidget(numFilesTitle, 2, 1);
-	summaryLayout->addWidget(mNumFiles, 2, 2);
-	summaryLayout->addWidget(outputDirTitle, 3, 1);
-	summaryLayout->addWidget(mOutputDir, 3, 2);
-	summaryLayout->addWidget(functionsTitle, 4, 1);
-	summaryLayout->addWidget(mFunctions, 4, 2);
+    QPushButton *updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
+    updateButton->setObjectName("updateButton");
+    // updateButton->setFlat(true);
+    updateButton->setToolTip(tr("Update"));
 
-	QPushButton* updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
-	updateButton->setObjectName("updateButton");
-	//updateButton->setFlat(true);
-	updateButton->setToolTip(tr("Update"));
+    QPushButton *deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
+    deleteButton->setObjectName("deleteButton");
+    // deleteButton->setFlat(true);
+    deleteButton->setToolTip(tr("Delete"));
 
-	QPushButton* deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
-	deleteButton->setObjectName("deleteButton");
-	//deleteButton->setFlat(true);
-	deleteButton->setToolTip(tr("Delete"));
+    QPushButton *exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
+    exportButton->setObjectName("exportButton");
+    // exportButton->setFlat(true);
+    exportButton->setToolTip(tr("Export"));
 
-	QPushButton* exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
-	exportButton->setObjectName("exportButton");
-	//exportButton->setFlat(true);
-	exportButton->setToolTip(tr("Export"));
+    QWidget *bw = new QWidget(this);
+    QHBoxLayout *bLayout = new QHBoxLayout(bw);
+    bLayout->setContentsMargins(0, 0, 0, 0);
+    bLayout->setAlignment(Qt::AlignRight);
+    bLayout->addWidget(updateButton);
+    bLayout->addWidget(exportButton);
+    bLayout->addWidget(deleteButton);
 
-	QWidget* bw = new QWidget(this);
-	QHBoxLayout* bLayout = new QHBoxLayout(bw);
-	bLayout->setContentsMargins(0, 0, 0, 0);
-	bLayout->setAlignment(Qt::AlignRight);
-	bLayout->addWidget(updateButton);
-	bLayout->addWidget(exportButton);
-	bLayout->addWidget(deleteButton);
-
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addWidget(sw);
-	layout->addWidget(bw);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(sw);
+    layout->addWidget(bw);
 }
-
 
 // DkProfileWidget --------------------------------------------------------------------
-DkProfileWidget::DkProfileWidget(QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
-
-	createLayout();
-	QMetaObject::connectSlotsByName(this);
+DkProfileWidget::DkProfileWidget(QWidget *parent, Qt::WindowFlags f)
+    : DkWidget(parent, f)
+{
+    createLayout();
+    QMetaObject::connectSlotsByName(this);
 }
 
-void DkProfileWidget::createLayout() {
+void DkProfileWidget::createLayout()
+{
+    mProfileList = new QListWidget(this);
+    mProfileList->setObjectName("profileList");
 
-	mProfileList = new QListWidget(this);
-	mProfileList->setObjectName("profileList");
+    mSummary = new DkProfileSummaryWidget(this);
 
-	mSummary = new DkProfileSummaryWidget(this);
+    // buttons
+    QPushButton *saveButton = new QPushButton(tr("Create New Profile"), this);
+    saveButton->setObjectName("saveButton");
 
-	// buttons
-	QPushButton* saveButton = new QPushButton(tr("Create New Profile"), this);
-	saveButton->setObjectName("saveButton");
+    QPushButton *resetButton = new QPushButton(tr("Apply Default"), this);
+    resetButton->setObjectName("resetButton");
 
-	QPushButton* resetButton = new QPushButton(tr("Apply Default"), this);
-	resetButton->setObjectName("resetButton");
+    QWidget *buttonWidget = new QWidget(this);
+    QHBoxLayout *bLayout = new QHBoxLayout(buttonWidget);
+    bLayout->setContentsMargins(0, 0, 0, 0);
+    bLayout->setAlignment(Qt::AlignLeft);
+    bLayout->addWidget(saveButton);
+    bLayout->addWidget(resetButton);
 
-	QWidget* buttonWidget = new QWidget(this);
-	QHBoxLayout* bLayout = new QHBoxLayout(buttonWidget);
-	bLayout->setContentsMargins(0, 0, 0, 0);
-	bLayout->setAlignment(Qt::AlignLeft);
-	bLayout->addWidget(saveButton);
-	bLayout->addWidget(resetButton);
+    QWidget *descWidget = new QWidget(this);
+    QVBoxLayout *descLayout = new QVBoxLayout(descWidget);
+    descLayout->setContentsMargins(0, 0, 0, 0);
+    descLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    descLayout->addWidget(mSummary);
+    descLayout->addWidget(buttonWidget);
 
-	QWidget* descWidget = new QWidget(this);
-	QVBoxLayout* descLayout = new QVBoxLayout(descWidget);
-	descLayout->setContentsMargins(0, 0, 0, 0);
-	descLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	descLayout->addWidget(mSummary);
-	descLayout->addWidget(buttonWidget);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(mProfileList);
+    layout->addWidget(descWidget);
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(mProfileList);
-	layout->addWidget(descWidget);
+    updateProfileList();
 
-	updateProfileList();
-
-	connect(mSummary, SIGNAL(updateCurrentProfile()), this, SLOT(updateCurrentProfile()));
-	connect(mSummary, SIGNAL(deleteCurrentProfile()), this, SLOT(deleteCurrentProfile()));
-	connect(mSummary, SIGNAL(exportCurrentProfile()), this, SLOT(exportCurrentProfile()));
+    connect(mSummary, SIGNAL(updateCurrentProfile()), this, SLOT(updateCurrentProfile()));
+    connect(mSummary, SIGNAL(deleteCurrentProfile()), this, SLOT(deleteCurrentProfile()));
+    connect(mSummary, SIGNAL(exportCurrentProfile()), this, SLOT(exportCurrentProfile()));
 }
 
-bool DkProfileWidget::hasUserInput() const {
-	return false;
+bool DkProfileWidget::hasUserInput() const
+{
+    return false;
 }
 
-bool DkProfileWidget::requiresUserInput() const {
-	return false;
+bool DkProfileWidget::requiresUserInput() const
+{
+    return false;
 }
 
-void DkProfileWidget::applyDefault() {
-	emit newHeaderText(tr("inactive"));
+void DkProfileWidget::applyDefault()
+{
+    emit newHeaderText(tr("inactive"));
 }
 
-void DkProfileWidget::profileSaved(const QString& profileName) {
+void DkProfileWidget::profileSaved(const QString &profileName)
+{
+    updateProfileList();
 
-	updateProfileList();
+    QList<QListWidgetItem *> items = mProfileList->findItems(profileName, Qt::MatchExactly);
 
-	QList<QListWidgetItem*> items = mProfileList->findItems(profileName, Qt::MatchExactly);
-	
-	for (auto i : items)
-		i->setSelected(true);
+    for (auto i : items)
+        i->setSelected(true);
 }
 
-void DkProfileWidget::on_profileList_itemSelectionChanged() {
-
-	changeProfile(currentProfile());
+void DkProfileWidget::on_profileList_itemSelectionChanged()
+{
+    changeProfile(currentProfile());
 }
 
-void DkProfileWidget::updateProfileList() {
+void DkProfileWidget::updateProfileList()
+{
+    mProfileList->clear();
 
-	mProfileList->clear();
+    DkBatchProfile bp;
+    QStringList pn = bp.profileNames();
 
-	DkBatchProfile bp;
-	QStringList pn = bp.profileNames();
+    mProfileList->addItem(tr("Default"));
 
-	mProfileList->addItem(tr("Default"));
-
-	for (const QString& p : pn) {
-		mProfileList->addItem(p);
-	}
+    for (const QString &p : pn) {
+        mProfileList->addItem(p);
+    }
 }
 
-void DkProfileWidget::changeProfile(const QString & profileName) {
-	
-	// is the default profile selected?
-	if (profileName.isEmpty() || (mProfileList->count() > 0 && mProfileList->item(0)->text() == profileName)) {
-		loadDefaultProfile();
-		return;
-	}
+void DkProfileWidget::changeProfile(const QString &profileName)
+{
+    // is the default profile selected?
+    if (profileName.isEmpty() || (mProfileList->count() > 0 && mProfileList->item(0)->text() == profileName)) {
+        loadDefaultProfile();
+        return;
+    }
 
-	QString profilePath = DkBatchProfile::profileNameToPath(profileName);
-	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
-	mSummary->setProfile(profileName, bc);
-	mSummary->show();
+    QString profilePath = DkBatchProfile::profileNameToPath(profileName);
+    DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
+    mSummary->setProfile(profileName, bc);
+    mSummary->show();
 
-	emit loadProfileSignal(profilePath);
-	emit newHeaderText(profileName);
+    emit loadProfileSignal(profilePath);
+    emit newHeaderText(profileName);
 }
 
-void DkProfileWidget::loadDefaultProfile() {
+void DkProfileWidget::loadDefaultProfile()
+{
+    // select default profile
+    if (mProfileList->count() > 0)
+        mProfileList->item(0)->setSelected(true);
 
-	// select default profile
-	if (mProfileList->count() > 0)
-		mProfileList->item(0)->setSelected(true);
-
-	mSummary->hide();
-	emit newHeaderText(tr("inactive"));
-	emit applyDefaultSignal();
+    mSummary->hide();
+    emit newHeaderText(tr("inactive"));
+    emit applyDefaultSignal();
 }
 
-QString DkProfileWidget::currentProfile() const {
-	
-	QString profileName;
+QString DkProfileWidget::currentProfile() const
+{
+    QString profileName;
 
-	for (auto pItem : mProfileList->selectedItems()) {
-		profileName = pItem->text();
-	}
+    for (auto pItem : mProfileList->selectedItems()) {
+        profileName = pItem->text();
+    }
 
-	return profileName;
+    return profileName;
 }
 
-void DkProfileWidget::on_saveButton_clicked() {
-
-	saveProfile();
+void DkProfileWidget::on_saveButton_clicked()
+{
+    saveProfile();
 }
 
-void DkProfileWidget::on_resetButton_clicked() {
-
-	loadDefaultProfile();
+void DkProfileWidget::on_resetButton_clicked()
+{
+    loadDefaultProfile();
 }
 
-void DkProfileWidget::updateCurrentProfile() {
-	emit saveProfileSignal(DkBatchProfile::profileNameToPath(currentProfile()));
+void DkProfileWidget::updateCurrentProfile()
+{
+    emit saveProfileSignal(DkBatchProfile::profileNameToPath(currentProfile()));
 }
 
-void DkProfileWidget::deleteCurrentProfile() {
+void DkProfileWidget::deleteCurrentProfile()
+{
+    QFile profile(DkBatchProfile::profileNameToPath(currentProfile()));
 
-	QFile profile(DkBatchProfile::profileNameToPath(currentProfile()));
-	
-	if (!profile.remove()) {
-		QMessageBox::critical(
-			this, 
-			tr("Deleting Profile"), 
-			tr("Sorry, I cannot delete %1").arg(currentProfile()), 
-			QMessageBox::Ok);
-		return;
-	}
+    if (!profile.remove()) {
+        QMessageBox::critical(this, tr("Deleting Profile"), tr("Sorry, I cannot delete %1").arg(currentProfile()), QMessageBox::Ok);
+        return;
+    }
 
-	updateProfileList();
-	loadDefaultProfile();
+    updateProfileList();
+    loadDefaultProfile();
 }
 
-void DkProfileWidget::exportCurrentProfile() {
+void DkProfileWidget::exportCurrentProfile()
+{
+    QString expPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator() + currentProfile() + "." + DkBatchProfile::extension();
 
-	QString expPath =
-		QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-		QDir::separator() + currentProfile() +
-		"." + DkBatchProfile::extension();
+    QString sPath = QFileDialog::getSaveFileName(this,
+                                                 tr("Export Batch Profile"),
+                                                 expPath,
+                                                 tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()),
+                                                 nullptr,
+                                                 DkDialog::fileDialogOptions());
 
-	QString sPath = QFileDialog::getSaveFileName(
-		this, 
-		tr("Export Batch Profile"), 
-		expPath,
-		tr("nomacs Batch Profile (*.%1)").arg(DkBatchProfile::extension()),
-		nullptr,
-		DkDialog::fileDialogOptions()
-		);
-
-	emit saveProfileSignal(sPath);
+    emit saveProfileSignal(sPath);
 }
 
-void DkProfileWidget::saveProfile() {
+void DkProfileWidget::saveProfile()
+{
+    // default mode is overwrite (UI is asking anyway)
+    QString cn = currentProfile();
+    QString dName = cn.isEmpty() || cn == mProfileList->item(0)->text() ? "Profile 1" : cn;
 
-	// default mode is overwrite (UI is asking anyway)
-	QString cn = currentProfile();
-	QString dName = cn.isEmpty() || cn == mProfileList->item(0)->text() ? "Profile 1" : cn;
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Profile Name"), tr("Profile Name:"), QLineEdit::Normal, dName, &ok);
 
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("Profile Name"),
-		tr("Profile Name:"), QLineEdit::Normal,
-		dName, &ok);
+    if (!ok || text.isEmpty())
+        return; // user canceled
 
-	if (!ok || text.isEmpty())
-		return;	// user canceled
+    // is the profile name unique?
+    if (!mProfileList->findItems(text, Qt::MatchExactly).isEmpty()) {
+        QMessageBox::StandardButton button =
+            QMessageBox::information(this, tr("Profile Already Exists"), tr("Do you want to overwrite %1?").arg(text), QMessageBox::Yes | QMessageBox::No);
 
-	// is the profile name unique?
-	if (!mProfileList->findItems(text, Qt::MatchExactly).isEmpty()) {
+        if (button == QMessageBox::No) {
+            saveProfile(); // start over
+            return;
+        }
+    }
 
-		QMessageBox::StandardButton button = QMessageBox::information(
-			this, 
-			tr("Profile Already Exists"), 
-			tr("Do you want to overwrite %1?").arg(text), 
-			QMessageBox::Yes | QMessageBox::No);
-
-		if (button == QMessageBox::No) {
-			saveProfile(); // start over
-			return;
-		}
-	}
-	
-	emit saveProfileSignal(DkBatchProfile::profileNameToPath(text));
+    emit saveProfileSignal(DkBatchProfile::profileNameToPath(text));
 }
 
 #ifdef WITH_PLUGINS
 // DkBatchPlugin --------------------------------------------------------------------
-DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
+DkBatchPluginWidget::DkBatchPluginWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+    : DkWidget(parent, f)
+{
+    // mSettings = DkSettingsManager::instance().qSettings();
+    DkPluginManager::instance().loadPlugins();
+    createLayout();
 
-	//mSettings = DkSettingsManager::instance().qSettings();
-	DkPluginManager::instance().loadPlugins();
-	createLayout();
-
-	connect(mSettingsEditor, SIGNAL(changeSettingSignal(const QString&, const QVariant&, const QStringList&)), 
-		this, SLOT(changeSetting(const QString&, const QVariant&, const QStringList&)));
-	connect(mSettingsEditor, SIGNAL(removeSettingSignal(const QString&, const QStringList&)), 
-		this, SLOT(removeSetting(const QString&, const QStringList&)));
-
+    connect(mSettingsEditor,
+            SIGNAL(changeSettingSignal(const QString &, const QVariant &, const QStringList &)),
+            this,
+            SLOT(changeSetting(const QString &, const QVariant &, const QStringList &)));
+    connect(mSettingsEditor,
+            SIGNAL(removeSettingSignal(const QString &, const QStringList &)),
+            this,
+            SLOT(removeSetting(const QString &, const QStringList &)));
 }
 
-void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const {
+void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchPlugin) const
+{
+    QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getBatchPlugins();
 
-	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBatchPlugins();
+    //// I don't like const casts
+    //// BUT: load settings effectively only opens groups (which is not const)
+    // QSettings& settings = const_cast<QSettings&>(mSettings);
 
-	//// I don't like const casts
-	//// BUT: load settings effectively only opens groups (which is not const)
-	//QSettings& settings = const_cast<QSettings&>(mSettings);
+    // for (auto p : plugins) {
+    //
+    //	if (p->batchPlugin()) {
+    //		// the const ca
+    //		p->batchPlugin()->loadSettings(settings);
+    //	}
+    // }
 
-	//for (auto p : plugins) {
-	//
-	//	if (p->batchPlugin()) {
-	//		// the const ca
-	//		p->batchPlugin()->loadSettings(settings);
-	//	}
-	//}
-
-	QStringList pluginList = selectedPlugins();
-	batchPlugin->setProperties(pluginList);
+    QStringList pluginList = selectedPlugins();
+    batchPlugin->setProperties(pluginList);
 }
 
-void DkBatchPluginWidget::createLayout() {
+void DkBatchPluginWidget::createLayout()
+{
+    QLabel *listLabel = new QLabel(tr("Select Plugins"));
+    listLabel->setObjectName("subTitle");
 
-	QLabel* listLabel = new QLabel(tr("Select Plugins"));
-	listLabel->setObjectName("subTitle");
+    mModel = new QStandardItemModel(this);
 
-	mModel = new QStandardItemModel(this);
+    QTreeView *pluginList = new QTreeView(this);
+    pluginList->setModel(mModel);
+    pluginList->header()->hide();
 
-	QTreeView* pluginList = new QTreeView(this);
-	pluginList->setModel(mModel);
-	pluginList->header()->hide();
+    // settings
+    mSettingsTitle = new QLabel(this);
+    mSettingsTitle->setObjectName("subTitle");
 
-	// settings
-	mSettingsTitle = new QLabel(this);
-	mSettingsTitle->setObjectName("subTitle");
+    mSettingsEditor = new DkSettingsWidget(this);
+    mSettingsEditor->hide();
 
-	mSettingsEditor = new DkSettingsWidget(this);
-	mSettingsEditor->hide();
+    addPlugins(mModel);
 
-	addPlugins(mModel);
+    QGridLayout *layout = new QGridLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(listLabel, 0, 0);
+    layout->addWidget(mSettingsTitle, 0, 1);
+    layout->addWidget(pluginList, 1, 0);
+    layout->addWidget(mSettingsEditor, 1, 1);
 
-	QGridLayout* layout = new QGridLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(listLabel, 0, 0);
-	layout->addWidget(mSettingsTitle, 0, 1);
-	layout->addWidget(pluginList, 1, 0);
-	layout->addWidget(mSettingsEditor, 1, 1);
-
-	connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
-	connect(pluginList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&)));
+    connect(mModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(itemChanged(QStandardItem *)));
+    connect(pluginList->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+            this,
+            SLOT(selectionChanged(const QItemSelection &)));
 }
 
-bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin) {
+bool DkBatchPluginWidget::loadProperties(QSharedPointer<DkPluginBatch> batchPlugin)
+{
+    if (!batchPlugin) {
+        qWarning() << "cannot load properties, DkPluginBatch is NULL";
+        return false;
+    }
 
-	if (!batchPlugin) {
-		qWarning() << "cannot load properties, DkPluginBatch is NULL";
-		return false;
-	}
+    mModel->blockSignals(true);
+    QStringList sPlugins = batchPlugin->pluginList();
 
-	mModel->blockSignals(true);
-	QStringList sPlugins = batchPlugin->pluginList();
+    for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+        QStandardItem *pItem = mModel->item(pIdx);
 
-	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+        for (int idx = 0; idx < pItem->rowCount(); idx++) {
+            // see if the plugin is contained in the plugin list
+            QStandardItem *item = pItem->child(idx);
+            QString key = item->data(Qt::UserRole).toString() + " | " + item->text();
+            item->setCheckState(sPlugins.contains(key) ? Qt::Checked : Qt::Unchecked);
+        }
+    }
+    mModel->blockSignals(false);
+    updateHeader();
 
-		QStandardItem* pItem = mModel->item(pIdx);
-	
-		for (int idx = 0; idx < pItem->rowCount(); idx++) {
-		
-			// see if the plugin is contained in the plugin list
-			QStandardItem* item = pItem->child(idx);
-			QString key = item->data(Qt::UserRole).toString() + " | " + item->text();
-			item->setCheckState(sPlugins.contains(key) ? Qt::Checked : Qt::Unchecked);
-		}
-	}
-	mModel->blockSignals(false);
-	updateHeader();
-
-	return true;
+    return true;
 }
 
-void DkBatchPluginWidget::itemChanged(QStandardItem* item) {
+void DkBatchPluginWidget::itemChanged(QStandardItem *item)
+{
+    if (!item)
+        return;
 
-	if (!item)
-		return;
+    if (item->checkState() == Qt::Checked)
+        selectPlugin(item->data(Qt::UserRole).toString());
 
-	if (item->checkState() == Qt::Checked)
-		selectPlugin(item->data(Qt::UserRole).toString());
-
-	updateHeader();
+    updateHeader();
 }
 
-bool DkBatchPluginWidget::hasUserInput() const {
-	return !selectedPlugins().isEmpty();
+bool DkBatchPluginWidget::hasUserInput() const
+{
+    return !selectedPlugins().isEmpty();
 }
 
-bool DkBatchPluginWidget::requiresUserInput() const {
-	return false;
+bool DkBatchPluginWidget::requiresUserInput() const
+{
+    return false;
 }
 
-void DkBatchPluginWidget::applyDefault() {
+void DkBatchPluginWidget::applyDefault()
+{
+    mSettings.clear();
 
-	mSettings.clear();
+    QStringList selectedPlugins;
 
-	QStringList selectedPlugins;
+    for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+        QStandardItem *pItem = mModel->item(pIdx);
 
-	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+        for (int idx = 0; idx < pItem->rowCount(); idx++) {
+            pItem->child(idx)->setCheckState(Qt::Unchecked);
+        }
+    }
 
-		QStandardItem* pItem = mModel->item(pIdx);
-
-		for (int idx = 0; idx < pItem->rowCount(); idx++) {
-			pItem->child(idx)->setCheckState(Qt::Unchecked);
-		}
-	}
-
-	selectPlugin("");
-	updateHeader();
+    selectPlugin("");
+    updateHeader();
 }
 
-void DkBatchPluginWidget::setSettingsPath(const QString & settingsPath) {
-	mSettings = QSharedPointer<QSettings>(new QSettings(settingsPath, QSettings::IniFormat));
-	
-	// choose the correct sub-group
-	mSettings->beginGroup("General");
-	mSettings->beginGroup("PluginBatch");
+void DkBatchPluginWidget::setSettingsPath(const QString &settingsPath)
+{
+    mSettings = QSharedPointer<QSettings>(new QSettings(settingsPath, QSettings::IniFormat));
+
+    // choose the correct sub-group
+    mSettings->beginGroup("General");
+    mSettings->beginGroup("PluginBatch");
 }
 
-void DkBatchPluginWidget::selectionChanged(const QItemSelection & selected) {
+void DkBatchPluginWidget::selectionChanged(const QItemSelection &selected)
+{
+    for (auto mIdx : selected.indexes()) {
+        QStandardItem *item;
 
-	for (auto mIdx : selected.indexes()) {
+        if (mIdx.parent().isValid()) {
+            item = mModel->item(mIdx.parent().row());
+            item = item->child(mIdx.row());
+        } else
+            item = mModel->item(mIdx.row());
 
-		QStandardItem* item;
+        if (!item)
+            continue;
 
-		if (mIdx.parent().isValid()) {
-			item = mModel->item(mIdx.parent().row());
-			item = item->child(mIdx.row());
-		}
-		else
-			item = mModel->item(mIdx.row());
-
-		if (!item)
-			continue;
-
-		selectPlugin(item->data(Qt::UserRole).toString());
-	}
-
+        selectPlugin(item->data(Qt::UserRole).toString());
+    }
 }
 
-void DkBatchPluginWidget::addPlugins(QStandardItemModel* model) const {
+void DkBatchPluginWidget::addPlugins(QStandardItemModel *model) const
+{
+    if (!model)
+        return;
 
-	if (!model)
-		return;
+    QVector<QSharedPointer<DkPluginContainer>> plugins = DkPluginManager::instance().getBatchPlugins();
 
-	QVector<QSharedPointer<DkPluginContainer> > plugins = DkPluginManager::instance().getBatchPlugins();
+    for (auto p : plugins) {
+        QStandardItem *mPluginItem = new QStandardItem(p->pluginName());
+        mPluginItem->setEditable(false);
+        mPluginItem->setCheckable(false);
+        // mPluginItem->setAutoTristate(true);
+        mPluginItem->setData(p->pluginName(), Qt::UserRole);
+        mModel->appendRow(mPluginItem);
 
-	for (auto p : plugins) {
+        QList<QAction *> actions = p->plugin()->pluginActions();
 
-		QStandardItem* mPluginItem = new QStandardItem(p->pluginName());
-		mPluginItem->setEditable(false);
-		mPluginItem->setCheckable(false);
-		//mPluginItem->setAutoTristate(true);
-		mPluginItem->setData(p->pluginName(), Qt::UserRole);
-		mModel->appendRow(mPluginItem);
-
-		QList<QAction*> actions = p->plugin()->pluginActions();
-
-		for (const QAction* a : actions) {
-			QStandardItem* item = new QStandardItem(a->icon(), a->text());
-			item->setEditable(false);
-			item->setCheckable(true);
-			item->setData(p->pluginName(), Qt::UserRole);
-			mPluginItem->appendRow(item);
-		}
-	}
+        for (const QAction *a : actions) {
+            QStandardItem *item = new QStandardItem(a->icon(), a->text());
+            item->setEditable(false);
+            item->setCheckable(true);
+            item->setData(p->pluginName(), Qt::UserRole);
+            mPluginItem->appendRow(item);
+        }
+    }
 }
 
-void DkBatchPluginWidget::selectPlugin(const QString & pluginName) {
+void DkBatchPluginWidget::selectPlugin(const QString &pluginName)
+{
+    mCurrentPlugin = 0; // unset
+    QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
 
-	mCurrentPlugin = 0;	// unset
-	QSharedPointer<DkPluginContainer> plugin = DkPluginManager::instance().getPluginByName(pluginName);
+    if (!plugin || !plugin->batchPlugin()) {
+        mSettingsTitle->setText("");
+        mSettingsTitle->hide();
+        mSettingsEditor->hide();
+        return;
+    }
 
-	if (!plugin || !plugin->batchPlugin()) {
-		mSettingsTitle->setText("");
-		mSettingsTitle->hide();
-		mSettingsEditor->hide();
-		return;
-	}
+    mCurrentPlugin = plugin->batchPlugin();
 
-	mCurrentPlugin = plugin->batchPlugin();
+    QSharedPointer<QSettings> s = settings();
+    DkSettingsGroup g = DkSettingsGroup::fromSettings(*s, mCurrentPlugin->name());
 
-	QSharedPointer<QSettings> s = settings();
-	DkSettingsGroup g = DkSettingsGroup::fromSettings(*s, mCurrentPlugin->name());
+    if (!g.isEmpty()) {
+        mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
+        mSettingsTitle->show();
 
-	if (!g.isEmpty()) {
-		mSettingsTitle->setText(plugin->pluginName() + tr(" Settings"));
-		mSettingsTitle->show();
-
-		mSettingsEditor->clear();
-		mSettingsEditor->addSettingsGroup(g);
-		mSettingsEditor->expandAll();
-		mSettingsEditor->show();
-	}
-	else {
-		mSettingsTitle->setText("");
-		mSettingsTitle->hide();
-		mSettingsEditor->hide();
-	}
+        mSettingsEditor->clear();
+        mSettingsEditor->addSettingsGroup(g);
+        mSettingsEditor->expandAll();
+        mSettingsEditor->show();
+    } else {
+        mSettingsTitle->setText("");
+        mSettingsTitle->hide();
+        mSettingsEditor->hide();
+    }
 }
 
-void DkBatchPluginWidget::changeSetting(const QString& key, const QVariant& value, const QStringList& groups) const {
+void DkBatchPluginWidget::changeSetting(const QString &key, const QVariant &value, const QStringList &groups) const
+{
+    if (!mCurrentPlugin) {
+        qWarning() << "cannot change settings if no plugin is selected";
+        return;
+    }
 
-	if (!mCurrentPlugin) {
-		qWarning() << "cannot change settings if no plugin is selected";
-		return;
-	}
-
-	QSharedPointer<QSettings> s = settings();
-	DkSettingsWidget::changeSetting(*s, key, value, groups);
-	mCurrentPlugin->loadSettings(*s);	// update
+    QSharedPointer<QSettings> s = settings();
+    DkSettingsWidget::changeSetting(*s, key, value, groups);
+    mCurrentPlugin->loadSettings(*s); // update
 }
 
-void DkBatchPluginWidget::removeSetting(const QString& key, const QStringList& groups) const {
+void DkBatchPluginWidget::removeSetting(const QString &key, const QStringList &groups) const
+{
+    if (!mCurrentPlugin) {
+        qWarning() << "cannot delete settings if no plugin is selected";
+        return;
+    }
 
-	if (!mCurrentPlugin) {
-		qWarning() << "cannot delete settings if no plugin is selected";
-		return;
-	}
-
-	QSharedPointer<QSettings> s = settings();
-	DkSettingsWidget::removeSetting(*s, key, groups);
-	mCurrentPlugin->loadSettings(*s);	// update
+    QSharedPointer<QSettings> s = settings();
+    DkSettingsWidget::removeSetting(*s, key, groups);
+    mCurrentPlugin->loadSettings(*s); // update
 }
 
+QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const
+{
+    QStringList selectedPlugins;
 
-QStringList DkBatchPluginWidget::selectedPlugins(bool selected) const {
+    for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
+        QStandardItem *pItem = mModel->item(pIdx);
 
-	QStringList selectedPlugins;
+        for (int idx = 0; idx < pItem->rowCount(); idx++) {
+            QStandardItem *item = pItem->child(idx);
+            if (!selected || item->checkState() == Qt::Checked)
+                selectedPlugins << item->data(Qt::UserRole).toString() + " | " + item->text();
+        }
+    }
 
-	for (int pIdx = 0; pIdx < mModel->rowCount(); pIdx++) {
-
-		QStandardItem* pItem = mModel->item(pIdx);
-		
-		for (int idx = 0; idx < pItem->rowCount(); idx++) {
-			
-			QStandardItem* item = pItem->child(idx);
-			if (!selected || item->checkState() == Qt::Checked)
-				selectedPlugins << item->data(Qt::UserRole).toString() + " | " + item->text();
-		}
-	}
-
-	return selectedPlugins;
+    return selectedPlugins;
 }
 
-QSharedPointer<QSettings> DkBatchPluginWidget::settings() const {
+QSharedPointer<QSettings> DkBatchPluginWidget::settings() const
+{
+    if (mSettings)
+        return mSettings;
 
-	if (mSettings)
-		return mSettings;
+    if (mCurrentPlugin)
+        return QSharedPointer<QSettings>(new QSettings(mCurrentPlugin->settingsFilePath(), QSettings::IniFormat));
 
-	if (mCurrentPlugin)
-		return QSharedPointer<QSettings>(new QSettings(mCurrentPlugin->settingsFilePath(), QSettings::IniFormat));
-
-	qWarning() << "DkBatchPluginWidget: I need to default the settings...";
-	return QSharedPointer<QSettings>(new DefaultSettings());
+    qWarning() << "DkBatchPluginWidget: I need to default the settings...";
+    return QSharedPointer<QSettings>(new DefaultSettings());
 }
 
-void DkBatchPluginWidget::updateHeader() const {
-	
-	int c = selectedPlugins().size();
-	if (!c)
-		emit newHeaderText(tr("inactive"));
-	else
-		emit newHeaderText(tr("%1 plugins selected").arg(c));
+void DkBatchPluginWidget::updateHeader() const
+{
+    int c = selectedPlugins().size();
+    if (!c)
+        emit newHeaderText(tr("inactive"));
+    else
+        emit newHeaderText(tr("%1 plugins selected").arg(c));
 }
 #endif
 
 // DkBatchManipulatorWidget --------------------------------------------------------------------
-DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
-
-	mManager.createManipulators(this);
-	createLayout();
-	addSettingsWidgets(mManager);
+DkBatchManipulatorWidget::DkBatchManipulatorWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+    : DkWidget(parent, f)
+{
+    mManager.createManipulators(this);
+    createLayout();
+    addSettingsWidgets(mManager);
 }
 
-void DkBatchManipulatorWidget::createLayout() {
+void DkBatchManipulatorWidget::createLayout()
+{
+    QLabel *listLabel = new QLabel(tr("Select Image Adjustments"));
+    listLabel->setObjectName("subTitle");
 
-	QLabel* listLabel = new QLabel(tr("Select Image Adjustments"));
-	listLabel->setObjectName("subTitle");
+    mModel = new QStandardItemModel(this);
 
-	mModel = new QStandardItemModel(this);
+    int idx = 0;
+    for (auto mpl : mManager.manipulators()) {
+        QStandardItem *item = new QStandardItem(mpl->action()->icon(), mpl->name());
+        item->setEditable(false);
+        item->setCheckable(true);
 
-	int idx = 0;
-	for (auto mpl : mManager.manipulators()) {
+        mModel->setItem(idx, item);
+        idx++;
+    }
 
-		QStandardItem * item = new QStandardItem(mpl->action()->icon(), mpl->name());
-		item->setEditable(false);
-		item->setCheckable(true);
+    QListView *manipulatorList = new QListView(this);
+    manipulatorList->setModel(mModel);
 
-		mModel->setItem(idx, item); 
-		idx++;
-	}
+    // settings
+    mSettingsTitle = new QLabel(this);
+    mSettingsTitle->setObjectName("subTitle");
 
-	QListView* manipulatorList = new QListView(this);
-	manipulatorList->setModel(mModel);
+    QWidget *settingsWidget = new QWidget(this);
+    mSettingsLayout = new QVBoxLayout(settingsWidget);
+    mSettingsLayout->setContentsMargins(0, 0, 0, 0);
+    mSettingsLayout->setAlignment(Qt::AlignTop);
 
-	// settings
-	mSettingsTitle = new QLabel(this);
-	mSettingsTitle->setObjectName("subTitle");
+    mPreviewLabel = new QLabel(this);
+    mPreviewLabel->setAlignment(Qt::AlignHCenter);
+    mPreviewLabel->hide();
 
-	QWidget* settingsWidget = new QWidget(this);
-	mSettingsLayout = new QVBoxLayout(settingsWidget);
-	mSettingsLayout->setContentsMargins(0, 0, 0, 0);
-	mSettingsLayout->setAlignment(Qt::AlignTop);
+    QWidget *rightWidget = new QWidget(this);
+    QVBoxLayout *rLayout = new QVBoxLayout(rightWidget);
+    rLayout->setContentsMargins(0, 0, 0, 0);
+    rLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    rLayout->addWidget(settingsWidget);
+    rLayout->addWidget(mPreviewLabel);
 
-	mPreviewLabel = new QLabel(this);
-	mPreviewLabel->setAlignment(Qt::AlignHCenter);
-	mPreviewLabel->hide();
+    QGridLayout *layout = new QGridLayout(this);
+    // layout->setAlignment(Qt::AlignHCenter);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(listLabel, 0, 0);
+    layout->addWidget(mSettingsTitle, 0, 1);
+    layout->addWidget(manipulatorList, 1, 0);
+    layout->addWidget(rightWidget, 1, 1);
 
-	QWidget* rightWidget = new QWidget(this);
-	QVBoxLayout* rLayout = new QVBoxLayout(rightWidget);
-	rLayout->setContentsMargins(0, 0, 0, 0);
-	rLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
-	rLayout->addWidget(settingsWidget);
-	rLayout->addWidget(mPreviewLabel);
-
-	QGridLayout* layout = new QGridLayout(this);
-	//layout->setAlignment(Qt::AlignHCenter);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(listLabel,		0, 0);
-	layout->addWidget(mSettingsTitle,	0, 1);
-	layout->addWidget(manipulatorList,	1, 0);
-	layout->addWidget(rightWidget,		1, 1);
-	
-	connect(mModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
-	connect(manipulatorList->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&)));
+    connect(mModel, SIGNAL(itemChanged(QStandardItem *)), this, SLOT(itemChanged(QStandardItem *)));
+    connect(manipulatorList->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+            this,
+            SLOT(selectionChanged(const QItemSelection &)));
 }
 
-void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager & manager) {
+void DkBatchManipulatorWidget::addSettingsWidgets(DkManipulatorManager &manager)
+{
+    for (auto w : mMplWidgets) {
+        mSettingsLayout->removeWidget(w);
+        delete w;
+    }
 
-	for (auto w : mMplWidgets) {
-		mSettingsLayout->removeWidget(w);
-		delete w;
-	}
+    mMplWidgets.clear(); // TODO: delete the old ones now?
 
-	mMplWidgets.clear();	// TODO: delete the old ones now?
+    mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
+    mMplWidgets << new DkBlurWidget(manager.manipulatorExt(DkManipulatorManager::m_blur), this);
+    mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
+    mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
+    mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);
+    mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
+    mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
+    mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
+    mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
 
-	mMplWidgets << new DkTinyPlanetWidget(manager.manipulatorExt(DkManipulatorManager::m_tiny_planet), this);
-	mMplWidgets << new DkBlurWidget(manager.manipulatorExt(DkManipulatorManager::m_blur), this);
-	mMplWidgets << new DkUnsharpMaskWidget(manager.manipulatorExt(DkManipulatorManager::m_unsharp_mask), this);
-	mMplWidgets << new DkRotateWidget(manager.manipulatorExt(DkManipulatorManager::m_rotate), this);
-	mMplWidgets << new DkThresholdWidget(manager.manipulatorExt(DkManipulatorManager::m_threshold), this);
-	mMplWidgets << new DkHueWidget(manager.manipulatorExt(DkManipulatorManager::m_hue), this);
-	mMplWidgets << new DkExposureWidget(manager.manipulatorExt(DkManipulatorManager::m_exposure), this);
-	mMplWidgets << new DkColorWidget(manager.manipulatorExt(DkManipulatorManager::m_color), this);
-	mMplWidgets << new DkResizeWidget(manager.manipulatorExt(DkManipulatorManager::m_resize), this);
+    for (QWidget *w : mMplWidgets)
+        mSettingsLayout->addWidget(w);
 
-	for (QWidget* w : mMplWidgets)
-		mSettingsLayout->addWidget(w);
-
-	for (QAction* a : manager.actions())
-		connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
-
+    for (QAction *a : manager.actions())
+        connect(a, SIGNAL(triggered()), this, SLOT(selectManipulator()), Qt::UniqueConnection);
 }
 
-bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators) {
+bool DkBatchManipulatorWidget::loadProperties(QSharedPointer<DkManipulatorBatch> batchManipulators)
+{
+    if (!batchManipulators) {
+        qWarning() << "cannot load properties, DkManipulatorBatch is NULL";
+        return false;
+    }
 
-	if (!batchManipulators) {
-		qWarning() << "cannot load properties, DkManipulatorBatch is NULL";
-		return false;
-	}
+    setManager(batchManipulators->manager());
+    addSettingsWidgets(mManager);
 
-	setManager(batchManipulators->manager());
-	addSettingsWidgets(mManager);
-
-	return true;
+    return true;
 }
 
-void DkBatchManipulatorWidget::setManager(const DkManipulatorManager& manager) {
+void DkBatchManipulatorWidget::setManager(const DkManipulatorManager &manager)
+{
+    mManager = manager;
+    addSettingsWidgets(mManager);
 
-	mManager = manager;
-	addSettingsWidgets(mManager);
+    for (const QSharedPointer<DkBaseManipulator> &mpl : mManager.manipulators()) {
+        auto items = mModel->findItems(mpl->name());
 
-	for (const QSharedPointer<DkBaseManipulator>& mpl : mManager.manipulators()) {
-		auto items = mModel->findItems(mpl->name());
-
-		for (auto i : items)
-			i->setCheckState(mpl->isSelected() ? Qt::Checked : Qt::Unchecked);
-	}
+        for (auto i : items)
+            i->setCheckState(mpl->isSelected() ? Qt::Checked : Qt::Unchecked);
+    }
 }
 
-void DkBatchManipulatorWidget::transferProperties(QSharedPointer<DkManipulatorBatch> batchManipulator) const {
-
-	batchManipulator->setProperties(mManager);
+void DkBatchManipulatorWidget::transferProperties(QSharedPointer<DkManipulatorBatch> batchManipulator) const
+{
+    batchManipulator->setProperties(mManager);
 }
 
-bool DkBatchManipulatorWidget::hasUserInput() const {
-	
-	return mManager.numSelected() > 0;
+bool DkBatchManipulatorWidget::hasUserInput() const
+{
+    return mManager.numSelected() > 0;
 }
 
-bool DkBatchManipulatorWidget::requiresUserInput() const {
-	return false;
+bool DkBatchManipulatorWidget::requiresUserInput() const
+{
+    return false;
 }
 
-void DkBatchManipulatorWidget::applyDefault() {
-
-	for (int rIdx = 0; rIdx < mModel->rowCount(); rIdx++) {
-		mModel->item(rIdx)->setCheckState(Qt::Unchecked);
-	}
+void DkBatchManipulatorWidget::applyDefault()
+{
+    for (int rIdx = 0; rIdx < mModel->rowCount(); rIdx++) {
+        mModel->item(rIdx)->setCheckState(Qt::Unchecked);
+    }
 }
 
-void DkBatchManipulatorWidget::setExampleFile(const QString & filePath) {
-	
-	mPreviewPath = filePath;
-	mPreview = QImage();
+void DkBatchManipulatorWidget::setExampleFile(const QString &filePath)
+{
+    mPreviewPath = filePath;
+    mPreview = QImage();
 }
 
-void DkBatchManipulatorWidget::selectionChanged(const QItemSelection & selected) {
+void DkBatchManipulatorWidget::selectionChanged(const QItemSelection &selected)
+{
+    for (auto mIdx : selected.indexes()) {
+        QStandardItem *item = mModel->item(mIdx.row());
 
-	for (auto mIdx : selected.indexes()) {
+        if (!item)
+            continue;
 
-		QStandardItem* item = mModel->item(mIdx.row());
-		
-		if (!item)
-			continue;
+        selectManipulator(mManager.manipulator(item->text()));
+    }
 
-		selectManipulator(mManager.manipulator(item->text()));
-	}
-	
-	//qDebug() << "selection changed...";
+    // qDebug() << "selection changed...";
 }
 
-void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl) {
+void DkBatchManipulatorWidget::selectManipulator(QSharedPointer<DkBaseManipulator> mpl)
+{
+    for (auto w : mMplWidgets)
+        w->hide();
 
-	for (auto w : mMplWidgets)
-		w->hide();
+    auto mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
 
-	auto mplExt = qSharedPointerDynamicCast<DkBaseManipulatorExt>(mpl);
+    if (!mplExt)
+        return;
 
-	if (!mplExt)
-		return;
-	
-	if (!mplExt->widget()) {
-		qCritical() << mpl->name() << "does not have a corresponding UI";
-		Q_ASSERT(mplExt->widget());	// bang
-		return;
-	}
+    if (!mplExt->widget()) {
+        qCritical() << mpl->name() << "does not have a corresponding UI";
+        Q_ASSERT(mplExt->widget()); // bang
+        return;
+    }
 
-	mSettingsTitle->setText(mplExt->name());
-	mSettingsTitle->show();
-	mplExt->widget()->show();
+    mSettingsTitle->setText(mplExt->name());
+    mSettingsTitle->show();
+    mplExt->widget()->show();
 
-	if (!mplExt)
-		mSettingsTitle->hide();
+    if (!mplExt)
+        mSettingsTitle->hide();
 
-	// load the preview
-	if (!mPreviewPath.isEmpty() && mPreview.isNull()) {
-		DkBasicLoader bl;
-		if (bl.loadGeneral(mPreviewPath)) {
-			QImage img = bl.image();
+    // load the preview
+    if (!mPreviewPath.isEmpty() && mPreview.isNull()) {
+        DkBasicLoader bl;
+        if (bl.loadGeneral(mPreviewPath)) {
+            QImage img = bl.image();
 
-			if (img.height() > img.width())
-				img = img.scaledToHeight(qMin(img.height(), mMaxPreview));
-			else
-				img = img.scaledToWidth(qMin(img.width(), mMaxPreview));
+            if (img.height() > img.width())
+                img = img.scaledToHeight(qMin(img.height(), mMaxPreview));
+            else
+                img = img.scaledToWidth(qMin(img.width(), mMaxPreview));
 
-			mPreview = img;
-		}
-		else
-			qInfo() << "could not load" << mPreviewPath << "for preview...";
-	}
+            mPreview = img;
+        } else
+            qInfo() << "could not load" << mPreviewPath << "for preview...";
+    }
 
-	// update preview
-	if (!mPreview.isNull()) {
-		mPreviewLabel->setPixmap(QPixmap::fromImage(mpl->apply(mPreview)));
-		mPreviewLabel->show();
-	}
-	else
-		mPreviewLabel->hide();
+    // update preview
+    if (!mPreview.isNull()) {
+        mPreviewLabel->setPixmap(QPixmap::fromImage(mpl->apply(mPreview)));
+        mPreviewLabel->show();
+    } else
+        mPreviewLabel->hide();
 }
 
-void DkBatchManipulatorWidget::selectManipulator() {
+void DkBatchManipulatorWidget::selectManipulator()
+{
+    QAction *action = dynamic_cast<QAction *>(QObject::sender());
+    QSharedPointer<DkBaseManipulator> mpl = mManager.manipulator(action);
 
-	QAction* action = dynamic_cast<QAction*>(QObject::sender());
-	QSharedPointer<DkBaseManipulator> mpl = mManager.manipulator(action);
-
-	if (mpl && action->isChecked())
-		selectManipulator(mpl);
+    if (mpl && action->isChecked())
+        selectManipulator(mpl);
 }
 
-void DkBatchManipulatorWidget::itemChanged(QStandardItem * item) {
+void DkBatchManipulatorWidget::itemChanged(QStandardItem *item)
+{
+    auto mpl = mManager.manipulator(item->text());
 
-	auto mpl = mManager.manipulator(item->text());
+    if (!mpl) {
+        qCritical() << "could not cast item in DkBatchManipulatorWidget!";
+        return;
+    }
 
-	if (!mpl) {
-		qCritical() << "could not cast item in DkBatchManipulatorWidget!";
-		return;
-	}
+    mpl->setSelected(item->checkState() == Qt::Checked);
+    selectManipulator(mpl);
 
-	mpl->setSelected(item->checkState() == Qt::Checked);
-	selectManipulator(mpl);
-
-	updateHeader();
-	//qDebug() << "item: " << item->text();
+    updateHeader();
+    // qDebug() << "item: " << item->text();
 }
 
-void DkBatchManipulatorWidget::updateHeader() const {
-
-	int c = mManager.numSelected();
-	if (!c)
-		emit newHeaderText(tr("inactive"));
-	else
-		emit newHeaderText(tr("%1 manipulators selected").arg(c));
-
+void DkBatchManipulatorWidget::updateHeader() const
+{
+    int c = mManager.numSelected();
+    if (!c)
+        emit newHeaderText(tr("inactive"));
+    else
+        emit newHeaderText(tr("%1 manipulators selected").arg(c));
 }
 
 // DkBatchTransform --------------------------------------------------------------------
-DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
-
-	createLayout();
-	applyDefault();
+DkBatchTransformWidget::DkBatchTransformWidget(QWidget *parent /* = 0 */, Qt::WindowFlags f /* = 0 */)
+    : DkWidget(parent, f)
+{
+    createLayout();
+    applyDefault();
 }
 
-void DkBatchTransformWidget::createLayout() {
+void DkBatchTransformWidget::createLayout()
+{
+    // resize
+    QLabel *resizeLabel = new QLabel(tr("Resize"), this);
+    resizeLabel->setObjectName("subTitle");
 
-	// resize
-	QLabel* resizeLabel = new QLabel(tr("Resize"), this);
-	resizeLabel->setObjectName("subTitle");
+    mResizeComboMode = new QComboBox(this);
+    QStringList modeItems;
+    modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
+    mResizeComboMode->addItems(modeItems);
 
-	mResizeComboMode = new QComboBox(this);
-	QStringList modeItems;
-	modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
-	mResizeComboMode->addItems(modeItems);
+    mResizeSbPercent = new QDoubleSpinBox(this);
+    mResizeSbPercent->setSuffix(tr("%"));
+    mResizeSbPercent->setMaximum(1000);
+    mResizeSbPercent->setMinimum(0.1);
 
-	mResizeSbPercent = new QDoubleSpinBox(this);
-	mResizeSbPercent->setSuffix(tr("%"));
-	mResizeSbPercent->setMaximum(1000);
-	mResizeSbPercent->setMinimum(0.1);
+    mResizeSbPx = new QSpinBox(this);
+    mResizeSbPx->setSuffix(tr(" px"));
+    mResizeSbPx->setMaximum(SHRT_MAX);
+    mResizeSbPx->setMinimum(1);
 
-	mResizeSbPx = new QSpinBox(this);
-	mResizeSbPx->setSuffix(tr(" px"));
-	mResizeSbPx->setMaximum(SHRT_MAX);
-	mResizeSbPx->setMinimum(1);
+    mResizeComboProperties = new QComboBox(this);
+    QStringList propertyItems;
+    propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
+    mResizeComboProperties->addItems(propertyItems);
 
-	mResizeComboProperties = new QComboBox(this);
-	QStringList propertyItems;
-	propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
-	mResizeComboProperties->addItems(propertyItems);
+    QWidget *resizeWidget = new QWidget(this);
+    QHBoxLayout *resizeLayout = new QHBoxLayout(resizeWidget);
+    resizeLayout->setContentsMargins(0, 0, 0, 0);
+    resizeLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    resizeLayout->addWidget(mResizeComboMode);
+    resizeLayout->addWidget(mResizeSbPercent);
+    resizeLayout->addWidget(mResizeSbPx);
+    resizeLayout->addWidget(mResizeComboProperties);
+    resizeLayout->addStretch();
 
-	QWidget* resizeWidget = new QWidget(this);
-	QHBoxLayout* resizeLayout = new QHBoxLayout(resizeWidget);
-	resizeLayout->setContentsMargins(0, 0, 0, 0);
-	resizeLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	resizeLayout->addWidget(mResizeComboMode);
-	resizeLayout->addWidget(mResizeSbPercent);
-	resizeLayout->addWidget(mResizeSbPx);
-	resizeLayout->addWidget(mResizeComboProperties);
-	resizeLayout->addStretch();
+    // rotation
+    QLabel *rotateLabel = new QLabel(tr("Orientation"), this);
+    rotateLabel->setObjectName("subTitle");
 
-	// rotation
-	QLabel* rotateLabel = new QLabel(tr("Orientation"), this);
-	rotateLabel->setObjectName("subTitle");
+    mRbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
+    mRbRotate0->setChecked(true);
+    mRbRotateLeft = new QRadioButton(tr("90%1 Counter Clockwise").arg(dk_degree_str));
+    mRbRotateRight = new QRadioButton(tr("90%1 Clockwise").arg(dk_degree_str));
+    mRbRotate180 = new QRadioButton(tr("180%1").arg(dk_degree_str));
 
-	mRbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
-	mRbRotate0->setChecked(true);
-	mRbRotateLeft = new QRadioButton(tr("90%1 Counter Clockwise").arg(dk_degree_str));
-	mRbRotateRight = new QRadioButton(tr("90%1 Clockwise").arg(dk_degree_str));
-	mRbRotate180 = new QRadioButton(tr("180%1").arg(dk_degree_str));
+    mRotateGroup = new QButtonGroup(this);
 
-	mRotateGroup = new QButtonGroup(this);
+    mRotateGroup->addButton(mRbRotate0);
+    mRotateGroup->addButton(mRbRotateLeft);
+    mRotateGroup->addButton(mRbRotateRight);
+    mRotateGroup->addButton(mRbRotate180);
 
-	mRotateGroup->addButton(mRbRotate0);
-	mRotateGroup->addButton(mRbRotateLeft);
-	mRotateGroup->addButton(mRbRotateRight);
-	mRotateGroup->addButton(mRbRotate180);
+    QLabel *transformLabel = new QLabel(tr("Transformations"), this);
+    transformLabel->setObjectName("subTitle");
 
-	QLabel* transformLabel = new QLabel(tr("Transformations"), this);
-	transformLabel->setObjectName("subTitle");
+    mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
 
-	mCbCropMetadata = new QCheckBox(tr("&Crop from Metadata"));
+    // crop rectangle
+    mCbCropRectangle = new QCheckBox(tr("&Crop Rectangle"));
+    mCropRectWidget = new DkRectWidget(QRect(), this);
 
-	// crop rectangle
-	mCbCropRectangle = new QCheckBox(tr("&Crop Rectangle"));
-	mCropRectWidget = new DkRectWidget(QRect(), this);
+    QGridLayout *layout = new QGridLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    layout->addWidget(resizeLabel, 0, 0);
+    layout->addWidget(resizeWidget, 1, 0);
+    layout->addWidget(rotateLabel, 2, 0);
+    layout->addWidget(mRbRotate0, 3, 0);
+    layout->addWidget(mRbRotateRight, 4, 0);
+    layout->addWidget(mRbRotateLeft, 5, 0);
+    layout->addWidget(mRbRotate180, 6, 0);
 
-	QGridLayout* layout = new QGridLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	layout->addWidget(resizeLabel, 0, 0);
-	layout->addWidget(resizeWidget, 1, 0);
-	layout->addWidget(rotateLabel, 2, 0);
-	layout->addWidget(mRbRotate0, 3, 0);
-	layout->addWidget(mRbRotateRight, 4, 0);
-	layout->addWidget(mRbRotateLeft, 5, 0);
-	layout->addWidget(mRbRotate180, 6, 0);
+    layout->addWidget(transformLabel, 7, 0);
+    layout->addWidget(mCbCropMetadata, 8, 0);
+    layout->setColumnStretch(3, 10);
+    layout->addWidget(mCbCropRectangle, 9, 0);
+    layout->setColumnStretch(3, 10);
+    layout->addWidget(mCropRectWidget, 10, 0);
 
-	layout->addWidget(transformLabel, 7, 0);
-	layout->addWidget(mCbCropMetadata, 8, 0);
-	layout->setColumnStretch(3, 10);
-	layout->addWidget(mCbCropRectangle, 9, 0);
-	layout->setColumnStretch(3, 10);
-	layout->addWidget(mCropRectWidget, 10, 0);
+    connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
+    connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
+    connect(mResizeSbPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
 
-	connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
-	connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
-	connect(mResizeSbPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
-
-	connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
-	connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
-	connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(updateHeader()));
+    connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
+    connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
+    connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(updateHeader()));
 }
 
-void DkBatchTransformWidget::applyDefault() {
+void DkBatchTransformWidget::applyDefault()
+{
+    mRbRotate0->setChecked(true);
+    mCbCropMetadata->setChecked(false);
+    mCbCropRectangle->setChecked(false);
+    mCropRectWidget->setRect(QRect());
 
-	mRbRotate0->setChecked(true);
-	mCbCropMetadata->setChecked(false);
-	mCbCropRectangle->setChecked(false);
-	mCropRectWidget->setRect(QRect());
+    mResizeSbPercent->setValue(100.0);
+    mResizeSbPx->setValue(1920);
+    mResizeComboMode->setCurrentIndex(0);
+    mResizeComboProperties->setCurrentIndex(0);
+    modeChanged(); // init gui
 
-	mResizeSbPercent->setValue(100.0);
-	mResizeSbPx->setValue(1920);
-	mResizeComboMode->setCurrentIndex(0);
-	mResizeComboProperties->setCurrentIndex(0);
-	modeChanged();	// init gui
-
-	updateHeader();
+    updateHeader();
 }
 
-bool DkBatchTransformWidget::hasUserInput() const {
-	
-	return 
-		!mRbRotate0->isChecked() || 
-		mCbCropMetadata->isChecked() || 
-		mCbCropRectangle->isChecked() ||
-		!(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
+bool DkBatchTransformWidget::hasUserInput() const
+{
+    return !mRbRotate0->isChecked() || mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()
+        || !(mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() == 100.0);
 }
 
-bool DkBatchTransformWidget::requiresUserInput() const {
-
-	return false;
+bool DkBatchTransformWidget::requiresUserInput() const
+{
+    return false;
 }
 
-void DkBatchTransformWidget::updateHeader() const {
+void DkBatchTransformWidget::updateHeader() const
+{
+    if (!hasUserInput())
+        emit newHeaderText(tr("inactive"));
+    else {
+        QString txt;
 
-	if (!hasUserInput())
-		emit newHeaderText(tr("inactive"));
-	else {
-		
-		QString txt;
+        if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() != 100.0) {
+            txt += tr("Resize by: %1%").arg(QString::number(mResizeSbPercent->value()));
+        }
 
-		if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default && mResizeSbPercent->value() != 100.0) {
-			txt += tr("Resize by: %1%").arg(QString::number(mResizeSbPercent->value()));
-		}
+        if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
+            txt += tr("Resize %1 to: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
+        }
 
-		if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
-			txt += tr("Resize %1 to: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
-		}
+        if (getAngle() != 0) {
+            if (!txt.isEmpty())
+                txt += " | ";
+            txt += tr("Rotating by: %1").arg(getAngle());
+        }
 
-		if (getAngle() != 0) {
-			if (!txt.isEmpty())
-				txt += " | ";
-			txt += tr("Rotating by: %1").arg(getAngle());
-		}
+        if (mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()) {
+            if (!txt.isEmpty())
+                txt += " | ";
+            txt += tr("Crop");
+        }
 
-		if (mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()) {
-			if (!txt.isEmpty())
-				txt += " | ";
-			txt += tr("Crop");
-		}
-
-		emit newHeaderText(txt);
-	}
+        emit newHeaderText(txt);
+    }
 }
 
-void DkBatchTransformWidget::modeChanged() {
-
-	if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
-		mResizeSbPx->hide();
-		mResizeSbPercent->show();
-		mResizeComboProperties->hide();
-		updateHeader();
-	}
-	else {
-		mResizeSbPx->show();
-		mResizeSbPercent->hide();
-		mResizeComboProperties->show();
-		updateHeader();
-	}
+void DkBatchTransformWidget::modeChanged()
+{
+    if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
+        mResizeSbPx->hide();
+        mResizeSbPercent->show();
+        mResizeComboProperties->hide();
+        updateHeader();
+    } else {
+        mResizeSbPx->show();
+        mResizeSbPercent->hide();
+        mResizeComboProperties->show();
+        updateHeader();
+    }
 }
 
-void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const {
-
-	if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
-		batchTransform->setProperties(
-			getAngle(), 
-			mCbCropMetadata->isChecked(),
-			mCbCropRectangle->isChecked() ? cropRect() : QRect(),
-			(float)mResizeSbPercent->value()/100.0f, 
-			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex());
-	}
-	else {
-		batchTransform->setProperties(
-			getAngle(), 
-			mCbCropMetadata->isChecked(),
-			mCbCropRectangle->isChecked() ? cropRect() : QRect(),
-			(float)mResizeSbPx->value(), 
-			(DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(), 
-			(DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
-	}
-
+void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const
+{
+    if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
+        batchTransform->setProperties(getAngle(),
+                                      mCbCropMetadata->isChecked(),
+                                      mCbCropRectangle->isChecked() ? cropRect() : QRect(),
+                                      (float)mResizeSbPercent->value() / 100.0f,
+                                      (DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex());
+    } else {
+        batchTransform->setProperties(getAngle(),
+                                      mCbCropMetadata->isChecked(),
+                                      mCbCropRectangle->isChecked() ? cropRect() : QRect(),
+                                      (float)mResizeSbPx->value(),
+                                      (DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(),
+                                      (DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
+    }
 }
 
-bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> batchTransform) {
-	
-	if (!batchTransform) {
-		qWarning() << "cannot load settings, DkBatchTransform is NULL";
-		return false;
-	}
+bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> batchTransform)
+{
+    if (!batchTransform) {
+        qWarning() << "cannot load settings, DkBatchTransform is NULL";
+        return false;
+    }
 
-	bool errored = false;
+    bool errored = false;
 
-	switch (batchTransform->angle()) {
-	case -90:	mRbRotateLeft->setChecked(true); break;
-	case 90:	mRbRotateLeft->setChecked(true); break;
-	case 180:	mRbRotateLeft->setChecked(true); break;
-	case 0:	break;	// nothing todo
-	default: errored = true;
-	}
+    switch (batchTransform->angle()) {
+    case -90:
+        mRbRotateLeft->setChecked(true);
+        break;
+    case 90:
+        mRbRotateLeft->setChecked(true);
+        break;
+    case 180:
+        mRbRotateLeft->setChecked(true);
+        break;
+    case 0:
+        break; // nothing todo
+    default:
+        errored = true;
+    }
 
-	// crop
-	mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
+    // crop
+    mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
 
-	mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
-	mCropRectWidget->setRect(batchTransform->cropRectangle());
+    mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
+    mCropRectWidget->setRect(batchTransform->cropRectangle());
 
-	// resize
-	mResizeComboMode->setCurrentIndex(batchTransform->mode());
-	mResizeComboProperties->setCurrentIndex(batchTransform->prop());
+    // resize
+    mResizeComboMode->setCurrentIndex(batchTransform->mode());
+    mResizeComboProperties->setCurrentIndex(batchTransform->prop());
 
-	float sf = batchTransform->scaleFactor();
-	if (batchTransform->mode() == DkBatchTransform::resize_mode_default)
-		mResizeSbPercent->setValue(sf*100.0f);
-	else
-		mResizeSbPx->setValue(qRound(sf));
-	modeChanged();
-	updateHeader();
+    float sf = batchTransform->scaleFactor();
+    if (batchTransform->mode() == DkBatchTransform::resize_mode_default)
+        mResizeSbPercent->setValue(sf * 100.0f);
+    else
+        mResizeSbPx->setValue(qRound(sf));
+    modeChanged();
+    updateHeader();
 
-	return !errored;
+    return !errored;
 }
 
-int DkBatchTransformWidget::getAngle() const {
+int DkBatchTransformWidget::getAngle() const
+{
+    if (mRbRotate0->isChecked())
+        return 0;
+    else if (mRbRotateLeft->isChecked())
+        return -90;
+    else if (mRbRotateRight->isChecked())
+        return 90;
+    else if (mRbRotate180->isChecked())
+        return 180;
 
-	if (mRbRotate0->isChecked())
-		return 0;
-	else if (mRbRotateLeft->isChecked())
-		return -90;
-	else if (mRbRotateRight->isChecked())
-		return 90;
-	else if (mRbRotate180->isChecked())
-		return 180;
-
-	return 0;
+    return 0;
 }
 
-QRect DkBatchTransformWidget::cropRect() const {
-	return mCropRectWidget->rect();
+QRect DkBatchTransformWidget::cropRect() const
+{
+    return mCropRectWidget->rect();
 }
 
 // Batch Buttons --------------------------------------------------------------------
-DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget* parent) : DkFadeWidget(parent) {
-	createLayout();
-	setPaused();
+DkBatchButtonsWidget::DkBatchButtonsWidget(QWidget *parent)
+    : DkFadeWidget(parent)
+{
+    createLayout();
+    setPaused();
 }
 
-void DkBatchButtonsWidget::createLayout() {
+void DkBatchButtonsWidget::createLayout()
+{
+    // play - pause button
+    QSize s(32, 32);
+    QIcon icon;
+    QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", s, QColor(255, 255, 255)));
+    icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
+    pm = DkImage::loadIcon(":/nomacs/img/stop.svg", s, QColor(255, 255, 255));
+    icon.addPixmap(pm, QIcon::Normal, QIcon::On);
 
-	// play - pause button
-	QSize s(32, 32);
-	QIcon icon;
-	QPixmap pm(DkImage::loadIcon(":/nomacs/img/play.svg", s, QColor(255, 255, 255)));
-	icon.addPixmap(pm, QIcon::Normal, QIcon::Off);
-	pm = DkImage::loadIcon(":/nomacs/img/stop.svg", s, QColor(255, 255, 255));
-	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
+    mPlayButton = new QPushButton(icon, "", this);
+    mPlayButton->setIconSize(pm.size());
+    mPlayButton->setCheckable(true);
+    mPlayButton->setFlat(true);
+    mPlayButton->setShortcut(Qt::ALT + Qt::Key_Return);
+    mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
 
-	mPlayButton = new QPushButton(icon, "", this);
-	mPlayButton->setIconSize(pm.size());
-	mPlayButton->setCheckable(true);
-	mPlayButton->setFlat(true);
-	mPlayButton->setShortcut(Qt::ALT + Qt::Key_Return);
-	mPlayButton->setToolTip(tr("Start/Cancel Batch Processing (%1)").arg(mPlayButton->shortcut().toString()));
+    icon = QIcon();
+    pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(255, 255, 255)));
+    icon.addPixmap(pm, QIcon::Normal, QIcon::On);
+    pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(100, 100, 100)));
+    icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
 
-	icon = QIcon();
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(255, 255, 255)));
-	icon.addPixmap(pm, QIcon::Normal, QIcon::On);
-	pm = QPixmap(DkImage::loadIcon(":/nomacs/img/bars.svg", s, QColor(100, 100, 100)));
-	icon.addPixmap(pm, QIcon::Disabled, QIcon::On);
+    mLogButton = new QPushButton(icon, "", this);
+    mLogButton->setIconSize(pm.size());
+    mLogButton->setFlat(true);
+    mLogButton->setEnabled(false);
 
-	mLogButton = new QPushButton(icon, "", this);
-	mLogButton->setIconSize(pm.size());
-	mLogButton->setFlat(true);
-	mLogButton->setEnabled(false);
-	
-	// connect
-	connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
-	connect(mLogButton, SIGNAL(clicked()), this, SIGNAL(showLogSignal()));
+    // connect
+    connect(mPlayButton, SIGNAL(clicked(bool)), this, SIGNAL(playSignal(bool)));
+    connect(mLogButton, SIGNAL(clicked()), this, SIGNAL(showLogSignal()));
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->addWidget(mPlayButton);
-	layout->addWidget(mLogButton);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->addWidget(mPlayButton);
+    layout->addWidget(mLogButton);
 }
 
-void DkBatchButtonsWidget::setPaused(bool paused) {
-	mPlayButton->setChecked(!paused);
+void DkBatchButtonsWidget::setPaused(bool paused)
+{
+    mPlayButton->setChecked(!paused);
 }
 
-QPushButton * DkBatchButtonsWidget::logButton() {
-	return mLogButton;
+QPushButton *DkBatchButtonsWidget::logButton()
+{
+    return mLogButton;
 }
 
-QPushButton * DkBatchButtonsWidget::playButton() {
-	return mPlayButton;
+QPushButton *DkBatchButtonsWidget::playButton()
+{
+    return mPlayButton;
 }
 
 // DkBatchInfo --------------------------------------------------------------------
-DkBatchInfoWidget::DkBatchInfoWidget(QWidget* parent) : DkFadeWidget(parent) {
-	createLayout();
+DkBatchInfoWidget::DkBatchInfoWidget(QWidget *parent)
+    : DkFadeWidget(parent)
+{
+    createLayout();
 }
 
-void DkBatchInfoWidget::createLayout() {
+void DkBatchInfoWidget::createLayout()
+{
+    mInfo = new QLabel(this);
+    mInfo->setObjectName("BatchInfo");
 
-	mInfo = new QLabel(this);
-	mInfo->setObjectName("BatchInfo");
+    mIcon = new QLabel(this);
 
-	mIcon = new QLabel(this);
-	
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setAlignment(Qt::AlignLeft);
-	layout->addWidget(mIcon);
-	layout->addWidget(mInfo);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setAlignment(Qt::AlignLeft);
+    layout->addWidget(mIcon);
+    layout->addWidget(mInfo);
 }
 
-void DkBatchInfoWidget::setInfo(const QString& message, const InfoMode& mode) {
+void DkBatchInfoWidget::setInfo(const QString &message, const InfoMode &mode)
+{
+    if (message == "")
+        hide();
+    else
+        show();
 
-	if (message == "")
-		hide();
-	else
-		show();
+    QPixmap pm;
+    switch (mode) {
+    case info_warning:
+        pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);
+        break;
+    case info_critical:
+        pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);
+        break;
+    default:
+        pm = QIcon(":/nomacs/img/info.svg").pixmap(24);
+        break;
+    }
+    pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
+    mIcon->setPixmap(pm);
 
-	QPixmap pm;
-	switch (mode) {
-	case info_warning:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);	break;
-	case info_critical:	pm = QIcon(":/nomacs/img/warning.svg").pixmap(24);	break;
-	default:			pm = QIcon(":/nomacs/img/info.svg").pixmap(24);		break;
-	}
-	pm = DkImage::colorizePixmap(pm, QColor(255, 255, 255));
-	mIcon->setPixmap(pm);
-
-	mInfo->setText(message);
+    mInfo->setText(message);
 }
 
 // Batch Widget --------------------------------------------------------------------
-DkBatchWidget::DkBatchWidget(const QString& currentDirectory, QWidget* parent /* = 0 */) : DkFadeWidget(parent) {
-	
-	mCurrentDirectory = currentDirectory;
-	mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
+DkBatchWidget::DkBatchWidget(const QString &currentDirectory, QWidget *parent /* = 0 */)
+    : DkFadeWidget(parent)
+{
+    mCurrentDirectory = currentDirectory;
+    mBatchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
 
-	connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
-	connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
+    connect(mBatchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
+    connect(mBatchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
-	createLayout();
+    createLayout();
 
-	connect(inputWidget(), SIGNAL(updateInputDir(const QString&)), outputWidget(), SLOT(setInputDir(const QString&)));
-	connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
-	connect(profileWidget(), SIGNAL(saveProfileSignal(const QString&)), this, SLOT(saveProfile(const QString&)));
-	connect(profileWidget(), SIGNAL(loadProfileSignal(const QString&)), this, SLOT(loadProfile(const QString&)));
-	connect(profileWidget(), SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
+    connect(inputWidget(), SIGNAL(updateInputDir(const QString &)), outputWidget(), SLOT(setInputDir(const QString &)));
+    connect(&mLogUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
+    connect(profileWidget(), SIGNAL(saveProfileSignal(const QString &)), this, SLOT(saveProfile(const QString &)));
+    connect(profileWidget(), SIGNAL(loadProfileSignal(const QString &)), this, SLOT(loadProfile(const QString &)));
+    connect(profileWidget(), SIGNAL(applyDefaultSignal()), this, SLOT(applyDefault()));
 
-	inputWidget()->setDir(currentDirectory);
-	outputWidget()->setInputDir(currentDirectory);
+    inputWidget()->setDir(currentDirectory);
+    outputWidget()->setInputDir(currentDirectory);
 
-	// change tabs with page up page down
-	QAction* nextAction = new QAction(tr("next"), this);
-	nextAction->setShortcut(Qt::Key_PageDown);
-	connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
-	addAction(nextAction);
+    // change tabs with page up page down
+    QAction *nextAction = new QAction(tr("next"), this);
+    nextAction->setShortcut(Qt::Key_PageDown);
+    connect(nextAction, SIGNAL(triggered()), this, SLOT(nextTab()));
+    addAction(nextAction);
 
-	QAction* previousAction = new QAction(tr("previous"), this);
-	previousAction->setShortcut(Qt::Key_PageUp);
-	previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
-	addAction(previousAction);
+    QAction *previousAction = new QAction(tr("previous"), this);
+    previousAction->setShortcut(Qt::Key_PageUp);
+    previousAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(previousAction, SIGNAL(triggered()), this, SLOT(previousTab()));
+    addAction(previousAction);
 }
 
-DkBatchWidget::~DkBatchWidget() {
-
-	// close cancels the current process
-	if (!cancel())
-		mBatchProcessing->waitForFinished();
+DkBatchWidget::~DkBatchWidget()
+{
+    // close cancels the current process
+    if (!cancel())
+        mBatchProcessing->waitForFinished();
 }
 
-void DkBatchWidget::createLayout() {
+void DkBatchWidget::createLayout()
+{
+    // setStyleSheet("QWidget{border: 1px solid #000000;}");
 
-	//setStyleSheet("QWidget{border: 1px solid #000000;}");
+    mWidgets.resize(batchWidgets_end);
 
-	mWidgets.resize(batchWidgets_end);
+    // Input Directory
+    mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
+    mWidgets[batch_input]->setContentWidget(new DkBatchInput(this));
+    inputWidget()->setDir(mCurrentDirectory);
 
-	// Input Directory
-	mWidgets[batch_input] = new DkBatchContainer(tr("Input"), tr("no files selected"), this);
-	mWidgets[batch_input]->setContentWidget(new DkBatchInput(this));
-	inputWidget()->setDir(mCurrentDirectory);
+    // fold content
+    mWidgets[batch_manipulator] = new DkBatchContainer(tr("Adjustments"), tr("inactive"), this);
+    mWidgets[batch_manipulator]->setContentWidget(new DkBatchManipulatorWidget(this));
 
-	// fold content
-	mWidgets[batch_manipulator] = new DkBatchContainer(tr("Adjustments"), tr("inactive"), this);
-	mWidgets[batch_manipulator]->setContentWidget(new DkBatchManipulatorWidget(this));
-
-	mWidgets[batch_transform] = new DkBatchContainer(tr("Transform"), tr("inactive"), this);
-	mWidgets[batch_transform]->setContentWidget(new DkBatchTransformWidget(this));
+    mWidgets[batch_transform] = new DkBatchContainer(tr("Transform"), tr("inactive"), this);
+    mWidgets[batch_transform]->setContentWidget(new DkBatchTransformWidget(this));
 
 #ifdef WITH_PLUGINS
-	mWidgets[batch_plugin] = new DkBatchContainer(tr("Plugins"), tr("inactive"), this);
-	mWidgets[batch_plugin]->setContentWidget(new DkBatchPluginWidget(this));
+    mWidgets[batch_plugin] = new DkBatchContainer(tr("Plugins"), tr("inactive"), this);
+    mWidgets[batch_plugin]->setContentWidget(new DkBatchPluginWidget(this));
 #endif
 
-	mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
-	mWidgets[batch_output]->setContentWidget(new DkBatchOutput(this));
+    mWidgets[batch_output] = new DkBatchContainer(tr("Output"), tr("not set"), this);
+    mWidgets[batch_output]->setContentWidget(new DkBatchOutput(this));
 
-	// profiles
-	mWidgets[batch_profile] = new DkBatchContainer(tr("Profiles"), tr("inactive"), this);
-	mWidgets[batch_profile]->setContentWidget(new DkProfileWidget(this));
+    // profiles
+    mWidgets[batch_profile] = new DkBatchContainer(tr("Profiles"), tr("inactive"), this);
+    mWidgets[batch_profile]->setContentWidget(new DkProfileWidget(this));
 
-	mProgressBar = new DkProgressBar(this);
-	mProgressBar->setVisible(false);
-	mProgressBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);	// progressbar is greedy otherwise
+    mProgressBar = new DkProgressBar(this);
+    mProgressBar->setVisible(false);
+    mProgressBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed); // progressbar is greedy otherwise
 
-	QWidget* centralWidget = new QWidget(this);
-	mCentralLayout = new QStackedLayout(centralWidget);
-	mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-	for (DkBatchContainer* w : mWidgets) {
-		if (!w)
-			continue;
-		mCentralLayout->addWidget(w->contentWidget());
-		connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
-	}
+    QWidget *centralWidget = new QWidget(this);
+    mCentralLayout = new QStackedLayout(centralWidget);
+    mCentralLayout->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    for (DkBatchContainer *w : mWidgets) {
+        if (!w)
+            continue;
+        mCentralLayout->addWidget(w->contentWidget());
+        connect(w, SIGNAL(showSignal()), this, SLOT(changeWidget()));
+    }
 
-	connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
-	connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
+    connect(mWidgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
+    connect(mWidgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 
-	mContentTitle = new QLabel("", this);
-	mContentTitle->setObjectName("batchContentTitle");
-	mContentInfo = new QLabel("", this);
-	mContentInfo->setObjectName("batchContentInfo");
+    mContentTitle = new QLabel("", this);
+    mContentTitle->setObjectName("batchContentTitle");
+    mContentInfo = new QLabel("", this);
+    mContentInfo->setObjectName("batchContentInfo");
 
-	QWidget* contentWidget = new QWidget(this);
-	QVBoxLayout* dialogLayout = new QVBoxLayout(contentWidget);
-	dialogLayout->addWidget(mContentTitle);
-	dialogLayout->addWidget(mContentInfo);
-	dialogLayout->addWidget(centralWidget);		// almost everything
-	//dialogLayout->addStretch(10);
-	//dialogLayout->addWidget(mButtons);
+    QWidget *contentWidget = new QWidget(this);
+    QVBoxLayout *dialogLayout = new QVBoxLayout(contentWidget);
+    dialogLayout->addWidget(mContentTitle);
+    dialogLayout->addWidget(mContentInfo);
+    dialogLayout->addWidget(centralWidget); // almost everything
+    // dialogLayout->addStretch(10);
+    // dialogLayout->addWidget(mButtons);
 
-	// the tabs left
-	QWidget* tabWidget = new QWidget(this);
-	tabWidget->setObjectName("DkBatchTabs");
+    // the tabs left
+    QWidget *tabWidget = new QWidget(this);
+    tabWidget->setObjectName("DkBatchTabs");
 
-	QVBoxLayout* tabLayout = new QVBoxLayout(tabWidget);
-	tabLayout->setAlignment(Qt::AlignTop);
-	tabLayout->setContentsMargins(0, 0, 0, 0);
-	tabLayout->setSpacing(0);
+    QVBoxLayout *tabLayout = new QVBoxLayout(tabWidget);
+    tabLayout->setAlignment(Qt::AlignTop);
+    tabLayout->setContentsMargins(0, 0, 0, 0);
+    tabLayout->setSpacing(0);
 
-	// tab buttons must be checked exclusively
-	QButtonGroup* tabGroup = new QButtonGroup(this);
+    // tab buttons must be checked exclusively
+    QButtonGroup *tabGroup = new QButtonGroup(this);
 
-	for (DkBatchContainer* w : mWidgets) {
+    for (DkBatchContainer *w : mWidgets) {
+        if (!w)
+            continue;
+        tabLayout->addWidget(w->headerWidget());
+        tabGroup->addButton(w->headerWidget());
+    }
 
-		if (!w)
-			continue;
-		tabLayout->addWidget(w->headerWidget());
-		tabGroup->addButton(w->headerWidget());
-	}
+    mInfoWidget = new DkBatchInfoWidget(this);
 
-	mInfoWidget = new DkBatchInfoWidget(this);
+    mButtonWidget = new DkBatchButtonsWidget(this);
+    mButtonWidget->show();
+    tabLayout->addStretch();
+    tabLayout->addWidget(mInfoWidget);
+    tabLayout->addWidget(mProgressBar);
+    tabLayout->addWidget(mButtonWidget);
 
-	mButtonWidget = new DkBatchButtonsWidget(this);
-	mButtonWidget->show();
-	tabLayout->addStretch();
-	tabLayout->addWidget(mInfoWidget);
-	tabLayout->addWidget(mProgressBar);
-	tabLayout->addWidget(mButtonWidget);
+    DkResizableScrollArea *tabScroller = new DkResizableScrollArea(this);
+    tabScroller->setWidgetResizable(true);
+    tabScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    tabScroller->setWidget(tabWidget);
+    tabScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	DkResizableScrollArea* tabScroller = new DkResizableScrollArea(this);
-	tabScroller->setWidgetResizable(true);
-	tabScroller->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-	tabScroller->setWidget(tabWidget);
-	tabScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    DkResizableScrollArea *contentScroller = new DkResizableScrollArea(this);
+    contentScroller->setWidgetResizable(true);
+    contentScroller->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    contentScroller->setWidget(contentWidget);
+    // contentScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	DkResizableScrollArea* contentScroller = new DkResizableScrollArea(this);
-	contentScroller->setWidgetResizable(true);
-	contentScroller->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-	contentScroller->setWidget(contentWidget);
-	//contentScroller->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(tabScroller);
+    layout->addWidget(contentScroller);
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(tabScroller);
-	layout->addWidget(contentScroller);
+    // open the first tab
+    if (!mWidgets.empty())
+        mWidgets[0]->headerWidget()->click();
 
-	// open the first tab
-	if (!mWidgets.empty())
-		mWidgets[0]->headerWidget()->click();
-
-	connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
-	connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
-	connect(this, SIGNAL(infoSignal(const QString&, const DkBatchInfoWidget::InfoMode&)), mInfoWidget, SLOT(setInfo(const QString&, const DkBatchInfoWidget::InfoMode&)));
+    connect(mButtonWidget, SIGNAL(playSignal(bool)), this, SLOT(toggleBatch(bool)));
+    connect(mButtonWidget, SIGNAL(showLogSignal()), this, SLOT(showLog()));
+    connect(this,
+            SIGNAL(infoSignal(const QString &, const DkBatchInfoWidget::InfoMode &)),
+            mInfoWidget,
+            SLOT(setInfo(const QString &, const DkBatchInfoWidget::InfoMode &)));
 }
 
-DkBatchInput* DkBatchWidget::inputWidget() const {
+DkBatchInput *DkBatchWidget::inputWidget() const
+{
+    DkBatchInput *w = dynamic_cast<DkBatchInput *>(mWidgets[batch_input]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchInput";
 
-	DkBatchInput* w = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchInput";
-
-	return w;
+    return w;
 }
 
-DkBatchOutput* DkBatchWidget::outputWidget() const {
-	
-	DkBatchOutput* w = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchOutput";
+DkBatchOutput *DkBatchWidget::outputWidget() const
+{
+    DkBatchOutput *w = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchOutput";
 
-	return w;
+    return w;
 }
 
-DkBatchManipulatorWidget* DkBatchWidget::manipulatorWidget() const {
+DkBatchManipulatorWidget *DkBatchWidget::manipulatorWidget() const
+{
+    DkBatchManipulatorWidget *w = dynamic_cast<DkBatchManipulatorWidget *>(mWidgets[batch_manipulator]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchManipulatorWidget";
 
-	DkBatchManipulatorWidget* w = dynamic_cast<DkBatchManipulatorWidget*>(mWidgets[batch_manipulator]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchManipulatorWidget";
-
-	return w;
+    return w;
 }
 
-DkProfileWidget* DkBatchWidget::profileWidget() const {
-	DkProfileWidget* w = dynamic_cast<DkProfileWidget*>(mWidgets[batch_profile]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchProfileWidget";
+DkProfileWidget *DkBatchWidget::profileWidget() const
+{
+    DkProfileWidget *w = dynamic_cast<DkProfileWidget *>(mWidgets[batch_profile]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchProfileWidget";
 
-	return w;
-
+    return w;
 }
 
 #ifdef WITH_PLUGINS
-DkBatchPluginWidget* DkBatchWidget::pluginWidget() const {
+DkBatchPluginWidget *DkBatchWidget::pluginWidget() const
+{
+    DkBatchPluginWidget *w = dynamic_cast<DkBatchPluginWidget *>(mWidgets[batch_plugin]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchPluginWidget";
 
-	DkBatchPluginWidget* w = dynamic_cast<DkBatchPluginWidget*>(mWidgets[batch_plugin]->contentWidget());
-	if (!w)
-		qCritical() << "cannot cast to DkBatchPluginWidget";
-
-	return w;
-
+    return w;
 }
 #endif
 
-DkBatchTransformWidget* DkBatchWidget::transformWidget() const {
+DkBatchTransformWidget *DkBatchWidget::transformWidget() const
+{
+    DkBatchTransformWidget *w = dynamic_cast<DkBatchTransformWidget *>(mWidgets[batch_transform]->contentWidget());
 
-	DkBatchTransformWidget* w = dynamic_cast<DkBatchTransformWidget*>(mWidgets[batch_transform]->contentWidget());
+    if (!w)
+        qCritical() << "cannot cast to DkBatchTransformWidget";
 
-	if (!w)
-		qCritical() << "cannot cast to DkBatchTransformWidget";
-
-	return w;
+    return w;
 }
 
-
-void DkBatchWidget::toggleBatch(bool start) {
-
-	if (start)
-		startBatch();
-	else
-		cancel();
+void DkBatchWidget::toggleBatch(bool start)
+{
+    if (start)
+        startBatch();
+    else
+        cancel();
 }
 
-void DkBatchWidget::startBatch() {
+void DkBatchWidget::startBatch()
+{
+    const DkBatchConfig &bc = createBatchConfig();
 
-	const DkBatchConfig& bc = createBatchConfig();
+    if (!bc.isOk()) {
+        mButtonWidget->setPaused();
+        qWarning() << "could not create batch config...";
+        return;
+    }
 
-	if (!bc.isOk()) {
-		mButtonWidget->setPaused();
-		qWarning() << "could not create batch config...";
-		return;
-	}
+    mBatchProcessing->setBatchConfig(bc);
 
-	mBatchProcessing->setBatchConfig(bc);
+    // reopen the input widget to show the status
+    if (!mWidgets.empty())
+        mWidgets[0]->headerWidget()->click();
 
-	// reopen the input widget to show the status
-	if (!mWidgets.empty())
-		mWidgets[0]->headerWidget()->click();
-
-	startProcessing();
-	mBatchProcessing->compute();
+    startProcessing();
+    mBatchProcessing->compute();
 }
 
-DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const {
+DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
+{
+    // QMainWindow* mw = DkActionManager::instance().getMainWindow();
 
-	//QMainWindow* mw = DkActionManager::instance().getMainWindow();
+    // check if we are good to go
+    if (strict && inputWidget()->getSelectedFiles().empty()) {
+        emit infoSignal(tr("Please select files for processing."), DkBatchInfoWidget::InfoMode::info_warning);
+        // QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+        return DkBatchConfig();
+    }
 
-	// check if we are good to go
-	if (strict && inputWidget()->getSelectedFiles().empty()) {
-		emit infoSignal(tr("Please select files for processing."), DkBatchInfoWidget::InfoMode::info_warning);
-		//QMessageBox::information(mw, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
-		return DkBatchConfig();
-	}
+    if (!outputWidget()) {
+        qDebug() << "FATAL ERROR: could not cast output widget";
+        emit infoSignal(tr("I am missing a widget."), DkBatchInfoWidget::InfoMode::info_critical);
+        // QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
+        return DkBatchConfig();
+    }
 
-	if (!outputWidget()) {
-		qDebug() << "FATAL ERROR: could not cast output widget";
-		emit infoSignal(tr("I am missing a widget."), DkBatchInfoWidget::InfoMode::info_critical);
-		//QMessageBox::critical(mw, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
-		return DkBatchConfig();
-	}
+    if (strict && mWidgets[batch_output] && mWidgets[batch_input]) {
+        bool outputChanged = outputWidget()->hasUserInput();
+        QString inputDirPath = inputWidget()->getDir();
+        QString outputDirPath = outputWidget()->getOutputDirectory();
 
-	if (strict && mWidgets[batch_output] && mWidgets[batch_input])  {
-		bool outputChanged = outputWidget()->hasUserInput();
-		QString inputDirPath = inputWidget()->getDir();
-		QString outputDirPath = outputWidget()->getOutputDirectory();
+        if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower()
+            && !(outputWidget()->overwriteMode() & DkSaveInfo::mode_overwrite || outputWidget()->overwriteMode() & DkSaveInfo::mode_do_not_save_output)) {
+            emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
+            // QMessageBox::information(mw, tr("Wrong Configuration"),
+            //	tr("Please check 'Overwrite Existing Files' or choose a different output directory."),
+            //	QMessageBox::Ok, QMessageBox::Ok);
+            return DkBatchConfig();
+        }
+    }
 
-		
-		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && 
-			!(outputWidget()->overwriteMode() & DkSaveInfo::mode_overwrite ||
-			 outputWidget()->overwriteMode() & DkSaveInfo::mode_do_not_save_output)) {
-			emit infoSignal(tr("Please check 'Overwrite Existing Files' or choose a different output directory."));
-			//QMessageBox::information(mw, tr("Wrong Configuration"), 
-			//	tr("Please check 'Overwrite Existing Files' or choose a different output directory."), 
-			//	QMessageBox::Ok, QMessageBox::Ok);
-			return DkBatchConfig();
-		}
-	}
+    DkSaveInfo si;
+    si.setMode(outputWidget()->overwriteMode());
+    si.setDeleteOriginal(outputWidget()->deleteOriginal());
+    si.setInputDirIsOutputDir(outputWidget()->useInputDir());
+    si.setCompression(outputWidget()->getCompression());
 
+    DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget()->getOutputDirectory(), outputWidget()->getFilePattern());
+    config.setSaveInfo(si);
 
-	DkSaveInfo si;
-	si.setMode(outputWidget()->overwriteMode());
-	si.setDeleteOriginal(outputWidget()->deleteOriginal());
-	si.setInputDirIsOutputDir(outputWidget()->useInputDir());
-	si.setCompression(outputWidget()->getCompression());
+    if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
+        DkMessageBox *msgBox = new DkMessageBox(QMessageBox::Question,
+                                                tr("Create Output Directory"),
+                                                tr("Should I create:\n%1").arg(config.getOutputDirPath()),
+                                                (QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel),
+                                                DkUtils::getMainWindow());
 
-	DkBatchConfig config(inputWidget()->getSelectedFilesBatch(), outputWidget()->getOutputDirectory(), outputWidget()->getFilePattern());
-	config.setSaveInfo(si);
+        msgBox->setDefaultButton(QMessageBox::Yes);
+        msgBox->setObjectName("batchOutputDirDialog");
 
-	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
+        int answer = msgBox->exec();
 
-		DkMessageBox* msgBox = new DkMessageBox(
-			QMessageBox::Question, tr("Create Output Directory"), 
-			tr("Should I create:\n%1").arg(config.getOutputDirPath()), 
-			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), 
-			DkUtils::getMainWindow());
+        if (answer != QMessageBox::Accepted && answer != QMessageBox::Yes) {
+            return DkBatchConfig();
+        }
+    }
 
-		msgBox->setDefaultButton(QMessageBox::Yes);
-		msgBox->setObjectName("batchOutputDirDialog");
+    if (strict && !config.isOk()) {
+        if (config.getOutputDirPath().isEmpty()) {
+            emit infoSignal(tr("Please select an output directory."), DkBatchInfoWidget::InfoMode::info_warning);
+            // QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+            return DkBatchConfig();
+        } else if (!QDir(config.getOutputDirPath()).exists()) {
+            emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), DkBatchInfoWidget::InfoMode::info_critical);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
+            return DkBatchConfig();
+        } else if (config.getFileList().empty()) {
+            emit infoSignal(tr("Sorry, I cannot find files to process."), DkBatchInfoWidget::InfoMode::info_critical);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+            return DkBatchConfig();
+        } else if (config.getFileNamePattern().isEmpty()) {
+            emit infoSignal(tr("Sorry, the file pattern is empty."), DkBatchInfoWidget::InfoMode::info_critical);
+            // QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+            return DkBatchConfig();
+        }
+        // else if (config.getOutputDir() == QDir()) {
+        //	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()),
+        //QMessageBox::Ok, QMessageBox::Ok); 	return;
+        // }
 
-		int answer = msgBox->exec();
+        qDebug() << "config not ok - canceling";
+        emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), DkBatchInfoWidget::InfoMode::info_critical);
+        // QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok,
+        // QMessageBox::Ok);
+        return DkBatchConfig();
+    }
 
-		if (answer != QMessageBox::Accepted && answer != QMessageBox::Yes) {
-			return DkBatchConfig();
-		}
-	}
+    // create processing functions
+    QSharedPointer<DkManipulatorBatch> manipulatorBatch(new DkManipulatorBatch);
+    manipulatorWidget()->transferProperties(manipulatorBatch);
 
-	if (strict && !config.isOk()) {
-
-		if (config.getOutputDirPath().isEmpty()) {
-			emit infoSignal(tr("Please select an output directory."), DkBatchInfoWidget::InfoMode::info_warning);
-			//QMessageBox::information(mw, tr("Info"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
-			return DkBatchConfig();
-		}
-		else if (!QDir(config.getOutputDirPath()).exists()) {
-			emit infoSignal(tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), DkBatchInfoWidget::InfoMode::info_critical);
-			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
-			return DkBatchConfig();
-		}
-		else if (config.getFileList().empty()) {
-			emit infoSignal(tr("Sorry, I cannot find files to process."), DkBatchInfoWidget::InfoMode::info_critical);
-			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
-			return DkBatchConfig();
-		}
-		else if (config.getFileNamePattern().isEmpty()) {
-			emit infoSignal(tr("Sorry, the file pattern is empty."), DkBatchInfoWidget::InfoMode::info_critical);
-			//QMessageBox::critical(mw, tr("Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
-			return DkBatchConfig();
-		}
-		//else if (config.getOutputDir() == QDir()) {
-		//	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
-		//	return;
-		//}
-
-		qDebug() << "config not ok - canceling";
-		emit infoSignal(tr("Sorry, I cannot start processing - please check the configuration."), DkBatchInfoWidget::InfoMode::info_critical);
-		//QMessageBox::critical(mw, tr("Fatal Error"), tr("Sorry, I cannot start processing - please check the configuration."), QMessageBox::Ok, QMessageBox::Ok);
-		return DkBatchConfig();
-	}
-
-	// create processing functions
-	QSharedPointer<DkManipulatorBatch> manipulatorBatch(new DkManipulatorBatch);
-	manipulatorWidget()->transferProperties(manipulatorBatch);
-
-	// create processing functions
-	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
-	transformWidget()->transferProperties(transformBatch);
+    // create processing functions
+    QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
+    transformWidget()->transferProperties(transformBatch);
 
 #ifdef WITH_PLUGINS
-	// create processing functions
-	QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
-	pluginWidget()->transferProperties(pluginBatch);
+    // create processing functions
+    QSharedPointer<DkPluginBatch> pluginBatch(new DkPluginBatch);
+    pluginWidget()->transferProperties(pluginBatch);
 #endif
 
-	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
+    QVector<QSharedPointer<DkAbstractBatch>> processFunctions;
 
-	if (manipulatorBatch->isActive())
-		processFunctions.append(manipulatorBatch);
+    if (manipulatorBatch->isActive())
+        processFunctions.append(manipulatorBatch);
 
-	if (transformBatch->isActive())
-		processFunctions.append(transformBatch);
+    if (transformBatch->isActive())
+        processFunctions.append(transformBatch);
 
 #ifdef WITH_PLUGINS
-	if (pluginBatch->isActive()) {
-		processFunctions.append(pluginBatch);
-		pluginBatch->preLoad();
-	}
+    if (pluginBatch->isActive()) {
+        processFunctions.append(pluginBatch);
+        pluginBatch->preLoad();
+    }
 #endif
 
-	config.setProcessFunctions(processFunctions);
+    config.setProcessFunctions(processFunctions);
 
-	return config;
+    return config;
 }
 
-bool DkBatchWidget::cancel() {
+bool DkBatchWidget::cancel()
+{
+    if (mBatchProcessing->isComputing()) {
+        emit infoSignal(tr("Canceling..."), DkBatchInfoWidget::InfoMode::info_message);
+        mBatchProcessing->cancel();
+        // mButtonWidget->playButton()->setEnabled(false);
+        // stopProcessing();
+        return false;
+    }
 
-	if (mBatchProcessing->isComputing()) {
-		emit infoSignal(tr("Canceling..."), DkBatchInfoWidget::InfoMode::info_message);
-		mBatchProcessing->cancel();
-		//mButtonWidget->playButton()->setEnabled(false);
-		//stopProcessing();
-		return false;
-	}
-
-	return true;
+    return true;
 }
 
-void DkBatchWidget::processingFinished() {
-
-	stopProcessing();
-
+void DkBatchWidget::processingFinished()
+{
+    stopProcessing();
 }
 
-void DkBatchWidget::startProcessing() {
+void DkBatchWidget::startProcessing()
+{
+    inputWidget()->startProcessing();
+    mInfoWidget->setInfo("");
 
-	inputWidget()->startProcessing();
-	mInfoWidget->setInfo("");
+    // mProgressBar->setFixedWidth(100);
+    qDebug() << "progressbar width: " << mProgressBar->width();
+    mProgressBar->show();
+    mProgressBar->reset();
+    mProgressBar->setMaximum(inputWidget()->getSelectedFiles().size());
+    mProgressBar->setTextVisible(false);
+    mButtonWidget->logButton()->setEnabled(false);
+    mButtonWidget->setPaused(false);
 
-	//mProgressBar->setFixedWidth(100);
-	qDebug() << "progressbar width: " << mProgressBar->width();
-	mProgressBar->show();
-	mProgressBar->reset();
-	mProgressBar->setMaximum(inputWidget()->getSelectedFiles().size());
-	mProgressBar->setTextVisible(false);
-	mButtonWidget->logButton()->setEnabled(false);
-	mButtonWidget->setPaused(false);
+    DkGlobalProgress::instance().start();
 
-	DkGlobalProgress::instance().start();
-
-	mLogUpdateTimer.start(1000);
+    mLogUpdateTimer.start(1000);
 }
 
-void DkBatchWidget::stopProcessing() {
+void DkBatchWidget::stopProcessing()
+{
+    inputWidget()->stopProcessing();
 
-	inputWidget()->stopProcessing();
+    if (mBatchProcessing)
+        mBatchProcessing->postLoad();
 
-	if (mBatchProcessing)
-		mBatchProcessing->postLoad();
+    DkGlobalProgress::instance().stop();
 
-	DkGlobalProgress::instance().stop();
+    mProgressBar->hide();
+    mProgressBar->reset();
+    mButtonWidget->logButton()->setEnabled(true);
+    mButtonWidget->setPaused(true);
 
-	mProgressBar->hide();
-	mProgressBar->reset();
-	mButtonWidget->logButton()->setEnabled(true);
-	mButtonWidget->setPaused(true);
-	
-	int numFailures = mBatchProcessing->getNumFailures();
-	int numProcessed = mBatchProcessing->getNumProcessed();
-	int numItems = mBatchProcessing->getNumItems();
+    int numFailures = mBatchProcessing->getNumFailures();
+    int numProcessed = mBatchProcessing->getNumProcessed();
+    int numItems = mBatchProcessing->getNumItems();
 
-	DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning : DkBatchInfoWidget::InfoMode::info_message;
-	mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures), im);
+    DkBatchInfoWidget::InfoMode im = (numFailures > 0) ? DkBatchInfoWidget::InfoMode::info_warning : DkBatchInfoWidget::InfoMode::info_message;
+    mInfoWidget->setInfo(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures), im);
 
-	mLogNeedsUpdate = false;
-	mLogUpdateTimer.stop();
+    mLogNeedsUpdate = false;
+    mLogUpdateTimer.stop();
 
-	updateLog();
+    updateLog();
 }
 
-void DkBatchWidget::updateLog() {
-
-	inputWidget()->setResults(mBatchProcessing->getResultList());
+void DkBatchWidget::updateLog()
+{
+    inputWidget()->setResults(mBatchProcessing->getResultList());
 }
 
-void DkBatchWidget::updateProgress(int progress) {
+void DkBatchWidget::updateProgress(int progress)
+{
+    mProgressBar->setValue(progress);
+    mLogNeedsUpdate = true;
 
-	mProgressBar->setValue(progress);
-	mLogNeedsUpdate = true;
-
-	DkGlobalProgress::instance().setProgressValue(qRound((double)progress / inputWidget()->getSelectedFiles().size()*100));
+    DkGlobalProgress::instance().setProgressValue(qRound((double)progress / inputWidget()->getSelectedFiles().size() * 100));
 }
 
-void DkBatchWidget::showLog() {
+void DkBatchWidget::showLog()
+{
+    QStringList log = mBatchProcessing->getLog();
 
-	QStringList log = mBatchProcessing->getLog();
+    DkTextDialog *textDialog = new DkTextDialog(this);
+    textDialog->setWindowTitle(tr("Batch Log"));
+    textDialog->getTextEdit()->setReadOnly(true);
+    textDialog->setText(log);
 
-	DkTextDialog* textDialog = new DkTextDialog(this);
-	textDialog->setWindowTitle(tr("Batch Log"));
-	textDialog->getTextEdit()->setReadOnly(true);
-	textDialog->setText(log);
-
-	textDialog->exec();
+    textDialog->exec();
 }
 
-void DkBatchWidget::setSelectedFiles(const QStringList& selFiles) {
-
-	if (!selFiles.empty()) {
-		inputWidget()->getInputEdit()->appendFiles(selFiles);
-		inputWidget()->changeTab(DkBatchInput::tab_text_input);
-	}
+void DkBatchWidget::setSelectedFiles(const QStringList &selFiles)
+{
+    if (!selFiles.empty()) {
+        inputWidget()->getInputEdit()->appendFiles(selFiles);
+        inputWidget()->changeTab(DkBatchInput::tab_text_input);
+    }
 }
 
-void DkBatchWidget::changeWidget(DkBatchContainer* widget) {
+void DkBatchWidget::changeWidget(DkBatchContainer *widget)
+{
+    if (!widget)
+        widget = dynamic_cast<DkBatchContainer *>(sender());
 
-	if (!widget)
-		widget = dynamic_cast<DkBatchContainer*>(sender());
+    if (!widget) {
+        qWarning() << "changeWidget() called with NULL widget";
+        return;
+    }
 
-	if (!widget) {
-		qWarning() << "changeWidget() called with NULL widget";
-		return;
-	}
-
-	for (DkBatchContainer* cw : mWidgets) {
-
-		if (cw == widget) {
-			mCentralLayout->setCurrentWidget(cw->contentWidget());
-			mContentTitle->setText(cw->headerWidget()->text());
-			mContentInfo->setText(cw->headerWidget()->info());
-			cw->headerWidget()->setChecked(true);
-			connect(cw->headerWidget(), SIGNAL(infoChanged(const QString&)), mContentInfo, SLOT(setText(const QString&)), Qt::UniqueConnection);
-		}
-	}
-
+    for (DkBatchContainer *cw : mWidgets) {
+        if (cw == widget) {
+            mCentralLayout->setCurrentWidget(cw->contentWidget());
+            mContentTitle->setText(cw->headerWidget()->text());
+            mContentInfo->setText(cw->headerWidget()->info());
+            cw->headerWidget()->setChecked(true);
+            connect(cw->headerWidget(), SIGNAL(infoChanged(const QString &)), mContentInfo, SLOT(setText(const QString &)), Qt::UniqueConnection);
+        }
+    }
 }
 
-void DkBatchWidget::nextTab() {
+void DkBatchWidget::nextTab()
+{
+    int idx = mCentralLayout->currentIndex() + 1;
+    idx %= mWidgets.size();
 
-	int idx = mCentralLayout->currentIndex() + 1;
-	idx %= mWidgets.size();
-
-	changeWidget(mWidgets[idx]);
+    changeWidget(mWidgets[idx]);
 }
 
-void DkBatchWidget::previousTab() {
+void DkBatchWidget::previousTab()
+{
+    int idx = mCentralLayout->currentIndex() - 1;
+    if (idx < 0)
+        idx = mWidgets.size() - 1;
 
-	int idx = mCentralLayout->currentIndex() - 1;
-	if (idx < 0)
-		idx = mWidgets.size()-1;
-
-	changeWidget(mWidgets[idx]);
+    changeWidget(mWidgets[idx]);
 }
 
-void DkBatchWidget::saveProfile(const QString & profilePath) const {
+void DkBatchWidget::saveProfile(const QString &profilePath) const
+{
+    DkBatchConfig bc = createBatchConfig(false); // false: no input/output must be profided
 
-	DkBatchConfig bc = createBatchConfig(false);	// false: no input/output must be profided
+    // if (!bc.isOk()) {
+    //	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings, since they are incomplete..."));
+    //	return;
+    // }
 
-	//if (!bc.isOk()) {
-	//	QMessageBox::critical(DkActionManager::instance().getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings, since they are incomplete..."));
-	//	return;
-	//}
+    // allow saving without functions (i.e. image conversions)
+    // if (bc.getProcessFunctions().empty()) {
+    //	QMessageBox::information(DkUtils::getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
+    //	return;
+    //}
 
-	// allow saving without functions (i.e. image conversions)
-	//if (bc.getProcessFunctions().empty()) {
-	//	QMessageBox::information(DkUtils::getMainWindow(), tr("Save Profile"), tr("Cannot save empty profile."));
-	//	return;
-	//}
+    if (!DkBatchProfile::saveProfile(profilePath, bc)) {
+        QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
+        return;
+    } else
+        qInfo() << "batch profile written to: " << profilePath;
 
-	if (!DkBatchProfile::saveProfile(profilePath, bc)) {
-		QMessageBox::critical(DkUtils::getMainWindow(), tr("Error"), tr("Sorry, I cannot save the settings..."));
-		return;
-	}
-	else
-		qInfo() << "batch profile written to: " << profilePath;
-
-	profileWidget()->profileSaved(DkBatchProfile::makeUserFriendly(profilePath));
+    profileWidget()->profileSaved(DkBatchProfile::makeUserFriendly(profilePath));
 }
 
-void DkBatchWidget::loadProfile(const QString & profilePath) {
+void DkBatchWidget::loadProfile(const QString &profilePath)
+{
+    DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
 
-	DkBatchConfig bc = DkBatchProfile::loadProfile(profilePath);
+    // allow loading without functions (i.e. image conversions)
+    // if (bc.getProcessFunctions().empty()) {
+    //
+    //	QMessageBox::critical(DkUtils::getMainWindow(),
+    //		tr("Error Loading Profile"),
+    //		tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
+    //	return;
+    //}
 
-	// allow loading without functions (i.e. image conversions)
-	//if (bc.getProcessFunctions().empty()) {
-	//	
-	//	QMessageBox::critical(DkUtils::getMainWindow(), 
-	//		tr("Error Loading Profile"), 
-	//		tr("Sorry, I cannot load batch settings from: \n%1").arg(profilePath));
-	//	return;
-	//}
+    applyDefault();
 
-	applyDefault();
+    if (!bc.getFileList().empty())
+        setSelectedFiles(bc.getFileList());
 
-	if (!bc.getFileList().empty())
-		setSelectedFiles(bc.getFileList());
+    outputWidget()->loadProperties(bc);
 
-	outputWidget()->loadProperties(bc);
-
-	int warnings = 0;
-	auto functions = bc.getProcessFunctions();
-	for (QSharedPointer<DkAbstractBatch> cf : functions) {
-
-		if (!cf) {
-			qWarning() << "processing function is NULL - ignoring";
-			continue;
-		}
-		// apply manipulator batch settings
-		else if (QSharedPointer<DkManipulatorBatch> mf = qSharedPointerDynamicCast<DkManipulatorBatch>(cf)) {
-			if (!manipulatorWidget()->loadProperties(mf)) {
-				warnings++;
-			}
-		}
-		// apply transform batch settings
-		else if (QSharedPointer<DkBatchTransform> tf = qSharedPointerDynamicCast<DkBatchTransform>(cf)) {
-			if (!transformWidget()->loadProperties(tf)) {
-				warnings++;
-			}
-		}
+    int warnings = 0;
+    auto functions = bc.getProcessFunctions();
+    for (QSharedPointer<DkAbstractBatch> cf : functions) {
+        if (!cf) {
+            qWarning() << "processing function is NULL - ignoring";
+            continue;
+        }
+        // apply manipulator batch settings
+        else if (QSharedPointer<DkManipulatorBatch> mf = qSharedPointerDynamicCast<DkManipulatorBatch>(cf)) {
+            if (!manipulatorWidget()->loadProperties(mf)) {
+                warnings++;
+            }
+        }
+        // apply transform batch settings
+        else if (QSharedPointer<DkBatchTransform> tf = qSharedPointerDynamicCast<DkBatchTransform>(cf)) {
+            if (!transformWidget()->loadProperties(tf)) {
+                warnings++;
+            }
+        }
 #ifdef WITH_PLUGINS
-		// apply plugin batch settings
-		else if (QSharedPointer<DkPluginBatch> pf = qSharedPointerDynamicCast<DkPluginBatch>(cf)) {
-			if (!pluginWidget()->loadProperties(pf)) {
-				warnings++;
-			}
-			pluginWidget()->setSettingsPath(profilePath);
-		}
+        // apply plugin batch settings
+        else if (QSharedPointer<DkPluginBatch> pf = qSharedPointerDynamicCast<DkPluginBatch>(cf)) {
+            if (!pluginWidget()->loadProperties(pf)) {
+                warnings++;
+            }
+            pluginWidget()->setSettingsPath(profilePath);
+        }
 #endif
-		else {
-			qWarning() << "illegal processing function: " << cf->name() << " - ignoring";
-			warnings++;
-		}
-	}
+        else {
+            qWarning() << "illegal processing function: " << cf->name() << " - ignoring";
+            warnings++;
+        }
+    }
 
-	// TODO: feedback 
-	qInfo() << "settings loaded with" << warnings << "warnings";
-
+    // TODO: feedback
+    qInfo() << "settings loaded with" << warnings << "warnings";
 }
 
-void DkBatchWidget::applyDefault() {
-
-	for (DkBatchContainer* bc : mWidgets)
-		bc->batchContent()->applyDefault();
+void DkBatchWidget::applyDefault()
+{
+    for (DkBatchContainer *bc : mWidgets)
+        bc->batchContent()->applyDefault();
 }
 
-void DkBatchWidget::widgetChanged() {
-	
-	if (mWidgets[batch_output] && mWidgets[batch_input])  {
-		QString inputDirPath = dynamic_cast<DkBatchInput*>(mWidgets[batch_input]->contentWidget())->getDir();
-		QString outputDirPath = dynamic_cast<DkBatchOutput*>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
-	
-		// TODO: shouldn't we enable it always?
-		//mButtonWidget->playButton()->setEnabled(inputDirPath == "" || outputDirPath == "");
-	}
+void DkBatchWidget::widgetChanged()
+{
+    if (mWidgets[batch_output] && mWidgets[batch_input]) {
+        QString inputDirPath = dynamic_cast<DkBatchInput *>(mWidgets[batch_input]->contentWidget())->getDir();
+        QString outputDirPath = dynamic_cast<DkBatchOutput *>(mWidgets[batch_output]->contentWidget())->getOutputDirectory();
 
-	if (!inputWidget()->getSelectedFiles().isEmpty()) {
+        // TODO: shouldn't we enable it always?
+        // mButtonWidget->playButton()->setEnabled(inputDirPath == "" || outputDirPath == "");
+    }
 
-		QUrl url = inputWidget()->getSelectedFiles().first();
-		QString fString = url.toString();
-		fString = fString.replace("file:///", "");
+    if (!inputWidget()->getSelectedFiles().isEmpty()) {
+        QUrl url = inputWidget()->getSelectedFiles().first();
+        QString fString = url.toString();
+        fString = fString.replace("file:///", "");
 
-		QFileInfo cFileInfo = QFileInfo(fString);
-		if (!cFileInfo.exists())	// try an alternative conversion
-			cFileInfo = QFileInfo(url.toLocalFile());
+        QFileInfo cFileInfo = QFileInfo(fString);
+        if (!cFileInfo.exists()) // try an alternative conversion
+            cFileInfo = QFileInfo(url.toLocalFile());
 
-		outputWidget()->setExampleFilename(cFileInfo.fileName());
-		manipulatorWidget()->setExampleFile(cFileInfo.filePath());
-		mButtonWidget->playButton()->setEnabled(true);
-	}
+        outputWidget()->setExampleFilename(cFileInfo.fileName());
+        manipulatorWidget()->setExampleFile(cFileInfo.filePath());
+        mButtonWidget->playButton()->setEnabled(true);
+    }
 }
 
 }

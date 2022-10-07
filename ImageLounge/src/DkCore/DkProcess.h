@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkProcess.h
  Created on:	27.12.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
@@ -27,19 +27,19 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QSharedPointer>
-#include <QFutureWatcher>
-#include <QFileInfo>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDir>
+#include <QFileInfo>
+#include <QFutureWatcher>
+#include <QSharedPointer>
 #include <QStringList>
 #include <QUrl>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #include "DkBatchInfo.h"
 #include "DkManipulators.h"
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -55,7 +55,8 @@
 class QImage;
 class QSettings;
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 class DkImageContainer;
@@ -63,307 +64,344 @@ class DkPluginContainer;
 class DkBaseManipulator;
 class DkMetaDataT;
 
-class DllCoreExport DkAbstractBatch {
-
+class DllCoreExport DkAbstractBatch
+{
 public:
-	DkAbstractBatch() {};
+    DkAbstractBatch(){};
 
-	virtual void setProperties(...) {};
-	virtual void saveSettings(QSettings&) const {};
-	virtual void loadSettings(QSettings&) {};
-	virtual bool compute(
-		QSharedPointer<DkImageContainer> container, 
-		const DkSaveInfo& saveInfo, 
-		QStringList& logStrings, 
-		QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const;
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
-	virtual bool compute(QImage&, QStringList&) const { return true; };
-	virtual bool isActive() const { return false; };
-	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >&) const {};
+    virtual void setProperties(...){};
+    virtual void saveSettings(QSettings &) const {};
+    virtual void loadSettings(QSettings &){};
+    virtual bool compute(QSharedPointer<DkImageContainer> container,
+                         const DkSaveInfo &saveInfo,
+                         QStringList &logStrings,
+                         QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const;
+    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const;
+    virtual bool compute(QImage &, QStringList &) const
+    {
+        return true;
+    };
+    virtual bool isActive() const
+    {
+        return false;
+    };
+    virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &) const {};
 
-	virtual QString name() const {return "Abstract Batch";};
-	QString settingsName() const;
+    virtual QString name() const
+    {
+        return "Abstract Batch";
+    };
+    QString settingsName() const;
 
-	static QSharedPointer<DkAbstractBatch> createFromName(const QString& settingsName);
+    static QSharedPointer<DkAbstractBatch> createFromName(const QString &settingsName);
 
 private:
-	// ok, this is important:
-	// we are using the abstract class to process specialized items
-	// if we allow copy operations - we get slicing issues
-	// so we just allow pointers to the batch processing functions.
-	// but pointers result in threading issues - so we just use
-	// QSharedPointers -> problem solved : )
-	DkAbstractBatch(const DkAbstractBatch& o);
-	DkAbstractBatch& operator=( const DkAbstractBatch& o);
-
+    // ok, this is important:
+    // we are using the abstract class to process specialized items
+    // if we allow copy operations - we get slicing issues
+    // so we just allow pointers to the batch processing functions.
+    // but pointers result in threading issues - so we just use
+    // QSharedPointers -> problem solved : )
+    DkAbstractBatch(const DkAbstractBatch &o);
+    DkAbstractBatch &operator=(const DkAbstractBatch &o);
 };
 
 #ifdef WITH_PLUGINS
-class DllCoreExport DkPluginBatch : public DkAbstractBatch {
-
+class DllCoreExport DkPluginBatch : public DkAbstractBatch
+{
 public:
-	DkPluginBatch();
+    DkPluginBatch();
 
-	virtual void saveSettings(QSettings& settings) const override;
-	virtual void loadSettings(QSettings& settings) override;
+    virtual void saveSettings(QSettings &settings) const override;
+    virtual void loadSettings(QSettings &settings) override;
 
-	virtual void preLoad();
-	virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const override;
-	virtual void setProperties(const QStringList& pluginList);
-	virtual bool compute(
-		QSharedPointer<DkImageContainer> container, 
-		const DkSaveInfo& saveInfo, 
-		QStringList& logStrings, 
-		QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const override;
-	virtual QString name() const override;
-	virtual bool isActive() const override;
-	virtual QStringList pluginList() const;
+    virtual void preLoad();
+    virtual void postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const override;
+    virtual void setProperties(const QStringList &pluginList);
+    virtual bool compute(QSharedPointer<DkImageContainer> container,
+                         const DkSaveInfo &saveInfo,
+                         QStringList &logStrings,
+                         QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const override;
+    virtual QString name() const override;
+    virtual bool isActive() const override;
+    virtual QStringList pluginList() const;
 
 protected:
-	void loadAllPlugins();
-	void loadPlugin(const QString& pluginString, QSharedPointer<DkPluginContainer>& plugin, QString& runID) const;
+    void loadAllPlugins();
+    void loadPlugin(const QString &pluginString, QSharedPointer<DkPluginContainer> &plugin, QString &runID) const;
 
-	QVector<QSharedPointer<DkPluginContainer> > mPlugins;
-	QStringList mRunIDs;
-	QStringList mPluginList;
+    QVector<QSharedPointer<DkPluginContainer>> mPlugins;
+    QStringList mRunIDs;
+    QStringList mPluginList;
 };
 #endif
 
-class DllCoreExport DkManipulatorBatch : public DkAbstractBatch {
-
+class DllCoreExport DkManipulatorBatch : public DkAbstractBatch
+{
 public:
-	DkManipulatorBatch();
+    DkManipulatorBatch();
 
-	virtual void saveSettings(QSettings& settings) const override;
-	virtual void loadSettings(QSettings& settings) override;
+    virtual void saveSettings(QSettings &settings) const override;
+    virtual void loadSettings(QSettings &settings) override;
 
-	virtual void setProperties(const DkManipulatorManager& manager);
-	virtual bool compute(
-		QSharedPointer<DkImageContainer> container, 
-		QStringList& logStrings) const override;
-	virtual QString name() const override;
-	virtual bool isActive() const override;
+    virtual void setProperties(const DkManipulatorManager &manager);
+    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    virtual QString name() const override;
+    virtual bool isActive() const override;
 
-	DkManipulatorManager manager() const;
+    DkManipulatorManager manager() const;
 
 protected:
-	DkManipulatorManager mManager;
+    DkManipulatorManager mManager;
 };
 
-class DllCoreExport DkBatchTransform : public DkAbstractBatch {
-
+class DllCoreExport DkBatchTransform : public DkAbstractBatch
+{
 public:
-	DkBatchTransform();
+    DkBatchTransform();
 
-	enum ResizeMode {
-		resize_mode_default,
-		resize_mode_long_side,
-		resize_mode_short_side,
-		resize_mode_width,
-		resize_mode_height,
+    enum ResizeMode {
+        resize_mode_default,
+        resize_mode_long_side,
+        resize_mode_short_side,
+        resize_mode_width,
+        resize_mode_height,
 
-		resize_mode_end
-	};
+        resize_mode_end
+    };
 
-	enum ResizeProperty {
-		resize_prop_default,
-		resize_prop_decrease_only,
-		resize_prop_increase_only,
+    enum ResizeProperty {
+        resize_prop_default,
+        resize_prop_decrease_only,
+        resize_prop_increase_only,
 
-		resize_prop_end
-	};
+        resize_prop_end
+    };
 
-	virtual void saveSettings(QSettings& settings) const override;
-	virtual void loadSettings(QSettings& settings) override;
+    virtual void saveSettings(QSettings &settings) const override;
+    virtual void loadSettings(QSettings &settings) override;
 
-	virtual void setProperties(
-		int angle, 
-		bool cropFromMetadata,
-		QRect cropRect,
-		float scaleFactor, 
-		const ResizeMode& mode = resize_mode_default, 
-		const ResizeProperty& prop = resize_prop_default, 
-		int iplMethod = 1/*DkImage::ipl_area*/, 
-		bool correctGamma = false
-		);
+    virtual void setProperties(int angle,
+                               bool cropFromMetadata,
+                               QRect cropRect,
+                               float scaleFactor,
+                               const ResizeMode &mode = resize_mode_default,
+                               const ResizeProperty &prop = resize_prop_default,
+                               int iplMethod = 1 /*DkImage::ipl_area*/,
+                               bool correctGamma = false);
 
-	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const override;
-	virtual QString name() const override;
-	virtual bool isActive() const override;
+    virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const override;
+    virtual QString name() const override;
+    virtual bool isActive() const override;
 
-	int angle() const;
-	bool cropMetatdata() const;
-	bool cropFromRectangle() const;
-	QRect cropRectangle() const;
+    int angle() const;
+    bool cropMetatdata() const;
+    bool cropFromRectangle() const;
+    QRect cropRectangle() const;
 
-	// resize
-	ResizeMode mode() const;
-	ResizeProperty prop() const;
-	int iplMethod() const;
-	float scaleFactor() const;
-	bool correctGamma() const;
+    // resize
+    ResizeMode mode() const;
+    ResizeProperty prop() const;
+    int iplMethod() const;
+    float scaleFactor() const;
+    bool correctGamma() const;
 
 protected:
-	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
-	bool isResizeActive() const;
-	QString rectToString(const QRect& r) const;
-	QRect stringToRect(const QString& s) const;
+    bool prepareProperties(const QSize &imgSize, QSize &size, float &scaleFactor, QStringList &logStrings) const;
+    bool isResizeActive() const;
+    QString rectToString(const QRect &r) const;
+    QRect stringToRect(const QString &s) const;
 
-	int mAngle = 0;
-	bool mCropFromMetadata = false;
+    int mAngle = 0;
+    bool mCropFromMetadata = false;
 
-	ResizeMode mResizeMode = resize_mode_default;
-	ResizeProperty mResizeProperty = resize_prop_default;
-	float mResizeScaleFactor = 1.0f;
-	int mResizeIplMethod = 0;
-	bool mResizeCorrectGamma = false;
-	
-	QRect mCropRect;
+    ResizeMode mResizeMode = resize_mode_default;
+    ResizeProperty mResizeProperty = resize_prop_default;
+    float mResizeScaleFactor = 1.0f;
+    int mResizeIplMethod = 0;
+    bool mResizeCorrectGamma = false;
+
+    QRect mCropRect;
 };
 
-class DllCoreExport DkBatchProcess {
-
+class DllCoreExport DkBatchProcess
+{
 public:
-	DkBatchProcess(const DkSaveInfo& saveInfo = DkSaveInfo());
+    DkBatchProcess(const DkSaveInfo &saveInfo = DkSaveInfo());
 
-	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
-	bool compute();	// do the work
-	QStringList getLog() const;
-	bool hasFailed() const;
-	bool wasProcessed() const;
-	QString inputFile() const;
-	QString outputFile() const;
+    void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch>> processes);
+    bool compute(); // do the work
+    QStringList getLog() const;
+    bool hasFailed() const;
+    bool wasProcessed() const;
+    QString inputFile() const;
+    QString outputFile() const;
 
-	QVector<QSharedPointer<DkBatchInfo> > batchInfo() const;
+    QVector<QSharedPointer<DkBatchInfo>> batchInfo() const;
 
 protected:
-	bool process();
-	bool prepareDeleteExisting();
-	bool deleteOrRestoreExisting();
-	bool deleteOriginalFile();
-	bool copyFile();
-	bool renameFile();
-	bool updateMetaData(DkMetaDataT* md);
+    bool process();
+    bool prepareDeleteExisting();
+    bool deleteOrRestoreExisting();
+    bool deleteOriginalFile();
+    bool copyFile();
+    bool renameFile();
+    bool updateMetaData(DkMetaDataT *md);
 
-	DkSaveInfo mSaveInfo;
-	int mFailure = 0;
-	bool mIsProcessed = false;
+    DkSaveInfo mSaveInfo;
+    int mFailure = 0;
+    bool mIsProcessed = false;
 
-	QVector<QSharedPointer<DkBatchInfo> > mInfos;
-	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
-	QStringList mLogStrings;
+    QVector<QSharedPointer<DkBatchInfo>> mInfos;
+    QVector<QSharedPointer<DkAbstractBatch>> mProcessFunctions;
+    QStringList mLogStrings;
 };
 
-class DllCoreExport DkBatchConfig {
-
+class DllCoreExport DkBatchConfig
+{
 public:
-	DkBatchConfig() { };
-	DkBatchConfig(const QStringList& fileList, const QString& outputDir, const QString& fileNamePattern);
+    DkBatchConfig(){};
+    DkBatchConfig(const QStringList &fileList, const QString &outputDir, const QString &fileNamePattern);
 
-	virtual void saveSettings(QSettings& settings) const;
-	virtual void loadSettings(QSettings& settings);
+    virtual void saveSettings(QSettings &settings) const;
+    virtual void loadSettings(QSettings &settings);
 
-	bool isOk() const;
+    bool isOk() const;
 
-	void setFileList(const QStringList& fileList) { mFileList = fileList; };
-	void setOutputDir(const QString& outputDir) { mOutputDirPath = outputDir; };
-	void setFileNamePattern(const QString& pattern) { mFileNamePattern = pattern; };
-	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { mProcessFunctions = processFunctions; };
-	void setSaveInfo(const DkSaveInfo& saveInfo) { mSaveInfo = saveInfo; };
+    void setFileList(const QStringList &fileList)
+    {
+        mFileList = fileList;
+    };
+    void setOutputDir(const QString &outputDir)
+    {
+        mOutputDirPath = outputDir;
+    };
+    void setFileNamePattern(const QString &pattern)
+    {
+        mFileNamePattern = pattern;
+    };
+    void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch>> &processFunctions)
+    {
+        mProcessFunctions = processFunctions;
+    };
+    void setSaveInfo(const DkSaveInfo &saveInfo)
+    {
+        mSaveInfo = saveInfo;
+    };
 
-	QStringList getFileList() const { return mFileList; };
-	QString getOutputDirPath() const { return mOutputDirPath; };
-	QString getFileNamePattern() const { return mFileNamePattern; };
-	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return mProcessFunctions; };
-	DkSaveInfo saveInfo() const { return mSaveInfo; };
+    QStringList getFileList() const
+    {
+        return mFileList;
+    };
+    QString getOutputDirPath() const
+    {
+        return mOutputDirPath;
+    };
+    QString getFileNamePattern() const
+    {
+        return mFileNamePattern;
+    };
+    QVector<QSharedPointer<DkAbstractBatch>> getProcessFunctions() const
+    {
+        return mProcessFunctions;
+    };
+    DkSaveInfo saveInfo() const
+    {
+        return mSaveInfo;
+    };
 
 protected:
-	
-	DkSaveInfo mSaveInfo;
+    DkSaveInfo mSaveInfo;
 
-	QStringList mFileList;
-	QString mOutputDirPath;
-	QString mFileNamePattern;
-	
-	QVector<QSharedPointer<DkAbstractBatch> > mProcessFunctions;
+    QStringList mFileList;
+    QString mOutputDirPath;
+    QString mFileNamePattern;
+
+    QVector<QSharedPointer<DkAbstractBatch>> mProcessFunctions;
 };
 
-class DllCoreExport DkBatchProcessing : public QObject {
-	Q_OBJECT
+class DllCoreExport DkBatchProcessing : public QObject
+{
+    Q_OBJECT
 
 public:
+    enum {
+        batch_item_failed,
+        batch_item_succeeded,
+        batch_item_not_computed,
 
-	enum {
-		batch_item_failed,
-		batch_item_succeeded,
-		batch_item_not_computed,
+        batch_item_end
+    };
 
-		batch_item_end
-	};
+    DkBatchProcessing(const DkBatchConfig &config = DkBatchConfig(), QWidget *parent = 0);
 
-	DkBatchProcessing(const DkBatchConfig& config = DkBatchConfig(), QWidget* parent = 0);
+    void compute();
+    static bool computeItem(DkBatchProcess &item);
 
-	void compute();
-	static bool computeItem(DkBatchProcess& item);
-	
-	QStringList getLog() const;
-	int getNumFailures() const;
-	int getNumItems() const;
-	int getNumProcessed() const;
-	
-	bool isComputing() const;
-	QList<int> getCurrentResults();
-	QStringList getResultList() const;
-	QString getBatchSummary(const DkBatchProcess& batch) const;
-	void waitForFinished();
+    QStringList getLog() const;
+    int getNumFailures() const;
+    int getNumItems() const;
+    int getNumProcessed() const;
 
-	// getter, setter
-	void setBatchConfig(const DkBatchConfig& config) { mBatchConfig = config; };
-	DkBatchConfig getBatchConfig() const { return mBatchConfig; };
+    bool isComputing() const;
+    QList<int> getCurrentResults();
+    QStringList getResultList() const;
+    QString getBatchSummary(const DkBatchProcess &batch) const;
+    void waitForFinished();
 
-	void postLoad();
+    // getter, setter
+    void setBatchConfig(const DkBatchConfig &config)
+    {
+        mBatchConfig = config;
+    };
+    DkBatchConfig getBatchConfig() const
+    {
+        return mBatchConfig;
+    };
 
-	static void computeBatch(const QString& settingsPath, const QString& logPath);
+    void postLoad();
+
+    static void computeBatch(const QString &settingsPath, const QString &logPath);
 
 public slots:
-	// user interaction
-	void cancel();
+    // user interaction
+    void cancel();
 
 signals:
-	void progressValueChanged(int idx);
-	void finished();
+    void progressValueChanged(int idx);
+    void finished();
 
 protected:
-	DkBatchConfig mBatchConfig;
-	QVector<DkBatchProcess> mBatchItems;
-	QList<int> mResList;
-	
-	// threading
-	QFutureWatcher<void> mBatchWatcher;
-	
-	void init();
+    DkBatchConfig mBatchConfig;
+    QVector<DkBatchProcess> mBatchItems;
+    QList<int> mResList;
+
+    // threading
+    QFutureWatcher<void> mBatchWatcher;
+
+    void init();
 };
 
-class DllCoreExport DkBatchProfile {
-
+class DllCoreExport DkBatchProfile
+{
 public:
-	DkBatchProfile(const QString& profileDir = QString());
-	
-	static DkBatchConfig loadProfile(const QString& profilePath);
-	static bool saveProfile(const QString& profilePath, const DkBatchConfig& batchConfig);
-	static QString defaultProfilePath();
-	static QString profileNameToPath(const QString& profileName);
-	static QString makeUserFriendly(const QString& profilePath);
-	static QString extension();
+    DkBatchProfile(const QString &profileDir = QString());
 
-	QStringList profileNames();
+    static DkBatchConfig loadProfile(const QString &profilePath);
+    static bool saveProfile(const QString &profilePath, const DkBatchConfig &batchConfig);
+    static QString defaultProfilePath();
+    static QString profileNameToPath(const QString &profileName);
+    static QString makeUserFriendly(const QString &profilePath);
+    static QString extension();
+
+    QStringList profileNames();
 
 protected:
-	QStringList index(const QString& profileDir) const;
+    QStringList index(const QString &profileDir) const;
 
-	QString mProfileDir;
-	QStringList mProfilePaths;
-	static QString ext;
+    QString mProfileDir;
+    QStringList mProfilePaths;
+    static QString ext;
 };
 
 }

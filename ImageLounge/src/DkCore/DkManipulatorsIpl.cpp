@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -31,470 +31,540 @@
 #include "DkImageStorage.h"
 #include "DkMath.h"
 
-#pragma warning(push, 0)	// no warnings from includes
-#include <QSharedPointer>
+#pragma warning(push, 0) // no warnings from includes
 #include <QDebug>
+#include <QSharedPointer>
 #pragma warning(pop)
 
-namespace nmc {
+namespace nmc
+{
 
 // DkGrayScaleManipulator --------------------------------------------------------------------
-DkGrayScaleManipulator::DkGrayScaleManipulator(QAction * action) : DkBaseManipulator(action) {
+DkGrayScaleManipulator::DkGrayScaleManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkGrayScaleManipulator::apply(const QImage& img) const {
+QImage DkGrayScaleManipulator::apply(const QImage &img) const
+{
+    if (img.isNull())
+        return img;
 
-	if (img.isNull())
-		return img;
-
-	return DkImage::grayscaleImage(img);
+    return DkImage::grayscaleImage(img);
 }
 
-QString DkGrayScaleManipulator::errorMessage() const {
-	return QObject::tr("Could not convert to grayscale");
+QString DkGrayScaleManipulator::errorMessage() const
+{
+    return QObject::tr("Could not convert to grayscale");
 }
 
 // DkAutoAdjustManipulator --------------------------------------------------------------------
-DkAutoAdjustManipulator::DkAutoAdjustManipulator(QAction * action) : DkBaseManipulator(action) {
+DkAutoAdjustManipulator::DkAutoAdjustManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkAutoAdjustManipulator::apply(const QImage & img) const {
-	
-	QImage imgR = img;
-	if (DkImage::autoAdjustImage(imgR))
-		return imgR;
+QImage DkAutoAdjustManipulator::apply(const QImage &img) const
+{
+    QImage imgR = img;
+    if (DkImage::autoAdjustImage(imgR))
+        return imgR;
 
-	return QImage();
+    return QImage();
 }
 
-QString DkAutoAdjustManipulator::errorMessage() const {
-	return QString(QObject::tr("Cannot auto adjust"));
+QString DkAutoAdjustManipulator::errorMessage() const
+{
+    return QString(QObject::tr("Cannot auto adjust"));
 }
 
 // DkNormalizeManipulator --------------------------------------------------------------------
-DkNormalizeManipulator::DkNormalizeManipulator(QAction * action) : DkBaseManipulator(action) {
+DkNormalizeManipulator::DkNormalizeManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkNormalizeManipulator::apply(const QImage & img) const {
-	
-	QImage imgR = img;
-	if (DkImage::normImage(imgR)) {
-		return imgR;
-	}
+QImage DkNormalizeManipulator::apply(const QImage &img) const
+{
+    QImage imgR = img;
+    if (DkImage::normImage(imgR)) {
+        return imgR;
+    }
 
-	return QImage();
+    return QImage();
 }
 
-QString DkNormalizeManipulator::errorMessage() const {
-	return QObject::tr("The Image is Already Normalized...");
+QString DkNormalizeManipulator::errorMessage() const
+{
+    return QObject::tr("The Image is Already Normalized...");
 }
 
 // DkInvertManipulator --------------------------------------------------------------------
-DkInvertManipulator::DkInvertManipulator(QAction * action) : DkBaseManipulator(action) {
+DkInvertManipulator::DkInvertManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkInvertManipulator::apply(const QImage & img) const {
-	
-	QImage imgR = img;
-	imgR.invertPixels();
-	return imgR;
+QImage DkInvertManipulator::apply(const QImage &img) const
+{
+    QImage imgR = img;
+    imgR.invertPixels();
+    return imgR;
 }
 
-QString DkInvertManipulator::errorMessage() const {
-	return QObject::tr("Cannot invert image");
+QString DkInvertManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot invert image");
 }
 
 // Flip Horizontally --------------------------------------------------------------------
-DkFlipHManipulator::DkFlipHManipulator(QAction * action) : DkBaseManipulator(action) {
+DkFlipHManipulator::DkFlipHManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkFlipHManipulator::apply(const QImage & img) const {
-	
-	return img.mirrored(true, false);
+QImage DkFlipHManipulator::apply(const QImage &img) const
+{
+    return img.mirrored(true, false);
 }
 
-QString DkFlipHManipulator::errorMessage() const {
-	return QObject::tr("Cannot flip image");
+QString DkFlipHManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot flip image");
 }
 
 // Flip Vertically --------------------------------------------------------------------
-DkFlipVManipulator::DkFlipVManipulator(QAction * action) : DkBaseManipulator(action) {
+DkFlipVManipulator::DkFlipVManipulator(QAction *action)
+    : DkBaseManipulator(action)
+{
 }
 
-QImage DkFlipVManipulator::apply(const QImage & img) const {
-	return img.mirrored(false, true);
+QImage DkFlipVManipulator::apply(const QImage &img) const
+{
+    return img.mirrored(false, true);
 }
 
-QString DkFlipVManipulator::errorMessage() const {
-	return QObject::tr("Cannot flip image");
+QString DkFlipVManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot flip image");
 }
 
 // DkTinyPlanetManipulator --------------------------------------------------------------------
-DkTinyPlanetManipulator::DkTinyPlanetManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkTinyPlanetManipulator::DkTinyPlanetManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkTinyPlanetManipulator::apply(const QImage & img) const {
-
+QImage DkTinyPlanetManipulator::apply(const QImage &img) const
+{
 #ifdef WITH_OPENCV
-	int ms = qMax(img.width(), img.height());
-	QSize s(ms, ms);
+    int ms = qMax(img.width(), img.height());
+    QSize s(ms, ms);
 
-	QImage imgR = img.copy();
-	DkImage::tinyPlanet(imgR, size(), angle()*DK_DEG2RAD, s, inverted());
-	return imgR;
+    QImage imgR = img.copy();
+    DkImage::tinyPlanet(imgR, size(), angle() * DK_DEG2RAD, s, inverted());
+    return imgR;
 #else
-	Q_UNUSED(img);
-	return QImage();	// trigger warning
+    Q_UNUSED(img);
+    return QImage(); // trigger warning
 #endif
 }
 
-QString DkTinyPlanetManipulator::errorMessage() const {
-	return QObject::tr("Sorry, I could not create a tiny planet");
+QString DkTinyPlanetManipulator::errorMessage() const
+{
+    return QObject::tr("Sorry, I could not create a tiny planet");
 }
 
-void DkTinyPlanetManipulator::setAngle(int angle) {
+void DkTinyPlanetManipulator::setAngle(int angle)
+{
+    if (angle == mAngle)
+        return;
 
-	if (angle == mAngle)
-		return;
-
-	mAngle = angle;
-	action()->trigger();
+    mAngle = angle;
+    action()->trigger();
 }
 
-int DkTinyPlanetManipulator::angle() const {
-	return mAngle;
+int DkTinyPlanetManipulator::angle() const
+{
+    return mAngle;
 }
 
-void DkTinyPlanetManipulator::setSize(int size) {
+void DkTinyPlanetManipulator::setSize(int size)
+{
+    if (mSize == size)
+        return;
 
-	if (mSize == size)
-		return;
-
-	mSize = size;
-	action()->trigger();
+    mSize = size;
+    action()->trigger();
 }
 
-int DkTinyPlanetManipulator::size() const {
-	return mSize;
+int DkTinyPlanetManipulator::size() const
+{
+    return mSize;
 }
 
-void DkTinyPlanetManipulator::setInverted(bool inverted) {
+void DkTinyPlanetManipulator::setInverted(bool inverted)
+{
+    if (mInverted == inverted)
+        return;
 
-	if (mInverted == inverted)
-		return;
-
-	mInverted = inverted;
-	action()->trigger();
+    mInverted = inverted;
+    action()->trigger();
 }
 
-bool DkTinyPlanetManipulator::inverted() const {
-	return mInverted;
-}
-
-// DkUnsharpMaskManipulator --------------------------------------------------------------------
-DkBlurManipulator::DkBlurManipulator(QAction* action) : DkBaseManipulatorExt(action) {
-}
-
-QImage DkBlurManipulator::apply(const QImage& img) const {
-
-	QImage imgC = img.copy();
-	DkImage::gaussianBlur(imgC, (float)sigma());
-	return imgC;
-}
-
-QString DkBlurManipulator::errorMessage() const {
-	
-	// so give me coffee & TV
-	return QObject::tr("Cannot blur image");
-}
-
-void DkBlurManipulator::setSigma(int sigma) {
-
-	if (mSigma == sigma)
-		return;
-
-	mSigma = sigma;
-	action()->trigger();
-}
-
-int DkBlurManipulator::sigma() const {
-	return mSigma;
+bool DkTinyPlanetManipulator::inverted() const
+{
+    return mInverted;
 }
 
 // DkUnsharpMaskManipulator --------------------------------------------------------------------
-DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkBlurManipulator::DkBlurManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkUnsharpMaskManipulator::apply(const QImage & img) const {
-
-	QImage imgC = img.copy();
-	DkImage::unsharpMask(imgC, (float)sigma(), 1.0f+amount()/100.0f);
-	return imgC;
+QImage DkBlurManipulator::apply(const QImage &img) const
+{
+    QImage imgC = img.copy();
+    DkImage::gaussianBlur(imgC, (float)sigma());
+    return imgC;
 }
 
-QString DkUnsharpMaskManipulator::errorMessage() const {
-	return QObject::tr("Cannot sharpen image");
+QString DkBlurManipulator::errorMessage() const
+{
+    // so give me coffee & TV
+    return QObject::tr("Cannot blur image");
 }
 
-void DkUnsharpMaskManipulator::setSigma(int sigma) {
+void DkBlurManipulator::setSigma(int sigma)
+{
+    if (mSigma == sigma)
+        return;
 
-	if (mSigma == sigma)
-		return;
-
-	mSigma = sigma;
-	action()->trigger();
+    mSigma = sigma;
+    action()->trigger();
 }
 
-int DkUnsharpMaskManipulator::sigma() const {
-	return mSigma;
+int DkBlurManipulator::sigma() const
+{
+    return mSigma;
 }
 
-void DkUnsharpMaskManipulator::setAmount(int amount) {
-
-	if (mAmount == amount)
-		return;
-
-	mAmount = amount;
-	action()->trigger();
+// DkUnsharpMaskManipulator --------------------------------------------------------------------
+DkUnsharpMaskManipulator::DkUnsharpMaskManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-int DkUnsharpMaskManipulator::amount() const {
-	return mAmount;
+QImage DkUnsharpMaskManipulator::apply(const QImage &img) const
+{
+    QImage imgC = img.copy();
+    DkImage::unsharpMask(imgC, (float)sigma(), 1.0f + amount() / 100.0f);
+    return imgC;
+}
+
+QString DkUnsharpMaskManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot sharpen image");
+}
+
+void DkUnsharpMaskManipulator::setSigma(int sigma)
+{
+    if (mSigma == sigma)
+        return;
+
+    mSigma = sigma;
+    action()->trigger();
+}
+
+int DkUnsharpMaskManipulator::sigma() const
+{
+    return mSigma;
+}
+
+void DkUnsharpMaskManipulator::setAmount(int amount)
+{
+    if (mAmount == amount)
+        return;
+
+    mAmount = amount;
+    action()->trigger();
+}
+
+int DkUnsharpMaskManipulator::amount() const
+{
+    return mAmount;
 }
 
 // Rotate Manipulator --------------------------------------------------------------------
-DkRotateManipulator::DkRotateManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkRotateManipulator::DkRotateManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkRotateManipulator::apply(const QImage & img) const {
-	return DkImage::rotate(img, angle());
+QImage DkRotateManipulator::apply(const QImage &img) const
+{
+    return DkImage::rotate(img, angle());
 }
 
-QString DkRotateManipulator::errorMessage() const {
-	return QObject::tr("Cannot rotate image");
+QString DkRotateManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot rotate image");
 }
 
-void DkRotateManipulator::setAngle(int angle) {
-	
-	if (angle == mAngle)
-		return;
+void DkRotateManipulator::setAngle(int angle)
+{
+    if (angle == mAngle)
+        return;
 
-	mAngle = angle;
-	action()->trigger();
+    mAngle = angle;
+    action()->trigger();
 }
 
-int DkRotateManipulator::angle() const {
-	return mAngle;
+int DkRotateManipulator::angle() const
+{
+    return mAngle;
 }
 
-// -------------------------------------------------------------------- DkResizeManipulator 
-DkResizeManipulator::DkResizeManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+// -------------------------------------------------------------------- DkResizeManipulator
+DkResizeManipulator::DkResizeManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkResizeManipulator::apply(const QImage & img) const {
+QImage DkResizeManipulator::apply(const QImage &img) const
+{
+    if (mScaleFactor == 1.0)
+        return img;
 
-	if (mScaleFactor == 1.0)
-		return img;
-
-	return DkImage::resizeImage(img, QSize(), mScaleFactor, mInterpolation, mCorrectGamma);
+    return DkImage::resizeImage(img, QSize(), mScaleFactor, mInterpolation, mCorrectGamma);
 }
 
-QString DkResizeManipulator::errorMessage() const {
-	return QObject::tr("Cannot resize image");
+QString DkResizeManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot resize image");
 }
 
-void DkResizeManipulator::setScaleFactor(double sf) {
-	mScaleFactor = sf;
-	action()->trigger();
+void DkResizeManipulator::setScaleFactor(double sf)
+{
+    mScaleFactor = sf;
+    action()->trigger();
 }
 
-double DkResizeManipulator::scaleFactor() const {
-	return mScaleFactor;
+double DkResizeManipulator::scaleFactor() const
+{
+    return mScaleFactor;
 }
 
-void DkResizeManipulator::setInterpolation(int ipl) {
-	mInterpolation = ipl;
-	action()->trigger();
+void DkResizeManipulator::setInterpolation(int ipl)
+{
+    mInterpolation = ipl;
+    action()->trigger();
 }
 
-int DkResizeManipulator::interpolation() const {
-	return mInterpolation;
+int DkResizeManipulator::interpolation() const
+{
+    return mInterpolation;
 }
 
-void DkResizeManipulator::setCorrectGamma(bool cg) {
-	mCorrectGamma = cg;
-	action()->trigger();
+void DkResizeManipulator::setCorrectGamma(bool cg)
+{
+    mCorrectGamma = cg;
+    action()->trigger();
 }
 
-bool DkResizeManipulator::correctGamma() const {
-	return mCorrectGamma;
+bool DkResizeManipulator::correctGamma() const
+{
+    return mCorrectGamma;
 }
-
 
 // Rotate Manipulator --------------------------------------------------------------------
-DkThresholdManipulator::DkThresholdManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkThresholdManipulator::DkThresholdManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkThresholdManipulator::apply(const QImage & img) const {
-	
-	return DkImage::thresholdImage(img, threshold(), color());
+QImage DkThresholdManipulator::apply(const QImage &img) const
+{
+    return DkImage::thresholdImage(img, threshold(), color());
 }
 
-QString DkThresholdManipulator::errorMessage() const {
-	return QObject::tr("Cannot threshold image");
+QString DkThresholdManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot threshold image");
 }
 
-void DkThresholdManipulator::setThreshold(int thr) {
+void DkThresholdManipulator::setThreshold(int thr)
+{
+    if (thr == mThreshold)
+        return;
 
-	if (thr == mThreshold)
-		return;
-
-	mThreshold = thr;
-	action()->trigger();
+    mThreshold = thr;
+    action()->trigger();
 }
 
-int DkThresholdManipulator::threshold() const {
-	return mThreshold;
+int DkThresholdManipulator::threshold() const
+{
+    return mThreshold;
 }
 
-void DkThresholdManipulator::setColor(bool col) {
+void DkThresholdManipulator::setColor(bool col)
+{
+    if (col == mColor)
+        return;
 
-	if (col == mColor)
-		return;
-
-	mColor = col;
-	action()->trigger();
+    mColor = col;
+    action()->trigger();
 }
 
-bool DkThresholdManipulator::color() const {
-	return mColor;
+bool DkThresholdManipulator::color() const
+{
+    return mColor;
 }
 
 // DkHueManipulator --------------------------------------------------------------------
-DkHueManipulator::DkHueManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkHueManipulator::DkHueManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkHueManipulator::apply(const QImage & img) const {
-	return DkImage::hueSaturation(img, hue(), saturation(), value());
+QImage DkHueManipulator::apply(const QImage &img) const
+{
+    return DkImage::hueSaturation(img, hue(), saturation(), value());
 }
 
-QString DkHueManipulator::errorMessage() const {
-	return QObject::tr("Cannot change Hue/Saturation");
+QString DkHueManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot change Hue/Saturation");
 }
 
-void DkHueManipulator::setHue(int hue) {
-	
-	if (mHue == hue)
-		return;
-	
-	mHue = hue;
-	action()->trigger();
+void DkHueManipulator::setHue(int hue)
+{
+    if (mHue == hue)
+        return;
+
+    mHue = hue;
+    action()->trigger();
 }
 
-int DkHueManipulator::hue() const {
-	return mHue;
+int DkHueManipulator::hue() const
+{
+    return mHue;
 }
 
-void DkHueManipulator::setSaturation(int sat) {
+void DkHueManipulator::setSaturation(int sat)
+{
+    if (mSat == sat)
+        return;
 
-	if (mSat == sat)
-		return;
-
-	mSat = sat;
-	action()->trigger();
+    mSat = sat;
+    action()->trigger();
 }
 
-int DkHueManipulator::saturation() const {
-	return mSat;
+int DkHueManipulator::saturation() const
+{
+    return mSat;
 }
 
-void DkHueManipulator::setValue(int val) {
+void DkHueManipulator::setValue(int val)
+{
+    if (mValue == val)
+        return;
 
-	if (mValue == val)
-		return;
-
-	mValue = val;
-	action()->trigger();
+    mValue = val;
+    action()->trigger();
 }
 
-int DkHueManipulator::value() const {
-	return mValue;
+int DkHueManipulator::value() const
+{
+    return mValue;
 }
 
-DkExposureManipulator::DkExposureManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+DkExposureManipulator::DkExposureManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkExposureManipulator::apply(const QImage & img) const {
-	return DkImage::exposure(img, exposure(), offset(), gamma());
+QImage DkExposureManipulator::apply(const QImage &img) const
+{
+    return DkImage::exposure(img, exposure(), offset(), gamma());
 }
 
-QString DkExposureManipulator::errorMessage() const {
-	return QObject::tr("Cannot apply exposure");
+QString DkExposureManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot apply exposure");
 }
 
-void DkExposureManipulator::setExposure(double exposure) {
+void DkExposureManipulator::setExposure(double exposure)
+{
+    if (mExposure == exposure)
+        return;
 
-	if (mExposure == exposure)
-		return;
-
-	mExposure = exposure;
-	action()->trigger();
+    mExposure = exposure;
+    action()->trigger();
 }
 
-double DkExposureManipulator::exposure() const {
-	return mExposure;
+double DkExposureManipulator::exposure() const
+{
+    return mExposure;
 }
 
-void DkExposureManipulator::setOffset(double offset) {
+void DkExposureManipulator::setOffset(double offset)
+{
+    if (mOffset == offset)
+        return;
 
-	if (mOffset == offset)
-		return;
-
-	mOffset = offset;
-	action()->trigger();
+    mOffset = offset;
+    action()->trigger();
 }
 
-double DkExposureManipulator::offset() const {
-	return mOffset;
+double DkExposureManipulator::offset() const
+{
+    return mOffset;
 }
 
-void DkExposureManipulator::setGamma(double gamma) {
+void DkExposureManipulator::setGamma(double gamma)
+{
+    if (mGamma == gamma)
+        return;
 
-	if (mGamma == gamma)
-		return;
-
-	mGamma = gamma;
-	action()->trigger();
+    mGamma = gamma;
+    action()->trigger();
 }
 
-double DkExposureManipulator::gamma() const {
-	return mGamma;
+double DkExposureManipulator::gamma() const
+{
+    return mGamma;
 }
 
-// -------------------------------------------------------------------- DkColorManipulator 
-DkColorManipulator::DkColorManipulator(QAction * action) : DkBaseManipulatorExt(action) {
+// -------------------------------------------------------------------- DkColorManipulator
+DkColorManipulator::DkColorManipulator(QAction *action)
+    : DkBaseManipulatorExt(action)
+{
 }
 
-QImage DkColorManipulator::apply(const QImage & img) const {
-	
-	return DkImage::bgColor(img, color());
+QImage DkColorManipulator::apply(const QImage &img) const
+{
+    return DkImage::bgColor(img, color());
 }
 
-QString DkColorManipulator::errorMessage() const {
-	return QObject::tr("Cannot draw background color");
+QString DkColorManipulator::errorMessage() const
+{
+    return QObject::tr("Cannot draw background color");
 }
 
-void DkColorManipulator::setColor(const QColor & col) {
-	
-	if (mColor == col)
-		return;
-	
-	mColor = col;
-	action()->trigger();
+void DkColorManipulator::setColor(const QColor &col)
+{
+    if (mColor == col)
+        return;
+
+    mColor = col;
+    action()->trigger();
 }
 
-QColor DkColorManipulator::color() const {
-	return mColor;
+QColor DkColorManipulator::color() const
+{
+    return mColor;
 }
 
 }

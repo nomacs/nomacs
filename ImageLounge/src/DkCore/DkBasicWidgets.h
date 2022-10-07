@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -30,11 +30,11 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0)	// no warnings from includes
+#pragma warning(push, 0) // no warnings from includes
 #include <QWidget>
 #pragma warning(pop)
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -56,231 +56,237 @@ class QPushButton;
 class QMenu;
 class QLineEdit;
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 
-class DllCoreExport DkSlider : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkSlider : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkSlider(QString title = "", QWidget* parent = 0);
+    DkSlider(QString title = "", QWidget *parent = 0);
 
-	QSlider* getSlider() const;
-	void setMinimum(int minValue);
-	void setMaximum(int maxValue);
-	void setTickInterval(int ticValue);
-	int value() const;
-	void setFocus(Qt::FocusReason reason);
+    QSlider *getSlider() const;
+    void setMinimum(int minValue);
+    void setMaximum(int maxValue);
+    void setTickInterval(int ticValue);
+    int value() const;
+    void setFocus(Qt::FocusReason reason);
 
 public slots:
-	void setValue(int value);
+    void setValue(int value);
 
 signals:
-	void sliderMoved(int value);
-	void valueChanged(int value);
+    void sliderMoved(int value);
+    void valueChanged(int value);
 
 protected:
-	void createLayout();
+    void createLayout();
 
-	QLabel* titleLabel;
-	QLabel* minValLabel;
-	QLabel* maxValLabel;
-	QSlider* slider;
-	QSpinBox* sliderBox;
+    QLabel *titleLabel;
+    QLabel *minValLabel;
+    QLabel *maxValLabel;
+    QSlider *slider;
+    QSpinBox *sliderBox;
 };
 
-class DllCoreExport DkDoubleSlider : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkDoubleSlider : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkDoubleSlider(const QString& title = "", QWidget* parent = 0);
+    DkDoubleSlider(const QString &title = "", QWidget *parent = 0);
 
-	QSlider* getSlider() const;
-	void setMinimum(double minValue);
-	void setMaximum(double maxValue);
-	void setCenterValue(double center);
-	void setTickInterval(double ticValue);
-	double value() const;
-	void setFocus(Qt::FocusReason reason);
-	void setSliderInverted(bool inverted);
+    QSlider *getSlider() const;
+    void setMinimum(double minValue);
+    void setMaximum(double maxValue);
+    void setCenterValue(double center);
+    void setTickInterval(double ticValue);
+    double value() const;
+    void setFocus(Qt::FocusReason reason);
+    void setSliderInverted(bool inverted);
 
 public slots:
-	void setValue(double value);
-	void setIntValue(int value);
+    void setValue(double value);
+    void setIntValue(int value);
 
 signals:
-	void sliderMoved(double value);
-	void valueChanged(double value);
+    void sliderMoved(double value);
+    void valueChanged(double value);
 
 protected:
-	void createLayout();
-	int map(double val) const;
-	double mapInv(int val) const;
+    void createLayout();
+    int map(double val) const;
+    double mapInv(int val) const;
 
-	QLabel* mTitleLabel;
-	QSlider* mSlider;
-	QDoubleSpinBox* mSliderBox;
-	bool mSliderInverted = false;
-	double mCenter = 0;
+    QLabel *mTitleLabel;
+    QSlider *mSlider;
+    QDoubleSpinBox *mSliderBox;
+    bool mSliderInverted = false;
+    double mCenter = 0;
 };
 
-class DllCoreExport DkColorChooser : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkColorChooser : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	virtual ~DkColorChooser() {};
+    DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    virtual ~DkColorChooser(){};
 
-	void setColor(const QColor& color);
-	void setColor(QColor* color);
-	QColor getColor();
-	bool isAccept() const;
-	void enableAlpha(bool enable = true);
+    void setColor(const QColor &color);
+    void setColor(QColor *color);
+    QColor getColor();
+    bool isAccept() const;
+    void enableAlpha(bool enable = true);
 
 public slots:
-	void on_resetButton_clicked();
-	void on_colorButton_clicked();
-	void on_colorDialog_accepted();
+    void on_resetButton_clicked();
+    void on_colorButton_clicked();
+    void on_colorDialog_accepted();
 
 signals:
-	void resetClicked();
-	void accepted();
+    void resetClicked();
+    void accepted();
 
 protected:
-	QColorDialog* colorDialog = 0;
-	QPushButton* colorButton = 0;
+    QColorDialog *colorDialog = 0;
+    QPushButton *colorButton = 0;
 
-	QColor defaultColor;
-	QColor* mSettingColor = 0;
-	QString mText;
-	bool mAccepted = false;
+    QColor defaultColor;
+    QColor *mSettingColor = 0;
+    QString mText;
+    bool mAccepted = false;
 
-	void init();
-
+    void init();
 };
 
-class DllCoreExport DkColorEdit : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkColorEdit : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkColorEdit(const QColor& col = QColor(), QWidget* parent = 0);
+    DkColorEdit(const QColor &col = QColor(), QWidget *parent = 0);
 
-	void setColor(const QColor& col);
-	QColor color() const;
+    void setColor(const QColor &col);
+    QColor color() const;
 
 signals:
-	void newColor(const QColor& col);
+    void newColor(const QColor &col);
 
 public slots:
-	void colorChanged();
-	void hashChanged(const QString& name);
-	void hashEditFinished();
+    void colorChanged();
+    void hashChanged(const QString &name);
+    void hashEditFinished();
 
 protected:
-	void createLayout();
+    void createLayout();
 
-	enum cols {
-		r = 0,
-		g,
-		b,
+    enum cols {
+        r = 0,
+        g,
+        b,
 
-		c_end
-	};
+        c_end
+    };
 
-	QVector<QSpinBox*> mColBoxes;
-	QLineEdit* mColHash;
-	QColor mColor;
+    QVector<QSpinBox *> mColBoxes;
+    QLineEdit *mColHash;
+    QColor mColor;
 };
 
-class DllCoreExport DkColorPane : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkColorPane : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkColorPane(QWidget* parent = 0);
+    DkColorPane(QWidget *parent = 0);
 
-	QColor color() const;
-	double hue() const;
+    QColor color() const;
+    double hue() const;
 
 signals:
-	void colorSelected(const QColor& col) const;
+    void colorSelected(const QColor &col) const;
 
 public slots:
-	void setHue(int hue);
-	void setColor(const QColor& col);
+    void setHue(int hue);
+    void setColor(const QColor &col);
 
 protected:
-	void paintEvent(QPaintEvent* ev) override;
-	void mouseMoveEvent(QMouseEvent* me) override;
-	void mouseReleaseEvent(QMouseEvent* me) override;
-	void mousePressEvent(QMouseEvent* me) override;
-	void resizeEvent(QResizeEvent* re) override;
-	
-	QPoint color2Pos(const QColor& col) const;
-	QColor pos2Color(const QPoint& pos) const;
-	QColor ipl(const QColor& c0, const QColor& c1, double alpha) const;
-	void setPos(const QPoint& pos);
+    void paintEvent(QPaintEvent *ev) override;
+    void mouseMoveEvent(QMouseEvent *me) override;
+    void mouseReleaseEvent(QMouseEvent *me) override;
+    void mousePressEvent(QMouseEvent *me) override;
+    void resizeEvent(QResizeEvent *re) override;
 
-	double brightness(const QColor& col) const;
+    QPoint color2Pos(const QColor &col) const;
+    QColor pos2Color(const QPoint &pos) const;
+    QColor ipl(const QColor &c0, const QColor &c1, double alpha) const;
+    void setPos(const QPoint &pos);
 
-	QColor mColor = QColor(255, 0, 0);
-	QPoint mPos = QPoint(0, 0);
+    double brightness(const QColor &col) const;
+
+    QColor mColor = QColor(255, 0, 0);
+    QPoint mPos = QPoint(0, 0);
 };
 
-class DllCoreExport DkColorPicker : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkColorPicker : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkColorPicker(QWidget* parent = 0);
+    DkColorPicker(QWidget *parent = 0);
 
-	QColor color() const;
+    QColor color() const;
 
 signals:
-	void colorSelected(const QColor& col);
+    void colorSelected(const QColor &col);
 
 public slots:
-	void setColor(const QColor& col);
-	void showMenu(const QPoint& pos = QPoint());
+    void setColor(const QColor &col);
+    void showMenu(const QPoint &pos = QPoint());
 
 protected:
-	void contextMenuEvent(QContextMenuEvent* cme) override;
-	void createLayout();
+    void contextMenuEvent(QContextMenuEvent *cme) override;
+    void createLayout();
 
-	DkColorPane* mColorPane = 0;
-	QLabel* mColorPreview = 0;
-	QMenu* mContextMenu = 0;
-	DkColorEdit* mColorEdit = 0;
+    DkColorPane *mColorPane = 0;
+    QLabel *mColorPreview = 0;
+    QMenu *mContextMenu = 0;
+    DkColorEdit *mColorEdit = 0;
 };
 
-class DllCoreExport DkRectWidget : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkRectWidget : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkRectWidget(const QRect& r = QRect(), QWidget* parent = 0);
+    DkRectWidget(const QRect &r = QRect(), QWidget *parent = 0);
 
-	QRect rect() const;
+    QRect rect() const;
 
 public slots:
-	void setRect(const QRect& r);
-	void updateRect();
+    void setRect(const QRect &r);
+    void updateRect();
 
 signals:
-	void updateRectSignal(const QRect& r) const;
+    void updateRectSignal(const QRect &r) const;
 
 protected:
-	void createLayout();
+    void createLayout();
 
-	enum {
-		crop_x = 0,
-		crop_y,
-		crop_width,
-		crop_height,
+    enum {
+        crop_x = 0,
+        crop_y,
+        crop_width,
+        crop_height,
 
-		crop_end
-	};
+        crop_end
+    };
 
-	QVector<QSpinBox*> mSpCropRect;
-
+    QVector<QSpinBox *> mSpCropRect;
 };
 
 }

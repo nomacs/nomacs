@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkStatusBar.h
  Created on:	12.01.2016
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -27,11 +27,11 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QStatusBar>
 #pragma warning(pop)
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -46,56 +46,56 @@
 // Qt defines
 class QLabel;
 
-namespace nmc {
+namespace nmc
+{
 
-
-class DllCoreExport DkStatusBar : public QStatusBar {
-	Q_OBJECT
+class DllCoreExport DkStatusBar : public QStatusBar
+{
+    Q_OBJECT
 
 public:
-	DkStatusBar(QWidget* parent = 0);
-	~DkStatusBar() {};
+    DkStatusBar(QWidget *parent = 0);
+    ~DkStatusBar(){};
 
-	enum StatusLabel {
-		status_pixel_info,	// the first is special (left)
+    enum StatusLabel {
+        status_pixel_info, // the first is special (left)
 
-		status_file_info,
-		status_dimension_info,
-		status_format_info,
-		status_zoom_info,
-		status_filenumber_info,
-		status_filesize_info,
-		status_time_info,
+        status_file_info,
+        status_dimension_info,
+        status_format_info,
+        status_zoom_info,
+        status_filenumber_info,
+        status_filesize_info,
+        status_time_info,
 
-		status_end,
-	};
+        status_end,
+    };
 
-	void setMessage(const QString& msg, StatusLabel which = status_pixel_info);
+    void setMessage(const QString &msg, StatusLabel which = status_pixel_info);
 
 protected:
+    void createLayout();
 
-	void createLayout();
-
-	QVector<QLabel*> mLabels;
+    QVector<QLabel *> mLabels;
 };
 
-class DllCoreExport DkStatusBarManager {
-
+class DllCoreExport DkStatusBarManager
+{
 public:
-	static DkStatusBarManager& instance();
+    static DkStatusBarManager &instance();
 
-	// singleton
-	DkStatusBarManager(DkStatusBarManager const&)   = delete;
-	void operator=(DkStatusBarManager const&)		= delete;
+    // singleton
+    DkStatusBarManager(DkStatusBarManager const &) = delete;
+    void operator=(DkStatusBarManager const &) = delete;
 
-	void show(bool show, bool permanent = true);
-	DkStatusBar* statusbar();
-	void setMessage(const QString& msg, DkStatusBar::StatusLabel which = DkStatusBar::status_pixel_info);
+    void show(bool show, bool permanent = true);
+    DkStatusBar *statusbar();
+    void setMessage(const QString &msg, DkStatusBar::StatusLabel which = DkStatusBar::status_pixel_info);
 
 private:
-	DkStatusBarManager();
+    DkStatusBarManager();
 
-	DkStatusBar* mStatusBar = 0;
+    DkStatusBar *mStatusBar = 0;
 };
 
 }

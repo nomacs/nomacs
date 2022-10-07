@@ -27,21 +27,21 @@
 
 #pragma once
 
-#include "DkImageContainer.h"
-#include "DkBatchInfo.h"
-#include "DkSettings.h"
 #include "DkBaseWidgets.h"
+#include "DkBatchInfo.h"
+#include "DkImageContainer.h"
+#include "DkSettings.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QStringList>
-#include <QString>
-#include <QImage>
-#include <QGraphicsView>
-#include <QFileInfo>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
+#include <QFileInfo>
+#include <QGraphicsView>
+#include <QImage>
 #include <QMainWindow>
 #include <QSettings>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QString>
+#include <QStringList>
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -53,179 +53,202 @@
 #endif
 #endif
 
-namespace nmc {
+namespace nmc
+{
 
 class DkPluginViewPort;
 
-class DkPluginInterface {
-
+class DkPluginInterface
+{
 public:
+    enum ifTypes {
+        interface_basic = 0,
+        interface_batch,
+        interface_viewport,
 
-	enum ifTypes {
-		interface_basic = 0,
-		interface_batch,
-		interface_viewport,
+        inteface_end,
+    };
 
-		inteface_end,
-	};
-
-	virtual ~DkPluginInterface() {}
+    virtual ~DkPluginInterface()
+    {
+    }
 
     virtual QImage image() const = 0;
 
-	virtual QList<QAction*> createActions(QWidget*) { return QList<QAction*>(); };
-	virtual QList<QAction*> pluginActions()	const { return QList<QAction*>(); };
-	virtual int interfaceType() const { return interface_basic; };
-	virtual bool closesOnImageChange() const { return true; };
-	
-	
-	/// <summary>
-	/// The plugin's compute function.
-	/// NOTE: it needs to be const for we run it with multiple threads.
-	/// </summary>
-	/// <param name="runID">The run identifier.</param>
-	/// <param name="imgC">The image container to be processed.</param>
-	/// <returns>A processed image container</returns>
-	virtual QSharedPointer<DkImageContainer> runPlugin(
-		const QString &runID = QString(), 
-		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
-	
-	QMainWindow* getMainWindow() const {
+    virtual QList<QAction *> createActions(QWidget *)
+    {
+        return QList<QAction *>();
+    };
+    virtual QList<QAction *> pluginActions() const
+    {
+        return QList<QAction *>();
+    };
+    virtual int interfaceType() const
+    {
+        return interface_basic;
+    };
+    virtual bool closesOnImageChange() const
+    {
+        return true;
+    };
 
-		QWidgetList widgets = QApplication::topLevelWidgets();
-		QMainWindow* win = 0;
+    /// <summary>
+    /// The plugin's compute function.
+    /// NOTE: it needs to be const for we run it with multiple threads.
+    /// </summary>
+    /// <param name="runID">The run identifier.</param>
+    /// <param name="imgC">The image container to be processed.</param>
+    /// <returns>A processed image container</returns>
+    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(),
+                                                       QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const = 0;
 
-		for (int idx = 0; idx < widgets.size(); idx++) {
+    QMainWindow *getMainWindow() const
+    {
+        QWidgetList widgets = QApplication::topLevelWidgets();
+        QMainWindow *win = 0;
 
-			if (widgets.at(idx)->inherits("QMainWindow")) {
-				win = qobject_cast<QMainWindow*>(widgets.at(idx));
-				break;
-			}
-		}
+        for (int idx = 0; idx < widgets.size(); idx++) {
+            if (widgets.at(idx)->inherits("QMainWindow")) {
+                win = qobject_cast<QMainWindow *>(widgets.at(idx));
+                break;
+            }
+        }
 
-		return win;
-	};
-
+        return win;
+    };
 };
 
-class DkBatchPluginInterface : public DkPluginInterface {
-
+class DkBatchPluginInterface : public DkPluginInterface
+{
 public:
-	virtual int interfaceType() const { return interface_batch; };
+    virtual int interfaceType() const
+    {
+        return interface_batch;
+    };
 
-	virtual QSharedPointer<DkImageContainer> runPlugin(
-		const QString & runID = QString(),
-		QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const {
-		
-		QSharedPointer<DkBatchInfo> dummy;
-		DkSaveInfo saveInfo;
+    virtual QSharedPointer<DkImageContainer> runPlugin(const QString &runID = QString(),
+                                                       QSharedPointer<DkImageContainer> imgC = QSharedPointer<DkImageContainer>()) const
+    {
+        QSharedPointer<DkBatchInfo> dummy;
+        DkSaveInfo saveInfo;
 
-		if (imgC) {
-			saveInfo.setInputFilePath(imgC->filePath());
-			saveInfo.setOutputFilePath(imgC->filePath());
-			saveInfo.setInputDirIsOutputDir(true);
-		}
+        if (imgC) {
+            saveInfo.setInputFilePath(imgC->filePath());
+            saveInfo.setOutputFilePath(imgC->filePath());
+            saveInfo.setInputDirIsOutputDir(true);
+        }
 
-		return runPlugin(runID, imgC, saveInfo, dummy);
-	};
+        return runPlugin(runID, imgC, saveInfo, dummy);
+    };
 
-	virtual QSharedPointer<DkImageContainer> runPlugin(
-		const QString & runID,
-		QSharedPointer<DkImageContainer> imgC,
-		const DkSaveInfo& saveInfo,
-		QSharedPointer<DkBatchInfo>& batchInfo) const = 0;
+    virtual QSharedPointer<DkImageContainer>
+    runPlugin(const QString &runID, QSharedPointer<DkImageContainer> imgC, const DkSaveInfo &saveInfo, QSharedPointer<DkBatchInfo> &batchInfo) const = 0;
 
-	virtual void preLoadPlugin() const = 0;	// is called before batch processing
-	virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo> > & batchInfo) const = 0;	// is called after batch processing
+    virtual void preLoadPlugin() const = 0; // is called before batch processing
+    virtual void postLoadPlugin(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const = 0; // is called after batch processing
 
-	virtual QString name() const = 0;	// is needed for settings
-	virtual QString settingsFilePath() const { return DkSettingsManager::param().settingsPath(); };
-	
-	void loadSettings(const QString& settingsPath = "") {
+    virtual QString name() const = 0; // is needed for settings
+    virtual QString settingsFilePath() const
+    {
+        return DkSettingsManager::param().settingsPath();
+    };
 
-		QString sp = settingsPath.isEmpty() ? settingsFilePath() : settingsPath;
-		QSettings settings(sp, QSettings::IniFormat);
-		loadSettings(settings);
-	};
-	void saveSettings(const QString& settingsPath = "") {
-		QString sp = settingsPath.isEmpty() ? settingsFilePath() : settingsPath;
-		QSettings settings(sp, QSettings::IniFormat);
-		saveSettings(settings);
-	};
-	
-	virtual void loadSettings(QSettings&) {};			// dummy
-	virtual void saveSettings(QSettings&) const {};		// dummy
+    void loadSettings(const QString &settingsPath = "")
+    {
+        QString sp = settingsPath.isEmpty() ? settingsFilePath() : settingsPath;
+        QSettings settings(sp, QSettings::IniFormat);
+        loadSettings(settings);
+    };
+    void saveSettings(const QString &settingsPath = "")
+    {
+        QString sp = settingsPath.isEmpty() ? settingsFilePath() : settingsPath;
+        QSettings settings(sp, QSettings::IniFormat);
+        saveSettings(settings);
+    };
+
+    virtual void loadSettings(QSettings &){}; // dummy
+    virtual void saveSettings(QSettings &) const {}; // dummy
 };
 
-class DkViewPortInterface : public DkPluginInterface {
-	
+class DkViewPortInterface : public DkPluginInterface
+{
 public:
+    virtual int interfaceType() const
+    {
+        return interface_viewport;
+    };
 
-	virtual int interfaceType()  const {return interface_viewport;};
-	
-	// return false here if you have a simple viewport (no children)
-	// and you want the user to be able to e.g. scroll thumbs while your plugin is active
-	virtual bool hideHUD() const { return true; };
+    // return false here if you have a simple viewport (no children)
+    // and you want the user to be able to e.g. scroll thumbs while your plugin is active
+    virtual bool hideHUD() const
+    {
+        return true;
+    };
 
-	virtual bool createViewPort(QWidget* parent) = 0;
-	virtual DkPluginViewPort* getViewPort() = 0;
+    virtual bool createViewPort(QWidget *parent) = 0;
+    virtual DkPluginViewPort *getViewPort() = 0;
 
-	virtual void setVisible(bool visible) = 0;
+    virtual void setVisible(bool visible) = 0;
 };
 
-class DllCoreExport DkPluginViewPort : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkPluginViewPort : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags()) : DkWidget(parent, flags) {
-		
-		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
-	};
+    DkPluginViewPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags())
+        : DkWidget(parent, flags)
+    {
+        setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        // setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
+    };
 
-	void setWorldMatrix(QTransform* worldMatrix) {
-		mWorldMatrix = worldMatrix;
-	};
+    void setWorldMatrix(QTransform *worldMatrix)
+    {
+        mWorldMatrix = worldMatrix;
+    };
 
-	void setImgMatrix(QTransform* imgMatrix) {
-		mImgMatrix = imgMatrix;
-	};
+    void setImgMatrix(QTransform *imgMatrix)
+    {
+        mImgMatrix = imgMatrix;
+    };
 
-	virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) {	};	// dummy
+    virtual void updateImageContainer(QSharedPointer<DkImageContainerT> imgC){}; // dummy
 
 signals:
-	void closePlugin(bool askForSaving = false) const;
-	void loadFile(const QString& filePath) const;
-	void loadImage(const QImage& image) const;
-	void showInfo(const QString& msg) const;
+    void closePlugin(bool askForSaving = false) const;
+    void loadFile(const QString &filePath) const;
+    void loadImage(const QImage &image) const;
+    void showInfo(const QString &msg) const;
 
 protected:
-	virtual void closeEvent(QCloseEvent *event) {
-		emit closePlugin();
-		QWidget::closeEvent(event);
-	};
+    virtual void closeEvent(QCloseEvent *event)
+    {
+        emit closePlugin();
+        QWidget::closeEvent(event);
+    };
 
-	virtual QPointF mapToImage(const QPointF& pos) const {
-		
-		if (!mWorldMatrix || !mImgMatrix)
-			return pos;
-		
-		QPointF imgPos = mWorldMatrix->inverted().map(pos);
-		imgPos = mImgMatrix->inverted().map(imgPos);
+    virtual QPointF mapToImage(const QPointF &pos) const
+    {
+        if (!mWorldMatrix || !mImgMatrix)
+            return pos;
 
-		return imgPos;
-	};
+        QPointF imgPos = mWorldMatrix->inverted().map(pos);
+        imgPos = mImgMatrix->inverted().map(imgPos);
 
-	virtual QPointF mapToViewport(const QPointF& pos) const {
+        return imgPos;
+    };
 
-		if (!mWorldMatrix)
-			return pos;
+    virtual QPointF mapToViewport(const QPointF &pos) const
+    {
+        if (!mWorldMatrix)
+            return pos;
 
-		return mWorldMatrix->inverted().map(pos);
-	};
+        return mWorldMatrix->inverted().map(pos);
+    };
 
-	QTransform* mWorldMatrix = 0;
-	QTransform* mImgMatrix = 0;
+    QTransform *mWorldMatrix = 0;
+    QTransform *mImgMatrix = 0;
 };
 
 }

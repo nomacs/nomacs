@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkImageStorage.cpp
  Created on:	12.07.2013
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,26 +27,27 @@
 
 #include "DkImageStorage.h"
 #include "DkActionManager.h"
-#include "DkSettings.h"
-#include "DkTimer.h"
 #include "DkMath.h"
+#include "DkSettings.h"
 #include "DkThumbs.h"
+#include "DkTimer.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDebug>
-#include <QtConcurrentRun>
-#include <QPixmap>
-#include <QPainter>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitmap>
-#include <qmath.h>
+#include <QDebug>
+#include <QPainter>
+#include <QPixmap>
 #include <QSvgRenderer>
 #include <QTimer>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QtConcurrentRun>
+#include <qmath.h>
+#pragma warning(pop) // no warnings from includes - end
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
-#include <winsock2.h>	// needed since libraw 0.16
+#include <winsock2.h> // needed since libraw 0.16
 #endif
-namespace nmc {
+namespace nmc
+{
 
 // DkImage --------------------------------------------------------------------
 
@@ -54,10 +55,10 @@ namespace nmc {
  * Returns a string with the buffer size of an image.
  * @param img a QImage
  * @return QString a human readable string containing the buffer size
- **/ 
-QString DkImage::getBufferSize(const QImage& img) {
-
-	return getBufferSize(img.size(), img.depth());
+ **/
+QString DkImage::getBufferSize(const QImage &img)
+{
+    return getBufferSize(img.size(), img.depth());
 }
 
 /**
@@ -65,25 +66,22 @@ QString DkImage::getBufferSize(const QImage& img) {
  * @param imgSize the image size
  * @param depth the image depth
  * @return QString a human readable string containing the buffer size
- **/ 
-QString DkImage::getBufferSize(const QSize& imgSize, const int depth) {
+ **/
+QString DkImage::getBufferSize(const QSize &imgSize, const int depth)
+{
+    double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth / 8.0f);
+    QString sizeStr;
+    qDebug() << "dimension: " << size;
 
-	double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
-	QString sizeStr;
-	qDebug() << "dimension: " << size;
-
-	if (size >= 1024*1024*1024) {
-		return QString::number(size/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
-	}
-	else if (size >= 1024*1024) {
-		return QString::number(size/(1024.0f*1024.0f), 'f', 2) + " MB";
-	}
-	else if (size >= 1024) {
-		return QString::number(size/1024.0f, 'f', 2) + " KB";
-	}
-	else {
-		return QString::number(size, 'f', 2) + " B";
-	}
+    if (size >= 1024 * 1024 * 1024) {
+        return QString::number(size / (1024.0f * 1024.0f * 1024.0f), 'f', 2) + " GB";
+    } else if (size >= 1024 * 1024) {
+        return QString::number(size / (1024.0f * 1024.0f), 'f', 2) + " MB";
+    } else if (size >= 1024) {
+        return QString::number(size / 1024.0f, 'f', 2) + " KB";
+    } else {
+        return QString::number(size, 'f', 2) + " B";
+    }
 }
 
 /**
@@ -91,13 +89,13 @@ QString DkImage::getBufferSize(const QSize& imgSize, const int depth) {
  * @param imgSize the image size
  * @param depth the image depth
  * @return buffer size in MB
- **/ 
-float DkImage::getBufferSizeFloat(const QSize& imgSize, const int depth) {
+ **/
+float DkImage::getBufferSizeFloat(const QSize &imgSize, const int depth)
+{
+    double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth / 8.0f);
+    QString sizeStr;
 
-	double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
-	QString sizeStr;
-
-	return (float)size/(1024.0f*1024.0f);
+    return (float)size / (1024.0f * 1024.0f);
 }
 
 /**
@@ -107,992 +105,981 @@ float DkImage::getBufferSizeFloat(const QSize& imgSize, const int depth) {
  * @param factor the resize factor
  * @param interpolation the interpolation method
  * @return QImage the resized image
- **/ 
-QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, double factor /* = 1.0 */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */) {
+ **/
+QImage
+DkImage::resizeImage(const QImage &img, const QSize &newSize, double factor /* = 1.0 */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */)
+{
+    QSize nSize = newSize;
 
-	QSize nSize = newSize;
+    // nothing to do
+    if (img.size() == nSize && factor == 1.0)
+        return img;
 
-	// nothing to do
-	if (img.size() == nSize && factor == 1.0)
-		return img;
+    if (factor != 1.0)
+        nSize = QSize(qRound(img.width() * factor), qRound(img.height() * factor));
 
-	if (factor != 1.0)
-		nSize = QSize(qRound(img.width()*factor), qRound(img.height()*factor));
+    if (nSize.width() < 1 || nSize.height() < 1) {
+        return QImage();
+    }
 
-	if (nSize.width() < 1 || nSize.height() < 1) {
-		return QImage();
-	}
-
-	Qt::TransformationMode iplQt = Qt::FastTransformation;
-	switch(interpolation) {
-	case ipl_nearest:	
-	case ipl_area:		iplQt = Qt::FastTransformation; break;
-	case ipl_linear:	
-	case ipl_cubic:		
-	case ipl_lanczos:	iplQt = Qt::SmoothTransformation; break;
-	}
+    Qt::TransformationMode iplQt = Qt::FastTransformation;
+    switch (interpolation) {
+    case ipl_nearest:
+    case ipl_area:
+        iplQt = Qt::FastTransformation;
+        break;
+    case ipl_linear:
+    case ipl_cubic:
+    case ipl_lanczos:
+        iplQt = Qt::SmoothTransformation;
+        break;
+    }
 #ifdef WITH_OPENCV
 
-	int ipl = CV_INTER_CUBIC;
-	switch(interpolation) {
-	case ipl_nearest:	ipl = CV_INTER_NN; break;
-	case ipl_area:		ipl = CV_INTER_AREA; break;
-	case ipl_linear:	ipl = CV_INTER_LINEAR; break;
-	case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
-	case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
-	}
+    int ipl = CV_INTER_CUBIC;
+    switch (interpolation) {
+    case ipl_nearest:
+        ipl = CV_INTER_NN;
+        break;
+    case ipl_area:
+        ipl = CV_INTER_AREA;
+        break;
+    case ipl_linear:
+        ipl = CV_INTER_LINEAR;
+        break;
+    case ipl_cubic:
+        ipl = CV_INTER_CUBIC;
+        break;
+    case ipl_lanczos:
+        ipl = CV_INTER_LANCZOS4;
+        break;
+    }
 
-	try {
-		
-		QImage qImg;
-		cv::Mat resizeImage = DkImage::qImage2Mat(img);
-		
-		if (correctGamma) {
-			resizeImage.convertTo(resizeImage, CV_16U, USHRT_MAX/255.0f);
-			DkImage::gammaToLinear(resizeImage);
-		}
+    try {
+        QImage qImg;
+        cv::Mat resizeImage = DkImage::qImage2Mat(img);
 
-		// is the image convertible?
-		if (resizeImage.empty()) {
-			qImg = img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-		}
-		else {
+        if (correctGamma) {
+            resizeImage.convertTo(resizeImage, CV_16U, USHRT_MAX / 255.0f);
+            DkImage::gammaToLinear(resizeImage);
+        }
 
-			cv::Mat tmp;
-			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
-			resizeImage = tmp;
-			
-			if (correctGamma) {
-				DkImage::linearToGamma(resizeImage);
-				resizeImage.convertTo(resizeImage, CV_8U, 255.0f/USHRT_MAX);
-			}
+        // is the image convertible?
+        if (resizeImage.empty()) {
+            qImg = img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+        } else {
+            cv::Mat tmp;
+            cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+            resizeImage = tmp;
 
-			qImg = DkImage::mat2QImage(resizeImage);
-		}
+            if (correctGamma) {
+                DkImage::linearToGamma(resizeImage);
+                resizeImage.convertTo(resizeImage, CV_8U, 255.0f / USHRT_MAX);
+            }
 
-		if (!img.colorTable().isEmpty())
-			qImg.setColorTable(img.colorTable());
+            qImg = DkImage::mat2QImage(resizeImage);
+        }
 
-		return qImg;
+        if (!img.colorTable().isEmpty())
+            qImg.setColorTable(img.colorTable());
 
-	} 
-	catch (std::exception se) {
-		return QImage();
-	}
+        return qImg;
+
+    } catch (std::exception se) {
+        return QImage();
+    }
 
 #else
 
-	QImage qImg = img.copy();
-	
-	if (correctGamma)
-		DkImage::gammaToLinear(qImg);
-	qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
-	
-	if (correctGamma)
-		DkImage::linearToGamma(qImg);
-	return qImg;
+    QImage qImg = img.copy();
+
+    if (correctGamma)
+        DkImage::gammaToLinear(qImg);
+    qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+
+    if (correctGamma)
+        DkImage::linearToGamma(qImg);
+    return qImg;
 #endif
 }
-	
-bool DkImage::alphaChannelUsed(const QImage& img) {
 
-	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32)
-		return false;
+bool DkImage::alphaChannelUsed(const QImage &img)
+{
+    if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32)
+        return false;
 
-	// number of used bytes per line
-	int bpl = (img.width() * img.depth() + 7) / 8;
-	int pad = img.bytesPerLine() - bpl;
-	const uchar* ptr = img.bits();
+    // number of used bytes per line
+    int bpl = (img.width() * img.depth() + 7) / 8;
+    int pad = img.bytesPerLine() - bpl;
+    const uchar *ptr = img.bits();
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+            if (cIdx % 4 == 3 && *ptr != 255)
+                return true;
+        }
 
-		for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+        ptr += pad;
+    }
 
-			if (cIdx % 4 == 3 && *ptr != 255)
-				return true;
-		}
-
-		ptr += pad;
-	}
-
-	return false;
+    return false;
 }
 
-QImage DkImage::thresholdImage(const QImage & img, double thr, bool color) {
+QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
+{
+    if (img.isNull())
+        return img;
 
-	if (img.isNull())
-		return img;
+    DkTimer dt;
 
-	DkTimer dt;
+    QImage tImg = color ? img.copy() : grayscaleImage(img);
 
-	QImage tImg = color ? img.copy() : grayscaleImage(img);
+    // number of bytes per line used
+    int bpl = (tImg.width() * tImg.depth() + 7) / 8;
+    int pad = tImg.bytesPerLine() - bpl;
 
-	// number of bytes per line used
-	int bpl = (tImg.width() * tImg.depth() + 7) / 8;
-	int pad = tImg.bytesPerLine() - bpl;
+    uchar *mPtr = tImg.bits();
 
-	uchar* mPtr = tImg.bits();
+    for (int rIdx = 0; rIdx < tImg.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+            *mPtr = *mPtr > thr ? 255 : 0;
+        }
+        mPtr += pad;
+    }
 
-	for (int rIdx = 0; rIdx < tImg.height(); rIdx++) {
+    qDebug() << "thresholding takes: " << dt;
 
-		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-			*mPtr = *mPtr > thr ? 255 : 0;
-		}
-		mPtr += pad;
-	}
-
-	qDebug() << "thresholding takes: " << dt;
-
-	return tImg;
+    return tImg;
 }
 
-QImage DkImage::rotateSimple(const QImage & img, double angle) {
+QImage DkImage::rotateSimple(const QImage &img, double angle)
+{
+    if (angle == 0 || angle == -1)
+        return img;
 
-	if (angle == 0 || angle == -1)
-		return img;
+    QTransform rotationMatrix;
+    rotationMatrix.rotate(angle);
+    QImage rImg = img.transformed(rotationMatrix);
 
-	QTransform rotationMatrix;
-	rotationMatrix.rotate(angle);
-	QImage rImg = img.transformed(rotationMatrix);
-
-	return rImg;
+    return rImg;
 }
 
-QImage DkImage::rotate(const QImage & img, double angle) {
+QImage DkImage::rotate(const QImage &img, double angle)
+{
+    if (qAbs(angle) == 90 || qAbs(angle) == 180 || angle == 0)
+        return rotateSimple(img, angle);
 
-	if (qAbs(angle) == 90 || qAbs(angle) == 180 || angle == 0)
-		return rotateSimple(img, angle);
+    // compute new image size
+    DkVector nSl((float)img.width(), (float)img.height());
+    DkVector nSr = nSl;
+    double angleRad = angle * DK_DEG2RAD;
 
-	// compute new image size
-	DkVector nSl((float)img.width(), (float)img.height());
-	DkVector nSr = nSl;
-	double angleRad = angle*DK_DEG2RAD;
-	
-	// size left
-	nSl.rotate(angleRad);
-	nSl.abs();
+    // size left
+    nSl.rotate(angleRad);
+    nSl.abs();
 
-	// size right
-	nSr.swap();
-	nSr.rotate(angleRad);
-	nSr.abs();
-	nSr.swap();
-	
-	DkVector ns = nSl.maxVec(nSr);
-	QSize newSize((int)ns.width, (int)ns.height);
+    // size right
+    nSr.swap();
+    nSr.rotate(angleRad);
+    nSr.abs();
+    nSr.swap();
 
-	// create image
-	QImage imgR(newSize, QImage::Format_RGBA8888);
-	imgR.fill(Qt::transparent);
+    DkVector ns = nSl.maxVec(nSr);
+    QSize newSize((int)ns.width, (int)ns.height);
 
-	// create transformation
-	QTransform trans; 
-	trans.translate(imgR.width()/2, imgR.height()/2); 
-	trans.rotate(angle); 
-	trans.translate(-img.width()/2, -img.height()/2);
+    // create image
+    QImage imgR(newSize, QImage::Format_RGBA8888);
+    imgR.fill(Qt::transparent);
 
-	// render
-	QPainter p(&imgR);
-	p.setRenderHint(QPainter::SmoothPixmapTransform);
-	p.setTransform(trans);
-	p.drawImage(QPoint(), img);
+    // create transformation
+    QTransform trans;
+    trans.translate(imgR.width() / 2, imgR.height() / 2);
+    trans.rotate(angle);
+    trans.translate(-img.width() / 2, -img.height() / 2);
 
-	return imgR;
+    // render
+    QPainter p(&imgR);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
+    p.setTransform(trans);
+    p.drawImage(QPoint(), img);
+
+    return imgR;
 }
 
-QImage DkImage::grayscaleImage(const QImage & img) {
-
-	QImage imgR;
+QImage DkImage::grayscaleImage(const QImage &img)
+{
+    QImage imgR;
 
 #ifdef WITH_OPENCV
 
-	cv::Mat cvImg = DkImage::qImage2Mat(img);
-	cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
+    cv::Mat cvImg = DkImage::qImage2Mat(img);
+    cv::cvtColor(cvImg, cvImg, CV_RGB2Lab);
 
-	std::vector<cv::Mat> imgs;
-	cv::split(cvImg, imgs);
+    std::vector<cv::Mat> imgs;
+    cv::split(cvImg, imgs);
 
-	// get the luminance channel
-	if (!imgs.empty())
-		cvImg = imgs[0];
+    // get the luminance channel
+    if (!imgs.empty())
+        cvImg = imgs[0];
 
-	// convert it back for the painter
-	cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
+    // convert it back for the painter
+    cv::cvtColor(cvImg, cvImg, CV_GRAY2RGB);
 
-	imgR = DkImage::mat2QImage(cvImg);
+    imgR = DkImage::mat2QImage(cvImg);
 #else
 
-	QVector<QRgb> table(256);
-	for(int i=0;i<256;++i)
-		table[i]=qRgb(i,i,i);
+    QVector<QRgb> table(256);
+    for (int i = 0; i < 256; ++i)
+        table[i] = qRgb(i, i, i);
 
-	imgR = img.convertToFormat(QImage::Format_Indexed8,table);
+    imgR = img.convertToFormat(QImage::Format_Indexed8, table);
 #endif
 
-	return imgR;
+    return imgR;
 }
 
-template <typename numFmt>
-QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal) {
+template<typename numFmt>
+QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal)
+{
+    QVector<numFmt> gammaTable;
+    double a = 0.055;
 
-	QVector<numFmt> gammaTable;
-	double a = 0.055;
+    for (int idx = 0; idx <= maxVal; idx++) {
+        double i = idx / (double)maxVal;
+        if (i <= 0.0031308) {
+            gammaTable.append((numFmt)(qRound(i * 12.92 * (double)maxVal)));
+        } else {
+            gammaTable.append((numFmt)(qRound(((1 + a) * pow(i, 1 / 2.4) - a) * (double)maxVal)));
+        }
+    }
 
-	for (int idx = 0; idx <= maxVal; idx++) {
-
-		double i = idx/(double)maxVal;
-		if (i <= 0.0031308) {
-			gammaTable.append((numFmt)(qRound(i*12.92*(double)maxVal)));
-		}
-		else {
-			gammaTable.append((numFmt)(qRound(((1+a)*pow(i,1/2.4)-a)*(double)maxVal)));
-		}
-	}
-
-	return gammaTable;
+    return gammaTable;
 }
 
-template <typename numFmt>
-QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal) {
+template<typename numFmt>
+QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal)
+{
+    // the formula should be:
+    // i = px/255
+    // i <= 0.04045 -> i/12.92
+    // i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
+    QVector<numFmt> gammaTable;
+    double a = 0.055;
 
-	// the formula should be:
-	// i = px/255
-	// i <= 0.04045 -> i/12.92
-	// i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
-	QVector<numFmt> gammaTable;
-	double a = 0.055;
+    for (int idx = 0; idx <= maxVal; idx++) {
+        double i = idx / (double)maxVal;
+        if (i <= 0.04045) {
+            gammaTable.append((numFmt)(qRound(i / 12.92 * maxVal)));
+        } else {
+            gammaTable.append(pow((i + a) / (1 + a), 2.4) * maxVal > 0 ? (numFmt)(pow((i + a) / (1 + a), 2.4) * maxVal) : 0);
+        }
+    }
 
-	for (int idx = 0; idx <= maxVal; idx++) {
-
-		double i = idx/(double)maxVal;
-		if (i <= 0.04045) {
-			gammaTable.append((numFmt)(qRound(i/12.92*maxVal)));
-		}
-		else {
-			gammaTable.append(pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(pow((i+a)/(1+a),2.4)*maxVal) : 0);
-		}
-	}
-
-	return gammaTable;
+    return gammaTable;
 }
 
-void DkImage::gammaToLinear(QImage& img) {
-
-	QVector<uchar> gt = getGamma2LinearTable<uchar>(255);
-	mapGammaTable(img, gt);
+void DkImage::gammaToLinear(QImage &img)
+{
+    QVector<uchar> gt = getGamma2LinearTable<uchar>(255);
+    mapGammaTable(img, gt);
 }
 
-void DkImage::linearToGamma(QImage& img) {
-
-	QVector<uchar> gt = getLinear2GammaTable<uchar>(255);
-	mapGammaTable(img, gt);
+void DkImage::linearToGamma(QImage &img)
+{
+    QVector<uchar> gt = getLinear2GammaTable<uchar>(255);
+    mapGammaTable(img, gt);
 }
 
-void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
+void DkImage::mapGammaTable(QImage &img, const QVector<uchar> &gammaTable)
+{
+    DkTimer dt;
 
-	DkTimer dt;
+    // number of bytes per line used
+    int bpl = (img.width() * img.depth() + 7) / 8;
+    int pad = img.bytesPerLine() - bpl;
 
-	// number of bytes per line used
-	int bpl = (img.width() * img.depth() + 7) / 8;
-	int pad = img.bytesPerLine() - bpl;
+    // int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
 
-	//int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
+    uchar *mPtr = img.bits();
 
-	uchar* mPtr = img.bits();
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+            if (*mPtr < 0 || *mPtr > gammaTable.size()) {
+                qDebug() << "WRONG VALUE: " << *mPtr;
+                continue;
+            }
+            if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
+                qDebug() << "WRONG VALUE: " << *mPtr;
+                continue;
+            }
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+            *mPtr = gammaTable[*mPtr];
+        }
+        mPtr += pad;
+    }
 
-		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-
-			if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-				qDebug() << "WRONG VALUE: " << *mPtr;
-				continue;
-			}
-			if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-				qDebug() << "WRONG VALUE: " << *mPtr;
-				continue;
-			}
-
-			*mPtr = gammaTable[*mPtr];
-		}
-		mPtr += pad;
-	}
-
-	qDebug() << "gamma computation takes: " << dt;
+    qDebug() << "gamma computation takes: " << dt;
 }
 
-QImage DkImage::normImage(const QImage& img) {
+QImage DkImage::normImage(const QImage &img)
+{
+    QImage imgN = img.copy();
+    normImage(imgN);
 
-	QImage imgN = img.copy();
-	normImage(imgN);
-
-	return imgN;
+    return imgN;
 }
 
-bool DkImage::normImage(QImage& img) {
+bool DkImage::normImage(QImage &img)
+{
+    uchar maxVal = 0;
+    uchar minVal = 255;
 
-	uchar maxVal = 0;
-	uchar minVal = 255;
+    // number of used bytes per line
+    int bpl = (img.width() * img.depth() + 7) / 8;
+    int pad = img.bytesPerLine() - bpl;
+    uchar *mPtr = img.bits();
+    bool hasAlpha = img.hasAlphaChannel() || img.format() == QImage::Format_RGB32;
 
-	// number of used bytes per line
-	int bpl = (img.width() * img.depth() + 7) / 8;
-	int pad = img.bytesPerLine() - bpl;
-	uchar* mPtr = img.bits();
-	bool hasAlpha = img.hasAlphaChannel() || img.format() == QImage::Format_RGB32;
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+            if (hasAlpha && cIdx % 4 == 3)
+                continue;
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-		
-		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
-			
-			if (hasAlpha && cIdx % 4 == 3)
-				continue;
+            if (*mPtr > maxVal)
+                maxVal = *mPtr;
+            if (*mPtr < minVal)
+                minVal = *mPtr;
+        }
 
-			if (*mPtr > maxVal)
-				maxVal = *mPtr;
-			if (*mPtr < minVal)
-				minVal = *mPtr;
-		}
-		
-		mPtr += pad;
-	}
+        mPtr += pad;
+    }
 
-	if ((minVal == 0 && maxVal == 255) || maxVal-minVal == 0)
-		return false;
+    if ((minVal == 0 && maxVal == 255) || maxVal - minVal == 0)
+        return false;
 
-	uchar* ptr = img.bits();
-	
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
-	
-		for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+    uchar *ptr = img.bits();
 
-			if (hasAlpha && cIdx % 4 == 3)
-				continue;
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+            if (hasAlpha && cIdx % 4 == 3)
+                continue;
 
-			*ptr = (uchar)qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
-		}
-		
-		ptr += pad;
-	}
+            *ptr = (uchar)qRound(255.0f * (*ptr - minVal) / (maxVal - minVal));
+        }
 
-	return true;
+        ptr += pad;
+    }
 
+    return true;
 }
 
-QImage DkImage::autoAdjustImage(const QImage& img) {
+QImage DkImage::autoAdjustImage(const QImage &img)
+{
+    QImage imgA = img.copy();
+    autoAdjustImage(imgA);
 
-	QImage imgA = img.copy();
-	autoAdjustImage(imgA);
-
-	return imgA;
+    return imgA;
 }
 
-bool DkImage::autoAdjustImage(QImage& img) {
+bool DkImage::autoAdjustImage(QImage &img)
+{
+    // return DkImage::unsharpMask(img, 30.0f, 1.5f);
 
-	//return DkImage::unsharpMask(img, 30.0f, 1.5f);
+    DkTimer dt;
+    qDebug() << "[Auto Adjust] image format: " << img.format();
 
-	DkTimer dt;
-	qDebug() << "[Auto Adjust] image format: " << img.format();
+    // for grayscale image - normalize is the same
+    if (img.format() <= QImage::Format_Indexed8) {
+        qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
+        return normImage(img);
+    } else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32
+               && img.format() != QImage::Format_RGB888) {
+        qDebug() << "[Auto Adjust] Format not supported: " << img.format();
+        return false;
+    }
 
-	// for grayscale image - normalize is the same
-	if (img.format() <= QImage::Format_Indexed8) {
-		qDebug() << "[Auto Adjust] Grayscale - switching to Normalize: " << img.format();
-		return normImage(img);
-	}
-	else if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32 && 
-		img.format() != QImage::Format_RGB32 && img.format() != QImage::Format_RGB888) {
-		qDebug() << "[Auto Adjust] Format not supported: " << img.format();
-		return false;
-	}
+    int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
 
-	int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
+    uchar maxR = 0, maxG = 0, maxB = 0;
+    uchar minR = 255, minG = 255, minB = 255;
 
-	uchar maxR = 0,		maxG = 0,	maxB = 0;
-	uchar minR = 255,	minG = 255, minB = 255;
+    // number of bytes per line used
+    int bpl = (img.width() * img.depth() + 7) / 8;
+    int pad = img.bytesPerLine() - bpl;
 
-	// number of bytes per line used
-	int bpl = (img.width() * img.depth() + 7) / 8;
-	int pad = img.bytesPerLine() - bpl;
+    uchar *mPtr = img.bits();
+    uchar r, g, b;
 
-	uchar* mPtr = img.bits();
-	uchar r,g,b;
+    int histR[256] = {0};
+    int histG[256] = {0};
+    int histB[256] = {0};
 
-	int histR[256] = {0};
-	int histG[256] = {0};
-	int histB[256] = {0};
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl;) {
+            r = *mPtr;
+            mPtr++;
+            g = *mPtr;
+            mPtr++;
+            b = *mPtr;
+            mPtr++;
+            cIdx += 3;
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+            if (r > maxR)
+                maxR = r;
+            if (r < minR)
+                minR = r;
 
-		for (int cIdx = 0; cIdx < bpl; ) {
+            if (g > maxG)
+                maxG = g;
+            if (g < minG)
+                minG = g;
 
-			r = *mPtr; mPtr++;
-			g = *mPtr; mPtr++;
-			b = *mPtr; mPtr++;
-			cIdx += 3;
+            if (b > maxB)
+                maxB = b;
+            if (b < minB)
+                minB = b;
 
-			if (r > maxR)	maxR = r;
-			if (r < minR)	minR = r;
+            histR[r]++;
+            histG[g]++;
+            histB[b]++;
 
-			if (g > maxG)	maxG = g;
-			if (g < minG)	minG = g;
+            // ?? strange but I would expect the alpha channel to be the first (big endian?)
+            if (channels == 4) {
+                mPtr++;
+                cIdx++;
+            }
+        }
+        mPtr += pad;
+    }
 
-			if (b > maxB)	maxB = b;
-			if (b < minB)	minB = b;
+    QColor ignoreChannel;
+    bool ignoreR = maxR - minR == 0 || maxR - minR == 255;
+    bool ignoreG = maxR - minR == 0 || maxG - minG == 255;
+    bool ignoreB = maxR - minR == 0 || maxB - minB == 255;
 
-			histR[r]++;
-			histG[g]++;
-			histB[b]++;
+    uchar *ptr = img.bits();
 
+    if (ignoreR) {
+        maxR = findHistPeak(histR);
+        ignoreR = maxR - minR == 0 || maxR - minR == 255;
+    }
+    if (ignoreG) {
+        maxG = findHistPeak(histG);
+        ignoreG = maxG - minG == 0 || maxG - minG == 255;
+    }
+    if (ignoreB) {
+        maxB = findHistPeak(histB);
+        ignoreB = maxB - minB == 0 || maxB - minB == 255;
+    }
 
-			// ?? strange but I would expect the alpha channel to be the first (big endian?)
-			if (channels == 4) {
-				mPtr++;
-				cIdx++;
-			}
+    // qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
+    // qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
+    // qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
+    // qDebug() << "computed in: " << dt;
 
-		}
-		mPtr += pad;
-	}
+    if (ignoreR && ignoreG && ignoreB) {
+        qDebug() << "[Auto Adjust] There is no need to adjust the image";
+        return false;
+    }
 
-	QColor ignoreChannel;
-	bool ignoreR = maxR-minR == 0 || maxR-minR == 255;
-	bool ignoreG = maxR-minR == 0 || maxG-minG == 255;
-	bool ignoreB = maxR-minR == 0 || maxB-minB == 255;
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl;) {
+            // don't check values - speed (but you see under-/overflows anyway)
+            if (!ignoreR && *ptr < maxR)
+                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minR) / (maxR - minR));
+            else if (!ignoreR)
+                *ptr = 255;
 
-	uchar* ptr = img.bits();
+            ptr++;
+            cIdx++;
 
-	if (ignoreR) {
-		maxR = findHistPeak(histR);
-		ignoreR = maxR-minR == 0 || maxR-minR == 255;
-	}
-	if (ignoreG) {
-		maxG = findHistPeak(histG);
-		ignoreG = maxG-minG == 0 || maxG-minG == 255;
-	}
-	if (ignoreB) {
-		maxB = findHistPeak(histB);
-		ignoreB = maxB-minB == 0 || maxB-minB == 255;
-	}
+            if (!ignoreG && *ptr < maxG)
+                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minG) / (maxG - minG));
+            else if (!ignoreG)
+                *ptr = 255;
 
-	//qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
-	//qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
-	//qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
-	//qDebug() << "computed in: " << dt;
+            ptr++;
+            cIdx++;
 
-	if (ignoreR && ignoreG && ignoreB) {
-		qDebug() << "[Auto Adjust] There is no need to adjust the image";
-		return false;
-	}
+            if (!ignoreB && *ptr < maxB)
+                *ptr = (uchar)qRound(255.0f * ((float)*ptr - minB) / (maxB - minB));
+            else if (!ignoreB)
+                *ptr = 255;
+            ptr++;
+            cIdx++;
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+            if (channels == 4) {
+                ptr++;
+                cIdx++;
+            }
+        }
+        ptr += pad;
+    }
 
-		for (int cIdx = 0; cIdx < bpl; ) {
+    qDebug() << "[Auto Adjust] image adjusted in: " << dt;
 
-			// don't check values - speed (but you see under-/overflows anyway)
-			if (!ignoreR && *ptr < maxR)
-				*ptr = (uchar)qRound(255.0f*((float)*ptr-minR)/(maxR-minR));
-			else if (!ignoreR)
-				*ptr = 255;
-
-			ptr++;
-			cIdx++;
-
-			if (!ignoreG && *ptr < maxG)
-				*ptr = (uchar)qRound(255.0f*((float)*ptr-minG)/(maxG-minG));
-			else if (!ignoreG)
-				*ptr = 255;
-
-			ptr++;
-			cIdx++;
-
-			if (!ignoreB && *ptr < maxB)
-				*ptr = (uchar)qRound(255.0f*((float)*ptr-minB)/(maxB-minB));
-			else if (!ignoreB)
-				*ptr = 255;
-			ptr++;
-			cIdx++;
-
-			if (channels == 4) {
-				ptr++;
-				cIdx++;
-			}
-
-		}
-		ptr += pad;
-	}
-
-	qDebug() << "[Auto Adjust] image adjusted in: " << dt;
-	
-	return true;
+    return true;
 }
 
-uchar DkImage::findHistPeak(const int* hist, float quantile) {
+uchar DkImage::findHistPeak(const int *hist, float quantile)
+{
+    int histArea = 0;
 
-	int histArea = 0;
+    for (int idx = 0; idx < 256; idx++)
+        histArea += hist[idx];
 
-	for (int idx = 0; idx < 256; idx++)
-		histArea += hist[idx];
+    int sumBins = 0;
 
-	int sumBins = 0;
+    for (int idx = 255; idx >= 0; idx--) {
+        sumBins += hist[idx];
 
-	for (int idx = 255; idx >= 0; idx--) {
+        if (sumBins / (float)histArea > quantile) {
+            qDebug() << "max bin: " << idx;
+            return (uchar)idx;
+        }
+    }
 
-		sumBins += hist[idx];
-		
-		if (sumBins/(float)histArea > quantile) {
-			qDebug() << "max bin: " << idx;
-			return (uchar)idx;
-		}
+    qDebug() << "no max bin found... sum: " << sumBins;
 
-	}
-
-	qDebug() << "no max bin found... sum: " << sumBins;
-
-	return 255;
+    return 255;
 }
 
-QPixmap DkImage::makeSquare(const QPixmap & pm) {
+QPixmap DkImage::makeSquare(const QPixmap &pm)
+{
+    QRect r(QPoint(), pm.size());
 
-	QRect r(QPoint(), pm.size());
+    if (r.width() > r.height()) {
+        r.setX(qFloor((r.width() - r.height()) * 0.5f));
+        r.setWidth(r.height());
+    } else {
+        r.setY(qFloor((r.height() - r.width()) * 0.5f));
+        r.setHeight(r.width());
+    }
 
-	if (r.width() > r.height()) {
-		r.setX(qFloor((r.width()-r.height())*0.5f));
-		r.setWidth(r.height());
-	}
-	else {
-		r.setY(qFloor((r.height()-r.width())*0.5f));
-		r.setHeight(r.width());
-	}
-
-	return pm.copy(r);
+    return pm.copy(r);
 }
 
-QPixmap DkImage::merge(const QVector<QImage>& imgs) {
+QPixmap DkImage::merge(const QVector<QImage> &imgs)
+{
+    if (imgs.size() > 10) {
+        qWarning() << "DkImage::merge is built for a small amount of images, you gave me: " << imgs.size();
+    }
 
-	if (imgs.size() > 10) {
-		qWarning() << "DkImage::merge is built for a small amount of images, you gave me: " << imgs.size();
-	}
+    QPixmap pm;
+    int margin = 10;
+    int x = 0;
+    QPainter p;
 
-	QPixmap pm;
-	int margin = 10;
-	int x = 0;
-	QPainter p;
+    for (const QImage &img : imgs) {
+        // init on first
+        if (pm.isNull()) {
+            pm = QPixmap(img.height() * imgs.size() + margin * (imgs.size() - 1), img.height());
+            pm.fill(QColor(0, 0, 0, 0));
 
-	for (const QImage& img : imgs) {
+            p.begin(&pm);
+        }
 
-		// init on first
-		if (pm.isNull()) {
-			pm = QPixmap(img.height()*imgs.size() + margin*(imgs.size()-1), img.height());
-			pm.fill(QColor(0,0,0,0));
-			
-			p.begin(&pm);
-		}
+        QPixmap cpm = DkImage::makeSquare(QPixmap::fromImage(img));
+        QRect r(QPoint(x, 0), QSize(pm.height(), pm.height()));
+        p.drawPixmap(r, cpm);
+        x += r.width() + margin;
+    }
 
-		QPixmap cpm = DkImage::makeSquare(QPixmap::fromImage(img));
-		QRect r(QPoint(x, 0), QSize(pm.height(), pm.height()));
-		p.drawPixmap(r, cpm);
-		x += r.width() + margin;
-	}
-
-	return pm;
+    return pm;
 }
 
-QImage DkImage::cropToImage(const QImage& src, const QRect& cropRect, const QTransform& t, const QColor& fillColor) {
+QImage DkImage::cropToImage(const QImage &src, const QRect &cropRect, const QTransform &t, const QColor &fillColor)
+{
+    // illegal?
+    if (cropRect.width() <= 0 || cropRect.height() <= 0)
+        return src;
 
-	// illegal?
-	if (cropRect.width() <= 0 || cropRect.height() <= 0)
-		return src;
+    QImage img = QImage(cropRect.width(), cropRect.height(), QImage::Format_ARGB32);
+    img.fill(fillColor.rgba());
 
-	QImage img = QImage(cropRect.width(), cropRect.height(), QImage::Format_ARGB32);
-	img.fill(fillColor.rgba());
+    // render the image into the new coordinate system
+    QPainter painter(&img);
+    painter.setWorldTransform(t);
 
-	// render the image into the new coordinate system
-	QPainter painter(&img);
-	painter.setWorldTransform(t);
+    // for rotated rects we want perfect anti-aliasing
+    if (t.isRotating())
+        painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
-	// for rotated rects we want perfect anti-aliasing
-	if (t.isRotating())
-		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
+    painter.end();
 
-	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
-	painter.end();
-
-	return img;
+    return img;
 }
 
-QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, const QColor & fillColor) {
+QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor)
+{
+    QTransform tForm;
+    QPointF cImgSize;
+    rect.getTransform(tForm, cImgSize);
 
-	QTransform tForm; 
-	QPointF cImgSize;
-	rect.getTransform(tForm, cImgSize);
+    // illegal?
+    if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f)
+        return src;
 
-	// illegal?
-	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f)
-		return src;
+    double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI * 0.5);
+    double minD = qMin(std::abs(angle), std::abs(angle - CV_PI * 0.5));
 
-	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
-	double minD = qMin(std::abs(angle), std::abs(angle-CV_PI*0.5));
+    QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+    img.fill(fillColor.rgba());
 
-	QImage img = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
-	img.fill(fillColor.rgba());
+    // render the image into the new coordinate system
+    QPainter painter(&img);
+    painter.setWorldTransform(tForm);
 
-	// render the image into the new coordinate system
-	QPainter painter(&img);
-	painter.setWorldTransform(tForm);
+    // for rotated rects we want perfect anti-aliasing
+    if (minD > FLT_EPSILON)
+        painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
-	// for rotated rects we want perfect anti-aliasing
-	if (minD > FLT_EPSILON)
-		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
+    painter.end();
 
-	painter.drawImage(QRect(QPoint(), src.size()), src, QRect(QPoint(), src.size()));
-	painter.end();
-
-	return img;
+    return img;
 }
 
-QImage DkImage::hueSaturation(const QImage & src, int hue, int sat, int brightness) {
-	
-	// nothing to do?
-	if (hue == 0 && sat == 0 && brightness == 0)
-		return src;
+QImage DkImage::hueSaturation(const QImage &src, int hue, int sat, int brightness)
+{
+    // nothing to do?
+    if (hue == 0 && sat == 0 && brightness == 0)
+        return src;
 
-	QImage imgR;
+    QImage imgR;
 
 #ifdef WITH_OPENCV
 
-	// normalize brightness/saturation
-	int brightnessN = qRound(brightness / 100.0 * 255.0);
-	double satN = sat / 100.0 + 1.0;
+    // normalize brightness/saturation
+    int brightnessN = qRound(brightness / 100.0 * 255.0);
+    double satN = sat / 100.0 + 1.0;
 
-	cv::Mat hsvImg = DkImage::qImage2Mat(src);
-	
-	if (hsvImg.channels() > 3)
-		cv::cvtColor(hsvImg, hsvImg, CV_RGBA2BGR);
+    cv::Mat hsvImg = DkImage::qImage2Mat(src);
 
-	cv::cvtColor(hsvImg, hsvImg, CV_BGR2HSV);
+    if (hsvImg.channels() > 3)
+        cv::cvtColor(hsvImg, hsvImg, CV_RGBA2BGR);
 
-	// apply hue/saturation changes
-	for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
+    cv::cvtColor(hsvImg, hsvImg, CV_BGR2HSV);
 
-		unsigned char* iPtr = hsvImg.ptr<unsigned char>(rIdx);
+    // apply hue/saturation changes
+    for (int rIdx = 0; rIdx < hsvImg.rows; rIdx++) {
+        unsigned char *iPtr = hsvImg.ptr<unsigned char>(rIdx);
 
-		for (int cIdx = 0; cIdx < hsvImg.cols*3; cIdx+=3) {
+        for (int cIdx = 0; cIdx < hsvImg.cols * 3; cIdx += 3) {
+            // adopt hue
+            int h = iPtr[cIdx] + hue;
+            if (h < 0)
+                h += 180;
+            if (h >= 180)
+                h -= 180;
 
-			// adopt hue
-			int h = iPtr[cIdx] + hue;
-			if (h < 0)		h += 180;
-			if (h >= 180)	h -= 180;
+            iPtr[cIdx] = (unsigned char)h;
 
-			iPtr[cIdx] = (unsigned char)h;
+            // adopt value
+            int v = iPtr[cIdx + 2] + brightnessN;
+            if (v < 0)
+                v = 0;
+            if (v > 255)
+                v = 255;
+            iPtr[cIdx + 2] = (unsigned char)v;
 
-			// adopt value
-			int v = iPtr[cIdx + 2] + brightnessN;
-			if (v < 0)		v = 0;
-			if (v > 255) 	v = 255;
-			iPtr[cIdx + 2] = (unsigned char)v;
+            // adopt saturation
+            int s = qRound(iPtr[cIdx + 1] * satN);
+            if (s < 0)
+                s = 0;
+            if (s > 255)
+                s = 255;
+            iPtr[cIdx + 1] = (unsigned char)s;
+        }
+    }
 
-			// adopt saturation
-			int s = qRound(iPtr[cIdx + 1] * satN);
-			if (s < 0)		s = 0;
-			if (s > 255) 	s = 255;
-			iPtr[cIdx + 1] = (unsigned char)s;
-		}
-	}
-	
-	cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
-	imgR = DkImage::mat2QImage(hsvImg);
+    cv::cvtColor(hsvImg, hsvImg, CV_HSV2BGR);
+    imgR = DkImage::mat2QImage(hsvImg);
 
 #endif // WITH_OPENCV
-	
-	return imgR;
+
+    return imgR;
 }
 
-QImage DkImage::exposure(const QImage & src, double exposure, double offset, double gamma) {
+QImage DkImage::exposure(const QImage &src, double exposure, double offset, double gamma)
+{
+    if (exposure == 0.0 && offset == 0.0 && gamma == 1.0)
+        return src;
 
-	if (exposure == 0.0 && offset == 0.0 && gamma == 1.0)
-		return src;
-
-	QImage imgR;
+    QImage imgR;
 #ifdef WITH_OPENCV
 
-	cv::Mat rgbImg = DkImage::qImage2Mat(src);
-	rgbImg.convertTo(rgbImg, CV_16U, 256, offset*std::numeric_limits<unsigned short>::max());
+    cv::Mat rgbImg = DkImage::qImage2Mat(src);
+    rgbImg.convertTo(rgbImg, CV_16U, 256, offset * std::numeric_limits<unsigned short>::max());
 
-	if (rgbImg.channels() > 3)
-		cv::cvtColor(rgbImg, rgbImg, CV_RGBA2BGR);
+    if (rgbImg.channels() > 3)
+        cv::cvtColor(rgbImg, rgbImg, CV_RGBA2BGR);
 
-	if (exposure != 0.0)
-		rgbImg = exposureMat(rgbImg, exposure);
+    if (exposure != 0.0)
+        rgbImg = exposureMat(rgbImg, exposure);
 
-	if (gamma != 1.0)
-		rgbImg = gammaMat(rgbImg, gamma);
+    if (gamma != 1.0)
+        rgbImg = gammaMat(rgbImg, gamma);
 
-	rgbImg.convertTo(rgbImg, CV_8U, 1.0/256.0);
-	imgR = DkImage::mat2QImage(rgbImg);
+    rgbImg.convertTo(rgbImg, CV_8U, 1.0 / 256.0);
+    imgR = DkImage::mat2QImage(rgbImg);
 
 #endif // WITH_OPENCV
 
-	return imgR;
+    return imgR;
 }
 
-QImage DkImage::bgColor(const QImage & src, const QColor & col) {
+QImage DkImage::bgColor(const QImage &src, const QColor &col)
+{
+    QImage dst(src.size(), QImage::Format_RGB32);
+    dst.fill(col);
 
-	QImage dst(src.size(), QImage::Format_RGB32);
-	dst.fill(col);
+    QPainter p(&dst);
+    p.drawImage(QPoint(0, 0), src);
 
-	QPainter p(&dst);
-	p.drawImage(QPoint(0, 0), src);
-
-	return dst;
+    return dst;
 }
 
-QByteArray DkImage::extractImageFromDataStream(const QByteArray & ba, const QByteArray & beginSignature, const QByteArray & endSignature, bool debugOutput) {
-	
-	
-	int bIdx = ba.indexOf(beginSignature);
+QByteArray DkImage::extractImageFromDataStream(const QByteArray &ba, const QByteArray &beginSignature, const QByteArray &endSignature, bool debugOutput)
+{
+    int bIdx = ba.indexOf(beginSignature);
 
-	if (bIdx == -1) {
-		qDebug() << "[ExtractImage] could not locate" << beginSignature;
-		return QByteArray();
-	}
+    if (bIdx == -1) {
+        qDebug() << "[ExtractImage] could not locate" << beginSignature;
+        return QByteArray();
+    }
 
-	int eIdx = ba.indexOf(endSignature, bIdx);
+    int eIdx = ba.indexOf(endSignature, bIdx);
 
-	if (eIdx == -1) {
-		qDebug() << "[ExtractImage] could not locate" << endSignature;
-		return QByteArray();
-	}
+    if (eIdx == -1) {
+        qDebug() << "[ExtractImage] could not locate" << endSignature;
+        return QByteArray();
+    }
 
-	QByteArray bac = ba.mid(bIdx, eIdx + endSignature.size() - bIdx);
+    QByteArray bac = ba.mid(bIdx, eIdx + endSignature.size() - bIdx);
 
-	if (debugOutput) {
-		qDebug() << "extracting image from stream...";
-		qDebug() << "cropping: [" << bIdx << eIdx << "]";
-		qDebug() << "original size: " << ba.size()/1024.0 << "KB" << "new size: " << bac.size()/1024.0 << "KB" << "difference:" << (ba.size()-bac.size())/1024 << "KB";
-	}
+    if (debugOutput) {
+        qDebug() << "extracting image from stream...";
+        qDebug() << "cropping: [" << bIdx << eIdx << "]";
+        qDebug() << "original size: " << ba.size() / 1024.0 << "KB"
+                 << "new size: " << bac.size() / 1024.0 << "KB"
+                 << "difference:" << (ba.size() - bac.size()) / 1024 << "KB";
+    }
 
-	return bac;
+    return bac;
 }
 
-QByteArray DkImage::fixSamsungPanorama(QByteArray & ba) {
+QByteArray DkImage::fixSamsungPanorama(QByteArray &ba)
+{
+    // this code is based on python code from bcyrill
+    // see: https://gist.github.com/bcyrill/e59fda6c7ffe23c7c4b08a990804b269
+    // it fixes SAMSUNG panorama images that are not standard conformant by adding an EOI marker to the QByteArray
+    // see also: https://github.com/nomacs/nomacs/issues/254
 
-	// this code is based on python code from bcyrill
-	// see: https://gist.github.com/bcyrill/e59fda6c7ffe23c7c4b08a990804b269
-	// it fixes SAMSUNG panorama images that are not standard conformant by adding an EOI marker to the QByteArray
-	// see also: https://github.com/nomacs/nomacs/issues/254
+    if (ba.size() < 8)
+        return QByteArray();
 
-	if (ba.size() < 8)
-		return QByteArray();
+    QByteArray trailer = ba.right(4);
 
-	QByteArray trailer = ba.right(4);
+    // is it a samsung panorama jpg?
+    if (trailer != QByteArray("SEFT"))
+        return QByteArray();
 
-	// is it a samsung panorama jpg?
-	if (trailer != QByteArray("SEFT"))
-		return QByteArray();
+    // TODO saveify:
+    int sefhPos = intFromByteArray(ba, ba.size() - 8) + 8;
+    trailer = ba.right(sefhPos);
 
-	// TODO saveify:
-	int sefhPos = intFromByteArray(ba, ba.size() - 8) + 8;
-	trailer = ba.right(sefhPos);
+    // trailer starts with "SEFH"?
+    if (trailer.left(4) != QByteArray("SEFH"))
+        return QByteArray();
 
-	// trailer starts with "SEFH"?
-	if (trailer.left(4) != QByteArray("SEFH"))
-		return QByteArray();
+    int endPos = ba.size();
+    int dirPos = endPos - sefhPos;
 
-	int endPos = ba.size();
-	int dirPos = endPos - sefhPos;
+    int count = intFromByteArray(trailer, 8);
 
-	int count = intFromByteArray(trailer, 8);
+    int firstBlock = 0;
+    bool isPano = false;
 
-	int firstBlock = 0;
-	bool isPano = false;
+    for (int idx = 0; idx < count; idx++) {
+        int e = 12 + 12 * idx;
 
-	for (int idx = 0; idx < count; idx++) {
+        int noff = intFromByteArray(trailer, e + 4);
+        int size = intFromByteArray(trailer, e + 8);
 
-		int e = 12 + 12 * idx;
+        if (firstBlock < noff)
+            firstBlock = noff;
 
-		int noff = intFromByteArray(trailer, e + 4);
-		int size = intFromByteArray(trailer, e + 8);
+        QByteArray cdata = ba.mid(dirPos - noff, size);
 
-		if (firstBlock < noff)
-			firstBlock = noff;
+        int eoff = intFromByteArray(cdata, 4);
+        QString pi = cdata.mid(8, eoff);
 
-		QByteArray cdata = ba.mid(dirPos - noff, size);
+        if (pi == "Panorama_Shot_Info")
+            isPano = true;
+    }
 
-		int eoff = intFromByteArray(cdata, 4);
-		QString pi = cdata.mid(8, eoff);
+    if (!isPano)
+        return QByteArray();
 
-		if (pi == "Panorama_Shot_Info")
-			isPano = true;
-	}
+    int dataPos = dirPos - firstBlock;
 
-	if (!isPano)
-		return QByteArray();
+    // ok, append the missing marker
+    QByteArray nb;
+    nb.append(ba.left(dataPos));
+    nb.append(QByteArray("\xff\xd9"));
+    nb.append(ba.right(dataPos));
+    qDebug() << "SAMSUNG panorma fix: EOI marker injected";
 
-	int dataPos = dirPos - firstBlock;
-
-	// ok, append the missing marker
-	QByteArray nb;
-	nb.append(ba.left(dataPos));
-	nb.append(QByteArray("\xff\xd9"));
-	nb.append(ba.right(dataPos));
-	qDebug() << "SAMSUNG panorma fix: EOI marker injected";
-
-	return nb;
-
+    return nb;
 }
 
-int DkImage::intFromByteArray(const QByteArray & ba, int pos) {
+int DkImage::intFromByteArray(const QByteArray &ba, int pos)
+{
+    // TODO saveify:
+    QByteArray tmp = ba.mid(pos, 4);
+    const int *val = (const int *)(tmp.constData());
 
-	// TODO saveify:
-	QByteArray tmp = ba.mid(pos, 4);
-	const int* val = (const int*)(tmp.constData());
-
-	return *val;
+    return *val;
 }
 
 #ifdef WITH_OPENCV
-cv::Mat DkImage::exposureMat(const cv::Mat& src, double exposure) {
+cv::Mat DkImage::exposureMat(const cv::Mat &src, double exposure)
+{
+    int maxVal = std::numeric_limits<unsigned short>::max();
+    cv::Mat lut(1, maxVal + 1, CV_16UC1);
 
-	int maxVal = std::numeric_limits<unsigned short>::max();
-	cv::Mat lut(1, maxVal+1, CV_16UC1);
+    double smooth = 0.5;
+    double cStops = std::log(exposure) / std::log(2.0);
+    double range = cStops * 2.0;
+    double linRange = std::pow(2.0, range);
+    double x1 = (maxVal + 1.0) / linRange - 1.0;
+    double y1 = x1 * exposure;
+    double y2 = maxVal * (1.0 + (1.0 - smooth) * (exposure - 1.0));
+    double sq3x = std::pow(x1 * x1 * maxVal, 1.0 / 3.0);
+    double B = (y2 - y1 + exposure * (3.0 * x1 - 3.0 * sq3x)) / (maxVal + 2.0 * x1 - 3.0 * sq3x);
+    double A = (exposure - B) * 3.0 * std::pow(x1 * x1, 1.0 / 3.0);
+    double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B * maxVal;
 
-	double smooth = 0.5;
-	double cStops = std::log(exposure) / std::log(2.0);
-	double range = cStops*2.0;
-	double linRange = std::pow(2.0, range);
-	double x1 = (maxVal + 1.0) / linRange - 1.0;
-	double y1 = x1 * exposure;
-	double y2 = maxVal * (1.0 + (1.0 - smooth) * (exposure - 1.0));
-	double sq3x = std::pow(x1*x1 * maxVal, 1.0 / 3.0);
-	double B = (y2 - y1 + exposure * (3.0*x1 - 3.0*sq3x)) / (maxVal + 2.0*x1 - 3.0*sq3x);
-	double A = (exposure - B) * 3.0 * std::pow(x1*x1, 1.0 / 3.0);
-	double CC = y2 - A * std::pow(maxVal, 1.0 / 3.0) - B*maxVal;
+    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
 
-	for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
+            double val = cIdx;
+            double valE = 0.0;
 
-		unsigned short* ptrLut = lut.ptr<unsigned short>(rIdx);
+            if (exposure < 1.0) {
+                valE = val * std::exp(exposure / 10.0); // /10 - make it slower -> we go down till -20
+            } else if (cIdx < x1) {
+                valE = val * exposure;
+            } else {
+                valE = A * std::pow(val, 1.0 / 3.0) + B * val + CC;
+            }
 
-		for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
+            if (valE < 0)
+                ptrLut[cIdx] = 0;
+            else if (valE > maxVal)
+                ptrLut[cIdx] = (unsigned short)maxVal;
+            else
+                ptrLut[cIdx] = (unsigned short)qRound(valE);
+        }
+    }
 
-			double val = cIdx;
-			double valE = 0.0;
-
-			if (exposure < 1.0) {
-				valE = val * std::exp(exposure/10.0);	// /10 - make it slower -> we go down till -20
-			}
-			else if (cIdx < x1) {
-				valE = val * exposure ;
-			}
-			else {
-				valE = A * std::pow(val, 1.0 / 3.0) + B*val + CC;
-			}
-
-			if (valE < 0)
-				ptrLut[cIdx] = 0;
-			else if (valE > maxVal)
-				ptrLut[cIdx] = (unsigned short)maxVal;
-			else
-				ptrLut[cIdx] = (unsigned short)qRound(valE);
-		}
-	}
-
-	return applyLUT(src, lut);
+    return applyLUT(src, lut);
 }
 
-cv::Mat DkImage::gammaMat(const cv::Mat& src, double gamma) {
+cv::Mat DkImage::gammaMat(const cv::Mat &src, double gamma)
+{
+    int maxVal = std::numeric_limits<unsigned short>::max();
+    cv::Mat lut(1, maxVal + 1, CV_16UC1);
 
-	int maxVal = std::numeric_limits<unsigned short>::max();
-	cv::Mat lut(1, maxVal+1, CV_16UC1);
+    for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        unsigned short *ptrLut = lut.ptr<unsigned short>(rIdx);
 
-	for (int rIdx = 0; rIdx < lut.rows; rIdx++) {
+        for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
+            double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
+            ptrLut[cIdx] = (unsigned short)qRound(val);
+        }
+    }
 
-		unsigned short* ptrLut = lut.ptr<unsigned short>(rIdx);
-
-		for (int cIdx = 0; cIdx < lut.cols; cIdx++) {
-
-			double val = std::pow((double)cIdx / maxVal, 1.0 / gamma) * maxVal;
-			ptrLut[cIdx] = (unsigned short)qRound(val);
-		}
-	}
-
-	return applyLUT(src, lut);
+    return applyLUT(src, lut);
 }
 
-cv::Mat DkImage::applyLUT(const cv::Mat& src, const cv::Mat& lut) {
+cv::Mat DkImage::applyLUT(const cv::Mat &src, const cv::Mat &lut)
+{
+    if (src.depth() != lut.depth()) {
+        qCritical() << "cannot apply LUT!";
+        return cv::Mat();
+    }
 
-	if (src.depth() != lut.depth()) {
-		qCritical() << "cannot apply LUT!";
-		return cv::Mat();
-	}
+    cv::Mat dst = src.clone();
+    const unsigned short *lutPtr = lut.ptr<unsigned short>();
 
-	cv::Mat dst = src.clone();
-	const unsigned short* lutPtr = lut.ptr<unsigned short>();
+    for (int rIdx = 0; rIdx < src.rows; rIdx++) {
+        unsigned short *dPtr = dst.ptr<unsigned short>(rIdx);
 
-	for (int rIdx = 0; rIdx < src.rows; rIdx++) {
+        for (int cIdx = 0; cIdx < src.cols * src.channels(); cIdx++) {
+            assert(dPtr[cIdx] >= 0 && dPtr[cIdx] < lut.cols);
+            dPtr[cIdx] = lutPtr[dPtr[cIdx]];
+        }
+    }
 
-		unsigned short* dPtr = dst.ptr<unsigned short>(rIdx);
-
-		for (int cIdx = 0; cIdx < src.cols*src.channels(); cIdx++) {
-			assert(dPtr[cIdx] >= 0 && dPtr[cIdx] < lut.cols);
-			dPtr[cIdx] = lutPtr[dPtr[cIdx]];
-		}
-	}
-
-	return dst;
+    return dst;
 }
 #endif // WITH_OPENCV
 
-QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {
+QPixmap DkImage::colorizePixmap(const QPixmap &icon, const QColor &col, float opacity)
+{
+    if (icon.isNull())
+        return icon;
 
-	if (icon.isNull())
-		return icon;
+    QPixmap glow = icon.copy();
+    QPixmap sGlow = glow.copy();
+    sGlow.fill(col);
 
-	QPixmap glow = icon.copy();
-	QPixmap sGlow = glow.copy();
-	sGlow.fill(col);
+    QPainter painter(&glow);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn); // check if this is the right composition mode
+    painter.setOpacity(opacity);
+    painter.drawPixmap(glow.rect(), sGlow);
 
-	QPainter painter(&glow);
-	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-	painter.setCompositionMode(QPainter::CompositionMode_SourceIn);	// check if this is the right composition mode
-	painter.setOpacity(opacity);
-	painter.drawPixmap(glow.rect(), sGlow);
-
-	return glow;
+    return glow;
 }
 
-QPixmap DkImage::loadIcon(const QString & filePath, const QSize& size, const QColor& col) {
-	
-	if (filePath.isEmpty())
-		return QPixmap();
+QPixmap DkImage::loadIcon(const QString &filePath, const QSize &size, const QColor &col)
+{
+    if (filePath.isEmpty())
+        return QPixmap();
 
-	QSize s = size * DkSettingsManager::param().dpiScaleFactor();
-	if (size.isEmpty()) {
-		int eis = DkSettingsManager::param().effectiveIconSize();
-		s = QSize(eis, eis);
-	}
+    QSize s = size * DkSettingsManager::param().dpiScaleFactor();
+    if (size.isEmpty()) {
+        int eis = DkSettingsManager::param().effectiveIconSize();
+        s = QSize(eis, eis);
+    }
 
-	QPixmap icon = loadFromSvg(filePath, s);
-	
-	QColor c = (col.isValid()) ? col : DkSettingsManager::param().display().iconColor;
+    QPixmap icon = loadFromSvg(filePath, s);
 
-	if (c.alpha() != 0)
-		icon = colorizePixmap(icon, c);
+    QColor c = (col.isValid()) ? col : DkSettingsManager::param().display().iconColor;
 
-	return icon;
+    if (c.alpha() != 0)
+        icon = colorizePixmap(icon, c);
+
+    return icon;
 }
 
-QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
+QPixmap DkImage::loadFromSvg(const QString &filePath, const QSize &size)
+{
+    QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
 
-	QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
-	
-	QPixmap pm(size);
-	pm.fill(QColor(0, 0, 0, 0));	// clear background
+    QPixmap pm(size);
+    pm.fill(QColor(0, 0, 0, 0)); // clear background
 
-	QPainter p(&pm);
-	svg->render(&p);
+    QPainter p(&pm);
+    svg->render(&p);
 
-	return pm;
+    return pm;
 }
-
 
 #ifdef WITH_OPENCV
 
@@ -1100,555 +1087,543 @@ QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
  * Converts a QImage to a Mat
  * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
  * @return cv::Mat the corresponding Mat
- **/ 
-cv::Mat DkImage::qImage2Mat(const QImage& img) {
+ **/
+cv::Mat DkImage::qImage2Mat(const QImage &img)
+{
+    cv::Mat mat2;
+    QImage cImg; // must be initialized here!	(otherwise the data is lost before clone())
 
-	cv::Mat mat2;
-	QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
+    try {
+        // if (img.format() == QImage::Format_RGB32)
+        //	qDebug() << "we have an RGB32 in memory...";
 
-	try {
-		//if (img.format() == QImage::Format_RGB32)
-		//	qDebug() << "we have an RGB32 in memory...";
+        if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
+            mat2 = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar *)img.bits(), img.bytesPerLine());
+            // qDebug() << "ARGB32 or RGB32";
+        } else if (img.format() == QImage::Format_RGB888) {
+            mat2 = cv::Mat(img.height(), img.width(), CV_8UC3, (uchar *)img.bits(), img.bytesPerLine());
+            // qDebug() << "RGB888";
+        }
+        //// converting to indexed8 causes bugs in the qpainter
+        //// see: http://qt-project.org/doc/qt-4.8/qimage.html
+        // else if (img.format() == QImage::Format_Indexed8) {
+        //	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
+        //	//qDebug() << "indexed...";
+        // }
+        else {
+            // qDebug() << "image flag: " << img.format();
+            cImg = img.convertToFormat(QImage::Format_ARGB32);
+            mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar *)cImg.bits(), cImg.bytesPerLine());
+            // qDebug() << "I need to convert the QImage to ARGB32";
+        }
 
-		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-			mat2 = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
-			//qDebug() << "ARGB32 or RGB32";
-		}
-		else if (img.format() == QImage::Format_RGB888) {
-			mat2 = cv::Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
-			//qDebug() << "RGB888";
-		}
-		//// converting to indexed8 causes bugs in the qpainter
-		//// see: http://qt-project.org/doc/qt-4.8/qimage.html
-		//else if (img.format() == QImage::Format_Indexed8) {
-		//	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
-		//	//qDebug() << "indexed...";
-		//}
-		else {
-			//qDebug() << "image flag: " << img.format();
-			cImg = img.convertToFormat(QImage::Format_ARGB32);
-			mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
-			//qDebug() << "I need to convert the QImage to ARGB32";
-		}
+        mat2 = mat2.clone(); // we need to own the pointer
+    } catch (...) { // something went seriously wrong (e.g. out of memory)
+        // DkNoMacs::dialog(QObject::tr("Sorry, could not convert image."));
+        qDebug() << "[DkImage::qImage2Mat] could not convert image - something is seriously wrong down here...";
+    }
 
-		mat2 = mat2.clone();	// we need to own the pointer
-	}
-	catch (...) {	// something went seriously wrong (e.g. out of memory)
-		//DkNoMacs::dialog(QObject::tr("Sorry, could not convert image."));
-		qDebug() << "[DkImage::qImage2Mat] could not convert image - something is seriously wrong down here...";
-
-	}
-
-	return mat2; 
+    return mat2;
 }
 
 /**
  * Converts a cv::Mat to a QImage.
  * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
  * @return QImage the corresponding QImage
- **/ 
-QImage DkImage::mat2QImage(cv::Mat img) {
+ **/
+QImage DkImage::mat2QImage(cv::Mat img)
+{
+    QImage qImg;
 
-	QImage qImg;
+    // since Mat header is copied, a new buffer should be allocated (check this!)
+    if (img.depth() == CV_32F)
+        img.convertTo(img, CV_8U, 255);
 
-	// since Mat header is copied, a new buffer should be allocated (check this!)
-	if (img.depth() == CV_32F)
-		img.convertTo(img, CV_8U, 255);
+    if (img.type() == CV_8UC1) {
+        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8); // opencv uses size_t for scaling in x64 applications
+        // Mat tmp;
+        // cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
+        // img = tmp;
+    }
+    if (img.type() == CV_8UC3) {
+        // cv::cvtColor(img, img, CV_RGB2BGR);
+        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
+    }
+    if (img.type() == CV_8UC4) {
+        qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
+    }
 
-	if (img.type() == CV_8UC1) {
-		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8);	// opencv uses size_t for scaling in x64 applications
-		//Mat tmp;
-		//cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
-		//img = tmp;
-	}
-	if (img.type() == CV_8UC3) {
-			
-		//cv::cvtColor(img, img, CV_RGB2BGR);
-		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
-	}
-	if (img.type() == CV_8UC4) {
-		qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
-	}
+    qImg = qImg.copy();
 
-	qImg = qImg.copy();
-
-	return qImg;
+    return qImg;
 }
 
-cv::Mat DkImage::get1DGauss(double sigma) {
+cv::Mat DkImage::get1DGauss(double sigma)
+{
+    // correct -> checked with matlab reference
+    int kernelsize = qCeil(sigma * 3 * 2) + 1;
+    if (kernelsize < 3)
+        kernelsize = 3;
+    if ((kernelsize % 2) != 1)
+        kernelsize += 1;
 
-	// correct -> checked with matlab reference
-	int kernelsize = qCeil(sigma*3*2)+1;
-	if (kernelsize < 3) kernelsize = 3;
-	if ((kernelsize % 2) != 1) kernelsize+=1;
+    cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
+    float *kernelPtr = gKernel.ptr<float>();
 
-	cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
-	float* kernelPtr = gKernel.ptr<float>();
+    for (int idx = 0, x = -qFloor(kernelsize / 2); idx < kernelsize; idx++, x++) {
+        kernelPtr[idx] = (float)(exp(-(x * x) / (2 * sigma * sigma))); // 1/(sqrt(2pi)*sigma) -> discrete normalization
+    }
 
-	for (int idx = 0, x = -qFloor(kernelsize/2); idx < kernelsize; idx++,x++) {
+    if (sum(gKernel).val[0] != 0)
+        gKernel *= 1.0f / sum(gKernel).val[0];
+    else
+        qWarning() << "The kernel sum is zero\n";
 
-		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
-	}
-
-	if (sum(gKernel).val[0] != 0)
-		gKernel *= 1.0f/sum(gKernel).val[0];
-	else
-		qWarning() << "The kernel sum is zero\n";
-
-	return gKernel;
+    return gKernel;
 }
 
-void DkImage::linearToGamma(cv::Mat& img) {
-
-	QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
-	mapGammaTable(img, gt);
+void DkImage::linearToGamma(cv::Mat &img)
+{
+    QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
+    mapGammaTable(img, gt);
 }
 
-void DkImage::gammaToLinear(cv::Mat& img) {
-
-	QVector<unsigned short> gt = getGamma2LinearTable<unsigned short>();
-	mapGammaTable(img, gt);
+void DkImage::gammaToLinear(cv::Mat &img)
+{
+    QVector<unsigned short> gt = getGamma2LinearTable<unsigned short>();
+    mapGammaTable(img, gt);
 }
 
-void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable) {
+void DkImage::mapGammaTable(cv::Mat &img, const QVector<unsigned short> &gammaTable)
+{
+    DkTimer dt;
 
-	DkTimer dt;
+    for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+        unsigned short *mPtr = img.ptr<unsigned short>(rIdx);
 
-	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+        for (int cIdx = 0; cIdx < img.cols; cIdx++) {
+            for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
+                if (*mPtr < 0 || *mPtr > gammaTable.size()) {
+                    qDebug() << "WRONG VALUE: " << *mPtr;
+                    continue;
+                }
+                if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
+                    qDebug() << "WRONG VALUE: " << *mPtr;
+                    continue;
+                }
 
-		unsigned short* mPtr = img.ptr<unsigned short>(rIdx);
+                *mPtr = gammaTable[*mPtr];
+            }
+        }
+    }
 
-		for (int cIdx = 0; cIdx < img.cols; cIdx++) {
-
-			for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
-
-				if (*mPtr < 0 || *mPtr > gammaTable.size()) {
-					qDebug() << "WRONG VALUE: " << *mPtr;
-					continue;
-				}
-				if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
-					qDebug() << "WRONG VALUE: " << *mPtr;
-					continue;
-				}
-
-				*mPtr = gammaTable[*mPtr];
-			}
-		}
-	}
-
-	qDebug() << "gamma computation takes: " << dt;
+    qDebug() << "gamma computation takes: " << dt;
 }
 
-void DkImage::logPolar(const cv::Mat& src, cv::Mat& dst, cv::Point2d center, double scaleLog, double angle, double scale) {
+void DkImage::logPolar(const cv::Mat &src, cv::Mat &dst, cv::Point2d center, double scaleLog, double angle, double scale)
+{
+    cv::Mat mapx, mapy;
 
-	cv::Mat mapx, mapy;
+    cv::Size ssize, dsize;
+    ssize = src.size();
+    dsize = dst.size();
 
-	cv::Size ssize, dsize;
-	ssize = src.size();
-	dsize = dst.size();
+    mapx = cv::Mat(dsize.height, dsize.width, CV_32F);
+    mapy = cv::Mat(dsize.height, dsize.width, CV_32F);
 
-	mapx = cv::Mat(dsize.height, dsize.width, CV_32F);
-	mapy = cv::Mat(dsize.height, dsize.width, CV_32F);
+    double xDist = dst.cols - center.x;
+    double yDist = dst.rows - center.y;
 
-	double xDist = dst.cols - center.x;
-	double yDist = dst.rows - center.y;
+    double radius = std::sqrt(xDist * xDist + yDist * yDist);
 
-	double radius = std::sqrt(xDist*xDist + yDist*yDist);
+    scale *= src.cols / std::log(radius / scaleLog + 1.0);
 
-	scale *= src.cols / std::log(radius / scaleLog + 1.0);
+    int x, y;
+    cv::Mat bufx, bufy, bufp, bufa;
+    double ascale = ssize.height / (2 * CV_PI);
+    cv::AutoBuffer<float> _buf(4 * dsize.width);
+    float *buf = _buf;
 
-	int x, y;
-	cv::Mat bufx, bufy, bufp, bufa;
-	double ascale = ssize.height / (2 * CV_PI);
-	cv::AutoBuffer<float> _buf(4 * dsize.width);
-	float* buf = _buf;
+    bufx = cv::Mat(1, dsize.width, CV_32F, buf);
+    bufy = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width);
+    bufp = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 2);
+    bufa = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 3);
 
-	bufx = cv::Mat(1, dsize.width, CV_32F, buf);
-	bufy = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width);
-	bufp = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 2);
-	bufa = cv::Mat(1, dsize.width, CV_32F, buf + dsize.width * 3);
+    for (x = 0; x < dsize.width; x++)
+        bufx.ptr<float>()[x] = (float)(x - center.x);
 
-	for (x = 0; x < dsize.width; x++)
-		bufx.ptr<float>()[x] = (float)(x - center.x);
+    for (y = 0; y < dsize.height; y++) {
+        float *mx = mapx.ptr<float>(y);
+        float *my = mapy.ptr<float>(y);
 
-	for (y = 0; y < dsize.height; y++) {
-		float* mx = mapx.ptr<float>(y);
-		float* my = mapy.ptr<float>(y);
+        for (x = 0; x < dsize.width; x++)
+            bufy.ptr<float>()[x] = (float)(y - center.y);
 
-		for (x = 0; x < dsize.width; x++)
-			bufy.ptr<float>()[x] = (float)(y - center.y);
+        cv::cartToPolar(bufx, bufy, bufp, bufa);
 
-		cv::cartToPolar(bufx, bufy, bufp, bufa);
+        for (x = 0; x < dsize.width; x++) {
+            bufp.ptr<float>()[x] /= (float)scaleLog;
+            bufp.ptr<float>()[x] += 1.0f;
+        }
 
-		for (x = 0; x < dsize.width; x++) {
-			bufp.ptr<float>()[x] /= (float)scaleLog;
-			bufp.ptr<float>()[x] += 1.0f;
-		}
+        cv::log(bufp, bufp);
 
-		cv::log(bufp, bufp);
+        for (x = 0; x < dsize.width; x++) {
+            double rho = bufp.ptr<float>()[x] * scale;
+            double phi = bufa.ptr<float>()[x] + angle;
 
-		for (x = 0; x < dsize.width; x++) {
-			double rho = bufp.ptr<float>()[x] * scale;
-			double phi = bufa.ptr<float>()[x] + angle;
+            if (phi < 0)
+                phi += 2 * CV_PI;
+            else if (phi > 2 * CV_PI)
+                phi -= 2 * CV_PI;
 
-			if (phi < 0)
-				phi += 2 * CV_PI;
-			else if (phi > 2 * CV_PI)
-				phi -= 2 * CV_PI;
+            phi *= ascale;
 
-			phi *= ascale;
+            // qDebug() << "phi: " << bufa.data.fl[x];
 
-			//qDebug() << "phi: " << bufa.data.fl[x];
+            mx[x] = (float)rho;
+            my[x] = (float)phi;
+        }
+    }
 
-			mx[x] = (float)rho;
-			my[x] = (float)phi;
-		}
-	}
-
-	cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
+    cv::remap(src, dst, mapx, mapy, CV_INTER_AREA, IPL_BORDER_REPLICATE);
 }
 
-void DkImage::tinyPlanet(QImage& img, double scaleLog, double angle, QSize s, bool invert /* = false */) {
+void DkImage::tinyPlanet(QImage &img, double scaleLog, double angle, QSize s, bool invert /* = false */)
+{
+    QTransform rotationMatrix;
+    rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
+    img = img.transformed(rotationMatrix);
 
-	QTransform rotationMatrix;
-	rotationMatrix.rotate((invert) ? (double)-90 : (double)90);
-	img = img.transformed(rotationMatrix);
+    // make square
+    img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-	// make square
-	img = img.scaled(s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    cv::Mat mImg = DkImage::qImage2Mat(img);
 
-	cv::Mat mImg = DkImage::qImage2Mat(img);
+    qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
+    logPolar(mImg, mImg, cv::Point2d(mImg.cols * 0.5, mImg.rows * 0.5), scaleLog, angle);
 
-	qDebug() << "scale log: " << scaleLog << " inverted: " << invert;
-	logPolar(mImg, mImg, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), scaleLog, angle);
-
-	img = DkImage::mat2QImage(mImg);
+    img = DkImage::mat2QImage(mImg);
 }
 
 #endif
 
-bool DkImage::gaussianBlur(QImage& img, float sigma) {
-
+bool DkImage::gaussianBlur(QImage &img, float sigma)
+{
 #ifdef WITH_OPENCV
-	DkTimer dt;
-	cv::Mat imgCv = DkImage::qImage2Mat(img);
+    DkTimer dt;
+    cv::Mat imgCv = DkImage::qImage2Mat(img);
 
-	cv::Mat imgG;
-	cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
-	cv::Mat gy = gx.t();
-	cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
-	img = DkImage::mat2QImage(imgG);
+    cv::Mat imgG;
+    cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
+    cv::Mat gy = gx.t();
+    cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
+    img = DkImage::mat2QImage(imgG);
 
-	qDebug() << "gaussian blur takes: " << dt;
+    qDebug() << "gaussian blur takes: " << dt;
 #else
-	Q_UNUSED(img);
-	Q_UNUSED(sigma);
+    Q_UNUSED(img);
+    Q_UNUSED(sigma);
 #endif
 
-	return true;
+    return true;
 }
 
-bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
-
+bool DkImage::unsharpMask(QImage &img, float sigma, float weight)
+{
 #ifdef WITH_OPENCV
-	DkTimer dt;
-	//DkImage::gammaToLinear(img);
-	cv::Mat imgCv = DkImage::qImage2Mat(img);
+    DkTimer dt;
+    // DkImage::gammaToLinear(img);
+    cv::Mat imgCv = DkImage::qImage2Mat(img);
 
-	cv::Mat imgG;
-	cv::Mat gx = cv::getGaussianKernel(qRound(4*sigma+1), sigma);
-	cv::Mat gy = gx.t();
-	cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
-	//cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
-	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
-	img = DkImage::mat2QImage(imgCv);
+    cv::Mat imgG;
+    cv::Mat gx = cv::getGaussianKernel(qRound(4 * sigma + 1), sigma);
+    cv::Mat gy = gx.t();
+    cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
+    // cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
+    cv::addWeighted(imgCv, weight, imgG, 1 - weight, 0, imgCv);
+    img = DkImage::mat2QImage(imgCv);
 
-	qDebug() << "unsharp mask takes: " << dt;
-	//DkImage::linearToGamma(img);
+    qDebug() << "unsharp mask takes: " << dt;
+    // DkImage::linearToGamma(img);
 #else
-	Q_UNUSED(img);
-	Q_UNUSED(sigma);
-	Q_UNUSED(weight);
+    Q_UNUSED(img);
+    Q_UNUSED(sigma);
+    Q_UNUSED(weight);
 #endif
 
-	return true;
+    return true;
 }
 
-QImage DkImage::createThumb(const QImage& image, int maxSize) {
+QImage DkImage::createThumb(const QImage &image, int maxSize)
+{
+    if (image.isNull())
+        return image;
 
-	if (image.isNull())
-		return image;
+    int maxThumbSize = maxSize == -1 ? (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor()) : maxSize;
+    int imgW = image.width();
+    int imgH = image.height();
 
-	int maxThumbSize = maxSize == -1 ? (int)(max_thumb_size * DkSettingsManager::param().dpiScaleFactor()) : maxSize;
-	int imgW = image.width();
-	int imgH = image.height();
+    if (imgW > maxThumbSize || imgH > maxThumbSize) {
+        if (imgW > imgH) {
+            imgH = qRound((float)maxThumbSize / imgW * imgH);
+            imgW = maxThumbSize;
+        } else if (imgW < imgH) {
+            imgW = qRound((float)maxThumbSize / imgH * imgW);
+            imgH = maxThumbSize;
+        } else {
+            imgW = maxThumbSize;
+            imgH = maxThumbSize;
+        }
+    }
 
-	if (imgW > maxThumbSize || imgH > maxThumbSize) {
-		if (imgW > imgH) {
-			imgH = qRound((float)maxThumbSize / imgW * imgH);
-			imgW = maxThumbSize;
-		} 
-		else if (imgW < imgH) {
-			imgW = qRound((float)maxThumbSize / imgH * imgW);
-			imgH = maxThumbSize;
-		}
-		else {
-			imgW = maxThumbSize;
-			imgH = maxThumbSize;
-		}
-	}
+    // fast downscaling
+    QImage thumb = image.scaled(QSize(imgW * 2, imgH * 2), Qt::KeepAspectRatio, Qt::FastTransformation);
+    thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	// fast downscaling
-	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    // qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
 
-	//qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
-
-	return thumb;
+    return thumb;
 }
 
 // NOTE: this is just for fun (all images in the world : )
-bool DkImage::addToImage(QImage& img, unsigned char val) {
+bool DkImage::addToImage(QImage &img, unsigned char val)
+{
+    // number of bytes per line used
+    int bpl = (img.width() * img.depth() + 7) / 8;
+    int pad = img.bytesPerLine() - bpl;
+    uchar *ptr = img.bits();
+    bool done = false;
 
-	// number of bytes per line used
-	int bpl = (img.width() * img.depth() + 7) / 8;
-	int pad = img.bytesPerLine() - bpl;
-	uchar* ptr = img.bits();
-	bool done = false;
+    for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+        for (int cIdx = 0; cIdx < bpl; cIdx++) {
+            // add it & we're done
+            if (*ptr <= 255 - val) {
+                *ptr += val;
+                done = true;
+                break;
+            }
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+            int ov = *ptr + (int)val; // compute the overflow
+            val = (char)(ov - 255);
 
-		for (int cIdx = 0; cIdx < bpl; cIdx++) {
+            *ptr = val;
+            ptr++;
+        }
 
-			// add it & we're done
-			if (*ptr <= 255-val) {
-				*ptr += val;
-				done = true;
-				break;
-			}
+        if (done)
+            break;
 
-			int ov = *ptr+(int)val;	// compute the overflow
-			val = (char)(ov-255);
+        ptr += pad;
+    }
 
-			*ptr = val;
-			ptr++;
-		}
-
-		if (done)
-			break;
-
-		ptr += pad;
-	}
-
-	return done;
+    return done;
 }
 
-QColor DkImage::getMeanColor(const QImage& img) {
+QColor DkImage::getMeanColor(const QImage &img)
+{
+    // some speed-up params
+    int nC = qRound(img.depth() / 8.0f);
+    int rStep = qRound(img.height() / 100.0f) + 1;
+    int cStep = qRound(img.width() / 100.0f) + 1;
+    int numCols = 42;
 
-	// some speed-up params
-	int nC = qRound(img.depth()/8.0f);
-	int rStep = qRound(img.height()/100.0f)+1;
-	int cStep = qRound(img.width()/100.0f)+1;
-	int numCols = 42;
+    int offset = (nC > 1) ? 1 : 0; // no offset for grayscale images
+    QMap<QRgb, int> colLookup;
+    int maxColCount = 0;
+    QRgb maxCol = 0;
 
-	int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-	QMap<QRgb, int> colLookup;
-	int maxColCount = 0;
-	QRgb maxCol = 0;
+    for (int rIdx = 0; rIdx < img.height(); rIdx += rStep) {
+        const unsigned char *pixel = img.constScanLine(rIdx);
 
-	for (int rIdx = 0; rIdx < img.height(); rIdx += rStep) {
+        for (int cIdx = 0; cIdx < img.width() * nC; cIdx += cStep * nC) {
+            QColor cColC(qRound(pixel[cIdx + 2 * offset] / 255.0f * numCols),
+                         qRound(pixel[cIdx + offset] / 255.0f * numCols),
+                         qRound(pixel[cIdx] / 255.0f * numCols));
+            QRgb cCol = cColC.rgb();
 
-		const unsigned char* pixel = img.constScanLine(rIdx);
+            //// skip black
+            // if (cColC.saturation() < 10)
+            //	continue;
+            if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
+                continue;
+            if (qRed(cCol) > numCols - 3 && qGreen(cCol) > numCols - 3 && qBlue(cCol) > numCols - 3)
+                continue;
 
-		for (int cIdx = 0; cIdx < img.width()*nC; cIdx += cStep*nC) {
+            if (colLookup.contains(cCol)) {
+                colLookup[cCol]++;
+            } else
+                colLookup[cCol] = 1;
 
-			QColor cColC(qRound(pixel[cIdx+2*offset]/255.0f*numCols), 
-				qRound(pixel[cIdx+offset]/255.0f*numCols), 
-				qRound(pixel[cIdx]/255.0f*numCols));
-			QRgb cCol = cColC.rgb();
+            if (colLookup[cCol] > maxColCount) {
+                maxCol = cCol;
+                maxColCount = colLookup[cCol];
+            }
+        }
+    }
 
-			//// skip black
-			//if (cColC.saturation() < 10)
-			//	continue;
-			if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
-				continue;
-			if (qRed(cCol) > numCols-3 && qGreen(cCol) > numCols-3 && qBlue(cCol) > numCols-3)
-				continue;
-
-			if (colLookup.contains(cCol)) {
-				colLookup[cCol]++;
-			}
-			else
-				colLookup[cCol] = 1;
-
-			if (colLookup[cCol] > maxColCount) {
-				maxCol = cCol;
-				maxColCount = colLookup[cCol];
-			}
-		}
-	}
-
-	if (maxColCount > 0)
-		return QColor(qRound((float)qRed(maxCol)/numCols*255), qRound((float)qGreen(maxCol)/numCols*255), qRound((float)qBlue(maxCol)/numCols*255));
-	else
-		return DkSettingsManager::param().display().hudBgColor;
+    if (maxColCount > 0)
+        return QColor(qRound((float)qRed(maxCol) / numCols * 255), qRound((float)qGreen(maxCol) / numCols * 255), qRound((float)qBlue(maxCol) / numCols * 255));
+    else
+        return DkSettingsManager::param().display().hudBgColor;
 }
-
 
 // DkImageStorage --------------------------------------------------------------------
-DkImageStorage::DkImageStorage(const QImage& img) {
+DkImageStorage::DkImageStorage(const QImage &img)
+{
+    mImg = img;
 
-	mImg = img;
+    mWaitTimer = new QTimer(this);
+    mWaitTimer->setSingleShot(true);
+    mWaitTimer->setInterval(100);
 
-	mWaitTimer = new QTimer(this);
-	mWaitTimer->setSingleShot(true);
-	mWaitTimer->setInterval(100);
-	
-	init();
+    init();
 
-	connect(mWaitTimer, SIGNAL(timeout()), this, SLOT(compute()), Qt::UniqueConnection);
-	connect(&mFutureWatcher, SIGNAL(finished()), this, SLOT(imageComputed()), Qt::UniqueConnection);
-	connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing), SIGNAL(toggled(bool)), this, SLOT(antiAliasingChanged(bool)), Qt::UniqueConnection);
+    connect(mWaitTimer, SIGNAL(timeout()), this, SLOT(compute()), Qt::UniqueConnection);
+    connect(&mFutureWatcher, SIGNAL(finished()), this, SLOT(imageComputed()), Qt::UniqueConnection);
+    connect(DkActionManager::instance().action(DkActionManager::menu_view_anti_aliasing),
+            SIGNAL(toggled(bool)),
+            this,
+            SLOT(antiAliasingChanged(bool)),
+            Qt::UniqueConnection);
 }
 
-void DkImageStorage::init() {
-
-	mComputeState = l_not_computed;
-	mScaledImg = QImage();
-	mWaitTimer->stop();
-	mSize = QSize();
+void DkImageStorage::init()
+{
+    mComputeState = l_not_computed;
+    mScaledImg = QImage();
+    mWaitTimer->stop();
+    mSize = QSize();
 }
 
-void DkImageStorage::setImage(const QImage& img) {
+void DkImageStorage::setImage(const QImage &img)
+{
+    init();
+    mImg = img;
 
-	init();
-	mImg = img;
-
-	mComputeState = l_cancelled;
+    mComputeState = l_cancelled;
 }
 
-void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
+void DkImageStorage::antiAliasingChanged(bool antiAliasing)
+{
+    DkSettingsManager::param().display().antiAliasing = antiAliasing;
 
-	DkSettingsManager::param().display().antiAliasing = antiAliasing;
+    if (!antiAliasing)
+        init();
 
-	if (!antiAliasing)
-		init();
-
-	emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
-	emit imageUpdated();
-
+    emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
+    emit imageUpdated();
 }
 
-QImage DkImageStorage::imageConst() const {
-	return mImg;
+QImage DkImageStorage::imageConst() const
+{
+    return mImg;
 }
 
-QImage DkImageStorage::image(const QSize& size) {
+QImage DkImageStorage::image(const QSize &size)
+{
+    if (size.isEmpty() || mImg.isNull() || !DkSettingsManager::param().display().antiAliasing || // user disabled?
+        mImg.size().width() < size.width() // scale factor > 1?
+    )
+        return mImg;
 
-	if (size.isEmpty() || 
-		mImg.isNull() ||
-		!DkSettingsManager::param().display().antiAliasing ||	// user disabled?
-		mImg.size().width() < size.width()						// scale factor > 1?
-		)
-		return mImg;
+    if (mScaledImg.size() == size)
+        return mScaledImg;
 
-	if (mScaledImg.size() == size)
-		return mScaledImg;
+    if (mComputeState != l_computing) {
+        // trigger a new computation
+        init();
+        mSize = size;
+        mWaitTimer->start();
+    }
 
-	if (mComputeState != l_computing) {
-		// trigger a new computation
-		init();
-		mSize = size;
-		mWaitTimer->start();
-	}
-
-	// currently no alternative is available
-	return mImg;
+    // currently no alternative is available
+    return mImg;
 }
 
-void DkImageStorage::cancel() {
-	mComputeState = l_cancelled;
+void DkImageStorage::cancel()
+{
+    mComputeState = l_cancelled;
 }
 
-void DkImageStorage::compute() {
+void DkImageStorage::compute()
+{
+    if (mComputeState == l_computed) {
+        emit imageUpdated();
+        qDebug() << "image is up-to-date in DkImageStorage::compute...";
+        return;
+    }
 
-	if (mComputeState == l_computed) {
-		emit imageUpdated();
-		qDebug() << "image is up-to-date in DkImageStorage::compute...";
-		return;
-	}
+    if (mComputeState == l_computing) // don't compute twice
+        return;
 
-	if (mComputeState == l_computing)	// don't compute twice
-		return;
+    mComputeState = l_computing;
 
-	mComputeState = l_computing;
-
-	mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mSize));
+    mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mSize));
 }
 
-QImage DkImageStorage::computeIntern(const QImage & src, const QSize& size) {
+QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)
+{
+    // should not happen
+    if (size.width() >= mImg.width()) {
+        qWarning() << "DkImageStorage::computeIntern was called without a need...";
+        return src;
+    }
 
-	// should not happen
-	if (size.width() >= mImg.width()) {
-		qWarning() << "DkImageStorage::computeIntern was called without a need...";
-		return src;
-	}
+    DkTimer dt;
+    QImage resizedImg = src;
 
-	DkTimer dt;
-	QImage resizedImg = src;
+    if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
+        QSize cs = src.size();
 
-	if (!DkSettingsManager::param().display().highQualityAntiAliasing) {
-		QSize cs = src.size();
+        // fast down sampling until the image is twice times full HD
+        while (qMin(cs.width(), cs.height()) > 2 * 4000) {
+            cs *= 0.5;
+        }
 
-		// fast down sampling until the image is twice times full HD
-		while (qMin(cs.width(), cs.height()) > 2 * 4000) {
-			cs *= 0.5;
-		}
+        // for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply
+        if (cs != mImg.size()) {
+            resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
+        }
+    }
 
-		// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
-		if (cs != mImg.size()) {
-			resizedImg = resizedImg.scaled(cs, Qt::KeepAspectRatio, Qt::FastTransformation);
-		}
-	}
+    QSize s = mSize;
 
-	QSize s = mSize;
-
-	if (s.height() == 0)
-		s.setHeight(1);
-	if (s.width() == 0)
-		s.setWidth(1);
+    if (s.height() == 0)
+        s.setHeight(1);
+    if (s.width() == 0)
+        s.setWidth(1);
 
 #ifdef WITH_OPENCV
-	try {
-		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
-		cv::Mat tmp;
-		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
-		resizedImg = DkImage::mat2QImage(tmp);
-	}
-	catch (...) {
-		qWarning() << "DkImageStorage: OpenCV exception caught while resizing...";
-	}
+    try {
+        cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
+        cv::Mat tmp;
+        cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+        resizedImg = DkImage::mat2QImage(tmp);
+    } catch (...) {
+        qWarning() << "DkImageStorage: OpenCV exception caught while resizing...";
+    }
 #else
-	resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
-	return resizedImg;
+    return resizedImg;
 }
 
-void DkImageStorage::imageComputed() {
+void DkImageStorage::imageComputed()
+{
+    if (mComputeState == l_cancelled) {
+        mComputeState = l_not_computed;
+        return;
+    }
 
-	if (mComputeState == l_cancelled) {
-		mComputeState = l_not_computed;
-		return;
-	}
+    mScaledImg = mFutureWatcher.result();
 
-	mScaledImg = mFutureWatcher.result();
+    mComputeState = (mScaledImg.isNull()) ? l_empty : l_computed;
 
-	mComputeState = (mScaledImg.isNull()) ? l_empty : l_computed;
-
-	if (mComputeState == l_computed)
-		emit imageUpdated();
-	else
-		qWarning() << "could not compute interpolated image...";
+    if (mComputeState == l_computed)
+        emit imageUpdated();
+    else
+        qWarning() << "could not compute interpolated image...";
 }
 }

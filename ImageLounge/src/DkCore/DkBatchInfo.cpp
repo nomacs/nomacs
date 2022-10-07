@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -28,17 +28,18 @@
 
 #include "DkBatchInfo.h"
 
-#pragma warning(push, 0)	// no warnings from includes
-#include <QFileInfo>
-#include <QSharedPointer>
-#include <QVector>
+#pragma warning(push, 0) // no warnings from includes
 #include <QDebug>
-#include <QUuid>
 #include <QDir>
+#include <QFileInfo>
 #include <QSettings>
+#include <QSharedPointer>
+#include <QUuid>
+#include <QVector>
 #pragma warning(pop)
 
-namespace nmc {
+namespace nmc
+{
 
 /// <summary>
 /// Initializes a new instance of the <see cref="DkBatchInfo" /> class.
@@ -50,81 +51,87 @@ namespace nmc {
 /// <param name="id">The processing module ID (e.g. runID of plugin).</param>
 /// <param name="filePath">The image file path.</param>
 /// DkBatchInfo --------------------------------------------------------------------
-DkBatchInfo::DkBatchInfo(const QString& id, const QString& filePath) {
-	mId = id;
-	mFilePath = filePath;
+DkBatchInfo::DkBatchInfo(const QString &id, const QString &filePath)
+{
+    mId = id;
+    mFilePath = filePath;
 }
 
-QDataStream& operator<<(QDataStream& s, const DkBatchInfo& b) {
-
-	// this makes the operator<< virtual (stroustrup)
-	s << b.toString();	// for now show children too
-	return s;
+QDataStream &operator<<(QDataStream &s, const DkBatchInfo &b)
+{
+    // this makes the operator<< virtual (stroustrup)
+    s << b.toString(); // for now show children too
+    return s;
 }
 
-QDebug operator<<(QDebug d, const DkBatchInfo& b) {
-
-	d << qPrintable(b.toString());
-	return d;
+QDebug operator<<(QDebug d, const DkBatchInfo &b)
+{
+    d << qPrintable(b.toString());
+    return d;
 }
-
 
 /// <summary>
 /// Determines whether this instance is empty.
 /// </summary>
 /// <returns>true if the file path is empty</returns>
-bool DkBatchInfo::isEmpty() const {
-	return mFilePath.isEmpty();
+bool DkBatchInfo::isEmpty() const
+{
+    return mFilePath.isEmpty();
 }
 
 /// <summary>
 /// File path of the corresponding image.
 /// </summary>
 /// <returns></returns>
-QString DkBatchInfo::filePath() const {
-	return mFilePath;
+QString DkBatchInfo::filePath() const
+{
+    return mFilePath;
 }
 
 /// <summary>
 /// QFileInfo with the current file path.
 /// </summary>
 /// <returns></returns>
-QFileInfo DkBatchInfo::fileInfo() const {
-	return QFileInfo(mFilePath);
+QFileInfo DkBatchInfo::fileInfo() const
+{
+    return QFileInfo(mFilePath);
 }
 
 /// <summary>
 /// Sets the file path.
 /// </summary>
 /// <param name="filePath">The path to the image file which is being processed.</param>
-void DkBatchInfo::setFilePath(const QString & filePath) {
-	mFilePath = filePath;
+void DkBatchInfo::setFilePath(const QString &filePath)
+{
+    mFilePath = filePath;
 }
 
 /// <summary>
 /// A unique identifier of the processing module (e.g. runID of plugins).
 /// </summary>
 /// <param name="id">The identifier.</param>
-void DkBatchInfo::setId(const QString & id) {
-	mId = id;
+void DkBatchInfo::setId(const QString &id)
+{
+    mId = id;
 }
 
 /// <summary>
 /// ID of the processing module.
 /// </summary>
 /// <returns></returns>
-QString DkBatchInfo::id() const {
-	return mId;
+QString DkBatchInfo::id() const
+{
+    return mId;
 }
 
-QString DkBatchInfo::toString() const {
-	
-	QString msg;
-	msg += "[DkBatchInfo] ";
-	msg += "id: " + id() + " ";
-	msg += "path: " + filePath() + " ";
-	
-	return msg;
+QString DkBatchInfo::toString() const
+{
+    QString msg;
+    msg += "[DkBatchInfo] ";
+    msg += "id: " + id() + " ";
+    msg += "path: " + filePath() + " ";
+
+    return msg;
 }
 
 /// <summary>
@@ -135,121 +142,137 @@ QString DkBatchInfo::toString() const {
 /// <param name="infos">The infos.</param>
 /// <param name="id">The ID.</param>
 /// <returns>Filtered Batch Infos for a specified module which has runID id.</returns>
-QVector<QSharedPointer<DkBatchInfo> > DkBatchInfo::filter(const QVector<QSharedPointer<DkBatchInfo>>& infos, const QString & id) {
-	
-	QVector<QSharedPointer<DkBatchInfo> > fInfos;
+QVector<QSharedPointer<DkBatchInfo>> DkBatchInfo::filter(const QVector<QSharedPointer<DkBatchInfo>> &infos, const QString &id)
+{
+    QVector<QSharedPointer<DkBatchInfo>> fInfos;
 
-	for (auto cInfo : infos) {
+    for (auto cInfo : infos) {
+        if (cInfo && cInfo->id() == id)
+            fInfos << cInfo;
+    }
 
-		if (cInfo && cInfo->id() == id)
-			fInfos << cInfo;
-	}
-	
-	return fInfos;
+    return fInfos;
 }
 
-DkSaveInfo::DkSaveInfo(const QString& filePathIn, const QString& filePathOut) {
-	
-	mFilePathIn = filePathIn;
-	mFilePathOut = filePathOut;
+DkSaveInfo::DkSaveInfo(const QString &filePathIn, const QString &filePathOut)
+{
+    mFilePathIn = filePathIn;
+    mFilePathOut = filePathOut;
 }
 
-void DkSaveInfo::createBackupFilePath() {
-
-	QFileInfo buFile(mFilePathOut);
-	mBackupPath = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix()).absoluteFilePath();
+void DkSaveInfo::createBackupFilePath()
+{
+    QFileInfo buFile(mFilePathOut);
+    mBackupPath = QFileInfo(buFile.absolutePath(), buFile.baseName() + QUuid::createUuid().toString() + "." + buFile.suffix()).absoluteFilePath();
 }
 
-void DkSaveInfo::clearBackupFilePath() {
-	mBackupPath = QString();
+void DkSaveInfo::clearBackupFilePath()
+{
+    mBackupPath = QString();
 }
 
-void DkSaveInfo::loadSettings(QSettings & settings) {
+void DkSaveInfo::loadSettings(QSettings &settings)
+{
+    settings.beginGroup("SaveInfo");
+    mCompression = settings.value("Compression", mCompression).toInt();
+    mMode = (DkSaveInfo::OverwriteMode)settings.value("Mode", mMode).toInt();
+    mDeleteOriginal = settings.value("DeleteOriginal", mDeleteOriginal).toBool();
+    mInputDirIsOutputDir = settings.value("InputDirIsOutputDir", mInputDirIsOutputDir).toBool();
 
-	settings.beginGroup("SaveInfo");
-	mCompression = settings.value("Compression", mCompression).toInt();
-	mMode = (DkSaveInfo::OverwriteMode)settings.value("Mode", mMode).toInt();
-	mDeleteOriginal = settings.value("DeleteOriginal", mDeleteOriginal).toBool();
-	mInputDirIsOutputDir = settings.value("InputDirIsOutputDir", mInputDirIsOutputDir).toBool();
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkSaveInfo::saveSettings(QSettings & settings) const {
+void DkSaveInfo::saveSettings(QSettings &settings) const
+{
+    settings.beginGroup("SaveInfo");
 
-	settings.beginGroup("SaveInfo");
+    settings.setValue("Compression", mCompression);
+    settings.setValue("Mode", mMode);
+    settings.setValue("DeleteOriginal", mDeleteOriginal);
+    settings.setValue("InputDirIsOutputDir", mInputDirIsOutputDir);
 
-	settings.setValue("Compression", mCompression);
-	settings.setValue("Mode", mMode);
-	settings.setValue("DeleteOriginal", mDeleteOriginal);
-	settings.setValue("InputDirIsOutputDir", mInputDirIsOutputDir);
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkSaveInfo::setInputFilePath(const QString & inputFilePath) {
-	mFilePathIn = inputFilePath;
+void DkSaveInfo::setInputFilePath(const QString &inputFilePath)
+{
+    mFilePathIn = inputFilePath;
 }
 
-void DkSaveInfo::setOutputFilePath(const QString & outputFilePath) {
-	mFilePathOut = outputFilePath;
-	clearBackupFilePath();
+void DkSaveInfo::setOutputFilePath(const QString &outputFilePath)
+{
+    mFilePathOut = outputFilePath;
+    clearBackupFilePath();
 }
 
-void DkSaveInfo::setMode(OverwriteMode mode) {
-	mMode = mode;
+void DkSaveInfo::setMode(OverwriteMode mode)
+{
+    mMode = mode;
 }
 
-void DkSaveInfo::setDeleteOriginal(bool deleteOriginal) {
-	mDeleteOriginal = deleteOriginal;
+void DkSaveInfo::setDeleteOriginal(bool deleteOriginal)
+{
+    mDeleteOriginal = deleteOriginal;
 }
 
-void DkSaveInfo::setCompression(int compression) {
-	mCompression = compression;
+void DkSaveInfo::setCompression(int compression)
+{
+    mCompression = compression;
 }
 
-void DkSaveInfo::setInputDirIsOutputDir(bool isOutputDir) {
-	mInputDirIsOutputDir = isOutputDir;
+void DkSaveInfo::setInputDirIsOutputDir(bool isOutputDir)
+{
+    mInputDirIsOutputDir = isOutputDir;
 }
 
-QString DkSaveInfo::inputFilePath() const {
-	return mFilePathIn;
+QString DkSaveInfo::inputFilePath() const
+{
+    return mFilePathIn;
 }
 
-QString DkSaveInfo::outputFilePath() const {
-	return mFilePathOut;
+QString DkSaveInfo::outputFilePath() const
+{
+    return mFilePathOut;
 }
 
-QString DkSaveInfo::backupFilePath() const {
-	return mBackupPath;
+QString DkSaveInfo::backupFilePath() const
+{
+    return mBackupPath;
 }
 
-QFileInfo DkSaveInfo::inputFileInfo() const {
-	return QFileInfo(mFilePathIn);
+QFileInfo DkSaveInfo::inputFileInfo() const
+{
+    return QFileInfo(mFilePathIn);
 }
 
-QFileInfo DkSaveInfo::outputFileInfo() const {
-	return QFileInfo(mFilePathOut);
+QFileInfo DkSaveInfo::outputFileInfo() const
+{
+    return QFileInfo(mFilePathOut);
 }
 
-QFileInfo DkSaveInfo::backupFileInfo() const {
-	return QFileInfo(mBackupPath);
+QFileInfo DkSaveInfo::backupFileInfo() const
+{
+    return QFileInfo(mBackupPath);
 }
 
-DkSaveInfo::OverwriteMode DkSaveInfo::mode() const {
-	return mMode;
+DkSaveInfo::OverwriteMode DkSaveInfo::mode() const
+{
+    return mMode;
 }
 
-bool DkSaveInfo::isDeleteOriginal() const {
-	return mDeleteOriginal;
+bool DkSaveInfo::isDeleteOriginal() const
+{
+    return mDeleteOriginal;
 }
 
-bool DkSaveInfo::isInputDirOutputDir() const {
-	return mInputDirIsOutputDir;
+bool DkSaveInfo::isInputDirOutputDir() const
+{
+    return mInputDirIsOutputDir;
 }
 
-int DkSaveInfo::compression() const {
-	return mCompression;
+int DkSaveInfo::compression() const
+{
+    return mCompression;
 }
 
 }

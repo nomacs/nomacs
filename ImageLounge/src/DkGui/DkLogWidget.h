@@ -29,7 +29,7 @@
 
 #include "DkBaseWidgets.h"
 
-#pragma warning(push, 0)	// no warnings from includes
+#pragma warning(push, 0) // no warnings from includes
 #include <QWidget>
 #pragma warning(pop)
 
@@ -45,47 +45,50 @@
 
 class QTextEdit;
 
-namespace nmc {
-	
+namespace nmc
+{
+
 void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg);
 
-class DkMessageQueuer : public QObject {
-	Q_OBJECT
+class DkMessageQueuer : public QObject
+{
+    Q_OBJECT
 
 public:
-	DkMessageQueuer();
+    DkMessageQueuer();
 
-	void log(QtMsgType type, const QString &msg);
+    void log(QtMsgType type, const QString &msg);
 
 signals:
-	void message(const QString &msg);
+    void message(const QString &msg);
 };
 
-
-class DkLogDock : public DkDockWidget {
-	Q_OBJECT
+class DkLogDock : public DkDockWidget
+{
+    Q_OBJECT
 
 public:
-	DkLogDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkLogDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
-	void createLayout();
+    void createLayout();
 };
 
-class DkLogWidget : public DkWidget {
-	Q_OBJECT
+class DkLogWidget : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkLogWidget(QWidget* parent = 0);
+    DkLogWidget(QWidget *parent = 0);
 
 public slots:
-	void log(const QString &msg);
-	void on_clearButton_pressed();
+    void log(const QString &msg);
+    void on_clearButton_pressed();
 
 protected:
-	void createLayout();
+    void createLayout();
 
-	QTextEdit* mTextEdit;
+    QTextEdit *mTextEdit;
 };
 
 }

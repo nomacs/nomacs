@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkNoMacs.h
  Created on:	21.04.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -30,16 +30,16 @@
 #pragma once
 
 // Qt
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QMainWindow>
 #include <QProcess>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #include "DkImageContainer.h"
 
 #ifdef Q_OS_WIN
-	#pragma warning(disable: 4996)
-	#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4251) // TODO: remove
 #endif
 
 #ifndef DllCoreExport
@@ -59,7 +59,8 @@ class QDesktopWidget;
 class QLabel;
 class QShortcut;
 
-namespace nmc {
+namespace nmc
+{
 
 class DkCompressDialog;
 class DkOpacityDialog;
@@ -94,260 +95,258 @@ Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
 QApplication level in the event().
 */
-class DkNomacsOSXEventFilter : public QObject {
-	Q_OBJECT
+class DkNomacsOSXEventFilter : public QObject
+{
+    Q_OBJECT
 
 public:
-	DkNomacsOSXEventFilter(QObject *parent = 0);
+    DkNomacsOSXEventFilter(QObject *parent = 0);
 
 signals:
-	void loadFile(const QString& fi) const;
+    void loadFile(const QString &fi) const;
 
 protected:
-	/*! Handle QFileOpenEvent for mac here */
-	bool eventFilter(QObject *obj, QEvent *event) override;
-
+    /*! Handle QFileOpenEvent for mac here */
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 class DkMenuBar;
 
 enum PluginMenuActions {
-	menu_plugin_manager,
+    menu_plugin_manager,
 
-	menu_plugins_end,	// nothing beyond this point
+    menu_plugins_end, // nothing beyond this point
 };
 
-
-class DllCoreExport DkNoMacs : public QMainWindow {
-	Q_OBJECT
+class DllCoreExport DkNoMacs : public QMainWindow
+{
+    Q_OBJECT
 
 public:
+    virtual ~DkNoMacs();
 
-	virtual ~DkNoMacs();
-	
-	virtual DkCentralWidget* getTabWidget() const;
-	
-	void loadFile(const QString& filePath);
+    virtual DkCentralWidget *getTabWidget() const;
 
-	bool mSaveSettings = true;
+    void loadFile(const QString &filePath);
+
+    bool mSaveSettings = true;
 
 signals:
-	void sendArrangeSignal(bool overlaid) const;
-	void closeSignal() const;
-	void sendQuitLocalClientsSignal() const;
+    void sendArrangeSignal(bool overlaid) const;
+    void closeSignal() const;
+    void sendQuitLocalClientsSignal() const;
 
 public slots:
-	void toggleFullScreen();
-	void enterFullScreen();
-	void exitFullScreen();
-	void toggleDocks(bool hide);
-	void restoreDocks();
-	void showExplorer(bool show, bool saveSettings = true);
-	void showMetaDataDock(bool show, bool saveSettings = true);
-	void showEditDock(bool show, bool saveSettings = true);
-	void showHistoryDock(bool show, bool saveSettings = true);
-	void showLogDock(bool show, bool saveSettings = true);
-	void showThumbsDock(bool show);
-	void thumbsDockAreaChanged();
-	void openDir();
-	void openFile();
-	void openQuickLaunch();
-	void openFileList();
-	void saveFileList();
-	void renameFile();
-	void changeSorting(bool change);
-	void goTo();
-	void find(bool filterAction = true);
-	void extractImagesFromArchive();
-	void trainFormat();
-	void exportTiff();
-	void cleanSettings();
-	void newInstance(const QString& filePath = QString());
-	void showMenuBar(bool show);
-	void openFileWith(QAction* action);
-	void aboutDialog();
-	void openDocumentation();
-	void bugReport();
-	void loadRecursion();
-	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
-	void setWindowTitle(const QString& filePath, const QSize& size = QSize(), bool edited = false, const QString& attr = QString());
-	void showOpacityDialog();
-	void opacityUp();
-	void opacityDown();
-	void changeOpacity(float change);
-	void animateChangeOpacity();
-	void animateOpacityUp();
-	void animateOpacityDown();
-	void lockWindow(bool lock);
-	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
-	void tcpSendWindowRect();
-	void tcpSendArrange();
-	void newClientConnected(bool connected);
-	virtual void settingsChanged();
-	void showUpdaterMessage(QString msg, QString title);
-	void showUpdateDialog(QString msg, QString title);
-	void performUpdate();
-	void updateProgress(qint64 received, qint64 total);
-	void updateProgressTranslations(qint64 received, qint64 total);
-	void startSetup(QString);
-	void updateTranslations();
-	void checkForUpdate(bool silent = false);
-	void startPong() const;
-	void fitFrame();
-	void setRecursiveScan(bool recursive);
-	void openPluginManager();
-	void clearFileHistory();
-	void clearFolderHistory();
-	void restartWithTranslationUpdate();
-	void restartWithPseudoColor(bool contrast);
-	void restartFrameless(bool frameless);
-	void showRecentFilesOnStartUp();
+    void toggleFullScreen();
+    void enterFullScreen();
+    void exitFullScreen();
+    void toggleDocks(bool hide);
+    void restoreDocks();
+    void showExplorer(bool show, bool saveSettings = true);
+    void showMetaDataDock(bool show, bool saveSettings = true);
+    void showEditDock(bool show, bool saveSettings = true);
+    void showHistoryDock(bool show, bool saveSettings = true);
+    void showLogDock(bool show, bool saveSettings = true);
+    void showThumbsDock(bool show);
+    void thumbsDockAreaChanged();
+    void openDir();
+    void openFile();
+    void openQuickLaunch();
+    void openFileList();
+    void saveFileList();
+    void renameFile();
+    void changeSorting(bool change);
+    void goTo();
+    void find(bool filterAction = true);
+    void extractImagesFromArchive();
+    void trainFormat();
+    void exportTiff();
+    void cleanSettings();
+    void newInstance(const QString &filePath = QString());
+    void showMenuBar(bool show);
+    void openFileWith(QAction *action);
+    void aboutDialog();
+    void openDocumentation();
+    void bugReport();
+    void loadRecursion();
+    void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
+    void setWindowTitle(const QString &filePath, const QSize &size = QSize(), bool edited = false, const QString &attr = QString());
+    void showOpacityDialog();
+    void opacityUp();
+    void opacityDown();
+    void changeOpacity(float change);
+    void animateChangeOpacity();
+    void animateOpacityUp();
+    void animateOpacityDown();
+    void lockWindow(bool lock);
+    void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
+    void tcpSendWindowRect();
+    void tcpSendArrange();
+    void newClientConnected(bool connected);
+    virtual void settingsChanged();
+    void showUpdaterMessage(QString msg, QString title);
+    void showUpdateDialog(QString msg, QString title);
+    void performUpdate();
+    void updateProgress(qint64 received, qint64 total);
+    void updateProgressTranslations(qint64 received, qint64 total);
+    void startSetup(QString);
+    void updateTranslations();
+    void checkForUpdate(bool silent = false);
+    void startPong() const;
+    void fitFrame();
+    void setRecursiveScan(bool recursive);
+    void openPluginManager();
+    void clearFileHistory();
+    void clearFolderHistory();
+    void restartWithTranslationUpdate();
+    void restartWithPseudoColor(bool contrast);
+    void restartFrameless(bool frameless);
+    void showRecentFilesOnStartUp();
 
-	// batch actions
-	void computeThumbsBatch();
-	void onWindowLoaded();
+    // batch actions
+    void computeThumbsBatch();
+    void onWindowLoaded();
 
 protected:
-	
-	// mouse events
-	void mouseDoubleClickEvent(QMouseEvent* event) override;
-	void mousePressEvent(QMouseEvent* event) override;
-	void mouseReleaseEvent(QMouseEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
+    // mouse events
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
-	// mouse events
-	void moveEvent(QMoveEvent *event) override;
+    // mouse events
+    void moveEvent(QMoveEvent *event) override;
 
-	// window events
-	void contextMenuEvent(QContextMenuEvent *event) override;
-	bool eventFilter(QObject *obj, QEvent *event) override;
-	void resizeEvent(QResizeEvent *event) override;
-	void closeEvent(QCloseEvent *event) override;
+    // window events
+    void contextMenuEvent(QContextMenuEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
-	void keyPressEvent(QKeyEvent *event) override;
-	void keyReleaseEvent(QKeyEvent* event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
-	//bool gestureEvent(QGestureEvent *event);
+    // bool gestureEvent(QGestureEvent *event);
 
-	// needed to hide menu
-	bool mOtherKeyPressed = true;
-	QPoint mPosGrabKey;
-	bool mOverlaid = false;
-	
-	// menu
-	DkMenuBar* mMenu = 0;
-	QMenu* mPluginsMenu = 0;
-	QMenu* mSyncMenu = 0;
+    // needed to hide menu
+    bool mOtherKeyPressed = true;
+    QPoint mPosGrabKey;
+    bool mOverlaid = false;
 
-	QPoint mMousePos;
-	
-	// quick access
-	DkQuickAccessEdit* mQuickAccessEdit = 0;
-	DkQuickAccess* mQuickAccess = 0;
+    // menu
+    DkMenuBar *mMenu = 0;
+    QMenu *mPluginsMenu = 0;
+    QMenu *mSyncMenu = 0;
 
-	// file dialog
-	QFileDialog* mOpenDialog = 0;
-	QFileDialog* mSaveDialog = 0;
-	DkOpacityDialog* mOpacityDialog = 0;
-	DkUpdateDialog* mUpdateDialog = 0;
-	QProgressDialog* mProgressDialog = 0;
-	QProgressDialog* mProgressDialogTranslations = 0;
-	DkForceThumbDialog* mForceDialog = 0;
-	DkTrainDialog* mTrainDialog = 0;
+    QPoint mMousePos;
+
+    // quick access
+    DkQuickAccessEdit *mQuickAccessEdit = 0;
+    DkQuickAccess *mQuickAccess = 0;
+
+    // file dialog
+    QFileDialog *mOpenDialog = 0;
+    QFileDialog *mSaveDialog = 0;
+    DkOpacityDialog *mOpacityDialog = 0;
+    DkUpdateDialog *mUpdateDialog = 0;
+    QProgressDialog *mProgressDialog = 0;
+    QProgressDialog *mProgressDialogTranslations = 0;
+    DkForceThumbDialog *mForceDialog = 0;
+    DkTrainDialog *mTrainDialog = 0;
 #ifdef WITH_QUAZIP
-	DkArchiveExtractionDialog* mArchiveExtractionDialog = 0;
+    DkArchiveExtractionDialog *mArchiveExtractionDialog = 0;
 #endif
-	DkExplorer* mExplorer = 0;
-	DkMetaDataDock* mMetaDataDock = 0;
-	DkEditDock* mEditDock = 0;
-	DkHistoryDock* mHistoryDock = 0;
-	DkLogDock* mLogDock = 0;
-	DkDockWidget* mThumbsDock = 0;
-	DkExportTiffDialog* mExportTiffDialog = 0;
-	DkThumbsSaver* mThumbSaver = 0;
+    DkExplorer *mExplorer = 0;
+    DkMetaDataDock *mMetaDataDock = 0;
+    DkEditDock *mEditDock = 0;
+    DkHistoryDock *mHistoryDock = 0;
+    DkLogDock *mLogDock = 0;
+    DkDockWidget *mThumbsDock = 0;
+    DkExportTiffDialog *mExportTiffDialog = 0;
+    DkThumbsSaver *mThumbSaver = 0;
 
-	DkPrintPreviewDialog* mPrintPreviewDialog = 0;
+    DkPrintPreviewDialog *mPrintPreviewDialog = 0;
 
-	DkInstallUpdater* mInstallUpdater = 0;
-	DkUpdater* mUpdater = 0;
-	DkTranslationUpdater* mTranslationUpdater = 0;	
+    DkInstallUpdater *mInstallUpdater = 0;
+    DkUpdater *mUpdater = 0;
+    DkTranslationUpdater *mTranslationUpdater = 0;
 
-	QRect mOldGeometry;
-	QProcess mProcess;
+    QRect mOldGeometry;
+    QProcess mProcess;
 
-	// functions
-	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    // functions
+    DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
-	virtual void init();
-	
-	void loadStyleSheet();
-	virtual void createActions();
-	virtual void createMenu();
-	virtual void createContextMenu();
-	virtual void createStatusBar();
+    virtual void init();
 
-	virtual void readSettings();
+    void loadStyleSheet();
+    virtual void createActions();
+    virtual void createMenu();
+    virtual void createContextMenu();
+    virtual void createStatusBar();
 
-	// plugin functions
-	bool mPluginMenuCreated = false;
+    virtual void readSettings();
+
+    // plugin functions
+    bool mPluginMenuCreated = false;
 };
 
-class DllCoreExport DkNoMacsSync : public DkNoMacs {
-	Q_OBJECT
+class DllCoreExport DkNoMacsSync : public DkNoMacs
+{
+    Q_OBJECT
 
 public:
-	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	~DkNoMacsSync();
-	
+    DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkNoMacsSync();
+
 signals:
-	void startRCServerSignal(bool start);
+    void startRCServerSignal(bool start);
 
 protected:
+    // mouse events
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
-	// mouse events
-	void dragEnterEvent(QDragEnterEvent *event) override;
-	void dropEvent(QDropEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
-
-	// gui
-	virtual void createActions() override;
+    // gui
+    virtual void createActions() override;
 };
 
-class DllCoreExport DkNoMacsIpl : public DkNoMacsSync {
-	Q_OBJECT
+class DllCoreExport DkNoMacsIpl : public DkNoMacsSync
+{
+    Q_OBJECT
 
 public:
-	DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 };
 
-
-
-class DllCoreExport DkNoMacsFrameless : public DkNoMacs {
-	Q_OBJECT
+class DllCoreExport DkNoMacsFrameless : public DkNoMacs
+{
+    Q_OBJECT
 
 public:
-	DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	
-	virtual ~DkNoMacsFrameless();
+    DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+
+    virtual ~DkNoMacsFrameless();
 
 public slots:
-	void chooseMonitor(bool force = true);
+    void chooseMonitor(bool force = true);
 
 protected:
-	void closeEvent(QCloseEvent *event) override;
-	bool eventFilter(QObject *obj, QEvent *event) override;
-	virtual void createContextMenu() override;
+    void closeEvent(QCloseEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    virtual void createContextMenu() override;
 
-	QDesktopWidget* mDesktop = 0;
+    QDesktopWidget *mDesktop = 0;
 };
 
-class DllCoreExport DkNoMacsContrast : public DkNoMacsSync {
-	Q_OBJECT
+class DllCoreExport DkNoMacsContrast : public DkNoMacsSync
+{
+    Q_OBJECT
 
 public:
-	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	
-	virtual ~DkNoMacsContrast();
+    DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
+    virtual ~DkNoMacsContrast();
 };
 }

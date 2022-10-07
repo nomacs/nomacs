@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkTransferToolBar.cpp
  Created on:	13.02.2012
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -26,1039 +26,993 @@
  *******************************************************************************************************/
 
 #include "DkToolbars.h"
-#include "DkSettings.h"
-#include "DkMath.h"
-#include "DkUtils.h"
-#include "DkImageStorage.h"
-#include "DkQuickAccess.h"
-#include "DkBasicWidgets.h"
 #include "DkActionManager.h"
+#include "DkBasicWidgets.h"
+#include "DkImageStorage.h"
+#include "DkMath.h"
+#include "DkQuickAccess.h"
+#include "DkSettings.h"
+#include "DkUtils.h"
 
 #include <assert.h>
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QToolBar>
-#include <QWidget>
+#pragma warning(push, 0) // no warnings from includes - begin
+#include <QAction>
+#include <QCheckBox>
+#include <QColor>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QCompleter>
+#include <QDebug>
+#include <QDoubleSpinBox>
+#include <QGradientStops>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QImage>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QLinearGradient>
+#include <QMenu>
+#include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
-#include <QLinearGradient>
-#include <QImage>
 #include <QPainterPath>
-#include <QDebug>
-#include <QMouseEvent>
-#include <QColorDialog>
-#include <QColor>
-#include <QGradientStops>
 #include <QPushButton>
-#include <QComboBox>
-#include <QLabel>
-#include <QCheckBox>
-#include <QHBoxLayout>
-#include <QLayout>
-#include <QIcon>
-#include <QAction>
+#include <QToolBar>
 #include <QTranslator>
-#include <QDoubleSpinBox>
-#include <QMenu>
-#include <QLineEdit>
-#include <QCompleter>
+#include <QWidget>
 //#include <QStringListModel>
-#include <QStandardItemModel>
 #include <QAbstractItemView>
 #include <QMainWindow>
+#include <QStandardItemModel>
 
-#include <QGridLayout>
 #include <QGraphicsOpacityEffect>
+#include <QGridLayout>
 #include <qmath.h>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
-namespace nmc {
+namespace nmc
+{
 
 // DkMainToolBar --------------------------------------------------------------------
-DkMainToolBar::DkMainToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
-
-	createLayout();
+DkMainToolBar::DkMainToolBar(const QString &title, QWidget *parent /* = 0 */)
+    : QToolBar(title, parent)
+{
+    createLayout();
 }
 
-void DkMainToolBar::createLayout() {
-
-	mQuickAccessEdit = new DkQuickAccessEdit(this);
+void DkMainToolBar::createLayout()
+{
+    mQuickAccessEdit = new DkQuickAccessEdit(this);
 }
 
-void DkMainToolBar::setQuickAccessModel(QStandardItemModel* model) {
-	
-	mQuickAccessEdit->setModel(model);
-	addWidget(mQuickAccessEdit);
-	mQuickAccessEdit->setFocus(Qt::MouseFocusReason);
+void DkMainToolBar::setQuickAccessModel(QStandardItemModel *model)
+{
+    mQuickAccessEdit->setModel(model);
+    addWidget(mQuickAccessEdit);
+    mQuickAccessEdit->setFocus(Qt::MouseFocusReason);
 }
 
-void DkMainToolBar::closeQuickAccess() {
-
-	mQuickAccessEdit->clearAccess();
+void DkMainToolBar::closeQuickAccess()
+{
+    mQuickAccessEdit->clearAccess();
 }
 
-void DkMainToolBar::allActionsAdded() {
-
-	// right align search filters
-	QWidget* spacer = new QWidget(this);
-	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	addWidget(spacer);
-	//addWidget(quickFilterEdit);
+void DkMainToolBar::allActionsAdded()
+{
+    // right align search filters
+    QWidget *spacer = new QWidget(this);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    addWidget(spacer);
+    // addWidget(quickFilterEdit);
 }
 
-DkQuickAccessEdit* DkMainToolBar::getQuickAccess() const {
-	return mQuickAccessEdit;
+DkQuickAccessEdit *DkMainToolBar::getQuickAccess() const
+{
+    return mQuickAccessEdit;
 }
 
 // DkColorSlider:
-DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth) 
-	: DkWidget(parent) {
+DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth)
+    : DkWidget(parent)
+{
+    this->setStatusTip(tr("Drag the slider downwards for elimination"));
+    this->mNormedPos = normedPos;
+    this->mColor = color;
+    this->mSliderWidth = sliderWidth;
+    mIsActive = false;
 
-	this->setStatusTip(tr("Drag the slider downwards for elimination"));
-	this->mNormedPos = normedPos;
-	this->mColor = color;
-	this->mSliderWidth = sliderWidth;
-	mIsActive = false;
+    mSliderHalfWidth = qCeil((float)sliderWidth / 2);
+    // return (qreal)(pos) / (qreal)(width() - sliderWidth);
 
-	mSliderHalfWidth = qCeil((float)sliderWidth / 2);
-	//return (qreal)(pos) / (qreal)(width() - sliderWidth);
-	
-	int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));
+    int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));
 
-	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + mSliderHalfWidth + 1);
+    setGeometry(pos, 23, sliderWidth + 1, sliderWidth + mSliderHalfWidth + 1);
 
-	show();
-
+    show();
 }
 
-void DkColorSlider::paintEvent(QPaintEvent*) {
+void DkColorSlider::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
 
-	QPainter painter(this);
+    painter.setPen(Qt::black);
 
-	painter.setPen(Qt::black);
+    // Draw the filled triangle at the top of the slider:
+    if (mIsActive) {
+        QPainterPath path;
+        path.moveTo(0, mSliderHalfWidth);
+        path.lineTo(mSliderHalfWidth, 0);
+        path.lineTo(mSliderHalfWidth, 0);
+        path.lineTo(mSliderWidth, mSliderHalfWidth);
 
-	// Draw the filled triangle at the top of the slider:
-	if (mIsActive) {
+        painter.fillPath(path, Qt::black);
+        painter.drawPath(path);
 
-		QPainterPath path;
-		path.moveTo(0, mSliderHalfWidth);
-		path.lineTo(mSliderHalfWidth, 0);
-		path.lineTo(mSliderHalfWidth, 0);
-		path.lineTo(mSliderWidth, mSliderHalfWidth);
-	
-		painter.fillPath(path, Qt::black);
-		painter.drawPath(path);
+    }
+    // Draw the empty triangle at the top of the slider:
+    else {
+        painter.drawLine(0, mSliderHalfWidth, mSliderHalfWidth, 0);
+        painter.drawLine(mSliderHalfWidth, 0, mSliderWidth, mSliderHalfWidth);
+    }
 
-	} 
-	// Draw the empty triangle at the top of the slider:
-	else {
-		painter.drawLine(0, mSliderHalfWidth, mSliderHalfWidth, 0);
-		painter.drawLine(mSliderHalfWidth, 0, mSliderWidth, mSliderHalfWidth);
-	}
-	
-	painter.drawRect(0, mSliderHalfWidth, mSliderWidth, mSliderWidth);
-	painter.fillRect(2, mSliderHalfWidth+2, mSliderWidth - 3, mSliderWidth - 3, mColor);
-	
- 
+    painter.drawRect(0, mSliderHalfWidth, mSliderWidth, mSliderWidth);
+    painter.fillRect(2, mSliderHalfWidth + 2, mSliderWidth - 3, mSliderWidth - 3, mColor);
 }
 
-void DkColorSlider::updatePos(int parentWidth) {
-
-	int pos = qRound(mNormedPos * (parentWidth - mSliderWidth - 1));
-	setGeometry(pos, 23, mSliderWidth + 1, mSliderWidth + mSliderHalfWidth + 1);
+void DkColorSlider::updatePos(int parentWidth)
+{
+    int pos = qRound(mNormedPos * (parentWidth - mSliderWidth - 1));
+    setGeometry(pos, 23, mSliderWidth + 1, mSliderWidth + mSliderHalfWidth + 1);
 }
 
-void DkColorSlider::setActive(bool isActive) {
-
-	mIsActive = isActive;
+void DkColorSlider::setActive(bool isActive)
+{
+    mIsActive = isActive;
 }
 
-DkColorSlider::~DkColorSlider() {
+DkColorSlider::~DkColorSlider()
+{
 }
 
-QColor DkColorSlider::getColor() {
-
-	return mColor;
+QColor DkColorSlider::getColor()
+{
+    return mColor;
 }
 
-qreal DkColorSlider::getNormedPos() {
-
-	return mNormedPos;
+qreal DkColorSlider::getNormedPos()
+{
+    return mNormedPos;
 }
 
-void DkColorSlider::setNormedPos(qreal pos) {
-
-	mNormedPos = pos;
+void DkColorSlider::setNormedPos(qreal pos)
+{
+    mNormedPos = pos;
 }
 
-
-void DkColorSlider::mousePressEvent(QMouseEvent *event) {
-	
-	mIsActive = true;
-	mDragStartX = event->pos().x();
-	emit sliderActivated(this);		
+void DkColorSlider::mousePressEvent(QMouseEvent *event)
+{
+    mIsActive = true;
+    mDragStartX = event->pos().x();
+    emit sliderActivated(this);
 }
 
-void DkColorSlider::mouseMoveEvent(QMouseEvent *event) {
-	
-	// Pass the actual position to the Gradient:
-	emit sliderMoved(this, event->pos().x() - mDragStartX, event->pos().y());
-		
+void DkColorSlider::mouseMoveEvent(QMouseEvent *event)
+{
+    // Pass the actual position to the Gradient:
+    emit sliderMoved(this, event->pos().x() - mDragStartX, event->pos().y());
 }
 
-void DkColorSlider::mouseDoubleClickEvent(QMouseEvent*) {
+void DkColorSlider::mouseDoubleClickEvent(QMouseEvent *)
+{
+    QColor color = QColorDialog::getColor(this->mColor, this);
+    if (color.isValid())
+        this->mColor = color;
 
-	QColor color = QColorDialog::getColor(this->mColor, this);
-	if (color.isValid())
-		this->mColor = color;
-
-	emit colorChanged(this);
-
+    emit colorChanged(this);
 }
 
-DkGradient::DkGradient(QWidget *parent) 
-	: DkWidget(parent) {
+DkGradient::DkGradient(QWidget *parent)
+    : DkWidget(parent)
+{
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+    this->setMinimumWidth(100);
+    this->setMaximumWidth(600);
 
-	this->setMinimumWidth(100);
-	this->setMaximumWidth(600);
+    this->setFixedHeight(40);
 
-	this->setFixedHeight(40);
+    mIsSliderDragged = false;
+    mClickAreaHeight = 20;
+    mDeleteSliderDist = 50;
 
-	mIsSliderDragged = false;
-	mClickAreaHeight = 20;
-	mDeleteSliderDist = 50;
-	
-	// Note that sliderWidth should be odd, in order to get a pretty rendered slider.
-	mSliderWidth = 10;
-	mHalfSliderWidth = mSliderWidth / 2;
-	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
-	
-	mSliders = QVector<DkColorSlider*>();
-	init();
+    // Note that sliderWidth should be odd, in order to get a pretty rendered slider.
+    mSliderWidth = 10;
+    mHalfSliderWidth = mSliderWidth / 2;
+    mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
 
+    mSliders = QVector<DkColorSlider *>();
+    init();
 }
 
-DkGradient::~DkGradient() {
+DkGradient::~DkGradient()
+{
 }
 
-void DkGradient::init() {
+void DkGradient::init()
+{
+    clearAllSliders();
 
-	clearAllSliders();
+    addSlider(0, Qt::black);
+    addSlider(1, Qt::white);
 
-	addSlider(0, Qt::black);
-	addSlider(1, Qt::white);
-	
-	updateGradient();
-
-
+    updateGradient();
 }
 
-void DkGradient::clearAllSliders() {
+void DkGradient::clearAllSliders()
+{
+    for (int i = 0; i < mSliders.size(); i++) {
+        DkColorSlider *slider = mSliders.at(i);
+        delete slider;
+    }
 
-	for (int i = 0; i < mSliders.size(); i++) {
-		DkColorSlider* slider = mSliders.at(i);
-		delete slider;
-	}
-
-	mSliders.clear();
-
+    mSliders.clear();
 }
 
-void DkGradient::setGradient(const QLinearGradient& gradient) {
+void DkGradient::setGradient(const QLinearGradient &gradient)
+{
+    reset();
+    clearAllSliders(); // reset adds a slider at the start and end
 
-	reset();
-	clearAllSliders();	// reset adds a slider at the start and end
+    this->mGradient.setStops(gradient.stops());
 
-	this->mGradient.setStops(gradient.stops());
-	
-	QVector<QGradientStop> stops = gradient.stops();
+    QVector<QGradientStop> stops = gradient.stops();
 
-	for (int idx = 0; idx < stops.size(); idx++) {
-		addSlider(stops.at(idx).first, stops.at(idx).second);
-	}
+    for (int idx = 0; idx < stops.size(); idx++) {
+        addSlider(stops.at(idx).first, stops.at(idx).second);
+    }
 
-	updateGradient();
-	update();
-	emit gradientChanged();
-
+    updateGradient();
+    update();
+    emit gradientChanged();
 }
 
-QLinearGradient DkGradient::getGradient() {
-
-	return mGradient;
+QLinearGradient DkGradient::getGradient()
+{
+    return mGradient;
 }
 
-void DkGradient::reset() {
-
-	init();
-	update();
-
+void DkGradient::reset()
+{
+    init();
+    update();
 }
 
+void DkGradient::resizeEvent(QResizeEvent *event)
+{
+    if (event->size() == event->oldSize())
+        return;
 
-void DkGradient::resizeEvent( QResizeEvent * event ) {
+    DkColorSlider *slider;
 
-	if (event->size() == event->oldSize())
-		return;
+    for (int i = 0; i < mSliders.size(); i++) {
+        slider = mSliders.at(i);
+        slider->updatePos(this->width());
+    }
 
-	DkColorSlider *slider;
+    // qDebug() << "resize gradient: " << event->size();
 
-	for (int i = 0; i < mSliders.size(); i++) {
-		slider = mSliders.at(i);
-		slider->updatePos(this->width());
-	}
+    updateGradient();
 
-	//qDebug() << "resize gradient: " << event->size();
-
-	updateGradient();
-
-	QWidget::resizeEvent(event);
+    QWidget::resizeEvent(event);
 }
 
-
-void DkGradient::addSlider(qreal pos, QColor color) {
-
-
-	DkColorSlider *actSlider =  new DkColorSlider(this, pos, color, mSliderWidth);
-	mSliders.append(actSlider);
-	connect(actSlider, SIGNAL(sliderMoved(DkColorSlider*, int, int)), this, SLOT(moveSlider(DkColorSlider*, int, int)));
-	connect(actSlider, SIGNAL(colorChanged(DkColorSlider*)), this, SLOT(changeColor(DkColorSlider*)));
-	connect(actSlider, SIGNAL(sliderActivated(DkColorSlider*)), this, SLOT(activateSlider(DkColorSlider*)));
-
+void DkGradient::addSlider(qreal pos, QColor color)
+{
+    DkColorSlider *actSlider = new DkColorSlider(this, pos, color, mSliderWidth);
+    mSliders.append(actSlider);
+    connect(actSlider, SIGNAL(sliderMoved(DkColorSlider *, int, int)), this, SLOT(moveSlider(DkColorSlider *, int, int)));
+    connect(actSlider, SIGNAL(colorChanged(DkColorSlider *)), this, SLOT(changeColor(DkColorSlider *)));
+    connect(actSlider, SIGNAL(sliderActivated(DkColorSlider *)), this, SLOT(activateSlider(DkColorSlider *)));
 }
 
-void DkGradient::insertSlider(qreal pos, QColor col) {
+void DkGradient::insertSlider(qreal pos, QColor col)
+{
+    // Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
 
-	// Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
+    // Find the neighbors of the new slider, since we need it for the color interpolation:
+    QColor leftColor, rightColor, actColor;
+    qreal dist;
+    qreal initValue = DBL_MAX; // std::numeric_limits<qreal>::max();	// >DIR: fix for linux [9.2.2012 markus]
+    qreal leftDist = initValue;
+    qreal rightDist = initValue;
 
-	// Find the neighbors of the new slider, since we need it for the color interpolation:
-	QColor leftColor, rightColor, actColor;
-	qreal dist;
-	qreal initValue = DBL_MAX; //std::numeric_limits<qreal>::max();	// >DIR: fix for linux [9.2.2012 markus]
-	qreal leftDist = initValue;
-	qreal rightDist = initValue;
+    int leftIdx = 0, rightIdx = 0;
 
-	int leftIdx = 0, rightIdx = 0;
-	
-	for (int i = 0; i < mSliders.size(); i++) {
-		dist = mSliders.at(i)->getNormedPos() - pos;
-		if (dist < 0) {
-			if (std::abs(dist) < leftDist) {
-				leftDist = (std::abs(dist));
-				leftIdx = i;
-			}
-		}
-		else if (dist > 0){
-			if (std::abs(dist) < rightDist) {
-				rightDist = (std::abs(dist));
-				rightIdx = i;
-			}
-		}
-		else {
-			actColor = mSliders.at(i)->getColor();
-			break;
-		}
-	}
+    for (int i = 0; i < mSliders.size(); i++) {
+        dist = mSliders.at(i)->getNormedPos() - pos;
+        if (dist < 0) {
+            if (std::abs(dist) < leftDist) {
+                leftDist = (std::abs(dist));
+                leftIdx = i;
+            }
+        } else if (dist > 0) {
+            if (std::abs(dist) < rightDist) {
+                rightDist = (std::abs(dist));
+                rightIdx = i;
+            }
+        } else {
+            actColor = mSliders.at(i)->getColor();
+            break;
+        }
+    }
 
-	if ((leftDist == initValue) && (rightDist == initValue))
-		actColor = Qt::black;
-	// The slider is most left:
-	else if (leftDist == initValue)
-		actColor = mSliders.at(rightIdx)->getColor();
-	// The slider is most right:
-	else if (rightDist == initValue)
-		actColor = mSliders.at(leftIdx)->getColor();
-	// The slider has a neighbor to the left and to the right:
-	else {
-		int rLeft, rRight, rNew, gLeft, gRight, gNew, bLeft, bRight, bNew;
-		
-		mSliders.at(leftIdx)->getColor().getRgb(&rLeft, &gLeft, &bLeft);
-		mSliders.at(rightIdx)->getColor().getRgb(&rRight, &gRight, &bRight);
-		
-		qreal fac = leftDist / (leftDist + rightDist);
-		rNew = qRound(rLeft * (1 - fac) + rRight * fac);
-		gNew = qRound(gLeft * (1 - fac) + gRight * fac);
-		bNew = qRound(bLeft * (1 - fac) + bRight * fac);
+    if ((leftDist == initValue) && (rightDist == initValue))
+        actColor = Qt::black;
+    // The slider is most left:
+    else if (leftDist == initValue)
+        actColor = mSliders.at(rightIdx)->getColor();
+    // The slider is most right:
+    else if (rightDist == initValue)
+        actColor = mSliders.at(leftIdx)->getColor();
+    // The slider has a neighbor to the left and to the right:
+    else {
+        int rLeft, rRight, rNew, gLeft, gRight, gNew, bLeft, bRight, bNew;
 
-		actColor = QColor(rNew, gNew, bNew);
+        mSliders.at(leftIdx)->getColor().getRgb(&rLeft, &gLeft, &bLeft);
+        mSliders.at(rightIdx)->getColor().getRgb(&rRight, &gRight, &bRight);
 
-	}
+        qreal fac = leftDist / (leftDist + rightDist);
+        rNew = qRound(rLeft * (1 - fac) + rRight * fac);
+        gNew = qRound(gLeft * (1 - fac) + gRight * fac);
+        bNew = qRound(bLeft * (1 - fac) + bRight * fac);
 
+        actColor = QColor(rNew, gNew, bNew);
+    }
 
-	addSlider(pos, col.isValid() ? col : actColor);
-	// The last slider in the list is the last one added, now make this one active:
-	activateSlider(mSliders.last());
+    addSlider(pos, col.isValid() ? col : actColor);
+    // The last slider in the list is the last one added, now make this one active:
+    activateSlider(mSliders.last());
 
-	updateGradient();
-	update();
-
-
+    updateGradient();
+    update();
 }
 
-void DkGradient::mousePressEvent(QMouseEvent *event) {
+void DkGradient::mousePressEvent(QMouseEvent *event)
+{
+    QPointF enterPos = event->pos();
+    qreal pos = (qreal)(enterPos.x() - mHalfSliderWidth) / (qreal)(width() - mSliderWidth);
 
-	QPointF enterPos = event->pos();
-	qreal pos = (qreal)(enterPos.x() - mHalfSliderWidth) / (qreal)(width()-mSliderWidth);
-
-	insertSlider(pos);
-	
+    insertSlider(pos);
 }
 
-void DkGradient::updateGradient() {
+void DkGradient::updateGradient()
+{
+    mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
 
-	mGradient = QLinearGradient(0, 0, width(), height() - mClickAreaHeight);
-
-	for (int i = 0; i < mSliders.size(); i++) 
-		mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
-	
+    for (int i = 0; i < mSliders.size(); i++)
+        mGradient.setColorAt(mSliders.at(i)->getNormedPos(), mSliders.at(i)->getColor());
 }
 
-QGradientStops DkGradient::getGradientStops() {
-
-	return mGradient.stops();
+QGradientStops DkGradient::getGradientStops()
+{
+    return mGradient.stops();
 }
 
-void DkGradient::moveSlider(DkColorSlider* sender, int dragDistX, int yPos) {
+void DkGradient::moveSlider(DkColorSlider *sender, int dragDistX, int yPos)
+{
+    // Delete the actual slider:
+    if (yPos > mDeleteSliderDist) {
+        int idx = mSliders.lastIndexOf(sender);
+        if (idx != -1) {
+            mSliders.remove(idx);
+            delete sender;
+            mIsActiveSliderExisting = false;
+        }
+    }
 
+    // Insert a new slider:
+    else {
+        int newPos = sender->pos().x() + dragDistX;
 
-	// Delete the actual slider:
-	if (yPos > mDeleteSliderDist) {
-		int idx = mSliders.lastIndexOf(sender);
-		if (idx != -1) {
-			mSliders.remove(idx);
-			delete sender;
-			mIsActiveSliderExisting = false;
-		}
-	}
+        if (newPos < 0)
+            newPos = 0;
+        else if (newPos > width() - mSliderWidth - 1)
+            newPos = width() - mSliderWidth - 1;
 
-	// Insert a new slider:
-	else {
+        qreal normedSliderPos = getNormedPos(newPos);
 
-		int newPos = sender->pos().x() + dragDistX;
+        if (normedSliderPos > 1)
+            normedSliderPos = 1;
+        if (normedSliderPos < 0)
+            normedSliderPos = 0;
 
-		if (newPos < 0)
-			newPos = 0;
-		else if (newPos > width() - mSliderWidth - 1)
-			newPos = width() - mSliderWidth - 1;
+        DkColorSlider *slider;
+        // Check if the position is already assigned to another slider:
+        for (int i = 0; i < mSliders.size(); i++) {
+            slider = mSliders.at(i);
+            if (slider != sender) {
+                if (slider->getNormedPos() == normedSliderPos)
+                    return;
+            }
+        }
 
-		qreal normedSliderPos = getNormedPos(newPos);
+        sender->setNormedPos(normedSliderPos);
+        sender->move(newPos, sender->pos().y());
+    }
 
-		if (normedSliderPos > 1)
-			normedSliderPos = 1;
-		if (normedSliderPos < 0)
-			normedSliderPos = 0;
+    updateGradient();
+    update();
 
-		DkColorSlider *slider;
-		// Check if the position is already assigned to another slider:
-		for (int i = 0; i < mSliders.size(); i++) {
-			slider = mSliders.at(i);
-			if (slider != sender) {
-				if (slider->getNormedPos() == normedSliderPos)
-					return;
-			}
-		}
-
-		sender->setNormedPos(normedSliderPos);
-		sender->move(newPos, sender->pos().y());
-
-	}
-
-	updateGradient();
-	update();
-	
-	emit gradientChanged();
-
+    emit gradientChanged();
 }
 
-qreal DkGradient::getNormedPos(int pos) {
-
-	return (qreal)(pos) / (qreal)(width() - mSliderWidth);
-
+qreal DkGradient::getNormedPos(int pos)
+{
+    return (qreal)(pos) / (qreal)(width() - mSliderWidth);
 }
 
-int DkGradient::getAbsolutePos(qreal pos) {
-
-	return (int) pos * width();
-
+int DkGradient::getAbsolutePos(qreal pos)
+{
+    return (int)pos * width();
 }
 
-void DkGradient::paintEvent(QPaintEvent*) {
+void DkGradient::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    painter.setPen(Qt::gray);
 
-	QPainter painter(this);
-	painter.setPen(Qt::gray);
-	
-	painter.fillRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight, mGradient);
-	painter.drawRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight);
+    painter.fillRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight, mGradient);
+    painter.drawRect(mHalfSliderWidth, 2, width() - mSliderWidth, height() - mClickAreaHeight);
 }
 
-
-void DkGradient::mouseReleaseEvent(QMouseEvent *) {
-
-	// unused
+void DkGradient::mouseReleaseEvent(QMouseEvent *)
+{
+    // unused
 }
 
-void DkGradient::changeColor(DkColorSlider*) {
+void DkGradient::changeColor(DkColorSlider *)
+{
+    updateGradient();
+    update();
 
-	updateGradient();
-	update();
-
-	emit gradientChanged();
+    emit gradientChanged();
 }
 
-void DkGradient::activateSlider(DkColorSlider *sender) {
+void DkGradient::activateSlider(DkColorSlider *sender)
+{
+    if (mIsActiveSliderExisting)
+        mActiveSlider->setActive(false);
+    else
+        mIsActiveSliderExisting = true;
 
-	
-	if (mIsActiveSliderExisting) 
-		mActiveSlider->setActive(false);
-	else
-		mIsActiveSliderExisting = true;
+    mActiveSlider = sender;
+    mActiveSlider->setActive(true);
 
-	mActiveSlider = sender;
-	mActiveSlider->setActive(true);
-
-	update();
-
+    update();
 }
 
 //
-DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
-	: QToolBar(tr("Pseudo Color Toolbar"), parent) {
+DkTransferToolBar::DkTransferToolBar(QWidget *parent)
+    : QToolBar(tr("Pseudo Color Toolbar"), parent)
+{
+    loadSettings();
 
-	loadSettings();
+    mEnableTFCheckBox = new QCheckBox(tr("Enable"));
+    mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
-	
-	mEnableTFCheckBox = new QCheckBox(tr("Enable"));
-	mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
+    this->addWidget(mEnableTFCheckBox);
 
-	this->addWidget(mEnableTFCheckBox);
+    // >DIR: more compact gui [2.3.2012 markus]
+    this->addSeparator();
+    // this->addWidget(new QLabel(tr("Active channel:")));
 
-	// >DIR: more compact gui [2.3.2012 markus]
-	this->addSeparator();
-	//this->addWidget(new QLabel(tr("Active channel:")));
+    mChannelComboBox = new QComboBox(this);
+    mChannelComboBox->setStatusTip(tr("Changes the displayed color channel"));
+    this->addWidget(mChannelComboBox);
 
-	mChannelComboBox = new QComboBox(this);
-	mChannelComboBox->setStatusTip(tr("Changes the displayed color channel"));
-	this->addWidget(mChannelComboBox);
+    mHistoryCombo = new QComboBox(this);
 
-	mHistoryCombo = new QComboBox(this);
+    QAction *delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
+    connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
 
-	QAction* delGradientAction = new QAction(tr("Delete"), mHistoryCombo);
-	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+    mHistoryCombo->addAction(delGradientAction);
+    mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-	mHistoryCombo->addAction(delGradientAction);
-	mHistoryCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
+    updateGradientHistory();
+    connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
+    connect(mHistoryCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
 
-	updateGradientHistory();
-	connect(mHistoryCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
-	connect(mHistoryCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
+    this->addWidget(mHistoryCombo);
 
-	this->addWidget(mHistoryCombo);
+    createIcons();
 
-	createIcons();
+    mGradient = new DkGradient(this);
+    mGradient->setStatusTip(tr("Click into the field for a new slider"));
+    this->addWidget(mGradient);
 
-	mGradient = new DkGradient(this);
-	mGradient->setStatusTip(tr("Click into the field for a new slider"));
-	this->addWidget(mGradient);
+    mEffect = new QGraphicsOpacityEffect(mGradient);
+    mEffect->setOpacity(1);
+    mGradient->setGraphicsEffect(mEffect);
 
-	mEffect = new QGraphicsOpacityEffect(mGradient);
-	mEffect->setOpacity(1);
-	mGradient->setGraphicsEffect(mEffect);
+    // Disable the entire transfer toolbar:
+    // enableTF(Qt::Unchecked);
 
-	// Disable the entire transfer toolbar:
-	//enableTF(Qt::Unchecked);
+    // Initialize the combo box for color images:
+    mImageMode = mode_uninitialized;
+    applyImageMode(mode_rgb);
 
-	// Initialize the combo box for color images:
-	mImageMode = mode_uninitialized;
-	applyImageMode(mode_rgb);
+    enableToolBar(false);
+    mEnableTFCheckBox->setEnabled(true);
 
-	enableToolBar(false);
-	mEnableTFCheckBox->setEnabled(true);	
+    connect(mEnableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
+    connect(mGradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 
-	connect(mEnableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
-	connect(mGradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
+    // needed for initialization
+    connect(this, SIGNAL(gradientChanged()), mGradient, SIGNAL(gradientChanged()));
 
-	// needed for initialization
-	connect(this, SIGNAL(gradientChanged()), mGradient, SIGNAL(gradientChanged()));
-
-	if (!mOldGradients.empty())
-		mGradient->setGradient(mOldGradients.first());
-
+    if (!mOldGradients.empty())
+        mGradient->setGradient(mOldGradients.first());
 }
 
-DkTransferToolBar::~DkTransferToolBar() {
+DkTransferToolBar::~DkTransferToolBar()
+{
 }
 
+void DkTransferToolBar::createIcons()
+{
+    // user needs to decide...
+    // this->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
 
-void DkTransferToolBar::createIcons() {
+    mToolBarIcons.resize(icon_toolbar_end);
 
-	// user needs to decide...
-	//this->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
-			
-	mToolBarIcons.resize(icon_toolbar_end);
+    mToolBarIcons[icon_toolbar_reset] = DkImage::loadIcon(":/nomacs/img/gradient-reset.svg");
+    mToolBarIcons[icon_toolbar_pipette] = DkImage::loadIcon(":/nomacs/img/pipette.svg");
+    mToolBarIcons[icon_toolbar_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
 
-	mToolBarIcons[icon_toolbar_reset] = DkImage::loadIcon(":/nomacs/img/gradient-reset.svg");
-	mToolBarIcons[icon_toolbar_pipette] = DkImage::loadIcon(":/nomacs/img/pipette.svg");
-	mToolBarIcons[icon_toolbar_save] = DkImage::loadIcon(":/nomacs/img/save.svg");
+    mToolBarActions.resize(toolbar_end);
+    mToolBarActions[toolbar_reset] = new QAction(mToolBarIcons[icon_toolbar_reset], tr("Reset"), this);
+    mToolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
+    connect(mToolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
 
-	mToolBarActions.resize(toolbar_end);
-	mToolBarActions[toolbar_reset] = new QAction(mToolBarIcons[icon_toolbar_reset], tr("Reset"), this);
-	mToolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
-	connect(mToolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
+    // toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
-	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
+    mToolBarActions[toolbar_pipette] = new QAction(mToolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
+    mToolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
+    mToolBarActions[toolbar_pipette]->setCheckable(true);
+    mToolBarActions[toolbar_pipette]->setChecked(false);
+    connect(mToolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
 
-	mToolBarActions[toolbar_pipette] = new QAction(mToolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
-	mToolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
-	mToolBarActions[toolbar_pipette]->setCheckable(true);
-	mToolBarActions[toolbar_pipette]->setChecked(false);
-	connect(mToolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
+    mToolBarActions[toolbar_save] = new QAction(mToolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
+    mToolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
+    connect(mToolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
 
-	mToolBarActions[toolbar_save] = new QAction(mToolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
-	mToolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
-	connect(mToolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
-
-	addActions(mToolBarActions.toList());
-
+    addActions(mToolBarActions.toList());
 }
 
-void DkTransferToolBar::saveSettings() {
+void DkTransferToolBar::saveSettings()
+{
+    DefaultSettings settings;
+    settings.beginGroup("Pseudo Color");
 
-	DefaultSettings settings;
-	settings.beginGroup("Pseudo Color");
+    settings.beginWriteArray("oldGradients", mOldGradients.size());
 
-	settings.beginWriteArray("oldGradients", mOldGradients.size());
+    for (int idx = 0; idx < mOldGradients.size(); idx++) {
+        settings.setArrayIndex(idx);
 
-	for (int idx = 0; idx < mOldGradients.size(); idx++) {
-		settings.setArrayIndex(idx);
+        QVector<QGradientStop> stops = mOldGradients.at(idx).stops();
+        settings.beginWriteArray("gradient", stops.size());
 
-		QVector<QGradientStop> stops = mOldGradients.at(idx).stops();
-		settings.beginWriteArray("gradient", stops.size());
+        for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
+            settings.setArrayIndex(sIdx);
+            settings.setValue("posRGBA", (float)stops.at(sIdx).first);
+            settings.setValue("colorRGBA", stops.at(sIdx).second.rgba());
+        }
+        settings.endArray();
+    }
 
-		for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
-			settings.setArrayIndex(sIdx);
-			settings.setValue("posRGBA", (float)stops.at(sIdx).first);
-			settings.setValue("colorRGBA", stops.at(sIdx).second.rgba());
-		}
-		settings.endArray();
-	}
-
-	settings.endArray();
-	settings.endGroup();
+    settings.endArray();
+    settings.endGroup();
 }
 
-void DkTransferToolBar::loadSettings() {
+void DkTransferToolBar::loadSettings()
+{
+    DefaultSettings settings;
+    settings.beginGroup("Pseudo Color");
 
-	DefaultSettings settings;
-	settings.beginGroup("Pseudo Color");
+    int gSize = settings.beginReadArray("oldGradients");
 
-	int gSize = settings.beginReadArray("oldGradients");
+    for (int idx = 0; idx < gSize; idx++) {
+        settings.setArrayIndex(idx);
 
-	for (int idx = 0; idx < gSize; idx++) {
-		settings.setArrayIndex(idx);
+        QVector<QGradientStop> stops;
+        int sSize = settings.beginReadArray("gradient");
 
-		QVector<QGradientStop> stops;
-		int sSize = settings.beginReadArray("gradient");
+        for (int sIdx = 0; sIdx < sSize; sIdx++) {
+            settings.setArrayIndex(sIdx);
 
-		for (int sIdx = 0; sIdx < sSize; sIdx++) {
-			settings.setArrayIndex(sIdx);
-			
-			QGradientStop s;
-			s.first = settings.value("posRGBA", 0).toFloat();
-			s.second = QColor::fromRgba(settings.value("colorRGBA", QColor().rgba()).toInt());
-			qDebug() << "pos: " << s.first << " col: " << s.second;
-			stops.append(s);
-		}
-		settings.endArray();
+            QGradientStop s;
+            s.first = settings.value("posRGBA", 0).toFloat();
+            s.second = QColor::fromRgba(settings.value("colorRGBA", QColor().rgba()).toInt());
+            qDebug() << "pos: " << s.first << " col: " << s.second;
+            stops.append(s);
+        }
+        settings.endArray();
 
-		QLinearGradient g;
-		g.setStops(stops);
-		mOldGradients.append(g);
-	}
+        QLinearGradient g;
+        g.setStops(stops);
+        mOldGradients.append(g);
+    }
 
-	settings.endArray();
-	settings.endGroup();
+    settings.endArray();
+    settings.endGroup();
 }
 
-void DkTransferToolBar::deleteGradientMenu(QPoint pos) {
-
-	QMenu* cm = new QMenu(this);
-	QAction* delAction = new QAction("Delete", this);
-	connect(delAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
-	cm->popup(mHistoryCombo->mapToGlobal(pos));
-	cm->exec();
+void DkTransferToolBar::deleteGradientMenu(QPoint pos)
+{
+    QMenu *cm = new QMenu(this);
+    QAction *delAction = new QAction("Delete", this);
+    connect(delAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+    cm->popup(mHistoryCombo->mapToGlobal(pos));
+    cm->exec();
 }
 
-void DkTransferToolBar::deleteGradient() {
+void DkTransferToolBar::deleteGradient()
+{
+    int idx = mHistoryCombo->currentIndex();
 
-	int idx = mHistoryCombo->currentIndex();
-
-	if (idx >= 0 && idx < mOldGradients.size()) {
-		mOldGradients.remove(idx);
-		mHistoryCombo->removeItem(idx);
-	}
-
+    if (idx >= 0 && idx < mOldGradients.size()) {
+        mOldGradients.remove(idx);
+        mHistoryCombo->removeItem(idx);
+    }
 }
 
-void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
-
-	mGradient->resize(event->size().width() - mGradient->x(), 40);
-
+void DkTransferToolBar::resizeEvent(QResizeEvent *event)
+{
+    mGradient->resize(event->size().width() - mGradient->x(), 40);
 }
 
-void DkTransferToolBar::insertSlider(qreal pos) {
-
-	mGradient->insertSlider(pos);
-
+void DkTransferToolBar::insertSlider(qreal pos)
+{
+    mGradient->insertSlider(pos);
 }
 
-void DkTransferToolBar::setImageMode(int mode) {
-
-	qDebug() << "and I received...";
-	applyImageMode(mode);
-
+void DkTransferToolBar::setImageMode(int mode)
+{
+    qDebug() << "and I received...";
+    applyImageMode(mode);
 }
 
-void DkTransferToolBar::applyImageMode(int mode) {
+void DkTransferToolBar::applyImageMode(int mode)
+{
+    // At first check if the right mode is already set. If so, don't do nothing.
 
-	// At first check if the right mode is already set. If so, don't do nothing.
+    if (mode == mImageMode)
+        return;
 
-	if (mode == mImageMode)
-		return;
+    // if (mImageMode != mode_invalid_format) {
+    //	enableToolBar(true);
+    //	emit channelChanged(0);
+    // }
 
-	//if (mImageMode != mode_invalid_format) {
-	//	enableToolBar(true);
-	//	emit channelChanged(0);
-	//}
+    mImageMode = mode;
+    mEnableTFCheckBox->setEnabled(mImageMode != mode_invalid_format);
 
-	mImageMode = mode;
-	mEnableTFCheckBox->setEnabled(mImageMode != mode_invalid_format);	
+    if (mImageMode == mode_invalid_format) {
+        enableToolBar(false);
+        return;
+    }
 
-	if (mImageMode == mode_invalid_format) {
-		enableToolBar(false);
-		return;
-	}
+    disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
+    mChannelComboBox->clear();
 
-	disconnect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
-	mChannelComboBox->clear();
+    if (mode == mode_gray) {
+        mChannelComboBox->addItem(tr("Gray"));
+    } else if (mode == mode_rgb) {
+        mChannelComboBox->addItem(tr("RGB"));
+        mChannelComboBox->addItem(tr("Red"));
+        mChannelComboBox->addItem(tr("Green"));
+        mChannelComboBox->addItem(tr("Blue"));
+    }
 
-	if (mode == mode_gray) {
-		mChannelComboBox->addItem(tr("Gray"));
-	}
-	else if (mode == mode_rgb) {
-		mChannelComboBox->addItem(tr("RGB"));
-		mChannelComboBox->addItem(tr("Red"));
-		mChannelComboBox->addItem(tr("Green"));
-		mChannelComboBox->addItem(tr("Blue"));
-	}
+    mChannelComboBox->setCurrentIndex(0);
 
-	mChannelComboBox->setCurrentIndex(0);
-
-	connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
-
+    connect(mChannelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 }
 
-void DkTransferToolBar::pickColor(bool enabled) {
-
-	emit pickColorRequest(enabled);
+void DkTransferToolBar::pickColor(bool enabled)
+{
+    emit pickColorRequest(enabled);
 }
 
-void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
+void DkTransferToolBar::enableTFCheckBoxClicked(int state)
+{
+    bool enabled;
+    if (state == Qt::Checked)
+        enabled = true;
+    else
+        enabled = false;
 
-	bool enabled;
-	if (state == Qt::Checked)
-		enabled = true;
-	else
-		enabled = false;
+    enableToolBar(enabled);
 
-	enableToolBar(enabled);
+    // At this point the checkbox is disabled, hence enable it...
+    mEnableTFCheckBox->setEnabled(true);
 
-	// At this point the checkbox is disabled, hence enable it...
-	mEnableTFCheckBox->setEnabled(true);
+    if (enabled)
+        mEnableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
+    else
+        mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
-	if (enabled)
-		mEnableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
-	else
-		mEnableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
-
-	emit tFEnabled(enabled);
-	emit gradientChanged();
+    emit tFEnabled(enabled);
+    emit gradientChanged();
 }
 
-void DkTransferToolBar::enableToolBar(bool enable) {
+void DkTransferToolBar::enableToolBar(bool enable)
+{
+    QObjectList list = this->children();
 
-	QObjectList list = this->children();
+    for (int i = 0; i < list.count(); i++) {
+        if (QWidget *action = qobject_cast<QWidget *>(list.at(i)))
+            action->setEnabled(enable);
+    }
 
-	for (int i = 0; i < list.count(); i++) {
-		if (QWidget *action = qobject_cast<QWidget*>(list.at(i)))
-			action->setEnabled(enable);
-	}
-	
-	if (enable)
-		mEffect->setOpacity(1);
-	else
-		mEffect->setOpacity(.5);
-
+    if (enable)
+        mEffect->setOpacity(1);
+    else
+        mEffect->setOpacity(.5);
 }
 
-void DkTransferToolBar::applyTF() {
+void DkTransferToolBar::applyTF()
+{
+    QGradientStops stops = mGradient->getGradientStops();
 
-	QGradientStops stops = mGradient->getGradientStops();
-
-	emit colorTableChanged(stops);
+    emit colorTableChanged(stops);
 }
 
-void DkTransferToolBar::changeChannel(int index) {
-
-	emit channelChanged(index);
+void DkTransferToolBar::changeChannel(int index)
+{
+    emit channelChanged(index);
 }
 
-void DkTransferToolBar::resetGradient() {
+void DkTransferToolBar::resetGradient()
+{
+    mGradient->reset();
 
-	mGradient->reset();
+    QGradientStops stops = mGradient->getGradientStops();
 
-	QGradientStops stops = mGradient->getGradientStops();
-
-	emit colorTableChanged(stops);
+    emit colorTableChanged(stops);
 }
 
-void DkTransferToolBar::paintEvent(QPaintEvent* event) {
-
-	QToolBar::paintEvent(event);
-
+void DkTransferToolBar::paintEvent(QPaintEvent *event)
+{
+    QToolBar::paintEvent(event);
 }
 
-void DkTransferToolBar::updateGradientHistory() {
+void DkTransferToolBar::updateGradientHistory()
+{
+    mHistoryCombo->clear();
+    mHistoryCombo->setIconSize(QSize(50, 10));
 
-	mHistoryCombo->clear();
-	mHistoryCombo->setIconSize(QSize(50,10));
-
-	for (int idx = 0; idx < mOldGradients.size(); idx++) {
-
-		QPixmap cg(50, 10);
-		QLinearGradient g(QPoint(0,0), QPoint(50, 0));
-		g.setStops(mOldGradients[idx].stops());
-		QPainter p(&cg);
-		p.fillRect(cg.rect(), g);
-		mHistoryCombo->addItem(cg, tr(""));
-	}
+    for (int idx = 0; idx < mOldGradients.size(); idx++) {
+        QPixmap cg(50, 10);
+        QLinearGradient g(QPoint(0, 0), QPoint(50, 0));
+        g.setStops(mOldGradients[idx].stops());
+        QPainter p(&cg);
+        p.fillRect(cg.rect(), g);
+        mHistoryCombo->addItem(cg, tr(""));
+    }
 }
 
-void DkTransferToolBar::switchGradient(int idx) {
-
-	if (idx >= 0 && idx < mOldGradients.size()) {
-		mGradient->setGradient(mOldGradients[idx]);
-	}
-
+void DkTransferToolBar::switchGradient(int idx)
+{
+    if (idx >= 0 && idx < mOldGradients.size()) {
+        mGradient->setGradient(mOldGradients[idx]);
+    }
 }
 
-void DkTransferToolBar::saveGradient() {
-	
-	mOldGradients.prepend(mGradient->getGradient());
-	updateGradientHistory();
-	saveSettings();
+void DkTransferToolBar::saveGradient()
+{
+    mOldGradients.prepend(mGradient->getGradient());
+    updateGradientHistory();
+    saveSettings();
 }
 
-// -------------------------------------------------------------------- DkToolBarManager 
-DkToolBarManager::DkToolBarManager() {
+// -------------------------------------------------------------------- DkToolBarManager
+DkToolBarManager::DkToolBarManager()
+{
 }
 
-DkToolBarManager& DkToolBarManager::inst() {
-
-	static DkToolBarManager inst;
-	return inst;
+DkToolBarManager &DkToolBarManager::inst()
+{
+    static DkToolBarManager inst;
+    return inst;
 }
 
-void DkToolBarManager::createDefaultToolBar() {
-	
-	if (mToolBar)
-		return;
+void DkToolBarManager::createDefaultToolBar()
+{
+    if (mToolBar)
+        return;
 
-	auto nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
-	assert(nomacs);
+    auto nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    assert(nomacs);
 
-	mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
-	mToolBar->setObjectName("EditToolBar");
+    mToolBar = new DkMainToolBar(QObject::tr("Edit ToolBar"), nomacs);
+    mToolBar->setObjectName("EditToolBar");
 
-	int is = DkSettingsManager::param().effectiveIconSize(nomacs);
-	mToolBar->setIconSize(QSize(is, is));
+    int is = DkSettingsManager::param().effectiveIconSize(nomacs);
+    mToolBar->setIconSize(QSize(is, is));
 
-	// add actions
-	DkActionManager& am = DkActionManager::instance();
-	mToolBar->addAction(am.action(DkActionManager::menu_file_prev));
-	mToolBar->addAction(am.action(DkActionManager::menu_file_next));
-	mToolBar->addSeparator();
+    // add actions
+    DkActionManager &am = DkActionManager::instance();
+    mToolBar->addAction(am.action(DkActionManager::menu_file_prev));
+    mToolBar->addAction(am.action(DkActionManager::menu_file_next));
+    mToolBar->addSeparator();
 
-	mToolBar->addAction(am.action(DkActionManager::menu_file_open));
-	mToolBar->addAction(am.action(DkActionManager::menu_file_open_dir));
-	mToolBar->addAction(am.action(DkActionManager::menu_file_save));
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_delete));
-	mToolBar->addAction(am.action(DkActionManager::menu_tools_filter));
-	mToolBar->addSeparator();
+    mToolBar->addAction(am.action(DkActionManager::menu_file_open));
+    mToolBar->addAction(am.action(DkActionManager::menu_file_open_dir));
+    mToolBar->addAction(am.action(DkActionManager::menu_file_save));
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_delete));
+    mToolBar->addAction(am.action(DkActionManager::menu_tools_filter));
+    mToolBar->addSeparator();
 
-	// view
-	mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_in));
-	mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_out));
-	mToolBar->addSeparator();
+    // view
+    mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_in));
+    mToolBar->addAction(am.action(DkActionManager::menu_view_zoom_out));
+    mToolBar->addSeparator();
 
-	// edit
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_copy));
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_paste));
-	mToolBar->addSeparator();
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_ccw));
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_cw));
-	mToolBar->addSeparator();
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_crop));
-	mToolBar->addAction(am.action(DkActionManager::menu_edit_transform));
-	mToolBar->addSeparator();
+    // edit
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_copy));
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_paste));
+    mToolBar->addSeparator();
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_ccw));
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_rotate_cw));
+    mToolBar->addSeparator();
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_crop));
+    mToolBar->addAction(am.action(DkActionManager::menu_edit_transform));
+    mToolBar->addSeparator();
 
-	// view
-	mToolBar->addAction(am.action(DkActionManager::menu_view_fullscreen));
-	mToolBar->addAction(am.action(DkActionManager::menu_view_reset));
-	mToolBar->addAction(am.action(DkActionManager::menu_view_100));
-	mToolBar->addSeparator();
+    // view
+    mToolBar->addAction(am.action(DkActionManager::menu_view_fullscreen));
+    mToolBar->addAction(am.action(DkActionManager::menu_view_reset));
+    mToolBar->addAction(am.action(DkActionManager::menu_view_100));
+    mToolBar->addSeparator();
 
-	mToolBar->addAction(am.action(DkActionManager::menu_view_gps_map));
-	mToolBar->allActionsAdded();
+    mToolBar->addAction(am.action(DkActionManager::menu_view_gps_map));
+    mToolBar->allActionsAdded();
 
-	mMovieToolBar = nomacs->addToolBar(QObject::tr("Movie ToolBar"));
-	mMovieToolBar->setObjectName("movieToolbar");
-	mMovieToolBar->setIconSize(QSize(is, is));
-	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_prev));
-	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_pause));
-	mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_next));
+    mMovieToolBar = nomacs->addToolBar(QObject::tr("Movie ToolBar"));
+    mMovieToolBar->setObjectName("movieToolbar");
+    mMovieToolBar->setIconSize(QSize(is, is));
+    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_prev));
+    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_pause));
+    mMovieToolBar->addAction(am.action(DkActionManager::menu_view_movie_next));
 
-	nomacs->addToolBar(mToolBar);
+    nomacs->addToolBar(mToolBar);
 }
 
-void DkToolBarManager::show(bool show, bool permanent) {
-	showDefaultToolBar(show, permanent);
-	showMovieToolBar(show);
-	showToolBarsTemporarily(show);
+void DkToolBarManager::show(bool show, bool permanent)
+{
+    showDefaultToolBar(show, permanent);
+    showMovieToolBar(show);
+    showToolBarsTemporarily(show);
 }
 
-void DkToolBarManager::restore() {
-
-	if (mToolBar)
-		mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
-	if (mMovieToolBar)
-		mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
+void DkToolBarManager::restore()
+{
+    if (mToolBar)
+        mToolBar->setVisible(DkSettingsManager::param().app().showToolBar);
+    if (mMovieToolBar)
+        mMovieToolBar->setVisible(DkSettingsManager::param().app().showMovieToolBar);
 }
 
-void DkToolBarManager::showToolBar(QToolBar* toolbar, bool show) {
+void DkToolBarManager::showToolBar(QToolBar *toolbar, bool show)
+{
+    if (!toolbar)
+        return;
 
-	if (!toolbar)
-		return;
+    showToolBarsTemporarily(!show);
+    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    assert(nomacs);
 
-	showToolBarsTemporarily(!show);
-	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
-	assert(nomacs);
+    if (show) {
+        if (!mToolBar)
+            createDefaultToolBar();
 
-	if (show) {
+        nomacs->addToolBar(nomacs->toolBarArea(mToolBar), toolbar);
+    } else
+        nomacs->removeToolBar(toolbar);
 
-		if (!mToolBar)
-			createDefaultToolBar();
-
-		nomacs->addToolBar(nomacs->toolBarArea(mToolBar), toolbar);
-	}
-	else
-		nomacs->removeToolBar(toolbar);
-
-	toolbar->setVisible(show);
+    toolbar->setVisible(show);
 }
 
-void DkToolBarManager::showToolBarsTemporarily(bool show) {
+void DkToolBarManager::showToolBarsTemporarily(bool show)
+{
+    if (show) {
+        for (QToolBar *t : mHiddenToolBars)
+            t->show();
+    } else {
+        QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+        assert(nomacs);
 
-	if (show) {
+        mHiddenToolBars.clear();
+        QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
 
-		for (QToolBar* t : mHiddenToolBars)
-			t->show();
-	}
-	else {
-
-		QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
-		assert(nomacs);
-
-		mHiddenToolBars.clear();
-		QList<QToolBar *> tbs = nomacs->findChildren<QToolBar *>();
-
-		for (QToolBar* t : tbs) {
-
-			if (t->isVisible()) {
-				t->hide();
-				mHiddenToolBars.append(t);
-			}
-		}
-	}
+        for (QToolBar *t : tbs) {
+            if (t->isVisible()) {
+                t->hide();
+                mHiddenToolBars.append(t);
+            }
+        }
+    }
 }
 
-void DkToolBarManager::showDefaultToolBar(bool show, bool permanent) {
+void DkToolBarManager::showDefaultToolBar(bool show, bool permanent)
+{
+    if (!show && !mToolBar)
+        return;
 
-	if (!show && !mToolBar)
-		return;
+    if (!mToolBar)
+        createDefaultToolBar();
 
-	if (!mToolBar)
-		createDefaultToolBar();
+    if (mToolBar->isVisible() == show)
+        return;
 
-	if (mToolBar->isVisible() == show)
-		return;
+    if (permanent)
+        DkSettingsManager::param().app().showToolBar = show;
+    DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
 
-	if (permanent)
-		DkSettingsManager::param().app().showToolBar = show;
-	DkActionManager::instance().action(DkActionManager::menu_panel_toolbar)->setChecked(DkSettingsManager::param().app().showToolBar);
-
-	mToolBar->setVisible(show);
+    mToolBar->setVisible(show);
 }
 
-void DkToolBarManager::showMovieToolBar(bool show) {
+void DkToolBarManager::showMovieToolBar(bool show)
+{
+    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    assert(nomacs);
 
-	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
-	assert(nomacs);
+    // set movie toolbar into current toolbar
+    if (mMovieToolbarArea == Qt::NoToolBarArea && show)
+        mMovieToolbarArea = nomacs->toolBarArea(mToolBar);
 
-	// set movie toolbar into current toolbar
-	if (mMovieToolbarArea == Qt::NoToolBarArea && show)
-		mMovieToolbarArea = nomacs->toolBarArea(mToolBar);
+    if (show)
+        nomacs->addToolBar(mMovieToolbarArea, mMovieToolBar);
+    else {
+        // remember if the user changed it
+        Qt::ToolBarArea nta = nomacs->toolBarArea(mMovieToolBar);
 
-	if (show)
-		nomacs->addToolBar(mMovieToolbarArea, mMovieToolBar);
-	else {
-		// remember if the user changed it
-		Qt::ToolBarArea nta = nomacs->toolBarArea(mMovieToolBar);
+        if (nta != Qt::NoToolBarArea && mMovieToolBar->isVisible())
+            mMovieToolbarArea = nomacs->toolBarArea(mMovieToolBar);
+        nomacs->removeToolBar(mMovieToolBar);
+    }
 
-		if (nta != Qt::NoToolBarArea && mMovieToolBar->isVisible())
-			mMovieToolbarArea = nomacs->toolBarArea(mMovieToolBar);
-		nomacs->removeToolBar(mMovieToolBar);
-	}
-
-	if (mToolBar && mToolBar->isVisible())
-		mMovieToolBar->setVisible(show);
+    if (mToolBar && mToolBar->isVisible())
+        mMovieToolBar->setVisible(show);
 }
 
+void DkToolBarManager::createTransferToolBar()
+{
+    QMainWindow *nomacs = dynamic_cast<QMainWindow *>(DkUtils::getMainWindow());
+    assert(nomacs);
 
-void DkToolBarManager::createTransferToolBar() {
+    mTransferToolBar = new DkTransferToolBar(nomacs);
 
-	QMainWindow* nomacs = dynamic_cast<QMainWindow*>(DkUtils::getMainWindow());
-	assert(nomacs);
+    // add this toolbar below all previous toolbars
+    nomacs->addToolBarBreak();
+    nomacs->addToolBar(mTransferToolBar);
+    mTransferToolBar->setObjectName("TransferToolBar");
 
-	mTransferToolBar = new DkTransferToolBar(nomacs);
-
-	// add this toolbar below all previous toolbars
-	nomacs->addToolBarBreak();
-	nomacs->addToolBar(mTransferToolBar);
-	mTransferToolBar->setObjectName("TransferToolBar");
-
-	int is = DkSettingsManager::param().effectiveIconSize(nomacs);
-	mTransferToolBar->setIconSize(QSize(is, is));
+    int is = DkSettingsManager::param().effectiveIconSize(nomacs);
+    mTransferToolBar->setIconSize(QSize(is, is));
 }
 
-DkMainToolBar * DkToolBarManager::defaultToolBar() const {
-	return mToolBar;
+DkMainToolBar *DkToolBarManager::defaultToolBar() const
+{
+    return mToolBar;
 }
 
-DkTransferToolBar * DkToolBarManager::transferToolBar() const {
-	return mTransferToolBar;
+DkTransferToolBar *DkToolBarManager::transferToolBar() const
+{
+    return mTransferToolBar;
 }
-
 
 }

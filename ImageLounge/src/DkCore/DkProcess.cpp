@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkProcess.cpp
  Created on:	27.12.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
@@ -26,27 +26,28 @@
  *******************************************************************************************************/
 
 #include "DkProcess.h"
-#include "DkUtils.h"
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
+#include "DkManipulators.h"
+#include "DkMath.h"
 #include "DkPluginManager.h"
 #include "DkSettings.h"
-#include "DkMath.h"
-#include "DkManipulators.h"
 #include "DkTimer.h"
+#include "DkUtils.h"
 
 #include "DkMetaData.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QtConcurrentMap>
 #include <QWidget>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QtConcurrentMap>
+#pragma warning(pop) // no warnings from includes - end
 
 #include <cassert>
 
-namespace nmc {
+namespace nmc
+{
 
 /// <summary>
 /// Generic compute method for DkBatch Info <see cref="DkBatchInfo"/>.
@@ -59,9 +60,12 @@ namespace nmc {
 /// <returns>
 /// true on success
 /// </returns>
-bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, const DkSaveInfo& , QStringList& logStrings, QVector<QSharedPointer<DkBatchInfo> >&) const {
-
-	return compute(container, logStrings);
+bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container,
+                              const DkSaveInfo &,
+                              QStringList &logStrings,
+                              QVector<QSharedPointer<DkBatchInfo>> &) const
+{
+    return compute(container, logStrings);
 }
 
 /// <summary>
@@ -72,1288 +76,1250 @@ bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, const 
 /// <param name="container">Container the image container to be processed.</param>
 /// <param name="logStrings">log strings.</param>
 /// <returns>true on success</returns>
-bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
-	
-	QImage img = container->image();
-	
-	bool isOk = compute(img, logStrings);
+bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const
+{
+    QImage img = container->image();
 
-	if (isOk)
-		container->setImage(img, QObject::tr("Batch Action"));
+    bool isOk = compute(img, logStrings);
 
-	return isOk;
+    if (isOk)
+        container->setImage(img, QObject::tr("Batch Action"));
+
+    return isOk;
 }
 
-QString DkAbstractBatch::settingsName() const {
-	
-	// make name() settings friendly
-	QString sn = name();
-	sn.replace("[", "");
-	sn.replace("]", "");
-	sn.replace(" ", "");
-	
-	return sn;
+QString DkAbstractBatch::settingsName() const
+{
+    // make name() settings friendly
+    QString sn = name();
+    sn.replace("[", "");
+    sn.replace("]", "");
+    sn.replace(" ", "");
+
+    return sn;
 }
 
-QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString& settingsName) {
+QSharedPointer<DkAbstractBatch> DkAbstractBatch::createFromName(const QString &settingsName)
+{
+    QSharedPointer<DkAbstractBatch> batch;
+    batch = QSharedPointer<DkBatchTransform>::create();
 
-	QSharedPointer<DkAbstractBatch> batch;
-	batch = QSharedPointer<DkBatchTransform>::create();
+    if (batch->settingsName() == settingsName)
+        return batch;
 
-	if (batch->settingsName() == settingsName)
-		return batch;
+    batch = QSharedPointer<DkManipulatorBatch>::create();
 
-	batch = QSharedPointer<DkManipulatorBatch>::create();
-
-	if (batch->settingsName() == settingsName)
-		return batch;
+    if (batch->settingsName() == settingsName)
+        return batch;
 
 #ifdef WITH_PLUGINS
-	batch = QSharedPointer<DkPluginBatch>::create();
+    batch = QSharedPointer<DkPluginBatch>::create();
 
-	if (batch->settingsName() == settingsName)
-		return batch;
+    if (batch->settingsName() == settingsName)
+        return batch;
 #endif
 
-	qCritical() << "cannot instantiate batch, illegal settings name: " << settingsName;
-	return QSharedPointer<DkAbstractBatch>();
+    qCritical() << "cannot instantiate batch, illegal settings name: " << settingsName;
+    return QSharedPointer<DkAbstractBatch>();
 }
 
 // DkTransformBatch --------------------------------------------------------------------
-DkBatchTransform::DkBatchTransform() {
-	mResizeIplMethod = DkImage::ipl_area;	// define here because of includes
+DkBatchTransform::DkBatchTransform()
+{
+    mResizeIplMethod = DkImage::ipl_area; // define here because of includes
 }
 
-QString DkBatchTransform::name() const {
-	return QObject::tr("[Transform Batch]");
+QString DkBatchTransform::name() const
+{
+    return QObject::tr("[Transform Batch]");
 }
 
-void DkBatchTransform::setProperties(		
-	int angle, 
-	bool cropFromMetadata,
-	QRect cropRect,
-	float scaleFactor, 
-	const ResizeMode& mode /*= resize_mode_default*/, 
-	const ResizeProperty& prop /*= resize_prop_default*/, 
-	int iplMethod /*= DkImage::ipl_area*/, 
-	bool correctGamma /*= false*/) {
-	
-	mAngle = angle;
-	mCropFromMetadata = cropFromMetadata;
-	mCropRect = cropRect;
+void DkBatchTransform::setProperties(int angle,
+                                     bool cropFromMetadata,
+                                     QRect cropRect,
+                                     float scaleFactor,
+                                     const ResizeMode &mode /*= resize_mode_default*/,
+                                     const ResizeProperty &prop /*= resize_prop_default*/,
+                                     int iplMethod /*= DkImage::ipl_area*/,
+                                     bool correctGamma /*= false*/)
+{
+    mAngle = angle;
+    mCropFromMetadata = cropFromMetadata;
+    mCropRect = cropRect;
 
-	mResizeScaleFactor = scaleFactor;
-	mResizeMode = mode;
-	mResizeProperty = prop;
-	mResizeIplMethod = iplMethod;
-	mResizeCorrectGamma = correctGamma;
+    mResizeScaleFactor = scaleFactor;
+    mResizeMode = mode;
+    mResizeProperty = prop;
+    mResizeIplMethod = iplMethod;
+    mResizeCorrectGamma = correctGamma;
 }
 
-void DkBatchTransform::saveSettings(QSettings & settings) const {
+void DkBatchTransform::saveSettings(QSettings &settings) const
+{
+    settings.beginGroup(settingsName());
+    settings.setValue("Angle", mAngle);
+    settings.setValue("CropFromMetadata", mCropFromMetadata);
+    settings.setValue("CropRectangle", rectToString(mCropRect));
 
-	settings.beginGroup(settingsName());
-	settings.setValue("Angle", mAngle);
-	settings.setValue("CropFromMetadata", mCropFromMetadata);
-	settings.setValue("CropRectangle", rectToString(mCropRect));
+    // resize
+    settings.setValue("ScaleFactor", mResizeScaleFactor);
+    settings.setValue("Mode", mResizeMode);
+    settings.setValue("Property", mResizeProperty);
+    settings.setValue("IplMethod", mResizeIplMethod);
+    settings.setValue("CorrectGamma", mResizeCorrectGamma);
 
-	// resize
-	settings.setValue("ScaleFactor", mResizeScaleFactor);
-	settings.setValue("Mode", mResizeMode);
-	settings.setValue("Property", mResizeProperty);
-	settings.setValue("IplMethod", mResizeIplMethod);
-	settings.setValue("CorrectGamma", mResizeCorrectGamma);
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkBatchTransform::loadSettings(QSettings & settings) {
+void DkBatchTransform::loadSettings(QSettings &settings)
+{
+    settings.beginGroup(settingsName());
+    mAngle = settings.value("Angle", mAngle).toInt();
+    mCropFromMetadata = settings.value("CropFromMetadata", mCropFromMetadata).toBool();
+    mCropRect = stringToRect(settings.value("CropRectangle", mCropRect).toString());
 
-	settings.beginGroup(settingsName());
-	mAngle = settings.value("Angle", mAngle).toInt();
-	mCropFromMetadata = settings.value("CropFromMetadata", mCropFromMetadata).toBool();
-	mCropRect = stringToRect(settings.value("CropRectangle", mCropRect).toString());
-
-	mResizeScaleFactor	= settings.value("ScaleFactor", mResizeScaleFactor).toFloat();
-	mResizeMode			= (ResizeMode)settings.value("Mode", mResizeMode).toInt();
-	mResizeProperty		= (ResizeProperty)settings.value("Property", mResizeProperty).toInt();
-	mResizeIplMethod	= settings.value("IplMethod", mResizeIplMethod).toInt();
-	mResizeCorrectGamma	= settings.value("Correct Gamma", mResizeCorrectGamma).toBool();
-	settings.endGroup();
+    mResizeScaleFactor = settings.value("ScaleFactor", mResizeScaleFactor).toFloat();
+    mResizeMode = (ResizeMode)settings.value("Mode", mResizeMode).toInt();
+    mResizeProperty = (ResizeProperty)settings.value("Property", mResizeProperty).toInt();
+    mResizeIplMethod = settings.value("IplMethod", mResizeIplMethod).toInt();
+    mResizeCorrectGamma = settings.value("Correct Gamma", mResizeCorrectGamma).toBool();
+    settings.endGroup();
 }
 
-bool DkBatchTransform::isResizeActive() const {
-	
-	if (mResizeMode != resize_mode_default)
-		return true;
+bool DkBatchTransform::isResizeActive() const
+{
+    if (mResizeMode != resize_mode_default)
+        return true;
 
-	if (mResizeScaleFactor != 1.0f)
-		return true;
+    if (mResizeScaleFactor != 1.0f)
+        return true;
 
-	return false;
+    return false;
 }
 
-QString DkBatchTransform::rectToString(const QRect & r) const {
-	
-	QString str;
-	str += QString::number(r.x()) + ",";
-	str += QString::number(r.y()) + ",";
-	str += QString::number(r.width()) + ",";
-	str += QString::number(r.height());
-	
-	return str;
+QString DkBatchTransform::rectToString(const QRect &r) const
+{
+    QString str;
+    str += QString::number(r.x()) + ",";
+    str += QString::number(r.y()) + ",";
+    str += QString::number(r.width()) + ",";
+    str += QString::number(r.height());
+
+    return str;
 }
 
-QRect DkBatchTransform::stringToRect(const QString & s) const {
-	
-	QStringList sl = s.split(",");
+QRect DkBatchTransform::stringToRect(const QString &s) const
+{
+    QStringList sl = s.split(",");
 
-	if (sl.size() != 4) {
-		qWarning() << "could not parse rect from" << s;
-		return QRect();
-	}
-	
-	QRect rect;
+    if (sl.size() != 4) {
+        qWarning() << "could not parse rect from" << s;
+        return QRect();
+    }
 
-	bool okX, okY, okW, okH = false;
-	rect.setX(sl[0].toInt(&okX));
-	rect.setY(sl[1].toInt(&okY));
-	rect.setWidth(sl[2].toInt(&okW));
-	rect.setHeight(sl[3].toInt(&okH));
+    QRect rect;
 
-	if (!okX || !okY || !okW || !okH) {
-		qWarning() << "could not parse rect from" << s;
-		return QRect();
-	}
-	
-	return rect;
+    bool okX, okY, okW, okH = false;
+    rect.setX(sl[0].toInt(&okX));
+    rect.setY(sl[1].toInt(&okY));
+    rect.setWidth(sl[2].toInt(&okW));
+    rect.setHeight(sl[3].toInt(&okH));
+
+    if (!okX || !okY || !okW || !okH) {
+        qWarning() << "could not parse rect from" << s;
+        return QRect();
+    }
+
+    return rect;
 }
 
-bool DkBatchTransform::isActive() const {
-
-	return mAngle != 0 || mCropFromMetadata || cropFromRectangle() || isResizeActive();
+bool DkBatchTransform::isActive() const
+{
+    return mAngle != 0 || mCropFromMetadata || cropFromRectangle() || isResizeActive();
 }
 
-int DkBatchTransform::angle() const {
-	return mAngle;
+int DkBatchTransform::angle() const
+{
+    return mAngle;
 }
 
-bool DkBatchTransform::cropMetatdata() const {
-	return mCropFromMetadata;
+bool DkBatchTransform::cropMetatdata() const
+{
+    return mCropFromMetadata;
 }
 
-bool DkBatchTransform::cropFromRectangle() const {
-	return !mCropRect.isEmpty();
+bool DkBatchTransform::cropFromRectangle() const
+{
+    return !mCropRect.isEmpty();
 }
 
-QRect DkBatchTransform::cropRectangle() const {
-	return mCropRect;
+QRect DkBatchTransform::cropRectangle() const
+{
+    return mCropRect;
 }
 
-DkBatchTransform::ResizeMode DkBatchTransform::mode() const {
-	return mResizeMode;
+DkBatchTransform::ResizeMode DkBatchTransform::mode() const
+{
+    return mResizeMode;
 }
 
-DkBatchTransform::ResizeProperty DkBatchTransform::prop() const {
-	return mResizeProperty;
+DkBatchTransform::ResizeProperty DkBatchTransform::prop() const
+{
+    return mResizeProperty;
 }
 
-int DkBatchTransform::iplMethod() const {
-	return mResizeIplMethod;
+int DkBatchTransform::iplMethod() const
+{
+    return mResizeIplMethod;
 }
 
-float DkBatchTransform::scaleFactor() const {
-	return mResizeScaleFactor;
+float DkBatchTransform::scaleFactor() const
+{
+    return mResizeScaleFactor;
 }
 
-bool DkBatchTransform::correctGamma() const {
-	return mResizeCorrectGamma;
+bool DkBatchTransform::correctGamma() const
+{
+    return mResizeCorrectGamma;
 }
 
-bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
+bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const
+{
+    if (!isActive()) {
+        logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+        return true;
+    }
 
-	
-	if (!isActive()) {
-		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
-		return true;
-	}
+    DkRotatingRect rect = container->cropRect();
+    if (mCropFromMetadata) {
+        if (!rect.isEmpty())
+            container->cropImage(rect, QColor(), false);
+    }
 
-	DkRotatingRect rect = container->cropRect();
-	if (mCropFromMetadata) {
-		if (!rect.isEmpty())
-			container->cropImage(rect, QColor(), false);
-	}
-	
-	QImage img = container->image();
-	QImage tmpImg;
+    QImage img = container->image();
+    QImage tmpImg;
 
-	// resize
-	if (isResizeActive()) {
-		QSize size;
-		float sf = 1.0f;
+    // resize
+    if (isResizeActive()) {
+        QSize size;
+        float sf = 1.0f;
 
-		if (prepareProperties(img.size(), size, sf, logStrings))
-			tmpImg = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
-		else
-			tmpImg = img;
-	}
-	else
-		tmpImg = img;
+        if (prepareProperties(img.size(), size, sf, logStrings))
+            tmpImg = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
+        else
+            tmpImg = img;
+    } else
+        tmpImg = img;
 
-	// rotate
-	if (mAngle != 0) {
-		QTransform rotationMatrix;
-		rotationMatrix.rotate((double)mAngle);
-		tmpImg = tmpImg.transformed(rotationMatrix);
-	}
+    // rotate
+    if (mAngle != 0) {
+        QTransform rotationMatrix;
+        rotationMatrix.rotate((double)mAngle);
+        tmpImg = tmpImg.transformed(rotationMatrix);
+    }
 
-	// crop from rectangle
-	if (cropFromRectangle()) {
-		QRect r = mCropRect.intersected(container->image().rect());
-		tmpImg = tmpImg.copy(r);
-	}
+    // crop from rectangle
+    if (cropFromRectangle()) {
+        QRect r = mCropRect.intersected(container->image().rect());
+        tmpImg = tmpImg.copy(r);
+    }
 
-	// logs
-	if (!tmpImg.isNull()) {
-	
-		container->setImage(tmpImg, QObject::tr("transformed"));
+    // logs
+    if (!tmpImg.isNull()) {
+        container->setImage(tmpImg, QObject::tr("transformed"));
 
-		if (rect.isEmpty() && mCropFromMetadata)
-			logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
-		else if (isResizeActive()) {
-			if (mResizeMode == resize_mode_default)
-				logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(mResizeScaleFactor*100.0f));
-			else
-				logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(mResizeScaleFactor));
-		}
-		else
-			logStrings.append(QObject::tr("%1 image transformed and cropped.").arg(name()));
+        if (rect.isEmpty() && mCropFromMetadata)
+            logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
+        else if (isResizeActive()) {
+            if (mResizeMode == resize_mode_default)
+                logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(mResizeScaleFactor * 100.0f));
+            else
+                logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(mResizeScaleFactor));
+        } else
+            logStrings.append(QObject::tr("%1 image transformed and cropped.").arg(name()));
 
-	}
-	else {
-		logStrings.append(QObject::tr("%1 error, could not transform image.").arg(name()));
-		return false;
-	}
+    } else {
+        logStrings.append(QObject::tr("%1 error, could not transform image.").arg(name()));
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
-bool DkBatchTransform::prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const {
+bool DkBatchTransform::prepareProperties(const QSize &imgSize, QSize &size, float &scaleFactor, QStringList &logStrings) const
+{
+    float sf = 1.0f;
+    QSize normalizedSize = imgSize;
 
-	float sf = 1.0f;
-	QSize normalizedSize = imgSize; 
+    if (mResizeMode == resize_mode_default) {
+        scaleFactor = mResizeScaleFactor;
+        return true;
+    } else if (mResizeMode == resize_mode_long_side) {
+        if (imgSize.width() < imgSize.height())
+            normalizedSize.transpose();
+    } else if (mResizeMode == resize_mode_short_side) {
+        if (imgSize.width() > imgSize.height())
+            normalizedSize.transpose();
+    } else if (mResizeMode == resize_mode_height)
+        normalizedSize.transpose();
 
-	if (mResizeMode == resize_mode_default) {
-		scaleFactor = mResizeScaleFactor;
-		return true;
-	}
-	else if (mResizeMode == resize_mode_long_side) {
+    sf = mResizeScaleFactor / normalizedSize.width();
 
-		if (imgSize.width() < imgSize.height())
-			normalizedSize.transpose();
-	}
-	else if (mResizeMode == resize_mode_short_side) {
+    if (sf > 1.0 && mResizeProperty == resize_prop_decrease_only) {
+        logStrings.append(QObject::tr("%1 I need to increase the image size, but the option is set to 'decrease only' -> skipping.").arg(name()));
+        return false;
+    } else if (sf < 1.0f && mResizeProperty == resize_prop_increase_only) {
+        logStrings.append(QObject::tr("%1 I need to decrease the image size, but the option is set to 'increase only' -> skipping.").arg(name()));
+        return false;
+    } else if (sf == 1.0f) {
+        logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
+        return false;
+    }
 
-		if (imgSize.width() > imgSize.height())
-			normalizedSize.transpose();
-	}
-	else if (mResizeMode == resize_mode_height)
-		normalizedSize.transpose();
+    size.setWidth(qRound(mResizeScaleFactor));
+    size.setHeight(qRound(sf * normalizedSize.height()));
 
-	sf = mResizeScaleFactor/normalizedSize.width();
+    if (normalizedSize != imgSize)
+        size.transpose();
 
-	if (sf > 1.0 && mResizeProperty == resize_prop_decrease_only) {
-
-		logStrings.append(QObject::tr("%1 I need to increase the image size, but the option is set to 'decrease only' -> skipping.").arg(name()));
-		return false;
-	}
-	else if (sf < 1.0f && mResizeProperty == resize_prop_increase_only) {
-		logStrings.append(QObject::tr("%1 I need to decrease the image size, but the option is set to 'increase only' -> skipping.").arg(name()));
-		return false;
-	}
-	else if (sf == 1.0f) {
-		logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
-		return false;
-	}
-
-	size.setWidth(qRound(mResizeScaleFactor));
-	size.setHeight(qRound(sf*normalizedSize.height()));
-
-	if (normalizedSize != imgSize)
-		size.transpose();
-
-	return true;
+    return true;
 }
-
-
 
 // DkManipulatorBatch --------------------------------------------------------------------
-DkManipulatorBatch::DkManipulatorBatch() {
-
+DkManipulatorBatch::DkManipulatorBatch()
+{
 }
 
-void DkManipulatorBatch::saveSettings(QSettings & settings) const {
-
-	settings.beginGroup(settingsName());
-	mManager.saveSettings(settings);
-	settings.endGroup();
+void DkManipulatorBatch::saveSettings(QSettings &settings) const
+{
+    settings.beginGroup(settingsName());
+    mManager.saveSettings(settings);
+    settings.endGroup();
 }
 
-void DkManipulatorBatch::loadSettings(QSettings & settings) {
-
-	settings.beginGroup(settingsName());
-	mManager.loadSettings(settings);
-	settings.endGroup();
+void DkManipulatorBatch::loadSettings(QSettings &settings)
+{
+    settings.beginGroup(settingsName());
+    mManager.loadSettings(settings);
+    settings.endGroup();
 }
 
-void DkManipulatorBatch::setProperties(const DkManipulatorManager& manager) {
-	mManager = manager;
+void DkManipulatorBatch::setProperties(const DkManipulatorManager &manager)
+{
+    mManager = manager;
 }
 
-bool DkManipulatorBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
+bool DkManipulatorBatch::compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const
+{
+    if (!isActive()) {
+        logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+        return true;
+    }
 
-	if (!isActive()) {
-		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
-		return true;
-	}
+    if (container && container->hasImage()) {
+        for (const QSharedPointer<DkBaseManipulator> &mpl : mManager.manipulators()) {
+            if (mpl->isSelected()) {
+                QImage img = mpl->apply(container->image());
+                if (!img.isNull()) {
+                    container->setImage(img, mpl->name());
+                    logStrings.append(QObject::tr("%1 %2 applied.").arg(name()).arg(mpl->name()));
+                } else
+                    logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(mpl->name()));
+            }
+        }
+    }
 
-	if (container && container->hasImage()) {
-		for (const QSharedPointer<DkBaseManipulator>& mpl : mManager.manipulators()) {
+    if (!container || !container->hasImage()) {
+        logStrings.append(QObject::tr("%1 error, could not apply image adjustments.").arg(name()));
+        return false;
+    }
 
-			if (mpl->isSelected()) {
-				QImage img = mpl->apply(container->image());
-				if (!img.isNull()) {
-					container->setImage(img, mpl->name());
-					logStrings.append(QObject::tr("%1 %2 applied.").arg(name()).arg(mpl->name()));
-				}
-				else
-					logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(mpl->name()));
-			}
-		}
-	}
-	
-	if (!container || !container->hasImage()) {
-		logStrings.append(QObject::tr("%1 error, could not apply image adjustments.").arg(name()));
-		return false;
-	}
-
-	return true;
+    return true;
 }
 
-QString DkManipulatorBatch::name() const {
-	return QObject::tr("[Adjustment Batch]");
+QString DkManipulatorBatch::name() const
+{
+    return QObject::tr("[Adjustment Batch]");
 }
 
-bool DkManipulatorBatch::isActive() const {
-	return mManager.numSelected() > 0;
+bool DkManipulatorBatch::isActive() const
+{
+    return mManager.numSelected() > 0;
 }
 
-DkManipulatorManager DkManipulatorBatch::manager() const {
-	return mManager;
+DkManipulatorManager DkManipulatorBatch::manager() const
+{
+    return mManager;
 }
 
 #ifdef WITH_PLUGINS
 // DkPluginBatch --------------------------------------------------------------------
-DkPluginBatch::DkPluginBatch() {
+DkPluginBatch::DkPluginBatch()
+{
 }
 
-void DkPluginBatch::setProperties(const QStringList & pluginList) {
-	mPluginList = pluginList;
+void DkPluginBatch::setProperties(const QStringList &pluginList)
+{
+    mPluginList = pluginList;
 }
 
-void DkPluginBatch::saveSettings(QSettings & settings) const {
+void DkPluginBatch::saveSettings(QSettings &settings) const
+{
+    settings.beginGroup(settingsName());
+    settings.setValue("pluginList", mPluginList.join(";"));
 
-	settings.beginGroup(settingsName());
-	settings.setValue("pluginList", mPluginList.join(";"));
+    for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+        if (!plugin)
+            continue;
 
-	for (const QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+        DkBatchPluginInterface *bPlugin = plugin->batchPlugin();
 
-		if (!plugin)
-			continue;
+        if (bPlugin) {
+            bPlugin->saveSettings(settings);
+        } else
+            qWarning() << "Illegal plugin detected: " << plugin->pluginName();
+    }
 
-		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
-		
-		if (bPlugin) {
-			bPlugin->saveSettings(settings);
-		}
-		else
-			qWarning() << "Illegal plugin detected: " << plugin->pluginName();
-	}
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkPluginBatch::loadSettings(QSettings & settings) {
+void DkPluginBatch::loadSettings(QSettings &settings)
+{
+    settings.beginGroup(settingsName());
+    mPluginList = settings.value("pluginList", mPluginList).toString().split(";");
 
-	settings.beginGroup(settingsName());
-	mPluginList = settings.value("pluginList", mPluginList).toString().split(";");
+    loadAllPlugins();
 
-	loadAllPlugins();
+    for (QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+        if (!plugin)
+            continue;
 
-	for (QSharedPointer<DkPluginContainer> plugin : mPlugins) {
+        DkBatchPluginInterface *bPlugin = plugin->batchPlugin();
 
-		if (!plugin)
-			continue;
+        if (bPlugin) {
+            assert(bPlugin);
+            bPlugin->loadSettings(settings);
+        }
+    }
 
-		DkBatchPluginInterface* bPlugin = plugin->batchPlugin();
-		
-		if (bPlugin) {
-			assert(bPlugin);
-			bPlugin->loadSettings(settings);
-		}
-	}
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-
-void DkPluginBatch::preLoad() {
-
-	loadAllPlugins();
+void DkPluginBatch::preLoad()
+{
+    loadAllPlugins();
 }
 
-void DkPluginBatch::postLoad(const QVector<QSharedPointer<DkBatchInfo> >& batchInfo) const {
+void DkPluginBatch::postLoad(const QVector<QSharedPointer<DkBatchInfo>> &batchInfo) const
+{
+    for (int idx = 0; idx < mPlugins.size(); idx++) {
+        QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
+        QString runID = mRunIDs[idx];
 
-	for (int idx = 0; idx < mPlugins.size(); idx++) {
+        if (pluginContainer) {
+            // get plugin
+            DkBatchPluginInterface *plugin = pluginContainer->batchPlugin();
 
-		QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
-		QString runID = mRunIDs[idx];
+            qDebug() << "[POST LOAD]" << pluginContainer->pluginName() << "id:" << runID;
+            QVector<QSharedPointer<DkBatchInfo>> fInfos = DkBatchInfo::filter(batchInfo, runID);
 
-		if (pluginContainer) {
-	
-			// get plugin
-			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
-
-			qDebug() << "[POST LOAD]" << pluginContainer->pluginName() << "id:" << runID;
-			QVector<QSharedPointer<DkBatchInfo> > fInfos = DkBatchInfo::filter(batchInfo, runID);
-
-			// check if it is ok
-			if (plugin) {
-				plugin->postLoadPlugin(fInfos);
-			}
-		}
-	}
+            // check if it is ok
+            if (plugin) {
+                plugin->postLoadPlugin(fInfos);
+            }
+        }
+    }
 }
 
-bool DkPluginBatch::compute(
-	QSharedPointer<DkImageContainer> container, 
-	const DkSaveInfo& saveInfo,
-	QStringList& logStrings, 
-	QVector<QSharedPointer<DkBatchInfo> >& batchInfos) const {
+bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container,
+                            const DkSaveInfo &saveInfo,
+                            QStringList &logStrings,
+                            QVector<QSharedPointer<DkBatchInfo>> &batchInfos) const
+{
+    if (!isActive()) {
+        logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+        return true;
+    }
 
-	if (!isActive()) {
-		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
-		return true;
-	}
+    for (int idx = 0; idx < mPlugins.size(); idx++) {
+        QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
+        QString runID = mRunIDs[idx];
 
-	for (int idx = 0; idx < mPlugins.size(); idx++) {
+        if (pluginContainer) {
+            // get plugin
+            DkPluginInterface *plugin = pluginContainer->plugin();
 
-		QSharedPointer<DkPluginContainer> pluginContainer = mPlugins[idx];
-		QString runID = mRunIDs[idx];
+            // check if it is ok
+            if (plugin && (plugin->interfaceType() == DkPluginInterface::interface_basic || plugin->interfaceType() == DkPluginInterface::interface_batch)) {
+                // apply the plugin
+                QSharedPointer<DkImageContainer> result;
 
-		if (pluginContainer) {
-			// get plugin
-			DkPluginInterface* plugin = pluginContainer->plugin();
+                if (plugin->interfaceType() == DkPluginInterface::interface_basic)
+                    result = plugin->runPlugin(runID, container);
+                else if (plugin->interfaceType() == DkPluginInterface::interface_batch) {
+                    DkBatchPluginInterface *bPlugin = pluginContainer->batchPlugin();
+                    QSharedPointer<DkBatchInfo> info;
 
-			// check if it is ok
-			if ( plugin && 
-				(plugin->interfaceType() == DkPluginInterface::interface_basic || 
-				 plugin->interfaceType() == DkPluginInterface::interface_batch)) {
+                    if (bPlugin)
+                        result = bPlugin->runPlugin(runID, container, saveInfo, info);
+                    else
+                        logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.").arg(name()).arg(pluginContainer->pluginName()));
 
-				// apply the plugin
-				QSharedPointer<DkImageContainer> result;
-				
-				if (plugin->interfaceType() == DkPluginInterface::interface_basic)
-					result = plugin->runPlugin(runID, container);
-				else if (plugin->interfaceType() == DkPluginInterface::interface_batch) {
+                    batchInfos << info;
+                }
 
-					DkBatchPluginInterface* bPlugin = pluginContainer->batchPlugin();
-					QSharedPointer<DkBatchInfo> info;
+                if (result && result->hasImage())
+                    container = result;
+                else
+                    logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(pluginContainer->pluginName()));
+            } else
+                logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
+        } else
+            logStrings.append(QObject::tr("%1 Cannot apply plugin because it is NULL.").arg(name()));
+    }
 
-					if (bPlugin)
-						result = bPlugin->runPlugin(runID, container, saveInfo, info);
-					else 
-						logStrings.append(QObject::tr("%1 Cannot cast batch plugin %2.").arg(name()).arg(pluginContainer->pluginName()));
+    if (!container || !container->hasImage()) {
+        logStrings.append(QObject::tr("%1 error, could not apply plugins.").arg(name()));
+        return false;
+    } else
+        logStrings.append(QObject::tr("%1 plugins applied.").arg(name()));
 
-					batchInfos << info;
-				}
-
-				if (result && result->hasImage())
-					container = result;
-				else
-					logStrings.append(QObject::tr("%1 Cannot apply %2.").arg(name()).arg(pluginContainer->pluginName()));
-			}
-			else
-				logStrings.append(QObject::tr("%1 illegal plugin interface: %2").arg(name()).arg(pluginContainer->pluginName()));
-		}
-		else 
-			logStrings.append(QObject::tr("%1 Cannot apply plugin because it is NULL.").arg(name()));
-	}
-
-	if (!container || !container->hasImage()) {
-		logStrings.append(QObject::tr("%1 error, could not apply plugins.").arg(name()));
-		return false;
-	}
-	else
-		logStrings.append(QObject::tr("%1 plugins applied.").arg(name()));
-
-	return true;
+    return true;
 }
 
-QString DkPluginBatch::name() const {
-	return QObject::tr("[Plugin Batch]");
+QString DkPluginBatch::name() const
+{
+    return QObject::tr("[Plugin Batch]");
 }
 
-bool DkPluginBatch::isActive() const {
-	
-	return !mPluginList.empty();
+bool DkPluginBatch::isActive() const
+{
+    return !mPluginList.empty();
 }
 
-QStringList DkPluginBatch::pluginList() const {
-	return mPluginList;
+QStringList DkPluginBatch::pluginList() const
+{
+    return mPluginList;
 }
 
-void DkPluginBatch::loadAllPlugins() {
+void DkPluginBatch::loadAllPlugins()
+{
+    // already loaded?
+    if (mPlugins.size() == mPluginList.size())
+        return;
 
-	// already loaded?
-	if (mPlugins.size() == mPluginList.size())
-		return;
+    // manager cares that they are not loaded twice
+    // we need to load them here for CMD inputs
+    DkPluginManager::instance().loadPlugins();
 
-	// manager cares that they are not loaded twice
-	// we need to load them here for CMD inputs
-	DkPluginManager::instance().loadPlugins();
+    QString runId;
 
-	QString runId;
+    for (const QString &cPluginString : mPluginList) {
+        // load plugin
+        QSharedPointer<DkPluginContainer> pluginContainer;
+        QString runID;
+        loadPlugin(cPluginString, pluginContainer, runID);
+        mPlugins << pluginContainer; // also add the empty ones...
+        mRunIDs << runID;
 
-	for (const QString& cPluginString : mPluginList) {
+        if (pluginContainer) {
+            qDebug() << "loading" << pluginContainer->pluginName() << "id:" << runID;
 
-		// load plugin
-		QSharedPointer<DkPluginContainer> pluginContainer;
-		QString runID;
-		loadPlugin(cPluginString, pluginContainer, runID);
-		mPlugins << pluginContainer;	// also add the empty ones...
-		mRunIDs << runID;
+            // get plugin
+            DkBatchPluginInterface *plugin = pluginContainer->batchPlugin();
 
-		if (pluginContainer) {
-
-			qDebug() << "loading" << pluginContainer->pluginName() << "id:" << runID;
-
-			// get plugin
-			DkBatchPluginInterface* plugin = pluginContainer->batchPlugin();
-
-			// check if it is ok
-			if (plugin) {
-				plugin->preLoadPlugin();
-			}
-		}
-		else
-			qWarning() << "could not load: " << cPluginString;
-	}
+            // check if it is ok
+            if (plugin) {
+                plugin->preLoadPlugin();
+            }
+        } else
+            qWarning() << "could not load: " << cPluginString;
+    }
 }
 
-void DkPluginBatch::loadPlugin(const QString & pluginString, QSharedPointer<DkPluginContainer> & plugin, QString& runID) const {
+void DkPluginBatch::loadPlugin(const QString &pluginString, QSharedPointer<DkPluginContainer> &plugin, QString &runID) const
+{
+    QString uiSeparator = " | ";
 
-	QString uiSeparator = " | ";
+    QStringList ids = pluginString.split(uiSeparator);
 
-	QStringList ids = pluginString.split(uiSeparator);
+    if (ids.size() != 2) {
+        qWarning() << "plugin string does not match:" << pluginString;
+    } else {
+        plugin = DkPluginManager::instance().getPluginByName(ids[0]);
 
-	if (ids.size() != 2) {
-		qWarning() << "plugin string does not match:" << pluginString;
-	}
-	else {
-		plugin = DkPluginManager::instance().getPluginByName(ids[0]);
-
-		if (plugin)
-			runID = plugin->actionNameToRunId(ids[1]);
-	}
+        if (plugin)
+            runID = plugin->actionNameToRunId(ids[1]);
+    }
 }
 #endif
 
 // DkBatchProcess --------------------------------------------------------------------
-DkBatchProcess::DkBatchProcess(const DkSaveInfo& saveInfo) {
-	mSaveInfo = saveInfo;
+DkBatchProcess::DkBatchProcess(const DkSaveInfo &saveInfo)
+{
+    mSaveInfo = saveInfo;
 }
 
-void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes) {
-
-	mProcessFunctions = processes;
+void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatch>> processes)
+{
+    mProcessFunctions = processes;
 }
 
-QString DkBatchProcess::inputFile() const {
-
-	return mSaveInfo.inputFilePath();
+QString DkBatchProcess::inputFile() const
+{
+    return mSaveInfo.inputFilePath();
 }
 
-QString DkBatchProcess::outputFile() const {
-
-	return mSaveInfo.outputFilePath();
+QString DkBatchProcess::outputFile() const
+{
+    return mSaveInfo.outputFilePath();
 }
 
-QVector<QSharedPointer<DkBatchInfo> > DkBatchProcess::batchInfo() const {
-
-	return mInfos;
+QVector<QSharedPointer<DkBatchInfo>> DkBatchProcess::batchInfo() const
+{
+    return mInfos;
 }
 
-bool DkBatchProcess::hasFailed() const {
-
-	return mFailure != 0;
+bool DkBatchProcess::hasFailed() const
+{
+    return mFailure != 0;
 }
 
-bool DkBatchProcess::wasProcessed() const {
-	
-	return mIsProcessed;
+bool DkBatchProcess::wasProcessed() const
+{
+    return mIsProcessed;
 }
 
-bool DkBatchProcess::compute() {
+bool DkBatchProcess::compute()
+{
+    mIsProcessed = true;
 
-	mIsProcessed = true;
+    QFileInfo fInfoIn(mSaveInfo.inputFilePath());
+    QFileInfo fInfoOut(mSaveInfo.outputFilePath());
 
-	QFileInfo fInfoIn(mSaveInfo.inputFilePath());
-	QFileInfo fInfoOut(mSaveInfo.outputFilePath());
+    // check errors
+    if ((mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) == 0 && // do not save is not set
+        (fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing)) {
+        mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mSaveInfo.outputFilePath()));
+        mFailure++;
+        return mFailure == 0;
+    } else if (!fInfoIn.exists()) {
+        mLogStrings.append(QObject::tr("Error: input file does not exist"));
+        mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
+        mFailure++;
+        return mFailure == 0;
+    } else if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && mProcessFunctions.empty()) {
+        mLogStrings.append(QObject::tr("Skipping: nothing to do here."));
+        mFailure++;
+        return mFailure == 0;
+    }
 
-	// check errors
-	if ((mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) == 0 && // do not save is not set
-		(fInfoOut.exists() && mSaveInfo.mode() == DkSaveInfo::mode_skip_existing)) {
-		mLogStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(mSaveInfo.outputFilePath()));
-		mFailure++;
-		return mFailure == 0;
-	}
-	else if (!fInfoIn.exists()) {
-		mLogStrings.append(QObject::tr("Error: input file does not exist"));
-		mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
-		mFailure++;
-		return mFailure == 0;
-	}
-	else if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && mProcessFunctions.empty()) {
-		mLogStrings.append(QObject::tr("Skipping: nothing to do here."));
-		mFailure++;
-		return mFailure == 0;
-	}
-	
-	// rename operation?
-	if (mProcessFunctions.empty() && 
-		mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && 
-		fInfoIn.suffix() == fInfoOut.suffix()) {
-		if (!renameFile())
-			mFailure++;
-		return mFailure == 0;
-	}
-	// copy operation?
-	else if (mProcessFunctions.empty() && fInfoIn.suffix() == fInfoOut.suffix()) {
-		if (!copyFile())
-			mFailure++;
-		else
-			deleteOriginalFile();
+    // rename operation?
+    if (mProcessFunctions.empty() && mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath() && fInfoIn.suffix() == fInfoOut.suffix()) {
+        if (!renameFile())
+            mFailure++;
+        return mFailure == 0;
+    }
+    // copy operation?
+    else if (mProcessFunctions.empty() && fInfoIn.suffix() == fInfoOut.suffix()) {
+        if (!copyFile())
+            mFailure++;
+        else
+            deleteOriginalFile();
 
-		return mFailure == 0;
-	}
+        return mFailure == 0;
+    }
 
-	// do the work
-	process();
+    // do the work
+    process();
 
-	// delete the original file if the user requested it
-	deleteOriginalFile();
+    // delete the original file if the user requested it
+    deleteOriginalFile();
 
-	return mFailure == 0;
+    return mFailure == 0;
 }
 
-QStringList DkBatchProcess::getLog() const {
-
-	return mLogStrings;
+QStringList DkBatchProcess::getLog() const
+{
+    return mLogStrings;
 }
 
-bool DkBatchProcess::process() {
+bool DkBatchProcess::process()
+{
+    mLogStrings.append(QObject::tr("processing %1").arg(mSaveInfo.inputFilePath()));
 
-	mLogStrings.append(QObject::tr("processing %1").arg(mSaveInfo.inputFilePath()));
+    QSharedPointer<DkImageContainer> imgC(new DkImageContainer(mSaveInfo.inputFilePath()));
 
-	QSharedPointer<DkImageContainer> imgC(new DkImageContainer(mSaveInfo.inputFilePath()));
+    if (!imgC->loadImage() || imgC->image().isNull()) {
+        mLogStrings.append(QObject::tr("Error while loading..."));
+        mFailure++;
+        return false;
+    }
 
-	if (!imgC->loadImage() || imgC->image().isNull()) {
-		mLogStrings.append(QObject::tr("Error while loading..."));
-		mFailure++;
-		return false;
-	}
+    for (QSharedPointer<DkAbstractBatch> batch : mProcessFunctions) {
+        if (!batch) {
+            mLogStrings.append(QObject::tr("Error: cannot process a NULL function."));
+            continue;
+        }
 
-	for (QSharedPointer<DkAbstractBatch> batch : mProcessFunctions) {
+        QVector<QSharedPointer<DkBatchInfo>> cInfos;
+        if (!batch->compute(imgC, mSaveInfo, mLogStrings, cInfos)) {
+            mLogStrings.append(QObject::tr("%1 failed").arg(batch->name()));
+            mFailure++;
+        }
 
-		if (!batch) {
-			mLogStrings.append(QObject::tr("Error: cannot process a NULL function."));
-			continue;
-		}
+        mInfos << cInfos;
+    }
 
-		QVector<QSharedPointer<DkBatchInfo> > cInfos;
-		if (!batch->compute(imgC, mSaveInfo, mLogStrings, cInfos)) {
-			mLogStrings.append(QObject::tr("%1 failed").arg(batch->name()));
-			mFailure++;
-		}
+    // report we could not back-up & break here
+    if (!prepareDeleteExisting()) {
+        mFailure++;
+        return false;
+    }
 
-		mInfos << cInfos;
-	}
+    // early break
+    if (mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) {
+        mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
+        return true;
+    }
 
-	// report we could not back-up & break here
-	if (!prepareDeleteExisting()) {
-		mFailure++;
-		return false;
-	}
+    // udpate metadata
+    if (updateMetaData(imgC->getMetaData().data()))
+        mLogStrings.append(QObject::tr("Original filename added to Exif"));
 
-	// early break
-	if (mSaveInfo.mode() & DkSaveInfo::mode_do_not_save_output) {
-		mLogStrings.append(QObject::tr("%1 not saved - option 'Do not Save' is checked...").arg(mSaveInfo.outputFilePath()));
-		return true;
-	}
+    // save the image
+    if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {
+        mLogStrings.append(QObject::tr("%1 saved...").arg(mSaveInfo.outputFilePath()));
+    } else {
+        mLogStrings.append(QObject::tr("Could not save: %1").arg(mSaveInfo.outputFilePath()));
+        mFailure++;
+    }
 
-	// udpate metadata
-	if (updateMetaData(imgC->getMetaData().data()))
-		mLogStrings.append(QObject::tr("Original filename added to Exif"));
+    if (!deleteOrRestoreExisting()) {
+        mFailure++;
+        return false;
+    }
 
-	// save the image
-	if (imgC->saveImage(mSaveInfo.outputFilePath(), mSaveInfo.compression())) {
-		mLogStrings.append(QObject::tr("%1 saved...").arg(mSaveInfo.outputFilePath()));
-	}
-	else {
-		mLogStrings.append(QObject::tr("Could not save: %1").arg(mSaveInfo.outputFilePath()));
-		mFailure++;
-	}
-
-	if (!deleteOrRestoreExisting()) {
-		mFailure++;
-		return false;
-	}
-
-	return true;
+    return true;
 }
 
-bool DkBatchProcess::renameFile() {
+bool DkBatchProcess::renameFile()
+{
+    if (QFileInfo(mSaveInfo.outputFilePath()).exists()) {
+        mLogStrings.append(QObject::tr("Error: could not rename file, the target file exists already."));
+        return false;
+    }
 
-	if (QFileInfo(mSaveInfo.outputFilePath()).exists()) {
-		mLogStrings.append(QObject::tr("Error: could not rename file, the target file exists already."));
-		return false;
-	}
+    QFile file(mSaveInfo.inputFilePath());
 
-	QFile file(mSaveInfo.inputFilePath());
+    QSharedPointer<DkMetaDataT> md(new DkMetaDataT());
+    md->readMetaData(mSaveInfo.inputFilePath());
 
-	QSharedPointer<DkMetaDataT> md(new DkMetaDataT());
-	md->readMetaData(mSaveInfo.inputFilePath());
+    if (updateMetaData(md.data())) {
+        if (md->saveMetaData(mSaveInfo.inputFilePath()))
+            mLogStrings.append(QObject::tr("Original filename added to Exif"));
+    }
 
-	if (updateMetaData(md.data())) {
-		if (md->saveMetaData(mSaveInfo.inputFilePath()))
-			mLogStrings.append(QObject::tr("Original filename added to Exif"));
-	}
+    // Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race Condition
+    if (!file.rename(mSaveInfo.outputFilePath())) {
+        mLogStrings.append(QObject::tr("Error: could not rename file"));
+        mLogStrings.append(file.errorString());
+        return false;
+    } else
+        mLogStrings.append(QObject::tr("Renaming: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
 
-	// Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race Condition
-	if (!file.rename(mSaveInfo.outputFilePath())) {
-		mLogStrings.append(QObject::tr("Error: could not rename file"));
-		mLogStrings.append(file.errorString());
-		return false;
-	}
-	else
-		mLogStrings.append(QObject::tr("Renaming: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
-
-	return true;
+    return true;
 }
 
-bool DkBatchProcess::updateMetaData(DkMetaDataT * md) {
-	
-	if (!md)
-		return false;
+bool DkBatchProcess::updateMetaData(DkMetaDataT *md)
+{
+    if (!md)
+        return false;
 
-	if (!md->isLoaded())
-		return false;
+    if (!md->isLoaded())
+        return false;
 
-	QString ifn = mSaveInfo.inputFileInfo().fileName();
-	if (ifn != mSaveInfo.outputFileInfo().fileName() &&
-		md->getExifValue("ImageDescription").isEmpty()) {
+    QString ifn = mSaveInfo.inputFileInfo().fileName();
+    if (ifn != mSaveInfo.outputFileInfo().fileName() && md->getExifValue("ImageDescription").isEmpty()) {
+        if (md->setExifValue("Exif.Image.ImageDescription", ifn))
+            return true;
+    }
 
-		if (md->setExifValue("Exif.Image.ImageDescription", ifn))
-			return true;
-	}
-
-	return false;
+    return false;
 }
 
-bool DkBatchProcess::copyFile() {
+bool DkBatchProcess::copyFile()
+{
+    QFile file(mSaveInfo.inputFilePath());
 
-	QFile file(mSaveInfo.inputFilePath());
+    if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
+        mLogStrings.append(QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
+        return false;
+    }
 
-	if (mSaveInfo.mode() == DkSaveInfo::mode_do_not_save_output) {
-		mLogStrings.append(QObject::tr("I should copy the file, but 'Do not Save' is checked - so I will do nothing..."));
-		return false;
-	}
+    // report we could not back-up & break here
+    if (!prepareDeleteExisting()) {
+        mFailure++;
+        return false;
+    }
 
-	// report we could not back-up & break here
-	if (!prepareDeleteExisting()) {
-		mFailure++;
-		return false;
-	}
+    QSharedPointer<DkMetaDataT> md(new DkMetaDataT());
+    md->readMetaData(mSaveInfo.inputFilePath());
 
-	QSharedPointer<DkMetaDataT> md(new DkMetaDataT());
-	md->readMetaData(mSaveInfo.inputFilePath());
+    bool exifUpdated = updateMetaData(md.data());
 
-	bool exifUpdated = updateMetaData(md.data());
+    if (!file.copy(mSaveInfo.outputFilePath())) {
+        mLogStrings.append(QObject::tr("Error: could not copy file"));
+        mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
+        mLogStrings.append(QObject::tr("Output: %1").arg(mSaveInfo.outputFilePath()));
+        mLogStrings.append(file.errorString());
+        return false;
+    } else {
+        if (exifUpdated && md->saveMetaData(mSaveInfo.outputFilePath()))
+            mLogStrings.append(QObject::tr("Original filename added to Exif"));
 
-	if (!file.copy(mSaveInfo.outputFilePath())) {
-		mLogStrings.append(QObject::tr("Error: could not copy file"));
-		mLogStrings.append(QObject::tr("Input: %1").arg(mSaveInfo.inputFilePath()));
-		mLogStrings.append(QObject::tr("Output: %1").arg(mSaveInfo.outputFilePath()));
-		mLogStrings.append(file.errorString());
-		return false;
-	}
-	else {
-		if (exifUpdated && md->saveMetaData(mSaveInfo.outputFilePath()))
-			mLogStrings.append(QObject::tr("Original filename added to Exif"));
+        mLogStrings.append(QObject::tr("Copying: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
+    }
 
-		mLogStrings.append(QObject::tr("Copying: %1 -> %2").arg(mSaveInfo.inputFilePath()).arg(mSaveInfo.outputFilePath()));
-	}
+    if (!deleteOrRestoreExisting()) {
+        mFailure++;
+        return false;
+    }
 
-	if (!deleteOrRestoreExisting()) {
-		mFailure++;
-		return false;
-	}
-
-	return true;
+    return true;
 }
 
-bool DkBatchProcess::prepareDeleteExisting() {
+bool DkBatchProcess::prepareDeleteExisting()
+{
+    if (QFileInfo(mSaveInfo.outputFilePath()).exists() && mSaveInfo.mode() == DkSaveInfo::mode_overwrite) {
+        mSaveInfo.createBackupFilePath();
 
-	if (QFileInfo(mSaveInfo.outputFilePath()).exists() && mSaveInfo.mode() == DkSaveInfo::mode_overwrite) {
+        // check the uniqueness : )
+        if (QFileInfo(mSaveInfo.backupFilePath()).exists()) {
+            mLogStrings.append(QObject::tr("Error: back-up (%1) file already exists").arg(mSaveInfo.backupFilePath()));
+            mSaveInfo.clearBackupFilePath();
+            return false;
+        }
 
-		mSaveInfo.createBackupFilePath();
+        QFile file(mSaveInfo.outputFilePath());
 
-		// check the uniqueness : )
-		if (QFileInfo(mSaveInfo.backupFilePath()).exists()) {
-			mLogStrings.append(QObject::tr("Error: back-up (%1) file already exists").arg(mSaveInfo.backupFilePath()));
-			mSaveInfo.clearBackupFilePath();
-			return false;
-		}
+        if (!file.rename(mSaveInfo.backupFilePath())) {
+            mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(mSaveInfo.backupFilePath()));
+            mLogStrings.append(file.errorString());
+            mSaveInfo.clearBackupFilePath();
+            return false;
+        }
+    }
 
-		QFile file(mSaveInfo.outputFilePath());
-
-		if (!file.rename(mSaveInfo.backupFilePath())) {
-			mLogStrings.append(QObject::tr("Error: could not rename existing file to %1").arg(mSaveInfo.backupFilePath()));
-			mLogStrings.append(file.errorString());
-			mSaveInfo.clearBackupFilePath();
-			return false;
-		}
-	}
-
-	return true;
+    return true;
 }
 
-bool DkBatchProcess::deleteOrRestoreExisting() {
+bool DkBatchProcess::deleteOrRestoreExisting()
+{
+    QFileInfo outInfo(mSaveInfo.outputFilePath());
 
-	QFileInfo outInfo(mSaveInfo.outputFilePath());
+    if (outInfo.exists() && !mSaveInfo.backupFilePath().isEmpty() && mSaveInfo.backupFileInfo().exists()) {
+        QFile file(mSaveInfo.backupFilePath());
 
-	if (outInfo.exists() && !mSaveInfo.backupFilePath().isEmpty() && mSaveInfo.backupFileInfo().exists()) {
-		QFile file(mSaveInfo.backupFilePath());
+        if (!file.remove()) {
+            mLogStrings.append(QObject::tr("Error: could not delete existing file"));
+            mLogStrings.append(file.errorString());
+            return false;
+        }
+    }
+    // fall-back
+    else if (!outInfo.exists()) {
+        QFile file(mSaveInfo.backupFilePath());
 
-		if (!file.remove()) {
-			mLogStrings.append(QObject::tr("Error: could not delete existing file"));
-			mLogStrings.append(file.errorString());
-			return false;
-		}
-	}
-	// fall-back
-	else if (!outInfo.exists()) {
-		
-		QFile file(mSaveInfo.backupFilePath());
+        if (!file.rename(mSaveInfo.outputFilePath())) {
+            mLogStrings.append(QObject::tr("Ui - a lot of things went wrong. Your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
+            mLogStrings.append(file.errorString());
+            return false;
+        } else {
+            mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mSaveInfo.outputFilePath()));
+        }
+    }
 
-		if (!file.rename(mSaveInfo.outputFilePath())) {
-			mLogStrings.append(QObject::tr("Ui - a lot of things went wrong. Your original file can be found here: %1").arg(mSaveInfo.backupFilePath()));
-			mLogStrings.append(file.errorString());
-			return false;
-		}
-		else {
-			mLogStrings.append(QObject::tr("I could not save to %1 so I restored the original file.").arg(mSaveInfo.outputFilePath()));
-		}
-	}
-
-	return true;
+    return true;
 }
 
-bool DkBatchProcess::deleteOriginalFile() {
+bool DkBatchProcess::deleteOriginalFile()
+{
+    if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath())
+        return true;
 
-	if (mSaveInfo.inputFilePath() == mSaveInfo.outputFilePath())
-		return true;
+    if (!mFailure && mSaveInfo.isDeleteOriginal()) {
+        QFile oFile(mSaveInfo.inputFilePath());
 
-	if (!mFailure && mSaveInfo.isDeleteOriginal()) {
-		QFile oFile(mSaveInfo.inputFilePath());
+        if (oFile.remove())
+            mLogStrings.append(QObject::tr("%1 deleted.").arg(mSaveInfo.inputFilePath()));
+        else {
+            mFailure++;
+            mLogStrings.append(QObject::tr("I could not delete %1").arg(mSaveInfo.inputFilePath()));
+            return false;
+        }
+    } else if (mFailure)
+        mLogStrings.append(QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(mFailure));
 
-		if (oFile.remove())
-			mLogStrings.append(QObject::tr("%1 deleted.").arg(mSaveInfo.inputFilePath()));
-		else {
-			mFailure++;
-			mLogStrings.append(QObject::tr("I could not delete %1").arg(mSaveInfo.inputFilePath()));
-			return false;
-		}
-	}
-	else if (mFailure)
-		mLogStrings.append(QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(mFailure));
-
-	return true;
+    return true;
 }
 
 // DkBatchConfig --------------------------------------------------------------------
-DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QString& outputDir, const QString& fileNamePattern) {
-
-	mFileList = fileList;
-	mOutputDirPath = outputDir;
-	mFileNamePattern = fileNamePattern;
-	
+DkBatchConfig::DkBatchConfig(const QStringList &fileList, const QString &outputDir, const QString &fileNamePattern)
+{
+    mFileList = fileList;
+    mOutputDirPath = outputDir;
+    mFileNamePattern = fileNamePattern;
 }
 
-bool DkBatchConfig::isOk() const {
+bool DkBatchConfig::isOk() const
+{
+    if (mOutputDirPath.isEmpty())
+        return false;
 
-	if (mOutputDirPath.isEmpty())
-		return false;
+    QDir oDir(mOutputDirPath);
 
-	QDir oDir(mOutputDirPath);
+    if (!oDir.exists()) {
+        if (!oDir.mkpath("."))
+            return false; // output dir does not exist & I cannot create it
+    }
 
-	if (!oDir.exists()) {
-		if (!oDir.mkpath("."))
-			return false;	// output dir does not exist & I cannot create it
-	}
+    if (mFileList.empty())
+        return false;
 
-	if (mFileList.empty())
-		return false;
+    if (mFileNamePattern.isEmpty())
+        return false;
 
-	if (mFileNamePattern.isEmpty())
-		return false;
-
-	return true;
+    return true;
 }
-
 
 // DkBatchProcessing --------------------------------------------------------------------
-DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* parent /*= 0*/) : QObject(parent) {
+DkBatchProcessing::DkBatchProcessing(const DkBatchConfig &config, QWidget *parent /*= 0*/)
+    : QObject(parent)
+{
+    mBatchConfig = config;
 
-	mBatchConfig = config;
-
-	connect(&mBatchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
-	connect(&mBatchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
+    connect(&mBatchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
+    connect(&mBatchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
 }
 
-void DkBatchProcessing::init() {
+void DkBatchProcessing::init()
+{
+    mBatchItems.clear();
 
-	mBatchItems.clear();
-	
-	QStringList fileList = mBatchConfig.getFileList();
+    QStringList fileList = mBatchConfig.getFileList();
 
-	for (int idx = 0; idx < fileList.size(); idx++) {
+    for (int idx = 0; idx < fileList.size(); idx++) {
+        DkSaveInfo si = mBatchConfig.saveInfo();
 
-		DkSaveInfo si = mBatchConfig.saveInfo();
+        QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
+        QString outDir = si.isInputDirOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
 
-		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
-		QString outDir = si.isInputDirOutputDir() ? cFileInfo.absolutePath() : mBatchConfig.getOutputDirPath();
+        DkFileNameConverter converter(cFileInfo.fileName(), mBatchConfig.getFileNamePattern(), idx);
+        QString outputFilePath = QFileInfo(outDir, converter.getConvertedFileName()).absoluteFilePath();
 
-		DkFileNameConverter converter(cFileInfo.fileName(), mBatchConfig.getFileNamePattern(), idx);
-		QString outputFilePath = QFileInfo(outDir, converter.getConvertedFileName()).absoluteFilePath();
+        // set input/output file path
+        si.setInputFilePath(fileList.at(idx));
+        si.setOutputFilePath(outputFilePath);
 
-		// set input/output file path
-		si.setInputFilePath(fileList.at(idx));
-		si.setOutputFilePath(outputFilePath);
+        DkBatchProcess cProcess(si);
+        cProcess.setProcessChain(mBatchConfig.getProcessFunctions());
 
-		DkBatchProcess cProcess(si);
-		cProcess.setProcessChain(mBatchConfig.getProcessFunctions());
-
-		mBatchItems.push_back(cProcess);
-	}
+        mBatchItems.push_back(cProcess);
+    }
 }
 
-void DkBatchConfig::saveSettings(QSettings & settings) const {
+void DkBatchConfig::saveSettings(QSettings &settings) const
+{
+    settings.beginGroup("General"); // this general group could be removed in future releases
+    settings.setValue("FileList", mFileList.join(";"));
+    settings.setValue("OutputDirPath", mOutputDirPath);
+    settings.setValue("FileNamePattern", mFileNamePattern);
 
-	settings.beginGroup("General");		// this general group could be removed in future releases
-	settings.setValue("FileList", mFileList.join(";"));
-	settings.setValue("OutputDirPath", mOutputDirPath);
-	settings.setValue("FileNamePattern", mFileNamePattern);
+    mSaveInfo.saveSettings(settings);
 
-	mSaveInfo.saveSettings(settings);
+    for (auto pf : mProcessFunctions)
+        pf->saveSettings(settings);
 
-	for (auto pf : mProcessFunctions)
-		pf->saveSettings(settings);
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkBatchConfig::loadSettings(QSettings & settings) {
+void DkBatchConfig::loadSettings(QSettings &settings)
+{
+    settings.beginGroup("General");
+    mFileList = settings.value("FileList", mFileList).toString().split(";");
+    mOutputDirPath = settings.value("OutputDirPath", mOutputDirPath).toString();
+    mFileNamePattern = settings.value("FileNamePattern", mFileNamePattern).toString();
 
-	settings.beginGroup("General");
-	mFileList = settings.value("FileList", mFileList).toString().split(";");
-	mOutputDirPath = settings.value("OutputDirPath", mOutputDirPath).toString();
-	mFileNamePattern = settings.value("FileNamePattern", mFileNamePattern).toString();
+    mSaveInfo.loadSettings(settings);
 
-	mSaveInfo.loadSettings(settings);
+    QStringList groups = settings.childGroups();
 
-	QStringList groups = settings.childGroups();
-	
-	for (const QString& name : groups) {
+    for (const QString &name : groups) {
+        // known groups that are not batch processes
+        if (name == "SaveInfo")
+            continue;
 
-		// known groups that are not batch processes
-		if (name == "SaveInfo")
-			continue;
+        QSharedPointer<DkAbstractBatch> batch = DkAbstractBatch::createFromName(name);
 
-		QSharedPointer<DkAbstractBatch> batch = DkAbstractBatch::createFromName(name);
+        // if it is valid - append the process
+        if (batch) {
+            batch->loadSettings(settings);
+            mProcessFunctions << batch;
+        }
+    }
 
-		// if it is valid - append the process
-		if (batch) {
-			batch->loadSettings(settings);
-			mProcessFunctions << batch;
-		}
-	}
+    for (auto pf : mProcessFunctions)
+        pf->saveSettings(settings);
 
-	for (auto pf : mProcessFunctions)
-		pf->saveSettings(settings);
-
-	settings.endGroup();
+    settings.endGroup();
 }
 
-void DkBatchProcessing::compute() {
+void DkBatchProcessing::compute()
+{
+    init();
 
-	init();
+    qDebug() << "computing...";
 
-	qDebug() << "computing...";
+    if (mBatchWatcher.isRunning())
+        mBatchWatcher.waitForFinished();
 
-	if (mBatchWatcher.isRunning())
-		mBatchWatcher.waitForFinished();
-
-	QFuture<void> future = QtConcurrent::map(mBatchItems, &nmc::DkBatchProcessing::computeItem);
-	mBatchWatcher.setFuture(future);
+    QFuture<void> future = QtConcurrent::map(mBatchItems, &nmc::DkBatchProcessing::computeItem);
+    mBatchWatcher.setFuture(future);
 }
 
-bool DkBatchProcessing::computeItem(DkBatchProcess& item) {
-
-	return item.compute();
+bool DkBatchProcessing::computeItem(DkBatchProcess &item)
+{
+    return item.compute();
 }
 
-void DkBatchProcessing::postLoad() {
+void DkBatchProcessing::postLoad()
+{
+    // collect batch infos
+    QVector<QSharedPointer<DkBatchInfo>> batchInfo;
 
-	// collect batch infos
-	QVector<QSharedPointer<DkBatchInfo> > batchInfo;
+    for (DkBatchProcess batch : mBatchItems) {
+        batchInfo << batch.batchInfo();
+    }
 
-	for (DkBatchProcess batch : mBatchItems) {
-		batchInfo << batch.batchInfo();
-	}
-
-	for (QSharedPointer<DkAbstractBatch> fun : mBatchConfig.getProcessFunctions()) {
-		fun->postLoad(batchInfo);
-	}
+    for (QSharedPointer<DkAbstractBatch> fun : mBatchConfig.getProcessFunctions()) {
+        fun->postLoad(batchInfo);
+    }
 }
 
-void DkBatchProcessing::computeBatch(const QString& settingsPath, const QString& logPath) {
+void DkBatchProcessing::computeBatch(const QString &settingsPath, const QString &logPath)
+{
+    DkTimer dt;
+    DkBatchConfig bc = DkBatchProfile::loadProfile(settingsPath);
 
-	DkTimer dt;
-	DkBatchConfig bc = DkBatchProfile::loadProfile(settingsPath);
+    // guarantee that the output path exists
+    if (!QDir().mkpath(bc.getOutputDirPath())) {
+        qCritical() << "Could not create:" << bc.getOutputDirPath();
+        return;
+    }
 
-	// guarantee that the output path exists
-	if (!QDir().mkpath(bc.getOutputDirPath())) {
-		qCritical() << "Could not create:" << bc.getOutputDirPath();
-		return;
-	}
+    QSharedPointer<nmc::DkBatchProcessing> process(new nmc::DkBatchProcessing());
+    process->setBatchConfig(bc);
+    process->compute();
 
-	QSharedPointer<nmc::DkBatchProcessing> process(new nmc::DkBatchProcessing());
-	process->setBatchConfig(bc);
-	process->compute();
+    process->waitForFinished(); // block
 
-	process->waitForFinished();	// block
+    qInfo() << "batch finished with" << process->getNumFailures() << "errors in" << dt;
 
-	qInfo() << "batch finished with" << process->getNumFailures() << "errors in" << dt;
+    if (!logPath.isEmpty()) {
+        QFileInfo fi(logPath);
 
-	if (!logPath.isEmpty()) {
+        QDir().mkpath(fi.absolutePath());
 
-		QFileInfo fi(logPath);
-
-		QDir().mkpath(fi.absolutePath());
-
-		QFile file(logPath);
-		if (!file.open(QIODevice::WriteOnly))
-			qWarning() << "Sorry, I could not write to" << logPath;
-		else {
-			QStringList log = process->getLog();
-			QTextStream s(&file);
-			for (const QString& line : log)
-				s << line << '\n';
-			qInfo() << "log written to: " << logPath;
-		}
-	}
+        QFile file(logPath);
+        if (!file.open(QIODevice::WriteOnly))
+            qWarning() << "Sorry, I could not write to" << logPath;
+        else {
+            QStringList log = process->getLog();
+            QTextStream s(&file);
+            for (const QString &line : log)
+                s << line << '\n';
+            qInfo() << "log written to: " << logPath;
+        }
+    }
 }
 
+QStringList DkBatchProcessing::getLog() const
+{
+    QStringList log;
 
-QStringList DkBatchProcessing::getLog() const {
+    for (DkBatchProcess batch : mBatchItems) {
+        log << batch.getLog();
+        log << ""; // add empty line between images
+    }
 
-	QStringList log;
-
-	for (DkBatchProcess batch : mBatchItems) {
-
-		log << batch.getLog();
-		log << "";	// add empty line between images
-	}
-
-	return log;
+    return log;
 }
 
-int DkBatchProcessing::getNumFailures() const {
+int DkBatchProcessing::getNumFailures() const
+{
+    int numFailures = 0;
 
-	int numFailures = 0;
+    for (DkBatchProcess batch : mBatchItems) {
+        if (batch.hasFailed())
+            numFailures++;
+    }
 
-	for (DkBatchProcess batch : mBatchItems) {
-		
-		if (batch.hasFailed())
-			numFailures++;
-	}
-
-	return numFailures;
+    return numFailures;
 }
 
-int DkBatchProcessing::getNumProcessed() const {
+int DkBatchProcessing::getNumProcessed() const
+{
+    int numProcessed = 0;
 
-	int numProcessed = 0;
+    for (DkBatchProcess batch : mBatchItems) {
+        if (batch.wasProcessed())
+            numProcessed++;
+    }
 
-	for (DkBatchProcess batch : mBatchItems) {
-
-		if (batch.wasProcessed())
-			numProcessed++;
-	}
-
-	return numProcessed;
+    return numProcessed;
 }
 
-QList<int> DkBatchProcessing::getCurrentResults() {
+QList<int> DkBatchProcessing::getCurrentResults()
+{
+    if (mResList.empty()) {
+        for (int idx = 0; idx < mBatchItems.size(); idx++)
+            mResList.append(batch_item_not_computed);
+    }
 
-	if (mResList.empty()) {
-		for (int idx = 0; idx < mBatchItems.size(); idx++)
-			mResList.append(batch_item_not_computed);
-	}
+    for (int idx = 0; idx < mResList.size(); idx++) {
+        if (mResList.at(idx) != batch_item_not_computed)
+            continue;
 
-	for (int idx = 0; idx < mResList.size(); idx++) {
+        if (mBatchItems.at(idx).wasProcessed())
+            mResList[idx] = mBatchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
+    }
 
-		if (mResList.at(idx) != batch_item_not_computed)
-			continue;
-
-		if (mBatchItems.at(idx).wasProcessed())
-			mResList[idx] = mBatchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
-	}
-
-	return mResList;
+    return mResList;
 }
 
-QStringList DkBatchProcessing::getResultList() const {
+QStringList DkBatchProcessing::getResultList() const
+{
+    QStringList results;
 
-	QStringList results;
+    for (DkBatchProcess batch : mBatchItems) {
+        if (batch.wasProcessed())
+            results.append(getBatchSummary(batch));
+    }
 
-	for (DkBatchProcess batch : mBatchItems) {
-
-		if (batch.wasProcessed())
-			results.append(getBatchSummary(batch));
-	}
-
-	return results;
+    return results;
 }
 
-QString DkBatchProcessing::getBatchSummary(const DkBatchProcess& batch) const {
+QString DkBatchProcessing::getBatchSummary(const DkBatchProcess &batch) const
+{
+    QString res = batch.inputFile() + "\t";
 
-	QString res = batch.inputFile() + "\t";
+    if (!batch.hasFailed())
+        res += " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
+    else
+        res += " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
 
-	if (!batch.hasFailed())
-		res += " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
-	else
-		res += " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
-
-	return res;
+    return res;
 }
 
-void DkBatchProcessing::waitForFinished() {
-	mBatchWatcher.waitForFinished();
+void DkBatchProcessing::waitForFinished()
+{
+    mBatchWatcher.waitForFinished();
 }
 
-int DkBatchProcessing::getNumItems() const {
-
-	return mBatchItems.size();
+int DkBatchProcessing::getNumItems() const
+{
+    return mBatchItems.size();
 }
 
-bool DkBatchProcessing::isComputing() const {
-
-	return mBatchWatcher.isRunning();
+bool DkBatchProcessing::isComputing() const
+{
+    return mBatchWatcher.isRunning();
 }
 
-void DkBatchProcessing::cancel() {
-
-	mBatchWatcher.cancel();
+void DkBatchProcessing::cancel()
+{
+    mBatchWatcher.cancel();
 }
 
 // DkBatchProfile --------------------------------------------------------------------
-QString DkBatchProfile::ext = "pnm";	// profile file extension
+QString DkBatchProfile::ext = "pnm"; // profile file extension
 
-DkBatchProfile::DkBatchProfile(const QString& profileDir) {
-
-	mProfileDir = (profileDir.isEmpty()) ? defaultProfilePath() : profileDir;
+DkBatchProfile::DkBatchProfile(const QString &profileDir)
+{
+    mProfileDir = (profileDir.isEmpty()) ? defaultProfilePath() : profileDir;
 }
 
-DkBatchConfig DkBatchProfile::loadProfile(const QString & profilePath) {
+DkBatchConfig DkBatchProfile::loadProfile(const QString &profilePath)
+{
+    QFileInfo fi(profilePath);
+    if (!fi.exists() || !fi.isFile()) {
+        qInfo() << "cannot read profile from:" << profilePath;
+        return DkBatchConfig();
+    }
 
-	QFileInfo fi(profilePath);
-	if (!fi.exists() || !fi.isFile()) {
-		qInfo() << "cannot read profile from:" << profilePath;
-		return DkBatchConfig();
-	}
+    QSettings s(profilePath, QSettings::IniFormat);
+    DkBatchConfig bc;
+    bc.loadSettings(s);
 
-	QSettings s(profilePath, QSettings::IniFormat);
-	DkBatchConfig bc;
-	bc.loadSettings(s);
-
-	return bc;
+    return bc;
 }
 
-bool DkBatchProfile::saveProfile(const QString & profilePath, const DkBatchConfig & batchConfig) {
-	
-	QSettings s(profilePath, QSettings::IniFormat);
-	s.clear();
-	batchConfig.saveSettings(s);
+bool DkBatchProfile::saveProfile(const QString &profilePath, const DkBatchConfig &batchConfig)
+{
+    QSettings s(profilePath, QSettings::IniFormat);
+    s.clear();
+    batchConfig.saveSettings(s);
 
-	return true;
+    return true;
 }
 
-QString DkBatchProfile::defaultProfilePath() {
-
-	return DkUtils::getAppDataPath() + QDir::separator() + "Profiles";
+QString DkBatchProfile::defaultProfilePath()
+{
+    return DkUtils::getAppDataPath() + QDir::separator() + "Profiles";
 }
 
-QString DkBatchProfile::profileNameToPath(const QString & profileName) {
-	return defaultProfilePath() + QDir::separator() + profileName + "." + ext;
+QString DkBatchProfile::profileNameToPath(const QString &profileName)
+{
+    return defaultProfilePath() + QDir::separator() + profileName + "." + ext;
 }
 
-QStringList DkBatchProfile::profileNames() {
+QStringList DkBatchProfile::profileNames()
+{
+    if (mProfilePaths.empty())
+        mProfilePaths = index(mProfileDir);
 
-	if (mProfilePaths.empty())
-		mProfilePaths = index(mProfileDir);
+    QStringList userNames;
+    for (const QString &p : mProfilePaths)
+        userNames << makeUserFriendly(p);
 
-	QStringList userNames;
-	for (const QString& p : mProfilePaths)
-		userNames << makeUserFriendly(p);
-
-	return userNames;
+    return userNames;
 }
 
-QStringList DkBatchProfile::index(const QString & profileDir) const {
+QStringList DkBatchProfile::index(const QString &profileDir) const
+{
+    QStringList exts;
+    exts << "*." + ext;
 
-	QStringList exts;
-	exts << "*." + ext;
+    QDir pd(profileDir);
+    QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
 
-	QDir pd(profileDir);
-	QStringList profiles = pd.entryList(exts, QDir::Files, QDir::Name);
+    qDebug() << "I have found these profiles: " << profiles;
+    if (profiles.empty())
+        qInfo() << "no profiles found in" << profileDir;
 
-	qDebug() << "I have found these profiles: " << profiles;
-	if (profiles.empty())
-		qInfo() << "no profiles found in" << profileDir;
-
-	return profiles;
+    return profiles;
 }
 
-QString DkBatchProfile::makeUserFriendly(const QString & profilePath) {
-	
-	QString pName = QFileInfo(profilePath).baseName();
-	return pName;
+QString DkBatchProfile::makeUserFriendly(const QString &profilePath)
+{
+    QString pName = QFileInfo(profilePath).baseName();
+    return pName;
 }
 
-QString DkBatchProfile::extension() {
-	return ext;
+QString DkBatchProfile::extension()
+{
+    return ext;
 }
 
 }

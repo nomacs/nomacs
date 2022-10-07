@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkQuickAccess.h
  Created on:	16.04.2015
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2015 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2015 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2015 Florian Kleber <florian@nomacs.org>
@@ -27,68 +27,73 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QObject>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QFileInfo>
-#include <QVector>
-#include <QStringList>
 #include <QLineEdit>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QObject>
+#include <QStringList>
+#include <QVector>
+#pragma warning(pop) // no warnings from includes - end
 
 class QAction;
 class QStandardItemModel;
 class QIcon;
 class QModelIndex;
 
-namespace nmc {
+namespace nmc
+{
 
-class DkQuickAccess : public QObject {
-	Q_OBJECT
+class DkQuickAccess : public QObject
+{
+    Q_OBJECT
 
 public:
-	DkQuickAccess(QObject* parent = 0);
+    DkQuickAccess(QObject *parent = 0);
 
-	void addActions(const QVector<QAction*>& actions);
-	void addDirs(const QStringList& dirPaths);
-	void addFiles(const QStringList& filePaths);
-	void addItems(const QStringList& itemTexts, const QIcon& icon);
+    void addActions(const QVector<QAction *> &actions);
+    void addDirs(const QStringList &dirPaths);
+    void addFiles(const QStringList &filePaths);
+    void addItems(const QStringList &itemTexts, const QIcon &icon);
 
-	QStandardItemModel* getModel() const { return mModel; };
-	
+    QStandardItemModel *getModel() const
+    {
+        return mModel;
+    };
+
 public slots:
-	bool execute(const QString& cmd) const;
+    bool execute(const QString &cmd) const;
 
 signals:
-	void loadFileSignal(const QString& filePath) const;
+    void loadFileSignal(const QString &filePath) const;
 
 protected:
-	QStandardItemModel* mModel = 0;
+    QStandardItemModel *mModel = 0;
 
-	QVector<QAction*> mActions;
-	QStringList mFilePaths;
+    QVector<QAction *> mActions;
+    QStringList mFilePaths;
 };
 
-class DkQuickAccessEdit : public QLineEdit {
-	Q_OBJECT
+class DkQuickAccessEdit : public QLineEdit
+{
+    Q_OBJECT
 
 public:
-	DkQuickAccessEdit(QWidget* parent = 0);
+    DkQuickAccessEdit(QWidget *parent = 0);
 
-	void setModel(QStandardItemModel* model);
+    void setModel(QStandardItemModel *model);
 
 signals:
-	void executeSignal(const QString& cmd) const;
+    void executeSignal(const QString &cmd) const;
 
 public slots:
-	void clearAccess();
-	void editConfirmed();
+    void clearAccess();
+    void editConfirmed();
 
 protected:
-	void focusOutEvent(QFocusEvent* ev) override;
-	void keyReleaseEvent(QKeyEvent* ev) override;
+    void focusOutEvent(QFocusEvent *ev) override;
+    void keyReleaseEvent(QKeyEvent *ev) override;
 
-	QCompleter* mCompleter;
-
+    QCompleter *mCompleter;
 };
 
 }

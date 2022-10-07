@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -28,10 +28,10 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes
-#include <QString>
-#include <QObject>
+#pragma warning(push, 0) // no warnings from includes
 #include <QNetworkReply>
+#include <QObject>
+#include <QString>
 #pragma warning(pop)
 
 #ifndef DllCoreExport
@@ -48,101 +48,107 @@
 class QXmlStreamReader;
 class QNetworkAccessManager;
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
-class DkPackage {
-
+class DkPackage
+{
 public:
-	DkPackage(const QString& name = "", const QString& version = "");
+    DkPackage(const QString &name = "", const QString &version = "");
 
-	bool isEmpty() const;
-	bool operator==(const DkPackage& o) const;
+    bool isEmpty() const;
+    bool operator==(const DkPackage &o) const;
 
-	QString name() const;
-	QString version() const;
+    QString name() const;
+    QString version() const;
 
 protected:
-	QString mName;
-	QString mVersion;
+    QString mName;
+    QString mVersion;
 };
 
-class DkXmlUpdateChecker {
-
+class DkXmlUpdateChecker
+{
 public:
-	DkXmlUpdateChecker();
+    DkXmlUpdateChecker();
 
-	QVector<DkPackage> updatesAvailable(QXmlStreamReader& localXml, QXmlStreamReader& remoteXml) const;
+    QVector<DkPackage> updatesAvailable(QXmlStreamReader &localXml, QXmlStreamReader &remoteXml) const;
 
 protected:
-	QVector<DkPackage> parse(QXmlStreamReader& reader) const;
+    QVector<DkPackage> parse(QXmlStreamReader &reader) const;
 };
 
-class DllCoreExport DkUpdater : public QObject {
-	Q_OBJECT
+class DllCoreExport DkUpdater : public QObject
+{
+    Q_OBJECT
 
 public:
-	bool silent;
+    bool silent;
 
-	DkUpdater(QObject* parent = 0);
+    DkUpdater(QObject *parent = 0);
 
 public slots:
-	void checkForUpdates();
-	void replyFinished(QNetworkReply*);
-	void replyError(QNetworkReply::NetworkError);
-	void performUpdate();
-	void downloadFinishedSlot(QNetworkReply* data);
-	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
-	void cancelUpdate();
+    void checkForUpdates();
+    void replyFinished(QNetworkReply *);
+    void replyError(QNetworkReply::NetworkError);
+    void performUpdate();
+    void downloadFinishedSlot(QNetworkReply *data);
+    void updateDownloadProgress(qint64 received, qint64 total)
+    {
+        emit downloadProgress(received, total);
+    };
+    void cancelUpdate();
 
 signals:
-	void displayUpdateDialog(const QString& msg, const QString& title) const;
-	void showUpdaterMessage(const QString& msg, const QString& title) const;
-	void downloadFinished(const QString& filePath) const;
-	void downloadProgress(qint64, qint64) const;
+    void displayUpdateDialog(const QString &msg, const QString &title) const;
+    void showUpdaterMessage(const QString &msg, const QString &title) const;
+    void downloadFinished(const QString &filePath) const;
+    void downloadProgress(qint64, qint64) const;
 
 protected:
-	void startDownload(QUrl downloadUrl);
+    void startDownload(QUrl downloadUrl);
 
-	QNetworkAccessManager mAccessManagerVersion;
-	QNetworkAccessManager mAccessManagerSetup;
+    QNetworkAccessManager mAccessManagerVersion;
+    QNetworkAccessManager mAccessManagerSetup;
 
-	QNetworkReply* mReply = 0;
-	QNetworkCookieJar* mCookie = 0;
+    QNetworkReply *mReply = 0;
+    QNetworkCookieJar *mCookie = 0;
 
-	QUrl mNomacsSetupUrl;
-	QString mSetupVersion;
-	bool mUpdateAborted = false;
+    QUrl mNomacsSetupUrl;
+    QString mSetupVersion;
+    bool mUpdateAborted = false;
 };
 
-class DllCoreExport DkTranslationUpdater : public QObject {
-	Q_OBJECT
+class DllCoreExport DkTranslationUpdater : public QObject
+{
+    Q_OBJECT
 
 public:
-	DkTranslationUpdater(bool silent = false, QObject* parent = 0);
-	bool silent;
+    DkTranslationUpdater(bool silent = false, QObject *parent = 0);
+    bool silent;
 
 public slots:
-	virtual void checkForUpdates();
-	virtual void replyFinished(QNetworkReply*);
-	void updateDownloadProgress(qint64 received, qint64 total);
-	void updateDownloadProgressQt(qint64 received, qint64 total);
-	void cancelUpdate();
+    virtual void checkForUpdates();
+    virtual void replyFinished(QNetworkReply *);
+    void updateDownloadProgress(qint64 received, qint64 total);
+    void updateDownloadProgressQt(qint64 received, qint64 total);
+    void cancelUpdate();
 
 signals:
-	void translationUpdated();
-	void showUpdaterMessage(const QString&, const QString&);
-	void downloadProgress(qint64, qint64);
-	void downloadFinished();
+    void translationUpdated();
+    void showUpdaterMessage(const QString &, const QString &);
+    void downloadProgress(qint64, qint64);
+    void downloadFinished();
 
 private:
-	bool isRemoteFileNewer(QDateTime lastModifiedRemote, const QString& localTranslationName);
-	bool updateAborted, updateAbortedQt;
+    bool isRemoteFileNewer(QDateTime lastModifiedRemote, const QString &localTranslationName);
+    bool updateAborted, updateAbortedQt;
 
-	qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
-	QNetworkAccessManager mAccessManager;
-	QNetworkReply* mReply = 0;
-	QNetworkReply* mReplyQt = 0;
+    qint64 mTotal, mTotalQt, mReceived, mReceivedQt;
+    QNetworkAccessManager mAccessManager;
+    QNetworkReply *mReply = 0;
+    QNetworkReply *mReplyQt = 0;
 };
 
 }
