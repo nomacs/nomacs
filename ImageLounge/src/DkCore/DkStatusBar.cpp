@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkStatusBar.cpp
  Created on:	12.01.2016
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -27,79 +27,83 @@
 
 #include "DkStatusBar.h"
 
-#include "DkSettings.h"
 #include "DkActionManager.h"
+#include "DkSettings.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QLabel>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
-namespace nmc {
+namespace nmc
+{
 
-DkStatusBar::DkStatusBar(QWidget* parent) : QStatusBar(parent) {
-	createLayout();
+DkStatusBar::DkStatusBar(QWidget *parent)
+    : QStatusBar(parent)
+{
+    createLayout();
 }
 
-void DkStatusBar::createLayout() {
+void DkStatusBar::createLayout()
+{
+    mLabels.resize(status_end);
+    setObjectName("DkStatusBar");
 
-	mLabels.resize(status_end);
-	setObjectName("DkStatusBar");
+    for (int idx = 0; idx < mLabels.size(); idx++) {
+        mLabels[idx] = new QLabel(this);
+        mLabels[idx]->setObjectName("statusBarLabel");
+        mLabels[idx]->hide();
 
-	for (int idx = 0; idx < mLabels.size(); idx++) {
-		mLabels[idx] = new QLabel(this);
-		mLabels[idx]->setObjectName("statusBarLabel");
-		mLabels[idx]->hide();
+        if (idx == 0) {
+            // mLabels[idx]->setToolTip(tr("CTRL activates the crosshair cursor"));
+            addWidget(mLabels[idx]);
+        } else
+            addPermanentWidget(mLabels[idx]);
+    }
 
-		if (idx == 0) {
-			//mLabels[idx]->setToolTip(tr("CTRL activates the crosshair cursor"));
-			addWidget(mLabels[idx]);
-		}
-		else
-			addPermanentWidget(mLabels[idx]);
-	}
-
-	hide();
+    hide();
 }
 
-void DkStatusBar::setMessage(const QString& msg, StatusLabel which) {
+void DkStatusBar::setMessage(const QString &msg, StatusLabel which)
+{
+    if (which < 0 || which >= mLabels.size())
+        return;
 
-	if (which < 0 || which >= mLabels.size())
-		return;
-
-	mLabels[which]->setVisible(!msg.isEmpty());
-	mLabels[which]->setText(msg);
+    mLabels[which]->setVisible(!msg.isEmpty());
+    mLabels[which]->setText(msg);
 }
 
 // DkStatusBarManager --------------------------------------------------------------------
-DkStatusBarManager::DkStatusBarManager() {
-
-	mStatusBar = new DkStatusBar();
+DkStatusBarManager::DkStatusBarManager()
+{
+    mStatusBar = new DkStatusBar();
 }
 
-DkStatusBarManager& DkStatusBarManager::instance() {
-
-	static DkStatusBarManager inst;
-	return inst;
+DkStatusBarManager &DkStatusBarManager::instance()
+{
+    static DkStatusBarManager inst;
+    return inst;
 }
 
-void DkStatusBarManager::setMessage(const QString& msg, DkStatusBar::StatusLabel which) {
-	mStatusBar->setMessage(msg, which);
+void DkStatusBarManager::setMessage(const QString &msg, DkStatusBar::StatusLabel which)
+{
+    mStatusBar->setMessage(msg, which);
 }
 
-void DkStatusBarManager::show(bool show, bool permanent) {
+void DkStatusBarManager::show(bool show, bool permanent)
+{
+    if (statusbar()->isVisible() == show)
+        return;
 
-	if (statusbar()->isVisible() == show)
-		return;
+    if (permanent)
+        DkSettingsManager::param().app().showStatusBar = show;
+    DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(DkSettingsManager::param().app().showStatusBar);
 
-	if (permanent)
-		DkSettingsManager::param().app().showStatusBar = show;
-	DkActionManager::instance().action(DkActionManager::menu_panel_statusbar)->setChecked(DkSettingsManager::param().app().showStatusBar);
-
-	statusbar()->setVisible(show);
+    statusbar()->setVisible(show);
 }
 
-DkStatusBar* DkStatusBarManager::statusbar() {
-	return mStatusBar;
+DkStatusBar *DkStatusBarManager::statusbar()
+{
+    return mStatusBar;
 }
 
 }

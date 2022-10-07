@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkBaseWidgets.h
  Created on:	11.02.2015
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2015 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2015 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2015 Florian Kleber <florian@nomacs.org>
@@ -27,13 +27,13 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QWidget>
-#include <QLabel>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDockWidget>
+#include <QLabel>
 #include <QScrollArea>
 #include <QTimer>
-#pragma warning(pop)	// no warnings from includes - end
+#include <QWidget>
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -51,152 +51,161 @@ class QGraphicsOpacityEffect;
 class QPushButton;
 class QComboBox;
 
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DkWidget : public QWidget {
-	Q_OBJECT
+class DllCoreExport DkWidget : public QWidget
+{
+    Q_OBJECT
 
 public:
-	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 protected:
-	void paintEvent(QPaintEvent* event) override;
-
+    void paintEvent(QPaintEvent *event) override;
 };
 
-class DllCoreExport DkFadeWidget : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkFadeWidget : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkFadeWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkFadeWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
-	void registerAction(QAction* action);
-	void block(bool blocked);
-	void setDisplaySettings(QBitArray* displayBits);
-	bool getCurrentDisplaySetting();
-	bool isHiding() const;
+    void registerAction(QAction *action);
+    void block(bool blocked);
+    void setDisplaySettings(QBitArray *displayBits);
+    bool getCurrentDisplaySetting();
+    bool isHiding() const;
 
-	enum {
-		pos_west,
-		pos_north,
-		pos_east,
-		pos_south,
-		pos_dock_hor,
-		pos_dock_ver,
+    enum {
+        pos_west,
+        pos_north,
+        pos_east,
+        pos_south,
+        pos_dock_hor,
+        pos_dock_ver,
 
-		pos_end,
-	};
+        pos_end,
+    };
 
 public slots:
-	virtual void show(bool saveSetting = true);
-	virtual void hide(bool saveSetting = true);
-	virtual void setVisible(bool visible, bool saveSetting = true);
+    virtual void show(bool saveSetting = true);
+    virtual void hide(bool saveSetting = true);
+    virtual void setVisible(bool visible, bool saveSetting = true);
 
-	void animateOpacityUp();
-	void animateOpacityDown();
-
-protected:
-
-	bool mBlocked;
-	bool mHiding;
-	bool mShowing;
-
-	QGraphicsOpacityEffect* mOpacityEffect;
-	QBitArray* mDisplaySettingsBits;
-	QAction* mAction = 0;
-
-	// functions
-	void init();
-};
-
-class DllCoreExport DkNamedWidget : public DkFadeWidget {
-	Q_OBJECT
-
-public:
-	DkNamedWidget(const QString& name, QWidget* parent);
-
-	QString name() const;
+    void animateOpacityUp();
+    void animateOpacityDown();
 
 protected:
-	QString mName;
+    bool mBlocked;
+    bool mHiding;
+    bool mShowing;
+
+    QGraphicsOpacityEffect *mOpacityEffect;
+    QBitArray *mDisplaySettingsBits;
+    QAction *mAction = 0;
+
+    // functions
+    void init();
 };
 
-class DllCoreExport DkLabel : public QLabel {
-	Q_OBJECT
+class DllCoreExport DkNamedWidget : public DkFadeWidget
+{
+    Q_OBJECT
 
 public:
-	DkLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkLabel();
+    DkNamedWidget(const QString &name, QWidget *parent);
 
-	virtual void showTimed(int time = 3000);
-	virtual void setText(const QString& msg, int time = 3000);
-	QString getText();
-	void setFontSize(int fontSize);
-	void stop();
-	void setFixedWidth(int fixedWidth);
+    QString name() const;
 
-	void block(bool blocked) {
-		mBlocked = blocked;
-	};
-	
-	void setMargin(const QPoint& margin) {
-		mMargin = margin;
-		updateStyleSheet();
-	};
+protected:
+    QString mName;
+};
+
+class DllCoreExport DkLabel : public QLabel
+{
+    Q_OBJECT
+
+public:
+    DkLabel(QWidget *parent = 0, const QString &text = QString());
+    virtual ~DkLabel();
+
+    virtual void showTimed(int time = 3000);
+    virtual void setText(const QString &msg, int time = 3000);
+    QString getText();
+    void setFontSize(int fontSize);
+    void stop();
+    void setFixedWidth(int fixedWidth);
+
+    void block(bool blocked)
+    {
+        mBlocked = blocked;
+    };
+
+    void setMargin(const QPoint &margin)
+    {
+        mMargin = margin;
+        updateStyleSheet();
+    };
 
 public slots:
-	virtual void hide();
+    virtual void hide();
 
 protected:
-	QWidget* mParent;
-	QTimer mTimer;
-	QString mText;
-	QColor mTextCol;
-	int mDefaultTime;
-	int mFontSize;
-	int mTime;
-	int mFixedWidth;
-	QPoint mMargin;
-	bool mBlocked;
+    QWidget *mParent;
+    QTimer mTimer;
+    QString mText;
+    QColor mTextCol;
+    int mDefaultTime;
+    int mFontSize;
+    int mTime;
+    int mFixedWidth;
+    QPoint mMargin;
+    bool mBlocked;
 
-	// functions
-	virtual void init();
-	void paintEvent(QPaintEvent *event) override;
-	virtual void draw(QPainter* painter);
+    // functions
+    virtual void init();
+    void paintEvent(QPaintEvent *event) override;
+    virtual void draw(QPainter *painter);
 
-	// for my children...
-	virtual void drawBackground(QPainter*) {};
-	virtual void setTextToLabel();
-	virtual void updateStyleSheet();
+    // for my children...
+    virtual void drawBackground(QPainter *){};
+    virtual void setTextToLabel();
+    virtual void updateStyleSheet();
 };
 
-class DllCoreExport DkElidedLabel : public QLabel {
-	Q_OBJECT
+class DllCoreExport DkElidedLabel : public QLabel
+{
+    Q_OBJECT
 
 public:
-	DkElidedLabel(QWidget *parent = 0, const QString &text = QString());
+    DkElidedLabel(QWidget *parent = 0, const QString &text = QString());
 
-	void setText(QString text);
-	QString text() const { return content; }
-	QSize minimumSizeHint();
-	QSize minimumSize();
-	int minimumWidth();
+    void setText(QString text);
+    QString text() const
+    {
+        return content;
+    }
+    QSize minimumSizeHint();
+    QSize minimumSize();
+    int minimumWidth();
 
 protected:
-	void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
-	void updateElision();
-	QString content;
+    void updateElision();
+    QString content;
 };
 
-class DkLabelBg : public DkLabel {
-	Q_OBJECT
+class DkLabelBg : public DkLabel
+{
+    Q_OBJECT
 
 public:
-	DkLabelBg(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkLabelBg() {};
-
+    DkLabelBg(QWidget *parent = 0, const QString &text = QString());
+    virtual ~DkLabelBg(){};
 };
 
 /**
@@ -205,79 +214,78 @@ public:
  * we need this class too, since we cannot derive from DkLabel & DkFadeWidget
  * at the same time -> both have QObject as common base class.
  **/
-class DkFadeLabel : public DkLabel {
-	Q_OBJECT
+class DkFadeLabel : public DkLabel
+{
+    Q_OBJECT
 
 public:
-	DkFadeLabel(QWidget* parent = 0, const QString& text = QString());
+    DkFadeLabel(QWidget *parent = 0, const QString &text = QString());
 
-	void block(bool blocked);
-	void registerAction(QAction* action);
-	void setDisplaySettings(QBitArray* displayBits);
-	bool getCurrentDisplaySetting();
+    void block(bool blocked);
+    void registerAction(QAction *action);
+    void setDisplaySettings(QBitArray *displayBits);
+    bool getCurrentDisplaySetting();
 
 public slots:
-	virtual void show(bool saveSetting = true);
-	virtual void hide(bool saveSetting = true);
-	virtual void setVisible(bool visible, bool saveSetting = true);
+    virtual void show(bool saveSetting = true);
+    virtual void hide(bool saveSetting = true);
+    virtual void setVisible(bool visible, bool saveSetting = true);
 
 protected slots:
-	void animateOpacityUp();
-	void animateOpacityDown();
+    void animateOpacityUp();
+    void animateOpacityDown();
 
 protected:
+    bool hiding;
+    bool showing;
+    QBitArray *displaySettingsBits;
 
-	bool hiding;
-	bool showing;
-	QBitArray* displaySettingsBits;
+    QAction *mAction = 0;
 
-	QAction* mAction = 0;
+    QGraphicsOpacityEffect *opacityEffect;
 
-	QGraphicsOpacityEffect *opacityEffect;
-
-	// functions
-	void init();
-
+    // functions
+    void init();
 };
 
-class DllCoreExport DkDockWidget : public QDockWidget {
-	Q_OBJECT
+class DllCoreExport DkDockWidget : public QDockWidget
+{
+    Q_OBJECT
 
 public:
-	DkDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags() );
-	~DkDockWidget();
+    DkDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    ~DkDockWidget();
 
-	void registerAction(QAction* action);
-	void setDisplaySettings(QBitArray* displayBits);
-	bool getCurrentDisplaySetting() const;
-	static bool testDisplaySettings(const QBitArray& displaySettingsBits);
-	Qt::DockWidgetArea getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const;
+    void registerAction(QAction *action);
+    void setDisplaySettings(QBitArray *displayBits);
+    bool getCurrentDisplaySetting() const;
+    static bool testDisplaySettings(const QBitArray &displaySettingsBits);
+    Qt::DockWidgetArea getDockLocationSettings(const Qt::DockWidgetArea &defaultArea) const;
 
 public slots:
-	virtual void setVisible(bool visible, bool saveSetting = true);
+    virtual void setVisible(bool visible, bool saveSetting = true);
 
 protected:
-	virtual void closeEvent(QCloseEvent* event) override;
+    virtual void closeEvent(QCloseEvent *event) override;
 
-	QBitArray* displaySettingsBits;
-	QAction* mAction = 0;
+    QBitArray *displaySettingsBits;
+    QAction *mAction = 0;
 };
 
-class DllCoreExport DkResizableScrollArea : public QScrollArea {
-	Q_OBJECT
+class DllCoreExport DkResizableScrollArea : public QScrollArea
+{
+    Q_OBJECT
 
 public:
-	DkResizableScrollArea(QWidget * parent = 0);
+    DkResizableScrollArea(QWidget *parent = 0);
 
-	void updateSize();
+    void updateSize();
 
-	virtual QSize sizeHint() const;
-	virtual QSize minimumSizeHint() const;
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
 
 protected:
-	bool eventFilter(QObject * o, QEvent * e);
-
+    bool eventFilter(QObject *o, QEvent *e);
 };
-
 
 }

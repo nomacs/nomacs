@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -30,11 +30,11 @@
 
 #include "DkManipulators.h"
 
-#pragma warning(push, 0)	// no warnings from includes
+#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #pragma warning(pop)
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -48,237 +48,238 @@
 
 // Qt defines
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 
-class DkGrayScaleManipulator : public DkBaseManipulator {
-
+class DkGrayScaleManipulator : public DkBaseManipulator
+{
 public:
-	DkGrayScaleManipulator(QAction* action = 0);
+    DkGrayScaleManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
-class DkAutoAdjustManipulator : public DkBaseManipulator {
-
+class DkAutoAdjustManipulator : public DkBaseManipulator
+{
 public:
-	DkAutoAdjustManipulator(QAction* action = 0);
+    DkAutoAdjustManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
-class DkNormalizeManipulator : public DkBaseManipulator {
-
+class DkNormalizeManipulator : public DkBaseManipulator
+{
 public:
-	DkNormalizeManipulator(QAction* action = 0);
+    DkNormalizeManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
-class DkInvertManipulator : public DkBaseManipulator {
-
+class DkInvertManipulator : public DkBaseManipulator
+{
 public:
-	DkInvertManipulator(QAction* action = 0);
+    DkInvertManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
-class DkFlipHManipulator : public DkBaseManipulator {
-
+class DkFlipHManipulator : public DkBaseManipulator
+{
 public:
-	DkFlipHManipulator(QAction* action = 0);
+    DkFlipHManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
-class DkFlipVManipulator : public DkBaseManipulator {
-
+class DkFlipVManipulator : public DkBaseManipulator
+{
 public:
-	DkFlipVManipulator(QAction* action = 0);
+    DkFlipVManipulator(QAction *action = 0);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 };
 
 // Extended --------------------------------------------------------------------
-class DllCoreExport DkTinyPlanetManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkTinyPlanetManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkTinyPlanetManipulator(QAction* action);
+    DkTinyPlanetManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setSize(int size);
-	int size() const;
+    void setSize(int size);
+    int size() const;
 
-	void setAngle(int angle);
-	int angle() const;
+    void setAngle(int angle);
+    int angle() const;
 
-	void setInverted(bool invert);
-	bool inverted() const;
+    void setInverted(bool invert);
+    bool inverted() const;
 
 private:
-	int mSize = 30;
-	int mAngle = 0;
-	bool mInverted = false;
+    int mSize = 30;
+    int mAngle = 0;
+    bool mInverted = false;
 };
 
-class DllCoreExport DkColorManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkColorManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkColorManipulator(QAction* action);
+    DkColorManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setColor(const QColor& col);
-	QColor color() const;
+    void setColor(const QColor &col);
+    QColor color() const;
 
 private:
-	QColor mColor = Qt::white;
+    QColor mColor = Qt::white;
 };
 
-class DllCoreExport DkBlurManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkBlurManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkBlurManipulator(QAction* action);
+    DkBlurManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setSigma(int sigma);
-	int sigma() const;
+    void setSigma(int sigma);
+    int sigma() const;
 
 private:
-	int mSigma = 5;
+    int mSigma = 5;
 };
 
-class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkUnsharpMaskManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkUnsharpMaskManipulator(QAction* action);
+    DkUnsharpMaskManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setSigma(int sigma);
-	int sigma() const;
+    void setSigma(int sigma);
+    int sigma() const;
 
-	void setAmount(int amount);
-	int amount() const;
+    void setAmount(int amount);
+    int amount() const;
 
 private:
-	int mSigma = 30;
-	int mAmount = 15;
+    int mSigma = 30;
+    int mAmount = 15;
 };
 
-class DllCoreExport DkRotateManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkRotateManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkRotateManipulator(QAction* action);
+    DkRotateManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setAngle(int angle);
-	int angle() const;
+    void setAngle(int angle);
+    int angle() const;
 
 private:
-	int mAngle = 0;
+    int mAngle = 0;
 };
 
-class DllCoreExport DkResizeManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkResizeManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkResizeManipulator(QAction* action);
+    DkResizeManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setScaleFactor(double sf);
-	double scaleFactor() const;
+    void setScaleFactor(double sf);
+    double scaleFactor() const;
 
-	void setInterpolation(int ipl);
-	int interpolation() const;
+    void setInterpolation(int ipl);
+    int interpolation() const;
 
-	void setCorrectGamma(bool ug);
-	bool correctGamma() const;
+    void setCorrectGamma(bool ug);
+    bool correctGamma() const;
 
 private:
-	double mScaleFactor = 1.0;
-	int mInterpolation = 1;
-	bool mCorrectGamma = false;
+    double mScaleFactor = 1.0;
+    int mInterpolation = 1;
+    bool mCorrectGamma = false;
 };
 
-class DllCoreExport DkThresholdManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkThresholdManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkThresholdManipulator(QAction* action);
+    DkThresholdManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setThreshold(int thr);
-	int threshold() const;
+    void setThreshold(int thr);
+    int threshold() const;
 
-	void setColor(bool col);
-	bool color() const;
+    void setColor(bool col);
+    bool color() const;
 
 private:
-	int mThreshold = 128;
-	bool mColor = false;
+    int mThreshold = 128;
+    bool mColor = false;
 };
 
-class DllCoreExport DkHueManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkHueManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkHueManipulator(QAction* action);
+    DkHueManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setHue(int hue);
-	int hue() const;
+    void setHue(int hue);
+    int hue() const;
 
-	void setSaturation(int sat);
-	int saturation() const;
+    void setSaturation(int sat);
+    int saturation() const;
 
-	void setValue(int val);
-	int value() const;
+    void setValue(int val);
+    int value() const;
 
 private:
-	int mHue = 0;
-	int mSat = 0;
-	int mValue = 0;
+    int mHue = 0;
+    int mSat = 0;
+    int mValue = 0;
 };
 
-class DllCoreExport DkExposureManipulator : public DkBaseManipulatorExt {
-
+class DllCoreExport DkExposureManipulator : public DkBaseManipulatorExt
+{
 public:
-	DkExposureManipulator(QAction* action);
+    DkExposureManipulator(QAction *action);
 
-	QImage apply(const QImage& img) const override;
-	QString errorMessage() const override;
+    QImage apply(const QImage &img) const override;
+    QString errorMessage() const override;
 
-	void setExposure(double exposure);
-	double exposure() const;
+    void setExposure(double exposure);
+    double exposure() const;
 
-	void setOffset(double offset);
-	double offset() const;
+    void setOffset(double offset);
+    double offset() const;
 
-	void setGamma(double gamma);
-	double gamma() const;
+    void setGamma(double gamma);
+    double gamma() const;
 
 private:
-	double mExposure = 0.0;
-	double mOffset = 0.0;
-	double mGamma = 1.0;
+    double mExposure = 0.0;
+    double mOffset = 0.0;
+    double mGamma = 1.0;
 };
 }

@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkImageLoader.h
  Created on:	21.04.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,10 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QTimer>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QImage>
-#pragma warning(pop)	// no warnings from includes - end
+#include <QTimer>
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -46,14 +46,15 @@
 #include "DkImageContainer.h"
 
 #ifdef Q_OS_LINUX
-	typedef  unsigned char byte;
+typedef unsigned char byte;
 #endif
 
 // Qt defines
 class QFileSystemWatcher;
 class QUrl;
 
-namespace nmc {
+namespace nmc
+{
 
 /**
  * This class is a basic image loader class.
@@ -61,152 +62,154 @@ namespace nmc {
  * holds the currently displayed image,
  * calls the load routines
  * and saves the image or the image metadata.
- **/ 
-class DllCoreExport DkImageLoader : public QObject {
-	Q_OBJECT
+ **/
+class DllCoreExport DkImageLoader : public QObject
+{
+    Q_OBJECT
 
 public:
+    DkImageLoader(const QString &filePath = QString());
+    virtual ~DkImageLoader();
 
-	DkImageLoader(const QString& filePath = QString());
-	virtual ~DkImageLoader();
+    static QStringList getFoldersRecursive(const QString &dirPath);
+    QFileInfoList updateSubFolders(const QString &rootDirPath);
+    QFileInfoList getFilteredFileInfoList(const QString &dirPath,
+                                          QStringList ignoreKeywords = QStringList(),
+                                          QStringList keywords = QStringList(),
+                                          QString folderKeywords = QString());
 
-	static QStringList getFoldersRecursive(const QString& dirPath);
-	QFileInfoList updateSubFolders(const QString& rootDirPath);
-	QFileInfoList getFilteredFileInfoList(const QString& dirPath, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QString folderKeywords = QString());
+    void rotateImage(double angle);
+    QSharedPointer<DkImageContainerT> getCurrentImage() const;
+    QSharedPointer<DkImageContainerT> getLastImage() const;
+    QString filePath() const;
+    QStringList getFileNames() const;
 
-	void rotateImage(double angle);
-	QSharedPointer<DkImageContainerT> getCurrentImage() const;
-	QSharedPointer<DkImageContainerT> getLastImage() const;
-	QString filePath() const;
-	QStringList getFileNames() const;
+    QVector<QSharedPointer<DkImageContainerT>> getImages();
+    void setImages(QVector<QSharedPointer<DkImageContainerT>> images);
+    QSharedPointer<DkImageContainerT> setImage(const QImage &img, const QString &editName, const QString &editFilePath = QString());
+    QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
+    void setImageUpdated();
+    void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
+    void sort();
 
-	QVector<QSharedPointer<DkImageContainerT> > getImages();
-	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
-	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editName, const QString& editFilePath = QString());
-	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
-	void setImageUpdated();
-	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
-	void sort();
+    // file selection
+    void firstFile();
+    void lastFile();
+    void clearPath();
+    void loadLastDir();
+    QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
 
-	// file selection
-	void firstFile();
-	void lastFile();
-	void clearPath();
-	void loadLastDir();
-	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
+    QString getDirPath() const;
+    QString getSavePath() const;
+    QString getCopyPath() const;
+    void setDir(const QString &dir);
+    void setSaveDir(const QString &dir);
 
-	QString getDirPath() const;
-	QString getSavePath() const;
-	QString getCopyPath() const;
-	void setDir(const QString& dir);
-	void setSaveDir(const QString& dir);
-	
-	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
-	QSharedPointer<DkImageContainerT> findFile(const QString& filePath) const;
-	int findFileIdx(const QString& filePath, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
-	
-	bool hasFile() const;
-	bool hasMovie() const;
-	bool hasSvg() const;
-	QString fileName() const;
+    QSharedPointer<DkImageContainerT> findOrCreateFile(const QString &filePath) const;
+    QSharedPointer<DkImageContainerT> findFile(const QString &filePath) const;
+    int findFileIdx(const QString &filePath, const QVector<QSharedPointer<DkImageContainerT>> &images) const;
 
-	void deactivate();
-	void activate(bool isActive = true);
-	bool hasImage() const;
-	bool isEdited() const;
-	int numFiles() const;
-	QImage getImage();
-	QImage getPixmap();
-	bool dirtyTiff();
+    bool hasFile() const;
+    bool hasMovie() const;
+    bool hasSvg() const;
+    QString fileName() const;
 
-	QStringList ignoreKeywords() const;
-	void setIgnoreKeywords(const QStringList& ignoreKeywords);
-	void appendIgnoreKeyword(const QString& keyword);
+    void deactivate();
+    void activate(bool isActive = true);
+    bool hasImage() const;
+    bool isEdited() const;
+    int numFiles() const;
+    QImage getImage();
+    QImage getPixmap();
+    bool dirtyTiff();
 
-	QStringList keywords() const;
-	void setKeywords(const QStringList& ignoreKeywords);
-	void appendKeyword(const QString& keyword);
+    QStringList ignoreKeywords() const;
+    void setIgnoreKeywords(const QStringList &ignoreKeywords);
+    void appendIgnoreKeyword(const QString &keyword);
 
-	static bool restoreFile(const QString &filePath);
+    QStringList keywords() const;
+    void setKeywords(const QStringList &ignoreKeywords);
+    void appendKeyword(const QString &keyword);
+
+    static bool restoreFile(const QString &filePath);
 
 #ifdef WITH_QUAZIP
-	bool loadZipArchive(const QString& zipPath);
+    bool loadZipArchive(const QString &zipPath);
 #endif
 
 signals:
-	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
-	void setPlayer(bool play) const;
+    void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
+    void setPlayer(bool play) const;
 
-	// new signals
-	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image) const;
-	void imageUpdatedSignal(int idx) const;	// folder scrollbar needs that
-	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true) const;
-	void showInfoSignal(const QString& msg, int time = 3000, int position = 0) const;
-	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images) const;
-	void imageHasGPSSignal(bool hasGPS) const;
-	void loadImageToTab(const QString& filePath) const;
+    // new signals
+    void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image) const;
+    void imageUpdatedSignal(int idx) const; // folder scrollbar needs that
+    void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true) const;
+    void showInfoSignal(const QString &msg, int time = 3000, int position = 0) const;
+    void updateDirSignal(QVector<QSharedPointer<DkImageContainerT>> images) const;
+    void imageHasGPSSignal(bool hasGPS) const;
+    void loadImageToTab(const QString &filePath) const;
 
 public slots:
-	void undo();
-	void redo();
-	void changeFile(int skipIdx);
-	void directoryChanged(const QString& path = QString());
-	void saveFileWeb(const QImage& saveImg);
-	void saveUserFileAs(const QImage& saveImg, bool silent);
-	void copyUserFile();
-	void saveFile(const QString& filename, const QImage& saveImg = QImage(), const QString& fileFilter = "", int compression = -1, bool threaded = true);
-	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
-	void load(const QString& filePath);
-	void downloadFile(const QUrl& url);
-	bool deleteFile();
-	QString saveTempFile(const QImage& img, const QString& name = "img", const QString& fileExt = ".png", bool force = false, bool threaded = true);
-	void setFolderFilter(const QString& filter);
-	void setFolderFilters(const QStringList& filters);
-	QString getFolderFilter();
-	QStringList getFolderFilters();
-	bool loadDir(const QString& newDirPath, bool scanRecursive = true);
-	void errorDialog(const QString& msg) const;
-	void loadFileAt(int idx);
+    void undo();
+    void redo();
+    void changeFile(int skipIdx);
+    void directoryChanged(const QString &path = QString());
+    void saveFileWeb(const QImage &saveImg);
+    void saveUserFileAs(const QImage &saveImg, bool silent);
+    void copyUserFile();
+    void saveFile(const QString &filename, const QImage &saveImg = QImage(), const QString &fileFilter = "", int compression = -1, bool threaded = true);
+    void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
+    void load(const QString &filePath);
+    void downloadFile(const QUrl &url);
+    bool deleteFile();
+    QString saveTempFile(const QImage &img, const QString &name = "img", const QString &fileExt = ".png", bool force = false, bool threaded = true);
+    void setFolderFilter(const QString &filter);
+    void setFolderFilters(const QStringList &filters);
+    QString getFolderFilter();
+    QStringList getFolderFilters();
+    bool loadDir(const QString &newDirPath, bool scanRecursive = true);
+    void errorDialog(const QString &msg) const;
+    void loadFileAt(int idx);
 
-	// new slots
-	void currentImageUpdated() const;
-	void imageLoaded(bool loaded = false);
-	void imageSaved(const QString& file, bool saved = true, bool loadToTab = true);
-	void imagesSorted();
-	bool unloadFile();
-	void reloadImage();
-	void showOnMap();
+    // new slots
+    void currentImageUpdated() const;
+    void imageLoaded(bool loaded = false);
+    void imageSaved(const QString &file, bool saved = true, bool loadToTab = true);
+    void imagesSorted();
+    bool unloadFile();
+    void reloadImage();
+    void showOnMap();
 
 protected:
-	// functions
-	void updateCacher(QSharedPointer<DkImageContainerT> imgC);
-	int getNextFolderIdx(int folderIdx);
-	int getPrevFolderIdx(int folderIdx);
-	void updateHistory();
-	void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images);
-	void createImages(const QFileInfoList& files, bool sort = true);
-	QVector<QSharedPointer<DkImageContainerT > > sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const;
+    // functions
+    void updateCacher(QSharedPointer<DkImageContainerT> imgC);
+    int getNextFolderIdx(int folderIdx);
+    int getPrevFolderIdx(int folderIdx);
+    void updateHistory();
+    void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
+    void createImages(const QFileInfoList &files, bool sort = true);
+    QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
 
-	QStringList mIgnoreKeywords;
-	QStringList mKeywords;
-	QString mFolderFilterString;		// are deleted if a new folder is opened
+    QStringList mIgnoreKeywords;
+    QStringList mKeywords;
+    QString mFolderFilterString; // are deleted if a new folder is opened
 
-	QTimer mDelayedUpdateTimer;
-	bool mTimerBlockedUpdate = false;
-	QString mCurrentDir;
-	QString mSaveDir;
-	QString mCopyDir;
-	QFileSystemWatcher* mDirWatcher = 0;
-	QStringList mSubFolders;
-	QVector<QSharedPointer<DkImageContainerT > > mImages;
-	QSharedPointer<DkImageContainerT > mCurrentImage;
-	QSharedPointer<DkImageContainerT > mLastImageLoaded;
-	bool mFolderUpdated = false;
-	int mTmpFileIdx = 0;
-	bool mSortingImages = false;
-	bool mSortingIsDirty = false;
-	QFutureWatcher<QVector<QSharedPointer<DkImageContainerT > > > mCreateImageWatcher;
-
+    QTimer mDelayedUpdateTimer;
+    bool mTimerBlockedUpdate = false;
+    QString mCurrentDir;
+    QString mSaveDir;
+    QString mCopyDir;
+    QFileSystemWatcher *mDirWatcher = 0;
+    QStringList mSubFolders;
+    QVector<QSharedPointer<DkImageContainerT>> mImages;
+    QSharedPointer<DkImageContainerT> mCurrentImage;
+    QSharedPointer<DkImageContainerT> mLastImageLoaded;
+    bool mFolderUpdated = false;
+    int mTmpFileIdx = 0;
+    bool mSortingImages = false;
+    bool mSortingIsDirty = false;
+    QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
 };
 
 }

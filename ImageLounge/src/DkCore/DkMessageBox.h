@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkMessageBox.h
  Created on:	28.03.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
@@ -27,10 +27,10 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QDialog>
 #include <QMessageBox>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -46,40 +46,41 @@
 class QDialogButtonBox;
 class QCheckBox;
 
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DkMessageBox : public QDialog {
-	Q_OBJECT
+class DllCoreExport DkMessageBox : public QDialog
+{
+    Q_OBJECT
 
 public:
-	DkMessageBox(QMessageBox::Icon icon, 
-		const QString& title, 
-		const QString& text, 
-		QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-		QWidget* parent = 0, 
-		Qt::WindowFlags f = Qt::Dialog);
-	DkMessageBox(QWidget* parent = 0);
+    DkMessageBox(QMessageBox::Icon icon,
+                 const QString &title,
+                 const QString &text,
+                 QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
+                 QWidget *parent = 0,
+                 Qt::WindowFlags f = Qt::Dialog);
+    DkMessageBox(QWidget *parent = 0);
 
-	~DkMessageBox();
+    ~DkMessageBox();
 
-	virtual void setVisible(bool visible) override;
-	void setDefaultButton(QMessageBox::StandardButton button);
-	void setButtonText(QMessageBox::StandardButton button, const QString &text);
+    virtual void setVisible(bool visible) override;
+    void setDefaultButton(QMessageBox::StandardButton button);
+    void setButtonText(QMessageBox::StandardButton button, const QString &text);
 
 public slots:
-	void buttonClicked(QAbstractButton* button);
-	int exec() override;
+    void buttonClicked(QAbstractButton *button);
+    int exec() override;
 
 protected:
+    QLabel *iconLabel;
+    QLabel *textLabel;
+    QMessageBox::Icon icon;
+    QDialogButtonBox *buttonBox;
+    QCheckBox *showAgain;
 
-	QLabel* iconLabel;
-	QLabel* textLabel;
-	QMessageBox::Icon icon;
-	QDialogButtonBox* buttonBox;
-	QCheckBox* showAgain;
-
-	void createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons);
-	void updateSize();
+    void createLayout(const QMessageBox::Icon &userIcon, const QString &userText, QMessageBox::StandardButtons buttons);
+    void updateSize();
 };
 
 }

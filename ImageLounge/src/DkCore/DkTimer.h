@@ -28,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include <time.h>
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QObject>
 #include <QTime>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -43,36 +43,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
-namespace nmc {
+namespace nmc
+{
 
 /**
  * A small class which measures the time.
  * This class is designed to measure the time of a method, especially
  * intervals and the total time can be measured.
  **/
-class DllCoreExport DkTimer : public QObject {
-	Q_OBJECT
+class DllCoreExport DkTimer : public QObject
+{
+    Q_OBJECT
 
 public:
+    /**
+     * Initializes the class and stops the clock.
+     **/
+    DkTimer();
+    virtual ~DkTimer()
+    {
+    }
 
-	/**
-	* Initializes the class and stops the clock.
-	**/
-	DkTimer();
-	virtual ~DkTimer() {}
+    friend DllCoreExport QDataStream &operator<<(QDataStream &s, const DkTimer &t);
+    friend DllCoreExport QDebug operator<<(QDebug d, const DkTimer &timer);
 
-	friend DllCoreExport QDataStream& operator<<(QDataStream& s, const DkTimer& t);
-	friend DllCoreExport QDebug operator<< (QDebug d, const DkTimer &timer);
-
-	QString getTotal() const;
-	virtual QDataStream& put(QDataStream& s) const;
-	QString stringifyTime(int ct) const;
-	int elapsed() const;
-	void start();
+    QString getTotal() const;
+    virtual QDataStream &put(QDataStream &s) const;
+    QString stringifyTime(int ct) const;
+    int elapsed() const;
+    void start();
 
 protected:
-
-	QTime mTimer;
+    QTime mTimer;
 };
 
 }

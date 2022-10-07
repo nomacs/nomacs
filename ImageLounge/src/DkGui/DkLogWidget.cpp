@@ -30,55 +30,58 @@ related links:
 
 #include "DkUtils.h"
 
-#pragma warning(push, 0)	// no warnings from includes
-#include <QTextEdit>
-#include <QVBoxLayout>
+#pragma warning(push, 0) // no warnings from includes
 #include <QAction>
 #include <QPushButton>
+#include <QTextEdit>
+#include <QVBoxLayout>
 #pragma warning(pop)
 
-namespace nmc {
+namespace nmc
+{
 
 QSharedPointer<DkMessageQueuer> msgQueuer = QSharedPointer<DkMessageQueuer>();
 
-// -------------------------------------------------------------------- DkLogWidget 
-DkLogWidget::DkLogWidget(QWidget* parent) : DkWidget(parent) {
+// -------------------------------------------------------------------- DkLogWidget
+DkLogWidget::DkLogWidget(QWidget *parent)
+    : DkWidget(parent)
+{
+    setObjectName("logWidget");
+    createLayout();
 
-	setObjectName("logWidget");
-	createLayout();
+    if (!msgQueuer)
+        msgQueuer = QSharedPointer<DkMessageQueuer>(new DkMessageQueuer());
 
-	if (!msgQueuer)
-		msgQueuer = QSharedPointer<DkMessageQueuer>(new DkMessageQueuer());
+    connect(msgQueuer.data(), SIGNAL(message(const QString &)), this, SLOT(log(const QString &)), Qt::QueuedConnection);
 
-	connect(msgQueuer.data(), SIGNAL(message(const QString &)), this, SLOT(log(const QString &)), Qt::QueuedConnection);
-
-	qInstallMessageHandler(widgetMessageHandler);
-	QMetaObject::connectSlotsByName(this);
+    qInstallMessageHandler(widgetMessageHandler);
+    QMetaObject::connectSlotsByName(this);
 }
 
-void DkLogWidget::log(const QString & msg) {
-
-	mTextEdit->append(msg);
+void DkLogWidget::log(const QString &msg)
+{
+    mTextEdit->append(msg);
 }
 
-void DkLogWidget::on_clearButton_pressed() {
-	mTextEdit->clear();
+void DkLogWidget::on_clearButton_pressed()
+{
+    mTextEdit->clear();
 }
 
-void DkLogWidget::createLayout() {
+void DkLogWidget::createLayout()
+{
+    mTextEdit = new QTextEdit(this);
+    mTextEdit->setReadOnly(true);
 
-	mTextEdit = new QTextEdit(this);
-	mTextEdit->setReadOnly(true);
+    QPushButton *clearButton = new QPushButton(this);
+    clearButton->setFlat(true);
+    clearButton->setObjectName("clearButton");
+    clearButton->setFixedSize(QSize(32, 32));
 
-	QPushButton* clearButton = new QPushButton(this);
-	clearButton->setFlat(true);
-	clearButton->setObjectName("clearButton");
-	clearButton->setFixedSize(QSize(32, 32));
-
-	QGridLayout* layout = new QGridLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(mTextEdit, 1, 1);
-	layout->addWidget(clearButton, 1, 1, Qt::AlignRight | Qt::AlignTop);
+    QGridLayout *layout = new QGridLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(mTextEdit, 1, 1);
+    layout->addWidget(clearButton, 1, 1, Qt::AlignRight | Qt::AlignTop);
 }
 
 /// <summary>
@@ -89,62 +92,63 @@ void DkLogWidget::createLayout() {
 /// <param name="type">The message type (QtDebugMsg are not written to the log).</param>
 /// <param name=""></param>
 /// <param name="msg">The message.</param>
-void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg) {
+void widgetMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
+{
+    if (msgQueuer) {
+        msgQueuer->log(type, msg);
+    }
 
-	if (msgQueuer) {
-		msgQueuer->log(type, msg);
-	}
-
-	DkUtils::logToFile(type, msg);
+    DkUtils::logToFile(type, msg);
 }
 
-
-// -------------------------------------------------------------------- DkLogDock 
-DkLogDock::DkLogDock(const QString& title, QWidget* parent, Qt::WindowFlags flags) : DkDockWidget(title, parent, flags) {
-	
-	setObjectName("logDock");
-	createLayout();
+// -------------------------------------------------------------------- DkLogDock
+DkLogDock::DkLogDock(const QString &title, QWidget *parent, Qt::WindowFlags flags)
+    : DkDockWidget(title, parent, flags)
+{
+    setObjectName("logDock");
+    createLayout();
 }
 
-void DkLogDock::createLayout() {
-	
-	DkLogWidget* logWidget = new DkLogWidget(this);
-	setWidget(logWidget);
+void DkLogDock::createLayout()
+{
+    DkLogWidget *logWidget = new DkLogWidget(this);
+    setWidget(logWidget);
 }
 
-DkMessageQueuer::DkMessageQueuer() {
+DkMessageQueuer::DkMessageQueuer()
+{
 }
 
-void DkMessageQueuer::log(QtMsgType type, const QString & msg) {
-
-	QString txt;
+void DkMessageQueuer::log(QtMsgType type, const QString &msg)
+{
+    QString txt;
 
 #if QT_VERSION >= 0x050500
-	switch (type) {
-	case QtDebugMsg:
-		//return;	// ignore debug messages
-		txt = "<span style=\"color: #aaa\"><i>" + msg + "</i></span>";
-		break;
-	case QtInfoMsg:
-		txt = "<span style=\"color: #21729e\">" + msg + "</span>";
-		break;
-	case QtWarningMsg:
-		txt = "<span style=\"color: #e29b0d\">[Warning] " + msg + "</span>";
-		break;
-	case QtCriticalMsg:
-		txt = "<span style=\"color: #a81e1e\">[Critical] " + msg + "</span>";
-		break;
-	case QtFatalMsg:
-		txt = "<span style=\"color: #a81e1e\">[FATAL] " + msg + "</span>";
-		break;
-	default:
-		return;
-	}
+    switch (type) {
+    case QtDebugMsg:
+        // return;	// ignore debug messages
+        txt = "<span style=\"color: #aaa\"><i>" + msg + "</i></span>";
+        break;
+    case QtInfoMsg:
+        txt = "<span style=\"color: #21729e\">" + msg + "</span>";
+        break;
+    case QtWarningMsg:
+        txt = "<span style=\"color: #e29b0d\">[Warning] " + msg + "</span>";
+        break;
+    case QtCriticalMsg:
+        txt = "<span style=\"color: #a81e1e\">[Critical] " + msg + "</span>";
+        break;
+    case QtFatalMsg:
+        txt = "<span style=\"color: #a81e1e\">[FATAL] " + msg + "</span>";
+        break;
+    default:
+        return;
+    }
 #else
-	txt = msg;
+    txt = msg;
 #endif
 
-	emit message(txt);
+    emit message(txt);
 }
 
 }

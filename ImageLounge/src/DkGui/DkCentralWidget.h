@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkCentralWidget.cpp
  Created on:	14.11.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,14 +27,14 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QWidget>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
-#include "DkImageContainer.h"
 #include "DkBaseWidgets.h"
+#include "DkImageContainer.h"
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -52,7 +52,8 @@ class QMimeData;
 class QSettings;
 class QStackedLayout;
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 class DkImageLoader;
@@ -62,166 +63,167 @@ class DkProgressBar;
 class DkBatchWidget;
 class DkCropViewPort;
 
-class DllCoreExport DkTabInfo : public QObject {
-	Q_OBJECT
+class DllCoreExport DkTabInfo : public QObject
+{
+    Q_OBJECT
 
 public:
+    enum TabMode {
+        tab_single_image,
+        tab_thumb_preview,
+        tab_recent_files,
+        tab_preferences,
+        tab_batch,
+        tab_crop,
 
-	enum TabMode {
-		tab_single_image,
-		tab_thumb_preview,
-		tab_recent_files,
-		tab_preferences,
-		tab_batch,
-		tab_crop,
+        tab_empty,
 
-		tab_empty,
+        tab_end
+    };
 
-		tab_end
-	};
+    DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1, QObject *parent = 0);
+    DkTabInfo(TabMode mode, int idx = -1, QObject *parent = 0);
+    ~DkTabInfo();
 
-	DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1, QObject* parent = 0);
-	DkTabInfo(TabMode mode, int idx = -1, QObject* parent = 0);
-	~DkTabInfo();
+    bool operator==(const DkTabInfo &o) const;
 
-	bool operator==(const DkTabInfo& o) const;
+    QString getFilePath() const;
+    void setFilePath(const QString &filePath);
+    bool setDirPath(const QString &dirPath);
 
-	QString getFilePath() const;
-	void setFilePath(const QString& filePath);
-	bool setDirPath(const QString& dirPath);
+    QSharedPointer<DkImageContainerT> getImage() const;
+    void setImage(QSharedPointer<DkImageContainerT> imgC);
 
-	QSharedPointer<DkImageContainerT> getImage() const;
-	void setImage(QSharedPointer<DkImageContainerT> imgC);
+    QSharedPointer<DkImageLoader> getImageLoader() const;
 
-	QSharedPointer<DkImageLoader> getImageLoader() const;
+    void deactivate();
+    void activate(bool isActive = true);
 
-	void deactivate();
-	void activate(bool isActive = true);
+    int getTabIdx() const;
+    void setTabIdx(int idx);
 
-	int getTabIdx() const;
-	void setTabIdx(int idx);
-	
-	void loadSettings(const QSettings& settings);
-	void saveSettings(QSettings& settings) const;
+    void loadSettings(const QSettings &settings);
+    void saveSettings(QSettings &settings) const;
 
-	QIcon getIcon();
-	QString getTabText() const;
+    QIcon getIcon();
+    QString getTabText() const;
 
-	TabMode getMode() const;
-	void setMode(int mode);
+    TabMode getMode() const;
+    void setMode(int mode);
 
 protected:
-	QSharedPointer<DkImageLoader> mImageLoader;
-	int mTabIdx = 0;
-	enum TabMode mTabMode = tab_recent_files;
-	QString mFilePath = "";
+    QSharedPointer<DkImageLoader> mImageLoader;
+    int mTabIdx = 0;
+    enum TabMode mTabMode = tab_recent_files;
+    QString mFilePath = "";
 };
 
 class DkViewPort;
 class DkThumbScrollWidget;
 class DkRecentFilesWidget;
 
-class DllCoreExport DkCentralWidget : public DkWidget {
-	Q_OBJECT
+class DllCoreExport DkCentralWidget : public DkWidget
+{
+    Q_OBJECT
 
 public:
-	DkCentralWidget(QWidget* parent = 0);
-	~DkCentralWidget();
+    DkCentralWidget(QWidget *parent = 0);
+    ~DkCentralWidget();
 
-	bool hasViewPort() const;
-	DkViewPort* getViewPort() const;
-	DkThumbScrollWidget* getThumbScrollWidget() const;
-	QString getCurrentDir() const;
+    bool hasViewPort() const;
+    DkViewPort *getViewPort() const;
+    DkThumbScrollWidget *getThumbScrollWidget() const;
+    QString getCurrentDir() const;
 
-	void clearAllTabs();
-	void setActiveTab(int idx) const;
-	int getActiveTab();
-	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
-	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
-	void loadSettings();
-	void saveSettings(bool clearTabs = false) const;
-	int currentViewMode() const;
-	QSharedPointer<DkImageContainerT> getCurrentImage() const;
-	QString getCurrentFilePath() const;
-	QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
-	bool requestClose() const;
+    void clearAllTabs();
+    void setActiveTab(int idx) const;
+    int getActiveTab();
+    void updateTab(QSharedPointer<DkTabInfo> tabInfo);
+    QVector<QSharedPointer<DkTabInfo>> getTabs() const;
+    void loadSettings();
+    void saveSettings(bool clearTabs = false) const;
+    int currentViewMode() const;
+    QSharedPointer<DkImageContainerT> getCurrentImage() const;
+    QString getCurrentFilePath() const;
+    QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
+    bool requestClose() const;
 
 signals:
-	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
-	void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
-	void imageHasGPSSignal(bool) const;
-	
+    void imageUpdatedSignal(QSharedPointer<DkImageContainerT>) const;
+    void imageLoadedSignal(QSharedPointer<DkImageContainerT>) const;
+    void imageHasGPSSignal(bool) const;
+
 public slots:
-	void imageLoaded(QSharedPointer<DkImageContainerT> img);
-	void currentTabChanged(int idx);
-	void tabCloseRequested(int idx);
-	void tabMoved(int from, int to);
-	void setTabList(QVector<QSharedPointer<DkTabInfo> > tabInfos, int activeIndex = -1);
-	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1, bool background = false);
-	void addTab(const QString& filePath, int idx = -1, bool background = false);
-	void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
-	void removeTab(int tabIdx = -1);
-	void nextTab() const;
-	void previousTab() const;
-	void showThumbView(bool show = true);
-	void showViewPort(bool show = true);
-	void showRecentFiles(bool show = true);
-	void showPreferences(bool show = true);
-	void showTabs(bool show = true);
-	void pasteImage();
-	void loadFileToTab(const QString& filePath);
-	void loadFile(const QString& filePath, bool newTab = false);
-	void loadDir(const QString& filePath);
-	void loadDirToTab(const QString& dirPath);
-	void loadUrl(const QUrl& urls, bool newTab = false);
-	void loadUrls(const QList<QUrl>& urls, const int maxUrlsToLoad = 20);
-	void openBatch(const QStringList& selectedFiles = QStringList());
-	void showBatch(bool show = true);
-	void openCrop();
-	void showCrop(bool show = true);	// hide function?!
-	void openPreferences();
-	void restart() const;
-	void showProgress(bool show, int time = -1);
-	void startSlideshow(bool start = true) const;
-	void setInfo(const QString& msg) const;
+    void imageLoaded(QSharedPointer<DkImageContainerT> img);
+    void currentTabChanged(int idx);
+    void tabCloseRequested(int idx);
+    void tabMoved(int from, int to);
+    void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
+    void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1, bool background = false);
+    void addTab(const QString &filePath, int idx = -1, bool background = false);
+    void addTab(const QSharedPointer<DkTabInfo> tabInfo, bool background = false);
+    void removeTab(int tabIdx = -1);
+    void nextTab() const;
+    void previousTab() const;
+    void showThumbView(bool show = true);
+    void showViewPort(bool show = true);
+    void showRecentFiles(bool show = true);
+    void showPreferences(bool show = true);
+    void showTabs(bool show = true);
+    void pasteImage();
+    void loadFileToTab(const QString &filePath);
+    void loadFile(const QString &filePath, bool newTab = false);
+    void loadDir(const QString &filePath);
+    void loadDirToTab(const QString &dirPath);
+    void loadUrl(const QUrl &urls, bool newTab = false);
+    void loadUrls(const QList<QUrl> &urls, const int maxUrlsToLoad = 20);
+    void openBatch(const QStringList &selectedFiles = QStringList());
+    void showBatch(bool show = true);
+    void openCrop();
+    void showCrop(bool show = true); // hide function?!
+    void openPreferences();
+    void restart() const;
+    void showProgress(bool show, int time = -1);
+    void startSlideshow(bool start = true) const;
+    void setInfo(const QString &msg) const;
 
 protected:
-	QTabBar* mTabbar = 0;
-	DkProgressBar* mProgressBar = 0;
-	QVector<QSharedPointer<DkTabInfo> > mTabInfos;
+    QTabBar *mTabbar = 0;
+    DkProgressBar *mProgressBar = 0;
+    QVector<QSharedPointer<DkTabInfo>> mTabInfos;
 
-	QVector<QWidget*> mWidgets;
-	QStackedLayout* mViewLayout = 0;
+    QVector<QWidget *> mWidgets;
+    QStackedLayout *mViewLayout = 0;
 
-	void dropEvent(QDropEvent *event) override;
-	void dragEnterEvent(QDragEnterEvent *event) override;
-	void paintEvent(QPaintEvent* ev) override;
+    void dropEvent(QDropEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void paintEvent(QPaintEvent *ev) override;
 
-	void createLayout();
-	void updateTabIdx();
-	void switchWidget(int widget);
-	void switchWidget(QWidget* widget = 0);
-	bool loadFromMime(const QMimeData* mimeData);
-	bool loadCascadeTrainingFiles(QList<QUrl> urls);
-	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
+    void createLayout();
+    void updateTabIdx();
+    void switchWidget(int widget);
+    void switchWidget(QWidget *widget = 0);
+    bool loadFromMime(const QMimeData *mimeData);
+    bool loadCascadeTrainingFiles(QList<QUrl> urls);
+    void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 
-	DkPreferenceWidget* createPreferences();
-	DkRecentFilesWidget* createRecentFiles();
-	DkThumbScrollWidget* createThumbScrollWidget();
-	DkBatchWidget* createBatch();
-	DkCropViewPort* createCrop();
-	void createViewPort();
+    DkPreferenceWidget *createPreferences();
+    DkRecentFilesWidget *createRecentFiles();
+    DkThumbScrollWidget *createThumbScrollWidget();
+    DkBatchWidget *createBatch();
+    DkCropViewPort *createCrop();
+    void createViewPort();
 
-	enum {
-		viewport_widget,
-		thumbs_widget,
-		recent_files_widget,
-		preference_widget,
-		batch_widget,
-		crop_widget,
+    enum {
+        viewport_widget,
+        thumbs_widget,
+        recent_files_widget,
+        preference_widget,
+        batch_widget,
+        crop_widget,
 
-		widget_end
-	};
+        widget_end
+    };
 };
 
 }

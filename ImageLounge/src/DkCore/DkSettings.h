@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkSettings.h
  Created on:	07.07.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,16 +27,16 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QSettings>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
+#include <QSettings>
 #include <QSharedPointer>
 #include <QVector>
-#pragma warning(pop)	// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -51,395 +51,395 @@
 class QFileInfo;
 class QTranslator;
 
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DefaultSettings : public QSettings {
-
+class DllCoreExport DefaultSettings : public QSettings
+{
 public:
-	DefaultSettings();
+    DefaultSettings();
 };
 
-class DllCoreExport DkFileFilterHandling {
-
+class DllCoreExport DkFileFilterHandling
+{
 public:
-	DkFileFilterHandling() {};
-	void registerNomacs(bool showDefaultApps = false);
-	void registerFileType(const QString& filterString, const QString& attribute, bool add);
-	void showDefaultSoftware() const;
+    DkFileFilterHandling(){};
+    void registerNomacs(bool showDefaultApps = false);
+    void registerFileType(const QString &filterString, const QString &attribute, bool add);
+    void showDefaultSoftware() const;
 
-	static void registerFileAssociations();
+    static void registerFileAssociations();
 
 protected:
-	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);
-	void registerExtension(const QString& ext, const QString& progKey, bool add);
-	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
-	void registerDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
-	QString getIconID(const QString& ext) const;
+    QString registerProgID(const QString &ext, const QString &friendlyName, bool add);
+    void registerExtension(const QString &ext, const QString &progKey, bool add);
+    void setAsDefaultApp(const QString &ext, const QString &progKey, bool defaultApp);
+    void registerDefaultApp(const QString &ext, const QString &progKey, bool defaultApp);
+    QString getIconID(const QString &ext) const;
 
-	QStringList getExtensions(const QString& filter) const;
-	QStringList getExtensions(const QString& filter, QString& friendlyName) const;
+    QStringList getExtensions(const QString &filter) const;
+    QStringList getExtensions(const QString &filter, QString &friendlyName) const;
 };
 
-class DllCoreExport DkThemeManager {
-
+class DllCoreExport DkThemeManager
+{
 public:
-	DkThemeManager() {};
+    DkThemeManager(){};
 
-	QStringList getAvailableThemes() const;
-	QString getCurrentThemeName() const;
-	QString themeDir() const;
+    QStringList getAvailableThemes() const;
+    QString getCurrentThemeName() const;
+    QString themeDir() const;
 
-	void setCurrentTheme(const QString& themeName) const;
-	QString loadTheme(const QString& themeName) const;
-	
-	QString loadStylesheet() const;
-	void applyTheme() const;
+    void setCurrentTheme(const QString &themeName) const;
+    QString loadTheme(const QString &themeName) const;
 
-	QString cleanThemeName(const QString& theme) const;
-	QStringList cleanThemeNames(const QStringList& themes) const;
+    QString loadStylesheet() const;
+    void applyTheme() const;
+
+    QString cleanThemeName(const QString &theme) const;
+    QStringList cleanThemeNames(const QStringList &themes) const;
 
 protected:
-	QString parseColors(const QString & styleSheet) const;
-	QString replaceColors(const QString & cssString) const;
+    QString parseColors(const QString &styleSheet) const;
+    QString replaceColors(const QString &cssString) const;
 };
 
-class DllCoreExport DkSettings {
-
+class DllCoreExport DkSettings
+{
 public:
-	DkSettings();
+    DkSettings();
 
-	enum modes {
-		mode_default = 0,
-		mode_frameless,
-		mode_contrast,
-		mode_default_fullscreen,
-		mode_frameless_fullscreen,
-		mode_contrast_fullscreen,
-		mode_end,
-	};
+    enum modes {
+        mode_default = 0,
+        mode_frameless,
+        mode_contrast,
+        mode_default_fullscreen,
+        mode_frameless_fullscreen,
+        mode_contrast_fullscreen,
+        mode_end,
+    };
 
-	enum sortMode {
-		sort_filename,
-		sort_date_created,
-		sort_date_modified,
-		sort_random,
-		sort_end,
-	};
+    enum sortMode {
+        sort_filename,
+        sort_date_created,
+        sort_date_modified,
+        sort_random,
+        sort_end,
+    };
 
-	enum sortDir {
-		sort_ascending,
-		sort_descending,
+    enum sortDir {
+        sort_ascending,
+        sort_descending,
 
-		sort_dir_end,
-	};
+        sort_dir_end,
+    };
 
-	enum rawThumb {
-		raw_thumb_always,
-		raw_thumb_if_large,
-		raw_thumb_never,
+    enum rawThumb {
+        raw_thumb_always,
+        raw_thumb_if_large,
+        raw_thumb_never,
 
-		raw_thumb_end,
-	};
+        raw_thumb_end,
+    };
 
-	enum keepZoom {
-		zoom_always_keep,
-		zoom_keep_same_size,
-		zoom_never_keep,
+    enum keepZoom {
+        zoom_always_keep,
+        zoom_keep_same_size,
+        zoom_never_keep,
 
-		zoom_end,
-	};
+        zoom_end,
+    };
 
-	enum TransitionMode {
-		trans_appear,
-		trans_fade,
-		trans_swipe,
+    enum TransitionMode {
+        trans_appear,
+        trans_fade,
+        trans_swipe,
 
-		trans_end
-	};
+        trans_end
+    };
 
-	enum LoadSaveMode {
-		ls_load,
-		ls_load_to_tab,
-		ls_do_nothing,
+    enum LoadSaveMode {
+        ls_load,
+        ls_load_to_tab,
+        ls_do_nothing,
 
-		ls,end
-	};
+        ls,
+        end
+    };
 
-	struct App {
-		bool showToolBar;
-		bool showMenuBar;
-		bool showStatusBar;
-		bool showMovieToolBar;
-		QBitArray showFilePreview;
-		QBitArray showFileInfoLabel;
-		QBitArray showPlayer;
-		QBitArray showMetaData;
-		QBitArray showHistogram;
-		QBitArray showOverview;
-		QBitArray showScroller;
-		QBitArray showComment;
-		QBitArray showExplorer;
-		QBitArray showMetaDataDock;
-		QBitArray showEditDock;
-		QBitArray showHistoryDock;
-		QBitArray showLogDock;
-		bool showRecentFiles;
-		bool useLogFile;
-		int appMode;
-		int currentAppMode;
-		bool privateMode;
-		bool advancedSettings;
-		bool closeOnEsc;
-		bool hideAllPanels;
+    struct App {
+        bool showToolBar;
+        bool showMenuBar;
+        bool showStatusBar;
+        bool showMovieToolBar;
+        QBitArray showFilePreview;
+        QBitArray showFileInfoLabel;
+        QBitArray showPlayer;
+        QBitArray showMetaData;
+        QBitArray showHistogram;
+        QBitArray showOverview;
+        QBitArray showScroller;
+        QBitArray showComment;
+        QBitArray showExplorer;
+        QBitArray showMetaDataDock;
+        QBitArray showEditDock;
+        QBitArray showHistoryDock;
+        QBitArray showLogDock;
+        bool showRecentFiles;
+        bool useLogFile;
+        int appMode;
+        int currentAppMode;
+        bool privateMode;
+        bool advancedSettings;
+        bool closeOnEsc;
+        bool hideAllPanels;
 
-		int defaultJpgQuality;
+        int defaultJpgQuality;
 
-		QStringList browseFilters;
-		QStringList registerFilters;
+        QStringList browseFilters;
+        QStringList registerFilters;
 
-		QStringList fileFilters;	// just the filters
-		QStringList openFilters;	// for open dialog
-		QStringList saveFilters;	// for save dialog
-		QStringList rawFilters;
-		QStringList containerFilters;
-		QString containerRawFilters;
-	};
+        QStringList fileFilters; // just the filters
+        QStringList openFilters; // for open dialog
+        QStringList saveFilters; // for save dialog
+        QStringList rawFilters;
+        QStringList containerFilters;
+        QString containerRawFilters;
+    };
 
-	struct Display {
-		int keepZoom;
-		bool zoomToFit;
-		bool invertZoom;
-		bool tpPattern;
-		bool showNavigation;
-		QString themeName;
-		QColor highlightColor;
-		QColor hudBgColor;
-		QColor bgColor;
-		QColor bgColorFrameless;
-		QColor hudFgdColor;
-		QColor iconColor;
+    struct Display {
+        int keepZoom;
+        bool zoomToFit;
+        bool invertZoom;
+        bool tpPattern;
+        bool showNavigation;
+        QString themeName;
+        QColor highlightColor;
+        QColor hudBgColor;
+        QColor bgColor;
+        QColor bgColorFrameless;
+        QColor hudFgdColor;
+        QColor iconColor;
 
-		// theme colors
-		QColor themeFgdColor;
-		QColor themeBgdColor;
+        // theme colors
+        QColor themeFgdColor;
+        QColor themeBgdColor;
 
-		bool defaultBackgroundColor;
-		bool defaultIconColor;
-		int thumbSize;
-		int iconSize;
-		int thumbPreviewSize;
-		//bool saveThumb;
-		int interpolateZoomLevel;
-		bool showCrop;
-		bool antiAliasing;
-		bool highQualityAntiAliasing;
-		bool showBorder;
-		bool displaySquaredThumbs;
-		bool showThumbLabel;
-		bool showScrollBars;
-		
-		TransitionMode transition;
-		bool alwaysAnimate;
-		float animationDuration;
+        bool defaultBackgroundColor;
+        bool defaultIconColor;
+        int thumbSize;
+        int iconSize;
+        int thumbPreviewSize;
+        // bool saveThumb;
+        int interpolateZoomLevel;
+        bool showCrop;
+        bool antiAliasing;
+        bool highQualityAntiAliasing;
+        bool showBorder;
+        bool displaySquaredThumbs;
+        bool showThumbLabel;
+        bool showScrollBars;
 
-		int histogramStyle;
-	};
+        TransitionMode transition;
+        bool alwaysAnimate;
+        float animationDuration;
 
-	struct Global {
-		int skipImgs;
-		int numFiles;
-		bool loop;
-		bool scanSubFolders;
+        int histogramStyle;
+    };
 
-		QString lastDir;
-		QString lastSaveDir;
-		QStringList recentFiles;
-		QStringList recentFolders;
-		QStringList pinnedFiles;
-		bool logRecentFiles;
-		bool checkOpenDuplicates;
-		bool extendedTabs;
-		bool askToSaveDeletedFiles;
-		QString tmpPath;
-		QString language;
-		QStringList searchHistory;
-		
-		Qt::KeyboardModifier altMod;
-		Qt::KeyboardModifier ctrlMod;
-		bool zoomOnWheel;
-		bool horZoomSkips;
-		bool doubleClickForFullscreen;
-		bool showBgImage;
+    struct Global {
+        int skipImgs;
+        int numFiles;
+        bool loop;
+        bool scanSubFolders;
 
-		QString setupPath;
-		QString setupVersion;
-		int numThreads;
+        QString lastDir;
+        QString lastSaveDir;
+        QStringList recentFiles;
+        QStringList recentFolders;
+        QStringList pinnedFiles;
+        bool logRecentFiles;
+        bool checkOpenDuplicates;
+        bool extendedTabs;
+        bool askToSaveDeletedFiles;
+        QString tmpPath;
+        QString language;
+        QStringList searchHistory;
 
-		int sortMode;
-		int sortDir;
-		QString pluginsDir;
-	};
+        Qt::KeyboardModifier altMod;
+        Qt::KeyboardModifier ctrlMod;
+        bool zoomOnWheel;
+        bool horZoomSkips;
+        bool doubleClickForFullscreen;
+        bool showBgImage;
 
-	struct SlideShow {
-		int filter;
-		float time;
-		bool showPlayer;
-		bool silentFullscreen;
-		QBitArray display;
-		QColor backgroundColor;
-		float moveSpeed;
-	};
-	struct Sync {
-		bool checkForUpdates;
-		bool updateDialogShown;
-		bool disableUpdateInteraction;
-		QDate lastUpdateCheck;
-		bool syncAbsoluteTransform;
-		bool switchModifier;
-		bool syncActions;
-	};
-	struct MetaData {
-		bool ignoreExifOrientation;
-		bool saveExifOrientation;
-	};
-		
-	struct Resources {
-		float cacheMemory;
-		float historyMemory;
-		bool nativeDialog;
-		int maxImagesCached;
-		bool waitForLastImg;
-		bool filterRawImages;
-		bool filterDuplicats;
-		int loadRawThumb;
-		QString preferredExtension;
-		bool gammaCorrection;
-		int loadSavedImage;
-	};
+        QString setupPath;
+        QString setupVersion;
+        int numThreads;
 
-	enum DisplayItems{
-		display_file_name,
-		display_creation_date,
-		display_file_rating,
+        int sortMode;
+        int sortDir;
+        QString pluginsDir;
+    };
 
-		display_end
-	};
+    struct SlideShow {
+        int filter;
+        float time;
+        bool showPlayer;
+        bool silentFullscreen;
+        QBitArray display;
+        QColor backgroundColor;
+        float moveSpeed;
+    };
+    struct Sync {
+        bool checkForUpdates;
+        bool updateDialogShown;
+        bool disableUpdateInteraction;
+        QDate lastUpdateCheck;
+        bool syncAbsoluteTransform;
+        bool switchModifier;
+        bool syncActions;
+    };
+    struct MetaData {
+        bool ignoreExifOrientation;
+        bool saveExifOrientation;
+    };
 
-	QStringList translatedCamData() const;
-	QStringList translatedDescriptionData() const;
+    struct Resources {
+        float cacheMemory;
+        float historyMemory;
+        bool nativeDialog;
+        int maxImagesCached;
+        bool waitForLastImg;
+        bool filterRawImages;
+        bool filterDuplicats;
+        int loadRawThumb;
+        QString preferredExtension;
+        bool gammaCorrection;
+        int loadSavedImage;
+    };
 
-	void initFileFilters();
-	void loadTranslation(const QString& fileName, QTranslator& translator);
-	QStringList getTranslationDirs();
+    enum DisplayItems {
+        display_file_name,
+        display_creation_date,
+        display_file_rating,
 
-	void load();
-	void load(QSettings& settings, bool defaults = false);
-	void save(bool force = false);
-	void save(QSettings& settings, bool force = false);
-	void setToDefaultSettings();
-	void setNumThreads(int numThreads);
+        display_end
+    };
 
-	bool isPortable();
-	QString settingsPath() const;
+    QStringList translatedCamData() const;
+    QStringList translatedDescriptionData() const;
 
-	double dpiScaleFactor(QWidget *w = 0) const;
-	int effectiveIconSize(QWidget *w = 0) const;
-	int effectiveThumbSize(QWidget *w = 0) const;
-	int effectiveThumbPreviewSize(QWidget *w = 0) const;
+    void initFileFilters();
+    void loadTranslation(const QString &fileName, QTranslator &translator);
+    QStringList getTranslationDirs();
 
-	App& app();
-	Global& global();
-	Display& display();
-	SlideShow& slideShow();
-	Sync& sync();
-	MetaData& metaData();
-	Resources& resources();
+    void load();
+    void load(QSettings &settings, bool defaults = false);
+    void save(bool force = false);
+    void save(QSettings &settings, bool force = false);
+    void setToDefaultSettings();
+    void setNumThreads(int numThreads);
+
+    bool isPortable();
+    QString settingsPath() const;
+
+    double dpiScaleFactor(QWidget *w = 0) const;
+    int effectiveIconSize(QWidget *w = 0) const;
+    int effectiveThumbSize(QWidget *w = 0) const;
+    int effectiveThumbPreviewSize(QWidget *w = 0) const;
+
+    App &app();
+    Global &global();
+    Display &display();
+    SlideShow &slideShow();
+    Sync &sync();
+    MetaData &metaData();
+    Resources &resources();
 
 protected:
-	QStringList scamDataDesc;
-	QStringList sdescriptionDesc;
+    QStringList scamDataDesc;
+    QStringList sdescriptionDesc;
 
-	App app_p;
-	Global global_p;
-	Display display_p;
-	SlideShow slideShow_p;
-	Sync sync_p;
-	MetaData meta_p;
-	Resources resources_p;
+    App app_p;
+    Global global_p;
+    Display display_p;
+    SlideShow slideShow_p;
+    Sync sync_p;
+    MetaData meta_p;
+    Resources resources_p;
 
-	App app_d;
-	Global global_d;
-	Display display_d;
-	SlideShow slideShow_d;
-	Sync sync_d;
-	MetaData meta_d;
-	Resources resources_d;
+    App app_d;
+    Global global_d;
+    Display display_d;
+    SlideShow slideShow_d;
+    Sync sync_d;
+    MetaData meta_d;
+    Resources resources_d;
 
-	void init();
+    void init();
 
-	void applyDefaultsFromFile();
-	void copySettings(const QSettings& src, QSettings& dst) const;
-	QString getDefaultSettingsFile() const;
+    void applyDefaultsFromFile();
+    void copySettings(const QSettings &src, QSettings &dst) const;
+    QString getDefaultSettingsFile() const;
 
-	QString mSettingsPath;
+    QString mSettingsPath;
 };
 
-class DllCoreExport DkSettingsManager {
-
+class DllCoreExport DkSettingsManager
+{
 public:
-	static DkSettingsManager& instance();
-	~DkSettingsManager();
+    static DkSettingsManager &instance();
+    ~DkSettingsManager();
 
-	// singleton
-	DkSettingsManager(DkSettingsManager const&)		= delete;
-	void operator=(DkSettingsManager const&)		= delete;
+    // singleton
+    DkSettingsManager(DkSettingsManager const &) = delete;
+    void operator=(DkSettingsManager const &) = delete;
 
-	static DkSettings& param();		// convenience
-	//QSettings& qSettings();
-	DkSettings& settings();			// rename
-	void init();
+    static DkSettings &param(); // convenience
+    // QSettings& qSettings();
+    DkSettings &settings(); // rename
+    void init();
 
-	static void importSettings(const QString& settingsPath);
+    static void importSettings(const QString &settingsPath);
 
 private:
-	DkSettingsManager();
+    DkSettingsManager();
 
-	//QSettings* mSettings = 0;
-	DkSettings* mParams = 0;
+    // QSettings* mSettings = 0;
+    DkSettings *mParams = 0;
 };
 
-class DkZoomConfig {
-
+class DkZoomConfig
+{
 public:
-	static DkZoomConfig& instance();
-	~DkZoomConfig();
+    static DkZoomConfig &instance();
+    ~DkZoomConfig();
 
-	// singleton
-	DkZoomConfig(DkZoomConfig const&) = delete;
-	void operator=(DkZoomConfig const&) = delete;
+    // singleton
+    DkZoomConfig(DkZoomConfig const &) = delete;
+    void operator=(DkZoomConfig const &) = delete;
 
-	double nextFactor(double currentFactor, double delta) const;
-	QVector<double> defaultLevels() const;
+    double nextFactor(double currentFactor, double delta) const;
+    QVector<double> defaultLevels() const;
 
-	bool useLevels() const;
-	void setUseLevels(bool useLevels);
+    bool useLevels() const;
+    void setUseLevels(bool useLevels);
 
-	bool setLevels(const QString& levelStr);
-	QString levelsToString() const;
+    bool setLevels(const QString &levelStr);
+    QString levelsToString() const;
 
-	void setLevelsToDefault();
+    void setLevelsToDefault();
 
-	static bool checkLevels(const QVector<double>& levels);
+    static bool checkLevels(const QVector<double> &levels);
 
 private:
+    QVector<double> mLevels;
+    bool mUseLevels = false;
 
-	QVector<double> mLevels;
-	bool mUseLevels = false;
-
-	DkZoomConfig();
-	void loadSettings(QSettings& settings);
-	void saveSettings(QSettings& settings) const;
-
+    DkZoomConfig();
+    void loadSettings(QSettings &settings);
+    void saveSettings(QSettings &settings) const;
 };
 
 }

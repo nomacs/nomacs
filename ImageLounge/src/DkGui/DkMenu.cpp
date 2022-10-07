@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkMenu.cpp
  Created on:	09.08.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -26,262 +26,275 @@
  *******************************************************************************************************/
 
 #include "DkMenu.h"
-#include "DkSettings.h"
 #include "DkNetwork.h"
+#include "DkSettings.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
+#include <QDebug>
 #include <QFileInfo>
 #include <QList>
 #include <QObject>
 #include <QPointer>
-#include <QTimer>
 #include <QStringBuilder>
-#include <QDebug>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QTimer>
+#pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
-#pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#pragma warning(disable : 4127) // no 'conditional expression is constant' if qDebug() messages are removed
 #endif
 
-namespace nmc {
+namespace nmc
+{
 
 // DkMenu --------------------------------------------------------------------
-DkMenuBar::DkMenuBar(QWidget *parent, int timeToShow) : QMenuBar(parent) {
+DkMenuBar::DkMenuBar(QWidget *parent, int timeToShow)
+    : QMenuBar(parent)
+{
+    mTimeToShow = timeToShow; // default: 5 seconds
 
-	mTimeToShow = timeToShow;	// default: 5 seconds
+    mTimerMenu = new QTimer(this);
+    mTimerMenu->setSingleShot(true);
+    connect(mTimerMenu, SIGNAL(timeout()), this, SLOT(hideMenu()));
 
-	mTimerMenu = new QTimer(this);
-	mTimerMenu->setSingleShot(true);
-	connect(mTimerMenu, SIGNAL(timeout()), this, SLOT(hideMenu()));
-
-
-	// uncomment if you want to show menu on start-up
-	//if (timeToShow != -1)
-	//	timerMenu->start(timeToShow);
+    // uncomment if you want to show menu on start-up
+    // if (timeToShow != -1)
+    //	timerMenu->start(timeToShow);
 }
 
-QAction* DkMenuBar::addMenu(QMenu* menu) {
+QAction *DkMenuBar::addMenu(QMenu *menu)
+{
+    mMenus.append(menu);
 
-	mMenus.append(menu);
-
-	return QMenuBar::addMenu(menu);
+    return QMenuBar::addMenu(menu);
 }
 
-QMenu* DkMenuBar::addMenu(const QString& title) {
+QMenu *DkMenuBar::addMenu(const QString &title)
+{
+    QMenu *newMenu = QMenuBar::addMenu(title);
+    mMenus.append(newMenu);
 
-	QMenu* newMenu = QMenuBar::addMenu(title);
-	mMenus.append(newMenu);
-
-	return newMenu;
+    return newMenu;
 }
 
-QMenu* DkMenuBar::addMenu(const QIcon& icon, const QString& title) {
+QMenu *DkMenuBar::addMenu(const QIcon &icon, const QString &title)
+{
+    QMenu *newMenu = QMenuBar::addMenu(icon, title);
+    mMenus.append(newMenu);
 
-	QMenu* newMenu = QMenuBar::addMenu(icon, title);
-	mMenus.append(newMenu);
-
-	return newMenu;
+    return newMenu;
 }
 
-void DkMenuBar::showMenu() {
+void DkMenuBar::showMenu()
+{
+    // if (mTimeToShow == -1)
+    //	return;
 
-	//if (mTimeToShow == -1)
-	//	return;
+    if (isVisible()) {
+        mTimerMenu->stop();
+        hideMenu();
+        return;
+    }
 
-	if (isVisible()) {
-		mTimerMenu->stop();
-		hideMenu();
-		return;
-	}
+    if (mTimeToShow != -1)
+        mTimerMenu->start(mTimeToShow);
 
-	if (mTimeToShow != -1)
-		mTimerMenu->start(mTimeToShow);
-	
-	show();
+    show();
 }
 
-void DkMenuBar::hideMenu() {
+void DkMenuBar::hideMenu()
+{
+    if (mTimeToShow == -1)
+        return;
 
-	if (mTimeToShow == -1)
-		return;
+    // ok we have a mouseover
+    if (mActive)
+        return;
 
-	// ok we have a mouseover
-	if (mActive)
-		return;
+    for (int idx = 0; idx < mMenus.size(); idx++) {
+        // ok, a child is active -> wait for it
+        if (mMenus.at(idx)->isVisible()) {
+            mTimerMenu->start(mTimeToShow);
+            return;
+        }
+    }
 
-	for (int idx = 0; idx < mMenus.size(); idx++) {
-
-		// ok, a child is active -> wait for it
-		if (mMenus.at(idx)->isVisible()) {
-			mTimerMenu->start(mTimeToShow);
-			return;
-		}
-	}
-
-	if (!mActive)
-		hide();
+    if (!mActive)
+        hide();
 }
 
-void DkMenuBar::setTimeToShow(int timeToShow) {
-
-	mTimeToShow = timeToShow;
+void DkMenuBar::setTimeToShow(int timeToShow)
+{
+    mTimeToShow = timeToShow;
 }
 
-void DkMenuBar::enterEvent(QEvent* event) {
+void DkMenuBar::enterEvent(QEvent *event)
+{
+    if (mTimeToShow == -1)
+        return;
 
-	if (mTimeToShow == -1)
-		return;
+    mActive = true;
 
-	mActive = true;
-
-	QMenuBar::enterEvent(event);
+    QMenuBar::enterEvent(event);
 }
 
-void DkMenuBar::leaveEvent(QEvent* event) {
+void DkMenuBar::leaveEvent(QEvent *event)
+{
+    if (mTimeToShow == -1)
+        return;
 
-	if (mTimeToShow == -1)
-		return;
+    mActive = false;
+    mTimerMenu->start(mTimeToShow);
 
-	mActive = false;
-	mTimerMenu->start(mTimeToShow);
-
-	QMenuBar::leaveEvent(event);
-
+    QMenuBar::leaveEvent(event);
 }
 
 // DkTcpMenu --------------------------------------------------------------------
-DkTcpMenu::DkTcpMenu(const QString& title, QWidget* parent) : QMenu(title, parent) {
-
-	connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
-	connect(this, SIGNAL(synchronizeWithSignal(quint16)), DkSyncManager::inst().client(), SLOT(synchronizeWith(quint16)));
+DkTcpMenu::DkTcpMenu(const QString &title, QWidget *parent)
+    : QMenu(title, parent)
+{
+    connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
+    connect(this, SIGNAL(synchronizeWithSignal(quint16)), DkSyncManager::inst().client(), SLOT(synchronizeWith(quint16)));
 }
 
-DkTcpMenu::~DkTcpMenu() {}
-
-void DkTcpMenu::addTcpAction(QAction* tcpAction) {
-	mTcpActions.append(tcpAction);
+DkTcpMenu::~DkTcpMenu()
+{
 }
 
-void DkTcpMenu::showNoClientsFound(bool show) {
-	mNoClientsFound = show;
+void DkTcpMenu::addTcpAction(QAction *tcpAction)
+{
+    mTcpActions.append(tcpAction);
 }
 
-void DkTcpMenu::clear() {
-	QMenu::clear();
-	mTcpActions.clear();
+void DkTcpMenu::showNoClientsFound(bool show)
+{
+    mNoClientsFound = show;
 }
 
-void DkTcpMenu::enableActions(bool enable, bool local) {
-
-	updatePeers();
-
-	if (local)
-		return;
-
-	bool anyConnected = enable;
-
-	// let's see if any other connection is there
-	if (!anyConnected) {
-
-		for (int idx = 0; idx < mTcpActions.size(); idx++) {
-
-			if (mTcpActions.at(idx)->objectName() == "tcpAction" && mTcpActions.at(idx)->isChecked()) {
-				anyConnected = true;
-				break;
-			}
-		}
-	}
-
-	for (int idx = 0; idx < mTcpActions.size(); idx++) {
-
-		if (mTcpActions.at(idx)->objectName() == "serverAction")
-			mTcpActions.at(idx)->setEnabled(!anyConnected);
-	}
-
+void DkTcpMenu::clear()
+{
+    QMenu::clear();
+    mTcpActions.clear();
 }
 
-void DkTcpMenu::updatePeers() {	// find other clients on paint
+void DkTcpMenu::enableActions(bool enable, bool local)
+{
+    updatePeers();
 
-	auto ct = DkSyncManager::inst().client();
-	QList<DkPeer*> newPeers = ct->getPeerList();	// TODO: remove old style
+    if (local)
+        return;
 
-	// just update if the peers have changed...
-	QMenu::clear();
+    bool anyConnected = enable;
 
-	// show dummy action
-	if (newPeers.empty() && mNoClientsFound) {
-		QAction* defaultAction = new QAction(tr("no clients found"), this);
-		defaultAction->setEnabled(false);
-		addAction(defaultAction);
-		return;
-	}
+    // let's see if any other connection is there
+    if (!anyConnected) {
+        for (int idx = 0; idx < mTcpActions.size(); idx++) {
+            if (mTcpActions.at(idx)->objectName() == "tcpAction" && mTcpActions.at(idx)->isChecked()) {
+                anyConnected = true;
+                break;
+            }
+        }
+    }
 
-	if (!mNoClientsFound || !newPeers.empty()) {
+    for (int idx = 0; idx < mTcpActions.size(); idx++) {
+        if (mTcpActions.at(idx)->objectName() == "serverAction")
+            mTcpActions.at(idx)->setEnabled(!anyConnected);
+    }
+}
 
-		for (int idx = 0; idx < mTcpActions.size(); idx++) {
-			addAction(mTcpActions.at(idx));
-		}
-	}
+void DkTcpMenu::updatePeers()
+{ // find other clients on paint
 
-	for (int idx = 0; idx < newPeers.size(); idx++) {
+    auto ct = DkSyncManager::inst().client();
+    QList<DkPeer *> newPeers = ct->getPeerList(); // TODO: remove old style
 
-		DkPeer* currentPeer = newPeers[idx];
+    // just update if the peers have changed...
+    QMenu::clear();
 
-		QString title = (mNoClientsFound) ? currentPeer->title : currentPeer->clientName % QString(": ") % currentPeer->title;
+    // show dummy action
+    if (newPeers.empty() && mNoClientsFound) {
+        QAction *defaultAction = new QAction(tr("no clients found"), this);
+        defaultAction->setEnabled(false);
+        addAction(defaultAction);
+        return;
+    }
 
-		DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
-		if (!mNoClientsFound) 
-			peerEntry->setTcpActions(&mTcpActions);
+    if (!mNoClientsFound || !newPeers.empty()) {
+        for (int idx = 0; idx < mTcpActions.size(); idx++) {
+            addAction(mTcpActions.at(idx));
+        }
+    }
 
-		connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), ct, SLOT(synchronizeWith(quint16)));
-		connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), ct, SLOT(stopSynchronizeWith(quint16)));
-		connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
+    for (int idx = 0; idx < newPeers.size(); idx++) {
+        DkPeer *currentPeer = newPeers[idx];
 
-		addAction(peerEntry);
-	}
+        QString title = (mNoClientsFound) ? currentPeer->title : currentPeer->clientName % QString(": ") % currentPeer->title;
+
+        DkTcpAction *peerEntry = new DkTcpAction(currentPeer, title, this);
+        if (!mNoClientsFound)
+            peerEntry->setTcpActions(&mTcpActions);
+
+        connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), ct, SLOT(synchronizeWith(quint16)));
+        connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), ct, SLOT(stopSynchronizeWith(quint16)));
+        connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
+
+        addAction(peerEntry);
+    }
 }
 
 // DkTcpAction --------------------------------------------------------------------
-DkTcpAction::DkTcpAction() : QAction(0) {}
-
-DkTcpAction::DkTcpAction(DkPeer* peer, QObject* parent) : QAction(parent) {
-	this->peer = peer;
-	init();
+DkTcpAction::DkTcpAction()
+    : QAction(0)
+{
 }
 
-DkTcpAction::DkTcpAction(DkPeer* peer, const QString& text, QObject* parent) : QAction(text, parent) {
-	this->peer = peer;
-	init();
+DkTcpAction::DkTcpAction(DkPeer *peer, QObject *parent)
+    : QAction(parent)
+{
+    this->peer = peer;
+    init();
 }
 
-DkTcpAction::DkTcpAction(DkPeer* peer, const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent) {
-	this->peer = peer;
-	init();
+DkTcpAction::DkTcpAction(DkPeer *peer, const QString &text, QObject *parent)
+    : QAction(text, parent)
+{
+    this->peer = peer;
+    init();
 }
 
-DkTcpAction::~DkTcpAction() {}
-
-void DkTcpAction::init() {
-	tcpActions = 0;
-	setObjectName("tcpAction");
-	setCheckable(true);
-	setChecked(peer->isSynchronized());
-	connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
+DkTcpAction::DkTcpAction(DkPeer *peer, const QIcon &icon, const QString &text, QObject *parent)
+    : QAction(icon, text, parent)
+{
+    this->peer = peer;
+    init();
 }
 
-void DkTcpAction::setTcpActions(QList<QAction*>* actions) {
-	tcpActions = actions;
+DkTcpAction::~DkTcpAction()
+{
 }
 
-void DkTcpAction::synchronize(bool checked) {
+void DkTcpAction::init()
+{
+    tcpActions = 0;
+    setObjectName("tcpAction");
+    setCheckable(true);
+    setChecked(peer->isSynchronized());
+    connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
+}
 
-	if (checked)
-		emit synchronizeWithSignal(peer->peerId);
-	else
-		emit disableSynchronizeWithSignal(peer->peerId);
+void DkTcpAction::setTcpActions(QList<QAction *> *actions)
+{
+    tcpActions = actions;
+}
 
-	emit enableActions(checked);
+void DkTcpAction::synchronize(bool checked)
+{
+    if (checked)
+        emit synchronizeWithSignal(peer->peerId);
+    else
+        emit disableSynchronizeWithSignal(peer->peerId);
+
+    emit enableActions(checked);
 }
 
 }

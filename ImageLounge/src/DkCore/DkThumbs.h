@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkThumbs.h
  Created on:	19.04.2013
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,16 +27,16 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QFutureWatcher>
-#include <QSharedPointer>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QColor>
 #include <QDir>
-#include <QThread>
+#include <QFutureWatcher>
 #include <QImage>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QSharedPointer>
+#include <QThread>
+#pragma warning(pop) // no warnings from includes - end
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -50,170 +50,176 @@
 
 class QThreadPool;
 
-namespace nmc {
+namespace nmc
+{
 
 #define max_thumb_size 400
 
 /**
  * This class holds thumbnails.
- **/ 
-class DllCoreExport DkThumbNail {
-
+ **/
+class DllCoreExport DkThumbNail
+{
 public:
-	enum {
-		loading = -2,
-		exists_not = -1,
-		not_loaded,
-		loaded,
-	};
-	
-	/**
-	 * Default constructor.
-	 * @param file the corresponding file
-	 * @param img the thumbnail image
-	 **/ 
-	DkThumbNail(const QString& filePath = QString(), const QImage& img = QImage());
+    enum {
+        loading = -2,
+        exists_not = -1,
+        not_loaded,
+        loaded,
+    };
 
-	/**
-	 * Default destructor.
-	 * @return 
-	 **/ 
-	virtual ~DkThumbNail();
+    /**
+     * Default constructor.
+     * @param file the corresponding file
+     * @param img the thumbnail image
+     **/
+    DkThumbNail(const QString &filePath = QString(), const QImage &img = QImage());
 
-	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
+    /**
+     * Default destructor.
+     * @return
+     **/
+    virtual ~DkThumbNail();
 
-		return lt.mFile == rt.mFile;
-	};
+    friend bool operator==(const DkThumbNail &lt, const DkThumbNail &rt)
+    {
+        return lt.mFile == rt.mFile;
+    };
 
-	/**
-	 * Sets the thumbnail image.
-	 * @param img the thumbnail
-	 **/ 
-	virtual void setImage(const QImage img);
+    /**
+     * Sets the thumbnail image.
+     * @param img the thumbnail
+     **/
+    virtual void setImage(const QImage img);
 
-	void removeBlackBorder(QImage& img);
+    void removeBlackBorder(QImage &img);
 
-	/**
-	 * Returns the thumbnail.
-	 * @return QImage the thumbnail.
-	 **/ 
-	QImage getImage() const {
-		
-		return mImg;
-	};
+    /**
+     * Returns the thumbnail.
+     * @return QImage the thumbnail.
+     **/
+    QImage getImage() const
+    {
+        return mImg;
+    };
 
-	/**
-	 * Returns the file information.
-	 * @return QFileInfo the thumbnail file
-	 **/ 
-	QString getFilePath() const {
-		return mFile;
-	};
+    /**
+     * Returns the file information.
+     * @return QFileInfo the thumbnail file
+     **/
+    QString getFilePath() const
+    {
+        return mFile;
+    };
 
-	void compute(int forceLoad = do_not_force);
+    void compute(int forceLoad = do_not_force);
 
-	/**
-	 * Returns whether the thumbnail was loaded, or does not exist.
-	 * @return int a status (loaded | not loaded | exists not)
-	 **/ 
-	int hasImage() const {
-		
-		if (!mImg.isNull())
-			return loaded;
-		else if (mImg.isNull() && mImgExists)
-			return not_loaded;
-		else
-			return exists_not;
-	};
+    /**
+     * Returns whether the thumbnail was loaded, or does not exist.
+     * @return int a status (loaded | not loaded | exists not)
+     **/
+    int hasImage() const
+    {
+        if (!mImg.isNull())
+            return loaded;
+        else if (mImg.isNull() && mImgExists)
+            return not_loaded;
+        else
+            return exists_not;
+    };
 
-	void setMaxThumbSize(int maxSize) {
-		mMaxThumbSize = maxSize;
-	};
+    void setMaxThumbSize(int maxSize)
+    {
+        mMaxThumbSize = maxSize;
+    };
 
-	int getMaxThumbSize() const {
-		return mMaxThumbSize;
-	};
+    int getMaxThumbSize() const
+    {
+        return mMaxThumbSize;
+    };
 
-	/**
-	 * Manipulates the file loaded status.
-	 * @param exists a status (loaded | not loaded | exists not)
-	 **/ 
-	void setImgExists(bool exists) {
-		mImgExists = exists;
-	};
+    /**
+     * Manipulates the file loaded status.
+     * @param exists a status (loaded | not loaded | exists not)
+     **/
+    void setImgExists(bool exists)
+    {
+        mImgExists = exists;
+    };
 
-	enum {
-		do_not_force,
-		force_exif_thumb,
-		force_full_thumb,
-		save_thumb,
-		force_save_thumb,
-	};
+    enum {
+        do_not_force,
+        force_exif_thumb,
+        force_full_thumb,
+        save_thumb,
+        force_save_thumb,
+    };
 
 protected:
-	QImage computeIntern(const QString& file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    QImage computeIntern(const QString &file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
 
-	QImage mImg;
-	QString mFile;
-	//int s;
-	bool mImgExists;
-	int mMaxThumbSize;
+    QImage mImg;
+    QString mFile;
+    // int s;
+    bool mImgExists;
+    int mMaxThumbSize;
 };
 
-class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail {
-	Q_OBJECT
+class DllCoreExport DkThumbNailT : public QObject, public DkThumbNail
+{
+    Q_OBJECT
 
 public:
-	DkThumbNailT(const QString& mFile = QString(), const QImage& mImg = QImage());
-	~DkThumbNailT();
+    DkThumbNailT(const QString &mFile = QString(), const QImage &mImg = QImage());
+    ~DkThumbNailT();
 
-	bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+    bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
-	/**
-	 * Returns whether the thumbnail was loaded, or does not exist.
-	 * @return int a status (loaded | not loaded | exists not | loading)
-	 **/ 
-	int hasImage() const {
-		
-		if (mThumbWatcher.isRunning())
-			return loading;
-		else
-			return DkThumbNail::hasImage();
-	};
+    /**
+     * Returns whether the thumbnail was loaded, or does not exist.
+     * @return int a status (loaded | not loaded | exists not | loading)
+     **/
+    int hasImage() const
+    {
+        if (mThumbWatcher.isRunning())
+            return loading;
+        else
+            return DkThumbNail::hasImage();
+    };
 
-	void setImage(const QImage img) {
-		DkThumbNail::setImage(img);
-		emit thumbLoadedSignal(true);
-	};
+    void setImage(const QImage img)
+    {
+        DkThumbNail::setImage(img);
+        emit thumbLoadedSignal(true);
+    };
 
 signals:
-	void thumbLoadedSignal(bool loaded = true);
+    void thumbLoadedSignal(bool loaded = true);
 
 protected slots:
-	void thumbLoaded();
+    void thumbLoaded();
 
 protected:
-	QImage computeCall(const QString& filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    QImage computeCall(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
 
-	QFutureWatcher<QImage> mThumbWatcher;
-	bool mFetching;
-	int mForceLoad;
+    QFutureWatcher<QImage> mThumbWatcher;
+    bool mFetching;
+    int mForceLoad;
 };
 
-class DkThumbsThreadPool {
-
+class DkThumbsThreadPool
+{
 public:
-	static DkThumbsThreadPool& instance();
+    static DkThumbsThreadPool &instance();
 
-	static QThreadPool* pool();
-	static void clear();
+    static QThreadPool *pool();
+    static void clear();
 
 private:
-	DkThumbsThreadPool();
-	DkThumbsThreadPool(const DkThumbsThreadPool&);
+    DkThumbsThreadPool();
+    DkThumbsThreadPool(const DkThumbsThreadPool &);
 
-	QThreadPool* mPool;
+    QThreadPool *mPool;
 };
-
 
 }

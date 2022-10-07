@@ -1,6 +1,6 @@
 /*******************************************************************************************************
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2016 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2016 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2016 Florian Kleber <florian@nomacs.org>
@@ -32,7 +32,7 @@
 #include "DkImageContainer.h"
 #include "DkManipulatorsIpl.h"
 
-#pragma warning(push, 0)	// no warnings from includes
+#pragma warning(push, 0) // no warnings from includes
 
 #pragma warning(pop)
 
@@ -48,214 +48,220 @@
 
 // Qt defines
 
-namespace nmc {
+namespace nmc
+{
 
 // nomacs defines
 
-class DkBaseManipulatorWidget : public DkFadeWidget {
-	Q_OBJECT
+class DkBaseManipulatorWidget : public DkFadeWidget
+{
+    Q_OBJECT
 
 public:
-	DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkBaseManipulatorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkBaseManipulatorExt> baseManipulator() const;
+    QSharedPointer<DkBaseManipulatorExt> baseManipulator() const;
 
 private:
-	QSharedPointer<DkBaseManipulatorExt> mBaseManipulator;
+    QSharedPointer<DkBaseManipulatorExt> mBaseManipulator;
 };
 
-class DkTinyPlanetWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkTinyPlanetWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
+    QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
 
 public slots:
-	void on_scaleSlider_valueChanged(int val);
-	void on_angleSlider_valueChanged(int val);
-	void on_invertBox_toggled(bool val);
+    void on_scaleSlider_valueChanged(int val);
+    void on_angleSlider_valueChanged(int val);
+    void on_invertBox_toggled(bool val);
 
 private:
-	void createLayout();
+    void createLayout();
 };
 
-class DkBlurWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkBlurWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkBlurManipulator> manipulator() const;
+    QSharedPointer<DkBlurManipulator> manipulator() const;
 
 public slots:
-	void on_sigmaSlider_valueChanged(int val);
+    void on_sigmaSlider_valueChanged(int val);
 
 private:
-	void createLayout();
-
+    void createLayout();
 };
 
-class DkUnsharpMaskWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkUnsharpMaskWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
+    QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
 
 public slots:
-	void on_sigmaSlider_valueChanged(int val);
-	void on_amountSlider_valueChanged(int val);
+    void on_sigmaSlider_valueChanged(int val);
+    void on_amountSlider_valueChanged(int val);
 
 private:
-	void createLayout();
-
+    void createLayout();
 };
 
-class DkRotateWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkRotateWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkRotateManipulator> manipulator() const;
+    QSharedPointer<DkRotateManipulator> manipulator() const;
 
 public slots:
-	void on_angleSlider_valueChanged(int val);
+    void on_angleSlider_valueChanged(int val);
 
 private:
-	void createLayout();
-
+    void createLayout();
 };
 
-class DkResizeWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkResizeWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkResizeManipulator> manipulator() const;
+    QSharedPointer<DkResizeManipulator> manipulator() const;
 
 public slots:
-	void on_scaleFactorSlider_valueChanged(double val);
-	void on_iplBox_currentIndexChanged(int idx);
-	void on_gammaCorrection_toggled(bool checked);
-	void onObjectNameChanged(const QString& name);
+    void on_scaleFactorSlider_valueChanged(double val);
+    void on_iplBox_currentIndexChanged(int idx);
+    void on_gammaCorrection_toggled(bool checked);
+    void onObjectNameChanged(const QString &name);
 
 private:
-	void createLayout();
+    void createLayout();
 
-	QComboBox* mIplBox;
-
+    QComboBox *mIplBox;
 };
 
-class DkThresholdWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkThresholdWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkThresholdManipulator> manipulator() const;
+    QSharedPointer<DkThresholdManipulator> manipulator() const;
 
 public slots:
-	void on_thrSlider_valueChanged(int val);
-	void on_colBox_toggled(bool checked);
+    void on_thrSlider_valueChanged(int val);
+    void on_colBox_toggled(bool checked);
 
 private:
-	void createLayout();
-
+    void createLayout();
 };
 
-class DkHueWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkHueWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkHueManipulator> manipulator() const;
+    QSharedPointer<DkHueManipulator> manipulator() const;
 
 public slots:
-	void on_hueSlider_valueChanged(int val);
-	void on_satSlider_valueChanged(int val);
-	void on_brightnessSlider_valueChanged(int val);
+    void on_hueSlider_valueChanged(int val);
+    void on_satSlider_valueChanged(int val);
+    void on_brightnessSlider_valueChanged(int val);
 
 private:
-	void createLayout();
+    void createLayout();
 };
 
-class DkColorWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkColorWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkColorManipulator> manipulator() const;
+    QSharedPointer<DkColorManipulator> manipulator() const;
 
 public slots:
-	void on_colPicker_colorSelected(const QColor& col);
+    void on_colPicker_colorSelected(const QColor &col);
 
 private:
-	void createLayout();
+    void createLayout();
 };
 
-class DkExposureWidget : public DkBaseManipulatorWidget {
-	Q_OBJECT
+class DkExposureWidget : public DkBaseManipulatorWidget
+{
+    Q_OBJECT
 
 public:
-	DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget* parent = 0);
+    DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidget *parent = 0);
 
-	QSharedPointer<DkExposureManipulator> manipulator() const;
+    QSharedPointer<DkExposureManipulator> manipulator() const;
 
 public slots:
-	void on_exposureSlider_valueChanged(double val);
-	void on_offsetSlider_valueChanged(double val);
-	void on_gammaSlider_valueChanged(double val);
+    void on_exposureSlider_valueChanged(double val);
+    void on_offsetSlider_valueChanged(double val);
+    void on_gammaSlider_valueChanged(double val);
 
 private:
-	void createLayout();
+    void createLayout();
 };
 
 // dock --------------------------------------------------------------------
-class DkManipulatorWidget : public DkFadeWidget {
-	Q_OBJECT
+class DkManipulatorWidget : public DkFadeWidget
+{
+    Q_OBJECT
 
 public:
-	DkManipulatorWidget(QWidget* parent = 0);
+    DkManipulatorWidget(QWidget *parent = 0);
 
-	void setImage(QSharedPointer<DkImageContainerT> imgC);
+    void setImage(QSharedPointer<DkImageContainerT> imgC);
 
 public slots:
-	void selectManipulator();
+    void selectManipulator();
 
 private:
-	void createLayout();
-	QImage scaledPreview(const QImage& img) const;
+    void createLayout();
+    QImage scaledPreview(const QImage &img) const;
 
-	QVector<DkBaseManipulatorWidget*> mWidgets;
+    QVector<DkBaseManipulatorWidget *> mWidgets;
 
-	QSharedPointer<DkImageContainerT> mImgC;
-	QLabel* mPreview = 0;
-	QLabel* mTitleLabel = 0;
-	int mMaxPreview = 150;
+    QSharedPointer<DkImageContainerT> mImgC;
+    QLabel *mPreview = 0;
+    QLabel *mTitleLabel = 0;
+    int mMaxPreview = 150;
 };
 
-class DkEditDock : public DkDockWidget {
-	Q_OBJECT
+class DkEditDock : public DkDockWidget
+{
+    Q_OBJECT
 
 public:
-	DkEditDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkEditDock(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
-	void setImage(QSharedPointer<DkImageContainerT> imgC);
+    void setImage(QSharedPointer<DkImageContainerT> imgC);
 
 protected:
-	void createLayout();
+    void createLayout();
 
-	DkManipulatorWidget* mMplWidget = 0;
-
+    DkManipulatorWidget *mMplWidget = 0;
 };
-
 
 }

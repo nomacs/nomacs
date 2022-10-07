@@ -27,141 +27,140 @@
 
 #include "DkDependencyResolver.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QFile>
-#include <QDebug>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QByteArrayMatcher>
+#include <QDebug>
+#include <QFile>
 #include <QFileInfo>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
-namespace nmc {
+namespace nmc
+{
 
-DkDllDependency::DkDllDependency(const QString & filePath) {
-	mFilePath = filePath;
+DkDllDependency::DkDllDependency(const QString &filePath)
+{
+    mFilePath = filePath;
 }
 
-bool DkDllDependency::findDependencies() {
-	
-	if (mFilePath.isEmpty()) {
-		qWarning() << "cannot find dependenies - dll path is empty...";
-		return false;
-	}
+bool DkDllDependency::findDependencies()
+{
+    if (mFilePath.isEmpty()) {
+        qWarning() << "cannot find dependenies - dll path is empty...";
+        return false;
+    }
 
-	QFile dllFile(mFilePath);
+    QFile dllFile(mFilePath);
 
-	if (!dllFile.open(QIODevice::ReadOnly)) {
-		qWarning() << "cannot open" << mFilePath << "for read...";
-		return false;
-	}
+    if (!dllFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "cannot open" << mFilePath << "for read...";
+        return false;
+    }
 
-	mDependencies.clear();
+    mDependencies.clear();
 
-	QByteArray ba(dllFile.readAll());
-	dllFile.close();
+    QByteArray ba(dllFile.readAll());
+    dllFile.close();
 
-	QString myName = QFileInfo(mFilePath).fileName();
-	QVector<int> dllLocations = markerLocations(ba, marker());
+    QString myName = QFileInfo(mFilePath).fileName();
+    QVector<int> dllLocations = markerLocations(ba, marker());
 
-	for (int l : dllLocations) {
-		
-		QString n = resolveName(ba, l);
+    for (int l : dllLocations) {
+        QString n = resolveName(ba, l);
 
-		if (!n.isEmpty() && n != myName) {
-			mDependencies << n;
-		}
-		else if (n.isEmpty())
-			qWarning() << "I could not resolve the name at location" << l;
-	}
+        if (!n.isEmpty() && n != myName) {
+            mDependencies << n;
+        } else if (n.isEmpty())
+            qWarning() << "I could not resolve the name at location" << l;
+    }
 
-	return true;
+    return true;
 }
 
-QStringList DkDllDependency::filteredDependencies() const {
-	
-	QStringList fd;
-	QRegExp re(filter());
+QStringList DkDllDependency::filteredDependencies() const
+{
+    QStringList fd;
+    QRegExp re(filter());
 
-	for (const QString& n : mDependencies) {
-		
-		if (re.exactMatch(n)) {
-			fd << n;
-		}
-	}
-	
-	return fd;
+    for (const QString &n : mDependencies) {
+        if (re.exactMatch(n)) {
+            fd << n;
+        }
+    }
+
+    return fd;
 }
 
-QStringList DkDllDependency::dependencies() const {
-	return mDependencies;
+QStringList DkDllDependency::dependencies() const
+{
+    return mDependencies;
 }
 
-QString DkDllDependency::filePath() const {
-	return mFilePath;
+QString DkDllDependency::filePath() const
+{
+    return mFilePath;
 }
 
-QString DkDllDependency::filter() {
-	
-	static QString filter = "(opencv.*|Read.*|libDk.*)";
+QString DkDllDependency::filter()
+{
+    static QString filter = "(opencv.*|Read.*|libDk.*)";
 
-	return filter;
+    return filter;
 }
 
-QByteArray DkDllDependency::marker() {
-	
-	static QByteArray m(".dll");
-	return m;
+QByteArray DkDllDependency::marker()
+{
+    static QByteArray m(".dll");
+    return m;
 }
 
-QVector<int> DkDllDependency::markerLocations(const QByteArray & ba, const QByteArray & marker) const {
-	
-	QByteArrayMatcher matcher(marker);
-	QVector<int> locations;
+QVector<int> DkDllDependency::markerLocations(const QByteArray &ba, const QByteArray &marker) const
+{
+    QByteArrayMatcher matcher(marker);
+    QVector<int> locations;
 
-	for (int offset = 0; offset < ba.size(); ) {
-		
-		int idx = matcher.indexIn(ba, offset);
+    for (int offset = 0; offset < ba.size();) {
+        int idx = matcher.indexIn(ba, offset);
 
-		if (idx == -1)
-			break;
+        if (idx == -1)
+            break;
 
-		offset = idx+1;
-		locations << idx;
-	}
-	
-	return locations;
+        offset = idx + 1;
+        locations << idx;
+    }
+
+    return locations;
 }
 
-QString DkDllDependency::resolveName(const QByteArray & ba, int location) const {
+QString DkDllDependency::resolveName(const QByteArray &ba, int location) const
+{
+    // dll names are terminated with NULL on both sides - so find their index...
+    int start = -1;
+    for (int idx = location; idx > 0; idx--) {
+        if (isStopCharacter(ba[idx])) {
+            start = idx;
+            break;
+        }
+    }
 
-	// dll names are terminated with NULL on both sides - so find their index...
-	int start = -1;
-	for (int idx = location; idx > 0; idx--) {
-		
-		if (isStopCharacter(ba[idx])) {
-			start = idx;
-			break;
-		}
-	}
+    if (start == -1)
+        return QString();
 
-	if (start == -1)
-		return QString();
+    int end = -1;
+    for (int idx = location; idx < ba.size(); idx++) {
+        if (isStopCharacter(ba[idx])) {
+            end = idx;
+            break;
+        }
+    }
 
-	int end = -1;
-	for (int idx = location; idx < ba.size(); idx++) {
-		
-		if (isStopCharacter(ba[idx])) {
-			end = idx;
-			break;
-		}
-	}
+    QString name(ba.mid(start + 1, end - start));
 
-	QString name(ba.mid(start+1, end - start));
-
-	return name;
+    return name;
 }
 
-bool DkDllDependency::isStopCharacter(const char& val) const {
-	return val == '\0' || val == '\u0001' || val == '\u0003' || val == '\u0006';	// NULL || SOH || ETX || ACK
+bool DkDllDependency::isStopCharacter(const char &val) const
+{
+    return val == '\0' || val == '\u0001' || val == '\u0003' || val == '\u0006'; // NULL || SOH || ETX || ACK
 }
 
 }

@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkViewPort.cpp
  Created on:	05.05.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -27,16 +27,16 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#include <QMainWindow>
+#pragma warning(push, 0) // no warnings from includes - begin
 #include <QGraphicsView>
-#include <QRect>
 #include <QLabel>
+#include <QMainWindow>
+#include <QRect>
 #include <QSharedPointer>
-#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(pop) // no warnings from includes - end
 
 #include "DkMath.h"
-#pragma warning(disable: 4251)
+#pragma warning(disable : 4251)
 
 #ifndef DllCoreExport
 #ifdef DK_CORE_DLL_EXPORT
@@ -48,183 +48,190 @@
 #endif
 #endif
 
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DkPongSettings {
-
+class DllCoreExport DkPongSettings
+{
 public:
-	DkPongSettings();
+    DkPongSettings();
 
-	void setField(const QRect& field);
-	QRect field() const;
+    void setField(const QRect &field);
+    QRect field() const;
 
-	void setUnit(int unit);
-	int unit() const;
+    void setUnit(int unit);
+    int unit() const;
 
-	void setBackgroundColor(const QColor& col);
-	QColor backgroundColor() const;
+    void setBackgroundColor(const QColor &col);
+    QColor backgroundColor() const;
 
-	void setForegroundColor(const QColor& col);
-	QColor foregroundColor() const;
+    void setForegroundColor(const QColor &col);
+    QColor foregroundColor() const;
 
-	void setTotalScore(int maxScore);
-	int totalScore() const;
+    void setTotalScore(int maxScore);
+    int totalScore() const;
 
-	void writeSettings();
+    void writeSettings();
 
-	QString player1Name() const;
-	QString player2Name() const;
+    QString player1Name() const;
+    QString player2Name() const;
 
-	float playerRatio() const;
+    float playerRatio() const;
 
 protected:
-	QRect mField;
-	int mUnit = 10;
-	int mTotalScore = 10;
+    QRect mField;
+    int mUnit = 10;
+    int mTotalScore = 10;
 
-	QColor mBgCol = QColor(0,0,0,100);
-	QColor mFgCol = QColor(255,255,255);
+    QColor mBgCol = QColor(0, 0, 0, 100);
+    QColor mFgCol = QColor(255, 255, 255);
 
-	QString mPlayer1Name = QObject::tr("Player 1");
-	QString mPlayer2Name = QObject::tr("Player 2");
+    QString mPlayer1Name = QObject::tr("Player 1");
+    QString mPlayer2Name = QObject::tr("Player 2");
 
-	float mPlayerRatio = 0.15f;
+    float mPlayerRatio = 0.15f;
 
-	void loadSettings();
+    void loadSettings();
 };
 
-class DllCoreExport DkPongPlayer {
-	
+class DllCoreExport DkPongPlayer
+{
 public:
-	DkPongPlayer(const QString& playerName = QObject::tr("Anonymous"), QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    DkPongPlayer(const QString &playerName = QObject::tr("Anonymous"),
+                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
-	void reset(const QPoint& pos);
-	QRect rect() const;
-	int pos() const;
-	void setHeight(int newHeight);
+    void reset(const QPoint &pos);
+    QRect rect() const;
+    int pos() const;
+    void setHeight(int newHeight);
 
-	void move();
-	void setSpeed(int speed);
+    void move();
+    void setSpeed(int speed);
 
-	void updateSize();
-	void increaseScore();
+    void updateSize();
+    void increaseScore();
 
-	void resetScore();
-	int score() const;
+    void resetScore();
+    int score() const;
 
-	QString name() const;
+    QString name() const;
 
 protected:
-	int mSpeed;
-	int mVelocity;
+    int mSpeed;
+    int mVelocity;
 
-	int mScore = 0;
-	int mPos = INT_MAX;
+    int mScore = 0;
+    int mPos = INT_MAX;
 
-	QSharedPointer<DkPongSettings> mS;
-	QRect mRect;
+    QSharedPointer<DkPongSettings> mS;
+    QRect mRect;
 
-	QString mPlayerName;
+    QString mPlayerName;
 };
 
-class DllCoreExport DkBall {
-
+class DllCoreExport DkBall
+{
 public:
-	DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    DkBall(QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
-	void reset();
-	void updateSize();
+    void reset();
+    void updateSize();
 
-	QRect rect() const;
-	QPoint direction() const;
+    QRect rect() const;
+    QPoint direction() const;
 
-	bool move(DkPongPlayer& player1, DkPongPlayer& player2);
+    bool move(DkPongPlayer &player1, DkPongPlayer &player2);
 
 protected:
-	int mMinSpeed;
-	int mMaxSpeed;
+    int mMinSpeed;
+    int mMaxSpeed;
 
-	DkVector mDirection;
-	QRect mRect;
+    DkVector mDirection;
+    QRect mRect;
 
-	QSharedPointer<DkPongSettings> mS;
+    QSharedPointer<DkPongSettings> mS;
 
-	void fixAngle();
-	void setDirection(const DkVector& dir);
+    void fixAngle();
+    void setDirection(const DkVector &dir);
 };
 
-class DllCoreExport DkScoreLabel : public QLabel {
-	Q_OBJECT
+class DllCoreExport DkScoreLabel : public QLabel
+{
+    Q_OBJECT
 
 public:
-	DkScoreLabel(Qt::Alignment align = Qt::AlignLeft, QWidget* parent = 0, QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
+    DkScoreLabel(Qt::Alignment align = Qt::AlignLeft,
+                 QWidget *parent = 0,
+                 QSharedPointer<DkPongSettings> settings = QSharedPointer<DkPongSettings>(new DkPongSettings()));
 
 protected:
-	void paintEvent(QPaintEvent* ev);
-	QFont mFont;
-	Qt::Alignment mAlign;
+    void paintEvent(QPaintEvent *ev);
+    QFont mFont;
+    Qt::Alignment mAlign;
 
-	QSharedPointer<DkPongSettings> mS;
+    QSharedPointer<DkPongSettings> mS;
 };
 
-class DllCoreExport DkPongPort : public QGraphicsView {
-	Q_OBJECT
+class DllCoreExport DkPongPort : public QGraphicsView
+{
+    Q_OBJECT
 
 public:
-	DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	virtual ~DkPongPort();
+    DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    virtual ~DkPongPort();
 
-	QSharedPointer<DkPongSettings> settings() const;
+    QSharedPointer<DkPongSettings> settings() const;
 
 public slots:
-	void gameLoop();
-	void countDown();
-	
-protected:
-	virtual void paintEvent(QPaintEvent* event) override;
-	virtual void resizeEvent(QResizeEvent* event) override;
-	virtual void keyPressEvent(QKeyEvent* event) override;
-	virtual void keyReleaseEvent(QKeyEvent* event) override;
+    void gameLoop();
+    void countDown();
 
-	void initGame();
-	void togglePause();
-	void pauseGame(bool pause = true);
+protected:
+    virtual void paintEvent(QPaintEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
+
+    void initGame();
+    void togglePause();
+    void pauseGame(bool pause = true);
 
 private:
-	QTimer *mEventLoop;
-	QTimer *mCountDownTimer;
-	int mCountDownSecs = 3;
+    QTimer *mEventLoop;
+    QTimer *mCountDownTimer;
+    int mCountDownSecs = 3;
 
-	int mPlayerSpeed;
+    int mPlayerSpeed;
 
-	DkBall mBall;
-	DkPongPlayer mPlayer1;
-	DkPongPlayer mPlayer2;
+    DkBall mBall;
+    DkPongPlayer mPlayer1;
+    DkPongPlayer mPlayer2;
 
-	QSharedPointer<DkPongSettings> mS;
-	void drawField(QPainter& p);
+    QSharedPointer<DkPongSettings> mS;
+    void drawField(QPainter &p);
 
-	DkScoreLabel* mP1Score;
-	DkScoreLabel* mP2Score;
+    DkScoreLabel *mP1Score;
+    DkScoreLabel *mP2Score;
 
-	DkScoreLabel* mLargeInfo;
-	DkScoreLabel* mSmallInfo;
+    DkScoreLabel *mLargeInfo;
+    DkScoreLabel *mSmallInfo;
 
-	void startCountDown(int sec = 3);
+    void startCountDown(int sec = 3);
 };
 
-class DllCoreExport DkPong : public QMainWindow {
-	Q_OBJECT
+class DllCoreExport DkPong : public QMainWindow
+{
+    Q_OBJECT
 
 public:
-	DkPong(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
-	virtual ~DkPong() {};
+    DkPong(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    virtual ~DkPong(){};
 
 protected:
-	void keyPressEvent(QKeyEvent *event) override;
-	void closeEvent(QCloseEvent* event) override;
-	
-	DkPongPort* mViewport;
+    void keyPressEvent(QKeyEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+
+    DkPongPort *mViewport;
 };
 
 }
