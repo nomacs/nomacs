@@ -75,7 +75,7 @@
 #endif
 #endif
 
-#if QT_VERSION >= 0x050500 && !defined(QT_NO_DEBUG_OUTPUT)
+#if !defined(QT_NO_DEBUG_OUTPUT)
 DllCoreExport QDebug qDebugClean();
 DllCoreExport QDebug qInfoClean();
 DllCoreExport QDebug qWarningClean();
@@ -83,10 +83,6 @@ DllCoreExport QDebug qWarningClean();
 #define qDebugClean() qDebug()
 #define qInfoClean() qDebug()
 #define qWarningClean() qDebug()
-#endif
-
-#if QT_VERSION < 0x050500
-#define qInfo() qDebug()
 #endif
 
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)

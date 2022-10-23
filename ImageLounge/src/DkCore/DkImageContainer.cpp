@@ -401,11 +401,7 @@ void DkImageContainer::setFilePath(const QString &filePath)
     mFileInfo = filePath;
 
 #ifdef Q_OS_WIN
-#if QT_VERSION < 0x050000
-    mFileNameStr = fileName().toStdWString();
-#else
     mFileNameStr = DkUtils::qStringToStdWString(fileName());
-#endif
 #endif
 }
 

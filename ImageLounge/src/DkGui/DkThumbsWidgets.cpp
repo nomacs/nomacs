@@ -839,11 +839,7 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem *pa
     setThumb(thumb);
     setFlag(ItemIsSelectable, true);
 
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
 }
 
 DkThumbLabel::~DkThumbLabel()
@@ -1612,11 +1608,7 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event)
 
     qDebug() << "mouse pressed";
 
-#if QT_VERSION < 0x050000
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos())));
-#else
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
-#endif
 
     // this is a bit of a hack
     // what we want to achieve: if the user is selecting with e.g. shift or ctrl
@@ -1669,11 +1661,7 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
 
-#if QT_VERSION < 0x050000
-    DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos())));
-#else
     DkThumbLabel *itemClicked = static_cast<DkThumbLabel *>(scene->itemAt(mapToScene(event->pos()), QTransform()));
-#endif
 
     if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
         scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));

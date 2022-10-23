@@ -74,7 +74,7 @@
 #pragma comment(lib, "shlwapi.lib")
 #endif
 
-#if QT_VERSION >= 0x050500 && !defined(QT_NO_DEBUG_OUTPUT)
+#if !defined(QT_NO_DEBUG_OUTPUT)
 
 QDebug qDebugClean()
 {
@@ -172,11 +172,7 @@ bool DkUtils::wCompLogic(const std::wstring &lhs, const std::wstring &rhs)
 
 bool DkUtils::compLogicQString(const QString &lhs, const QString &rhs)
 {
-#if QT_VERSION < 0x050000
-    return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
-#else
     return wCompLogic(qStringToStdWString(lhs), qStringToStdWString(rhs));
-#endif
 }
 
 #else // !Q_OS_WIN
@@ -390,8 +386,6 @@ void qtMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &
 
 void DkUtils::logToFile(QtMsgType type, const QString &msg)
 {
-#if QT_VERSION >= 0x050500
-
     static QString filePath;
 
     if (filePath.isEmpty())
@@ -426,7 +420,6 @@ void DkUtils::logToFile(QtMsgType type, const QString &msg)
 
     QTextStream ts(&outFile);
     ts << txt << endl;
-#endif
 }
 
 void DkUtils::initializeDebug()
@@ -453,19 +446,8 @@ QString DkUtils::getAppDataPath()
 {
     QString appPath;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     // this gives us a roaming profile on windows
     appPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-#elif QT_VERSION >= 0x050000
-    appPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-
-    // make our own folder - AppDataLocation already does this...
-    appPath += QDir::separator() + QCoreApplication::organizationName();
-#else
-    appPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-    // make our own folder
-    appPath += QDir::separator() + QCoreApplication::organizationName();
-#endif
 
     if (!QDir().mkpath(appPath))
         qWarning() << "I could not create" << appPath;
@@ -533,7 +515,6 @@ void DkUtils::mSleep(int ms)
 bool DkUtils::exists(const QFileInfo &file, int waitMs)
 {
     QFuture<bool> future = QtConcurrent::run(
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
         // TODO: if we have a lot of mounted files (windows) in the history
         // we can potentially exhaust the pool & image loading has
         // to wait for these exists
@@ -543,7 +524,6 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
         // - create a dedicated pool for exists
         // - create a dedicated pool for image loading
         DkThumbsThreadPool::pool(), // hook it to the thumbs pool
-#endif
         &DkUtils::checkFile,
         file);
 
@@ -777,17 +757,13 @@ QString DkUtils::formatToString(int format)
         break;
     case QImage::Format_RGBX8888:
     case QImage::Format_RGBA8888_Premultiplied:
-#if QT_VERSION >= 0x050500
     case QImage::Format_RGB30:
-#endif
     case QImage::Format_RGB32:
         msg = QObject::tr("RGB 32-bit");
         break;
     case QImage::Format_ARGB32_Premultiplied:
     case QImage::Format_RGBA8888:
-#if QT_VERSION >= 0x050500
     case QImage::Format_A2RGB30_Premultiplied:
-#endif
     case QImage::Format_ARGB32:
         msg = QObject::tr("ARGB 32-bit");
         break;
@@ -809,7 +785,6 @@ QString DkUtils::formatToString(int format)
         msg = QObject::tr("ARGB 16-bit");
         break;
 
-#if QT_VERSION >= 0x050500
     case QImage::Format_BGR30:
         msg = QObject::tr("BGR 32-bit");
         break;
@@ -822,7 +797,6 @@ QString DkUtils::formatToString(int format)
     case QImage::Format_Alpha8:
         msg = QObject::tr("Alpha 8-bit");
         break;
-#endif
     }
 
     return msg;
@@ -880,78 +854,9 @@ bool DkUtils::moveToTrash(const QString &filePath)
         return false;
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-
     // wohooooo - moveToTrash finally made it into Qt : )
     QFile file(filePath);
     return file.moveToTrash();
-
-    // code is based on:http://stackoverflow.com/questions/17964439/move-files-to-trash-recycle-bin-in-qt
-#elif defined(Q_OS_WIN)
-
-    std::wstring winPath = (fileInfo.isSymLink()) ? qStringToStdWString(fileInfo.symLinkTarget()) : qStringToStdWString(filePath);
-    winPath.append(1, L'\0'); // path string must be double nul-terminated
-
-    SHFILEOPSTRUCTW shfos = {};
-    shfos.hwnd = nullptr; // handle to window that will own generated windows, if applicable
-    shfos.wFunc = FO_DELETE;
-    shfos.pFrom = winPath.c_str();
-    shfos.pTo = nullptr; // not used for deletion operations
-    shfos.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT; // use the recycle bin
-
-    const int retVal = SHFileOperationW(&shfos);
-
-    return retVal == 0; // true if no error code
-
-#elif defined(Q_OS_LINUX)
-
-    // TODO (or not): currently if no one ever deleted something, /share/Trash does not exist -> should we create it?
-    QString trashFilePath = QDir::homePath() + "/.local/share/Trash/files/"; // trash file path contain delete files
-    QString trashFileName = fileInfo.fileName();
-    qInfo() << "deleting to: " << trashFilePath + fileInfo.fileName();
-
-    QFile file(filePath);
-
-    auto createTrashInfo = [&](const QString &filePath) {
-        QString trashInfoPath = QDir::homePath() + "/.local/share/Trash/info/"; // trash file path contain delete files
-        QFile ti(trashInfoPath + trashFileName + ".trashinfo");
-
-        if (ti.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream stream(&ti);
-            stream << "[Trash Info]\n";
-            stream << "Path=" << filePath << "\n";
-            stream << "DeletionDate=" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss") << "\n";
-            ti.close();
-
-        } else {
-            qWarning() << "could not write trash info...";
-        }
-    };
-
-    bool deleted = false;
-
-    // move to trash
-    if (file.rename(trashFilePath + trashFileName)) {
-        deleted = true;
-    } else {
-        // ok - a file with the same name exists in the trash -> add date-time
-        // fixes #493
-        trashFileName = fileInfo.fileName() + DkUtils::nowString();
-        deleted = file.rename(trashFilePath + trashFileName);
-    }
-
-    if (deleted) {
-        createTrashInfo(filePath);
-        return true;
-    } else
-        return false;
-
-#else
-    QFile fileHandle(filePath);
-    return fileHandle.remove();
-#endif
-
-    return false; // should never be hit
 }
 
 QString DkUtils::readableByte(float bytes)

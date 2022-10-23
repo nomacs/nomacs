@@ -189,9 +189,6 @@ void DkCompressDialog::init()
         mCompressionCombo->show();
         mColChooser->show();
 
-#if QT_VERSION < 0x050000
-        mCbLossless->show();
-#endif
         mSizeCombo->hide();
         losslessCompression(mCbLossless->isChecked());
     } else if (mDialogMode == avif_dialog) {

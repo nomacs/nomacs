@@ -432,13 +432,12 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent *event)
         }
         qDebug() << "swiping...";
     } else if (QPinchGesture *pinch = static_cast<QPinchGesture *>(event->gesture(Qt::PinchGesture))) {
-#if QT_VERSION >= 0x050000
         double scale = pinch->lastScaleFactor();
 
         if (fabs(scale - 1.0) > FLT_EPSILON) {
             zoom(scale, mapFromGlobal(pinch->centerPoint().toPoint()));
         }
-#endif
+
         qDebug() << "[Qt] pinching...";
     } else if (/*QGesture *pan = */ event->gesture(Qt::PanGesture)) {
         qDebug() << "panning...";
