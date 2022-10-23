@@ -141,9 +141,8 @@ DkQuickAccessEdit::DkQuickAccessEdit(QWidget *parent)
 
     mCompleter = new QCompleter(this);
 
-#if QT_VERSION >= 0x050000
     mCompleter->setFilterMode(Qt::MatchContains);
-#endif
+
     mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     setCompleter(mCompleter);
 

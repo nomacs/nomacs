@@ -548,8 +548,6 @@ void DkAppManagerDialog::on_addButton_clicked()
 #ifdef Q_OS_WIN
     appFilter += tr("Executable Files (*.exe);;");
     defaultPath = getenv("PROGRAMFILES");
-#elif QT_VERSION < 0x050000
-    defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
 #else
     defaultPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation); // still retrieves startmenu on windows
 #endif
@@ -1482,12 +1480,7 @@ QWidget *DkShortcutDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     if (!scW)
         return scW;
 
-#if QT_VERSION < 0x050000
-    connect(scW, SIGNAL(textChanged(const QString &)), this, SLOT(textChanged(const QString &)));
-    connect(scW, SIGNAL(editingFinished()), this, SLOT(textChanged()));
-#else
     connect(scW, SIGNAL(keySequenceChanged(const QKeySequence &)), this, SLOT(keySequenceChanged(const QKeySequence &)));
-#endif
 
     return scW;
 }
@@ -1548,17 +1541,6 @@ void DkShortcutDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     }
 }
 
-#if QT_VERSION < 0x050000
-void DkShortcutDelegate::textChanged(const QString &text)
-{
-    emit checkDuplicateSignal(text, mItem);
-}
-
-void DkShortcutDelegate::keySequenceChanged(const QKeySequence &)
-{
-}
-#else
-
 void DkShortcutDelegate::textChanged(const QString &)
 {
 } // dummy since the moccer is to dumb to get #if defs
@@ -1567,7 +1549,6 @@ void DkShortcutDelegate::keySequenceChanged(const QKeySequence &keySequence)
 {
     emit checkDuplicateSignal(keySequence, mItem);
 }
-#endif
 
 // fun fact: there are ~10^4500 (binary) images of size 128x128
 // increase counter if you think this is fascinating: 1
@@ -1843,11 +1824,7 @@ void DkShortcutsDialog::createLayout()
     // register our special shortcut editor
     QItemEditorFactory *factory = new QItemEditorFactory;
 
-#if QT_VERSION < 0x050000
-    QItemEditorCreatorBase *shortcutListCreator = new QStandardItemEditorCreator<DkShortcutEditor>();
-#else
     QItemEditorCreatorBase *shortcutListCreator = new QStandardItemEditorCreator<QKeySequenceEdit>();
-#endif
 
     factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
 
@@ -1875,12 +1852,8 @@ void DkShortcutsDialog::createLayout()
     connect(mDefaultButton, SIGNAL(clicked()), this, SLOT(defaultButtonClicked()));
     connect(mModel, SIGNAL(duplicateSignal(const QString &)), mNotificationLabel, SLOT(setText(const QString &)));
 
-#if QT_VERSION < 0x050000
-    connect(scDelegate, SIGNAL(checkDuplicateSignal(const QString &, void *)), model, SLOT(checkDuplicate(const QString &, void *)));
-#else
     connect(scDelegate, SIGNAL(checkDuplicateSignal(const QKeySequence &, void *)), mModel, SLOT(checkDuplicate(const QKeySequence &, void *)));
     connect(scDelegate, SIGNAL(clearDuplicateSignal()), mModel, SLOT(clearDuplicateInfo()));
-#endif
 
     // mButtons
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);

@@ -230,19 +230,6 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     if (loadMetaData && mMetaData) {
         try {
             mMetaData->readMetaData(filePath, ba);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-            // this is a workaroung for old Qt5 versions where jpgs with 'illegal' orientation=0 were not loaded
-            if (!DkSettingsManager::param().metaData().ignoreExifOrientation) {
-                DkMetaDataT::ExifOrientationState orState = mMetaData->checkExifOrientation();
-
-                if (orState == DkMetaDataT::or_illegal) {
-                    mMetaData->clearOrientation();
-                    mMetaData->saveMetaData(ba);
-                    qWarning() << "deleting illegal EXIV orientation...";
-                }
-            }
-#endif
         } catch (...) {
         } // ignore if we cannot read the metadata
     } else if (!mMetaData) {
@@ -303,15 +290,6 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
         if (imgLoaded)
             mLoader = psd_loader;
     }
-
-#if QT_VERSION < 0x050000 // >DIR: qt5 ships with webp : ) [23.4.2015 markus]
-    // WEBP loader
-    if (!imgLoaded) {
-        imgLoaded = loadWebPFile(file, ba);
-        if (imgLoaded)
-            loader = webp_loader;
-    }
-#endif
 
     // RAW loader
     if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
@@ -560,7 +538,7 @@ bool DkBasicLoader::loadTIFFile(const QString &filePath, QImage &img, QSharedPoi
     TIFF *tiff = 0;
 
 // TODO: currently TIFFStreamOpen can only be linked on Windows?!
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0) && defined(Q_OS_WIN)
+#if defined(Q_OS_WIN)
 
     std::istringstream is(ba ? ba->toStdString() : "");
 
@@ -637,12 +615,8 @@ uint32_t drif2qtfmt(uint32_t f)
         return QImage::Format_RGB888;
     case DRIF_FMT_RGBA8888:
         return QImage::Format_RGBA8888;
-
-        // grayscale 8 was added in Qt 5.4
-#if QT_VERSION >= 0x050500
     case DRIF_FMT_GRAY:
         return QImage::Format_Grayscale8;
-#endif
     }
 
     return QImage::Format_Invalid;
@@ -1084,7 +1058,7 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     DkTimer dt;
     TIFF *tiff = 0;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0) && defined(Q_OS_WIN)
+#if defined(Q_OS_WIN)
     std::istringstream is(ba ? ba->toStdString() : "");
 
     if (ba)
@@ -1165,7 +1139,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
     DkTimer dt;
     TIFF *tiff = TIFFOpen(mFile.toLatin1(), "r");
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0) && defined(Q_OS_WIN)
+#if defined(Q_OS_WIN)
 
     // loading from buffer allows us to load files with non-latin names
     QSharedPointer<QByteArray> ba;
@@ -1308,14 +1282,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
 
     if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
         saved = saveWindowsIcon(img, ba);
-    }
-#if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
-    else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
-        saved = saveWebPFile(img, ba, compression);
-    }
-#endif
-    else {
-
+    } else {
         bool hasAlpha = DkImage::alphaChannelUsed(img);
         QImage sImg = img;
 
@@ -1346,10 +1313,9 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
             imgWriter->setQuality(DkSettingsManager::instance().settings().app().defaultJpgQuality);
         }
 
-#if QT_VERSION >= 0x050500
         imgWriter->setOptimizedWrite(true); // this saves space TODO: user option here?
         imgWriter->setProgressiveScanWrite(true);
-#endif
+
         saved = imgWriter->write(sImg); // hint: release() might run now, resetting mMetaData which is used below [2022-08, pse]
         delete imgWriter;
     }

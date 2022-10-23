@@ -2696,7 +2696,7 @@ DkBatchConfig DkBatchWidget::createBatchConfig(bool strict) const
         }
         // else if (config.getOutputDir() == QDir()) {
         //	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()),
-        //QMessageBox::Ok, QMessageBox::Ok); 	return;
+        // QMessageBox::Ok, QMessageBox::Ok); 	return;
         // }
 
         qDebug() << "config not ok - canceling";

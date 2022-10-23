@@ -311,16 +311,13 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
     connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
 
-    mThumbWatcher.setFuture(QtConcurrent::run(
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-        DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-#endif
-        this,
-        &nmc::DkThumbNailT::computeCall,
-        mFile,
-        ba,
-        forceLoad,
-        mMaxThumbSize));
+    mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
+                                              this,
+                                              &nmc::DkThumbNailT::computeCall,
+                                              mFile,
+                                              ba,
+                                              forceLoad,
+                                              mMaxThumbSize));
 
     return true;
 }
@@ -347,10 +344,8 @@ void DkThumbNailT::thumbLoaded()
 // DkThumbsThreadPool --------------------------------------------------------------------
 DkThumbsThreadPool::DkThumbsThreadPool()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     mPool = new QThreadPool();
     mPool->setMaxThreadCount(qMax(mPool->maxThreadCount() - 2, 1));
-#endif
 }
 
 DkThumbsThreadPool &DkThumbsThreadPool::instance()
@@ -361,18 +356,12 @@ DkThumbsThreadPool &DkThumbsThreadPool::instance()
 
 QThreadPool *DkThumbsThreadPool::pool()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     return instance().mPool;
-#else
-    return QThreadPool::globalInstance();
-#endif
 }
 
 void DkThumbsThreadPool::clear()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     pool()->clear();
-#endif
 }
 
 }
