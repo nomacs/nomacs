@@ -1,27 +1,125 @@
-.\"Created with GNOME Manpages Editor Wizard
-.\"http://sourceforge.net/projects/gmanedit2
-.TH nomacs 1 "July 13, 2012" "" "nomacs - ImageLounge"
-
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH nomacs 1 "October 24, 2022" "" "nomacs - ImageLounge"
+.\"----------------------------------------------------------------------------
 .SH NAME
 nomacs \- is a free, open source image viewer, which supports multiple platforms. 
-
+.\"----------------------------------------------------------------------------
 .SH SYNOPSIS
 .B nomacs
-.RI [ file ]
+.RI [file]
 .br
-
+.\"----------------------------------------------------------------------------
 .SH DESCRIPTION
-\fBnomacs\fP nomacs is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.
+.PP
+\fBnomacs\fP is a free, open source image viewer, which supports multiple platforms. You can use it for viewing all common image formats including RAW and psd images.
 nomacs includes image manipulation methods for adjusting brightness, contrast, saturation, hue, gamma, exposure. It has a pseudo color function which allows creating false color images. A unique feature of nomacs is the synchronization of multiple instances. With this feature you can easily compare images by zooming and/or panning at the exactly same position or even by overlaying them with different opacity.
 nomacs is licensed under the GNU General Public License v3 and available for Windows, Linux, FreeBSD, and OS/2. It is free for private and commercial use.
-
+.\"----------------------------------------------------------------------------
 .SH OPTIONS
-
-you can supply an image file to nomacs and it will open it immediately. 
-
+.PP
+The following is the list of the options you can use, but the minimum usage is just supplying the file or folder path to nomacs.
+.
+.PP
+\-\-batch <batch-settings-path>
+.RS 4
+Batch processing of <batch-settings.pnm>.
+.RE
+.
+.PP
+\-\-batch-log <log-path.txt>
+.RS 4
+Saves batch log to <log-path.txt>.
+.RE
+.
+.PP
+\-d, \-\-directory <directory>
+.RS 4
+Load all files in the <directory>.
+.RE
+.
+.PP
+\-f, \-\-fullscreen
+.RS 4
+Start in fullscreen.
+.RE
+.
+.PP
+\-h, \-\-help
+.RS 4
+Displays help on commandline options.
+.RE
+.
+.PP
+\-\-help-all
+.RS 4
+Displays help including Qt specific options.
+.RE
+.
+.PP
+\-\-import-settings <settings-path.ini>
+.RS 4
+Imports the settings from <settings-path.ini> and saves them.
+.RE
+.
+.PP
+\-m, \-\-mode <default | frameless | pseudocolor>
+.RS 4
+Set the viewing mode <mode>.
+.RE
+.
+.PP
+\-p, \-\-private
+.RS 4
+Start in private mode.
+.RE
+.
+.PP
+\-\-pong
+.RS 4
+Start Pong.
+.RE
+.
+.PP
+\-\-register-files
+.RS 4
+Register file associations (Windows only).
+.RE
+.
+.PP
+\-\-slideshow
+.RS 4
+Start slideshow playback.
+.RE
+.
+.PP
+\-t, \-\-tab <images>
+.RS 4
+Load <images> to tabs.
+.RE
+.
+.PP
+\-v, \-\-version
+.RS 4
+Displays version information.
+.RE
+.
+.\"----------------------------------------------------------------------------
+.SH ARGUMENTS
+.PP
+You can supply an image file to nomacs and it will open it immediately. 
+.\"----------------------------------------------------------------------------
+.SH SEE ALSO
+.PP
+You may also find more detailed online documentation on project homepage and Git repository.
+.
+.br
+• https://github.com/nomacs/nomacs
+.
+.\"----------------------------------------------------------------------------
 .SH AUTHORS
-Markus Diem <markus@nomacs.org>
-
-Stefan Fiel <stefan@nomacs.org>
-
-Florian Kleber <florian@nomacs.org>
+.PP
+• Markus Diem <markus@nomacs.org>
+.br
+• Stefan Fiel <stefan@nomacs.org>
+.br
+• Florian Kleber <florian@nomacs.org>
