@@ -326,6 +326,16 @@ bool DkUtils::compFilenameInv(const QFileInfo &lhf, const QFileInfo &rhf)
     return !compFilename(lhf, rhf);
 }
 
+bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
+{
+    return lhf.size() < rhf.size();
+}
+
+bool DkUtils::compFileSizeInv(const QFileInfo &lhf, const QFileInfo &rhf)
+{
+    return !compFileSize(lhf, rhf);
+}
+
 bool DkUtils::compRandom(const QFileInfo &, const QFileInfo &)
 {
     return qrand() % 2 != 0;

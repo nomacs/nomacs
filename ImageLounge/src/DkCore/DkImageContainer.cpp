@@ -582,13 +582,11 @@ bool imageContainerLessThan(const DkImageContainer &l, const DkImageContainer &r
             return DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
         else
             return !DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
-        break;
 #else
         if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
             return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
         else
             return DkUtils::compFilenameInv(l.fileInfo(), r.fileInfo());
-        break;
 #endif
 
     case DkSettings::sort_date_created:
@@ -596,7 +594,12 @@ bool imageContainerLessThan(const DkImageContainer &l, const DkImageContainer &r
             return DkUtils::compDateCreated(l.fileInfo(), r.fileInfo());
         else
             return DkUtils::compDateCreatedInv(l.fileInfo(), r.fileInfo());
-        break;
+
+    case DkSettings::sort_file_size:
+        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
+            return DkUtils::compFileSize(l.fileInfo(), r.fileInfo());
+        else
+            return DkUtils::compFileSizeInv(l.fileInfo(), r.fileInfo());
 
     case DkSettings::sort_date_modified:
         if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)

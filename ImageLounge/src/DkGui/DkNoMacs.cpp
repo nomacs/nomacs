@@ -283,6 +283,7 @@ void DkNoMacs::createActions()
     connect(am.action(DkActionManager::menu_file_exit), SIGNAL(triggered()), this, SLOT(close()));
 
     connect(am.action(DkActionManager::menu_sort_filename), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+    connect(am.action(DkActionManager::menu_sort_file_size), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
     connect(am.action(DkActionManager::menu_sort_date_created), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
     connect(am.action(DkActionManager::menu_sort_date_modified), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
     connect(am.action(DkActionManager::menu_sort_random), SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
@@ -1351,6 +1352,8 @@ void DkNoMacs::changeSorting(bool change)
 
         if (senderName == "menu_sort_filename")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_filename;
+        else if (senderName == "menu_sort_file_size")
+            DkSettingsManager::param().global().sortMode = DkSettings::sort_file_size;
         else if (senderName == "menu_sort_date_created")
             DkSettingsManager::param().global().sortMode = DkSettings::sort_date_created;
         else if (senderName == "menu_sort_date_modified")
