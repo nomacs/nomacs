@@ -565,7 +565,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     QFileInfo fileInfo(thumb->getFilePath());
                     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n"
-                        + tr("Created: ") + fileInfo.created().toString(Qt::SystemLocaleDate);
+                        + tr("Created: ") + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
                     setToolTip(toolTipInfo);
                     setStatusTip(fileInfo.fileName());
                 }
@@ -856,7 +856,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb)
     connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
     QFileInfo fileInfo(thumb->getFilePath());
     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n" + tr("Created: ")
-        + fileInfo.created().toString(Qt::SystemLocaleDate);
+        + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
 
     setToolTip(toolTipInfo);
 

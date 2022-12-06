@@ -298,7 +298,7 @@ QString DkUtils::getLongestNumber(const QString &str, int startIdx)
 
 bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
 {
-    return lhf.created() < rhf.created();
+    return lhf.birthTime() < rhf.birthTime();
 }
 
 bool DkUtils::compDateCreatedInv(const QFileInfo &lhf, const QFileInfo &rhf)
@@ -715,7 +715,7 @@ QDateTime DkUtils::convertDate(const QString &date, const QFileInfo &file)
 
         dateCreated = QDateTime(dateV, time);
     } else if (file.exists())
-        dateCreated = file.created();
+        dateCreated = file.birthTime();
 
     return dateCreated;
 }
@@ -735,7 +735,7 @@ QString DkUtils::convertDateString(const QString &date, const QFileInfo &file)
             dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
         }
     } else if (file.exists()) {
-        QDateTime dateCreated = file.created();
+        QDateTime dateCreated = file.birthTime();
         dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
     } else
         dateConverted = "unknown date";
