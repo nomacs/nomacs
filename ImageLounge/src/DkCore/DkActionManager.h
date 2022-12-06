@@ -144,6 +144,7 @@ public:
     enum SortMenuActions {
 
         menu_sort_filename,
+        menu_sort_file_size,
         menu_sort_date_created,
         menu_sort_date_modified,
         menu_sort_random,
