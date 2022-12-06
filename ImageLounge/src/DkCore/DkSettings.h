@@ -121,6 +121,7 @@ public:
 
     enum sortMode {
         sort_filename,
+        sort_file_size,
         sort_date_created,
         sort_date_modified,
         sort_random,

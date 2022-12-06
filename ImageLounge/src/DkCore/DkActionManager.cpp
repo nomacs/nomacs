@@ -422,6 +422,7 @@ QMenu *DkActionManager::createSortMenu(QWidget *parent)
 {
     mSortMenu = new QMenu(QObject::tr("S&ort"), parent);
     mSortMenu->addAction(mSortActions[menu_sort_filename]);
+    mSortMenu->addAction(mSortActions[menu_sort_file_size]);
     mSortMenu->addAction(mSortActions[menu_sort_date_created]);
     mSortMenu->addAction(mSortActions[menu_sort_date_modified]);
     mSortMenu->addAction(mSortActions[menu_sort_random]);
@@ -1090,6 +1091,12 @@ void DkActionManager::createActions(QWidget *parent)
     mSortActions[menu_sort_filename]->setStatusTip(QObject::tr("Sort by Filename"));
     mSortActions[menu_sort_filename]->setCheckable(true);
     mSortActions[menu_sort_filename]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_filename);
+
+    mSortActions[menu_sort_file_size] = new QAction(QObject::tr("by File &Size"), parent);
+    mSortActions[menu_sort_file_size]->setObjectName("menu_sort_file_size");
+    mSortActions[menu_sort_file_size]->setStatusTip(QObject::tr("Sort by File Size"));
+    mSortActions[menu_sort_file_size]->setCheckable(true);
+    mSortActions[menu_sort_file_size]->setChecked(DkSettingsManager::param().global().sortMode == DkSettings::sort_file_size);
 
     mSortActions[menu_sort_date_created] = new QAction(QObject::tr("by Date &Created"), parent);
     mSortActions[menu_sort_date_created]->setObjectName("menu_sort_date_created");
