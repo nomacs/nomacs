@@ -361,7 +361,7 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
     if (sort) {
-        qSort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
+        std::sort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
         qInfo() << "[DkImageLoader] after sorting: " << dt;
 
         emit updateDirSignal(mImages);
@@ -376,7 +376,7 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
 
 QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const
 {
-    qSort(images.begin(), images.end(), imageContainerLessThanPtr);
+    std::sort(images.begin(), images.end(), imageContainerLessThanPtr);
     return images;
 }
 
@@ -1694,7 +1694,7 @@ QStringList DkImageLoader::getFoldersRecursive(const QString &dirPath)
 
     subFolders << dirPath;
 
-    qSort(subFolders.begin(), subFolders.end(), DkUtils::compLogicQString);
+    std::sort(subFolders.begin(), subFolders.end(), DkUtils::compLogicQString);
 
     qDebug() << dirPath << "loaded recursively...";
 
@@ -1999,7 +1999,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
 void DkImageLoader::sort()
 {
-    qSort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
+    std::sort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
     emit updateDirSignal(mImages);
 }
 
