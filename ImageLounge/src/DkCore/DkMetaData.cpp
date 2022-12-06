@@ -600,7 +600,7 @@ void DkMetaDataT::getFileMetaData(QStringList &fileKeys, QStringList &fileValues
 
     // date group
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
-    fileValues.append(fileInfo.created().toString(Qt::SystemLocaleDate));
+    fileValues.append(fileInfo.birthTime().toString(Qt::SystemLocaleDate));
 
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
     fileValues.append(fileInfo.lastModified().toString(Qt::SystemLocaleDate));
