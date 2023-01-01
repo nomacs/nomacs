@@ -111,12 +111,12 @@ $ cd build
 
 For Homebrew on Intel models:
 ```console
-$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin ../ImageLounge/.
+$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
 ```
 
 For Homebrew on Apple Silicon models:
 ```console
-$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin ../ImageLounge/.
+$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
 ```
 
 Run make:
