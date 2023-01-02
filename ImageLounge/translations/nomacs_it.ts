@@ -190,7 +190,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="614"/>
       <source>&amp;Synchronize</source>
-      <translation>&amp;Sincronizza finestre in locale</translation>
+      <translation>&amp;Sincronizza</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="957"/>
@@ -255,7 +255,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="986"/>
       <source>Go To an image</source>
-      <translation>Vai all'immagine</translation>
+      <translation>Vai ad un'immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="988"/>
@@ -265,7 +265,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="990"/>
       <source>Save an image</source>
-      <translation>Salva l'immagine</translation>
+      <translation>Salva un'immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="992"/>
@@ -315,17 +315,17 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1007"/>
       <source>Print an image</source>
-      <translation>Stampa l'immagine</translation>
+      <translation>Stampa un'immagine</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1009"/>
       <source>&amp;Recent Files</source>
-      <translation>&amp;Files Recenti</translation>
+      <translation>&amp;File Recenti</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1013"/>
       <source>Show Recent Files</source>
-      <translation>Visualizza Files Recenti</translation>
+      <translation>Visualizza File Recenti</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1015"/>
@@ -365,7 +365,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1032"/>
       <source>Open file in new instance</source>
-      <translation>Visualizza file in finestra nuova</translation>
+      <translation>Visualizza file in una nuova istanza</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1034"/>
@@ -396,7 +396,7 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1043"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation>Passa attraverso la cartella e sottocartelle</translation>
+      <translation>Attraversa la cartella e le sottocartelle</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1047"/>
@@ -1058,12 +1058,12 @@
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1376"/>
       <source>Choose &amp;Monitor</source>
-      <translation>Scegli e controlla</translation>
+      <translation>Scegli uno schermo</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Choose the Monitor to run nomacs</source>
-      <translation>Seleziona il monitor per avviare nomacs</translation>
+      <translation>Seleziona lo schermo in cui avviare nomacs</translation>
     </message>
     <message>
       <location filename="../../src/DkCore/DkActionManager.cpp" line="1379"/>
