@@ -28,6 +28,7 @@
 #include "DkDependencyResolver.h"
 
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <limits>
 #include <QByteArrayMatcher>
 #include <QDebug>
 #include <QFile>
