@@ -64,11 +64,11 @@ class QSettings;
 
 namespace nmc
 {
-
 // nomacs defines
 class DkCropToolBar;
 
-class DkButton : public QPushButton {
+class DkButton : public QPushButton
+{
     Q_OBJECT
 
 public:
@@ -474,7 +474,8 @@ public:
         mImgT = QImage();
     };
 
-	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix){
+    void setTransforms(QTransform *worldMatrix, QTransform *imgMatrix)
+    {
         mWorldMatrix = worldMatrix;
         mImgMatrix = imgMatrix;
     };
@@ -492,9 +493,9 @@ protected:
     QImage mImg;
     QImage mImgT;
     QSize mImgSize;
-	QTransform* mScaledImgMatrix;
-	QTransform* mWorldMatrix;
-	QTransform* mImgMatrix;
+    QTransform *mScaledImgMatrix;
+    QTransform *mWorldMatrix;
+    QTransform *mImgMatrix;
     QRectF mViewPortRect;
     QPointF mPosGrab;
     QPointF mEnterPos;
@@ -662,26 +663,27 @@ protected:
     bool mShowInfo = false;
 };
 
-class DkCropWidget : public DkEditableRect {
-	Q_OBJECT
+class DkCropWidget : public DkEditableRect
+{
+    Q_OBJECT
 
 public:
-	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    DkCropWidget(QRectF rect = QRect(), QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
-	DkCropToolBar* getToolbar() const;
+    DkCropToolBar *getToolbar() const;
 
 public slots:
-	void crop(bool cropToMetadata = false);
-	virtual void setVisible(bool visible) override;
+    void crop(bool cropToMetadata = false);
+    virtual void setVisible(bool visible) override;
 
 signals:
-	void hideSignal();
+    void hideSignal();
 
 protected:
-	void createToolbar();
-	void mouseDoubleClickEvent(QMouseEvent* ev) override;
+    void createToolbar();
+    void mouseDoubleClickEvent(QMouseEvent *ev) override;
 
-	DkCropToolBar* cropToolbar;
+    DkCropToolBar *cropToolbar;
 };
 
 // Image histogram display

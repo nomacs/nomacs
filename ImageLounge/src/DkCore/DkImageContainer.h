@@ -49,7 +49,6 @@
 
 namespace nmc
 {
-
 // nomacs defines
 class DkBasicLoader;
 class DkMetaDataT;
@@ -126,7 +125,7 @@ public:
     virtual void undo();
     virtual void redo();
     virtual void setHistoryIndex(int idx);
-	void cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata);
+    void cropImage(const DkRotatingRect &rect, const QColor &col, bool cropToMetadata);
     DkRotatingRect cropRect();
 
 protected:

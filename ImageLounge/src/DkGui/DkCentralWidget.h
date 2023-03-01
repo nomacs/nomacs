@@ -54,7 +54,6 @@ class QStackedLayout;
 
 namespace nmc
 {
-
 // nomacs defines
 class DkImageLoader;
 class DkViewPort;
@@ -203,10 +202,10 @@ protected:
     bool loadCascadeTrainingFiles(QList<QUrl> urls);
     void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 
-	DkPreferenceWidget* createPreferences();
-	DkRecentFilesWidget* createRecentFiles();
-	DkThumbScrollWidget* createThumbScrollWidget();
-	DkBatchWidget* createBatch();
+    DkPreferenceWidget *createPreferences();
+    DkRecentFilesWidget *createRecentFiles();
+    DkThumbScrollWidget *createThumbScrollWidget();
+    DkBatchWidget *createBatch();
     void createViewPort();
 
     enum {

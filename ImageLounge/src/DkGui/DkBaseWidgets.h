@@ -53,13 +53,12 @@ class QComboBox;
 
 namespace nmc
 {
-
 class DllCoreExport DkWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
+    DkWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 };
 
 class DllCoreExport DkFadeWidget : public DkWidget
@@ -105,7 +104,7 @@ protected:
 
     // functions
     void init();
-	void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 };
 
 class DllCoreExport DkNamedWidget : public DkFadeWidget
@@ -164,8 +163,8 @@ protected:
 
     // functions
     virtual void init();
-	virtual void paintEvent(QPaintEvent *event) override;
-	virtual void draw(QPainter* painter);
+    virtual void paintEvent(QPaintEvent *event) override;
+    virtual void draw(QPainter *painter);
 
     // for my children...
     virtual void drawBackground(QPainter *){};

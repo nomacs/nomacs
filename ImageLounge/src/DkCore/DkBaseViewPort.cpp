@@ -51,7 +51,6 @@
 
 namespace nmc
 {
-
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent)
     : QGraphicsView(parent)
@@ -114,18 +113,18 @@ void DkBaseViewPort::zoomConstraints(double minZoom, double maxZoom)
 }
 
 // zoom - pan --------------------------------------------------------------------
-void DkBaseViewPort::resetView() {
-
-	mWorldMatrix.reset();
+void DkBaseViewPort::resetView()
+{
+    mWorldMatrix.reset();
     changeCursor();
 
     update();
 }
 
-void DkBaseViewPort::fullView() {
-
-	mWorldMatrix.reset();
-	zoom(1.0/mImgMatrix.m11());
+void DkBaseViewPort::fullView()
+{
+    mWorldMatrix.reset();
+    zoom(1.0 / mImgMatrix.m11());
     changeCursor();
 
     update();
@@ -165,9 +164,9 @@ void DkBaseViewPort::moveView(const QPointF &delta)
 {
     QPointF lDelta = delta;
     QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
-	if (imgWorldRect.width() < width())
+    if (imgWorldRect.width() < width())
         lDelta.setX(0);
-	if (imgWorldRect.height() < height())
+    if (imgWorldRect.height() < height())
         lDelta.setY(0);
 
     mWorldMatrix.translate(lDelta.x(), lDelta.y());
@@ -196,9 +195,9 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
     if (mImgStorage.isEmpty())
         return;
 
-	//limit zoom out ---
-	if (mWorldMatrix.m11()*factor < mMinZoom && factor < 1)
-		return;
+    // limit zoom out ---
+    if (mWorldMatrix.m11() * factor < mMinZoom && factor < 1)
+        return;
 
     // reset view & block if we pass the 'image fit to screen' on zoom out
     if (mWorldMatrix.m11() > 1 && mWorldMatrix.m11() * factor < 1 && !force) {
@@ -214,15 +213,15 @@ void DkBaseViewPort::zoom(double factor, const QPointF &center, bool force)
         return;
     }
 
-	//limit zoom in ---
-	if (mWorldMatrix.m11()*mImgMatrix.m11() > mMaxZoom && factor > 1)
+    // limit zoom in ---
+    if (mWorldMatrix.m11() * mImgMatrix.m11() > mMaxZoom && factor > 1)
         return;
 
     QPointF pos = center;
 
     // if no center assigned: zoom in at the image center
     if (pos.x() == -1 || pos.y() == -1)
-		pos = mImgViewRect.center();
+        pos = mImgViewRect.center();
 
     zoomToPoint(factor, pos, mWorldMatrix);
 
@@ -242,7 +241,8 @@ void DkBaseViewPort::zoomToPoint(double factor, const QPointF &pos, QTransform &
     matrix.scale(factor, factor);
 }
 
-void DkBaseViewPort::stopBlockZooming() {
+void DkBaseViewPort::stopBlockZooming()
+{
     mBlockZooming = false;
 }
 
@@ -262,7 +262,7 @@ void DkBaseViewPort::setImage(QImage newImg)
     mImgRect = QRectF(QPoint(), getImageSize());
 
     if (!DkSettingsManager::param().display().keepZoom || mImgRect != oldImgRect)
-		mWorldMatrix.reset();							
+        mWorldMatrix.reset();
 
     updateImageMatrix();
     update();
@@ -337,7 +337,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent *event)
     QPainter painter(viewport());
 
     if (!mImgStorage.isEmpty()) {
-		painter.setWorldTransform(mWorldMatrix);
+        painter.setWorldTransform(mWorldMatrix);
 
         // don't interpolate - we have a sophisticated anti-aliasing methods
         //// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
@@ -434,7 +434,7 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent *event)
 void DkBaseViewPort::mousePressEvent(QMouseEvent *event)
 {
     // ok, start panning
-	if (mWorldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
+    if (mWorldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
         setCursor(Qt::ClosedHandCursor);
     }
 
@@ -443,9 +443,9 @@ void DkBaseViewPort::mousePressEvent(QMouseEvent *event)
     QWidget::mousePressEvent(event);
 }
 
-void DkBaseViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
-	if (mWorldMatrix.m11() > 1 && !imageInside())
+void DkBaseViewPort::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (mWorldMatrix.m11() > 1 && !imageInside())
         setCursor(Qt::OpenHandCursor);
 
     QWidget::mouseReleaseEvent(event);
@@ -456,10 +456,9 @@ void DkBaseViewPort::mouseDoubleClickEvent(QMouseEvent *event)
     QCoreApplication::sendEvent(parentWidget(), event);
 }
 
-void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
-
-	if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
-
+void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event)
+{
+    if (mWorldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
         QPointF cPos = event->pos();
         QPointF dxy = (cPos - mPosGrab);
         mPosGrab = cPos;
@@ -536,9 +535,7 @@ void DkBaseViewPort::draw(QPainter &painter, double opacity)
         painter.drawPixmap(mImgViewRect, mMovie->currentPixmap(), mMovie->frameRect());
     } else {
         // if we have the exact level cached: render it directly
-		if (displayRect.width() == img.width() &&
-			displayRect.height() == img.height()) {
-
+        if (displayRect.width() == img.width() && displayRect.height() == img.height()) {
             painter.setWorldMatrixEnabled(false);
             painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
             painter.drawImage(displayRect, img, img.rect());
@@ -571,7 +568,7 @@ bool DkBaseViewPort::imageInside() const
 {
     QRect viewRect = mWorldMatrix.mapRect(mImgViewRect).toRect();
 
-	return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(viewRect);
+    return mWorldMatrix.m11() <= 1.0f || mViewportRect.contains(viewRect);
 }
 
 void DkBaseViewPort::updateImageMatrix()
@@ -587,83 +584,83 @@ void DkBaseViewPort::updateImageMatrix()
     QSize imgSize = getImageSize();
 
     // if the image is smaller or zoom is active: paint the image as is
-	if (!mViewportRect.contains(mImgRect))
+    if (!mViewportRect.contains(mImgRect))
         mImgMatrix = getScaledImageMatrix();
     else {
-		mImgMatrix.translate((float)(width()-imgSize.width())*0.5f, (float)(height()-imgSize.height())*0.5f);
+        mImgMatrix.translate((float)(width() - imgSize.width()) * 0.5f, (float)(height() - imgSize.height()) * 0.5f);
         mImgMatrix.scale(1.0f, 1.0f);
     }
 
     mImgViewRect = mImgMatrix.mapRect(mImgRect);
 
     // update world matrix
-	if (mWorldMatrix.m11() != 1) {
+    if (mWorldMatrix.m11() != 1) {
+        double scaleFactor = oldImgMatrix.m11() / mImgMatrix.m11();
+        double dx = oldImgRect.x() / scaleFactor - mImgViewRect.x();
+        double dy = oldImgRect.y() / scaleFactor - mImgViewRect.y();
 
-		double scaleFactor = oldImgMatrix.m11()/mImgMatrix.m11();
-		double dx = oldImgRect.x()/scaleFactor-mImgViewRect.x();
-		double dy = oldImgRect.y()/scaleFactor-mImgViewRect.y();
-
-    mWorldMatrix.scale(scaleFactor, scaleFactor);
-    mWorldMatrix.translate(dx, dy);
-	}
+        mWorldMatrix.scale(scaleFactor, scaleFactor);
+        mWorldMatrix.translate(dx, dy);
+    }
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix() const {
-	return getScaledImageMatrix(size());
+QTransform DkBaseViewPort::getScaledImageMatrix() const
+{
+    return getScaledImageMatrix(size());
 }
 
-QTransform DkBaseViewPort::getScaledImageMatrix(const QSize& size) const {
+QTransform DkBaseViewPort::getScaledImageMatrix(const QSize &size) const
+{
+    // the image resizes as we zoom
+    float ratioImg = (float)mImgRect.width() / (float)mImgRect.height();
+    float ratioWin = (float)size.width() / (float)size.height();
 
-	// the image resizes as we zoom
-	float ratioImg = (float)mImgRect.width()/(float)mImgRect.height();
-	float ratioWin = (float)size.width()/(float)size.height();
+    QTransform imgMatrix;
+    float s;
+    if (mImgRect.width() == 0 || mImgRect.height() == 0)
+        s = 1.0f;
+    else
+        s = (ratioImg > ratioWin) ? (float)size.width() / (float)mImgRect.width() : (float)size.height() / (float)mImgRect.height();
 
-	QTransform imgMatrix;
-	float s;
-	if (mImgRect.width() == 0 || mImgRect.height() == 0)
-		s = 1.0f;
-	else
-		s = (ratioImg > ratioWin) ? (float)size.width()/(float)mImgRect.width() : (float)size.height()/(float)mImgRect.height();
+    imgMatrix.scale(s, s);
 
-	imgMatrix.scale(s, s);
-
-	QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
-	imgMatrix.translate((size.width()-imgViewRect.width())*0.5f/s, (size.height()-imgViewRect.height())*0.5f/s);
+    QRectF imgViewRect = imgMatrix.mapRect(mImgRect);
+    imgMatrix.translate((size.width() - imgViewRect.width()) * 0.5f / s, (size.height() - imgViewRect.height()) * 0.5f / s);
 
     return imgMatrix;
 }
 
-void DkBaseViewPort::controlImagePosition(float lb, float ub) {
-
+void DkBaseViewPort::controlImagePosition(float lb, float ub)
+{
     QRectF imgRectWorld = mWorldMatrix.mapRect(mImgViewRect);
 
-	if (lb == -1 && ub == -1 && mPanControl.x() != -1 && mPanControl.y() != -1) {
-		lb = (float)mPanControl.x(); 
-		ub = (float)mPanControl.y();
-	}
-	// we must not pan further if scrollbars are visible
-	else if (lb == -1 && ub == -1 && DkSettingsManager::instance().param().display().showScrollBars) {
-		lb = 0.0f;
-		ub = 0.0f;
-	}
-	else {
+    if (lb == -1 && ub == -1 && mPanControl.x() != -1 && mPanControl.y() != -1) {
+        lb = (float)mPanControl.x();
+        ub = (float)mPanControl.y();
+    }
+    // we must not pan further if scrollbars are visible
+    else if (lb == -1 && ub == -1 && DkSettingsManager::instance().param().display().showScrollBars) {
+        lb = 0.0f;
+        ub = 0.0f;
+    } else {
+        // default behavior
+        if (lb == -1)
+            lb = (float)mViewportRect.width() / 2.0f;
+        if (ub == -1)
+            ub = (float)mViewportRect.height() / 2.0f;
+    }
 
-		// default behavior
-		if (lb == -1)	lb = (float)mViewportRect.width()/2.0f;
-		if (ub == -1)	ub = (float)mViewportRect.height()/2.0f;
-	}
+    if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
+        mWorldMatrix.translate((lb - imgRectWorld.left()) / mWorldMatrix.m11(), 0);
 
-	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
-		mWorldMatrix.translate((lb-imgRectWorld.left())/mWorldMatrix.m11(), 0);
+    if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
+        mWorldMatrix.translate(0, (ub - imgRectWorld.top()) / mWorldMatrix.m11());
 
-	if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
-		mWorldMatrix.translate(0, (ub-imgRectWorld.top())/mWorldMatrix.m11());
+    if (imgRectWorld.right() < width() - lb && imgRectWorld.width() > width())
+        mWorldMatrix.translate(((width() - lb) - imgRectWorld.right()) / mWorldMatrix.m11(), 0);
 
-	if (imgRectWorld.right() < width()-lb && imgRectWorld.width() > width())
-		mWorldMatrix.translate(((width()-lb)-imgRectWorld.right())/mWorldMatrix.m11(), 0);
-
-	if (imgRectWorld.bottom() < height()-ub && imgRectWorld.height() > height())
-		mWorldMatrix.translate(0, ((height()-ub)-imgRectWorld.bottom())/mWorldMatrix.m11());
+    if (imgRectWorld.bottom() < height() - ub && imgRectWorld.height() > height())
+        mWorldMatrix.translate(0, ((height() - ub) - imgRectWorld.bottom()) / mWorldMatrix.m11());
 
     // update scene size (this is needed to make the scroll area work)
     if (DkSettingsManager::instance().param().display().showScrollBars)
@@ -722,10 +719,10 @@ void DkBaseViewPort::scrollVertically(int val)
 }
 
 // Anna's first text:
-//gcfbxxxxxxxxxxxbxbbbcx
-//tggbeeeeeeeeeeecddddeebljlljl�
+// gcfbxxxxxxxxxxxbxbbbcx
+// tggbeeeeeeeeeeecddddeebljlljl�
 //
 //
-//rr45�[, mgd     7re � 8n484welkmsclsdmvcdsm wr., bpodsa0][gb b c
+// rr45�[, mgd     7re � 8n484welkmsclsdmvcdsm wr., bpodsa0][gb b c
 
 }

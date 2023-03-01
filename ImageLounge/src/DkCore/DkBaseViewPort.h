@@ -54,7 +54,6 @@ class QSettings;
 
 namespace nmc
 {
-
 class DllCoreExport DkBaseViewPort : public QGraphicsView
 {
     Q_OBJECT
@@ -178,7 +177,7 @@ protected:
     QTransform mImgMatrix;
     QTransform mWorldMatrix;
     QRectF mImgViewRect;
-	QRectF mViewportRect;
+    QRectF mViewportRect;
     QRectF mImgRect;
     QTimer *mHideCursorTimer;
 
@@ -201,12 +200,11 @@ protected:
     virtual void drawPattern(QPainter &painter) const;
     virtual void updateImageMatrix();
     virtual QTransform getScaledImageMatrix() const;
-	virtual QTransform getScaledImageMatrix(const QSize& size) const;
-	virtual void controlImagePosition(float lb = -1, float ub = -1);
+    virtual QTransform getScaledImageMatrix(const QSize &size) const;
+    virtual void controlImagePosition(float lb = -1, float ub = -1);
     virtual void centerImage();
     virtual void changeCursor();
     void zoomToPoint(double factor, const QPointF &pos, QTransform &matrix) const;
-
 };
 
 }

@@ -53,7 +53,6 @@
 
 namespace nmc
 {
-
 #ifdef WITH_QUAZIP
 QString DkZipContainer::mZipMarker = "dIrChAr";
 #endif
@@ -139,18 +138,18 @@ void DkImageContainer::setHistoryIndex(int idx)
     getLoader()->setHistoryIndex(idx);
 }
 
-void DkImageContainer::cropImage(const DkRotatingRect & rect, const QColor & col, bool cropToMetadata) {
-
+void DkImageContainer::cropImage(const DkRotatingRect &rect, const QColor &col, bool cropToMetadata)
+{
     if (!cropToMetadata) {
         QImage cropped = DkImage::cropToImage(image(), rect, col);
         setImage(cropped, QObject::tr("Cropped"));
         getMetaData()->clearXMPRect();
-	}
-	else
+    } else
         getMetaData()->saveRectToXMP(rect, image().size());
 }
 
-QFileInfo DkImageContainer::fileInfo() const {
+QFileInfo DkImageContainer::fileInfo() const
+{
     return mFileInfo;
 }
 
@@ -501,14 +500,14 @@ void DkImageContainer::saveMetaData()
     saveMetaDataIntern(mFilePath, mLoader, mFileBuffer);
 }
 
-void DkImageContainer::saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
-
-	// TODO this shouldn't be used without notifying the user, see issue #799
-	loader->saveMetaData(filePath, fileBuffer);
+void DkImageContainer::saveMetaDataIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer)
+{
+    // TODO this shouldn't be used without notifying the user, see issue #799
+    loader->saveMetaData(filePath, fileBuffer);
 }
 
-void DkImageContainer::setEdited(bool edited /* = true */) {
-
+void DkImageContainer::setEdited(bool edited /* = true */)
+{
     mEdited = edited;
 }
 

@@ -55,7 +55,6 @@ class QLabel;
 
 namespace nmc
 {
-
 // some dummies
 class DkFilePreview;
 class DkThumbScrollWidget;
@@ -90,7 +89,7 @@ public:
     enum Widgets {
         last_widget = -1,
         hud_widget,
-		crop_widget,
+        crop_widget,
 
         widget_end
     };
@@ -100,16 +99,16 @@ public:
 
     void setFullScreen(bool fullscreen);
 
-	DkFilePreview* getFilePreview() const;
-	DkFolderScrollBar* getScroller() const;
-	DkMetaDataHUD* getMetaDataWidget() const;
-	DkCommentWidget* getCommentWidget() const;
-	DkOverview* getOverview() const;
-	DkZoomWidget* getZoomWidget() const;
-	DkPlayer* getPlayer() const;
-	DkFileInfoLabel* getFileInfoLabel() const;
-	DkHistogram* getHistogram() const;
-	DkCropWidget* getCropWidget() const;
+    DkFilePreview *getFilePreview() const;
+    DkFolderScrollBar *getScroller() const;
+    DkMetaDataHUD *getMetaDataWidget() const;
+    DkCommentWidget *getCommentWidget() const;
+    DkOverview *getOverview() const;
+    DkZoomWidget *getZoomWidget() const;
+    DkPlayer *getPlayer() const;
+    DkFileInfoLabel *getFileInfoLabel() const;
+    DkHistogram *getHistogram() const;
+    DkCropWidget *getCropWidget() const;
 
     void stopLabels();
     void showWidgetsSettings();
@@ -124,8 +123,8 @@ public slots:
     void showFileInfo(bool visible);
     void showPlayer(bool visible);
     void startSlideshow(bool start = true);
-	void hideCrop(bool hide = true);
-	void showCrop(bool visible);
+    void hideCrop(bool hide = true);
+    void showCrop(bool visible);
     void showOverview(bool visible);
     void showHistogram(bool visible);
     void showCommentWidget(bool visible);
@@ -171,8 +170,8 @@ protected:
     QStackedLayout *mLayout;
     QGridLayout *mHudLayout;
 
-	DkViewPort* mViewport;
-	DkCropWidget* mCropWidget;
+    DkViewPort *mViewport;
+    DkCropWidget *mCropWidget;
 
     DkFilePreview *mFilePreview;
     DkMetaDataHUD *mMetaDataInfo;

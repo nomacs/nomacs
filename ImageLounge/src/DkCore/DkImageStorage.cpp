@@ -48,7 +48,6 @@
 #endif
 namespace nmc
 {
-
 // DkImage --------------------------------------------------------------------
 
 /**
@@ -252,8 +251,8 @@ QImage DkImage::thresholdImage(const QImage &img, double thr, bool color)
     return tImg;
 }
 
-QImage DkImage::rotateImage(const QImage & img, double angle) {
-
+QImage DkImage::rotateImage(const QImage &img, double angle)
+{
     // compute new image size
     DkVector nSl((float)img.width(), (float)img.height());
     DkVector nSr = nSl;
@@ -673,8 +672,8 @@ QPixmap DkImage::merge(const QVector<QImage> &imgs)
     return pm;
 }
 
-QImage DkImage::cropToImage(const QImage & src, const DkRotatingRect & rect, const QColor & fillColor) {
-
+QImage DkImage::cropToImage(const QImage &src, const DkRotatingRect &rect, const QColor &fillColor)
+{
     QTransform tForm;
     QPointF cImgSize;
     rect.getTransform(tForm, cImgSize);
@@ -1030,24 +1029,23 @@ QPixmap DkImage::loadIcon(const QString &filePath, const QSize &size, const QCol
     return icon;
 }
 
-QPixmap DkImage::loadIcon(const QString & filePath, const QColor& col, const QSize& size) {
+QPixmap DkImage::loadIcon(const QString &filePath, const QColor &col, const QSize &size)
+{
+    QSize is = size;
 
+    if (is.isNull()) {
+        int s = DkSettingsManager::param().effectiveIconSize();
+        is = QSize(s, s);
+    }
 
-	QSize is = size;
+    QPixmap icon = loadFromSvg(filePath, is);
+    icon = colorizePixmap(icon, col);
 
-	if (is.isNull()) {
-		int s = DkSettingsManager::param().effectiveIconSize();
-		is = QSize(s, s);
-	}
-
-	QPixmap icon = loadFromSvg(filePath, is);
-	icon = colorizePixmap(icon, col);
-
-	return icon;
+    return icon;
 }
 
-QPixmap DkImage::loadFromSvg(const QString & filePath, const QSize & size) {
-
+QPixmap DkImage::loadFromSvg(const QString &filePath, const QSize &size)
+{
     QSharedPointer<QSvgRenderer> svg(new QSvgRenderer(filePath));
 
     QPixmap pm(size);
