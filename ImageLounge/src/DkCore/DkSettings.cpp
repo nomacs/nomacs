@@ -267,9 +267,9 @@ void DkSettings::initFileFilters()
 
     app_p.openFilters.prepend("Image Files (" + app_p.fileFilters.join(" ") + ")");
 
-    //#ifdef Q_OS_WIN
+    // #ifdef Q_OS_WIN
     //	app_p.fileFilters.append("*.lnk");
-    //#endif
+    // #endif
 }
 
 void DkSettings::loadTranslation(const QString &fileName, QTranslator &translator)

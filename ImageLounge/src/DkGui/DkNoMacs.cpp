@@ -66,7 +66,7 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QStatusBar>
-//#include <QPanGesture>
+// #include <QPanGesture>
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>

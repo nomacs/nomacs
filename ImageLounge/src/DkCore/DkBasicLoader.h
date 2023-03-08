@@ -36,7 +36,7 @@
 #pragma warning(pop)
 
 #pragma warning(disable : 4251) // TODO: remove
-//#include "DkImageStorage.h"
+// #include "DkImageStorage.h"
 
 #ifndef Q_OS_WIN
 #include "qpsdhandler.h"
