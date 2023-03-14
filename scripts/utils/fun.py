@@ -27,7 +27,7 @@ def version():
     vp = version_cache()
 
     with open(vp, "r") as src:
-        for l in src.readlines():
+        for l in src.read().splitlines():
 
             # assuming: version: 3.15.0.1444
             pl = l.split(":")
