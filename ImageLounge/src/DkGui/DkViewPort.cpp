@@ -48,7 +48,6 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QDrag>
 #include <QDragLeaveEvent>
 #include <QInputDialog>
@@ -530,7 +529,7 @@ void DkViewPort::showZoom()
         return;
 
     QString zoomStr;
-    zoomStr.sprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
+    zoomStr.asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
 
     if (!mController->getZoomWidget()->isVisible())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
@@ -872,7 +871,11 @@ void DkViewPort::applyManipulator()
     } else
         img = getImage();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mManipulatorWatcher.setFuture(QtConcurrent::run(mpl.data(), &nmc::DkBaseManipulator::apply, img));
+#else
+    mManipulatorWatcher.setFuture(QtConcurrent::run(&nmc::DkBaseManipulator::apply, mpl.data(), img));
+#endif
 
     mActiveManipulator = mpl;
 
@@ -1259,10 +1262,14 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event)
 void DkViewPort::wheelEvent(QWheelEvent *event)
 {
     if ((!DkSettingsManager::param().global().zoomOnWheel && event->modifiers() != mCtrlMod)
+        /* TODO: fix the second option below for Qt6 */
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         || (DkSettingsManager::param().global().zoomOnWheel
             && (event->modifiers() & mCtrlMod
-                || (DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
-        if (event->delta() < 0)
+                || (DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))
+#endif
+        ) {
+        if (event->angleDelta().y() < 0)
             loadNextFileFast();
         else
             loadPrevFileFast();

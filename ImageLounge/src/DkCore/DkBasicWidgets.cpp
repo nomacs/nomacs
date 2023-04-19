@@ -799,7 +799,7 @@ void DkRectWidget::createLayout()
     }
 
     QHBoxLayout *cropLayout = new QHBoxLayout(this);
-    cropLayout->setMargin(0);
+    cropLayout->setContentsMargins(0,0,0,0);
     cropLayout->addWidget(lbCropX);
     cropLayout->addWidget(mSpCropRect[crop_x]);
     cropLayout->addWidget(lbCropY);

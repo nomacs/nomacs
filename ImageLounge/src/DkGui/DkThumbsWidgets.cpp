@@ -565,7 +565,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     QFileInfo fileInfo(thumb->getFilePath());
                     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n"
-                        + tr("Created: ") + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
+                        + tr("Created: ") + fileInfo.birthTime().toString();
                     setToolTip(toolTipInfo);
                     setStatusTip(fileInfo.fileName());
                 }
@@ -628,7 +628,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
         int newSize = DkSettingsManager::param().display().thumbSize;
-        newSize += qRound(event->delta() * 0.05f);
+        newSize += qRound(event->angleDelta().y() * 0.05f);
 
         // make sure it is even
         if (qRound(newSize * 0.5f) != newSize * 0.5f)
@@ -644,7 +644,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
             update();
         }
     } else {
-        int fc = (event->delta() > 0) ? -1 : 1;
+        int fc = (event->angleDelta().y() > 0) ? -1 : 1;
 
         if (!DkSettingsManager::param().resources().waitForLastImg) {
             currentFileIdx += fc;
@@ -856,7 +856,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb)
     connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
     QFileInfo fileInfo(thumb->getFilePath());
     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n" + tr("Created: ")
-        + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
+        + fileInfo.birthTime().toString();
 
     setToolTip(toolTipInfo);
 
@@ -1506,7 +1506,7 @@ void DkThumbScene::renameSelected() const
 
     if (ok && !newFileName.isEmpty()) {
         for (int idx = 0; idx < fileList.size(); idx++) {
-            QFileInfo fileInfo = fileList.at(idx);
+            QFileInfo fileInfo = QFileInfo(fileList.at(idx));
             QFile file(fileInfo.absoluteFilePath());
             QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
             DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
@@ -1590,10 +1590,11 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
 void DkThumbsView::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::ControlModifier) {
-        scene->resizeThumbs(event->delta() / 100.0f);
+        scene->resizeThumbs(event->angleDelta().y() / 100.0f);
     } else if (event->modifiers() == Qt::NoModifier) {
         if (verticalScrollBar()->isVisible()) {
-            verticalScrollBar()->setValue(verticalScrollBar()->value() - event->delta());
+            verticalScrollBar()->setValue(verticalScrollBar()->value() -
+                    event->angleDelta().y());
         }
     }
 
@@ -2094,7 +2095,7 @@ void DkRecentDirWidget::createLayout()
 
     // check if the folder exists (in the current context)
     // this should fix issues with disconnected samba drives on windows
-    if (DkUtils::exists(mRecentDir.firstFilePath(), 30)) {
+    if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
         for (auto tp : mRecentDir.filePaths(4)) {
             auto tpl = new DkThumbPreviewLabel(tp, 42, this);
             connect(tpl, SIGNAL(loadFileSignal(const QString &, bool)), this, SIGNAL(loadFileSignal(const QString &, bool)));
@@ -2157,7 +2158,7 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent *event)
     DkFadeWidget::mousePressEvent(event);
 }
 
-void DkRecentDirWidget::enterEvent(QEvent *event)
+void DkRecentDirWidget::enterEvent(QEnterEvent_t *event)
 {
     for (auto b : mButtons)
         b->show();

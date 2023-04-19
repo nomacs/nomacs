@@ -32,7 +32,6 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGuiApplication>

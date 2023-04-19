@@ -51,6 +51,7 @@
 #include <QPluginLoader>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QScrollBar>
 #include <QSettings>
 #include <QSlider>
@@ -445,8 +446,8 @@ QString DkPluginContainer::fullDescription() const
     if (!company().isEmpty())
         fs += "<b>" + trCompany + "</b> " + company() + "<br>";
 
-    fs += "<b>" + trCreated + "</b> " + mDateCreated.toString(Qt::LocalDate) + "<br>";
-    fs += "<b>" + trModified + "</b> " + mDateModified.toString(Qt::LocalDate) + "<br>";
+    fs += "<b>" + trCreated + "</b> " + mDateCreated.toString() + "<br>";
+    fs += "<b>" + trModified + "</b> " + mDateModified.toString() + "<br>";
 
     return fs;
 }
@@ -710,8 +711,9 @@ void DkPluginTableWidget::reloadPlugins()
 
 void DkPluginTableWidget::filterTextChanged()
 {
-    QRegExp regExp(mFilterEdit->text(), Qt::CaseInsensitive, QRegExp::FixedString);
-    mProxyModel->setFilterRegExp(regExp);
+    QRegularExpression regExp(mFilterEdit->text(),
+           QRegularExpression::CaseInsensitiveOption);
+    mProxyModel->setFilterRegularExpression(regExp);
     mTableView->resizeRowsToContents();
 }
 
@@ -869,7 +871,7 @@ void DkPluginCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewIt
         if (mParentTable->hasFocus())
             painter->fillRect(option.rect, option.palette.highlight());
         else
-            painter->fillRect(option.rect, option.palette.background());
+            painter->fillRect(option.rect, option.palette.window());
     }
     // else if (index.row() % 2 == 1) painter->fillRect(option.rect, option.palette.alternateBase());	// already done automatically
 
@@ -934,7 +936,7 @@ void DkPushButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         if (mParentTable->hasFocus())
             painter->fillRect(option.rect, option.palette.highlight());
         else
-            painter->fillRect(option.rect, option.palette.background());
+            painter->fillRect(option.rect, option.palette.window());
     }
 
     QStyleOptionButton pushButtonStyleOption;
@@ -1182,7 +1184,7 @@ void DkPluginManager::loadPlugins()
         }
     }
 
-    qSort(mPlugins.begin(), mPlugins.end()); // , &DkPluginContainer::operator<);
+    std::sort(mPlugins.begin(), mPlugins.end()); // , &DkPluginContainer::operator<);
     qInfo() << mPlugins.size() << "plugins loaded in" << dt;
 
     if (mPlugins.empty())
@@ -1433,7 +1435,7 @@ void DkPluginActionManager::updateMenu()
 void DkPluginActionManager::addPluginsToMenu()
 {
     QVector<QSharedPointer<DkPluginContainer>> loadedPlugins = DkPluginManager::instance().getPlugins();
-    qSort(loadedPlugins);
+    std::sort(loadedPlugins.begin(), loadedPlugins.end());
 
     mPluginSubMenus.clear();
 

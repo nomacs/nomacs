@@ -42,6 +42,7 @@
 #include <QScreen>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QStandardPaths>
 #include <QStyledItemDelegate>
 #include <QTableView>
 #include <QThreadPool>
@@ -250,7 +251,7 @@ void DkSettings::initFileFilters()
 
     for (int idx = 0; idx < app_p.openFilters.size(); idx++) {
         QString cFilter = app_p.openFilters[idx];
-        cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+        cFilter = cFilter.section(QRegularExpression("(\\(|\\))"), 1);
         cFilter = cFilter.replace(")", "");
         app_p.fileFilters += cFilter.split(" ");
     }
@@ -292,7 +293,7 @@ QStringList DkSettings::getTranslationDirs()
 
     QStringList rDirs;
     rDirs << qApp->applicationDirPath();
-    rDirs << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    rDirs << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
 
     for (const QString &d : rDirs)
         trDirs << d + QDir::separator() + "translations";
@@ -1378,7 +1379,7 @@ QString DkThemeManager::themeDir() const
 {
     QStringList paths;
     paths << QCoreApplication::applicationDirPath();
-    paths << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    paths << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
 
     QDir themeDir;
 

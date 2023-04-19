@@ -47,6 +47,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QPixmap>
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 
 #include <assert.h>
@@ -145,7 +146,7 @@ bool DkEditImage::hasImage() const
 
 bool DkEditImage::hasMetaData() const
 {
-    return mMetaData;
+    return !mMetaData->isNull();
 }
 
 bool DkEditImage::hasNewImage() const
@@ -276,7 +277,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     // OpenCV Tiff loader - supports jpg compressed tiffs
-    if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && newSuffix.contains(QRegularExpression("(tif|tiff)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         imgLoaded = loadTIFFile(mFile, img, ba);
 
         if (imgLoaded)
@@ -300,7 +302,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     // TGA loader
-    if (!imgLoaded && newSuffix.contains(QRegExp("(tga)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && newSuffix.contains(QRegularExpression("(tga)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         imgLoaded = loadTgaFile(mFile, img, ba);
 
         if (imgLoaded)
@@ -310,7 +313,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     QByteArray lba;
 
     // default Qt loader
-    if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && !newSuffix.contains(QRegularExpression("(roh)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         // if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
         // TODO: add warning here
         loadFileToBuffer(mFile, lba);
@@ -325,7 +329,8 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
 
     // add marker to fix broken panorama images from SAMSUNG
     // see: https://github.com/nomacs/nomacs/issues/254
-    if (!imgLoaded && newSuffix.contains(QRegExp("(jpg|jpeg|jpe)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && newSuffix.contains(QRegularExpression("(jpg|jpeg|jpe)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         // prefer external buffer
         QByteArray baf = DkImage::fixSamsungPanorama(ba && !ba->isEmpty() ? *ba : lba);
 
@@ -337,14 +342,16 @@ bool DkBasicLoader::loadGeneral(const QString &filePath, QSharedPointer<QByteArr
     }
 
     // this loader is a bit buggy -> be carefull
-    if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && newSuffix.contains(QRegularExpression("(roh)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         imgLoaded = loadRohFile(mFile, img, ba);
         if (imgLoaded)
             mLoader = roh_loader;
     }
 
     // this loader is for OpenCV cascade training files
-    if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
+    if (!imgLoaded && newSuffix.contains(QRegularExpression("(vec)",
+                    QRegularExpression::CaseInsensitiveOption))) {
         imgLoaded = loadOpenCVVecFile(mFile, img, ba);
         if (imgLoaded)
             mLoader = roh_loader;
@@ -1046,7 +1053,8 @@ void DkBasicLoader::indexPages(const QString &filePath, const QSharedPointer<QBy
     QFileInfo fInfo(filePath);
 
     // for now we just support tiff's
-    if (!fInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
+    if (!fInfo.suffix().contains(QRegularExpression("(tif|tiff)",
+                    QRegularExpression::CaseInsensitiveOption)))
         return;
 
     // first turn off nasty warning/error dialogs - (we do the GUI : )
@@ -1286,9 +1294,9 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
         QImage sImg = img;
 
         // JPEG 2000 can only handle 32 or 8bit images
-        if (!hasAlpha && img.colorTable().empty() && !fInfo.suffix().contains(QRegExp("(avif|j2k|jp2|jpf|jpx|jxl|png)"))) {
+        if (!hasAlpha && img.colorTable().empty() && !fInfo.suffix().contains(QRegularExpression("(avif|j2k|jp2|jpf|jpx|jxl|png)"))) {
             sImg = sImg.convertToFormat(QImage::Format_RGB888);
-        } else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8) {
+        } else if (fInfo.suffix().contains(QRegularExpression("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8) {
             if (sImg.hasAlphaChannel()) {
                 sImg = sImg.convertToFormat(QImage::Format_ARGB32);
             } else {
@@ -1296,7 +1304,7 @@ bool DkBasicLoader::saveToBuffer(const QString &filePath, const QImage &img, QSh
             }
         }
 
-        if (fInfo.suffix().contains(QRegExp("(png)")))
+        if (fInfo.suffix().contains(QRegularExpression("(png)")))
             compression = -1;
 
         QBuffer fileBuffer(ba.data());
@@ -1675,7 +1683,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QString &filePath, QImage &img, QSha
 void DkBasicLoader::getPatchSizeFromFileName(const QString &fileName, int &width, int &height) const
 {
     // parse patch size from file
-    QStringList sections = fileName.split(QRegExp("[-\\.]"));
+    QStringList sections = fileName.split(QRegularExpression("[-\\.]"));
 
     for (int idx = 0; idx < sections.size(); idx++) {
         QString tmpSec = sections[idx];

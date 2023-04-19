@@ -275,7 +275,7 @@ void DkGroupWidget::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -661,7 +661,7 @@ void DkGeneralPreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -979,7 +979,7 @@ void DkDisplayPreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -1153,7 +1153,7 @@ void DkFilePreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -1299,7 +1299,7 @@ void DkFileAssociationsPreference::writeSettings() const
 
         if (browseItem && browseItem->checkState() == Qt::Checked) {
             QString cFilter = item->text();
-            cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+            cFilter = cFilter.section(QRegularExpression("(\\(|\\))"), 1);
             cFilter = cFilter.replace(")", "");
 
             DkSettingsManager::param().app().browseFilters += cFilter.split(" ");
@@ -1321,7 +1321,7 @@ void DkFileAssociationsPreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -1497,7 +1497,7 @@ void DkAdvancedPreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -1535,7 +1535,7 @@ void DkEditorPreference::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 

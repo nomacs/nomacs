@@ -50,7 +50,6 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QFileDialog>
 #include <QIcon>
@@ -505,7 +504,7 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const
 void DkCentralWidget::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }

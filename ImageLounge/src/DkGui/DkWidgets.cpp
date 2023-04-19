@@ -47,9 +47,7 @@
 #include <QColorDialog>
 #include <QComboBox>
 #include <QCompleter>
-#include <QDesktopWidget>
 #include <QDialog>
-#include <QDirModel>
 #include <QDockWidget>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
@@ -79,6 +77,7 @@
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QRegularExpression>
 #include <QScreen>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -364,9 +363,9 @@ DkSortFileProxyModel::DkSortFileProxyModel(QObject *parent /* = 0 */)
 
 bool DkSortFileProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    if (left.data().canConvert(QVariant::Url)) {
-        QFileInfo lf = left.data().toString();
-        QFileInfo rf = right.data().toString();
+    if (left.data().canConvert(QMetaType::QUrl)) {
+        QFileInfo lf = QFileInfo(left.data().toString());
+        QFileInfo rf = QFileInfo(right.data().toString());
 
         // could not find a better way to tell files from dirs appart (isDir() is not what we expect)
         if (lf.suffix().isEmpty() && !rf.suffix().isEmpty())
@@ -377,7 +376,7 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex &left, const QModelIndex &
         QString ls = (!lf.fileName().isEmpty()) ? lf.fileName() : lf.absoluteFilePath(); // otherwise e.g. C: is empty
         QString rs = (!rf.fileName().isEmpty()) ? rf.fileName() : rf.absoluteFilePath();
 
-        QString ld = ls.section(QRegExp("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
+        QString ld = ls.section(QRegularExpression("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
 
         // sort by drive letter if present
         if (!ld.isEmpty()) {
@@ -385,7 +384,7 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex &left, const QModelIndex &
             ls = ld;
         }
 
-        QString rd = rs.section(QRegExp("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
+        QString rd = rs.section(QRegularExpression("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
 
         // sort by drive letter if present
         if (!rd.isEmpty()) {
@@ -707,7 +706,7 @@ void DkOverview::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     int lm, tm, rm, bm;
-    getContentsMargins(&lm, &tm, &rm, &bm);
+    if (layout() != nullptr) layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 
     QSize viewSize = QSize(width() - lm - rm, height() - tm - bm); // overview shall take 15% of the mViewport....
 
@@ -766,7 +765,7 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event)
 
     if (dxy.manhattanLength() < 4) {
         int lm, tm, rm, bm;
-        getContentsMargins(&lm, &tm, &rm, &bm);
+        if (layout() != nullptr) layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 
         // move to the current position
         QRectF viewRect = mViewPortRect;
@@ -838,7 +837,7 @@ QTransform DkOverview::getScaledImageMatrix()
         return QTransform();
 
     int lm, tm, rm, bm;
-    getContentsMargins(&lm, &tm, &rm, &bm);
+    if (layout() != nullptr) layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 
     QSize iSize = QSize(width() - lm - rm, height() - tm - bm); // inner size
 
@@ -2559,7 +2558,7 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget *parent /* = 0 */)
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 
     QCompleter *completer = new QCompleter(this);
-    QDirModel *model = new QDirModel(completer);
+    QFileSystemModel *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2573,7 +2572,7 @@ DkDirectoryEdit::DkDirectoryEdit(const QString &content, QWidget *parent /* = 0 
     setText(content);
 
     QCompleter *completer = new QCompleter(this);
-    QDirModel *model = new QDirModel(completer);
+    QFileSystemModel *model = new QFileSystemModel(completer);
     model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     completer->setModel(model);
     setCompleter(completer);
@@ -2740,7 +2739,7 @@ void DkProgressBar::setVisibleTimed(bool visible, int time)
 void DkProgressBar::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
 
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
@@ -2992,7 +2991,7 @@ void DkTabEntryWidget::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -3084,7 +3083,7 @@ void DkDisplayWidget::updateLayout()
     QRect md = tm.mapRect(desktop);
     QPoint dxy(qRound((width() - md.width()) * 0.5), qRound((height() - md.height()) * 0.5));
 
-    int myScreen = QApplication::desktop()->screenNumber(this);
+    QScreen *myScreen = screen();
 
     for (int idx = 0; idx < mScreens.size(); idx++) {
         QRect r = mScreens[idx]->geometry();
@@ -3093,7 +3092,7 @@ void DkDisplayWidget::updateLayout()
         r = tm.mapRect(r);
         r.moveCenter(r.center() + dxy); // center
 
-        if (idx == myScreen)
+        if (mScreens[idx] == myScreen)
             mScreenButtons[idx]->setChecked(true);
 
         mScreenButtons[idx]->setGeometry(r);

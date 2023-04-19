@@ -37,6 +37,7 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QImage>
 #include <QObject>
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 
 // quazip
@@ -390,7 +391,7 @@ void DkImageContainer::setMetaData(const QString &editName)
 void DkImageContainer::setFilePath(const QString &filePath)
 {
     mFilePath = filePath;
-    mFileInfo = filePath;
+    mFileInfo = QFileInfo(filePath);
 
 #ifdef Q_OS_WIN
     mFileNameStr = DkUtils::qStringToStdWString(fileName());
@@ -408,13 +409,15 @@ bool DkImageContainer::hasImage() const
 bool DkImageContainer::hasMovie() const
 {
     QString newSuffix = QFileInfo(filePath()).suffix();
-    return newSuffix.contains(QRegExp("(apng|avif|gif|jxl|mng|webp)", Qt::CaseInsensitive)) != 0;
+    return newSuffix.contains(QRegularExpression("(apng|avif|gif|jxl|mng|webp)",
+                             QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkImageContainer::hasSvg() const
 {
     QString newSuffix = QFileInfo(filePath()).suffix();
-    return newSuffix.contains(QRegExp("(svg)", Qt::CaseInsensitive)) != 0;
+    return newSuffix.contains(QRegularExpression("(svg)",
+                             QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 int DkImageContainer::getLoadState() const
@@ -442,7 +445,7 @@ bool DkImageContainer::saveImage(const QString &filePath, int compression /* = -
 
 bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, int compression /* = -1 */)
 {
-    QFileInfo saveFile = saveImageIntern(filePath, getLoader(), saveImg, compression);
+    QFileInfo saveFile = QFileInfo(saveImageIntern(filePath, getLoader(), saveImg, compression));
 
     saveFile.refresh();
     qDebug() << "save file: " << saveFile.absoluteFilePath();
@@ -452,10 +455,10 @@ bool DkImageContainer::saveImage(const QString &filePath, const QImage saveImg, 
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QString &filePath)
 {
-    QFileInfo fInfo = filePath;
+    QFileInfo fInfo = QFileInfo(filePath);
 
     if (fInfo.isSymLink())
-        fInfo = fInfo.symLinkTarget();
+        fInfo = QFileInfo(fInfo.symLinkTarget());
 
 #ifdef WITH_QUAZIP
     if (isFromZip())
@@ -707,7 +710,7 @@ bool DkImageContainerT::loadImageThreaded(bool force)
 #endif
 
     // check file for updates
-    QFileInfo fileInfo = filePath();
+    QFileInfo fileInfo = QFileInfo(filePath());
     QDateTime modifiedBefore = fileInfo.lastModified();
     fileInfo.refresh();
 
@@ -761,8 +764,11 @@ void DkImageContainerT::fetchFile()
 
     mFetchingBuffer = true; // saves the threaded call
     connect(&mBufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mBufferWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::loadFileToBuffer, filePath()));
+#else
+    mBufferWatcher.setFuture(QtConcurrent::run(&nmc::DkImageContainerT::loadFileToBuffer, this, filePath()));
+#endif
 }
 
 void DkImageContainerT::bufferLoaded()
@@ -801,7 +807,11 @@ void DkImageContainerT::fetchImage()
 
     connect(&mImageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::loadImageIntern, filePath(), mLoader, mFileBuffer));
+#else
+    mImageWatcher.setFuture(QtConcurrent::run(&nmc::DkImageContainerT::loadImageIntern, this, filePath(), mLoader, mFileBuffer));
+#endif
 }
 
 void DkImageContainerT::imageLoaded()
@@ -950,7 +960,11 @@ void DkImageContainerT::saveMetaDataThreaded(const QString &filePath)
         return;
 
     mFileUpdateTimer.stop();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QFuture<void> future = QtConcurrent::run(this, &nmc::DkImageContainerT::saveMetaDataIntern, filePath, getLoader(), getFileBuffer());
+#else
+    QFuture<void> future = QtConcurrent::run(&nmc::DkImageContainerT::saveMetaDataIntern, this, filePath, getLoader(), getFileBuffer());
+#endif
 }
 
 void DkImageContainerT::saveMetaDataThreaded()
@@ -967,7 +981,7 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
 {
     mSaveImageWatcher.waitForFinished();
 
-    QFileInfo fInfo = filePath;
+    QFileInfo fInfo = QFileInfo(filePath);
 
     if (saveImg.isNull()) {
         QString msg = tr("I can't save an empty file, sorry...\n");
@@ -990,7 +1004,11 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
     mFileUpdateTimer.stop();
     connect(&mSaveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()), Qt::UniqueConnection);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mSaveImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::saveImageIntern, filePath, mLoader, saveImg, compression));
+#else
+    mSaveImageWatcher.setFuture(QtConcurrent::run(&nmc::DkImageContainerT::saveImageIntern, this, filePath, mLoader, saveImg, compression));
+#endif
 
     return true;
 }
@@ -999,7 +1017,7 @@ void DkImageContainerT::savingFinished()
 {
     QString savePath = mSaveImageWatcher.result();
 
-    QFileInfo sInfo = savePath;
+    QFileInfo sInfo = QFileInfo(savePath);
     sInfo.refresh();
     qDebug() << "save file: " << savePath;
 

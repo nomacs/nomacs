@@ -45,6 +45,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QStandardPaths>
+#include <QStringView>
 #include <QVector>
 #include <QXmlStreamReader>
 
@@ -123,12 +124,12 @@ QVector<DkPackage> DkXmlUpdateChecker::parse(QXmlStreamReader &reader) const
 
     while (!reader.atEnd()) {
         // e.g. <Name>nomacs</Name>
-        if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName() == "Name") {
+        if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName().toString() == "Name") {
             reader.readNext();
             pName = reader.text().toString();
         }
         // e.g. <Version>3.0.0-3</Version>
-        else if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName() == "Version") {
+        else if (reader.tokenType() == QXmlStreamReader::StartElement && reader.qualifiedName().toString() == "Version") {
             reader.readNext();
 
             if (!pName.isEmpty()) {
@@ -207,7 +208,7 @@ void DkUpdater::replyFinished(QNetworkReply *reply)
 
     QString replyData = reply->readAll();
 
-    QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
+    QStringList sl = replyData.split('\n', Qt::SkipEmptyParts);
 
     QString version, x64, x86, url, mac, XPx86;
     for (int i = 0; i < sl.length(); i++) {

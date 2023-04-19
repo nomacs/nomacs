@@ -29,6 +29,7 @@
 #pragma once
 
 #include "DkBaseWidgets.h"
+#include "DkSettingsWidget.h"
 #include "DkUtils.h"
 
 #pragma warning(push, 0) // no warnings from includes

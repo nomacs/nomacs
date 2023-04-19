@@ -46,7 +46,9 @@ namespace nmc
  **/
 DkTimer::DkTimer()
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mTimer.start();
+#endif
 }
 
 QDataStream &operator<<(QDataStream &s, const DkTimer &t)
@@ -57,7 +59,11 @@ QDataStream &operator<<(QDataStream &s, const DkTimer &t)
 
 QDebug operator<<(QDebug d, const DkTimer &timer)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     d << qPrintable(timer.stringifyTime(timer.elapsed()));
+#else
+    d << QString();
+#endif
     return d;
 }
 
@@ -69,12 +75,20 @@ QDebug operator<<(QDebug d, const DkTimer &timer)
  **/
 QString DkTimer::getTotal() const
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return qPrintable(stringifyTime(mTimer.elapsed()));
+#else
+    return QString();
+#endif
 }
 
 QDataStream &DkTimer::put(QDataStream &s) const
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     s << stringifyTime(mTimer.elapsed());
+#else
+    s << stringifyTime(0);
+#endif
 
     return s;
 }
@@ -123,11 +137,17 @@ QString DkTimer::stringifyTime(int ct) const
 
 void DkTimer::start()
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mTimer.restart();
+#endif
 }
 
 int DkTimer::elapsed() const
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return mTimer.elapsed();
+#else
+    return 0;
+#endif
 }
 }

@@ -136,7 +136,7 @@ protected:
     void showClose();
 
 private:
-    QPoint mouseGrab;
+    QPointF mouseGrab;
     QString text;
     QLabel *textLabel;
     QLabel *imgLabel;

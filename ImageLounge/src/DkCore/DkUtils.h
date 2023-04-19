@@ -34,6 +34,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QVector>
+#include <QRegExp>
 
 #include <QSharedMemory>
 #pragma warning(pop) // no warnings from includes - end
@@ -496,7 +497,7 @@ public:
 
     void appendChild(TreeItem *child);
 
-    bool contains(const QRegExp &regExp, int column = 0, bool recursive = true) const;
+    bool contains(const QRegularExpression &regExp, int column = 0, bool recursive = true) const;
 
     TreeItem *child(int row) const;
     int childCount() const;

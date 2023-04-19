@@ -56,6 +56,13 @@ class QMenu;
 class QToolBar;
 class QLineEdit;
 
+// To make the code complian to Qt5 and Qt6
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+typedef QEvent QEnterEvent_t;
+#else
+typedef QEnterEvent QEnterEvent_t;
+#endif
+
 namespace nmc
 {
 
@@ -447,7 +454,7 @@ protected:
 
     void createLayout();
     void mousePressEvent(QMouseEvent *event) override;
-    void enterEvent(QEvent *event) override;
+    void enterEvent(QEnterEvent_t *event);
     void leaveEvent(QEvent *event) override;
 };
 

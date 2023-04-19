@@ -35,6 +35,12 @@
 // Qt includes
 class QTimer;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+typedef QEvent QEnterEvent_t;
+#else
+typedef QEnterEvent QEnterEvent_t;
+#endif
+
 namespace nmc
 {
 
@@ -104,7 +110,7 @@ public slots:
     void hideMenu();
 
 protected:
-    void enterEvent(QEvent *event) override;
+    void enterEvent(QEnterEvent_t *event) override;
     void leaveEvent(QEvent *event) override;
 
 private:

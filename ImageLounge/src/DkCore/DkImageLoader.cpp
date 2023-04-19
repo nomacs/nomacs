@@ -314,7 +314,11 @@ void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>
 
     mSortingIsDirty = false;
     mSortingImages = true;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mCreateImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageLoader::sortImages, images));
+#else
+    mCreateImageWatcher.setFuture(QtConcurrent::run(&nmc::DkImageLoader::sortImages, this, images));
+#endif
 
     qDebug() << "sorting images threaded...";
 }
@@ -978,7 +982,7 @@ QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, cons
             qWarning() << filePath << "does not exist";
         return QString();
     } else if (filePath.isEmpty() || !fInfo.exists()) {
-        fInfo = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        fInfo = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
 
         if (!fInfo.isDir()) {
             // load system default open dialog
@@ -987,7 +991,7 @@ QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, cons
                                                                 getDirPath(),
                                                                 QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
-            fInfo = dirName + QDir::separator();
+            fInfo = QFileInfo(dirName + QDir::separator());
 
             if (!fInfo.exists())
                 return QString();
@@ -1229,7 +1233,8 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
 
         compression = jpgDialog->getCompression();
 
-    } else if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+    } else if (selectedFilter.contains(QRegularExpression("(j2k|jp2|jpf|jpx)",
+                                QRegularExpression::CaseInsensitiveOption))) {
         if (!jpgDialog)
             jpgDialog = new DkCompressDialog(dialogParent);
 
@@ -1245,7 +1250,8 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
 
         compression = jpgDialog->getCompression();
 
-    } else if (selectedFilter.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive))) {
+    } else if (selectedFilter.contains(QRegularExpression("(jpg|jpeg)",
+                                QRegularExpression::CaseInsensitiveOption))) {
         if (!jpgDialog)
             jpgDialog = new DkCompressDialog(dialogParent);
 
@@ -1401,7 +1407,7 @@ void DkImageLoader::updateHistory()
     if (!mCurrentImage || mCurrentImage->hasImage() != DkImageContainer::loaded || !mCurrentImage->exists())
         return;
 
-    QFileInfo file = mCurrentImage->filePath();
+    QFileInfo file = QFileInfo(mCurrentImage->filePath());
 
     // sync with other instances
     DefaultSettings settings;
@@ -1940,8 +1946,8 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
     // remove files that contain ignore keywords
     for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
-        QRegExp exp = QRegExp("^((?!" + ignoreKeywords[idx] + ").)*$");
-        exp.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression exp = QRegularExpression("^((?!" + ignoreKeywords[idx] + ").)*$");
+        exp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
         fileList = fileList.filter(exp);
     }
 

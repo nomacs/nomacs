@@ -53,7 +53,6 @@
 #include <QComboBox>
 #include <QCompleter>
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -78,11 +77,13 @@
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QRandomGenerator>
 #include <QScreen>
 #include <QSlider>
 #include <QSpinBox>
 #include <QSplashScreen>
 #include <QStandardItemModel>
+#include <QStandardPaths>
 #include <QStringListModel>
 #include <QTableView>
 #include <QTextEdit>
@@ -104,6 +105,11 @@
 #endif
 
 #pragma warning(pop) // no warnings from includes - end
+
+// To make code Qt5 compliant
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#define globalPosition globalPos
+#endif
 
 namespace nmc
 {
@@ -196,15 +202,15 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
 void DkSplashScreen::mousePressEvent(QMouseEvent *event)
 {
     setCursor(Qt::ClosedHandCursor);
-    mouseGrab = event->globalPos();
+    mouseGrab = event->globalPosition();
     QDialog::mousePressEvent(event);
 }
 
 void DkSplashScreen::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() == Qt::LeftButton) {
-        move(pos() - (mouseGrab - event->globalPos()));
-        mouseGrab = event->globalPos();
+        move(pos() - (mouseGrab - event->globalPosition()).toPoint());
+        mouseGrab = event->globalPosition();
         qDebug() << "moving...";
     } else
         setCursor(Qt::OpenHandCursor);
@@ -2194,7 +2200,13 @@ void DkPrintPreviewDialog::pageSetup()
 
     if (pageSetup.exec() == QDialog::Accepted) {
         // update possible orientation changes
-        if (mPreview->orientation() == QPrinter::Portrait) {
+        if (mPreview->orientation() ==
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                QPrinter::Portrait
+#else
+                QPageLayout::Portrait
+#endif
+                ) {
             mPreview->setPortraitOrientation();
         } else {
             mPreview->setLandscapeOrientation();
@@ -2204,13 +2216,14 @@ void DkPrintPreviewDialog::pageSetup()
 
 void DkPrintPreviewDialog::print()
 {
-    QRect pr = mPrinter->pageRect();
+   //TODO: move from QRect to smth else
+    QRect pr = mPrinter->pageLayout().paintRectPixels(mPrinter->resolution());
 
     QPrintDialog *pDialog = new QPrintDialog(mPrinter, this);
 
     if (pDialog->exec() == QDialog::Accepted) {
         // if the page rect is changed - we have to newly fit the images...
-        if (pr != mPrinter->pageRect())
+        if (pr != mPrinter->pageRect(QPrinter::Inch))
             mPreview->fitImages();
 
         mPreview->paintForPrinting();
@@ -2272,10 +2285,10 @@ void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event)
         return;
     }
 
-    qreal delta = event->delta();
+    qreal delta = event->angleDelta().y();
     if (DkSettingsManager::param().display().invertZoom)
         delta *= -1;
-    if (event->delta() > 0)
+    if (event->angleDelta().y() > 0)
         zoomIn();
     else
         zoomOut();
@@ -2311,7 +2324,7 @@ void DkPrintPreviewWidget::setPortraitOrientation()
 void DkPrintPreviewWidget::changeDpi(int value)
 {
     double inchW = mPrinter->pageRect(QPrinter::Inch).width();
-    int pxW = mPrinter->pageRect().width();
+    int pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
     double sf = ((double)pxW / inchW) / value;
 
     for (auto pi : mPrintImages)
@@ -2408,7 +2421,8 @@ void DkExportTiffDialog::dragEnterEvent(QDragEnterEvent *event)
         url = url.toLocalFile();
         QFileInfo file = QFileInfo(url.toString());
 
-        if (file.exists() && file.suffix().indexOf(QRegExp("tif"), Qt::CaseInsensitive) != -1)
+        if (file.exists() && file.suffix().indexOf(QRegularExpression("tif"),
+                   QRegularExpression::CaseInsensitiveOption) != -1)
             event->acceptProposedAction();
     }
 }
@@ -2450,7 +2464,7 @@ void DkExportTiffDialog::createLayout()
 
     mSuffixBox = new QComboBox(this);
     mSuffixBox->addItems(DkSettingsManager::param().app().saveFilters);
-    mSuffixBox->setCurrentIndex(DkSettingsManager::param().app().saveFilters.indexOf(QRegExp(".*tif.*")));
+    mSuffixBox->setCurrentIndex(DkSettingsManager::param().app().saveFilters.indexOf(QRegularExpression(".*tif.*")));
 
     // export handles
     QLabel *exportLabel = new QLabel(tr("Export Pages"));
@@ -2513,7 +2527,7 @@ void DkExportTiffDialog::on_openButton_pressed()
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open TIFF"),
                                                     mFilePath,
-                                                    DkSettingsManager::param().app().saveFilters.filter(QRegExp(".*tif.*")).join(";;"),
+                                                    DkSettingsManager::param().app().saveFilters.filter(QRegularExpression(".*tif.*")).join(";;"),
                                                     nullptr,
                                                     DkDialog::fileDialogOptions());
 
@@ -2572,8 +2586,14 @@ void DkExportTiffDialog::accept()
 
     emit infoMessage("");
 
-    QFuture<int> future = QtConcurrent::run(this,
+    QFuture<int> future = QtConcurrent::run(
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                                            this,
+#endif
                                             &nmc::DkExportTiffDialog::exportImages,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                            this,
+#endif
                                             sFile.absoluteFilePath(),
                                             mFromPage->value(),
                                             mToPage->value(),
@@ -2587,7 +2607,7 @@ void DkExportTiffDialog::processingFinished()
     mProgress->hide();
     mMsgLabel->hide();
 
-    if (mWatcher.future() == QDialog::Accepted)
+    if (mWatcher.result() == QDialog::Accepted)
         QDialog::accept();
 }
 
@@ -3035,8 +3055,14 @@ void DkMosaicDialog::buttonClicked(QAbstractButton *button)
             enableAll(false);
             button->setEnabled(false);
 
-            QFuture<bool> future = QtConcurrent::run(this,
+            QFuture<bool> future = QtConcurrent::run(
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                                                     this,
+#endif
                                                      &nmc::DkMosaicDialog::postProcessMosaic,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                                     this,
+#endif
                                                      mDarkenSlider->value() / 100.0f,
                                                      mLightenSlider->value() / 100.0f,
                                                      mSaturationSlider->value() / 100.0f,
@@ -3081,7 +3107,18 @@ void DkMosaicDialog::compute()
     mFilesUsed.clear();
 
     mProcessing = true;
-    QFuture<int> future = QtConcurrent::run(this, &nmc::DkMosaicDialog::computeMosaic, filter, suffix, mNewWidthBox->value(), mNumPatchesH->value());
+    QFuture<int> future = QtConcurrent::run(
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                                            this,
+#endif
+                                            &nmc::DkMosaicDialog::computeMosaic,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                            this,
+#endif
+                                            filter,
+                                            suffix,
+                                            mNewWidthBox->value(),
+                                            mNumPatchesH->value());
     mMosaicWatcher.setFuture(future);
 
     //// debug
@@ -3259,7 +3296,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                 // update cc
                 ccPtr[maxIdx.x] = (float)maxVal;
 
-                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = thumb.getFilePath(); // replaces additionally the old file
+                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = QFileInfo(thumb.getFilePath()); // replaces additionally the old file
                 iDidNothing = 0;
             } else
                 iDidNothing++;
@@ -3412,7 +3449,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString &cPath, const QString &
     if (entries.isEmpty())
         return QString();
 
-    int rIdx = qRound((float)qrand() / RAND_MAX * (entries.size() - 1));
+    int rIdx = qRound(QRandomGenerator::global()->generateDouble() * (entries.size() - 1));
 
     // qDebug() << "rand index: " << rIdx;
 
@@ -3438,8 +3475,14 @@ void DkMosaicDialog::updatePostProcess()
     mButtons->button(QDialogButtonBox::Apply)->setEnabled(false);
     mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
-    QFuture<bool> future = QtConcurrent::run(this,
+    QFuture<bool> future = QtConcurrent::run(
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                                             this,
+#endif
                                              &nmc::DkMosaicDialog::postProcessMosaic,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                             this,
+#endif
                                              mDarkenSlider->value() / 100.0f,
                                              mLightenSlider->value() / 100.0f,
                                              mSaturationSlider->value() / 100.0f,
@@ -4157,7 +4200,12 @@ void DkPrintImage::fit()
     }
 
     double sf = 0;
-    QRectF pr = mPrinter->pageRect();
+
+    /* TODO: Check/test wether pageRect() calls below
+     * provide correct measurements to scale the image
+     */
+
+    QRectF pr = mPrinter->pageRect(QPrinter::DevicePixel);
 
     // scale image to fit on paper
     if (pr.width() / mImg.width() < pr.height() / mImg.height()) {
@@ -4167,7 +4215,7 @@ void DkPrintImage::fit()
     }
 
     double inchW = mPrinter->pageRect(QPrinter::Inch).width();
-    double pxW = mPrinter->pageRect().width();
+    double pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
     double cDpi = dpi();
 
     // use at least 150 dpi
@@ -4188,7 +4236,7 @@ void DkPrintImage::fit()
 double DkPrintImage::dpi()
 {
     double iW = mPrinter->pageRect(QPrinter::Inch).width();
-    double pxW = mPrinter->pageRect().width();
+    double pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
 
     return (pxW / iW) / mTransform.m11();
 }
@@ -4210,8 +4258,13 @@ void DkPrintImage::center(QTransform &t) const
 {
     QRectF transRect = t.mapRect(mImg.rect());
     qreal xtrans = 0, ytrans = 0;
-    xtrans = ((mPrinter->pageRect().width() - transRect.width()) / 2);
-    ytrans = (mPrinter->pageRect().height() - transRect.height()) / 2;
+
+    /* TODO: Check/test QPrinter->pageRect() values and
+     * correct calculation of the center
+     */
+
+    xtrans = ((mPrinter->pageRect(QPrinter::DevicePixel).width() - transRect.width()) / 2);
+    ytrans = (mPrinter->pageRect(QPrinter::DevicePixel).height() - transRect.height()) / 2;
 
     t.translate(-t.dx() / (t.m11() + DBL_EPSILON), -t.dy() / (t.m22() + DBL_EPSILON)); // reset old transformation
     t.translate(xtrans / (t.m11() + DBL_EPSILON), ytrans / (t.m22() + DBL_EPSILON));

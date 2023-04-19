@@ -33,6 +33,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <limits>
+#include <QRegExp>
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc

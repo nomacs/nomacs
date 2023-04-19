@@ -131,7 +131,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const QSharedPointer<
 
     QFileInfo fInfo(filePath);
     QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
-    fInfo = lFilePath;
+    fInfo = QFileInfo(lFilePath);
 
     // diem: do_not_force is the generic load - so also rescale these
     bool rescale = forceLoad == do_not_force;
@@ -197,7 +197,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const QSharedPointer<
             if (!ba || ba->isEmpty())
                 metaData.saveMetaData(lFilePath);
             else
-                metaData.saveMetaData(lFilePath, ba);
+                metaData.saveMetaData(lFilePath, true);
 
             qDebug() << "[thumb] saved to exif data";
         } catch (...) {
@@ -301,7 +301,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
     // check if we can load the file
     // though if it might seem over engineered: it is much faster cascading it here
-    if (!DkUtils::hasValidSuffix(getFilePath()) && !QFileInfo(getFilePath()).suffix().isEmpty() && !DkUtils::isValid(getFilePath()))
+    if (!DkUtils::hasValidSuffix(getFilePath()) && !QFileInfo(getFilePath()).suffix().isEmpty() && !DkUtils::isValid(QFileInfo(getFilePath())))
         return false;
 
     // we have to do our own bool here
@@ -312,8 +312,13 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
     connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
 
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                                               this,
+#endif
                                               &nmc::DkThumbNailT::computeCall,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                              this,
+#endif
                                               mFile,
                                               ba,
                                               forceLoad,
