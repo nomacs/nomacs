@@ -96,6 +96,17 @@ endif()
 
 # find Qt
 NMC_FINDQT()
+if(${QT_VERSION_MAJOR} VERSION_GREATER_EQUAL "6")
+    # Still we a using a tons of deprecated features (silence them for a while)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
+	set(ENABLE_QUAZIP OFF)
+	message(STATUS "QuaZip disabled - it's not supported for Qt6")
+
+    # We need these to biuld with Qt6
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
 if (NOT ENABLE_QT_DEBUG)
 	message (STATUS "disabling qt debug messages")
@@ -162,7 +173,7 @@ file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 qt_add_resources(NOMACS_RCC ${NOMACS_RESOURCES})
 
 if (${ENABLE_TRANSLATIONS})
-	QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+	qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS})
 endif()
 
 if(MSVC)
@@ -254,8 +265,7 @@ set(ignoreMe "${CMAKE_EXPORT_COMPILE_COMMANDS}")
 MESSAGE(STATUS "")
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
 MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
-execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE qt_version)
-message(STATUS " Qt version: ${qt_version}")
+message(STATUS " Qt version: ${Qt${QT_DEFAULT_MAJOR_VERSION}_VERSION}")
 
 
 IF(OpenCV_FOUND)
