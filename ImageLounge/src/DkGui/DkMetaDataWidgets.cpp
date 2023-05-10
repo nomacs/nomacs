@@ -45,6 +45,7 @@
 #include <QMenu>
 #include <QPainter>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QResizeEvent>
 #include <QScrollArea>
 #include <QSettings>
@@ -326,7 +327,7 @@ bool DkMetaDataProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
 
     TreeItem *t = static_cast<TreeItem *>(index.internalPointer());
     if (t) {
-        return t->contains(filterRegExp(), -1) /* | t->contains(filterRegExp(), 1)*/;
+        return t->contains(filterRegularExpression(), -1) /* | t->contains(filterRegExp(), 1)*/;
     }
 
     qWarning() << "[DkMetaDataProxyModel] Ich höre gerade, es ist ein bisschen was durcheinander gekommen";
@@ -428,7 +429,7 @@ void DkMetaDataDock::on_filter_textChanged(const QString &filterText)
     if (!filterText.isEmpty())
         mTreeView->expandAll();
 
-    mProxyModel->setFilterRegExp(QRegExp(filterText, Qt::CaseInsensitive, QRegExp::FixedString));
+    mProxyModel->setFilterRegularExpression(QRegularExpression(QRegularExpression::escape(filterText), QRegularExpression::CaseInsensitiveOption));
 }
 
 void DkMetaDataDock::updateEntries()
@@ -525,7 +526,7 @@ void DkMetaDataDock::expandRows(const QModelIndex &index, const QStringList &exp
     }
 
     for (int idx = 0; idx < mProxyModel->rowCount(index); idx++) {
-        QModelIndex cIndex = index.child(idx, 0);
+        QModelIndex cIndex = mProxyModel->index(idx, 0, index);
 
         if (expandedNames.contains(mProxyModel->data(cIndex).toString())) {
             mTreeView->setExpanded(cIndex, true);
@@ -595,7 +596,7 @@ void DkMetaDataSelection::appendGUIEntry(const QString &key, const QString &valu
     QDateTime pd = DkUtils::getConvertableDate(cleanValue);
 
     if (!pd.isNull())
-        cleanValue = pd.toString(Qt::SystemLocaleShortDate);
+        cleanValue = pd.toString(Qt::TextDate);
 
     QLabel *label = new QLabel(cleanValue, this);
     label->setObjectName("DkMetadataValueLabel");
@@ -1023,7 +1024,7 @@ QLabel *DkMetaDataHUD::createValueLabel(const QString &val)
     QDateTime pd = DkUtils::getConvertableDate(cleanValue);
 
     if (!pd.isNull())
-        cleanValue = pd.toString(Qt::SystemLocaleShortDate);
+        cleanValue = pd.toString(Qt::TextDate);
 
     QLabel *valLabel = new QLabel(cleanValue.trimmed(), this);
     valLabel->setObjectName("DkMetaDataLabel");

@@ -126,7 +126,7 @@ void DkAppManager::loadSettings()
 
         // default shortcuts
         if (action->objectName() == mDefaultNames[app_explorer])
-            action->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_E));
+            action->setShortcut(QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_E));
 
         if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
             mApps.append(action);

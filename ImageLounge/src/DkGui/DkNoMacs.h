@@ -330,7 +330,9 @@ public:
     virtual ~DkNoMacsFrameless();
 
 public slots:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     void chooseMonitor(bool force = true);
+#endif
 
 protected:
     void closeEvent(QCloseEvent *event) override;

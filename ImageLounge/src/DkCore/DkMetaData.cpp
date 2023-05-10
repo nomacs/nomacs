@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <QImage>
 #include <QObject>
+#include <QRegularExpression>
 #include <QTranslator>
 #include <QVector2D>
 #pragma warning(pop) // no warnings from includes - end
@@ -599,13 +600,13 @@ void DkMetaDataT::getFileMetaData(QStringList &fileKeys, QStringList &fileValues
 
     // date group
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
-    fileValues.append(fileInfo.birthTime().toString(Qt::SystemLocaleDate));
+    fileValues.append(fileInfo.birthTime().toString());
 
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
-    fileValues.append(fileInfo.lastModified().toString(Qt::SystemLocaleDate));
+    fileValues.append(fileInfo.lastModified().toString());
 
     fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Read"));
-    fileValues.append(fileInfo.lastRead().toString(Qt::SystemLocaleDate));
+    fileValues.append(fileInfo.lastRead().toString());
 
     if (!fileInfo.owner().isEmpty()) {
         fileKeys.append(QObject::tr("Owner"));
@@ -789,37 +790,37 @@ bool DkMetaDataT::isLoaded() const
 bool DkMetaDataT::isTiff() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)) != 0;
+    return newSuffix.contains(QRegularExpression("(tif|tiff)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isJpg() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive)) != 0;
+    return newSuffix.contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isRaw() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive)) != 0;
+    return newSuffix.contains(QRegularExpression("(nef|crw|cr2|arw)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isAVIF() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(avif)", Qt::CaseInsensitive));
+    return newSuffix.contains(QRegularExpression("(avif)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isHEIF() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(heic|heif)", Qt::CaseInsensitive));
+    return newSuffix.contains(QRegularExpression("(heic|heif)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isJXL() const
 {
     QString newSuffix = QFileInfo(mFilePath).suffix();
-    return newSuffix.contains(QRegExp("(jxl)", Qt::CaseInsensitive));
+    return newSuffix.contains(QRegularExpression("(jxl)", QRegularExpression::CaseInsensitiveOption)) != 0;
 }
 
 bool DkMetaDataT::isDirty() const

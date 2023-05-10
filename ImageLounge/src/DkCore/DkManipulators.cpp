@@ -92,13 +92,13 @@ void DkManipulatorManager::createManipulators(QWidget *parent)
 
     // auto adjust
     action = new QAction(DkImage::loadIcon(":/nomacs/img/auto-adjust.svg", size), QObject::tr("&Auto Adjust"), parent);
-    action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_L);
+    action->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_L);
     action->setStatusTip(QObject::tr("Auto Adjust Image Contrast and Color Balance"));
     mpls[m_auto_adjust] = QSharedPointer<DkAutoAdjustManipulator>::create(action);
 
     // normalize
     action = new QAction(DkImage::loadIcon(":/nomacs/img/normalize.svg", size), QObject::tr("Nor&malize Image"), parent);
-    action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
+    action->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_N);
     action->setStatusTip(QObject::tr("Normalize the Image"));
     mpls[m_normalize] = QSharedPointer<DkNormalizeManipulator>::create(action);
 

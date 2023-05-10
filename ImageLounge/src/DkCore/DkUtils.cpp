@@ -53,7 +53,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QRegExp>
+#include <QRandomGenerator>
 #include <QStandardPaths>
 #include <QString>
 #include <QStringList>
@@ -338,7 +338,7 @@ bool DkUtils::compFileSizeInv(const QFileInfo &lhf, const QFileInfo &rhf)
 
 bool DkUtils::compRandom(const QFileInfo &, const QFileInfo &)
 {
-    return qrand() % 2 != 0;
+    return QRandomGenerator::global()->generate() % 2 != 0;
 }
 
 void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)
@@ -429,7 +429,7 @@ void DkUtils::logToFile(QtMsgType type, const QString &msg)
         printf("cannot open %s for logging\n", filePath.toStdString().c_str());
 
     QTextStream ts(&outFile);
-    ts << txt << endl;
+    ts << txt << Qt::endl;
 }
 
 void DkUtils::initializeDebug()
@@ -549,7 +549,7 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
     // future.cancel();
 
     // assume file is not existing if it took longer than waitMs
-    return (future.isFinished()) ? future : false;
+    return (future.isFinished()) ? future.result() : false;
 }
 
 bool DkUtils::checkFile(const QFileInfo &file)
@@ -626,7 +626,7 @@ bool DkUtils::isValid(const QFileInfo &fileInfo)
     QString fileName = fInfo.fileName();
 
     if (fInfo.isSymLink())
-        fInfo = fileInfo.symLinkTarget();
+        fInfo = QFileInfo(fileInfo.symLinkTarget());
 
     if (!fInfo.exists()) {
         return false;
@@ -674,7 +674,7 @@ QStringList DkUtils::suffixOnly(const QStringList &fileFilters)
     QStringList cleanedFilters;
 
     for (QString cFilter : fileFilters) {
-        cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+        cFilter = cFilter.section(QRegularExpression("(\\(|\\))"), 1);
         cFilter = cFilter.replace(")", "");
         cleanedFilters += cFilter.split(" ");
     }
@@ -685,7 +685,7 @@ QStringList DkUtils::suffixOnly(const QStringList &fileFilters)
 QDateTime DkUtils::getConvertableDate(const QString &date)
 {
     QDateTime dateCreated;
-    QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+    QStringList dateSplit = date.split(QRegularExpression("[/: \t]"));
 
     if (date.count(":") != 4 /*|| date.count(QRegExp("\t")) != 1*/)
         return dateCreated;
@@ -714,7 +714,7 @@ QDateTime DkUtils::convertDate(const QString &date, const QFileInfo &file)
 {
     // convert date
     QDateTime dateCreated;
-    QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+    QStringList dateSplit = date.split(QRegularExpression("[/: \t]"));
 
     if (dateSplit.size() >= 3) {
         QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
@@ -734,19 +734,19 @@ QString DkUtils::convertDateString(const QString &date, const QFileInfo &file)
 {
     // convert date
     QString dateConverted;
-    QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+    QStringList dateSplit = date.split(QRegularExpression("[/: \t]"));
 
     if (dateSplit.size() >= 3) {
         QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
-        dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
+        dateConverted = dateV.toString();
 
         if (dateSplit.size() >= 6) {
             QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
-            dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
+            dateConverted += " " + time.toString();
         }
     } else if (file.exists()) {
         QDateTime dateCreated = file.birthTime();
-        dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
+        dateConverted += dateCreated.toString();
     } else
         dateConverted = "unknown date";
 
@@ -837,12 +837,13 @@ QStringList DkUtils::filterStringList(const QString &query, const QStringList &l
 
     // if string match returns nothing -> try a regexp
     if (resultList.empty()) {
-        QRegExp regExp(query);
+        QRegularExpression regExp(query);
         resultList = list.filter(regExp);
 
         if (resultList.empty()) {
-            regExp.setPatternSyntax(QRegExp::Wildcard);
-            resultList = list.filter(regExp);
+            QString wildcardExp = QRegularExpression::wildcardToRegularExpression(query);
+            QRegularExpression re(QRegularExpression::anchoredPattern(wildcardExp), QRegularExpression::CaseInsensitiveOption);
+            resultList = list.filter(re);
         }
     }
 
@@ -928,7 +929,7 @@ QString DkUtils::resolveFraction(const QString &frac)
 QList<QUrl> DkUtils::findUrlsInTextNewline(QString text)
 {
     QList<QUrl> urls;
-    QStringList lines = text.split(QRegExp("\n|\r\n|\r"));
+    QStringList lines = text.split(QRegularExpression("\n|\r\n|\r"));
     for (QString fp : lines) {
         // fixes urls for windows - yes that actually annoys me
         fp = fp.replace("\\", "/");
@@ -1109,7 +1110,7 @@ void TreeItem::appendChild(TreeItem *item)
     childItems.append(item);
 }
 
-bool TreeItem::contains(const QRegExp &regExp, int column, bool recursive) const
+bool TreeItem::contains(const QRegularExpression &regExp, int column, bool recursive) const
 {
     bool found = false;
 
@@ -1235,7 +1236,7 @@ bool TabMiddleMouseCloser::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::MidButton) {
+        if (mouseEvent->button() == Qt::MiddleButton) {
             auto tabbar = static_cast<QTabBar *>(obj);
             for (int i = 0; i < tabbar->count(); i++) {
                 QRect tabrect = tabbar->tabRect(i);

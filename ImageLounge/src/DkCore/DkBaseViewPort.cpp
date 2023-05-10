@@ -487,7 +487,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event)
 
 void DkBaseViewPort::wheelEvent(QWheelEvent *event)
 {
-    double factor = -event->delta();
+    double factor = -event->angleDelta().y();
     if (DkSettingsManager::param().display().invertZoom)
         factor *= -1.0;
 
@@ -495,7 +495,7 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event)
     factor += 1.0;
 
     // qDebug() << "zoom factor..." << factor;
-    zoomLeveled(factor, event->pos());
+    zoomLeveled(factor, event->position());
 }
 
 void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event)

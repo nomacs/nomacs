@@ -84,7 +84,7 @@ void DkFadeWidget::paintEvent(QPaintEvent *event)
 {
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 

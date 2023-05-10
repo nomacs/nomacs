@@ -105,7 +105,7 @@ void DkBatchTabButton::paintEvent(QPaintEvent *event)
 
     // fixes stylesheets which are not applied to custom widgets
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     // style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
@@ -886,7 +886,7 @@ void DkBatchOutput::updateCBCompression()
     int quality[5];
 
     const QString extStr = mCbNewExtension->currentText();
-    if (extStr.contains(QRegExp("(avif)", Qt::CaseInsensitive))) {
+    if (extStr.contains(QRegularExpression("(avif)", QRegularExpression::CaseInsensitiveOption))) {
         quality[0] = 100;
         quality[1] = 80;
         quality[2] = 60;
@@ -1018,7 +1018,7 @@ void DkBatchOutput::parameterChanged()
 {
     // enable/disable compression combo
     QString extStr = mCbNewExtension->currentText();
-    mCbCompression->setEnabled(extStr.contains(QRegExp("(avif|jpg|jp2|jxl|webp)", Qt::CaseInsensitive)));
+    mCbCompression->setEnabled(extStr.contains(QRegularExpression("(avif|jpg|jp2|jxl|webp)", QRegularExpression::CaseInsensitiveOption)));
 
     updateCBCompression();
     updateFileLabelPreview();
