@@ -705,7 +705,10 @@ void DkOverview::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    int lm, tm, rm, bm;
+    int lm = 0;
+    int tm = 0;
+    int rm = 0;
+    int bm = 0;
     if (layout() != nullptr)
         layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 
@@ -765,7 +768,10 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event)
     QPointF dxy = mEnterPos - QPointF(event->pos());
 
     if (dxy.manhattanLength() < 4) {
-        int lm, tm, rm, bm;
+        int lm = 0;
+        int tm = 0;
+        int rm = 0;
+        int bm = 0;
         if (layout() != nullptr)
             layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 
@@ -838,7 +844,10 @@ QTransform DkOverview::getScaledImageMatrix()
     if (mImgT.isNull() && mImg.isNull())
         return QTransform();
 
-    int lm, tm, rm, bm;
+    int lm = 0;
+    int tm = 0;
+    int rm = 0;
+    int bm = 0;
     if (layout() != nullptr)
         layout()->getContentsMargins(&lm, &tm, &rm, &bm);
 

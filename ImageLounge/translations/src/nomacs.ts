@@ -3795,7 +3795,7 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
 <context>
     <name>nmc::DkCropWidget</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2135"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2144"/>
         <source>Crop Toolbar</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3829,12 +3829,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
 <context>
     <name>nmc::DkDirectoryChooser</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2616"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2625"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2631"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2640"/>
         <source>Open an Image Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4204,12 +4204,12 @@ This option is only useful if plugins save sidecar files - so be careful!</sourc
 <context>
     <name>nmc::DkFileInfoLabel</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1223"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1232"/>
         <source>Info Box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1224"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1233"/>
         <source>All information fields are currently hidden.
 Do you want to show them again?</source>
         <translation type="unfinished"></translation>
@@ -4686,32 +4686,32 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkGenericProfileWidget</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2846"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2855"/>
         <source>Set As Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2902"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2911"/>
         <source>Profile Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2902"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2911"/>
         <source>Profile Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2910"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2919"/>
         <source>Profile Already Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2911"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2920"/>
         <source>Do you want to overwrite %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2974"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2983"/>
         <source>No Profiles</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4728,12 +4728,12 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkHistogram</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2198"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2207"/>
         <source>Show Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="2203"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="2212"/>
         <source>Histogram Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4741,12 +4741,12 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkHudNavigation</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1492"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1501"/>
         <source>Show previous image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1499"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1508"/>
         <source>Show next image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5686,17 +5686,17 @@ then press %1</source>
 <context>
     <name>nmc::DkPlayer</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1334"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1343"/>
         <source>Show previous image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1346"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1355"/>
         <source>Play/Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1358"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1367"/>
         <source>Show next image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5958,27 +5958,27 @@ then press %1</source>
 <context>
     <name>nmc::DkRatingLabel</name>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1113"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1122"/>
         <source>one star</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1117"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1126"/>
         <source>two stars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1121"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1130"/>
         <source>three star</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1125"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1134"/>
         <source>four star</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkGui/DkWidgets.cpp" line="1129"/>
+        <location filename="../../src/DkGui/DkWidgets.cpp" line="1138"/>
         <source>five star</source>
         <translation type="unfinished"></translation>
     </message>
