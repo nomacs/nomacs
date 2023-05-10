@@ -580,7 +580,8 @@ void DkBall::updateSize()
 {
     mMinSpeed = qRound(mS->field().width() * 0.005);
     mMaxSpeed = qRound(mS->field().width() * 0.01);
-    setDirection(DkVector(QRandomGenerator::global()->generateDouble() * 10.0f - 5.0f, QRandomGenerator::global()->generateDouble() * 5.0f - 2.5f));
+    setDirection(DkVector(static_cast<float>(QRandomGenerator::global()->generateDouble() * 10.0f - 5.0f),
+                          static_cast<float>(QRandomGenerator::global()->generateDouble() * 5.0f - 2.5f)));
     // setDirection(DkVector(10,10));
 }
 
