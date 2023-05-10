@@ -70,7 +70,9 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QDesktopWidget>
+#endif
 #include <QDrag>
 #include <QErrorMessage>
 #include <QEvent>
@@ -80,6 +82,7 @@
 #include <QNetworkProxyFactory>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QScreen>
 #include <QSettings>
 #include <QShortcut>
 #include <QSplashScreen>
@@ -694,8 +697,8 @@ void DkNoMacs::fitFrame()
     nmRect.moveCenter(c);
 
     // still fits on screen?
-    QDesktopWidget *dw = QApplication::desktop();
-    QRect screenRect = dw->availableGeometry(this);
+    QScreen *sc = QApplication::primaryScreen();
+    QRect screenRect = sc->availableGeometry();
     QRect newGeometry = screenRect.intersected(nmRect.toRect());
 
     // correct frame
@@ -1455,7 +1458,7 @@ void DkNoMacs::computeThumbsBatch()
 
 void DkNoMacs::aboutDialog()
 {
-    DkSplashScreen *spScreen = new DkSplashScreen(this, 0);
+    DkSplashScreen *spScreen = new DkSplashScreen(this);
     spScreen->exec();
     spScreen->deleteLater();
 }
@@ -1692,7 +1695,7 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
         title.append(QString::number(getTabWidget()->getActiveTab() + 1) + "/" + QString::number(getTabWidget()->getTabs().count()) + " - ");
     }
 
-    QFileInfo fInfo = filePath;
+    QFileInfo fInfo(filePath);
     title.append(QFileInfo(filePath).fileName());
     title = title.remove(".lnk");
 
@@ -1712,9 +1715,9 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
     auto vp = getTabWidget()->getViewPort();
 
     if (!size.isEmpty())
-        attributes.sprintf(" - %i x %i", size.width(), size.height());
+        attributes.asprintf(" - %i x %i", size.width(), size.height());
     if (size.isEmpty() && vp && !vp->getImageSize().isEmpty())
-        attributes.sprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
+        attributes.asprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
     if (DkSettingsManager::param().app().privateMode)
         attributes.append(tr(" [Private Mode]"));
 
@@ -2054,13 +2057,17 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
     am.action(DkActionManager::menu_view_frameless)->setChecked(true);
     am.action(DkActionManager::menu_view_frameless)->blockSignals(false);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mDesktop = QApplication::desktop();
 
     chooseMonitor(false);
+#endif
     show();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(mDesktop, SIGNAL(workAreaResized(int)), this, SLOT(chooseMonitor()));
     connect(am.action(DkActionManager::menu_view_monitors), SIGNAL(triggered()), this, SLOT(chooseMonitor()));
+#endif
 
     setObjectName("DkNoMacsFrameless");
     DkStatusBarManager::instance().show(false); // fix
@@ -2082,6 +2089,7 @@ void DkNoMacsFrameless::createContextMenu()
     am.contextMenu()->addAction(am.action(DkActionManager::menu_file_exit));
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void DkNoMacsFrameless::chooseMonitor(bool force)
 {
     if (!mDesktop)
@@ -2106,6 +2114,7 @@ void DkNoMacsFrameless::chooseMonitor(bool force)
 
     setGeometry(screenRect);
 }
+#endif
 
 // >DIR diem: eating shortcut overrides
 bool DkNoMacsFrameless::eventFilter(QObject *, QEvent *event)

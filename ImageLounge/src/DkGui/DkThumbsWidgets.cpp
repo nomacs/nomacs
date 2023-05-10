@@ -628,7 +628,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
         int newSize = DkSettingsManager::param().display().thumbSize;
-        newSize += qRound(event->delta() * 0.05f);
+        newSize += qRound(event->angleDelta().y() * 0.05f);
 
         // make sure it is even
         if (qRound(newSize * 0.5f) != newSize * 0.5f)
@@ -644,7 +644,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
             update();
         }
     } else {
-        int fc = (event->delta() > 0) ? -1 : 1;
+        int fc = (event->angleDelta().y() > 0) ? -1 : 1;
 
         if (!DkSettingsManager::param().resources().waitForLastImg) {
             currentFileIdx += fc;
@@ -1590,10 +1590,10 @@ DkThumbsView::DkThumbsView(DkThumbScene *scene, QWidget *parent /* = 0 */)
 void DkThumbsView::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::ControlModifier) {
-        scene->resizeThumbs(event->delta() / 100.0f);
+        scene->resizeThumbs(event->angleDelta().y() / 100.0f);
     } else if (event->modifiers() == Qt::NoModifier) {
         if (verticalScrollBar()->isVisible()) {
-            verticalScrollBar()->setValue(verticalScrollBar()->value() - event->delta());
+            verticalScrollBar()->setValue(verticalScrollBar()->value() - event->angleDelta().y());
         }
     }
 

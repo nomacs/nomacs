@@ -37,7 +37,6 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QHostInfo>
 #include <QList>
@@ -50,6 +49,7 @@
 #include <QNetworkInterface>
 #include <QNetworkProxyFactory>
 #include <QProcess>
+#include <QScreen>
 #include <QStringBuilder>
 #include <QTcpSocket>
 #include <QThread>
@@ -471,8 +471,7 @@ void DkLocalClientManager::stopSynchronizeWith(quint16)
 
 void DkLocalClientManager::sendArrangeInstances(bool overlaid)
 {
-    int screen = QApplication::desktop()->screenNumber(DkUtils::getMainWindow());
-    const QRect screenGeometry = QApplication::desktop()->availableGeometry(screen);
+    const QRect screenGeometry = QApplication::primaryScreen()->availableGeometry();
     int connectedInstances = mPeerList.getSynchronizedPeers().size() + 1; // +1 because of this instance itself
     if (connectedInstances == 1)
         return;

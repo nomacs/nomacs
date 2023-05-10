@@ -78,6 +78,7 @@
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QRandomGenerator>
 #include <QScreen>
 #include <QSlider>
 #include <QSpinBox>
@@ -2272,10 +2273,10 @@ void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event)
         return;
     }
 
-    qreal delta = event->delta();
+    qreal delta = event->angleDelta().y();
     if (DkSettingsManager::param().display().invertZoom)
         delta *= -1;
-    if (event->delta() > 0)
+    if (event->angleDelta().y() > 0)
         zoomIn();
     else
         zoomOut();
@@ -2408,7 +2409,7 @@ void DkExportTiffDialog::dragEnterEvent(QDragEnterEvent *event)
         url = url.toLocalFile();
         QFileInfo file = QFileInfo(url.toString());
 
-        if (file.exists() && file.suffix().indexOf(QRegExp("tif"), Qt::CaseInsensitive) != -1)
+        if (file.exists() && file.suffix().indexOf(QRegularExpression("tif"), QRegularExpression::CaseInsensitiveOption) != -1)
             event->acceptProposedAction();
     }
 }
@@ -2450,7 +2451,7 @@ void DkExportTiffDialog::createLayout()
 
     mSuffixBox = new QComboBox(this);
     mSuffixBox->addItems(DkSettingsManager::param().app().saveFilters);
-    mSuffixBox->setCurrentIndex(DkSettingsManager::param().app().saveFilters.indexOf(QRegExp(".*tif.*")));
+    mSuffixBox->setCurrentIndex(DkSettingsManager::param().app().saveFilters.indexOf(QRegularExpression(".*tif.*")));
 
     // export handles
     QLabel *exportLabel = new QLabel(tr("Export Pages"));
@@ -2513,7 +2514,7 @@ void DkExportTiffDialog::on_openButton_pressed()
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open TIFF"),
                                                     mFilePath,
-                                                    DkSettingsManager::param().app().saveFilters.filter(QRegExp(".*tif.*")).join(";;"),
+                                                    DkSettingsManager::param().app().saveFilters.filter(QRegularExpression(".*tif.*")).join(";;"),
                                                     nullptr,
                                                     DkDialog::fileDialogOptions());
 
@@ -3412,7 +3413,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString &cPath, const QString &
     if (entries.isEmpty())
         return QString();
 
-    int rIdx = qRound((float)qrand() / RAND_MAX * (entries.size() - 1));
+    int rIdx = qRound(QRandomGenerator::global()->generateDouble() * (entries.size() - 1));
 
     // qDebug() << "rand index: " << rIdx;
 

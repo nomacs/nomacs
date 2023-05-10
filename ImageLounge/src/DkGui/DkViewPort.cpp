@@ -530,7 +530,7 @@ void DkViewPort::showZoom()
         return;
 
     QString zoomStr;
-    zoomStr.sprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
+    zoomStr.asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
 
     if (!mController->getZoomWidget()->isVisible())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
@@ -1262,7 +1262,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
         || (DkSettingsManager::param().global().zoomOnWheel
             && (event->modifiers() & mCtrlMod
                 || (DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
-        if (event->delta() < 0)
+        if (event->angleDelta().y() < 0)
             loadNextFileFast();
         else
             loadPrevFileFast();

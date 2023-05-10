@@ -32,8 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QKeyEvent>
+#include <QRandomGenerator>
+#include <QScreen>
 #include <QSettings>
 #include <QTime>
 #include <QTimer>
@@ -259,7 +260,7 @@ void DkScoreLabel::paintEvent(QPaintEvent * /*ev*/)
 {
     QFontMetrics m(mFont);
 
-    QPixmap buffer(m.width(text()) - 1, m.height());
+    QPixmap buffer(m.horizontalAdvance(text()) - 1, m.height());
     buffer.fill(Qt::transparent);
     // buffer.fill(Qt::red);
 
@@ -556,7 +557,6 @@ void DkPongPort::keyReleaseEvent(QKeyEvent *event)
 // DkBall --------------------------------------------------------------------
 DkBall::DkBall(QSharedPointer<DkPongSettings> settings)
 {
-    qsrand(QTime::currentTime().msec());
     mS = settings;
 
     mMinSpeed = qRound(mS->field().width() * 0.005);
@@ -580,7 +580,7 @@ void DkBall::updateSize()
 {
     mMinSpeed = qRound(mS->field().width() * 0.005);
     mMaxSpeed = qRound(mS->field().width() * 0.01);
-    setDirection(DkVector((float)qrand() / RAND_MAX * 10.0f - 5.0f, (float)qrand() / RAND_MAX * 5.0f - 2.5f));
+    setDirection(DkVector(QRandomGenerator::global()->generateDouble() * 10.0f - 5.0f, QRandomGenerator::global()->generateDouble() * 5.0f - 2.5f));
     // setDirection(DkVector(10,10));
 }
 
@@ -605,7 +605,7 @@ bool DkBall::move(DkPongPlayer &player1, DkPongPlayer &player2)
     }
 
     double nAngle = dir.angle() + CV_PI * 0.5; // DkMath::normAngleRad(dir.angle()+CV_PI*0.5, 0, CV_PI*0.5);
-    double magic = (double)qrand() / RAND_MAX * 0.5 - 0.25;
+    double magic = QRandomGenerator::global()->generateDouble() * 0.5 - 0.25;
 
     // player collision
     if (player1.rect().intersects(mRect) && dir.x < 0) {
@@ -698,7 +698,7 @@ DkPong::DkPong(QWidget *parent, Qt::WindowFlags flags)
 
     mViewport = new DkPongPort(this);
 
-    QRect screenRect = QApplication::desktop()->screenGeometry();
+    QRect screenRect = QApplication::primaryScreen()->availableGeometry();
     QRect winRect = screenRect;
 
     if (mViewport->settings()->field() == QRect())
