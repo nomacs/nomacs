@@ -1495,8 +1495,10 @@ void DkAdvancedPreference::on_useNative_toggled(bool checked) const
 void DkAdvancedPreference::on_logFolder_clicked() const
 {
     // TODO: add linux/mac os
+#ifdef _WIN32
     QString logPath = QDir::toNativeSeparators(DkUtils::getLogFilePath());
     QProcess::startDetached(QString("explorer /select, \"%1\"").arg(logPath));
+#endif
 }
 
 void DkAdvancedPreference::on_numThreads_valueChanged(int val) const
