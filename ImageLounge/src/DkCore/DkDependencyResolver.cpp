@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <limits>
 #pragma warning(pop) // no warnings from includes - end
 
@@ -80,10 +81,10 @@ bool DkDllDependency::findDependencies()
 QStringList DkDllDependency::filteredDependencies() const
 {
     QStringList fd;
-    QRegExp re(filter());
+    QRegularExpression re(filter());
 
     for (const QString &n : mDependencies) {
-        if (re.exactMatch(n)) {
+        if (re.match(n).hasMatch()) {
             fd << n;
         }
     }
