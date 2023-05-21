@@ -3262,7 +3262,7 @@ int DkMosaicDialog::computeMosaic(const QString &filter, const QString &suffix, 
                 // update cc
                 ccPtr[maxIdx.x] = (float)maxVal;
 
-                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = thumb.getFilePath(); // replaces additionally the old file
+                mFilesUsed[maxIdx.y * numPatchesH + maxIdx.x] = QFileInfo(thumb.getFilePath()); // replaces additionally the old file
                 iDidNothing = 0;
             } else
                 iDidNothing++;
