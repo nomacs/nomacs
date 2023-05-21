@@ -2205,13 +2205,14 @@ void DkPrintPreviewDialog::pageSetup()
 
 void DkPrintPreviewDialog::print()
 {
-    QRect pr = mPrinter->pageRect();
+    // TODO: move from QRect to smth else
+    QRect pr = mPrinter->pageLayout().paintRectPixels(mPrinter->resolution());
 
     QPrintDialog *pDialog = new QPrintDialog(mPrinter, this);
 
     if (pDialog->exec() == QDialog::Accepted) {
         // if the page rect is changed - we have to newly fit the images...
-        if (pr != mPrinter->pageRect())
+        if (pr != mPrinter->pageRect(QPrinter::Inch))
             mPreview->fitImages();
 
         mPreview->paintForPrinting();
@@ -2313,7 +2314,7 @@ void DkPrintPreviewWidget::setPortraitOrientation()
 void DkPrintPreviewWidget::changeDpi(int value)
 {
     double inchW = mPrinter->pageRect(QPrinter::Inch).width();
-    int pxW = mPrinter->pageRect().width();
+    int pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
     double sf = ((double)pxW / inchW) / value;
 
     for (auto pi : mPrintImages)
@@ -4159,7 +4160,12 @@ void DkPrintImage::fit()
     }
 
     double sf = 0;
-    QRectF pr = mPrinter->pageRect();
+
+    /* TODO: Check/test wether pageRect() calls below
+     * provide correct measurements to scale the image
+     */
+
+    QRectF pr = mPrinter->pageRect(QPrinter::DevicePixel);
 
     // scale image to fit on paper
     if (pr.width() / mImg.width() < pr.height() / mImg.height()) {
@@ -4169,7 +4175,7 @@ void DkPrintImage::fit()
     }
 
     double inchW = mPrinter->pageRect(QPrinter::Inch).width();
-    double pxW = mPrinter->pageRect().width();
+    double pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
     double cDpi = dpi();
 
     // use at least 150 dpi
@@ -4190,7 +4196,7 @@ void DkPrintImage::fit()
 double DkPrintImage::dpi()
 {
     double iW = mPrinter->pageRect(QPrinter::Inch).width();
-    double pxW = mPrinter->pageRect().width();
+    double pxW = mPrinter->pageRect(QPrinter::DevicePixel).width();
 
     return (pxW / iW) / mTransform.m11();
 }
@@ -4212,8 +4218,13 @@ void DkPrintImage::center(QTransform &t) const
 {
     QRectF transRect = t.mapRect(mImg.rect());
     qreal xtrans = 0, ytrans = 0;
-    xtrans = ((mPrinter->pageRect().width() - transRect.width()) / 2);
-    ytrans = (mPrinter->pageRect().height() - transRect.height()) / 2;
+
+    /* TODO: Check/test QPrinter->pageRect() values and
+     * correct calculation of the center
+     */
+
+    xtrans = ((mPrinter->pageRect(QPrinter::DevicePixel).width() - transRect.width()) / 2);
+    ytrans = (mPrinter->pageRect(QPrinter::DevicePixel).height() - transRect.height()) / 2;
 
     t.translate(-t.dx() / (t.m11() + DBL_EPSILON), -t.dy() / (t.m22() + DBL_EPSILON)); // reset old transformation
     t.translate(xtrans / (t.m11() + DBL_EPSILON), ytrans / (t.m22() + DBL_EPSILON));
