@@ -1547,12 +1547,12 @@ bool DkImageLoader::restoreFile(const QString &filePath)
     QFileInfo fInfo(filePath);
     QStringList files = fInfo.dir().entryList();
     QString fileName = fInfo.fileName();
-    QRegExp filePattern(fileName + "[0-9]+");
+    QRegularExpression filePattern(fileName + "[0-9]+");
     QString backupFileName;
 
     // if exif crashed it saved a backup file with the format: filename.png1232
     for (int idx = 0; idx < files.size(); idx++) {
-        if (filePattern.exactMatch(files[idx])) {
+        if (filePattern.match(files[idx]).hasMatch()) {
             backupFileName = files[idx];
             break;
         }

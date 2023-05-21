@@ -33,7 +33,7 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDebug>
 #include <QFileInfo>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QVector>
 
 #include <QSharedMemory>
