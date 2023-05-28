@@ -159,10 +159,10 @@ set(NOMACS_RESOURCES src/nomacs.qrc)
 
 file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
-QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
+qt_add_resources(NOMACS_RCC ${NOMACS_RESOURCES})
 
 if (${ENABLE_TRANSLATIONS})
-	QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+	qt_add_translation(NOMACS_QM ${NOMACS_TRANSLATIONS})
 endif()
 
 if(MSVC)
@@ -254,8 +254,7 @@ set(ignoreMe "${CMAKE_EXPORT_COMPILE_COMMANDS}")
 MESSAGE(STATUS "")
 MESSAGE(STATUS "----------------------------------------------------------------------------------")
 MESSAGE(STATUS " ${PROJECT_NAME} - Image Lounge ${NOMACS_VERSION}  <https://nomacs.org>")
-execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE qt_version)
-message(STATUS " Qt version: ${qt_version}")
+message(STATUS " Qt version: ${Qt${QT_DEFAULT_MAJOR_VERSION}_VERSION}")
 
 
 IF(OpenCV_FOUND)
