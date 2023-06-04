@@ -1370,7 +1370,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="145"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="146"/>
         <source>Cropped</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4719,7 +4719,7 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkGlobalSettingsWidget</name>
     <message>
-        <location filename="../../src/DkCore/DkUtils.cpp" line="368"/>
+        <location filename="../../src/DkCore/DkUtils.cpp" line="369"/>
         <source>English</source>
         <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
         <translation type="unfinished"></translation>
@@ -4772,45 +4772,45 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkImageContainerT</name>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="722"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="723"/>
         <source>Sorry, the file: %1 does not exist... </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="727"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="728"/>
         <source>Sorry, you are not allowed to read: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="841"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="842"/>
         <source>updated...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="849"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="850"/>
         <source>Sorry, I could not load: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="901"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="902"/>
         <source>Sorry, I could not download:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="973"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="974"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="978"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="979"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageContainer.cpp" line="983"/>
+        <location filename="../../src/DkCore/DkImageContainer.cpp" line="984"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4818,60 +4818,60 @@ Do you want to show them again?</source>
 <context>
     <name>nmc::DkImageLoader</name>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="205"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="243"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="281"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="206"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="244"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="282"/>
         <source>%1 
  does not contain any image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="561"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="617"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="562"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="618"/>
         <source>You have reached the beginning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="567"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="621"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="568"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="622"/>
         <source>You have reached the end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="728"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="729"/>
         <source>Save Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="729"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="730"/>
         <source>Do you want to save changes to:
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="849"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="850"/>
         <source>sorry, %1 does not exist anymore...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="867"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="868"/>
         <source>Sorry, I could not find the GPS coordinates...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="953"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="954"/>
         <source>%1 of %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="986"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="987"/>
         <source>Save Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1037"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1038"/>
         <location filename="../../src/DkCore/DkImageLoader.cpp" line="1092"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1163"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1162"/>
         <source>Save File %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4881,39 +4881,39 @@ Do you want to show them again?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1150"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1149"/>
         <source>Overwrite File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1151"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1150"/>
         <source>Do you want to overwrite:
 %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1337"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1336"/>
         <source>Sorry, I cannot save an empty image...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1470"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1469"/>
         <source>%1 deleted...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1473"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1472"/>
         <source>Sorry, I could not delete: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1519"/>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1525"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1518"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1524"/>
         <source>Rotated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1785"/>
+        <location filename="../../src/DkCore/DkImageLoader.cpp" line="1784"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>

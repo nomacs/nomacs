@@ -565,7 +565,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event)
                     //	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
                     QFileInfo fileInfo(thumb->getFilePath());
                     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n"
-                        + tr("Created: ") + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
+                        + tr("Created: ") + fileInfo.birthTime().toString();
                     setToolTip(toolTipInfo);
                     setStatusTip(fileInfo.fileName());
                 }
@@ -856,7 +856,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb)
     connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
     QFileInfo fileInfo(thumb->getFilePath());
     QString toolTipInfo = tr("Name: ") + fileInfo.fileName() + "\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + "\n" + tr("Created: ")
-        + fileInfo.birthTime().toString(Qt::SystemLocaleDate);
+        + fileInfo.birthTime().toString();
 
     setToolTip(toolTipInfo);
 
@@ -1506,7 +1506,7 @@ void DkThumbScene::renameSelected() const
 
     if (ok && !newFileName.isEmpty()) {
         for (int idx = 0; idx < fileList.size(); idx++) {
-            QFileInfo fileInfo = fileList.at(idx);
+            QFileInfo fileInfo = QFileInfo(fileList.at(idx));
             QFile file(fileInfo.absoluteFilePath());
             QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>"; // no index if just 1 file was added
             DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
@@ -2094,7 +2094,7 @@ void DkRecentDirWidget::createLayout()
 
     // check if the folder exists (in the current context)
     // this should fix issues with disconnected samba drives on windows
-    if (DkUtils::exists(mRecentDir.firstFilePath(), 30)) {
+    if (DkUtils::exists(QFileInfo(mRecentDir.firstFilePath()), 30)) {
         for (auto tp : mRecentDir.filePaths(4)) {
             auto tpl = new DkThumbPreviewLabel(tp, 42, this);
             connect(tpl, SIGNAL(loadFileSignal(const QString &, bool)), this, SIGNAL(loadFileSignal(const QString &, bool)));

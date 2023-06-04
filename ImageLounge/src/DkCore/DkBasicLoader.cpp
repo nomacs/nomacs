@@ -568,8 +568,8 @@ bool DkBasicLoader::loadTIFFile(const QString &filePath, QImage &img, QSharedPoi
     if (!tiff)
         return success;
 
-    uint32 width = 0;
-    uint32 height = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
 
     TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
     TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
@@ -578,10 +578,10 @@ bool DkBasicLoader::loadTIFFile(const QString &filePath, QImage &img, QSharedPoi
     img = QImage(width, height, QImage::Format_ARGB32);
 
     const int stopOnError = 1;
-    success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+    success = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32_t *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
     if (success) {
-        for (uint32 y = 0; y < height; ++y)
+        for (uint32_t y = 0; y < height; ++y)
             convert32BitOrder(img.scanLine(y), width);
     }
 
@@ -1157,8 +1157,8 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
     if (!tiff)
         return imgLoaded;
 
-    uint32 width = 0;
-    uint32 height = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
 
     // go to current directory
     for (int idx = 1; idx < pageIdx; idx++) {
@@ -1172,10 +1172,10 @@ bool DkBasicLoader::loadPageAt(int pageIdx)
     QImage img = QImage(width, height, QImage::Format_ARGB32);
 
     const int stopOnError = 1;
-    imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+    imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32_t *>(img.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
     if (imgLoaded) {
-        for (uint32 y = 0; y < height; ++y)
+        for (uint32_t y = 0; y < height; ++y)
             convert32BitOrder(img.scanLine(y), width);
     }
 
@@ -1220,9 +1220,9 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) const
 {
 #ifdef WITH_LIBTIFF
     // code from Qt QTiffHandler
-    uint32 *target = reinterpret_cast<uint32 *>(buffer);
-    for (int32 x = 0; x < width; ++x) {
-        uint32 p = target[x];
+    uint32_t *target = reinterpret_cast<uint32_t *>(buffer);
+    for (uint32_t x = 0; x < width; ++x) {
+        uint32_t p = target[x];
         // convert between ARGB and ABGR
         target[x] = (p & 0xff000000) | ((p & 0x00ff0000) >> 16) | (p & 0x0000ff00) | ((p & 0x000000ff) << 16);
     }
