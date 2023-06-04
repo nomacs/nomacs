@@ -327,7 +327,7 @@ void DkCompressDialog::drawPreview()
     if ((mDialogMode == jpg_dialog || mDialogMode == j2k_dialog) && mHasAlpha)
         mNewImg.fill(mBgCol.rgb());
     else if ((mDialogMode == jpg_dialog || mDialogMode == web_dialog) && !mHasAlpha)
-        mNewImg.fill(palette().color(QPalette::Background).rgb());
+        mNewImg.fill(palette().color(QPalette::Window).rgb());
     else
         mNewImg.fill(QColor(0, 0, 0, 0).rgba());
 

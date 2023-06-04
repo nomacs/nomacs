@@ -54,6 +54,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QRandomGenerator>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QString>
 #include <QStringList>
@@ -644,12 +645,11 @@ bool DkUtils::isSavable(const QString &fileName)
     QStringList cleanSaveFilters = suffixOnly(DkSettingsManager::param().app().saveFilters);
 
     for (const QString &cFilter : cleanSaveFilters) {
-        QRegExp exp = QRegExp(cFilter, Qt::CaseInsensitive);
-        exp.setPatternSyntax(QRegExp::Wildcard);
+        QRegularExpression exp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(cFilter), QRegularExpression::CaseInsensitiveOption);
 
         qDebug() << "checking extension: " << exp;
 
-        if (exp.exactMatch(fileName))
+        if (exp.match(fileName).hasMatch())
             return true;
     }
 
@@ -659,9 +659,9 @@ bool DkUtils::isSavable(const QString &fileName)
 bool DkUtils::hasValidSuffix(const QString &fileName)
 {
     for (int idx = 0; idx < DkSettingsManager::param().app().fileFilters.size(); idx++) {
-        QRegExp exp = QRegExp(DkSettingsManager::param().app().fileFilters.at(idx), Qt::CaseInsensitive);
-        exp.setPatternSyntax(QRegExp::Wildcard);
-        if (exp.exactMatch(fileName))
+        QRegularExpression exp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(DkSettingsManager::param().app().fileFilters.at(idx)),
+                                                    QRegularExpression::CaseInsensitiveOption);
+        if (exp.match(fileName).hasMatch())
             return true;
     }
 

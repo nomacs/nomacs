@@ -131,7 +131,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const QSharedPointer<
 
     QFileInfo fInfo(filePath);
     QString lFilePath = fInfo.isSymLink() ? fInfo.symLinkTarget() : filePath;
-    fInfo = lFilePath;
+    fInfo = QFileInfo(lFilePath);
 
     // diem: do_not_force is the generic load - so also rescale these
     bool rescale = forceLoad == do_not_force;
@@ -301,7 +301,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
     // check if we can load the file
     // though if it might seem over engineered: it is much faster cascading it here
-    if (!DkUtils::hasValidSuffix(getFilePath()) && !QFileInfo(getFilePath()).suffix().isEmpty() && !DkUtils::isValid(getFilePath()))
+    if (!DkUtils::hasValidSuffix(getFilePath()) && !QFileInfo(getFilePath()).suffix().isEmpty() && !DkUtils::isValid(QFileInfo(getFilePath())))
         return false;
 
     // we have to do our own bool here

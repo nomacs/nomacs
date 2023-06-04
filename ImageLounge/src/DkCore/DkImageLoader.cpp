@@ -65,6 +65,7 @@
 #include <QProgressDialog>
 #include <QReadLocker>
 #include <QReadWriteLock>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QStringBuilder>
@@ -978,7 +979,7 @@ QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, cons
             qWarning() << filePath << "does not exist";
         return QString();
     } else if (filePath.isEmpty() || !fInfo.exists()) {
-        fInfo = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+        fInfo = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
 
         if (!fInfo.isDir()) {
             // load system default open dialog
@@ -987,7 +988,7 @@ QString DkImageLoader::saveTempFile(const QImage &img, const QString &name, cons
                                                                 getDirPath(),
                                                                 QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());
 
-            fInfo = dirName + QDir::separator();
+            fInfo = QFileInfo(dirName + QDir::separator());
 
             if (!fInfo.exists())
                 return QString();
@@ -1076,11 +1077,10 @@ void DkImageLoader::copyUserFile()
 
         // retrieve the extension name (that's more user friendly)
         QStringList sF = DkSettingsManager::param().app().openFilters;
-        QRegExp exp = QRegExp("*." + extension + "*", Qt::CaseInsensitive);
-        exp.setPatternSyntax(QRegExp::Wildcard);
+        QRegularExpression exp = QRegularExpression(extension, QRegularExpression::CaseInsensitiveOption);
 
         for (int idx = 1; idx < sF.size(); idx++) {
-            if (exp.exactMatch(sF.at(idx))) {
+            if (exp.match(sF.at(idx)).hasMatch()) {
                 extension = sF.at(idx);
                 filterIdx = idx;
                 break;
@@ -1124,11 +1124,10 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
         QStringList sF = DkSettingsManager::param().app().saveFilters;
         // qDebug() << sF;
 
-        QRegExp exp = QRegExp("*." + saveFileInfo.suffix() + "*", Qt::CaseInsensitive);
-        exp.setPatternSyntax(QRegExp::Wildcard);
+        QRegularExpression exp = QRegularExpression(saveFileInfo.suffix(), QRegularExpression::CaseInsensitiveOption);
 
         for (int idx = 0; idx < sF.size(); idx++) {
-            if (exp.exactMatch(sF.at(idx))) {
+            if (exp.match(sF.at(idx)).hasMatch()) {
                 selectedFilter = sF.at(idx);
                 filterIdx = idx;
                 break;
@@ -1229,7 +1228,7 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
 
         compression = jpgDialog->getCompression();
 
-    } else if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+    } else if (selectedFilter.contains(QRegularExpression("(j2k|jp2|jpf|jpx)", QRegularExpression::CaseInsensitiveOption))) {
         if (!jpgDialog)
             jpgDialog = new DkCompressDialog(dialogParent);
 
@@ -1245,7 +1244,7 @@ void DkImageLoader::saveUserFileAs(const QImage &saveImg, bool silent)
 
         compression = jpgDialog->getCompression();
 
-    } else if (selectedFilter.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive))) {
+    } else if (selectedFilter.contains(QRegularExpression("(jpg|jpeg)", QRegularExpression::CaseInsensitiveOption))) {
         if (!jpgDialog)
             jpgDialog = new DkCompressDialog(dialogParent);
 
@@ -1401,7 +1400,7 @@ void DkImageLoader::updateHistory()
     if (!mCurrentImage || mCurrentImage->hasImage() != DkImageContainer::loaded || !mCurrentImage->exists())
         return;
 
-    QFileInfo file = mCurrentImage->filePath();
+    QFileInfo file = QFileInfo(mCurrentImage->filePath());
 
     // sync with other instances
     DefaultSettings settings;
@@ -1940,8 +1939,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
     // remove files that contain ignore keywords
     for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
-        QRegExp exp = QRegExp("^((?!" + ignoreKeywords[idx] + ").)*$");
-        exp.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression exp = QRegularExpression("^((?!" + ignoreKeywords[idx] + ").)*$", QRegularExpression::CaseInsensitiveOption);
         fileList = fileList.filter(exp);
     }
 
