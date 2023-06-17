@@ -124,6 +124,9 @@ file(GLOB GUI_HEADERS "src/DkGui/*.h")
 file(GLOB CORE_SOURCES "src/DkCore/*.cpp")
 file(GLOB CORE_HEADERS "src/DkCore/*.h")
 
+# themes
+file(GLOB NOMACS_THEMES "src/themes/*.css")
+
 # gather information for building
 include_directories (
 	${EXIV2_INCLUDE_DIRS}
