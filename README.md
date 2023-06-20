@@ -126,7 +126,11 @@ $ make
 $ make bundle
 ```
 
-I make fails with a missing 
+If make fails with `fatal error: 'libssh/libssh.h' file not found`, try to set `CPLUS_INCLUDE_PATH` before make.
+
+```console
+$ export CPLUS_INCLUDE_PATH=/usr/local/include
+```
 
 You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/Applications`, use
 
