@@ -111,21 +111,24 @@ $ cd build
 
 For Homebrew on Intel models:
 ```console
-$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
+$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
 ```
 
 For Homebrew on Apple Silicon models:
 ```console
-$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
+$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake --install-prefix /Applications ../ImageLounge/.
 ```
 
 Run make:
 
 ```console
 $ make
+$ make bundle
 ```
 
-You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
+I make fails with a missing 
+
+You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/Applications`, use
 
 ```console
 $ sudo make install
