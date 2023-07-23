@@ -2268,15 +2268,16 @@ void DkPrintPreviewWidget::fitImages()
 
 void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event)
 {
-    if (event->modifiers() != Qt::AltModifier) {
+    auto delta = event->angleDelta().y();
+
+    if ((event->modifiers() != Qt::AltModifier) || (delta == 0)) {
         QPrintPreviewWidget::wheelEvent(event);
         return;
     }
 
-    qreal delta = event->angleDelta().y();
     if (DkSettingsManager::param().display().invertZoom)
         delta *= -1;
-    if (event->angleDelta().y() > 0)
+    if (delta > 0)
         zoomIn();
     else
         zoomOut();

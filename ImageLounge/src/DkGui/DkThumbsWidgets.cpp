@@ -626,9 +626,10 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event)
 
 void DkFilePreview::wheelEvent(QWheelEvent *event)
 {
+    auto delta = event->angleDelta().y();
     if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
         int newSize = DkSettingsManager::param().display().thumbSize;
-        newSize += qRound(event->angleDelta().y() * 0.05f);
+        newSize += qRound(delta * 0.05f);
 
         // make sure it is even
         if (qRound(newSize * 0.5f) != newSize * 0.5f)
@@ -643,8 +644,8 @@ void DkFilePreview::wheelEvent(QWheelEvent *event)
             DkSettingsManager::param().display().thumbSize = newSize;
             update();
         }
-    } else {
-        int fc = (event->angleDelta().y() > 0) ? -1 : 1;
+    } else if (delta != 0) {
+        int fc = (delta > 0) ? -1 : 1;
 
         if (!DkSettingsManager::param().resources().waitForLastImg) {
             currentFileIdx += fc;
