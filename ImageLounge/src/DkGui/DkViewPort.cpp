@@ -1262,10 +1262,9 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
         || (DkSettingsManager::param().global().zoomOnWheel
             && (event->modifiers() & mCtrlMod
                 || (DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
-        if (event->angleDelta().y() < 0)
-            loadNextFileFast();
-        else
-            loadPrevFileFast();
+        auto delta = event->angleDelta().y();
+        if (delta < 0) loadNextFileFast();
+        if (delta > 0) loadPrevFileFast();
     } else
         DkBaseViewPort::wheelEvent(event);
 
