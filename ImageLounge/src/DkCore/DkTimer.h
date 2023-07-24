@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 
 #pragma warning(push, 0) // no warnings from includes - begin
+#include <QElapsedTimer>
 #include <QObject>
-#include <QTime>
 #pragma warning(pop) // no warnings from includes - end
 
 #ifndef DllCoreExport
@@ -74,7 +74,7 @@ public:
     void start();
 
 protected:
-    QTime mTimer;
+    QElapsedTimer mTimer;
 };
 
 }
