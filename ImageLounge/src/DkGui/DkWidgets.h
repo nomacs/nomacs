@@ -95,7 +95,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
     void focusOutEvent(QFocusEvent *event) override;
-    void enterEvent(QEvent *event);
+    void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
     QPixmap createSelectedEffect(QPixmap *pm);
 };
@@ -562,7 +562,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void enterEvent(QEvent *event);
+    void enterEvent(QEvent *event) override;
     void init();
 
     DkRotatingRect *rect;
