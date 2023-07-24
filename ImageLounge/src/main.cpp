@@ -28,12 +28,12 @@
 #ifdef Q_OS_WIN
 #include "shlwapi.h"
 #pragma comment(lib, "shlwapi.lib")
-#endif
 
 #if defined(_MSC_BUILD) && !defined(DK_INSTALL) // only final release will be compiled without a CMD
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #else
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS")
+#endif
 #endif
 
 #ifdef QT_NO_DEBUG_OUTPUT
