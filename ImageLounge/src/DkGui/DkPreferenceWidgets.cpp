@@ -409,6 +409,11 @@ void DkGeneralPreference::createLayout()
     cbCloseOnEsc->setToolTip(tr("Close nomacs if ESC is pressed."));
     cbCloseOnEsc->setChecked(DkSettingsManager::param().app().closeOnEsc);
 
+    QCheckBox *cbCloseOnMiddleMouse = new QCheckBox(tr("Close on Middle Mouse Button"), this);
+    cbCloseOnMiddleMouse->setObjectName("closeOnMiddleMouse");
+    cbCloseOnMiddleMouse->setToolTip(tr("Close nomacs if the Middle Mouse Button is pressed over the image."));
+    cbCloseOnMiddleMouse->setChecked(DkSettingsManager::param().app().closeOnMiddleMouse);
+
     QCheckBox *cbCheckForUpdates = new QCheckBox(tr("Check For Updates"), this);
     cbCheckForUpdates->setObjectName("checkForUpdates");
     cbCheckForUpdates->setToolTip(tr("Check for updates on start-up."));
@@ -426,6 +431,7 @@ void DkGeneralPreference::createLayout()
     generalGroup->addWidget(cbDoubleClickForFullscreen);
     generalGroup->addWidget(cbSwitchModifier);
     generalGroup->addWidget(cbCloseOnEsc);
+    generalGroup->addWidget(cbCloseOnMiddleMouse);
     generalGroup->addWidget(cbCheckForUpdates);
     generalGroup->addWidget(cbShowBgImage);
 
@@ -527,6 +533,12 @@ void DkGeneralPreference::on_closeOnEsc_toggled(bool checked) const
 {
     if (DkSettingsManager::param().app().closeOnEsc != checked)
         DkSettingsManager::param().app().closeOnEsc = checked;
+}
+
+void DkGeneralPreference::on_closeOnMiddleMouse_toggled(bool checked) const
+{
+    if (DkSettingsManager::param().app().closeOnMiddleMouse != checked)
+        DkSettingsManager::param().app().closeOnMiddleMouse = checked;
 }
 
 void DkGeneralPreference::on_zoomOnWheel_toggled(bool checked) const

@@ -193,6 +193,7 @@ public:
         bool privateMode;
         bool advancedSettings;
         bool closeOnEsc;
+        bool closeOnMiddleMouse;
         bool hideAllPanels;
 
         int defaultJpgQuality;
