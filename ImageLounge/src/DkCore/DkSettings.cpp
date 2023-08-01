@@ -365,6 +365,7 @@ void DkSettings::load(QSettings &settings, bool defaults)
 
     app_p.hideAllPanels = settings.value("hideAllPanels", app_p.hideAllPanels).toBool();
     app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
+    app_p.closeOnMiddleMouse = settings.value("closeOnMiddleMouse", app_p.closeOnMiddleMouse).toBool();
     app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
     app_p.useLogFile = settings.value("useLogFile", app_p.useLogFile).toBool();
     app_p.defaultJpgQuality = settings.value("defaultJpgQuality", app_p.defaultJpgQuality).toInt();
@@ -580,6 +581,8 @@ void DkSettings::save(QSettings &settings, bool force)
         settings.setValue("advancedSettings", app_p.advancedSettings);
     if (force || app_p.closeOnEsc != app_d.closeOnEsc)
         settings.setValue("closeOnEsc", app_p.closeOnEsc);
+    if (force || app_p.closeOnMiddleMouse != app_d.closeOnMiddleMouse)
+        settings.setValue("closeOnMiddleMouse", app_p.closeOnMiddleMouse);
     if (force || app_p.showRecentFiles != app_d.showRecentFiles)
         settings.setValue("showRecentFiles", app_p.showRecentFiles);
     if (force || app_p.useLogFile != app_d.useLogFile)
@@ -818,6 +821,7 @@ void DkSettings::setToDefaultSettings()
     app_p.showLogDock = QBitArray(mode_end, false);
     app_p.advancedSettings = false;
     app_p.closeOnEsc = false;
+    app_p.closeOnMiddleMouse = false;
     app_p.hideAllPanels = false;
     app_p.showRecentFiles = true;
     app_p.browseFilters = QStringList();

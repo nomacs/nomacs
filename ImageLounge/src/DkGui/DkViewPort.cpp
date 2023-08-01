@@ -1152,6 +1152,9 @@ void DkViewPort::mousePressEvent(QMouseEvent *event)
         mRepeatZoomTimer->start();
     }
 
+    if (DkSettingsManager::param().app().closeOnMiddleMouse && event->buttons() == Qt::MiddleButton)
+        DkUtils::getMainWindow()->close();
+
     // ok, start panning
     if (mWorldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
         setCursor(Qt::ClosedHandCursor);
