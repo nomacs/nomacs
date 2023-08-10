@@ -92,6 +92,7 @@ void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
 {
     QSharedPointer<DkMetaDataT> src(other);
     // Copy exif data (to this instance), reading from src
+    if (src->isNull()) return;
     mExifImg->setExifData(src->mExifImg->exifData()); // explicit copy of list<Exifdatum>
 }
 
