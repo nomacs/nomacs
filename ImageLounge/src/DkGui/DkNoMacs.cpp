@@ -1715,9 +1715,9 @@ void DkNoMacs::setWindowTitle(const QString &filePath, const QSize &size, bool e
     auto vp = getTabWidget()->getViewPort();
 
     if (!size.isEmpty())
-        attributes.asprintf(" - %i x %i", size.width(), size.height());
+        attributes = QString::asprintf(" - %i x %i", size.width(), size.height());
     if (size.isEmpty() && vp && !vp->getImageSize().isEmpty())
-        attributes.asprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
+        attributes = QString::asprintf(" - %i x %i", vp->getImage().width(), vp->getImage().height());
     if (DkSettingsManager::param().app().privateMode)
         attributes.append(tr(" [Private Mode]"));
 
