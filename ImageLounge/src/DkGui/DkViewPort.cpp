@@ -529,8 +529,7 @@ void DkViewPort::showZoom()
     if (isFullScreen() || DkSettingsManager::param().app().hideAllPanels)
         return;
 
-    QString zoomStr;
-    zoomStr.asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
+    QString zoomStr = QString::asprintf("%.1f%%", mImgMatrix.m11() * mWorldMatrix.m11() * 100);
 
     if (!mController->getZoomWidget()->isVisible())
         mController->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
@@ -1263,8 +1262,10 @@ void DkViewPort::wheelEvent(QWheelEvent *event)
             && (event->modifiers() & mCtrlMod
                 || (DkSettingsManager::param().global().horZoomSkips && event->orientation() == Qt::Horizontal && !(event->modifiers() & mAltMod))))) {
         auto delta = event->angleDelta().y();
-        if (delta < 0) loadNextFileFast();
-        if (delta > 0) loadPrevFileFast();
+        if (delta < 0)
+            loadNextFileFast();
+        if (delta > 0)
+            loadPrevFileFast();
     } else
         DkBaseViewPort::wheelEvent(event);
 
