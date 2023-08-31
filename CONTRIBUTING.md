@@ -10,7 +10,7 @@ git clone git@github.com:your-username/nomacs.git
 
 - [Build](README.md) nomacs on your machine.
 - Make your changes.
-- Commit in small junks (one feature/bug fix per commit).
+- Commit in small chunks (one feature/bug fix per commit).
 - Push to your fork and submit a pull request.
 
 We will comment on pull requests within one week. Here are some things that increase the chances of your PR being accepted:
@@ -54,7 +54,7 @@ private:
 Wrong:
 
 ```cpp
-class DllCoreExport baseManipulator 
+class DllCoreExport baseManipulator
 {
 
 public:
