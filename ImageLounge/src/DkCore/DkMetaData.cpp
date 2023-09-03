@@ -69,7 +69,11 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
         // ImageFactory::create(type) may crash even if old Image object has that type
         try {
             // Load new Exiv2::Image object
+#if EXIV2_TEST_VERSION(0, 28, 0)
+            Exiv2::ImageType i_type = mExifImg->imageType();
+#else
             int i_type = mExifImg->imageType();
+#endif
             metaDataN->mExifImg = Exiv2::ImageFactory::create(i_type);
             // Copy exif data from old object into new object
             Exiv2::ExifData data = mExifImg->exifData();
@@ -115,8 +119,12 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
             std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
             mExifImg = Exiv2::ImageFactory::open(strFilePath);
         } else {
-            Exiv2::BasicIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte *)ba->constData(), ba->size()));
+#if EXIV2_TEST_VERSION(0, 28, 0)
+            mExifImg = Exiv2::ImageFactory::open((const byte *)ba->constData(), ba->size());
+#else
+            std::unique_ptr<Exiv2::BasicIo> exifBuffer(new Exiv2::MemIo((const byte *)ba->constData(), ba->size()));
             mExifImg = Exiv2::ImageFactory::open(exifBuffer);
+#endif
         }
     } catch (...) {
         // TODO: check crashes here
@@ -218,13 +226,17 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
     Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
-    Exiv2::Image::AutoPtr exifImgN;
-    Exiv2::MemIo::AutoPtr exifMem;
+    std::unique_ptr<Exiv2::Image> exifImgN;
+    std::unique_ptr<Exiv2::MemIo> exifMem;
 
     try {
         // Load new exif object (based on byte array of raw image file, see overload)
-        exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte *)ba->data(), ba->size()));
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        exifImgN = Exiv2::ImageFactory::open((byte *)ba->data(), ba->size());
+#else
+        exifMem = std::unique_ptr<Exiv2::MemIo>(new Exiv2::MemIo((byte *)ba->data(), ba->size()));
         exifImgN = Exiv2::ImageFactory::open(exifMem);
+#endif
     } catch (...) {
         qDebug() << "could not open image for exif data";
         return false;
@@ -247,8 +259,13 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     // Copy image + new exif and return temporary object as byte array
     // The calling function should then write it back to the file
     Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
+#if EXIV2_TEST_VERSION(0, 28, 0)
+    if (!exifBuf.empty()) {
+        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char *)exifBuf.c_data(), exifBuf.size()));
+#else
     if (exifBuf.pData_) {
         QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char *)exifBuf.pData_, exifBuf.size_));
+#endif
 
         if (tmp->size() > qRound(ba->size() * 0.5f))
             ba = tmp;
@@ -258,7 +275,11 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
         return false;
 
     // Replace old exif object with new one and clear "dirty" flag
+#if EXIV2_TEST_VERSION(0, 28, 0)
+    mExifImg.swap(exifImgN);
+#else
     mExifImg = exifImgN;
+#endif
     mExifState = loaded;
 
     return true;
@@ -305,7 +326,7 @@ int DkMetaDataT::getOrientationDegree() const
             Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
             if (pos != exifData.end() && pos->count() != 0) {
-                Exiv2::Value::AutoPtr v = pos->getValue();
+                std::unique_ptr<Exiv2::Value> v = pos->getValue();
                 orientation = (int)pos->toFloat();
 
                 switch (orientation) {
@@ -385,7 +406,7 @@ int DkMetaDataT::getRating() const
         Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
         if (pos != exifData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            std::unique_ptr<Exiv2::Value> v = pos->getValue();
             exifRating = v->toFloat();
         }
     }
@@ -397,7 +418,7 @@ int DkMetaDataT::getRating() const
 
         // xmp Rating tag
         if (pos != xmpData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            std::unique_ptr<Exiv2::Value> v = pos->getValue();
             xmpRating = v->toFloat();
         }
 
@@ -406,7 +427,7 @@ int DkMetaDataT::getRating() const
             key = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
             pos = xmpData.findKey(key);
             if (pos != xmpData.end() && pos->count() != 0) {
-                Exiv2::Value::AutoPtr v = pos->getValue();
+                std::unique_ptr<Exiv2::Value> v = pos->getValue();
                 xmpRating = v->toFloat();
             }
         }
@@ -506,7 +527,7 @@ QString DkMetaDataT::getXmpValue(const QString &key) const
         }
 
         if (pos != xmpData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            std::unique_ptr<Exiv2::Value> v = pos->getValue();
             info = exiv2ToQString(pos->toString());
         }
     }
@@ -574,7 +595,7 @@ QString DkMetaDataT::getIptcValue(const QString &key) const
         }
 
         if (pos != iptcData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            std::unique_ptr<Exiv2::Value> v = pos->getValue();
             info = exiv2ToQString(pos->toString());
         }
     }
@@ -716,7 +737,11 @@ QImage DkMetaDataT::getThumbnail() const
         Exiv2::ExifThumb thumb(exifData);
         Exiv2::DataBuf buffer = thumb.copy();
 
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        QByteArray ba = QByteArray((char *)buffer.c_data(), buffer.size());
+#else
         QByteArray ba = QByteArray((char *)buffer.pData_, buffer.size_);
+#endif
         qThumb.loadFromData(ba);
     } catch (...) {
         qDebug() << "Sorry, I could not load the thumb from the exif data...";
@@ -995,8 +1020,12 @@ void DkMetaDataT::setThumbnail(QImage thumb)
 
         try {
             // whipe all exif data of the thumbnail
-            Exiv2::MemIo::AutoPtr exifBufferThumb(new Exiv2::MemIo((const byte *)ba.constData(), ba.size()));
-            Exiv2::Image::AutoPtr exifImgThumb = Exiv2::ImageFactory::open(exifBufferThumb);
+#if EXIV2_TEST_VERSION(0, 28, 0)
+            Exiv2::Image::UniquePtr exifImgThumb = Exiv2::ImageFactory::open((const byte *)ba.constData(), ba.size());
+#else
+            std::unique_ptr<Exiv2::MemIo> exifBufferThumb(new Exiv2::MemIo((const byte *)ba.constData(), ba.size()));
+            std::unique_ptr<Exiv2::Image> exifImgThumb = Exiv2::ImageFactory::open(exifBufferThumb);
+#endif
 
             if (exifImgThumb.get() != 0 && exifImgThumb->good())
                 exifImgThumb->clearExifData();
@@ -1107,12 +1136,12 @@ void DkMetaDataT::setOrientation(int o)
         pos = exifData.findKey(key);
     }
 
-    Exiv2::Value::AutoPtr v = pos->getValue();
+    std::unique_ptr<Exiv2::Value> v = pos->getValue();
     Exiv2::UShortValue *prv = dynamic_cast<Exiv2::UShortValue *>(v.release());
     if (!prv)
         return;
 
-    Exiv2::UShortValue::AutoPtr rv = Exiv2::UShortValue::AutoPtr(prv);
+    std::unique_ptr<Exiv2::UShortValue> rv = std::unique_ptr<Exiv2::UShortValue>(prv);
     if (rv->value_.empty())
         return;
 
@@ -1203,7 +1232,7 @@ void DkMetaDataT::setRating(int r)
         exifData["Exif.Image.Rating"] = uint16_t(r);
         exifData["Exif.Image.RatingPercent"] = uint16_t(r);
 
-        Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+        std::unique_ptr<Exiv2::Value> v = Exiv2::Value::create(Exiv2::xmpText);
         v->read(sRating);
         xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
         v->read(sRatingPercent);
@@ -1449,9 +1478,9 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize &size) const
     return DkRotatingRect(rr);
 }
 
-Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString &filePath) const
+std::unique_ptr<Exiv2::Image> DkMetaDataT::loadSidecar(const QString &filePath) const
 {
-    Exiv2::Image::AutoPtr xmpImg;
+    std::unique_ptr<Exiv2::Image> xmpImg;
 
     // TODO: check if the file type supports xmp
 
@@ -1501,7 +1530,7 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData &xmpData, QString xmpKey, QString x
         if (!pos->setValue(xmpValue.toStdString()))
             setXMPValueSuccessful = true;
     } else {
-        Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+        std::unique_ptr<Exiv2::Value> v = Exiv2::Value::create(Exiv2::xmpText);
         if (!v->read(xmpValue.toStdString())) {
             if (!xmpData.add(Exiv2::XmpKey(key), v.get()))
                 setXMPValueSuccessful = true;
@@ -1977,5 +2006,4 @@ void DkMetaDataHelper::initialize()
     qInfo() << "Metadata support for AVIF, HEIF and JPEG XL formats is not available.";
 #endif
 }
-
 }
