@@ -1596,514 +1596,514 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="480"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="947"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="481"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="952"/>
         <source>&lt;data too large to display&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="588"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="589"/>
         <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="821"/>
         <source>Filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="591"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="592"/>
         <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="822"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="595"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="596"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="599"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="600"/>
         <location filename="../../src/DkGui/DkMetaDataWidgets.cpp" line="823"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="603"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="606"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="609"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="604"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="607"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="610"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="603"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="604"/>
         <source>Created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="606"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="607"/>
         <source>Last Modified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="609"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="610"/>
         <source>Last Read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="613"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="626"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="614"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="627"/>
         <source>Owner</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="617"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="618"/>
         <source>OwnerID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="621"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="640"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="622"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="641"/>
         <source>Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="626"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="633"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="640"/>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="647"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="627"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="634"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="641"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="648"/>
         <source>Permissions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="633"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="634"/>
         <source>User</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="647"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="648"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="657"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="658"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1552"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1556"/>
         <source>not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1553"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1557"/>
         <source>manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1554"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1558"/>
         <source>normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1555"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1559"/>
         <source>aperture priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1556"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1560"/>
         <source>shutter priority</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1557"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1561"/>
         <source>program creative</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1558"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1562"/>
         <source>high-speed program</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1559"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1563"/>
         <source>portrait mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1560"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1564"/>
         <source>landscape mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1563"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1567"/>
         <source>No Flash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1564"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1568"/>
         <source>Fired</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1565"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1569"/>
         <source>Fired, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1566"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1570"/>
         <source>Fired, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1567"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1571"/>
         <source>On, Did not fire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1568"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1572"/>
         <source>On, Fired</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1569"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1573"/>
         <source>On, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1570"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1574"/>
         <source>On, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1571"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1575"/>
         <source>Off, Did not fire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1572"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1576"/>
         <source>Off, Did not fire, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1573"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1577"/>
         <source>Auto, Did not fire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1574"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1578"/>
         <source>Auto, Fired</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1575"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1579"/>
         <source>Auto, Fired, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1576"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1580"/>
         <source>Auto, Fired, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1577"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1581"/>
         <source>No flash function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1578"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1582"/>
         <source>Off, No flash function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1579"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1583"/>
         <source>Fired, Red-eye reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1580"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1584"/>
         <source>Fired, Red-eye reduction, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1581"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1585"/>
         <source>Fired, Red-eye reduction, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1582"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1586"/>
         <source>On, Red-eye reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1583"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1587"/>
         <source>On, Red-eye reduction, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1584"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1588"/>
         <source>On, Red-eye reduction, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1585"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1589"/>
         <source>Off, Red-eye reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1586"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1590"/>
         <source>Auto, Did not fire, Red-eye reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1587"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1591"/>
         <source>Auto, Fired, Red-eye reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1588"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1592"/>
         <source>Auto, Fired, Red-eye reduction, Return not detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1589"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1593"/>
         <source>Auto, Fired, Red-eye reduction, Return detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1592"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1596"/>
         <source>Uncompressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1593"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1597"/>
         <source>CCITT 1D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1594"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1598"/>
         <source>T4/Group 3 Fax</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1595"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1599"/>
         <source>T6/Group 4 Fax</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1596"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1600"/>
         <source>LZW</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1597"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1601"/>
         <source>JPEG (old-style)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1598"/>
         <location filename="../../src/DkCore/DkMetaData.cpp" line="1602"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1606"/>
         <source>JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1599"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1603"/>
         <source>Adobe Deflate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1600"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1604"/>
         <source>JBIG B&amp;W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1601"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1605"/>
         <source>JBIG Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1603"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1607"/>
         <source>Kodak 262</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1604"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1608"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1605"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1609"/>
         <source>Sony ARW Compressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1606"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1610"/>
         <source>Packed RAW</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1607"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1611"/>
         <source>Samsung SRW Compressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1608"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1612"/>
         <source>CCIRLEW</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1609"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1613"/>
         <source>Samsung SRW Compressed 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1610"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1614"/>
         <source>PackBits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1611"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1615"/>
         <source>Thunderscan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1612"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1616"/>
         <source>Kodak KDC Compressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1613"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1617"/>
         <source>IT8CTPAD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1614"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1618"/>
         <source>IT8LW</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1615"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1619"/>
         <source>IT8MP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1616"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1620"/>
         <source>IT8BL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1617"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1621"/>
         <source>PixarFilm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1618"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1622"/>
         <source>PixarLog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1619"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1623"/>
         <source>Deflate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1620"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1624"/>
         <source>DCS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1621"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1625"/>
         <source>Aperio JPEG 2000 YCbCr</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1622"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1626"/>
         <source>Aperio JPEG 2000 RGB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1623"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1627"/>
         <source>JBIG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1624"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1628"/>
         <source>SGILog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1625"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1629"/>
         <source>SGILog24</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1626"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1630"/>
         <source>JPEG 2000</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1627"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1631"/>
         <source>Nikon NEF Compressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1628"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1632"/>
         <source>JBIG2 TIFF FX</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1629"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1633"/>
         <source>Microsoft Document Imaging(MDI) Binary Level Codec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1630"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1634"/>
         <source>Microsoft Document Imaging(MDI) Progressive Transform Codec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1631"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1635"/>
         <source>Microsoft Document Imaging(MDI) Vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1632"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1636"/>
         <source>ESRI Lerc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1633"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1637"/>
         <source>Lossy JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1634"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1638"/>
         <source>LZMA2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1635"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1639"/>
         <source>Zstd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1636"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1640"/>
         <source>WebP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1637"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1641"/>
         <source>PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1638"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1642"/>
         <source>JPEG XR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1639"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1643"/>
         <source>Kodak DCR Compressed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkMetaData.cpp" line="1640"/>
+        <location filename="../../src/DkCore/DkMetaData.cpp" line="1644"/>
         <source>Pentax PEF Compressed</source>
         <translation type="unfinished"></translation>
     </message>
