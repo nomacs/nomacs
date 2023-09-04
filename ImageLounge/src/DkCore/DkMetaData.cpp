@@ -69,8 +69,7 @@ QSharedPointer<DkMetaDataT> DkMetaDataT::copy() const
         // ImageFactory::create(type) may crash even if old Image object has that type
         try {
             // Load new Exiv2::Image object
-            int i_type = mExifImg->imageType();
-            metaDataN->mExifImg = Exiv2::ImageFactory::create(i_type);
+            metaDataN->mExifImg = Exiv2::ImageFactory::create(mExifImg->imageType());
             // Copy exif data from old object into new object
             Exiv2::ExifData data = mExifImg->exifData();
             metaDataN->mExifImg->setExifData(data); // explicit copy of list<Exifdatum>
@@ -245,9 +244,13 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     // Copy image + new exif and return temporary object as byte array
     // The calling function should then write it back to the file
     Exiv2::DataBuf exifBuf = exifImgN->io().read((long)exifImgN->io().size());
+#if EXIV2_TEST_VERSION(0, 28, 0)
+    if (!exifBuf.empty()) {
+        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char *>(exifBuf.c_data()), exifBuf.size()));
+#else
     if (exifBuf.pData_) {
-        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char *)exifBuf.pData_, exifBuf.size_));
-
+        QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char *>(exifBuf.pData_), exifBuf.size_));
+#endif
         if (tmp->size() > qRound(ba->size() * 0.5f))
             ba = tmp;
         else
@@ -714,7 +717,11 @@ QImage DkMetaDataT::getThumbnail() const
         Exiv2::ExifThumb thumb(exifData);
         Exiv2::DataBuf buffer = thumb.copy();
 
-        QByteArray ba = QByteArray((char *)buffer.pData_, buffer.size_);
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.c_data()), buffer.size());
+#else
+        QByteArray ba = QByteArray(reinterpret_cast<const char *>(buffer.pData_), buffer.size_);
+#endif
         qThumb.loadFromData(ba);
     } catch (...) {
         qDebug() << "Sorry, I could not load the thumb from the exif data...";
