@@ -155,7 +155,7 @@ public:
     bool setXMPValue(Exiv2::XmpData &xmpData, QString xmpKey, QString xmpValue);
 
 protected:
-    Exiv2::Image::AutoPtr loadSidecar(const QString &filePath) const;
+    std::unique_ptr<Exiv2::Image> loadSidecar(const QString &filePath) const;
 
     enum {
         not_loaded,
@@ -164,7 +164,7 @@ protected:
         dirty,
     };
 
-    Exiv2::Image::AutoPtr mExifImg; // TODO std::unique_ptr<Exiv2::Image> (and all other *::AutoPtr)
+    std::unique_ptr<Exiv2::Image> mExifImg;
     QString mFilePath;
     QStringList mQtKeys;
     QStringList mQtValues;

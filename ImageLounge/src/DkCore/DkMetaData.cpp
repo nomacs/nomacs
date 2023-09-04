@@ -92,7 +92,8 @@ void DkMetaDataT::update(const QSharedPointer<DkMetaDataT> &other)
 {
     QSharedPointer<DkMetaDataT> src(other);
     // Copy exif data (to this instance), reading from src
-    if (src->isNull()) return;
+    if (src->isNull())
+        return;
     mExifImg->setExifData(src->mExifImg->exifData()); // explicit copy of list<Exifdatum>
 }
 
@@ -115,8 +116,7 @@ void DkMetaDataT::readMetaData(const QString &filePath, QSharedPointer<QByteArra
             std::string strFilePath = (fileInfo.isSymLink()) ? fileInfo.symLinkTarget().toStdString() : filePath.toStdString();
             mExifImg = Exiv2::ImageFactory::open(strFilePath);
         } else {
-            Exiv2::BasicIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte *)ba->constData(), ba->size()));
-            mExifImg = Exiv2::ImageFactory::open(exifBuffer);
+            mExifImg = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
         }
     } catch (...) {
         // TODO: check crashes here
@@ -218,13 +218,11 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
     Exiv2::XmpData &xmpData = mExifImg->xmpData();
     Exiv2::IptcData &iptcData = mExifImg->iptcData();
 
-    Exiv2::Image::AutoPtr exifImgN;
-    Exiv2::MemIo::AutoPtr exifMem;
+    std::unique_ptr<Exiv2::Image> exifImgN;
 
     try {
         // Load new exif object (based on byte array of raw image file, see overload)
-        exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte *)ba->data(), ba->size()));
-        exifImgN = Exiv2::ImageFactory::open(exifMem);
+        exifImgN = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba->constData()), ba->size());
     } catch (...) {
         qDebug() << "could not open image for exif data";
         return false;
@@ -258,7 +256,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> &ba, bool force)
         return false;
 
     // Replace old exif object with new one and clear "dirty" flag
-    mExifImg = exifImgN;
+    mExifImg.swap(exifImgN);
     mExifState = loaded;
 
     return true;
@@ -305,7 +303,7 @@ int DkMetaDataT::getOrientationDegree() const
             Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
             if (pos != exifData.end() && pos->count() != 0) {
-                Exiv2::Value::AutoPtr v = pos->getValue();
+                auto v = pos->getValue();
                 orientation = (int)pos->toFloat();
 
                 switch (orientation) {
@@ -385,7 +383,7 @@ int DkMetaDataT::getRating() const
         Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
         if (pos != exifData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            auto v = pos->getValue();
             exifRating = v->toFloat();
         }
     }
@@ -397,7 +395,7 @@ int DkMetaDataT::getRating() const
 
         // xmp Rating tag
         if (pos != xmpData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            auto v = pos->getValue();
             xmpRating = v->toFloat();
         }
 
@@ -406,7 +404,7 @@ int DkMetaDataT::getRating() const
             key = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
             pos = xmpData.findKey(key);
             if (pos != xmpData.end() && pos->count() != 0) {
-                Exiv2::Value::AutoPtr v = pos->getValue();
+                auto v = pos->getValue();
                 xmpRating = v->toFloat();
             }
         }
@@ -506,7 +504,7 @@ QString DkMetaDataT::getXmpValue(const QString &key) const
         }
 
         if (pos != xmpData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            auto v = pos->getValue();
             info = exiv2ToQString(pos->toString());
         }
     }
@@ -574,7 +572,7 @@ QString DkMetaDataT::getIptcValue(const QString &key) const
         }
 
         if (pos != iptcData.end() && pos->count() != 0) {
-            Exiv2::Value::AutoPtr v = pos->getValue();
+            auto v = pos->getValue();
             info = exiv2ToQString(pos->toString());
         }
     }
@@ -995,8 +993,7 @@ void DkMetaDataT::setThumbnail(QImage thumb)
 
         try {
             // whipe all exif data of the thumbnail
-            Exiv2::MemIo::AutoPtr exifBufferThumb(new Exiv2::MemIo((const byte *)ba.constData(), ba.size()));
-            Exiv2::Image::AutoPtr exifImgThumb = Exiv2::ImageFactory::open(exifBufferThumb);
+            auto exifImgThumb = Exiv2::ImageFactory::open(reinterpret_cast<const byte *>(ba.constData()), ba.size());
 
             if (exifImgThumb.get() != 0 && exifImgThumb->good())
                 exifImgThumb->clearExifData();
@@ -1107,12 +1104,12 @@ void DkMetaDataT::setOrientation(int o)
         pos = exifData.findKey(key);
     }
 
-    Exiv2::Value::AutoPtr v = pos->getValue();
+    auto v = pos->getValue();
     Exiv2::UShortValue *prv = dynamic_cast<Exiv2::UShortValue *>(v.release());
     if (!prv)
         return;
 
-    Exiv2::UShortValue::AutoPtr rv = Exiv2::UShortValue::AutoPtr(prv);
+    std::unique_ptr<Exiv2::UShortValue> rv(prv);
     if (rv->value_.empty())
         return;
 
@@ -1203,7 +1200,7 @@ void DkMetaDataT::setRating(int r)
         exifData["Exif.Image.Rating"] = uint16_t(r);
         exifData["Exif.Image.RatingPercent"] = uint16_t(r);
 
-        Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+        auto v = Exiv2::Value::create(Exiv2::xmpText);
         v->read(sRating);
         xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
         v->read(sRatingPercent);
@@ -1449,9 +1446,9 @@ DkRotatingRect DkMetaDataT::getXMPRect(const QSize &size) const
     return DkRotatingRect(rr);
 }
 
-Exiv2::Image::AutoPtr DkMetaDataT::loadSidecar(const QString &filePath) const
+std::unique_ptr<Exiv2::Image> DkMetaDataT::loadSidecar(const QString &filePath) const
 {
-    Exiv2::Image::AutoPtr xmpImg;
+    std::unique_ptr<Exiv2::Image> xmpImg;
 
     // TODO: check if the file type supports xmp
 
@@ -1501,7 +1498,7 @@ bool DkMetaDataT::setXMPValue(Exiv2::XmpData &xmpData, QString xmpKey, QString x
         if (!pos->setValue(xmpValue.toStdString()))
             setXMPValueSuccessful = true;
     } else {
-        Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+        auto v = Exiv2::Value::create(Exiv2::xmpText);
         if (!v->read(xmpValue.toStdString())) {
             if (!xmpData.add(Exiv2::XmpKey(key), v.get()))
                 setXMPValueSuccessful = true;
