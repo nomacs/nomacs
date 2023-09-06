@@ -258,6 +258,7 @@ class FormatsConfig(Config):
             # os.path.join(self.libpath, "libde265") + ";" +
             # os.path.join(self.libpath, "libheif") + ";" +
             self.qtpath,
+            "-DENABLE_QOI=ON",
             "-B" + self.builddir,
             self.srcpath
         ]

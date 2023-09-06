@@ -2380,12 +2380,12 @@ Please restart nomacs and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="1107"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="1109"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/DkCore/DkSettings.cpp" line="1128"/>
+        <location filename="../../src/DkCore/DkSettings.cpp" line="1130"/>
         <source>nomacs - Image Lounge is a lightweight image viewer.</source>
         <translation type="unfinished"></translation>
     </message>
