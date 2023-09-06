@@ -920,17 +920,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1308"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>透明模式(&amp;T)</translation>
+      <translation>透明图案(&amp;T)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1310"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>如果选中，图案将以透明对象模式显示。</translation>
+      <translation>如果选中，则在对象的透明部位显示此图案。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1314"/>
       <source>&amp;Frameless</source>
-      <translation>无框</translation>
+      <translation>无框(&amp;F)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1316"/>
@@ -940,7 +940,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1543"/>
       <source>Star Rating 0</source>
-      <translation>星级评分0</translation>
+      <translation>星级评分 0</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1544"/>
@@ -950,32 +950,32 @@
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1560"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1564"/>
       <source>Star rating which is saved to an image's metadata</source>
-      <translation>星级评分，将存入图像元数据中</translation>
+      <translation>星级评分,将存入图像元数据中</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1547"/>
       <source>Star Rating 1</source>
-      <translation>星级评分1</translation>
+      <translation>星级评分 1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1551"/>
       <source>Star Rating 2</source>
-      <translation>星级评分2</translation>
+      <translation>星级评分 2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1555"/>
       <source>Star Rating 3</source>
-      <translation>星级评分3</translation>
+      <translation>星级评分 3</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1559"/>
       <source>Star Rating 4</source>
-      <translation>星级评分4</translation>
+      <translation>星级评分 4</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1563"/>
       <source>Star Rating 5</source>
-      <translation>星级评分5</translation>
+      <translation>星级评分 5</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1567"/>
@@ -985,7 +985,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1568"/>
       <source>Pans the image up if zoomed.</source>
-      <translation>缩放后将图像向上平移。</translation>
+      <translation>如果缩放，则向上平移图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1571"/>
@@ -995,7 +995,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1572"/>
       <source>Pans the image down if zoomed.</source>
-      <translation>缩放后将图像向下平移。</translation>
+      <translation>如果缩放，则向下平移图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1575"/>
@@ -1005,7 +1005,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1576"/>
       <source>Pans the image left if zoomed.</source>
-      <translation>缩放后将图像向左平移。</translation>
+      <translation>如果缩放，则向左平移图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1579"/>
@@ -1015,12 +1015,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1580"/>
       <source>Pans the image right if zoomed.</source>
-      <translation>缩放后将图像向右平移。</translation>
+      <translation>如果缩放，则向右平移图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1247"/>
       <source>New &amp;Tab</source>
-      <translation>新选项卡</translation>
+      <translation>新建选项卡(&amp;T)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1158"/>
@@ -1035,7 +1035,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1251"/>
       <source>&amp;Close Tab</source>
-      <translation>关闭选项卡</translation>
+      <translation>关闭选项卡(&amp;C)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1253"/>
@@ -1045,17 +1045,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1262"/>
       <source>F&amp;irst Tab</source>
-      <translation>＆第一个标签</translation>
+      <translation>第一个选项卡(&amp;I)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1263"/>
       <source>Switch to first tab</source>
-      <translation>切换到第一个标签</translation>
+      <translation>切换到第一个选项卡</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1265"/>
       <source>&amp;Previous Tab</source>
-      <translation>上一选项卡</translation>
+      <translation>上一个选项卡(&amp;P)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1267"/>
@@ -1065,17 +1065,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1269"/>
       <source>&amp;Go to Tab</source>
-      <translation>＆转到选项</translation>
+      <translation>选项卡切换(&amp;G)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1270"/>
       <source>Go to tab by index</source>
-      <translation>按索引转到标签</translation>
+      <translation>按索引切换选项卡</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1272"/>
       <source>&amp;Next Tab</source>
-      <translation>下一个选项卡</translation>
+      <translation>下一个选项卡(&amp;N)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1274"/>
@@ -1085,7 +1085,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1276"/>
       <source>La&amp;st Tab</source>
-      <translation>最后一个标签</translation>
+      <translation>最后一个标签(&amp;S)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1277"/>
@@ -1095,44 +1095,44 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1320"/>
       <source>&amp;Change Opacity</source>
-      <translation>更改透明度</translation>
+      <translation>修改透明度(&amp;C)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1322"/>
       <source>change the window opacity</source>
-      <translation>更改窗口透明度</translation>
+      <translation>修改窗口透明度</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1324"/>
       <source>Opacity &amp;Up</source>
-      <translation>增加不透明度</translation>
+      <translation>增加不透明度(&amp;U)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1326"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1330"/>
       <source>changes the window opacity</source>
-      <translation>更改窗口透明度</translation>
+      <translation>修改窗口透明度</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1328"/>
       <source>Opacity &amp;Down</source>
-      <translation>减少不透明度</translation>
+      <translation>减少不透明度(&amp;D)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1332"/>
       <source>To&amp;ggle Opacity</source>
-      <translation>切换不透明度</translation>
+      <translation>切换不透明度(&amp;G)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1334"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1425"/>
       <source>toggle the window opacity</source>
-      <translation>切换窗口不透明度</translation>
+      <translation>窗口在不同透明度之间切换</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1336"/>
       <source>Lock &amp;Window</source>
-      <translation>锁定窗口</translation>
+      <translation>锁定窗口(&amp;W)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1338"/>
@@ -1142,7 +1142,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1342"/>
       <source>&amp;Toggle Slideshow</source>
-      <translation>&amp;切换幻灯片</translation>
+      <translation>切换幻灯片(&amp;T)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1343"/>
@@ -1152,17 +1152,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1346"/>
       <source>&amp;Pause Movie</source>
-      <translation>暂停播放</translation>
+      <translation>暂停播放(&amp;P)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1347"/>
       <source>pause the current movie</source>
-      <translation>暂停当前影片</translation>
+      <translation>暂停播放当前影片</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1351"/>
       <source>P&amp;revious Frame</source>
-      <translation>上一帧</translation>
+      <translation>上一帧(&amp;R)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1352"/>
@@ -1172,7 +1172,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1354"/>
       <source>&amp;Next Frame</source>
-      <translation>下一帧</translation>
+      <translation>下一帧(&amp;N)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1355"/>
@@ -1182,7 +1182,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1367"/>
       <source>Compute &amp;Thumbnails</source>
-      <translation>生成缩略图</translation>
+      <translation>生成缩略图(&amp;T)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1368"/>
@@ -1198,12 +1198,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1376"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>导出多页 TIFF</translation>
+      <translation>导出多页 TIFF(&amp;T)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1377"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>导出TIFF 到多个 tiff 文件</translation>
+      <translation>将TIFF的页面导出为多个tiff文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1379"/>
@@ -1218,7 +1218,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1383"/>
       <source>&amp;Mosaic Image</source>
-      <translation>马赛克图像</translation>
+      <translation>马赛克图像(&amp;M)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1384"/>
@@ -1238,7 +1238,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1398"/>
       <source>&amp;About Nomacs</source>
-      <translation>关于Nomacs</translation>
+      <translation>关于Nomacs(&amp;A)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1400"/>
@@ -1248,7 +1248,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1402"/>
       <source>&amp;Documentation</source>
-      <translation>文档</translation>
+      <translation>文档(&amp;D)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1403"/>
@@ -1258,7 +1258,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1405"/>
       <source>&amp;Report a Bug</source>
-      <translation>报告Bug</translation>
+      <translation>报告Bug(&amp;R)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1406"/>
@@ -1268,7 +1268,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1408"/>
       <source>&amp;Check for Updates</source>
-      <translation>检查更新</translation>
+      <translation>检查更新(&amp;C)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1409"/>
@@ -1278,7 +1278,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1412"/>
       <source>&amp;Update Translation</source>
-      <translation>更新翻译</translation>
+      <translation>更新翻译(&amp;U)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1413"/>
@@ -1288,7 +1288,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1418"/>
       <source>Synchronize &amp;View</source>
-      <translation>同步视图</translation>
+      <translation>同步视图(&amp;V)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1420"/>
@@ -1298,32 +1298,32 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1423"/>
       <source>&amp;Window Overlay</source>
-      <translation>叠加窗口</translation>
+      <translation>窗口叠加(&amp;W)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1428"/>
       <source>Arrange Instances</source>
-      <translation>铺排实例</translation>
+      <translation>排列实例</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1430"/>
       <source>arrange connected instances</source>
-      <translation>铺排相关实例</translation>
+      <translation>排列关联的实例</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1433"/>
       <source>Connect &amp;All</source>
-      <translation>连接所有</translation>
+      <translation>全部关联(&amp;A)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1436"/>
       <source>connect all instances</source>
-      <translation>连接所有实例</translation>
+      <translation>关联所有实例</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1438"/>
       <source>&amp;Sync All Actions</source>
-      <translation>同步所有操作</translation>
+      <translation>同步所有操作(&amp;S)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1439"/>
@@ -1333,7 +1333,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1445"/>
       <source>&amp;Plugin Manager</source>
-      <translation>插件管理器</translation>
+      <translation>插件管理器(&amp;P)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1446"/>
@@ -1343,37 +1343,37 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1451"/>
       <source>Select &amp;All</source>
-      <translation>全选</translation>
+      <translation>全选(&amp;A)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1458"/>
       <source>Zoom &amp;Out</source>
-      <translation>缩小</translation>
+      <translation>缩小(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1461"/>
       <source>Display &amp;Squares</source>
-      <translation>显示直方图</translation>
+      <translation>显示直方图(&amp;S)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1465"/>
       <source>Show &amp;Filename</source>
-      <translation>显示文件名</translation>
+      <translation>显示文件名(&amp;F)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1481"/>
       <source>&amp;Rename</source>
-      <translation>重命名</translation>
+      <translation>重命名(&amp;R)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1484"/>
       <source>&amp;Batch Process</source>
-      <translation>批处理</translation>
+      <translation>批处理(&amp;B)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1485"/>
       <source>Adds selected files to batch processing.</source>
-      <translation>将选中的文件添加到批处理。</translation>
+      <translation>将选中的文件添加到批处理中。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1488"/>
@@ -1388,7 +1388,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1504"/>
       <source>Start pong</source>
-      <translation>开始乒乓球</translation>
+      <translation>开始pong</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1507"/>
@@ -1410,7 +1410,7 @@
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1512"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1528"/>
       <source>Jump to the end of the current folder</source>
-      <translation>跳转到当前文件夹的最后</translation>
+      <translation>跳转到当前文件夹末尾</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1515"/>
@@ -1421,28 +1421,28 @@
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1516"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1532"/>
       <source>Jumps 10 images before the current image</source>
-      <translation>向前跳10张图像</translation>
+      <translation>向前跳过10张图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1519"/>
       <source>Skip Next Images</source>
-      <translation>跳过下一个图像</translation>
+      <translation>跳过之后的图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1520"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1536"/>
       <source>Jumps 10 images after the current image</source>
-      <translation>向后跳10张图像</translation>
+      <translation>向后跳过10张图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1523"/>
       <source>First File Sync</source>
-      <translation>第一次文件同步</translation>
+      <translation>首次文件同步</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1527"/>
       <source>Last File Sync</source>
-      <translation>上一次文件同步</translation>
+      <translation>上次文件同步</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1531"/>
@@ -1452,17 +1452,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1535"/>
       <source>Skip Next Images Sync</source>
-      <translation>跳过下一步图像并同步</translation>
+      <translation>跳过后面的图像并同步</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1539"/>
       <source>Delete File Silent</source>
-      <translation>删除文件并不作提示</translation>
+      <translation>删除文件而不提示</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkActionManager.cpp" line="1540"/>
       <source>Deletes a file without warning</source>
-      <translation>无跳出警告地删除一个文件</translation>
+      <translation>不弹出警告而直接删除文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="405"/>
@@ -1503,17 +1503,17 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="535"/>
       <source>Created</source>
-      <translation>创建</translation>
+      <translation>创建时间</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="538"/>
       <source>Last Modified</source>
-      <translation>上次修改时间</translation>
+      <translation>修改时间</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="541"/>
       <source>Last Read</source>
-      <translation>上次读取</translation>
+      <translation>上次读取时间</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="545"/>
@@ -1530,7 +1530,7 @@
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="553"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="572"/>
       <source>Group</source>
-      <translation>组</translation>
+      <translation>群组</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="558"/>
@@ -1583,7 +1583,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="1484"/>
       <source>program creative</source>
-      <translation>创造性的程序</translation>
+      <translation>创建程序</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="1485"/>
@@ -1678,7 +1678,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="1505"/>
       <source>Off, No flash function</source>
-      <translation>关闭，没有闪光灯的功能</translation>
+      <translation>关，没有闪光灯的功能</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkMetaData.cpp" line="1506"/>
@@ -1738,7 +1738,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkCentralWidget.cpp" line="225"/>
       <source>New Tab</source>
-      <translation>新的选项卡</translation>
+      <translation>新建选项卡</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkCentralWidget.cpp" line="228"/>
@@ -1748,7 +1748,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkCentralWidget.cpp" line="230"/>
       <source>Recent Files</source>
-      <translation>最近的文件</translation>
+      <translation>最近文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkCentralWidget.cpp" line="232"/>
@@ -1763,12 +1763,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="324"/>
       <source>%1 image resized, scale factor: %2%</source>
-      <translation>%1 图像调整大小，缩放比例： %2%</translation>
+      <translation>已调整 %1 个图像大小，缩放比例： %2%</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="326"/>
       <source>%1 image resized, new side: %2 px</source>
-      <translation>%1 图像调整大小后，新边长： %2 px</translation>
+      <translation>已经调整 %1 个图像大小，新的边长： %2 px</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="366"/>
@@ -1788,7 +1788,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="128"/>
       <source>[Transform Batch]</source>
-      <translation>[批量变化]</translation>
+      <translation>[批量转换]</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="276"/>
@@ -1800,18 +1800,18 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="321"/>
       <source>%1 image transformed.</source>
-      <translation>%1 图像转换。</translation>
+      <translation>%1 个图像已转换。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="333"/>
       <source>%1 error, could not transform image.</source>
-      <translation>%1 错误，不能变换图像。</translation>
+      <translation>%1 错误，不能转换图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="429"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="583"/>
       <source>%1 Cannot apply %2.</source>
-      <translation>%1 不适用 %2。</translation>
+      <translation>%1 不能应用到 %2。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="82"/>
@@ -1826,7 +1826,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="329"/>
       <source>%1 image transformed and cropped.</source>
-      <translation>%1 图像变形和裁剪。</translation>
+      <translation>%1 个图像已转换和裁剪。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="426"/>
@@ -1836,7 +1836,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="435"/>
       <source>%1 error, could not apply image adjustments.</source>
-      <translation>%1 错误，调整无法应用到图像。</translation>
+      <translation>%1 错误，无法应用图像调整。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="443"/>
@@ -1846,12 +1846,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="575"/>
       <source>%1 Cannot cast batch plugin %2.</source>
-      <translation>%1无法强制转换批处理插件%2</translation>
+      <translation>%1 无法施放批处理插件 %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="586"/>
       <source>%1 illegal plugin interface: %2</source>
-      <translation>%1非法的插件接口:%2</translation>
+      <translation>%1 非法的插件接口: %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="589"/>
@@ -1861,12 +1861,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="593"/>
       <source>%1 error, could not apply plugins.</source>
-      <translation>错误%1，无法添加插件。</translation>
+      <translation>错误%1，无法应用插件。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="597"/>
       <source>%1 plugins applied.</source>
-      <translation>%1插件已添加。</translation>
+      <translation>%1 个插件已应用。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="603"/>
@@ -1876,12 +1876,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="716"/>
       <source>%1 already exists -&gt; skipping (check 'overwrite' if you want to overwrite the file)</source>
-      <translation>%1 已经存在-&gt; 跳过 （如果你想覆盖此文件，选择‘覆盖’）</translation>
+      <translation>%1 已经存在-&gt; 跳过（如果想要覆盖此文件，请选择“覆盖”）</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="721"/>
       <source>Error: input file does not exist</source>
-      <translation>错误: 输入的文件不存在</translation>
+      <translation>错误：输入的文件不存在</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="722"/>
@@ -1892,12 +1892,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="727"/>
       <source>Skipping: nothing to do here.</source>
-      <translation>跳过：此处无操作。</translation>
+      <translation>跳过：此处空白。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="766"/>
       <source>processing %1</source>
-      <translation>处理中 %1</translation>
+      <translation>正在处理 %1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="771"/>
@@ -1907,24 +1907,24 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="779"/>
       <source>Error: cannot process a NULL function.</source>
-      <translation>错误: 无法处理 NULL 函数。</translation>
+      <translation>错误：无法处理 NULL 函数。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="785"/>
       <source>%1 failed</source>
-      <translation>%1 失败</translation>
+      <translation>%1 已失败</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="800"/>
       <source>%1 not saved - option 'Do not Save' is checked...</source>
-      <translation>%1 未保存 - 已选中选项“不保存”...</translation>
+      <translation>%1 未保存 - “不保存”选项已选中...</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="806"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="839"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="902"/>
       <source>Original filename added to Exif</source>
-      <translation>原始文件名已添加到Exif</translation>
+      <translation>原始文件名已添加到 Exif</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="810"/>
@@ -1949,12 +1949,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="849"/>
       <source>Renaming: %1 -&gt; %2</source>
-      <translation>重命名： %1-&gt; %2</translation>
+      <translation>正在重命名： %1-&gt; %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="878"/>
       <source>I should copy the file, but 'Do not Save' is checked - so I will do nothing...</source>
-      <translation>本应复制该文件，但“不保存”已选中 - 故不进行任何操作...</translation>
+      <translation>本应复制此文件，但“不保存”已选中 - 所以不进行任何操作...</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="894"/>
@@ -1964,12 +1964,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="896"/>
       <source>Output: %1</source>
-      <translation>输出： %1</translation>
+      <translation>输出：%1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="904"/>
       <source>Copying: %1 -&gt; %2</source>
-      <translation>复制: %1-&gt; %2</translation>
+      <translation>正在复制: %1-&gt; %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="923"/>
@@ -1979,7 +1979,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="931"/>
       <source>Error: could not rename existing file to %1</source>
-      <translation>错误：无法将当前文件重命名为%1</translation>
+      <translation>错误：无法将当前文件重命名为 %1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="949"/>
@@ -1989,27 +1989,27 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="960"/>
       <source>Ui - a lot of things went wrong sorry, your original file can be found here: %1</source>
-      <translation>Ui - 抱歉，发生错误，您的原始文件可以在这里找到：%1</translation>
+      <translation>Ui - 抱歉，发生错误，原始文件可在此处找到：%1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="965"/>
       <source>I could not save to %1 so I restored the original file.</source>
-      <translation>因为无法保存为%1所以我恢复了原始文件</translation>
+      <translation>因为无法保存为 %1，所以恢复了原始文件。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="981"/>
       <source>%1 deleted.</source>
-      <translation>%1已删除。</translation>
+      <translation>%1 已删除。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="984"/>
       <source>I could not delete %1</source>
-      <translation>我无法删除%1</translation>
+      <translation>无法删除 %1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="989"/>
       <source>I did not delete the original because I detected %1 failure(s).</source>
-      <translation>我无法删除源文件因为发现%1错误。</translation>
+      <translation>无法删除源文件，因为发现 %1 个错误。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkSettings.cpp" line="1060"/>
@@ -2024,12 +2024,12 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPong.h" line="88"/>
       <source>Player 1</source>
-      <translation>播放器1</translation>
+      <translation>播放器 1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPong.h" line="89"/>
       <source>Player 2</source>
-      <translation>播放器2</translation>
+      <translation>播放器 2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPong.h" line="99"/>
@@ -2039,7 +2039,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="122"/>
       <source>An input image.</source>
-      <translation>导入的文件</translation>
+      <translation>导入的图片</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="125"/>
@@ -2074,7 +2074,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="143"/>
       <source>Load all files of a &lt;directory&gt;.</source>
-      <translation>加载&lt;directory&gt;的所有文件</translation>
+      <translation>加载&lt;directory&gt;中的所有文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="144"/>
@@ -2084,7 +2084,7 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="148"/>
       <source>Load &lt;images&gt; to tabs.</source>
-      <translation>加载&lt;images&gt;到选项卡。</translation>
+      <translation>将&lt;images&gt;加载到选项卡。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="149"/>
@@ -2114,27 +2114,27 @@
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="163"/>
       <source>Imports the settings from &lt;settings-path.ini&gt; and saves them.</source>
-      <translation type="unfinished">Imports the settings from &lt;settings-path.ini&gt; and saves them.</translation>
+      <translation>从&lt;settings-path.ini&gt;导入设置并保存它。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="164"/>
       <source>settings-path.ini</source>
-      <translation type="unfinished">settings-path.ini</translation>
+      <translation>settings-path.ini</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="167"/>
       <source>Register file associations (Windows only).</source>
-      <translation type="unfinished">Register file associations (Windows only).</translation>
+      <translation>注册文件关联（仅Windows系统）。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="335"/>
       <source>Critical Error</source>
-      <translation type="unfinished">Critical Error</translation>
+      <translation>严重错误</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/main.cpp" line="336"/>
       <source>Sorry, nomacs ran out of memory...</source>
-      <translation type="unfinished">Sorry, nomacs ran out of memory...</translation>
+      <translation>抱歉，nomacs溢出了内存...</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUtils.cpp" line="800"/>
@@ -2210,7 +2210,7 @@
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkPluginManager.cpp" line="1102"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation>此dll不能删除！请重新启动nomacs，然后再尝试。</translation>
+      <translation>此dll不能删除！请重启nomacs，然后重试。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkPluginManager.cpp" line="1276"/>
@@ -2225,28 +2225,28 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="54"/>
       <source>Could not convert to grayscale</source>
-      <translation type="unfinished">Could not convert to grayscale</translation>
+      <translation>不能转换为灰度</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="71"/>
       <source>Cannot auto adjust</source>
-      <translation type="unfinished">Cannot auto adjust</translation>
+      <translation>不能自动调整</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="89"/>
       <source>The Image is Already Normalized...</source>
-      <translation type="unfinished">The Image is Already Normalized...</translation>
+      <translation>图像已被标准化...</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="104"/>
       <source>Cannot invert image</source>
-      <translation type="unfinished">Cannot invert image</translation>
+      <translation>不能反转图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="117"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="129"/>
       <source>Cannot flip image</source>
-      <translation type="unfinished">Cannot flip image</translation>
+      <translation>不能翻转图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="152"/>
@@ -2256,7 +2256,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="206"/>
       <source>Cannot sharpen image</source>
-      <translation type="unfinished">Cannot sharpen image</translation>
+      <translation>不能锐化图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="244"/>
