@@ -160,6 +160,8 @@ void DkSettings::initFileFilters()
         app_p.saveFilters.append("WebP (*.webp)");
     if (qtFormats.contains("avif"))
         app_p.saveFilters.append("AV1 Image File Format (*.avif)");
+    if (qtFormats.contains("qoi"))
+        app_p.saveFilters.append("Quite OK Image Format (*.qoi)");
 
 #ifdef Q_OS_WIN
     if (qtFormats.contains("ico"))
