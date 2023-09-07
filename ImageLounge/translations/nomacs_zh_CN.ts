@@ -2261,27 +2261,27 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="244"/>
       <source>Cannot rotate image</source>
-      <translation type="unfinished">Cannot rotate image</translation>
+      <translation>不能旋转图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="270"/>
       <source>Cannot threshold image</source>
-      <translation type="unfinished">Cannot threshold image</translation>
+      <translation>不能阈值化图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="308"/>
       <source>Cannot change Hue/Saturation</source>
-      <translation type="unfinished">Cannot change Hue/Saturation</translation>
+      <translation>不能修改色调/饱和度</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="358"/>
       <source>Cannot apply exposure</source>
-      <translation type="unfinished">Cannot apply exposure</translation>
+      <translation>不能应用曝光量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkManipulatorsIpl.cpp" line="410"/>
       <source>Cannot draw background color</source>
-      <translation type="unfinished">Cannot draw background color</translation>
+      <translation>不能绘制背景色</translation>
     </message>
   </context>
   <context>
@@ -2317,7 +2317,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1314"/>
       <source>Always Load JPG if Embedded</source>
-      <translation>总是载入内嵌 JPG</translation>
+      <translation>如果JPG内嵌则载入它</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1315"/>
@@ -2327,7 +2327,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1316"/>
       <source>Always Load RAW Data</source>
-      <translation>总是加载原始数据</translation>
+      <translation>总是加载RAW数据</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1327"/>
@@ -2337,7 +2337,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1329"/>
       <source>If checked, a noise filter is applied which reduced color noise</source>
-      <translation type="unfinished">If checked, a noise filter is applied which reduced color noise</translation>
+      <translation>如选中，则应用降噪来来降低色彩噪点</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1332"/>
@@ -2352,7 +2352,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1342"/>
       <source>If checked, nomacs asked to save files which were deleted by other applications</source>
-      <translation>如果选中此选项，nomacs 询问是否保存这被其他应用程序所删除的文件</translation>
+      <translation>如果选中，nomacs 会询问是否保存被其他应用程序删除的文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1345"/>
