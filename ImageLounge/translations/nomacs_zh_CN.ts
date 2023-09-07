@@ -2362,7 +2362,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1347"/>
       <source>If checked, images are NOT rotated with respect to their Exif orientation</source>
-      <translation>如果选中， 图像不会根据Exif方向旋转</translation>
+      <translation>如果选中，不会根据Exif方向旋转图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1350"/>
@@ -2373,28 +2373,27 @@ Please restart nomacs and try again.</source>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1352"/>
       <source>If checked, orientation is written to the Exif rather than rotating the image Matrix
 </source>
-      <translation>如果选中，方向写入 Exif，而不是旋转图像矩阵
-</translation>
+      <translation>如果选中，将方向写入 Exif，而不是旋转图像矩阵</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1353"/>
       <source>NOTE: this allows for rotating JPGs without losing information.</source>
-      <translation>注意： 这允许旋转 Jpg 而不会丢失信息。</translation>
+      <translation>注意：这将允许旋转 Jpg 而不会丢失信息。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1356"/>
       <source>File Loading/Saving</source>
-      <translation>文件 载入/保存</translation>
+      <translation>文件载入/保存</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1364"/>
       <source>Choose the number of Threads in the thread pool</source>
-      <translation type="unfinished">Choose the number of Threads in the thread pool</translation>
+      <translation>选择线程池中的线程数</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1369"/>
       <source>Number of Threads</source>
-      <translation>线程数</translation>
+      <translation>线程数量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1373"/>
@@ -2404,7 +2403,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1375"/>
       <source>If checked, a log file will be created.</source>
-      <translation>如果选中此选项，将会创建一个日志文件。</translation>
+      <translation>如果选中，将会创建一个日志文件。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1378"/>
@@ -2419,7 +2418,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkPreferenceWidgets.cpp" line="1432"/>
       <source>Please Restart nomacs to apply changes</source>
-      <translation>请重新启动nomacs来应用更改</translation>
+      <translation>请重新启动nomacs使修改生效</translation>
     </message>
   </context>
   <context>
@@ -2462,7 +2461,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="542"/>
       <source>Open Application</source>
-      <translation>打开的应用程序</translation>
+      <translation>打开应用程序</translation>
     </message>
   </context>
   <context>
@@ -2470,7 +2469,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3762"/>
       <source>Extract images from an archive</source>
-      <translation>从存档中解压缩图像</translation>
+      <translation>从压缩文件中解压图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3771"/>
@@ -2522,7 +2521,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3927"/>
       <source>Not a valid archive.</source>
-      <translation>不是有效的归档文件。</translation>
+      <translation>不是有效的压缩文件。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3956"/>
@@ -2547,7 +2546,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="4034"/>
       <source>Extracting file %1 of %2</source>
-      <translation>提取文件 %1 / %2</translation>
+      <translation>正在解压文件 %1 / %2</translation>
     </message>
   </context>
   <context>
@@ -2561,7 +2560,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicLoader.cpp" line="1177"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>对不起，不能保存: %1</translation>
+      <translation>抱歉，不能保存: %1</translation>
     </message>
   </context>
   <context>
@@ -2569,7 +2568,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="2246"/>
       <source>Start/Cancel Batch Processing (%1)</source>
-      <translation type="unfinished">Start/Cancel Batch Processing (%1)</translation>
+      <translation>开始/取消批处理 (%1)</translation>
     </message>
   </context>
   <context>
@@ -2577,7 +2576,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="350"/>
       <source>File Explorer</source>
-      <translation>文件资源管理器</translation>
+      <translation>文件管理器</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="362"/>
@@ -2587,7 +2586,7 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="363"/>
       <source>File List</source>
-      <translation type="unfinished">File List</translation>
+      <translation>文件列表</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="413"/>
@@ -2597,23 +2596,23 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="477"/>
       <source>No Files Selected</source>
-      <translation type="unfinished">No Files Selected</translation>
+      <translation>未选定文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="479"/>
       <source>%1 File Selected</source>
-      <translation type="unfinished">%1 File Selected</translation>
+      <translation>选定 %1 个文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="481"/>
       <source>%1 Files Selected</source>
-      <translation type="unfinished">%1 Files Selected</translation>
+      <translation>选定 %1 个文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="506"/>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="520"/>
       <source>Results</source>
-      <translation type="unfinished">Results</translation>
+      <translation>结果</translation>
     </message>
   </context>
   <context>
@@ -2621,17 +2620,17 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1752"/>
       <source>Select Image Adjustments</source>
-      <translation type="unfinished">Select Image Adjustments</translation>
+      <translation>选择文件调整</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1967"/>
       <source>inactive</source>
-      <translation>非活动状态</translation>
+      <translation>未激活</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1969"/>
       <source>%1 manipulators selected</source>
-      <translation type="unfinished">%1 manipulators selected</translation>
+      <translation>已选定 %1 个处理工具</translation>
     </message>
   </context>
   <context>
@@ -2649,30 +2648,30 @@ Please restart nomacs and try again.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="753"/>
       <source>Select a Directory</source>
-      <translation>选择一个目录</translation>
+      <translation>选择目录</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="758"/>
       <source>Overwrite Existing Files</source>
-      <translation>覆盖现有文件</translation>
+      <translation>覆盖已有文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="759"/>
       <source>If checked, existing files are overwritten.
 This option might destroy your images - so be careful!</source>
-      <translation>如果选中此选项，则现有文件将被覆盖。此选项可能会破坏您的图像—所以请谨慎勾选 ！</translation>
+      <translation>如果选中，则会覆盖已有文件。此选项可能会破坏图像——请谨慎勾选！</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="763"/>
       <source>Do not Save Output Images</source>
-      <translation type="unfinished">Do not Save Output Images</translation>
+      <translation>不保存输出图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="764"/>
       <source>If checked, output images are not saved at all.
 This option is only useful if plugins save sidecar files - so be careful!</source>
-      <translation type="unfinished">If checked, output images are not saved at all.
-This option is only useful if plugins save sidecar files - so be careful!</translation>
+      <translation>如果选中，由完全不保存输出图像。
+此选项仅在插件保存附属文件时有用——所以，请谨慎勾选！</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="768"/>
@@ -2682,18 +2681,18 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="769"/>
       <source>If checked, the batch is applied to the input folder - so be careful!</source>
-      <translation>如果选中此选项，批处理将应用于输入文件夹 — — 所以要小心 ！</translation>
+      <translation>如果选中，批处理将应用于输入文件夹——所以，请小心！</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="773"/>
       <source>Delete Input Files</source>
-      <translation>删除输入的文件</translation>
+      <translation>删除输入文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="774"/>
       <source>If checked, the original file will be deleted if the conversion was successful.
  So be careful!</source>
-      <translation>如果选中此项，转换成功后将删除原始文件。 请注意 ！</translation>
+      <translation>如果选中，转换成功后将删除原始文件。因此，请小心！</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="792"/>
@@ -2713,22 +2712,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="824"/>
       <source>Best Quality</source>
-      <translation type="unfinished">Best Quality</translation>
+      <translation>最好质量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="825"/>
       <source>High Quality</source>
-      <translation type="unfinished">High Quality</translation>
+      <translation>高质量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="826"/>
       <source>Medium Quality</source>
-      <translation type="unfinished">Medium Quality</translation>
+      <translation>中等质量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="827"/>
       <source>Low Quality</source>
-      <translation type="unfinished">Low Quality</translation>
+      <translation>低质量</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="837"/>
@@ -2738,12 +2737,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="840"/>
       <source>Old Filename: </source>
-      <translation type="unfinished">Old Filename: </translation>
+      <translation>原文件名：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="845"/>
       <source>New Filename: </source>
-      <translation type="unfinished">New Filename: </translation>
+      <translation>新文件名：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="878"/>
@@ -2756,22 +2755,22 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1491"/>
       <source>Select Plugins</source>
-      <translation type="unfinished">Select Plugins</translation>
+      <translation>选择插件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1661"/>
       <source> Settings</source>
-      <translation type="unfinished"> Settings</translation>
+      <translation>设置</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1736"/>
       <source>inactive</source>
-      <translation>非活动状态</translation>
+      <translation>未激活</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1738"/>
       <source>%1 plugins selected</source>
-      <translation>%1插件被选中</translation>
+      <translation>已选定 %1 个插件</translation>
     </message>
   </context>
   <context>
@@ -2779,12 +2778,12 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="1255"/>
       <source>[OK]</source>
-      <translation>[OK]</translation>
+      <translation>[确定]</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkProcess.cpp" line="1257"/>
       <source>[FAIL]</source>
-      <translation>[FAIL]</translation>
+      <translation>[失败]</translation>
     </message>
   </context>
   <context>
@@ -2797,7 +2796,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1988"/>
       <source>Percent</source>
-      <translation type="unfinished">Percent</translation>
+      <translation>百分比</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkBatch.cpp" line="1988"/>
@@ -3192,7 +3191,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkMetaDataWidgets.cpp" line="1231"/>
       <source>Sorry, I cannot save comments for this image format.</source>
-      <translation>对不起，不能保存该图像文件格式的备注。</translation>
+      <translation>抱歉，不能保存该图像文件格式的备注。</translation>
     </message>
   </context>
   <context>
@@ -3713,7 +3712,7 @@ This option is only useful if plugins save sidecar files - so be careful!</trans
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="2651"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>对不起，不能保存: %1</translation>
+      <translation>抱歉，不能保存: %1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="2643"/>
@@ -4359,7 +4358,7 @@ Do you want to show them again?</source>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkImageContainer.cpp" line="859"/>
       <source>Sorry, I could not download:
 %1</source>
-      <translation>对不起，无法下载：%1</translation>
+      <translation>抱歉，无法下载：%1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkImageContainer.cpp" line="925"/>
@@ -4959,7 +4958,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3215"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>对不起，看来无法用此数据库创建您的马赛克图像。</translation>
+      <translation>抱歉，看来无法用此数据库创建您的马赛克图像。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3332"/>
@@ -4974,7 +4973,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3580"/>
       <source>Sorry, I could not mix the image...</source>
-      <translation>对不起，无法混合图像...</translation>
+      <translation>抱歉，无法混合图像...</translation>
     </message>
   </context>
   <context>
@@ -6026,7 +6025,7 @@ Press ESC to undo changes</source>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1532"/>
       <source>Sorry, I cannot delete:
 %1</source>
-      <translation>对不起，不能删除：%1</translation>
+      <translation>抱歉，不能删除：%1</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1559"/>
@@ -6041,7 +6040,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1578"/>
       <source>Sorry, I cannot rename: %1 to %2</source>
-      <translation>对不起，无法将 %1 重命名为 %2</translation>
+      <translation>抱歉，无法将 %1 重命名为 %2</translation>
     </message>
   </context>
   <context>
@@ -6173,7 +6172,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="396"/>
       <source>Sorry, currently we don't support: *.%1 files</source>
-      <translation>对不起，目前我们不支持： *.%1 的文件</translation>
+      <translation>抱歉，目前我们不支持： *.%1 的文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="401"/>
