@@ -29,23 +29,24 @@ nomacs might have a weird coding style at the first glance, however we try to fo
   - Methods start with lowercase (i.e. `name()`).
   - Prefix members with an m (i.e. `int mAction = 0`).
   - Prefix classes with `Dk`.
-- Braces have to be set in the same line
+- format C++ sources with `clang-format -i --style=file your_contribution.cpp`
 - Encapsulate everything with the namespace `nmc`
 
 Right:
 
 ```cpp
-namespace nmc {
+namespace nmc
+{
 
-class DllCoreExport DkBaseManipulator {
-
+class DllCoreExport DkBaseManipulator
+{
 public:
-  DkBaseManipulator(QAction* action = 0);
+    DkBaseManipulator(QAction *action = 0);
 
-  QString name() const;
+    QString name() const;
 
 private:
-  QAction* mAction = 0;
+    QAction *mAction = 0;
 };
 
 }
