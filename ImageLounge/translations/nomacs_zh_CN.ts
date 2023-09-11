@@ -5578,12 +5578,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="2145"/>
       <source>Pin this directory</source>
-      <translation type="unfinished">Pin this directory</translation>
+      <translation>钉住此目录Pin this directory</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="2153"/>
       <source>Remove this directory</source>
-      <translation type="unfinished">Remove this directory</translation>
+      <translation>删除此目录</translation>
     </message>
   </context>
   <context>
@@ -5591,22 +5591,22 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicWidgets.cpp" line="693"/>
       <source>x:</source>
-      <translation type="unfinished">x:</translation>
+      <translation>x：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicWidgets.cpp" line="697"/>
       <source>y:</source>
-      <translation type="unfinished">y:</translation>
+      <translation>y：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicWidgets.cpp" line="701"/>
       <source>width:</source>
-      <translation type="unfinished">width:</translation>
+      <translation>宽度：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicWidgets.cpp" line="705"/>
       <source>height:</source>
-      <translation type="unfinished">height:</translation>
+      <translation>高度：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkBasicWidgets.cpp" line="710"/>
@@ -5624,12 +5624,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="905"/>
       <source>Original</source>
-      <translation>原作</translation>
+      <translation>原始大小</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="907"/>
       <source>New</source>
-      <translation>结果</translation>
+      <translation>调整之后</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="936"/>
@@ -5661,7 +5661,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1033"/>
       <source>Resample Image:</source>
-      <translation>对图像重新取样:</translation>
+      <translation>图像重新采样：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1040"/>
@@ -5681,12 +5681,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1043"/>
       <source>Bicubic (4x4 pixel interpolation)</source>
-      <translation>双立方 (4 x 4 像素内插法)</translation>
+      <translation>双立方 (4x4 像素内插法)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1044"/>
       <source>Lanczos (8x8 pixel interpolation)</source>
-      <translation>Lanczos (8 x 8 像素内插法)</translation>
+      <translation>Lanczos (8x8 像素内插法)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1053"/>
@@ -5696,7 +5696,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1064"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1065"/>
@@ -5711,7 +5711,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1443"/>
       <source>Sorry, the image is too large: %1</source>
-      <translation>抱歉，该图像太大： %1</translation>
+      <translation>抱歉，此图像太大： %1</translation>
     </message>
   </context>
   <context>
@@ -5719,7 +5719,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkManipulatorWidgets.cpp" line="343"/>
       <source>Angle</source>
-      <translation type="unfinished">Angle</translation>
+      <translation>角度</translation>
     </message>
   </context>
   <context>
@@ -5727,7 +5727,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="624"/>
       <source>Find &amp; Filter</source>
-      <translation>查找过滤器</translation>
+      <translation>查找过滤器(&amp;F)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="626"/>
@@ -5747,12 +5747,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="634"/>
       <source>Type search words or a regular expression</source>
-      <translation type="unfinished">Type search words or a regular expression</translation>
+      <translation>输入搜索字或正则表达式</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="692"/>
       <source>No Matching Items</source>
-      <translation>无匹配项</translation>
+      <translation>无匹配项目</translation>
     </message>
   </context>
   <context>
@@ -5773,7 +5773,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkSettingsWidget.cpp" line="131"/>
       <source>Filter Settings</source>
-      <translation type="unfinished">Filter Settings</translation>
+      <translation>过滤器设置</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkSettingsWidget.cpp" line="157"/>
@@ -5786,22 +5786,22 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1824"/>
       <source>Keyboard Shortcuts</source>
-      <translation>键盘快捷方式</translation>
+      <translation>键盘快捷键</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1860"/>
       <source>Set to &amp;Default</source>
-      <translation>设为默认(&amp;D)</translation>
+      <translation>设为默认值(&amp;D)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1861"/>
       <source>Removes All Custom Shortcuts</source>
-      <translation>删除所有的自定义快捷方式</translation>
+      <translation>删除所有自定义的快捷键</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1874"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1875"/>
@@ -5819,21 +5819,21 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1555"/>
       <source>Shortcut</source>
-      <translation>快捷方式</translation>
+      <translation>快捷键</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1737"/>
       <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-      <translation>%1已经在%2到%3使用
-按ESC来撤销更改</translation>
+      <translation>%1已经被%2到%3使用
+按ESC可撤销更改</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="1743"/>
       <source>%1 already used by %2
 Press ESC to undo changes</source>
-      <translation>%1已经在%2使用
-按ESC来撤销更改</translation>
+      <translation>%1已经被%2使用
+按ESC可撤销更改</translation>
     </message>
   </context>
   <context>
@@ -5846,7 +5846,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="257"/>
       <source>Portable</source>
-      <translation>移动</translation>
+      <translation>便携</translation>
     </message>
   </context>
   <context>
@@ -5862,17 +5862,17 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="4223"/>
       <source>width:</source>
-      <translation type="unfinished">width:</translation>
+      <translation>宽度：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="4230"/>
       <source>height:</source>
-      <translation type="unfinished">height:</translation>
+      <translation>高度：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="4246"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="4247"/>
@@ -5937,12 +5937,12 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkManipulatorWidgets.cpp" line="374"/>
       <source>Threshold</source>
-      <translation type="unfinished">Threshold</translation>
+      <translation>阈值</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkManipulatorWidgets.cpp" line="381"/>
       <source>Color</source>
-      <translation type="unfinished">Color</translation>
+      <translation>颜色</translation>
     </message>
   </context>
   <context>
@@ -5975,47 +5975,47 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1258"/>
       <source> selected</source>
-      <translation type="unfinished"> selected</translation>
+      <translation> 已选定</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1260"/>
       <source> images</source>
-      <translation type="unfinished"> images</translation>
+      <translation> 图像</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1262"/>
       <source>%1 | %2</source>
-      <translation type="unfinished">%1 | %2</translation>
+      <translation>%1 | %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1448"/>
       <source>Sorry, I cannot %1 %2</source>
-      <translation type="unfinished">Sorry, I cannot %1 %2</translation>
+      <translation>抱歉，不能 %1 %2</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1460"/>
       <source>move</source>
-      <translation type="unfinished">move</translation>
+      <translation>移动</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1471"/>
       <source>create link</source>
-      <translation type="unfinished">create link</translation>
+      <translation>创建链接</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1479"/>
       <source>copy</source>
-      <translation type="unfinished">copy</translation>
+      <translation>复制</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1501"/>
       <source>Shall I move %1 file(s) to trash?</source>
-      <translation>将%1个文件移至垃圾桶吗？</translation>
+      <translation>将 %1个 文件移至垃圾桶吗？</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1503"/>
       <source>Are you sure you want to permanently delete %1 file(s)?</source>
-      <translation>你确定你想要永久删除这 %1 个文件？</translation>
+      <translation>确定要永久删除这 %1 个文件？</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1508"/>
@@ -6036,7 +6036,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1560"/>
       <source>New Filename:</source>
-      <translation>新的文件名：</translation>
+      <translation>新文件名：</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1578"/>
@@ -6059,7 +6059,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1902"/>
       <source>Filter Files (Ctrl + F)</source>
-      <translation>文件筛选器 (Ctrl + F)</translation>
+      <translation>文件筛选器(Ctrl + F)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkThumbsWidgets.cpp" line="1915"/>
@@ -6107,7 +6107,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkSaveDialog.cpp" line="79"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkSaveDialog.cpp" line="80"/>
@@ -6125,7 +6125,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkManipulatorWidgets.cpp" line="259"/>
       <source>Angle</source>
-      <translation type="unfinished">Angle</translation>
+      <translation>角度</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkManipulatorWidgets.cpp" line="265"/>
@@ -6173,22 +6173,22 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="396"/>
       <source>Sorry, currently we don't support: *.%1 files</source>
-      <translation>抱歉，目前我们不支持： *.%1 的文件</translation>
+      <translation>抱歉，目前不支持：*.%1 文件</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="401"/>
       <source>*.%1 is already supported.</source>
-      <translation>*.%1 已经被支持。</translation>
+      <translation>已经支持 *.%1。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="405"/>
       <source>*.%1 is supported.</source>
-      <translation>*.%1 支持。</translation>
+      <translation>支持 *.%1。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="422"/>
       <source>Please name the new format:</source>
-      <translation>请命名新的格式：</translation>
+      <translation>请命名新格式：</translation>
     </message>
   </context>
   <context>
@@ -6201,7 +6201,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="603"/>
       <source>Resets the Pseudo Color function</source>
-      <translation>重置的仿色功能</translation>
+      <translation>重置伪彩色功能</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="777"/>
@@ -6211,7 +6211,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="538"/>
       <source>Changes the displayed color channel</source>
-      <translation>更改显示的颜色通道</translation>
+      <translation>修改显示的颜色通道</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="523"/>
@@ -6226,7 +6226,7 @@ Creating thumbnails...
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="558"/>
       <source>Click into the field for a new slider</source>
-      <translation>在字段中点击建立一个新的滑块</translation>
+      <translation>在字段中点击建立一个新滑块</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkToolbars.cpp" line="602"/>
@@ -6296,12 +6296,12 @@ Creating thumbnails...
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="368"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation>Nomacs 更新被禁用。有关详细信息，请与系统管理员联系。</translation>
+      <translation>Nomacs 更新被禁用。欲了解详情，请联系系统管理员。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="415"/>
       <source>Unable to download translation</source>
-      <translation>下载翻译出错了</translation>
+      <translation>无法下载翻译</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="415"/>
@@ -6314,7 +6314,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="432"/>
       <source>Unable to update translation</source>
-      <translation>更新翻译出错了</translation>
+      <translation>更新翻译出错</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="454"/>
@@ -6363,7 +6363,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="248"/>
       <source>sorry, I could not check for newer versions</source>
-      <translation>抱歉, 我不能检查新版本</translation>
+      <translation>抱歉, 不能检查新版本</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="268"/>
@@ -6387,7 +6387,7 @@ Please contact your system administrator for further information.</source>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="162"/>
       <source>nomacs updates are disabled.
 Please contact your system administrator for further information.</source>
-      <translation>Nomacs 更新被禁用。有关详细信息，请与系统管理员联系。</translation>
+      <translation>Nomacs 更新被禁用。欲了解详情，请联系系统管理员。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="248"/>
@@ -6402,12 +6402,12 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="261"/>
       <source>Do you want to download and install it now?</source>
-      <translation>您要现在下载并安装吗？</translation>
+      <translation>现在下载并安装吗？</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="262"/>
       <source>For more information see </source>
-      <translation>有关详细信息请参阅</translation>
+      <translation>有关详情请参阅</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="279"/>
@@ -6422,7 +6422,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkCore/DkUpdater.cpp" line="271"/>
       <source>nomacs is up-to-date</source>
-      <translation>nomacs是最新的</translation>
+      <translation>nomacs已是最新版</translation>
     </message>
   </context>
   <context>
@@ -6435,7 +6435,7 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="615"/>
       <source>connected with: </source>
-      <translation>连接: </translation>
+      <translation>已经连接: </translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="619"/>
@@ -6445,22 +6445,22 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="734"/>
       <source>Busy</source>
-      <translation>Busy</translation>
+      <translation>忙</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1379"/>
       <source>Transparency Pattern Enabled</source>
-      <translation>启用透明模式</translation>
+      <translation>启用透明图案</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1379"/>
       <source>Transparency Pattern Disabled</source>
-      <translation>禁用透明模式</translation>
+      <translation>禁用透明图案</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1420"/>
       <source>A remarkable woman</source>
-      <translation>一个了不得的女人</translation>
+      <translation>杰出女性</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1420"/>
@@ -6470,17 +6470,17 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1430"/>
       <source>you cannot cancel this</source>
-      <translation>您不能取消这个操作</translation>
+      <translation>不能取消此操作</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1438"/>
       <source>did you understand the brainteaser?</source>
-      <translation>您理解这个谜题吗?</translation>
+      <translation>理解这个谜题吗？</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1440"/>
       <source>%1 is wrong...</source>
-      <translation>%1 是错误的...</translation>
+      <translation>%1 是错误的……</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkViewPort.cpp" line="1473"/>
@@ -6507,22 +6507,22 @@ Please contact your system administrator for further information.</source>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3698"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
-      <translation>欢迎来到Nomacs，请选择您喜爱的语言。</translation>
+      <translation>欢迎使用Nomacs，请在下方选择需要的语言。</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3703"/>
       <source>&amp;Register File Associations</source>
-      <translation>注册文件关联</translation>
+      <translation>注册文件关联(&amp;R)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3706"/>
       <source>Set As &amp;Default Viewer</source>
-      <translation>设置为默认查看器</translation>
+      <translation>设置为默认查看器(&amp;D)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3711"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../srv/nomacs.git/ImageLounge/src/DkGui/DkDialog.cpp" line="3712"/>
