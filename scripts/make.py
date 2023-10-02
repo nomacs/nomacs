@@ -262,6 +262,7 @@ class FormatsConfig(Config):
             # os.path.join(self.libpath, "libheif") + ";" +
             self.qtpath,
             "-DENABLE_QOI=ON",
+            "-DENABLE_WEBP=ON",
             "-B" + self.builddir,
             self.srcpath
         ]
