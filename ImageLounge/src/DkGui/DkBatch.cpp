@@ -888,10 +888,10 @@ void DkBatchOutput::updateCBCompression()
     const QString extStr = mCbNewExtension->currentText();
     if (extStr.contains(QRegularExpression("(avif)", QRegularExpression::CaseInsensitiveOption))) {
         quality[0] = 100;
-        quality[1] = 80;
-        quality[2] = 60;
-        quality[3] = 40;
-        quality[4] = 20;
+        quality[1] = 90;
+        quality[2] = 76;
+        quality[3] = 57;
+        quality[4] = 36;
     } else { // quality used for JPG and other formats
         quality[0] = 100;
         quality[1] = 97;

@@ -109,10 +109,10 @@ DkCompressDialog::DkCompressDialog(QWidget *parent, Qt::WindowFlags flags)
 
     mAvifImgQuality.resize(end_quality);
     mAvifImgQuality[best_quality] = 100;
-    mAvifImgQuality[high_quality] = 80;
-    mAvifImgQuality[medium_quality] = 60;
-    mAvifImgQuality[low_quality] = 40;
-    mAvifImgQuality[bad_quality] = 20;
+    mAvifImgQuality[high_quality] = 90;
+    mAvifImgQuality[medium_quality] = 76;
+    mAvifImgQuality[low_quality] = 57;
+    mAvifImgQuality[bad_quality] = 36;
 
     createLayout();
     init();
