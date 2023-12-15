@@ -127,6 +127,7 @@ if (ENABLE_HEIF)
     file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/kimg_heif.dll" ${CMAKE_BINARY_DIR}/Release/imageformats/kimg_heif.dll)
     file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/heif.dll" ${CMAKE_BINARY_DIR}/Release/heif.dll)
     file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/libde265.dll" ${CMAKE_BINARY_DIR}/Release/libde265.dll)
+    file(DOWNLOAD "https://github.com/novomesk/qt-heic-image-plugin/releases/latest/download/openjp2.dll" ${CMAKE_BINARY_DIR}/Release/openjp2.dll)
 endif()
 
 # copy additional Qt files
