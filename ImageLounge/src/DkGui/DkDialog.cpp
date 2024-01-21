@@ -83,6 +83,7 @@
 #include <QSpinBox>
 #include <QSplashScreen>
 #include <QStandardItemModel>
+#include <QStandardPaths>
 #include <QStringListModel>
 #include <QTableView>
 #include <QTextEdit>
