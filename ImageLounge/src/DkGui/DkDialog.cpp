@@ -53,7 +53,6 @@
 #include <QComboBox>
 #include <QCompleter>
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFileInfo>

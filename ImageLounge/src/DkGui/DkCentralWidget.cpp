@@ -50,7 +50,6 @@
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QFileDialog>
 #include <QIcon>
