@@ -2571,16 +2571,12 @@ void DkExportTiffDialog::accept()
         }
     }
 
-    QFileInfo sFile(mSaveDirPath, mFileEdit->text() + "-" + suffix);
-
     emit infoMessage("");
 
-    QFuture<int> future = QtConcurrent::run(this,
-                                            &nmc::DkExportTiffDialog::exportImages,
-                                            sFile.absoluteFilePath(),
-                                            mFromPage->value(),
-                                            mToPage->value(),
-                                            mOverwrite->isChecked());
+    QFuture<int> future = QtConcurrent::run([&, suffix] {
+        QFileInfo sFile(mSaveDirPath, mFileEdit->text() + "-" + suffix);
+        return nmc::DkExportTiffDialog::exportImages(sFile.absoluteFilePath(), mFromPage->value(), mToPage->value(), mOverwrite->isChecked());
+    });
     mWatcher.setFuture(future);
 }
 
@@ -2590,7 +2586,7 @@ void DkExportTiffDialog::processingFinished()
     mProgress->hide();
     mMsgLabel->hide();
 
-    if (mWatcher.future() == QDialog::Accepted)
+    if (mWatcher.result() == QDialog::Accepted)
         QDialog::accept();
 }
 
@@ -3038,12 +3034,9 @@ void DkMosaicDialog::buttonClicked(QAbstractButton *button)
             enableAll(false);
             button->setEnabled(false);
 
-            QFuture<bool> future = QtConcurrent::run(this,
-                                                     &nmc::DkMosaicDialog::postProcessMosaic,
-                                                     mDarkenSlider->value() / 100.0f,
-                                                     mLightenSlider->value() / 100.0f,
-                                                     mSaturationSlider->value() / 100.0f,
-                                                     false);
+            QFuture<bool> future = QtConcurrent::run([&] {
+                return postProcessMosaic(mDarkenSlider->value() / 100.0f, mLightenSlider->value() / 100.0f, mSaturationSlider->value() / 100.0f, false);
+            });
             mPostProcessWatcher.setFuture(future);
         }
     } else if (button == mButtons->button(QDialogButtonBox::Apply))
@@ -3080,11 +3073,13 @@ void DkMosaicDialog::compute()
         }
     }
 
-    QString filter = mFilterEdit->text();
     mFilesUsed.clear();
 
     mProcessing = true;
-    QFuture<int> future = QtConcurrent::run(this, &nmc::DkMosaicDialog::computeMosaic, filter, suffix, mNewWidthBox->value(), mNumPatchesH->value());
+    QFuture<int> future = QtConcurrent::run([&, suffix] {
+        QString filter = mFilterEdit->text();
+        return computeMosaic(filter, suffix, mNewWidthBox->value(), mNumPatchesH->value());
+    });
     mMosaicWatcher.setFuture(future);
 
     //// debug
@@ -3441,12 +3436,9 @@ void DkMosaicDialog::updatePostProcess()
     mButtons->button(QDialogButtonBox::Apply)->setEnabled(false);
     mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
-    QFuture<bool> future = QtConcurrent::run(this,
-                                             &nmc::DkMosaicDialog::postProcessMosaic,
-                                             mDarkenSlider->value() / 100.0f,
-                                             mLightenSlider->value() / 100.0f,
-                                             mSaturationSlider->value() / 100.0f,
-                                             true);
+    QFuture<bool> future = QtConcurrent::run([&] {
+        return postProcessMosaic(mDarkenSlider->value() / 100.0f, mLightenSlider->value() / 100.0f, mSaturationSlider->value() / 100.0f, true);
+    });
     mPostProcessWatcher.setFuture(future);
 
     mUpdatePostProcessing = false;

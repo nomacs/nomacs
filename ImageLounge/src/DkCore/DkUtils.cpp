@@ -535,8 +535,9 @@ bool DkUtils::exists(const QFileInfo &file, int waitMs)
         // - create a dedicated pool for exists
         // - create a dedicated pool for image loading
         DkThumbsThreadPool::pool(), // hook it to the thumbs pool
-        &DkUtils::checkFile,
-        file);
+        [file] {
+            return DkUtils::checkFile(file);
+        });
 
     for (int idx = 0; idx < waitMs; idx++) {
         if (future.isFinished())
