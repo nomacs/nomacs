@@ -88,7 +88,7 @@ void DkThumbNail::compute(int forceLoad)
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/
-QImage DkThumbNail::computeIntern(const QString &filePath, const QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize)
+QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize)
 {
     DkTimer dt;
     // qDebug() << "[thumb] file: " << filePath;
@@ -197,7 +197,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, const QSharedPointer<
             if (!ba || ba->isEmpty())
                 metaData.saveMetaData(lFilePath);
             else
-                metaData.saveMetaData(lFilePath, ba);
+                metaData.saveMetaData(ba);
 
             qDebug() << "[thumb] saved to exif data";
         } catch (...) {
