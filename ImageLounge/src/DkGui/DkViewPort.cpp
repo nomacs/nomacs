@@ -48,7 +48,6 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
-#include <QDesktopWidget>
 #include <QDrag>
 #include <QDragLeaveEvent>
 #include <QInputDialog>
