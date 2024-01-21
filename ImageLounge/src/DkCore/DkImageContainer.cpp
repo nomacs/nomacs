@@ -762,8 +762,9 @@ void DkImageContainerT::fetchFile()
 
     mFetchingBuffer = true; // saves the threaded call
     connect(&mBufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
-
-    mBufferWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::loadFileToBuffer, filePath()));
+    mBufferWatcher.setFuture(QtConcurrent::run([&] {
+        return loadFileToBuffer(filePath());
+    }));
 }
 
 void DkImageContainerT::bufferLoaded()
@@ -802,7 +803,9 @@ void DkImageContainerT::fetchImage()
 
     connect(&mImageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
 
-    mImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::loadImageIntern, filePath(), mLoader, mFileBuffer));
+    mImageWatcher.setFuture(QtConcurrent::run([&] {
+        return loadImageIntern(filePath(), mLoader, mFileBuffer);
+    }));
 }
 
 void DkImageContainerT::imageLoaded()
@@ -951,7 +954,9 @@ void DkImageContainerT::saveMetaDataThreaded(const QString &filePath)
         return;
 
     mFileUpdateTimer.stop();
-    QFuture<void> future = QtConcurrent::run(this, &nmc::DkImageContainerT::saveMetaDataIntern, filePath, getLoader(), getFileBuffer());
+    QFuture<void> future = QtConcurrent::run([&, filePath] {
+        return saveMetaDataIntern(filePath, getLoader(), getFileBuffer());
+    });
 }
 
 void DkImageContainerT::saveMetaDataThreaded()
@@ -991,7 +996,9 @@ bool DkImageContainerT::saveImageThreaded(const QString &filePath, const QImage 
     mFileUpdateTimer.stop();
     connect(&mSaveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()), Qt::UniqueConnection);
 
-    mSaveImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageContainerT::saveImageIntern, filePath, mLoader, saveImg, compression));
+    mSaveImageWatcher.setFuture(QtConcurrent::run([&, filePath, saveImg, compression] {
+        return saveImageIntern(filePath, mLoader, saveImg, compression);
+    }));
 
     return true;
 }

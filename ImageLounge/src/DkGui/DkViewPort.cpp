@@ -870,7 +870,9 @@ void DkViewPort::applyManipulator()
     } else
         img = getImage();
 
-    mManipulatorWatcher.setFuture(QtConcurrent::run(mpl.data(), &nmc::DkBaseManipulator::apply, img));
+    mManipulatorWatcher.setFuture(QtConcurrent::run([mpl, img] {
+        return mpl.data()->apply(img);
+    }));
 
     mActiveManipulator = mpl;
 

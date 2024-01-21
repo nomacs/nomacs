@@ -1535,7 +1535,9 @@ void DkImageStorage::compute()
 
     mComputeState = l_computing;
 
-    mFutureWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageStorage::computeIntern, mImg, mSize));
+    mFutureWatcher.setFuture(QtConcurrent::run([&] {
+        return computeIntern(mImg, mSize);
+    }));
 }
 
 QImage DkImageStorage::computeIntern(const QImage &src, const QSize &size)

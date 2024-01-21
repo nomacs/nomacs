@@ -312,12 +312,9 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
     connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
 
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              this,
-                                              &nmc::DkThumbNailT::computeCall,
-                                              mFile,
-                                              ba,
-                                              forceLoad,
-                                              mMaxThumbSize));
+                                              [&, ba] {
+                                                  return computeCall(mFile, ba, mForceLoad, mMaxThumbSize);
+                                              }));
 
     return true;
 }

@@ -315,7 +315,9 @@ void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>
 
     mSortingIsDirty = false;
     mSortingImages = true;
-    mCreateImageWatcher.setFuture(QtConcurrent::run(this, &nmc::DkImageLoader::sortImages, images));
+    mCreateImageWatcher.setFuture(QtConcurrent::run([&, images] {
+        return sortImages(images);
+    }));
 
     qDebug() << "sorting images threaded...";
 }
