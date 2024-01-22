@@ -557,10 +557,13 @@ protected:
 
     QCheckBox *mCbCropRectangle = 0;
     DkRectWidget *mCropRectWidget = 0;
+    QCheckBox *mCbCropRectCenter = 0;
 
     QComboBox *mResizeComboMode;
     QComboBox *mResizeComboProperties;
     QSpinBox *mResizeSbPx;
+    QLabel *mResizeSbZoomLabel;
+    QSpinBox *mResizeSbZoomHeightPx;
     QDoubleSpinBox *mResizeSbPercent;
 };
 
