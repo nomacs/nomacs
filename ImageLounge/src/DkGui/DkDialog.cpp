@@ -106,6 +106,10 @@
 
 #pragma warning(pop) // no warnings from includes - end
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#define QPageLayout QPrinter
+#endif
+
 namespace nmc
 {
 
@@ -2195,7 +2199,7 @@ void DkPrintPreviewDialog::pageSetup()
 
     if (pageSetup.exec() == QDialog::Accepted) {
         // update possible orientation changes
-        if (mPreview->orientation() == QPrinter::Portrait) {
+        if (mPreview->orientation() == QPageLayout::Portrait) {
             mPreview->setPortraitOrientation();
         } else {
             mPreview->setLandscapeOrientation();
