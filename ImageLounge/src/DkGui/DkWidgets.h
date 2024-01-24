@@ -31,6 +31,7 @@
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDockWidget>
+#include <QFileIconProvider>
 #include <QFileSystemModel>
 #include <QFutureWatcher>
 #include <QLineEdit>
@@ -381,6 +382,9 @@ class DkFileSystemModel : public QFileSystemModel
 
 public:
     DkFileSystemModel(QObject *parent = 0);
+
+protected:
+    QFileIconProvider *mIconProvider = nullptr;
 };
 
 class DkSortFileProxyModel : public QSortFilterProxyModel
