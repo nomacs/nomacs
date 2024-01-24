@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "DkQt5Compat.h"
+
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QDockWidget>
 #include <QFileSystemModel>
@@ -95,7 +97,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
     void focusOutEvent(QFocusEvent *event) override;
-    void enterEvent(QEvent *event) override;
+    void enterEvent(DkEnterEvent *event) override;
     void leaveEvent(QEvent *event) override;
     QPixmap createSelectedEffect(QPixmap *pm);
 };
@@ -562,7 +564,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void enterEvent(QEvent *event) override;
+    void enterEvent(DkEnterEvent *event) override;
     void init();
 
     DkRotatingRect *rect;

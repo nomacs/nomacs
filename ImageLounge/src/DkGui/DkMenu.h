@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "DkQt5Compat.h"
+
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QMenuBar>
 #include <QPointer>
@@ -104,7 +106,7 @@ public slots:
     void hideMenu();
 
 protected:
-    void enterEvent(QEvent *event) override;
+    void enterEvent(DkEnterEvent *event) override;
     void leaveEvent(QEvent *event) override;
 
 private:

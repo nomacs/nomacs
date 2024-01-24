@@ -128,7 +128,7 @@ void DkMenuBar::setTimeToShow(int timeToShow)
     mTimeToShow = timeToShow;
 }
 
-void DkMenuBar::enterEvent(QEvent *event)
+void DkMenuBar::enterEvent(DkEnterEvent *event)
 {
     if (mTimeToShow == -1)
         return;
