@@ -2158,7 +2158,7 @@ void DkRecentDirWidget::mousePressEvent(QMouseEvent *event)
     DkFadeWidget::mousePressEvent(event);
 }
 
-void DkRecentDirWidget::enterEvent(QEvent *event)
+void DkRecentDirWidget::enterEvent(DkEnterEvent *event)
 {
     for (auto b : mButtons)
         b->show();
