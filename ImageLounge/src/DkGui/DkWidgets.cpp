@@ -353,6 +353,9 @@ DkFileSystemModel::DkFileSystemModel(QObject *parent /* = 0 */)
     setRootPath(QDir::rootPath());
     setNameFilters(DkSettingsManager::param().app().fileFilters);
     setReadOnly(false);
+
+    mIconProvider = new QFileIconProvider();
+    setIconProvider(mIconProvider);
 }
 
 // DkSortFileProxyModel --------------------------------------------------------------------
