@@ -96,6 +96,17 @@ endif()
 
 # find Qt
 NMC_FINDQT()
+if(${QT_VERSION_MAJOR} VERSION_GREATER_EQUAL "6")
+    # Still we a using a tons of deprecated features (silence them for a while)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
+	set(ENABLE_QUAZIP OFF)
+	message(STATUS "QuaZip disabled - it's not supported for Qt6")
+
+    # We need these to biuld with Qt6
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
 if (NOT ENABLE_QT_DEBUG)
 	message (STATUS "disabling qt debug messages")
