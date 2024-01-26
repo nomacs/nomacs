@@ -93,7 +93,7 @@ Install [Homebrew](http://brew.sh/) for easier installation of dependencies.
 Install required dependencies:
 
 ``` console
-$ brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
+brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
 Clone the nomacs repository from GitHub:
@@ -104,31 +104,31 @@ git clone https://github.com/nomacs/nomacs.git
 Go to the `nomacs` directory and run cmake to get the Makefiles:
 
 ``` console
-$ cd nomacs
-$ mkdir build
-$ cd build
+cd nomacs
+mkdir build
+cd build
 ```
 
 For Homebrew on Intel models:
 ```console
-$ Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
+Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
 ```
 
 For Homebrew on Apple Silicon models:
 ```console
-$ Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
+Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
 ```
 
 Run make:
 
 ```console
-$ make
+make
 ```
 
 You will now have a binary (`nomacs.app`), which you can test (or use directly). To install it to `/usr/local/bin`, use
 
 ```console
-$ sudo make install
+sudo make install
 ```
 
 ## Build in Docker
