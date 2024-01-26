@@ -73,9 +73,7 @@ void DkSettingsWidget::addSettingsGroup(const DkSettingsGroup &group)
 void DkSettingsWidget::clear()
 {
     mProxyModel->invalidate();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mSettingsModel->clear();
-#endif
 }
 
 void DkSettingsWidget::changeSetting(QSettings &settings, const QString &key, const QVariant &value, const QStringList &groups)
