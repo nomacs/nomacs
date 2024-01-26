@@ -82,8 +82,7 @@ else()
 endif()
 
 # themes
-file(GLOB NMC_THEMES "src/themes/*.css")
-install(FILES ${NMC_THEMES} DESTINATION "share/nomacs/Image Lounge/themes")
+install(FILES ${NOMACS_THEMES} DESTINATION "share/nomacs/Image Lounge/themes")
 
 # "make dist" target
 string(TOLOWER ${PROJECT_NAME} CPACK_PACKAGE_NAME)
