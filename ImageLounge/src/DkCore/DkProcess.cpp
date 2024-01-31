@@ -303,44 +303,56 @@ bool DkBatchTransform::correctGamma() const
 
 bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStringList &logStrings) const
 {
+    bool changed = false;
+
     if (!isActive()) {
         logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
         return true;
     }
 
+    // crop from metadata
     DkRotatingRect rect = container->cropRect();
-    if (mCropFromMetadata) {
-        if (!rect.isEmpty())
-            container->cropImage(rect, QColor(), false);
+    if (mCropFromMetadata && !rect.isEmpty()) {
+        container->cropImage(rect, QColor(), false);
+        logStrings.append(QObject::tr("%1 image cropped from metadata.").arg(name()));
+        changed = true;
     }
 
     QImage img = container->image();
-    QImage tmpImg;
+
+    // rotate before resize (for mode zoom)
+    if (mAngle != 0 && mResizeMode == resize_mode_zoom) {
+        QTransform rotationMatrix;
+        rotationMatrix.rotate((double)mAngle);
+        img = img.transformed(rotationMatrix);
+        logStrings.append(QObject::tr("%1 image rotated %2 degrees.").arg(name()).arg(mAngle));
+        changed = true;
+    }
 
     // resize
     if (isResizeActive()) {
         QSize size;
         float sf = 1.0f;
-
         if (prepareProperties(img.size(), size, sf, logStrings))
-            tmpImg = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
-        else
-            tmpImg = img;
-    } else
-        tmpImg = img;
-
-    // rotate
-    if (mAngle != 0) {
-        QTransform rotationMatrix;
-        rotationMatrix.rotate((double)mAngle);
-        tmpImg = tmpImg.transformed(rotationMatrix);
+        {
+            img = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
+            logStrings.append(QObject::tr("%1 image resized to %2 x %3.").arg(name()).arg(img.rect().width()).arg(img.rect().height()));
+            changed = true;
+        }
     }
 
-    // crop from rectangle
-    if (cropFromRectangle() || mResizeMode == resize_mode_zoom) {
-        //QRect r = mCropRect.intersected(container->image().rect());
+    // rotate after resize (for other modes)
+    if (mAngle != 0 && mResizeMode != resize_mode_zoom) {
+        QTransform rotationMatrix;
+        rotationMatrix.rotate((double)mAngle);
+        img = img.transformed(rotationMatrix);
+        logStrings.append(QObject::tr("%1 image rotated %2 degrees.").arg(name()).arg(mAngle));
+        changed = true;
+    }
 
-        QRect imgRect = tmpImg.rect();
+    // crop from rectangle or crop to finalize zoom
+    if (cropFromRectangle() || mResizeMode == resize_mode_zoom) {
+        QRect imgRect = img.rect();
         QRect r = mCropRect.intersected(imgRect);
         if (mResizeMode == resize_mode_zoom)
             r.setRect(0, 0, mResizeScaleFactor, mResizeZoomHeight);
@@ -353,34 +365,18 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
         if (center && r.height() < imgRect.height())
             r.moveTop((imgRect.height() - r.height()) / 2);
 
-        if (center)
-            logStrings.append(QObject::tr("%1 image resized and cropped: x%2 y%3 w%4 h%5 from img x%6 y%7 w%8 h%9").arg(name())
-            .arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height())
-            .arg(imgRect.x()).arg(imgRect.y()).arg(imgRect.width()).arg(imgRect.height()));
+        logStrings.append(QObject::tr("%1 image %2 x %3 cropped to x%4 y%5 w%6 h%7")
+            .arg(name()).arg(imgRect.width()).arg(imgRect.height()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
 
-        tmpImg = tmpImg.copy(r);
+        img = img.copy(r);
+        changed = true;
     }
 
-    // logs
-    if (!tmpImg.isNull()) {
-        container->setImage(tmpImg, QObject::tr("transformed"));
+    if (changed)
+        container->setImage(img, QObject::tr("transformed"));
 
-        if (rect.isEmpty() && mCropFromMetadata)
-            logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
-        else if (isResizeActive()) {
-            if (mResizeMode == resize_mode_zoom)
-                logStrings.append(QObject::tr("%1 image zoomed, scale factor: %2%").arg(name()).arg(mResizeScaleFactor * 100.0f));
-            else if (mResizeMode == resize_mode_default)
-                logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(mResizeScaleFactor * 100.0f));
-            else
-                logStrings.append(QObject::tr("%1 image resized, new size: %2 px").arg(name()).arg(mResizeScaleFactor));
-        } else
-            logStrings.append(QObject::tr("%1 image transformed and cropped.").arg(name()));
-
-    } else {
-        logStrings.append(QObject::tr("%1 error, could not transform image.").arg(name()));
-        return false;
-    }
+    else
+        logStrings.append(QObject::tr("%1 not transformed.").arg(name()));
 
     return true;
 }

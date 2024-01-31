@@ -761,6 +761,14 @@ void DkRectWidget::setRect(const QRect &r)
     blockSignals(false);
 }
 
+void DkRectWidget::setSizeOnly(bool sizeOnly)
+{
+    mCropXLabel->setEnabled(!sizeOnly);
+    mSpCropRect[crop_x]->setEnabled(!sizeOnly);
+    mCropYLabel->setEnabled(!sizeOnly);
+    mSpCropRect[crop_y]->setEnabled(!sizeOnly);
+}
+
 QRect DkRectWidget::rect() const
 {
     return QRect(mSpCropRect[crop_x]->value(), mSpCropRect[crop_y]->value(), mSpCropRect[crop_width]->value(), mSpCropRect[crop_height]->value());
@@ -775,21 +783,21 @@ void DkRectWidget::createLayout()
 {
     mSpCropRect.resize(crop_end);
 
-    QLabel *lbCropX = new QLabel(tr("x:"));
+    mCropXLabel = new QLabel(tr("x:"));
     mSpCropRect[crop_x] = new QSpinBox(this);
-    lbCropX->setBuddy(mSpCropRect[crop_x]);
+    mCropXLabel->setBuddy(mSpCropRect[crop_x]);
 
-    QLabel *lbCropY = new QLabel(tr("y:"));
+    mCropYLabel = new QLabel(tr("y:"));
     mSpCropRect[crop_y] = new QSpinBox(this);
-    lbCropY->setBuddy(mSpCropRect[crop_y]);
+    mCropYLabel->setBuddy(mSpCropRect[crop_y]);
 
-    QLabel *lbCropWidth = new QLabel(tr("width:"));
+    mCropWLabel = new QLabel(tr("width:"));
     mSpCropRect[crop_width] = new QSpinBox(this);
-    lbCropWidth->setBuddy(mSpCropRect[crop_width]);
+    mCropWLabel->setBuddy(mSpCropRect[crop_width]);
 
-    QLabel *lbCropHeight = new QLabel(tr("height:"));
+    mCropHLabel = new QLabel(tr("height:"));
     mSpCropRect[crop_height] = new QSpinBox(this);
-    lbCropHeight->setBuddy(mSpCropRect[crop_height]);
+    mCropHLabel->setBuddy(mSpCropRect[crop_height]);
 
     for (QSpinBox *sp : mSpCropRect) {
         sp->setSuffix(tr(" px"));
@@ -800,13 +808,13 @@ void DkRectWidget::createLayout()
 
     QHBoxLayout *cropLayout = new QHBoxLayout(this);
     cropLayout->setContentsMargins(0, 0, 0, 0);
-    cropLayout->addWidget(lbCropX);
+    cropLayout->addWidget(mCropXLabel);
     cropLayout->addWidget(mSpCropRect[crop_x]);
-    cropLayout->addWidget(lbCropY);
+    cropLayout->addWidget(mCropYLabel);
     cropLayout->addWidget(mSpCropRect[crop_y]);
-    cropLayout->addWidget(lbCropWidth);
+    cropLayout->addWidget(mCropWLabel);
     cropLayout->addWidget(mSpCropRect[crop_width]);
-    cropLayout->addWidget(lbCropHeight);
+    cropLayout->addWidget(mCropHLabel);
     cropLayout->addWidget(mSpCropRect[crop_height]);
 }
 
