@@ -767,6 +767,21 @@ void DkRectWidget::setSizeOnly(bool sizeOnly)
     mSpCropRect[crop_x]->setEnabled(!sizeOnly);
     mCropYLabel->setEnabled(!sizeOnly);
     mSpCropRect[crop_y]->setEnabled(!sizeOnly);
+
+    if (sizeOnly)
+    {
+        blockSignals(true);
+        mSpCropRect[crop_x]->setSpecialValueText(" ");
+        mSpCropRect[crop_y]->setSpecialValueText(" ");
+        mSpCropRect[crop_x]->setValue(0);
+        mSpCropRect[crop_y]->setValue(0);
+        blockSignals(false);
+    }
+    else
+    {
+        mSpCropRect[crop_x]->setSpecialValueText("");
+        mSpCropRect[crop_y]->setSpecialValueText("");
+    }
 }
 
 QRect DkRectWidget::rect() const

@@ -2204,6 +2204,10 @@ void DkBatchTransformWidget::modeChanged()
         mResizeSbZoomHeightPx->show();
         mResizeSbPercent->hide();
         mResizeComboProperties->hide();
+
+        // Uncheck disabled checkboxes
+        mCbCropMetadata->setChecked(false);
+        mCbCropRectangle->setChecked(false);
     } else {
         mResizeSbPx->show();
         mResizeSbZoomLabel->hide();
@@ -2215,13 +2219,17 @@ void DkBatchTransformWidget::modeChanged()
     // Cropping not available for resize mode 'Zoom'
     mCbCropMetadata->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
     mCbCropRectangle->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
-    mCropRectWidget->setSizeOnly(mCbCropRectCenter->isChecked());
 
     // Crop rect and crop center only available when crop rectangle is active
     mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
         && mCbCropRectangle->isChecked());
     mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
         && mCbCropRectangle->isChecked());
+
+    if (!mCbCropRectCenter->isEnabled())
+        mCbCropRectCenter->setChecked(false);
+
+    mCropRectWidget->setSizeOnly(mCbCropRectCenter->isChecked());
 
     updateHeader();
 }
@@ -2284,10 +2292,12 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 
     // crop
     mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
-
-    mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
+    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+        && batchTransform->cropFromRectangle());
     mCropRectWidget->setRect(batchTransform->cropRectangle());
-    mCbCropRectCenter->setChecked(batchTransform->cropRectCenter());
+    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+        && batchTransform->cropMetatdata()
+        && batchTransform->cropRectCenter());
 
     // resize
     mResizeComboMode->setCurrentIndex(batchTransform->mode());
