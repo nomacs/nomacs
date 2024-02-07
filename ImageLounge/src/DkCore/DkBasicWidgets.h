@@ -269,6 +269,7 @@ public:
 
 public slots:
     void setRect(const QRect &r);
+    void setSizeOnly(bool sizeOnly);
     void updateRect();
 
 signals:
@@ -287,6 +288,10 @@ protected:
     };
 
     QVector<QSpinBox *> mSpCropRect;
+    QLabel *mCropXLabel;
+    QLabel *mCropYLabel;
+    QLabel *mCropWLabel;
+    QLabel *mCropHLabel;
 };
 
 }

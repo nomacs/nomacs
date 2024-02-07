@@ -166,6 +166,7 @@ public:
         resize_mode_short_side,
         resize_mode_width,
         resize_mode_height,
+        resize_mode_zoom,
 
         resize_mode_end
     };
@@ -184,7 +185,9 @@ public:
     virtual void setProperties(int angle,
                                bool cropFromMetadata,
                                QRect cropRect,
+                               bool cropRectCenter,
                                float scaleFactor,
+                               float zoomHeight,
                                const ResizeMode &mode = resize_mode_default,
                                const ResizeProperty &prop = resize_prop_default,
                                int iplMethod = 1 /*DkImage::ipl_area*/,
@@ -198,12 +201,14 @@ public:
     bool cropMetatdata() const;
     bool cropFromRectangle() const;
     QRect cropRectangle() const;
+    bool cropRectCenter() const;
 
     // resize
     ResizeMode mode() const;
     ResizeProperty prop() const;
     int iplMethod() const;
     float scaleFactor() const;
+    float zoomHeight() const;
     bool correctGamma() const;
 
 protected:
@@ -214,10 +219,12 @@ protected:
 
     int mAngle = 0;
     bool mCropFromMetadata = false;
+    bool mCropRectCenter = false;
 
     ResizeMode mResizeMode = resize_mode_default;
     ResizeProperty mResizeProperty = resize_prop_default;
     float mResizeScaleFactor = 1.0f;
+    float mResizeZoomHeight = 0;
     int mResizeIplMethod = 0;
     bool mResizeCorrectGamma = false;
 

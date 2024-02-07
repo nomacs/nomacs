@@ -2032,7 +2032,7 @@ void DkBatchTransformWidget::createLayout()
 
     mResizeComboMode = new QComboBox(this);
     QStringList modeItems;
-    modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
+    modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height") << tr("Zoom");
     mResizeComboMode->addItems(modeItems);
 
     mResizeSbPercent = new QDoubleSpinBox(this);
@@ -2044,6 +2044,13 @@ void DkBatchTransformWidget::createLayout()
     mResizeSbPx->setSuffix(tr(" px"));
     mResizeSbPx->setMaximum(SHRT_MAX);
     mResizeSbPx->setMinimum(1);
+
+    mResizeSbZoomLabel = new QLabel("x", this);
+
+    mResizeSbZoomHeightPx = new QSpinBox(this);
+    mResizeSbZoomHeightPx->setSuffix(tr(" px"));
+    mResizeSbZoomHeightPx->setMaximum(SHRT_MAX);
+    mResizeSbZoomHeightPx->setMinimum(1);
 
     mResizeComboProperties = new QComboBox(this);
     QStringList propertyItems;
@@ -2057,6 +2064,8 @@ void DkBatchTransformWidget::createLayout()
     resizeLayout->addWidget(mResizeComboMode);
     resizeLayout->addWidget(mResizeSbPercent);
     resizeLayout->addWidget(mResizeSbPx);
+    resizeLayout->addWidget(mResizeSbZoomLabel);
+    resizeLayout->addWidget(mResizeSbZoomHeightPx);
     resizeLayout->addWidget(mResizeComboProperties);
     resizeLayout->addStretch();
 
@@ -2085,6 +2094,7 @@ void DkBatchTransformWidget::createLayout()
     // crop rectangle
     mCbCropRectangle = new QCheckBox(tr("&Crop Rectangle"));
     mCropRectWidget = new DkRectWidget(QRect(), this);
+    mCbCropRectCenter = new QCheckBox(tr("&Crop to center"));
 
     QGridLayout *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -2103,14 +2113,18 @@ void DkBatchTransformWidget::createLayout()
     layout->addWidget(mCbCropRectangle, 9, 0);
     layout->setColumnStretch(3, 10);
     layout->addWidget(mCropRectWidget, 10, 0);
+    layout->setColumnStretch(3, 10);
+    layout->addWidget(mCbCropRectCenter, 11, 0);
 
     connect(mResizeComboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged()));
     connect(mResizeSbPercent, SIGNAL(valueChanged(double)), this, SLOT(updateHeader()));
     connect(mResizeSbPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
+    connect(mResizeSbZoomHeightPx, SIGNAL(valueChanged(int)), this, SLOT(updateHeader()));
 
     connect(mRotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateHeader()));
     connect(mCbCropMetadata, SIGNAL(clicked()), this, SLOT(updateHeader()));
-    connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(updateHeader()));
+    connect(mCbCropRectangle, SIGNAL(clicked()), this, SLOT(modeChanged()));
+    connect(mCbCropRectCenter, SIGNAL(clicked()), this, SLOT(modeChanged()));
 }
 
 void DkBatchTransformWidget::applyDefault()
@@ -2119,14 +2133,15 @@ void DkBatchTransformWidget::applyDefault()
     mCbCropMetadata->setChecked(false);
     mCbCropRectangle->setChecked(false);
     mCropRectWidget->setRect(QRect());
+    mCropRectWidget->setSizeOnly(false);
+    mCbCropRectCenter->setChecked(false);
 
     mResizeSbPercent->setValue(100.0);
     mResizeSbPx->setValue(1920);
+    mResizeSbZoomHeightPx->setValue(1080);
     mResizeComboMode->setCurrentIndex(0);
     mResizeComboProperties->setCurrentIndex(0);
     modeChanged(); // init gui
-
-    updateHeader();
 }
 
 bool DkBatchTransformWidget::hasUserInput() const
@@ -2151,7 +2166,11 @@ void DkBatchTransformWidget::updateHeader() const
             txt += tr("Resize by: %1%").arg(QString::number(mResizeSbPercent->value()));
         }
 
-        if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
+        else if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_zoom) {
+            txt += tr("Zoom to: %1 px by %2 px").arg(QString::number(mResizeSbPx->value())).arg(QString::number(mResizeSbZoomHeightPx->value()));
+        }
+
+        else if (mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_default) {
             txt += tr("Resize %1 to: %2 px").arg(mResizeComboMode->itemText(mResizeComboMode->currentIndex())).arg(QString::number(mResizeSbPx->value()));
         }
 
@@ -2161,7 +2180,7 @@ void DkBatchTransformWidget::updateHeader() const
             txt += tr("Rotating by: %1").arg(getAngle());
         }
 
-        if (mCbCropMetadata->isChecked() || mCbCropRectangle->isChecked()) {
+        if (mCbCropMetadata->isChecked() || (mCbCropRectangle->isEnabled() && mCbCropRectangle->isChecked())) {
             if (!txt.isEmpty())
                 txt += " | ";
             txt += tr("Crop");
@@ -2175,15 +2194,44 @@ void DkBatchTransformWidget::modeChanged()
 {
     if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_default) {
         mResizeSbPx->hide();
+        mResizeSbZoomLabel->hide();
+        mResizeSbZoomHeightPx->hide();
         mResizeSbPercent->show();
         mResizeComboProperties->hide();
-        updateHeader();
+    } else if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_zoom) {
+        mResizeSbPx->show();
+        mResizeSbZoomLabel->show();
+        mResizeSbZoomHeightPx->show();
+        mResizeSbPercent->hide();
+        mResizeComboProperties->hide();
+
+        // Uncheck disabled checkboxes
+        mCbCropMetadata->setChecked(false);
+        mCbCropRectangle->setChecked(false);
     } else {
         mResizeSbPx->show();
+        mResizeSbZoomLabel->hide();
+        mResizeSbZoomHeightPx->hide();
         mResizeSbPercent->hide();
         mResizeComboProperties->show();
-        updateHeader();
     }
+
+    // Cropping not available for resize mode 'Zoom'
+    mCbCropMetadata->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
+    mCbCropRectangle->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
+
+    // Crop rect and crop center only available when crop rectangle is active
+    mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
+        && mCbCropRectangle->isChecked());
+    mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
+        && mCbCropRectangle->isChecked());
+
+    if (!mCbCropRectCenter->isEnabled())
+        mCbCropRectCenter->setChecked(false);
+
+    mCropRectWidget->setSizeOnly(mCbCropRectCenter->isChecked());
+
+    updateHeader();
 }
 
 void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const
@@ -2192,13 +2240,26 @@ void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform>
         batchTransform->setProperties(getAngle(),
                                       mCbCropMetadata->isChecked(),
                                       mCbCropRectangle->isChecked() ? cropRect() : QRect(),
+                                      mCbCropRectCenter->isChecked(),
                                       (float)mResizeSbPercent->value() / 100.0f,
+                                      (float)mResizeSbZoomHeightPx->value(),
                                       (DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex());
+    } else if (mResizeComboMode->currentIndex() == DkBatchTransform::resize_mode_zoom) {
+        batchTransform->setProperties(getAngle(),
+                                      mCbCropMetadata->isChecked(),
+                                      mCbCropRectangle->isChecked() ? cropRect() : QRect(),
+                                      mCbCropRectCenter->isChecked(),
+                                      (float)mResizeSbPx->value(),
+                                      (float)mResizeSbZoomHeightPx->value(),
+                                      (DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(),
+                                      (DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
     } else {
         batchTransform->setProperties(getAngle(),
                                       mCbCropMetadata->isChecked(),
                                       mCbCropRectangle->isChecked() ? cropRect() : QRect(),
+                                      mCbCropRectCenter->isChecked(),
                                       (float)mResizeSbPx->value(),
+                                      (float)mResizeSbZoomHeightPx->value(),
                                       (DkBatchTransform::ResizeMode)mResizeComboMode->currentIndex(),
                                       (DkBatchTransform::ResizeProperty)mResizeComboProperties->currentIndex());
     }
@@ -2231,9 +2292,12 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 
     // crop
     mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
-
-    mCbCropRectangle->setChecked(batchTransform->cropFromRectangle());
+    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+        && batchTransform->cropFromRectangle());
     mCropRectWidget->setRect(batchTransform->cropRectangle());
+    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
+        && batchTransform->cropMetatdata()
+        && batchTransform->cropRectCenter());
 
     // resize
     mResizeComboMode->setCurrentIndex(batchTransform->mode());
@@ -2244,9 +2308,10 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
         mResizeSbPercent->setValue(sf * 100.0f);
     else
         mResizeSbPx->setValue(qRound(sf));
-    modeChanged();
-    updateHeader();
 
+    mResizeSbZoomHeightPx->setValue(batchTransform->zoomHeight());
+
+    modeChanged();
     return !errored;
 }
 
