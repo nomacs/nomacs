@@ -333,8 +333,7 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
     if (isResizeActive()) {
         QSize size;
         float sf = 1.0f;
-        if (prepareProperties(img.size(), size, sf, logStrings))
-        {
+        if (prepareProperties(img.size(), size, sf, logStrings)) {
             img = DkImage::resizeImage(img, size, sf, mResizeIplMethod, mResizeCorrectGamma);
             logStrings.append(QObject::tr("%1 image resized to %2 x %3.").arg(name()).arg(img.rect().width()).arg(img.rect().height()));
             changed = true;
@@ -366,7 +365,13 @@ bool DkBatchTransform::compute(QSharedPointer<DkImageContainer> container, QStri
             r.moveTop((imgRect.height() - r.height()) / 2);
 
         logStrings.append(QObject::tr("%1 image %2 x %3 cropped to x%4 y%5 w%6 h%7")
-            .arg(name()).arg(imgRect.width()).arg(imgRect.height()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+                              .arg(name())
+                              .arg(imgRect.width())
+                              .arg(imgRect.height())
+                              .arg(r.x())
+                              .arg(r.y())
+                              .arg(r.width())
+                              .arg(r.height()));
 
         img = img.copy(r);
         changed = true;
@@ -397,8 +402,7 @@ bool DkBatchTransform::prepareProperties(const QSize &imgSize, QSize &size, floa
             normalizedSize.transpose();
     } else if (mResizeMode == resize_mode_height)
         normalizedSize.transpose();
-    else if (mResizeMode == resize_mode_zoom)
-    {
+    else if (mResizeMode == resize_mode_zoom) {
         // Resize to either width or height matches selection while other dimension is larger
         if (imgSize.width() == mResizeScaleFactor && imgSize.height() == mResizeZoomHeight)
             return false;
@@ -408,8 +412,7 @@ bool DkBatchTransform::prepareProperties(const QSize &imgSize, QSize &size, floa
         if (height - 1 == mResizeZoomHeight || height + 1 == mResizeZoomHeight)
             height = mResizeZoomHeight; // correct rounding error
 
-        if (height >= mResizeZoomHeight)
-        {
+        if (height >= mResizeZoomHeight) {
             size.setWidth(qRound(mResizeScaleFactor));
             size.setHeight(height);
             return true;

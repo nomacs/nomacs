@@ -2221,10 +2221,8 @@ void DkBatchTransformWidget::modeChanged()
     mCbCropRectangle->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom);
 
     // Crop rect and crop center only available when crop rectangle is active
-    mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
-        && mCbCropRectangle->isChecked());
-    mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom
-        && mCbCropRectangle->isChecked());
+    mCropRectWidget->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom && mCbCropRectangle->isChecked());
+    mCbCropRectCenter->setEnabled(mResizeComboMode->currentIndex() != DkBatchTransform::resize_mode_zoom && mCbCropRectangle->isChecked());
 
     if (!mCbCropRectCenter->isEnabled())
         mCbCropRectCenter->setChecked(false);
@@ -2292,12 +2290,10 @@ bool DkBatchTransformWidget::loadProperties(QSharedPointer<DkBatchTransform> bat
 
     // crop
     mCbCropMetadata->setChecked(batchTransform->cropMetatdata());
-    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
-        && batchTransform->cropFromRectangle());
+    mCbCropRectangle->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom && batchTransform->cropFromRectangle());
     mCropRectWidget->setRect(batchTransform->cropRectangle());
-    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom
-        && batchTransform->cropMetatdata()
-        && batchTransform->cropRectCenter());
+    mCbCropRectCenter->setChecked(batchTransform->mode() != DkBatchTransform::resize_mode_zoom && batchTransform->cropMetatdata()
+                                  && batchTransform->cropRectCenter());
 
     // resize
     mResizeComboMode->setCurrentIndex(batchTransform->mode());
