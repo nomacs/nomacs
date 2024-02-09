@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Visual Studio 2022
 configuration: Release
 skip_commits:
   files:
@@ -9,12 +9,12 @@ skip_commits:
 
 environment:
     matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
       QT5: C:\Qt\5.15.2\msvc2019_64
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
-      PYTHON: "C:\\Python38-x64"
+      PYTHON: "C:\\Python312-x64"
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
