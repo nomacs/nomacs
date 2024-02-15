@@ -62,6 +62,7 @@
 #include <QUrl>
 #include <QtConcurrentRun>
 #include <qmath.h>
+#include <QMessageBox>
 
 #include <QSystemSemaphore>
 #pragma warning(pop) // no warnings from includes - end
@@ -869,6 +870,73 @@ bool DkUtils::moveToTrash(const QString &filePath)
     // wohooooo - moveToTrash finally made it into Qt : )
     QFile file(filePath);
     return file.moveToTrash();
+}
+
+QString DkUtils::openFromTrash(const QString &filePath) {
+    QString realPath=filePath;
+    if (!filePath.isEmpty()) {
+
+#if defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
+        if (realPath.startsWith("trash:///")) {
+            // for gnome or other desktop enverment, not include ked.
+            // some file name contains \, so , don't convert url in the first.
+            // Gnome parmars is trash:///%5Cmnt%5C843c89b8-7899-44bb-ae9e-0efbecb5c66a%5C.Trash-1000%5Cfiles%5Cdad%255Cdad/%5C%5C%5CN-US7989247628_UHD.jpg
+            QString tempFilePath=realPath.remove(0,QString("trash:///").length());
+            int i=tempFilePath.lastIndexOf("/");
+            if(i<=0){
+                // for file in trash but no in folder;
+                QString path= QUrl::fromPercentEncoding(tempFilePath.toUtf8()).replace("\\",QDir::separator());
+                QString lurl = QUrl::fromPercentEncoding( path.toUtf8());
+                // this can't work
+                realPath=QDir::toNativeSeparators(lurl);
+            } else{
+                QFileInfo fileInfo(tempFilePath); // Create QFileInfo
+                QString fileName = fileInfo.fileName(); // get file name
+                QString path= QUrl::fromPercentEncoding(fileInfo.path().toUtf8());
+                if(path.startsWith("\\")){
+                  path.replace("\\",QDir::separator());
+                }
+                QString lurl = QUrl::fromPercentEncoding( (path+"/"+ fileName).toUtf8());
+                // this can't work
+                realPath=QDir::toNativeSeparators(lurl);
+            }
+            if (!(realPath.startsWith("/"))) {
+                realPath = QDir::homePath() + "/.local/share/Trash/files/" + realPath;
+            }
+
+        } else if (QFileInfo(realPath).isSymLink()){
+
+			// for kde Plasma need use kde component, and need add KDE to Categories
+			// this method not kde Plasma method
+            // /run/user/1000/kio-fuse-KXucgr/trash/home/user/.local/share/Trash/files/UHD.jpg
+            QString splitWord="trash";
+            QString path = QFileInfo(realPath).symLinkTarget();
+			if(!QFile(path).exists()){
+                int m= path.indexOf(splitWord)+splitWord.length();
+                QString tempPath=path.mid(m);
+				if(QFile(realPath).exists()){
+                    realPath=tempPath;
+				}
+			}
+        } else if(!QFile(realPath).exists()){
+
+			// for kde Plasma when delete folder
+			// this method not kde Plasma method
+            // /run/user/1000/kio-fuse-KXucgr/trash/0-2\2/1\1.jpg
+            QString splitWord="trash";
+            int m= filePath.indexOf(splitWord)+splitWord.length();
+            QString trashParent=filePath.mid(0,m);
+            QString tempPath=filePath.mid(m+1);
+            QString symFilePath=tempPath.mid(0,tempPath.indexOf("/"));
+            // get the symlink
+            QString path = QFileInfo(trashParent+"/"+symFilePath).symLinkTarget().mid(m)+tempPath.mid(tempPath.indexOf("/"));
+            if(QFile(path).exists()){
+                realPath=path;
+			}
+		}
+#endif
+	}
+    return realPath;
 }
 
 QString DkUtils::readableByte(float bytes)

@@ -2,7 +2,7 @@
 Name=nomacs
 GenericName=Image Viewer
 Comment=nomacs is a free, open source image viewer.
-Exec=nomacs %f
+Exec=nomacs %u
 Terminal=false
 Icon=org.nomacs.ImageLounge
 Type=Application
