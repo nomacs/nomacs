@@ -62,7 +62,6 @@
 #include <QUrl>
 #include <QtConcurrentRun>
 #include <qmath.h>
-#include <QMessageBox>
 
 #include <QSystemSemaphore>
 #pragma warning(pop) // no warnings from includes - end
