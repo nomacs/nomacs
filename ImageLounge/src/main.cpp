@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
 
         if (!filePath.isEmpty()) {
 #if defined Q_OS_LINUX and not defined(Q_OS_OPENBSD)
-            filePath=nmc::DkUtils::openFromTrash(filePath);
+            filePath = nmc::DkUtils::openFromTrash(filePath);
 #endif
             w->loadFile(QFileInfo(filePath).absoluteFilePath()); // update folder + be silent
             loading = true;
