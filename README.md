@@ -12,11 +12,14 @@ nomacs is a free, open source image viewer, which supports multiple platforms. Y
 We assume you have an IDE (i.e. Visual Studio), python, git, and [Qt](https://www.qt.io/download-open-source) installed.  
 
 Get all dependencies:
+
 ```bash
 git submodule init
 git submodule update
 ```
+
 Project folders in ``3rd-party`` will not be empty anymore. Now call:
+
 ```bash
 python scripts/make.py "qtpath/bin"
 ```
@@ -24,12 +27,15 @@ python scripts/make.py "qtpath/bin"
 This will build nomacs into `build/nomacs`. If you are using Visual Studio, you can then double-click `build/nomacs/nomacs.sln`. Right-click the nomacs project and choose `Set as StartUp Project`.
 
 Build individual projects using:
+
 ```bash
 python scripts/make.py "qt/bin" --project quazip,libraw --force
 ```
 
 ### Developer Build
-I like having a separate developer build (without submodules) that uses 3rd party libs already compiled. To do so you need to: 
+
+I like having a separate developer build (without submodules) that uses 3rd party libs already compiled. To do so you need to:
+
 ```bash
 git submodule update --init --remote scripts 
 
@@ -52,12 +58,14 @@ sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qtt
 ```
 
 Clone the nomacs repository from GitHub:
+
 ``` console
 git clone https://github.com/nomacs/nomacs.git
 ```
 
 This will by default place the source into ~/nomacs
 Go to the nomacs/ImageLounge directory and run `cmake` to get the Makefiles:
+
 ``` console
 mkdir build
 cd build
@@ -65,19 +73,23 @@ cmake ../ImageLounge/.
 ```
 
 Compile nomacs:
+
 ``` console
 make
 ```
 
 You will now have a binary (~/nomacs/build/nomacs), which you can test (or use directly). To install it to /usr/local/bin, use:
+
 ``` console
 sudo make install
 ```
 
 note that you have to execute
+
 ``` console
 sudo ldconfig
 ```
+
 after a successful install.
 
 Install the [heif plugin](https://github.com/jakar/qt-heif-image-plugin) for HEIF support.
@@ -97,6 +109,7 @@ brew install qt5 exiv2 opencv libraw quazip cmake pkg-config
 ```
 
 Clone the nomacs repository from GitHub:
+
 ``` console
 git clone https://github.com/nomacs/nomacs.git
 ```
@@ -110,11 +123,13 @@ cd build
 ```
 
 For Homebrew on Intel models:
+
 ```console
 Qt5_DIR=/usr/local/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/usr/local/opt/qt5/bin/qmake ../ImageLounge/.
 ```
 
 For Homebrew on Apple Silicon models:
+
 ```console
 Qt5_DIR=/opt/homebrew/opt/qt5/ cmake -DQT_QMAKE_EXECUTABLE=/opt/homebrew/opt/qt5/bin/qmake ../ImageLounge/.
 ```
@@ -132,15 +147,21 @@ sudo make install
 ```
 
 ## Build in Docker
+
 We have created a docker image that best simulates the travis system (currently it's ubuntu xenial 16.04). To build nomacs in a docker, you have to create the image:
+
 ````bash
 docker build --rm -f "Dockerfile" -t nomacs:latest empty-docker-dir
 `````
+
 To deploy nomacs in a docker on your system, you can mount this directory using:
+
 ````bash
 docker run --rm -it -v C:\\coding\\nomacs:/usr/nomacs nomacs:latest
 ````
+
 If needed, you can upload the image:
+
 ````bash
 docker login
 docker tag nomacs diemmarkus/nomacs
@@ -151,5 +172,6 @@ docker push diemmarkus/nomacs:latest
 
 - [nomacs.org](https://nomacs.org)
 - [GitHub](https://github.com/nomacs)
+- [Matrix chat room](https://matrix.to/#/#nomacs:matrix.org)
 
 [![nomacs-icon](https://nomacs.org/startpage/nomacs.svg)](https://nomacs.org)
