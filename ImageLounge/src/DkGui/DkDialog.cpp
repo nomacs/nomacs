@@ -39,6 +39,7 @@
 #include "DkUtils.h"
 #include "DkViewPort.h"
 #include "DkWidgets.h"
+#include "DkVersion.h"
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
@@ -161,7 +162,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
     text = QString(
         "Flo was here und w&uuml;nscht<br>"
         "Stefan fiel Spa&szlig; w&auml;hrend<br>"
-        "Markus rockt... <br><br>"
+        "Markus rockt... <br><br><br>"
 
         "<a href=\"https://github.com/nomacs/nomacs\">https://github.com/nomacs/nomacs</a><br>"
 
@@ -187,7 +188,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
 
     versionLabel->setText(versionText());
     versionLabel->setAlignment(Qt::AlignRight);
-    versionLabel->move(360, 280);
+    versionLabel->move(450-versionLabel->sizeHint().width(), 280);
     versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     showTimer = new QTimer(this);
@@ -249,6 +250,7 @@ QString DkSplashScreen::versionText() const
 
     // version & build date
     vt += QApplication::applicationVersion() + platform + "<br>";
+    vt += QString(nmc::revisionString) + "<br>";
 
 // reproducable builds for linux (see #139)
 #ifdef Q_OS_WIN
