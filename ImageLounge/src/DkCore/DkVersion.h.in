@@ -1,7 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // This file defines the nomacs version number.
 // It is updated by versionupdate.py (if enabled in CMAKE)
-// In addition to the version number displayed in the help section, 
+// In addition to the version number displayed in the help section,
 // it will update the VS_VERSION_INFO in the *.rc file.
+
+#ifndef DK_VERSION_H
+#define DK_VERSION_H
 
 #define NOMACS_VERSION_STR "@NOMACS_FULL_VERSION@"
 #define NOMACS_VER_MAJOR @NOMACS_VERSION_MAJOR@
@@ -9,4 +14,10 @@
 #define NOMACS_VER_PATCH @NOMACS_VERSION_PATCH@
 
 #define NOMACS_VERSION_RC @NOMACS_VERSION_MAJOR@,@NOMACS_VERSION_MINOR@,@NOMACS_VERSION_PATCH@
-#define NOMACS_GIT_TAG "a8bff3f271cc7d3f35ec822f12b1fde16c346b38"
+
+namespace nmc
+{
+extern char const *revisionString;
+}
+
+#endif
