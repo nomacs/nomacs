@@ -53,9 +53,17 @@ python scripts/make.py "qt/bin" --lib-path "nomacs/3rd-party/build"
 
 Get the required packages:
 
-``` console
-sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
-```
+- For Ubuntu 21.04 and above:
+
+  ``` console
+  sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
+  ```
+
+- For older Ubuntu versions:
+
+  ``` console
+  sudo apt-get install debhelper cdbs qt5-qmake qttools5-dev-tools qt5-default qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev libquazip5-dev libwebp-dev git build-essential lcov libzip-dev
+  ```
 
 Clone the nomacs repository from GitHub:
 
