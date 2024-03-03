@@ -20,7 +20,7 @@ macro(NMC_FINDQT)
 	 endif()
 
 	if (NOT DEFINED QT_VERSION_MAJOR)
-	   find_package(QT NAMES Qt6 Qt5 REQAUIRED COMPONENTS Core)
+	   find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 	endif()
 
 	find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network LinguistTools PrintSupport Concurrent Gui Svg)
