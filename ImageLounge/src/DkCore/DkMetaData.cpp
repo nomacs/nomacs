@@ -469,7 +469,9 @@ QString DkMetaDataT::getNativeExifValue(const QString &key, bool humanReadable) 
 
                 // qDebug() << "pos count: " << pos->count();
                 // Exiv2::Value::AutoPtr v = pos->getValue();
-                if (humanReadable) {
+                if (key == QLatin1String("Exif.Photo.UserComment")) {
+                    info = QString::fromStdString(static_cast<const Exiv2::CommentValue &>(pos->value()).comment());
+                } else if (humanReadable) {
                     std::stringstream ss;
                     ss << *pos;
                     info = exiv2ToQString(ss.str());
