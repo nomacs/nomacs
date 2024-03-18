@@ -44,6 +44,7 @@
 #include <QColor>
 #include <QComboBox>
 #include <QCoreApplication>
+#include <QCryptographicHash>
 #include <QDate>
 #include <QDir>
 #include <QFileInfo>
@@ -53,7 +54,6 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QString>
@@ -337,9 +337,12 @@ bool DkUtils::compFileSizeInv(const QFileInfo &lhf, const QFileInfo &rhf)
     return !compFileSize(lhf, rhf);
 }
 
-bool DkUtils::compRandom(const QFileInfo &, const QFileInfo &)
+bool DkUtils::compRandom(const QFileInfo &lhf, const QFileInfo &rhf)
 {
-    return QRandomGenerator::global()->generate() % 2 != 0;
+    return QCryptographicHash::hash(lhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
+                                    QCryptographicHash::Algorithm::Md5)
+        > QCryptographicHash::hash(rhf.absoluteFilePath().toUtf8() + QByteArray::number(DkSettingsManager::param().global().sortSeed),
+                                   QCryptographicHash::Algorithm::Md5);
 }
 
 void DkUtils::addLanguages(QComboBox *langCombo, QStringList &languages)

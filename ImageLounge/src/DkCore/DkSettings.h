@@ -281,6 +281,7 @@ public:
 
         int sortMode;
         int sortDir;
+        quint32 sortSeed;
         QString pluginsDir;
     };
 

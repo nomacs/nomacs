@@ -39,6 +39,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QImageReader>
+#include <QRandomGenerator>
 #include <QScreen>
 #include <QStandardItem>
 #include <QStandardItemModel>
@@ -857,6 +858,7 @@ void DkSettings::setToDefaultSettings()
     global_p.numThreads = -1;
     global_p.sortMode = sort_filename;
     global_p.sortDir = sort_ascending;
+    global_p.sortSeed = QRandomGenerator::global()->generate();
     global_p.zoomOnWheel = true;
     global_p.horZoomSkips = true;
     global_p.doubleClickForFullscreen = true;
