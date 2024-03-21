@@ -33,6 +33,7 @@
 #include <QPolygonF>
 #include <cmath>
 #include <float.h>
+#include <iostream>
 #pragma warning(pop) // no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
