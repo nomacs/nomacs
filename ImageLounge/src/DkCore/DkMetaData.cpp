@@ -1774,7 +1774,7 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
             // example url
             // http://maps.google.com/maps?q=N48+8'+31.940001''+E16+15'+35.009998''
 
-            gpsInfo = "http://maps.google.com/maps?q=";
+            gpsInfo = "https://maps.google.com/maps?q=";
 
             QString latStr = convertGpsCoordinates(Lat).join("+");
             QString lonStr = convertGpsCoordinates(Lon).join("+");

@@ -171,13 +171,13 @@ void DkUpdater::checkForUpdates()
     DkSettingsManager::param().save();
 
 #ifdef Q_OS_WIN
-    QUrl url("http://nomacs.org/version/version_win_stable");
+    QUrl url("https://nomacs.org/version/version_win_stable");
 #elif defined Q_OS_LINUX
-    QUrl url("http://nomacs.org/version/version_linux");
+    QUrl url("https://nomacs.org/version/version_linux");
 #elif defined Q_OS_MAC
-    QUrl url("http://nomacs.org/version/version_mac_stable");
+    QUrl url("https://nomacs.org/version/version_mac_stable");
 #else
-    QUrl url("http://nomacs.org/version/version");
+    QUrl url("https://nomacs.org/version/version");
 #endif
 
     // the proxy settings take > 2 sec on Win7
@@ -185,7 +185,7 @@ void DkUpdater::checkForUpdates()
     // for manual updates
     if (!silent) {
         DkTimer dt;
-        QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+        QNetworkProxyQuery npq(QUrl("https://www.google.com"));
         QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 
         if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
@@ -385,19 +385,19 @@ void DkTranslationUpdater::checkForUpdates()
     updateAbortedQt = false;
 
     // that line takes 2 secs on win7!
-    QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+    QNetworkProxyQuery npq(QUrl("https://www.google.com"));
     QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
     if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
         mAccessManager.setProxy(listOfProxies[0]);
     }
 
-    QUrl url("http://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language
+    QUrl url("https://nomacs.org/translations/" + DkSettingsManager::param().global().language + "/nomacs_" + DkSettingsManager::param().global().language
              + ".qm");
     qInfo() << "checking for new translations at " << url;
     mReply = mAccessManager.get(QNetworkRequest(url));
     connect(mReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 
-    url = QUrl("http://nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
+    url = QUrl("https://nomacs.org/translations/qt/qt_" + DkSettingsManager::param().global().language + ".qm");
     qDebug() << "checking for new translations at " << url;
     mReplyQt = mAccessManager.get(QNetworkRequest(url));
     connect(mReplyQt, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgressQt(qint64, qint64)));
