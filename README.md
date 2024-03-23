@@ -182,4 +182,4 @@ docker push diemmarkus/nomacs:latest
 - [GitHub](https://github.com/nomacs)
 - [Matrix chat room](https://matrix.to/#/#nomacs:matrix.org)
 
-[![nomacs-icon](https://nomacs.org/startpage/nomacs.svg)](https://nomacs.org)
+[![nomacs-icon](https://nomacs.org/nomacs.svg)](https://nomacs.org)
