@@ -52,6 +52,11 @@
 #include <QProcess>
 #include <QTextStream>
 #include <QTranslator>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QImageReader>
+#endif
+
 #pragma warning(pop) // no warnings from includes - end
 
 #include "DkCentralWidget.h"
@@ -88,11 +93,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Image Lounge");
     QCoreApplication::setApplicationVersion(NOMACS_VERSION_STR);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
-#endif
 
     QApplication app(argc, (char **)argv);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QImageReader::setAllocationLimit(2048);
+#endif
 
     // init settings
     nmc::DkSettingsManager::instance().init();
