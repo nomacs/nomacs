@@ -97,6 +97,10 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, (char **)argv);
 
+#ifdef Q_OS_LINUX
+    app.setDesktopFileName("org.nomacs.ImageLounge");
+#endif
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QImageReader::setAllocationLimit(2048);
 #endif
