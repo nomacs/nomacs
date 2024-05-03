@@ -1831,7 +1831,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event)
 QRect DkEditableRect::rect() const
 {
     QRect r;
-    r.setTopLeft(mRect.getCenter().toPoint());
+    r.setTopLeft(mRect.getTopLeft().toPoint());
     r.setSize(mRect.size());
 
     return r;
@@ -2094,7 +2094,7 @@ void DkEditableRect::setShowInfo(bool showInfo)
 
 void DkEditableRect::setRect(const QRect &rect)
 {
-    mRect.setCenter(rect.topLeft());
+    mRect.setCenter(rect.center());
     mRect.setSize(rect.size());
 
     update();
