@@ -2002,7 +2002,11 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event)
             tl = mRtform.map(mRect.getTopLeft()).toPoint();
             info += "x: ";
         } else {
-            tl = mRtform.map(mRect.getCenter()).toPoint();
+            // Because we rotate around the center, there's no need to do rotation.
+            // However, we need to check whether the center is tranlated.
+            // Not sure why, but the tranlation is stored in mRtform in the above.
+            const QTransform transform{1, 0, 0, 1, mRtform.dx(), mRtform.dy()};
+            tl = transform.map(mRect.getCenter()).toPoint();
             info += "center x: ";
         }
         info += QString::number(tl.x()) + ", y: ";
