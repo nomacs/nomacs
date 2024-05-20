@@ -37,9 +37,9 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkUtils.h"
+#include "DkVersion.h"
 #include "DkViewPort.h"
 #include "DkWidgets.h"
-#include "DkVersion.h"
 
 #if defined(Q_OS_WIN) && !defined(SOCK_STREAM)
 #include <winsock2.h> // needed since libraw 0.16
@@ -188,7 +188,7 @@ DkSplashScreen::DkSplashScreen(QWidget * /*parent*/, Qt::WindowFlags flags)
 
     versionLabel->setText(versionText());
     versionLabel->setAlignment(Qt::AlignRight);
-    versionLabel->move(450-versionLabel->sizeHint().width(), 280);
+    versionLabel->move(450 - versionLabel->sizeHint().width(), 280);
     versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     showTimer = new QTimer(this);
