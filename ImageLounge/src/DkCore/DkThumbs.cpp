@@ -301,7 +301,7 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
     // check if we can load the file
     // though if it might seem over engineered: it is much faster cascading it here
-    if (!DkUtils::hasValidSuffix(getFilePath()) && !QFileInfo(getFilePath()).suffix().isEmpty() && !DkUtils::isValid(QFileInfo(getFilePath())))
+    if (!DkUtils::hasValidSuffix(getFilePath()) && !DkUtils::isValid(QFileInfo(getFilePath())))
         return false;
 
     // we have to do our own bool here

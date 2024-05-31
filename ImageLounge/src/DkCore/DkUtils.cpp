@@ -662,12 +662,14 @@ bool DkUtils::isSavable(const QString &fileName)
 
 bool DkUtils::hasValidSuffix(const QString &fileName)
 {
-    for (int idx = 0; idx < DkSettingsManager::param().app().fileFilters.size(); idx++) {
-        QRegularExpression exp = QRegularExpression(QRegularExpression::wildcardToRegularExpression(DkSettingsManager::param().app().fileFilters.at(idx)),
-                                                    QRegularExpression::CaseInsensitiveOption);
-        if (exp.match(fileName).hasMatch())
+    const QString fileSuffix = fileName.mid(fileName.lastIndexOf('.')).toLower(); // .jpg
+    if (fileSuffix.isEmpty())
+        return false;
+
+    const QStringList &filters = DkSettingsManager::param().app().fileFilters; // [*.jpg, ...]
+    for (const QString &filter : filters)
+        if (filter.endsWith(fileSuffix))
             return true;
-    }
 
     return false;
 }
