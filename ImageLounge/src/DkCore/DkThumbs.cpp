@@ -87,6 +87,8 @@ void DkThumbNail::compute(int forceLoad)
  * @param minThumbSize the minimal thumbnail size to be loaded
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
+ * @reentrant all parameters must be copies or thread-safe shared pointers,
+ *            no class members are allowed
  **/
 QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize)
 {
@@ -99,7 +101,7 @@ QImage DkThumbNail::computeIntern(const QString &filePath, QSharedPointer<QByteA
 
     QSharedPointer<QByteArray> baZip = QSharedPointer<QByteArray>();
 #ifdef WITH_QUAZIP
-    if (QFileInfo(mFile).dir().path().contains(DkZipContainer::zipMarker()))
+    if (QFileInfo(filePath).dir().path().contains(DkZipContainer::zipMarker()))
         baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(filePath), DkZipContainer::decodeImageFile(filePath));
 #endif
     try {
@@ -311,18 +313,17 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
     connect(&mThumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()), Qt::UniqueConnection);
 
+    // add work to the thread pool
+    // note: arguments to lambda must be thread-safe or copies (no "&", "this") to prevent race conditions
+    QString filePath = getFilePath(); // not a copy, but will detach (COW) if string is modified
+    int maxThumbSize = mMaxThumbSize;
     mThumbWatcher.setFuture(QtConcurrent::run(DkThumbsThreadPool::pool(), // load thumbnails on their dedicated pool
-                                              [&, ba] {
-                                                  return computeCall(mFile, ba, mForceLoad, mMaxThumbSize);
+                                              [filePath, ba, forceLoad, maxThumbSize] {
+                                                  QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize);
+                                                  return DkImage::createThumb(thumb);
                                               }));
 
     return true;
-}
-
-QImage DkThumbNailT::computeCall(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize)
-{
-    QImage thumb = DkThumbNail::computeIntern(filePath, ba, forceLoad, maxThumbSize);
-    return DkImage::createThumb(thumb);
 }
 
 void DkThumbNailT::thumbLoaded()

@@ -92,7 +92,7 @@ public:
      **/
     virtual void setImage(const QImage img);
 
-    void removeBlackBorder(QImage &img);
+    static void removeBlackBorder(QImage &img);
 
     /**
      * Returns the thumbnail.
@@ -156,7 +156,7 @@ public:
     };
 
 protected:
-    QImage computeIntern(const QString &file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
+    static QImage computeIntern(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
 
     QImage mImg;
     QString mFile;
@@ -200,8 +200,6 @@ protected slots:
     void thumbLoaded();
 
 protected:
-    QImage computeCall(const QString &filePath, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize);
-
     QFutureWatcher<QImage> mThumbWatcher;
     bool mFetching;
     int mForceLoad;
