@@ -525,7 +525,11 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
     }
 
 #ifdef WITH_QUAZIP
-    if (mCurrentImage && (newFileIdx < 0 || newFileIdx >= mImages.size()) && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
+    // zips only loop if browse filter is disabled; otherwise we could not break out of a zip
+    bool loopZip = DkSettingsManager::param().global().loop && !DkSettingsManager::param().app().browseFilters.contains("*.zip");
+
+    if (mCurrentImage && (newFileIdx < 0 || newFileIdx >= mImages.size()) &&
+        mCurrentImage->isFromZip() && mCurrentImage->getZipData() && !loopZip) {
         // load the zip again and go on from there
         setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(mCurrentImage->getZipData()->getZipFilePath())));
 
