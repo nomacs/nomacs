@@ -509,6 +509,7 @@ void DkViewPort::resetView()
     controlImagePosition();
 
     emit zoomSignal(mWorldMatrix.m11() * mImgMatrix.m11() * 100);
+    DkStatusBarManager::instance().setMessage(QString::number(qRound(mWorldMatrix.m11() * mImgMatrix.m11() * 100)) + "%", DkStatusBar::status_zoom_info);
     tcpSynchronize();
 }
 
