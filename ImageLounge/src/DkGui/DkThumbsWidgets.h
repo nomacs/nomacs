@@ -338,7 +338,7 @@ public slots:
     void setFilterFocus() const;
     void batchProcessFiles() const;
     void batchPrint() const;
-    void on_loadFile_triggered();
+    void onLoadFileTriggered();
 
 signals:
     void updateDirSignal(const QString &dir);
@@ -429,9 +429,9 @@ signals:
     void removeSignal();
 
 public slots:
-    void on_pin_clicked(bool checked);
-    void on_remove_clicked();
-    void on_load_dir_clicked();
+    void onPinClicked(bool checked);
+    void onRemoveClicked();
+    void onLoadDirClicked();
 
 protected:
     DkRecentDir mRecentDir;

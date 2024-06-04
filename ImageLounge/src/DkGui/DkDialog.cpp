@@ -94,6 +94,7 @@
 #include <QTreeView>
 #include <QWidget>
 #include <QtConcurrentRun>
+#include <QtGlobal>
 #include <qmath.h>
 
 // quazip
@@ -509,14 +510,14 @@ void DkAppManagerDialog::createLayout()
     appTableView->setWordWrap(false);
 
     QPushButton *runButton = new QPushButton(tr("&Run"), this);
-    runButton->setObjectName("runButton");
+    connect(runButton, &QPushButton::clicked, this, &DkAppManagerDialog::onRunButtonClicked);
 
     QPushButton *addButton = new QPushButton(tr("&Add"), this);
-    addButton->setObjectName("addButton");
+    connect(addButton, &QPushButton::clicked, this, &DkAppManagerDialog::onAddButtonClicked);
 
     QPushButton *deleteButton = new QPushButton(tr("&Delete"), this);
-    deleteButton->setObjectName("deleteButton");
     deleteButton->setShortcut(QKeySequence::Delete);
+    connect(deleteButton, &QPushButton::clicked, this, &DkAppManagerDialog::onDeleteButtonClicked);
 
     // mButtons
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -531,7 +532,6 @@ void DkAppManagerDialog::createLayout()
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(appTableView);
     layout->addWidget(buttons);
-    QMetaObject::connectSlotsByName(this);
 }
 
 QList<QStandardItem *> DkAppManagerDialog::getItems(QAction *action)
@@ -547,7 +547,7 @@ QList<QStandardItem *> DkAppManagerDialog::getItems(QAction *action)
     return items;
 }
 
-void DkAppManagerDialog::on_addButton_clicked()
+void DkAppManagerDialog::onAddButtonClicked()
 {
     // load system default open dialog
     QString appFilter;
@@ -570,7 +570,7 @@ void DkAppManagerDialog::on_addButton_clicked()
         model->appendRow(getItems(newApp));
 }
 
-void DkAppManagerDialog::on_deleteButton_clicked()
+void DkAppManagerDialog::onDeleteButtonClicked()
 {
     QModelIndexList selRows = appTableView->selectionModel()->selectedRows();
 
@@ -580,7 +580,7 @@ void DkAppManagerDialog::on_deleteButton_clicked()
     }
 }
 
-void DkAppManagerDialog::on_runButton_clicked()
+void DkAppManagerDialog::onRunButtonClicked()
 {
     accept();
 
@@ -645,9 +645,9 @@ void DkSearchDialog::init()
     QCompleter *history = new QCompleter(DkSettingsManager::param().global().searchHistory, this);
     history->setCompletionMode(QCompleter::InlineCompletion);
     mSearchBar = new QLineEdit();
-    mSearchBar->setObjectName("searchBar");
     mSearchBar->setToolTip(tr("Type search words or a regular expression"));
     mSearchBar->setCompleter(history);
+    connect(mSearchBar, &QLineEdit::textChanged, this, &DkSearchDialog::onSearchBarTextChanged);
 
     mStringModel = new QStringListModel(this);
 
@@ -656,9 +656,11 @@ void DkSearchDialog::init()
     mResultListView->setModel(mStringModel);
     mResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mResultListView->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(mResultListView, &QListView::clicked, this, &DkSearchDialog::onResultListViewClicked);
+    connect(mResultListView, &QListView::doubleClicked, this, &DkSearchDialog::onResultListViewDoubleClicked);
 
     mFilterButton = new QPushButton(tr("&Filter"), this);
-    mFilterButton->setObjectName("filterButton");
+    connect(mFilterButton, &QPushButton::pressed, this, &DkSearchDialog::onFilterButtonPressed);
 
     mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
     mButtons->button(QDialogButtonBox::Ok)->setDefault(true);
@@ -673,8 +675,6 @@ void DkSearchDialog::init()
     layout->addWidget(mButtons);
 
     mSearchBar->setFocus(Qt::MouseFocusReason);
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkSearchDialog::setFiles(const QStringList &fileList)
@@ -694,7 +694,7 @@ bool DkSearchDialog::filterPressed() const
     return mIsFilterPressed;
 }
 
-void DkSearchDialog::on_searchBar_textChanged(const QString &text)
+void DkSearchDialog::onSearchBarTextChanged(const QString &text)
 {
     DkTimer dt;
 
@@ -729,7 +729,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString &text)
     qDebug() << "searching takes (total): " << dt;
 }
 
-void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex &modelIndex)
+void DkSearchDialog::onResultListViewDoubleClicked(const QModelIndex &modelIndex)
 {
     if (modelIndex.data().toString() == mEndMessage) {
         mStringModel->setStringList(makeViewable(mResultList, true));
@@ -740,7 +740,7 @@ void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex &modelInd
     close();
 }
 
-void DkSearchDialog::on_resultListView_clicked(const QModelIndex &modelIndex)
+void DkSearchDialog::onResultListViewClicked(const QModelIndex &modelIndex)
 {
     if (modelIndex.data().toString() == mEndMessage)
         mStringModel->setStringList(makeViewable(mResultList, true));
@@ -765,7 +765,7 @@ void DkSearchDialog::accept()
     QDialog::accept();
 }
 
-void DkSearchDialog::on_filterButton_pressed()
+void DkSearchDialog::onFilterButtonPressed()
 {
     filterSignal(mCurrentSearch);
     mIsFilterPressed = true;
@@ -902,8 +902,6 @@ void DkResizeDialog::init()
     initBoxes();
 
     mWPixelSpin->setFocus(Qt::ActiveWindowFocusReason);
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkResizeDialog::createLayout()
@@ -949,28 +947,28 @@ void DkResizeDialog::createLayout()
     QLabel *wPixelLabel = new QLabel(tr("Width: "), this);
     wPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mWPixelSpin = new DkSelectAllDoubleSpinBox(this);
-    mWPixelSpin->setObjectName("wPixelSpin");
     mWPixelSpin->setRange(minPx, maxPx);
     mWPixelSpin->setDecimals(0);
+    connect(mWPixelSpin, QOverload<double>::of(&DkSelectAllDoubleSpinBox::valueChanged), this, &DkResizeDialog::onWPixelSpinValueChanged);
 
     mLockButton = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"), DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"), "lock", this);
-    mLockButton->setObjectName("lockButton");
     mLockButton->setCheckable(true);
     mLockButton->setChecked(true);
+    connect(mLockButton, &DkButton::clicked, this, &DkResizeDialog::onLockButtonClicked);
 
     QLabel *hPixelLabel = new QLabel(tr("Height: "), this);
     hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mHPixelSpin = new DkSelectAllDoubleSpinBox(this);
-    mHPixelSpin->setObjectName("hPixelSpin");
     mHPixelSpin->setRange(minPx, maxPx);
     mHPixelSpin->setDecimals(0);
+    connect(mHPixelSpin, QOverload<double>::of(&DkSelectAllDoubleSpinBox::valueChanged), this, &DkResizeDialog::onHPixelSpinValueChanged);
 
     mSizeBox = new QComboBox(this);
     QStringList sizeList;
     sizeList.insert(size_pixel, "pixel");
     sizeList.insert(size_percent, "%");
     mSizeBox->addItems(sizeList);
-    mSizeBox->setObjectName("sizeBox");
+    connect(mSizeBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeDialog::onSizeBoxCurrentIndexChanged);
 
     // first row
     int rIdx = 0;
@@ -985,22 +983,22 @@ void DkResizeDialog::createLayout()
     QLabel *widthLabel = new QLabel(tr("Width: "));
     widthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mWidthSpin = new DkSelectAllDoubleSpinBox();
-    mWidthSpin->setObjectName("widthSpin");
     mWidthSpin->setRange(minWidth, maxWidth);
     mWidthSpin->setDecimals(decimals);
+    connect(mWidthSpin, QOverload<double>::of(&DkSelectAllDoubleSpinBox::valueChanged), this, &DkResizeDialog::onWidthSpinValueChanged);
 
     mLockButtonDim = new DkButton(DkImage::loadIcon(":/nomacs/img/lock.svg"), DkImage::loadIcon(":/nomacs/img/lock-unlocked.svg"), "lock");
     // mLockButtonDim->setFixedSize(QSize(16,16));
-    mLockButtonDim->setObjectName("lockButtonDim");
     mLockButtonDim->setCheckable(true);
     mLockButtonDim->setChecked(true);
+    connect(mLockButtonDim, &DkButton::clicked, this, &DkResizeDialog::onLockButtonDimClicked);
 
     QLabel *heightLabel = new QLabel(tr("Height: "));
     heightLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mHeightSpin = new DkSelectAllDoubleSpinBox();
-    mHeightSpin->setObjectName("heightSpin");
     mHeightSpin->setRange(minWidth, maxWidth);
     mHeightSpin->setDecimals(decimals);
+    connect(mHeightSpin, QOverload<double>::of(&DkSelectAllDoubleSpinBox::valueChanged), this, &DkResizeDialog::onHeightSpinValueChanged);
 
     mUnitBox = new QComboBox();
     QStringList unitList;
@@ -1009,7 +1007,7 @@ void DkResizeDialog::createLayout()
     unitList.insert(unit_inch, "inch");
     // unitList.insert(unit_percent, "%");
     mUnitBox->addItems(unitList);
-    mUnitBox->setObjectName("unitBox");
+    connect(mUnitBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeDialog::onUnitBoxCurrentIndexChanged);
 
     // second row
     rIdx = 0;
@@ -1024,16 +1022,16 @@ void DkResizeDialog::createLayout()
     QLabel *resolutionLabel = new QLabel(tr("Resolution: "));
     resolutionLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mResolutionSpin = new DkSelectAllDoubleSpinBox();
-    mResolutionSpin->setObjectName("resolutionSpin");
     mResolutionSpin->setRange(minWidth, maxWidth);
     mResolutionSpin->setDecimals(decimals);
+    connect(mResolutionSpin, QOverload<double>::of(&DkSelectAllDoubleSpinBox::valueChanged), this, &DkResizeDialog::onResolutionSpinValueChanged);
 
     mResUnitBox = new QComboBox();
     QStringList resUnitList;
     resUnitList.insert(res_ppi, tr("pixel/inch"));
     resUnitList.insert(res_ppc, tr("pixel/cm"));
     mResUnitBox->addItems(resUnitList);
-    mResUnitBox->setObjectName("resUnitBox");
+    connect(mResUnitBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeDialog::onResUnitBoxCurrentIndexChanged);
 
     // third row
     rIdx = 0;
@@ -1044,7 +1042,7 @@ void DkResizeDialog::createLayout()
     // resample
     mResampleCheck = new QCheckBox(tr("Resample Image:"));
     mResampleCheck->setChecked(true);
-    mResampleCheck->setObjectName("resampleCheck");
+    connect(mResampleCheck, &QCheckBox::clicked, this, &DkResizeDialog::onResampleCheckClicked);
 
     // TODO: disable items if no opencv is available
     mResampleBox = new QComboBox();
@@ -1057,6 +1055,7 @@ void DkResizeDialog::createLayout()
     mResampleBox->addItems(resampleList);
     mResampleBox->setObjectName("resampleBox");
     mResampleBox->setCurrentIndex(ipl_cubic);
+    connect(mResampleBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeDialog::onResampleBoxCurrentIndexChanged);
 
     // last two rows
     gridLayout->addWidget(mResampleCheck, 3, 1, 1, 3);
@@ -1065,6 +1064,7 @@ void DkResizeDialog::createLayout()
     mGammaCorrection = new QCheckBox(tr("Gamma Correction"));
     mGammaCorrection->setObjectName("gammaCorrection");
     mGammaCorrection->setChecked(false); // default: false since gamma might destroy soft gradients
+    connect(mGammaCorrection, &QCheckBox::clicked, this, &DkResizeDialog::onGammaCorrectionClicked);
 
     gridLayout->addWidget(mGammaCorrection, 5, 1, 1, 3);
 
@@ -1209,7 +1209,7 @@ void DkResizeDialog::updatePixelWidth()
     mWPixelSpin->setValue(pixelWidth);
 }
 
-void DkResizeDialog::on_lockButtonDim_clicked()
+void DkResizeDialog::onLockButtonDimClicked()
 {
     mLockButton->setChecked(mLockButtonDim->isChecked());
     if (!mLockButtonDim->isChecked())
@@ -1219,7 +1219,7 @@ void DkResizeDialog::on_lockButtonDim_clicked()
     drawPreview();
 }
 
-void DkResizeDialog::on_lockButton_clicked()
+void DkResizeDialog::onLockButtonClicked()
 {
     mLockButtonDim->setChecked(mLockButton->isChecked());
 
@@ -1230,7 +1230,7 @@ void DkResizeDialog::on_lockButton_clicked()
     drawPreview();
 }
 
-void DkResizeDialog::on_wPixelSpin_valueChanged(double val)
+void DkResizeDialog::onWPixelSpinValueChanged(double val)
 {
     if (!mWPixelSpin->hasFocus())
         return;
@@ -1248,7 +1248,7 @@ void DkResizeDialog::on_wPixelSpin_valueChanged(double val)
     drawPreview();
 }
 
-void DkResizeDialog::on_hPixelSpin_valueChanged(double val)
+void DkResizeDialog::onHPixelSpinValueChanged(double val)
 {
     if (!mHPixelSpin->hasFocus())
         return;
@@ -1266,7 +1266,7 @@ void DkResizeDialog::on_hPixelSpin_valueChanged(double val)
     drawPreview();
 }
 
-void DkResizeDialog::on_widthSpin_valueChanged(double val)
+void DkResizeDialog::onWidthSpinValueChanged(double val)
 {
     if (!mWidthSpin->hasFocus())
         return;
@@ -1290,7 +1290,7 @@ void DkResizeDialog::on_widthSpin_valueChanged(double val)
     drawPreview();
 }
 
-void DkResizeDialog::on_heightSpin_valueChanged(double val)
+void DkResizeDialog::onHeightSpinValueChanged(double val)
 {
     if (!mHeightSpin->hasFocus())
         return;
@@ -1313,7 +1313,7 @@ void DkResizeDialog::on_heightSpin_valueChanged(double val)
     drawPreview();
 }
 
-void DkResizeDialog::on_resolutionSpin_valueChanged(double val)
+void DkResizeDialog::onResolutionSpinValueChanged(double val)
 {
     mExifDpi = (float)val;
 
@@ -1331,14 +1331,14 @@ void DkResizeDialog::on_resolutionSpin_valueChanged(double val)
     initBoxes();
 }
 
-void DkResizeDialog::on_unitBox_currentIndexChanged(int)
+void DkResizeDialog::onUnitBoxCurrentIndexChanged(int)
 {
     updateHeight();
     updateWidth();
     // initBoxes();
 }
 
-void DkResizeDialog::on_sizeBox_currentIndexChanged(int idx)
+void DkResizeDialog::onSizeBoxCurrentIndexChanged(int idx)
 {
     if (idx == size_pixel) {
         mWPixelSpin->setDecimals(0);
@@ -1352,13 +1352,13 @@ void DkResizeDialog::on_sizeBox_currentIndexChanged(int idx)
     updatePixelWidth();
 }
 
-void DkResizeDialog::on_resUnitBox_currentIndexChanged(int)
+void DkResizeDialog::onResUnitBoxCurrentIndexChanged(int)
 {
     updateResolution();
     // initBoxes();
 }
 
-void DkResizeDialog::on_resampleCheck_clicked()
+void DkResizeDialog::onResampleCheckClicked()
 {
     mResampleBox->setEnabled(mResampleCheck->isChecked());
     mWPixelSpin->setEnabled(mResampleCheck->isChecked());
@@ -1372,12 +1372,12 @@ void DkResizeDialog::on_resampleCheck_clicked()
         drawPreview();
 }
 
-void DkResizeDialog::on_gammaCorrection_clicked()
+void DkResizeDialog::onGammaCorrectionClicked()
 {
     drawPreview(); // diem: just update
 }
 
-void DkResizeDialog::on_resampleBox_currentIndexChanged(int)
+void DkResizeDialog::onResampleBoxCurrentIndexChanged(int)
 {
     drawPreview();
 }
@@ -2397,7 +2397,6 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget *parent /* = 0 */, Qt::WindowFlag
     connect(&mWatcher, SIGNAL(finished()), this, SLOT(processingFinished()));
     connect(this, SIGNAL(infoMessage(const QString &)), mMsgLabel, SLOT(setText(const QString &)));
     connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkExportTiffDialog::dropEvent(QDropEvent *event)
@@ -2437,7 +2436,7 @@ void DkExportTiffDialog::createLayout()
     openLabel->setAlignment(Qt::AlignRight);
 
     QPushButton *openButton = new QPushButton(tr("&Browse"), this);
-    openButton->setObjectName("openButton");
+    connect(openButton, &QPushButton::pressed, this, &DkExportTiffDialog::onOpenButtonPressed);
 
     mTiffLabel = new QLabel(tr("No Multi-Page TIFF loaded"), this);
 
@@ -2446,7 +2445,7 @@ void DkExportTiffDialog::createLayout()
     saveLabel->setAlignment(Qt::AlignRight);
 
     QPushButton *saveButton = new QPushButton(tr("&Browse"), this);
-    saveButton->setObjectName("saveButton");
+    connect(saveButton, &QPushButton::pressed, this, &DkExportTiffDialog::onSaveButtonPressed);
 
     mFolderLabel = new QLabel(tr("Specify a Save Folder"), this);
 
@@ -2455,7 +2454,7 @@ void DkExportTiffDialog::createLayout()
     fileLabel->setAlignment(Qt::AlignRight);
 
     mFileEdit = new QLineEdit("tiff_page", this);
-    mFileEdit->setObjectName("fileEdit");
+    connect(mFileEdit, &QLineEdit::textChanged, this, &DkExportTiffDialog::onFileEditTextChanged);
 
     mSuffixBox = new QComboBox(this);
     mSuffixBox->addItems(DkSettingsManager::param().app().saveFilters);
@@ -2516,7 +2515,7 @@ void DkExportTiffDialog::createLayout()
     enableTIFFSave(false);
 }
 
-void DkExportTiffDialog::on_openButton_pressed()
+void DkExportTiffDialog::onOpenButtonPressed()
 {
     // load system default open dialog
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -2529,7 +2528,7 @@ void DkExportTiffDialog::on_openButton_pressed()
     setFile(fileName);
 }
 
-void DkExportTiffDialog::on_saveButton_pressed()
+void DkExportTiffDialog::onSaveButtonPressed()
 {
     qDebug() << "save triggered...";
 
@@ -2543,7 +2542,7 @@ void DkExportTiffDialog::on_saveButton_pressed()
     }
 }
 
-void DkExportTiffDialog::on_fileEdit_textChanged(const QString &filename)
+void DkExportTiffDialog::onFileEditTextChanged(const QString &filename)
 {
     qDebug() << "new file name: " << filename;
 }
@@ -2701,7 +2700,6 @@ DkMosaicDialog::DkMosaicDialog(QWidget *parent /* = 0 */, Qt::WindowFlags f /* =
     connect(&mPostProcessWatcher, SIGNAL(canceled()), this, SLOT(postProcessFinished()));
     connect(this, SIGNAL(infoMessage(const QString &)), mMsgLabel, SLOT(setText(const QString &)));
     connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkMosaicDialog::dropEvent(QDropEvent *event)
@@ -2738,19 +2736,16 @@ void DkMosaicDialog::createLayout()
 
     // post processing sliders
     mDarkenSlider = new QSlider(Qt::Horizontal, this);
-    mDarkenSlider->setObjectName("darkenSlider");
     mDarkenSlider->setValue(40);
-    // darkenSlider->hide();
+    connect(mDarkenSlider, &QSlider::valueChanged, this, &DkMosaicDialog::onDarkenSliderValueChanged);
 
     mLightenSlider = new QSlider(Qt::Horizontal, this);
-    mLightenSlider->setObjectName("lightenSlider");
     mLightenSlider->setValue(40);
-    // lightenSlider->hide();
+    connect(mLightenSlider, &QSlider::valueChanged, this, &DkMosaicDialog::onLightenSliderValueChanged);
 
     mSaturationSlider = new QSlider(Qt::Horizontal, this);
-    mSaturationSlider->setObjectName("saturationSlider");
     mSaturationSlider->setValue(60);
-    // saturationSlider->hide();
+    connect(mSaturationSlider, &QSlider::valueChanged, this, &DkMosaicDialog::onSaturationSliderValueChanged);
 
     mSliderWidget = new QWidget(this);
     QGridLayout *sliderLayout = new QGridLayout(mSliderWidget);
@@ -2768,8 +2763,8 @@ void DkMosaicDialog::createLayout()
     openLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     QPushButton *openButton = new QPushButton(tr("&Browse"), this);
-    openButton->setObjectName("openButton");
     openButton->setToolTip(tr("Choose which image to mosaic."));
+    connect(openButton, &QPushButton::pressed, this, &DkMosaicDialog::onOpenButtonPressed);
 
     mFileLabel = new QLabel(tr("No Image loaded"), this);
 
@@ -2778,8 +2773,8 @@ void DkMosaicDialog::createLayout()
     saveLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     QPushButton *dbButton = new QPushButton(tr("&Browse"), this);
-    dbButton->setObjectName("dbButton");
     dbButton->setToolTip(tr("Specify the root folder of images used for mosaic elements."));
+    connect(dbButton, &QPushButton::pressed, this, &DkMosaicDialog::onDbButtonPressed);
 
     mFolderLabel = new QLabel(tr("Specify an Image Database"), this);
 
@@ -2787,31 +2782,34 @@ void DkMosaicDialog::createLayout()
     QLabel *sizeLabel = new QLabel(tr("Resolution:"));
     sizeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mNewWidthBox = new QSpinBox();
-    mNewWidthBox->setObjectName("newWidthBox");
     mNewWidthBox->setToolTip(tr("Pixel Width"));
     mNewWidthBox->setMinimum(100);
     mNewWidthBox->setMaximum(30000);
+    connect(mNewWidthBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkMosaicDialog::onNewWidthBoxValueChanged);
+
     mNewHeightBox = new QSpinBox();
-    mNewHeightBox->setObjectName("newHeightBox");
     mNewHeightBox->setToolTip(tr("Pixel Height"));
     mNewHeightBox->setMinimum(100);
     mNewHeightBox->setMaximum(30000);
+    connect(mNewHeightBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkMosaicDialog::onNewHeightBoxValueChanged);
+
     mRealResLabel = new QLabel("");
-    // realResLabel->setToolTip(tr("."));
 
     // num patch handles
     QLabel *patchLabel = new QLabel(tr("Patches:"));
     patchLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     mNumPatchesH = new QSpinBox(this);
-    mNumPatchesH->setObjectName("numPatchesH");
     mNumPatchesH->setToolTip(tr("Number of Horizontal Patches"));
     mNumPatchesH->setMinimum(1);
     mNumPatchesH->setMaximum(1000);
+    connect(mNumPatchesH, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkMosaicDialog::onNumPatchesHValueChanged);
+
     mNumPatchesV = new QSpinBox(this);
-    mNumPatchesV->setObjectName("numPatchesV");
     mNumPatchesV->setToolTip(tr("Number of Vertical Patches"));
     mNumPatchesV->setMinimum(1);
     mNumPatchesV->setMaximum(1000);
+    connect(mNumPatchesV, QOverload<int>::of(&QSpinBox::valueChanged), this, &DkMosaicDialog::onNumPatchesVValueChanged);
+
     mPatchResLabel = new QLabel("", this);
     mPatchResLabel->setObjectName("DkDecentInfo");
     mPatchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
@@ -2821,15 +2819,14 @@ void DkMosaicDialog::createLayout()
     filterLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     mFilterEdit = new QLineEdit("", this);
-    mFilterEdit->setObjectName("fileEdit");
     mFilterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
+    connect(mFilterEdit, &QLineEdit::textChanged, this, &DkMosaicDialog::onFileEditTextChanged);
 
     QStringList filters = DkSettingsManager::param().app().openFilters;
     filters.pop_front(); // replace for better readability
     filters.push_front(tr("All Images"));
     mSuffixBox = new QComboBox(this);
     mSuffixBox->addItems(filters);
-    // suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
     mControlWidget = new QWidget(this);
     QGridLayout *controlLayout = new QGridLayout(mControlWidget);
@@ -2894,7 +2891,7 @@ void DkMosaicDialog::createLayout()
     enableMosaicSave(false);
 }
 
-void DkMosaicDialog::on_openButton_pressed()
+void DkMosaicDialog::onOpenButtonPressed()
 {
     // load system default open dialog
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -2907,7 +2904,7 @@ void DkMosaicDialog::on_openButton_pressed()
     setFile(fileName);
 }
 
-void DkMosaicDialog::on_dbButton_pressed()
+void DkMosaicDialog::onDbButtonPressed()
 {
     qDebug() << "save triggered...";
 
@@ -2921,12 +2918,12 @@ void DkMosaicDialog::on_dbButton_pressed()
     }
 }
 
-void DkMosaicDialog::on_fileEdit_textChanged(const QString &filename)
+void DkMosaicDialog::onFileEditTextChanged(const QString &filename)
 {
     qDebug() << "new file name: " << filename;
 }
 
-void DkMosaicDialog::on_newWidthBox_valueChanged(int)
+void DkMosaicDialog::onNewWidthBoxValueChanged(int)
 {
     if (!mLoader.hasImage())
         return;
@@ -2939,7 +2936,7 @@ void DkMosaicDialog::on_newWidthBox_valueChanged(int)
     updatePatchRes();
 }
 
-void DkMosaicDialog::on_newHeightBox_valueChanged(int)
+void DkMosaicDialog::onNewHeightBoxValueChanged(int)
 {
     if (!mLoader.hasImage())
         return;
@@ -2952,7 +2949,7 @@ void DkMosaicDialog::on_newHeightBox_valueChanged(int)
     updatePatchRes();
 }
 
-void DkMosaicDialog::on_numPatchesH_valueChanged(int)
+void DkMosaicDialog::onNumPatchesHValueChanged(int)
 {
     if (!mLoader.hasImage())
         return;
@@ -2963,7 +2960,7 @@ void DkMosaicDialog::on_numPatchesH_valueChanged(int)
     updatePatchRes();
 }
 
-void DkMosaicDialog::on_numPatchesV_valueChanged(int)
+void DkMosaicDialog::onNumPatchesVValueChanged(int)
 {
     if (!mLoader.hasImage())
         return;
@@ -2974,17 +2971,17 @@ void DkMosaicDialog::on_numPatchesV_valueChanged(int)
     updatePatchRes();
 }
 
-void DkMosaicDialog::on_darkenSlider_valueChanged(int)
+void DkMosaicDialog::onDarkenSliderValueChanged(int)
 {
     updatePostProcess();
 }
 
-void DkMosaicDialog::on_lightenSlider_valueChanged(int)
+void DkMosaicDialog::onLightenSliderValueChanged(int)
 {
     updatePostProcess();
 }
 
-void DkMosaicDialog::on_saturationSlider_valueChanged(int)
+void DkMosaicDialog::onSaturationSliderValueChanged(int)
 {
     updatePostProcess();
 }
@@ -4236,8 +4233,6 @@ DkSvgSizeDialog::DkSvgSizeDialog(const QSize &size, QWidget *parent)
     mARatio = (double)size.width() / size.height();
     setWindowTitle("Resize SVG");
     createLayout();
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkSvgSizeDialog::createLayout()
@@ -4247,12 +4242,12 @@ void DkSvgSizeDialog::createLayout()
     mSizeBox.resize(b_end);
 
     mSizeBox[b_width] = new QSpinBox(this);
-    mSizeBox[b_width]->setObjectName("width");
+    connect(mSizeBox[b_width], QOverload<int>::of(&QSpinBox::valueChanged), this, &DkSvgSizeDialog::onWidthValueChanged);
 
     QLabel *hl = new QLabel(tr("height:"), this);
 
     mSizeBox[b_height] = new QSpinBox(this);
-    mSizeBox[b_height]->setObjectName("height");
+    connect(mSizeBox[b_height], QOverload<int>::of(&QSpinBox::valueChanged), this, &DkSvgSizeDialog::onHeightValueChanged);
 
     for (auto s : mSizeBox) {
         s->setMinimum(1);
@@ -4282,7 +4277,7 @@ void DkSvgSizeDialog::createLayout()
     layout->addWidget(buttons, 3, 1, 1, 6, Qt::AlignBottom);
 }
 
-void DkSvgSizeDialog::on_width_valueChanged(int val)
+void DkSvgSizeDialog::onWidthValueChanged(int val)
 {
     mSize.setWidth(val);
     mSize.setHeight(qRound(val / mARatio));
@@ -4292,7 +4287,7 @@ void DkSvgSizeDialog::on_width_valueChanged(int val)
     mSizeBox[b_height]->blockSignals(false);
 }
 
-void DkSvgSizeDialog::on_height_valueChanged(int val)
+void DkSvgSizeDialog::onHeightValueChanged(int val)
 {
     mSize.setWidth(qRound(val * mARatio));
     mSize.setHeight(val);

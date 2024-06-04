@@ -212,9 +212,9 @@ public:
     DkAppManagerDialog(DkAppManager *manager = 0, QWidget *parent = 0, Qt::WindowFlags flags = Qt::WindowFlags());
 
 public slots:
-    void on_addButton_clicked();
-    void on_deleteButton_clicked();
-    void on_runButton_clicked();
+    void onAddButtonClicked();
+    void onDeleteButtonClicked();
+    void onRunButtonClicked();
     virtual void accept() override;
 
 signals:
@@ -250,10 +250,10 @@ public:
     void setDefaultButton(int defaultButton = find_button);
 
 public slots:
-    void on_searchBar_textChanged(const QString &text);
-    void on_filterButton_pressed();
-    void on_resultListView_doubleClicked(const QModelIndex &modelIndex);
-    void on_resultListView_clicked(const QModelIndex &modelIndex);
+    void onSearchBarTextChanged(const QString &text);
+    void onFilterButtonPressed();
+    void onResultListViewDoubleClicked(const QModelIndex &modelIndex);
+    void onResultListViewClicked(const QModelIndex &modelIndex);
     virtual void accept() override;
 
 signals:
@@ -304,23 +304,23 @@ public:
     bool resample();
 
 protected slots:
-    void on_lockButtonDim_clicked();
-    void on_lockButton_clicked();
+    void onLockButtonDimClicked();
+    void onLockButtonClicked();
 
-    void on_wPixelSpin_valueChanged(double val);
-    void on_hPixelSpin_valueChanged(double val);
+    void onWPixelSpinValueChanged(double val);
+    void onHPixelSpinValueChanged(double val);
 
-    void on_widthSpin_valueChanged(double val);
-    void on_heightSpin_valueChanged(double val);
-    void on_resolutionSpin_valueChanged(double val);
+    void onWidthSpinValueChanged(double val);
+    void onHeightSpinValueChanged(double val);
+    void onResolutionSpinValueChanged(double val);
 
-    void on_sizeBox_currentIndexChanged(int idx);
-    void on_unitBox_currentIndexChanged(int idx);
-    void on_resUnitBox_currentIndexChanged(int idx);
-    void on_resampleBox_currentIndexChanged(int idx);
+    void onSizeBoxCurrentIndexChanged(int idx);
+    void onUnitBoxCurrentIndexChanged(int idx);
+    void onResUnitBoxCurrentIndexChanged(int idx);
+    void onResampleBoxCurrentIndexChanged(int idx);
 
-    void on_resampleCheck_clicked();
-    void on_gammaCorrection_clicked();
+    void onResampleCheckClicked();
+    void onGammaCorrectionClicked();
 
     void drawPreview();
 
@@ -632,9 +632,9 @@ public:
     DkExportTiffDialog(QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 
 public slots:
-    void on_openButton_pressed();
-    void on_saveButton_pressed();
-    void on_fileEdit_textChanged(const QString &filename);
+    void onOpenButtonPressed();
+    void onSaveButtonPressed();
+    void onFileEditTextChanged(const QString &filename);
     void setFile(const QString &filePath);
     void accept() override;
     void reject() override;
@@ -693,16 +693,16 @@ public:
     QImage getImage();
 
 public slots:
-    void on_openButton_pressed();
-    void on_dbButton_pressed();
-    void on_fileEdit_textChanged(const QString &filename);
-    void on_newWidthBox_valueChanged(int i);
-    void on_newHeightBox_valueChanged(int i);
-    void on_numPatchesV_valueChanged(int i);
-    void on_numPatchesH_valueChanged(int i);
-    void on_darkenSlider_valueChanged(int i);
-    void on_lightenSlider_valueChanged(int i);
-    void on_saturationSlider_valueChanged(int i);
+    void onOpenButtonPressed();
+    void onDbButtonPressed();
+    void onFileEditTextChanged(const QString &filename);
+    void onNewWidthBoxValueChanged(int i);
+    void onNewHeightBoxValueChanged(int i);
+    void onNumPatchesVValueChanged(int i);
+    void onNumPatchesHValueChanged(int i);
+    void onDarkenSliderValueChanged(int i);
+    void onLightenSliderValueChanged(int i);
+    void onSaturationSliderValueChanged(int i);
 
     void setFile(const QString &file);
     void compute();
@@ -827,8 +827,8 @@ public:
     QSize size() const;
 
 public slots:
-    void on_width_valueChanged(int val);
-    void on_height_valueChanged(int val);
+    void onWidthValueChanged(int val);
+    void onHeightValueChanged(int val);
 
 private:
     void createLayout();

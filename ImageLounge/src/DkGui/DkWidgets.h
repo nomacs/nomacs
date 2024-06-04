@@ -533,8 +533,8 @@ public slots:
     virtual void setVisible(bool visible, bool autoHide = false);
 
     void updateZoom(double zoomLevel);
-    void on_sbZoom_valueChanged(double zoomLevel);
-    void on_slZoom_valueChanged(int zoomLevel);
+    void onSbZoomValueChanged(double zoomLevel);
+    void onSlZoomValueChanged(int zoomLevel);
 
 protected:
     void createLayout();
@@ -714,7 +714,7 @@ public:
     void setPainted(bool isPainted);
 
 public slots:
-    void on_toggleStats_triggered(bool show);
+    void onToggleStatsTriggered(bool show);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
@@ -810,7 +810,7 @@ public:
     DkDirectoryChooser(const QString &dirPath = "", QWidget *parent = 0);
 
 public slots:
-    void on_dirButton_clicked();
+    void onDirButtonClicked();
 
 signals:
     void directoryChanged(const QString &dirPath) const;

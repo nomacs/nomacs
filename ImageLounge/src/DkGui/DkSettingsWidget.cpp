@@ -46,8 +46,6 @@ DkSettingsWidget::DkSettingsWidget(QWidget *parent)
     : DkWidget(parent)
 {
     createLayout();
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkSettingsWidget::setSettingsPath(const QString &settingsPath, const QString &parentName)
@@ -108,17 +106,17 @@ void DkSettingsWidget::removeSetting(QSettings &settings, const QString &key, co
         settings.endGroup();
 }
 
-void DkSettingsWidget::on_SettingsModel_settingChanged(const QString &key, const QVariant &value, const QStringList &groups)
+void DkSettingsWidget::onSettingsModelSettingChanged(const QString &key, const QVariant &value, const QStringList &groups)
 {
     emit changeSettingSignal(key, value, groups);
 }
 
-void DkSettingsWidget::on_SettingsModel_settingRemoved(const QString &key, const QStringList &groups)
+void DkSettingsWidget::onSettingsModelSettingRemoved(const QString &key, const QStringList &groups)
 {
     emit removeSettingSignal(key, groups);
 }
 
-void DkSettingsWidget::on_removeRows_triggered()
+void DkSettingsWidget::onRemoveRowsTriggered()
 {
     QModelIndexList selList = mTreeView->selectionModel()->selectedRows();
     for (const QModelIndex index : selList) {
@@ -130,12 +128,13 @@ void DkSettingsWidget::on_removeRows_triggered()
 void DkSettingsWidget::createLayout()
 {
     mSettingsFilter = new QLineEdit(this);
-    mSettingsFilter->setObjectName("Filter");
     mSettingsFilter->setPlaceholderText(tr("Filter Settings"));
+    connect(mSettingsFilter, &QLineEdit::textChanged, this, &DkSettingsWidget::onFilterTextChanged);
 
     // create our beautiful shortcut view
     mSettingsModel = new DkSettingsModel(this);
-    mSettingsModel->setObjectName("SettingsModel");
+    connect(mSettingsModel, &DkSettingsModel::settingChanged, this, &DkSettingsWidget::onSettingsModelSettingChanged);
+    connect(mSettingsModel, &DkSettingsModel::settingRemoved, this, &DkSettingsWidget::onSettingsModelSettingRemoved);
 
     mProxyModel = new DkSettingsProxyModel(this);
     mProxyModel->setSourceModel(mSettingsModel);
@@ -158,9 +157,9 @@ void DkSettingsWidget::createLayout()
     mTreeView->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     QAction *removeAction = new QAction(tr("Delete"), contextMenu);
-    removeAction->setObjectName("removeRows");
     removeAction->setShortcut(QKeySequence::Delete);
     mTreeView->addAction(removeAction);
+    connect(removeAction, &QAction::triggered, this, &DkSettingsWidget::onRemoveRowsTriggered);
 }
 
 void DkSettingsWidget::filter(const QString &filterText)
@@ -177,7 +176,7 @@ void DkSettingsWidget::expandAll()
     mTreeView->expandAll();
 }
 
-void DkSettingsWidget::on_Filter_textChanged(const QString &filterText)
+void DkSettingsWidget::onFilterTextChanged(const QString &filterText)
 {
     filter(filterText);
 }

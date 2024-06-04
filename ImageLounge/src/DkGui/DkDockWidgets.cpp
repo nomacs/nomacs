@@ -44,7 +44,6 @@ DkHistoryDock::DkHistoryDock(const QString &title, QWidget *parent)
 {
     setObjectName("DkHistoryDock");
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkHistoryDock::createLayout()
@@ -52,6 +51,7 @@ void DkHistoryDock::createLayout()
     mHistoryList = new QListWidget(this);
     mHistoryList->setObjectName("historyList");
     mHistoryList->setIconSize(QSize(DkSettingsManager::param().effectiveIconSize(), DkSettingsManager::param().effectiveIconSize()));
+    connect(mHistoryList, &QListWidget::itemClicked, this, &DkHistoryDock::onHistoryListItemClicked);
 
     QWidget *contentWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(contentWidget);
@@ -88,7 +88,7 @@ void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img)
         mHistoryList->item(hIdx)->setSelected(true);
 }
 
-void DkHistoryDock::on_historyList_itemClicked(QListWidgetItem *item)
+void DkHistoryDock::onHistoryListItemClicked(QListWidgetItem *item)
 {
     if (!mImg)
         return;

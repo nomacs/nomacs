@@ -42,6 +42,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QtGlobal>
 #pragma warning(pop)
 
 namespace nmc
@@ -252,7 +253,6 @@ DkTinyPlanetWidget::DkTinyPlanetWidget(QSharedPointer<DkBaseManipulatorExt> mani
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -261,20 +261,20 @@ void DkTinyPlanetWidget::createLayout()
 {
     // post processing sliders
     DkSlider *scaleSlider = new DkSlider(tr("Planet Size"), this);
-    scaleSlider->setObjectName("scaleSlider");
     scaleSlider->setMinimum(1);
     scaleSlider->setMaximum(1000);
     scaleSlider->setValue(manipulator()->size());
+    connect(scaleSlider, &DkSlider::valueChanged, this, &DkTinyPlanetWidget::onScaleSliderValueChanged);
 
     DkSlider *angleSlider = new DkSlider(tr("Angle"), this);
-    angleSlider->setObjectName("angleSlider");
     angleSlider->setValue(manipulator()->angle());
     angleSlider->setMinimum(-180);
     angleSlider->setMaximum(179);
+    connect(angleSlider, &DkSlider::valueChanged, this, &DkTinyPlanetWidget::onAngleSliderValueChanged);
 
     QCheckBox *invertBox = new QCheckBox(tr("Invert Planet"), this);
-    invertBox->setObjectName("invertBox");
     invertBox->setChecked(manipulator()->inverted());
+    connect(invertBox, &QCheckBox::toggled, this, &DkTinyPlanetWidget::onInvertBoxToggled);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(scaleSlider);
@@ -282,17 +282,17 @@ void DkTinyPlanetWidget::createLayout()
     sliderLayout->addWidget(invertBox);
 }
 
-void DkTinyPlanetWidget::on_scaleSlider_valueChanged(int val)
+void DkTinyPlanetWidget::onScaleSliderValueChanged(int val)
 {
     manipulator()->setSize(val);
 }
 
-void DkTinyPlanetWidget::on_angleSlider_valueChanged(int val)
+void DkTinyPlanetWidget::onAngleSliderValueChanged(int val)
 {
     manipulator()->setAngle(val);
 }
 
-void DkTinyPlanetWidget::on_invertBox_toggled(bool val)
+void DkTinyPlanetWidget::onInvertBoxToggled(bool val)
 {
     manipulator()->setInverted(val);
 }
@@ -307,7 +307,6 @@ DkBlurWidget::DkBlurWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWi
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -316,15 +315,15 @@ void DkBlurWidget::createLayout()
 {
     // post processing sliders
     DkSlider *sigmaSlider = new DkSlider(tr("Sigma"), this);
-    sigmaSlider->setObjectName("sigmaSlider");
     sigmaSlider->setValue(manipulator()->sigma());
     sigmaSlider->setMaximum(50);
+    connect(sigmaSlider, &DkSlider::valueChanged, this, &DkBlurWidget::onSigmaSliderValueChanged);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(sigmaSlider);
 }
 
-void DkBlurWidget::on_sigmaSlider_valueChanged(int val)
+void DkBlurWidget::onSigmaSliderValueChanged(int val)
 {
     manipulator()->setSigma(val);
 }
@@ -339,7 +338,6 @@ DkUnsharpMaskWidget::DkUnsharpMaskWidget(QSharedPointer<DkBaseManipulatorExt> ma
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -348,25 +346,24 @@ void DkUnsharpMaskWidget::createLayout()
 {
     // post processing sliders
     DkSlider *sigmaSlider = new DkSlider(tr("Sigma"), this);
-    sigmaSlider->setObjectName("sigmaSlider");
     sigmaSlider->setValue(manipulator()->sigma());
-    // darkenSlider->hide();
+    connect(sigmaSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onSigmaSliderValueChanged);
 
     DkSlider *amountSlider = new DkSlider(tr("Amount"), this);
-    amountSlider->setObjectName("amountSlider");
     amountSlider->setValue(manipulator()->amount());
+    connect(amountSlider, &DkSlider::valueChanged, this, &DkUnsharpMaskWidget::onAmountSliderValueChanged);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(sigmaSlider);
     sliderLayout->addWidget(amountSlider);
 }
 
-void DkUnsharpMaskWidget::on_sigmaSlider_valueChanged(int val)
+void DkUnsharpMaskWidget::onSigmaSliderValueChanged(int val)
 {
     manipulator()->setSigma(val);
 }
 
-void DkUnsharpMaskWidget::on_amountSlider_valueChanged(int val)
+void DkUnsharpMaskWidget::onAmountSliderValueChanged(int val)
 {
     manipulator()->setAmount(val);
 }
@@ -381,7 +378,6 @@ DkRotateWidget::DkRotateWidget(QSharedPointer<DkBaseManipulatorExt> manipulator,
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -394,16 +390,16 @@ QSharedPointer<DkRotateManipulator> DkRotateWidget::manipulator() const
 void DkRotateWidget::createLayout()
 {
     DkSlider *angleSlider = new DkSlider(tr("Angle"), this);
-    angleSlider->setObjectName("angleSlider");
     angleSlider->setValue(manipulator()->angle());
     angleSlider->setMinimum(-180);
     angleSlider->setMaximum(180);
+    connect(angleSlider, &DkSlider::valueChanged, this, &DkRotateWidget::onAngleSliderValueChanged);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(angleSlider);
 }
 
-void DkRotateWidget::on_angleSlider_valueChanged(int val)
+void DkRotateWidget::onAngleSliderValueChanged(int val)
 {
     manipulator()->setAngle(val);
 }
@@ -413,7 +409,6 @@ DkResizeWidget::DkResizeWidget(QSharedPointer<DkBaseManipulatorExt> manipulator,
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 
@@ -439,14 +434,13 @@ void DkResizeWidget::onObjectNameChanged(const QString &name)
 void DkResizeWidget::createLayout()
 {
     DkDoubleSlider *scaleSlider = new DkDoubleSlider(tr("Scale"), this);
-    scaleSlider->setObjectName("scaleFactorSlider");
     scaleSlider->setMinimum(0.1);
     scaleSlider->setCenterValue(1.0);
     scaleSlider->setMaximum(10);
     scaleSlider->setValue(manipulator()->scaleFactor());
+    connect(scaleSlider, &DkDoubleSlider::valueChanged, this, &DkResizeWidget::onScaleFactorSliderValueChanged);
 
     mIplBox = new QComboBox(this);
-    mIplBox->setObjectName("iplBox");
     mIplBox->setView(new QListView()); // needed for style
     mIplBox->addItem(tr("Nearest Neighbor"), DkImage::ipl_nearest);
     mIplBox->addItem(tr("Area (best for downscaling)"), DkImage::ipl_area);
@@ -454,9 +448,10 @@ void DkResizeWidget::createLayout()
     mIplBox->addItem(tr("Bicubic (4x4 interpolatia)"), DkImage::ipl_cubic);
     mIplBox->addItem(tr("Lanczos (8x8 interpolation)"), DkImage::ipl_lanczos);
     mIplBox->setCurrentIndex(1);
+    connect(mIplBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &DkResizeWidget::onIplBoxCurrentIndexChanged);
 
     QCheckBox *cbGamma = new QCheckBox(tr("Gamma Correction"), this);
-    cbGamma->setObjectName("gammaCorrection");
+    connect(cbGamma, &QCheckBox::toggled, this, &DkResizeWidget::onGammaCorrectionToggled);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->setSpacing(10);
@@ -465,17 +460,17 @@ void DkResizeWidget::createLayout()
     sliderLayout->addWidget(cbGamma);
 }
 
-void DkResizeWidget::on_scaleFactorSlider_valueChanged(double val)
+void DkResizeWidget::onScaleFactorSliderValueChanged(double val)
 {
     manipulator()->setScaleFactor(val);
 }
 
-void DkResizeWidget::on_iplBox_currentIndexChanged(int idx)
+void DkResizeWidget::onIplBoxCurrentIndexChanged(int idx)
 {
     manipulator()->setInterpolation(mIplBox->itemData(idx).toInt());
 }
 
-void DkResizeWidget::on_gammaCorrection_toggled(bool checked)
+void DkResizeWidget::onGammaCorrectionToggled(bool checked)
 {
     manipulator()->setCorrectGamma(checked);
 }
@@ -485,7 +480,6 @@ DkThresholdWidget::DkThresholdWidget(QSharedPointer<DkBaseManipulatorExt> manipu
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -495,7 +489,7 @@ QSharedPointer<DkThresholdManipulator> DkThresholdWidget::manipulator() const
     return qSharedPointerDynamicCast<DkThresholdManipulator>(baseManipulator());
 }
 
-void DkThresholdWidget::on_colBox_toggled(bool checked)
+void DkThresholdWidget::onColBoxToggled(bool checked)
 {
     manipulator()->setColor(checked);
 }
@@ -503,21 +497,21 @@ void DkThresholdWidget::on_colBox_toggled(bool checked)
 void DkThresholdWidget::createLayout()
 {
     DkSlider *thrSlider = new DkSlider(tr("Threshold"), this);
-    thrSlider->setObjectName("thrSlider");
     thrSlider->setValue(manipulator()->threshold());
     thrSlider->setMinimum(0);
     thrSlider->setMaximum(255);
     thrSlider->setValue(manipulator()->threshold());
+    connect(thrSlider, &DkSlider::valueChanged, this, &DkThresholdWidget::onThrSliderValueChanged);
 
     QCheckBox *colBox = new QCheckBox(tr("Color"), this);
-    colBox->setObjectName("colBox");
     colBox->setChecked(manipulator()->color());
+    connect(colBox, &QCheckBox::toggled, this, &DkThresholdWidget::onColBoxToggled);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(thrSlider);
     layout->addWidget(colBox);
 }
-void DkThresholdWidget::on_thrSlider_valueChanged(int val)
+void DkThresholdWidget::onThrSliderValueChanged(int val)
 {
     manipulator()->setThreshold(val);
 }
@@ -527,8 +521,6 @@ DkColorWidget::DkColorWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, Q
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
     setMinimumHeight(150);
@@ -542,14 +534,14 @@ QSharedPointer<DkColorManipulator> DkColorWidget::manipulator() const
 void DkColorWidget::createLayout()
 {
     DkColorPicker *cp = new DkColorPicker(this);
-    cp->setObjectName("colPicker");
+    connect(cp, &DkColorPicker::colorSelected, this, &DkColorWidget::onColPickerColorSelected);
 
     QVBoxLayout *l = new QVBoxLayout(this);
     l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(cp);
 }
 
-void DkColorWidget::on_colPicker_colorSelected(const QColor &col)
+void DkColorWidget::onColPickerColorSelected(const QColor &col)
 {
     manipulator()->setColor(col);
 }
@@ -559,7 +551,6 @@ DkHueWidget::DkHueWidget(QSharedPointer<DkBaseManipulatorExt> manipulator, QWidg
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -572,25 +563,25 @@ QSharedPointer<DkHueManipulator> DkHueWidget::manipulator() const
 void DkHueWidget::createLayout()
 {
     DkSlider *hueSlider = new DkSlider(tr("Hue"), this);
-    hueSlider->setObjectName("hueSlider");
     hueSlider->getSlider()->setObjectName("DkHueSlider");
     hueSlider->setValue(manipulator()->hue());
     hueSlider->setMinimum(-180);
     hueSlider->setMaximum(180);
+    connect(hueSlider, &DkSlider::valueChanged, this, &DkHueWidget::onHueSliderValueChanged);
 
     DkSlider *satSlider = new DkSlider(tr("Saturation"), this);
-    satSlider->setObjectName("satSlider");
     satSlider->getSlider()->setObjectName("DkSaturationSlider");
     satSlider->setValue(manipulator()->saturation());
     satSlider->setMinimum(-100);
     satSlider->setMaximum(100);
+    connect(satSlider, &DkSlider::valueChanged, this, &DkHueWidget::onSatSliderValueChanged);
 
     DkSlider *brightnessSlider = new DkSlider(tr("Brightness"), this);
-    brightnessSlider->setObjectName("brightnessSlider");
     brightnessSlider->getSlider()->setObjectName("DkBrightnessSlider");
     brightnessSlider->setValue(manipulator()->hue());
     brightnessSlider->setMinimum(-100);
     brightnessSlider->setMaximum(100);
+    connect(brightnessSlider, &DkSlider::valueChanged, this, &DkHueWidget::onBrightnessSliderValueChanged);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(hueSlider);
@@ -598,17 +589,17 @@ void DkHueWidget::createLayout()
     sliderLayout->addWidget(brightnessSlider);
 }
 
-void DkHueWidget::on_hueSlider_valueChanged(int val)
+void DkHueWidget::onHueSliderValueChanged(int val)
 {
     manipulator()->setHue(val);
 }
 
-void DkHueWidget::on_satSlider_valueChanged(int val)
+void DkHueWidget::onSatSliderValueChanged(int val)
 {
     manipulator()->setSaturation(val);
 }
 
-void DkHueWidget::on_brightnessSlider_valueChanged(int val)
+void DkHueWidget::onBrightnessSliderValueChanged(int val)
 {
     manipulator()->setValue(val);
 }
@@ -618,7 +609,6 @@ DkExposureWidget::DkExposureWidget(QSharedPointer<DkBaseManipulatorExt> manipula
     : DkBaseManipulatorWidget(manipulator, parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 
     manipulator->setWidget(this);
 }
@@ -631,27 +621,27 @@ QSharedPointer<DkExposureManipulator> DkExposureWidget::manipulator() const
 void DkExposureWidget::createLayout()
 {
     DkDoubleSlider *exposureSlider = new DkDoubleSlider(tr("Exposure"), this);
-    exposureSlider->setObjectName("exposureSlider");
     exposureSlider->setMinimum(-3);
     exposureSlider->setMaximum(3);
     exposureSlider->setTickInterval(0.0005);
     exposureSlider->setValue(manipulator()->exposure());
+    connect(exposureSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onExposureSliderValueChanged);
 
     DkDoubleSlider *offsetSlider = new DkDoubleSlider(tr("Offset"), this);
-    offsetSlider->setObjectName("offsetSlider");
     offsetSlider->setMinimum(-0.5);
     offsetSlider->setMaximum(0.5);
     offsetSlider->setTickInterval(0.001);
     offsetSlider->setValue(manipulator()->offset());
+    connect(offsetSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onOffsetSliderValueChanged);
 
     DkDoubleSlider *gammaSlider = new DkDoubleSlider(tr("Gamma"), this);
-    gammaSlider->setObjectName("gammaSlider");
     gammaSlider->setMinimum(0);
     gammaSlider->setCenterValue(1);
     gammaSlider->setMaximum(10);
     gammaSlider->setTickInterval(0.001);
     gammaSlider->setSliderInverted(true);
     gammaSlider->setValue(manipulator()->gamma());
+    connect(gammaSlider, &DkDoubleSlider::valueChanged, this, &DkExposureWidget::onGammaSliderValueChanged);
 
     QVBoxLayout *sliderLayout = new QVBoxLayout(this);
     sliderLayout->addWidget(exposureSlider);
@@ -659,7 +649,7 @@ void DkExposureWidget::createLayout()
     sliderLayout->addWidget(gammaSlider);
 }
 
-void DkExposureWidget::on_exposureSlider_valueChanged(double val)
+void DkExposureWidget::onExposureSliderValueChanged(double val)
 {
     double tv = val * val;
     if (val < 0)
@@ -667,12 +657,12 @@ void DkExposureWidget::on_exposureSlider_valueChanged(double val)
     manipulator()->setExposure(tv);
 }
 
-void DkExposureWidget::on_offsetSlider_valueChanged(double val)
+void DkExposureWidget::onOffsetSliderValueChanged(double val)
 {
     manipulator()->setOffset(val);
 }
 
-void DkExposureWidget::on_gammaSlider_valueChanged(double val)
+void DkExposureWidget::onGammaSliderValueChanged(double val)
 {
     manipulator()->setGamma(val);
 }

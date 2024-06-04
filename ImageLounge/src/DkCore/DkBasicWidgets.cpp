@@ -358,8 +358,8 @@ void DkColorChooser::init()
     mAccepted = false;
 
     colorDialog = new QColorDialog(this);
-    colorDialog->setObjectName("colorDialog");
     colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+    connect(colorDialog, &QColorDialog::accepted, this, &DkColorChooser::onColorDialogAccepted);
 
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(11, 0, 11, 0);
@@ -367,12 +367,12 @@ void DkColorChooser::init()
     QLabel *colorLabel = new QLabel(mText, this);
     colorButton = new QPushButton("", this);
     colorButton->setFlat(true);
-    colorButton->setObjectName("colorButton");
     colorButton->setAutoDefault(false);
+    connect(colorButton, &QPushButton::clicked, this, &DkColorChooser::onColorButtonClicked);
 
     QPushButton *resetButton = new QPushButton(tr("Reset"), this);
-    resetButton->setObjectName("resetButton");
     resetButton->setAutoDefault(false);
+    connect(resetButton, &QPushButton::clicked, this, &DkColorChooser::onResetButtonClicked);
 
     QWidget *colWidget = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout(colWidget);
@@ -386,7 +386,6 @@ void DkColorChooser::init()
     vLayout->addWidget(colWidget);
 
     setColor(defaultColor);
-    QMetaObject::connectSlotsByName(this);
 }
 
 bool DkColorChooser::isAccept() const
@@ -420,19 +419,19 @@ QColor DkColorChooser::getColor()
     return colorDialog->currentColor();
 }
 
-void DkColorChooser::on_resetButton_clicked()
+void DkColorChooser::onResetButtonClicked()
 {
     setColor(defaultColor);
     emit resetClicked();
 }
 
-void DkColorChooser::on_colorButton_clicked()
+void DkColorChooser::onColorButtonClicked()
 {
     // incorrect color? - see: https://bugreports.qt.io/browse/QTBUG-42988
     colorDialog->show();
 }
 
-void DkColorChooser::on_colorDialog_accepted()
+void DkColorChooser::onColorDialogAccepted()
 {
     setColor(colorDialog->currentColor());
     mAccepted = true;
@@ -664,7 +663,6 @@ DkColorPicker::DkColorPicker(QWidget *parent)
     : DkWidget(parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkColorPicker::createLayout()
@@ -673,7 +671,6 @@ void DkColorPicker::createLayout()
 
     // color pane
     mColorPane = new DkColorPane(this);
-    mColorPane->setObjectName("mColorPane");
     mColorPane->setBaseSize(100, 100);
     mColorPane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 

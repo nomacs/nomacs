@@ -610,7 +610,6 @@ DkPluginTableWidget::DkPluginTableWidget(QWidget *parent)
     : DkWidget(parent)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 DkPluginTableWidget::~DkPluginTableWidget()

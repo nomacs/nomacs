@@ -37,6 +37,7 @@
 #include "DkTimer.h"
 #include "DkToolbars.h"
 #include "DkUtils.h"
+#include <QtGlobal>
 
 #pragma warning(push, 0) // no warnings from includes - begin
 #include <QAction>
@@ -890,7 +891,6 @@ DkZoomWidget::DkZoomWidget(QWidget *parent)
     setMinimumSize(70, 0);
     setMaximumSize(200, 240);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkZoomWidget::createLayout()
@@ -902,6 +902,7 @@ void DkZoomWidget::createLayout()
     mSlZoom->setCursor(Qt::ArrowCursor);
     mSlZoom->setMinimum(0); // add a mapping here
     mSlZoom->setMaximum(100);
+    connect(mSlZoom, &QSlider::valueChanged, this, &DkZoomWidget::onSlZoomValueChanged);
 
     mSbZoom = new QDoubleSpinBox(this);
     mSbZoom->setObjectName("sbZoom");
@@ -911,6 +912,7 @@ void DkZoomWidget::createLayout()
     mSbZoom->setValue(100);
     mSbZoom->setMinimum(0.2);
     mSbZoom->setMaximum(6000);
+    connect(mSbZoom, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkZoomWidget::onSbZoomValueChanged);
 
     QLabel *sliderWidget = new QLabel(this);
     sliderWidget->setObjectName("DkOverviewSliderWidget");
@@ -927,14 +929,14 @@ void DkZoomWidget::createLayout()
     layout->addWidget(sliderWidget);
 }
 
-void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel)
+void DkZoomWidget::onSbZoomValueChanged(double zoomLevel)
 {
     updateZoom((float)zoomLevel);
     mAutoHide = false;
     emit zoomSignal(zoomLevel / 100.0);
 }
 
-void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel)
+void DkZoomWidget::onSlZoomValueChanged(int zoomLevel)
 {
     double level = (zoomLevel > 50) ? (zoomLevel - 50.0) / 50.0 * mSbZoom->maximum() + 200.0 : zoomLevel * 4.0;
     if (level < 0.2)
@@ -2212,14 +2214,12 @@ DkHistogram::DkHistogram(QWidget *parent)
 
     // create context menu
     QAction *showStats = new QAction(tr("Show Statistics"), this);
-    showStats->setObjectName("toggleStats");
     showStats->setCheckable(true);
     showStats->setChecked(mDisplayMode == DisplayMode::histogram_mode_extended);
+    connect(showStats, &QAction::triggered, this, &DkHistogram::onToggleStatsTriggered);
 
     mContextMenu = new QMenu(tr("Histogram Settings"));
     mContextMenu->addAction(showStats);
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 DkHistogram::~DkHistogram()
@@ -2307,7 +2307,7 @@ void DkHistogram::contextMenuEvent(QContextMenuEvent *event)
     // DkFadeWidget::contextMenuEvent(event);
 }
 
-void DkHistogram::on_toggleStats_triggered(bool show)
+void DkHistogram::onToggleStatsTriggered(bool show)
 {
     mDisplayMode = (show) ? DisplayMode::histogram_mode_extended : DisplayMode::histogram_mode_simple;
     DkSettingsManager::param().display().histogramStyle = (int)mDisplayMode;
@@ -2621,7 +2621,6 @@ DkDirectoryChooser::DkDirectoryChooser(const QString &dirPath, QWidget *parent)
     : DkWidget(parent)
 {
     createLayout(dirPath);
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkDirectoryChooser::createLayout(const QString &dirPath)
@@ -2630,7 +2629,7 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
     mDirEdit->setObjectName("dirEdit");
 
     QPushButton *dirButton = new QPushButton(tr("..."), this);
-    dirButton->setObjectName("dirButton");
+    connect(dirButton, &QPushButton::clicked, this, &DkDirectoryChooser::onDirButtonClicked);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setAlignment(Qt::AlignLeft);
@@ -2641,7 +2640,7 @@ void DkDirectoryChooser::createLayout(const QString &dirPath)
     connect(mDirEdit, SIGNAL(textChanged(const QString &)), this, SIGNAL(directoryChanged(const QString &)));
 }
 
-void DkDirectoryChooser::on_dirButton_clicked()
+void DkDirectoryChooser::onDirButtonClicked()
 {
     QString dirPath =
         QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mDirEdit->text(), QFileDialog::ShowDirsOnly | DkDialog::fileDialogOptions());

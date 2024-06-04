@@ -1760,6 +1760,7 @@ void DkThumbsView::fetchThumbs()
 DkThumbScrollWidget::DkThumbScrollWidget(QWidget *parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
     : DkFadeWidget(parent, flags)
 {
+    // TODO: is this name required elsewhere?
     setObjectName("DkThumbScrollWidget");
     setContentsMargins(0, 0, 0, 0);
 
@@ -1780,8 +1781,6 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget *parent /* = 0 */, Qt::WindowFl
     setLayout(layout);
 
     enableSelectionActions();
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkThumbScrollWidget::createToolbar()
@@ -1847,8 +1846,8 @@ void DkThumbScrollWidget::createActions()
 
     // add a shortcut to open the selected image
     QAction *loadFile = new QAction(tr("Open Image"), this);
-    loadFile->setObjectName("loadFile");
     loadFile->setShortcut(Qt::Key_Return);
+    connect(loadFile, &QAction::triggered, this, &DkThumbScrollWidget::onLoadFileTriggered);
 
     addAction(loadFile);
 }
@@ -1882,7 +1881,7 @@ void DkThumbScrollWidget::batchPrint() const
     printPreviewDialog->deleteLater();
 }
 
-void DkThumbScrollWidget::on_loadFile_triggered()
+void DkThumbScrollWidget::onLoadFileTriggered()
 {
     auto selected = mThumbsScene->selectedItems();
 
@@ -2055,7 +2054,6 @@ DkRecentDirWidget::DkRecentDirWidget(const DkRecentDir &rde, QWidget *parent)
     mRecentDir = rde;
 
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkRecentDirWidget::createLayout()
@@ -2072,6 +2070,7 @@ void DkRecentDirWidget::createLayout()
     mButtons[button_load_dir]->setObjectName("load_dir");
     mButtons[button_load_dir]->setFlat(true);
     mButtons[button_load_dir]->hide();
+    connect(mButtons[button_load_dir], &QPushButton::clicked, this, &DkRecentDirWidget::onLoadDirClicked);
 
     QIcon pIcon;
     pIcon.addPixmap(DkImage::loadIcon(":/nomacs/img/pin-checked.svg"), QIcon::Normal, QIcon::On);
@@ -2084,12 +2083,14 @@ void DkRecentDirWidget::createLayout()
     mButtons[button_pin]->setChecked(mRecentDir.isPinned());
     mButtons[button_pin]->setFlat(true);
     mButtons[button_pin]->hide();
+    connect(mButtons[button_pin], &QPushButton::clicked, this, &DkRecentDirWidget::onPinClicked);
 
     mButtons[button_remove] = new QPushButton(DkImage::loadIcon(":/nomacs/img/close.svg"), "", this);
     mButtons[button_remove]->setToolTip(tr("Remove this directory"));
     mButtons[button_remove]->setObjectName("remove");
     mButtons[button_remove]->setFlat(true);
     mButtons[button_remove]->hide();
+    connect(mButtons[button_remove], &QPushButton::clicked, this, &DkRecentDirWidget::onRemoveClicked);
 
     QVector<DkThumbPreviewLabel *> tls;
 
@@ -2128,7 +2129,7 @@ void DkRecentDirWidget::createLayout()
     setStatusTip(mRecentDir.dirPath());
 }
 
-void DkRecentDirWidget::on_pin_clicked(bool checked)
+void DkRecentDirWidget::onPinClicked(bool checked)
 {
     if (checked) {
         DkSettingsManager::param().global().pinnedFiles << mRecentDir.filePaths();
@@ -2138,13 +2139,13 @@ void DkRecentDirWidget::on_pin_clicked(bool checked)
     }
 }
 
-void DkRecentDirWidget::on_remove_clicked()
+void DkRecentDirWidget::onRemoveClicked()
 {
     mRecentDir.remove();
     emit removeSignal();
 }
 
-void DkRecentDirWidget::on_load_dir_clicked()
+void DkRecentDirWidget::onLoadDirClicked()
 {
     emit loadDirSignal(mRecentDir.dirPath());
 }

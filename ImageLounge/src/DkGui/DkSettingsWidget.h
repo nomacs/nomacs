@@ -163,11 +163,10 @@ signals:
     void removeSettingSignal(const QString &key, const QStringList &groups);
 
 public slots:
-    // void focusFilter();
-    void on_Filter_textChanged(const QString &text);
-    void on_SettingsModel_settingChanged(const QString &key, const QVariant &value, const QStringList &groups);
-    void on_SettingsModel_settingRemoved(const QString &key, const QStringList &groups);
-    void on_removeRows_triggered();
+    void onFilterTextChanged(const QString &text);
+    void onSettingsModelSettingChanged(const QString &key, const QVariant &value, const QStringList &groups);
+    void onSettingsModelSettingRemoved(const QString &key, const QStringList &groups);
+    void onRemoveRowsTriggered();
 
 protected:
     void createLayout();

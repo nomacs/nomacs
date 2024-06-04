@@ -143,9 +143,9 @@ public:
     void enableAlpha(bool enable = true);
 
 public slots:
-    void on_resetButton_clicked();
-    void on_colorButton_clicked();
-    void on_colorDialog_accepted();
+    void onResetButtonClicked();
+    void onColorButtonClicked();
+    void onColorDialogAccepted();
 
 signals:
     void resetClicked();
