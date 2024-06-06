@@ -302,19 +302,9 @@ bool DkUtils::compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf)
     return lhf.birthTime() < rhf.birthTime();
 }
 
-bool DkUtils::compDateCreatedInv(const QFileInfo &lhf, const QFileInfo &rhf)
-{
-    return !compDateCreated(lhf, rhf);
-}
-
 bool DkUtils::compDateModified(const QFileInfo &lhf, const QFileInfo &rhf)
 {
     return lhf.lastModified() < rhf.lastModified();
-}
-
-bool DkUtils::compDateModifiedInv(const QFileInfo &lhf, const QFileInfo &rhf)
-{
-    return !compDateModified(lhf, rhf);
 }
 
 bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
@@ -322,19 +312,9 @@ bool DkUtils::compFilename(const QFileInfo &lhf, const QFileInfo &rhf)
     return compLogicQString(lhf.fileName(), rhf.fileName());
 }
 
-bool DkUtils::compFilenameInv(const QFileInfo &lhf, const QFileInfo &rhf)
-{
-    return !compFilename(lhf, rhf);
-}
-
 bool DkUtils::compFileSize(const QFileInfo &lhf, const QFileInfo &rhf)
 {
     return lhf.size() < rhf.size();
-}
-
-bool DkUtils::compFileSizeInv(const QFileInfo &lhf, const QFileInfo &rhf)
-{
-    return !compFileSize(lhf, rhf);
 }
 
 bool DkUtils::compRandom(const QFileInfo &lhf, const QFileInfo &rhf)

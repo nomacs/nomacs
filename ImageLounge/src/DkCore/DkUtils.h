@@ -132,19 +132,11 @@ public:
 
     static bool compFilename(const QFileInfo &lhf, const QFileInfo &rhf);
 
-    static bool compFilenameInv(const QFileInfo &lhf, const QFileInfo &rhf);
-
     static bool compFileSize(const QFileInfo &lhf, const QFileInfo &rhf);
-
-    static bool compFileSizeInv(const QFileInfo &lhf, const QFileInfo &rhf);
 
     static bool compDateCreated(const QFileInfo &lhf, const QFileInfo &rhf);
 
-    static bool compDateCreatedInv(const QFileInfo &lhf, const QFileInfo &rhf);
-
     static bool compDateModified(const QFileInfo &lhf, const QFileInfo &rhf);
-
-    static bool compDateModifiedInv(const QFileInfo &lhf, const QFileInfo &rhf);
 
     static bool compRandom(const QFileInfo &lhf, const QFileInfo &rhf);
 
