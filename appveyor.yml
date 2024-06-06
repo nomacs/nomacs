@@ -15,6 +15,7 @@ environment:
       ARCHITECTURE: x86_64
       WARNINGS_AS_ERRORS: ON
       PYTHON: "C:\\Python312-x64"
+      GIT_CLONE_PROTECTION_ACTIVE: false
 
     certpwd:
       secure: lqgUngzqY8panUxQ6C3IYQj4qZ8JYvMak5mH0ihm/ffnkTHADsqgPkXmI70gXVww
