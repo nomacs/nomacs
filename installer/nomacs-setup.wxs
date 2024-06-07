@@ -15,7 +15,7 @@
 		<Icon Id="ProductIcon" SourceFile="./img/nomacs.ico"/>
 		<Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
 		<Property Id="ARPHELPLINK" Value="https://nomacs.org"/>
-		<Property Id="ARPURLINFOABOUT" Value="https://nomacs.org/documentation/"/>
+		<Property Id="ARPURLINFOABOUT" Value="https://nomacs.org/docs/getting-started/introduction/"/>
 		<Property Id="ARPNOREPAIR" Value="1"/>
 		<!-- <Property Id="ARPNOMODIFY" Value="1"/> -->
 		<SetProperty Id="ARPNOMODIFY" Value="1" After="InstallValidate" Sequence="execute"/>
