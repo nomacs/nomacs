@@ -63,16 +63,18 @@ void DkHistoryDock::createLayout()
 void DkHistoryDock::updateImage(QSharedPointer<DkImageContainerT> img)
 {
     updateList(img);
-    mImg = img;
+    mImg = img; // null if tab has no image
 }
 
 void DkHistoryDock::updateList(QSharedPointer<DkImageContainerT> img)
 {
+    mHistoryList->clear();
+    if (!img)
+        return;
+
     QVector<DkEditImage> *history = img->getLoader()->history();
     int hIdx = img->getLoader()->historyIndex();
     QVector<QListWidgetItem *> editItems;
-
-    mHistoryList->clear();
 
     for (int idx = 0; idx < history->size(); idx++) {
         const DkEditImage &eImg = history->at(idx);
