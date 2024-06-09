@@ -89,32 +89,6 @@ bool DkImageContainer::operator==(const DkImageContainer &ric) const
     return mFilePath == ric.filePath();
 }
 
-bool DkImageContainer::operator<=(const DkImageContainer &o) const
-{
-    if (*this == o)
-        return true;
-
-    return *this < o;
-}
-
-bool DkImageContainer::operator<(const DkImageContainer &o) const
-{
-    return imageContainerLessThan(*this, o);
-}
-
-bool DkImageContainer::operator>(const DkImageContainer &o) const
-{
-    return !imageContainerLessThan(*this, o);
-}
-
-bool DkImageContainer::operator>=(const DkImageContainer &o) const
-{
-    if (*this == o)
-        return true;
-
-    return !imageContainerLessThan(*this, o);
-}
-
 void DkImageContainer::clear()
 {
     if (mLoader)
@@ -294,6 +268,43 @@ DkRotatingRect DkImageContainer::cropRect()
         qWarning() << "empty crop rect because there are no metadata...";
 
     return DkRotatingRect();
+}
+
+std::function<bool(const QSharedPointer<DkImageContainer> &,
+                   const QSharedPointer<DkImageContainer> &)>
+DkImageContainer::compareFunc()
+{
+    // select from the assortment of QFileInfo functions; if there isn't one use this one
+    // future: exif, custom sorting, etc can all be tied in here, need not be QFileInfo
+    std::function<bool(const QFileInfo &, const QFileInfo &FileInfo)> cmp;
+
+    int mode = DkSettingsManager::param().global().sortMode;
+
+    switch ((DkSettings::sortMode)mode) {
+    case DkSettings::sort_filename:
+        cmp = &DkUtils::compFilename;
+        break;
+    case DkSettings::sort_date_created:
+        cmp = &DkUtils::compDateCreated;
+        break;
+    case DkSettings::sort_file_size:
+        cmp = &DkUtils::compFileSize;
+        break;
+    case DkSettings::sort_date_modified:
+        cmp = &DkUtils::compDateModified;
+        break;
+    case DkSettings::sort_random:
+        cmp = &DkUtils::compRandom;
+        break;
+    default:
+        qWarning() << "[compareFunc] bogus sort mode ignored" << mode;
+        cmp = &DkUtils::compFilename;
+    }
+
+    return [cmp](const QSharedPointer<DkImageContainer> &lhs,
+                 const QSharedPointer<DkImageContainer> &rhs) {
+        return cmp(lhs->fileInfo(), rhs->fileInfo());
+    };
 }
 
 QImage DkImageContainer::image()
@@ -548,66 +559,6 @@ std::wstring DkImageContainer::getFileNameWStr() const
     return mFileNameStr;
 }
 #endif
-
-bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r)
-{
-    if (!l || !r)
-        return false;
-
-    return imageContainerLessThan(*l, *r);
-}
-
-bool imageContainerLessThan(const DkImageContainer &l, const DkImageContainer &r)
-{
-    switch (DkSettingsManager::param().global().sortMode) {
-    case DkSettings::sort_filename:
-#ifdef Q_OS_WIN
-        // not beautiful if you take a look at the code, but:
-        // time on Win8 with compFilename:
-        //		WinAPI, indexed ( 73872 ) files in:  " 92 ms"
-        //		[DkImageLoader]  73872  containers created in  " 1.825 sec"
-        //		[DkImageLoader] after sorting:  " 52.246 sec"
-        // time on Win8 with direct wCompLogic:
-        //		WinAPI, indexed ( 73872 ) files in:  " 63 ms"
-        //		[DkImageLoader]  73872  containers created in  " 1.203 sec"
-        //		[DkImageLoader] after sorting:  " 14.407 sec"
-        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
-            return DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
-        else
-            return !DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
-#else
-        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
-            return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
-        else
-            return DkUtils::compFilenameInv(l.fileInfo(), r.fileInfo());
-#endif
-
-    case DkSettings::sort_date_created:
-        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
-            return DkUtils::compDateCreated(l.fileInfo(), r.fileInfo());
-        else
-            return DkUtils::compDateCreatedInv(l.fileInfo(), r.fileInfo());
-
-    case DkSettings::sort_file_size:
-        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
-            return DkUtils::compFileSize(l.fileInfo(), r.fileInfo());
-        else
-            return DkUtils::compFileSizeInv(l.fileInfo(), r.fileInfo());
-
-    case DkSettings::sort_date_modified:
-        if (DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending)
-            return DkUtils::compDateModified(l.fileInfo(), r.fileInfo());
-        else
-            return DkUtils::compDateModifiedInv(l.fileInfo(), r.fileInfo());
-
-    case DkSettings::sort_random:
-        return DkUtils::compRandom(l.fileInfo(), r.fileInfo());
-
-    default:
-        // filename
-        return DkUtils::compFilename(l.fileInfo(), r.fileInfo());
-    }
-}
 
 // DkImageContainerT --------------------------------------------------------------------
 DkImageContainerT::DkImageContainerT(const QString &filePath)

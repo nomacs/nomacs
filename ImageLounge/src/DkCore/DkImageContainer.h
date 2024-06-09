@@ -70,10 +70,6 @@ public:
     DkImageContainer(const QString &filePath);
     virtual ~DkImageContainer();
     bool operator==(const DkImageContainer &ric) const;
-    bool operator<(const DkImageContainer &o) const;
-    bool operator<=(const DkImageContainer &o) const;
-    bool operator>(const DkImageContainer &o) const;
-    bool operator>=(const DkImageContainer &o) const;
 
     QImage image();
     QImage pixmap();
@@ -128,6 +124,14 @@ public:
     void cropImage(const DkRotatingRect &rect, const QColor &col, bool cropToMetadata);
     DkRotatingRect cropRect();
 
+    /**
+     * Get a less-than function based on the global sort mode, suitable for std::sort et al
+     * @note does not incorporate the ascending/descending mode (always ascending),
+     *       to sort descending, reverse the array after sorting.
+     */
+    static std::function<bool(const QSharedPointer<DkImageContainer> &,
+                              const QSharedPointer<DkImageContainer> &)> compareFunc();
+
 protected:
     QSharedPointer<DkBasicLoader> loadImageIntern(const QString &filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
     void
@@ -157,9 +161,6 @@ protected:
 private:
     QString mFilePath;
 };
-
-bool imageContainerLessThan(const DkImageContainer &l, const DkImageContainer &r);
-bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
 class DllCoreExport DkImageContainerT : public QObject, public DkImageContainer
 {

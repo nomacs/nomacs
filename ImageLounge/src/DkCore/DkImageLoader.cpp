@@ -364,10 +364,8 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
     qInfo() << "[DkImageLoader]" << mImages.size() << "containers created in" << dt;
 
     if (sort) {
-        std::sort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
+        DkImageLoader::sort();
         qInfo() << "[DkImageLoader] after sorting: " << dt;
-
-        emit updateDirSignal(mImages);
 
         if (mDirWatcher) {
             if (!mDirWatcher->directories().isEmpty())
@@ -379,7 +377,8 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
 
 QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const
 {
-    std::sort(images.begin(), images.end(), imageContainerLessThanPtr);
+    // this is dead code and could crash, see sort() for a correct way to do it
+    //std::sort(images.begin(), images.end(), imageContainerLessThanPtr);
     return images;
 }
 
@@ -452,11 +451,14 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
         mTmpFileIdx = findFileIdx(file, mImages);
 
+        bool sortAscending = DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending;
+        const auto isLessThan = DkImageContainer::compareFunc();
+
         // could not locate the file -> it was deleted?!
         if (mTmpFileIdx == -1) {
             mTmpFileIdx = 0;
             for (; mTmpFileIdx < mImages.size(); mTmpFileIdx++) {
-                if (*(mCurrentImage.data()) < *(mImages[mTmpFileIdx].data()))
+                if (!sortAscending ^ isLessThan(mCurrentImage, mImages[mTmpFileIdx]))
                     break;
             }
 
@@ -2003,7 +2005,20 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
 void DkImageLoader::sort()
 {
-    std::sort(mImages.begin(), mImages.end(), imageContainerLessThanPtr);
+    for (auto& img : qAsConst(mImages))
+        if (!img) {
+            qWarning() << "attempt to sort null image(s) averted";
+            return;
+        }
+
+    bool ascending = DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending;
+
+    auto cmp = DkImageContainer::compareFunc();
+
+    std::sort(mImages.begin(), mImages.end(), cmp);
+    if (!ascending)
+        std::reverse(mImages.begin(), mImages.end());
+
     emit updateDirSignal(mImages);
 }
 
