@@ -50,8 +50,12 @@
 #include <QTranslator>
 
 #ifdef Q_OS_WIN
-#include "Shobjidl.h"
+#ifndef NTDDI_VERSION
+#define NTDDI_VERSION NTDDI_WIN8 // IApplicationActivationManager needs Windows 8/Server 2012
 #endif
+#include "shobjidl.h"
+#endif
+
 #pragma warning(pop) // no warnings from includes - end
 
 namespace nmc

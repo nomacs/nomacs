@@ -29,7 +29,7 @@ macro(NMC_FINDQT)
 		message(FATAL_ERROR "Qt Libraries not found!")
 	endif()
 	 
-	if (MSVC)
+	if (MSVC OR MINGW)
 		find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED WinExtras)
 	endif()
 	 
