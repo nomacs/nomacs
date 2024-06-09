@@ -32,10 +32,11 @@
         <content_attribute id="language-profanity">mild</content_attribute>
     </content_rating>
 
-    <screenshots>
-        <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.49.26-1.png</screenshot>
-        <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.59.10.png</screenshot>
-    </screenshots>
+    <!-- TODO: new screenshots -->
+    <!-- <screenshots> -->
+    <!--     <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.49.26-1.png</screenshot> -->
+    <!--     <screenshot type="default">https://nomacs.org/wp-content/uploads/2020/03/img-2020-03-18-11.59.10.png</screenshot> -->
+    <!-- </screenshots> -->
 
     <releases>
         <release version="@NOMACS_VERSION@" date="@TODAY@"/>
