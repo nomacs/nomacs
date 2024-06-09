@@ -939,9 +939,8 @@ void DkCropToolBar::createLayout()
 
     mVerValBox = new QDoubleSpinBox(this);
     mVerValBox->setSpecialValueText("  ");
-    // FIXME: the following is wrong
-    mHorValBox->setToolTip(tr("Vertical Constraint"));
-    mHorValBox->setStatusTip(mHorValBox->toolTip());
+    mVerValBox->setToolTip(tr("Vertical Constraint"));
+    mVerValBox->setStatusTip(mVerValBox->toolTip());
     connect(mVerValBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &DkCropToolBar::onVerValBoxValueChanged);
 
     mAngleBox = new QDoubleSpinBox(this);
