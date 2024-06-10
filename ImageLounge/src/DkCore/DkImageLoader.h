@@ -76,7 +76,7 @@ public:
     QFileInfoList getFilteredFileInfoList(const QString &dirPath,
                                           QStringList ignoreKeywords = QStringList(),
                                           QStringList keywords = QStringList(),
-                                          QString folderKeywords = QString());
+                                          QString folderKeywords = QString()) const;
 
     void rotateImage(double angle);
     QSharedPointer<DkImageContainerT> getCurrentImage() const;
@@ -97,7 +97,7 @@ public:
     void lastFile();
     void clearPath();
     void loadLastDir();
-    QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
+    QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx=0);
 
     QString getDirPath() const;
     QString getSavePath() const;
@@ -184,8 +184,7 @@ public slots:
 protected:
     // functions
     void updateCacher(QSharedPointer<DkImageContainerT> imgC);
-    int getNextFolderIdx(int folderIdx);
-    int getPrevFolderIdx(int folderIdx);
+    int getSubFolderIdx(int fromIdx, bool forward) const;
     void updateHistory();
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
     void createImages(const QFileInfoList &files, bool sort = true);
@@ -206,7 +205,6 @@ protected:
     QSharedPointer<DkImageContainerT> mCurrentImage;
     QSharedPointer<DkImageContainerT> mLastImageLoaded;
     bool mFolderUpdated = false;
-    int mTmpFileIdx = 0;
     bool mSortingImages = false;
     bool mSortingIsDirty = false;
     QFutureWatcher<QVector<QSharedPointer<DkImageContainerT>>> mCreateImageWatcher;
