@@ -410,12 +410,15 @@ void DkImageLoader::changeFile(int skipIdx)
 }
 
 /**
- * Returns the file info of the ancesting/subsequent file + skipIdx.
- * @param skipIdx the number of files to be skipped from the current file.
- * @param silent if true, no status information will be displayed.
- * @return QFileInfo the file info of the demanded file
+ * Find subsequent file at offset skipIdx
+ * @param skipIdx the number of files to be skipped from the current file
+ * @param recursive true if calling ourself
+ * @param currFileIdx passed to recursive calls to adjust for subfolders
+ * @note If scanFoldersRecursive, then all subfolders (mSubFolders) are checked,
+ *       otherwise only the current folder is considered.
+ * @return
  **/
-QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bool searchFile, bool recursive)
+QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bool recursive /* = false */, int currFileIdx /* = 0 */)
 {
     QSharedPointer<DkImageContainerT> imgC;
 
@@ -428,111 +431,86 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
     if (mCurrentImage->setPageIdx(skipIdx))
         return mCurrentImage;
 
-    // if (searchFile && currentImage->file().absoluteDir() != dir.absolutePath()) {
-    //	qDebug() << "loading new dir: " << currentImage->file().absolutePath();
-    //	qDebug() << "old dir: " << dir.absolutePath();
-
-    if (!recursive)
+    // we need the current file's index, non-trivial if there are file/folder deletions etc
+    // note: the recursive calls are providing this for us
+    if (!recursive) {
+        // we need a valid current dir before we can proceed; it might have been modified
+        // do not scan recursive here since getSkippedImage is called for every scroll and can be slow when recursing
+        // note: the recursive call already did loadDir() so its fine to have this here
+        // note: we don't care if this fails
         loadDir(mCurrentImage->dirPath(), false);
 
-    // locate the current file
-    int newFileIdx = 0;
+        // note: this makes no sense so I've disabled it for now
+        // QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : mCurrentDir;
+        QString file = mCurrentImage->filePath();
 
-    if (searchFile)
-        mTmpFileIdx = 0;
+        currFileIdx = findFileIdx(file, mImages);
 
-    // qDebug() << "virtual file " << virtualFile.absoluteFilePath();
-    // qDebug() << "file" << file.absoluteFilePath();
+        if (currFileIdx == -1) {
+            // current file could have been deleted *externally* and loadDir() would have expunged it
+            qWarning() << "missing file" << mCurrentImage->filePath();
 
-    // if (virtualExists || file.exists()) {
+            bool sortAscending = DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending;
+            const auto isLessThan = DkImageContainer::compareFunc();
 
-    if (searchFile) {
-        QString file = (mCurrentImage->exists()) ? mCurrentImage->filePath() : mCurrentDir;
-
-        mTmpFileIdx = findFileIdx(file, mImages);
-
-        bool sortAscending = DkSettingsManager::param().global().sortDir == DkSettings::sort_ascending;
-        const auto isLessThan = DkImageContainer::compareFunc();
-
-        // could not locate the file -> it was deleted?!
-        if (mTmpFileIdx == -1) {
-            mTmpFileIdx = 0;
-            for (; mTmpFileIdx < mImages.size(); mTmpFileIdx++) {
-                if (!sortAscending ^ isLessThan(mCurrentImage, mImages[mTmpFileIdx]))
+            currFileIdx = 0;
+            for (; currFileIdx < mImages.size(); currFileIdx++) {
+                if (!sortAscending ^ isLessThan(mCurrentImage, mImages[currFileIdx]))
                     break;
             }
 
             if (skipIdx > 0)
-                mTmpFileIdx--; // -1 because the current file does not exist
-            if (mImages.size() == mTmpFileIdx) // could not locate file - resize
-                mTmpFileIdx = 0;
+                currFileIdx--; // -1 because the current file does not exist
+            if (mImages.size() == currFileIdx) // could not locate file - resize
+                currFileIdx = 0;
         }
     }
-    newFileIdx = mTmpFileIdx + skipIdx;
 
-    // qDebug() << "subfolders: " << DkSettingsManager::param().global().scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
+    // new index in the current dir
+    int newFileIdx = currFileIdx + skipIdx;
 
-    if (DkSettingsManager::param().global().scanSubFolders && mSubFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= mImages.size())) {
-        int folderIdx = 0;
+    // invalid index means we have to loop, search subfolder etc depending on settings
+    bool validIndex = newFileIdx >= 0 && newFileIdx < mImages.size();
 
-        // locate folder
-        for (int idx = 0; idx < mSubFolders.size(); idx++) {
-            if (mSubFolders[idx] == mCurrentDir) {
-                folderIdx = idx;
-                break;
-            }
+    // search subfolders
+    if (!validIndex && DkSettingsManager::param().global().scanSubFolders && mSubFolders.size() > 1) {
+        int currFolderIdx = mSubFolders.indexOf(mCurrentDir);
+        int newFolderIdx = getSubFolderIdx(currFolderIdx, newFileIdx >= 0);
+
+        qDebug() << mSubFolders;
+        qDebug() << "new folder idx: " << newFolderIdx;
+
+        if (newFolderIdx < 0) {
+            // not a problem; the subfolder list could all be empty folders
         }
-
-        if (newFileIdx < 0)
-            folderIdx = getPrevFolderIdx(folderIdx);
-        else
-            folderIdx = getNextFolderIdx(folderIdx);
-
-        qDebug() << "new folder idx: " << folderIdx;
-
-        // if (DkSettingsManager::param().global().loop)
-        //	folderIdx %= subFolders.size();
-
-        if (folderIdx >= 0 && folderIdx < mSubFolders.size()) {
+        else {
             int oldFileSize = mImages.size();
-            loadDir(mSubFolders[folderIdx], false); // don't scan recursive again
-            qDebug() << "loading new folder: " << mSubFolders[folderIdx];
+
+            qDebug() << "loading subfolder: " << mSubFolders[newFolderIdx];
+            loadDir(mSubFolders.at(newFolderIdx), false); // don't scan recursive again
 
             if (newFileIdx >= oldFileSize) {
-                newFileIdx -= oldFileSize;
-                mTmpFileIdx = 0;
-                qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << mTmpFileIdx << " -----------------------------";
-                getSkippedImage(newFileIdx, false, true);
-            } else if (newFileIdx < 0) {
-                newFileIdx += mTmpFileIdx;
-                mTmpFileIdx = mImages.size() - 1;
-                qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << mTmpFileIdx << " -----------------------------";
-                getSkippedImage(newFileIdx, false, true);
+                skipIdx -= oldFileSize - currFileIdx; // subtract how many being skipped
+                currFileIdx = 0;                      // restart at first image in dir
+            } else {
+                skipIdx += currFileIdx + 1;           // add how many being skipped
+                currFileIdx = mImages.size() - 1;     // restart at last image in dir
             }
-        }
-        //// dir up
-        // else if (folderIdx == subFolders.size()) {
 
-        //	qDebug() << "going one up";
-        //	dir.cd("..");
-        //	loadDir(dir, false);	// don't scan recursive again
-        //	newFileIdx += cFileIdx;
-        //	cFileIdx = 0;
-        //	getChangedFileInfo(newFileIdx, silent, false);
-        //}
-        //// get root files
-        // else if (folderIdx < 0) {
-        //	loadDir(dir, false);
-        // }
+            qDebug() << "new skip idx: " << skipIdx << "cFileIdx: " << currFileIdx << " -----------------------------";
+            return getSkippedImage(skipIdx, true, currFileIdx);
+        }
     }
 
 #ifdef WITH_QUAZIP
     // zips only loop if browse filter is disabled; otherwise we could not break out of a zip
     bool loopZip = DkSettingsManager::param().global().loop && !DkSettingsManager::param().app().browseFilters.contains("*.zip");
 
-    if (mCurrentImage && (newFileIdx < 0 || newFileIdx >= mImages.size()) &&
-        mCurrentImage->isFromZip() && mCurrentImage->getZipData() && !loopZip) {
-        // load the zip again and go on from there
+    if (!validIndex && !loopZip && mCurrentImage && mCurrentImage->isFromZip() && mCurrentImage->getZipData()) {
+        // browse to the next zipfile or image file (in theory)
+        // fixme: this doesn't really do what you'd want
+        // if skipping backwards it always goes to the first file in the next zip
+        // if skipping forwards it always jumps to last zip or first zip in the directory
         setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(mCurrentImage->getZipData()->getZipFilePath())));
 
         if (newFileIdx >= mImages.size())
@@ -542,9 +520,10 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
     }
 #endif
 
-    // this should never happen!
+    // could happen if current dir was deleted; we
+    // don't check status of loadDir() so we can try subfolders
     if (mImages.empty()) {
-        qDebug() << "file list is empty, where it should not be";
+        qWarning() << "unexpected empty file list";
         return imgC;
     }
 
@@ -554,14 +533,13 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
         while (newFileIdx < 0) // should be hit once
             newFileIdx = mImages.size() + newFileIdx;
-
     }
     // clip to pos1 if skipIdx < -1
-    else if (mTmpFileIdx > 0 && newFileIdx < 0) {
+    else if (currFileIdx > 0 && newFileIdx < 0) {
         newFileIdx = 0;
     }
     // clip to end if skipIdx > 1
-    else if (mTmpFileIdx < mImages.size() - 1 && newFileIdx >= mImages.size()) {
+    else if (currFileIdx < mImages.size() - 1 && newFileIdx >= mImages.size()) {
         newFileIdx = mImages.size() - 1;
     }
     // tell user that there is nothing left to display
@@ -581,8 +559,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
         showInfoSignal(msg, 1000);
         return imgC;
     }
-
-    mTmpFileIdx = newFileIdx;
 
     if (newFileIdx >= 0 && newFileIdx < mImages.size())
         imgC = mImages.at(newFileIdx);
@@ -1728,62 +1704,46 @@ QFileInfoList DkImageLoader::updateSubFolders(const QString &rootDirPath)
     return files;
 }
 
-int DkImageLoader::getNextFolderIdx(int folderIdx)
+/**
+ * Find the first subfolder that has images
+ * @param fromIdx where to start from
+ * @param next true if check forward
+ * @return -1 or found folder
+ * @see getSkippedImage()
+ */
+int DkImageLoader::getSubFolderIdx(int fromIdx, bool forward) const
 {
-    int nextIdx = -1;
+    int idx = -1;
 
     if (mSubFolders.empty())
-        return nextIdx;
+        return idx;
 
-    // find the first sub folder that has images
-    for (int idx = 1; idx < mSubFolders.size(); idx++) {
-        int tmpNextIdx = folderIdx + idx;
+    bool loop = DkSettingsManager::param().global().loop;
 
-        if (DkSettingsManager::param().global().loop)
-            tmpNextIdx %= mSubFolders.size();
-        else if (tmpNextIdx >= mSubFolders.size())
+    for (int i = 1; i < mSubFolders.size(); i++) {
+        int checkIdx = fromIdx + (forward ? i : -i);
+
+        if (loop) {
+            if (checkIdx < 0)
+                checkIdx += mSubFolders.size();
+            else
+                checkIdx %= mSubFolders.size();
+        }
+
+        if (checkIdx < 0 || checkIdx >= mSubFolders.size())
             return -1;
 
-        QDir cDir = mSubFolders[tmpNextIdx];
+        QDir cDir = mSubFolders[checkIdx];
         QFileInfoList cFiles = getFilteredFileInfoList(cDir.absolutePath(),
                                                        mIgnoreKeywords,
                                                        mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
         if (!cFiles.empty()) {
-            nextIdx = tmpNextIdx;
+            idx = checkIdx;
             break;
         }
     }
 
-    return nextIdx;
-}
-
-int DkImageLoader::getPrevFolderIdx(int folderIdx)
-{
-    int prevIdx = -1;
-
-    if (mSubFolders.empty())
-        return prevIdx;
-
-    // find the first sub folder that has images
-    for (int idx = 1; idx < mSubFolders.size(); idx++) {
-        int tmpPrevIdx = folderIdx - idx;
-
-        if (DkSettingsManager::param().global().loop && tmpPrevIdx < 0)
-            tmpPrevIdx += mSubFolders.size();
-        else if (tmpPrevIdx < 0)
-            return -1;
-
-        QDir cDir = mSubFolders[tmpPrevIdx];
-        QFileInfoList cFiles = getFilteredFileInfoList(cDir.absolutePath(),
-                                                       mIgnoreKeywords,
-                                                       mKeywords); // this line takes seconds if you have lots of files and slow loading (e.g. network)
-        if (!cFiles.empty()) {
-            prevIdx = tmpPrevIdx;
-            break;
-        }
-    }
-
-    return prevIdx;
+    return idx;
 }
 
 void DkImageLoader::errorDialog(const QString &msg) const
@@ -1872,7 +1832,8 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC)
  * @param keywords if one of these keywords is not in the file name, the file will be ignored.
  * @return QStringList all filtered files of the current directory.
  **/
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QStringList ignoreKeywords, QStringList keywords, QString folderKeywords)
+QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QStringList ignoreKeywords,
+                                                     QStringList keywords, QString folderKeywords) const
 {
     DkTimer dt;
 
