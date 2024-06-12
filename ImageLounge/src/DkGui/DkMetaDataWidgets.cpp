@@ -342,8 +342,6 @@ DkMetaDataDock::DkMetaDataDock(const QString &title, QWidget *parent /* = 0 */, 
 
     createLayout();
     readSettings();
-
-    QMetaObject::connectSlotsByName(this);
 }
 
 DkMetaDataDock::~DkMetaDataDock()
@@ -389,9 +387,9 @@ void DkMetaDataDock::readSettings()
 void DkMetaDataDock::createLayout()
 {
     mFilterEdit = new QLineEdit(this);
-    mFilterEdit->setObjectName("filter");
     mFilterEdit->setPlaceholderText(tr("Filter"));
     mFilterEdit->setFocusPolicy(Qt::ClickFocus);
+    connect(mFilterEdit, &QLineEdit::textChanged, this, &DkMetaDataDock::onFilterTextChanged);
 
     // create our beautiful shortcut view
     mModel = new DkMetaDataModel(this);
@@ -426,7 +424,7 @@ void DkMetaDataDock::createLayout()
     setWidget(widget);
 }
 
-void DkMetaDataDock::on_filter_textChanged(const QString &filterText)
+void DkMetaDataDock::onFilterTextChanged(const QString &filterText)
 {
     if (!filterText.isEmpty())
         mTreeView->expandAll();
@@ -1165,7 +1163,6 @@ DkCommentWidget::DkCommentWidget(QWidget *parent /* = 0 */, Qt::WindowFlags /* =
 {
     setMaximumSize(220, 150);
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkCommentWidget::createLayout()
@@ -1184,24 +1181,25 @@ void DkCommentWidget::createLayout()
         + QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
 
     mCommentLabel = new DkCommentTextEdit(this);
-    mCommentLabel->setObjectName("CommentLabel");
     mCommentLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     mCommentLabel->setStyleSheet(scrollbarStyle + mCommentLabel->styleSheet());
     mCommentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
+    connect(mCommentLabel, &DkCommentTextEdit::textChanged, this, &DkCommentWidget::onCommentLabelTextChanged);
+    connect(mCommentLabel, &DkCommentTextEdit::focusLost, this, &DkCommentWidget::onCommentLabelFocusLost);
 
     QPushButton *saveButton = new QPushButton(this);
-    saveButton->setObjectName("saveButton");
     saveButton->setFlat(true);
     saveButton->setIcon(DkImage::loadIcon(":/nomacs/img/save.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
     saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
     saveButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return));
+    connect(saveButton, &QPushButton::clicked, this, &DkCommentWidget::onSaveButtonClicked);
 
     QPushButton *cancelButton = new QPushButton(this);
-    cancelButton->setObjectName("cancelButton");
     cancelButton->setFlat(true);
     cancelButton->setIcon(DkImage::loadIcon(":/nomacs/img/trash.svg", QSize(), DkSettingsManager::param().display().hudFgdColor));
     cancelButton->setToolTip(tr("Discard Changes (ESC)"));
     cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
+    connect(cancelButton, &QPushButton::clicked, this, &DkCommentWidget::onCancelButtonClicked);
 
     QWidget *titleWidget = new QWidget(this);
     QHBoxLayout *titleLayout = new QHBoxLayout(titleWidget);
@@ -1264,25 +1262,25 @@ void DkCommentWidget::saveComment()
     }
 }
 
-void DkCommentWidget::on_CommentLabel_textChanged()
+void DkCommentWidget::onCommentLabelTextChanged()
 {
     mTextEdited = text() != mOldText;
     if (mTextEdited)
         emit commentEditedSignal();
 }
 
-void DkCommentWidget::on_CommentLabel_focusLost()
+void DkCommentWidget::onCommentLabelFocusLost()
 {
     // We don't want to do anything when changing focus
 }
 
-void DkCommentWidget::on_saveButton_clicked()
+void DkCommentWidget::onSaveButtonClicked()
 {
     saveComment();
     mCommentLabel->clearFocus();
 }
 
-void DkCommentWidget::on_cancelButton_clicked()
+void DkCommentWidget::onCancelButtonClicked()
 {
     resetComment();
 }

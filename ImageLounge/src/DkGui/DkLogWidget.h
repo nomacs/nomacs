@@ -83,7 +83,7 @@ public:
 
 public slots:
     void log(const QString &msg);
-    void on_clearButton_pressed();
+    void onClearButtonPressed();
 
 protected:
     void createLayout();

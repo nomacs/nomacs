@@ -76,9 +76,9 @@ public:
     QSharedPointer<DkTinyPlanetManipulator> manipulator() const;
 
 public slots:
-    void on_scaleSlider_valueChanged(int val);
-    void on_angleSlider_valueChanged(int val);
-    void on_invertBox_toggled(bool val);
+    void onScaleSliderValueChanged(int val);
+    void onAngleSliderValueChanged(int val);
+    void onInvertBoxToggled(bool val);
 
 private:
     void createLayout();
@@ -94,7 +94,7 @@ public:
     QSharedPointer<DkBlurManipulator> manipulator() const;
 
 public slots:
-    void on_sigmaSlider_valueChanged(int val);
+    void onSigmaSliderValueChanged(int val);
 
 private:
     void createLayout();
@@ -110,8 +110,8 @@ public:
     QSharedPointer<DkUnsharpMaskManipulator> manipulator() const;
 
 public slots:
-    void on_sigmaSlider_valueChanged(int val);
-    void on_amountSlider_valueChanged(int val);
+    void onSigmaSliderValueChanged(int val);
+    void onAmountSliderValueChanged(int val);
 
 private:
     void createLayout();
@@ -127,7 +127,7 @@ public:
     QSharedPointer<DkRotateManipulator> manipulator() const;
 
 public slots:
-    void on_angleSlider_valueChanged(int val);
+    void onAngleSliderValueChanged(int val);
 
 private:
     void createLayout();
@@ -143,9 +143,9 @@ public:
     QSharedPointer<DkResizeManipulator> manipulator() const;
 
 public slots:
-    void on_scaleFactorSlider_valueChanged(double val);
-    void on_iplBox_currentIndexChanged(int idx);
-    void on_gammaCorrection_toggled(bool checked);
+    void onScaleFactorSliderValueChanged(double val);
+    void onIplBoxCurrentIndexChanged(int idx);
+    void onGammaCorrectionToggled(bool checked);
     void onObjectNameChanged(const QString &name);
 
 private:
@@ -164,8 +164,8 @@ public:
     QSharedPointer<DkThresholdManipulator> manipulator() const;
 
 public slots:
-    void on_thrSlider_valueChanged(int val);
-    void on_colBox_toggled(bool checked);
+    void onThrSliderValueChanged(int val);
+    void onColBoxToggled(bool checked);
 
 private:
     void createLayout();
@@ -181,9 +181,9 @@ public:
     QSharedPointer<DkHueManipulator> manipulator() const;
 
 public slots:
-    void on_hueSlider_valueChanged(int val);
-    void on_satSlider_valueChanged(int val);
-    void on_brightnessSlider_valueChanged(int val);
+    void onHueSliderValueChanged(int val);
+    void onSatSliderValueChanged(int val);
+    void onBrightnessSliderValueChanged(int val);
 
 private:
     void createLayout();
@@ -199,7 +199,7 @@ public:
     QSharedPointer<DkColorManipulator> manipulator() const;
 
 public slots:
-    void on_colPicker_colorSelected(const QColor &col);
+    void onColPickerColorSelected(const QColor &col);
 
 private:
     void createLayout();
@@ -215,9 +215,9 @@ public:
     QSharedPointer<DkExposureManipulator> manipulator() const;
 
 public slots:
-    void on_exposureSlider_valueChanged(double val);
-    void on_offsetSlider_valueChanged(double val);
-    void on_gammaSlider_valueChanged(double val);
+    void onExposureSliderValueChanged(double val);
+    void onOffsetSliderValueChanged(double val);
+    void onGammaSliderValueChanged(double val);
 
 private:
     void createLayout();

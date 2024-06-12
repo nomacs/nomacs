@@ -379,9 +379,9 @@ public:
     void setProfile(const QString &name, const DkBatchConfig &config);
 
 public slots:
-    void on_deleteButton_clicked();
-    void on_updateButton_clicked();
-    void on_exportButton_clicked();
+    void onDeleteButtonClicked();
+    void onUpdateButtonClicked();
+    void onExportButtonClicked();
 
 signals:
     void deleteCurrentProfile() const;
@@ -411,9 +411,9 @@ public:
     void profileSaved(const QString &profileName);
 
 public slots:
-    void on_profileList_itemSelectionChanged();
-    void on_saveButton_clicked();
-    void on_resetButton_clicked();
+    void onProfileListItemSelectionChanged();
+    void onSaveButtonClicked();
+    void onResetButtonClicked();
 
     void updateCurrentProfile();
     void deleteCurrentProfile();

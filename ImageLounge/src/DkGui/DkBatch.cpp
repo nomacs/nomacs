@@ -1203,7 +1203,6 @@ DkProfileSummaryWidget::DkProfileSummaryWidget(QWidget *parent)
 {
     createLayout();
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkProfileSummaryWidget::setProfile(const QString &profileName, const DkBatchConfig &config)
@@ -1219,17 +1218,17 @@ void DkProfileSummaryWidget::setProfile(const QString &profileName, const DkBatc
     mFunctions->setText(functions);
 }
 
-void DkProfileSummaryWidget::on_deleteButton_clicked()
+void DkProfileSummaryWidget::onDeleteButtonClicked()
 {
     emit deleteCurrentProfile();
 }
 
-void DkProfileSummaryWidget::on_updateButton_clicked()
+void DkProfileSummaryWidget::onUpdateButtonClicked()
 {
     emit updateCurrentProfile();
 }
 
-void DkProfileSummaryWidget::on_exportButton_clicked()
+void DkProfileSummaryWidget::onExportButtonClicked()
 {
     emit exportCurrentProfile();
 }
@@ -1264,19 +1263,16 @@ void DkProfileSummaryWidget::createLayout()
     summaryLayout->addWidget(mFunctions, 4, 2);
 
     QPushButton *updateButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/save.svg"), "", this);
-    updateButton->setObjectName("updateButton");
-    // updateButton->setFlat(true);
     updateButton->setToolTip(tr("Update"));
+    connect(updateButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onUpdateButtonClicked);
 
     QPushButton *deleteButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/trash.svg"), "", this);
-    deleteButton->setObjectName("deleteButton");
-    // deleteButton->setFlat(true);
     deleteButton->setToolTip(tr("Delete"));
+    connect(deleteButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onDeleteButtonClicked);
 
     QPushButton *exportButton = new QPushButton(DkImage::loadIcon(":/nomacs/img/export.svg"), "", this);
-    exportButton->setObjectName("exportButton");
-    // exportButton->setFlat(true);
     exportButton->setToolTip(tr("Export"));
+    connect(exportButton, &QPushButton::clicked, this, &DkProfileSummaryWidget::onExportButtonClicked);
 
     QWidget *bw = new QWidget(this);
     QHBoxLayout *bLayout = new QHBoxLayout(bw);
@@ -1296,22 +1292,22 @@ DkProfileWidget::DkProfileWidget(QWidget *parent, Qt::WindowFlags f)
     : DkWidget(parent, f)
 {
     createLayout();
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkProfileWidget::createLayout()
 {
     mProfileList = new QListWidget(this);
     mProfileList->setObjectName("profileList");
+    connect(mProfileList, &QListWidget::itemSelectionChanged, this, &DkProfileWidget::onProfileListItemSelectionChanged);
 
     mSummary = new DkProfileSummaryWidget(this);
 
     // buttons
     QPushButton *saveButton = new QPushButton(tr("Create New Profile"), this);
-    saveButton->setObjectName("saveButton");
+    connect(saveButton, &QPushButton::clicked, this, &DkProfileWidget::onSaveButtonClicked);
 
     QPushButton *resetButton = new QPushButton(tr("Apply Default"), this);
-    resetButton->setObjectName("resetButton");
+    connect(resetButton, &QPushButton::clicked, this, &DkProfileWidget::onResetButtonClicked);
 
     QWidget *buttonWidget = new QWidget(this);
     QHBoxLayout *bLayout = new QHBoxLayout(buttonWidget);
@@ -1364,7 +1360,7 @@ void DkProfileWidget::profileSaved(const QString &profileName)
         i->setSelected(true);
 }
 
-void DkProfileWidget::on_profileList_itemSelectionChanged()
+void DkProfileWidget::onProfileListItemSelectionChanged()
 {
     changeProfile(currentProfile());
 }
@@ -1422,12 +1418,12 @@ QString DkProfileWidget::currentProfile() const
     return profileName;
 }
 
-void DkProfileWidget::on_saveButton_clicked()
+void DkProfileWidget::onSaveButtonClicked()
 {
     saveProfile();
 }
 
-void DkProfileWidget::on_resetButton_clicked()
+void DkProfileWidget::onResetButtonClicked()
 {
     loadDefaultProfile();
 }

@@ -61,7 +61,7 @@ public:
 
 public slots:
     void updateImage(QSharedPointer<DkImageContainerT> img);
-    void on_historyList_itemClicked(QListWidgetItem *item);
+    void onHistoryListItemClicked(QListWidgetItem *item);
 
 protected:
     void createLayout();

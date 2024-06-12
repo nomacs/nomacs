@@ -272,18 +272,18 @@ public:
 public slots:
     void setAspectRatio(const QPointF &aRatio);
     void setRect(const QRect &r);
-    void on_cropAction_triggered();
-    void on_cancelAction_triggered();
-    void on_swapAction_triggered();
-    void on_ratioBox_currentIndexChanged(const QString &text);
-    void on_guideBox_currentIndexChanged(int idx);
-    void on_horValBox_valueChanged(double val);
-    void on_verValBox_valueChanged(double val);
-    void on_angleBox_valueChanged(double val);
-    void on_bgColButton_clicked();
-    void on_panAction_toggled(bool checked);
-    void on_invertAction_toggled(bool checked);
-    void on_infoAction_toggled(bool checked);
+    void onCropActionTriggered();
+    void onCancelActionTriggered();
+    void onSwapActionTriggered();
+    void onRatioBoxCurrentIndexChanged(const QString &text);
+    void onGuideBoxCurrentIndexChanged(int idx);
+    void onHorValBoxValueChanged(double val);
+    void onVerValBoxValueChanged(double val);
+    void onAngleBoxValueChanged(double val);
+    void onBgColButtonClicked();
+    void onPanActionToggled(bool checked);
+    void onInvertActionToggled(bool checked);
+    void onInfoActionToggled(bool checked);
     void angleChanged(double val);
     virtual void setVisible(bool visible) override;
 

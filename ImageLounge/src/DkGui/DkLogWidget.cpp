@@ -55,7 +55,6 @@ DkLogWidget::DkLogWidget(QWidget *parent)
     connect(msgQueuer.data(), SIGNAL(message(const QString &)), this, SLOT(log(const QString &)), Qt::QueuedConnection);
 
     qInstallMessageHandler(widgetMessageHandler);
-    QMetaObject::connectSlotsByName(this);
 }
 
 void DkLogWidget::log(const QString &msg)
@@ -63,7 +62,7 @@ void DkLogWidget::log(const QString &msg)
     mTextEdit->append(msg);
 }
 
-void DkLogWidget::on_clearButton_pressed()
+void DkLogWidget::onClearButtonPressed()
 {
     mTextEdit->clear();
 }
@@ -75,8 +74,8 @@ void DkLogWidget::createLayout()
 
     QPushButton *clearButton = new QPushButton(this);
     clearButton->setFlat(true);
-    clearButton->setObjectName("clearButton");
     clearButton->setFixedSize(QSize(32, 32));
+    connect(clearButton, &QPushButton::clicked, this, &DkLogWidget::onClearButtonPressed);
 
     QGridLayout *layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

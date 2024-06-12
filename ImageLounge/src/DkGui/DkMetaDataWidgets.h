@@ -106,7 +106,7 @@ public:
 public slots:
     void setImage(QSharedPointer<DkImageContainerT> imgC);
     void thumbLoaded(bool loaded);
-    void on_filter_textChanged(const QString &filterText);
+    void onFilterTextChanged(const QString &filterText);
 
 protected:
     void createLayout();
@@ -252,10 +252,10 @@ public:
     QString text() const;
 
 public slots:
-    void on_CommentLabel_textChanged();
-    void on_CommentLabel_focusLost();
-    void on_saveButton_clicked();
-    void on_cancelButton_clicked();
+    void onCommentLabelTextChanged();
+    void onCommentLabelFocusLost();
+    void onSaveButtonClicked();
+    void onCancelButtonClicked();
 
     void initComment(const QString &description);
     void resetComment();

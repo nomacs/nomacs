@@ -145,30 +145,30 @@ public:
     DkGeneralPreference(QWidget *parent = 0);
 
 public slots:
-    void on_themeBox_currentIndexChanged(const QString &text) const;
-    void on_showRecentFiles_toggled(bool checked) const;
-    void on_logRecentFiles_toggled(bool checked) const;
-    void on_checkOpenDuplicates_toggled(bool checked) const;
-    void on_extendedTabs_toggled(bool checked) const;
-    void on_closeOnEsc_toggled(bool checked) const;
-    void on_closeOnMiddleMouse_toggled(bool checked) const;
-    void on_zoomOnWheel_toggled(bool checked) const;
-    void on_horZoomSkips_toggled(bool checked) const;
-    void on_doubleClickForFullscreen_toggled(bool checked) const;
-    void on_showBgImage_toggled(bool checked) const;
-    void on_checkForUpdates_toggled(bool checked) const;
-    void on_switchModifier_toggled(bool checked) const;
-    void on_loopImages_toggled(bool checked) const;
-    void on_defaultSettings_clicked();
-    void on_importSettings_clicked();
-    void on_exportSettings_clicked();
-    void on_languageCombo_currentIndexChanged(int index) const;
+    void onThemeBoxCurrentTextChanged(const QString &text) const;
+    void onShowRecentFilesToggled(bool checked) const;
+    void onLogRecentFilesToggled(bool checked) const;
+    void onCheckOpenDuplicatesToggled(bool checked) const;
+    void onExtendedTabsToggled(bool checked) const;
+    void onCloseOnEscToggled(bool checked) const;
+    void onCloseOnMiddleMouseToggled(bool checked) const;
+    void onZoomOnWheelToggled(bool checked) const;
+    void onHorZoomSkipsToggled(bool checked) const;
+    void onDoubleClickForFullscreenToggled(bool checked) const;
+    void onShowBgImageToggled(bool checked) const;
+    void onCheckForUpdatesToggled(bool checked) const;
+    void onSwitchModifierToggled(bool checked) const;
+    void onLoopImagesToggled(bool checked) const;
+    void onDefaultSettingsClicked();
+    void onImportSettingsClicked();
+    void onExportSettingsClicked();
+    void onLanguageComboCurrentIndexChanged(int index) const;
     void showRestartLabel() const;
 
-    void on_backgroundColor_accepted() const;
-    void on_backgroundColor_resetClicked() const;
-    void on_iconColor_accepted() const;
-    void on_iconColor_resetClicked() const;
+    void onBackgroundColorAccepted() const;
+    void onBackgroundColorResetClicked() const;
+    void onIconColorAccepted() const;
+    void onIconColorResetClicked() const;
 
 signals:
     void infoSignal(const QString &msg) const;
@@ -188,23 +188,23 @@ public:
     DkDisplayPreference(QWidget *parent = 0);
 
 public slots:
-    void on_interpolationBox_valueChanged(int value) const;
-    void on_iconSizeBox_valueChanged(int value) const;
-    void on_fadeImageBox_valueChanged(double value) const;
-    void on_displayTimeBox_valueChanged(double value) const;
-    void on_showPlayer_toggled(bool checked) const;
-    void on_keepZoom_buttonClicked(int buttonId) const;
-    void on_invertZoom_toggled(bool checked) const;
-    void on_hQAntiAliasing_toggled(bool checked) const;
-    void on_zoomToFit_toggled(bool checked) const;
-    void on_transition_currentIndexChanged(int index) const;
-    void on_alwaysAnimate_toggled(bool checked) const;
-    void on_showCrop_toggled(bool checked) const;
-    void on_showScrollBars_toggled(bool checked) const;
-    void on_useZoomLevels_toggled(bool checked) const;
-    void on_showNavigation_toggled(bool checked) const;
-    void on_zoomLevels_editingFinished() const;
-    void on_zoomLevelsDefault_clicked() const;
+    void onInterpolationBoxValueChanged(int value) const;
+    void onIconSizeBoxValueChanged(int value) const;
+    void onFadeImageBoxValueChanged(double value) const;
+    void onDisplayTimeBoxValueChanged(double value) const;
+    void onShowPlayerToggled(bool checked) const;
+    void onKeepZoomButtonClicked(int buttonId) const;
+    void onInvertZoomToggled(bool checked) const;
+    void onHQAntiAliasingToggled(bool checked) const;
+    void onZoomToFitToggled(bool checked) const;
+    void onTransitionCurrentIndexChanged(int index) const;
+    void onAlwaysAnimateToggled(bool checked) const;
+    void onShowCropToggled(bool checked) const;
+    void onShowScrollBarsToggled(bool checked) const;
+    void onUseZoomLevelsToggled(bool checked) const;
+    void onShowNavigationToggled(bool checked) const;
+    void onZoomLevelsEditingFinished() const;
+    void onZoomLevelsDefaultClicked() const;
 
 signals:
     void infoSignal(const QString &msg) const;
@@ -225,12 +225,12 @@ public:
     DkFilePreference(QWidget *parent = 0);
 
 public slots:
-    void on_dirChooser_directoryChanged(const QString &dirPath) const;
-    void on_loadGroup_buttonClicked(int buttonId) const;
-    void on_skipBox_valueChanged(int value) const;
-    void on_cacheBox_valueChanged(int value) const;
-    void on_historyBox_valueChanged(int value) const;
-    void on_saveGroup_buttonClicked(int buttonId) const;
+    void onDirChooserDirectoryChanged(const QString &dirPath) const;
+    void onLoadGroupButtonClicked(int buttonId) const;
+    void onSkipBoxValueChanged(int value) const;
+    void onCacheBoxValueChanged(int value) const;
+    void onHistoryBoxValueChanged(int value) const;
+    void onSaveGroupButtonClicked(int buttonId) const;
 
 signals:
     void infoSignal(const QString &msg) const;
@@ -248,9 +248,9 @@ public:
     DkFileAssociationsPreference(QWidget *parent = 0);
     virtual ~DkFileAssociationsPreference();
 public slots:
-    void on_fileModel_itemChanged(QStandardItem *);
-    void on_openDefault_clicked() const;
-    void on_associateFiles_clicked();
+    void onFileModelItemChanged(QStandardItem *);
+    void onOpenDefaultClicked() const;
+    void onAssociateFilesClicked();
 
 signals:
     void infoSignal(const QString &msg) const;
@@ -275,15 +275,15 @@ public:
     DkAdvancedPreference(QWidget *parent = 0);
 
 public slots:
-    void on_loadRaw_buttonClicked(int buttonId) const;
-    void on_filterRaw_toggled(bool checked) const;
-    void on_saveDeleted_toggled(bool checked) const;
-    void on_ignoreExif_toggled(bool checked) const;
-    void on_saveExif_toggled(bool checked) const;
-    void on_useLog_toggled(bool checked) const;
-    void on_useNative_toggled(bool checked) const;
-    void on_logFolder_clicked() const;
-    void on_numThreads_valueChanged(int val) const;
+    void onLoadRawButtonClicked(int buttonId) const;
+    void onFilterRawToggled(bool checked) const;
+    void onSaveDeletedToggled(bool checked) const;
+    void onIgnoreExifToggled(bool checked) const;
+    void onSaveExifToggled(bool checked) const;
+    void onUseLogToggled(bool checked) const;
+    void onUseNativeToggled(bool checked) const;
+    void onLogFolderClicked() const;
+    void onNumThreadsValueChanged(int val) const;
 
 signals:
     void infoSignal(const QString &msg) const;
