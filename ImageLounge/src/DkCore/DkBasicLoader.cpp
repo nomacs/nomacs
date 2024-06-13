@@ -65,7 +65,7 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
 #pragma warning(disable : 4996)
 #endif
 
@@ -77,7 +77,7 @@
 #endif
 
 #ifdef WITH_LIBTIFF
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
 #include <tif_config.h>
 #endif
 
