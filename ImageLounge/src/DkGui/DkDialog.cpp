@@ -1402,8 +1402,14 @@ void DkResizeDialog::drawPreview()
     // TODO: thread here!
     QImage img = resizeImg(newImg);
 
+    qreal deviceScale = devicePixelRatioF();
+
     // TODO: is there a better way of mapping the pixels? (ipl here introduces artifacts that are not in the final image)
-    img = img.scaled(mPreviewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+    img = img.scaled(mOrigView->size()*deviceScale, Qt::KeepAspectRatio, Qt::FastTransformation);
+
+    // HiDPI: pixmap inherits this; painter uses it
+    img.setDevicePixelRatio(deviceScale);
+
     mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 }
 

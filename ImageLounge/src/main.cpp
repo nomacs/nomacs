@@ -93,8 +93,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Image Lounge");
     QCoreApplication::setApplicationVersion(NOMACS_VERSION_STR);
 
-    QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
-
     QApplication app(argc, (char **)argv);
 
 #ifdef Q_OS_LINUX
