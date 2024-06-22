@@ -1,0 +1,77 @@
+name: Linux workflow
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: build (${{ matrix.compiler.type }}, Qt${{ matrix.qt.ver }}, ${{ matrix.cmake_flags.type }})
+    strategy:
+      matrix:
+        qt: 
+          - ver: 5
+            deps: "qttools5-dev-tools qtbase5-dev qttools5-dev libqt5svg5-dev qt5-image-formats-plugins libquazip5-dev"
+          - ver: 6
+            deps: "qt6-tools-dev-tools qt6-base-dev qt6-tools-dev libqt6svg6-dev qt6-image-formats-plugins libquazip5-dev libgl-dev qt6-l10n-tools"
+        cmake_flags:
+          - type: default
+            flags: ""
+          - type: minimum
+            flags: "-DENABLE_PLUGINS=OFF -DENABLE_OPENCV=OFF -DENABLE_RAW=OFF -DENABLE_TIFF=OFF -DENABLE_QUAZIP=OFF"
+        compiler:
+          - type: gcc
+            env: "CC=gcc CXX=g++"
+          - type: clang
+            env: "CC=clang CXX=clang++"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install -y libexiv2-dev libraw-dev libopencv-dev cmake libtiff-dev build-essential ninja-build ${{ matrix.qt.deps }}
+
+      - name: CMake configure
+        run: |
+          mkdir ${GITHUB_WORKSPACE}/build
+          cd ${GITHUB_WORKSPACE}/build
+          ${{ matrix.compiler.env }} cmake -G Ninja ${{ matrix.cmake_flags.flags }} ../ImageLounge
+
+      - name: Build
+        run: |
+          cd ${GITHUB_WORKSPACE}/build
+          ninja -j3
+
+  check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: PR commits + 1
+        run: echo "PR_FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))" >> "${GITHUB_ENV}"
+      
+      - name: Checkout PR branch and all PR commits
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: ${{ env.PR_FETCH_DEPTH }}
+      
+      - name: Fetch the other branch with enough history for a common merge-base commit
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Install dependencies
+        # Need to use version above 15 to have non-zero return code
+        run: |
+          sudo apt-get install -y clang-format-15
+
+      - name: Check clang-format
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          git clang-format-15 --diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} 
