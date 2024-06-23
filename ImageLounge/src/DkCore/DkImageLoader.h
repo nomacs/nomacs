@@ -97,7 +97,7 @@ public:
     void lastFile();
     void clearPath();
     void loadLastDir();
-    QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx=0);
+    QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool recursive = false, int currFileIdx = 0);
 
     QString getDirPath() const;
     QString getSavePath() const;

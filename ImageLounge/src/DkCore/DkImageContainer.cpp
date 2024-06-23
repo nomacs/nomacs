@@ -270,9 +270,7 @@ DkRotatingRect DkImageContainer::cropRect()
     return DkRotatingRect();
 }
 
-std::function<bool(const QSharedPointer<DkImageContainer> &,
-                   const QSharedPointer<DkImageContainer> &)>
-DkImageContainer::compareFunc()
+std::function<bool(const QSharedPointer<DkImageContainer> &, const QSharedPointer<DkImageContainer> &)> DkImageContainer::compareFunc()
 {
     // select from the assortment of QFileInfo functions; if there isn't one use this one
     // future: exif, custom sorting, etc can all be tied in here, need not be QFileInfo
@@ -301,8 +299,7 @@ DkImageContainer::compareFunc()
         cmp = &DkUtils::compFilename;
     }
 
-    return [cmp](const QSharedPointer<DkImageContainer> &lhs,
-                 const QSharedPointer<DkImageContainer> &rhs) {
+    return [cmp](const QSharedPointer<DkImageContainer> &lhs, const QSharedPointer<DkImageContainer> &rhs) {
         return cmp(lhs->fileInfo(), rhs->fileInfo());
     };
 }

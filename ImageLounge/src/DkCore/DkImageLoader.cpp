@@ -378,7 +378,7 @@ void DkImageLoader::createImages(const QFileInfoList &files, bool sort)
 QVector<QSharedPointer<DkImageContainerT>> DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const
 {
     // this is dead code and could crash, see sort() for a correct way to do it
-    //std::sort(images.begin(), images.end(), imageContainerLessThanPtr);
+    // std::sort(images.begin(), images.end(), imageContainerLessThanPtr);
     return images;
 }
 
@@ -482,8 +482,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
         if (newFolderIdx < 0) {
             // not a problem; the subfolder list could all be empty folders
-        }
-        else {
+        } else {
             int oldFileSize = mImages.size();
 
             qDebug() << "loading subfolder: " << mSubFolders[newFolderIdx];
@@ -491,10 +490,10 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
             if (newFileIdx >= oldFileSize) {
                 skipIdx -= oldFileSize - currFileIdx; // subtract how many being skipped
-                currFileIdx = 0;                      // restart at first image in dir
+                currFileIdx = 0; // restart at first image in dir
             } else {
-                skipIdx += currFileIdx + 1;           // add how many being skipped
-                currFileIdx = mImages.size() - 1;     // restart at last image in dir
+                skipIdx += currFileIdx + 1; // add how many being skipped
+                currFileIdx = mImages.size() - 1; // restart at last image in dir
             }
 
             qDebug() << "new skip idx: " << skipIdx << "cFileIdx: " << currFileIdx << " -----------------------------";
@@ -1832,8 +1831,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC)
  * @param keywords if one of these keywords is not in the file name, the file will be ignored.
  * @return QStringList all filtered files of the current directory.
  **/
-QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QStringList ignoreKeywords,
-                                                     QStringList keywords, QString folderKeywords) const
+QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QStringList ignoreKeywords, QStringList keywords, QString folderKeywords) const
 {
     DkTimer dt;
 
@@ -1966,7 +1964,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QString &dirPath, QSt
 
 void DkImageLoader::sort()
 {
-    for (auto& img : qAsConst(mImages))
+    for (auto &img : qAsConst(mImages))
         if (!img) {
             qWarning() << "attempt to sort null image(s) averted";
             return;
