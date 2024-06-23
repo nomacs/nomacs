@@ -26,64 +26,64 @@
 
 #include "DkPluginInterface.h"
 
-namespace nmp {
+namespace nmp
+{
 
-class DkPageExtractionPlugin : public QObject, nmc::DkBatchPluginInterface {
-	Q_OBJECT
-	Q_INTERFACES(nmc::DkBatchPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.2" FILE "DkPageExtractionPlugin.json")
+class DkPageExtractionPlugin : public QObject, nmc::DkBatchPluginInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(nmc::DkBatchPluginInterface)
+    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPageExtractionPlugin/3.2" FILE "DkPageExtractionPlugin.json")
 
 public:
+    DkPageExtractionPlugin(QObject *parent = 0);
+    ~DkPageExtractionPlugin();
 
-	DkPageExtractionPlugin(QObject* parent = 0);
-	~DkPageExtractionPlugin();
+    QImage image() const;
+    QString name() const;
 
-	QImage image() const;
-	QString name() const;
+    QList<QAction *> createActions(QWidget *parent) override;
+    QList<QAction *> pluginActions() const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID,
+                                                    QSharedPointer<nmc::DkImageContainer> image,
+                                                    const nmc::DkSaveInfo &saveInfo,
+                                                    QSharedPointer<nmc::DkBatchInfo> &batchInfo) const override;
 
-	QList<QAction*> createActions(QWidget* parent) override;
-	QList<QAction*> pluginActions() const override;
-	QSharedPointer<nmc::DkImageContainer> runPlugin(
-		const QString &runID, 
-		QSharedPointer<nmc::DkImageContainer> image, 
-		const nmc::DkSaveInfo& saveInfo,
-		QSharedPointer<nmc::DkBatchInfo>& batchInfo) const override;
+    virtual void preLoadPlugin() const {}; // is called before batch processing
+    virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo>> &) const {}; // is called after batch processing
 
-	virtual void preLoadPlugin() const {};	// is called before batch processing
-	virtual void postLoadPlugin(const QVector<QSharedPointer<nmc::DkBatchInfo> > &) const {};	// is called after batch processing
+    enum {
+        id_crop_to_page,
+        id_crop_to_metadata,
+        id_draw_to_page,
+        // id_eval_page,
+        //  add actions here
 
-	enum {
-		id_crop_to_page,
-		id_crop_to_metadata,
-		id_draw_to_page,
-		//id_eval_page,
-		// add actions here
+        id_end
+    };
 
-		id_end
-	};
+    enum MethodIndex {
+        m_thresholds = 0,
+        m_bhaskar,
 
-	enum MethodIndex {
-		m_thresholds = 0,
-		m_bhaskar,
+        m_end
+    };
 
-		m_end
-	};
-
-	void loadSettings(QSettings& settings) override;
-	void saveSettings(QSettings& settings) const override;
+    void loadSettings(QSettings &settings) override;
+    void saveSettings(QSettings &settings) const override;
 
 protected:
-	QList<QAction*> mActions;
-	QStringList mRunIDs;
-	QStringList mMenuNames;
-	QStringList mMenuStatusTips;
-	QString mResultPath;
+    QList<QAction *> mActions;
+    QStringList mRunIDs;
+    QStringList mMenuNames;
+    QStringList mMenuStatusTips;
+    QString mResultPath;
 
-	MethodIndex mMethod = m_thresholds;
+    MethodIndex mMethod = m_thresholds;
 
-	QPolygonF readGT(const QString& imgPath) const;
-	double jaccardIndex(const QSize& imgSize, const QPolygonF& gt, const QPolygonF& computed) const;
-	QImage drawPoly(const QSize& imgSize, const QPolygonF& poly) const;
+    QPolygonF readGT(const QString &imgPath) const;
+    double jaccardIndex(const QSize &imgSize, const QPolygonF &gt, const QPolygonF &computed) const;
+    QImage drawPoly(const QSize &imgSize, const QPolygonF &poly) const;
 };
 
 };

@@ -32,247 +32,249 @@
 #define INIT_WIDTH 1
 #define INIT_HEIGHT 0.1941
 
-namespace nmp {
-
+namespace nmp
+{
 
 #ifdef WITH_OPENCV
-	// I know - but I just want to get rid of these little issues...
+// I know - but I just want to get rid of these little issues...
 #if (CV_MAJOR_VERSION > 3)
-	int DIST_C = cv::DIST_C;
+int DIST_C = cv::DIST_C;
 #else
-	int DIST_C = CV_DIST_C;
+int DIST_C = CV_DIST_C;
 #endif
 #endif
 
 /**************************************************************
-* DkFakeMiniaturesDialog: Dialog for creating fake miniatures
-***************************************************************/
-DkFakeMiniaturesDialog::DkFakeMiniaturesDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
-
-	init();
+ * DkFakeMiniaturesDialog: Dialog for creating fake miniatures
+ ***************************************************************/
+DkFakeMiniaturesDialog::DkFakeMiniaturesDialog(QWidget *parent, Qt::WindowFlags flags)
+    : QDialog(parent, flags)
+{
+    init();
 }
 
-DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog() {
-
+DkFakeMiniaturesDialog::~DkFakeMiniaturesDialog()
+{
 }
 
 /**
  * initializes variables
  **/
-void DkFakeMiniaturesDialog::init() {
+void DkFakeMiniaturesDialog::init()
+{
+    isOk = false;
+    dialogWidth = 700;
+    dialogHeight = 510;
+    toolsWidth = 200;
+    previewMargin = 20;
+    previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
+    previewHeight = dialogHeight - previewMargin * 2;
 
-	isOk = false;
-	dialogWidth = 700;
-	dialogHeight = 510;
-	toolsWidth = 200;
-	previewMargin = 20;
-	previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
-	previewHeight = dialogHeight - previewMargin*2;
-
-	setWindowTitle(tr("Fake Miniatures"));
-	setFixedSize(dialogWidth, dialogHeight);
-	createLayout();
+    setWindowTitle(tr("Fake Miniatures"));
+    setFixedSize(dialogWidth, dialogHeight);
+    createLayout();
 }
 
 /**
  * creates dialog layout and adds items to it
  **/
-void DkFakeMiniaturesDialog::createLayout() {
+void DkFakeMiniaturesDialog::createLayout()
+{
+    // central widget - preview image
+    QWidget *centralWidget = new QWidget(this);
+    // previewLabel = new QLabel(centralWidget);
+    previewLabel = new DkPreviewLabel(this, centralWidget);
+    previewLabel->setGeometry(QRect(QPoint(previewMargin, previewMargin), QSize(previewWidth, previewHeight)));
 
-	// central widget - preview image
-	QWidget* centralWidget = new QWidget(this);
-	//previewLabel = new QLabel(centralWidget);
-	previewLabel = new DkPreviewLabel(this, centralWidget);
-	previewLabel->setGeometry(QRect(QPoint(previewMargin, previewMargin), QSize(previewWidth, previewHeight)));
-	
-	// east widget - sliders
-	QWidget* eastWidget = new QWidget(this);
-	eastWidget->setMinimumWidth(toolsWidth);
-	eastWidget->setMaximumWidth(toolsWidth);
-	eastWidget->setFixedHeight(previewHeight);
-	eastWidget->setContentsMargins(0,10,10,0);
-	QVBoxLayout* toolsLayout = new QVBoxLayout(eastWidget);
-	toolsLayout->setContentsMargins(0,0,0,0);
+    // east widget - sliders
+    QWidget *eastWidget = new QWidget(this);
+    eastWidget->setMinimumWidth(toolsWidth);
+    eastWidget->setMaximumWidth(toolsWidth);
+    eastWidget->setFixedHeight(previewHeight);
+    eastWidget->setContentsMargins(0, 10, 10, 0);
+    QVBoxLayout *toolsLayout = new QVBoxLayout(eastWidget);
+    toolsLayout->setContentsMargins(0, 0, 0, 0);
 
-	kernelSizeWidget = new DkKernelSize(eastWidget, this);
-	saturationWidget = new DkSaturation(eastWidget, this);
-	 
-	toolsLayout->addWidget(kernelSizeWidget);
-	toolsLayout->addWidget(saturationWidget);
+    kernelSizeWidget = new DkKernelSize(eastWidget, this);
+    saturationWidget = new DkSaturation(eastWidget, this);
 
-	QSpacerItem* spacer = new QSpacerItem(20,280, QSizePolicy::Minimum, QSizePolicy::Minimum);
-	toolsLayout->addItem(spacer);
+    toolsLayout->addWidget(kernelSizeWidget);
+    toolsLayout->addWidget(saturationWidget);
 
-	// bottom widget - buttons	
-	//QWidget* bottomWidget = new QWidget(eastWidget);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout();
+    QSpacerItem *spacer = new QSpacerItem(20, 280, QSizePolicy::Minimum, QSizePolicy::Minimum);
+    toolsLayout->addItem(spacer);
 
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
+    // bottom widget - buttons
+    // QWidget* bottomWidget = new QWidget(eastWidget);
+    QHBoxLayout *bottomWidgetHBoxLayout = new QHBoxLayout();
 
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);	
+    QPushButton *buttonOk = new QPushButton(tr("&Ok"));
+    connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
+    QPushButton *buttonCancel = new QPushButton(tr("&Cancel"));
+    connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
-	toolsLayout->addLayout(bottomWidgetHBoxLayout);
+    bottomWidgetHBoxLayout->addWidget(buttonOk);
+    bottomWidgetHBoxLayout->addWidget(buttonCancel);
 
-	eastWidget->setLayout(toolsLayout);
+    toolsLayout->addLayout(bottomWidgetHBoxLayout);
 
-	QWidget* dummy = new QWidget(this);
-	QHBoxLayout* cLayout = new QHBoxLayout(dummy);
-	cLayout->setContentsMargins(0, 0, 0, 0);
-	//cLayout->setSpacing(0);
+    eastWidget->setLayout(toolsLayout);
 
-	cLayout->addWidget(centralWidget);
-	cLayout->addWidget(eastWidget);
+    QWidget *dummy = new QWidget(this);
+    QHBoxLayout *cLayout = new QHBoxLayout(dummy);
+    cLayout->setContentsMargins(0, 0, 0, 0);
+    // cLayout->setSpacing(0);
 
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->addWidget(dummy);
-	//layout->addWidget(buttons);
+    cLayout->addWidget(centralWidget);
+    cLayout->addWidget(eastWidget);
 
-	this->setSizeGripEnabled(false);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(dummy);
+    // layout->addWidget(buttons);
 
+    this->setSizeGripEnabled(false);
 }
 
 /**
  * scales input image for the display in the preview label
  **/
-void DkFakeMiniaturesDialog::createImgPreview() {
+void DkFakeMiniaturesDialog::createImgPreview()
+{
+    if (!mImg || mImg->isNull())
+        return;
 
-	if (!mImg || mImg->isNull())
-		return;
-	
-	QPoint lt;
-	float rW = previewWidth / (float) mImg->width();
-	float rH = previewHeight / (float) mImg->height();
-	rMin = (rW < rH) ? rW : rH;
+    QPoint lt;
+    float rW = previewWidth / (float)mImg->width();
+    float rH = previewHeight / (float)mImg->height();
+    rMin = (rW < rH) ? rW : rH;
 
-	if(rMin < 1) {
-		if(rW < rH) lt = QPoint(0, qRound((float) mImg->height() * (rH - rMin) / 2.0f));
-		else {
-			 lt = QPoint(qRound((float) mImg->width() * (rW - rMin) / 2.0f), 0);
-		}
-	}
-	else lt = QPoint(qRound((previewWidth - mImg->width()) / 2.0f), qRound((previewHeight - mImg->height()) / 2.0f));
+    if (rMin < 1) {
+        if (rW < rH)
+            lt = QPoint(0, qRound((float)mImg->height() * (rH - rMin) / 2.0f));
+        else {
+            lt = QPoint(qRound((float)mImg->width() * (rW - rMin) / 2.0f), 0);
+        }
+    } else
+        lt = QPoint(qRound((previewWidth - mImg->width()) / 2.0f), qRound((previewHeight - mImg->height()) / 2.0f));
 
-	QSize imgSizeScaled = QSize(mImg->size());
-	if(rMin < 1) imgSizeScaled *= rMin;
+    QSize imgSizeScaled = QSize(mImg->size());
+    if (rMin < 1)
+        imgSizeScaled *= rMin;
 
-	previewImgRect = QRect(lt, imgSizeScaled);
+    previewImgRect = QRect(lt, imgSizeScaled);
 
-	previewImgRect.setTop(previewImgRect.top()+1);
-	previewImgRect.setLeft(previewImgRect.left()+1);
-	previewImgRect.setWidth(previewImgRect.width()-1);			// we have a border... correct that...
-	previewImgRect.setHeight(previewImgRect.height()-1);
+    previewImgRect.setTop(previewImgRect.top() + 1);
+    previewImgRect.setLeft(previewImgRect.left() + 1);
+    previewImgRect.setWidth(previewImgRect.width() - 1); // we have a border... correct that...
+    previewImgRect.setHeight(previewImgRect.height() - 1);
 
-	if(rMin < 1) scaledImg = mImg->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	else scaledImg = *mImg;
-	
-	imgPreview = applyMiniaturesFilter(scaledImg, QRect(
-		INIT_X, 
-		qRound(INIT_Y*scaledImg.height()), 
-		INIT_WIDTH*scaledImg.width(), 
-		qRound(INIT_HEIGHT*scaledImg.height()))); 
-	
-	previewLabel->setImgRect(previewImgRect);
+    if (rMin < 1)
+        scaledImg = mImg->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    else
+        scaledImg = *mImg;
+
+    imgPreview =
+        applyMiniaturesFilter(scaledImg,
+                              QRect(INIT_X, qRound(INIT_Y * scaledImg.height()), INIT_WIDTH * scaledImg.width(), qRound(INIT_HEIGHT * scaledImg.height())));
+
+    previewLabel->setImgRect(previewImgRect);
 }
 
 /**
  * draws preview image onto preview label
  **/
-void DkFakeMiniaturesDialog::drawImgPreview() {
-
-	QImage preview = QImage(previewWidth,previewHeight, QImage::Format_ARGB32);
-	preview.fill(Qt::transparent);
-	QPainter painter(&preview);
-	painter.setPen(QColor(0,0,0));
-	painter.drawRect(0, 0, previewWidth - 1, previewHeight - 1);
-	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(previewImgRect, imgPreview);
-	previewLabel->setPixmap(QPixmap::fromImage(preview));
+void DkFakeMiniaturesDialog::drawImgPreview()
+{
+    QImage preview = QImage(previewWidth, previewHeight, QImage::Format_ARGB32);
+    preview.fill(Qt::transparent);
+    QPainter painter(&preview);
+    painter.setPen(QColor(0, 0, 0));
+    painter.drawRect(0, 0, previewWidth - 1, previewHeight - 1);
+    painter.setBackgroundMode(Qt::TransparentMode);
+    painter.drawImage(previewImgRect, imgPreview);
+    previewLabel->setPixmap(QPixmap::fromImage(preview));
 }
 
 /**
  * applies fake miniature filter to an image
- * @param inImg image where the filter is applied 
+ * @param inImg image where the filter is applied
  * @param roi the rectangle that will not be blurred
  * @return image with filter applied
  **/
-QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
+QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi)
+{
+#ifdef WITH_OPENCV
 
-#ifdef WITH_OPENCV	
+    int kernelSize = kernelSizeWidget->getToolValue();
+    if (inImg == scaledImg) {
+        double diagO = sqrt(mImg->width() * mImg->width() + mImg->height() * mImg->height());
+        double diagP = sqrt(scaledImg.width() * scaledImg.width() + scaledImg.height() * scaledImg.height());
+        kernelSize = qRound(kernelSize * diagP / diagO);
+    }
 
-	int kernelSize = kernelSizeWidget->getToolValue();
-	if (inImg == scaledImg) {
-		double diagO = sqrt(mImg->width()*mImg->width()+mImg->height()*mImg->height());
-		double diagP = sqrt(scaledImg.width()*scaledImg.width()+scaledImg.height()*scaledImg.height());
-		kernelSize = qRound(kernelSize*diagP/diagO);
-	}
+    int saturation = saturationWidget->getToolValue();
+    float satFactor = saturation / 50.0f + 1;
 
-	int saturation = saturationWidget->getToolValue();
-	float satFactor = saturation/50.0f + 1; 
+    cv::Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
+    cv::Mat distImg(blurImg.size(), CV_8UC1);
+    distImg = 255;
+    cv::Mat roi(distImg, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
+    roi.setTo(0);
+    // blur plane by plane
+    std::vector<cv::Mat> planes;
+    cv::split(blurImg, planes);
 
-	cv::Mat blurImg = DkFakeMiniaturesDialog::qImage2Mat(inImg);
-	cv::Mat distImg(blurImg.size(), CV_8UC1);
-	distImg = 255;
-	cv::Mat roi(distImg, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
-	roi.setTo(0);
-	// blur plane by plane
-	std::vector<cv::Mat> planes;
-	cv::split(blurImg, planes);
+    // dist image based on 'some' threshold
+    // cv::Mat distImg;
+    // cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
 
-	// dist image based on 'some' threshold
-	//cv::Mat distImg;
-	//cv::threshold(planes.at(0), distImg, 40, 255, THRESH_BINARY);
+    cv::distanceTransform(distImg, distImg, DIST_C, 3);
+    cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
 
-	cv::distanceTransform(distImg, distImg, DIST_C, 3);
-	cv::normalize(distImg, distImg, 1.0f, 0.0f, NORM_MINMAX);
-	
-	for (size_t idx = 0; idx < planes.size(); idx++)
-		planes.at(idx) = blurPanTilt(planes.at(idx), distImg, kernelSize);		// 140 is the maximal blurring kernel size
-		//planes.at(idx) = distImg;
+    for (size_t idx = 0; idx < planes.size(); idx++)
+        planes.at(idx) = blurPanTilt(planes.at(idx), distImg, kernelSize); // 140 is the maximal blurring kernel size
+    // planes.at(idx) = distImg;
 
-	cv::merge(planes, blurImg);
-	//return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
+    cv::merge(planes, blurImg);
+    // return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
 
-	if(satFactor > 1) {
-		Mat imgHsv;
-		cvtColor(blurImg, imgHsv, cv::COLOR_RGB2HSV);
-		std::vector<Mat> imgHsvCh;
-		split(imgHsv, imgHsvCh);
+    if (satFactor > 1) {
+        Mat imgHsv;
+        cvtColor(blurImg, imgHsv, cv::COLOR_RGB2HSV);
+        std::vector<Mat> imgHsvCh;
+        split(imgHsv, imgHsvCh);
 
-		for (int row = 0; row < imgHsv.rows; row++)
-		{
-			unsigned char *ptr = imgHsvCh[1].ptr<unsigned char>(row);
-	 	
-			for (int col = 0; col < imgHsv.cols; col++) {
-				float tmp = (float)ptr[col] * satFactor;
-				if (tmp > 255.0f) tmp = 255.0f;
-				if (tmp < 0) tmp = 0.0f;
-				ptr[col] = (unsigned char)qRound(tmp);
-			}
-		}
-	
+        for (int row = 0; row < imgHsv.rows; row++) {
+            unsigned char *ptr = imgHsvCh[1].ptr<unsigned char>(row);
 
-		merge(imgHsvCh, imgHsv);
-		Mat tempImg(blurImg);
-		cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
-	
-		if(tempImg.type() == CV_8UC4) {	// the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
-			std::vector<Mat> inImgCh;
-			split(tempImg, inImgCh);
-			std::vector<Mat> retImgCh;
-			split(blurImg, retImgCh);
-			retImgCh.push_back(inImgCh[3]);
-			merge(retImgCh, blurImg);
-		}
-	}
-	
-	return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
+            for (int col = 0; col < imgHsv.cols; col++) {
+                float tmp = (float)ptr[col] * satFactor;
+                if (tmp > 255.0f)
+                    tmp = 255.0f;
+                if (tmp < 0)
+                    tmp = 0.0f;
+                ptr[col] = (unsigned char)qRound(tmp);
+            }
+        }
+
+        merge(imgHsvCh, imgHsv);
+        Mat tempImg(blurImg);
+        cvtColor(imgHsv, blurImg, cv::COLOR_HSV2RGB);
+
+        if (tempImg.type() == CV_8UC4) { // the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
+            std::vector<Mat> inImgCh;
+            split(tempImg, inImgCh);
+            std::vector<Mat> retImgCh;
+            split(blurImg, retImgCh);
+            retImgCh.push_back(inImgCh[3]);
+            merge(retImgCh, blurImg);
+        }
+    }
+
+    return (DkFakeMiniaturesDialog::mat2QImage(blurImg));
 #else
-	return inImg;
+    return inImg;
 #endif
 }
 
@@ -281,252 +283,262 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
  * blur filter
  * @param src input Mat
  * @param depthImg distance transform based on a roi
- * @param maxKernel maximum blur kernel size 
+ * @param maxKernel maximum blur kernel size
  * @return Mat blurres mat
  **/
-Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
+Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel)
+{
+    cv::Mat integralImg;
 
-	cv::Mat integralImg;
+    cv::Mat blurImg(src.size(), src.depth());
 
-	cv::Mat blurImg(src.size(), src.depth());
+    // a template function would have more 'style' here
+    // const double* itgrl64Ptr = 0;
 
-	// a template function would have more 'style' here
-	//const double* itgrl64Ptr = 0;
+    // images with an area below 4000*4000 can be compuated using 32 bit
+    cv::integral(src, integralImg, CV_32S);
+    const unsigned int *itgrl32Ptr = integralImg.ptr<unsigned int>();
 
-	// images with an area below 4000*4000 can be compuated using 32 bit 
-	cv::integral(src, integralImg, CV_32S);
-	const unsigned int* itgrl32Ptr = integralImg.ptr<unsigned int>();
+    for (int rIdx = 0; rIdx < src.rows; rIdx++) {
+        unsigned char *blurPtr = blurImg.ptr<unsigned char>(rIdx); // assuming unsigned char
+        const float *depthPtr = depthImg.ptr<float>(rIdx);
+        const unsigned char *srcPtr = src.ptr<unsigned char>(rIdx);
 
-	for (int rIdx = 0; rIdx < src.rows; rIdx++) {
+        for (int cIdx = 0; cIdx < src.cols; cIdx++) {
+            // kernel size depends on the distance transform, the user selected
+            // float dpv = depthPtr[cIdx];
+            float ksf = depthPtr[cIdx] * maxKernel * 0.5f;
 
-		unsigned char* blurPtr = blurImg.ptr<unsigned char>(rIdx);	// assuming unsigned char
-		const float* depthPtr = depthImg.ptr<float>(rIdx);
-		const unsigned char* srcPtr = src.ptr<unsigned char>(rIdx);
+            // if (!ks) {
+            //	blurPtr[cIdx] = srcPtr[cIdx];
+            //	continue;
+            // }
 
-		for (int cIdx = 0; cIdx < src.cols; cIdx++) {
+            int ks = qRound(ksf);
+            if (ksf > 0 && ksf < 2)
+                ks = 2;
+            else if (ks == 0) { // early skip
+                blurPtr[cIdx] = srcPtr[cIdx];
+                continue;
+            }
 
-			// kernel size depends on the distance transform, the user selected
-			//float dpv = depthPtr[cIdx];
-			float ksf = depthPtr[cIdx]*maxKernel*0.5f;
+            // clip all coordinates
+            int left = qMax(cIdx - ks, 0);
+            int right = qMin(cIdx + ks + 1, src.cols); // note not cols-1 since integral mImg is src.cols+1
+            int bottom = qMax(rIdx - ks, 0); // note top bottom is flipped since -y coords
+            int top = qMin(rIdx + ks + 1, src.rows);
+            int area = (right - left) * (top - bottom);
 
-			//if (!ks) {
-			//	blurPtr[cIdx] = srcPtr[cIdx];
-			//	continue;
-			//}
-			
-			int ks = qRound(ksf);
-			if (ksf > 0 && ksf < 2) ks = 2;
-			else if (ks == 0) { // early skip
-				blurPtr[cIdx] = srcPtr[cIdx];
-				continue;
-			}
+            top *= integralImg.cols;
+            bottom *= integralImg.cols;
 
-			// clip all coordinates
-			int left	= qMax(cIdx-ks, 0);
-			int right	= qMin(cIdx+ks+1, src.cols);	// note not cols-1 since integral mImg is src.cols+1
-			int bottom	= qMax(rIdx-ks, 0);				// note top bottom is flipped since -y coords
-			int top		= qMin(rIdx+ks+1, src.rows);
-			int area	= (right-left)*(top-bottom);
+            float tmp = 0.0f;
 
-			top *= integralImg.cols;
-			bottom *= integralImg.cols;
+            // compute mean kernel
+            if (area && itgrl32Ptr && ks > 1)
+                tmp = (float)(*(itgrl32Ptr + top + right) + *(itgrl32Ptr + bottom + left) - *(itgrl32Ptr + top + left) - *(itgrl32Ptr + bottom + right)) / area;
+            else
+                tmp = srcPtr[cIdx];
 
-			float tmp = 0.0f;
+            if (tmp < 0)
+                tmp = 0.0f;
+            if (tmp > 255)
+                tmp = 255.0f;
 
-			// compute mean kernel
-			if (area && itgrl32Ptr && ks > 1)
-				tmp = (float)(*(itgrl32Ptr + top+right) + *(itgrl32Ptr + bottom+left) - *(itgrl32Ptr + top+left) - *(itgrl32Ptr + bottom+right))/area;
-			else
-				tmp = srcPtr[cIdx];
+            blurPtr[cIdx] = (uchar)qRound(tmp);
+        }
+    }
 
-			if (tmp < 0)
-				tmp = 0.0f;
-			if (tmp > 255)
-				tmp = 255.0f;
-
-			blurPtr[cIdx] = (uchar)qRound(tmp);
-		}
-	}
-
-	return blurImg;
+    return blurImg;
 }
 #endif
 
 /**
  * on button ok pressed event
  **/
-void DkFakeMiniaturesDialog::okPressed() {
-
-	isOk = true;
-	this->close();
+void DkFakeMiniaturesDialog::okPressed()
+{
+    isOk = true;
+    this->close();
 }
 
 /**
  * on button cancel pressed event
  **/
-void DkFakeMiniaturesDialog::cancelPressed() {
-
-	this->close();
+void DkFakeMiniaturesDialog::cancelPressed()
+{
+    this->close();
 }
 
 /**
  * the dialog is executed and displayes
  **/
-void DkFakeMiniaturesDialog::showEvent(QShowEvent *event) {
+void DkFakeMiniaturesDialog::showEvent(QShowEvent *event)
+{
+    isOk = false;
+    double diag = sqrt(mImg->width() * mImg->width() + mImg->height() * mImg->height());
+    kernelSizeWidget->setToolValue(qMin(qMax(int(diag * 0.02), 5), 140));
+    saturationWidget->setToolValue(2);
 
-	isOk = false;	
-	double diag = sqrt(mImg->width()*mImg->width()+mImg->height()*mImg->height());
-	kernelSizeWidget->setToolValue(qMin(qMax(int(diag * 0.02), 5), 140));
-	saturationWidget->setToolValue(2);
-
-	QDialog::showEvent(event);
+    QDialog::showEvent(event);
 }
 
-void DkFakeMiniaturesDialog::setImage(const QImage *img) {
-
-	this->mImg = img;
-	createImgPreview();
-	drawImgPreview();
+void DkFakeMiniaturesDialog::setImage(const QImage *img)
+{
+    this->mImg = img;
+    createImgPreview();
+    drawImgPreview();
 };
 
 /**
  * the dialog returns image after execution
  **/
-QImage DkFakeMiniaturesDialog::getImage() {
+QImage DkFakeMiniaturesDialog::getImage()
+{
+    QRect rescaledRect = previewLabel->getROI();
+    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(), rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
+    if (rMin < 1) {
+        rescaledRect.moveTo(qRound(rescaledRect.topLeft().x() / rMin), qRound(rescaledRect.topLeft().y() / rMin));
+        rescaledRect.setWidth(qRound(rescaledRect.width() / rMin));
+        rescaledRect.setHeight(qRound(rescaledRect.height() / rMin));
+    }
+    QRect imgRect = (*(this->mImg)).rect();
+    if (rescaledRect.topLeft().x() < imgRect.topLeft().x())
+        rescaledRect.topLeft().setX(imgRect.topLeft().x());
+    if (rescaledRect.topLeft().y() < imgRect.topLeft().y())
+        rescaledRect.topLeft().setY(imgRect.topLeft().y());
+    if (rescaledRect.bottomRight().x() > imgRect.bottomRight().x())
+        rescaledRect.bottomRight().setX(imgRect.bottomRight().x());
+    if (rescaledRect.bottomRight().y() > imgRect.bottomRight().y())
+        rescaledRect.bottomRight().setY(imgRect.bottomRight().y());
 
-	QRect rescaledRect = previewLabel->getROI();
-	rescaledRect.moveTo(rescaledRect.topLeft().x()-previewImgRect.topLeft().x(), rescaledRect.topLeft().y()-previewImgRect.topLeft().y());
-	if(rMin < 1) {
-		rescaledRect.moveTo(qRound(rescaledRect.topLeft().x()/rMin), qRound(rescaledRect.topLeft().y()/rMin));
-		rescaledRect.setWidth(qRound(rescaledRect.width()/rMin));
-		rescaledRect.setHeight(qRound(rescaledRect.height()/rMin));
-	}
-	QRect imgRect = (*(this->mImg)).rect();
-	if(rescaledRect.topLeft().x() < imgRect.topLeft().x()) rescaledRect.topLeft().setX(imgRect.topLeft().x());
-	if(rescaledRect.topLeft().y() < imgRect.topLeft().y()) rescaledRect.topLeft().setY(imgRect.topLeft().y());
-	if(rescaledRect.bottomRight().x() > imgRect.bottomRight().x()) rescaledRect.bottomRight().setX(imgRect.bottomRight().x());
-	if(rescaledRect.bottomRight().y() > imgRect.bottomRight().y()) rescaledRect.bottomRight().setY(imgRect.bottomRight().y());
-
-	QImage miniature = applyMiniaturesFilter(*(this->mImg), rescaledRect);
-	return miniature;
+    QImage miniature = applyMiniaturesFilter(*(this->mImg), rescaledRect);
+    return miniature;
 };
 
 /**
  * slot that redraws preview after slider change
  **/
-void DkFakeMiniaturesDialog::redrawImgPreview() {
-	
-	QRect rescaledRect = previewLabel->getROI();
-	rescaledRect.moveTo(rescaledRect.topLeft().x()-previewImgRect.topLeft().x(), rescaledRect.topLeft().y()-previewImgRect.topLeft().y());
-	setImagePreview(applyMiniaturesFilter(getScaledImg(), rescaledRect));
-	drawImgPreview();
+void DkFakeMiniaturesDialog::redrawImgPreview()
+{
+    QRect rescaledRect = previewLabel->getROI();
+    rescaledRect.moveTo(rescaledRect.topLeft().x() - previewImgRect.topLeft().x(), rescaledRect.topLeft().y() - previewImgRect.topLeft().y());
+    setImagePreview(applyMiniaturesFilter(getScaledImg(), rescaledRect));
+    drawImgPreview();
 };
 
 /**************************************************************
-* DkPreviewLabel: label for displaying image preview
-***************************************************************/
-DkPreviewLabel::DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent) : QLabel(parent) {
-	fmDialog = parentDialog;
-	showROI = false;
-    selectionStarted=false;
+ * DkPreviewLabel: label for displaying image preview
+ ***************************************************************/
+DkPreviewLabel::DkPreviewLabel(DkFakeMiniaturesDialog *parentDialog, QWidget *parent)
+    : QLabel(parent)
+{
+    fmDialog = parentDialog;
+    showROI = false;
+    selectionStarted = false;
 };
 
-DkPreviewLabel::~DkPreviewLabel() {
+DkPreviewLabel::~DkPreviewLabel(){
 
 };
 
-
-void DkPreviewLabel::mousePressEvent(QMouseEvent *e) {
-    selectionStarted=true;
-	QPoint pos = e->pos();
-	if(pos.x() < previewImgRect.topLeft().x()) pos.setX(previewImgRect.topLeft().x());
-	if(pos.y() < previewImgRect.topLeft().y()) pos.setY(previewImgRect.topLeft().y());
-	if(pos.x() > previewImgRect.bottomRight().x()) pos.setX(previewImgRect.bottomRight().x());
-	if(pos.y() > previewImgRect.bottomRight().y()) pos.setY(previewImgRect.bottomRight().y());
-	selectionRect.setTopLeft(pos);
-	selectionRect.setBottomRight(pos);
- 
+void DkPreviewLabel::mousePressEvent(QMouseEvent *e)
+{
+    selectionStarted = true;
+    QPoint pos = e->pos();
+    if (pos.x() < previewImgRect.topLeft().x())
+        pos.setX(previewImgRect.topLeft().x());
+    if (pos.y() < previewImgRect.topLeft().y())
+        pos.setY(previewImgRect.topLeft().y());
+    if (pos.x() > previewImgRect.bottomRight().x())
+        pos.setX(previewImgRect.bottomRight().x());
+    if (pos.y() > previewImgRect.bottomRight().y())
+        pos.setY(previewImgRect.bottomRight().y());
+    selectionRect.setTopLeft(pos);
+    selectionRect.setBottomRight(pos);
 };
- 
-void DkPreviewLabel::mouseMoveEvent(QMouseEvent *e) {
+
+void DkPreviewLabel::mouseMoveEvent(QMouseEvent *e)
+{
     if (selectionStarted) {
-		QPoint pos = e->pos();
-		if(pos.x() > previewImgRect.topLeft().x() && pos.x() < previewImgRect.bottomRight().x() && pos.y() > previewImgRect.topLeft().y() && pos.y() < previewImgRect.bottomRight().y()) {
-			selectionRect.setBottomRight(pos);
-		}
-		repaint();
+        QPoint pos = e->pos();
+        if (pos.x() > previewImgRect.topLeft().x() && pos.x() < previewImgRect.bottomRight().x() && pos.y() > previewImgRect.topLeft().y()
+            && pos.y() < previewImgRect.bottomRight().y()) {
+            selectionRect.setBottomRight(pos);
+        }
+        repaint();
     }
 };
- 
-void DkPreviewLabel::mouseReleaseEvent(QMouseEvent *e) {
-    
-	selectionStarted=false;
-	if (selectionRect.top() > selectionRect.bottom()) {
-		int top = selectionRect.top();
-		selectionRect.setTop(selectionRect.bottom());
-		selectionRect.setBottom(top);
-	}
-	if (selectionRect.left() > selectionRect.right()) {			
-		int left = selectionRect.left();
-		selectionRect.setLeft(selectionRect.right());
-		selectionRect.setRight(left);
-	}
 
-	fmDialog->redrawImgPreview();
+void DkPreviewLabel::mouseReleaseEvent(QMouseEvent *e)
+{
+    selectionStarted = false;
+    if (selectionRect.top() > selectionRect.bottom()) {
+        int top = selectionRect.top();
+        selectionRect.setTop(selectionRect.bottom());
+        selectionRect.setBottom(top);
+    }
+    if (selectionRect.left() > selectionRect.right()) {
+        int left = selectionRect.left();
+        selectionRect.setLeft(selectionRect.right());
+        selectionRect.setRight(left);
+    }
 
-	QLabel::mouseReleaseEvent(e);
+    fmDialog->redrawImgPreview();
+
+    QLabel::mouseReleaseEvent(e);
 };
 
-void DkPreviewLabel::enterEvent(QEvent * e){
-	showROI = true;
-	repaint();
+void DkPreviewLabel::enterEvent(QEnterEvent *e)
+{
+    showROI = true;
+    repaint();
     QLabel::enterEvent(e);
 };
 
-void DkPreviewLabel::leaveEvent(QEvent * e){
-	showROI = false;
-	repaint();
+void DkPreviewLabel::leaveEvent(QEvent *e)
+{
+    showROI = false;
+    repaint();
     QLabel::leaveEvent(e);
 };
 
-void DkPreviewLabel::paintEvent(QPaintEvent *e) {
-	QLabel::paintEvent(e);
-	if (showROI) {
-		QPainter painter(this);	
-		painter.setPen(QPen(QBrush(QColor(0,0,0,180)),1,Qt::DashLine));
-		painter.setBrush(QBrush(QColor(255,255,255,120))); 
-		painter.drawRect(selectionRect);
-	}
+void DkPreviewLabel::paintEvent(QPaintEvent *e)
+{
+    QLabel::paintEvent(e);
+    if (showROI) {
+        QPainter painter(this);
+        painter.setPen(QPen(QBrush(QColor(0, 0, 0, 180)), 1, Qt::DashLine));
+        painter.setBrush(QBrush(QColor(255, 255, 255, 120)));
+        painter.drawRect(selectionRect);
+    }
 };
 
-void DkPreviewLabel::setImgRect(QRect rect) {
-
-	previewImgRect = rect;
-	selectionRect = QRect(
-		previewImgRect.left() + INIT_X*previewImgRect.width(), 
-		qRound(previewImgRect.top() + INIT_Y*previewImgRect.height()), 
-		INIT_WIDTH*previewImgRect.width(), 
-		qRound(INIT_HEIGHT*previewImgRect.height()));
+void DkPreviewLabel::setImgRect(QRect rect)
+{
+    previewImgRect = rect;
+    selectionRect = QRect(previewImgRect.left() + INIT_X * previewImgRect.width(),
+                          qRound(previewImgRect.top() + INIT_Y * previewImgRect.height()),
+                          INIT_WIDTH * previewImgRect.width(),
+                          qRound(INIT_HEIGHT * previewImgRect.height()));
 };
-
 
 /**************************************************************
-* DkFakeMiniaturesToolWidget: abstract class - all tool widgets inherit from it
-***************************************************************/
+ * DkFakeMiniaturesToolWidget: abstract class - all tool widgets inherit from it
+ ***************************************************************/
 DkFakeMiniaturesToolWidget::DkFakeMiniaturesToolWidget(QWidget *parent, DkFakeMiniaturesDialog *parentDialog)
-	: QWidget(parent) {
+    : QWidget(parent)
+{
+    this->leftSpacing = 10;
+    this->topSpacing = 10;
+    this->margin = 10;
+    this->sliderLength = parent->minimumWidth() - 2 * leftSpacing;
+    this->valueUpdated = false;
 
-	this->leftSpacing = 10;
-	this->topSpacing = 10;
-	this->margin = 10;
-	this->sliderLength = parent->minimumWidth() - 2 * leftSpacing;
-	this->valueUpdated = false;
-
-	connect(this, SIGNAL(redrawImgPreview()), parentDialog, SLOT(redrawImgPreview()));
+    connect(this, SIGNAL(redrawImgPreview()), parentDialog, SLOT(redrawImgPreview()));
 };
 
-DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget() {
-
+DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget(){
 
 };
 
@@ -534,156 +546,154 @@ DkFakeMiniaturesToolWidget::~DkFakeMiniaturesToolWidget() {
  * slider spin box slot: update value and redraw image
  * @param changed value
  **/
-void DkFakeMiniaturesToolWidget::updateSliderSpinBox(int val) {
-
-	if(!valueUpdated) {
-		valueUpdated = true;
-		this->sliderSpinBox->setValue(val);
-		emit redrawImgPreview();
-	}
-	else valueUpdated = false;
-
+void DkFakeMiniaturesToolWidget::updateSliderSpinBox(int val)
+{
+    if (!valueUpdated) {
+        valueUpdated = true;
+        this->sliderSpinBox->setValue(val);
+        emit redrawImgPreview();
+    } else
+        valueUpdated = false;
 };
-
 
 /**
  * slider slot: update value and redraw image
  * @param changed value
  **/
-void DkFakeMiniaturesToolWidget::updateSliderVal(int val) {
-
-	if(!valueUpdated) {
-		valueUpdated = true;
-		this->slider->setValue(val);
-		emit redrawImgPreview();
-	}
-	else valueUpdated = false;
-
+void DkFakeMiniaturesToolWidget::updateSliderVal(int val)
+{
+    if (!valueUpdated) {
+        valueUpdated = true;
+        this->slider->setValue(val);
+        emit redrawImgPreview();
+    } else
+        valueUpdated = false;
 };
 
 /**
-* set a new tool value
-* @param new value
-**/
-void DkFakeMiniaturesToolWidget::setToolValue(int val) {
-
-	if (this->name.compare("DkKernelSize") == 0) { slider->setValue(val);}
-	//else if (this->name.compare("DkSaturation") == 0) { contrast = (int)val; slider->setValue((int)val);}
+ * set a new tool value
+ * @param new value
+ **/
+void DkFakeMiniaturesToolWidget::setToolValue(int val)
+{
+    if (this->name.compare("DkKernelSize") == 0) {
+        slider->setValue(val);
+    }
+    // else if (this->name.compare("DkSaturation") == 0) { contrast = (int)val; slider->setValue((int)val);}
 };
 
 /**
-* @return tool value
-**/
-int DkFakeMiniaturesToolWidget::getToolValue() {
-
-	if (this->name.compare("DkKernelSize") == 0) return slider->value();
-	else if (this->name.compare("DkSaturation") == 0) return slider->value();
-	else return 0;
+ * @return tool value
+ **/
+int DkFakeMiniaturesToolWidget::getToolValue()
+{
+    if (this->name.compare("DkKernelSize") == 0)
+        return slider->value();
+    else if (this->name.compare("DkSaturation") == 0)
+        return slider->value();
+    else
+        return 0;
 };
 
 /**************************************************************
-* DkKernelSize: widget for changing kernel size
-***************************************************************/
-DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog) 
-	: DkFakeMiniaturesToolWidget(parent, parentDialog){
+ * DkKernelSize: widget for changing kernel size
+ ***************************************************************/
+DkKernelSize::DkKernelSize(QWidget *parent, DkFakeMiniaturesDialog *parentDialog)
+    : DkFakeMiniaturesToolWidget(parent, parentDialog)
+{
+    name = QString("DkKernelSize");
+    defaultValue = 50;
 
-	name = QString("DkKernelSize");
-	defaultValue = 50;
+    minVal = 1; // no change
+    maxVal = 140; // max change
+    middleVal = 70;
 
-	minVal = 1;	// no change
-	maxVal = 140; // max change
-	middleVal = 70;
+    sliderTitle = new QLabel(tr("Blur amount"), this);
+    sliderTitle->move(leftSpacing, topSpacing);
 
-	sliderTitle = new QLabel(tr("Blur amount"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+    slider = new QSlider(this);
+    slider->setMinimum(minVal);
+    slider->setMaximum(maxVal);
+    slider->setValue(middleVal);
+    slider->setOrientation(Qt::Horizontal);
+    slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
+    slider->setStyleSheet(QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
+                          + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ") + QString(";} ")
+                          + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: "
+                                    "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
 
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
-		+ QString(";} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+    sliderSpinBox = new QSpinBox(this);
+    sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
+    sliderSpinBox->setMinimum(minVal);
+    sliderSpinBox->setMaximum(maxVal);
+    sliderSpinBox->setValue(slider->value());
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+    connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+    minValLabel = new QLabel(QString::number(minVal), this);
+    minValLabel->move(leftSpacing, slider->geometry().bottom());
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+    middleValLabel = new QLabel(QString::number(middleVal), this);
+    middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
-
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+    maxValLabel = new QLabel(QString::number(maxVal), this);
+    maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkKernelSize::~DkKernelSize() {
-
+DkKernelSize::~DkKernelSize(){
 
 };
 
 /**************************************************************
-* DkSaturation: widget for changing saturation
-***************************************************************/
-DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog) 
-	: DkFakeMiniaturesToolWidget(parent, parentDialog){
+ * DkSaturation: widget for changing saturation
+ ***************************************************************/
+DkSaturation::DkSaturation(QWidget *parent, DkFakeMiniaturesDialog *parentDialog)
+    : DkFakeMiniaturesToolWidget(parent, parentDialog)
+{
+    name = QString("DkSaturation");
+    defaultValue = 50;
 
-	name = QString("DkSaturation");
-	defaultValue = 50;
+    minVal = 0;
+    middleVal = 50;
+    maxVal = 100;
 
-	minVal = 0;
-	middleVal = 50;
-	maxVal = 100;
+    sliderTitle = new QLabel(tr("Saturation"), this);
+    sliderTitle->move(leftSpacing, topSpacing);
 
-	sliderTitle = new QLabel(tr("Saturation"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+    slider = new QSlider(this);
+    slider->setMinimum(minVal);
+    slider->setMaximum(maxVal);
+    slider->setValue(middleVal);
+    slider->setOrientation(Qt::Horizontal);
+    slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
+    slider->setStyleSheet(QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
+                          + QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);} ")
+                          + QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: "
+                                    "1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
 
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+    sliderSpinBox = new QSpinBox(this);
+    sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
+    sliderSpinBox->setMinimum(minVal);
+    sliderSpinBox->setMaximum(maxVal);
+    sliderSpinBox->setValue(slider->value());
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+    connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+    minValLabel = new QLabel(QString::number(minVal), this);
+    minValLabel->move(leftSpacing, slider->geometry().bottom());
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+    middleValLabel = new QLabel(QString::number(middleVal), this);
+    middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
-
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
-
+    maxValLabel = new QLabel(QString::number(maxVal), this);
+    maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
 };
 
-DkSaturation::~DkSaturation() {
-
+DkSaturation::~DkSaturation(){
 
 };
 

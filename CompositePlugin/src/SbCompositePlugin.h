@@ -26,100 +26,119 @@
 
 #include "DkPluginInterface.h"
 #include "SbChannelWidget.h"
-#include <opencv2/opencv.hpp>
 #include <QDockWidget>
-#include <QVBoxLayout>
-#include <QVector>
-#include <QString>
+#include <QIcon>
 #include <QLabel>
 #include <QPushButton>
-#include <QIcon>
+#include <QString>
 #include <QStyle>
+#include <QVBoxLayout>
+#include <QVector>
+#include <opencv2/opencv.hpp>
 
-
-namespace nmc {
+namespace nmc
+{
 
 // subclassed to access its close event
-class SbCompositeDockWidget : public QDockWidget {
-	Q_OBJECT
+class SbCompositeDockWidget : public QDockWidget
+{
+    Q_OBJECT
 public:
-	SbCompositeDockWidget(const QString& title, QWidget* parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags()) : QDockWidget(title, parent, flags) {
-		setObjectName("CompositeDockWidget");	// fixes saving...
-	}
-	~SbCompositeDockWidget() {}
+    SbCompositeDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags())
+        : QDockWidget(title, parent, flags)
+    {
+        setObjectName("CompositeDockWidget"); // fixes saving...
+    }
+    ~SbCompositeDockWidget()
+    {
+    }
+
 protected:
-	void closeEvent(QCloseEvent*) {
-		emit closed();
-	}
+    void closeEvent(QCloseEvent *)
+    {
+        emit closed();
+    }
 signals:
-	void closed();
+    void closed();
 };
 
 // subclassed to access the image container
-class SbViewPort : public DkPluginViewPort {
-	Q_OBJECT
+class SbViewPort : public DkPluginViewPort
+{
+    Q_OBJECT
 public:
-	SbViewPort(QWidget* parent = 0) : DkPluginViewPort(parent) {};
-	void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override {
-		if (!imgC)
-			return;
-		mImgC = imgC;
-		emit gotImage();
-	}
-	QSharedPointer<DkImageContainerT> getImgC() {
-		return mImgC;
-	}
+    SbViewPort(QWidget *parent = 0)
+        : DkPluginViewPort(parent){};
+    void updateImageContainer(QSharedPointer<DkImageContainerT> imgC) override
+    {
+        if (!imgC)
+            return;
+        mImgC = imgC;
+        emit gotImage();
+    }
+    QSharedPointer<DkImageContainerT> getImgC()
+    {
+        return mImgC;
+    }
+
 private:
-	QSharedPointer<DkImageContainerT> mImgC;
+    QSharedPointer<DkImageContainerT> mImgC;
 signals:
-	void gotImage();
+    void gotImage();
 };
 
-
 // the main thing
-class SbCompositePlugin : public QObject, DkViewPortInterface {
-	Q_OBJECT
-	Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.SbCompositePlugin/0.1" FILE "SbCompositePlugin.json")
+class SbCompositePlugin : public QObject, DkViewPortInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(nmc::DkViewPortInterface)
+    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.SbCompositePlugin/0.1" FILE "SbCompositePlugin.json")
 
 public:
+    SbCompositePlugin(QObject *parent = 0)
+        : QObject(parent)
+    {
+    }
+    ~SbCompositePlugin()
+    {
+    }
 
-	SbCompositePlugin(QObject* parent = 0) : QObject(parent) {}
-	~SbCompositePlugin() {}
+    // DkPluginInterface
+    QImage image() const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
+                                                    QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
+    virtual bool closesOnImageChange()
+    {
+        return false;
+    } // actually I think this has no effect...
 
-	//DkPluginInterface
-	QImage image() const override;
-	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
-	virtual bool closesOnImageChange() { return false; }	// actually I think this has no effect...
-
-	//DkViewPortInterface
-	bool createViewPort(QWidget* parent) override;
-	DkPluginViewPort* getViewPort() override;
-	virtual void setVisible(bool visible) override;
-	
+    // DkViewPortInterface
+    bool createViewPort(QWidget *parent) override;
+    DkPluginViewPort *getViewPort() override;
+    virtual void setVisible(bool visible) override;
 
 protected:
-	SbCompositeDockWidget* dockWidget = 0;
-	QScrollArea* scrollArea = 0;
-	QWidget* mainWidget = 0;
-	QBoxLayout* outerLayout = 0;
-	QVector<SbChannelWidget*> channelWidgets;
-	SbViewPort* viewport = 0;
-	cv::Mat channels[3];
-	cv::Mat alpha;
-	bool apply = false;
+    SbCompositeDockWidget *dockWidget = 0;
+    QScrollArea *scrollArea = 0;
+    QWidget *mainWidget = 0;
+    QBoxLayout *outerLayout = 0;
+    QVector<SbChannelWidget *> channelWidgets;
+    SbViewPort *viewport = 0;
+    cv::Mat channels[3];
+    cv::Mat alpha;
+    bool apply = false;
 
-	void buildUI();						// initialize UI and connect 
-	QImage buildComposite() const;		// merge channels (and alpha if present) to a rgb(a) QImage
+    void buildUI(); // initialize UI and connect
+    QImage buildComposite() const; // merge channels (and alpha if present) to a rgb(a) QImage
 
 public slots:
-	void onImageChanged(int channel);					// fetch new image from respective channel
-	void onNewAlpha(QImage _alpha);						// update alpha (don't trigger buildComposite())
-	void onViewportGotImage();							// get image from the viewport, split it into channels, assign them to the channel widgets
-	void onDockWidgetClose();							// close plugin, ask for apply/cancel (this is buggy)
-	void onDockLocationChanged(Qt::DockWidgetArea a);	// switches between vertical / horizontal layout depending on the current dock area
-	void onPushButtonApply();							// close plugin and apply
-	void onPushButtonCancel();							// close plugin and cancel
+    void onImageChanged(int channel); // fetch new image from respective channel
+    void onNewAlpha(QImage _alpha); // update alpha (don't trigger buildComposite())
+    void onViewportGotImage(); // get image from the viewport, split it into channels, assign them to the channel widgets
+    void onDockWidgetClose(); // close plugin, ask for apply/cancel (this is buggy)
+    void onDockLocationChanged(Qt::DockWidgetArea a); // switches between vertical / horizontal layout depending on the current dock area
+    void onPushButtonApply(); // close plugin and apply
+    void onPushButtonCancel(); // close plugin and cancel
 };
 
 };

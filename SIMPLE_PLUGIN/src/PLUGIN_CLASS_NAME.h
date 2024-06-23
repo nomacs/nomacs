@@ -26,36 +26,38 @@
 
 #include "DkPluginInterface.h"
 
-namespace nmc {
+namespace nmc
+{
 
-class PLUGIN_CLASS_NAME : public QObject, DkPluginInterface {
-	Q_OBJECT
-	Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.PLUGIN_CLASS_NAME/3.2" FILE "PLUGIN_CLASS_NAME.json")
+class PLUGIN_CLASS_NAME : public QObject, DkPluginInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(nmc::DkPluginInterface)
+    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.PLUGIN_CLASS_NAME/3.2" FILE "PLUGIN_CLASS_NAME.json")
 
 public:
+    PLUGIN_CLASS_NAME(QObject *parent = 0);
+    ~PLUGIN_CLASS_NAME();
 
-	PLUGIN_CLASS_NAME(QObject* parent = 0);
-	~PLUGIN_CLASS_NAME();
+    QImage image() const override;
 
-	QImage image() const override;
+    QList<QAction *> createActions(QWidget *parent) override;
+    QList<QAction *> pluginActions() const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
+                                                    QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
 
-	QList<QAction*> createActions(QWidget* parent) override;
-	QList<QAction*> pluginActions() const override;
-	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> imgC = QSharedPointer<nmc::DkImageContainer>()) const override;
+    enum {
+        ID_ACTION1,
+        // add actions here
 
-	enum {
-		ID_ACTION1,
-		// add actions here
-
-		id_end
-	};
+        id_end
+    };
 
 protected:
-	QList<QAction*> mActions;
-	QStringList mRunIDs;
-	QStringList mMenuNames;
-	QStringList mMenuStatusTips;
+    QList<QAction *> mActions;
+    QStringList mRunIDs;
+    QStringList mMenuNames;
+    QStringList mMenuStatusTips;
 };
 
 };

@@ -27,23 +27,23 @@
 
 #pragma once
 
-#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(push, 0) // no warnings from includes - begin
+#include <QDebug>
 #include <QImage>
-#include <QtCore/qmath.h>
-#include <QtGlobal>
+#include <QProgressDialog>
 #include <QVector3D>
 #include <QVector4D>
-#include <cmath>
-#include <QProgressDialog>
 #include <QWidget>
-#include <QDebug>
-#pragma warning(pop)		// no warnings from includes - end
+#include <QtCore/qmath.h>
+#include <QtGlobal>
+#include <cmath>
+#pragma warning(pop) // no warnings from includes - end
 
 // opencv
 #ifdef WITH_OPENCV
 
 #ifdef WIN32
-#pragma warning(disable: 4996)
+#pragma warning(disable : 4996)
 #endif
 
 #include "opencv2/core/core.hpp"
@@ -51,52 +51,50 @@
 
 #endif
 
+namespace nmp
+{
 
-namespace nmp {
-
-
-class DkSkewEstimator {
-
+class DkSkewEstimator
+{
 public:
+    enum {
+        dir_horizontal = 0,
+        dir_vertical,
 
-	enum {
-		dir_horizontal = 0,
-		dir_vertical,
+        dir_end,
+    };
 
-		dir_end,
-	};
+    DkSkewEstimator(QWidget *mainWin = 0);
+    ~DkSkewEstimator();
 
-	DkSkewEstimator(QWidget* mainWin = 0);
-	~DkSkewEstimator();
+    double getSkewAngle();
+    QVector<QVector4D> getLines();
+    QVector<int> getLineTypes();
+    void setImage(QImage inImage);
 
-	double getSkewAngle();
-	QVector<QVector4D> getLines();
-	QVector<int> getLineTypes();
-	void setImage(QImage inImage);
+private:
+    cv::Mat computeSeparability(cv::Mat integral, cv::Mat integralSq, int direction);
+    cv::Mat computeEdgeMap(cv::Mat separability, double thr, int direction);
+    QVector<QVector3D> computeWeights(cv::Mat edgeMap, int direction);
+    double computeSkewAngle(QVector<QVector3D> weights, double imgDiagonal);
+    int randInt(int low, int high);
 
-private: 
-	cv::Mat computeSeparability(cv::Mat integral, cv::Mat integralSq, int direction);
-	cv::Mat computeEdgeMap(cv::Mat separability, double thr, int direction);
-	QVector<QVector3D> computeWeights(cv::Mat edgeMap, int direction);
-	double computeSkewAngle(QVector<QVector3D> weights, double imgDiagonal);
-	int randInt(int low, int high);
+    int nIter;
+    QSize sepDims;
+    int delta;
+    double sigma;
+    double sepThr;
+    int epsilon;
+    int kMax;
+    int minLineLength;
+    int minLineProjLength;
 
-	int nIter;
-	QSize sepDims;
-	int delta;
-	double sigma;
-	double sepThr;
-	int epsilon;
-	int kMax;
-	int minLineLength;
-	int minLineProjLength;
-	
-	QVector<QVector4D> selectedLines;
-	QVector<int> selectedLineTypes;
-	cv::Mat matImg;
-	int rotationFactor;
-	QProgressDialog* progress;
-	QWidget* mainWin;
+    QVector<QVector4D> selectedLines;
+    QVector<int> selectedLineTypes;
+    cv::Mat matImg;
+    int rotationFactor;
+    QProgressDialog *progress;
+    QWidget *mainWin;
 };
 
 };

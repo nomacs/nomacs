@@ -27,30 +27,33 @@
 
 #pragma once
 
-#pragma warning(disable: 4251)	// TODO: remove
+#pragma warning(disable : 4251) // TODO: remove
 
+#include <QImage>
+#include <QMessageBox>
 #include <QObject>
+#include <QString>
+#include <QStringList>
 #include <QWidget>
 #include <QtPlugin>
-#include <QImage>
-#include <QStringList>
-#include <QString>
-#include <QMessageBox>
 
-#include "DkPluginInterface.h"
 #include "DkFakeMiniaturesDialog.h"
+#include "DkPluginInterface.h"
 
-namespace nmp {
+namespace nmp
+{
 
-class DkFakeMiniaturesPlugin : public QObject, nmc::DkPluginInterface {
+class DkFakeMiniaturesPlugin : public QObject, nmc::DkPluginInterface
+{
     Q_OBJECT
     Q_INTERFACES(nmc::DkPluginInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/3.2" FILE "DkFakeMiniaturesPlugin.json")
+    Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/3.2" FILE "DkFakeMiniaturesPlugin.json")
 
 public:
     QImage image() const override;
 
-	QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(), QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
+    QSharedPointer<nmc::DkImageContainer> runPlugin(const QString &runID = QString(),
+                                                    QSharedPointer<nmc::DkImageContainer> image = QSharedPointer<nmc::DkImageContainer>()) const override;
 };
 
 };

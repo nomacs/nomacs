@@ -27,49 +27,49 @@
 
 #include "DkFakeMiniaturesPlugin.h"
 
-namespace nmp {
+namespace nmp
+{
 
 /**
-* Returns descriptive iamge for every ID
-* @param plug-in ID
-**/
-QImage DkFakeMiniaturesPlugin::image() const {
-
-   return QImage(":/nomacsPluginFakeMin/img/fakeMinDesc.png");
+ * Returns descriptive iamge for every ID
+ * @param plug-in ID
+ **/
+QImage DkFakeMiniaturesPlugin::image() const
+{
+    return QImage(":/nomacsPluginFakeMin/img/fakeMinDesc.png");
 };
 
 /**
-* Main function: runs plug-in based on its ID
-* @param plug-in ID
-* @param current imgC in the Nomacs viewport
-**/
-QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const {
+ * Main function: runs plug-in based on its ID
+ * @param plug-in ID
+ * @param current imgC in the Nomacs viewport
+ **/
+QSharedPointer<nmc::DkImageContainer> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<nmc::DkImageContainer> imgC) const
+{
+    qDebug() << "run id" << runID;
+    if (imgC) {
+        QMainWindow *mainWindow = getMainWindow();
+        DkFakeMiniaturesDialog *fakeMiniaturesDialog;
+        if (mainWindow)
+            fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);
+        else
+            fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
-	qDebug() << "run id" << runID;
-	if (imgC) {
-		QMainWindow* mainWindow = getMainWindow();
-		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
-		if(mainWindow) 
-			fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);
-		else 
-			fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
+        QImage img = imgC->image();
+        fakeMiniaturesDialog->setImage(&img);
 
-		QImage img = imgC->image();
-		fakeMiniaturesDialog->setImage(&img);
+        fakeMiniaturesDialog->exec();
 
-		fakeMiniaturesDialog->exec();
+        QImage returnImg(imgC->image());
+        if (fakeMiniaturesDialog->wasOkPressed())
+            returnImg = fakeMiniaturesDialog->getImage();
 
-		QImage returnImg(imgC->image());
-		if (fakeMiniaturesDialog->wasOkPressed()) 
-			returnImg = fakeMiniaturesDialog->getImage();
+        fakeMiniaturesDialog->deleteLater();
 
-		fakeMiniaturesDialog->deleteLater();
+        imgC->setImage(returnImg, tr("Fake Miniature"));
+    }
 
-		imgC->setImage(returnImg, tr("Fake Miniature"));
-	}
-
-	return imgC;
+    return imgC;
 };
 
 };
-
