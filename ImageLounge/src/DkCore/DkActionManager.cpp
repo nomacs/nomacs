@@ -53,8 +53,10 @@
 #include <QSvgRenderer>
 
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QWinTaskbarProgress>
 #include <QtWin>
+#endif
 #include <windows.h>
 #endif
 #pragma warning(pop) // no warnings from includes - end
@@ -275,8 +277,13 @@ void DkAppManager::assignIcon(QAction *app) const
     HICON smallIcon;
     ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
-    if (nIcons != 0 && smallIcon != NULL)
+    if (nIcons != 0 && smallIcon != NULL) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         appIcon = QtWin::fromHICON(smallIcon);
+#else
+        appIcon = QPixmap::fromImage(QImage::fromHICON(smallIcon));
+#endif
+    }
 
     DestroyIcon(largeIcon);
     DestroyIcon(smallIcon);
@@ -1801,7 +1808,7 @@ void DkActionManager::enableMovieActions(bool enable) const
 DkGlobalProgress::DkGlobalProgress()
     : showProgress(true)
 {
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     mProgress = new QWinTaskbarProgress(this);
 #endif
 }
@@ -1818,7 +1825,7 @@ DkGlobalProgress &DkGlobalProgress::instance()
 
 void DkGlobalProgress::start()
 {
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 
     if (!mProgress) {
         qWarning() << "global progress bar is empty...";
@@ -1835,7 +1842,7 @@ void DkGlobalProgress::stop()
     if (!mProgress)
         return;
 
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     mProgress->setVisible(false);
     mProgress->setValue(0);
 #endif
@@ -1843,7 +1850,7 @@ void DkGlobalProgress::stop()
 
 void DkGlobalProgress::setProgressValue(int value)
 {
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     if (showProgress)
         mProgress->setValue(value);
 #endif
@@ -1854,7 +1861,7 @@ QObject *DkGlobalProgress::progressObject() const
     return mProgress;
 }
 
-#ifdef Q_OS_WIN32
+#if defined Q_OS_WIN32 && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 void DkGlobalProgress::setProgressBar(QWinTaskbarProgress *progress)
 {
     mProgress = progress;

@@ -625,7 +625,7 @@ public:
     void start();
     void stop();
 
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     void setProgressBar(QWinTaskbarProgress *progressbar);
     QWinTaskbarProgress *progressBar();
 #else
@@ -641,7 +641,7 @@ private:
     QSharedPointer<DkGlobalProgress> inst;
     bool showProgress;
 
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QWinTaskbarProgress *mProgress = 0;
 #else
     QProgressDialog *mProgress = 0;
