@@ -27,6 +27,7 @@ class NomacsConfig(Config):
 
         # tune cmake parameters here
         args = [
+            "-DQT_MAJOR_VERSION=5",
             "-DCMAKE_PREFIX_PATH=" + self.qtpath,
             "-DDEPENDENCY_PATH=" + self.libpath,
             "-DENABLE_TRANSLATIONS=ON",
@@ -257,6 +258,7 @@ class FormatsConfig(Config):
 
         # tune cmake parameters here
         args = [
+            "-DQT_MAJOR_VERSION=5",
             "-DCMAKE_PREFIX_PATH=" +
             # os.path.join(self.libpath, "libde265") + ";" +
             # os.path.join(self.libpath, "libheif") + ";" +
