@@ -749,7 +749,7 @@ public:
     /**
      * Normal vector.
      * @return a vector which is normal to the current vector
-     * (rotated by 90° counter clockwise).
+     * (rotated by 90 counter clockwise).
      */
     DkVector normalVec() const
     {
