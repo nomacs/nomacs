@@ -100,6 +100,8 @@ class ExifConfig(Config):
             "-DEXPAT_BUILD_PATH=" + self.libpath + "/expat",
             "-DEXPAT_INCLUDE_DIR=" + self.repopath + "/expat/lib",
             "-DEXIV2_ENABLE_BMFF=ON",
+            "-DEXIV2_ENABLE_BROTLI=OFF",
+            "-DEXIV2_ENABLE_INIH=OFF",
             "-DEXIV2_BUILD_EXIV2_COMMAND=OFF",
             "-DEXIV2_BUILD_SAMPLES=OFF",
             "-B" + self.builddir,

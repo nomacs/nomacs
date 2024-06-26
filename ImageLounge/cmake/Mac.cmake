@@ -13,7 +13,7 @@ endif()
 find_package(PkgConfig)
 
 # search for exiv2
-pkg_check_modules(EXIV2 REQUIRED exiv2>=0.27)
+pkg_check_modules(EXIV2 REQUIRED exiv2>=0.28.1)
 message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 
 find_file(HAVE_EXIV2_HPP exiv2/exiv2.hpp ${EXIV2_INCLUDE_DIRS})
