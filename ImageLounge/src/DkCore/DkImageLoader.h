@@ -189,6 +189,7 @@ protected:
     void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT>> images);
     void createImages(const QFileInfoList &files, bool sort = true);
     QVector<QSharedPointer<DkImageContainerT>> sortImages(QVector<QSharedPointer<DkImageContainerT>> images) const;
+    void receiveUpdates(bool connectSignals);
 
     QStringList mIgnoreKeywords;
     QStringList mKeywords;
