@@ -38,7 +38,7 @@ macro(NMC_FINDQT)
 		message(FATAL_ERROR "Qt Libraries not found!")
 	endif()
 
-	if (MSVC AND QT_MAJOR_VERSION STREQUAL "5")
+	if (MSVC AND QT_VERSION_MAJOR STREQUAL "5")
 		find_package(Qt5 ${QT5_MIN_VERSION} REQUIRED WinExtras)
 	endif()
 
@@ -127,10 +127,6 @@ macro(NMC_CREATE_TARGETS)
 	        ${DLL_CORE_NAME} 
 	    )
 
-		### DependencyCollector
-		set(DC_SCRIPT ${CMAKE_SOURCE_DIR}/cmake/DependencyCollector.py)
-		set(DC_CONFIG ${CMAKE_CURRENT_BINARY_DIR}/DependencyCollector.ini)
-		
 		# CMAKE_MAKE_PROGRAM works for VS 2017 too
 		get_filename_component(VS_PATH ${CMAKE_MAKE_PROGRAM} PATH)
 		if(CMAKE_CL_64)
@@ -139,20 +135,12 @@ macro(NMC_CREATE_TARGETS)
 			set(VS_PATH "${VS_PATH}/../../Common7/IDE/Remote Debugger/x86")
 		endif()
 
-		set(DC_PATHS_RELEASE C:/Windows/System32 ${OpenCV_DIR}/bin/Release ${QT_QMAKE_PATH} ${VS_PATH})
-		set(DC_PATHS_DEBUG C:/Windows/System32 ${OpenCV_DIR}/bin/Debug ${QT_QMAKE_PATH} ${VS_PATH})
-
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/DependencyCollector.config.cmake.in ${DC_CONFIG})
-
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND python ${DC_SCRIPT} --infile $<TARGET_FILE:${PROJECT_NAME}> --configfile ${DC_CONFIG} --configuration $<CONFIGURATION>)
-		### End of DependencyCollector
-		
 		message(STATUS "${PROJECT_NAME} \t v${PLUGIN_VERSION} \t will be installed to: ${NOMACS_INSTALL_DIRECTORY}")
-		
+
 		set(PACKAGE_DIR ${NOMACS_INSTALL_DIRECTORY}/nomacs.${PLUGIN_ARCHITECTURE}/plugins/)
 		install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${PACKAGE_DIR} CONFIGURATIONS Release)
 		install(FILES ${ADDITIONAL_DLLS} DESTINATION ${PACKAGE_DIR} CONFIGURATIONS Release)
-	
+
 	elseif(UNIX)
 		set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${NOMACS_BUILD_DIRECTORY}/plugins)
         install(TARGETS ${PROJECT_NAME} RUNTIME LIBRARY DESTINATION lib${LIB_SUFFIX}/nomacs-plugins)
